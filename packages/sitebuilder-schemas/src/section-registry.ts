@@ -12,6 +12,9 @@ import { RichTextConfig, richTextFields } from './sections/rich-text';
 import { ImageBannerConfig, imageBannerFields } from './sections/image-banner';
 import { TestimonialsConfig, testimonialsFields } from './sections/testimonials';
 import { EmailSignupConfig, emailSignupFields } from './sections/email-signup';
+import { PanelsConfig, panelsFields } from './sections/panels';
+import { MediaTextConfig, mediaTextFields } from './sections/media-text';
+import { StatsConfig, statsFields } from './sections/stats';
 import {
   ProductBuyBoxConfig,
   productBuyBoxFields,
@@ -43,6 +46,9 @@ export const SECTION_TYPES = [
   'image-banner',
   'testimonials',
   'email-signup',
+  'panels',
+  'media-text',
+  'stats',
   // Bound — product scope (resolve from the assigned product)
   'product-buy-box',
   'product-description',
@@ -139,6 +145,30 @@ export const SECTION_REGISTRY: Record<SectionType, SectionDefinition> = {
     icon: 'Mail',
     schema: EmailSignupConfig,
     fields: emailSignupFields,
+  },
+  panels: {
+    type: 'panels',
+    label: 'Panels',
+    description: 'A row of 1–4 media or card panels, each with its own heading and buttons.',
+    icon: 'Columns3',
+    schema: PanelsConfig,
+    fields: panelsFields,
+  },
+  'media-text': {
+    type: 'media-text',
+    label: 'Media + text',
+    description: 'A feature band: an image beside a heading, copy, and buttons.',
+    icon: 'GalleryHorizontalEnd',
+    schema: MediaTextConfig,
+    fields: mediaTextFields,
+  },
+  stats: {
+    type: 'stats',
+    label: 'Stats',
+    description: 'Big figures and labels, with an optional lead image and buttons.',
+    icon: 'BarChart3',
+    schema: StatsConfig,
+    fields: statsFields,
   },
   'product-buy-box': {
     type: 'product-buy-box',

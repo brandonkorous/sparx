@@ -18,6 +18,9 @@ import type {
   ImageBannerConfig,
   TestimonialsConfig,
   EmailSignupConfig,
+  PanelsConfig,
+  MediaTextConfig,
+  StatsConfig,
   ProductBuyBoxConfig,
   ProductDescriptionConfig,
   ProductFitmentConfig,
@@ -43,6 +46,9 @@ import { RichTextSection } from './sections/rich-text';
 import { ImageBannerSection } from './sections/image-banner';
 import { TestimonialsSection } from './sections/testimonials';
 import { EmailSignupSection } from './sections/email-signup';
+import { PanelsSection } from './sections/panels';
+import { MediaTextSection } from './sections/media-text';
+import { StatsSection } from './sections/stats';
 import { ProductBuyBoxSection } from './sections/product-buy-box';
 import { ProductDescriptionSection } from './sections/product-description';
 import { ProductFitmentSection } from './sections/product-fitment';
@@ -97,6 +103,12 @@ function renderSection(section: SectionSnapshot, ctx: SectionContext): React.Rea
       return <TestimonialsSection config={c as unknown as TestimonialsConfig} ctx={ctx} />;
     case 'email-signup':
       return <EmailSignupSection config={c as unknown as EmailSignupConfig} />;
+    case 'panels':
+      return <PanelsSection config={c as unknown as PanelsConfig} ctx={ctx} />;
+    case 'media-text':
+      return <MediaTextSection config={c as unknown as MediaTextConfig} ctx={ctx} />;
+    case 'stats':
+      return <StatsSection config={c as unknown as StatsConfig} ctx={ctx} />;
     case 'product-buy-box':
       return <ProductBuyBoxSection config={c as unknown as ProductBuyBoxConfig} ctx={ctx} />;
     case 'product-description':

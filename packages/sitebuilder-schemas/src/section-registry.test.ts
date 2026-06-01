@@ -27,7 +27,28 @@ describe('section registry', () => {
     // New sections ship with placeholder copy so they look intentional before
     // the merchant edits them (rather than rendering blank).
     expect(hero.heading).toBe('Your headline goes here');
-    expect(hero.ctaLabel).toBe('Shop now');
+    // A fresh hero ships with one solid CTA (multi-CTA model, docs/37).
+    const ctas = hero.ctas as { label: string; style: string }[];
+    expect(ctas).toHaveLength(1);
+    expect(ctas[0].label).toBe('Shop now');
+    expect(ctas[0].style).toBe('solid');
+  });
+
+  it('new landing sections are registered and addable on the home target', () => {
+    for (const type of ['panels', 'media-text', 'stats'] as const) {
+      expect(getSectionDefinition(type)?.type).toBe(type);
+      expect(isSectionAllowedInTarget(type, 'site:home')).toBe(true);
+    }
+    // The CTA array bounds at two buttons.
+    expect(() =>
+      parseSectionConfig('hero', {
+        ctas: [
+          { label: 'a', url: '/a' },
+          { label: 'b', url: '/b' },
+          { label: 'c', url: '/c' },
+        ],
+      })
+    ).toThrow();
   });
 
   it('validates and fills section config from partial input', () => {

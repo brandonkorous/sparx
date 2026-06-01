@@ -22,5 +22,8 @@ export * from './sections/rich-text';
 export * from './sections/image-banner';
 export * from './sections/testimonials';
 export * from './sections/email-signup';
+export * from './sections/panels';
+export * from './sections/media-text';
+export * from './sections/stats';
 export * from './sections/product-bound';
 export * from './sections/collection-bound';

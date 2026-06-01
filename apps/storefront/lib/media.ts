@@ -8,10 +8,14 @@
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
-/** Resolve a media asset id → a stable public URL. Returns null for a null
- *  id so callers can fall back to a placeholder. */
+/** Resolve a media reference → a stable public URL. Accepts either a media
+ *  asset id (UUID, resolved via the public redirect) or an absolute http(s)
+ *  URL (passed straight through, so a merchant can reference a self-hosted /
+ *  CDN asset without uploading it). Returns null for an empty ref so callers
+ *  can fall back to a placeholder. */
 export function mediaUrl(assetId: string | null | undefined, tenantSlug: string): string | null {
   if (!assetId) return null;
+  if (/^https?:\/\//i.test(assetId)) return assetId;
   return `${BASE_URL}/v1/public/media/${encodeURIComponent(assetId)}?tenant=${encodeURIComponent(
     tenantSlug
   )}`;

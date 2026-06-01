@@ -38,6 +38,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { MediaPicker, type PickedAsset } from './media-picker';
 import { ReferencePicker, type PickedReference } from './reference-picker';
 import { searchEntries } from './cms-internal-api';
+import { LucideIconLink, isLucideIconField } from '@/lib/lucide-icon-hint';
 
 export interface FieldRendererProps {
   field: FieldDef;
@@ -98,6 +99,7 @@ function FieldLabel({ htmlFor, field }: { htmlFor: string; field: FieldDef }) {
           {field.helpText}
         </Text>
       )}
+      {isLucideIconField(field.helpText) && <LucideIconLink />}
     </Stack>
   );
 }
