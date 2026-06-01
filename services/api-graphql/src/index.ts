@@ -3,7 +3,7 @@
 
 import { configurePubsub } from '@sparx/api-core/pubsub';
 import { startWebhookDeliveryLoop } from '@sparx/api-core/webhook-delivery';
-import { installCrmWebhookFanout, preconnectWebhookFanout } from '@sparx/crm';
+import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { createApp } from './app.js';
 import { env } from './env.js';
@@ -17,6 +17,12 @@ async function main(): Promise<void> {
   // Pub/Sub. MUST run before installCrmWebhookFanout() (it wraps the active
   // publisher). No-op when GCP_PROJECT_ID is unset.
   installCrmPubSubBridge({ projectId: env.GCP_PROJECT_ID, logger: console });
+
+  // Wire the in-process CRM consumers so order/quote/etc. mutations made via
+  // GraphQL maintain customer stats + activity in THIS process (the platform
+  // bus is in-process; events only dispatch where they're published). See the
+  // api-rest bootstrap for the full rationale.
+  registerCrmConsumers();
 
   // Wrap the CRM publisher so every publishCrmEvent() also enqueues a
   // WebhookDelivery row per matching tenant subscription.

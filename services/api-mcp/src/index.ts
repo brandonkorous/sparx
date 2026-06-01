@@ -1,6 +1,6 @@
 // Entry point. Boots the Fastify app and listens.
 
-import { installCrmWebhookFanout, preconnectWebhookFanout } from '@sparx/crm';
+import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { env } from './env.js';
 import { createApp } from './app.js';
@@ -13,6 +13,10 @@ async function main(): Promise<void> {
   // reach the search index. MUST run before installCrmWebhookFanout() (it
   // wraps the active publisher). No-op when GCP_PROJECT_ID is unset.
   installCrmPubSubBridge({ projectId: env.GCP_PROJECT_ID, logger: console });
+  // Wire the in-process CRM consumers so order/customer mutations made via MCP
+  // tools maintain customer stats + activity in THIS process (the platform bus
+  // is in-process). See the api-rest bootstrap for the full rationale.
+  registerCrmConsumers();
   // Wrap CRM publisher so write tools (create_deal, move_deal_stage, ...)
   // enqueue webhook deliveries through the same fan-out as REST + GraphQL.
   installCrmWebhookFanout();

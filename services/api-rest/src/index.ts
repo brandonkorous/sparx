@@ -3,7 +3,7 @@
 
 import { configurePubsub } from '@sparx/api-core/pubsub';
 import { startWebhookDeliveryLoop } from '@sparx/api-core/webhook-delivery';
-import { installCrmWebhookFanout, preconnectWebhookFanout } from '@sparx/crm';
+import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { createApp } from './app.js';
 import { env } from './env.js';
@@ -21,6 +21,15 @@ async function main(): Promise<void> {
   // installCrmWebhookFanout() so the fanout wraps the Pub/Sub-backed
   // publisher (not the stub). No-op when GCP_PROJECT_ID is unset (dev).
   installCrmPubSubBridge({ projectId: env.GCP_PROJECT_ID, logger: console });
+
+  // Wire the in-process CRM consumers (order→customer stats + activity, quote,
+  // email, segment, module-activation). publishPlatformEvent() is a no-op
+  // without subscribers, so without this every order.* event — including
+  // orderService.create()'s 'order.created' on checkout — falls on the floor,
+  // leaving customers.total_spent/order_count stale (search docs show 0).
+  // Subscriptions delegate to the in-memory bus the tee bridge wraps, so
+  // ordering vs. installCrmPubSubBridge above doesn't matter.
+  registerCrmConsumers();
 
   // Wrap the CRM publisher so every publishCrmEvent() also enqueues a
   // WebhookDelivery row per matching tenant subscription. Pre-warm the
