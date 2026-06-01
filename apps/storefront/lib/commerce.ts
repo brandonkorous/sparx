@@ -8,7 +8,14 @@ const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 interface SuccessEnvelope<T> {
   success: true;
   data: T;
-  meta?: { page?: number; per_page?: number; total?: number; total_pages?: number };
+  meta?: {
+    page?: number;
+    per_page?: number;
+    total?: number;
+    total_pages?: number;
+    // Search responses carry Typesense facet counts here.
+    facets?: Record<string, { value: string; count: number }[]>;
+  };
 }
 
 interface ErrorEnvelope {
@@ -299,6 +306,81 @@ export async function listProducts(
     total: meta?.total ?? data.length,
     page: meta?.page ?? filters.page ?? 1,
     perPage: meta?.per_page ?? filters.perPage ?? 24,
+  };
+}
+
+// ─── Typesense search ───────────────────────────────────────────────────
+
+export interface SearchFacetValue {
+  value: string;
+  count: number;
+}
+
+/** Facet counts keyed by Typesense field name (vendor, product_type, tags,
+ *  fitment_makes, …). Drives the search-page filter sidebar. */
+export type SearchFacets = Record<string, SearchFacetValue[]>;
+
+export interface ProductSearchFilters {
+  q?: string;
+  vendor?: string;
+  productType?: string;
+  tag?: string;
+  inStock?: boolean;
+  minPriceCents?: number;
+  maxPriceCents?: number;
+  fitmentMakes?: string;
+  fitmentModels?: string;
+  fitmentEngines?: string;
+  fitmentYear?: number;
+  sort?: ProductSort;
+  page?: number;
+  perPage?: number;
+}
+
+export interface ProductSearchResult {
+  items: PublicProductListItem[];
+  total: number;
+  page: number;
+  perPage: number;
+  facets: SearchFacets;
+}
+
+/** Typo-tolerant faceted product search (Typesense, via api-rest). Returns the
+ *  same PublicProductListItem cards as the PLP plus facet counts for the
+ *  filter sidebar. */
+export async function searchProducts(
+  tenantSlug: string,
+  filters: ProductSearchFilters = {}
+): Promise<ProductSearchResult> {
+  const query: Record<string, string | number | undefined> = {
+    tenant: tenantSlug,
+    q: filters.q,
+    vendor: filters.vendor,
+    productType: filters.productType,
+    tag: filters.tag,
+    inStock: filters.inStock === undefined ? undefined : String(filters.inStock),
+    minPriceCents: filters.minPriceCents,
+    maxPriceCents: filters.maxPriceCents,
+    fitmentMakes: filters.fitmentMakes,
+    fitmentModels: filters.fitmentModels,
+    fitmentEngines: filters.fitmentEngines,
+    fitmentYear: filters.fitmentYear,
+    sort: filters.sort,
+    page: filters.page,
+    perPage: filters.perPage,
+  };
+  const { data, meta } = await publicGet<PublicProductListItem[]>(
+    '/v1/public/commerce/search',
+    query,
+    [`commerce:${tenantSlug}:search`]
+  );
+  const facets: SearchFacets = meta?.facets ?? {};
+  return {
+    items: data,
+    total: meta?.total ?? data.length,
+    page: meta?.page ?? filters.page ?? 1,
+    perPage: meta?.per_page ?? filters.perPage ?? 24,
+    facets,
   };
 }
 

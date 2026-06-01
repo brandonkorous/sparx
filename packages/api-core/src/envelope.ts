@@ -15,6 +15,10 @@ export interface PaginationMeta {
   total?: number;
   total_pages?: number;
   next_cursor?: string | null;
+  // Endpoint-specific extras (e.g. search facet counts) ride alongside the
+  // pagination fields. Kept open so list endpoints can attach structured
+  // metadata without a bespoke envelope per route.
+  [key: string]: unknown;
 }
 
 export function ok<T>(data: T): SuccessEnvelope<T> {
