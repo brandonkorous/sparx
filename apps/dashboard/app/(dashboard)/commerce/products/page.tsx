@@ -37,6 +37,20 @@ interface ProductListItem {
   updatedAt: string;
 }
 
+// Typesense product search document (the subset this list needs). Returned by
+// /v1/search/products — typo-tolerant across title / handle / vendor / SKU.
+interface ProductSearchDoc {
+  product_id: string;
+  title: string;
+  handle: string;
+  status: 'draft' | 'active' | 'archived';
+  vendor?: string;
+  product_type?: string;
+  price_min_cents: number;
+  price_max_cents: number;
+  updated_at: number; // epoch seconds
+}
+
 // Products index — the pilot for the ListToolbar (docs/34 §7.1): live search +
 // quick filters + sort + Table/Cards toggle, all driven through the query
 // string. Filters live in the URL so saved views / shared links serialize
@@ -79,8 +93,32 @@ export default async function ProductsPage({ searchParams }: PageProps) {
   // Selecting the Archived status implies surfacing archived rows at all.
   const includeArchived = status === 'archived' || stringParam(params.archived) === '1';
 
-  const [{ data: products, meta }, prefs] = await Promise.all([
-    api.getPaged<ProductListItem[]>(
+  // With a query, search via Typesense (typo-tolerant across title / handle /
+  // vendor / SKU); without one, list straight from Postgres with the status
+  // facet + sort. variantCount isn't indexed, so search rows render it as —.
+  const prefsPromise = getUserPreferences();
+  let products: ProductListItem[];
+  let total: number;
+  if (q) {
+    const sq = new URLSearchParams({ q, per_page: '100' });
+    const { data, meta } = await api.getPaged<ProductSearchDoc[]>(
+      `/v1/search/products?${sq.toString()}`
+    );
+    products = data.map((d) => ({
+      id: d.product_id,
+      title: d.title,
+      handle: d.handle,
+      status: d.status,
+      vendor: d.vendor ?? null,
+      productType: d.product_type ?? null,
+      variantCount: Number.NaN, // not indexed — rendered as —
+      priceMinCents: d.price_min_cents,
+      priceMaxCents: d.price_max_cents,
+      updatedAt: new Date(d.updated_at * 1000).toISOString(),
+    }));
+    total = (meta?.total as number | undefined) ?? products.length;
+  } else {
+    const { data, meta } = await api.getPaged<ProductListItem[]>(
       `/v1/commerce/products?${new URLSearchParams({
         take: '100',
         sort_by: sortBy,
@@ -89,12 +127,12 @@ export default async function ProductsPage({ searchParams }: PageProps) {
         ...(vendor ? { vendor } : {}),
         ...(tag ? { tag } : {}),
         ...(productType ? { product_type: productType } : {}),
-        ...(q ? { q } : {}),
       }).toString()}`
-    ),
-    getUserPreferences(),
-  ]);
-  const total = (meta?.total as number | undefined) ?? products.length;
+    );
+    products = data;
+    total = (meta?.total as number | undefined) ?? products.length;
+  }
+  const prefs = await prefsPromise;
   // `?view=` overrides; absent → the user's saved default (§7.2).
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -185,7 +223,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                     </Text>
                   </Stack>
                   <Text size="xs" variant="muted">
-                    {p.variantCount} variant{p.variantCount === 1 ? '' : 's'} · updated{' '}
+                    {variantsLabel(p.variantCount)} · updated{' '}
                     {new Date(p.updatedAt).toLocaleDateString()}
                   </Text>
                 </Stack>
@@ -241,7 +279,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                         </Text>
                       </TableCell>
                       <TableCell className="text-right tabular-nums">
-                        <Text size="sm">{p.variantCount}</Text>
+                        <Text size="sm">{Number.isNaN(p.variantCount) ? '—' : p.variantCount}</Text>
                       </TableCell>
                       <TableCell className="text-right tabular-nums">
                         <Text size="sm" variant="muted">
@@ -273,6 +311,13 @@ function stringParam(v: string | string[] | undefined): string | undefined {
 
 function parseStatus(v: string | undefined): 'draft' | 'active' | 'archived' | undefined {
   return v === 'draft' || v === 'active' || v === 'archived' ? v : undefined;
+}
+
+// Variant count isn't in the search index, so search-result rows pass NaN and
+// render as — (the catalog list passes the real count).
+function variantsLabel(n: number): string {
+  if (Number.isNaN(n)) return '—';
+  return `${n} variant${n === 1 ? '' : 's'}`;
 }
 
 function formatPriceRange(minCents: number | null, maxCents: number | null): string {
