@@ -12,7 +12,12 @@ import { Pagination } from '@/components/pagination';
 import { ProductGrid } from '@/components/product-grid';
 import { SearchFacets } from '@/components/search-facets';
 import { SortSelect } from '@/components/sort-select';
-import { searchProducts, type ProductSort } from '@/lib/commerce';
+import {
+  searchEverything,
+  searchProducts,
+  type ProductSort,
+  type SiteSearchHit,
+} from '@/lib/commerce';
 import { resolveTenant } from '@/lib/tenant';
 
 export const dynamic = 'force-dynamic';
@@ -28,6 +33,9 @@ const dollarsToCents = (v: string | undefined): number | undefined => {
   const n = Number(v);
   return Number.isFinite(n) && n >= 0 ? Math.round(n * 100) : undefined;
 };
+
+const SITE_HIT_LABEL: Record<string, string> = { collection: 'Collection', cms_page: 'Page' };
+const labelForType = (t: string) => SITE_HIT_LABEL[t] ?? 'Result';
 
 export default async function SearchPage({
   searchParams,
@@ -58,6 +66,13 @@ export default async function SearchPage({
       (v) => Boolean(v)
     );
 
+  // Kick off the universal "search everything" alongside the product search.
+  // Products appear in the grid below, so the strip surfaces the rest of the
+  // site (collections, CMS pages). Starts here so it runs concurrently.
+  const siteSearch = q
+    ? searchEverything(tenant.slug, q, 12)
+    : Promise.resolve<SiteSearchHit[]>([]);
+
   const result = hasCriteria
     ? await searchProducts(tenant.slug, {
         q: q || undefined,
@@ -74,6 +89,8 @@ export default async function SearchPage({
         maxPriceCents: dollarsToCents(maxPrice),
       })
     : { items: [], total: 0, page: 1, perPage: PER_PAGE, facets: {} };
+
+  const siteHits = (await siteSearch).filter((h) => h.type !== 'product');
 
   const totalPages = Math.max(1, Math.ceil(result.total / result.perPage));
   const { defaultCurrency: currency, defaultLocale: locale } = tenant.storefront;
@@ -107,6 +124,27 @@ export default async function SearchPage({
           aria-label="Search products"
         />
       </form>
+
+      {siteHits.length > 0 ? (
+        <section style={{ marginBlock: '1.5rem' }}>
+          <h2 style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>Pages &amp; collections</h2>
+          <ul
+            style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '0.375rem' }}
+          >
+            {siteHits.map((h) => (
+              <li key={h.url}>
+                <a
+                  href={h.url}
+                  style={{ display: 'inline-flex', gap: '0.5rem', alignItems: 'baseline' }}
+                >
+                  <span>{h.title}</span>
+                  <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>{labelForType(h.type)}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {!hasCriteria ? (
         <EmptyState
