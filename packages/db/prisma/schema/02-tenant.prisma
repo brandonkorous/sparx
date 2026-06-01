@@ -189,6 +189,7 @@ model Tenant {
   siteThemes           SiteTheme[]
   siteLayoutDefaults   SiteLayoutDefault[]
   siteLayoutAssign     SiteLayoutAssignment[]
+  sectionDefinitions   TenantSectionDefinition[]
 
   // Email platform — management surface (docs/13)
   emailSettings       EmailSettings?

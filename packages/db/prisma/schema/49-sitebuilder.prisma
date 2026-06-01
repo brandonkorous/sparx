@@ -49,6 +49,11 @@ model SiteVersion {
   sectionsSnapshot Json @map("sections_snapshot")
   layoutSnapshot   Json @map("layout_snapshot")
   compiledTokens   Json @map("compiled_tokens")
+  // Pinned custom-section definitions (docs/38 Phase C) the snapshot's sections
+  // reference, keyed by slug — so a `custom:<slug>` section renders deterministically
+  // from the template AST as it was at publish, surviving later edits/deletes.
+  // Defaults to [] (no custom sections / pre-Phase-C versions).
+  definitionsSnapshot Json @default("[]") @map("definitions_snapshot")
 
   publishedById String? @map("published_by_id") @db.Uuid
   note          String? @db.VarChar(500)
@@ -246,4 +251,45 @@ model SiteLayoutAssignment {
   @@unique([tenantId, targetId, itemRef])
   @@index([tenantId, targetId])
   @@map("sitebuilder_layout_assignments")
+}
+
+// A merchant-defined custom section TYPE (docs/38 Phase C;
+// docs/handoffs/sitebuilder-custom-section-template-spec.md). This is the
+// data-defined analogue of a code-first SECTION_REGISTRY entry: `fieldSpec` is
+// the editor form spec (a SectionField[] — same shape the dashboard already
+// auto-renders) and `template` is the validated render-template AST the
+// storefront interpreter walks. Merged into the registry under the `custom:`
+// namespace as `custom:<slug>`; both halves are validated by
+// @sparx/sitebuilder-schemas (fieldSpecToZod + validateTemplate), never by the
+// DB. `binding` mirrors the registry's data binding (null | "product" |
+// "collection"); `version` bumps on every edit so publish snapshots can pin
+// `custom:<slug>@<version>` for deterministic rollback. Tenant-scoped,
+// ENABLE+FORCE RLS — a callsite that forgets withTenant() sees no definitions.
+model TenantSectionDefinition {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  slug        String  @db.VarChar(63)
+  label       String  @db.VarChar(120)
+  description String? @db.VarChar(500)
+  icon        String? @db.VarChar(63)
+  // null (static) | "product" | "collection" — gates the binding scope the
+  // template may read (validateTemplate enforces it).
+  binding     String? @db.VarChar(31)
+
+  fieldSpec Json   @default("[]") @map("field_spec") @db.JsonB
+  template  Json   @db.JsonB
+  version   Int    @default(1)
+  // active | archived (archived defs stop appearing in the editor library but
+  // still resolve for already-published pages via the pinned snapshot).
+  status    String @default("active") @db.VarChar(20)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@map("sitebuilder_section_definitions")
 }

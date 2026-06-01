@@ -15,6 +15,9 @@ export * from './section-template';
 export * from './section-template-eval';
 export * from './field-spec-to-zod';
 export * from './section-template-validate';
+// Custom-section definitions: the `custom:<slug>` namespace, the stored-record →
+// registry-definition bridge, and the custom-aware registry lookups.
+export * from './custom-section';
 export * from './default-templates';
 export * from './page-templates';
 export * from './site-settings';
