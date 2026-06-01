@@ -25,6 +25,7 @@ import type { SectionField } from '@sparx/sitebuilder-schemas';
 // The media library is shared dashboard infra (docs/29 §1) — Site Builder image
 // fields reuse the CMS asset picker rather than a parallel one.
 import { MediaPicker } from '../../cms/_components/media-picker';
+import { LucideIconLink, isLucideIconField } from '@/lib/lucide-icon-hint';
 
 // Web-safe + popular Google fonts offered in font pickers.
 const FONT_OPTIONS = [
@@ -57,6 +58,7 @@ export function FieldControl({ field, value, onChange }: FieldControlProps) {
       {field.type !== 'boolean' ? <Label htmlFor={id}>{field.label}</Label> : null}
       <Control field={field} id={id} value={value} onChange={onChange} />
       {field.help ? <p className="text-xs text-[var(--color-text-muted)]">{field.help}</p> : null}
+      {isLucideIconField(field.help) && <LucideIconLink />}
     </div>
   );
 }
@@ -184,57 +186,71 @@ function Control({ field, id, value, onChange }: FieldControlProps & { id: strin
   }
 }
 
-// Image field — opens the shared CMS asset picker and stores the picked
-// asset's id (the same shape the old raw text box stored, so nothing
-// downstream changes). Shows a thumbnail once an asset is picked this session.
+// Image field — accepts EITHER a library asset (via the shared CMS picker,
+// stored as its asset id) OR a pasted absolute image/video URL (stored as-is).
+// The storefront resolver (lib/media.ts) handles both. Shows a live thumbnail.
 function MediaField({
   value,
   onChange,
 }: Omit<FieldControlProps, 'field'> & { field?: SectionField }) {
   const [open, setOpen] = React.useState(false);
-  const [preview, setPreview] = React.useState<string | null>(null);
-  const assetId = typeof value === 'string' && value ? value : null;
+  const [pickedSrc, setPickedSrc] = React.useState<string | null>(null);
+  const current = typeof value === 'string' && value ? value : null;
+  const isUrl = current ? /^https?:\/\//i.test(current) : false;
+  const preview = isUrl ? current : pickedSrc;
 
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
-        {preview ? (
-          <img src={preview} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <ImageIcon className="h-5 w-5 text-[var(--color-text-tertiary)]" />
-        )}
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <div className="flex gap-2">
-          <Button type="button" size="sm" variant="outline" onClick={() => setOpen(true)}>
-            {assetId ? 'Change image' : 'Choose image'}
-          </Button>
-          {assetId ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                setPreview(null);
-                onChange(null);
-              }}
-            >
-              Remove
-            </Button>
-          ) : null}
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-3">
+        <div className="flex h-16 w-16 flex-none items-center justify-center overflow-hidden rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)]">
+          {preview ? (
+            <img src={preview} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <ImageIcon className="h-5 w-5 text-[var(--color-text-tertiary)]" />
+          )}
         </div>
-        {assetId ? (
-          <span className="font-mono text-[11px] text-[var(--color-text-muted)]">{assetId}</span>
-        ) : (
-          <span className="text-xs text-[var(--color-text-muted)]">No image selected</span>
-        )}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex gap-2">
+            <Button type="button" size="sm" variant="outline" onClick={() => setOpen(true)}>
+              {current && !isUrl ? 'Change image' : 'Choose image'}
+            </Button>
+            {current ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  setPickedSrc(null);
+                  onChange(null);
+                }}
+              >
+                Remove
+              </Button>
+            ) : null}
+          </div>
+          {current && !isUrl ? (
+            <span className="font-mono text-[11px] text-[var(--color-text-muted)]">{current}</span>
+          ) : (
+            <span className="text-xs text-[var(--color-text-muted)]">
+              {isUrl ? 'External URL' : 'No image selected'}
+            </span>
+          )}
+        </div>
       </div>
+      <Input
+        value={isUrl ? (current ?? '') : ''}
+        placeholder="…or paste an image URL (https://…)"
+        onChange={(e) => {
+          setPickedSrc(null);
+          onChange(e.target.value.trim() || null);
+        }}
+      />
       <MediaPicker
         open={open}
         onOpenChange={setOpen}
         accept={['image/*']}
         onPick={(asset) => {
-          setPreview(asset.src || null);
+          setPickedSrc(asset.src || null);
           onChange(asset.assetId);
           setOpen(false);
         }}

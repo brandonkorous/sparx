@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { mediaUrl } from '@/lib/media';
 import type { ResolvedTenant } from '@/lib/tenant';
 import { CartButton } from './cart-button';
+import { HeaderScroll } from './header-scroll';
 import { MobileNav } from './mobile-nav';
 import { SearchBox } from './search-box';
 
@@ -26,6 +27,9 @@ export interface SiteHeaderProps {
   showSearch?: boolean;
   /** Where the logo sits in the bar (Site Builder header config). */
   logoPlacement?: 'left' | 'center';
+  /** Transparent header that floats over the first full-bleed section and turns
+   *  solid on scroll (Site Builder header config). */
+  overlay?: boolean;
   /** Light/dark toggle island, rendered only when appearancePolicy = toggle. */
   modeToggle?: React.ReactNode;
 }
@@ -37,12 +41,14 @@ export function SiteHeader({
   announcementHref,
   showSearch = true,
   logoPlacement = 'left',
+  overlay = false,
   modeToggle,
 }: SiteHeaderProps) {
   const logo = mediaUrl(tenant.theme?.logoMediaId ?? null, tenant.slug);
 
   return (
-    <header className="sf-header">
+    <header className={overlay ? 'sf-header sf-header--overlay' : 'sf-header'}>
+      {overlay ? <HeaderScroll /> : null}
       {announcement ? (
         <div className="sf-announce">
           {announcementHref ? (

@@ -3,7 +3,7 @@
 **Platform:** Sparx (sparx.works)
 **Company:** WizeWorks (wize.works)
 **Author:** Brandon Korous (me@brandonkorous.com)
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -116,3 +116,5 @@ Decisions locked in during the v2 documentation pass (vs. the original WizeWorks
 | 33  | Token Model v2                      | Semantic palette + shape/rhythm/effects, brand-vs-presentation ownership                              |
 | 34  | Platform Glossary & Concept Model   | Canonical terms; tenant → brand → site → modules; "storefront" overload                               |
 | 36  | Site Builder Layering Model         | Brand+Theme / SiteLayout / PageLayout tiers; template→layout; data-driven targets; assignment cascade |
+| 37  | Site Builder Section System         | Landing-composition gaps + target model: multi-CTA, full-bleed media, Panels/Media+Text/Stats/Embed   |
+| 38  | Site Builder Extensible Sections    | Letting merchants add components: compose → saved blocks → declarative custom types → marketplace     |
