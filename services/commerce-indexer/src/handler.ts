@@ -6,9 +6,18 @@
 import {
   projectAllCollectionRulesForTenant,
   projectCollectionRules,
+  projectCustomer,
+  projectOrder,
   projectProduct,
 } from '@sparx/commerce';
-import { deleteProduct, upsertProduct } from '@sparx/search';
+import {
+  deleteCustomer,
+  deleteOrder,
+  deleteProduct,
+  upsertCustomer,
+  upsertOrder,
+  upsertProduct,
+} from '@sparx/search';
 import type { Logger as PinoLogger } from 'pino';
 
 import { runReindex } from './reindex.js';
@@ -106,6 +115,69 @@ export async function handleEvent(
       return { outcome: 'deleted', details: { productId } };
     }
 
+    // ── Customers (crm.customer.* — the CRM bus, bridged to Pub/Sub) ──
+    case 'crm.customer.created':
+    case 'crm.customer.updated': {
+      const customerId = stringProp(event.data, 'customerId');
+      if (!customerId) {
+        logger.warn({ type: event.type }, 'customer event missing customerId; skipping');
+        return { outcome: 'skipped' };
+      }
+      const { document } = await projectCustomer(ctx, customerId);
+      if (!document) {
+        // Soft-deleted between publish and processing — remove from index.
+        await deleteCustomer(tenantId, customerId);
+        return { outcome: 'deleted', details: { customerId } };
+      }
+      await upsertCustomer(document);
+      return { outcome: 'indexed', details: { customerId } };
+    }
+
+    case 'crm.customer.deleted': {
+      const customerId = stringProp(event.data, 'customerId');
+      if (!customerId) return { outcome: 'skipped' };
+      await deleteCustomer(tenantId, customerId);
+      return { outcome: 'deleted', details: { customerId } };
+    }
+
+    case 'crm.customer.merged': {
+      // merge-service emits { primaryCustomerId, duplicateCustomerIds[] }.
+      // The losers are soft-deleted → drop them; the survivor absorbed their
+      // stats → re-project + upsert it.
+      const primaryId = stringProp(event.data, 'primaryCustomerId');
+      const duplicateIds = stringArrayProp(event.data, 'duplicateCustomerIds');
+      for (const dupId of duplicateIds) {
+        await deleteCustomer(tenantId, dupId);
+      }
+      if (primaryId) {
+        const { document } = await projectCustomer(ctx, primaryId);
+        if (document) await upsertCustomer(document);
+        else await deleteCustomer(tenantId, primaryId);
+      }
+      return { outcome: 'indexed', details: { primaryId, merged: duplicateIds.length } };
+    }
+
+    // ── Orders (order.* — the platform bus, teed to Pub/Sub) ──
+    case 'order.created':
+    case 'order.cancelled':
+    case 'order.payment.recorded':
+    case 'order.fulfilled':
+    case 'order.delivered':
+    case 'order.refunded': {
+      const orderId = stringProp(event.data, 'orderId');
+      if (!orderId) {
+        logger.warn({ type: event.type }, 'order event missing orderId; skipping');
+        return { outcome: 'skipped' };
+      }
+      const { document } = await projectOrder(ctx, orderId);
+      if (!document) {
+        await deleteOrder(tenantId, orderId);
+        return { outcome: 'deleted', details: { orderId } };
+      }
+      await upsertOrder(document);
+      return { outcome: 'indexed', details: { orderId } };
+    }
+
     case 'search.reindex.requested': {
       const summary = await runReindex(event, logger);
       return { outcome: 'reindexed', details: { ...summary } };
@@ -120,4 +192,9 @@ export async function handleEvent(
 function stringProp(data: Record<string, unknown> | undefined, key: string): string | undefined {
   const v = data?.[key];
   return typeof v === 'string' ? v : undefined;
+}
+
+function stringArrayProp(data: Record<string, unknown> | undefined, key: string): string[] {
+  const v = data?.[key];
+  return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
 }

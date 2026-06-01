@@ -73,9 +73,9 @@ export async function runReindex(
     runId?: unknown;
   };
   const requested = Array.isArray(data.collections)
-    ? (data.collections.filter((c): c is ReindexCollection =>
-        ALL_COLLECTIONS.includes(c as ReindexCollection)
-      ) as ReindexCollection[])
+    ? data.collections.filter((c): c is ReindexCollection =>
+        (ALL_COLLECTIONS as readonly string[]).includes(c as string)
+      )
     : ALL_COLLECTIONS;
   const dropStale = data.dropStale === true;
   const runId = typeof data.runId === 'string' ? data.runId : undefined;
@@ -83,21 +83,21 @@ export async function runReindex(
   const result: ReindexResult = { runId, collections: {} };
 
   for (const collection of requested) {
-    const { collectionName, listIds, projectAndUpsert } = planFor(collection);
+    const plan = planFor(collection);
 
     if (dropStale) {
-      const dropped = await dropTenantFromCollection(collectionName, tenantId);
+      const dropped = await dropTenantFromCollection(plan.collectionName, tenantId);
       logger.info(
         { tenantId, collection, dropped: dropped.deleted, runId },
         'reindex: dropped stale docs'
       );
     }
 
-    const ids = await listIds(ctx);
+    const ids = await plan.listIds(ctx);
     let indexed = 0;
     let errors = 0;
     for (const idBatch of chunk(ids, PROJECT_CHUNK)) {
-      const out = await projectAndUpsert(ctx, idBatch);
+      const out = await plan.projectAndUpsert(ctx, idBatch);
       indexed += out.indexed;
       errors += out.errors;
     }
@@ -111,44 +111,49 @@ export async function runReindex(
   return result;
 }
 
-interface CollectionPlan {
-  collectionName: string;
-  listIds(ctx: { tenantId: string; userId?: string }): Promise<string[]>;
-  projectAndUpsert(
-    ctx: { tenantId: string; userId?: string },
-    ids: string[]
-  ): Promise<{ indexed: number; errors: number }>;
+interface ReindexCtx {
+  tenantId: string;
+  userId?: string;
 }
 
+interface CollectionPlan {
+  collectionName: string;
+  listIds: (ctx: ReindexCtx) => Promise<string[]>;
+  projectAndUpsert: (
+    ctx: ReindexCtx,
+    ids: string[]
+  ) => Promise<{ indexed: number; errors: number }>;
+}
+
+// Arrow-function wrappers (not bare references) so the projection/list
+// functions stay `this`-free closures — keeps the lint unbound-method rule
+// happy and the call sites uniform across collections.
 function planFor(collection: ReindexCollection): CollectionPlan {
   switch (collection) {
     case 'products':
       return {
         collectionName: PRODUCTS_COLLECTION,
-        listIds: listProductIdsForTenant,
-        async projectAndUpsert(ctx, ids) {
-          const docs = await projectProducts(ctx, ids);
-          const res = await bulkUpsertProducts(docs);
+        listIds: (ctx) => listProductIdsForTenant(ctx),
+        projectAndUpsert: async (ctx, ids) => {
+          const res = await bulkUpsertProducts(await projectProducts(ctx, ids));
           return { indexed: res.successCount, errors: res.errors.length };
         },
       };
     case 'customers':
       return {
         collectionName: CUSTOMERS_COLLECTION,
-        listIds: listCustomerIdsForTenant,
-        async projectAndUpsert(ctx, ids) {
-          const docs = await projectCustomers(ctx, ids);
-          const res = await bulkUpsertCustomers(docs);
+        listIds: (ctx) => listCustomerIdsForTenant(ctx),
+        projectAndUpsert: async (ctx, ids) => {
+          const res = await bulkUpsertCustomers(await projectCustomers(ctx, ids));
           return { indexed: res.successCount, errors: res.errors.length };
         },
       };
     case 'orders':
       return {
         collectionName: ORDERS_COLLECTION,
-        listIds: listOrderIdsForTenant,
-        async projectAndUpsert(ctx, ids) {
-          const docs = await projectOrders(ctx, ids);
-          const res = await bulkUpsertOrders(docs);
+        listIds: (ctx) => listOrderIdsForTenant(ctx),
+        projectAndUpsert: async (ctx, ids) => {
+          const res = await bulkUpsertOrders(await projectOrders(ctx, ids));
           return { indexed: res.successCount, errors: res.errors.length };
         },
       };

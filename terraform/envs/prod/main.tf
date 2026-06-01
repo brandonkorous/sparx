@@ -86,13 +86,23 @@ module "pubsub" {
     # Empty list = topic only, no idle pull subscription.
     "search.reindex.requested" = []
 
-    # Commerce / orders
-    "order.created" = ["worker-webhook"]
-    "order.updated" = ["worker-webhook"]
+    # Commerce / orders — lifecycle events teed from the CRM platform bus to
+    # Pub/Sub (packages/crm/src/pubsub-bridge.ts). commerce-indexer consumes
+    # them via its Cloud Run PUSH subscriptions in serverless.tf; topic-only
+    # here (empty list = no idle pull subscription).
+    "order.created"          = []
+    "order.cancelled"        = []
+    "order.payment.recorded" = []
+    "order.fulfilled"        = []
+    "order.delivered"        = []
+    "order.refunded"         = []
 
-    # CRM customers
-    "customer.created" = ["worker-webhook"]
-    "customer.updated" = ["worker-webhook"]
+    # CRM customers — the CRM bus (crm.customer.*) bridged to Pub/Sub.
+    # commerce-indexer consumes via push subscriptions in serverless.tf.
+    "crm.customer.created" = []
+    "crm.customer.updated" = []
+    "crm.customer.deleted" = []
+    "crm.customer.merged"  = []
 
     # Cart
     "cart.abandoned" = []
