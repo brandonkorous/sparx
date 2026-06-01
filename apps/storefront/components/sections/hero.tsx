@@ -42,7 +42,7 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
         {config.eyebrow ? <p className="sf-sb-hero__eyebrow">{config.eyebrow}</p> : null}
         {config.heading ? <h1 className="sf-sb-hero__title">{config.heading}</h1> : null}
         {config.subheading ? <p className="sf-sb-hero__sub">{config.subheading}</p> : null}
-        <SbCtaRow ctas={ctas} size="lg" />
+        <SbCtaRow ctas={ctas} size="lg" layout={config.ctaLayout} />
       </div>
       {config.showScrollHint ? (
         <span className="sf-sb-hero__scroll-hint" aria-hidden="true">

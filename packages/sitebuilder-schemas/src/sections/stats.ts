@@ -18,6 +18,10 @@ export const StatsConfig = z.object({
   ctas: ctas([]),
   items: z.array(StatItem).max(6).default([]),
   columns: z.number().int().min(1).max(4).default(3),
+  // Count each figure up from zero when it scrolls into view (the numeric part
+  // of the value is animated; any prefix/suffix like "$" or "+" is preserved).
+  // Falls back to the static value without JS or under reduced-motion.
+  animate: z.boolean().default(true),
 });
 export type StatsConfig = z.infer<typeof StatsConfig>;
 
@@ -27,6 +31,12 @@ export const statsFields: SectionField[] = [
   { key: 'subheading', label: 'Subheading', type: 'textarea' },
   ctasField(),
   { key: 'columns', label: 'Columns', type: 'range', min: 1, max: 4, step: 1 },
+  {
+    key: 'animate',
+    label: 'Count up on scroll',
+    type: 'boolean',
+    help: 'Animate each figure from zero when it enters the viewport.',
+  },
   {
     key: 'items',
     label: 'Stats',

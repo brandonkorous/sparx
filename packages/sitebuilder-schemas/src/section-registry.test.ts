@@ -35,7 +35,7 @@ describe('section registry', () => {
   });
 
   it('new landing sections are registered and addable on the home target', () => {
-    for (const type of ['panels', 'media-text', 'stats', 'carousel'] as const) {
+    for (const type of ['panels', 'media-text', 'stats', 'carousel', 'embed'] as const) {
       expect(getSectionDefinition(type)?.type).toBe(type);
       expect(isSectionAllowedInTarget(type, 'site:home')).toBe(true);
     }

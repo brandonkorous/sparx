@@ -46,12 +46,24 @@ const CTA_CLASS: Record<string, string> = {
 };
 
 /** A row of up to two CTA buttons. Empty/invalid CTAs are dropped; renders
- *  nothing when none remain. `size="lg"` enlarges them (hero). */
-export function SbCtaRow({ ctas, size }: { ctas?: Cta[] | null; size?: 'lg' }) {
+ *  nothing when none remain. `size="lg"` enlarges them (hero); `layout="stacked"`
+ *  stacks them vertically (the full-bleed "two stacked pills" look). */
+export function SbCtaRow({
+  ctas,
+  size,
+  layout,
+}: {
+  ctas?: Cta[] | null;
+  size?: 'lg';
+  layout?: 'row' | 'stacked';
+}) {
   const items = (ctas ?? []).filter((c) => c?.label && c?.url);
   if (items.length === 0) return null;
+  const rowCls = ['sf-cta-row', layout === 'stacked' ? 'sf-cta-row--stacked' : '']
+    .filter(Boolean)
+    .join(' ');
   return (
-    <div className="sf-cta-row">
+    <div className={rowCls}>
       {items.map((c, i) => {
         const cls = [CTA_CLASS[c.style] ?? CTA_CLASS.solid, size === 'lg' ? 'sf-btn--lg' : '']
           .filter(Boolean)

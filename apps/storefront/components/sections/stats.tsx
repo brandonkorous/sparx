@@ -6,6 +6,7 @@ import type { StatsConfig } from '@sparx/sitebuilder-schemas';
 import { mediaUrl } from '@/lib/media';
 import type { SectionContext } from '../section-renderer';
 import { SbCtaRow } from './_shared';
+import { StatValue } from './stat-count';
 
 export function StatsSection({ config, ctx }: { config: StatsConfig; ctx: SectionContext }) {
   const img = mediaUrl(config.mediaId ?? null, ctx.tenantSlug);
@@ -29,7 +30,7 @@ export function StatsSection({ config, ctx }: { config: StatsConfig; ctx: Sectio
           <div className="sf-sb-stats__grid" data-cols={config.columns}>
             {items.map((s, i) => (
               <div key={i} className="sf-sb-stat">
-                <span className="sf-sb-stat__value">{s.value}</span>
+                <StatValue value={s.value} animate={config.animate} />
                 <span className="sf-sb-stat__label">{s.label}</span>
               </div>
             ))}

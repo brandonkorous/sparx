@@ -22,6 +22,7 @@ import type {
   MediaTextConfig,
   StatsConfig,
   CarouselConfig,
+  EmbedConfig,
   ProductBuyBoxConfig,
   ProductDescriptionConfig,
   ProductFitmentConfig,
@@ -51,6 +52,7 @@ import { PanelsSection } from './sections/panels';
 import { MediaTextSection } from './sections/media-text';
 import { StatsSection } from './sections/stats';
 import { CarouselSection } from './sections/carousel';
+import { EmbedSection } from './sections/embed';
 import { ProductBuyBoxSection } from './sections/product-buy-box';
 import { ProductDescriptionSection } from './sections/product-description';
 import { ProductFitmentSection } from './sections/product-fitment';
@@ -113,6 +115,8 @@ function renderSection(section: SectionSnapshot, ctx: SectionContext): React.Rea
       return <StatsSection config={c as unknown as StatsConfig} ctx={ctx} />;
     case 'carousel':
       return <CarouselSection config={c as unknown as CarouselConfig} ctx={ctx} />;
+    case 'embed':
+      return <EmbedSection config={c as unknown as EmbedConfig} />;
     case 'product-buy-box':
       return <ProductBuyBoxSection config={c as unknown as ProductBuyBoxConfig} ctx={ctx} />;
     case 'product-description':

@@ -40,6 +40,7 @@ import {
 
 import './globals.css';
 import './storefront.css';
+import './storefront-template.css';
 
 const FOOTER_YEAR = 2026; // static so SSR output stays deterministic/cacheable
 const THEME_COOKIE = 'sparx_theme';

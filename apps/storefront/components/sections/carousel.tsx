@@ -139,7 +139,7 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
                   {s.eyebrow ? <p className="sf-sb-carousel__eyebrow">{s.eyebrow}</p> : null}
                   {s.heading ? <h3 className="sf-sb-carousel__title">{s.heading}</h3> : null}
                   {s.subheading ? <p className="sf-sb-carousel__sub">{s.subheading}</p> : null}
-                  <SbCtaRow ctas={s.ctas} />
+                  <SbCtaRow ctas={s.ctas} layout={config.ctaLayout} />
                 </div>
               </div>
             );

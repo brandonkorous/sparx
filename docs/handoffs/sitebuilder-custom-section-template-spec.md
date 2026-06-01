@@ -318,9 +318,13 @@ template may resolve `product.*` / `collection.*` paths against the bound item t
 condition schemas), [`section-template-validate.ts`](../../packages/sitebuilder-schemas/src/section-template-validate.ts)
 (the author-time validator), [`field-spec-to-zod.ts`](../../packages/sitebuilder-schemas/src/field-spec-to-zod.ts),
 and [`section-template-eval.ts`](../../packages/sitebuilder-schemas/src/section-template-eval.ts) (the pure
-evaluator — `lookupPath` / `resolveValue` / `evalCondition` / `resolveEnum` / formatters). The remaining
-increments are the React emission layer + persistence (interpreter + CSS, DB migration, registry merge,
-snapshot pinning, MCP) — not yet started.
+evaluator — `lookupPath` / `resolveValue` / `evalCondition` / `resolveEnum` / formatters). **The storefront
+render layer is also built + green** (typecheck + lint clean): the interpreter
+[`custom-template.tsx`](../../apps/storefront/components/sections/custom-template.tsx), the bundled icon subset
+[`_icons.tsx`](../../apps/storefront/components/sections/_icons.tsx), and the `sf-tpl-*` CSS family in
+[`storefront-template.css`](../../apps/storefront/app/storefront-template.css) (its own file, imported beside
+storefront.css). What remains is the **persistence layer**: the DB migration, registry merge, snapshot
+pinning, the `SectionRenderer` `custom:*` wiring, and service/MCP CRUD.
 
 **Ships (server-safe split per [[feedback_dockerfile_package_wiring]]):**
 
@@ -328,9 +332,10 @@ snapshot pinning, MCP) — not yet started.
   value-expression + condition schemas, the author-time validator (field-ref / path / enum / embed-gating
   checks), `fieldSpecToZod`, **and the pure evaluator** (`resolveValue` / `evalCondition` / `resolveEnum` /
   formatters) that the storefront and dashboard-preview interpreters both consume.
-- In the storefront (React): the thin interpreter (`AST → RSC`, calling the pure evaluator), the `sf-tpl-*`
-  CSS family in storefront.css, the bundled lucide icon subset + allowlist, and the `SectionRenderer`
-  `custom:*` branch.
+- ✅ In the storefront (React): the thin interpreter (`AST → RSC`, calling the pure evaluator), the `sf-tpl-*`
+  CSS family (in `storefront-template.css`), and the bundled icon subset + allowlist. The image node renders
+  as a token-driven background-image div (matching the `sf-sb-*` media pattern), not an `<img>`. _Pending:_ the
+  `SectionRenderer` `custom:*` branch (part of wiring, needs the persistence layer below).
 - In `@sparx/db`: `tenant_section_definitions` (tenant-scoped **ENABLE+FORCE RLS**, hand-edited migration SQL
   per [[feedback_sparx_db_rls_pattern]]).
 - In `@sparx/sitebuilder` service + MCP: definition CRUD/versioning, registry merge, snapshot pinning in
