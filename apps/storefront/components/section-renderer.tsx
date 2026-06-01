@@ -9,7 +9,9 @@
 // Static sections ignore the binding; bound sections render nothing when their
 // binding is absent.
 
-import type { SectionSnapshot } from '@/lib/site';
+import { customSectionType, type TemplateNode } from '@sparx/sitebuilder-schemas';
+
+import type { PinnedDefinition, SectionSnapshot } from '@/lib/site';
 import type {
   HeroConfig,
   FeaturedProductsConfig,
@@ -61,6 +63,7 @@ import { ProductQuestionsSection } from './sections/product-questions';
 import { ProductRelatedSection } from './sections/product-related';
 import { CollectionHeaderSection } from './sections/collection-header';
 import { CollectionProductsSection } from './sections/collection-products';
+import { CustomTemplateSection } from './sections/custom-template';
 
 /** Everything a section needs from the tenant beyond its own config. */
 export interface SectionContext {
@@ -90,7 +93,12 @@ export interface SectionContext {
 // Published configs are validated + defaulted at publish time (the section
 // service parses against the registry schema before snapshotting), so a cast
 // here is safe — we never receive a partial config from the public endpoint.
-function renderSection(section: SectionSnapshot, ctx: SectionContext): React.ReactNode {
+function renderSection(
+  section: SectionSnapshot,
+  ctx: SectionContext,
+  // Pinned custom-section templates by `custom:<slug>` type (docs/38 Phase C).
+  customTemplates: Map<string, TemplateNode>
+): React.ReactNode {
   const c = section.config;
   switch (section.sectionType) {
     case 'hero':
@@ -137,19 +145,33 @@ function renderSection(section: SectionSnapshot, ctx: SectionContext): React.Rea
       return (
         <CollectionProductsSection config={c as unknown as CollectionProductsConfig} ctx={ctx} />
       );
-    default:
-      // Unknown section type — skip rather than crash the page.
+    default: {
+      // A merchant-defined custom section (`custom:<slug>`): render its pinned
+      // template AST via the interpreter. Unknown / unpinned types skip rather
+      // than crash the page (forward-compat with newer snapshots).
+      const template = customTemplates.get(section.sectionType);
+      if (template) {
+        return <CustomTemplateSection template={template} config={c} ctx={ctx} />;
+      }
       return null;
+    }
   }
 }
 
 export function SectionRenderer({
   sections,
   ctx,
+  definitions = [],
 }: {
   sections: SectionSnapshot[];
   ctx: SectionContext;
+  // Pinned custom-section definitions from the snapshot (docs/38 Phase C).
+  definitions?: PinnedDefinition[];
 }) {
+  // `custom:<slug>` → its pinned template AST, resolved once for the whole list.
+  const customTemplates = new Map<string, TemplateNode>(
+    definitions.map((d) => [customSectionType(d.slug), d.template])
+  );
   return (
     <>
       {sections.map((section) => (
@@ -163,7 +185,7 @@ export function SectionRenderer({
           data-section-type={section.sectionType}
           data-sf-reveal
         >
-          {renderSection(section, ctx)}
+          {renderSection(section, ctx, customTemplates)}
         </div>
       ))}
     </>

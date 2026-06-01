@@ -4,6 +4,7 @@ import type { FastifyPluginAsync } from 'fastify';
 
 import themeRoutes from './theme.js';
 import savedThemeRoutes from './saved-themes.js';
+import definitionRoutes from './definitions.js';
 import pageLayoutRoutes from './page-layouts.js';
 import assignmentRoutes from './assignments.js';
 import sectionRoutes from './sections.js';
@@ -13,6 +14,7 @@ import publishRoutes from './publish.js';
 const sitebuilderRoutes: FastifyPluginAsync = async (app) => {
   await app.register(themeRoutes);
   await app.register(savedThemeRoutes);
+  await app.register(definitionRoutes);
   await app.register(pageLayoutRoutes);
   await app.register(assignmentRoutes);
   await app.register(sectionRoutes);

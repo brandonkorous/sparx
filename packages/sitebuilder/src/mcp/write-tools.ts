@@ -8,6 +8,8 @@ import {
   ReorderSectionsInput,
   RollbackInput,
   ScheduleInput,
+  SectionDefinitionInput,
+  SectionDefinitionUpdateInput,
   SelectThemeInput,
   UpdateSettingsInput,
   UpsertLayoutInput,
@@ -19,6 +21,7 @@ import {
   layoutService,
   publishService,
   scheduleService,
+  definitionService,
 } from '../services/index';
 import type { AnyMcpTool } from './registry';
 
@@ -28,6 +31,13 @@ const UpdateSectionTool = z.object({
   visible: z.boolean().optional(),
 });
 const RemoveSectionTool = z.object({ sectionId: Uuid });
+
+// Update addresses the definition by its immutable slug; the rest is a full
+// replacement body (SectionDefinitionUpdateInput) that bumps the version.
+const UpdateDefinitionTool = SectionDefinitionUpdateInput.extend({
+  slug: z.string().min(1).max(56),
+});
+const DeleteDefinitionTool = z.object({ slug: z.string().min(1).max(56) });
 
 export const writeTools: AnyMcpTool[] = [
   {
@@ -117,5 +127,36 @@ export const writeTools: AnyMcpTool[] = [
     input: ScheduleInput,
     confirmation: true,
     run: (ctx, input) => scheduleService.schedule(ctx, input),
+  },
+  {
+    name: 'create_custom_section',
+    description:
+      'Define a new custom section TYPE: a `slug`, `label`, an optional `binding` (product | collection), a `fieldSpec` (the editable fields), and a `template` (the render-template AST). Merchants then add it to layouts as `custom:<slug>`.',
+    scope: 'write:storefront',
+    input: SectionDefinitionInput,
+    confirmation: false,
+    run: (ctx, input) => definitionService.create(ctx, input),
+  },
+  {
+    name: 'update_custom_section',
+    description:
+      'Replace a custom section definition (by `slug`) — its label, binding, field spec, and template. Bumps the version; the next publish re-pins it.',
+    scope: 'write:storefront',
+    input: UpdateDefinitionTool,
+    confirmation: false,
+    run: (ctx, input) => {
+      const { slug, ...rest } = input as z.infer<typeof UpdateDefinitionTool>;
+      return definitionService.update(ctx, slug, rest);
+    },
+  },
+  {
+    name: 'delete_custom_section',
+    description:
+      'Delete a custom section definition by slug. Refused while draft sections still place it; published pages keep rendering from their pinned snapshot.',
+    scope: 'write:storefront',
+    input: DeleteDefinitionTool,
+    confirmation: true,
+    run: (ctx, input) =>
+      definitionService.remove(ctx, (input as z.infer<typeof DeleteDefinitionTool>).slug),
   },
 ];

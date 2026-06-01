@@ -2,7 +2,10 @@
 // overlay scrim, eyebrow/heading/subheading, and up to two CTAs. Height,
 // alignment (horizontal + vertical), and text color come from the config.
 
+import type { CSSProperties } from 'react';
+
 import type { HeroConfig } from '@sparx/sitebuilder-schemas';
+import { focalToPosition } from '@sparx/sitebuilder-schemas';
 
 import { mediaUrl } from '@/lib/media';
 import type { SectionContext } from '../section-renderer';
@@ -13,6 +16,17 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
   const overlay = Math.min(100, Math.max(0, config.overlayOpacity)) / 100;
   const ctas = resolveCtas(config);
   const isVideo = config.mediaType === 'video' && Boolean(bg);
+  const fit = config.imageFit === 'contain' ? 'contain' : 'cover';
+  const position = focalToPosition(config.imageFocal);
+  const zoom = typeof config.imageZoom === 'number' ? config.imageZoom : 1;
+  // object-fit + object-position frame the crop; transform scales (zooms) around
+  // the same focal point so punching in keeps the chosen subject centred.
+  const mediaStyle: CSSProperties = {
+    objectFit: fit,
+    objectPosition: position,
+    transform: zoom > 1 ? `scale(${zoom})` : undefined,
+    transformOrigin: position,
+  };
 
   return (
     <section
@@ -22,18 +36,20 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
       data-height={config.height}
       data-text={config.textColor}
       data-has-bg={bg ? 'true' : 'false'}
-      style={bg && !isVideo ? { backgroundImage: `url("${bg}")` } : undefined}
     >
       {isVideo ? (
         <video
-          className="sf-sb-hero__video"
+          className="sf-sb-hero__media"
           autoPlay
           muted
           loop
           playsInline
           src={bg ?? undefined}
           aria-hidden="true"
+          style={mediaStyle}
         />
+      ) : bg ? (
+        <img className="sf-sb-hero__media" src={bg} alt="" aria-hidden="true" style={mediaStyle} />
       ) : null}
       {bg ? (
         <div className="sf-sb-hero__scrim" style={{ opacity: overlay }} aria-hidden="true" />

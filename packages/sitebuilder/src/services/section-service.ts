@@ -14,8 +14,8 @@ import {
   ReorderSectionsInput,
   UpdateSectionInput,
   defaultLayoutName,
-  isSectionAllowedInTarget,
-  parseSectionConfig,
+  isSectionAllowedInTargetWith,
+  parseSectionConfigWith,
 } from '@sparx/sitebuilder-schemas';
 import type { PageLayout, Prisma, SiteSection, TxClient } from '@sparx/db';
 import { withTenant } from '@sparx/db';
@@ -24,6 +24,7 @@ import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
 import { SitebuilderNotFoundError, SitebuilderValidationError } from '../errors';
 import { getOrCreateConfig } from './_config';
+import { loadCustomDefinitions } from './definition-service';
 import { findPageLayout, getOrCreatePageLayout } from './page-layout-service';
 
 // The view the public surface returns — the section plus its owning layout's
@@ -134,14 +135,17 @@ export function listForPageLayout(
 
 export async function create(ctx: ServiceContext, rawInput: unknown): Promise<SectionView> {
   const input = CreateSectionInput.parse(rawInput);
-  const config = parseSectionConfig(input.sectionType, input.config ?? {});
 
   return withTenant(ctx, async (tx) => {
     await getOrCreateConfig(tx, ctx.tenantId);
+    // Resolve config + target-safety against code sections AND the tenant's custom
+    // section definitions (`custom:<slug>`), loaded once per write (docs/38 Phase C).
+    const customDefs = await loadCustomDefinitions(tx);
+    const config = parseSectionConfigWith(input.sectionType, input.config ?? {}, customDefs);
     const layout = await resolvePageLayoutForWrite(tx, ctx.tenantId, input);
     // Target safety: a bound section can only be added to a layout whose target
     // supplies its data binding (docs/36 §4.1).
-    if (!isSectionAllowedInTarget(input.sectionType, layout.targetId)) {
+    if (!isSectionAllowedInTargetWith(input.sectionType, layout.targetId, customDefs)) {
       throw new SitebuilderValidationError(
         `Section "${input.sectionType}" is not allowed in a "${layout.targetId}" layout.`,
         [{ field: 'sectionType', message: `not allowed in target ${layout.targetId}` }]
@@ -201,7 +205,11 @@ export async function update(
 
     const config =
       input.config !== undefined
-        ? parseSectionConfig(existing.sectionType, input.config)
+        ? parseSectionConfigWith(
+            existing.sectionType,
+            input.config,
+            await loadCustomDefinitions(tx)
+          )
         : undefined;
 
     const updated = await tx.siteSection.update({

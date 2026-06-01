@@ -1,5 +1,13 @@
 import { z } from 'zod';
-import { Align, OptionalMediaRef, ctas, ctasField, mediaField } from '../common';
+import {
+  Align,
+  FocalPoint,
+  ObjectFit,
+  OptionalMediaRef,
+  ctas,
+  ctasField,
+  mediaField,
+} from '../common';
 import type { SectionField } from '../fields';
 
 // A single panel within a Panels row. Each is a self-contained media card with
@@ -8,6 +16,8 @@ import type { SectionField } from '../fields';
 // nested section (docs/37 §4.2).
 export const PanelItem = z.object({
   mediaId: OptionalMediaRef,
+  imageFit: ObjectFit.default('cover'),
+  imageFocal: FocalPoint.default({ x: 50, y: 50 }),
   eyebrow: z.string().max(80).default(''),
   heading: z.string().max(120).default(''),
   subheading: z.string().max(240).default(''),
@@ -97,7 +107,7 @@ export const panelsFields: SectionField[] = [
     type: 'list',
     itemLabel: 'Panel',
     itemFields: [
-      mediaField('mediaId', 'Image'),
+      mediaField('mediaId', 'Image', undefined, { fitKey: 'imageFit', focalKey: 'imageFocal' }),
       { key: 'eyebrow', label: 'Eyebrow', type: 'text' },
       { key: 'heading', label: 'Heading', type: 'text' },
       { key: 'subheading', label: 'Subheading', type: 'textarea' },

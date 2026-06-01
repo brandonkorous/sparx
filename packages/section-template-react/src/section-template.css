@@ -1,8 +1,8 @@
 /* ─── Custom-section template primitives (sf-tpl-*) ──────────────────────────
    The closed class family the custom-section interpreter (docs/38 Phase C;
    docs/handoffs/sitebuilder-custom-section-template-spec.md) compiles its AST
-   into. Loaded alongside storefront.css (same cascade); kept in its own file so
-   the feature is self-contained.
+   into. Shared by the storefront (SSR) and the dashboard Section Studio preview,
+   so both render identically.
 
    Every value reads a --sf-* token; variant selection is data-* only and scoped
    to the sf-tpl-* classes (never bare attribute selectors, which would collide
@@ -257,4 +257,73 @@
 }
 .sf-tpl-spacer[data-size='xl'] {
   height: var(--sf-space-16);
+}
+
+/* Button — the template family's own button, token-driven and self-contained
+   (so the renderer needs no storefront.css). Variants mirror the multi-CTA set
+   (solid → primary fill, light/dark filled, ghost, link). */
+.sf-tpl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font: inherit;
+  font-weight: 550;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0.85rem 1.5rem;
+  min-height: var(--sf-size-field);
+  border-radius: var(--sf-radius-field);
+  border: var(--sf-border-width) solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background var(--sf-ease) 160ms,
+    border-color var(--sf-ease) 160ms,
+    transform var(--sf-ease) 120ms;
+}
+.sf-tpl-btn:active {
+  transform: translateY(1px);
+}
+.sf-tpl-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sf-primary) 35%, transparent);
+}
+.sf-tpl-btn--solid {
+  background: var(--sf-primary);
+  color: var(--sf-on-primary);
+}
+.sf-tpl-btn--solid:hover {
+  background: var(--sf-primary-hover);
+}
+.sf-tpl-btn--light {
+  background: var(--sf-base-100);
+  color: var(--sf-base-content);
+}
+.sf-tpl-btn--light:hover {
+  background: color-mix(in oklab, var(--sf-base-100) 88%, var(--sf-base-content));
+}
+.sf-tpl-btn--dark {
+  background: var(--sf-base-content);
+  color: var(--sf-base-100);
+}
+.sf-tpl-btn--dark:hover {
+  background: color-mix(in oklab, var(--sf-base-content) 86%, var(--sf-base-100));
+}
+.sf-tpl-btn--ghost {
+  background: transparent;
+  color: var(--sf-text);
+  border-color: var(--sf-border-strong);
+}
+.sf-tpl-btn--ghost:hover {
+  background: var(--sf-bg-subtle);
+}
+.sf-tpl-btn--link {
+  background: transparent;
+  color: var(--sf-primary);
+  padding-inline: 0.25rem;
+  min-height: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

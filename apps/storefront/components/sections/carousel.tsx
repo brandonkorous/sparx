@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { CarouselConfig } from '@sparx/sitebuilder-schemas';
+import { focalToPosition } from '@sparx/sitebuilder-schemas';
 
 import { mediaUrl } from '@/lib/media';
 import type { SectionContext } from '../section-renderer';
@@ -126,7 +127,15 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
                 data-valign={config.verticalAlign}
                 data-text={config.textColor}
                 data-height={config.height}
-                style={img ? { backgroundImage: `url("${img}")` } : undefined}
+                style={
+                  img
+                    ? {
+                        backgroundImage: `url("${img}")`,
+                        backgroundSize: s.imageFit === 'contain' ? 'contain' : 'cover',
+                        backgroundPosition: focalToPosition(s.imageFocal),
+                      }
+                    : undefined
+                }
               >
                 {img ? (
                   <div

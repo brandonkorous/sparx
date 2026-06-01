@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getLayoutTarget } from '@sparx/sitebuilder-schemas';
-import { getPageLayout, listSectionsByPageLayout } from '../../_lib/api';
+import { getPageLayout, listCustomDefinitions, listSectionsByPageLayout } from '../../_lib/api';
 import { PageLayoutEditor } from '../../_components/page-layout-editor';
 
 // The per-layout canvas editor (docs/36 §11, P-D). A canvas scope: the editor
@@ -16,7 +16,10 @@ export default async function LayoutEditorPage({
   const layout = await getPageLayout(layoutId).catch(() => null);
   if (!layout) notFound();
 
-  const sections = await listSectionsByPageLayout(layout.id);
+  const [sections, customDefinitions] = await Promise.all([
+    listSectionsByPageLayout(layout.id),
+    listCustomDefinitions(),
+  ]);
   const target = getLayoutTarget(layout.targetId);
 
   return (
@@ -25,6 +28,7 @@ export default async function LayoutEditorPage({
       binding={target?.binding ?? null}
       targetLabel={target?.label ?? layout.targetId}
       sections={sections}
+      customDefinitions={customDefinitions}
     />
   );
 }

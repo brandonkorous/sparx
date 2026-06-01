@@ -65,6 +65,7 @@ export default async function StorefrontPage({ params, searchParams }: SlugPageP
         <SectionRenderer
           sections={sections}
           ctx={{ tenantSlug: tenant.slug, currency: defaultCurrency, locale: defaultLocale }}
+          definitions={snapshot?.definitions ?? []}
         />
       ) : null}
       {page ? <PageView entry={page} /> : null}

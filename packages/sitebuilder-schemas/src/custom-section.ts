@@ -41,6 +41,10 @@ export function isCustomSectionType(type: string): boolean {
   return type.startsWith(CUSTOM_SECTION_PREFIX);
 }
 
+/** A `custom:<slug>` placed-section type, for write inputs. Code types are the
+ *  SectionTypeEnum; the two compose into the section-write `sectionType` union. */
+export const CustomSectionTypeSchema = z.string().regex(/^custom:[a-z][a-z0-9-]{0,55}$/);
+
 export function customSectionType(slug: string): string {
   return `${CUSTOM_SECTION_PREFIX}${slug}`;
 }
@@ -103,7 +107,10 @@ export const SectionFieldSchema: z.ZodType<SectionField> = z.lazy(
         itemLabel: z.string().max(120).optional(),
         // One level of nesting (a list's per-item fields); deeper nesting isn't
         // supported by the renderer (a Repeater iterates one list).
-        itemFields: z.array(z.lazy(() => SectionFieldSchema)).max(30).optional(),
+        itemFields: z
+          .array(z.lazy(() => SectionFieldSchema))
+          .max(30)
+          .optional(),
       })
       .strict() as unknown as z.ZodType<SectionField>
 );
@@ -200,7 +207,12 @@ export function parseSectionConfigWith(
   const def = resolveSectionDefinition(type, customDefs);
   if (!def) {
     throw new z.ZodError([
-      { code: 'custom', message: `Unknown section type: ${type}`, path: ['sectionType'], input: type },
+      {
+        code: 'custom',
+        message: `Unknown section type: ${type}`,
+        path: ['sectionType'],
+        input: type,
+      },
     ]);
   }
   return def.schema.parse(raw ?? {}) as Record<string, unknown>;

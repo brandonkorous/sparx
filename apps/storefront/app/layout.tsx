@@ -40,7 +40,9 @@ import {
 
 import './globals.css';
 import './storefront.css';
-import './storefront-template.css';
+// The custom-section template primitives (sf-tpl-*), shared with the dashboard
+// Section Studio preview so both render identically (docs/38 Phase C).
+import '@sparx/section-template-react/section-template.css';
 
 const FOOTER_YEAR = 2026; // static so SSR output stays deterministic/cacheable
 const THEME_COOKIE = 'sparx_theme';

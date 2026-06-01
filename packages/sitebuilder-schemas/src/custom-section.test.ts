@@ -184,7 +184,9 @@ describe('SectionDefinitionInput', () => {
 
   it('rejects a non-kebab slug', () => {
     expect(SectionDefinitionInput.safeParse({ ...valid, slug: 'Icon Grid' }).success).toBe(false);
-    expect(SectionDefinitionInput.safeParse({ ...valid, slug: 'a'.repeat(57) }).success).toBe(false);
+    expect(SectionDefinitionInput.safeParse({ ...valid, slug: 'a'.repeat(57) }).success).toBe(
+      false
+    );
   });
 
   it('rejects an unknown field type in the spec', () => {

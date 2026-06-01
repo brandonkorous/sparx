@@ -4,6 +4,7 @@
 
 export * as themeService from './theme-service';
 export * as savedThemeService from './saved-theme-service';
+export * as definitionService from './definition-service';
 export * as sectionService from './section-service';
 export * as pageLayoutService from './page-layout-service';
 export * as assignmentService from './assignment-service';
@@ -12,4 +13,9 @@ export * as publishService from './publish-service';
 export * as scheduleService from './schedule-service';
 
 // Shared snapshot types consumed by the public storefront endpoint.
-export type { PublishedSnapshot, SectionSnapshot, LayoutSnapshot } from './publish-internals';
+export type {
+  PublishedSnapshot,
+  SectionSnapshot,
+  LayoutSnapshot,
+  PinnedDefinition,
+} from './publish-internals';

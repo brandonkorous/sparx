@@ -5,6 +5,7 @@
 // Stacks to one column on narrow screens (CSS).
 
 import type { PanelsConfig } from '@sparx/sitebuilder-schemas';
+import { focalToPosition } from '@sparx/sitebuilder-schemas';
 
 import { mediaUrl } from '@/lib/media';
 import type { SectionContext } from '../section-renderer';
@@ -26,6 +27,13 @@ export function PanelsSection({ config, ctx }: { config: PanelsConfig; ctx: Sect
       <div className="sf-sb-panels" data-cols={config.columns} data-variant={config.variant}>
         {items.map((p, i) => {
           const img = mediaUrl(p.mediaId ?? null, ctx.tenantSlug);
+          const bg = img
+            ? {
+                backgroundImage: `url("${img}")`,
+                backgroundSize: p.imageFit === 'contain' ? 'contain' : 'cover',
+                backgroundPosition: focalToPosition(p.imageFocal),
+              }
+            : undefined;
           const content = (
             <div className="sf-sb-panel__inner">
               {p.eyebrow ? <p className="sf-sb-panel__eyebrow">{p.eyebrow}</p> : null}
@@ -44,7 +52,7 @@ export function PanelsSection({ config, ctx }: { config: PanelsConfig; ctx: Sect
                 data-valign={config.verticalAlign}
                 data-height={config.height}
                 data-text={config.textColor}
-                style={img ? { backgroundImage: `url("${img}")` } : undefined}
+                style={bg}
               >
                 {img ? (
                   <div
@@ -60,9 +68,7 @@ export function PanelsSection({ config, ctx }: { config: PanelsConfig; ctx: Sect
 
           return (
             <div key={i} className="sf-sb-panel sf-sb-panel--card">
-              {img ? (
-                <div className="sf-sb-panel__media" style={{ backgroundImage: `url("${img}")` }} />
-              ) : null}
+              {img ? <div className="sf-sb-panel__media" style={bg} /> : null}
               {content}
             </div>
           );

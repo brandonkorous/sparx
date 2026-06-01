@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Button, Input } from '@sparx/ui';
+import { Badge, Button, Input, toast, useConfirm } from '@sparx/ui';
 import { publishNow, schedulePublish } from '../_lib/actions';
 
 export interface PublishBarProps {
@@ -13,18 +13,36 @@ export interface PublishBarProps {
 
 export function PublishBar({ isPublished, hasUnpublishedChanges }: PublishBarProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [scheduling, setScheduling] = React.useState(false);
   const [scheduleAt, setScheduleAt] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
 
+  // Publishing pushes the draft live for every visitor — gate it behind a
+  // confirm (we resolve it BEFORE the transition so the dialog isn't awaited
+  // inside startTransition) and report the outcome with a toast.
   const doPublish = () => {
     setError(null);
-    startTransition(async () => {
-      const res = await publishNow();
-      if (!res.ok) setError(res.error ?? 'Publish failed.');
-      else router.refresh();
-    });
+    void (async () => {
+      const ok = await confirm({
+        title: 'Publish your site?',
+        description: 'This makes your current draft live for everyone visiting your store.',
+        confirmLabel: 'Publish now',
+        tone: 'module',
+      });
+      if (!ok) return;
+      startTransition(async () => {
+        const res = await publishNow();
+        if (!res.ok) {
+          setError(res.error ?? 'Publish failed.');
+          toast.error(res.error ?? 'Publish failed.');
+        } else {
+          toast.success('Your site is now live.');
+          router.refresh();
+        }
+      });
+    })();
   };
 
   const doSchedule = () => {
@@ -32,10 +50,13 @@ export function PublishBar({ isPublished, hasUnpublishedChanges }: PublishBarPro
     setError(null);
     startTransition(async () => {
       const res = await schedulePublish(new Date(scheduleAt).toISOString());
-      if (!res.ok) setError(res.error ?? 'Scheduling failed.');
-      else {
+      if (!res.ok) {
+        setError(res.error ?? 'Scheduling failed.');
+        toast.error(res.error ?? 'Scheduling failed.');
+      } else {
         setScheduling(false);
         setScheduleAt('');
+        toast.success('Publish scheduled.');
         router.refresh();
       }
     });

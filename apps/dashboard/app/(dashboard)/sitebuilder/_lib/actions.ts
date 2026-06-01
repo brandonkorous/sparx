@@ -4,9 +4,11 @@ import { revalidatePath } from 'next/cache';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { resolveMediaUrl } from './api';
 import type { PresentationOverlayV2 } from '@sparx/storefront-themes';
+import type { SectionField, TemplateNode } from '@sparx/sitebuilder-schemas';
 import type {
   AppearancePolicy,
   BrandDto,
+  CustomDefinitionDto,
   PageLayoutDto,
   SavedThemeBrandDto,
   SiteConfigDto,
@@ -17,6 +19,19 @@ import type {
   SiteThemeDto,
   SiteVersionDto,
 } from './types';
+
+// The create/update payload for a custom section definition (docs/38 Phase C),
+// validated server-side by SectionDefinitionInput. `slug` is the immutable type
+// identity (create only).
+export interface DefinitionInput {
+  slug: string;
+  label: string;
+  description?: string;
+  icon?: string;
+  binding?: 'product' | 'collection' | null;
+  fieldSpec: SectionField[];
+  template: TemplateNode;
+}
 
 // Thin server-action adapters over api-rest. Server actions inherit the
 // session + JWT secret (held only on the dashboard server) and integrate with
@@ -86,6 +101,28 @@ export async function deleteSavedTheme(id: string): Promise<ActionResult> {
 
 export async function applySavedTheme(id: string): Promise<ActionResult<SiteConfigDto>> {
   return run(() => api.post<SiteConfigDto>(`/v1/sitebuilder/saved-themes/${id}/apply`, {}));
+}
+
+// ── Custom section definitions (docs/38 Phase C — the Section Studio) ───────
+// Author a custom section TYPE. Bodies are validated server-side
+// (SectionDefinitionInput + validateTemplate); the slug addresses the type.
+export async function createDefinition(
+  input: DefinitionInput
+): Promise<ActionResult<CustomDefinitionDto>> {
+  return run(() => api.post<CustomDefinitionDto>('/v1/sitebuilder/definitions', input));
+}
+
+export async function updateDefinition(
+  slug: string,
+  input: Omit<DefinitionInput, 'slug'>
+): Promise<ActionResult<CustomDefinitionDto>> {
+  return run(() =>
+    api.put<CustomDefinitionDto>(`/v1/sitebuilder/definitions/${encodeURIComponent(slug)}`, input)
+  );
+}
+
+export async function deleteDefinition(slug: string): Promise<ActionResult> {
+  return run(() => api.delete<void>(`/v1/sitebuilder/definitions/${encodeURIComponent(slug)}`));
 }
 
 export async function createSection(input: {

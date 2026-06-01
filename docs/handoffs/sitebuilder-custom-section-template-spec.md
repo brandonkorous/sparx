@@ -312,39 +312,48 @@ template may resolve `product.*` / `collection.*` paths against the bound item t
 
 ## 10. Phase C spike — scope & exit criteria
 
-**Build status (2026-06-01):** the entire zod-only / React-free half is **built + green** in
-`@sparx/sitebuilder-schemas` (37 passing tests, typecheck + lint clean):
-[`section-template.ts`](../../packages/sitebuilder-schemas/src/section-template.ts) (AST + value-expression +
-condition schemas), [`section-template-validate.ts`](../../packages/sitebuilder-schemas/src/section-template-validate.ts)
-(the author-time validator), [`field-spec-to-zod.ts`](../../packages/sitebuilder-schemas/src/field-spec-to-zod.ts),
-and [`section-template-eval.ts`](../../packages/sitebuilder-schemas/src/section-template-eval.ts) (the pure
-evaluator — `lookupPath` / `resolveValue` / `evalCondition` / `resolveEnum` / formatters). **The storefront
-render layer is also built + green** (typecheck + lint clean): the interpreter
-[`custom-template.tsx`](../../apps/storefront/components/sections/custom-template.tsx), the bundled icon subset
-[`_icons.tsx`](../../apps/storefront/components/sections/_icons.tsx), and the `sf-tpl-*` CSS family in
-[`storefront-template.css`](../../apps/storefront/app/storefront-template.css) (its own file, imported beside
-storefront.css). What remains is the **persistence layer**: the DB migration, registry merge, snapshot
-pinning, the `SectionRenderer` `custom:*` wiring, and service/MCP CRUD.
+**Build status (2026-06-01): COMPLETE — built + green end-to-end.** Every layer below is implemented,
+typechecked, linted, and tested (schemas 70 tests, sitebuilder 37 tests incl. a definition-lifecycle +
+publish-pinning integration test, storefront production build, dashboard typecheck/lint). The migration is
+applied to local docker; prod applies via the DB Migrate pipeline on push.
 
 **Ships (server-safe split per [[feedback_dockerfile_package_wiring]]):**
 
-- ✅ In `@sparx/sitebuilder-schemas` (zod-only, no React): the `SectionTemplate` AST schema, the
-  value-expression + condition schemas, the author-time validator (field-ref / path / enum / embed-gating
-  checks), `fieldSpecToZod`, **and the pure evaluator** (`resolveValue` / `evalCondition` / `resolveEnum` /
-  formatters) that the storefront and dashboard-preview interpreters both consume.
-- ✅ In the storefront (React): the thin interpreter (`AST → RSC`, calling the pure evaluator), the `sf-tpl-*`
-  CSS family (in `storefront-template.css`), and the bundled icon subset + allowlist. The image node renders
-  as a token-driven background-image div (matching the `sf-sb-*` media pattern), not an `<img>`. _Pending:_ the
-  `SectionRenderer` `custom:*` branch (part of wiring, needs the persistence layer below).
-- In `@sparx/db`: `tenant_section_definitions` (tenant-scoped **ENABLE+FORCE RLS**, hand-edited migration SQL
-  per [[feedback_sparx_db_rls_pattern]]).
-- In `@sparx/sitebuilder` service + MCP: definition CRUD/versioning, registry merge, snapshot pinning in
-  `publishWithinTx`.
-- One seeded example (`custom:icon-grid`) behind a flag for the E2E test.
+- ✅ `@sparx/sitebuilder-schemas` (zod-only, no React): the `SectionTemplate` AST schema, value-expression +
+  condition schemas, the author-time validator, `fieldSpecToZod`, the pure evaluator
+  (`resolveValue` / `evalCondition` / `resolveEnum` / formatters), **and `custom-section.ts`** — the
+  `custom:<slug>` namespace, `toCustomSectionDefinition` (stored record → registry-shaped definition),
+  the custom-aware lookups (`resolveSectionDefinition` / `parseSectionConfigWith` /
+  `isSectionAllowedInTargetWith` / `mergedSectionsForTarget`), the `SectionField[]` CRUD schema, and the
+  `SectionDefinitionInput` write contract. `CreateSectionInput.sectionType` now accepts code OR `custom:<slug>`.
+- ✅ Storefront (React): the thin interpreter [`custom-template.tsx`](../../apps/storefront/components/sections/custom-template.tsx),
+  the bundled icon subset, the `sf-tpl-*` CSS family ([`storefront-template.css`](../../apps/storefront/app/storefront-template.css)),
+  **and the `SectionRenderer` `custom:*` branch** — it resolves a section's pinned template from
+  `snapshot.definitions` (threaded through all four page routes) and renders it. Image node = token-driven
+  background-image div, not `<img>`.
+- ✅ `@sparx/db`: `TenantSectionDefinition` model + the hand-edited RLS migration
+  `20260617000000_sitebuilder_section_definitions` (ENABLE+FORCE RLS + `tenant_isolation` policy per
+  [[feedback_sparx_db_rls_pattern]]), plus a `definitions_snapshot` JSONB column on `sitebuilder_versions`.
+- ✅ `@sparx/sitebuilder` service: `definition-service.ts` (CRUD + version bump + in-use delete guard +
+  semantic `validateTemplate` on write), `section-service` validates/scope-checks `custom:<slug>` writes via
+  the loaded tenant definitions, and `publishWithinTx` **pins** the referenced definitions into
+  `definitionsSnapshot` (getDraftSnapshot pins too, for live preview). Rollback re-references live defs.
+- ✅ Transports: REST `/v1/sitebuilder/definitions` (list/create/get/PUT/delete by slug), MCP read tools
+  (`list_custom_sections`, `get_custom_section`) + write tools (`create_/update_/delete_custom_section`), and
+  the public storefront endpoint passes `definitions` through verbatim.
+- ✅ Dashboard editor: the section library merges the tenant's custom sections (a "Custom" badge), placing one
+  works, and the inspector auto-renders its fields from the field spec.
 
-**Exit:** a merchant (via API/MCP) defines `custom:icon-grid`, the dashboard auto-generates its inspector form
-from the field spec, the merchant places + configures it, publishes, and it renders theme-correct on the
-storefront — **no engineer, no deploy** — and a rollback reproduces it exactly.
+**Exit (met):** a merchant (via API/MCP) defines `custom:icon-grid`, the dashboard auto-generates its inspector
+form from the field spec, the merchant places + configures it, publishes, and it renders theme-correct on the
+storefront — **no engineer, no deploy** — and a rollback reproduces it exactly (the integration test asserts the
+publish pin + version).
+
+**Deferred (own slices):** the visual template-authoring UI (a non-developer builds the AST — §11.2, aligns
+with doc 38's "visual schema editor"); a dedicated `icon` `SectionFieldType` picker (§11.1); live-draft config
+migration when a field spec changes under published pages (§11.3); client-island interactivity (§11.4).
+Write-time richtext sanitization currently mirrors the existing rich-text section's trust model (the dashboard
+editor sanitizes); a defensive server-side pass is a future hardening.
 
 ---
 

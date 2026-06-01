@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { OptionalMediaRef, ctas, ctasField, mediaField } from '../common';
+import { FocalPoint, ObjectFit, OptionalMediaRef, ctas, ctasField, mediaField } from '../common';
 import type { SectionField } from '../fields';
 
 // A band of big figures + labels, with an optional lead image (e.g. a map), a
@@ -13,6 +13,8 @@ export type StatItem = z.infer<typeof StatItem>;
 export const StatsConfig = z.object({
   // Optional full-width image rendered above the stats row (map, photo, etc.).
   mediaId: OptionalMediaRef,
+  imageFit: ObjectFit.default('cover'),
+  imageFocal: FocalPoint.default({ x: 50, y: 50 }),
   heading: z.string().max(160).default(''),
   subheading: z.string().max(400).default(''),
   ctas: ctas([]),
@@ -26,7 +28,10 @@ export const StatsConfig = z.object({
 export type StatsConfig = z.infer<typeof StatsConfig>;
 
 export const statsFields: SectionField[] = [
-  mediaField('mediaId', 'Lead image (optional)', 'A wide image above the stats — e.g. a map.'),
+  mediaField('mediaId', 'Lead image (optional)', 'A wide image above the stats — e.g. a map.', {
+    fitKey: 'imageFit',
+    focalKey: 'imageFocal',
+  }),
   { key: 'heading', label: 'Heading', type: 'text' },
   { key: 'subheading', label: 'Subheading', type: 'textarea' },
   ctasField(),

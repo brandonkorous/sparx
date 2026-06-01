@@ -99,6 +99,7 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
           collection,
           collectionExtras: { items, total, page, perPage, currentParams: sp },
         }}
+        definitions={snapshot?.definitions ?? []}
       />
     </div>
   );

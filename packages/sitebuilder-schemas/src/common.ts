@@ -91,7 +91,52 @@ export function ctasField(key = 'ctas', label = 'Buttons'): SectionField {
   };
 }
 
-/** A `media` field that accepts a library asset or a pasted image/video URL. */
-export function mediaField(key: string, label: string, help?: string): SectionField {
-  return { key, label, type: 'media', help: help ?? 'Pick an asset or paste an image URL.' };
+/**
+ * A `media` field that accepts a library asset or a pasted image/video URL.
+ * Pass `framing` to attach the visual framing modal (Fill/Fit + focal point +
+ * zoom), naming the sibling config keys it reads/writes.
+ */
+export function mediaField(
+  key: string,
+  label: string,
+  help?: string,
+  framing?: { fitKey: string; focalKey: string; zoomKey?: string }
+): SectionField {
+  return {
+    key,
+    label,
+    type: 'media',
+    help: help ?? 'Pick an asset or paste an image URL.',
+    fitKey: framing?.fitKey,
+    focalKey: framing?.focalKey,
+    zoomKey: framing?.zoomKey,
+  };
+}
+
+// ── Image display: fit + focal point + zoom ─────────────────────────────────
+// A pasted/uploaded image rarely matches its container's aspect ratio, so every
+// image-bearing section can expose how it fills the box (`fit`), which part
+// stays in frame (`focal`, an x/y % point), and how far to punch in (`zoom`).
+// Edited via the visual framing modal; rendered as object-fit / object-position
+// / transform. `cover` crops to fill (common); `contain` shows the whole image.
+
+export const ObjectFit = z.enum(['cover', 'contain']);
+export type ObjectFit = z.infer<typeof ObjectFit>;
+
+// Focal point as percentages of the image box (0–100), defaulting to centre.
+export const FocalPoint = z.object({
+  x: z.number().min(0).max(100).default(50),
+  y: z.number().min(0).max(100).default(50),
+});
+export type FocalPoint = z.infer<typeof FocalPoint>;
+
+// Zoom / scale factor (1 = no zoom, 3 = 3×).
+export const ImageZoom = z.number().min(1).max(3).default(1);
+
+const clampPct = (n: number | null | undefined): number =>
+  Math.max(0, Math.min(100, typeof n === 'number' && Number.isFinite(n) ? n : 50));
+
+/** Map a focal point to a CSS background-position / object-position string. */
+export function focalToPosition(focal?: { x?: number; y?: number } | null): string {
+  return `${clampPct(focal?.x)}% ${clampPct(focal?.y)}%`;
 }

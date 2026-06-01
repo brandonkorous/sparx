@@ -1,6 +1,6 @@
 # Site Builder — User-Extensible Sections
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-01
 
@@ -114,10 +114,14 @@ payload: JSON }`. Mirrors `SiteTheme`.
 - **API/MCP:** CRUD on presets; "insert preset into layout."
 - **Exit:** a merchant saves a configured section and re-inserts it on another page/layout.
 
-### Phase C — Declarative custom section types _(the strategic unlock)_
+### Phase C — Declarative custom section types _(the strategic unlock — ✅ built 2026-06-01)_
 
 Let a technical merchant/agency define a **brand-new section type as data** — fields + a safe render template —
-with no deploy. This is the phase that genuinely answers the title question; §4 specs it.
+with no deploy. This is the phase that genuinely answers the title question; §4 specs it. **Built end-to-end**
+(DB → schemas → service → storefront render → REST/MCP → editor placement) per the build-status block in
+[the template-language spec](handoffs/sitebuilder-custom-section-template-spec.md) §10. The remaining
+authoring UX (a non-developer composing the template tree) is the deferred "section studio" slice (§6.2);
+definitions are created via API/MCP and placed/configured in the dashboard today.
 
 - **For:** technical merchants, agencies, and (via API/MCP) AI authoring.
 - **Data/DB:** `tenant_section_definitions` (tenant-scoped RLS) — `{ slug, label, icon, fieldSpec: JSON,

@@ -10,6 +10,7 @@ import {
   toStorefrontThemeColumns,
   type CompiledThemeV2,
 } from '@sparx/storefront-themes';
+import { customSlugOf, type SectionField, type TemplateNode } from '@sparx/sitebuilder-schemas';
 
 import type { SnapshotAssignments } from './assignment-service';
 
@@ -55,6 +56,21 @@ export interface LayoutSnapshot {
   visible: boolean;
 }
 
+// A custom-section definition pinned into a snapshot (docs/38 Phase C): the
+// template AST + field spec as they were at publish, keyed by slug. The
+// storefront renders a `custom:<slug>` section from this — surviving later edits
+// or deletion of the live definition. Only the definitions the snapshot's
+// sections actually reference are pinned.
+export interface PinnedDefinition {
+  slug: string;
+  label: string;
+  icon: string | null;
+  binding: string | null;
+  version: number;
+  fieldSpec: SectionField[];
+  template: TemplateNode;
+}
+
 export interface PublishedSnapshot {
   versionNumber: number;
   themeKey: string;
@@ -69,6 +85,10 @@ export interface PublishedSnapshot {
   compiledV2?: CompiledThemeV2;
   sections: SectionSnapshot[];
   layout: LayoutSnapshot[];
+  // Custom-section definitions the sections reference, pinned at publish (docs/38
+  // Phase C). Empty when no `custom:<slug>` sections are placed. The storefront
+  // resolves a custom section's template from here.
+  definitions: PinnedDefinition[];
   // The layout resolver maps (docs/36 §6) — per-target default + per-item override
   // layoutKeys. Attached LIVE by publish-service (not baked into the version).
   assignments?: SnapshotAssignments;
@@ -121,6 +141,34 @@ export async function readDraft(
   };
 }
 
+/**
+ * The pinned definitions for the `custom:<slug>` sections in a section list —
+ * loaded by the distinct slugs they reference (active OR archived: a placed
+ * section must still render). Shared by the publish path (baked into the version)
+ * and getDraftSnapshot (so the live preview resolves custom sections too).
+ */
+export async function readDefinitionsForSections(
+  tx: TxClient,
+  sections: SectionSnapshot[]
+): Promise<PinnedDefinition[]> {
+  const slugs = [
+    ...new Set(
+      sections.map((s) => customSlugOf(s.sectionType)).filter((s): s is string => s !== null)
+    ),
+  ];
+  if (slugs.length === 0) return [];
+  const rows = await tx.tenantSectionDefinition.findMany({ where: { slug: { in: slugs } } });
+  return rows.map((r) => ({
+    slug: r.slug,
+    label: r.label,
+    icon: r.icon,
+    binding: r.binding,
+    version: r.version,
+    fieldSpec: (r.fieldSpec ?? []) as unknown as SectionField[],
+    template: r.template as unknown as TemplateNode,
+  }));
+}
+
 async function nextVersionNumber(tx: TxClient, tenantId: string): Promise<number> {
   const last = await tx.siteVersion.findFirst({
     where: { tenantId },
@@ -166,6 +214,9 @@ export async function publishWithinTx(
   };
   const compiled = compileTokens(config.themeKey, settings.tokens ?? {});
   const draft = await readDraft(tx);
+  // Pin the custom-section definitions this draft references so the published
+  // snapshot renders them deterministically (docs/38 Phase C).
+  const definitions = await readDefinitionsForSections(tx, draft.sections);
   const versionNumber = await nextVersionNumber(tx, tenantId);
 
   const version = await tx.siteVersion.create({
@@ -177,6 +228,7 @@ export async function publishWithinTx(
       settingsSnapshot: config.draftSettings as Prisma.InputJsonValue,
       sectionsSnapshot: draft.sections as unknown as Prisma.InputJsonValue,
       layoutSnapshot: draft.layout as unknown as Prisma.InputJsonValue,
+      definitionsSnapshot: definitions as unknown as Prisma.InputJsonValue,
       compiledTokens: compiled as unknown as Prisma.InputJsonValue,
       publishedById: userId,
       note: note ?? null,
@@ -294,5 +346,6 @@ export function toPublishedSnapshot(version: SiteVersion): PublishedSnapshot {
     compiledTokens: version.compiledTokens as unknown as PublishedSnapshot['compiledTokens'],
     sections: (version.sectionsSnapshot ?? []) as unknown as SectionSnapshot[],
     layout: (version.layoutSnapshot ?? []) as unknown as LayoutSnapshot[],
+    definitions: (version.definitionsSnapshot ?? []) as unknown as PinnedDefinition[],
   };
 }

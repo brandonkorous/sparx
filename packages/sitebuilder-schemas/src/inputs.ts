@@ -5,7 +5,13 @@ import { z } from 'zod';
 import { AppearancePolicy, LayoutSlot, OptionalUuid, ThemeKey, Uuid } from './common';
 import { TargetId } from './layout-targets';
 import { SectionTypeEnum } from './section-registry';
+import { CustomSectionTypeSchema } from './custom-section';
 import { PresentationOverlay, SiteSettings } from './site-settings';
+
+// A placed section's type: a code section (SectionTypeEnum) or a tenant custom
+// section (`custom:<slug>`). The custom type's existence + scope are validated
+// downstream against the tenant's loaded definitions (sectionService), not here.
+const SectionTypeRef = z.union([SectionTypeEnum, CustomSectionTypeSchema]);
 
 export const SelectThemeInput = z.object({
   themeKey: ThemeKey,
@@ -71,7 +77,7 @@ export const CreateSectionInput = z.object({
   pageLayoutId: Uuid.optional(),
   targetId: TargetId.optional(),
   key: LayoutKey.optional(),
-  sectionType: SectionTypeEnum,
+  sectionType: SectionTypeRef,
   // Optional initial config; defaults are filled from the section schema.
   config: z.record(z.string(), z.unknown()).optional(),
   // Insert position; appended to the end when omitted.

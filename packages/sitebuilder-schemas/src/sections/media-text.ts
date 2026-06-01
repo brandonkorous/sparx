@@ -1,11 +1,13 @@
 import { z } from 'zod';
-import { OptionalMediaRef, ctas, ctasField, mediaField } from '../common';
+import { FocalPoint, ObjectFit, OptionalMediaRef, ctas, ctasField, mediaField } from '../common';
 import type { SectionField } from '../fields';
 
 // A side-by-side band: a media column beside a text column (eyebrow / heading /
 // body / CTAs). The classic alternating feature/explainer row. Stacks on mobile.
 export const MediaTextConfig = z.object({
   mediaId: OptionalMediaRef,
+  imageFit: ObjectFit.default('cover'),
+  imageFocal: FocalPoint.default({ x: 50, y: 50 }),
   mediaSide: z.enum(['left', 'right']).default('right'),
   eyebrow: z.string().max(80).default(''),
   heading: z.string().max(160).default('A headline about this feature'),
@@ -19,7 +21,10 @@ export const MediaTextConfig = z.object({
 export type MediaTextConfig = z.infer<typeof MediaTextConfig>;
 
 export const mediaTextFields: SectionField[] = [
-  mediaField('mediaId', 'Image'),
+  mediaField('mediaId', 'Image', undefined, {
+    fitKey: 'imageFit',
+    focalKey: 'imageFocal',
+  }),
   {
     key: 'mediaSide',
     label: 'Image side',

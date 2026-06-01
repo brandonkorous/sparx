@@ -43,6 +43,7 @@ import {
   Megaphone,
   MessageCircleQuestion,
   PanelTop,
+  Puzzle,
   Quote,
   ShoppingBag,
   ShoppingCart,
@@ -51,9 +52,15 @@ import {
   Wrench,
 } from 'lucide-react';
 import { Badge, Button, EmptyState, Modal, ModalContent, ModalHeader, ModalTitle } from '@sparx/ui';
-import { SECTION_REGISTRY, sectionsForTarget, type SectionType } from '@sparx/sitebuilder-schemas';
+import {
+  SECTION_DEFINITIONS,
+  getLayoutTarget,
+  sectionsForTarget,
+  type SectionDefinition,
+  type SectionField,
+} from '@sparx/sitebuilder-schemas';
 import { createSection, removeSection, reorderSections, updateSection } from '../_lib/actions';
-import type { SiteSectionDto } from '../_lib/types';
+import type { CustomDefinitionDto, SiteSectionDto } from '../_lib/types';
 import { FieldControl } from './field-control';
 import { useEditorCanvas } from './editor-shell';
 
@@ -83,7 +90,48 @@ const SECTION_ICONS: Record<string, React.ComponentType<{ className?: string }>>
   // Bound — collection
   PanelTop,
   Grid3x3,
+  // Custom sections' default icon
+  Puzzle,
 };
+
+// A unified definition shape the editor renders from — code sections
+// (SECTION_REGISTRY) and the tenant's custom sections (docs/38 Phase C) both map
+// onto it, so the library, the section list, and the inspector treat them alike.
+interface EditorDef {
+  type: string;
+  label: string;
+  description: string;
+  icon: string;
+  binding: 'product' | 'collection' | null;
+  fields: SectionField[];
+  bindings?: { label: string; path: string }[];
+  custom: boolean;
+}
+
+function codeToEditorDef(d: SectionDefinition): EditorDef {
+  return {
+    type: d.type,
+    label: d.label,
+    description: d.description,
+    icon: d.icon,
+    binding: d.binding ?? null,
+    fields: d.fields,
+    bindings: d.bindings,
+    custom: false,
+  };
+}
+
+function customToEditorDef(d: CustomDefinitionDto): EditorDef {
+  return {
+    type: d.type,
+    label: d.label,
+    description: d.description ?? '',
+    icon: d.icon ?? 'Puzzle',
+    binding: d.binding,
+    fields: d.fieldSpec,
+    custom: true,
+  };
+}
 
 export interface SectionBuilderProps {
   /** The PageLayout these sections compose (Phase 3 — section parent FK). */
@@ -91,6 +139,9 @@ export interface SectionBuilderProps {
   /** The layout's target id — restricts the section library + drives bindings. */
   targetId: string;
   sections: SiteSectionDto[];
+  /** The tenant's custom section definitions (docs/38 Phase C), merged into the
+   *  library + per-section lookups. Defaults to none. */
+  customDefinitions?: CustomDefinitionDto[];
   /** Storefront path this layout renders at ("/" for home, "/<slug>" otherwise,
    *  a sample PDP/PLP for product/collection targets). Points the shared canvas
    *  at the right page on mount. */
@@ -104,6 +155,7 @@ export function SectionBuilder({
   pageLayoutId,
   targetId,
   sections,
+  customDefinitions = [],
   previewPath = '/',
   manageCanvasPath = true,
 }: SectionBuilderProps) {
@@ -113,7 +165,26 @@ export function SectionBuilder({
   const [adding, setAdding] = React.useState(false);
   const [editingId, setEditingId] = React.useState<string | null>(null);
 
-  const library = React.useMemo(() => sectionsForTarget(targetId), [targetId]);
+  // The "add a section" library: code sections allowed in this target, then the
+  // tenant's custom sections (static everywhere; a bound custom section only in a
+  // target of the same binding — mirrors isSectionAllowedInTarget).
+  const library = React.useMemo<EditorDef[]>(() => {
+    const code = sectionsForTarget(targetId).map(codeToEditorDef);
+    const targetBinding = getLayoutTarget(targetId)?.binding ?? null;
+    const custom = customDefinitions
+      .filter((d) => !d.binding || d.binding === targetBinding)
+      .map(customToEditorDef);
+    return [...code, ...custom];
+  }, [targetId, customDefinitions]);
+
+  // Per-type lookup for the section list + inspector — ALL code sections plus the
+  // tenant's custom ones (a placed section's type is always one of these).
+  const defByType = React.useMemo(() => {
+    const m = new Map<string, EditorDef>();
+    for (const d of SECTION_DEFINITIONS) m.set(d.type, codeToEditorDef(d));
+    for (const d of customDefinitions) m.set(d.type, customToEditorDef(d));
+    return m;
+  }, [customDefinitions]);
 
   const sorted = React.useMemo(
     () => [...sections].sort((a, b) => a.position - b.position),
@@ -158,7 +229,7 @@ export function SectionBuilder({
       canvas.reload();
     });
 
-  const add = (type: SectionType) => {
+  const add = (type: string) => {
     setAdding(false);
     act(() => createSection({ pageLayoutId, sectionType: type }));
   };
@@ -185,6 +256,7 @@ export function SectionBuilder({
       <InlineSectionEditor
         key={editing.id}
         section={editing}
+        def={defByType.get(editing.sectionType)}
         pending={pending}
         onBack={() => setEditingId(null)}
         onSave={(config) => act(() => updateSection(editing.id, { config }))}
@@ -219,6 +291,7 @@ export function SectionBuilder({
                 <SortableSection
                   key={s.id}
                   section={s}
+                  def={defByType.get(s.sectionType)}
                   pending={pending}
                   onEdit={() => setEditingId(s.id)}
                   onToggle={() => act(() => updateSection(s.id, { visible: !s.visible }))}
@@ -260,6 +333,11 @@ export function SectionBuilder({
                           Bound
                         </Badge>
                       ) : null}
+                      {def.custom ? (
+                        <Badge color="module" variant="outline" size="sm">
+                          Custom
+                        </Badge>
+                      ) : null}
                     </span>
                     <span className="text-xs text-[var(--color-text-muted)]">
                       {def.description}
@@ -289,18 +367,19 @@ function BoundLegend() {
 
 function SortableSection({
   section,
+  def,
   pending,
   onEdit,
   onToggle,
   onRemove,
 }: {
   section: SiteSectionDto;
+  def: EditorDef | undefined;
   pending: boolean;
   onEdit: () => void;
   onToggle: () => void;
   onRemove: () => void;
 }) {
-  const def = SECTION_REGISTRY[section.sectionType as SectionType];
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: section.id,
   });
@@ -353,16 +432,17 @@ function SortableSection({
 
 function InlineSectionEditor({
   section,
+  def,
   pending,
   onBack,
   onSave,
 }: {
   section: SiteSectionDto;
+  def: EditorDef | undefined;
   pending: boolean;
   onBack: () => void;
   onSave: (config: Record<string, unknown>) => void;
 }) {
-  const def = SECTION_REGISTRY[section.sectionType as SectionType];
   const [config, setConfig] = React.useState<Record<string, unknown>>(section.config ?? {});
   const bindings = def?.bindings ?? [];
 
@@ -410,6 +490,8 @@ function InlineSectionEditor({
             field={f}
             value={config[f.key]}
             onChange={(v) => setConfig((c) => ({ ...c, [f.key]: v }))}
+            config={config}
+            onPatch={(partial) => setConfig((c) => ({ ...c, ...partial }))}
           />
         ))}
       </div>

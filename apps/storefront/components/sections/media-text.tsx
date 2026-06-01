@@ -3,6 +3,7 @@
 // stacks to one column on narrow screens (CSS).
 
 import type { MediaTextConfig } from '@sparx/sitebuilder-schemas';
+import { focalToPosition } from '@sparx/sitebuilder-schemas';
 
 import { mediaUrl } from '@/lib/media';
 import type { SectionContext } from '../section-renderer';
@@ -16,13 +17,21 @@ export function MediaTextSection({
   ctx: SectionContext;
 }) {
   const img = mediaUrl(config.mediaId ?? null, ctx.tenantSlug);
+  const position = focalToPosition(config.imageFocal);
 
   return (
     <section className="sf-section sf-sb-mediatext" data-bg={config.background}>
       <div className="sf-container sf-sb-mediatext__grid" data-media-side={config.mediaSide}>
         <div className="sf-sb-mediatext__media">
           {img ? (
-            <div className="sf-sb-mediatext__img" style={{ backgroundImage: `url("${img}")` }} />
+            <div
+              className="sf-sb-mediatext__img"
+              style={{
+                backgroundImage: `url("${img}")`,
+                backgroundSize: config.imageFit === 'contain' ? 'contain' : 'cover',
+                backgroundPosition: position,
+              }}
+            />
           ) : null}
         </div>
         <div className="sf-sb-mediatext__text">

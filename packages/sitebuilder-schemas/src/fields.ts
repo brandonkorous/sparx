@@ -37,4 +37,10 @@ export interface SectionField {
   // For `list` fields (e.g. testimonials): the per-item editable fields.
   itemLabel?: string;
   itemFields?: SectionField[];
+  // For `media` fields: opt into the visual framing modal (Fill/Fit + focal
+  // point + zoom). These name the sibling config keys the modal reads/writes —
+  // so the same control serves every image field. Absent = no framing control.
+  fitKey?: string;
+  focalKey?: string;
+  zoomKey?: string;
 }

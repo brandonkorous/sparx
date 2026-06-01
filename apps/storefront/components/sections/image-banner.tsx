@@ -3,6 +3,7 @@
 // full-bleed (edge-to-edge) toggle come from config.
 
 import type { ImageBannerConfig } from '@sparx/sitebuilder-schemas';
+import { focalToPosition } from '@sparx/sitebuilder-schemas';
 
 import { mediaUrl } from '@/lib/media';
 import type { SectionContext } from '../section-renderer';
@@ -28,7 +29,15 @@ export function ImageBannerSection({
       data-valign={config.verticalAlign}
       data-text={config.textColor}
       data-fullbleed={config.fullBleed ? 'true' : 'false'}
-      style={img ? { backgroundImage: `url("${img}")` } : undefined}
+      style={
+        img
+          ? {
+              backgroundImage: `url("${img}")`,
+              backgroundSize: config.imageFit === 'contain' ? 'contain' : 'cover',
+              backgroundPosition: focalToPosition(config.imageFocal),
+            }
+          : undefined
+      }
     >
       {img ? (
         <div className="sf-sb-banner__scrim" style={{ opacity: overlay }} aria-hidden="true" />

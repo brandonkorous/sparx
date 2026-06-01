@@ -16,6 +16,7 @@
 // the two owners stay clean even though they share one form (docs/33 §3.6).
 
 import * as React from 'react';
+import { toast, useConfirm } from '@sparx/ui';
 import {
   buildThemeCssV2,
   compileThemeForTenant,
@@ -103,6 +104,7 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
   const [status, setStatus] = React.useState<SaveState>('idle');
   const [error, setError] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
+  const confirm = useConfirm();
 
   const cleanedTokens = React.useMemo(() => cleanTokens(tokens), [tokens]);
 
@@ -183,6 +185,7 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
         } else {
           setError(res.error ?? 'Could not save your brand.');
           setStatus('error');
+          toast.error(res.error ?? 'Could not save your brand changes.');
         }
       })();
     }, 600);
@@ -237,6 +240,7 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
         if (!res.ok) {
           setError(res.error ?? 'Could not save theme settings.');
           setStatus('error');
+          toast.error(res.error ?? 'Could not save theme settings.');
           return;
         }
         // If a saved theme is selected, the same presentation edit also writes
@@ -335,9 +339,11 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
         setActiveSavedThemeId(created.id);
         savedPresRef.current = JSON.stringify(presentation);
         setStatus('saved');
+        toast.success(`Saved “${name}” to your themes.`);
       } else {
         setError(res.error ?? 'Could not save this theme yet.');
         setStatus('error');
+        toast.error(res.error ?? 'Could not save this theme.');
       }
     });
   };
@@ -357,16 +363,30 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
   };
 
   const onDeleteSaved = (id: string) => {
-    startTransition(async () => {
-      const res = await deleteSavedTheme(id);
-      if (res.ok) {
-        setSavedThemes((s) => s.filter((t) => t.id !== id));
-        if (activeSavedIdRef.current === id) setActiveSavedThemeId(null);
-      } else {
-        setError(res.error ?? 'Could not delete this theme.');
-        setStatus('error');
-      }
-    });
+    const theme = savedThemes.find((t) => t.id === id);
+    // Deleting a saved theme is destructive (the snapshot is gone) — confirm
+    // before doing it. Resolve the dialog OUTSIDE the transition.
+    void (async () => {
+      const ok = await confirm({
+        title: `Delete “${theme?.name ?? 'this theme'}”?`,
+        description: 'This removes the saved theme. Your live store is not affected.',
+        confirmLabel: 'Delete theme',
+        tone: 'danger',
+      });
+      if (!ok) return;
+      startTransition(async () => {
+        const res = await deleteSavedTheme(id);
+        if (res.ok) {
+          setSavedThemes((s) => s.filter((t) => t.id !== id));
+          if (activeSavedIdRef.current === id) setActiveSavedThemeId(null);
+          toast.success(`Deleted “${theme?.name ?? 'theme'}”.`);
+        } else {
+          setError(res.error ?? 'Could not delete this theme.');
+          setStatus('error');
+          toast.error(res.error ?? 'Could not delete this theme.');
+        }
+      });
+    })();
   };
 
   const onApplySaved = (id: string) => {
@@ -397,10 +417,13 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     startTransition(async () => {
       setStatus('saving');
       const res = await applySavedTheme(id);
-      if (res.ok) setStatus('saved');
-      else {
+      if (res.ok) {
+        setStatus('saved');
+        toast.success(`Applied “${t.name}”.`);
+      } else {
         setError(res.error ?? 'Could not apply this theme.');
         setStatus('error');
+        toast.error(res.error ?? 'Could not apply this theme.');
       }
     });
   };

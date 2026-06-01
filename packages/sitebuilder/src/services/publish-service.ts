@@ -25,6 +25,7 @@ import {
   materializeWithinTx,
   publishWithinTx,
   readDraft,
+  readDefinitionsForSections,
   toPublishedSnapshot,
   type PublishedSnapshot,
 } from './publish-internals';
@@ -191,6 +192,7 @@ export async function getDraftSnapshot(ctx: ServiceContext): Promise<PublishedSn
     };
     const compiled = compileTokens(config.themeKey, settings.tokens ?? {});
     const presentation = readPresentation(config.draftSettings);
+    const definitions = await readDefinitionsForSections(tx, draft.sections);
     const snapshot: PublishedSnapshot = {
       versionNumber: 0,
       themeKey: config.themeKey,
@@ -198,6 +200,7 @@ export async function getDraftSnapshot(ctx: ServiceContext): Promise<PublishedSn
       compiledTokens: compiled,
       sections: draft.sections,
       layout: draft.layout,
+      definitions,
     };
     const withBrand = await overlayBrand(tx, ctx.tenantId, snapshot, presentation);
     const assignments = await readAssignmentSnapshot(tx, ctx.tenantId);

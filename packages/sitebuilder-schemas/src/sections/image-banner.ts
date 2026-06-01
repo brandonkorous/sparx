@@ -1,9 +1,19 @@
 import { z } from 'zod';
-import { Align, OptionalMediaRef, ctas, ctasField, mediaField } from '../common';
+import {
+  Align,
+  FocalPoint,
+  ObjectFit,
+  OptionalMediaRef,
+  ctas,
+  ctasField,
+  mediaField,
+} from '../common';
 import type { SectionField } from '../fields';
 
 export const ImageBannerConfig = z.object({
   imageMediaId: OptionalMediaRef,
+  imageFit: ObjectFit.default('cover'),
+  imageFocal: FocalPoint.default({ x: 50, y: 50 }),
   eyebrow: z.string().max(80).default(''),
   heading: z.string().max(160).default('Your banner headline'),
   subheading: z.string().max(300).default(''),
@@ -19,7 +29,7 @@ export const ImageBannerConfig = z.object({
 export type ImageBannerConfig = z.infer<typeof ImageBannerConfig>;
 
 export const imageBannerFields: SectionField[] = [
-  mediaField('imageMediaId', 'Image'),
+  mediaField('imageMediaId', 'Image', undefined, { fitKey: 'imageFit', focalKey: 'imageFocal' }),
   { key: 'eyebrow', label: 'Eyebrow', type: 'text' },
   { key: 'heading', label: 'Heading', type: 'text' },
   { key: 'subheading', label: 'Subheading', type: 'textarea' },

@@ -135,6 +135,7 @@ export type {
   SiteTheme,
   SiteLayoutDefault,
   SiteLayoutAssignment,
+  TenantSectionDefinition,
   // Email platform
   EmailSettings,
   SendingDomain,

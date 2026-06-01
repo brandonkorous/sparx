@@ -36,6 +36,7 @@
     "@sparx/provider-shippo": "workspace:*",
     "@sparx/provider-stripe": "workspace:*",
     "@sparx/provider-taxjar": "workspace:*",
+    "@sparx/section-template-react": "workspace:*",
     "@sparx/sitebuilder": "workspace:*",
     "@sparx/sitebuilder-schemas": "workspace:*",
     "@sparx/storefront-themes": "workspace:*",

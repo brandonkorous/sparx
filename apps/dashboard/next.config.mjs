@@ -14,6 +14,7 @@ const config = {
     '@sparx/crm-schemas',
     '@sparx/cms-editor',
     '@sparx/cms-schemas',
+    '@sparx/section-template-react',
   ],
   serverExternalPackages: ['@prisma/client', 'better-auth'],
   typedRoutes: true,

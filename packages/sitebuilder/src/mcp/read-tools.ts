@@ -2,11 +2,12 @@
 
 import { z } from 'zod';
 import { TargetId, LayoutKey } from '@sparx/sitebuilder-schemas';
-import { themeService, sectionService, publishService } from '../services/index';
+import { themeService, sectionService, publishService, definitionService } from '../services/index';
 import type { AnyMcpTool } from './registry';
 
 const NoArgs = z.object({});
 const TargetArg = z.object({ targetId: TargetId, key: LayoutKey.default('default') });
+const SlugArg = z.object({ slug: z.string().min(1).max(56) });
 const ListVersionsArgs = z.object({
   take: z.number().int().min(1).max(200).optional(),
   skip: z.number().int().min(0).optional(),
@@ -60,5 +61,23 @@ export const readTools: AnyMcpTool[] = [
     input: NoArgs,
     confirmation: false,
     run: (ctx) => publishService.getPublishedSnapshot(ctx),
+  },
+  {
+    name: 'list_custom_sections',
+    description:
+      'List the tenant’s custom section types (merchant-defined sections, each a field spec + render template). Their placed-section type is `custom:<slug>`.',
+    scope: 'read:storefront',
+    input: NoArgs,
+    confirmation: false,
+    run: (ctx) => definitionService.list(ctx),
+  },
+  {
+    name: 'get_custom_section',
+    description:
+      'Get one custom section definition by slug — its field spec, render template, binding, and version.',
+    scope: 'read:storefront',
+    input: SlugArg,
+    confirmation: false,
+    run: (ctx, input) => definitionService.get(ctx, (input as z.infer<typeof SlugArg>).slug),
   },
 ];

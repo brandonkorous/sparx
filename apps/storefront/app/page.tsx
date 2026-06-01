@@ -38,6 +38,7 @@ export default async function StorefrontRoot({ searchParams }: RootPageProps) {
       <SectionRenderer
         sections={homeSections}
         ctx={{ tenantSlug: tenant.slug, currency: defaultCurrency, locale: defaultLocale }}
+        definitions={snapshot?.definitions ?? []}
       />
     );
   }

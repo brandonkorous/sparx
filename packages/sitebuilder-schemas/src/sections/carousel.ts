@@ -1,5 +1,13 @@
 import { z } from 'zod';
-import { Align, OptionalMediaRef, ctas, ctasField, mediaField } from '../common';
+import {
+  Align,
+  FocalPoint,
+  ObjectFit,
+  OptionalMediaRef,
+  ctas,
+  ctasField,
+  mediaField,
+} from '../common';
 import type { SectionField } from '../fields';
 
 // A single slide in a Carousel — a full-bleed media slide with overlaid
@@ -7,6 +15,8 @@ import type { SectionField } from '../fields';
 // Panel item, docs/37 §4.2). A list item, not a nested section.
 export const CarouselSlide = z.object({
   mediaId: OptionalMediaRef,
+  imageFit: ObjectFit.default('cover'),
+  imageFocal: FocalPoint.default({ x: 50, y: 50 }),
   eyebrow: z.string().max(80).default(''),
   heading: z.string().max(120).default(''),
   subheading: z.string().max(240).default(''),
@@ -100,7 +110,7 @@ export const carouselFields: SectionField[] = [
     type: 'list',
     itemLabel: 'Slide',
     itemFields: [
-      mediaField('mediaId', 'Image'),
+      mediaField('mediaId', 'Image', undefined, { fitKey: 'imageFit', focalKey: 'imageFocal' }),
       { key: 'eyebrow', label: 'Eyebrow', type: 'text' },
       { key: 'heading', label: 'Heading', type: 'text' },
       { key: 'subheading', label: 'Subheading', type: 'textarea' },

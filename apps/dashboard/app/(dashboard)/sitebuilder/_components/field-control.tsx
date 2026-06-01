@@ -25,6 +25,7 @@ import type { SectionField } from '@sparx/sitebuilder-schemas';
 // The media library is shared dashboard infra (docs/29 §1) — Site Builder image
 // fields reuse the CMS asset picker rather than a parallel one.
 import { MediaPicker } from '../../cms/_components/media-picker';
+import { ImageFramingModal } from './image-framing-modal';
 import { LucideIconLink, isLucideIconField } from '@/lib/lucide-icon-hint';
 
 // Web-safe + popular Google fonts offered in font pickers.
@@ -49,21 +50,40 @@ export interface FieldControlProps {
   field: SectionField;
   value: unknown;
   onChange: (value: unknown) => void;
+  // Optional: the full section config + a multi-key patch setter. Threaded only
+  // by the section editor so a composite control (the image framing modal) can
+  // read/write sibling keys (fit/focal/zoom). Plain fields ignore both.
+  config?: Record<string, unknown>;
+  onPatch?: (partial: Record<string, unknown>) => void;
 }
 
-export function FieldControl({ field, value, onChange }: FieldControlProps) {
+export function FieldControl({ field, value, onChange, config, onPatch }: FieldControlProps) {
   const id = `fld-${field.key}`;
   return (
     <div className="flex flex-col gap-1.5">
       {field.type !== 'boolean' ? <Label htmlFor={id}>{field.label}</Label> : null}
-      <Control field={field} id={id} value={value} onChange={onChange} />
+      <Control
+        field={field}
+        id={id}
+        value={value}
+        onChange={onChange}
+        config={config}
+        onPatch={onPatch}
+      />
       {field.help ? <p className="text-xs text-[var(--color-text-muted)]">{field.help}</p> : null}
       {isLucideIconField(field.help) && <LucideIconLink />}
     </div>
   );
 }
 
-function Control({ field, id, value, onChange }: FieldControlProps & { id: string }) {
+function Control({
+  field,
+  id,
+  value,
+  onChange,
+  config,
+  onPatch,
+}: FieldControlProps & { id: string }) {
   switch (field.type) {
     case 'textarea':
     case 'richtext':
@@ -148,7 +168,15 @@ function Control({ field, id, value, onChange }: FieldControlProps & { id: strin
         </label>
       );
     case 'media':
-      return <MediaField field={field} value={value} onChange={onChange} />;
+      return (
+        <MediaField
+          field={field}
+          value={value}
+          onChange={onChange}
+          config={config}
+          onPatch={onPatch}
+        />
+      );
     case 'collection':
     case 'products':
       // Id-based references. A catalog search picker can replace these inputs
@@ -189,15 +217,19 @@ function Control({ field, id, value, onChange }: FieldControlProps & { id: strin
 // Image field — accepts EITHER a library asset (via the shared CMS picker,
 // stored as its asset id) OR a pasted absolute image/video URL (stored as-is).
 // The storefront resolver (lib/media.ts) handles both. Shows a live thumbnail.
-function MediaField({
-  value,
-  onChange,
-}: Omit<FieldControlProps, 'field'> & { field?: SectionField }) {
+function MediaField({ field, value, onChange, config, onPatch }: FieldControlProps) {
   const [open, setOpen] = React.useState(false);
+  const [framingOpen, setFramingOpen] = React.useState(false);
   const [pickedSrc, setPickedSrc] = React.useState<string | null>(null);
   const current = typeof value === 'string' && value ? value : null;
   const isUrl = current ? /^https?:\/\//i.test(current) : false;
   const preview = isUrl ? current : pickedSrc;
+
+  // Framing is available when the media field opts in (fit + focal keys) and the
+  // editor threaded the section config + patch setter, and we have a displayable
+  // image (a pasted URL, or an asset whose preview src we know).
+  const framingEnabled = Boolean(field.fitKey && field.focalKey && config && onPatch);
+  const focal = (config?.[field.focalKey ?? ''] as { x?: number; y?: number } | undefined) ?? {};
 
   return (
     <div className="flex flex-col gap-2">
@@ -245,6 +277,42 @@ function MediaField({
           onChange(e.target.value.trim() || null);
         }}
       />
+      {framingEnabled ? (
+        <>
+          <button
+            type="button"
+            onClick={() => setFramingOpen(true)}
+            disabled={!preview}
+            className="self-start text-sm text-[var(--module-active)] hover:underline disabled:cursor-not-allowed disabled:text-[var(--color-text-muted)] disabled:no-underline"
+          >
+            Adjust framing…
+          </button>
+          <ImageFramingModal
+            open={framingOpen}
+            onOpenChange={setFramingOpen}
+            src={preview}
+            showZoom={Boolean(field.zoomKey)}
+            initial={{
+              fit: config?.[field.fitKey ?? ''] === 'contain' ? 'contain' : 'cover',
+              focal: {
+                x: typeof focal.x === 'number' ? focal.x : 50,
+                y: typeof focal.y === 'number' ? focal.y : 50,
+              },
+              zoom:
+                field.zoomKey && typeof config?.[field.zoomKey] === 'number'
+                  ? (config?.[field.zoomKey] as number)
+                  : 1,
+            }}
+            onApply={(f) => {
+              const patch: Record<string, unknown> = {};
+              if (field.fitKey) patch[field.fitKey] = f.fit;
+              if (field.focalKey) patch[field.focalKey] = f.focal;
+              if (field.zoomKey) patch[field.zoomKey] = f.zoom;
+              onPatch?.(patch);
+            }}
+          />
+        </>
+      ) : null}
       <MediaPicker
         open={open}
         onOpenChange={setOpen}
@@ -268,6 +336,11 @@ function ListField({ field, value, onChange }: FieldControlProps) {
   const setItem = (index: number, key: string, v: unknown) => {
     const next = items.map((it, i) => (i === index ? { ...it, [key]: v } : it));
     onChange(next);
+  };
+  // Merge multiple keys into one item at once (used by composite controls like
+  // the image framing modal, which write fit/focal/zoom together).
+  const patchItem = (index: number, partial: Record<string, unknown>) => {
+    onChange(items.map((it, i) => (i === index ? { ...it, ...partial } : it)));
   };
   const addItem = () => onChange([...items, {}]);
   const removeItem = (index: number) => onChange(items.filter((_, i) => i !== index));
@@ -297,6 +370,8 @@ function ListField({ field, value, onChange }: FieldControlProps) {
               field={f}
               value={item[f.key]}
               onChange={(v) => setItem(i, f.key, v)}
+              config={item}
+              onPatch={(partial) => patchItem(i, partial)}
             />
           ))}
         </div>

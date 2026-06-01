@@ -162,6 +162,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
           product,
           productExtras: { related, questions, fitmentDomainsBySlug },
         }}
+        definitions={snapshot?.definitions ?? []}
       />
     </div>
   );

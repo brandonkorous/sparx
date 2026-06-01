@@ -1,10 +1,24 @@
 import { z } from 'zod';
-import { Align, OptionalMediaRef, ctas, ctasField, mediaField } from '../common';
+import {
+  Align,
+  FocalPoint,
+  ImageZoom,
+  ObjectFit,
+  OptionalMediaRef,
+  ctas,
+  ctasField,
+  mediaField,
+} from '../common';
 import type { SectionField } from '../fields';
 
 export const HeroConfig = z.object({
   backgroundMediaId: OptionalMediaRef,
   mediaType: z.enum(['image', 'video']).default('image'),
+  // How the background image fills the hero, which part stays in frame, and how
+  // far to punch in — all edited via the visual framing modal.
+  imageFit: ObjectFit.default('cover'),
+  imageFocal: FocalPoint.default({ x: 50, y: 50 }),
+  imageZoom: ImageZoom,
   eyebrow: z.string().max(80).default(''),
   heading: z.string().max(160).default('Your headline goes here'),
   subheading: z
@@ -30,7 +44,11 @@ export const HeroConfig = z.object({
 export type HeroConfig = z.infer<typeof HeroConfig>;
 
 export const heroFields: SectionField[] = [
-  mediaField('backgroundMediaId', 'Background image'),
+  mediaField('backgroundMediaId', 'Background image', undefined, {
+    fitKey: 'imageFit',
+    focalKey: 'imageFocal',
+    zoomKey: 'imageZoom',
+  }),
   {
     key: 'mediaType',
     label: 'Background type',

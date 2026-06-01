@@ -18,7 +18,24 @@
 // packages/sitebuilder/src/services/publish-internals.ts — keep them in sync.
 
 import type { CompiledThemeV2 } from '@sparx/storefront-themes';
-import { DEFAULT_TEMPLATES } from '@sparx/sitebuilder-schemas';
+import {
+  DEFAULT_TEMPLATES,
+  type SectionField,
+  type TemplateNode,
+} from '@sparx/sitebuilder-schemas';
+
+// A custom-section definition pinned into the published snapshot (docs/38 Phase
+// C), mirrored from packages/sitebuilder publish-internals.PinnedDefinition. The
+// renderer resolves a `custom:<slug>` section's template from here.
+export interface PinnedDefinition {
+  slug: string;
+  label: string;
+  icon: string | null;
+  binding: string | null;
+  version: number;
+  fieldSpec: SectionField[];
+  template: TemplateNode;
+}
 
 export interface SectionSnapshot {
   id: string;
@@ -52,6 +69,10 @@ export interface PublishedSnapshot {
   compiledV2?: CompiledThemeV2;
   sections: SectionSnapshot[];
   layout: LayoutSnapshot[];
+  // Pinned custom-section definitions the sections reference (docs/38 Phase C).
+  // Absent on pre-Phase-C snapshots; the renderer skips a custom section with no
+  // matching pin.
+  definitions?: PinnedDefinition[];
   // Layout resolver maps (docs/36 §6): per-target default layoutKey + per-item
   // override layoutKeys. Absent → every item uses the `default` layout.
   assignments?: {

@@ -1,7 +1,7 @@
 // Bundled icon subset for the custom-section template `Icon` node
 // (docs/handoffs/sitebuilder-custom-section-template-spec.md §3.2).
 //
-// The storefront has no lucide-react dependency, so custom-section icons render
+// The render path has no lucide-react dependency, so custom-section icons render
 // from this curated, hand-authored stroke set (lucide-named where they line up).
 // An unknown name renders nothing — the interpreter never injects arbitrary
 // markup, so the icon surface stays a closed allowlist. Add icons here as needed.
@@ -99,7 +99,7 @@ const ICONS: Record<string, ReactNode> = {
   ),
 };
 
-/** The names this storefront build can render — the closed icon allowlist. */
+/** The names the render path can show — the closed icon allowlist. */
 export const TEMPLATE_ICON_NAMES = Object.keys(ICONS);
 
 /** Render a bundled icon by name; renders nothing for an unknown name. */

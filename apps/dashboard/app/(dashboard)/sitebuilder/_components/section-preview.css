@@ -1,0 +1,118 @@
+/* Section Studio live-render preview surface (docs/38 Phase C; Section Studio
+   increment 5).
+
+   The preview renders the in-progress template with the SAME interpreter the
+   storefront uses (@sparx/section-template-react), so it must supply the same
+   token surface. This reproduces storefront.css's UN-THEMED default `--sf-*` map
+   — scoped to `.sb-section-preview` — mapped onto the `@sparx/ui` base tokens the
+   dashboard already loads, so a fresh (un-themed) storefront and this preview
+   render identically.
+
+   The `sf-tpl-*` primitives ship from @sparx/section-template-react's own CSS.
+   The headings + prose classes the interpreter ALSO emits (sf-h1/2/3, sf-prose)
+   are storefront-owned, so they're mirrored here — token-driven and scoped — for
+   parity, without dragging the rest of storefront.css into the dashboard. */
+
+.sb-section-preview {
+  /* Brand */
+  --sf-primary: var(--sparx-primary);
+  --sf-primary-content: #ffffff;
+  --sf-primary-hover: color-mix(in oklab, var(--sf-primary) 86%, black);
+  --sf-primary-tint: color-mix(in oklab, var(--sf-primary) 8%, transparent);
+  --sf-accent: var(--sf-primary);
+  --sf-accent-tint: color-mix(in oklab, var(--sf-accent) 8%, transparent);
+
+  /* Surfaces + line */
+  --sf-base-100: var(--color-bg-page);
+  --sf-base-content: var(--color-text-primary);
+  --sf-border: var(--color-border-default);
+
+  /* Type */
+  --sf-font-heading: var(--font-sans);
+  --sf-font-body: var(--font-sans);
+
+  /* Shape */
+  --sf-radius-field: 0.5rem;
+  --sf-radius-box: 0.875rem;
+  --sf-radius-selector: 9999px;
+  --sf-border-width: 1px;
+
+  /* Rhythm */
+  --sf-space-base: 0.25rem;
+  --sf-space-2: calc(var(--sf-space-base) * 2);
+  --sf-space-3: calc(var(--sf-space-base) * 3);
+  --sf-space-4: calc(var(--sf-space-base) * 4);
+  --sf-space-6: calc(var(--sf-space-base) * 6);
+  --sf-space-8: calc(var(--sf-space-base) * 8);
+  --sf-space-10: calc(var(--sf-space-base) * 10);
+  --sf-space-12: calc(var(--sf-space-base) * 12);
+  --sf-space-16: calc(var(--sf-space-base) * 16);
+  --sf-size-field: 2.75rem;
+
+  /* Derived text tiers + strong border (follow the canonical bases) */
+  --sf-text-secondary: color-mix(in oklab, var(--sf-base-content) 78%, var(--sf-base-100));
+  --sf-text-muted: color-mix(in oklab, var(--sf-base-content) 55%, var(--sf-base-100));
+  --sf-border-strong: color-mix(in oklab, var(--sf-border), var(--sf-base-content) 35%);
+
+  /* Aliases the sf-tpl-* family reads */
+  --sf-surface: var(--color-bg-surface);
+  --sf-bg-subtle: var(--color-bg-subtle);
+  --sf-text: var(--sf-base-content);
+  --sf-on-primary: var(--sf-primary-content);
+  --sf-radius: var(--sf-radius-box);
+  --sf-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  background: var(--sf-base-100);
+  color: var(--sf-text);
+  font-family: var(--sf-font-body);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--sf-radius-field);
+  overflow: hidden;
+}
+
+.sb-section-preview__surface {
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+/* Headings the interpreter emits (storefront-owned classes), mirrored
+   token-driven and scoped so they never leak to dashboard chrome. */
+.sb-section-preview .sf-h1,
+.sb-section-preview .sf-h2,
+.sb-section-preview .sf-h3 {
+  font-family: var(--sf-font-heading);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--sf-text);
+}
+.sb-section-preview .sf-h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 650;
+}
+.sb-section-preview .sf-h2 {
+  font-size: clamp(1.5rem, 2.6vw, 2.125rem);
+  font-weight: 600;
+}
+.sb-section-preview .sf-h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* RichText prose (storefront-owned), mirrored + scoped. */
+.sb-section-preview .sf-prose {
+  line-height: 1.7;
+  color: var(--sf-text-secondary);
+}
+.sb-section-preview .sf-prose :where(h1, h2, h3) {
+  color: var(--sf-text);
+  font-family: var(--sf-font-heading);
+}
+.sb-section-preview .sf-prose :where(a) {
+  color: var(--sf-primary);
+}
+.sb-section-preview .sf-prose :where(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--sf-radius-field);
+}

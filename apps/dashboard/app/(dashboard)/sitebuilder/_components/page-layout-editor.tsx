@@ -17,7 +17,7 @@
 
 import * as React from 'react';
 import { Heading, Text } from '@sparx/ui';
-import type { SiteSectionDto } from '../_lib/types';
+import type { CustomDefinitionDto, SiteSectionDto } from '../_lib/types';
 import { SectionBuilder } from './section-builder';
 import { useEditorCanvas } from './editor-shell';
 
@@ -27,6 +27,8 @@ export interface PageLayoutEditorProps {
   binding: 'product' | 'collection' | null;
   targetLabel: string;
   sections: SiteSectionDto[];
+  /** The tenant's custom section definitions, merged into the section library. */
+  customDefinitions: CustomDefinitionDto[];
 }
 
 export function PageLayoutEditor({
@@ -34,6 +36,7 @@ export function PageLayoutEditor({
   binding,
   targetLabel,
   sections,
+  customDefinitions,
 }: PageLayoutEditorProps) {
   const canvas = useEditorCanvas();
 
@@ -75,6 +78,7 @@ export function PageLayoutEditor({
         pageLayoutId={layout.id}
         targetId={layout.targetId}
         sections={sections}
+        customDefinitions={customDefinitions}
         manageCanvasPath={false}
       />
     </div>

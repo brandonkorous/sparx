@@ -3,8 +3,28 @@
 // without pulling the service package / Prisma into the browser bundle.
 
 import type { BrandTokenDoc, PresentationOverlayV2, ThemePreset } from '@sparx/storefront-themes';
+import type { SectionField, TemplateNode } from '@sparx/sitebuilder-schemas';
 
 export type ThemeDto = ThemePreset;
+
+// A merchant-defined custom section TYPE (docs/38 Phase C). Surfaced in the
+// section library beside the code sections (placed as `custom:<slug>`) AND edited
+// in the Section Studio — so it carries the full definition: field spec + the
+// render-template AST + version.
+export interface CustomDefinitionDto {
+  slug: string;
+  type: string;
+  label: string;
+  description: string | null;
+  icon: string | null;
+  binding: 'product' | 'collection' | null;
+  fieldSpec: SectionField[];
+  template: TemplateNode;
+  version: number;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export type AppearancePolicy = 'light-only' | 'dark-only' | 'auto' | 'toggle';
 

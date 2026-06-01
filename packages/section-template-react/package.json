@@ -1,0 +1,38 @@
+{
+  "name": "@sparx/section-template-react",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Sparx Site Builder — the shared React interpreter that renders a custom-section template AST into sf-tpl-* markup (docs/38 Phase C). One renderer for the storefront (SSR) and the dashboard Section Studio preview, via injected adapters, so the preview can't drift from production.",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./section-template.css": "./src/section-template.css"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@sparx/sitebuilder-schemas": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

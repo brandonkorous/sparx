@@ -2,6 +2,7 @@
 // subcopy with up to two CTAs, and a row of big figure + label stats.
 
 import type { StatsConfig } from '@sparx/sitebuilder-schemas';
+import { focalToPosition } from '@sparx/sitebuilder-schemas';
 
 import { mediaUrl } from '@/lib/media';
 import type { SectionContext } from '../section-renderer';
@@ -16,7 +17,14 @@ export function StatsSection({ config, ctx }: { config: StatsConfig; ctx: Sectio
   return (
     <section className="sf-section sf-sb-stats">
       {img ? (
-        <div className="sf-sb-stats__media" style={{ backgroundImage: `url("${img}")` }} />
+        <div
+          className="sf-sb-stats__media"
+          style={{
+            backgroundImage: `url("${img}")`,
+            backgroundSize: config.imageFit === 'contain' ? 'contain' : 'cover',
+            backgroundPosition: focalToPosition(config.imageFocal),
+          }}
+        />
       ) : null}
       <div className="sf-container sf-sb-stats__body">
         {hasLead ? (

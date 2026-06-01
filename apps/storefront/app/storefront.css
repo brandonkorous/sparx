@@ -1740,7 +1740,7 @@
 .sf-sb-hero[data-valign='bottom'] {
   align-items: flex-end;
 }
-.sf-sb-hero__video {
+.sf-sb-hero__media {
   position: absolute;
   inset: 0;
   width: 100%;

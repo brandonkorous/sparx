@@ -5,6 +5,7 @@ import 'server-only';
 import { api } from '@/lib/api-rest-client';
 import type {
   BrandDto,
+  CustomDefinitionDto,
   LayoutDefaultDto,
   NavMenuDto,
   PageLayoutDto,
@@ -47,6 +48,29 @@ export async function listSavedThemes(): Promise<SiteThemeDto[]> {
   } catch {
     return [];
   }
+}
+
+// The tenant's custom section definitions (docs/38 Phase C). The editor merges
+// these into the section library; degrades to an empty list if the endpoint is
+// unavailable (the code sections still render).
+export async function listCustomDefinitions(): Promise<CustomDefinitionDto[]> {
+  try {
+    const { definitions } = await api.get<{ definitions?: unknown[] }>(
+      '/v1/sitebuilder/definitions'
+    );
+    const rows = Array.isArray(definitions) ? definitions : [];
+    return rows.filter(
+      (d): d is CustomDefinitionDto =>
+        typeof d === 'object' && d !== null && 'slug' in d && 'fieldSpec' in d
+    );
+  } catch {
+    return [];
+  }
+}
+
+// One custom section definition by slug (the Section Studio editor route).
+export function getDefinition(slug: string): Promise<CustomDefinitionDto> {
+  return api.get<CustomDefinitionDto>(`/v1/sitebuilder/definitions/${encodeURIComponent(slug)}`);
 }
 
 // Page layouts the tenant has for a target (docs/36 §4). A target with no row has
