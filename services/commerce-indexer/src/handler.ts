@@ -11,6 +11,8 @@ import {
 import { deleteProduct, upsertProduct } from '@sparx/search';
 import type { Logger as PinoLogger } from 'pino';
 
+import { runReindex } from './reindex.js';
+
 export interface CommerceEventEnvelope {
   type: string;
   tenantId?: string;
@@ -20,7 +22,7 @@ export interface CommerceEventEnvelope {
 }
 
 interface HandleResult {
-  outcome: 'indexed' | 'deleted' | 'reprojected' | 'skipped';
+  outcome: 'indexed' | 'deleted' | 'reprojected' | 'reindexed' | 'skipped';
   details?: Record<string, unknown>;
 }
 
@@ -102,6 +104,11 @@ export async function handleEvent(
       if (!productId) return { outcome: 'skipped' };
       await deleteProduct(tenantId, productId);
       return { outcome: 'deleted', details: { productId } };
+    }
+
+    case 'search.reindex.requested': {
+      const summary = await runReindex(event, logger);
+      return { outcome: 'reindexed', details: { ...summary } };
     }
 
     default:

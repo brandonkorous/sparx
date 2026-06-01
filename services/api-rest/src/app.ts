@@ -77,6 +77,7 @@ import emailTestRoutes from './routes/v1/email/test.js';
 import emailRoutes from './routes/v1/email/index.js';
 import emailWebhookRoutes from './routes/v1/public/email-webhook.js';
 import dashboardRoutes from './routes/v1/dashboard.js';
+import searchRoutes from './routes/v1/search.js';
 import { bootstrapProviders } from './lib/providers-bootstrap.js';
 
 function loggerOptions(): FastifyServerOptions['logger'] {
@@ -452,6 +453,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(emailTestRoutes);
   await app.register(emailRoutes);
   await app.register(dashboardRoutes);
+  await app.register(searchRoutes);
 
   return app;
 }

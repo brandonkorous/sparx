@@ -25,5 +25,25 @@ services:
       timeout: 5s
       retries: 10
 
+  # Local Typesense for search development. Production runs the same engine as
+  # a GKE StatefulSet (k8s/typesense/); this mirrors it so `pnpm db:up` brings
+  # search up alongside Postgres. The api-rest read path + commerce-indexer
+  # write path both point here via TYPESENSE_* env (see .env.example files).
+  typesense:
+    image: typesense/typesense:28.0
+    container_name: sparx-typesense
+    restart: unless-stopped
+    command: '--data-dir /data --api-key=dev-typesense-key --enable-cors'
+    ports:
+      - '8108:8108'
+    volumes:
+      - sparx-typesense-data:/data
+    # No healthcheck: the Typesense image doesn't reliably ship curl/wget, and
+    # an unhealthy check would stall `db:up:wait`. Production readiness is
+    # handled by k8s httpGet probes (k8s/typesense/statefulset.yaml); locally
+    # migrations only gate on Postgres. Hit http://localhost:8108/health to
+    # check by hand.
+
 volumes:
   sparx-pg-data:
+  sparx-typesense-data:

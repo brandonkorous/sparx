@@ -280,7 +280,10 @@ module "commerce_indexer_cloudrun" {
   container_concurrency = 8
   cpu                   = "1"
   memory                = "512Mi"
-  timeout_seconds       = 120
+  # A full-tenant reindex (search.reindex.requested) pages every product /
+  # customer / order through the projection in one request — give it room.
+  # Must be >= the reindex subscription's ack deadline (300s) below.
+  timeout_seconds = 600
 
   env_vars = {
     NODE_ENV                = "production"
@@ -327,6 +330,13 @@ module "commerce_indexer_cloudrun" {
     { topic = "variant.updated", subscription_name = "variant.updated.commerce-indexer-cloudrun" },
     { topic = "variant.deleted", subscription_name = "variant.deleted.commerce-indexer-cloudrun" },
     { topic = "inventory.adjusted", subscription_name = "inventory.adjusted.commerce-indexer-cloudrun" },
+    # Admin-triggered full reindex. Longer ack deadline since a single
+    # message rebuilds an entire tenant's collections from Postgres.
+    {
+      topic                = "search.reindex.requested"
+      subscription_name    = "search.reindex.requested.commerce-indexer-cloudrun"
+      ack_deadline_seconds = 300
+    },
   ]
 
   depends_on = [

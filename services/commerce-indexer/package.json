@@ -2,7 +2,7 @@
   "name": "@sparx/commerce-indexer",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx commerce indexer. Receives product.*, variant.*, inventory.adjusted, and collection.updated events via Pub/Sub push (Cloud Run HTTP entrypoint). Reprojects affected products into Typesense via @sparx/commerce's projectProduct() + @sparx/search's upsertProduct(); reprojects rules-driven collection memberships on relevant changes.",
+  "description": "Sparx search indexer. Cloud Run Pub/Sub push worker. Consumes catalog events (product.*, variant.*, inventory.adjusted) and — once the customer/order bridges land — crm.customer.* / order.* events, reprojecting the affected entity into Typesense via @sparx/commerce's projections + @sparx/search. Also runs admin-triggered full reindexes (search.reindex.requested).",
   "type": "module",
   "main": "src/index.ts",
   "scripts": {

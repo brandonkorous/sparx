@@ -40,7 +40,11 @@ export type EventType =
   | 'email.domain.verified'
   // Webhooks / redirects (Phase 4)
   | 'redirect.added'
-  | 'redirect.removed';
+  | 'redirect.removed'
+  // Search — admin-triggered full reindex; consumed by commerce-indexer,
+  // which bulk-projects the tenant's products/customers/orders from
+  // Postgres into Typesense. See services/commerce-indexer/src/reindex.ts.
+  | 'search.reindex.requested';
 
 export interface SparxEvent<T = unknown> {
   type: EventType;

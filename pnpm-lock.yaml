@@ -1316,6 +1316,9 @@ importers:
       '@sparx/provider-stripe':
         specifier: workspace:*
         version: link:../../packages/provider-stripe
+      '@sparx/search':
+        specifier: workspace:*
+        version: link:../../packages/search
       '@sparx/sitebuilder':
         specifier: workspace:*
         version: link:../../packages/sitebuilder

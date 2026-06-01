@@ -80,6 +80,12 @@ module "pubsub" {
     "inventory.low"      = []
     "inventory.depleted" = []
 
+    # Search — admin-triggered full reindex. api-rest publishes; the
+    # commerce-indexer consumes via its Cloud Run PUSH subscription declared
+    # in serverless.tf (search.reindex.requested.commerce-indexer-cloudrun).
+    # Empty list = topic only, no idle pull subscription.
+    "search.reindex.requested" = []
+
     # Commerce / orders
     "order.created" = ["worker-webhook"]
     "order.updated" = ["worker-webhook"]
