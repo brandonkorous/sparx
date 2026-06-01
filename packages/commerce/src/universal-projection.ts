@@ -187,6 +187,9 @@ const collectionProjector: EntityProjector = {
         subtitle: c.handle,
         body: snippet(c.description),
         keywords: keywords([c.handle, c.type]),
+        // No publish flag on collections — a non-deleted collection is live;
+        // mark 'active' so the public storefront status filter admits it.
+        status: 'active',
         url: `/commerce/collections/${c.id}`,
         created_at: epoch(c.createdAt),
         updated_at: epoch(c.updatedAt),
@@ -597,6 +600,78 @@ const taskProjector: EntityProjector = {
     }),
 };
 
+// ─── commerce: product (also a rich collection; here for global search) ─
+// Products keep their faceted `products` collection (storefront PLP, fitment).
+// A lightweight universal doc additionally lands here (docs/39 §4.1) so global
+// ⌘K + the public storefront "search everything" are one query. Real-time via
+// the product.* tee in events.ts; SKU search stays the rich collection's job.
+
+const productProjector: EntityProjector = {
+  entityType: 'product',
+  module: 'commerce',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.product.findMany({
+        where: { deletedAt: null },
+        select: { id: true },
+      });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const p = await tx.product.findFirst({ where: { id, deletedAt: null } });
+      if (!p) return null;
+      return {
+        id: universalId(ctx.tenantId, 'product', p.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'product',
+        module: 'commerce',
+        record_id: p.id,
+        title: p.title,
+        subtitle: p.vendor ?? undefined,
+        keywords: keywords([p.handle, p.vendor, ...p.tags]),
+        status: p.status, // draft | active | archived (public search filters active)
+        url: `/commerce/products/${p.id}`,
+        created_at: epoch(p.createdAt),
+        updated_at: epoch(p.updatedAt),
+      };
+    }),
+};
+
+// ─── cms: page (reindex-only — CMS emits no domain events yet, docs/39 §6.3) ─
+// Read via the shared Prisma client (no @sparx/cms dep / Dockerfile edge, same
+// as the CRM projectors). Public storefront search filters status:='published'.
+
+const cmsPageProjector: EntityProjector = {
+  entityType: 'cms_page',
+  module: 'cms',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.page.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const p = await tx.page.findFirst({ where: { id } });
+      if (!p) return null;
+      return {
+        id: universalId(ctx.tenantId, 'cms_page', p.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'cms_page',
+        module: 'cms',
+        record_id: p.id,
+        title: p.title,
+        subtitle: p.slug,
+        body: snippet(p.metaDescription),
+        keywords: keywords([p.slug]),
+        status: p.status, // draft | published (public search filters published)
+        url: `/cms/${p.id}`,
+        created_at: epoch(p.createdAt),
+        updated_at: epoch(p.updatedAt),
+      };
+    }),
+};
+
 /** Universal projectors contributed by Commerce + CRM. The commerce-indexer
  *  registers these into its projector registry (reindex + event dispatch). */
 export const commerceUniversalProjectors: EntityProjector[] = [
@@ -618,4 +693,7 @@ export const commerceUniversalProjectors: EntityProjector[] = [
   pipelineProjector,
   dealProjector,
   taskProjector,
+  // Public storefront content (also powers global ⌘K)
+  productProjector,
+  cmsPageProjector,
 ];

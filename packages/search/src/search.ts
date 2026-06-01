@@ -193,6 +193,9 @@ export interface UniversalSearchInput {
   modules?: string[];
   /** Restrict to one or more entity types (e.g. a single list page). */
   entityTypes?: string[];
+  /** Restrict to these statuses — e.g. ['active','published'] so a public
+   *  storefront search never surfaces draft/archived records. */
+  statuses?: string[];
   page?: number;
   perPage?: number;
 }
@@ -209,6 +212,7 @@ export async function searchAll(
   const parts: (string | null)[] = [`tenant_id:=${input.tenantId}`];
   if (input.modules?.length) parts.push(`module:=${facetList(input.modules)}`);
   if (input.entityTypes?.length) parts.push(`entity_type:=${facetList(input.entityTypes)}`);
+  if (input.statuses?.length) parts.push(`status:=${facetList(input.statuses)}`);
   const params: AnySearchParams = {
     q: input.q && input.q.length > 0 ? input.q : '*',
     query_by: 'title,keywords,subtitle,body',

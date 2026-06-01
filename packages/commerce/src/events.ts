@@ -123,8 +123,8 @@ export async function publishCommerceEvent<T>(input: CommerceEventInput<T>): Pro
  * read from the event's `data` payload:
  *   - gift_card / subscription / return / review carry their own id field;
  *   - collection / category changes ride on `product.*` with a discriminator id;
- *   - bare `product.*` maps to nothing (products live in their rich collection,
- *     not the universal index — see docs/39 §4.1).
+ *   - bare `product.*` (productId only) indexes the product's lightweight
+ *     universal doc, alongside its rich collection (docs/39 §4.1).
  */
 function universalTargetFor(
   topic: CommerceTopic,
@@ -154,6 +154,8 @@ function universalTargetFor(
     if (collectionId) return { entityType: 'collection', recordId: collectionId };
     const categoryId = str('categoryId');
     if (categoryId) return { entityType: 'category', recordId: categoryId };
+    const productId = str('productId');
+    if (productId) return { entityType: 'product', recordId: productId };
   }
   return null;
 }
