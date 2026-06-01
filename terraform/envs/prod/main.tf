@@ -86,6 +86,12 @@ module "pubsub" {
     # Empty list = topic only, no idle pull subscription.
     "search.reindex.requested" = []
 
+    # Search — generic universal-index signal (docs/39). Any module publishes
+    # `search.entity.changed` post-commit; the commerce-indexer re-projects the
+    # one entity into the universal `entities` collection. One topic for every
+    # entity type; consumed via the push subscription in serverless.tf.
+    "search.entity.changed" = []
+
     # Commerce / orders — lifecycle events teed from the CRM platform bus to
     # Pub/Sub (packages/crm/src/pubsub-bridge.ts). commerce-indexer consumes
     # them via its Cloud Run PUSH subscriptions in serverless.tf; topic-only

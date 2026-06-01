@@ -349,6 +349,9 @@ module "commerce_indexer_cloudrun" {
       subscription_name    = "search.reindex.requested.commerce-indexer-cloudrun"
       ack_deadline_seconds = 300
     },
+    # Universal-index signal (docs/39) — any module's `search.entity.changed`
+    # re-projects one entity into the `entities` collection.
+    { topic = "search.entity.changed", subscription_name = "search.entity.changed.commerce-indexer-cloudrun" },
   ]
 
   depends_on = [

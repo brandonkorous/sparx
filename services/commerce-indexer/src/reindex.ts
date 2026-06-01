@@ -19,25 +19,33 @@ import {
 } from '@sparx/commerce';
 import {
   bulkUpsertCustomers,
+  bulkUpsertEntities,
   bulkUpsertOrders,
   bulkUpsertProducts,
   CUSTOMERS_COLLECTION,
   dropTenantFromCollection,
+  ENTITIES_COLLECTION,
   ORDERS_COLLECTION,
   PRODUCTS_COLLECTION,
+  type UniversalSearchDocument,
 } from '@sparx/search';
 import type { Logger as PinoLogger } from 'pino';
 
 import type { CommerceEventEnvelope } from './handler.js';
+import { REGISTRY } from './registry.js';
 
 // Ids are enumerated all-at-once (cheap, id-only), then projected +
 // upserted in chunks this size so a huge tenant doesn't hold every
 // projected document in memory at once.
 const PROJECT_CHUNK = 500;
 
+// The three rich collections have bespoke per-collection plans; `entities` is
+// the universal collection rebuilt by walking the projector registry.
 export type ReindexCollection = 'products' | 'customers' | 'orders';
+export type ReindexTarget = ReindexCollection | 'entities';
 
 const ALL_COLLECTIONS: ReindexCollection[] = ['products', 'customers', 'orders'];
+const ALL_TARGETS: ReindexTarget[] = [...ALL_COLLECTIONS, 'entities'];
 
 export interface ReindexResult {
   runId?: string;
@@ -74,16 +82,23 @@ export async function runReindex(
     runId?: unknown;
   };
   const requested = Array.isArray(data.collections)
-    ? data.collections.filter((c): c is ReindexCollection =>
-        (ALL_COLLECTIONS as readonly string[]).includes(c as string)
+    ? data.collections.filter((c): c is ReindexTarget =>
+        (ALL_TARGETS as readonly string[]).includes(c as string)
       )
-    : ALL_COLLECTIONS;
+    : ALL_TARGETS;
   const dropStale = data.dropStale === true;
   const runId = typeof data.runId === 'string' ? data.runId : undefined;
 
   const result: ReindexResult = { runId, collections: {} };
 
   for (const collection of requested) {
+    // The universal `entities` collection is rebuilt by walking every
+    // registered projector (each entity type) — not a single plan.
+    if (collection === 'entities') {
+      result.collections.entities = await reindexEntities(ctx, dropStale, runId, logger);
+      continue;
+    }
+
     const plan = planFor(collection);
 
     if (dropStale) {
@@ -115,6 +130,42 @@ export async function runReindex(
 interface ReindexCtx {
   tenantId: string;
   userId?: string;
+}
+
+/** Rebuild the universal `entities` collection for one tenant by walking every
+ *  registered projector. Each projector enumerates its ids and projects in
+ *  PROJECT_CHUNK batches; nulls (deleted records) are skipped. One bad row is
+ *  counted, not thrown — same contract as the rich-collection plans. */
+async function reindexEntities(
+  ctx: ReindexCtx,
+  dropStale: boolean,
+  runId: string | undefined,
+  logger: PinoLogger
+): Promise<{ indexed: number; errors: number }> {
+  if (dropStale) {
+    const dropped = await dropTenantFromCollection(ENTITIES_COLLECTION, ctx.tenantId);
+    logger.info(
+      { tenantId: ctx.tenantId, collection: 'entities', dropped: dropped.deleted, runId },
+      'reindex: dropped stale docs'
+    );
+  }
+  let indexed = 0;
+  let errors = 0;
+  for (const projector of REGISTRY.values()) {
+    const ids = await projector.listIdsForTenant(ctx);
+    for (const idBatch of chunk(ids, PROJECT_CHUNK)) {
+      const projected = await Promise.all(idBatch.map((id) => projector.project(ctx, id)));
+      const docs = projected.filter((d): d is UniversalSearchDocument => d !== null);
+      const res = await bulkUpsertEntities(docs);
+      indexed += res.successCount;
+      errors += res.errors.length;
+    }
+    logger.info(
+      { tenantId: ctx.tenantId, entityType: projector.entityType, total: ids.length, runId },
+      'reindex: entity type done'
+    );
+  }
+  return { indexed, errors };
 }
 
 interface CollectionPlan {

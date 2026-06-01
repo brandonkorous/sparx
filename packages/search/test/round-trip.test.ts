@@ -11,14 +11,20 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 import { _resetClientForTest, getClient } from '../src/client';
 import { collectionStats, dropAllSchemas, ensureSchemas } from '../src/admin';
-import { bulkUpsertCustomers, bulkUpsertOrders, bulkUpsertProducts } from '../src/bulk';
-import { palette, searchCustomers, searchOrders, searchProducts } from '../src/search';
+import {
+  bulkUpsertCustomers,
+  bulkUpsertEntities,
+  bulkUpsertOrders,
+  bulkUpsertProducts,
+} from '../src/bulk';
+import { palette, searchAll, searchCustomers, searchOrders, searchProducts } from '../src/search';
 import { ensureSynonyms, GLOBAL_PRODUCT_SYNONYMS } from '../src/synonyms';
 import { generateScopedSearchKeyWithExpiry } from '../src/keys';
 import type {
   CustomerSearchDocument,
   OrderSearchDocument,
   ProductSearchDocument,
+  UniversalSearchDocument,
 } from '../src/schemas';
 
 // Default to the docker-compose Typesense; allow env override.
@@ -107,6 +113,25 @@ function order(
     total_cents: 25_800,
     currency: 'USD',
     placed_at: 1_700_000_000,
+    ...over,
+  };
+}
+
+function entity(
+  tenantId: string,
+  entityType: string,
+  recordId: string,
+  over: Partial<UniversalSearchDocument> = {}
+): UniversalSearchDocument {
+  return {
+    id: `${tenantId}:${entityType}:${recordId}`,
+    tenant_id: tenantId,
+    entity_type: entityType,
+    module: 'commerce',
+    record_id: recordId,
+    title: 'Untitled',
+    created_at: 1_700_000_000,
+    updated_at: 1_700_000_000,
     ...over,
   };
 }
@@ -201,5 +226,35 @@ describe.skipIf(!AVAILABLE)('@sparx/search round-trip', () => {
     expect(typeof scoped.key).toBe('string');
     expect(scoped.key.length).toBeGreaterThan(0);
     expect(scoped.expiresInSeconds).toBe(3600);
+  });
+
+  it('universal search spans entity types, module-filters, and isolates tenants', async () => {
+    await bulkUpsertEntities([
+      entity(TENANT_A, 'warehouse', 'w1', { title: 'Visalia Main Warehouse', subtitle: 'VIS-1' }),
+      entity(TENANT_A, 'discount', 'd1', { title: 'Fleet 10%', keywords: ['FLEET10'] }),
+      entity(TENANT_A, 'b2b_account', 'a1', { title: 'Acme Diesel', module: 'crm' }),
+      entity(TENANT_B, 'warehouse', 'w9', { title: 'Other Tenant Depot', subtitle: 'OTH-9' }),
+    ]);
+
+    // Tenant A sees only its own three docs — never tenant B's depot.
+    const all = await searchAll({ tenantId: TENANT_A, q: '*' });
+    expect(all.found).toBe(3);
+    for (const hit of all.hits) expect(hit.document.tenant_id).toBe(TENANT_A);
+
+    // Module filter scopes to commerce (warehouse + discount), excluding the
+    // crm b2b_account — this is how the route gates to enabled modules.
+    const commerceOnly = await searchAll({ tenantId: TENANT_A, q: '*', modules: ['commerce'] });
+    expect(commerceOnly.found).toBe(2);
+    expect(commerceOnly.hits.every((h) => h.document.module === 'commerce')).toBe(true);
+
+    // entity_type filter narrows to a single type (a list page's use).
+    const warehouses = await searchAll({ tenantId: TENANT_A, q: '*', entityTypes: ['warehouse'] });
+    expect(warehouses.found).toBe(1);
+    expect(warehouses.hits[0]?.document.entity_type).toBe('warehouse');
+
+    // Free-text matches the title, still tenant-isolated.
+    const byText = await searchAll({ tenantId: TENANT_A, q: 'visalia' });
+    expect(byText.hits.some((h) => h.document.record_id === 'w1')).toBe(true);
+    expect(byText.hits.every((h) => h.document.tenant_id === TENANT_A)).toBe(true);
   });
 });

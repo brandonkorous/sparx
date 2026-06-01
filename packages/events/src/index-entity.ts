@@ -11,8 +11,10 @@ import { createPublisher, publishEvent, type PublisherLogger } from './publisher
 import type { SearchEntityChangedPayload } from './types';
 
 const logger: PublisherLogger = {
-  info: (obj, msg) => console.log(JSON.stringify({ level: 'info', src: 'search-index', ...obj, msg })),
-  warn: (obj, msg) => console.warn(JSON.stringify({ level: 'warn', src: 'search-index', ...obj, msg })),
+  info: (obj, msg) =>
+    console.log(JSON.stringify({ level: 'info', src: 'search-index', ...obj, msg })),
+  warn: (obj, msg) =>
+    console.warn(JSON.stringify({ level: 'warn', src: 'search-index', ...obj, msg })),
   error: (obj, msg) =>
     console.error(JSON.stringify({ level: 'error', src: 'search-index', ...obj, msg })),
 };

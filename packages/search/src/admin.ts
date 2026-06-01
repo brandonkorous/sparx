@@ -85,12 +85,7 @@ export async function collectionStats(
   tenantId: string,
   client: Client = getClient()
 ): Promise<CollectionStat[]> {
-  const names = [
-    PRODUCTS_COLLECTION,
-    CUSTOMERS_COLLECTION,
-    ORDERS_COLLECTION,
-    ENTITIES_COLLECTION,
-  ];
+  const names = [PRODUCTS_COLLECTION, CUSTOMERS_COLLECTION, ORDERS_COLLECTION, ENTITIES_COLLECTION];
   const out: CollectionStat[] = [];
   for (const name of names) {
     try {

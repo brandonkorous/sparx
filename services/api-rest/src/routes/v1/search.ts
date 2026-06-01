@@ -15,10 +15,12 @@ import {
   collectionStats,
   generateScopedSearchKeyWithExpiry,
   palette,
+  searchAll,
   searchCustomers,
   searchOrders,
   searchProducts,
 } from '@sparx/search';
+import { listEnabledModules } from '@sparx/auth';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { publish } from '@sparx/api-core/pubsub';
@@ -50,6 +52,16 @@ const SearchQuery = z.object({
 const PaletteQuery = z.object({
   q: z.string().min(1),
   limit: z.coerce.number().int().min(1).max(20).optional(),
+});
+
+const SearchAllQuery = z.object({
+  q: z.string().optional(),
+  /** Comma-separated module filter; intersected with the tenant's enabled set. */
+  modules: z.string().optional(),
+  /** Comma-separated entity_type filter (e.g. a single list page). */
+  types: z.string().optional(),
+  page: z.coerce.number().int().min(1).optional(),
+  per_page: z.coerce.number().int().min(1).max(250).optional(),
 });
 
 const ReindexBody = z
@@ -155,6 +167,39 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     const auth = requireAuth(request);
     const collections = await collectionStats(auth.tenantId);
     return ok({ collections });
+  });
+
+  // ── Universal search (docs/39) — the `entities` collection spanning every
+  //    module. Auth-only; results are gated to the tenant's ENABLED modules so
+  //    a disabled module's stale docs never surface. `types` narrows to one or
+  //    more entity types (a single list page); facet counts ride in meta. ──
+  app.get('/v1/search/all', async (request) => {
+    requireRole(request, 'viewer');
+    const auth = requireAuth(request);
+    const q = SearchAllQuery.parse(request.query);
+    const enabled = await listEnabledModules(auth.tenantId);
+    const enabledSet = enabled as readonly string[];
+    const requested = csv(q.modules);
+    // Intersect any requested modules with the enabled set; default to all
+    // enabled modules so disabled-module hits are never returned.
+    const modules = requested ? requested.filter((m) => enabledSet.includes(m)) : [...enabledSet];
+    const result = await searchAll({
+      tenantId: auth.tenantId,
+      q: q.q,
+      modules,
+      entityTypes: csv(q.types),
+      page: q.page,
+      perPage: q.per_page,
+    });
+    return paged(
+      result.hits.map((h) => h.document),
+      {
+        total: result.found,
+        per_page: result.perPage,
+        page: result.page,
+        facets: result.facetCounts,
+      }
+    );
   });
 
   // ── Scoped search key — a short-TTL Typesense key locked to this tenant

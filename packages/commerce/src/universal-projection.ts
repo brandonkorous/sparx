@@ -49,8 +49,11 @@ function customerName(c: {
   company: string | null;
   email: string | null;
 }): string | undefined {
+  // An explicit empty-string check (not `??`) so a blank full name falls
+  // through to company / email rather than winning as ''.
   const full = [c.firstName, c.lastName].filter(Boolean).join(' ').trim();
-  return full || c.company || c.email || undefined;
+  if (full) return full;
+  return c.company ?? c.email ?? undefined;
 }
 
 // ─── commerce: warehouse ─────────────────────────────────────────────
