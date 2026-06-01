@@ -73,6 +73,16 @@ spec:
                 secretKeyRef:
                   name: typesense-secrets
                   key: api-key
+            # Search-only parent key for minting tenant-scoped browser keys
+            # (GET /v1/search/key). Optional — the endpoint returns 501 if the
+            # secret/key is absent. `optional: true` so api-rest still boots
+            # before the key is provisioned.
+            - name: TYPESENSE_SEARCH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: typesense-secrets
+                  key: search-key
+                  optional: true
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000

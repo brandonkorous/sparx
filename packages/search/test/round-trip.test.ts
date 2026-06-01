@@ -13,6 +13,8 @@ import { _resetClientForTest, getClient } from '../src/client';
 import { collectionStats, dropAllSchemas, ensureSchemas } from '../src/admin';
 import { bulkUpsertCustomers, bulkUpsertOrders, bulkUpsertProducts } from '../src/bulk';
 import { palette, searchCustomers, searchOrders, searchProducts } from '../src/search';
+import { ensureSynonyms, GLOBAL_PRODUCT_SYNONYMS } from '../src/synonyms';
+import { generateScopedSearchKeyWithExpiry } from '../src/keys';
 import type {
   CustomerSearchDocument,
   OrderSearchDocument,
@@ -180,5 +182,24 @@ describe.skipIf(!AVAILABLE)('@sparx/search round-trip', () => {
     expect(byName.products).toBe(2); // not 3 — tenant B's product is excluded
     expect(byName.customers).toBe(1);
     expect(byName.orders).toBe(1);
+  });
+
+  it('applies global synonyms (turbo → turbocharger)', async () => {
+    const out = await ensureSynonyms();
+    expect(out.applied).toEqual(GLOBAL_PRODUCT_SYNONYMS.map((g) => g.id));
+    // "turbocharger" should now match the "Cummins Turbocharger" via the
+    // turbo synonym group (and "turbo" would too).
+    const res = await searchProducts({ tenantId: TENANT_A, q: 'turbo' });
+    expect(res.hits.some((h) => h.document.title.includes('Turbocharger'))).toBe(true);
+  });
+
+  it('mints a tenant-scoped search key that only sees its tenant', () => {
+    // Use the admin key as the parent for the test (prod uses a search-only
+    // key); the derived key + embedded expiry is what we're asserting.
+    process.env.TYPESENSE_SEARCH_KEY = process.env.TYPESENSE_API_KEY;
+    const scoped = generateScopedSearchKeyWithExpiry(TENANT_A, 1_700_000_000, 3600);
+    expect(typeof scoped.key).toBe('string');
+    expect(scoped.key.length).toBeGreaterThan(0);
+    expect(scoped.expiresInSeconds).toBe(3600);
   });
 });

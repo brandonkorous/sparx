@@ -13,6 +13,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import {
   collectionStats,
+  generateScopedSearchKeyWithExpiry,
   palette,
   searchCustomers,
   searchOrders,
@@ -154,6 +155,40 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     const auth = requireAuth(request);
     const collections = await collectionStats(auth.tenantId);
     return ok({ collections });
+  });
+
+  // ── Scoped search key — a short-TTL Typesense key locked to this tenant
+  //    via an embedded filter, so the storefront/dashboard CAN query
+  //    Typesense directly from the browser (instant-search) without
+  //    proxying every keystroke. Server-proxied search stays the default;
+  //    this is opt-in. Requires TYPESENSE_SEARCH_KEY (a search-only parent
+  //    key) — returns 501 if the platform hasn't provisioned one. ──
+  app.get('/v1/search/key', async (request, reply) => {
+    requireRole(request, 'viewer');
+    const auth = requireAuth(request);
+    try {
+      const nowSeconds = Math.floor(Date.now() / 1000);
+      const scoped = generateScopedSearchKeyWithExpiry(auth.tenantId, nowSeconds);
+      return ok({
+        key: scoped.key,
+        expiresInSeconds: scoped.expiresInSeconds,
+        host: process.env.TYPESENSE_HOST ?? 'typesense',
+        port: Number(process.env.TYPESENSE_PORT ?? 8108),
+        protocol: process.env.TYPESENSE_PROTOCOL ?? 'http',
+      });
+    } catch {
+      // No search-only parent key provisioned — feature unavailable, not an
+      // error in the caller's request.
+      reply.code(501);
+      return {
+        success: false as const,
+        error: {
+          code: 'NOT_IMPLEMENTED',
+          message: 'Direct-search keys are not enabled for this deployment.',
+          request_id: request.id,
+        },
+      };
+    }
   });
 
   // ── Reindex — admin-only. Publishes an event the commerce-indexer

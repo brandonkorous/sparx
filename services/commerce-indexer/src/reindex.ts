@@ -9,6 +9,7 @@
 // reader, and scales to zero between runs.
 
 import {
+  computeBestSellerRanks,
   listCustomerIdsForTenant,
   listOrderIdsForTenant,
   listProductIdsForTenant,
@@ -130,15 +131,23 @@ interface CollectionPlan {
 // happy and the call sites uniform across collections.
 function planFor(collection: ReindexCollection): CollectionPlan {
   switch (collection) {
-    case 'products':
+    case 'products': {
+      // Best-seller ranks are tenant-wide, so compute them once and reuse the
+      // memoized map across every chunk (the plan's projectAndUpsert runs per
+      // chunk). The map is stamped into each product doc so the default search
+      // sort (_text_match,best_seller_rank,updated_at) is meaningful.
+      let ranksPromise: Promise<Map<string, number>> | null = null;
       return {
         collectionName: PRODUCTS_COLLECTION,
         listIds: (ctx) => listProductIdsForTenant(ctx),
         projectAndUpsert: async (ctx, ids) => {
-          const res = await bulkUpsertProducts(await projectProducts(ctx, ids));
+          ranksPromise ??= computeBestSellerRanks(ctx);
+          const ranks = await ranksPromise;
+          const res = await bulkUpsertProducts(await projectProducts(ctx, ids, ranks));
           return { indexed: res.successCount, errors: res.errors.length };
         },
       };
+    }
     case 'customers':
       return {
         collectionName: CUSTOMERS_COLLECTION,

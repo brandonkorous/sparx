@@ -32,7 +32,12 @@ export interface ProjectionResult {
  */
 export async function projectProduct(
   ctx: ServiceContext,
-  productId: string
+  productId: string,
+  /** Optional best-seller rank (1 = best). Threaded in by reindex, which
+   *  computes it once per tenant from order-item quantities so the default
+   *  sort (_text_match,best_seller_rank,updated_at) is meaningful. Omitted on
+   *  the single-event path — a product write doesn't shift global rank. */
+  bestSellerRank?: number
 ): Promise<ProjectionResult> {
   const projection = await withTenant(ctx, async (tx) => {
     const product = await tx.product.findFirst({
@@ -153,6 +158,7 @@ export async function projectProduct(
       image_url: firstImageKey ? mediaPublicUrl(firstImageKey) : undefined,
       created_at: Math.floor(product.createdAt.getTime() / 1000),
       updated_at: Math.floor(product.updatedAt.getTime() / 1000),
+      best_seller_rank: bestSellerRank,
     };
 
     return doc;
@@ -163,18 +169,45 @@ export async function projectProduct(
 
 /**
  * Project many products in one call. The indexer batches by tenant so
- * the RLS context flips once per batch, not per row.
+ * the RLS context flips once per batch, not per row. When `ranks` is supplied
+ * (reindex path), each product's best-seller rank is stamped into its doc.
  */
 export async function projectProducts(
   ctx: ServiceContext,
-  productIds: string[]
+  productIds: string[],
+  ranks?: Map<string, number>
 ): Promise<ProductSearchDocument[]> {
   const out: ProductSearchDocument[] = [];
   for (const id of productIds) {
-    const { document } = await projectProduct(ctx, id);
+    const { document } = await projectProduct(ctx, id, ranks?.get(id));
     if (document) out.push(document);
   }
   return out;
+}
+
+/**
+ * Compute best-seller ranks for a tenant: products ordered by total quantity
+ * sold (sum of order-item quantities), most-sold first → rank 1. Returns a
+ * `productId → rank` map. Products with no sales are absent (rank stays
+ * undefined → they sort after ranked ones under the default sort). Used by
+ * the reindex path; cheap enough to run once per full rebuild.
+ */
+export async function computeBestSellerRanks(ctx: ServiceContext): Promise<Map<string, number>> {
+  return withTenant(ctx, async (tx) => {
+    const grouped = await tx.orderItem.groupBy({
+      by: ['productId'],
+      where: { productId: { not: null } },
+      _sum: { quantity: true },
+    });
+    const ranked = grouped
+      .filter((g): g is typeof g & { productId: string } => g.productId !== null)
+      .map((g) => ({ productId: g.productId, qty: g._sum.quantity ?? 0 }))
+      .filter((g) => g.qty > 0)
+      .sort((a, b) => b.qty - a.qty);
+    const map = new Map<string, number>();
+    ranked.forEach((r, i) => map.set(r.productId, i + 1));
+    return map;
+  });
 }
 
 // ─── Customers ───────────────────────────────────────────────────────

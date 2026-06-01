@@ -8,3 +8,6 @@ export * from './indexer';
 export * from './bulk';
 export * from './search';
 export * from './admin';
+export * from './synonyms';
+export * from './keys';
+export * from './mcp-tools';

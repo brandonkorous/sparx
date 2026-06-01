@@ -1207,6 +1207,9 @@ importers:
       '@sparx/email-platform':
         specifier: workspace:*
         version: link:../../packages/email-platform
+      '@sparx/search':
+        specifier: workspace:*
+        version: link:../../packages/search
       '@sparx/sitebuilder':
         specifier: workspace:*
         version: link:../../packages/sitebuilder
