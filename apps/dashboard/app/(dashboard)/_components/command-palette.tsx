@@ -12,36 +12,84 @@ import {
 } from '@sparx/ui';
 import { findFavoritableById, listFavoritableItems } from '../_shell/registry';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
+import { searchEntities, type PaletteResults } from './search-action';
 
-// ⌘K Quick Mode. Three groups, all manifest-driven:
-//   1. Favorites — the user's pinned items (top of the list).
-//   2. Recents — the user's last-visited items.
-//   3. Everything — every manifest action + every manifest section, less
-//      whatever already appeared in Favorites or Recents.
+// ⌘K palette. Two layers:
+//   • Quick Mode (default / short query): manifest-driven nav — Favorites,
+//     Recents, Everything.
+//   • Deep Mode: once the query is long enough, a debounced server call hits
+//     the Typesense-backed /v1/search palette and shows matching products,
+//     customers, and orders ABOVE the nav groups. Selecting any item
+//     navigates to its detail route.
 //
-// Selecting an item navigates to its href and closes the palette.
-//
-// Deep Mode (entity FTS) lands in a later PR — until then this is purely
-// nav/action search, no entity-instance results. See docs/24-dashboard-shell.md
-// §6 for the layered design.
+// We own filtering (cmdk's shouldFilter is off) because the server results are
+// typo-tolerant — "boach" should keep "Bosch Injector", which cmdk's fuzzy
+// match would discard. Nav items are filtered here with a simple substring.
 
 interface CommandPaletteProps {
   favorites: FavoriteRow[];
   recents: RecentRow[];
 }
 
+const EMPTY_RESULTS: PaletteResults = { products: [], customers: [], orders: [] };
+const MIN_DEEP_QUERY = 2;
+const DEBOUNCE_MS = 200;
+
 export function CommandPalette({ favorites, recents }: CommandPaletteProps) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
+  const [query, setQuery] = React.useState('');
+  const [results, setResults] = React.useState<PaletteResults>(EMPTY_RESULTS);
+  const [loading, setLoading] = React.useState(false);
 
   // Let non-keyboard surfaces (the rail/mobile-nav Search affordance) open the
-  // palette without re-implementing the ⌘K shortcut. They dispatch a window
-  // event; the palette owns the open state.
+  // palette without re-implementing the ⌘K shortcut.
   React.useEffect(() => {
     const handler = () => setOpen(true);
     window.addEventListener('sparx:open-command-palette', handler);
     return () => window.removeEventListener('sparx:open-command-palette', handler);
   }, []);
+
+  // Reset transient state when the palette closes so the next open is clean.
+  React.useEffect(() => {
+    if (!open) {
+      setQuery('');
+      setResults(EMPTY_RESULTS);
+      setLoading(false);
+    }
+  }, [open]);
+
+  // Debounced deep search. A request token guards against out-of-order
+  // responses (a slow early query resolving after a faster later one).
+  React.useEffect(() => {
+    const q = query.trim();
+    if (q.length < MIN_DEEP_QUERY) {
+      setResults(EMPTY_RESULTS);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    let active = true;
+    const handle = setTimeout(() => {
+      void searchEntities(q)
+        .then((r) => {
+          if (active) {
+            setResults(r);
+            setLoading(false);
+          }
+        })
+        .catch(() => {
+          if (active) {
+            setResults(EMPTY_RESULTS);
+            setLoading(false);
+          }
+        });
+    }, DEBOUNCE_MS);
+    return () => {
+      active = false;
+      clearTimeout(handle);
+    };
+  }, [query]);
 
   const all = listFavoritableItems();
 
@@ -55,9 +103,21 @@ export function CommandPalette({ favorites, recents }: CommandPaletteProps) {
     .filter((item) => !favoritedItems.some((f) => f.id === item.id))
     .slice(0, 5);
 
+  // We own filtering now (cmdk shouldFilter=false). Apply a substring match to
+  // nav items so Quick Mode still narrows as you type.
+  const needle = query.trim().toLowerCase();
+  const matchesNeedle = (label: string, extra: string) =>
+    needle.length === 0 || `${label} ${extra}`.toLowerCase().includes(needle);
+
   const everythingElse = all
     .filter((item) => !favoritedItems.some((f) => f.id === item.id))
-    .filter((item) => !recentItems.some((r) => r.id === item.id));
+    .filter((item) => !recentItems.some((r) => r.id === item.id))
+    .filter((item) => matchesNeedle(item.label, `${item.moduleId} ${item.kind}`));
+
+  const visibleFavorites = favoritedItems.filter((i) => matchesNeedle(i.label, i.moduleId));
+  const visibleRecents = recentItems.filter((i) => matchesNeedle(i.label, i.moduleId));
+
+  const hasResults = results.products.length + results.customers.length + results.orders.length > 0;
 
   function go(href: string) {
     setOpen(false);
@@ -65,18 +125,54 @@ export function CommandPalette({ favorites, recents }: CommandPaletteProps) {
   }
 
   return (
-    <UICommandPalette open={open} onOpenChange={setOpen} placeholder="Search…">
+    <UICommandPalette
+      open={open}
+      onOpenChange={setOpen}
+      placeholder="Search products, customers, orders…"
+      search={query}
+      onSearchChange={setQuery}
+      shouldFilter={false}
+    >
       <CommandList>
-        <CommandEmpty>No matches.</CommandEmpty>
+        <CommandEmpty>{loading ? 'Searching…' : 'No matches.'}</CommandEmpty>
 
-        {favoritedItems.length > 0 && (
+        {results.products.length > 0 && (
+          <CommandGroup heading="Products">
+            {results.products.map((hit) => (
+              <CommandItem key={hit.id} value={`product-${hit.id}`} onSelect={() => go(hit.href)}>
+                <span>{hit.label}</span>
+                {hit.sublabel ? <CommandShortcut>{hit.sublabel}</CommandShortcut> : null}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
+
+        {results.customers.length > 0 && (
+          <CommandGroup heading="Customers">
+            {results.customers.map((hit) => (
+              <CommandItem key={hit.id} value={`customer-${hit.id}`} onSelect={() => go(hit.href)}>
+                <span>{hit.label}</span>
+                {hit.sublabel ? <CommandShortcut>{hit.sublabel}</CommandShortcut> : null}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
+
+        {results.orders.length > 0 && (
+          <CommandGroup heading="Orders">
+            {results.orders.map((hit) => (
+              <CommandItem key={hit.id} value={`order-${hit.id}`} onSelect={() => go(hit.href)}>
+                <span>{hit.label}</span>
+                {hit.sublabel ? <CommandShortcut>{hit.sublabel}</CommandShortcut> : null}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
+
+        {visibleFavorites.length > 0 && (
           <CommandGroup heading="Favorites">
-            {favoritedItems.map((item) => (
-              <CommandItem
-                key={item.id}
-                value={`${item.label} ${item.moduleId}`}
-                onSelect={() => go(item.href)}
-              >
+            {visibleFavorites.map((item) => (
+              <CommandItem key={item.id} value={`fav-${item.id}`} onSelect={() => go(item.href)}>
                 <ItemIcon icon={item.icon} />
                 {item.label}
               </CommandItem>
@@ -84,14 +180,10 @@ export function CommandPalette({ favorites, recents }: CommandPaletteProps) {
           </CommandGroup>
         )}
 
-        {recentItems.length > 0 && (
+        {visibleRecents.length > 0 && (
           <CommandGroup heading="Recents">
-            {recentItems.map((item) => (
-              <CommandItem
-                key={item.id}
-                value={`${item.label} ${item.moduleId}`}
-                onSelect={() => go(item.href)}
-              >
+            {visibleRecents.map((item) => (
+              <CommandItem key={item.id} value={`recent-${item.id}`} onSelect={() => go(item.href)}>
                 <ItemIcon icon={item.icon} />
                 {item.label}
               </CommandItem>
@@ -99,19 +191,17 @@ export function CommandPalette({ favorites, recents }: CommandPaletteProps) {
           </CommandGroup>
         )}
 
-        <CommandGroup heading="Everything">
-          {everythingElse.map((item) => (
-            <CommandItem
-              key={item.id}
-              value={`${item.label} ${item.moduleId} ${item.kind}`}
-              onSelect={() => go(item.href)}
-            >
-              <ItemIcon icon={item.icon} />
-              {item.label}
-              <CommandShortcut>{item.moduleId}</CommandShortcut>
-            </CommandItem>
-          ))}
-        </CommandGroup>
+        {everythingElse.length > 0 && (
+          <CommandGroup heading={hasResults ? 'Go to' : 'Everything'}>
+            {everythingElse.map((item) => (
+              <CommandItem key={item.id} value={`nav-${item.id}`} onSelect={() => go(item.href)}>
+                <ItemIcon icon={item.icon} />
+                {item.label}
+                <CommandShortcut>{item.moduleId}</CommandShortcut>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
       </CommandList>
     </UICommandPalette>
   );

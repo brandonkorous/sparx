@@ -5,6 +5,7 @@ import 'server-only';
 import { api } from '@/lib/api-rest-client';
 import type {
   BrandDto,
+  LayoutDefaultDto,
   NavMenuDto,
   PageLayoutDto,
   SiteConfigDto,
@@ -50,12 +51,43 @@ export async function listSavedThemes(): Promise<SiteThemeDto[]> {
 
 // Page layouts the tenant has for a target (docs/36 §4). A target with no row has
 // never been customized — the editor shows the seeded default read-only until then.
+// Omit `targetId` to list every layout across targets (the Layouts surface).
 export async function listPageLayouts(targetId?: string): Promise<PageLayoutDto[]> {
   const qs = targetId ? `?target_id=${encodeURIComponent(targetId)}` : '';
   const { pageLayouts } = await api.get<{ pageLayouts: PageLayoutDto[] }>(
     `/v1/sitebuilder/page-layouts${qs}`
   );
   return pageLayouts;
+}
+
+// One page layout by id (the per-layout editor route).
+export function getPageLayout(id: string): Promise<PageLayoutDto> {
+  return api.get<PageLayoutDto>(`/v1/sitebuilder/page-layouts/${encodeURIComponent(id)}`);
+}
+
+// Every per-target tenant default (docs/36 §6) — the Layouts surface badges.
+export async function listLayoutDefaults(): Promise<LayoutDefaultDto[]> {
+  const { defaults } = await api.get<{ defaults: LayoutDefaultDto[] }>(
+    '/v1/sitebuilder/assignments/defaults'
+  );
+  return defaults;
+}
+
+// The current layout resolution for an item (docs/36 §6, P-C) — its per-item
+// override + the per-target default, as pageLayoutIds. Powers the assignment
+// picker in the Commerce/CMS item editors. Throws if Site Builder is inactive
+// (the consuming section component catches and hides the picker).
+export interface LayoutResolutionDto {
+  assignedLayoutId: string | null;
+  defaultLayoutId: string | null;
+}
+
+export function getLayoutResolution(
+  targetId: string,
+  itemRef: string
+): Promise<LayoutResolutionDto> {
+  const qs = `target_id=${encodeURIComponent(targetId)}&item_ref=${encodeURIComponent(itemRef)}`;
+  return api.get<LayoutResolutionDto>(`/v1/sitebuilder/assignments/resolution?${qs}`);
 }
 
 // Resolve-or-create the page layout for a (targetId, key) — idempotent, like the

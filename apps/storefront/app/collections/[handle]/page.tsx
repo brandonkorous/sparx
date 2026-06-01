@@ -54,9 +54,17 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
   if (!collection) notFound();
 
   // The commerce:collection layout: the merchant's published one, or the seeded
-  // default (parity). A site-preview token resolves the draft instead.
+  // default (parity). A site-preview token resolves the draft instead. In preview
+  // only, `sparxLayoutKey` forces a specific alternate layout onto the canvas
+  // (gated to the preview token — a public visitor can't pin a layout via query).
   const snapshot = await getPublishedSite(tenant.slug, one(sp.sparxSitePreview));
-  const sections = resolveTemplateSections(snapshot, 'commerce:collection');
+  const forcedKey = one(sp.sparxSitePreview) ? one(sp.sparxLayoutKey) : undefined;
+  const sections = resolveTemplateSections(
+    snapshot,
+    'commerce:collection',
+    collection.id,
+    forcedKey
+  );
 
   // Page size comes from the product-grid section's config (default 24 = today).
   const gridSection = sections.find((s) => s.sectionType === 'collection-products');

@@ -13,6 +13,9 @@ const EnvSchema = z.object({
   // tokens for the MCP transport so the auth model is symmetric. External
   // API keys land later via the AI Integrations dashboard.
   SPARX_INTERNAL_JWT_SECRET: z.string().min(32),
+  // Enables the real Pub/Sub bridge for CRM customer writes made via MCP
+  // tools. Unset (dev) → the bridge is a no-op and writes stay on the stub.
+  GCP_PROJECT_ID: z.string().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

@@ -302,15 +302,58 @@ before build.
       USER-TRIGGERED; deploy P-B2 code FIRST, then `db-migrate.yml`** — between the two, product/collection resolve
       falls back to `DEFAULT_TEMPLATES` (no hard error), home/CMS render off `pageKey` (untouched). Joins the
       still-pending prod set; one `prisma migrate deploy` covers all. Local api-rest restart needed.
-- [ ] **P-C · Assignment & resolver (doc 36 §6).** SB-owned default table `(targetId)→pageLayoutId` + per-item
-      assignment table `(targetId, itemRef)→pageLayoutId`; storefront resolver cascade (per-item → tenant
-      default → seeded/code default → safety fallback); `Layout: [▾]` picker in the Commerce product editor +
-      CMS entry editor (writes the SB-owned per-item assignment).
-- [ ] **P-D · Unified Layouts surface.** Fold 3.3b's per-scope nav (Product/Collection/Homepage/Pages) into one
-      **Layouts** surface by target: tenant PageLayouts + a "begin from a Page Template" catalog (code-first,
-      doc 36 §10) + the per-target default control.
-- [ ] **Acceptance:** a per-item override and a per-target default both resolve correctly at render; a Page
-      Template instantiates into an editable PageLayout; the seeded default renders identically to today.
+- [x] **P-C · Assignment & resolver (doc 36 §6) — DONE + green (2026-05-31).** Spec:
+      [docs/handoffs/sitebuilder-pc-spec.md](sitebuilder-pc-spec.md). Two SB-owned tables — `SiteLayoutDefault` (unique tenant+target) and
+      `SiteLayoutAssignment` (unique tenant+target+itemRef), each mapping to a `pageLayoutId`; both FK
+      PageLayout cascade, ENABLE+FORCE RLS; migration `20260615000000_sitebuilder_layout_assignments`, additive,
+      applied LOCAL only). **`itemRef` = the record's stable id.** **Assignments read LIVE** (no `SiteVersion`
+      column) — `assignmentService.readAssignmentSnapshot(tx)` resolves both tables → `{defaults, items}`
+      layoutKeys, attached in `publish-service` `getPublishedSnapshot`+`getDraftSnapshot` (like brand/compiledV2;
+      a layout's sections must be published to take effect regardless, so baking buys nothing). Storefront
+      **resolver cascade** `resolveTemplateSections(snapshot, targetId, itemRef?)` → `resolveLayoutKey`
+      (per-item → per-target default → `default` key) → `sectionsForTarget`, else code default; product/collection
+      pages pass `product.id`/`collection.id`. New `assignment-service` (setDefault/clearDefault/assign/unassign/
+      getResolution/listForTarget + `requireOwnedLayout` ownership+target-match guard) + inputs
+      (`SetLayoutDefaultInput`/`AssignLayoutInput`) + api-rest `/v1/sitebuilder/assignments` (resolution/list/
+      assign/unassign + `/default` set/clear). **Pickers (owner chose both editors):** SB-owned
+      `LayoutAssignmentSection` (server, resilient — self-hides if SB inactive via try/catch) + `LayoutAssignmentPicker`
+      (client Select, `__default__` sentinel) + `_lib` `getLayoutResolution`/`assignLayout`/`unassignLayout`;
+      mounted in the **Commerce product editor** (Overview tab, `commerce:product`, wired end-to-end) and the
+      **CMS entry editor** (`cms:content-type:<typeKey>` — the immutable key IS the stable id the API exposes;
+      gated to types with a `url_pattern`; **write-only until §8** wires CMS storefront rendering through layouts —
+      picker carries a muted note saying so). GATE: typecheck (6 pkgs) + lint (0 err) + format + 25/25 sitebuilder
+      integration tests (5 new in `assignments.test.ts`), all green. **PROD migration USER-TRIGGERED** (additive,
+      joins the still-pending set). Local api-rest restart needed. **Picker is thin until P-D** (only `default` to
+      pick until alternate layouts can be created) — accepted.
+- [x] **P-D · Unified Layouts surface — DONE + green (2026-05-31).** Spec:
+      [docs/handoffs/sitebuilder-pd-spec.md](sitebuilder-pd-spec.md). **NO migration** (all PageLayout FKs already
+      cascade; multi-layout + default already snapshot/resolve via P-B/P-C). Folded the four per-scope nav entries
+      (Homepage/Product pages/Collection pages/Pages) into ONE **Layouts** surface organized by target. Schemas:
+      NEW `page-templates.ts` (`PageTemplate` + `PAGE_TEMPLATES` catalog `product-default`/`collection-default`/
+      `blank` reusing `DEFAULT_TEMPLATES`; `getPageTemplate`/`pageTemplatesForTarget`) + `InstantiateLayoutInput`/
+      `RenamePageLayoutInput`. Service: `pageLayoutService.getById`/`instantiate` (unique-key slugify w/ `-2` suffix;
+      binding-fits-target check **inside** the tenant tx so a mismatch rejects)/`rename`/`remove` (cascade);
+      `assignmentService.listDefaults`. api-rest: `page-layouts` `POST /instantiate` + `GET`/`PATCH`/`DELETE /:id`,
+      `assignments` `GET /defaults`. Storefront: `resolveTemplateSections(..., forcedKey?)` — preview-only forced key
+      bypasses the cascade (code-default fallback now ONLY for the `default` key, so named alternates preview empty
+      not seeded); PDP/PLP pass `sparxLayoutKey` gated to a `sparxSitePreview` token. Dashboard: `editor-shell`
+      `setLayoutKey` + `&sparxLayoutKey=`, `CANVAS_SCOPES` → `/sitebuilder/layouts` + `FULL_WIDTH_EXACT` (index
+      full-width, `/:id` is the canvas editor); manifest 4 entries → one **Layouts** (`sitebuilder.layout.create`
+      action; `entityTypes` emptied — the `page` entity is CMS-owned, the old SB one was a dead collision); NEW
+      `layouts/page.tsx` (grouped-by-target index, `Card variant="module"` + bordered rows + Default badges +
+      New-layout template catalog / New-page slug / Customize-built-in / Set-default / Rename / Delete) +
+      `layouts/[layoutId]/page.tsx` (canvas editor); NEW `layouts-index.tsx` + `page-layout-editor.tsx`
+      (generalizes the deleted `layout-scope-editor`); `_lib` `getPageLayout`/`listLayoutDefaults` (api) +
+      `instantiateLayout`/`renamePageLayout`/`deletePageLayout`/`setLayoutDefault`/`clearLayoutDefault` (actions) +
+      `LayoutDefaultDto` (types). DELETED the `homepage`/`products`/`collections`/`pages` routes + `page-slug-form` + `layout-scope-editor`; Overview "Manage pages"→"Manage layouts". **`cms:content-type:<id>` targets are NOT
+      on the surface yet** (no storefront render path until layout-driven CMS authoring, doc 36 §8) — noted. GATE:
+      typecheck (schemas/sitebuilder/api-rest/storefront/dashboard) + lint (0 err) + format + **31/31** sitebuilder
+      integration tests (6 new), all green. Not committed/deployed — user-triggered. Local api-rest restart needed
+      to expose the new `/page-layouts/:id` + `/instantiate` + `/assignments/defaults` routes.
+- [x] **Acceptance — met.** A per-item override AND a per-target default both resolve at render (P-C
+      `getDraftSnapshot` test + storefront cascade); a Page Template instantiates into an editable PageLayout
+      (`instantiate` test); the seeded default renders identically to today (`forcedKey==='default'` keeps the
+      `DEFAULT_TEMPLATES` fallback). Runtime eyeball of the new surface pending the local stack / deploy.
 
 **Future tiers (deferred, after the PageLayout tier — doc 36 §11):**
 

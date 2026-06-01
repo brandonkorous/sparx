@@ -20,6 +20,7 @@ import { z } from 'zod';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 import { prisma, withTenant } from '@sparx/db';
+import { searchProducts } from '@sparx/search';
 
 const TenantQuery = z.object({ tenant: z.string().min(1).max(63) });
 
@@ -37,6 +38,46 @@ const ProductListQuery = PagingQuery.extend({
   fitmentMake: z.string().optional(),
   fitmentYear: z.coerce.number().int().optional(),
 });
+
+// Typesense-backed storefront search. Typo-tolerant, faceted, fast. Typesense
+// owns ranking/filtering/faceting; Postgres still owns the canonical display
+// row (ratings, inventory, image) so cards render identically to the PLP — we
+// hydrate the hit ids in Typesense's relevance order. `sort` mirrors the PLP's
+// ProductSort vocabulary.
+const SearchQuery = PagingQuery.extend({
+  q: z.string().optional(),
+  vendor: z.string().optional(),
+  productType: z.string().optional(),
+  tag: z.string().optional(),
+  inStock: z.coerce.boolean().optional(),
+  minPriceCents: z.coerce.number().int().min(0).optional(),
+  maxPriceCents: z.coerce.number().int().min(0).optional(),
+  fitmentMakes: z.string().optional(),
+  fitmentModels: z.string().optional(),
+  fitmentEngines: z.string().optional(),
+  fitmentYear: z.coerce.number().int().optional(),
+  sort: z
+    .enum(['relevance', 'price-asc', 'price-desc', 'title-asc', 'title-desc', 'newest'])
+    .default('relevance'),
+});
+
+const SEARCH_SORT_BY: Record<string, string | undefined> = {
+  relevance: undefined, // Typesense default: _text_match,best_seller_rank,updated_at
+  'price-asc': 'price_min_cents:asc',
+  'price-desc': 'price_max_cents:desc',
+  'title-asc': 'title:asc',
+  'title-desc': 'title:desc',
+  newest: 'updated_at:desc',
+};
+
+function splitCsv(value?: string): string[] | undefined {
+  if (!value) return undefined;
+  const parts = value
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return parts.length > 0 ? parts : undefined;
+}
 
 const HandleParams = z.object({ handle: z.string().min(1).max(255) });
 
@@ -226,6 +267,72 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       page: q.page,
       per_page: q.perPage,
       total: result.total,
+    });
+  });
+
+  // ─── Search (Typesense) ────────────────────────────────────────────
+  //
+  // Typo-tolerant faceted search. Typesense ranks + filters + facets; we
+  // hydrate the resulting product ids from Postgres (same select + mapper as
+  // the PLP) so the card shape is identical and ratings/inventory stay out of
+  // the index. Facet counts ride in `meta.facets` for the storefront sidebar.
+  app.get('/v1/public/commerce/search', async (request) => {
+    const q = SearchQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+
+    // Build the price filter in Typesense grammar (cents, matching the index).
+    const priceParts: string[] = [];
+    if (q.minPriceCents !== undefined) priceParts.push(`price_min_cents:>=${q.minPriceCents}`);
+    if (q.maxPriceCents !== undefined) priceParts.push(`price_max_cents:<=${q.maxPriceCents}`);
+    const filterExtras = [
+      q.vendor ? `vendor:=\`${q.vendor}\`` : null,
+      q.productType ? `product_type:=\`${q.productType}\`` : null,
+      q.tag ? `tags:=\`${q.tag}\`` : null,
+      q.inStock === true ? 'in_stock:=true' : null,
+      ...priceParts,
+    ].filter((p): p is string => p !== null);
+
+    const result = await searchProducts({
+      tenantId,
+      q: q.q,
+      page: q.page,
+      perPage: q.perPage,
+      sortBy: SEARCH_SORT_BY[q.sort],
+      filterBy: filterExtras.length > 0 ? filterExtras.join(' && ') : undefined,
+      fitmentMakes: splitCsv(q.fitmentMakes),
+      fitmentModels: splitCsv(q.fitmentModels),
+      fitmentEngines: splitCsv(q.fitmentEngines),
+      fitmentYear: q.fitmentYear,
+    });
+
+    // Hydrate the canonical display rows in Typesense's relevance order.
+    const ids = result.hits.map((h) => h.document.product_id);
+    let ordered: ReturnType<typeof publicProduct>[] = [];
+    if (ids.length > 0) {
+      const rows = await withTenant({ tenantId }, (tx) =>
+        tx.product.findMany({
+          where: { id: { in: ids }, status: 'active', deletedAt: null },
+          select: productSelect(),
+        })
+      );
+      const byId = new Map(rows.map((r) => [r.id, r]));
+      ordered = ids.flatMap((id) => {
+        const row = byId.get(id);
+        return row ? [publicProduct(row)] : [];
+      });
+    }
+
+    return paged(ordered, {
+      page: result.page,
+      per_page: result.perPage,
+      total: result.found,
+      // Facet counts for the storefront sidebar. Shape: { field: [{value,count}] }.
+      facets: Object.fromEntries(
+        result.facetCounts.map((f) => [
+          f.fieldName,
+          f.counts.map((c) => ({ value: c.value, count: c.count })),
+        ])
+      ),
     });
   });
 

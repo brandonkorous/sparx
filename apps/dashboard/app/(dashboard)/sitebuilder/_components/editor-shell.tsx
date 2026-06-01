@@ -43,6 +43,11 @@ export interface EditorCanvasApi {
   setPreviewPath: (path: string) => void;
   /** Toggle the token-gated sample-data preview on the canvas URL (doc 36 §9). */
   setSampleData: (on: boolean) => void;
+  /** Force a SPECIFIC alternate layout onto the canvas via `sparxLayoutKey`
+   *  (preview-only, docs/36 §6). null = resolve normally via the cascade. Only
+   *  meaningful for bound targets (product/collection); home/pages preview by
+   *  path. */
+  setLayoutKey: (key: string | null) => void;
   /** Force a canvas reload (re-fetches the draft snapshot). */
   reload: () => void;
   /** Subscribe to in-canvas section clicks. Returns an unsubscribe fn. */
@@ -70,14 +75,20 @@ const CANVAS_SCOPES: readonly string[] = [
   ROOT,
   '/sitebuilder/design',
   '/sitebuilder/navigation',
-  '/sitebuilder/homepage',
-  '/sitebuilder/products',
-  '/sitebuilder/collections',
-  '/sitebuilder/pages',
+  // The Layouts surface: the index ('/sitebuilder/layouts') is a full-width
+  // grouped catalog (FULL_WIDTH_EXACT below); a specific layout
+  // ('/sitebuilder/layouts/<id>') is the canvas editor.
+  '/sitebuilder/layouts',
 ];
+
+// Routes that match a CANVAS_SCOPE prefix but should render full-width (no
+// canvas) when hit EXACTLY — e.g. the Layouts index lists layouts, while its
+// `/:id` children are the editors that do show the canvas.
+const FULL_WIDTH_EXACT: readonly string[] = ['/sitebuilder/layouts'];
 
 function showsCanvas(pathname: string | null): boolean {
   if (!pathname) return false;
+  if (FULL_WIDTH_EXACT.includes(pathname)) return false;
   return CANVAS_SCOPES.some((s) =>
     s === ROOT ? pathname === ROOT : pathname === s || pathname.startsWith(`${s}/`)
   );
@@ -119,6 +130,7 @@ export function EditorShell({
   const [device, setDevice] = React.useState<(typeof DEVICES)[number]['id']>('desktop');
   const [path, setPath] = React.useState('/');
   const [sampleData, setSampleDataState] = React.useState(false);
+  const [layoutKey, setLayoutKeyState] = React.useState<string | null>(null);
   const [nonce, setNonce] = React.useState(0);
   // Mobile single-column: which pane is showing.
   const [mobilePane, setMobilePane] = React.useState<'edit' | 'preview'>('edit');
@@ -170,6 +182,9 @@ export function EditorShell({
       setSampleData: (on) => {
         setSampleDataState(on);
       },
+      setLayoutKey: (key) => {
+        setLayoutKeyState(key);
+      },
       reload: () => {
         setNonce((n) => n + 1);
       },
@@ -194,7 +209,9 @@ export function EditorShell({
 
   const query = `tenant=${encodeURIComponent(slug)}${
     previewToken ? `&sparxSitePreview=${encodeURIComponent(previewToken)}` : ''
-  }${sampleData ? '&sparxSampleData=1' : ''}`;
+  }${sampleData ? '&sparxSampleData=1' : ''}${
+    layoutKey ? `&sparxLayoutKey=${encodeURIComponent(layoutKey)}` : ''
+  }`;
   const src = `${storefrontUrl}${path}?${query}&v=${nonce}`;
   const openUrl = `${storefrontUrl}${path}?${query}`;
 

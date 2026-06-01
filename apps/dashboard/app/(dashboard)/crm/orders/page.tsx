@@ -67,21 +67,56 @@ const PAYMENT_STATUS_OPTIONS = [
   { value: 'refunded', label: 'Refunded' },
 ];
 
+// Typesense order search document (the subset this list needs). Returned by
+// /v1/search/orders — typo-tolerant across order number + customer + items.
+interface OrderSearchDoc {
+  order_id: string;
+  order_number: string;
+  status: string;
+  payment_status: string;
+  currency: string;
+  total_cents: number;
+  placed_at: number; // epoch seconds
+  channel?: string;
+}
+
 export default async function OrdersPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const status = stringParam(params.status);
   const paymentStatus = stringParam(params.paymentStatus);
   const q = stringParam(params.q);
 
-  const query = new URLSearchParams({ take: '100', sort_by: 'placedAt' });
-  if (status) query.set('status', status);
-  if (paymentStatus) query.set('payment_status', paymentStatus);
-  if (q) query.set('q', q);
-
-  const { data: orders, meta } = await api.getPaged<OrderRow[]>(
-    `/v1/crm/orders?${query.toString()}`
-  );
-  const total = (meta?.total as number | undefined) ?? orders.length;
+  // With a query, search via Typesense (typo-tolerant, matches order number +
+  // customer name/email + item titles); without one, list straight from
+  // Postgres with the status/payment facets. `amountPaid` isn't indexed, so
+  // search rows show — for Paid; the detail view has the full picture.
+  let orders: OrderRow[];
+  let total: number;
+  if (q) {
+    const sq = new URLSearchParams({ q, per_page: '100' });
+    const { data, meta } = await api.getPaged<OrderSearchDoc[]>(
+      `/v1/search/orders?${sq.toString()}`
+    );
+    orders = data.map((d) => ({
+      id: d.order_id,
+      orderNumber: d.order_number,
+      status: d.status,
+      paymentStatus: d.payment_status,
+      currency: d.currency,
+      total: d.total_cents / 100,
+      amountPaid: Number.NaN, // not indexed — rendered as —
+      placedAt: new Date(d.placed_at * 1000).toISOString(),
+      channel: d.channel ?? null,
+    }));
+    total = (meta?.total as number | undefined) ?? orders.length;
+  } else {
+    const query = new URLSearchParams({ take: '100', sort_by: 'placedAt' });
+    if (status) query.set('status', status);
+    if (paymentStatus) query.set('payment_status', paymentStatus);
+    const res = await api.getPaged<OrderRow[]>(`/v1/crm/orders?${query.toString()}`);
+    orders = res.data;
+    total = (res.meta?.total as number | undefined) ?? orders.length;
+  }
 
   return (
     <Container size="full">
@@ -108,7 +143,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
         />
 
         <ListToolbar
-          searchable={false}
+          searchPlaceholder="Search order #, customer, or item…"
           filters={[
             { key: 'status', label: 'Statuses', options: STATUS_OPTIONS },
             { key: 'paymentStatus', label: 'Payment', options: PAYMENT_STATUS_OPTIONS },
@@ -165,7 +200,9 @@ export default async function OrdersPage({ searchParams }: PageProps) {
                         {o.currency} {Number(o.total).toLocaleString()}
                       </TableCell>
                       <TableCell className="text-right tabular-nums">
-                        {o.currency} {Number(o.amountPaid).toLocaleString()}
+                        {Number.isNaN(Number(o.amountPaid))
+                          ? '—'
+                          : `${o.currency} ${Number(o.amountPaid).toLocaleString()}`}
                       </TableCell>
                       <TableCell>
                         <Text size="sm" variant="muted">

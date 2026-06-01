@@ -6,6 +6,7 @@ import type { z } from 'zod';
 import { crmMcpTools } from '@sparx/crm';
 import { sitebuilderMcpTools } from '@sparx/sitebuilder';
 import { emailMcpTools } from '@sparx/email-platform';
+import { searchMcpTools } from '@sparx/search';
 
 // Structural type spanning every module's tool definition. Each module declares
 // its own scope union; here we only need the shared shape (scope is a string).
@@ -24,6 +25,7 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   ...(crmMcpTools as unknown as AnyMcpTool[]),
   ...(sitebuilderMcpTools as unknown as AnyMcpTool[]),
   ...(emailMcpTools as unknown as AnyMcpTool[]),
+  ...(searchMcpTools as unknown as AnyMcpTool[]),
 ];
 
 const WRITE_SCOPES: ReadonlySet<string> = new Set([

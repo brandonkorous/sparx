@@ -280,7 +280,10 @@ module "commerce_indexer_cloudrun" {
   container_concurrency = 8
   cpu                   = "1"
   memory                = "512Mi"
-  timeout_seconds       = 120
+  # A full-tenant reindex (search.reindex.requested) pages every product /
+  # customer / order through the projection in one request — give it room.
+  # Must be >= the reindex subscription's ack deadline (300s) below.
+  timeout_seconds = 600
 
   env_vars = {
     NODE_ENV                = "production"
@@ -327,6 +330,25 @@ module "commerce_indexer_cloudrun" {
     { topic = "variant.updated", subscription_name = "variant.updated.commerce-indexer-cloudrun" },
     { topic = "variant.deleted", subscription_name = "variant.deleted.commerce-indexer-cloudrun" },
     { topic = "inventory.adjusted", subscription_name = "inventory.adjusted.commerce-indexer-cloudrun" },
+    # CRM customers — live index updates (crm.customer.* bridged to Pub/Sub).
+    { topic = "crm.customer.created", subscription_name = "crm.customer.created.commerce-indexer-cloudrun" },
+    { topic = "crm.customer.updated", subscription_name = "crm.customer.updated.commerce-indexer-cloudrun" },
+    { topic = "crm.customer.deleted", subscription_name = "crm.customer.deleted.commerce-indexer-cloudrun" },
+    { topic = "crm.customer.merged", subscription_name = "crm.customer.merged.commerce-indexer-cloudrun" },
+    # Orders — live index updates (order.* teed from the platform bus).
+    { topic = "order.created", subscription_name = "order.created.commerce-indexer-cloudrun" },
+    { topic = "order.cancelled", subscription_name = "order.cancelled.commerce-indexer-cloudrun" },
+    { topic = "order.payment.recorded", subscription_name = "order.payment.recorded.commerce-indexer-cloudrun" },
+    { topic = "order.fulfilled", subscription_name = "order.fulfilled.commerce-indexer-cloudrun" },
+    { topic = "order.delivered", subscription_name = "order.delivered.commerce-indexer-cloudrun" },
+    { topic = "order.refunded", subscription_name = "order.refunded.commerce-indexer-cloudrun" },
+    # Admin-triggered full reindex. Longer ack deadline since a single
+    # message rebuilds an entire tenant's collections from Postgres.
+    {
+      topic                = "search.reindex.requested"
+      subscription_name    = "search.reindex.requested.commerce-indexer-cloudrun"
+      ack_deadline_seconds = 300
+    },
   ]
 
   depends_on = [

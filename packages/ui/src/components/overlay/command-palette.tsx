@@ -138,6 +138,15 @@ export interface CommandPaletteProps {
   /** Default true — when uncontrolled, listens for ⌘K / Ctrl+K to toggle. */
   enableShortcut?: boolean;
   placeholder?: string;
+  /** Controlled search text. Pair with `onSearchChange`. Supply both to drive
+   *  the input from outside — e.g. to fetch server-side results as the user
+   *  types. Leave unset for cmdk's uncontrolled input. */
+  search?: string;
+  onSearchChange?: (value: string) => void;
+  /** Forwarded to cmdk's `shouldFilter`. Set false when the consumer owns
+   *  filtering (e.g. mixing client nav items with server search results that
+   *  shouldn't be re-filtered by cmdk's fuzzy match). Default true. */
+  shouldFilter?: boolean;
 }
 
 export function CommandPalette({
@@ -146,6 +155,9 @@ export function CommandPalette({
   children,
   enableShortcut = true,
   placeholder = 'Type a command or search…',
+  search,
+  onSearchChange,
+  shouldFilter,
 }: CommandPaletteProps) {
   const isControlled = controlledOpen !== undefined;
   const [internalOpen, setInternalOpen] = React.useState(false);
@@ -179,8 +191,12 @@ export function CommandPalette({
         <ModalDescription className="sr-only">
           Search pages and actions, or use arrow keys to navigate.
         </ModalDescription>
-        <Command>
-          <CommandInput placeholder={placeholder} />
+        <Command shouldFilter={shouldFilter}>
+          <CommandInput
+            placeholder={placeholder}
+            {...(search !== undefined ? { value: search } : {})}
+            {...(onSearchChange ? { onValueChange: onSearchChange } : {})}
+          />
           {children}
         </Command>
       </ModalContent>

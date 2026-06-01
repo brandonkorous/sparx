@@ -8,15 +8,32 @@ export type ThemeDto = ThemePreset;
 
 export type AppearancePolicy = 'light-only' | 'dark-only' | 'auto' | 'toggle';
 
+// The captured brand "look" stored on a saved theme (docs/33): identity colours,
+// fonts, and the shape/feel token doc. Null on legacy rows saved before themes
+// carried a snapshot. Applying a theme writes these onto the tenant brand.
+export interface SavedThemeBrandDto {
+  colorPrimary?: string | null;
+  colorPrimaryForeground?: string | null;
+  colorAccent?: string | null;
+  colorAccentForeground?: string | null;
+  colorSecondary?: string | null;
+  colorSecondaryForeground?: string | null;
+  fontHeading?: string | null;
+  fontBody?: string | null;
+  tokens?: BrandTokenDoc | null;
+}
+
 // A tenant-saved theme variant (docs/33 saved-themes contract). The merchant's
-// own named presentation snapshots — distinct from the read-only prebuilt
-// presets (ThemeDto). `presentation` is the v2 overlay; `basePresetKey` is the
-// preset it layers on. Backed by /v1/sitebuilder/saved-themes (editor-gated).
+// own named theme snapshots — distinct from the read-only prebuilt presets
+// (ThemeDto). `presentation` is the v2 surface overlay; `basePresetKey` is the
+// preset it layers on; `brand` is the captured identity look so the theme is
+// self-contained. Backed by /v1/sitebuilder/saved-themes (editor-gated).
 export interface SiteThemeDto {
   id: string;
   name: string;
   basePresetKey: string;
   presentation: PresentationOverlayV2;
+  brand: SavedThemeBrandDto | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -59,6 +76,13 @@ export interface PageLayoutDto {
   targetId: string;
   key: string;
   name: string;
+}
+
+// A per-target tenant default (docs/36 §6). Powers the "Default" badge on the
+// Layouts surface; `pageLayoutId` is the layout that target's pages fall back to.
+export interface LayoutDefaultDto {
+  targetId: string;
+  pageLayoutId: string;
 }
 
 export interface SiteLayoutBlockDto {

@@ -62,6 +62,27 @@ spec:
               value: '3000'
             - name: LOG_LEVEL
               value: info
+            # Typesense — api-rest's /v1/search/* read path queries the
+            # in-cluster Typesense (ClusterIP Service named `typesense`, the
+            # @sparx/search default host). The key matches the secret
+            # bootstrap.yml mints from Secret Manager's typesense-api-key.
+            - name: TYPESENSE_HOST
+              value: typesense
+            - name: TYPESENSE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: typesense-secrets
+                  key: api-key
+            # Search-only parent key for minting tenant-scoped browser keys
+            # (GET /v1/search/key). Optional — the endpoint returns 501 if the
+            # secret/key is absent. `optional: true` so api-rest still boots
+            # before the key is provisioned.
+            - name: TYPESENSE_SEARCH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: typesense-secrets
+                  key: search-key
+                  optional: true
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000

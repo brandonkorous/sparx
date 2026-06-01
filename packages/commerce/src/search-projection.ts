@@ -9,7 +9,11 @@
 // keep them in sync; a missing/typo'd field is a runtime failure at
 // `documents().upsert()`.
 
-import type { ProductSearchDocument } from '@sparx/search';
+import type {
+  CustomerSearchDocument,
+  OrderSearchDocument,
+  ProductSearchDocument,
+} from '@sparx/search';
 import { withTenant } from '@sparx/db';
 
 import type { ServiceContext } from './errors';
@@ -28,7 +32,12 @@ export interface ProjectionResult {
  */
 export async function projectProduct(
   ctx: ServiceContext,
-  productId: string
+  productId: string,
+  /** Optional best-seller rank (1 = best). Threaded in by reindex, which
+   *  computes it once per tenant from order-item quantities so the default
+   *  sort (_text_match,best_seller_rank,updated_at) is meaningful. Omitted on
+   *  the single-event path — a product write doesn't shift global rank. */
+  bestSellerRank?: number
 ): Promise<ProjectionResult> {
   const projection = await withTenant(ctx, async (tx) => {
     const product = await tx.product.findFirst({
@@ -149,6 +158,7 @@ export async function projectProduct(
       image_url: firstImageKey ? mediaPublicUrl(firstImageKey) : undefined,
       created_at: Math.floor(product.createdAt.getTime() / 1000),
       updated_at: Math.floor(product.updatedAt.getTime() / 1000),
+      best_seller_rank: bestSellerRank,
     };
 
     return doc;
@@ -159,18 +169,241 @@ export async function projectProduct(
 
 /**
  * Project many products in one call. The indexer batches by tenant so
- * the RLS context flips once per batch, not per row.
+ * the RLS context flips once per batch, not per row. When `ranks` is supplied
+ * (reindex path), each product's best-seller rank is stamped into its doc.
  */
 export async function projectProducts(
   ctx: ServiceContext,
-  productIds: string[]
+  productIds: string[],
+  ranks?: Map<string, number>
 ): Promise<ProductSearchDocument[]> {
   const out: ProductSearchDocument[] = [];
   for (const id of productIds) {
-    const { document } = await projectProduct(ctx, id);
+    const { document } = await projectProduct(ctx, id, ranks?.get(id));
     if (document) out.push(document);
   }
   return out;
+}
+
+/**
+ * Compute best-seller ranks for a tenant: products ordered by total quantity
+ * sold (sum of order-item quantities), most-sold first → rank 1. Returns a
+ * `productId → rank` map. Products with no sales are absent (rank stays
+ * undefined → they sort after ranked ones under the default sort). Used by
+ * the reindex path; cheap enough to run once per full rebuild.
+ */
+export async function computeBestSellerRanks(ctx: ServiceContext): Promise<Map<string, number>> {
+  return withTenant(ctx, async (tx) => {
+    const grouped = await tx.orderItem.groupBy({
+      by: ['productId'],
+      where: { productId: { not: null } },
+      _sum: { quantity: true },
+    });
+    const ranked = grouped
+      .filter((g): g is typeof g & { productId: string } => g.productId !== null)
+      .map((g) => ({ productId: g.productId, qty: g._sum.quantity ?? 0 }))
+      .filter((g) => g.qty > 0)
+      .sort((a, b) => b.qty - a.qty);
+    const map = new Map<string, number>();
+    ranked.forEach((r, i) => map.set(r.productId, i + 1));
+    return map;
+  });
+}
+
+// ─── Customers ───────────────────────────────────────────────────────
+//
+// Customers + orders are CRM-spine tables, but their projections live here
+// alongside products because the commerce-indexer worker (the only caller)
+// already imports @sparx/commerce, and @sparx/commerce already depends on
+// @sparx/search for the document types. Keeping all three projections in
+// one module avoids adding @sparx/search to @sparx/crm. The shapes are
+// dictated by packages/search/src/schemas/{customers,orders}.ts — keep
+// them in sync.
+
+export interface CustomerProjectionResult {
+  /** Null when the customer no longer exists (soft-deleted) — caller deletes. */
+  document: CustomerSearchDocument | null;
+}
+
+/**
+ * Project a single customer into its search document. Returns null when the
+ * customer is soft-deleted or gone, in which case the caller should
+ * `deleteCustomer(tenantId, customerId)`. The denormalized commerce stats
+ * (total_spent, order_count, last_order_at) are stored columns maintained by
+ * the order-events consumer, so we read them straight off the row.
+ */
+export async function projectCustomer(
+  ctx: ServiceContext,
+  customerId: string
+): Promise<CustomerProjectionResult> {
+  const document = await withTenant(ctx, async (tx) => {
+    const customer = await tx.customer.findFirst({
+      where: { id: customerId, deletedAt: null },
+    });
+    if (!customer) return null;
+
+    const name = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
+    // full_name is required + non-empty in the Typesense schema; fall back
+    // through company → email → placeholder. `??` won't do — these are
+    // empty-string-or-null, and an empty string must fall through.
+    const fullName = firstNonEmpty(name, customer.company, customer.email) ?? '(no name)';
+
+    const doc: CustomerSearchDocument = {
+      id: `${ctx.tenantId}:${customer.id}`,
+      tenant_id: ctx.tenantId,
+      customer_id: customer.id,
+      full_name: fullName,
+      email: customer.email ?? '',
+      phone: customer.phone ?? undefined,
+      company: customer.company ?? undefined,
+      type: customer.type as 'prospect' | 'retail' | 'b2b',
+      b2b_account_id: customer.b2bAccountId ?? undefined,
+      tags: customer.tags.length > 0 ? customer.tags : undefined,
+      total_spent_cents: Math.round(Number(customer.totalSpent) * 100),
+      order_count: customer.orderCount,
+      last_order_at: customer.lastOrderAt
+        ? Math.floor(customer.lastOrderAt.getTime() / 1000)
+        : undefined,
+      created_at: Math.floor(customer.createdAt.getTime() / 1000),
+    };
+    return doc;
+  });
+
+  return { document };
+}
+
+/** First non-empty (trimmed) string from the candidates, or undefined. Used
+ *  for required search fields where a null OR an empty column must fall
+ *  through to the next candidate (so `??` alone won't do). */
+function firstNonEmpty(...values: (string | null | undefined)[]): string | undefined {
+  for (const v of values) {
+    if (v && v.trim().length > 0) return v;
+  }
+  return undefined;
+}
+
+/** Project many customers in one call (reindex batches by tenant). */
+export async function projectCustomers(
+  ctx: ServiceContext,
+  customerIds: string[]
+): Promise<CustomerSearchDocument[]> {
+  const out: CustomerSearchDocument[] = [];
+  for (const id of customerIds) {
+    const { document } = await projectCustomer(ctx, id);
+    if (document) out.push(document);
+  }
+  return out;
+}
+
+// ─── Orders ──────────────────────────────────────────────────────────
+
+export interface OrderProjectionResult {
+  /** Null when the order no longer exists — caller deletes from the index. */
+  document: OrderSearchDocument | null;
+}
+
+/**
+ * Project a single order into its search document. Returns null when the
+ * order is gone (caller deletes from the index). Orders aren't soft-deleted,
+ * so null here means a hard delete or a not-yet-committed read. Line items
+ * supply the searchable title/SKU arrays; the customer relation supplies the
+ * denormalized name/email/b2b fields so order search matches on the buyer.
+ */
+export async function projectOrder(
+  ctx: ServiceContext,
+  orderId: string
+): Promise<OrderProjectionResult> {
+  const document = await withTenant(ctx, async (tx) => {
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: { select: { name: true, sku: true } },
+        customer: {
+          select: { firstName: true, lastName: true, email: true, b2bAccountId: true },
+        },
+      },
+    });
+    if (!order) return null;
+
+    const customerName = [order.customer?.firstName, order.customer?.lastName]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+    const itemTitles = order.items.map((i) => i.name).filter((s): s is string => !!s);
+    const itemSkus = order.items.map((i) => i.sku).filter((s): s is string => !!s);
+
+    const doc: OrderSearchDocument = {
+      id: `${ctx.tenantId}:${order.id}`,
+      tenant_id: ctx.tenantId,
+      order_id: order.id,
+      order_number: order.orderNumber,
+      customer_id: order.customerId,
+      customer_name: customerName || undefined,
+      customer_email: order.customer?.email ?? undefined,
+      b2b_account_id: order.customer?.b2bAccountId ?? undefined,
+      channel: order.channel ?? 'admin',
+      status: order.status,
+      payment_status: order.paymentStatus,
+      // fulfillment_status isn't an Order column (it lives per-OrderFulfillment).
+      // Derive a coarse value from the order lifecycle so order search can
+      // facet on it; finer-grained per-fulfillment state stays out of search.
+      fulfillment_status:
+        order.status === 'fulfilled' || order.status === 'delivered' ? order.status : undefined,
+      item_titles: itemTitles.length > 0 ? itemTitles : undefined,
+      item_skus: itemSkus.length > 0 ? itemSkus : undefined,
+      // Order has no `tags` column — omit (the schema field is optional).
+      total_cents: Math.round(Number(order.total) * 100),
+      currency: order.currency,
+      placed_at: Math.floor(order.placedAt.getTime() / 1000),
+    };
+    return doc;
+  });
+
+  return { document };
+}
+
+/** Project many orders in one call (reindex batches by tenant). */
+export async function projectOrders(
+  ctx: ServiceContext,
+  orderIds: string[]
+): Promise<OrderSearchDocument[]> {
+  const out: OrderSearchDocument[] = [];
+  for (const id of orderIds) {
+    const { document } = await projectOrder(ctx, id);
+    if (document) out.push(document);
+  }
+  return out;
+}
+
+// ─── Reindex id enumeration ──────────────────────────────────────────
+//
+// The reindex worker pages a tenant's entity ids (cheap id-only reads),
+// then projects + bulk-upserts in bounded chunks. Soft-deleted rows are
+// excluded so the index only ever holds live documents; the worker drops
+// stale docs separately when asked.
+
+/** All non-deleted product ids for the tenant (reindex enumeration). */
+export async function listProductIdsForTenant(ctx: ServiceContext): Promise<string[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.product.findMany({ where: { deletedAt: null }, select: { id: true } });
+    return rows.map((r) => r.id);
+  });
+}
+
+/** All non-deleted customer ids for the tenant (reindex enumeration). */
+export async function listCustomerIdsForTenant(ctx: ServiceContext): Promise<string[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.customer.findMany({ where: { deletedAt: null }, select: { id: true } });
+    return rows.map((r) => r.id);
+  });
+}
+
+/** All order ids for the tenant (orders aren't soft-deleted). */
+export async function listOrderIdsForTenant(ctx: ServiceContext): Promise<string[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.order.findMany({ select: { id: true } });
+    return rows.map((r) => r.id);
+  });
 }
 
 // Public CDN URL builder. The media-worker writes variants into the

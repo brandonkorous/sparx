@@ -189,6 +189,10 @@ model SiteTheme {
   name          String @db.VarChar(120)
   basePresetKey String @map("base_preset_key") @db.VarChar(63)
   presentation  Json   @default("{}") @db.JsonB
+  // The theme's captured brand "look": identity colours, fonts, and shape/feel
+  // tokens (docs/33). Null on legacy rows saved before themes carried a brand
+  // snapshot. Applying the theme writes these onto the tenant brand.
+  brand         Json?  @db.JsonB
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

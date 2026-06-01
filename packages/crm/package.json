@@ -16,6 +16,10 @@
     "./manifest": {
       "types": "./src/manifest.ts",
       "default": "./src/manifest.ts"
+    },
+    "./pubsub": {
+      "types": "./src/pubsub-bridge.ts",
+      "default": "./src/pubsub-bridge.ts"
     }
   },
   "files": [
@@ -29,6 +33,7 @@
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {
+    "@google-cloud/pubsub": "^5.3.0",
     "@sparx/auth": "workspace:*",
     "@sparx/crm-schemas": "workspace:*",
     "@sparx/db": "workspace:*",

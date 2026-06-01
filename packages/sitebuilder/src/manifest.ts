@@ -6,13 +6,10 @@
 
 import type { ModuleManifest } from '@sparx/ui/shell';
 import {
-  FileText,
   Fingerprint,
-  Home,
   Image,
   Layers,
   LayoutTemplate,
-  Package,
   PanelTop,
   Palette,
   Plus,
@@ -32,18 +29,12 @@ export const sitebuilderManifest: ModuleManifest = {
     // here — theme selection lives in the Design/Theme scope). Route stays
     // /sitebuilder/design until the v2-native theme pane lands (Phase 2 §2.3).
     { id: 'design', label: 'Theme', icon: Palette, href: '/sitebuilder/design' },
-    // Layouts — the scoped page layouts (Phase 3). Home is the storefront
-    // homepage; Products/Collections are the bound layouts every product/
-    // collection page renders through; Pages are standalone section-based slugs.
-    { id: 'homepage', label: 'Homepage', icon: Home, href: '/sitebuilder/homepage' },
-    { id: 'products', label: 'Product pages', icon: Package, href: '/sitebuilder/products' },
-    {
-      id: 'collections',
-      label: 'Collection pages',
-      icon: Layers,
-      href: '/sitebuilder/collections',
-    },
-    { id: 'pages', label: 'Pages', icon: FileText, href: '/sitebuilder/pages' },
+    // Layouts — ONE surface for every page layout, organized by target (docs/36
+    // §11, P-D). Folds the old per-scope nav (Homepage / Product pages /
+    // Collection pages / Pages) into a single grouped index: each target's
+    // PageLayouts + a "begin from a Page Template" catalog + the per-target
+    // default control. A specific layout opens the canvas editor at /layouts/<id>.
+    { id: 'layouts', label: 'Layouts', icon: Layers, href: '/sitebuilder/layouts' },
     {
       id: 'navigation',
       label: 'Header & footer',
@@ -54,10 +45,10 @@ export const sitebuilderManifest: ModuleManifest = {
   ],
   actions: [
     {
-      id: 'sitebuilder.page.create',
-      label: 'Create page',
+      id: 'sitebuilder.layout.create',
+      label: 'New layout',
       icon: Plus,
-      href: '/sitebuilder/pages/new',
+      href: '/sitebuilder/layouts',
     },
     {
       id: 'sitebuilder.media.open',
@@ -66,7 +57,8 @@ export const sitebuilderManifest: ModuleManifest = {
       href: '/cms/media',
     },
   ],
-  entityTypes: [
-    { id: 'page', label: 'Page', routePrefix: '/sitebuilder/pages', hasDetailView: true },
-  ],
+  // No entityTypes: a storefront page IS a CMS `page` entity (the cms-editor
+  // manifest owns that id + its detail view); a Site Builder PageLayout has its
+  // own /sitebuilder/layouts surface, not a shell entity drawer.
+  entityTypes: [],
 };

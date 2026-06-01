@@ -10,7 +10,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import pino from 'pino';
 
-import { ensureSchemas } from '@sparx/search';
+import { ensureSchemas, ensureSynonyms } from '@sparx/search';
 
 import { env } from './env.js';
 import { handleEvent, type CommerceEventEnvelope } from './handler.js';
@@ -136,6 +136,15 @@ async function main(): Promise<void> {
     try {
       const out = await ensureSchemas();
       logger.info(out, 'typesense schemas ensured');
+      // Synonyms ride on the same admin-key boot step (collection must exist
+      // first). Best-effort + separate try so a synonym hiccup doesn't undo a
+      // successful schema ensure — search still works without synonyms.
+      try {
+        const syn = await ensureSynonyms();
+        logger.info(syn, 'typesense synonyms ensured');
+      } catch (err) {
+        logger.error({ err }, 'failed to ensure typesense synonyms; continuing');
+      }
     } catch (err) {
       // Don't crash — schema creation requires an admin API key the
       // search-only key won't have. Log loudly and continue; the worker

@@ -8,6 +8,7 @@ import type {
   AppearancePolicy,
   BrandDto,
   PageLayoutDto,
+  SavedThemeBrandDto,
   SiteConfigDto,
   SiteLayoutBlockDto,
   SitePublishScheduleDto,
@@ -50,20 +51,33 @@ export async function updateSettings(input: {
 }
 
 // ── Saved themes (docs/33 saved-themes contract) ───────────────────────────
-// The merchant's named theme variants. These hit /v1/sitebuilder/saved-themes,
-// which the Site Builder owner is landing; until then they return ok:false and
-// the UI surfaces the error inline (the prebuilt-preset flow is unaffected).
-// `apply` loads a saved theme's basePreset + presentation into the draft config.
+// The merchant's named themes (/v1/sitebuilder/saved-themes). A theme captures
+// its base preset, a presentation overlay, AND a brand "look" snapshot
+// (colours/fonts/shape), so it's self-contained. `apply` loads the base preset +
+// presentation into the draft; the dashboard separately writes the brand via
+// /v1/brand (the brand stays tenant-owned — see theme-center onApplySaved).
 export async function saveTheme(input: {
   name: string;
   basePresetKey: string;
   presentation: PresentationOverlayV2;
+  brand?: SavedThemeBrandDto;
 }): Promise<ActionResult<SiteThemeDto>> {
   return run(() => api.post<SiteThemeDto>('/v1/sitebuilder/saved-themes', input));
 }
 
 export async function renameTheme(id: string, name: string): Promise<ActionResult<SiteThemeDto>> {
   return run(() => api.patch<SiteThemeDto>(`/v1/sitebuilder/saved-themes/${id}`, { name }));
+}
+
+// Edit a saved theme in place — name, presentation overlay, and/or brand "look".
+// Used when a saved theme is the selected/active theme: presentation AND brand
+// edits write back into it so "select and tweak" actually modifies the snapshot.
+// (The base preset is fixed at creation; the backend update accepts the rest.)
+export async function updateSavedTheme(
+  id: string,
+  input: { name?: string; presentation?: PresentationOverlayV2; brand?: SavedThemeBrandDto }
+): Promise<ActionResult<SiteThemeDto>> {
+  return run(() => api.patch<SiteThemeDto>(`/v1/sitebuilder/saved-themes/${id}`, input));
 }
 
 export async function deleteSavedTheme(id: string): Promise<ActionResult> {
@@ -96,6 +110,81 @@ export async function materializeLayout(input: {
       input
     )
   );
+}
+
+// Instantiate a NEW named layout for a target from a Page Template (docs/36 §10).
+// Used by the Layouts surface "New layout" flow — creates an editable layout
+// (with the template's sections) the merchant then opens in the canvas editor.
+export async function instantiateLayout(input: {
+  targetId: string;
+  templateId: string;
+  name?: string;
+  key?: string;
+}): Promise<ActionResult<{ pageLayout: PageLayoutDto; sections: SiteSectionDto[] }>> {
+  return run(() =>
+    api.post<{ pageLayout: PageLayoutDto; sections: SiteSectionDto[] }>(
+      '/v1/sitebuilder/page-layouts/instantiate',
+      input
+    )
+  );
+}
+
+export async function renamePageLayout(
+  id: string,
+  name: string
+): Promise<ActionResult<PageLayoutDto>> {
+  return run(() => api.patch<PageLayoutDto>(`/v1/sitebuilder/page-layouts/${id}`, { name }));
+}
+
+export async function deletePageLayout(id: string): Promise<ActionResult> {
+  return run(() => api.delete<void>(`/v1/sitebuilder/page-layouts/${id}`));
+}
+
+// Set / clear the per-target tenant default layout (docs/36 §6). The Layouts
+// surface owns these (the per-item override is set from the item editor, P-C).
+export async function setLayoutDefault(
+  targetId: string,
+  pageLayoutId: string
+): Promise<ActionResult<unknown>> {
+  return run(() =>
+    api.post<unknown>('/v1/sitebuilder/assignments/default', { targetId, pageLayoutId })
+  );
+}
+
+export async function clearLayoutDefault(targetId: string): Promise<ActionResult<unknown>> {
+  const qs = `target_id=${encodeURIComponent(targetId)}`;
+  return run(() => api.delete<unknown>(`/v1/sitebuilder/assignments/default?${qs}`));
+}
+
+// Layout assignment (docs/36 §6, P-C). Invoked from the Commerce/CMS item
+// editors (cross-module — the assignment tables are Site-Builder-owned, written
+// via the SB API). No `/sitebuilder` revalidation: the picker `router.refresh()`s
+// its own route after the call.
+async function restAction<T>(fn: () => Promise<T>): Promise<ActionResult<T>> {
+  try {
+    return { ok: true, data: await fn() };
+  } catch (err) {
+    const e = err as ApiRestError;
+    return { ok: false, error: e.message ?? 'Something went wrong.' };
+  }
+}
+
+export async function assignLayout(
+  targetId: string,
+  itemRef: string,
+  pageLayoutId: string
+): Promise<ActionResult<unknown>> {
+  return restAction(() =>
+    api.post<unknown>('/v1/sitebuilder/assignments', { targetId, itemRef, pageLayoutId })
+  );
+}
+
+export async function unassignLayout(
+  targetId: string,
+  itemRef: string
+): Promise<ActionResult<unknown>> {
+  const qs = `target_id=${encodeURIComponent(targetId)}&item_ref=${encodeURIComponent(itemRef)}`;
+  return restAction(() => api.delete<unknown>(`/v1/sitebuilder/assignments?${qs}`));
 }
 
 export async function updateSection(

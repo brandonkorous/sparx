@@ -11,6 +11,8 @@ import {
   type CompiledThemeV2,
 } from '@sparx/storefront-themes';
 
+import type { SnapshotAssignments } from './assignment-service';
+
 import { writeAuditLog } from '../audit';
 import { SitebuilderNotFoundError } from '../errors';
 import { getOrCreatePageLayout } from './page-layout-service';
@@ -67,6 +69,9 @@ export interface PublishedSnapshot {
   compiledV2?: CompiledThemeV2;
   sections: SectionSnapshot[];
   layout: LayoutSnapshot[];
+  // The layout resolver maps (docs/36 §6) — per-target default + per-item override
+  // layoutKeys. Attached LIVE by publish-service (not baked into the version).
+  assignments?: SnapshotAssignments;
 }
 
 function toSectionSnapshot(s: {

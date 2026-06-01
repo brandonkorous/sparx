@@ -80,13 +80,29 @@ module "pubsub" {
     "inventory.low"      = []
     "inventory.depleted" = []
 
-    # Commerce / orders
-    "order.created" = ["worker-webhook"]
-    "order.updated" = ["worker-webhook"]
+    # Search — admin-triggered full reindex. api-rest publishes; the
+    # commerce-indexer consumes via its Cloud Run PUSH subscription declared
+    # in serverless.tf (search.reindex.requested.commerce-indexer-cloudrun).
+    # Empty list = topic only, no idle pull subscription.
+    "search.reindex.requested" = []
 
-    # CRM customers
-    "customer.created" = ["worker-webhook"]
-    "customer.updated" = ["worker-webhook"]
+    # Commerce / orders — lifecycle events teed from the CRM platform bus to
+    # Pub/Sub (packages/crm/src/pubsub-bridge.ts). commerce-indexer consumes
+    # them via its Cloud Run PUSH subscriptions in serverless.tf; topic-only
+    # here (empty list = no idle pull subscription).
+    "order.created"          = []
+    "order.cancelled"        = []
+    "order.payment.recorded" = []
+    "order.fulfilled"        = []
+    "order.delivered"        = []
+    "order.refunded"         = []
+
+    # CRM customers — the CRM bus (crm.customer.*) bridged to Pub/Sub.
+    # commerce-indexer consumes via push subscriptions in serverless.tf.
+    "crm.customer.created" = []
+    "crm.customer.updated" = []
+    "crm.customer.deleted" = []
+    "crm.customer.merged"  = []
 
     # Cart
     "cart.abandoned" = []
@@ -160,6 +176,13 @@ module "secrets" {
     # Manager → Cloud Run env binding. Rotated by the operator manually
     # (Typesense doesn't have rotation hooks).
     "typesense-api-key",
+    # Typesense SEARCH-ONLY parent key. api-rest derives short-lived
+    # tenant-scoped search keys from it (GET /v1/search/key) so the browser
+    # can query Typesense directly without ever holding the admin key.
+    # Provisioned out-of-band via the Typesense keys API; create with only
+    # documents:search on products/customers/orders. Optional — the key
+    # endpoint returns 501 until this is populated.
+    "typesense-search-key",
   ]
 }
 

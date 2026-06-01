@@ -12,16 +12,20 @@
 import * as React from 'react';
 import { Button, Input, cn } from '@sparx/ui';
 import { THEME_DEFAULTS_V2, THEME_LIST } from '@sparx/storefront-themes';
-import { Check, Plus, RotateCcw, Trash2 } from 'lucide-react';
+import { Check, Pencil, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import type { SiteThemeDto } from '../_lib/types';
 
 export interface ThemeRailProps {
   savedThemes: SiteThemeDto[];
   activeThemeKey: string;
+  // The saved theme currently selected for editing (null when editing a prebuilt
+  // base). Its row is highlighted, and presentation edits write back into it.
+  activeSavedThemeId: string | null;
   onSelectPreset: (key: string) => void;
   onResetOverrides: () => void;
   onApplySaved: (id: string) => void;
   onSaveCurrent: (name: string) => void;
+  onRenameSaved: (id: string, name: string) => void;
   onDeleteSaved: (id: string) => void;
   busy?: boolean;
 }
@@ -29,23 +33,33 @@ export interface ThemeRailProps {
 export function ThemeRail({
   savedThemes,
   activeThemeKey,
+  activeSavedThemeId,
   onSelectPreset,
   onResetOverrides,
   onApplySaved,
   onSaveCurrent,
+  onRenameSaved,
   onDeleteSaved,
   busy,
 }: ThemeRailProps) {
   const [saving, setSaving] = React.useState(false);
   const [name, setName] = React.useState('');
 
-  // Each row shows the theme's OWN palette so presets stay distinguishable. A
-  // saved theme may override base100 via its presentation overlay, so that one
-  // value can come from the snapshot; identity stays the base preset's.
-  const swatchFor = (presetKey: string, base100?: string | null): string[] => {
+  // Each row shows the theme's OWN palette so themes stay distinguishable. For a
+  // prebuilt preset that's the preset's primary/accent/base; for a saved theme it
+  // overlays the captured brand identity (primary/accent) + presentation base100,
+  // so two saved themes with different colours read distinctly.
+  const swatchFor = (
+    presetKey: string,
+    opts?: { primary?: string | null; accent?: string | null; base100?: string | null }
+  ): string[] => {
     const preset = THEME_DEFAULTS_V2[presetKey as keyof typeof THEME_DEFAULTS_V2];
     const light = preset?.light ?? THEME_DEFAULTS_V2.apex.light;
-    return [light.primary, light.accent, base100 ?? light.base100];
+    return [
+      opts?.primary ?? light.primary,
+      opts?.accent ?? light.accent,
+      opts?.base100 ?? light.base100,
+    ];
   };
 
   const commitSave = () => {
@@ -107,8 +121,14 @@ export function ThemeRail({
             <ThemeRow
               key={t.id}
               name={t.name}
-              colors={swatchFor(t.basePresetKey, t.presentation.light?.base100)}
+              colors={swatchFor(t.basePresetKey, {
+                primary: t.brand?.colorPrimary,
+                accent: t.brand?.colorAccent,
+                base100: t.presentation.light?.base100,
+              })}
+              active={t.id === activeSavedThemeId}
               onSelect={() => onApplySaved(t.id)}
+              onRename={(name) => onRenameSaved(t.id, name)}
               disabled={busy}
               action={
                 <button
@@ -130,7 +150,9 @@ export function ThemeRail({
       <div className="flex flex-col gap-2">
         <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">Prebuilt themes</h2>
         {THEME_LIST.map((t) => {
-          const active = t.key === activeThemeKey;
+          // A selected saved theme owns the "active" highlight; its base preset
+          // row shouldn't also light up.
+          const active = !activeSavedThemeId && t.key === activeThemeKey;
           return (
             <ThemeRow
               key={t.key}
@@ -166,6 +188,7 @@ function ThemeRow({
   colors,
   active,
   onSelect,
+  onRename,
   disabled,
   action,
 }: {
@@ -173,9 +196,33 @@ function ThemeRow({
   colors: string[];
   active?: boolean;
   onSelect: () => void;
+  // When provided, the row gains an inline rename affordance (pencil → field).
+  onRename?: (name: string) => void;
   disabled?: boolean;
   action?: React.ReactNode;
 }) {
+  const [editing, setEditing] = React.useState(false);
+  const [draft, setDraft] = React.useState(name);
+  React.useEffect(() => setDraft(name), [name]);
+
+  const commit = () => {
+    const v = draft.trim();
+    if (v && v !== name) onRename?.(v);
+    setEditing(false);
+  };
+
+  const swatches = (
+    <span className="flex flex-none -space-x-1">
+      {colors.map((c, i) => (
+        <span
+          key={i}
+          className="h-4 w-4 rounded-full border border-[var(--color-border-default)]"
+          style={{ backgroundColor: c }}
+        />
+      ))}
+    </span>
+  );
+
   return (
     <div
       className={cn(
@@ -185,27 +232,64 @@ function ThemeRow({
           : 'border-[var(--color-border-default)] hover:bg-[var(--color-bg-subtle)]'
       )}
     >
-      <button
-        type="button"
-        onClick={onSelect}
-        disabled={disabled}
-        className="flex min-w-0 flex-1 items-center gap-2.5 text-left"
-      >
-        <span className="flex flex-none -space-x-1">
-          {colors.map((c, i) => (
-            <span
-              key={i}
-              className="h-4 w-4 rounded-full border border-[var(--color-border-default)]"
-              style={{ backgroundColor: c }}
-            />
-          ))}
-        </span>
-        <span className="min-w-0 flex-1 truncate text-sm font-medium text-[var(--color-text-primary)]">
-          {name}
-        </span>
-        {active ? <Check className="h-4 w-4 flex-none text-[var(--module-active)]" /> : null}
-      </button>
-      {action}
+      {editing ? (
+        <div className="flex min-w-0 flex-1 items-center gap-2.5">
+          {swatches}
+          <Input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') commit();
+              if (e.key === 'Escape') {
+                setDraft(name);
+                setEditing(false);
+              }
+            }}
+            onBlur={commit}
+            aria-label={`Rename ${name}`}
+            className="h-7 min-w-0 flex-1 px-2 text-sm"
+          />
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={onSelect}
+          disabled={disabled}
+          className="flex min-w-0 flex-1 items-center gap-2.5 text-left"
+        >
+          {swatches}
+          <span className="min-w-0 flex-1 truncate text-sm font-medium text-[var(--color-text-primary)]">
+            {name}
+          </span>
+          {active ? <Check className="h-4 w-4 flex-none text-[var(--module-active)]" /> : null}
+        </button>
+      )}
+      {editing ? (
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={commit}
+          aria-label="Save name"
+          className="rounded p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+        >
+          <Check className="h-3.5 w-3.5" />
+        </button>
+      ) : (
+        <>
+          {onRename ? (
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              disabled={disabled}
+              aria-label={`Rename ${name}`}
+              className="rounded p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          ) : null}
+          {action}
+        </>
+      )}
     </div>
   );
 }

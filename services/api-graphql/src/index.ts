@@ -4,6 +4,7 @@
 import { configurePubsub } from '@sparx/api-core/pubsub';
 import { startWebhookDeliveryLoop } from '@sparx/api-core/webhook-delivery';
 import { installCrmWebhookFanout, preconnectWebhookFanout } from '@sparx/crm';
+import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { createApp } from './app.js';
 import { env } from './env.js';
 
@@ -11,6 +12,11 @@ async function main(): Promise<void> {
   // Hand api-core its Pub/Sub config before any resolver can call publish().
   // Unset GCP_PROJECT_ID → stdout-logging stub.
   configurePubsub({ gcpProjectId: env.GCP_PROJECT_ID });
+
+  // Bridge the CRM bus (crm.customer.*) + platform bus (order.*) to real
+  // Pub/Sub. MUST run before installCrmWebhookFanout() (it wraps the active
+  // publisher). No-op when GCP_PROJECT_ID is unset.
+  installCrmPubSubBridge({ projectId: env.GCP_PROJECT_ID, logger: console });
 
   // Wrap the CRM publisher so every publishCrmEvent() also enqueues a
   // WebhookDelivery row per matching tenant subscription.

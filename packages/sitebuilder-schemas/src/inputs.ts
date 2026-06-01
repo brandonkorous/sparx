@@ -45,6 +45,25 @@ export const ListPageLayoutsQuery = z.object({
 });
 export type ListPageLayoutsQuery = z.infer<typeof ListPageLayoutsQuery>;
 
+// Instantiate a NEW page layout for a target from a Page Template (the code-first
+// catalog, docs/36 §10). `name` defaults to the template's name; `key` is derived
+// from the name when omitted — the service guarantees it's unique within the
+// target (suffixing `-2`, `-3`, … on collision).
+export const InstantiateLayoutInput = z.object({
+  targetId: TargetId,
+  templateId: z.string().min(1).max(120),
+  name: z.string().min(1).max(255).optional(),
+  key: LayoutKey.optional(),
+});
+export type InstantiateLayoutInput = z.infer<typeof InstantiateLayoutInput>;
+
+// Rename a page layout — the merchant-facing label only. The `key` is immutable
+// (it's the snapshot/resolver identity), so it is NOT editable here.
+export const RenamePageLayoutInput = z.object({
+  name: z.string().min(1).max(255),
+});
+export type RenamePageLayoutInput = z.infer<typeof RenamePageLayoutInput>;
+
 export const CreateSectionInput = z.object({
   // Target layout. Address by `pageLayoutId` (preferred) or by `targetId` (+
   // `key`, default 'default') — e.g. 'commerce:product' / 'site:home'. The
@@ -120,20 +139,45 @@ export const ScheduleInput = z.object({
 export type ScheduleInput = z.infer<typeof ScheduleInput>;
 
 // ── Saved themes (docs/36 Brand+Theme tier) ─────────────────────────────────
-// A tenant's NAMED presentation variant — the merchant's own library, distinct
-// from the read-only platform presets. `presentation` is the v2 overlay;
-// `basePresetKey` is the preset it layers on.
+// A tenant's NAMED theme — the merchant's own library, distinct from the
+// read-only platform presets. `presentation` is the v2 surface overlay;
+// `basePresetKey` is the preset it layers on; `brand` is the captured identity
+// "look" (colours/fonts/shape) so the theme is a self-contained snapshot.
 export const SavedThemeName = z.string().min(1).max(120);
+
+// Hex (#rrggbb) or a CSS colour keyword — permissive; the v2 compiler reads each
+// slot defensively. Lengths/tokens mirror the brand record (docs/33 §3).
+const ThemeColor = z.string().max(32);
+
+// The brand identity captured into a saved theme: colour identity, typography,
+// and the shape/rhythm/effect token doc. All fields optional/nullable — a theme
+// snapshots whatever the brand had; absent/null means "no override for that slot".
+export const SavedThemeBrand = z
+  .object({
+    colorPrimary: ThemeColor.nullable(),
+    colorPrimaryForeground: ThemeColor.nullable(),
+    colorAccent: ThemeColor.nullable(),
+    colorAccentForeground: ThemeColor.nullable(),
+    colorSecondary: ThemeColor.nullable(),
+    colorSecondaryForeground: ThemeColor.nullable(),
+    fontHeading: z.string().max(127).nullable(),
+    fontBody: z.string().max(127).nullable(),
+    tokens: z.record(z.string(), z.unknown()).nullable(),
+  })
+  .partial();
+export type SavedThemeBrand = z.infer<typeof SavedThemeBrand>;
 
 export const CreateSavedThemeInput = z.object({
   name: SavedThemeName,
   basePresetKey: ThemeKey,
   presentation: PresentationOverlay.default({}),
+  brand: SavedThemeBrand.optional(),
 });
 export type CreateSavedThemeInput = z.infer<typeof CreateSavedThemeInput>;
 
 export const UpdateSavedThemeInput = z.object({
   name: SavedThemeName.optional(),
   presentation: PresentationOverlay.optional(),
+  brand: SavedThemeBrand.optional(),
 });
 export type UpdateSavedThemeInput = z.infer<typeof UpdateSavedThemeInput>;

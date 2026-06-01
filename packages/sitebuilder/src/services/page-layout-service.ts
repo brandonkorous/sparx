@@ -11,8 +11,12 @@
 import {
   CreatePageLayoutInput,
   DEFAULT_TEMPLATES,
+  InstantiateLayoutInput,
   MaterializePageLayoutInput,
+  RenamePageLayoutInput,
   defaultLayoutName,
+  getLayoutTarget,
+  getPageTemplate,
   parseSectionConfig,
 } from '@sparx/sitebuilder-schemas';
 import type { PageLayout, Prisma, TxClient } from '@sparx/db';
@@ -20,6 +24,7 @@ import { withTenant } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
+import { SitebuilderNotFoundError, SitebuilderValidationError } from '../errors';
 import { getOrCreateConfig } from './_config';
 
 // The transport-facing view of a PageLayout (stable shape across REST/MCP/SA).
@@ -152,5 +157,164 @@ export function materializeDefault(
     }
 
     return toView(layout);
+  });
+}
+
+/** Fetch one layout by id (RLS scopes to the tenant; a cross-tenant id 404s). */
+export function getById(ctx: ServiceContext, id: string): Promise<PageLayoutView> {
+  return withTenant(ctx, async (tx) => {
+    const layout = await tx.pageLayout.findUnique({ where: { id } });
+    if (!layout) throw new SitebuilderNotFoundError('PageLayout', id);
+    return toView(layout);
+  });
+}
+
+// A storefront-safe layout key from a human name: lowercase, non-alphanumerics
+// collapsed to hyphens, trimmed. Empty input (all punctuation) → "layout".
+function slugify(input: string): string {
+  const s = input
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 200);
+  return s || 'layout';
+}
+
+/** A key unique within (tenant, targetId): the desired slug, else `<slug>-2`, … */
+function uniqueKey(taken: ReadonlySet<string>, desired: string): string {
+  if (!taken.has(desired)) return desired;
+  for (let n = 2; ; n++) {
+    const candidate = `${desired}-${n}`.slice(0, 255);
+    if (!taken.has(candidate)) return candidate;
+  }
+}
+
+/**
+ * Instantiate a NEW page layout for a target from a Page Template (docs/36 §10):
+ * create the PageLayout with a unique key, then copy the template's composition
+ * into real SiteSection rows. Unlike `materializeDefault` (which is keyed and
+ * idempotent on the `default` layout), this always creates a fresh named layout —
+ * the tenant can have many per target. A bound template only fits a target of the
+ * same binding.
+ */
+export function instantiate(ctx: ServiceContext, rawInput: unknown): Promise<PageLayoutView> {
+  const input = InstantiateLayoutInput.parse(rawInput);
+  return withTenant(ctx, async (tx) => {
+    const template = getPageTemplate(input.templateId);
+    if (!template) {
+      throw new SitebuilderValidationError(`Unknown page template "${input.templateId}".`, [
+        { field: 'templateId', message: 'no such template' },
+      ]);
+    }
+    // A bound template needs a target of the same binding (a product template
+    // can't compose a collection page); a null-binding template fits any target.
+    const targetBinding = getLayoutTarget(input.targetId)?.binding ?? null;
+    if (template.binding !== null && template.binding !== targetBinding) {
+      throw new SitebuilderValidationError(
+        `Template "${template.id}" needs a ${template.binding} target, not "${input.targetId}".`,
+        [{ field: 'templateId', message: 'template/target binding mismatch' }]
+      );
+    }
+
+    await getOrCreateConfig(tx, ctx.tenantId);
+    // Empty-trimmed-string fallbacks (a blank name/key falls back). The explicit
+    // length guard keeps `??` semantics off the table — `??` would keep `''`.
+    const trimmedName = input.name?.trim();
+    const name = trimmedName && trimmedName.length > 0 ? trimmedName : template.name;
+    const trimmedKey = input.key?.trim();
+    const desiredKey = trimmedKey && trimmedKey.length > 0 ? trimmedKey : slugify(name);
+    const existing = await tx.pageLayout.findMany({
+      where: { targetId: input.targetId },
+      select: { key: true },
+    });
+    const taken = new Set(existing.map((r) => r.key));
+    const key = uniqueKey(taken, desiredKey);
+
+    const layout = await tx.pageLayout.create({
+      data: { tenantId: ctx.tenantId, targetId: input.targetId, key, name },
+    });
+
+    for (const [position, d] of template.sections.entries()) {
+      const config = parseSectionConfig(d.sectionType, d.config);
+      await tx.siteSection.create({
+        data: {
+          tenantId: ctx.tenantId,
+          pageLayoutId: layout.id,
+          sectionType: d.sectionType,
+          position,
+          config: config as Prisma.InputJsonValue,
+        },
+      });
+    }
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'sitebuilder.page_layout.instantiated',
+      entityType: 'PageLayout',
+      entityId: layout.id,
+      diff: {
+        after: {
+          targetId: input.targetId,
+          key,
+          templateId: template.id,
+          sections: template.sections.length,
+        },
+      },
+    });
+
+    return toView(layout);
+  });
+}
+
+/** Rename a layout (label only; `key` is immutable). */
+export function rename(
+  ctx: ServiceContext,
+  id: string,
+  rawInput: unknown
+): Promise<PageLayoutView> {
+  const input = RenamePageLayoutInput.parse(rawInput);
+  return withTenant(ctx, async (tx) => {
+    const existing = await tx.pageLayout.findUnique({ where: { id } });
+    if (!existing) throw new SitebuilderNotFoundError('PageLayout', id);
+    const layout = await tx.pageLayout.update({
+      where: { id },
+      data: { name: input.name.trim() },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'sitebuilder.page_layout.renamed',
+      entityType: 'PageLayout',
+      entityId: id,
+      diff: { before: { name: existing.name }, after: { name: layout.name } },
+    });
+    return toView(layout);
+  });
+}
+
+/** Delete a layout. Cascade removes its sections + any default/per-item
+ *  assignment rows that point at it (all FKs are onDelete: Cascade), so the
+ *  storefront cleanly falls back to the cascade (→ the seeded code default). */
+export function remove(ctx: ServiceContext, id: string): Promise<void> {
+  return withTenant(ctx, async (tx) => {
+    const existing = await tx.pageLayout.findUnique({ where: { id } });
+    if (!existing) throw new SitebuilderNotFoundError('PageLayout', id);
+    await tx.pageLayout.delete({ where: { id } });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'sitebuilder.page_layout.removed',
+      entityType: 'PageLayout',
+      entityId: id,
+      diff: { before: { targetId: existing.targetId, key: existing.key, name: existing.name } },
+    });
   });
 }

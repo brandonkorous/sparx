@@ -10,6 +10,7 @@ export * from './fields';
 export * from './layout-targets';
 export * from './section-registry';
 export * from './default-templates';
+export * from './page-templates';
 export * from './site-settings';
 export * from './inputs';
 

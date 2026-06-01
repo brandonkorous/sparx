@@ -65,9 +65,12 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   if (!product) notFound();
 
   // The commerce:product layout: the merchant's published one, or the seeded
-  // default (parity). A site-preview token resolves the draft instead.
+  // default (parity). A site-preview token resolves the draft instead. In preview
+  // only, `sparxLayoutKey` forces a specific alternate layout onto the canvas
+  // (gated to the preview token — a public visitor can't pin a layout via query).
   const snapshot = await getPublishedSite(tenant.slug, one(sp.sparxSitePreview));
-  const sections = resolveTemplateSections(snapshot, 'commerce:product');
+  const forcedKey = one(sp.sparxSitePreview) ? one(sp.sparxLayoutKey) : undefined;
+  const sections = resolveTemplateSections(snapshot, 'commerce:product', product.id, forcedKey);
 
   // Fetch only the supplementary data the resolved layout renders. The related
   // rail's count comes from its section config (default 4 — today's behavior).

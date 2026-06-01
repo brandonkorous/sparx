@@ -12,8 +12,9 @@ import {
   CreateSavedThemeInput,
   UpdateSavedThemeInput,
   type PresentationOverlay,
+  type SavedThemeBrand,
 } from '@sparx/sitebuilder-schemas';
-import type { SiteTheme } from '@sparx/db';
+import type { Prisma, SiteTheme } from '@sparx/db';
 import { withTenant } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
@@ -26,6 +27,9 @@ export interface SavedThemeView {
   name: string;
   basePresetKey: string;
   presentation: PresentationOverlay;
+  // The captured brand "look" (colours/fonts/shape). Null on legacy rows saved
+  // before themes carried a snapshot — those fall back to the live brand.
+  brand: SavedThemeBrand | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -36,6 +40,7 @@ function toView(row: SiteTheme): SavedThemeView {
     name: row.name,
     basePresetKey: row.basePresetKey,
     presentation: (row.presentation ?? {}) as PresentationOverlay,
+    brand: (row.brand ?? null) as SavedThemeBrand | null,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
@@ -57,6 +62,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Sa
         name: input.name,
         basePresetKey: input.basePresetKey,
         presentation: input.presentation,
+        ...(input.brand !== undefined ? { brand: input.brand as Prisma.InputJsonValue } : {}),
       },
     });
     await writeAuditLog({
@@ -87,6 +93,7 @@ export async function update(
       data: {
         ...(input.name !== undefined ? { name: input.name } : {}),
         ...(input.presentation !== undefined ? { presentation: input.presentation } : {}),
+        ...(input.brand !== undefined ? { brand: input.brand as Prisma.InputJsonValue } : {}),
       },
     });
     await writeAuditLog({
