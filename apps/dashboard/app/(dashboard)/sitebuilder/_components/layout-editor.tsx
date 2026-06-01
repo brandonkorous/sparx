@@ -61,7 +61,12 @@ const FIELDS: Record<Slot, SectionField[]> = {
         { label: 'Minimal (single row)', value: 'minimal' },
       ],
     },
-    { key: 'tagline', label: 'Tagline', type: 'text', help: 'Shown under the brand (columns only).' },
+    {
+      key: 'tagline',
+      label: 'Tagline',
+      type: 'text',
+      help: 'Shown under the brand (columns only).',
+    },
     { key: 'copyright', label: 'Copyright text', type: 'text' },
     { key: 'showPaymentIcons', label: 'Show payment icons', type: 'boolean' },
   ],

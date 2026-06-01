@@ -15,7 +15,14 @@ import { SbCtaRow } from './_shared';
 
 function Chevron({ dir }: { dir: 'prev' | 'next' }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      aria-hidden="true"
+    >
       <path
         d={dir === 'prev' ? 'M15 6l-6 6 6 6' : 'M9 6l6 6-6 6'}
         strokeWidth="2"

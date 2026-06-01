@@ -312,11 +312,20 @@ template may resolve `product.*` / `collection.*` paths against the bound item t
 
 ## 10. Phase C spike — scope & exit criteria
 
+**Build status (2026-06-01):** the zod-only foundation is **built + green** in `@sparx/sitebuilder-schemas`
+— [`section-template.ts`](../../packages/sitebuilder-schemas/src/section-template.ts) (AST + value-expression
+
+- condition schemas), [`section-template-validate.ts`](../../packages/sitebuilder-schemas/src/section-template-validate.ts)
+  (the author-time validator), and [`field-spec-to-zod.ts`](../../packages/sitebuilder-schemas/src/field-spec-to-zod.ts),
+  with 18 passing tests in [`section-template.test.ts`](../../packages/sitebuilder-schemas/src/section-template.test.ts).
+  The remaining increments below (DB migration, interpreter + CSS, registry merge, snapshot pinning, MCP) are
+  not yet started.
+
 **Ships (server-safe split per [[feedback_dockerfile_package_wiring]]):**
 
-- In `@sparx/sitebuilder-schemas` (zod-only, no React): the `SectionTemplate` AST schema, the value-expression
-  - condition schemas, the author-time validator (field-ref / path / enum / embed-host checks), and
-    `fieldSpecToZod`.
+- ✅ In `@sparx/sitebuilder-schemas` (zod-only, no React): the `SectionTemplate` AST schema, the
+  value-expression + condition schemas, the author-time validator (field-ref / path / enum / embed-gating
+  checks), and `fieldSpecToZod`.
 - In the storefront (React): the interpreter (`AST → RSC`), the `sf-tpl-*` CSS family in storefront.css, the
   bundled lucide icon subset + allowlist, and the `SectionRenderer` `custom:*` branch.
 - In `@sparx/db`: `tenant_section_definitions` (tenant-scoped **ENABLE+FORCE RLS**, hand-edited migration SQL
