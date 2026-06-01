@@ -12,6 +12,7 @@ export * from './section-registry';
 // Custom-section template language (docs/38 Phase C): the AST schema, the
 // field-spec→Zod deriver, and the author-time validator.
 export * from './section-template';
+export * from './section-template-eval';
 export * from './field-spec-to-zod';
 export * from './section-template-validate';
 export * from './default-templates';
