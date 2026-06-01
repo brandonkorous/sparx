@@ -8,6 +8,13 @@
 // in an `x-tenant-slug` request header (read by resolveTenant) AND persist it
 // as a cookie so navigating between pages keeps the active store without
 // re-appending the query param.
+//
+// Site preview: the page components read the `?sparxSitePreview=` draft token
+// straight off their `searchParams`, but the root layout (which renders the
+// header / footer / announcement chrome) can't see searchParams. So we mirror
+// the token into an `x-sparx-site-preview` request header here, letting the
+// layout fetch the DRAFT chrome too — without it, chrome changes (and the
+// announcement bar) only ever appear after publishing.
 
 import { NextResponse, type NextRequest } from 'next/server';
 
@@ -17,9 +24,11 @@ export function middleware(req: NextRequest) {
   const fromQuery = req.nextUrl.searchParams.get('tenant');
   const fromCookie = req.cookies.get(COOKIE)?.value;
   const slug = fromQuery ?? fromCookie;
+  const previewToken = req.nextUrl.searchParams.get('sparxSitePreview');
 
   const requestHeaders = new Headers(req.headers);
   if (slug) requestHeaders.set('x-tenant-slug', slug);
+  if (previewToken) requestHeaders.set('x-sparx-site-preview', previewToken);
 
   const res = NextResponse.next({ request: { headers: requestHeaders } });
   if (fromQuery && fromQuery !== fromCookie) {

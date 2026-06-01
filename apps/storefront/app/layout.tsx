@@ -12,7 +12,7 @@
 // handles the "store not found" messaging.
 
 import type { Metadata } from 'next';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 
@@ -148,7 +148,11 @@ function navNodesToFooterColumns(nodes: NavNode[]): FooterColumn[] {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const tenant = await resolveTenant();
-  const snapshot = tenant ? await getPublishedSite(tenant.slug) : null;
+  // Mirror of the `?sparxSitePreview=` token, set by middleware so this layout
+  // (which the App Router never hands searchParams) can render the DRAFT chrome
+  // — header/footer/announcement — in the editor preview, not just published.
+  const sitePreviewToken = (await headers()).get('x-sparx-site-preview') ?? undefined;
+  const snapshot = tenant ? await getPublishedSite(tenant.slug, sitePreviewToken) : null;
 
   // Active base theme preset (additive registry) for the no-snapshot path.
   const themePreset = (tenant?.settings as { theme?: { preset?: string } } | undefined)?.theme
