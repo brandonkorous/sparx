@@ -33,7 +33,7 @@ import {
   CommerceValidationError,
 } from '../errors';
 import type { ServiceContext } from '../errors';
-import { publishCommerceEvent } from '../events';
+import { indexCommerceEntity, publishCommerceEvent } from '../events';
 
 // ─── Discounts ────────────────────────────────────────────────────────
 
@@ -144,6 +144,9 @@ export async function createDiscount(
     });
     return created;
   });
+
+  await indexCommerceEntity(ctx, 'discount', result.id);
+
   return { id: result.id, code: result.code };
 }
 
@@ -217,6 +220,8 @@ export async function updateDiscount(
       },
     });
   });
+
+  await indexCommerceEntity(ctx, 'discount', id);
 }
 
 export async function archiveDiscount(ctx: ServiceContext, id: string): Promise<void> {
@@ -238,6 +243,8 @@ export async function archiveDiscount(ctx: ServiceContext, id: string): Promise<
       diff: { before: { status: before.status } },
     });
   });
+
+  await indexCommerceEntity(ctx, 'discount', id, 'delete');
 }
 
 export async function activateDiscount(ctx: ServiceContext, id: string): Promise<void> {
@@ -260,6 +267,8 @@ export async function activateDiscount(ctx: ServiceContext, id: string): Promise
       diff: { before: { status: before.status }, after: { status: 'active' } },
     });
   });
+
+  await indexCommerceEntity(ctx, 'discount', id);
 }
 
 /**

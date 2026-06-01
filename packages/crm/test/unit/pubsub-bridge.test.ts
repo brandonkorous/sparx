@@ -100,4 +100,27 @@ describe('CrmPubSubPublisher', () => {
       tenantId: 'tenant-1',
     });
   });
+
+  it('also tees a search.entity.changed for a universal entity (deal)', async () => {
+    const { pub, captured } = makeBridge();
+    await pub.publish({
+      tenantId: 'tenant-1',
+      topic: 'crm.deal.created',
+      payload: { dealId: 'd1', pipelineId: 'p1', stageId: 's1' },
+      occurredAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+    // Two publishes: the domain event + the universal index signal.
+    expect(captured).toHaveLength(2);
+    const index = captured.find((c) => c.envelope.type === 'search.entity.changed');
+    expect(index).toBeDefined();
+    expect(index!.envelope.data).toEqual({ entityType: 'deal', recordId: 'd1', op: 'upsert' });
+    expect(index!.attributes).toEqual({ type: 'search.entity.changed', tenantId: 'tenant-1' });
+  });
+
+  it('does not tee an index signal for entities with no universal projector (customer)', async () => {
+    const { pub, captured } = makeBridge();
+    await pub.publish(event); // crm.customer.created → rich collection, not `entities`
+    expect(captured).toHaveLength(1);
+    expect(captured[0]!.envelope.type).toBe('crm.customer.created');
+  });
 });

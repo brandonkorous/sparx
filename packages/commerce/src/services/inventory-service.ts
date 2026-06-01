@@ -36,7 +36,7 @@ import {
   CommerceValidationError,
 } from '../errors';
 import type { ServiceContext } from '../errors';
-import { publishCommerceEvent } from '../events';
+import { indexCommerceEntity, publishCommerceEvent } from '../events';
 
 const CART_TTL_SECONDS_DEFAULT = 30 * 60;
 
@@ -139,6 +139,8 @@ export async function createWarehouse(
     return warehouse;
   });
 
+  await indexCommerceEntity(ctx, 'warehouse', result.id);
+
   return { id: result.id };
 }
 
@@ -211,6 +213,8 @@ export async function updateWarehouse(
     return updated;
   });
 
+  await indexCommerceEntity(ctx, 'warehouse', warehouseId);
+
   return serializeWarehouse(result);
 }
 
@@ -247,6 +251,8 @@ export async function archiveWarehouse(ctx: ServiceContext, warehouseId: string)
       diff: { before: serializeWarehouse(before) as unknown as Record<string, unknown> },
     });
   });
+
+  await indexCommerceEntity(ctx, 'warehouse', warehouseId, 'delete');
 }
 
 // ─── Inventory levels ─────────────────────────────────────────────────

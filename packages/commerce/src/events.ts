@@ -6,7 +6,13 @@
 // one place. The actual transport is @sparx/events, which talks to
 // Google Pub/Sub in prod and a noop-with-logging publisher in dev/test.
 
-import { createPublisher, publishEvent, type EventType, type PublisherLogger } from '@sparx/events';
+import {
+  createPublisher,
+  indexEntity,
+  publishEvent,
+  type EventType,
+  type PublisherLogger,
+} from '@sparx/events';
 
 const logger: PublisherLogger = {
   info: (obj, msg) => console.log(JSON.stringify({ level: 'info', src: 'commerce', ...obj, msg })),
@@ -94,4 +100,82 @@ export async function publishCommerceEvent<T>(input: CommerceEventInput<T>): Pro
     input.data,
     logger
   );
+
+  // Keep the universal `entities` search index live off the existing event
+  // stream (docs/39 §6.1): when a commerce event names a searchable entity,
+  // also emit one generic `search.entity.changed` so the indexer re-projects
+  // it. No per-entity topic; reindex backfills regardless. `indexEntity` never
+  // throws into the caller (transport errors are swallowed downstream).
+  const target = universalTargetFor(input.topic, input.data as Record<string, unknown>);
+  if (target) {
+    await indexEntity({
+      tenantId: input.tenantId,
+      actorId: input.actorId ?? null,
+      entityType: target.entityType,
+      recordId: target.recordId,
+    });
+  }
+}
+
+/**
+ * Map a commerce domain event → the universal-search entity it should reindex,
+ * or null when the event isn't a searchable-entity change. The record id is
+ * read from the event's `data` payload:
+ *   - gift_card / subscription / return / review carry their own id field;
+ *   - collection / category changes ride on `product.*` with a discriminator id;
+ *   - bare `product.*` maps to nothing (products live in their rich collection,
+ *     not the universal index — see docs/39 §4.1).
+ */
+function universalTargetFor(
+  topic: CommerceTopic,
+  data: Record<string, unknown>
+): { entityType: string; recordId: string } | null {
+  const str = (k: string): string | undefined =>
+    typeof data[k] === 'string' ? data[k] : undefined;
+
+  if (topic === 'giftcard.issued' || topic === 'giftcard.redeemed') {
+    const id = str('giftCardId');
+    return id ? { entityType: 'gift_card', recordId: id } : null;
+  }
+  if (topic.startsWith('subscription.')) {
+    const id = str('subscriptionId');
+    return id ? { entityType: 'subscription', recordId: id } : null;
+  }
+  if (topic.startsWith('return.')) {
+    const id = str('returnId');
+    return id ? { entityType: 'return', recordId: id } : null;
+  }
+  if (topic.startsWith('review.')) {
+    const id = str('reviewId');
+    return id ? { entityType: 'review', recordId: id } : null;
+  }
+  if (topic === 'product.created' || topic === 'product.updated' || topic === 'product.deleted') {
+    const collectionId = str('collectionId');
+    if (collectionId) return { entityType: 'collection', recordId: collectionId };
+    const categoryId = str('categoryId');
+    if (categoryId) return { entityType: 'category', recordId: categoryId };
+  }
+  return null;
+}
+
+/**
+ * Post-commit universal-search signal for commerce entities that have NO domain
+ * event of their own (discount, warehouse, bundle). Same contract as
+ * `publishCommerceEvent`: call AFTER the write commits; never throws into the
+ * caller. `op: 'delete'` removes the doc; `'upsert'` (default) re-projects (and
+ * the indexer deletes anyway if the projector reports the record is gone).
+ */
+export async function indexCommerceEntity(
+  ctx: { tenantId: string; userId?: string | null },
+  entityType: string,
+  recordId: string,
+  op: 'upsert' | 'delete' = 'upsert'
+): Promise<void> {
+  await indexEntity({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    entityType,
+    recordId,
+    op,
+  });
 }
