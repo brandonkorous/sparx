@@ -30,8 +30,8 @@ describe('section registry', () => {
     // A fresh hero ships with one solid CTA (multi-CTA model, docs/37).
     const ctas = hero.ctas as { label: string; style: string }[];
     expect(ctas).toHaveLength(1);
-    expect(ctas[0].label).toBe('Shop now');
-    expect(ctas[0].style).toBe('solid');
+    expect(ctas[0]?.label).toBe('Shop now');
+    expect(ctas[0]?.style).toBe('solid');
   });
 
   it('new landing sections are registered and addable on the home target', () => {
