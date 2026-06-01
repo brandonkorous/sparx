@@ -1881,6 +1881,41 @@
   line-height: 1.5;
   opacity: 0.95;
 }
+/* Split placement — the full-screen "model name up top, buttons down low" hero
+   treatment: text group pinned to the top, CTA group to the bottom, the photo
+   filling the gap between. */
+.sf-sb-banner[data-valign='split'] {
+  align-items: stretch;
+}
+.sf-sb-banner[data-valign='split'] .sf-sb-banner__inner {
+  /* No explicit height — `align-items: stretch` on the banner stretches this to
+     the full section height so space-between can pin the groups top & bottom.
+     (Setting height:100% here would resolve against the parent's indefinite
+     height and collapse back to content height.) */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-self: stretch;
+  width: 100%;
+  max-width: none;
+  gap: 1.5rem;
+}
+.sf-sb-banner__group {
+  display: grid;
+  gap: 0.75rem;
+}
+.sf-sb-banner[data-align='center'] .sf-sb-banner__group {
+  justify-items: center;
+}
+.sf-sb-banner[data-align='right'] .sf-sb-banner__group {
+  justify-items: end;
+}
+.sf-sb-banner[data-valign='split'] .sf-sb-banner__group--top {
+  padding-top: clamp(0.5rem, 4vh, 3rem);
+}
+.sf-sb-banner[data-valign='split'] .sf-sb-banner__group--bottom {
+  padding-bottom: clamp(0.5rem, 3vh, 2rem);
+}
 
 /* Rich text section. */
 .sf-sb-richtext[data-align='center'] {
@@ -2671,6 +2706,15 @@ html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child
 .sf-sb-panel--media .sf-btn--dark:hover,
 .sf-sb-carousel__slide .sf-btn--dark:hover {
   background: rgb(23 26 32 / 0.88);
+}
+/* Tesla-style media-overlay CTAs: pill-shaped and comfortably wide, independent
+   of the site's base control radius (the full-bleed hero/banner button look). */
+.sf-sb-hero[data-has-bg='true'] .sf-btn,
+.sf-sb-banner .sf-btn,
+.sf-sb-panel--media .sf-btn,
+.sf-sb-carousel__slide .sf-btn {
+  border-radius: 100px;
+  min-width: 12rem;
 }
 
 /* ─── Embed section (docs/37 — bring-your-own map / video / widget) ──────────

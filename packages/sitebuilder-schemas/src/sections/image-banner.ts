@@ -19,7 +19,9 @@ export const ImageBannerConfig = z.object({
   subheading: z.string().max(300).default(''),
   ctas: ctas([{ label: 'Learn more', url: '/products', style: 'solid' }]),
   align: Align.default('left'),
-  verticalAlign: z.enum(['top', 'center', 'bottom']).default('center'),
+  // `split` pins the title block to the top and the CTAs to the bottom (the
+  // full-screen "model name up top, buttons down low" hero treatment).
+  verticalAlign: z.enum(['top', 'center', 'bottom', 'split']).default('center'),
   height: z.enum(['sm', 'md', 'lg', 'screen']).default('md'),
   // Break out of the centered content container to a full-bleed band.
   fullBleed: z.boolean().default(false),
@@ -52,6 +54,7 @@ export const imageBannerFields: SectionField[] = [
       { label: 'Top', value: 'top' },
       { label: 'Center', value: 'center' },
       { label: 'Bottom', value: 'bottom' },
+      { label: 'Split (title top, buttons bottom)', value: 'split' },
     ],
   },
   {

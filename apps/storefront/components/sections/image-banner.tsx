@@ -20,6 +20,17 @@ export function ImageBannerSection({
   const overlay = Math.min(100, Math.max(0, config.overlayOpacity)) / 100;
   const ctas = resolveCtas(config);
   const hasText = Boolean(config.eyebrow || config.heading || config.subheading || ctas.length);
+  // `split` pins the text to the top and the CTAs to the bottom of a full-height
+  // section (the Tesla-style model section). Otherwise everything stacks together.
+  const isSplit = config.verticalAlign === 'split';
+
+  const textBlock = (
+    <>
+      {config.eyebrow ? <p className="sf-sb-banner__eyebrow">{config.eyebrow}</p> : null}
+      {config.heading ? <h2 className="sf-sb-banner__title">{config.heading}</h2> : null}
+      {config.subheading ? <p className="sf-sb-banner__sub">{config.subheading}</p> : null}
+    </>
+  );
 
   const banner = (
     <div
@@ -44,10 +55,21 @@ export function ImageBannerSection({
       ) : null}
       {hasText ? (
         <div className="sf-sb-banner__inner">
-          {config.eyebrow ? <p className="sf-sb-banner__eyebrow">{config.eyebrow}</p> : null}
-          {config.heading ? <h2 className="sf-sb-banner__title">{config.heading}</h2> : null}
-          {config.subheading ? <p className="sf-sb-banner__sub">{config.subheading}</p> : null}
-          <SbCtaRow ctas={ctas} />
+          {isSplit ? (
+            <>
+              <div className="sf-sb-banner__group sf-sb-banner__group--top">{textBlock}</div>
+              {ctas.length ? (
+                <div className="sf-sb-banner__group sf-sb-banner__group--bottom">
+                  <SbCtaRow ctas={ctas} />
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <>
+              {textBlock}
+              <SbCtaRow ctas={ctas} />
+            </>
+          )}
         </div>
       ) : null}
     </div>
