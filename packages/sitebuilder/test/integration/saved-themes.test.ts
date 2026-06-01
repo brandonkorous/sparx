@@ -5,7 +5,12 @@
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { savedThemeService, scheduleService, themeService } from '../../src/services/index.js';
+import {
+  publishService,
+  savedThemeService,
+  scheduleService,
+  themeService,
+} from '../../src/services/index.js';
 import { SitebuilderNotFoundError } from '../../src/errors.js';
 import { disposeTestContext, makeTestContext, type TestContext } from '../helpers.js';
 
@@ -42,6 +47,7 @@ describe('sitebuilder saved themes', () => {
       name: 'Holiday',
       basePresetKey: 'industrial',
       presentation: { containerWidth: '1320px' },
+      brand: { colorPrimary: '#0a7d2b' },
     });
 
     const list = await savedThemeService.list(test.ctx);
@@ -91,6 +97,12 @@ describe('sitebuilder saved themes', () => {
 
     const config = await themeService.getConfig(test.ctx);
     expect(config.themeKey).toBe('industrial');
+
+    // The Holiday theme captured its own brand; the scheduled swap applies it to
+    // the tenant brand, so the storefront — which compiles brand live — recolours
+    // (not just the surface overlay). compiledV2 reflects the applied primary.
+    const snapshot = await publishService.getPublishedSnapshot(test.ctx);
+    expect(snapshot?.compiledV2?.light.primary).toBe('#0a7d2b');
   });
 
   it('remove — deletes the variant', async () => {

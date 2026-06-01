@@ -14,7 +14,7 @@ import {
   type PresentationOverlay,
   type SavedThemeBrand,
 } from '@sparx/sitebuilder-schemas';
-import type { Prisma, SiteTheme } from '@sparx/db';
+import type { Prisma, SiteTheme, TxClient } from '@sparx/db';
 import { withTenant } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
@@ -107,6 +107,44 @@ export async function update(
       diff: { before: { name: existing.name }, after: { name: row.name } },
     });
     return toView(row);
+  });
+}
+
+// Apply a saved theme's captured brand "look" onto the tenant brand — the
+// "apply to brand everywhere" model (docs/33). Writes ONLY the look fields
+// (colours, fonts, shape tokens); never the business identity (name/logo/
+// socials). A theme with no snapshot (brand == null) is a no-op, leaving the
+// current brand untouched. Used by the scheduled-swap path so a scheduled theme
+// recolours the whole store — the storefront reads brand live (publish-service
+// overlayBrand). The interactive dashboard apply writes the same fields via
+// /v1/brand; this is the server-side equivalent for headless application.
+export async function applyThemeBrandWithinTx(
+  tx: TxClient,
+  tenantId: string,
+  brand: SavedThemeBrand | null | undefined
+): Promise<void> {
+  if (!brand) return;
+  const data: Prisma.TenantBrandUncheckedUpdateInput = {};
+  if (brand.colorPrimary !== undefined) data.colorPrimary = brand.colorPrimary;
+  if (brand.colorPrimaryForeground !== undefined)
+    data.colorPrimaryForeground = brand.colorPrimaryForeground;
+  if (brand.colorAccent !== undefined) data.colorAccent = brand.colorAccent;
+  if (brand.colorAccentForeground !== undefined)
+    data.colorAccentForeground = brand.colorAccentForeground;
+  if (brand.colorSecondary !== undefined) data.colorSecondary = brand.colorSecondary;
+  if (brand.colorSecondaryForeground !== undefined)
+    data.colorSecondaryForeground = brand.colorSecondaryForeground;
+  if (brand.fontHeading !== undefined) data.fontHeading = brand.fontHeading;
+  if (brand.fontBody !== undefined) data.fontBody = brand.fontBody;
+  // tokens is a JSON column — only set it when the theme carries a shape doc, so
+  // a brand without one leaves the tenant's shape untouched (avoids the DbNull
+  // dance; clearing shape isn't a goal of a theme swap).
+  if (brand.tokens != null) data.tokens = brand.tokens as Prisma.InputJsonValue;
+  if (Object.keys(data).length === 0) return;
+  await tx.tenantBrand.upsert({
+    where: { tenantId },
+    create: { tenantId, ...data } as Prisma.TenantBrandUncheckedCreateInput,
+    update: data,
   });
 }
 
