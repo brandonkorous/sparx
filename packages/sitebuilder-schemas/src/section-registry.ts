@@ -16,6 +16,7 @@ import { PanelsConfig, panelsFields } from './sections/panels';
 import { MediaTextConfig, mediaTextFields } from './sections/media-text';
 import { StatsConfig, statsFields } from './sections/stats';
 import { CarouselConfig, carouselFields } from './sections/carousel';
+import { EmbedConfig, embedFields } from './sections/embed';
 import {
   ProductBuyBoxConfig,
   productBuyBoxFields,
@@ -51,6 +52,7 @@ export const SECTION_TYPES = [
   'media-text',
   'stats',
   'carousel',
+  'embed',
   // Bound — product scope (resolve from the assigned product)
   'product-buy-box',
   'product-description',
@@ -179,6 +181,14 @@ export const SECTION_REGISTRY: Record<SectionType, SectionDefinition> = {
     icon: 'GalleryHorizontal',
     schema: CarouselConfig,
     fields: carouselFields,
+  },
+  embed: {
+    type: 'embed',
+    label: 'Embed',
+    description: 'Drop in a Google Map, a video, or any third-party widget from a URL.',
+    icon: 'Frame',
+    schema: EmbedConfig,
+    fields: embedFields,
   },
   'product-buy-box': {
     type: 'product-buy-box',

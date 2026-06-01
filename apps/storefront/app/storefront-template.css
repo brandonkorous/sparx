@@ -1,0 +1,260 @@
+/* ─── Custom-section template primitives (sf-tpl-*) ──────────────────────────
+   The closed class family the custom-section interpreter (docs/38 Phase C;
+   docs/handoffs/sitebuilder-custom-section-template-spec.md) compiles its AST
+   into. Loaded alongside storefront.css (same cascade); kept in its own file so
+   the feature is self-contained.
+
+   Every value reads a --sf-* token; variant selection is data-* only and scoped
+   to the sf-tpl-* classes (never bare attribute selectors, which would collide
+   with the sf-sb-* sections' own data-cols/data-align). A merchant-authored
+   template can therefore never emit an off-token value. */
+
+/* Stack — flex column/row */
+.sf-tpl-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-4);
+}
+.sf-tpl-stack[data-dir='row'] {
+  flex-direction: row;
+}
+.sf-tpl-stack[data-wrap] {
+  flex-wrap: wrap;
+}
+.sf-tpl-stack[data-align='start'] {
+  align-items: flex-start;
+}
+.sf-tpl-stack[data-align='center'] {
+  align-items: center;
+}
+.sf-tpl-stack[data-align='end'] {
+  align-items: flex-end;
+}
+.sf-tpl-stack[data-align='stretch'] {
+  align-items: stretch;
+}
+.sf-tpl-stack[data-justify='start'] {
+  justify-content: flex-start;
+}
+.sf-tpl-stack[data-justify='center'] {
+  justify-content: center;
+}
+.sf-tpl-stack[data-justify='end'] {
+  justify-content: flex-end;
+}
+.sf-tpl-stack[data-justify='between'] {
+  justify-content: space-between;
+}
+
+/* gap — a shared scale on Stack + Grid */
+.sf-tpl-stack[data-gap='none'],
+.sf-tpl-grid[data-gap='none'] {
+  gap: 0;
+}
+.sf-tpl-stack[data-gap='xs'],
+.sf-tpl-grid[data-gap='xs'] {
+  gap: var(--sf-space-2);
+}
+.sf-tpl-stack[data-gap='sm'],
+.sf-tpl-grid[data-gap='sm'] {
+  gap: var(--sf-space-3);
+}
+.sf-tpl-stack[data-gap='md'],
+.sf-tpl-grid[data-gap='md'] {
+  gap: var(--sf-space-4);
+}
+.sf-tpl-stack[data-gap='lg'],
+.sf-tpl-grid[data-gap='lg'] {
+  gap: var(--sf-space-6);
+}
+.sf-tpl-stack[data-gap='xl'],
+.sf-tpl-grid[data-gap='xl'] {
+  gap: var(--sf-space-10);
+}
+
+/* Grid — responsive column count (collapses like the panels grid) */
+.sf-tpl-grid {
+  display: grid;
+  gap: var(--sf-space-6);
+  grid-template-columns: repeat(var(--sf-tpl-cols, 2), minmax(0, 1fr));
+}
+.sf-tpl-grid[data-cols='1'] {
+  --sf-tpl-cols: 1;
+}
+.sf-tpl-grid[data-cols='2'] {
+  --sf-tpl-cols: 2;
+}
+.sf-tpl-grid[data-cols='3'] {
+  --sf-tpl-cols: 3;
+}
+.sf-tpl-grid[data-cols='4'] {
+  --sf-tpl-cols: 4;
+}
+@media (max-width: 900px) {
+  .sf-tpl-grid[data-cols='3'],
+  .sf-tpl-grid[data-cols='4'] {
+    --sf-tpl-cols: 2;
+  }
+}
+@media (max-width: 600px) {
+  .sf-tpl-grid[data-cols] {
+    --sf-tpl-cols: 1;
+  }
+}
+
+/* Box — padded / toned container */
+.sf-tpl-box {
+  border-radius: var(--sf-radius);
+}
+.sf-tpl-box[data-pad='none'] {
+  padding: 0;
+}
+.sf-tpl-box[data-pad='sm'] {
+  padding: var(--sf-space-4);
+}
+.sf-tpl-box[data-pad='md'] {
+  padding: var(--sf-space-6);
+}
+.sf-tpl-box[data-pad='lg'] {
+  padding: var(--sf-space-8);
+}
+.sf-tpl-box[data-pad='xl'] {
+  padding: var(--sf-space-12);
+}
+.sf-tpl-box[data-tone='surface'] {
+  background: var(--sf-surface);
+}
+.sf-tpl-box[data-tone='subtle'] {
+  background: var(--sf-bg-subtle);
+}
+.sf-tpl-box[data-tone='brand-tint'] {
+  background: var(--sf-primary-tint);
+}
+.sf-tpl-box[data-tone='accent-tint'] {
+  background: var(--sf-accent-tint);
+}
+.sf-tpl-box[data-tone='inverse'] {
+  background: var(--sf-base-content);
+  color: var(--sf-base-100);
+}
+.sf-tpl-box[data-radius='none'] {
+  border-radius: 0;
+}
+.sf-tpl-box[data-radius='sm'] {
+  border-radius: var(--sf-radius-field);
+}
+.sf-tpl-box[data-radius='md'],
+.sf-tpl-box[data-radius='lg'] {
+  border-radius: var(--sf-radius-box);
+}
+.sf-tpl-box[data-radius='pill'] {
+  border-radius: var(--sf-radius-selector);
+}
+.sf-tpl-box[data-border] {
+  border: var(--sf-border-width) solid var(--sf-border);
+}
+
+/* Text */
+.sf-tpl-text {
+  margin: 0;
+  line-height: 1.6;
+}
+.sf-tpl-text[data-tone='secondary'] {
+  color: var(--sf-text-secondary);
+}
+.sf-tpl-text[data-tone='muted'] {
+  color: var(--sf-text-muted);
+}
+.sf-tpl-text[data-size='sm'] {
+  font-size: 0.875rem;
+}
+.sf-tpl-text[data-size='md'] {
+  font-size: 1rem;
+}
+.sf-tpl-text[data-size='lg'] {
+  font-size: 1.125rem;
+}
+
+/* Image — background-image div (matches the sf-sb-* media pattern) */
+.sf-tpl-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--sf-bg-subtle);
+  border-radius: var(--sf-radius);
+}
+.sf-tpl-img[data-ratio='auto'] {
+  aspect-ratio: auto;
+}
+.sf-tpl-img[data-ratio='1:1'] {
+  aspect-ratio: 1 / 1;
+}
+.sf-tpl-img[data-ratio='4:3'] {
+  aspect-ratio: 4 / 3;
+}
+.sf-tpl-img[data-ratio='16:9'] {
+  aspect-ratio: 16 / 9;
+}
+.sf-tpl-img[data-ratio='21:9'] {
+  aspect-ratio: 21 / 9;
+}
+.sf-tpl-img[data-fit='contain'] {
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Icon — bundled inline SVG sized via font-size */
+.sf-tpl-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  font-size: 1.5rem;
+  color: var(--sf-text);
+}
+.sf-tpl-icon[data-size='sm'] {
+  font-size: 1rem;
+}
+.sf-tpl-icon[data-size='md'] {
+  font-size: 1.5rem;
+}
+.sf-tpl-icon[data-size='lg'] {
+  font-size: 2rem;
+}
+.sf-tpl-icon[data-tone='muted'] {
+  color: var(--sf-text-muted);
+}
+.sf-tpl-icon[data-tone='accent'] {
+  color: var(--sf-accent);
+}
+.sf-tpl-icon[data-tone='brand'] {
+  color: var(--sf-primary);
+}
+
+/* Link / Divider / Spacer */
+.sf-tpl-link {
+  color: var(--sf-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sf-tpl-link:hover {
+  color: var(--sf-primary-hover);
+}
+.sf-tpl-divider {
+  border: none;
+  border-top: 1px solid var(--sf-border);
+  margin-block: var(--sf-space-4);
+}
+.sf-tpl-spacer[data-size='sm'] {
+  height: var(--sf-space-4);
+}
+.sf-tpl-spacer[data-size='md'] {
+  height: var(--sf-space-8);
+}
+.sf-tpl-spacer[data-size='lg'] {
+  height: var(--sf-space-12);
+}
+.sf-tpl-spacer[data-size='xl'] {
+  height: var(--sf-space-16);
+}

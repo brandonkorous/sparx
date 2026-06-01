@@ -26,6 +26,8 @@ export const CarouselConfig = z.object({
   verticalAlign: z.enum(['top', 'center', 'bottom']).default('bottom'),
   textColor: z.enum(['auto', 'light', 'dark']).default('auto'),
   overlayOpacity: z.number().int().min(0).max(100).default(30),
+  // Per-slide button layout (row = side by side, stacked = one above the other).
+  ctaLayout: z.enum(['row', 'stacked']).default('row'),
   autoplay: z.boolean().default(false),
   // Seconds between auto-advances (autoplay only).
   intervalSec: z.number().int().min(2).max(15).default(6),
@@ -79,6 +81,15 @@ export const carouselFields: SectionField[] = [
     ],
   },
   { key: 'overlayOpacity', label: 'Overlay opacity', type: 'range', min: 0, max: 100, step: 5 },
+  {
+    key: 'ctaLayout',
+    label: 'Button layout',
+    type: 'select',
+    options: [
+      { label: 'Side by side', value: 'row' },
+      { label: 'Stacked', value: 'stacked' },
+    ],
+  },
   { key: 'autoplay', label: 'Auto-advance slides', type: 'boolean' },
   { key: 'intervalSec', label: 'Seconds per slide', type: 'number', min: 2, max: 15, step: 1 },
   { key: 'showArrows', label: 'Show arrows', type: 'boolean' },

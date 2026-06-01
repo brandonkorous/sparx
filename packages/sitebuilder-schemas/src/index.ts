@@ -32,5 +32,6 @@ export * from './sections/panels';
 export * from './sections/media-text';
 export * from './sections/stats';
 export * from './sections/carousel';
+export * from './sections/embed';
 export * from './sections/product-bound';
 export * from './sections/collection-bound';

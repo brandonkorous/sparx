@@ -14,6 +14,9 @@ export const HeroConfig = z.object({
   // Up to two CTAs. A fresh hero ships with one solid button; legacy single-CTA
   // configs (ctaLabel/ctaUrl) are mapped in the storefront component.
   ctas: ctas([{ label: 'Shop now', url: '/products', style: 'solid' }]),
+  // Row = buttons side by side; stacked = one above the other (the full-bleed
+  // "two stacked pills" look common on car/product landing heroes).
+  ctaLayout: z.enum(['row', 'stacked']).default('row'),
   align: Align.default('center'),
   verticalAlign: z.enum(['top', 'center', 'bottom']).default('center'),
   height: z.enum(['sm', 'md', 'lg', 'screen']).default('md'),
@@ -41,6 +44,15 @@ export const heroFields: SectionField[] = [
   { key: 'heading', label: 'Heading', type: 'text' },
   { key: 'subheading', label: 'Subheading', type: 'textarea' },
   ctasField(),
+  {
+    key: 'ctaLayout',
+    label: 'Button layout',
+    type: 'select',
+    options: [
+      { label: 'Side by side', value: 'row' },
+      { label: 'Stacked', value: 'stacked' },
+    ],
+  },
   {
     key: 'align',
     label: 'Horizontal alignment',

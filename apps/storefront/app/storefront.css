@@ -2256,6 +2256,8 @@
   font-weight: 680;
   letter-spacing: -0.02em;
   line-height: 1;
+  /* Stable width while the figure counts up (no layout jitter per frame). */
+  font-variant-numeric: tabular-nums;
 }
 .sf-sb-stat__label {
   font-size: 0.9rem;
@@ -2619,4 +2621,108 @@ html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child
   .sf-sb-hero__scroll-hint {
     animation: none;
   }
+}
+
+/* ─── Stacked CTAs ──────────────────────────────────────────────────────────
+   The full-bleed "two pills, one above the other" layout (hero / carousel).
+   Buttons take a comfortable min-width and align to the section's content. */
+.sf-cta-row--stacked {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+.sf-cta-row--stacked .sf-btn {
+  width: 100%;
+  min-width: 260px;
+}
+@media (max-width: 480px) {
+  .sf-cta-row--stacked .sf-btn {
+    min-width: 0;
+  }
+}
+
+/* ─── Translucent CTAs over media ───────────────────────────────────────────
+   On a photo/video context the light/dark filled buttons read better as frosted
+   glass (the premium "pill over imagery" look) than as flat opaque blocks. Only
+   applies inside a media section — elsewhere light/dark stay solid + on-token. */
+.sf-sb-hero[data-has-bg='true'] .sf-btn--light,
+.sf-sb-banner .sf-btn--light,
+.sf-sb-panel--media .sf-btn--light,
+.sf-sb-carousel__slide .sf-btn--light {
+  background: rgb(255 255 255 / 0.82);
+  color: #171a20;
+  backdrop-filter: blur(6px);
+}
+.sf-sb-hero[data-has-bg='true'] .sf-btn--light:hover,
+.sf-sb-banner .sf-btn--light:hover,
+.sf-sb-panel--media .sf-btn--light:hover,
+.sf-sb-carousel__slide .sf-btn--light:hover {
+  background: rgb(255 255 255 / 0.95);
+}
+.sf-sb-hero[data-has-bg='true'] .sf-btn--dark,
+.sf-sb-banner .sf-btn--dark,
+.sf-sb-panel--media .sf-btn--dark,
+.sf-sb-carousel__slide .sf-btn--dark {
+  background: rgb(23 26 32 / 0.72);
+  color: #fff;
+  backdrop-filter: blur(6px);
+}
+.sf-sb-hero[data-has-bg='true'] .sf-btn--dark:hover,
+.sf-sb-banner .sf-btn--dark:hover,
+.sf-sb-panel--media .sf-btn--dark:hover,
+.sf-sb-carousel__slide .sf-btn--dark:hover {
+  background: rgb(23 26 32 / 0.88);
+}
+
+/* ─── Embed section (docs/37 — bring-your-own map / video / widget) ──────────
+   A responsive, sandboxed iframe built from a pasted URL. The aspect-ratio box
+   keeps it from causing layout shift while it loads. */
+.sf-sb-embed {
+  padding-block: clamp(2rem, 5vw, 4rem);
+}
+.sf-sb-embed[data-width='prose'] .sf-container {
+  max-width: var(--sf-max-prose);
+}
+.sf-sb-embed__bleed {
+  width: 100%;
+}
+.sf-sb-embed__heading {
+  margin-bottom: 1rem;
+}
+.sf-sb-embed__frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--sf-radius);
+  background: var(--sf-bg-subtle);
+  box-shadow: var(--sf-shadow-sm);
+}
+.sf-sb-embed__bleed .sf-sb-embed__frame {
+  border-radius: 0;
+  box-shadow: none;
+}
+.sf-sb-embed__frame[data-aspect='16:9'] {
+  aspect-ratio: 16 / 9;
+}
+.sf-sb-embed__frame[data-aspect='4:3'] {
+  aspect-ratio: 4 / 3;
+}
+.sf-sb-embed__frame[data-aspect='3:2'] {
+  aspect-ratio: 3 / 2;
+}
+.sf-sb-embed__frame[data-aspect='1:1'] {
+  aspect-ratio: 1 / 1;
+}
+.sf-sb-embed__frame[data-aspect='21:9'] {
+  aspect-ratio: 21 / 9;
+}
+.sf-sb-embed__frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.sf-sb-embed__caption {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
 }
