@@ -8,6 +8,7 @@
 export * from './services';
 export * from './events';
 export * from './search-projection';
+export * from './universal-projection';
 export * from './collection-rules';
 export * as commerceSchedulers from './schedulers';
 export * as commerceMcp from './mcp';
