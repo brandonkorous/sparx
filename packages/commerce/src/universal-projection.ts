@@ -1,16 +1,20 @@
-// Universal-search projectors (docs/39 §5) for the Phase-1 entity set.
+// Universal-search projectors (docs/39 §5) for the commerce + CRM entity set.
 //
 // These live in @sparx/commerce — the same home as projectCustomer/projectOrder
 // — because the commerce-indexer already depends on @sparx/commerce, so no new
-// dependency edge / Dockerfile COPY is needed. All five read straight through
+// dependency edge / Dockerfile COPY is needed. They all read straight through
 // @sparx/db's Prisma client (one schema spans Commerce + CRM models), so the
-// CRM entities (b2b_account, quote) project here without pulling @sparx/crm's
-// service layer.
+// CRM entities (b2b_account, quote, segment, pipeline, deal, task) project here
+// without pulling @sparx/crm's service layer.
 //
-// Each entity also publishes `search.entity.changed` from its write sites (via
-// @sparx/events `indexEntity`) so the index stays live; reindex walks
-// `commerceUniversalProjectors` to backfill. The doc shape is dictated by
-// packages/search/src/schemas/entities.ts — keep them in sync.
+// Phase 1 (shipped): warehouse, discount, gift_card, b2b_account, quote.
+// Phase 2 (breadth): collection, category, bundle, subscription, review, return,
+// segment, pipeline, deal, task.
+//
+// Each entity becomes live by publishing `search.entity.changed` from its write
+// sites (via @sparx/events `indexEntity`); reindex walks
+// `commerceUniversalProjectors` to backfill regardless. The doc shape is
+// dictated by packages/search/src/schemas/entities.ts — keep them in sync.
 
 import { withTenant } from '@sparx/db';
 import {
@@ -156,6 +160,231 @@ const giftCardProjector: EntityProjector = {
     }),
 };
 
+// ─── commerce: collection ────────────────────────────────────────────
+
+const collectionProjector: EntityProjector = {
+  entityType: 'collection',
+  module: 'commerce',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.productCollection.findMany({
+        where: { deletedAt: null },
+        select: { id: true },
+      });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const c = await tx.productCollection.findFirst({ where: { id, deletedAt: null } });
+      if (!c) return null;
+      return {
+        id: universalId(ctx.tenantId, 'collection', c.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'collection',
+        module: 'commerce',
+        record_id: c.id,
+        title: c.name,
+        subtitle: c.handle,
+        body: snippet(c.description),
+        keywords: keywords([c.handle, c.type]),
+        url: `/commerce/collections/${c.id}`,
+        created_at: epoch(c.createdAt),
+        updated_at: epoch(c.updatedAt),
+      };
+    }),
+};
+
+// ─── commerce: category ──────────────────────────────────────────────
+// No standalone /commerce/categories/[id] route yet — link to the category
+// list (never a dead link); tighten to the record when a detail route lands.
+
+const categoryProjector: EntityProjector = {
+  entityType: 'category',
+  module: 'commerce',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.productCategory.findMany({
+        where: { deletedAt: null },
+        select: { id: true },
+      });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const c = await tx.productCategory.findFirst({ where: { id, deletedAt: null } });
+      if (!c) return null;
+      return {
+        id: universalId(ctx.tenantId, 'category', c.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'category',
+        module: 'commerce',
+        record_id: c.id,
+        title: c.name,
+        subtitle: c.handle,
+        body: snippet(c.description),
+        keywords: keywords([c.handle]),
+        url: '/commerce/categories',
+        created_at: epoch(c.createdAt),
+        updated_at: epoch(c.updatedAt),
+      };
+    }),
+};
+
+// ─── commerce: bundle (titled by its wrapper product; no soft-delete) ─
+
+const bundleProjector: EntityProjector = {
+  entityType: 'bundle',
+  module: 'commerce',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.bundle.findMany({
+        where: { bundleProduct: { deletedAt: null } },
+        select: { id: true },
+      });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const b = await tx.bundle.findFirst({
+        where: { id },
+        include: {
+          bundleProduct: { select: { title: true, handle: true, status: true, deletedAt: true } },
+        },
+      });
+      if (!b || b.bundleProduct.deletedAt) return null;
+      return {
+        id: universalId(ctx.tenantId, 'bundle', b.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'bundle',
+        module: 'commerce',
+        record_id: b.id,
+        title: b.bundleProduct.title,
+        subtitle: b.pricingMode,
+        keywords: keywords([b.bundleProduct.handle, b.pricingMode]),
+        status: b.bundleProduct.status,
+        url: `/commerce/bundles/${b.id}`,
+        created_at: epoch(b.createdAt),
+        updated_at: epoch(b.updatedAt),
+      };
+    }),
+};
+
+// ─── commerce: subscription (no name — titled by its customer) ────────
+
+const subscriptionProjector: EntityProjector = {
+  entityType: 'subscription',
+  module: 'commerce',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.subscription.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const s = await tx.subscription.findFirst({
+        where: { id },
+        include: {
+          customer: { select: { firstName: true, lastName: true, company: true, email: true } },
+        },
+      });
+      if (!s) return null;
+      const who = customerName(s.customer);
+      return {
+        id: universalId(ctx.tenantId, 'subscription', s.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'subscription',
+        module: 'commerce',
+        record_id: s.id,
+        title: who ?? 'Subscription',
+        subtitle: `every ${s.intervalCount} ${s.intervalUnit}`,
+        keywords: keywords([who, s.customer.email, s.providerSlug]),
+        status: s.status,
+        url: `/commerce/subscriptions/${s.id}`,
+        created_at: epoch(s.createdAt),
+        updated_at: epoch(s.updatedAt),
+      };
+    }),
+};
+
+// ─── commerce: review ─────────────────────────────────────────────────
+
+const reviewProjector: EntityProjector = {
+  entityType: 'review',
+  module: 'commerce',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.productReview.findMany({
+        where: { deletedAt: null },
+        select: { id: true },
+      });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const r = await tx.productReview.findFirst({
+        where: { id, deletedAt: null },
+        include: { product: { select: { title: true } } },
+      });
+      if (!r) return null;
+      // title is a non-null column but may be blank — fall through to a body
+      // snippet (`||`, not `??`, so an empty string falls through).
+      const title = r.title || (snippet(r.body, 80) ?? 'Review');
+      return {
+        id: universalId(ctx.tenantId, 'review', r.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'review',
+        module: 'commerce',
+        record_id: r.id,
+        title,
+        subtitle: r.product.title,
+        body: snippet(r.body),
+        keywords: keywords([r.displayName, r.product.title]),
+        status: r.status,
+        url: `/commerce/reviews/${r.id}`,
+        created_at: epoch(r.createdAt),
+        updated_at: epoch(r.updatedAt),
+      };
+    }),
+};
+
+// ─── commerce: return / RMA ───────────────────────────────────────────
+
+const returnProjector: EntityProjector = {
+  entityType: 'return',
+  module: 'commerce',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.returnRequest.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const r = await tx.returnRequest.findFirst({ where: { id } });
+      if (!r) return null;
+      // ReturnRequest has no `order` relation — fetch the order number for a
+      // human-searchable title (RMAs are found by their order).
+      const order = await tx.order.findUnique({
+        where: { id: r.orderId },
+        select: { orderNumber: true },
+      });
+      const orderNo = order?.orderNumber;
+      return {
+        id: universalId(ctx.tenantId, 'return', r.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'return',
+        module: 'commerce',
+        record_id: r.id,
+        title: orderNo ? `Return · ${orderNo}` : `Return ${r.id.slice(0, 8)}`,
+        subtitle: r.preferredOutcome,
+        keywords: keywords([orderNo, r.status, r.preferredOutcome, r.requestedBy]),
+        status: r.status,
+        url: `/commerce/returns/${r.id}`,
+        created_at: epoch(r.createdAt),
+        updated_at: epoch(r.updatedAt),
+      };
+    }),
+};
+
 // ─── crm: b2b_account ────────────────────────────────────────────────
 
 const b2bAccountProjector: EntityProjector = {
@@ -229,12 +458,164 @@ const quoteProjector: EntityProjector = {
     }),
 };
 
-/** Phase-1 universal projectors contributed by Commerce + CRM. The
- *  commerce-indexer registers these into its projector registry. */
+// ─── crm: segment (archive = soft-inactive; kept in index with status) ─
+
+const segmentProjector: EntityProjector = {
+  entityType: 'segment',
+  module: 'crm',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.segment.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const s = await tx.segment.findFirst({ where: { id } });
+      if (!s) return null;
+      return {
+        id: universalId(ctx.tenantId, 'segment', s.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'segment',
+        module: 'crm',
+        record_id: s.id,
+        title: s.name,
+        subtitle: s.slug,
+        body: snippet(s.description),
+        keywords: keywords([s.slug]),
+        status: s.archivedAt ? 'archived' : 'active',
+        url: `/crm/segments/${s.id}`,
+        created_at: epoch(s.createdAt),
+        updated_at: epoch(s.updatedAt),
+      };
+    }),
+};
+
+// ─── crm: pipeline ────────────────────────────────────────────────────
+
+const pipelineProjector: EntityProjector = {
+  entityType: 'pipeline',
+  module: 'crm',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.pipeline.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const p = await tx.pipeline.findFirst({ where: { id } });
+      if (!p) return null;
+      return {
+        id: universalId(ctx.tenantId, 'pipeline', p.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'pipeline',
+        module: 'crm',
+        record_id: p.id,
+        title: p.name,
+        subtitle: p.slug,
+        keywords: keywords([p.slug]),
+        status: p.archivedAt ? 'archived' : 'active',
+        url: `/crm/pipelines/${p.id}`,
+        created_at: epoch(p.createdAt),
+        updated_at: epoch(p.updatedAt),
+      };
+    }),
+};
+
+// ─── crm: deal ────────────────────────────────────────────────────────
+
+const dealProjector: EntityProjector = {
+  entityType: 'deal',
+  module: 'crm',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.deal.findMany({
+        where: { deletedAt: null },
+        select: { id: true },
+      });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const d = await tx.deal.findFirst({
+        where: { id, deletedAt: null },
+        include: {
+          customer: { select: { firstName: true, lastName: true, company: true, email: true } },
+          b2bAccount: { select: { companyName: true } },
+          stage: { select: { name: true, stageType: true } },
+        },
+      });
+      if (!d) return null;
+      const who = d.b2bAccount?.companyName ?? (d.customer ? customerName(d.customer) : undefined);
+      return {
+        id: universalId(ctx.tenantId, 'deal', d.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'deal',
+        module: 'crm',
+        record_id: d.id,
+        title: d.title,
+        subtitle: who ?? d.stage.name,
+        keywords: keywords([who, d.source, ...d.tags]),
+        status: d.stage.stageType, // open | won | lost
+        url: `/crm/deals/${d.id}`,
+        created_at: epoch(d.createdAt),
+        updated_at: epoch(d.updatedAt),
+      };
+    }),
+};
+
+// ─── crm: task ────────────────────────────────────────────────────────
+// No standalone /crm/tasks/[id] route yet — link to the task list (never a
+// dead link); tighten to the record when a detail route lands.
+
+const taskProjector: EntityProjector = {
+  entityType: 'task',
+  module: 'crm',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.task.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const t = await tx.task.findFirst({ where: { id } });
+      if (!t) return null;
+      return {
+        id: universalId(ctx.tenantId, 'task', t.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'task',
+        module: 'crm',
+        record_id: t.id,
+        title: t.title,
+        subtitle: t.priority,
+        body: snippet(t.description),
+        keywords: keywords([t.priority]),
+        status: t.status,
+        url: '/crm/tasks',
+        created_at: epoch(t.createdAt),
+        updated_at: epoch(t.updatedAt),
+      };
+    }),
+};
+
+/** Universal projectors contributed by Commerce + CRM. The commerce-indexer
+ *  registers these into its projector registry (reindex + event dispatch). */
 export const commerceUniversalProjectors: EntityProjector[] = [
+  // Phase 1 (shipped)
   warehouseProjector,
   discountProjector,
   giftCardProjector,
   b2bAccountProjector,
   quoteProjector,
+  // Phase 2 — breadth (commerce)
+  collectionProjector,
+  categoryProjector,
+  bundleProjector,
+  subscriptionProjector,
+  reviewProjector,
+  returnProjector,
+  // Phase 2 — breadth (crm)
+  segmentProjector,
+  pipelineProjector,
+  dealProjector,
+  taskProjector,
 ];
