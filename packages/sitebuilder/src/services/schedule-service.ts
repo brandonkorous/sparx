@@ -7,7 +7,7 @@
 // drift. The cross-tenant scan + advisory lock live in api-rest, not here, so
 // this package stays tenant-scoped.
 
-import { ScheduleInput } from '@sparx/sitebuilder-schemas';
+import { ScheduleInput, type SavedThemeBrand } from '@sparx/sitebuilder-schemas';
 import type { SitePublishSchedule, SiteVersion } from '@sparx/db';
 import { withTenant } from '@sparx/db';
 
@@ -17,6 +17,7 @@ import type { ServiceContext } from '../errors';
 import { SitebuilderNotFoundError } from '../errors';
 import { getOrCreateConfig } from './_config';
 import { publishWithinTx } from './publish-internals';
+import { applyThemeBrandWithinTx } from './saved-theme-service';
 
 export async function schedule(
   ctx: ServiceContext,
@@ -143,6 +144,10 @@ export async function processDueSchedule(
               },
             },
           });
+          // ...and apply the theme's captured brand "look", so the swap recolours
+          // the WHOLE store (brand is read live by the storefront), not just the
+          // surface overlay. Matches the interactive "apply to brand" model.
+          await applyThemeBrandWithinTx(tx, ctx.tenantId, theme.brand as SavedThemeBrand | null);
         }
       }
 

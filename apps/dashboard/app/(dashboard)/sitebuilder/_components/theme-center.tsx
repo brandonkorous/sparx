@@ -262,11 +262,28 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
   }, [presentation]);
 
   // ── Theme / saved-theme actions ────────────────────────────────────────────
+
+  // Drop the brand's identity-colour overrides (primary/accent + their -content
+  // pairs) back to "inherit". Brand colours WIN over the theme (docs/33), so a
+  // stale override masks a newly-selected theme's signature colours — clearing
+  // them lets the preset's palette show through ("switch to Market → Market
+  // colours"). Surfaces/fonts/shape are the theme's already; the merchant
+  // re-customises on top afterwards.
+  const clearBrandColorOverrides = () => {
+    setColorPrimary(null);
+    setColorPrimaryForeground(null);
+    setColorAccent(null);
+    setColorAccentForeground(null);
+  };
+
   const onSelectPreset = (key: string) => {
     setThemeKey(key);
     // Switching to a prebuilt base detaches from any saved theme being edited
-    // (a saved theme's base is fixed; you're now editing the live draft).
+    // (a saved theme's base is fixed; you're now editing the live draft)…
     setActiveSavedThemeId(null);
+    // …and adopts the preset's palette: without this, brand primary/accent
+    // overrides would keep the old colours and the theme would look "not applied".
+    clearBrandColorOverrides();
     startTransition(async () => {
       setStatus('saving');
       const res = await selectTheme(key);
@@ -278,7 +295,13 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     });
   };
 
-  const onResetOverrides = () => setPresentation({ v: 2 });
+  // The active preset row's reset affordance ("Reset color overrides to this
+  // preset"): clear BOTH the presentation overlay and the brand colour overrides
+  // so the preset renders exactly as shipped — matching the control's label.
+  const onResetOverrides = () => {
+    setPresentation({ v: 2 });
+    clearBrandColorOverrides();
+  };
 
   const onPolicyChange = (p: AppearancePolicy) => {
     setPolicy(p);
