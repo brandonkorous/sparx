@@ -57,6 +57,33 @@ interface IndexerEnvelope {
   data: Record<string, unknown>;
 }
 
+// Map a CRM domain topic (`crm.<entity>.<action>`) → the universal-search
+// entity it should reindex, reading the record id from the payload's
+// `<entity>Id` field. Topics whose entity has no universal projector
+// (customer → rich collection, activity) map to nothing. (docs/39 §6.1)
+const CRM_UNIVERSAL_BY_ENTITY: Record<string, { entityType: string; idField: string }> = {
+  b2b_account: { entityType: 'b2b_account', idField: 'b2bAccountId' },
+  quote: { entityType: 'quote', idField: 'quoteId' },
+  pipeline: { entityType: 'pipeline', idField: 'pipelineId' },
+  deal: { entityType: 'deal', idField: 'dealId' },
+  task: { entityType: 'task', idField: 'taskId' },
+  segment: { entityType: 'segment', idField: 'segmentId' },
+};
+
+function universalTargetForCrm(
+  topic: string,
+  payload: Record<string, unknown>
+): { entityType: string; recordId: string } | null {
+  const parts = topic.split('.');
+  if (parts[0] !== 'crm' || parts.length < 3) return null;
+  const entityKey = parts[1];
+  if (!entityKey) return null;
+  const map = CRM_UNIVERSAL_BY_ENTITY[entityKey];
+  if (!map) return null;
+  const recordId = payload[map.idField];
+  return typeof recordId === 'string' ? { entityType: map.entityType, recordId } : null;
+}
+
 // One shared Pub/Sub client + topic cache across both bridges. Topics are
 // created in Terraform; the client only publishes.
 class TopicPublisher {
@@ -112,6 +139,34 @@ export class CrmPubSubPublisher implements CrmPublisher {
     } catch (err) {
       this.logger.error({ err, topic: event.topic }, 'crm-pubsub: publish failed');
     }
+
+    // Also keep the universal `entities` search index live (docs/39 §6.1): map
+    // crm.<entity>.<action> → one generic search.entity.changed so the
+    // commerce-indexer re-projects it. One topic, no per-entity subscription;
+    // op is always 'upsert' (the indexer deletes when the projector reports the
+    // record gone — covering soft-deletes/archives without a delete event).
+    const target = universalTargetForCrm(event.topic, event.payload);
+    if (target) {
+      const indexEnvelope: IndexerEnvelope = {
+        type: 'search.entity.changed',
+        tenantId: event.tenantId,
+        actorId: null,
+        occurredAt: (event.occurredAt ?? new Date()).toISOString(),
+        data: { entityType: target.entityType, recordId: target.recordId, op: 'upsert' },
+      };
+      try {
+        await this.topics.publish(indexEnvelope, {
+          type: 'search.entity.changed',
+          tenantId: event.tenantId,
+        });
+      } catch (err) {
+        this.logger.error(
+          { err, entityType: target.entityType },
+          'crm-pubsub: universal index publish failed'
+        );
+      }
+    }
+
     await this.inner.publish(event);
   }
 }

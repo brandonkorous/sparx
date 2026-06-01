@@ -384,6 +384,36 @@ export async function searchProducts(
   };
 }
 
+export interface SiteSearchHit {
+  /** 'product' | 'collection' | 'cms_page' */
+  type: string;
+  title: string;
+  subtitle: string | null;
+  url: string;
+}
+
+/** Public "search everything" across the storefront (products, collections,
+ *  CMS pages) via the universal index. Degrades to an empty list rather than
+ *  throwing — it's a supplementary strip beside the product grid, never
+ *  load-bearing. */
+export async function searchEverything(
+  tenantSlug: string,
+  q: string,
+  perPage = 20
+): Promise<SiteSearchHit[]> {
+  if (!q.trim()) return [];
+  try {
+    const { data } = await publicGet<{ results: SiteSearchHit[]; total: number }>(
+      '/v1/public/search',
+      { tenant: tenantSlug, q, perPage },
+      [`commerce:${tenantSlug}:search`]
+    );
+    return data.results;
+  } catch {
+    return [];
+  }
+}
+
 /** Products related to the given one: same product type, self excluded.
  *  Falls back to an empty list rather than throwing — it's a nice-to-have
  *  section, never load-bearing. */

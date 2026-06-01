@@ -31,7 +31,7 @@ interface CommandPaletteProps {
   recents: RecentRow[];
 }
 
-const EMPTY_RESULTS: PaletteResults = { products: [], customers: [], orders: [] };
+const EMPTY_RESULTS: PaletteResults = { products: [], customers: [], orders: [], other: [] };
 const MIN_DEEP_QUERY = 2;
 const DEBOUNCE_MS = 200;
 
@@ -117,7 +117,12 @@ export function CommandPalette({ favorites, recents }: CommandPaletteProps) {
   const visibleFavorites = favoritedItems.filter((i) => matchesNeedle(i.label, i.moduleId));
   const visibleRecents = recentItems.filter((i) => matchesNeedle(i.label, i.moduleId));
 
-  const hasResults = results.products.length + results.customers.length + results.orders.length > 0;
+  const resultCount =
+    results.products.length +
+    results.customers.length +
+    results.orders.length +
+    results.other.length;
+  const hasResults = resultCount > 0;
 
   function go(href: string) {
     setOpen(false);
@@ -162,6 +167,17 @@ export function CommandPalette({ favorites, recents }: CommandPaletteProps) {
           <CommandGroup heading="Orders">
             {results.orders.map((hit) => (
               <CommandItem key={hit.id} value={`order-${hit.id}`} onSelect={() => go(hit.href)}>
+                <span>{hit.label}</span>
+                {hit.sublabel ? <CommandShortcut>{hit.sublabel}</CommandShortcut> : null}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
+
+        {results.other.length > 0 && (
+          <CommandGroup heading="More">
+            {results.other.map((hit) => (
+              <CommandItem key={hit.id} value={`other-${hit.id}`} onSelect={() => go(hit.href)}>
                 <span>{hit.label}</span>
                 {hit.sublabel ? <CommandShortcut>{hit.sublabel}</CommandShortcut> : null}
               </CommandItem>

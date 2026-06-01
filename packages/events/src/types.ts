@@ -86,7 +86,20 @@ export type EventType =
   // Configurator
   | 'configuration.requested'
   | 'configuration.quoted'
-  | 'configuration.accepted';
+  | 'configuration.accepted'
+  // ─── Universal search (docs/39) ─────────────────────────────────────
+  // Generic indexing signal: any module emits this post-commit so the
+  // commerce-indexer (re)projects ONE entity into the universal `entities`
+  // collection. One topic serves every entity type — no per-entity topic.
+  | 'search.entity.changed';
+
+/** Payload for `search.entity.changed`. `entityType` keys the projector
+ *  registry; `op` distinguishes a reprojection from a removal. */
+export interface SearchEntityChangedPayload {
+  entityType: string;
+  recordId: string;
+  op: 'upsert' | 'delete';
+}
 
 export interface SparxEvent<T = unknown> {
   type: EventType;

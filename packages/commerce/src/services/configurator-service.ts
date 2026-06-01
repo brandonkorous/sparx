@@ -31,7 +31,7 @@ import type { Prisma, TxClient } from '@sparx/db';
 import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
-import { publishCommerceEvent } from '../events';
+import { indexCommerceEntity, publishCommerceEvent } from '../events';
 
 // ─── Bundles ──────────────────────────────────────────────────────────
 
@@ -190,6 +190,8 @@ export async function createBundle(
     return created;
   });
 
+  await indexCommerceEntity(ctx, 'bundle', result.id);
+
   return { id: result.id };
 }
 
@@ -264,6 +266,8 @@ export async function updateBundle(
       },
     });
   });
+
+  await indexCommerceEntity(ctx, 'bundle', id);
 }
 
 export async function deleteBundle(ctx: ServiceContext, id: string): Promise<void> {
@@ -282,6 +286,8 @@ export async function deleteBundle(ctx: ServiceContext, id: string): Promise<voi
       diff: { before: { bundleProductId: before.bundleProductId } },
     });
   });
+
+  await indexCommerceEntity(ctx, 'bundle', id, 'delete');
 }
 
 // ─── Configurator templates ───────────────────────────────────────────

@@ -9,6 +9,8 @@ import type { Client } from 'typesense';
 import {
   CUSTOMERS_COLLECTION,
   type CustomerSearchDocument,
+  ENTITIES_COLLECTION,
+  type UniversalSearchDocument,
   ORDERS_COLLECTION,
   type OrderSearchDocument,
   PRODUCTS_COLLECTION,
@@ -19,6 +21,25 @@ import { getClient } from './client';
 
 function client(): Client {
   return getClient();
+}
+
+// ─── Universal `entities` collection (docs/39) ───────────────────────
+// The universal doc id is `${tenantId}:${entityType}:${recordId}`; callers
+// pass the parts so a delete needs no prior read.
+
+export async function upsertEntity(doc: UniversalSearchDocument): Promise<void> {
+  await client().collections(ENTITIES_COLLECTION).documents().upsert(doc);
+}
+
+export async function deleteEntity(
+  tenantId: string,
+  entityType: string,
+  recordId: string
+): Promise<void> {
+  await client()
+    .collections(ENTITIES_COLLECTION)
+    .documents(`${tenantId}:${entityType}:${recordId}`)
+    .delete();
 }
 
 // ─── Products ────────────────────────────────────────────────────────

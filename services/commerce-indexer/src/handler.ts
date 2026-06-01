@@ -12,15 +12,18 @@ import {
 } from '@sparx/commerce';
 import {
   deleteCustomer,
+  deleteEntity,
   deleteOrder,
   deleteProduct,
   upsertCustomer,
+  upsertEntity,
   upsertOrder,
   upsertProduct,
 } from '@sparx/search';
 import type { Logger as PinoLogger } from 'pino';
 
 import { runReindex } from './reindex.js';
+import { REGISTRY } from './registry.js';
 
 export interface CommerceEventEnvelope {
   type: string;
@@ -176,6 +179,39 @@ export async function handleEvent(
       }
       await upsertOrder(document);
       return { outcome: 'indexed', details: { orderId } };
+    }
+
+    // ── Universal `entities` collection (docs/39) ──
+    // Generic indexing signal any module emits post-commit. Dispatch by
+    // entity_type to the projector registry; re-project + upsert (or delete
+    // when the projector reports the record is gone).
+    case 'search.entity.changed': {
+      const entityType = stringProp(event.data, 'entityType');
+      const recordId = stringProp(event.data, 'recordId');
+      const op = stringProp(event.data, 'op') ?? 'upsert';
+      if (!entityType || !recordId) {
+        logger.warn(
+          { type: event.type },
+          'search.entity.changed missing entityType/recordId; skipping'
+        );
+        return { outcome: 'skipped' };
+      }
+      const projector = REGISTRY.get(entityType);
+      if (!projector) {
+        logger.warn({ type: event.type, entityType }, 'no projector for entity_type; skipping');
+        return { outcome: 'skipped' };
+      }
+      if (op === 'delete') {
+        await deleteEntity(tenantId, entityType, recordId);
+        return { outcome: 'deleted', details: { entityType, recordId } };
+      }
+      const doc = await projector.project(ctx, recordId);
+      if (!doc) {
+        await deleteEntity(tenantId, entityType, recordId);
+        return { outcome: 'deleted', details: { entityType, recordId } };
+      }
+      await upsertEntity(doc);
+      return { outcome: 'indexed', details: { entityType, recordId } };
     }
 
     case 'search.reindex.requested': {

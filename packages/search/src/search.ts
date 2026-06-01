@@ -7,6 +7,8 @@ import { getClient } from './client';
 import {
   CUSTOMERS_COLLECTION,
   type CustomerSearchDocument,
+  ENTITIES_COLLECTION,
+  type UniversalSearchDocument,
   ORDERS_COLLECTION,
   type OrderSearchDocument,
   PRODUCTS_COLLECTION,
@@ -179,6 +181,50 @@ export async function palette(input: {
     customers: (customersRes?.hits ?? []) as unknown as SearchHit<CustomerSearchDocument>[],
     orders: (ordersRes?.hits ?? []) as unknown as SearchHit<OrderSearchDocument>[],
   };
+}
+
+// ─── Universal search (docs/39) — the `entities` collection ───────────
+
+export interface UniversalSearchInput {
+  tenantId: string;
+  q?: string;
+  /** Restrict to these modules — pass the tenant's ENABLED set so a disabled
+   *  module's stale docs never surface (the route enforces this). */
+  modules?: string[];
+  /** Restrict to one or more entity types (e.g. a single list page). */
+  entityTypes?: string[];
+  /** Restrict to these statuses — e.g. ['active','published'] so a public
+   *  storefront search never surfaces draft/archived records. */
+  statuses?: string[];
+  page?: number;
+  perPage?: number;
+}
+
+/** `[`a`,`b`]` — Typesense exact-match list syntax, backtick-quoted so values
+ *  with separators don't break the filter grammar. */
+function facetList(values: string[]): string {
+  return `[${values.map((v) => `\`${v}\``).join(',')}]`;
+}
+
+export async function searchAll(
+  input: UniversalSearchInput
+): Promise<SearchResult<UniversalSearchDocument>> {
+  const parts: (string | null)[] = [`tenant_id:=${input.tenantId}`];
+  if (input.modules?.length) parts.push(`module:=${facetList(input.modules)}`);
+  if (input.entityTypes?.length) parts.push(`entity_type:=${facetList(input.entityTypes)}`);
+  if (input.statuses?.length) parts.push(`status:=${facetList(input.statuses)}`);
+  const params: AnySearchParams = {
+    q: input.q && input.q.length > 0 ? input.q : '*',
+    query_by: 'title,keywords,subtitle,body',
+    query_by_weights: '5,4,3,1',
+    filter_by: joinFilter(parts),
+    facet_by: 'module,entity_type,status',
+    sort_by: '_text_match:desc,updated_at:desc',
+    page: input.page ?? 1,
+    per_page: input.perPage ?? 20,
+  };
+  const result = await getClient().collections(ENTITIES_COLLECTION).documents().search(params);
+  return shape<UniversalSearchDocument>(result, params);
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────

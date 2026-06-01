@@ -58,6 +58,7 @@ import sitemapRoutes from './routes/v1/sitemap.js';
 import rssRoutes from './routes/v1/rss.js';
 import publicContentRoutes from './routes/v1/public/content.js';
 import publicCommerceRoutes from './routes/v1/public/commerce.js';
+import publicSearchRoutes from './routes/v1/public/search.js';
 import publicCartRoutes from './routes/v1/public/cart.js';
 import publicCheckoutRoutes from './routes/v1/public/checkout.js';
 import publicReviewRoutes from './routes/v1/public/reviews.js';
@@ -438,6 +439,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(rssRoutes);
   await app.register(publicContentRoutes);
   await app.register(publicCommerceRoutes);
+  await app.register(publicSearchRoutes);
   await app.register(publicCartRoutes);
   await app.register(publicCheckoutRoutes);
   await app.register(publicReviewRoutes);
