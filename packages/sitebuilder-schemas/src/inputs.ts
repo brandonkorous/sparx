@@ -76,6 +76,22 @@ export const ReorderSectionsInput = z.object({
 });
 export type ReorderSectionsInput = z.infer<typeof ReorderSectionsInput>;
 
+// ── Layout assignment (docs/36 §6, P-C) ─────────────────────────────────────
+// SB-owned assignment of a layout to a target's default or a specific record.
+// `itemRef` = the owning module's STABLE record id (product/collection/entry id).
+export const SetLayoutDefaultInput = z.object({
+  targetId: TargetId,
+  pageLayoutId: Uuid,
+});
+export type SetLayoutDefaultInput = z.infer<typeof SetLayoutDefaultInput>;
+
+export const AssignLayoutInput = z.object({
+  targetId: TargetId,
+  itemRef: z.string().min(1).max(255),
+  pageLayoutId: Uuid,
+});
+export type AssignLayoutInput = z.infer<typeof AssignLayoutInput>;
+
 export const UpsertLayoutInput = z.object({
   slot: LayoutSlot,
   navigationMenuId: OptionalUuid,
