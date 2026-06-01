@@ -30,6 +30,7 @@ import {
   BarChart3,
   Boxes,
   Columns3,
+  GalleryHorizontal,
   GalleryHorizontalEnd,
   GripVertical,
   Grid3x3,
@@ -68,6 +69,7 @@ const SECTION_ICONS: Record<string, React.ComponentType<{ className?: string }>>
   Mail,
   Columns3,
   GalleryHorizontalEnd,
+  GalleryHorizontal,
   BarChart3,
   // Bound — product
   ShoppingCart,

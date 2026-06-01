@@ -21,6 +21,7 @@ import type {
   PanelsConfig,
   MediaTextConfig,
   StatsConfig,
+  CarouselConfig,
   ProductBuyBoxConfig,
   ProductDescriptionConfig,
   ProductFitmentConfig,
@@ -49,6 +50,7 @@ import { EmailSignupSection } from './sections/email-signup';
 import { PanelsSection } from './sections/panels';
 import { MediaTextSection } from './sections/media-text';
 import { StatsSection } from './sections/stats';
+import { CarouselSection } from './sections/carousel';
 import { ProductBuyBoxSection } from './sections/product-buy-box';
 import { ProductDescriptionSection } from './sections/product-description';
 import { ProductFitmentSection } from './sections/product-fitment';
@@ -109,6 +111,8 @@ function renderSection(section: SectionSnapshot, ctx: SectionContext): React.Rea
       return <MediaTextSection config={c as unknown as MediaTextConfig} ctx={ctx} />;
     case 'stats':
       return <StatsSection config={c as unknown as StatsConfig} ctx={ctx} />;
+    case 'carousel':
+      return <CarouselSection config={c as unknown as CarouselConfig} ctx={ctx} />;
     case 'product-buy-box':
       return <ProductBuyBoxSection config={c as unknown as ProductBuyBoxConfig} ctx={ctx} />;
     case 'product-description':
@@ -147,7 +151,14 @@ export function SectionRenderer({
       {sections.map((section) => (
         // data-section-* lets the Site Builder preview bridge resolve a click to
         // a section without each section having to become a client component.
-        <div key={section.id} data-section-id={section.id} data-section-type={section.sectionType}>
+        // data-sf-reveal opts the wrapper into the scroll-reveal entrance
+        // (RevealController + storefront.css); inert without JS / reduced motion.
+        <div
+          key={section.id}
+          data-section-id={section.id}
+          data-section-type={section.sectionType}
+          data-sf-reveal
+        >
           {renderSection(section, ctx)}
         </div>
       ))}

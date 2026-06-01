@@ -25,6 +25,7 @@ export default async function SitebuilderLayout({ children }: { children: React.
         storefrontUrl={storefrontOrigin(tenant.slug)}
         previewToken={previewToken}
         initialMode={initialMode}
+        isPublished={config.publishedVersionId !== null}
       >
         {children}
       </EditorShell>

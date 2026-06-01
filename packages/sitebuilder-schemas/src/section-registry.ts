@@ -15,6 +15,7 @@ import { EmailSignupConfig, emailSignupFields } from './sections/email-signup';
 import { PanelsConfig, panelsFields } from './sections/panels';
 import { MediaTextConfig, mediaTextFields } from './sections/media-text';
 import { StatsConfig, statsFields } from './sections/stats';
+import { CarouselConfig, carouselFields } from './sections/carousel';
 import {
   ProductBuyBoxConfig,
   productBuyBoxFields,
@@ -49,6 +50,7 @@ export const SECTION_TYPES = [
   'panels',
   'media-text',
   'stats',
+  'carousel',
   // Bound — product scope (resolve from the assigned product)
   'product-buy-box',
   'product-description',
@@ -169,6 +171,14 @@ export const SECTION_REGISTRY: Record<SectionType, SectionDefinition> = {
     icon: 'BarChart3',
     schema: StatsConfig,
     fields: statsFields,
+  },
+  carousel: {
+    type: 'carousel',
+    label: 'Carousel',
+    description: 'A swipeable slider of media slides, with optional autoplay, arrows, and dots.',
+    icon: 'GalleryHorizontal',
+    schema: CarouselConfig,
+    fields: carouselFields,
   },
   'product-buy-box': {
     type: 'product-buy-box',

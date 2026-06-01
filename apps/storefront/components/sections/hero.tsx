@@ -44,6 +44,13 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
         {config.subheading ? <p className="sf-sb-hero__sub">{config.subheading}</p> : null}
         <SbCtaRow ctas={ctas} size="lg" />
       </div>
+      {config.showScrollHint ? (
+        <span className="sf-sb-hero__scroll-hint" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M6 9l6 6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      ) : null}
     </section>
   );
 }

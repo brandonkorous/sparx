@@ -34,6 +34,12 @@ const FIELDS: Record<Slot, SectionField[]> = {
   ],
   header: [
     { key: 'sticky', label: 'Sticky header', type: 'boolean' },
+    {
+      key: 'overlay',
+      label: 'Overlay first section',
+      type: 'boolean',
+      help: 'Float a transparent header over the hero; it turns solid on scroll.',
+    },
     { key: 'showSearch', label: 'Show search', type: 'boolean' },
     {
       key: 'logoPlacement',
@@ -46,6 +52,16 @@ const FIELDS: Record<Slot, SectionField[]> = {
     },
   ],
   footer: [
+    {
+      key: 'variant',
+      label: 'Footer style',
+      type: 'select',
+      options: [
+        { label: 'Columns (sitemap)', value: 'columns' },
+        { label: 'Minimal (single row)', value: 'minimal' },
+      ],
+    },
+    { key: 'tagline', label: 'Tagline', type: 'text', help: 'Shown under the brand (columns only).' },
     { key: 'copyright', label: 'Copyright text', type: 'text' },
     { key: 'showPaymentIcons', label: 'Show payment icons', type: 'boolean' },
   ],

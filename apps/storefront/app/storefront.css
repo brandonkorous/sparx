@@ -2266,3 +2266,357 @@
     grid-template-columns: repeat(2, auto);
   }
 }
+
+/* ─── Overlay header (docs/37 §6, gap #12) ──────────────────────────────────
+   Transparent bar that floats over the first full-bleed section and resolves to
+   a solid surface once scrolled (html[data-sf-scrolled], set by HeaderScroll).
+   `position: fixed` takes it out of flow so the hero starts at the viewport top
+   beneath it. Pair with a hero that carries a scrim, so the light nav stays
+   legible over the media. */
+.sf-header--overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom-color: transparent;
+  transition:
+    background var(--sf-ease) 220ms,
+    border-color var(--sf-ease) 220ms,
+    backdrop-filter var(--sf-ease) 220ms;
+}
+.sf-header--overlay .sf-header__brand,
+.sf-header--overlay .sf-iconbtn {
+  color: #fff;
+}
+.sf-header--overlay .sf-nav__link {
+  color: rgb(255 255 255 / 0.85);
+}
+.sf-header--overlay .sf-nav__link:hover {
+  color: #fff;
+}
+.sf-header--overlay .sf-iconbtn:hover {
+  background: rgb(255 255 255 / 0.16);
+}
+/* Solid state once the page scrolls past the hero. */
+html[data-sf-scrolled='1'] .sf-header--overlay {
+  background: color-mix(in srgb, var(--sf-surface) 92%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom-color: var(--sf-border);
+}
+html[data-sf-scrolled='1'] .sf-header--overlay .sf-header__brand,
+html[data-sf-scrolled='1'] .sf-header--overlay .sf-iconbtn {
+  color: var(--sf-text);
+}
+html[data-sf-scrolled='1'] .sf-header--overlay .sf-nav__link {
+  color: var(--sf-text-secondary);
+}
+html[data-sf-scrolled='1'] .sf-header--overlay .sf-nav__link:hover {
+  color: var(--sf-text);
+}
+html[data-sf-scrolled='1'] .sf-header--overlay .sf-iconbtn:hover {
+  background: var(--sf-bg-subtle);
+}
+
+/* ─── Minimal footer (docs/37 §6, gap #13) ──────────────────────────────────
+   A single compact, centered link row + legal line — the thin legal/locale
+   strip pattern, as opposed to the multi-column sitemap footer. */
+.sf-footer--minimal {
+  margin-top: clamp(3rem, 6vw, 5rem);
+}
+.sf-footer__minimal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  padding-block: clamp(1.75rem, 4vw, 2.5rem);
+}
+.sf-footer__minimal-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.5rem;
+}
+.sf-footer__minimal-links a {
+  color: var(--sf-text-secondary);
+  text-decoration: none;
+  font-size: 0.82rem;
+  transition: color var(--sf-ease) 140ms;
+}
+.sf-footer__minimal-links a:hover {
+  color: var(--sf-text);
+}
+.sf-footer__minimal .sf-footer__social {
+  margin-top: 0;
+}
+.sf-footer__minimal-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.25rem;
+  font-size: 0.78rem;
+  color: var(--sf-text-muted);
+}
+
+/* ─── Scroll reveal (docs/37 §6) ────────────────────────────────────────────
+   Each Site Builder section wrapper carries [data-sf-reveal]. RevealController
+   adds .is-visible as it enters the viewport. The hidden initial state is gated
+   on html.sf-reveal-ready (set before paint only when motion is allowed), so JS
+   off / reduced motion never hides content. */
+html.sf-reveal-ready [data-sf-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity var(--sf-ease) 700ms,
+    transform var(--sf-ease) 700ms;
+  will-change: opacity, transform;
+}
+html.sf-reveal-ready [data-sf-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.sf-reveal-ready [data-sf-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ─── Carousel section (docs/37 §6) ─────────────────────────────────────────
+   A scroll-snap slider of full-bleed media slides. Native horizontal scroll
+   handles swiping; the island layers arrows/dots/autoplay on top. Slide visuals
+   mirror the hero (height presets, vertical alignment, scrim, text color). */
+.sf-sb-carousel-section {
+  position: relative;
+}
+.sf-sb-carousel-section .sf-section__head {
+  padding-block: clamp(1.5rem, 3vw, 2.5rem) 1rem;
+}
+.sf-sb-carousel {
+  position: relative;
+  isolation: isolate;
+}
+.sf-sb-carousel__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.sf-sb-carousel__track::-webkit-scrollbar {
+  display: none;
+}
+.sf-sb-carousel__slide {
+  position: relative;
+  flex: 0 0 100%;
+  min-width: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: flex-end;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--sf-bg-subtle);
+  overflow: hidden;
+  color: #fff;
+  padding-block: clamp(2.5rem, 6vw, 5rem);
+}
+.sf-sb-carousel__slide[data-text='dark'] {
+  color: var(--sf-base-content);
+}
+.sf-sb-carousel__slide[data-height='sm'] {
+  min-height: 340px;
+}
+.sf-sb-carousel__slide[data-height='md'] {
+  min-height: 480px;
+}
+.sf-sb-carousel__slide[data-height='lg'] {
+  min-height: 640px;
+}
+.sf-sb-carousel__slide[data-height='screen'] {
+  min-height: 100svh;
+}
+.sf-sb-carousel__slide[data-valign='top'] {
+  align-items: flex-start;
+}
+.sf-sb-carousel__slide[data-valign='center'] {
+  align-items: center;
+}
+.sf-sb-carousel__scrim {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 0;
+}
+.sf-sb-carousel__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+  justify-items: start;
+  text-align: left;
+}
+.sf-sb-carousel__slide[data-align='center'] .sf-sb-carousel__inner {
+  justify-items: center;
+  text-align: center;
+}
+.sf-sb-carousel__slide[data-align='right'] .sf-sb-carousel__inner {
+  justify-items: end;
+  text-align: right;
+}
+.sf-sb-carousel__eyebrow {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.sf-sb-carousel__title {
+  font-family: var(--sf-font-heading);
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 680;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  max-width: 18ch;
+  margin: 0;
+}
+.sf-sb-carousel__sub {
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  max-width: 48ch;
+  margin: 0;
+  line-height: 1.5;
+  opacity: 0.92;
+}
+.sf-sb-carousel__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  border: none;
+  background: rgb(255 255 255 / 0.85);
+  color: #111;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.18);
+  transition:
+    background var(--sf-ease) 140ms,
+    transform var(--sf-ease) 140ms;
+}
+.sf-sb-carousel__arrow:hover {
+  background: #fff;
+}
+.sf-sb-carousel__arrow:active {
+  transform: translateY(-50%) scale(0.94);
+}
+.sf-sb-carousel__arrow--prev {
+  left: clamp(0.75rem, 2vw, 1.5rem);
+}
+.sf-sb-carousel__arrow--next {
+  right: clamp(0.75rem, 2vw, 1.5rem);
+}
+.sf-sb-carousel__dots {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  gap: 0.5rem;
+}
+.sf-sb-carousel__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  border: none;
+  padding: 0;
+  background: rgb(255 255 255 / 0.5);
+  cursor: pointer;
+  transition:
+    background var(--sf-ease) 140ms,
+    transform var(--sf-ease) 140ms;
+}
+.sf-sb-carousel__dot[data-active='true'] {
+  background: #fff;
+  transform: scale(1.25);
+}
+@media (max-width: 640px) {
+  .sf-sb-carousel__arrow {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+/* ─── Hero entrance + scroll hint (pure-CSS motion) ─────────────────────────
+   The hero is above the fold, so rather than the whole-section fade-up reveal,
+   we keep the section in place and let its content rise in a short stagger on
+   load. The scroll-hint chevron bounces on a CSS keyframe. All motion is gated
+   by reduced-motion below. */
+html.sf-reveal-ready [data-sf-reveal][data-section-type='hero'] {
+  opacity: 1;
+  transform: none;
+}
+@keyframes sf-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > * {
+  opacity: 0;
+  animation: sf-rise 700ms var(--sf-ease) both;
+}
+html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child(1) {
+  animation-delay: 0.08s;
+}
+html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child(2) {
+  animation-delay: 0.18s;
+}
+html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child(3) {
+  animation-delay: 0.28s;
+}
+html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child(4) {
+  animation-delay: 0.38s;
+}
+@keyframes sf-scroll-hint {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate(-50%, 8px);
+    opacity: 1;
+  }
+}
+.sf-sb-hero__scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: inline-flex;
+  animation: sf-scroll-hint 1.8s var(--sf-ease) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > * {
+    opacity: 1;
+    animation: none;
+  }
+  .sf-sb-hero__scroll-hint {
+    animation: none;
+  }
+}

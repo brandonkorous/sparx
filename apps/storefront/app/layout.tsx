@@ -24,6 +24,7 @@ import { WishlistProvider } from '@/components/wishlist-provider';
 import { MiniCart } from '@/components/mini-cart';
 import { ModeToggle } from '@/components/mode-toggle';
 import { PreviewBridge } from '@/components/preview-bridge';
+import { RevealController } from '@/components/reveal-controller';
 import { SiteHeader, type NavItem } from '@/components/site-header';
 import { SiteFooter, type FooterColumn } from '@/components/site-footer';
 import { listCollections } from '@/lib/commerce';
@@ -102,6 +103,12 @@ function buildThemeCss(
 function noFlashScript(policy: 'auto' | 'toggle'): string {
   return `(function(){try{var d=document.documentElement;var p=${JSON.stringify(policy)};var dark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(p==='toggle'){var m=document.cookie.match(/(?:^|;\\s*)sparx_theme=(light|dark)/);d.setAttribute('data-theme',m?m[1]:(dark?'dark':'light'));}else{d.setAttribute('data-theme',dark?'dark':'light');}}catch(e){}})();`;
 }
+
+// Before-paint flag that enables the section scroll-reveal entrance. Gating the
+// hidden initial state on `html.sf-reveal-ready` means content is fully visible
+// when JS is off (this script never runs) or reduced motion is requested (the
+// class is not added), avoiding any flash of invisible content.
+const REVEAL_INIT_SCRIPT = `(function(){try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.documentElement.classList.add('sf-reveal-ready');}catch(e){}})();`;
 
 // ── Header / footer chrome from the snapshot's layout blocks ─────────────────
 
@@ -244,9 +251,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {dynamicPolicy ? (
           <script dangerouslySetInnerHTML={{ __html: noFlashScript(dynamicPolicy) }} />
         ) : null}
+        <script dangerouslySetInnerHTML={{ __html: REVEAL_INIT_SCRIPT }} />
       </head>
       <body className="sf-body">
         <PreviewBridge />
+        <RevealController />
         {tenant ? (
           <CustomerProvider tenantSlug={tenant.slug}>
             <WishlistProvider>
@@ -262,6 +271,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     announcementHref={blankToNull(announceConfig.linkUrl)}
                     showSearch={headerConfig.showSearch ?? true}
                     logoPlacement={headerConfig.logoPlacement ?? 'left'}
+                    overlay={headerConfig.overlay ?? false}
                     modeToggle={
                       policy === 'toggle' ? <ModeToggle initial={initialTheme} /> : undefined
                     }
@@ -275,6 +285,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     year={FOOTER_YEAR}
                     copyright={blankToNull(footerConfig.copyright)}
                     socialLinks={socialLinks.map((s) => ({ platform: s.platform, url: s.url }))}
+                    variant={footerConfig.variant ?? 'columns'}
+                    tagline={blankToNull(footerConfig.tagline)}
                   />
                 </div>
                 <MiniCart />

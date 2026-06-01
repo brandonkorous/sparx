@@ -66,6 +66,11 @@ export const HeaderConfig = z.object({
   showSearch: z.boolean().default(true),
   // 'left' | 'center' — where the logo sits in the bar.
   logoPlacement: z.enum(['left', 'center']).default('left'),
+  // Transparent header that floats over the first full-bleed section (hero/banner)
+  // and resolves to a solid bar once the page scrolls past it. The page's first
+  // section then begins at the very top of the viewport, under the header. A
+  // site-agnostic chrome trait (docs/37 §6, gap #12) — not hero-specific.
+  overlay: z.boolean().default(false),
 });
 export type HeaderConfig = z.infer<typeof HeaderConfig>;
 
@@ -79,6 +84,13 @@ export const FooterConfig = z.object({
   copyright: z.string().max(300).default(''),
   socialLinks: z.array(SocialLink).max(8).default([]),
   showPaymentIcons: z.boolean().default(true),
+  // 'columns' = the full multi-column footer (brand blurb + link columns).
+  // 'minimal' = a single compact, centered row of links + copyright (docs/37
+  // §6, gap #13) — for sites whose footer is a thin legal/locale strip.
+  variant: z.enum(['columns', 'minimal']).default('columns'),
+  // Short blurb under the brand in the 'columns' variant. Blank → the storefront
+  // default. Ignored by 'minimal'.
+  tagline: z.string().max(300).default(''),
 });
 export type FooterConfig = z.infer<typeof FooterConfig>;
 

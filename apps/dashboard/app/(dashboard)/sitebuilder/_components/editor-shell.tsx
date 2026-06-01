@@ -25,6 +25,8 @@ import { usePathname } from 'next/navigation';
 import { Button, ScrollArea, cn } from '@sparx/ui';
 import { ExternalLink, Monitor, RefreshCw, Smartphone, Tablet } from 'lucide-react';
 
+import { PublishBar } from './publish-bar';
+
 type Mode = 'light' | 'dark';
 
 interface SectionSelection {
@@ -106,6 +108,8 @@ export interface EditorShellProps {
   previewToken: string | null;
   /** Initial preview mode (from the site's appearance policy). */
   initialMode?: Mode;
+  /** Whether the site has ever been published — drives the persistent publish bar. */
+  isPublished?: boolean;
   children: React.ReactNode;
 }
 
@@ -114,6 +118,7 @@ export function EditorShell({
   storefrontUrl,
   previewToken,
   initialMode = 'light',
+  isPublished = false,
   children,
 }: EditorShellProps) {
   const pathname = usePathname();
@@ -196,13 +201,25 @@ export function EditorShell({
     [mode, post]
   );
 
+  // Persistent publish strip — always visible across every Site Builder scope so
+  // "Publish" is never more than a glance away (it previously had no home in the
+  // UI at all). Server-action backed; safe to render full-width above the panes.
+  const topBar = (
+    <div className="border-b border-[var(--color-border-default)] px-4 py-2">
+      <PublishBar isPublished={isPublished} hasUnpublishedChanges={false} />
+    </div>
+  );
+
   // Inspector full-width for non-canvas scopes (Brand, Publishing, and any route
   // not yet migrated). The context is still provided so those pages can mount
   // without special-casing.
   if (!canvasVisible) {
     return (
       <EditorCanvasContext.Provider value={api}>
-        <div className="px-6 py-8 lg:px-10">{children}</div>
+        <div className="flex flex-col">
+          {topBar}
+          <div className="px-6 py-8 lg:px-10">{children}</div>
+        </div>
       </EditorCanvasContext.Provider>
     );
   }
@@ -238,6 +255,7 @@ export function EditorShell({
   return (
     <EditorCanvasContext.Provider value={api}>
       <div className="flex h-[calc(100vh-3.5rem)] flex-col">
+        {topBar}
         {/* Mobile-only Edit/Preview switch; on lg both panes show side by side. */}
         <PaneSwitch pane={mobilePane} onChange={setMobilePane} className="lg:hidden" />
         <div className="min-h-0 flex-1 lg:grid lg:grid-cols-[minmax(320px,400px)_1fr]">

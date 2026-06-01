@@ -35,7 +35,7 @@ describe('section registry', () => {
   });
 
   it('new landing sections are registered and addable on the home target', () => {
-    for (const type of ['panels', 'media-text', 'stats'] as const) {
+    for (const type of ['panels', 'media-text', 'stats', 'carousel'] as const) {
       expect(getSectionDefinition(type)?.type).toBe(type);
       expect(isSectionAllowedInTarget(type, 'site:home')).toBe(true);
     }
@@ -49,6 +49,19 @@ describe('section registry', () => {
         ],
       })
     ).toThrow();
+  });
+
+  it('carousel defaults + bounds (≤8 slides, autoplay off, intervals 2..15)', () => {
+    const cfg = defaultSectionConfig('carousel');
+    expect(cfg.autoplay).toBe(false);
+    expect(cfg.intervalSec).toBe(6);
+    expect(cfg.height).toBe('lg');
+    // Slide count caps at 8.
+    const nine = Array.from({ length: 9 }, () => ({ heading: 'x' }));
+    expect(() => parseSectionConfig('carousel', { items: nine })).toThrow();
+    // Interval is clamped to a sane range.
+    expect(() => parseSectionConfig('carousel', { intervalSec: 1 })).toThrow();
+    expect(() => parseSectionConfig('carousel', { intervalSec: 99 })).toThrow();
   });
 
   it('validates and fills section config from partial input', () => {
