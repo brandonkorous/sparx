@@ -11,3 +11,4 @@ export * from './admin';
 export * from './synonyms';
 export * from './keys';
 export * from './mcp-tools';
+export * from './projector';

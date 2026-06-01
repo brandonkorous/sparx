@@ -7,6 +7,7 @@ import { getClient } from './client';
 import {
   allSchemas,
   CUSTOMERS_COLLECTION,
+  ENTITIES_COLLECTION,
   ORDERS_COLLECTION,
   PRODUCTS_COLLECTION,
 } from './schemas';
@@ -70,6 +71,7 @@ const STAT_QUERY_BY: Record<string, string> = {
   [PRODUCTS_COLLECTION]: 'title',
   [CUSTOMERS_COLLECTION]: 'full_name',
   [ORDERS_COLLECTION]: 'order_number',
+  [ENTITIES_COLLECTION]: 'title',
 };
 
 /**
@@ -83,7 +85,12 @@ export async function collectionStats(
   tenantId: string,
   client: Client = getClient()
 ): Promise<CollectionStat[]> {
-  const names = [PRODUCTS_COLLECTION, CUSTOMERS_COLLECTION, ORDERS_COLLECTION];
+  const names = [
+    PRODUCTS_COLLECTION,
+    CUSTOMERS_COLLECTION,
+    ORDERS_COLLECTION,
+    ENTITIES_COLLECTION,
+  ];
   const out: CollectionStat[] = [];
   for (const name of names) {
     try {

@@ -1,4 +1,4 @@
-export type { EventType, SparxEvent, EmailSendPayload } from './types';
+export type { EventType, SparxEvent, EmailSendPayload, SearchEntityChangedPayload } from './types';
 export {
   createPublisher,
   publishEvent,
@@ -7,3 +7,4 @@ export {
   type PublisherLogger,
   type CreatePublisherOptions,
 } from './publisher';
+export { indexEntity, type IndexEntityInput } from './index-entity';

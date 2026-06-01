@@ -7,6 +7,8 @@ import type { Client } from 'typesense';
 import {
   CUSTOMERS_COLLECTION,
   type CustomerSearchDocument,
+  ENTITIES_COLLECTION,
+  type UniversalSearchDocument,
   ORDERS_COLLECTION,
   type OrderSearchDocument,
   PRODUCTS_COLLECTION,
@@ -73,6 +75,13 @@ export function bulkUpsertOrders(
   batchSize = DEFAULT_BATCH
 ): Promise<ImportDocumentsResult> {
   return importBatched(ORDERS_COLLECTION, docs, batchSize);
+}
+
+export function bulkUpsertEntities(
+  docs: UniversalSearchDocument[],
+  batchSize = DEFAULT_BATCH
+): Promise<ImportDocumentsResult> {
+  return importBatched(ENTITIES_COLLECTION, docs, batchSize);
 }
 
 /** Delete every document for a tenant from a collection. Used when a

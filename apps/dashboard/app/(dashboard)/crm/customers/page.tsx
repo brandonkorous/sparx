@@ -41,6 +41,20 @@ interface CustomerListRow {
   updatedAt: string;
 }
 
+// Typesense customer search document (the subset this list needs). Returned by
+// /v1/search/customers — typo-tolerant across name / email / company.
+interface CustomerSearchDoc {
+  customer_id: string;
+  full_name: string;
+  email?: string;
+  company?: string;
+  type: 'prospect' | 'retail' | 'b2b';
+  total_spent_cents: number;
+  order_count: number;
+  last_order_at?: number; // epoch seconds
+  created_at: number; // epoch seconds
+}
+
 // CRM customers list — the customer table with filter bar. Reached from the
 // CRM overview (/crm) and the "Customers" panel section.
 //
@@ -86,18 +100,45 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
     ? (stringParam(params.sort) as SortKey)
     : ('updatedAt' satisfies SortKey);
 
-  const query = new URLSearchParams();
-  query.set('take', '100');
-  query.set('sort_by', sort);
-  if (type === 'prospect' || type === 'retail' || type === 'b2b') query.set('type', type);
-  if (tag) query.set('tag', tag);
-  if (q) query.set('q', q);
-
-  const [{ data: customers, meta }, prefs] = await Promise.all([
-    api.getPaged<CustomerListRow[]>(`/v1/crm/customers?${query.toString()}`),
-    getUserPreferences(),
-  ]);
-  const total = (meta?.total as number | undefined) ?? customers.length;
+  // With a query, search via Typesense (typo-tolerant across name / email /
+  // company); without one, list straight from Postgres with the type facet +
+  // sort. The search doc carries full_name (not first/last) and omits the DNC
+  // flag + updated date, so those degrade gracefully on search-result rows.
+  const prefsPromise = getUserPreferences();
+  let customers: CustomerListRow[];
+  let total: number;
+  if (q) {
+    const sq = new URLSearchParams({ q, per_page: '100' });
+    const { data, meta } = await api.getPaged<CustomerSearchDoc[]>(
+      `/v1/search/customers?${sq.toString()}`
+    );
+    customers = data.map((d) => ({
+      id: d.customer_id,
+      type: d.type,
+      firstName: d.full_name, // search indexes a combined name → drives the display name
+      lastName: null,
+      company: d.company ?? null,
+      email: d.email ?? null,
+      doNotContact: false, // not indexed
+      orderCount: d.order_count,
+      totalSpent: d.total_spent_cents / 100,
+      lastOrderAt: d.last_order_at ? new Date(d.last_order_at * 1000).toISOString() : null,
+      updatedAt: new Date(d.created_at * 1000).toISOString(), // "updated" not indexed — show created
+    }));
+    total = (meta?.total as number | undefined) ?? customers.length;
+  } else {
+    const query = new URLSearchParams();
+    query.set('take', '100');
+    query.set('sort_by', sort);
+    if (type === 'prospect' || type === 'retail' || type === 'b2b') query.set('type', type);
+    if (tag) query.set('tag', tag);
+    const { data, meta } = await api.getPaged<CustomerListRow[]>(
+      `/v1/crm/customers?${query.toString()}`
+    );
+    customers = data;
+    total = (meta?.total as number | undefined) ?? customers.length;
+  }
+  const prefs = await prefsPromise;
   // `?view=` overrides; absent → the user's saved default.
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
