@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import { ConfirmProvider, THEME_INIT_SCRIPT, Toaster, TooltipProvider } from '@sparx/ui';
 import { PostHogProvider } from '../components/posthog-provider';
 import './globals.css';
@@ -21,12 +22,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme="light" suppressHydrationWarning className={interWordmark.variable}>
-      <head>
-        {/* Runs before React hydrates, so the persisted theme is applied
-            to <html> before paint — no FOUC. See @sparx/ui/use-theme. */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-      </head>
       <body>
+        {/* Applies the persisted theme to <html> before paint (no FOUC).
+            `beforeInteractive` injects this into the server HTML ahead of
+            hydration, so React never reconciles a content-bearing <script> in
+            the tree (React 19 warns on that). See @sparx/ui/use-theme. */}
+        <Script id="sparx-theme-init" strategy="beforeInteractive">
+          {THEME_INIT_SCRIPT}
+        </Script>
         <PostHogProvider>
           <TooltipProvider delayDuration={150}>
             <ConfirmProvider>{children}</ConfirmProvider>

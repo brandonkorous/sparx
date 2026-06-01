@@ -45,7 +45,7 @@ export default async function SitebuilderOverview() {
           <Link href="/sitebuilder/design">Edit theme &amp; design</Link>
         </Button>
         <Button asChild variant="outline" shape="block">
-          <Link href="/sitebuilder/pages">Manage pages</Link>
+          <Link href="/sitebuilder/layouts">Manage layouts</Link>
         </Button>
         <Button asChild variant="outline" shape="block">
           <Link href="/sitebuilder/brand">Edit brand</Link>

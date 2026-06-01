@@ -79,20 +79,24 @@ import emailWebhookRoutes from './routes/v1/public/email-webhook.js';
 import dashboardRoutes from './routes/v1/dashboard.js';
 import searchRoutes from './routes/v1/search.js';
 import { bootstrapProviders } from './lib/providers-bootstrap.js';
+import pretty from 'pino-pretty';
 
 function loggerOptions(): FastifyServerOptions['logger'] {
   if (env.NODE_ENV === 'test') return false;
   if (env.NODE_ENV === 'development') {
+    // pino-pretty as a SYNCHRONOUS in-process stream — NOT a `transport`
+    // worker. The worker path runs through thread-stream, which crashes the
+    // whole server on boot under Node 24 with an inspector attached
+    // ("Error: this should not happen: undefined"). A direct sync stream keeps
+    // the colorized dev logs with no worker thread to fall over.
     return {
       level: env.LOG_LEVEL,
-      transport: {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-          translateTime: 'HH:MM:ss.l',
-          ignore: 'pid,hostname',
-        },
-      },
+      stream: pretty({
+        colorize: true,
+        translateTime: 'HH:MM:ss.l',
+        ignore: 'pid,hostname',
+        sync: true,
+      }),
     };
   }
   return { level: env.LOG_LEVEL };

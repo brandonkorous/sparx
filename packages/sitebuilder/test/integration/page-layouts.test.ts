@@ -7,7 +7,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { sectionService, pageLayoutService } from '../../src/services/index.js';
-import { SitebuilderValidationError } from '../../src/errors.js';
+import { SitebuilderNotFoundError, SitebuilderValidationError } from '../../src/errors.js';
 import { disposeTestContext, makeTestContext, type TestContext } from '../helpers.js';
 
 describe('sitebuilder page layouts', () => {
@@ -154,5 +154,79 @@ describe('sitebuilder page layouts', () => {
     await expect(sectionService.create(test.ctx, { sectionType: 'hero' })).rejects.toBeInstanceOf(
       SitebuilderValidationError
     );
+  });
+
+  // ── P-D: instantiate from a Page Template + getById / rename / remove ──────
+
+  it('instantiate(product-default) — NEW named layout seeded from the template; key from name', async () => {
+    const layout = await pageLayoutService.instantiate(test.ctx, {
+      targetId: 'commerce:product',
+      templateId: 'product-default',
+      name: 'Spotlight',
+    });
+    expect(layout.targetId).toBe('commerce:product');
+    expect(layout.key).toBe('spotlight');
+    expect(layout.name).toBe('Spotlight');
+    const sections = await sectionService.listForPageLayout(test.ctx, layout.id);
+    expect(sections.map((s) => s.sectionType)).toEqual([
+      'product-buy-box',
+      'product-description',
+      'product-fitment',
+      'product-reviews',
+      'product-questions',
+      'product-related',
+    ]);
+
+    // A second layout with the same name gets a unique key (no collision).
+    const dup = await pageLayoutService.instantiate(test.ctx, {
+      targetId: 'commerce:product',
+      templateId: 'blank',
+      name: 'Spotlight',
+    });
+    expect(dup.key).toBe('spotlight-2');
+  });
+
+  it('instantiate — a bound template is rejected for a mismatched target', async () => {
+    await expect(
+      pageLayoutService.instantiate(test.ctx, {
+        targetId: 'commerce:collection',
+        templateId: 'product-default',
+      })
+    ).rejects.toBeInstanceOf(SitebuilderValidationError);
+  });
+
+  it('instantiate(blank) — fits a no-binding target; empty composition; explicit key honored', async () => {
+    const layout = await pageLayoutService.instantiate(test.ctx, {
+      targetId: 'cms:content-page',
+      templateId: 'blank',
+      name: 'Lookbook',
+      key: 'lookbook',
+    });
+    expect(layout.key).toBe('lookbook');
+    const sections = await sectionService.listForPageLayout(test.ctx, layout.id);
+    expect(sections).toHaveLength(0);
+  });
+
+  it('getById / rename / remove — fetch, relabel, cascade-delete', async () => {
+    const layout = await pageLayoutService.instantiate(test.ctx, {
+      targetId: 'commerce:product',
+      templateId: 'blank',
+      name: 'Temp',
+    });
+    expect((await pageLayoutService.getById(test.ctx, layout.id)).id).toBe(layout.id);
+
+    const renamed = await pageLayoutService.rename(test.ctx, layout.id, { name: 'Renamed' });
+    expect(renamed.name).toBe('Renamed');
+
+    await pageLayoutService.remove(test.ctx, layout.id);
+    await expect(pageLayoutService.getById(test.ctx, layout.id)).rejects.toBeInstanceOf(
+      SitebuilderNotFoundError
+    );
+  });
+
+  it('getById — unknown id rejects', async () => {
+    await expect(
+      pageLayoutService.getById(test.ctx, '00000000-0000-0000-0000-000000000000')
+    ).rejects.toBeInstanceOf(SitebuilderNotFoundError);
   });
 });

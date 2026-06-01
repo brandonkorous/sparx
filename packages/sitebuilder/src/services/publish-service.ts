@@ -20,6 +20,7 @@ import { publishSitebuilderEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { SitebuilderNotFoundError } from '../errors';
 import { getOrCreateConfig } from './_config';
+import { readAssignmentSnapshot } from './assignment-service';
 import {
   materializeWithinTx,
   publishWithinTx,
@@ -166,7 +167,14 @@ export async function getPublishedSnapshot(ctx: ServiceContext): Promise<Publish
     const version = await tx.siteVersion.findUnique({ where: { id: config.publishedVersionId } });
     if (!version) return null;
     const presentation = readPresentation(version.settingsSnapshot);
-    return overlayBrand(tx, ctx.tenantId, toPublishedSnapshot(version), presentation);
+    const withBrand = await overlayBrand(
+      tx,
+      ctx.tenantId,
+      toPublishedSnapshot(version),
+      presentation
+    );
+    const assignments = await readAssignmentSnapshot(tx, ctx.tenantId);
+    return { ...withBrand, assignments };
   });
 }
 
@@ -191,6 +199,8 @@ export async function getDraftSnapshot(ctx: ServiceContext): Promise<PublishedSn
       sections: draft.sections,
       layout: draft.layout,
     };
-    return overlayBrand(tx, ctx.tenantId, snapshot, presentation);
+    const withBrand = await overlayBrand(tx, ctx.tenantId, snapshot, presentation);
+    const assignments = await readAssignmentSnapshot(tx, ctx.tenantId);
+    return { ...withBrand, assignments };
   });
 }

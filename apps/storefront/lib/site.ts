@@ -52,6 +52,12 @@ export interface PublishedSnapshot {
   compiledV2?: CompiledThemeV2;
   sections: SectionSnapshot[];
   layout: LayoutSnapshot[];
+  // Layout resolver maps (docs/36 §6): per-target default layoutKey + per-item
+  // override layoutKeys. Absent → every item uses the `default` layout.
+  assignments?: {
+    defaults: Record<string, string>;
+    items: { targetId: string; itemRef: string; layoutKey: string }[];
+  };
 }
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
@@ -137,18 +143,45 @@ export function sectionsForTarget(
     .sort((a, b) => a.position - b.position);
 }
 
+// Resolve the layoutKey for a (target, item) via the cascade (docs/36 §6):
+// per-item override → per-target default → the `default` key.
+function resolveLayoutKey(
+  snapshot: PublishedSnapshot | null,
+  targetId: string,
+  itemRef?: string
+): string {
+  const a = snapshot?.assignments;
+  if (!a) return 'default';
+  if (itemRef) {
+    const hit = a.items.find((i) => i.targetId === targetId && i.itemRef === itemRef);
+    if (hit) return hit.layoutKey;
+  }
+  return a.defaults[targetId] ?? 'default';
+}
+
 /**
- * The sections to render for a product/collection page: the merchant's published
- * layout for that target, or — when they have none — the code-defined seeded
- * default (day-one parity, no DB rows). Synthesizes renderable SectionSnapshots
- * from the default composition.
+ * The sections to render for a product/collection page: the layout that resolves
+ * for THIS item (per-item override → per-target default → `default` key), or —
+ * when that layout has no published sections — the code-defined seeded default
+ * (day-one parity, no DB rows). Synthesizes renderable SectionSnapshots from the
+ * default composition. `itemRef` is the record's stable id (docs/36 §6).
+ *
+ * `forcedKey` (editor preview only, gated to a preview token) renders a SPECIFIC
+ * named layout directly, bypassing the cascade — so the dashboard canvas can show
+ * the exact alternate layout being edited. The code-default fallback applies ONLY
+ * to the canonical `default` key: a named alternate with no sections previews as
+ * empty (the merchant is building it), never as the seeded default.
  */
 export function resolveTemplateSections(
   snapshot: PublishedSnapshot | null,
-  targetId: 'commerce:product' | 'commerce:collection'
+  targetId: 'commerce:product' | 'commerce:collection',
+  itemRef?: string,
+  forcedKey?: string
 ): SectionSnapshot[] {
-  const published = sectionsForTarget(snapshot, targetId);
+  const layoutKey = forcedKey ?? resolveLayoutKey(snapshot, targetId, itemRef);
+  const published = sectionsForTarget(snapshot, targetId, layoutKey);
   if (published.length > 0) return published;
+  if (layoutKey !== 'default') return [];
   return DEFAULT_TEMPLATES[targetId].map((s, i) => ({
     id: `default-${targetId}-${i}`,
     targetId,

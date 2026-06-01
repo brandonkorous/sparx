@@ -27,6 +27,7 @@ import {
   saveTheme,
   selectTheme,
   updateBrand,
+  updateSavedTheme,
   updateSettings,
   type BrandPatch,
 } from '../_lib/actions';
@@ -89,6 +90,13 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
   );
 
   const [savedThemes, setSavedThemes] = React.useState<SiteThemeDto[]>(initialSaved);
+  // The saved theme currently selected for editing (null = editing a prebuilt
+  // base). When set, presentation edits write back into that theme (below).
+  const [activeSavedThemeId, setActiveSavedThemeId] = React.useState<string | null>(null);
+  const activeSavedIdRef = React.useRef(activeSavedThemeId);
+  React.useEffect(() => {
+    activeSavedIdRef.current = activeSavedThemeId;
+  }, [activeSavedThemeId]);
   const [mode, setMode] = React.useState<Mode>(
     config.appearancePolicy === 'dark-only' ? 'dark' : 'light'
   );
@@ -181,6 +189,38 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     return () => clearTimeout(t);
   }, [brandPatch]);
 
+  // ── Write brand "look" edits back into the selected saved theme ─────────────
+  // Separate from the tenant-brand save above: that always persists to /v1/brand
+  // (so "apply to brand everywhere" works); this only fires when a saved theme is
+  // selected, snapshotting the look into it so re-applying it later restores the
+  // edit. On selection/apply/detach we re-baseline without writing.
+  const themeBrandBaselineRef = React.useRef<string | null>(null);
+  const prevActiveSavedRef = React.useRef<string | null>(null);
+  React.useEffect(() => {
+    const sid = activeSavedThemeId;
+    const cur = JSON.stringify(brandCols);
+    if (sid !== prevActiveSavedRef.current) {
+      prevActiveSavedRef.current = sid;
+      themeBrandBaselineRef.current = sid ? cur : null;
+      return;
+    }
+    if (!sid || cur === themeBrandBaselineRef.current) return;
+    const t = setTimeout(() => {
+      void (async () => {
+        const res = await updateSavedTheme(sid, { brand: brandCols });
+        if (res.ok && res.data) {
+          const saved = res.data;
+          themeBrandBaselineRef.current = cur;
+          setSavedThemes((s) => s.map((x) => (x.id === sid ? saved : x)));
+        } else {
+          setError(res.error ?? 'Could not update this theme.');
+          setStatus('error');
+        }
+      })();
+    }, 600);
+    return () => clearTimeout(t);
+  }, [brandCols, activeSavedThemeId]);
+
   // ── Debounced autosave: presentation ───────────────────────────────────────
   const draftTokens = React.useRef(config.draftSettings.tokens);
   const draftCss = React.useRef(config.draftSettings.customCss);
@@ -194,13 +234,28 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
         const res = await updateSettings({
           settings: { tokens: draftTokens.current, customCss: draftCss.current, presentation },
         });
-        if (res.ok) {
-          savedPresRef.current = cur;
-          setStatus('saved');
-        } else {
+        if (!res.ok) {
           setError(res.error ?? 'Could not save theme settings.');
           setStatus('error');
+          return;
         }
+        // If a saved theme is selected, the same presentation edit also writes
+        // back into that theme so "select and tweak" actually modifies it.
+        const sid = activeSavedIdRef.current;
+        if (sid) {
+          const upd = await updateSavedTheme(sid, { presentation });
+          if (upd.ok && upd.data) {
+            const saved = upd.data;
+            setSavedThemes((s) => s.map((x) => (x.id === sid ? saved : x)));
+          } else {
+            setError(upd.error ?? 'Could not update this theme.');
+            setStatus('error');
+            savedPresRef.current = cur; // config saved — don't re-loop on it
+            return;
+          }
+        }
+        savedPresRef.current = cur;
+        setStatus('saved');
       })();
     }, 600);
     return () => clearTimeout(t);
@@ -209,6 +264,9 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
   // ── Theme / saved-theme actions ────────────────────────────────────────────
   const onSelectPreset = (key: string) => {
     setThemeKey(key);
+    // Switching to a prebuilt base detaches from any saved theme being edited
+    // (a saved theme's base is fixed; you're now editing the live draft).
+    setActiveSavedThemeId(null);
     startTransition(async () => {
       setStatus('saving');
       const res = await selectTheme(key);
@@ -238,9 +296,21 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
   const onSaveCurrent = (name: string) => {
     startTransition(async () => {
       setStatus('saving');
-      const res = await saveTheme({ name, basePresetKey: themeKey, presentation });
+      // Capture the full look: base preset + presentation overlay + brand
+      // identity (colours/fonts/shape), so the theme is a self-contained snapshot.
+      const res = await saveTheme({
+        name,
+        basePresetKey: themeKey,
+        presentation,
+        brand: brandCols,
+      });
       if (res.ok && res.data) {
-        setSavedThemes((s) => [...s, res.data!]);
+        const created = res.data;
+        setSavedThemes((s) => [...s, created]);
+        // The freshly-saved theme becomes the one you're editing, so further
+        // tweaks flow back into it.
+        setActiveSavedThemeId(created.id);
+        savedPresRef.current = JSON.stringify(presentation);
         setStatus('saved');
       } else {
         setError(res.error ?? 'Could not save this theme yet.');
@@ -249,11 +319,27 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     });
   };
 
+  const onRenameSaved = (id: string, name: string) => {
+    setSavedThemes((s) => s.map((t) => (t.id === id ? { ...t, name } : t))); // optimistic
+    startTransition(async () => {
+      const res = await updateSavedTheme(id, { name });
+      if (res.ok && res.data) {
+        const renamed = res.data;
+        setSavedThemes((s) => s.map((t) => (t.id === id ? renamed : t)));
+      } else {
+        setError(res.error ?? 'Could not rename this theme.');
+        setStatus('error');
+      }
+    });
+  };
+
   const onDeleteSaved = (id: string) => {
     startTransition(async () => {
       const res = await deleteSavedTheme(id);
-      if (res.ok) setSavedThemes((s) => s.filter((t) => t.id !== id));
-      else {
+      if (res.ok) {
+        setSavedThemes((s) => s.filter((t) => t.id !== id));
+        if (activeSavedIdRef.current === id) setActiveSavedThemeId(null);
+      } else {
         setError(res.error ?? 'Could not delete this theme.');
         setStatus('error');
       }
@@ -265,6 +351,23 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     if (!t) return;
     setThemeKey(t.basePresetKey);
     setPresentation(t.presentation);
+    // Load the theme's captured brand "look" into state. That changes brandPatch,
+    // so the brand autosave writes it to /v1/brand — i.e. applying a theme updates
+    // the tenant brand everywhere (the chosen "apply to brand" model). Legacy
+    // themes with no snapshot (brand === null) leave the current brand untouched.
+    const tb = t.brand;
+    if (tb) {
+      setColorPrimary(tb.colorPrimary ?? null);
+      setColorPrimaryForeground(tb.colorPrimaryForeground ?? null);
+      setColorAccent(tb.colorAccent ?? null);
+      setColorAccentForeground(tb.colorAccentForeground ?? null);
+      setFontHeading(tb.fontHeading ?? null);
+      setFontBody(tb.fontBody ?? null);
+      setTokens(tb.tokens ?? {});
+    }
+    // This saved theme is now the one being edited — presentation AND brand edits
+    // write back into it (see the autosave effects).
+    setActiveSavedThemeId(id);
     // The apply endpoint persists base + presentation server-side; mark the
     // presentation as saved so the autosave effect doesn't redundantly re-PATCH.
     savedPresRef.current = JSON.stringify(t.presentation);
@@ -301,10 +404,12 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
           <ThemeRail
             savedThemes={savedThemes}
             activeThemeKey={themeKey}
+            activeSavedThemeId={activeSavedThemeId}
             onSelectPreset={onSelectPreset}
             onResetOverrides={onResetOverrides}
             onApplySaved={onApplySaved}
             onSaveCurrent={onSaveCurrent}
+            onRenameSaved={onRenameSaved}
             onDeleteSaved={onDeleteSaved}
             busy={pending}
           />

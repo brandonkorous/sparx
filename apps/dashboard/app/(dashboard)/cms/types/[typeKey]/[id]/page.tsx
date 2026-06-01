@@ -1,9 +1,14 @@
 import { notFound } from 'next/navigation';
 import type { FieldDef } from '@sparx/cms-schemas';
+import { cmsContentTypeTargetId } from '@sparx/sitebuilder-schemas';
 import { Badge, Container, PageHeader, Stack, Text } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { EditEntryForm } from './edit-entry-form';
+// Site-Builder-owned layout assignment (docs/36 §6). The content type's stable
+// `key` is the target identifier; the entry id is the item. Self-hides when Site
+// Builder is inactive. Only shown for types that have storefront pages.
+import { LayoutAssignmentSection } from '../../../../sitebuilder/_components/layout-assignment-section';
 
 export const dynamic = 'force-dynamic';
 
@@ -70,6 +75,13 @@ export default async function EditEntryPage({ params }: PageProps) {
           initialBody={entry.body}
           initialStatus={entry.status}
         />
+        {type.url_pattern ? (
+          <LayoutAssignmentSection
+            targetId={cmsContentTypeTargetId(type.key)}
+            itemRef={entry.id}
+            note="Saved now; takes effect on the storefront once content pages render through layouts."
+          />
+        ) : null}
       </Stack>
     </Container>
   );

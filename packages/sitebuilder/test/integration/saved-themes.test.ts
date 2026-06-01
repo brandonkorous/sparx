@@ -23,16 +23,20 @@ describe('sitebuilder saved themes', () => {
     await disposeTestContext(test);
   });
 
-  it('create — saves a named presentation variant; list is sorted by name', async () => {
+  it('create — saves a named presentation variant + brand snapshot; list is sorted by name', async () => {
     const summer = await savedThemeService.create(test.ctx, {
       name: 'Summer',
       basePresetKey: 'apex',
       presentation: { containerWidth: '1200px' },
+      brand: { colorPrimary: '#ff5a1f', fontHeading: 'Poppins' },
     });
     summerId = summer.id;
     expect(summer.name).toBe('Summer');
     expect(summer.basePresetKey).toBe('apex');
     expect(summer.presentation.containerWidth).toBe('1200px');
+    // The captured brand "look" round-trips (docs/33 self-contained themes).
+    expect(summer.brand?.colorPrimary).toBe('#ff5a1f');
+    expect(summer.brand?.fontHeading).toBe('Poppins');
 
     await savedThemeService.create(test.ctx, {
       name: 'Holiday',
@@ -44,13 +48,16 @@ describe('sitebuilder saved themes', () => {
     expect(list.map((t) => t.name)).toEqual(['Holiday', 'Summer']);
   });
 
-  it('update — renames and replaces the presentation', async () => {
+  it('update — renames and replaces the presentation + brand', async () => {
     const updated = await savedThemeService.update(test.ctx, summerId, {
       name: 'Summer Sale',
       presentation: { containerWidth: '1280px' },
+      brand: { colorPrimary: '#2f7d32' },
     });
     expect(updated.name).toBe('Summer Sale');
     expect(updated.presentation.containerWidth).toBe('1280px');
+    // Brand edits write back into the snapshot ("select and tweak").
+    expect(updated.brand?.colorPrimary).toBe('#2f7d32');
   });
 
   it('apply — loads the saved theme into the working draft (theme + presentation), no publish', async () => {

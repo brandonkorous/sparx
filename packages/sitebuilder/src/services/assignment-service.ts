@@ -161,6 +161,20 @@ export function getResolution(
   });
 }
 
+export interface LayoutDefaultView {
+  targetId: string;
+  pageLayoutId: string;
+}
+
+/** Every per-target tenant default (powers the Layouts surface's default
+ *  badges). Per-item overrides are listed by target via `listForTarget`. */
+export function listDefaults(ctx: ServiceContext): Promise<LayoutDefaultView[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.siteLayoutDefault.findMany({ orderBy: { targetId: 'asc' } });
+    return rows.map((r) => ({ targetId: r.targetId, pageLayoutId: r.pageLayoutId }));
+  });
+}
+
 /** All per-item overrides for a target (admin/listing). */
 export function listForTarget(ctx: ServiceContext, targetId: string): Promise<AssignmentView[]> {
   return withTenant(ctx, async (tx) => {
