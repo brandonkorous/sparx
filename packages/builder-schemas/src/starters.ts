@@ -302,7 +302,9 @@ function siteLayoutTree(): BuilderNode {
           node('NavMenu', { props: { orientation: 'row' }, bind: 'site.primaryNav' }),
         ],
       }),
-      node('Outlet'),
+      node('Outlet', {
+        box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
+      }),
       node('Section', {
         box: {
           name: 'Footer',

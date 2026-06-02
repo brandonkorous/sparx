@@ -14,7 +14,9 @@ import type { BuilderNode, DataSources } from '@sparx/builder-schemas';
 
 import { publicGet, type ApiEntry } from './content';
 import { listProducts, type PublicProductListItem } from './commerce';
+import { getNavByLocation, type NavNode } from './site';
 import { mediaUrl } from './media';
+import type { ResolvedTenant } from './tenant';
 
 function walkBindings(node: BuilderNode, visit: (path: string) => void): void {
   if (node.binding?.path) visit(node.binding.path);
@@ -111,5 +113,40 @@ export async function loadBuilderData(tenantSlug: string, tree: BuilderNode): Pr
   }
 
   await Promise.all(tasks);
+  return root;
+}
+
+// ── Site layout data (docs/45 §4) ────────────────────────────────────────────
+// The chrome (header/footer) binds to the `site` sources. Unlike page data,
+// these reference the platform's EXISTING stores (brand identity, CMS nav) — the
+// Builder keeps no parallel copy. Nested nav is flattened to the top level for
+// v1 (docs/45 §7); social binds to the tenant brand's socials, which the public
+// tenant payload doesn't carry yet, so it's sourced empty for now.
+
+function navToItems(nodes: NavNode[]): Array<{ label: string; url: string }> {
+  return nodes.map((n) => ({ label: n.label, url: n.href }));
+}
+
+/** Build the `site` resolver root for the layout renderer: brand identity from
+ *  the resolved tenant, header/footer nav from the CMS navigation menus. */
+export async function loadSiteData(tenant: ResolvedTenant): Promise<DataSources> {
+  const root: DataSources = {};
+
+  const logo = mediaUrl(tenant.theme?.logoMediaId ?? null, tenant.slug);
+  setAtPath(root, 'site.identity', {
+    name: tenant.name,
+    tagline: '',
+    logo: logo ? { url: logo, alt: tenant.name } : null,
+  });
+
+  // getNavByLocation already degrades to [] on failure / no menu.
+  const [header, footer] = await Promise.all([
+    getNavByLocation(tenant.slug, 'header'),
+    getNavByLocation(tenant.slug, 'footer'),
+  ]);
+  setAtPath(root, 'site.primaryNav', navToItems(header));
+  setAtPath(root, 'site.footerNav', navToItems(footer));
+  setAtPath(root, 'site.social', []);
+
   return root;
 }

@@ -1,9 +1,10 @@
-// Storefront read for PUBLISHED Builder pages (docs/44). A published singleton
-// Builder page serves at `/{slug}`; this fetches its node tree from api-rest's
-// public endpoint. Returns null when no published page has that slug (or the
-// read fails) so the catch-all route falls through to the legacy paths.
+// Storefront reads for PUBLISHED Builder content (docs/44, docs/45). A published
+// singleton Builder page serves at `/{slug}`; a published Builder LAYOUT is the
+// chrome shell wrapping every page. Both fetch from api-rest's public endpoints
+// and return null when nothing is published (or the read fails) so the
+// storefront falls through to the legacy paths.
 
-import type { PublishedPageDto } from '@sparx/builder-schemas';
+import type { PublishedLayoutDto, PublishedPageDto } from '@sparx/builder-schemas';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
@@ -33,6 +34,32 @@ export async function getPublishedBuilderPage(
       }
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedPageDto> | ErrorEnvelope;
+    if (!res.ok || 'error' in json) return null;
+    return json.data;
+  } catch {
+    return null;
+  }
+}
+
+/** The tenant's PUBLISHED site layout — the chrome shell wrapping every page
+ *  (docs/45 §2.6). Null when the tenant has never published a layout (or the
+ *  read fails), so the storefront renders its legacy header/footer instead. */
+export async function getPublishedBuilderLayout(
+  tenantSlug: string
+): Promise<PublishedLayoutDto | null> {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/v1/public/builder/layout?tenant=${encodeURIComponent(tenantSlug)}`,
+      {
+        // The layout changes on publish; the publish flow can purge this tag
+        // (builder-layout:<tenant>) later. Falls back to TTL until then.
+        next: {
+          revalidate: 300,
+          tags: ['sparx-storefront', `tenant:${tenantSlug}`, `builder-layout:${tenantSlug}`],
+        },
+      }
+    );
+    const json = (await res.json()) as SuccessEnvelope<PublishedLayoutDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return null;
     return json.data;
   } catch {

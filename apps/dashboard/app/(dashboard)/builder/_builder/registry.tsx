@@ -408,7 +408,9 @@ const DEFS: ComponentDef[] = [
     showHeight: false,
     surfaces: ['site'],
     props: [],
-    defaults: { box: { padding: 'none' } },
+    // Edge-to-edge: the routed page manages its own width (its sections do
+    // contained/full themselves), so the outlet never constrains it.
+    defaults: { box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' } },
     renderLeaf: () => (
       <div className="bx-outlet">
         <SquareDashed className="bx-outlet__icon" aria-hidden />

@@ -27,8 +27,11 @@ import { PreviewBridge } from '@/components/preview-bridge';
 import { RevealController } from '@/components/reveal-controller';
 import { SiteHeader, type NavItem } from '@/components/site-header';
 import { SiteFooter, type FooterColumn } from '@/components/site-footer';
+import { BuilderSiteChrome } from '@/components/builder-renderer';
 import { listCollections } from '@/lib/commerce';
 import { getLegalFooterLinks } from '@/lib/legal';
+import { getPublishedBuilderLayout } from '@/lib/builder';
+import { loadSiteData } from '@/lib/builder-data';
 import { ConsentManager } from '@/components/consent/consent-manager';
 import { mediaUrl } from '@/lib/media';
 import { resolveTenant, type TenantTheme } from '@/lib/tenant';
@@ -165,6 +168,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const sitePreviewToken = (await headers()).get('x-sparx-site-preview') ?? undefined;
   const snapshot = tenant ? await getPublishedSite(tenant.slug, sitePreviewToken) : null;
 
+  // A published Builder layout (docs/45) is the chrome shell, and it WINS over
+  // the legacy header/footer when present — the additive "Builder owns it, else
+  // fall through" pattern (cf. the page render path, docs/44 §2.5). Its chrome
+  // binds to the `site` sources resolved here. The snapshot is still read above
+  // for THEME (the Builder layout carries chrome, not tokens).
+  const builderLayout = tenant ? await getPublishedBuilderLayout(tenant.slug) : null;
+  const siteData = tenant && builderLayout ? await loadSiteData(tenant) : null;
+
   // Active base theme preset (additive registry) for the no-snapshot path.
   const themePreset = (tenant?.settings as { theme?: { preset?: string } } | undefined)?.theme
     ?.preset;
@@ -193,8 +204,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   // Default chrome (no snapshot, or snapshot block without a menu): derive nav
   // from the tenant's collections so a brand-new store still has working links.
+  // Skipped entirely when a Builder layout owns the chrome.
   let collectionNav: NavItem[] = [];
-  if (tenant) {
+  if (tenant && !builderLayout) {
     try {
       const collections = await listCollections(tenant.slug);
       collectionNav = collections.slice(0, 4).map((c) => ({
@@ -236,11 +248,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   ];
 
   // Snapshot nav menus override the defaults when present + non-empty.
-  if (tenant && headerBlock?.navigationMenuId) {
+  if (tenant && !builderLayout && headerBlock?.navigationMenuId) {
     const items = await getNavigationMenu(tenant.slug, headerBlock.navigationMenuId);
     if (items.length > 0) nav = navNodesToItems(items);
   }
-  if (tenant && footerBlock?.navigationMenuId) {
+  if (tenant && !builderLayout && footerBlock?.navigationMenuId) {
     const items = await getNavigationMenu(tenant.slug, footerBlock.navigationMenuId);
     const cols = navNodesToFooterColumns(items);
     if (cols.length > 0) footerColumns = cols;
@@ -251,7 +263,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // footer above is default or nav-menu-driven, since legal links are
   // compliance-driven, not editorial. Omitted entirely when nothing is
   // published yet.
-  if (tenant) {
+  if (tenant && !builderLayout) {
     const legalLinks = await getLegalFooterLinks(tenant.slug);
     if (legalLinks.length > 0) {
       footerColumns = [
@@ -293,30 +305,42 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <a href="#sf-main" className="sf-skip-link">
                     Skip to content
                   </a>
-                  <SiteHeader
-                    tenant={tenant}
-                    nav={nav}
-                    announcement={announcement}
-                    announcementHref={blankToNull(announceConfig.linkUrl)}
-                    showSearch={headerConfig.showSearch ?? true}
-                    logoPlacement={headerConfig.logoPlacement ?? 'left'}
-                    overlay={headerConfig.overlay ?? false}
-                    modeToggle={
-                      policy === 'toggle' ? <ModeToggle initial={initialTheme} /> : undefined
-                    }
-                  />
-                  <main className="sf-main" id="sf-main" tabIndex={-1}>
-                    {children}
-                  </main>
-                  <SiteFooter
-                    tenant={tenant}
-                    columns={footerColumns}
-                    year={FOOTER_YEAR}
-                    copyright={blankToNull(footerConfig.copyright)}
-                    socialLinks={socialLinks.map((s) => ({ platform: s.platform, url: s.url }))}
-                    variant={footerConfig.variant ?? 'columns'}
-                    tagline={blankToNull(footerConfig.tagline)}
-                  />
+                  {builderLayout && siteData ? (
+                    // A published Builder layout owns the chrome: render its tree
+                    // with the page dropped at the Outlet (docs/45 §2.6).
+                    <BuilderSiteChrome tree={builderLayout.tree} data={siteData}>
+                      <main className="sf-main" id="sf-main" tabIndex={-1}>
+                        {children}
+                      </main>
+                    </BuilderSiteChrome>
+                  ) : (
+                    <>
+                      <SiteHeader
+                        tenant={tenant}
+                        nav={nav}
+                        announcement={announcement}
+                        announcementHref={blankToNull(announceConfig.linkUrl)}
+                        showSearch={headerConfig.showSearch ?? true}
+                        logoPlacement={headerConfig.logoPlacement ?? 'left'}
+                        overlay={headerConfig.overlay ?? false}
+                        modeToggle={
+                          policy === 'toggle' ? <ModeToggle initial={initialTheme} /> : undefined
+                        }
+                      />
+                      <main className="sf-main" id="sf-main" tabIndex={-1}>
+                        {children}
+                      </main>
+                      <SiteFooter
+                        tenant={tenant}
+                        columns={footerColumns}
+                        year={FOOTER_YEAR}
+                        copyright={blankToNull(footerConfig.copyright)}
+                        socialLinks={socialLinks.map((s) => ({ platform: s.platform, url: s.url }))}
+                        variant={footerConfig.variant ?? 'columns'}
+                        tagline={blankToNull(footerConfig.tagline)}
+                      />
+                    </>
+                  )}
                 </div>
                 <MiniCart />
                 <ConsentManager tenant={tenant.slug} config={tenant.consent} />

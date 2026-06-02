@@ -59,6 +59,72 @@ function prettifySlug(slug: string): string {
     .join(' ');
 }
 
+// Navigation item resolution — shared by the by-id and by-location reads. An
+// item resolves to an href (an internal published CMS page, or an external URL);
+// items with no resolvable href are dropped — and their descendants with them,
+// so the storefront never renders a dead link. Tree-shaped via parentItemId.
+interface RawNavItem {
+  id: string;
+  parentItemId: string | null;
+  position: number;
+  label: string;
+  externalUrl: string | null;
+  openInNewTab: boolean;
+  entry: { slug: string | null; status: string; deletedAt: Date | null } | null;
+}
+interface PublicNavNode {
+  id: string;
+  label: string;
+  href: string;
+  openInNewTab: boolean;
+  children: PublicNavNode[];
+}
+
+function buildNavTree(items: RawNavItem[]): PublicNavNode[] {
+  const hrefFor = (item: RawNavItem): string | null => {
+    if (item.externalUrl) return item.externalUrl;
+    const e = item.entry;
+    if (e?.slug && e.status === 'published' && !e.deletedAt) return `/${e.slug}`;
+    return null;
+  };
+  const byParent = new Map<string | null, RawNavItem[]>();
+  for (const item of items) {
+    const key = item.parentItemId;
+    const bucket = byParent.get(key) ?? [];
+    bucket.push(item);
+    byParent.set(key, bucket);
+  }
+  const build = (parentId: string | null): PublicNavNode[] =>
+    (byParent.get(parentId) ?? []).flatMap((item) => {
+      const href = hrefFor(item);
+      if (!href) return [];
+      return [
+        {
+          id: item.id,
+          label: item.label,
+          href,
+          openInNewTab: item.openInNewTab,
+          children: build(item.id),
+        },
+      ];
+    });
+  return build(null);
+}
+
+const NAV_ITEM_SELECT = {
+  orderBy: { position: 'asc' },
+  select: {
+    id: true,
+    parentItemId: true,
+    position: true,
+    label: true,
+    externalUrl: true,
+    openInNewTab: true,
+    // Only published, non-deleted target pages resolve to a link.
+    entry: { select: { slug: true, status: true, deletedAt: true } },
+  },
+} as const;
+
 const publicContentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/content/entries', async (request) => {
     const q = ListQuery.parse(request.query);
@@ -134,67 +200,44 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     const menu = await withTenant({ tenantId }, (tx) =>
       tx.navigationMenu.findUnique({
         where: { id },
-        select: {
-          id: true,
-          location: true,
-          name: true,
-          items: {
-            orderBy: { position: 'asc' },
-            select: {
-              id: true,
-              parentItemId: true,
-              position: true,
-              label: true,
-              externalUrl: true,
-              openInNewTab: true,
-              // Only published, non-deleted target pages resolve to a link.
-              entry: { select: { slug: true, status: true, deletedAt: true } },
-            },
-          },
-        },
+        select: { id: true, location: true, name: true, items: NAV_ITEM_SELECT },
       })
     );
     if (!menu) throw notFound('Navigation menu', id);
+    return ok({
+      id: menu.id,
+      location: menu.location,
+      name: menu.name,
+      items: buildNavTree(menu.items),
+    });
+  });
 
-    interface NavNode {
-      id: string;
-      label: string;
-      href: string;
-      openInNewTab: boolean;
-      children: NavNode[];
-    }
-    const hrefFor = (item: (typeof menu.items)[number]): string | null => {
-      if (item.externalUrl) return item.externalUrl;
-      const e = item.entry;
-      if (e?.slug && e.status === 'published' && !e.deletedAt) return `/${e.slug}`;
-      return null;
-    };
+  // Public navigation menu read BY LOCATION — the Builder site layout (docs/45)
+  // binds its chrome nav to `site.primaryNav` (location 'header') /
+  // `site.footerNav` (location 'footer'); the storefront resolves those here
+  // without needing a menu id. One menu per (tenant, location). Same item
+  // resolution as the by-id read. 404 when the tenant has no menu at that
+  // location (the chrome nav then renders empty).
+  app.get('/v1/public/content/navigation/by-location/:location', async (request) => {
+    const { location } = z
+      .object({ location: z.string().min(1).max(63) })
+      .parse(request.params);
+    const q = z.object({ tenant: z.string().min(1).max(63) }).parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
 
-    // Build the tree, dropping items with no resolvable href (and, with them,
-    // any descendants — a child of a dead parent has no place to hang).
-    const byParent = new Map<string | null, typeof menu.items>();
-    for (const item of menu.items) {
-      const key = item.parentItemId;
-      const bucket = byParent.get(key) ?? [];
-      bucket.push(item);
-      byParent.set(key, bucket);
-    }
-    const build = (parentId: string | null): NavNode[] =>
-      (byParent.get(parentId) ?? []).flatMap((item) => {
-        const href = hrefFor(item);
-        if (!href) return [];
-        return [
-          {
-            id: item.id,
-            label: item.label,
-            href,
-            openInNewTab: item.openInNewTab,
-            children: build(item.id),
-          },
-        ];
-      });
-
-    return ok({ id: menu.id, location: menu.location, name: menu.name, items: build(null) });
+    const menu = await withTenant({ tenantId }, (tx) =>
+      tx.navigationMenu.findUnique({
+        where: { tenantId_location: { tenantId, location } },
+        select: { id: true, location: true, name: true, items: NAV_ITEM_SELECT },
+      })
+    );
+    if (!menu) throw notFound('Navigation menu', location);
+    return ok({
+      id: menu.id,
+      location: menu.location,
+      name: menu.name,
+      items: buildNavTree(menu.items),
+    });
   });
 
   // Public legal-document placements — the storefront resolves a tenant's

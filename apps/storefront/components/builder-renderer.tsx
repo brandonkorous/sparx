@@ -257,7 +257,104 @@ function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.Re
         />
       );
     }
-    // Signup (interactive) lands in Slice B.
+    // ── Site chrome (docs/45) ────────────────────────────────────────────────
+    case 'Logo': {
+      const identity =
+        value && typeof value === 'object'
+          ? (value as { name?: unknown; logo?: unknown })
+          : null;
+      const name = typeof identity?.name === 'string' ? identity.name : '';
+      const img = firstImage(identity?.logo);
+      return (
+        <a
+          href="/"
+          style={{ display: 'inline-flex', alignItems: 'center', color: 'inherit', textDecoration: 'none' }}
+        >
+          {img?.url ? (
+            <img
+              src={img.url}
+              alt={img.alt ?? name}
+              style={{ height: '2rem', width: 'auto', display: 'block' }}
+            />
+          ) : (
+            <span
+              style={{
+                fontFamily: 'var(--sf-font-heading)',
+                fontWeight: 700,
+                fontSize: '1.25rem',
+                letterSpacing: '-0.02em',
+              }}
+            >
+              {name || 'Brand'}
+            </span>
+          )}
+        </a>
+      );
+    }
+    case 'NavMenu': {
+      const orientation = str('orientation') || 'row';
+      const items = Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
+      return (
+        <nav
+          style={{
+            display: 'flex',
+            flexDirection: orientation === 'stack' ? 'column' : 'row',
+            gap: orientation === 'stack' ? '0.5rem' : '1.25rem',
+            flexWrap: 'wrap',
+            alignItems: orientation === 'stack' ? 'flex-start' : 'center',
+          }}
+        >
+          {items.map((it, i) => {
+            const label = typeof it.label === 'string' ? it.label : '';
+            const url = typeof it.url === 'string' ? it.url : '#';
+            if (!label) return null;
+            return (
+              <a
+                key={`${i}-${label}`}
+                href={url}
+                style={{
+                  color: 'inherit',
+                  textDecoration: 'none',
+                  fontWeight: 500,
+                  fontSize: '0.95rem',
+                }}
+              >
+                {label}
+              </a>
+            );
+          })}
+        </nav>
+      );
+    }
+    case 'SocialLinks': {
+      const items = Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
+      if (items.length === 0) return null;
+      return (
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          {items.map((it, i) => {
+            const platform = typeof it.platform === 'string' ? it.platform : '';
+            const url = typeof it.url === 'string' ? it.url : '#';
+            return (
+              <a
+                key={`${i}-${platform}`}
+                href={url}
+                aria-label={platform || 'social link'}
+                style={{
+                  color: 'inherit',
+                  textDecoration: 'none',
+                  fontSize: '0.85rem',
+                  textTransform: 'capitalize',
+                }}
+              >
+                {platform}
+              </a>
+            );
+          })}
+        </div>
+      );
+    }
+    // Outlet is handled in RenderNode (it renders the routed page, not a leaf
+    // value); Signup (interactive) lands later.
     default:
       return null;
   }
@@ -265,7 +362,17 @@ function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.Re
 
 // ── Recursive node ───────────────────────────────────────────────────────────
 
-function RenderNode({ node, scope }: { node: BuilderNode; scope: Scope }): React.ReactNode {
+function RenderNode({
+  node,
+  scope,
+  outlet,
+}: {
+  node: BuilderNode;
+  scope: Scope;
+  /** The routed page content, rendered where an `Outlet` node sits (site layout
+   *  only — undefined when rendering a page tree, which has no Outlet). */
+  outlet?: React.ReactNode;
+}): React.ReactNode {
   const isContainer = CONTAINERS.has(node.type);
   const bound = Boolean(node.binding);
   const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
@@ -275,22 +382,32 @@ function RenderNode({ node, scope }: { node: BuilderNode; scope: Scope }): React
   const innerStyle = isContainer && node.layout ? { ...inner, ...layoutStyle(node.layout) } : inner;
 
   let body: React.ReactNode;
-  if (isContainer) {
+  if (node.type === 'Outlet') {
+    // The content outlet: render the routed page here (docs/45 §2.6).
+    body = outlet ?? null;
+  } else if (isContainer) {
     const kids = node.children ?? [];
     if (bound && card === 'array') {
       // Iterate: each record scopes its subtree to `item`.
       body = (value as unknown[]).flatMap((item, i) =>
         kids.map((child) => (
-          <RenderNode key={`${i}:${child.id}`} node={child} scope={{ ...scope, item, index: i }} />
+          <RenderNode
+            key={`${i}:${child.id}`}
+            node={child}
+            scope={{ ...scope, item, index: i }}
+            outlet={outlet}
+          />
         ))
       );
     } else if (bound && card === 'object') {
       // Set scope: render once, descendants resolve item.*
       body = kids.map((child) => (
-        <RenderNode key={child.id} node={child} scope={{ ...scope, item: value }} />
+        <RenderNode key={child.id} node={child} scope={{ ...scope, item: value }} outlet={outlet} />
       ));
     } else {
-      body = kids.map((child) => <RenderNode key={child.id} node={child} scope={scope} />);
+      body = kids.map((child) => (
+        <RenderNode key={child.id} node={child} scope={scope} outlet={outlet} />
+      ));
     }
   } else {
     body = renderLeaf(node, value, bound);
@@ -307,6 +424,25 @@ export function BuilderRenderer({ tree, data }: { tree: BuilderNode; data: DataS
   return (
     <div className="bx-render" data-builder-page>
       <RenderNode node={tree} scope={{ root: data }} />
+    </div>
+  );
+}
+
+/** The site LAYOUT renderer (docs/45 §2.6): the published chrome tree, with the
+ *  routed page dropped at its `Outlet`. The chrome binds to the `site` sources
+ *  (nav / identity / social) resolved by `loadSiteData`. */
+export function BuilderSiteChrome({
+  tree,
+  data,
+  children,
+}: {
+  tree: BuilderNode;
+  data: DataSources;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bx-render" data-builder-layout>
+      <RenderNode node={tree} scope={{ root: data }} outlet={children} />
     </div>
   );
 }

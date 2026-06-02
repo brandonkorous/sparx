@@ -252,3 +252,26 @@ export async function getNavigationMenu(tenantSlug: string, menuId: string): Pro
     return [];
   }
 }
+
+/** Resolve a CMS NavigationMenu BY LOCATION ('header' / 'footer') into nav nodes.
+ *  The Builder site layout (docs/45) binds its chrome nav to a location, not a
+ *  menu id. Returns [] when the tenant has no menu at that location (or on
+ *  failure) so the chrome nav renders empty. */
+export async function getNavByLocation(tenantSlug: string, location: string): Promise<NavNode[]> {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/v1/public/content/navigation/by-location/${encodeURIComponent(location)}?tenant=${encodeURIComponent(tenantSlug)}`,
+      {
+        next: {
+          revalidate: 300,
+          tags: ['sparx-storefront', `content:${tenantSlug}`, `site:${tenantSlug}`],
+        },
+      }
+    );
+    const json = (await res.json()) as SuccessEnvelope<NavMenu> | ErrorEnvelope;
+    if (!res.ok || 'error' in json) return [];
+    return json.data.items;
+  } catch {
+    return [];
+  }
+}
