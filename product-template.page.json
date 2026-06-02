@@ -1,0 +1,55 @@
+{
+  "format": "sparx.builder/v1",
+  "type": "page",
+  "name": "Product page",
+  "kind": "collection",
+  "recordType": "commerce.product",
+  "tree": {
+    "type": "Section",
+    "box": { "name": "Product", "padding": "lg", "backgroundWidth": "full", "contentWidth": "contained" },
+    "layout": { "direction": "stack", "gap": "lg" },
+    "children": [
+      {
+        "type": "Section",
+        "box": { "name": "PDP", "padding": "none", "contentWidth": "full" },
+        "layout": { "direction": "row", "gap": "lg", "alignItems": "start" },
+        "children": [
+          {
+            "type": "ImageDisplay",
+            "box": { "name": "Gallery" },
+            "props": { "ratio": "square" },
+            "binding": { "path": "product.images" }
+          },
+          {
+            "type": "Stack",
+            "box": { "name": "Buy", "padding": "none" },
+            "layout": { "direction": "stack", "gap": "md" },
+            "children": [
+              { "type": "Heading", "box": { "name": "Title" }, "props": { "level": "h1" }, "binding": { "path": "product.title" } },
+              { "type": "PriceTag", "box": { "name": "Price" }, "props": {}, "binding": { "path": "product.price" } },
+              {
+                "type": "ProductForm",
+                "box": { "name": "Buy form", "padding": "none" },
+                "layout": { "direction": "stack", "gap": "md" },
+                "binding": { "path": "product" },
+                "children": [
+                  { "type": "VariantPicker", "box": { "name": "Options" }, "props": {} },
+                  {
+                    "type": "Stack",
+                    "box": { "name": "Add row", "padding": "none" },
+                    "layout": { "direction": "row", "gap": "sm", "alignItems": "center" },
+                    "children": [
+                      { "type": "Quantity", "box": { "name": "Qty" }, "props": {} },
+                      { "type": "AddToCart", "box": { "name": "Add" }, "props": { "label": "Add to cart" } }
+                    ]
+                  }
+                ]
+              },
+              { "type": "Text", "box": { "name": "Description" }, "props": { "variant": "body" }, "binding": { "path": "product.description" } }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

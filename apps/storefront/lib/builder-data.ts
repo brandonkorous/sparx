@@ -4,19 +4,21 @@
 // the shared resolver (`resolvePath`) reads — the real-record analogue of the
 // editor's `buildPreviewData`.
 //
-// Scope: ARRAY sources only — `cms.<type>` (collection) + `commerce.product`.
-// These cover singleton pages that iterate / pick `[0]`. Object record sources
-// (`blog_post.*`, `product.*`) and `crm.list` belong to per-record collection
-// templates (Slice B) and resolve to empty here, so those nodes render their
-// empty state rather than erroring.
+// Scope: ARRAY sources — `cms.<type>` (collection) + `commerce.product` — cover
+// singleton pages that iterate / pick `[0]`. For per-record COLLECTION templates
+// (docs/44 §3 B) the caller passes the in-scope `record` ({ key:'product', value })
+// which is injected at `root.product` / `root.page` / `root.blog_post` so the
+// tree's `product.*` / `page.*` bindings resolve to that one record. `crm.list`
+// still resolves empty until its loader lands.
 
 import type { BuilderNode, DataSources } from '@sparx/builder-schemas';
 
 import { publicGet, type ApiEntry } from './content';
-import { listProducts, type PublicProductListItem } from './commerce';
+import { listProducts, type PublicProduct, type PublicProductListItem } from './commerce';
 import { getNavByLocation, type NavNode } from './site';
 import { mediaUrl } from './media';
 import type { ResolvedTenant } from './tenant';
+import type { BuilderProduct } from '../components/builder-commerce';
 
 function walkBindings(node: BuilderNode, visit: (path: string) => void): void {
   if (node.binding?.path) visit(node.binding.path);
@@ -78,9 +80,58 @@ function mapProduct(p: PublicProductListItem, tenantSlug: string): Record<string
   };
 }
 
+/** Map a full PublicProduct into the BuilderProduct the collection template
+ *  binds: the `product.*` leaf fields (title/price/description/images/sku) PLUS
+ *  options + variants (cents preserved) so the Tier-2 buy-box resolves a selected
+ *  variant. The single in-scope record for a `commerce.product` collection page. */
+export function productToBuilderRecord(
+  p: PublicProduct,
+  tenantSlug: string,
+  currency: string
+): BuilderProduct {
+  return {
+    title: p.title,
+    price: p.priceMinCents != null ? p.priceMinCents / 100 : null,
+    compareAtPrice: p.compareAtCents != null ? p.compareAtCents / 100 : null,
+    description: p.description ?? '',
+    images: p.images
+      .map((img) => ({
+        url: mediaUrl(img.mediaAssetId, tenantSlug) ?? '',
+        alt: img.alt ?? p.title,
+      }))
+      .filter((i) => i.url !== ''),
+    sku: p.variants.find((v) => v.isDefault)?.sku ?? p.variants[0]?.sku ?? '',
+    currency,
+    priceMinCents: p.priceMinCents,
+    priceMaxCents: p.priceMaxCents,
+    options: p.options.map((o) => ({
+      id: o.id,
+      name: o.name,
+      displayType: o.displayType,
+      values: o.values.map((v) => ({ id: v.id, value: v.value, swatchHex: v.swatchHex })),
+    })),
+    variants: p.variants.map((v) => ({
+      id: v.id,
+      sku: v.sku,
+      priceCents: v.priceCents,
+      compareAtPriceCents: v.compareAtPriceCents,
+      isDefault: v.isDefault,
+      inStock: v.inStock,
+      available: v.available,
+      optionValueIds: v.optionValueIds,
+    })),
+  };
+}
+
 /** Fetch every source the tree binds to and return the resolver `root`. A
- *  failed fetch degrades that source to empty rather than failing the page. */
-export async function loadBuilderData(tenantSlug: string, tree: BuilderNode): Promise<DataSources> {
+ *  failed fetch degrades that source to empty rather than failing the page.
+ *  `record` (collection templates) injects a single in-scope record at its
+ *  object key (`product`, `page`, `blog_post`) so `<key>.*` bindings resolve. */
+export async function loadBuilderData(
+  tenantSlug: string,
+  tree: BuilderNode,
+  record?: { key: string; value: unknown }
+): Promise<DataSources> {
   const { cmsTypes, commerce } = neededSources(tree);
   const root: DataSources = {};
   const tasks: Promise<void>[] = [];
@@ -113,6 +164,10 @@ export async function loadBuilderData(tenantSlug: string, tree: BuilderNode): Pr
   }
 
   await Promise.all(tasks);
+  // The in-scope record for a collection template (e.g. root.product = the one
+  // product). Set last; its key never collides with the array sources above
+  // (`product` vs `commerce.product`).
+  if (record) setAtPath(root, record.key, record.value);
   return root;
 }
 

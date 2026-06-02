@@ -9,6 +9,9 @@ import { notFound } from 'next/navigation';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SectionRenderer } from '@/components/section-renderer';
+import { BuilderRenderer } from '@/components/builder-renderer';
+import { getPublishedBuilderCollection } from '@/lib/builder';
+import { loadBuilderData, productToBuilderRecord } from '@/lib/builder-data';
 import {
   getProduct,
   listFitmentDomains,
@@ -63,6 +66,35 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   const sample = isSampleRequested(sp);
   const product = sample ? SAMPLE_PRODUCT : await getProduct(tenant.slug, handle);
   if (!product) notFound();
+
+  // The generic per-record router (docs/44 §3 B): a published Builder
+  // `commerce.product` collection template renders the PDP through the node tree
+  // — with the interactive Tier-2 buy-box — binding THIS product as `product`.
+  // Falls through to the legacy section template when none is published, so a
+  // tenant without a builder product page is unaffected. Sample-data previews
+  // (the merchant designing before a product exists) keep the legacy path.
+  if (!sample) {
+    const builderTemplate = await getPublishedBuilderCollection(tenant.slug, 'commerce.product');
+    if (builderTemplate) {
+      const currency = tenant.storefront.defaultCurrency;
+      const data = await loadBuilderData(tenant.slug, builderTemplate.tree, {
+        key: 'product',
+        value: productToBuilderRecord(product, tenant.slug, currency),
+      });
+      return (
+        <div className="sf-container">
+          <Breadcrumbs
+            items={[
+              { label: 'Home', href: '/' },
+              { label: 'Products', href: '/products' },
+              { label: product.title },
+            ]}
+          />
+          <BuilderRenderer tree={builderTemplate.tree} data={data} />
+        </div>
+      );
+    }
+  }
 
   // The commerce:product layout: the merchant's published one, or the seeded
   // default (parity). A site-preview token resolves the draft instead. In preview

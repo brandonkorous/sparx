@@ -255,3 +255,33 @@ export function getPublishedBySlug(
     };
   });
 }
+
+/** The collection-template read (docs/44 §3 B — the generic record router): the
+ *  PUBLISHED tree of the collection page that renders EVERY record of
+ *  `recordType` (e.g. `commerce.product`, `cms.page`, `cms.blog_post`), or null
+ *  when the tenant has published none. A tenant may keep several collection
+ *  pages for a type; the lowest-`position` PUBLISHED one wins (deterministic).
+ *  The storefront binds the in-scope record into this tree (`product.*` etc.). */
+export function getPublishedByRecordType(
+  ctx: ServiceContext,
+  recordType: string
+): Promise<PublishedPageDto | null> {
+  return withTenant(ctx, async (tx) => {
+    // Ordered candidates; pick the first PUBLISHED one. publishedTree's NULL
+    // check is in JS (Prisma is a type-only import here — cf. getPublishedBySlug).
+    const rows = await tx.builderPage.findMany({
+      where: { recordType, kind: 'collection' },
+      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+    });
+    const row = rows.find((r) => r.publishedTree != null);
+    if (row?.publishedTree == null) return null;
+    return {
+      name: row.name,
+      slug: row.slug ?? recordType,
+      kind: row.kind as BuilderPageKind,
+      recordType: row.recordType,
+      tree: row.publishedTree as unknown as BuilderNode,
+      publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
+    };
+  });
+}

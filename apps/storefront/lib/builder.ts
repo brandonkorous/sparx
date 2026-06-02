@@ -41,6 +41,29 @@ export async function getPublishedBuilderPage(
   }
 }
 
+/** The PUBLISHED collection template for a record type (docs/44 §3 B — the
+ *  generic per-record router): the tree that renders EVERY record of
+ *  `recordType` (`commerce.product`, `cms.page`, `cms.blog_post`, …). Null when
+ *  the tenant has published none, so the caller keeps its legacy render path.
+ *  The caller binds the in-scope record into the tree before rendering. */
+export async function getPublishedBuilderCollection(
+  tenantSlug: string,
+  recordType: string
+): Promise<PublishedPageDto | null> {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/v1/public/builder/collection?tenant=${encodeURIComponent(tenantSlug)}&recordType=${encodeURIComponent(recordType)}`,
+      // INTERIM: uncached so a publish reflects immediately (see getPublishedBuilderPage).
+      { cache: 'no-store' }
+    );
+    const json = (await res.json()) as SuccessEnvelope<PublishedPageDto> | ErrorEnvelope;
+    if (!res.ok || 'error' in json) return null;
+    return json.data;
+  } catch {
+    return null;
+  }
+}
+
 /** The tenant's PUBLISHED site layout — the chrome shell wrapping every page
  *  (docs/45 §2.6). Null when the tenant has never published a layout (or the
  *  read fails), so the storefront renders its legacy header/footer instead. */

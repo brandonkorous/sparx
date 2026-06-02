@@ -29,6 +29,14 @@ import {
 } from '@sparx/builder-schemas';
 
 import { BuilderCarousel } from './builder-carousel';
+import {
+  BuilderAddToCart,
+  BuilderBuyBox,
+  BuilderQuantity,
+  BuilderVariantPicker,
+  ProductFormProvider,
+  type BuilderProduct,
+} from './builder-commerce';
 
 // ── Box-base → CSS (mirrors the editor canvas scales, --sf-* tokens) ──────────
 
@@ -108,7 +116,7 @@ const TEXT_ALIGN: Record<AlignX, 'left' | 'center' | 'right'> = {
   end: 'right',
 };
 
-const CONTAINERS = new Set(['Section', 'Grid', 'Stack', 'Card', 'Carousel']);
+const CONTAINERS = new Set(['Section', 'Grid', 'Stack', 'Card', 'Carousel', 'ProductForm']);
 
 function layoutStyle(layout: LayoutBase): React.CSSProperties {
   const gap = GAP[layout.gap];
@@ -328,8 +336,30 @@ function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.Re
       );
     case 'Button': {
       const label = (bound ? asText(value) : '') || str('label') || 'Button';
-      return <span style={buttonStyle(str('style') || 'primary')}>{label}</span>;
+      const style = buttonStyle(str('style') || 'primary');
+      // A `href` turns the button into a real link (internal path or absolute
+      // URL); without one it stays a non-navigating span (e.g. a future
+      // form-submit / add-to-cart action owns its own behavior).
+      const href = str('href');
+      return href ? (
+        <a href={href} style={{ ...style, textDecoration: 'none' }}>
+          {label}
+        </a>
+      ) : (
+        <span style={style}>{label}</span>
+      );
     }
+    // Tier-2 commerce (docs/40 §7). BuyBox is self-contained (bound to `product`,
+    // value = the product object). The atoms read the shared ProductForm context
+    // established by a ProductForm container ancestor, so they ignore `value`.
+    case 'BuyBox':
+      return <BuilderBuyBox product={(value ?? {}) as BuilderProduct} />;
+    case 'VariantPicker':
+      return <BuilderVariantPicker />;
+    case 'Quantity':
+      return <BuilderQuantity />;
+    case 'AddToCart':
+      return <BuilderAddToCart label={str('label') || undefined} />;
     case 'Divider':
       return (
         <hr
@@ -631,6 +661,15 @@ function RenderNode({
     }
   } else {
     body = renderLeaf(node, value, bound);
+  }
+
+  // A ProductForm container establishes the shared buy-box context over its
+  // subtree, so VariantPicker/Quantity/AddToCart atoms placed inside stay in
+  // sync. Bound to `product` → `value` is the product object.
+  if (node.type === 'ProductForm') {
+    body = (
+      <ProductFormProvider product={(value ?? {}) as BuilderProduct}>{body}</ProductFormProvider>
+    );
   }
 
   return (

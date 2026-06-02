@@ -28,9 +28,13 @@ import {
   Menu,
   Minus,
   MousePointerClick,
+  Package,
+  Palette,
   PlayCircle,
   Rows3,
   Share2,
+  ShoppingBag,
+  ShoppingCart,
   Square,
   SquareDashed,
   Type,
@@ -340,6 +344,12 @@ const DEFS: ComponentDef[] = [
     props: [
       { key: 'label', label: 'Label', control: 'text', placeholder: 'Button label' },
       {
+        key: 'href',
+        label: 'Link URL',
+        control: 'text',
+        placeholder: '/products/model-3 or https://…',
+      },
+      {
         key: 'style',
         label: 'Style',
         control: 'select',
@@ -352,7 +362,7 @@ const DEFS: ComponentDef[] = [
         ],
       },
     ],
-    defaults: { props: { label: 'Button', style: 'primary' } },
+    defaults: { props: { label: 'Button', style: 'primary', href: '' } },
     renderLeaf: ({ node, value, bound }) => {
       const style = (node.props.style as string) ?? 'primary';
       const label = bound ? firstString(value, 'Button') : firstString(node.props.label, 'Button');
@@ -560,6 +570,103 @@ const DEFS: ComponentDef[] = [
         <span className="bx-signup__field">you@example.com</span>
         <span className="bx-btn bx-btn--primary">{firstString(node.props.cta, 'Subscribe')}</span>
       </div>
+    ),
+  },
+
+  // ---- Commerce buy-box (Tier 2 — interactive, docs/40 §7) ----
+  // ProductForm establishes the shared form context (selected variant + qty);
+  // the atoms inside it stay in sync. BuyBox is the cohesive convenience. These
+  // are interactive ONLY on the storefront — the editor shows a static preview.
+  {
+    type: 'ProductForm',
+    label: 'Product form',
+    kind: 'container',
+    group: 'data',
+    icon: Package,
+    module: 'commerce',
+    bindable: true,
+    accepts: ['object'],
+    surfaces: ['page'],
+    props: [],
+    defaults: { box: { padding: 'none' }, layout: { direction: 'stack', gap: 'md' } },
+    chromeClass: 'bx-productform',
+  },
+  {
+    type: 'BuyBox',
+    label: 'Buy box',
+    kind: 'leaf',
+    group: 'data',
+    icon: ShoppingBag,
+    module: 'commerce',
+    bindable: true,
+    accepts: ['object'],
+    surfaces: ['page'],
+    props: [],
+    defaults: {},
+    renderLeaf: () => (
+      <div
+        className="bx-buybox-preview"
+        style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+      >
+        <span className="bx-price">$0.00</span>
+        <div style={{ display: 'flex', gap: '0.4rem' }}>
+          <span className="bx-btn bx-btn--soft">Small</span>
+          <span className="bx-btn bx-btn--soft">Large</span>
+        </div>
+        <span className="bx-btn bx-btn--primary">Add to cart</span>
+      </div>
+    ),
+  },
+  {
+    type: 'VariantPicker',
+    label: 'Variant picker',
+    kind: 'leaf',
+    group: 'data',
+    icon: Palette,
+    module: 'commerce',
+    bindable: false,
+    accepts: [],
+    surfaces: ['page'],
+    props: [],
+    defaults: {},
+    renderLeaf: () => (
+      <div style={{ display: 'flex', gap: '0.4rem' }}>
+        <span className="bx-btn bx-btn--soft">Small</span>
+        <span className="bx-btn bx-btn--soft">Medium</span>
+        <span className="bx-btn bx-btn--soft">Large</span>
+      </div>
+    ),
+  },
+  {
+    type: 'Quantity',
+    label: 'Quantity',
+    kind: 'leaf',
+    group: 'data',
+    icon: Hash,
+    module: 'commerce',
+    bindable: false,
+    accepts: [],
+    surfaces: ['page'],
+    props: [],
+    defaults: {},
+    renderLeaf: () => (
+      <span style={{ display: 'inline-flex', gap: '0.6rem', alignItems: 'center' }}>− 1 +</span>
+    ),
+  },
+  {
+    type: 'AddToCart',
+    label: 'Add to cart',
+    kind: 'leaf',
+    group: 'data',
+    icon: ShoppingCart,
+    module: 'commerce',
+    bindable: false,
+    accepts: [],
+    surfaces: ['page'],
+    props: [{ key: 'label', label: 'Label', control: 'text', placeholder: 'Add to cart' }],
+    defaults: { props: { label: 'Add to cart' } },
+    renderLeaf: ({ node }) => (
+      <span className="bx-btn bx-btn--primary">{firstString(node.props.label, 'Add to cart')}</span>
     ),
   },
 

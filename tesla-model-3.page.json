@@ -1,0 +1,404 @@
+{
+  "format": "sparx.builder/v1",
+  "type": "page",
+  "name": "Model 3",
+  "kind": "singleton",
+  "slug": "model-3",
+  "tree": {
+    "type": "Section",
+    "box": { "name": "Model 3", "padding": "none", "backgroundWidth": "full", "contentWidth": "full" },
+    "layout": { "direction": "stack", "gap": "none" },
+    "children": [
+      {
+        "type": "Section",
+        "box": { "name": "APR banner", "surface": "brand", "backgroundWidth": "full", "contentWidth": "contained", "padding": "sm", "align": "center", "textTone": "light" },
+        "layout": { "direction": "row", "gap": "sm", "justify": "center", "alignItems": "center" },
+        "children": [
+          { "type": "Text", "props": { "variant": "meta", "text": "0.99% APR Available" } },
+          { "type": "Button", "props": { "label": "Order Now", "style": "link", "href": "/products/model-3" } }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": {
+          "name": "Hero",
+          "height": "full",
+          "backgroundWidth": "full",
+          "contentWidth": "contained",
+          "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Performance-Hero-Desktop-EMEA.jpg",
+          "overlay": "gradient",
+          "textTone": "light",
+          "align": "center",
+          "padding": "xl"
+        },
+        "layout": { "direction": "stack", "gap": "sm", "justify": "start", "alignItems": "center" },
+        "children": [
+          { "type": "Heading", "props": { "level": "h1", "text": "Model 3 Performance" } },
+          { "type": "Text", "props": { "variant": "body", "text": "Lease From $599/mo" } },
+          {
+            "type": "Stack",
+            "box": { "name": "Hero CTAs", "padding": "sm" },
+            "layout": { "direction": "row", "gap": "sm", "justify": "center", "alignItems": "center" },
+            "children": [
+              { "type": "Button", "props": { "label": "Order Now", "style": "primary", "href": "/products/model-3" } },
+              { "type": "Button", "props": { "label": "Demo Drive", "style": "glass", "href": "/products/model-3" } }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": { "name": "Meet Model 3", "padding": "xl", "contentWidth": "contained", "align": "center" },
+        "layout": { "direction": "stack", "gap": "lg", "alignItems": "stretch", "justify": "center" },
+        "children": [
+          { "type": "Heading", "props": { "level": "h2", "text": "Meet Model 3" } },
+          {
+            "type": "Grid",
+            "box": { "name": "Meet grid", "padding": "none" },
+            "layout": { "direction": "grid", "columns": 3, "gap": "md", "wrap": true },
+            "children": [
+              {
+                "type": "Card",
+                "box": { "name": "Convenience", "surface": "none", "height": "md", "padding": "md", "textTone": "light", "overlay": "dark", "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Meet-Carousel-Slide-1-Desktop-V2.png" },
+                "layout": { "direction": "stack", "gap": "sm", "justify": "end", "alignItems": "start" },
+                "children": [ { "type": "Heading", "props": { "level": "h3", "text": "Convenience" } } ]
+              },
+              {
+                "type": "Card",
+                "box": { "name": "Safety", "surface": "none", "height": "md", "padding": "md", "textTone": "light", "overlay": "dark", "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Meet-Carousel-Slide-2-Desktop.png" },
+                "layout": { "direction": "stack", "gap": "sm", "justify": "end", "alignItems": "start" },
+                "children": [ { "type": "Heading", "props": { "level": "h3", "text": "Safety" } } ]
+              },
+              {
+                "type": "Card",
+                "box": { "name": "Full Self-Driving", "surface": "none", "height": "md", "padding": "md", "textTone": "light", "overlay": "dark", "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Meet-Landing-Carousel-FSD-All.jpg" },
+                "layout": { "direction": "stack", "gap": "sm", "justify": "end", "alignItems": "start" },
+                "children": [ { "type": "Heading", "props": { "level": "h3", "text": "Full Self-Driving (Supervised)" } } ]
+              },
+              {
+                "type": "Card",
+                "box": { "name": "Warranties", "surface": "none", "height": "md", "padding": "md", "textTone": "light", "overlay": "dark", "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Meet-Carousel-Slide-Warranty-All-Devices.jpg" },
+                "layout": { "direction": "stack", "gap": "sm", "justify": "end", "alignItems": "start" },
+                "children": [ { "type": "Heading", "props": { "level": "h3", "text": "Warranties" } } ]
+              },
+              {
+                "type": "Card",
+                "box": { "name": "Efficiency", "surface": "none", "height": "md", "padding": "md", "textTone": "light", "overlay": "dark", "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Meet-Carousel-Slide-3-Desktop.png" },
+                "layout": { "direction": "stack", "gap": "sm", "justify": "end", "alignItems": "start" },
+                "children": [ { "type": "Heading", "props": { "level": "h3", "text": "Efficiency" } } ]
+              },
+              {
+                "type": "Card",
+                "box": { "name": "Design", "surface": "none", "height": "md", "padding": "md", "textTone": "light", "overlay": "dark", "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Meet-Carousel-Slide-4-Desktop.png" },
+                "layout": { "direction": "stack", "gap": "sm", "justify": "end", "alignItems": "start" },
+                "children": [ { "type": "Heading", "props": { "level": "h3", "text": "Design" } } ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": { "name": "Explore Model 3", "surface": "subtle", "padding": "xl", "contentWidth": "contained", "align": "center" },
+        "layout": { "direction": "stack", "gap": "lg", "alignItems": "stretch", "justify": "center" },
+        "children": [
+          { "type": "Heading", "props": { "level": "h2", "text": "Explore Model 3" } },
+          {
+            "type": "Stack",
+            "box": { "name": "Car render", "height": "md", "padding": "none", "backgroundWidth": "full", "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Toggle-Performance-Desktop.jpg" },
+            "layout": { "direction": "stack", "gap": "none" },
+            "children": []
+          },
+          {
+            "type": "Grid",
+            "box": { "name": "Stats", "padding": "none", "align": "center" },
+            "layout": { "direction": "grid", "columns": 3, "gap": "lg", "wrap": true },
+            "children": [
+              { "type": "Stat", "props": { "value": "321 mi", "label": "Range (EPA est.)" } },
+              { "type": "Stat", "props": { "value": "5.8 sec", "label": "0-60 mph" } },
+              { "type": "Stat", "props": { "value": "125 mph", "label": "Top Speed" } }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": { "name": "Our Most Affordable", "padding": "xl", "contentWidth": "contained" },
+        "layout": { "direction": "stack", "gap": "md" },
+        "children": [
+          { "type": "Heading", "props": { "level": "h2", "text": "Our Most Affordable" } },
+          { "type": "Text", "props": { "variant": "body", "text": "The new Standard is our most affordable vehicle ever, with the lowest cost of ownership and the range, performance and technology that made Model 3 the world's best-selling sedan." } }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": { "name": "Highlights", "padding": "xl", "contentWidth": "contained" },
+        "layout": { "direction": "grid", "columns": 3, "gap": "lg", "wrap": true },
+        "children": [
+          {
+            "type": "Stack",
+            "box": { "name": "Focused Design", "padding": "none" },
+            "layout": { "direction": "stack", "gap": "sm" },
+            "children": [
+              { "type": "Heading", "props": { "level": "h3", "text": "Focused Design" } },
+              { "type": "Text", "props": { "variant": "body", "text": "Functional, high-quality and refined, while embracing a minimalist design, reducing the same low without sacrificing quality." } }
+            ]
+          },
+          {
+            "type": "Stack",
+            "box": { "name": "Efficient Drive", "padding": "none" },
+            "layout": { "direction": "stack", "gap": "sm" },
+            "children": [
+              { "type": "Heading", "props": { "level": "h3", "text": "Efficient Drive" } },
+              { "type": "Text", "props": { "variant": "body", "text": "Charging is often cheaper than filling up a gas tank. Model 3 is designed to make sure that each charge lasts as long as possible, maximizing your range." } }
+            ]
+          },
+          {
+            "type": "Stack",
+            "box": { "name": "Minimal Maintenance", "padding": "none" },
+            "layout": { "direction": "stack", "gap": "sm" },
+            "children": [
+              { "type": "Heading", "props": { "level": "h3", "text": "Minimal Maintenance" } },
+              { "type": "Text", "props": { "variant": "body", "text": "Fewer vehicle parts, no oil changes and regenerative braking mean less wear, so Model 3 is built to need less time in the shop and more time on the road." } }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": {
+          "name": "Ride With Comfort",
+          "height": "lg",
+          "backgroundWidth": "full",
+          "contentWidth": "contained",
+          "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Premium-Hero-Desktop-EMEA.jpg",
+          "overlay": "dark",
+          "textTone": "light",
+          "align": "start",
+          "padding": "xl"
+        },
+        "layout": { "direction": "stack", "gap": "sm", "justify": "end", "alignItems": "start" },
+        "children": [
+          { "type": "Heading", "props": { "level": "h2", "text": "Ride With Comfort" } },
+          { "type": "Text", "props": { "variant": "body", "text": "The firm new exterior tactile seats and a heated steering wheel. Finished with premium materials throughout the cabin." } }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": {
+          "name": "Take Control",
+          "height": "md",
+          "backgroundWidth": "full",
+          "contentWidth": "contained",
+          "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Meet-Carousel-Slide-2-Desktop.png",
+          "overlay": "dark",
+          "textTone": "light",
+          "align": "end",
+          "padding": "xl"
+        },
+        "layout": { "direction": "stack", "gap": "sm", "justify": "center", "alignItems": "end" },
+        "children": [
+          { "type": "Heading", "props": { "level": "h2", "text": "Take Control" } },
+          { "type": "Text", "props": { "variant": "body", "text": "Control your view, audio and climate from the new touchscreen controls. Turn signals fade a swivel standard." } }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": { "name": "Always Connected", "padding": "xl", "contentWidth": "contained" },
+        "layout": { "direction": "stack", "gap": "lg" },
+        "children": [
+          { "type": "Heading", "props": { "level": "h2", "text": "Always Connected" } },
+          { "type": "Text", "props": { "variant": "body", "text": "Monitor, access and control your vehicle from anywhere remotely, on your phone with the Tesla app." } },
+          {
+            "type": "Grid",
+            "box": { "name": "Connected grid", "padding": "none" },
+            "layout": { "direction": "grid", "columns": 4, "gap": "md", "wrap": true },
+            "children": [
+              {
+                "type": "Card",
+                "box": { "name": "Remote Climate", "surface": "subtle", "padding": "md" },
+                "layout": { "direction": "stack", "gap": "sm" },
+                "children": [
+                  { "type": "Heading", "props": { "level": "h3", "text": "Remote Climate Control" } },
+                  { "type": "Text", "props": { "variant": "meta", "text": "Adjust your cabin temperature before your drive and keep it comfortable climate." } }
+                ]
+              },
+              {
+                "type": "Card",
+                "box": { "name": "Phone Key", "surface": "subtle", "padding": "md" },
+                "layout": { "direction": "stack", "gap": "sm" },
+                "children": [
+                  { "type": "Heading", "props": { "level": "h3", "text": "Phone Key" } },
+                  { "type": "Text", "props": { "variant": "meta", "text": "You won't forget your keys. Unlock your vehicle with your phone as it senses you near." } }
+                ]
+              },
+              {
+                "type": "Card",
+                "box": { "name": "Pet Mode", "surface": "subtle", "padding": "md" },
+                "layout": { "direction": "stack", "gap": "sm" },
+                "children": [
+                  { "type": "Heading", "props": { "level": "h3", "text": "Pet Mode" } },
+                  { "type": "Text", "props": { "variant": "meta", "text": "Maintain the climate to keep your pet safe and cozy while you're away." } }
+                ]
+              },
+              {
+                "type": "Card",
+                "box": { "name": "Sentry Mode", "surface": "subtle", "padding": "md" },
+                "layout": { "direction": "stack", "gap": "sm" },
+                "children": [
+                  { "type": "Heading", "props": { "level": "h3", "text": "Sentry Mode" } },
+                  { "type": "Text", "props": { "variant": "meta", "text": "Monitor your vehicle's surroundings while unattended by recording nearby activity." } }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": {
+          "name": "Engineered for Your Safety",
+          "height": "lg",
+          "backgroundWidth": "full",
+          "contentWidth": "contained",
+          "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Standard-Hero-Desktop-EMEA.jpg",
+          "overlay": "dark",
+          "textTone": "light",
+          "align": "start",
+          "padding": "xl"
+        },
+        "layout": { "direction": "stack", "gap": "sm", "justify": "end", "alignItems": "start" },
+        "children": [
+          { "type": "Heading", "props": { "level": "h2", "text": "Engineered for Your Safety" } },
+          { "type": "Text", "props": { "variant": "body", "text": "Safety is Tesla is paramount. Every Tesla vehicle is designed with impact-absorbing zones, a rigid passenger compartment to minimize intrusion and multiple airbags to help protect occupants." } }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": {
+          "name": "The Future of Travel is Autonomous",
+          "height": "lg",
+          "backgroundWidth": "full",
+          "contentWidth": "contained",
+          "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Meet-Landing-Carousel-FSD-All.jpg",
+          "overlay": "dark",
+          "textTone": "light",
+          "align": "start",
+          "padding": "xl"
+        },
+        "layout": { "direction": "stack", "gap": "sm", "justify": "end", "alignItems": "start" },
+        "children": [
+          { "type": "Heading", "props": { "level": "h2", "text": "The Future of Travel is Autonomous" } },
+          { "type": "Text", "props": { "variant": "body", "text": "Equipped with active safety features including Automatic Emergency Braking, Model 3 is engineered to help you in your daily commute. Upgrade to Full Self-Driving (Supervised) to unlock more features." } }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": { "name": "Autopilot highlights", "padding": "xl", "contentWidth": "contained" },
+        "layout": { "direction": "grid", "columns": 3, "gap": "lg", "wrap": true },
+        "children": [
+          {
+            "type": "Stack",
+            "box": { "name": "FSD", "padding": "none" },
+            "layout": { "direction": "stack", "gap": "sm" },
+            "children": [
+              { "type": "Heading", "props": { "level": "h3", "text": "Full Self-Driving (Supervised)" } },
+              { "type": "Text", "props": { "variant": "body", "text": "Your car will be able to drive itself almost anywhere with minimal driver intervention." } }
+            ]
+          },
+          {
+            "type": "Stack",
+            "box": { "name": "Cameras", "padding": "none" },
+            "layout": { "direction": "stack", "gap": "sm" },
+            "children": [
+              { "type": "Heading", "props": { "level": "h3", "text": "Front-Facing Cameras" } },
+              { "type": "Text", "props": { "variant": "body", "text": "A wide field of view and long-range visibility give the system a clear picture of the road ahead." } }
+            ]
+          },
+          {
+            "type": "Stack",
+            "box": { "name": "Blind Spot", "padding": "none" },
+            "layout": { "direction": "stack", "gap": "sm" },
+            "children": [
+              { "type": "Heading", "props": { "level": "h3", "text": "Blind Spot Monitoring" } },
+              { "type": "Text", "props": { "variant": "body", "text": "Cameras monitor the areas alongside your vehicle to help keep you safe when changing lanes." } }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": { "name": "Model 3 Specs", "surface": "inverse", "backgroundWidth": "full", "contentWidth": "contained", "padding": "xl", "textTone": "light" },
+        "layout": { "direction": "stack", "gap": "lg" },
+        "children": [
+          { "type": "Heading", "props": { "level": "h2", "text": "Model 3 Specs" } },
+          {
+            "type": "Stack",
+            "box": { "name": "Specs car", "height": "md", "padding": "none", "backgroundWidth": "full", "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Specs-LR-RWD-Desktop-Imperial.png" },
+            "layout": { "direction": "stack", "gap": "none" },
+            "children": []
+          },
+          {
+            "type": "Grid",
+            "box": { "name": "Spec columns", "padding": "none" },
+            "layout": { "direction": "grid", "columns": 3, "gap": "lg", "wrap": true },
+            "children": [
+              {
+                "type": "Stack",
+                "box": { "name": "Performance", "padding": "none" },
+                "layout": { "direction": "stack", "gap": "sm" },
+                "children": [
+                  { "type": "Heading", "props": { "level": "h3", "text": "Rear-Wheel Drive" } },
+                  { "type": "Stat", "props": { "value": "321 mi", "label": "Range (EPA est.)" } },
+                  { "type": "Stat", "props": { "value": "5.8 sec", "label": "0-60 mph" } },
+                  { "type": "Stat", "props": { "value": "125 mph", "label": "Top Speed" } }
+                ]
+              },
+              {
+                "type": "Stack",
+                "box": { "name": "Dimensions", "padding": "none" },
+                "layout": { "direction": "stack", "gap": "sm" },
+                "children": [
+                  { "type": "Heading", "props": { "level": "h3", "text": "Dimensions" } },
+                  { "type": "Text", "props": { "variant": "meta", "text": "Wheels: 18\" or 19\"" } },
+                  { "type": "Text", "props": { "variant": "meta", "text": "Cargo: 23 cu ft" } },
+                  { "type": "Text", "props": { "variant": "meta", "text": "Seating: 5 adults" } },
+                  { "type": "Text", "props": { "variant": "meta", "text": "Weight: 3,891 lbs" } }
+                ]
+              },
+              {
+                "type": "Stack",
+                "box": { "name": "Charging", "padding": "none" },
+                "layout": { "direction": "stack", "gap": "sm" },
+                "children": [
+                  { "type": "Heading", "props": { "level": "h3", "text": "Charging" } },
+                  { "type": "Text", "props": { "variant": "meta", "text": "Peak Rate: 250 kW (Supercharger)" } },
+                  { "type": "Text", "props": { "variant": "meta", "text": "Up to 175 mi in 15 min" } },
+                  { "type": "Text", "props": { "variant": "meta", "text": "Onboard Charger: 11.5 kW" } }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": { "name": "Order CTA", "padding": "xl", "contentWidth": "contained", "align": "center" },
+        "layout": { "direction": "stack", "gap": "md", "alignItems": "center", "justify": "center" },
+        "children": [
+          { "type": "Heading", "props": { "level": "h2", "text": "Model 3" } },
+          { "type": "Button", "props": { "label": "Order Now", "style": "primary", "href": "/products/model-3" } }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": { "name": "Footer", "surface": "muted", "backgroundWidth": "full", "contentWidth": "contained", "padding": "lg" },
+        "layout": { "direction": "row", "gap": "md", "justify": "between", "alignItems": "center" },
+        "children": [
+          { "type": "Text", "props": { "variant": "meta", "text": "Tesla Model 3 — recreated in Sparx Builder" } },
+          { "type": "Text", "props": { "variant": "meta", "text": "Built with Sparx" } }
+        ]
+      }
+    ]
+  }
+}
