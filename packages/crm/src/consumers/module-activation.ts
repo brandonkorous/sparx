@@ -11,7 +11,7 @@
 // tenants, but we ARE the consumer that runs only when the module just
 // turned on. Module-cache invalidation also happens here (slimmer than
 // pulling registry.ts into the loop). On `module.deactivated` we keep the
-// rows around — disabling is reversible and merchants would be upset to
+// rows around — disabling is reversible and tenants would be upset to
 // lose their edited pipeline on a brief disable.
 
 import { invalidateModuleCache } from '@sparx/auth';

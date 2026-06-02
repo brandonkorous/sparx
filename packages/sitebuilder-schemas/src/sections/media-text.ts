@@ -1,5 +1,14 @@
 import { z } from 'zod';
-import { FocalPoint, ObjectFit, OptionalMediaRef, ctas, ctasField, mediaField } from '../common';
+import {
+  FocalPoint,
+  ObjectFit,
+  OptionalMediaRef,
+  SectionHeight,
+  ctas,
+  ctasField,
+  mediaField,
+  sectionHeightField,
+} from '../common';
 import type { SectionField } from '../fields';
 
 // A side-by-side band: a media column beside a text column (eyebrow / heading /
@@ -17,6 +26,7 @@ export const MediaTextConfig = z.object({
     .default('Use this space to explain a single idea — what it is and why it matters.'),
   ctas: ctas([]),
   background: z.enum(['default', 'subtle']).default('subtle'),
+  sectionHeight: SectionHeight.default('auto'),
 });
 export type MediaTextConfig = z.infer<typeof MediaTextConfig>;
 
@@ -47,4 +57,5 @@ export const mediaTextFields: SectionField[] = [
       { label: 'Default', value: 'default' },
     ],
   },
+  sectionHeightField(),
 ];

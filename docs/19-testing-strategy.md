@@ -1,8 +1,8 @@
 # WizeWorks Platform — Testing Strategy
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -177,11 +177,11 @@ E2E tests run against the full deployed application (staging environment) after 
 
 **Critical Path Suite** (runs on every deploy, must pass for deployment to proceed):
 
-- Merchant signup → onboarding → live store
+- Tenant signup → onboarding → live store
 - Add product → publish → visible on storefront
 - Customer places order → checkout → order confirmation
 - Order fulfillment → tracking email sent
-- Merchant admin views order dashboard
+- Tenant admin views order dashboard
 
 **Extended Suite** (runs nightly):
 
@@ -218,7 +218,7 @@ export default defineConfig({
 });
 ```
 
-### E2E Example: Merchant Onboarding
+### E2E Example: Tenant Onboarding
 
 ```typescript
 test('merchant can complete onboarding in under 5 minutes', async ({ page }) => {

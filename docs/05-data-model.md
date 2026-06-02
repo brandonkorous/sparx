@@ -1,8 +1,8 @@
 # WizeWorks Platform — Data Model
 
-**Version:** 1.0  
+**Version:** 1.0.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -20,7 +20,7 @@
 ## 2. Core Entity Map
 
 ```
-Tenant (merchant account)
+Tenant (organization account)
 ├── Domain(s)
 ├── Subscription (billing plan)
 ├── Settings (JSON config)

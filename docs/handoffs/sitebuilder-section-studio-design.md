@@ -1,12 +1,12 @@
 # Site Builder — Section Studio (design)
 
-**Version:** 1.1
+**Version:** 1.1.1
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-01
 
 ---
 
-The dashboard surface where a merchant authors a **custom section type** — its field spec + render
+The dashboard surface where a tenant authors a **custom section type** — its field spec + render
 template — with no engineer and no deploy. It completes the self-serve loop for docs/38 Phase C: the
 data model, service, transports, storefront render, and editor _placement_ already ship (see
 [the template-language spec](sitebuilder-custom-section-template-spec.md) §10); today a definition can

@@ -44,7 +44,7 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
     if (!tenant.settings) throw badRequest('Tenant has no published configuration.');
 
     const settings = tenant.settings as Record<string, unknown>;
-    // sparx.works is the admin host; merchant storefronts live on
+    // sparx.works is the admin host; tenant storefronts live on
     // *.sparx.zone. The fallback used to point at .sparx.works (the dashboard
     // domain) so once any entry published the <loc> URLs would 404 against
     // the storefront. Default to the .sparx.zone subdomain unless the tenant

@@ -42,7 +42,7 @@ const PRODUCT_SCHEMA = {
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
   description:
-    'A modular commerce operating system. Storefront, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer.',
+    'A modular content and commerce operating system. Storefront, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer.',
   offers: {
     '@type': 'Offer',
     price: '49',
@@ -57,9 +57,9 @@ const PRODUCT_SCHEMA = {
 };
 
 export const metadata: Metadata = {
-  title: 'Sparx — Commerce, ignited.',
+  title: 'Sparx — Everything, ignited.',
   description:
-    'A modular commerce operating system. Storefront, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer. Pay only for what you use. Live in five minutes.',
+    'A modular content and commerce operating system. Storefront, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer. Pay only for what you use. Live in five minutes.',
   metadataBase: new URL('https://sparx.works'),
   alternates: {
     canonical: '/',
@@ -67,9 +67,9 @@ export const metadata: Metadata = {
   // OG + Twitter images are generated dynamically from app/opengraph-image.tsx
   // and app/twitter-image.tsx — Next auto-discovers them.
   openGraph: {
-    title: 'Sparx — Commerce, ignited.',
+    title: 'Sparx — Everything, ignited.',
     description:
-      'Modular commerce OS by WizeWorks. Eight pieces, one platform, MCP-native AI. Live in five minutes.',
+      'Modular content and commerce OS by WizeWorks. Eight pieces, one platform, MCP-native AI. Live in five minutes.',
     url: 'https://sparx.works',
     siteName: 'Sparx',
     type: 'website',
@@ -77,8 +77,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sparx — Commerce, ignited.',
-    description: 'Modular commerce OS by WizeWorks.',
+    title: 'Sparx — Everything, ignited.',
+    description: 'Modular content and commerce OS by WizeWorks.',
   },
   robots: {
     index: true,

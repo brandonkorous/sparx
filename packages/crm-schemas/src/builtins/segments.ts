@@ -2,12 +2,12 @@
 //
 // Seeded per-tenant on CRM module activation by the bootstrap consumer in
 // @sparx/crm. Each tenant gets their own editable copy (same pattern as
-// the default pipeline template) — so a merchant can rename "High Value"
+// the default pipeline template) — so a tenant can rename "High Value"
 // to "VIP" or tweak the threshold without touching the platform-wide
 // definition.
 //
 // isSystem=true marks the seeded rows. The dashboard renders system
-// segments as cloneable but not deletable; the merchant can clone+edit
+// segments as cloneable but not deletable; the tenant can clone+edit
 // to make their own version. Adding a new built-in here flows through to
 // every new tenant; existing tenants pick it up on next activation
 // (which is a no-op unless the segment slug doesn't exist yet).

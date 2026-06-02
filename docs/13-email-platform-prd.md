@@ -1,8 +1,8 @@
 # Sparx Platform — Email Platform PRD
 
-**Version:** 3.0
+**Version:** 3.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-29
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -10,7 +10,7 @@
 
 The Sparx Email Platform is a fully integrated transactional and marketing email system. Outbound delivery runs through **Mailgun**'s HTTP API, called directly from the `email-worker` Cloud Run service. Sparx owns templates, events, queue, and analytics surface; Mailgun owns the egress, reputation, and bounce/complaint handling.
 
-Every email sent through Sparx originates from the merchant's own domain (once verified), is triggered by real platform events, and feeds results back into the CRM. The email module is independently activatable at $29/month.
+Every email sent through Sparx originates from the tenant's own domain (once verified), is triggered by real platform events, and feeds results back into the CRM. The email module is independently activatable at $29/month.
 
 ### Why Mailgun (and not self-hosted Postal)
 
@@ -24,18 +24,18 @@ Combining (1) and (2) means self-hosted Postal would require running our own Pos
 What we gain by going Mailgun-direct:
 
 - **Zero infrastructure for outbound** — no GKE pods, no MariaDB, no PVC, no admin UI to keep secure. The `email-worker` Cloud Run service makes a `POST /v3/{domain}/messages` call and Mailgun handles everything downstream.
-- **Multi-tenant by API** — Mailgun supports up to 1,000 verified sending domains per account (Foundation tier). Per-merchant domain provisioning is a `POST /v4/domains` + `PUT /v4/domains/{name}/verify` flow.
+- **Multi-tenant by API** — Mailgun supports up to 1,000 verified sending domains per account (Foundation tier). Per-tenant domain provisioning is a `POST /v4/domains` + `PUT /v4/domains/{name}/verify` flow.
 - **Reputation is theirs** — clean IPs, established warmup, ongoing blocklist monitoring, FBL registration with major ISPs, Google Postmaster Tools / Microsoft SNDS. None of which we have to operate.
 - **Templates stay ours** — React Email components render inside `@sparx/email` and we pass the rendered HTML/text to Mailgun. No vendor lock-in on content.
 
 Cost trajectory:
 
-| Phase                        | Volume   | Mailgun tier   | $/mo |
-| ---------------------------- | -------- | -------------- | ---- |
-| Now (platform only)          | <100/day | **Free**       | $0   |
-| First merchant custom domain | <10k/mo  | **Foundation** | $35  |
-| 50–500 merchants             | <50k/mo  | **Foundation** | $35  |
-| 1,000+ merchants             | 100k+/mo | **Scale**      | $90+ |
+| Phase                      | Volume   | Mailgun tier   | $/mo |
+| -------------------------- | -------- | -------------- | ---- |
+| Now (platform only)        | <100/day | **Free**       | $0   |
+| First tenant custom domain | <10k/mo  | **Foundation** | $35  |
+| 50–500 tenants             | <50k/mo  | **Foundation** | $35  |
+| 1,000+ tenants             | 100k+/mo | **Scale**      | $90+ |
 
 If we hit scale where Mailgun's per-email cost becomes meaningful, the natural revisit is migrating outbound to AWS SES ($0.10/1k emails, ~$10/mo at 100k/mo). At that point the `email-worker` swaps providers; the rest of the platform doesn't notice.
 
@@ -50,7 +50,7 @@ Pub/Sub topic: email.send
         ▼
 Cloud Run: email-worker
   ├── renders React Email template via @sparx/email
-  ├── selects merchant sending domain
+  ├── selects tenant sending domain
   └── POST https://api.mailgun.net/v3/{domain}/messages
         │
         ▼
@@ -62,7 +62,7 @@ Mailgun (US region)
 
 Sending domains:
   sparx.email                — Platform infrastructure (verified)
-  acme.com                   — Merchant domain (after DNS verification)
+  acme.com                   — Tenant domain (after DNS verification)
   └── noreply@..., orders@..., etc. — sender addresses
 ```
 
@@ -71,21 +71,21 @@ Sending domains:
 Mailgun owns the IP pool and warming — we don't operate this. Per-tenant reputation is isolated by:
 
 - Independent DKIM keys per sending domain (Mailgun generates on `POST /v4/domains`).
-- Independent SPF / DMARC posture per merchant (records live on the merchant's DNS).
+- Independent SPF / DMARC posture per tenant (records live on the tenant's DNS).
 - Mailgun handles bounce throttling and complaint suppression automatically per domain.
-- High-volume merchants can be moved to Mailgun's dedicated IP add-on later if reputation requires.
+- High-volume tenants can be moved to Mailgun's dedicated IP add-on later if reputation requires.
 
 ---
 
 ## 2. Email Types
 
-| Type              | Triggered By       | Example                                       |
-| ----------------- | ------------------ | --------------------------------------------- |
-| **Transactional** | Platform events    | Order confirmation, shipping notification     |
-| **Automated**     | Rules engine       | Cart abandonment (2hr), win-back (90 days)    |
-| **Broadcast**     | Merchant/AI action | "Send 10% off to all Utah customers"          |
-| **B2B**           | B2B events         | Quote received, account approved, invoice due |
-| **System**        | Platform           | Password reset, staff invite, billing alert   |
+| Type              | Triggered By     | Example                                       |
+| ----------------- | ---------------- | --------------------------------------------- |
+| **Transactional** | Platform events  | Order confirmation, shipping notification     |
+| **Automated**     | Rules engine     | Cart abandonment (2hr), win-back (90 days)    |
+| **Broadcast**     | Tenant/AI action | "Send 10% off to all Utah customers"          |
+| **B2B**           | B2B events       | Quote received, account approved, invoice due |
+| **System**        | Platform         | Password reset, staff invite, billing alert   |
 
 ---
 
@@ -95,24 +95,24 @@ Mailgun owns the IP pool and warming — we don't operate this. Per-tenant reput
 
 ```
 From: noreply@{slug}.sparx.zone
-Reply-To: merchant-configured address
+Reply-To: tenant-configured address
 ```
 
 ### After Custom Domain Verification
 
 ```
-From: noreply@{merchant-domain.com}
-Reply-To: merchant-configured address
+From: noreply@{tenant-domain.com}
+Reply-To: tenant-configured address
 ```
 
-The transition is invisible to merchants — the platform handles it automatically once DNS records validate.
+The transition is invisible to tenants — the platform handles it automatically once DNS records validate.
 
 ### Domain Authentication (DKIM/SPF/DMARC)
 
-When a merchant adds a custom domain, Sparx automatically:
+When a tenant adds a custom domain, Sparx automatically:
 
-1. Calls `POST /v4/domains` with the merchant's domain (Mailgun generates the DKIM keypair on their side; we never see the private key)
-2. Reads `sending_dns_records[]` from the response and displays them in the merchant dashboard:
+1. Calls `POST /v4/domains` with the tenant's domain (Mailgun generates the DKIM keypair on their side; we never see the private key)
+2. Reads `sending_dns_records[]` from the response and displays them in the tenant dashboard:
 
 ```
 Type: TXT     Name: @
@@ -129,7 +129,7 @@ Value: v=DMARC1; p=quarantine; rua=mailto:dmarc@sparx.email
 ```
 
 3. Polls `PUT /v4/domains/{name}/verify` on a worker until Mailgun reports all records valid
-4. On verification: merchant is flagged send-enabled; outbound mail uses `POST /v3/{their-domain}/messages` with their DKIM signature
+4. On verification: tenant is flagged send-enabled; outbound mail uses `POST /v3/{their-domain}/messages` with their DKIM signature
 5. Mailgun signs every outbound message with the per-domain DKIM key automatically
 
 > **SPF gotcha (2026-05-29):** Mailgun's verifier requires the SPF TXT to be EXACTLY `v=spf1 include:mailgun.org ~all`. Adding extra mechanisms like `a mx include:spf.sparx.email` causes verification to fail even though the record is technically valid SPF. Always use the minimal canonical form.
@@ -193,7 +193,7 @@ Each automation:
 - **Action:** Send email using template, or chain to next step
 - **Frequency cap:** Prevent sending same automation more than once per customer per configurable period
 
-Visual flow: Linear steps (not complex diagram). Merchants build flows in plain language — "When cart is abandoned → wait 2 hours → if no order placed → send email."
+Visual flow: Linear steps (not complex diagram). Tenants build flows in plain language — "When cart is abandoned → wait 2 hours → if no order placed → send email."
 
 ---
 
@@ -236,15 +236,15 @@ Visual flow: Linear steps (not complex diagram). Merchants build flows in plain 
 - Bounce rate monitored per sending domain (alert if > 2%)
 - Spam complaint rate monitored (alert if > 0.1%)
 - IP reputation checked daily via MXToolbox / Google Postmaster Tools
-- DKIM/SPF/DMARC validation checked weekly per merchant domain
+- DKIM/SPF/DMARC validation checked weekly per tenant domain
 
 ### Reputation Isolation
 
-Each merchant's sending reputation is isolated from others via:
+Each tenant's sending reputation is isolated from others via:
 
 - Separate DKIM keys per tenant
 - Separate sending subdomains per tenant (before custom domain)
-- High-volume merchants on dedicated IP pools
+- High-volume tenants on dedicated IP pools
 - Problematic senders (high bounce/complaint) automatically throttled
 
 ---

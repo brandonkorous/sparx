@@ -2,7 +2,7 @@
 
 // Icon-name input affordance.
 //
-// Several schema-driven fields ask a merchant to type the *name* of a Lucide
+// Several schema-driven fields ask a user to type the *name* of a Lucide
 // icon (e.g. "truck", "shield-check") — most users have no idea what "Lucide"
 // is or where the names come from. Wherever such a field renders, we drop a
 // link to the searchable icon gallery so they can find and copy a name.

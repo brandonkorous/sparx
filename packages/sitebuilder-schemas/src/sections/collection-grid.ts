@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Uuid } from '../common';
+import { Uuid, SectionHeight, sectionHeightField } from '../common';
 import type { SectionField } from '../fields';
 
 export const CollectionGridConfig = z.object({
@@ -9,6 +9,7 @@ export const CollectionGridConfig = z.object({
   collectionIds: z.array(Uuid).max(12).default([]),
   columns: z.number().int().min(1).max(4).default(3),
   limit: z.number().int().min(1).max(12).default(6),
+  sectionHeight: SectionHeight.default('auto'),
 });
 export type CollectionGridConfig = z.infer<typeof CollectionGridConfig>;
 
@@ -31,4 +32,5 @@ export const collectionGridFields: SectionField[] = [
   },
   { key: 'columns', label: 'Columns', type: 'range', min: 1, max: 4, step: 1 },
   { key: 'limit', label: 'Max collections', type: 'range', min: 1, max: 12, step: 1 },
+  sectionHeightField(),
 ];

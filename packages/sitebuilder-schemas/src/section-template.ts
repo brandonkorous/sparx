@@ -90,7 +90,7 @@ const ImageFit = z.enum(['cover', 'contain']);
 const ButtonVariant = z.enum(['solid', 'light', 'dark', 'ghost', 'link']);
 const EmbedRatio = z.enum(['16:9', '4:3', '1:1']);
 
-/** A variant prop the merchant MAY bind to a field; the interpreter validates
+/** A variant prop the tenant MAY bind to a field; the interpreter validates
  *  the resolved value against the enum at render and falls back to the default
  *  when it isn't a member. (Only `Grid.cols` uses this in v1.) */
 const Bindable = <T extends z.ZodTypeAny>(lit: T) => z.union([lit, BindExpr]);

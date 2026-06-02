@@ -1,14 +1,14 @@
 # Site Builder Redesign
 
-**Version:** 1.2
+**Version:** 1.2.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-01
 
 ---
 
 ## 1. Purpose & scope
 
-The Site Builder is the platform's centerpiece — the first surface a merchant touches and
+The Site Builder is the platform's centerpiece — the first surface a tenant touches and
 the lens through which they judge everything else. The first build ([docs/29-sitebuilder-architecture.md](29-sitebuilder-architecture.md))
 shipped a working backend (theme engine, section schemas, draft→publish→rollback, storefront
 rendering) behind a dashboard that is assembled as **six disconnected admin screens** rather
@@ -43,7 +43,7 @@ confirmed seven issues, each traced to a concrete cause:
 
 ## 2. North star
 
-> Stop presenting the store as six admin forms. Present it as **one living thing the merchant
+> Stop presenting the store as six admin forms. Present it as **one living thing the tenant
 > edits in place**, where every change is reflected immediately in an honest preview, and where
 > a layout designed once can be applied to many items across Commerce and CMS.
 
@@ -181,7 +181,7 @@ wall.)
 ### 4.3 Editing a scoped layout
 
 When editing a `product` (or `collection`) layout, the canvas previews it **bound to a
-representative sample item** the merchant picks (`preview against [sample product ▾]`). Bound
+representative sample item** the tenant picks (`preview against [sample product ▾]`). Bound
 sections render that sample's real data; static sections render their authored content.
 
 ---
@@ -217,10 +217,10 @@ assignment table — to be settled when §11 is specced.)
 
 ## 6. Brand (tenant-level)
 
-Brand is the merchant's **identity** — business name, logo (light/dark), favicon, core color
+Brand is the tenant's **identity** — business name, logo (light/dark), favicon, core color
 palette, typography, tagline, social links. It is **vital and cross-cutting**: it must read
 identically on the storefront, in transactional + marketing email, the customer account area,
-invoices/PDFs, the B2B portal, and anywhere else the merchant is represented. It is **not** a
+invoices/PDFs, the B2B portal, and anywhere else the tenant is represented. It is **not** a
 Site Builder concept, a Commerce concept, or an Email concept.
 
 ### 6.1 Ownership — a tenant-level source of truth
@@ -231,14 +231,14 @@ Brand is **owned at the tenant/platform level, above every module.** Three force
   Commerce, disabling that module would orphan the brand that Email and CRM still need. Brand
   must survive any single module being off.
 - **Onboarding.** Brand (business name → logo → colors) is captured in the 5-minute onboarding
-  flow ([docs/15-merchant-onboarding-prd.md](15-merchant-onboarding-prd.md)), before the merchant
+  flow ([docs/15-merchant-onboarding-prd.md](15-merchant-onboarding-prd.md)), before the tenant
   touches any module, and outlives every one of them.
 - **It already fragments.** Brand is spread across Commerce `StorefrontTheme` (`logoMediaId`,
   `logoDarkMediaId`, `faviconMediaId` + color tokens) and a per-module
   `EmailSettings.brandingOverride`. `resolveEmailBrand` cascades Commerce `StorefrontTheme` →
   the email override → Sparx defaults; the intended Site-Builder-snapshot source is documented
-  but `not yet exposed — falls through`. There is no single record a merchant sets, the email
-  override is precisely the kind of per-module brand redefinition §6.2 forbids, and a merchant
+  but `not yet exposed — falls through`. There is no single record a tenant sets, the email
+  override is precisely the kind of per-module brand redefinition §6.2 forbids, and a tenant
   without a storefront has no shared identity for email. A tenant-level brand removes the
   fragmentation and the override.
 
@@ -261,12 +261,12 @@ brand a _source of truth_ rather than another layer of defaults, and it is hard.
 ### 6.3 Presence — primary, but editing a tenant record
 
 Brand is surfaced **prominently** — set in onboarding and editable as a first-class **Brand**
-rail entry in the Site Builder editor, plus a platform/settings Brand area for merchants without
+rail entry in the Site Builder editor, plus a platform/settings Brand area for tenants without
 the Storefront module. Every one of these surfaces _edits the single tenant brand record_; none
 owns it (the same pattern as navigation in §8 — a consuming surface edits content it doesn't own).
 
 The storefront theme then resolves as: **brand (identity foundation, read-only) → storefront
-presentation tokens (theme) → merchant presentation overrides → write-through to `StorefrontTheme`.**
+presentation tokens (theme) → tenant presentation overrides → write-through to `StorefrontTheme`.**
 
 ---
 

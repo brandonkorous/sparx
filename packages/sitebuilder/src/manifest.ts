@@ -36,7 +36,7 @@ export const sitebuilderManifest: ModuleManifest = {
     // PageLayouts + a "begin from a Page Template" catalog + the per-target
     // default control. A specific layout opens the canvas editor at /layouts/<id>.
     { id: 'layouts', label: 'Layouts', icon: Layers, href: '/sitebuilder/layouts' },
-    // Section Studio — the merchant's own custom section TYPES (docs/38 Phase C):
+    // Section Studio — the tenant's own custom section TYPES (docs/38 Phase C):
     // a list of definitions + the authoring editor. A building-block library, so
     // it sits beside Layouts (which composes pages FROM sections).
     { id: 'sections', label: 'Sections', icon: Blocks, href: '/sitebuilder/sections' },

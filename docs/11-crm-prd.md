@@ -1,8 +1,8 @@
 # WizeWorks Platform — CRM PRD
 
-**Version:** 1.0  
+**Version:** 1.0.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -10,7 +10,7 @@
 
 The WizeWorks CRM is a fully integrated customer intelligence layer. Unlike bolt-on CRMs (HubSpot, Salesforce), WizeWorks CRM shares the same customer, order, and product data as the commerce engine. There is no sync, no integration, no data mismatch — it is all one system.
 
-The CRM is designed for merchants who need to manage customer relationships, track sales opportunities, log activities, and automate follow-ups — without leaving their commerce dashboard.
+The CRM is designed for teams who need to manage customer relationships, track sales opportunities, log activities, and automate follow-ups — without leaving their dashboard.
 
 ---
 
@@ -91,7 +91,7 @@ Default stages (fully customizable):
 Lead → Qualified → Proposal Sent → Negotiation → Closed Won / Closed Lost
 ```
 
-Merchants create multiple pipelines for different use cases:
+Teams create multiple pipelines for different use cases:
 
 - New B2B Account Acquisition
 - Fleet Contract Renewals

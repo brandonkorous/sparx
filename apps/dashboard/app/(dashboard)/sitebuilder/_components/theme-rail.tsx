@@ -1,7 +1,7 @@
 'use client';
 
 // Column 1 of the Brand & Theme center — the theme picker. Two groups: the
-// merchant's own SAVED themes (named presentation snapshots, docs/33
+// tenant's own SAVED themes (named presentation snapshots, docs/33
 // saved-themes contract) and the read-only PREBUILT presets shipped in
 // @sparx/storefront-themes. Selecting a preset switches the base theme (keeping
 // any surface overrides); applying a saved theme loads its base + presentation.

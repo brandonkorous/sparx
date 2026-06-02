@@ -70,9 +70,9 @@ model SendingDomain {
 
 // A template record. `source` discriminates the render path:
 //   builtin   → renders via a code-defined @sparx/email React component keyed
-//               by `key`; `body` holds only the merchant's slot + branding
+//               by `key`; `body` holds only the tenant's slot + branding
 //               overrides (intro/outro rich text), never structure.
-//   authored  → merchant-authored marketing body; `body` is a CMS TipTap doc
+//   authored  → tenant-authored marketing body; `body` is a CMS TipTap doc
 //               now (serialized to email-safe HTML), a reorderable section
 //               list once the shared SECTION_REGISTRY ships (plan P9).
 model EmailTemplate {
@@ -107,7 +107,7 @@ model EmailTemplate {
 }
 
 // An automation rule. Default rows (PRD §4) are seeded per tenant on module
-// activation (keyed by `key`); merchants add custom ones with key = null.
+// activation (keyed by `key`); tenants add custom ones with key = null.
 model EmailAutomation {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid

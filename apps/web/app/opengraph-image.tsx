@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'Sparx — Commerce, ignited.';
+export const alt = 'Sparx — Everything, ignited.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -79,7 +79,7 @@ export default function Image() {
               textTransform: 'uppercase',
             }}
           >
-            Modular Commerce OS
+            Content & Commerce OS
           </span>
         </div>
       </div>
@@ -103,7 +103,7 @@ export default function Image() {
             color: '#FFFFFF',
           }}
         >
-          <div style={{ display: 'flex' }}>Commerce,</div>
+          <div style={{ display: 'flex' }}>Everything,</div>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
             <span>ignited</span>
             <span

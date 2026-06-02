@@ -68,7 +68,7 @@ export interface CompileForTenantArgs {
 
 /**
  * Compile a tenant's storefront theme: the v2 preset for `themeKey`, with brand
- * identity layered on top and the merchant's presentation overlay over that.
+ * identity layered on top and the tenant's presentation overlay over that.
  * Always complete (the preset supplies every slot) even with no brand/overlay.
  */
 export function compileThemeForTenant(args: CompileForTenantArgs): CompiledThemeV2 {

@@ -1,14 +1,14 @@
 # WizeWorks Platform — MCP Server Specification
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
 ## 1. Overview
 
-The WizeWorks MCP (Model Context Protocol) Server is a first-class platform service that exposes merchant business data to AI assistants — Claude, ChatGPT, and Microsoft Copilot. It enables natural language interaction with live business data without any custom integration work by the merchant.
+The WizeWorks MCP (Model Context Protocol) Server is a first-class platform service that exposes tenant business data to AI assistants — Claude, ChatGPT, and Microsoft Copilot. It enables natural language interaction with live business data without any custom integration work by the tenant.
 
 The MCP server runs as a dedicated Kubernetes deployment and is available on all Pro and Enterprise plans.
 
@@ -129,13 +129,13 @@ Best performing product: Bosch Injector Set at $12,400."
 
 ## 5. Authentication
 
-### Merchant Connection Flow
+### Tenant Connection Flow
 
-1. Merchant opens **Settings → AI Integrations**
+1. Tenant opens **Settings → AI Integrations**
 2. Selects AI client (Claude, ChatGPT, Copilot)
 3. Clicks "Connect" — generates a scoped API key
 4. Copies the MCP server URL + API key into their AI client
-5. AI client can now access their merchant data
+5. AI client can now access their tenant data
 
 ### API Key Scopes
 
@@ -206,4 +206,4 @@ All MCP tool calls are logged to the audit log with:
 - Result: success/failure
 - Timestamp
 
-Merchants can view their full AI interaction history in the dashboard.
+Tenants can view their full AI interaction history in the dashboard.

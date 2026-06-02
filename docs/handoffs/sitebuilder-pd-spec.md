@@ -1,8 +1,8 @@
 # Site Builder P-D — Unified Layouts Surface
 
-**Version:** 1.0
+**Version:** 1.0.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-01
 
 > Implementation spec for **P-D** of the PageLayout tier (the revised Phase 4 in
 > [docs/36-sitebuilder-layering-model.md](../36-sitebuilder-layering-model.md) §11). Builds on P-A
@@ -15,7 +15,7 @@
 ## 1. Goal
 
 Fold the four per-scope nav entries (Homepage / Product pages / Collection pages / Pages) into **one
-Layouts surface organized by target** that lists the tenant's `PageLayout`s, lets a merchant **begin
+Layouts surface organized by target** that lists the tenant's `PageLayout`s, lets a tenant **begin
 from a Page Template** (the code-first catalog, doc 36 §10), and exposes the **per-target default**
 control. This is what makes P-C's assignment picker non-thin: until now a target had only its single
 `default` layout to pick; P-D lets a tenant create **many named layouts per target**, so the per-item
@@ -86,7 +86,7 @@ service/route verbs it needs.
 - `resolveTemplateSections(snapshot, targetId, itemRef?, forcedKey?)` — `forcedKey` (preview only)
   renders a **specific** layout directly, bypassing the cascade, so the dashboard canvas can preview
   an alternate layout as itself. The code-default fallback now applies **only** to the canonical
-  `default` key — a named alternate with no sections previews as **empty** (the merchant is building
+  `default` key — a named alternate with no sections previews as **empty** (the tenant is building
   it), never as the seeded default. (Behaviour for the default key is unchanged → exact parity.)
 - PDP + PLP pass `sparxLayoutKey` **only when a `sparxSitePreview` token is present** — a public
   visitor cannot pin a layout via query string.

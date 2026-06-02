@@ -43,7 +43,7 @@ export class EmailConflictError extends Error {
 }
 
 // Raised when an external provider (Mailgun) rejects a request in a way the
-// merchant needs to see (e.g. domain already exists, invalid domain). Distinct
+// tenant needs to see (e.g. domain already exists, invalid domain). Distinct
 // from a transient 5xx, which should bubble as a plain Error and retry.
 export class EmailProviderError extends Error {
   readonly code = 'PROVIDER_ERROR' as const;

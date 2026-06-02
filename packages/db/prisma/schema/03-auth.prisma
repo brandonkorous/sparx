@@ -1,4 +1,4 @@
-// Staff users + sessions + auth credentials (Layer 1 — merchant staff).
+// Staff users + sessions + auth credentials (Layer 1 — tenant staff).
 //
 // Better Auth-compatible base columns + Sparx tenant/role extensions on
 // `User`. Customer-facing accounts (Layer 2) live in `customers` and share

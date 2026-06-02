@@ -5,7 +5,7 @@
 // grouped controls · live component showcase. It replaces the separate Brand
 // board and Theme inspector: a single source for the tenant's identity AND its
 // presentation overlay, with the showcase recompiling on every keystroke so the
-// merchant sees the brand applied across the whole platform without an iframe.
+// tenant sees the brand applied across the whole platform without an iframe.
 //
 //   edit → compileThemeForTenant(themeKey, brand, presentation)
 //        → buildThemeCssV2(..., { rootSelector:'#sf-theme-preview' })   ← scoped, instant
@@ -93,7 +93,11 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
   const [savedThemes, setSavedThemes] = React.useState<SiteThemeDto[]>(initialSaved);
   // The saved theme currently selected for editing (null = editing a prebuilt
   // base). When set, presentation edits write back into that theme (below).
-  const [activeSavedThemeId, setActiveSavedThemeId] = React.useState<string | null>(null);
+  // Seeded from the persisted draft so the rail restores the selection on reload
+  // — the pointer rides in draftSettings (see the settings autosave).
+  const [activeSavedThemeId, setActiveSavedThemeId] = React.useState<string | null>(
+    config.draftSettings.activeSavedThemeId ?? null
+  );
   const activeSavedIdRef = React.useRef(activeSavedThemeId);
   React.useEffect(() => {
     activeSavedIdRef.current = activeSavedThemeId;
@@ -224,18 +228,27 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     return () => clearTimeout(t);
   }, [brandCols, activeSavedThemeId]);
 
-  // ── Debounced autosave: presentation ───────────────────────────────────────
+  // ── Debounced autosave: presentation + active-theme pointer ─────────────────
+  // Both live in draftSettings, and updateSettings REPLACES that JSON, so they
+  // must save through ONE effect — two effects would each send a partial
+  // settings object and race on the full-replace, dropping a field. Fires when
+  // either the presentation overlay or the active-saved-theme pointer changes.
   const draftTokens = React.useRef(config.draftSettings.tokens);
   const draftCss = React.useRef(config.draftSettings.customCss);
-  const savedPresRef = React.useRef(JSON.stringify(presentation));
+  const savedSettingsRef = React.useRef(JSON.stringify({ presentation, activeSavedThemeId }));
   React.useEffect(() => {
-    const cur = JSON.stringify(presentation);
-    if (cur === savedPresRef.current) return;
+    const cur = JSON.stringify({ presentation, activeSavedThemeId });
+    if (cur === savedSettingsRef.current) return;
     setStatus('saving');
     const t = setTimeout(() => {
       void (async () => {
         const res = await updateSettings({
-          settings: { tokens: draftTokens.current, customCss: draftCss.current, presentation },
+          settings: {
+            tokens: draftTokens.current,
+            customCss: draftCss.current,
+            presentation,
+            activeSavedThemeId,
+          },
         });
         if (!res.ok) {
           setError(res.error ?? 'Could not save theme settings.');
@@ -254,16 +267,16 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
           } else {
             setError(upd.error ?? 'Could not update this theme.');
             setStatus('error');
-            savedPresRef.current = cur; // config saved — don't re-loop on it
+            savedSettingsRef.current = cur; // config saved — don't re-loop on it
             return;
           }
         }
-        savedPresRef.current = cur;
+        savedSettingsRef.current = cur;
         setStatus('saved');
       })();
     }, 600);
     return () => clearTimeout(t);
-  }, [presentation]);
+  }, [presentation, activeSavedThemeId]);
 
   // ── Theme / saved-theme actions ────────────────────────────────────────────
 
@@ -271,7 +284,7 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
   // pairs) back to "inherit". Brand colours WIN over the theme (docs/33), so a
   // stale override masks a newly-selected theme's signature colours — clearing
   // them lets the preset's palette show through ("switch to Market → Market
-  // colours"). Surfaces/fonts/shape are the theme's already; the merchant
+  // colours"). Surfaces/fonts/shape are the theme's already; the tenant
   // re-customises on top afterwards.
   const clearBrandColorOverrides = () => {
     setColorPrimary(null);
@@ -335,9 +348,9 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
         const created = res.data;
         setSavedThemes((s) => [...s, created]);
         // The freshly-saved theme becomes the one you're editing, so further
-        // tweaks flow back into it.
+        // tweaks flow back into it. The settings autosave (keyed on
+        // activeSavedThemeId) then persists the pointer.
         setActiveSavedThemeId(created.id);
-        savedPresRef.current = JSON.stringify(presentation);
         setStatus('saved');
         toast.success(`Saved “${name}” to your themes.`);
       } else {
@@ -411,9 +424,13 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     // This saved theme is now the one being edited — presentation AND brand edits
     // write back into it (see the autosave effects).
     setActiveSavedThemeId(id);
-    // The apply endpoint persists base + presentation server-side; mark the
-    // presentation as saved so the autosave effect doesn't redundantly re-PATCH.
-    savedPresRef.current = JSON.stringify(t.presentation);
+    // The apply endpoint persists base + presentation + the active-theme pointer
+    // server-side; mark the settings snapshot as saved so the autosave effect
+    // doesn't redundantly re-PATCH them.
+    savedSettingsRef.current = JSON.stringify({
+      presentation: t.presentation,
+      activeSavedThemeId: id,
+    });
     startTransition(async () => {
       setStatus('saving');
       const res = await applySavedTheme(id);

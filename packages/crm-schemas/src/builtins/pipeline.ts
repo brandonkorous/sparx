@@ -1,7 +1,7 @@
 // Default sales pipeline template (docs/11 §4).
 //
 // Applied to every new tenant by the onboarding worker. Stages mirror the
-// PRD's documented default; the merchant edits them freely once they have
+// PRD's documented default; the tenant edits them freely once they have
 // their own pipeline.
 
 export interface PipelineStageTemplate {

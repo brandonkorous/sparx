@@ -25,7 +25,7 @@ export interface LegacyBrandInput {
   colorAccent?: string | null;
   fontHeading?: string | null;
   fontBody?: string | null;
-  // A merchant-chosen corner radius (v1 presentation) maps onto brand shape.
+  // A tenant-chosen corner radius (v1 presentation) maps onto brand shape.
   radiusBase?: string | null;
 }
 
@@ -46,7 +46,7 @@ function present(...vals: (string | null | undefined)[]): string | undefined {
 }
 
 // v1 presentation tokens → a v2 presentation overlay for one mode (surfaces
-// only; neutral/status stay on the preset until a merchant edits them).
+// only; neutral/status stay on the preset until a tenant edits them).
 function presentationFromV1(t: Record<string, string>): PresentationColorOverlay {
   return {
     base100: present(t.colorBackground),

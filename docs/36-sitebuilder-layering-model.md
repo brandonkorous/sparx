@@ -1,8 +1,8 @@
 # Site Builder Layering Model
 
-**Version:** 1.1
+**Version:** 1.1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -20,7 +20,7 @@ set of page types, or how assignment resolves, **this doc wins** and doc 30 §4/
 phase that lands the change. Everything else in doc 30 (the editor shell, preview transport, brand
 ownership, publish lifecycle) stands unchanged.
 
-The one-sentence shift: **the "page designer" is a _page-layout_ designer.** A merchant designs a
+The one-sentence shift: **the "page designer" is a _page-layout_ designer.** A tenant designs a
 layout for a _kind of page_ (a product, a collection, a content type, a taxonomy, later a B2B page),
 sets a tenant default per kind, and overrides per item where they want to. The kinds are **data-
 driven** — modules declare them — so new page types (B2B) arrive by registration, with **zero Site
@@ -31,7 +31,7 @@ Builder schema change**.
 ## 2. The three tiers that compose the experience
 
 A storefront page is produced by three independent layers. Each answers a different question, each
-is owned and edited separately, and together they are the whole merchant experience.
+is owned and edited separately, and together they are the whole tenant experience.
 
 | Tier            | Question it answers              | What it owns                                                                                                    | Status                                                   |
 | --------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
@@ -60,7 +60,7 @@ Two words have been used loosely ("template," "layout"). This model fixes them, 
 **symmetric across all three tiers**:
 
 - A **Template** (preset) is a **platform-authored**, predefined starting point — a catalog entry we
-  ship to get a merchant to a great result fast. It is read-only; a merchant does not edit a Template
+  ship to get a tenant to a great result fast. It is read-only; a tenant does not edit a Template
   in place. It is "begin here."
 - A **Layout** (instance) is the **tenant's own editable thing**, created by **instantiating a
   Template** (copy-to-edit) — or from scratch. Editing happens here.
@@ -73,8 +73,8 @@ Applied per tier:
 | **SiteLayout**  | **Site Templates** (predefined region skeletons)  | the tenant's **SiteLayout** (future)    |
 | **PageLayout**  | **Page Templates** (predefined page compositions) | the tenant's **PageLayout** (near-term) |
 
-**Site & Page Templates are how we get merchants to gold quickly** (owner's words). They are a
-curated catalog of good starting points; a merchant picks one, it is instantiated into an editable
+**Site & Page Templates are how we get tenants to gold quickly** (owner's words). They are a
+curated catalog of good starting points; a tenant picks one, it is instantiated into an editable
 Layout, and they take it from there.
 
 Today's code already has the seed of this: `DEFAULT_TEMPLATES` (in `@sparx/sitebuilder-schemas`) is
@@ -84,7 +84,7 @@ generalization: `DEFAULT_TEMPLATES` becomes one entry in a **Page Template catal
 `templateService.materializeDefault` generalizes to **`instantiateFromTemplate(templateId)`**.
 
 **The catalog is code-first, catalog-ready (§10).** We author Templates in code now; a DB-backed,
-merchant-extensible catalog is a later, additive step that doesn't change the model.
+tenant-extensible catalog is a later, additive step that doesn't change the model.
 
 ---
 
@@ -152,7 +152,7 @@ is a registry change (which targets a section declares), not a renderer change.
 
 Today's `SiteTemplate` model is, by the §3 vocabulary, an **instance** (the tenant's editable thing),
 not a preset. It is misnamed, and the name `SiteTemplate` is needed for the SiteLayout-tier preset.
-**Rename it now** — there are zero merchants, so there is no migration risk or customer churn, and
+**Rename it now** — there are zero tenants, so there is no migration risk or customer churn, and
 doing it before the catalog and assignment land avoids reclaiming the word later under load.
 
 | Today                                                                   | Renamed to                                                                |
@@ -207,7 +207,7 @@ modules never read SB assignment tables; the storefront's site-resolver performs
 exactly as Phase 3's storefront already resolves a layout from the published snapshot.
 
 **The picker.** A `Layout: [▾]` control appears in the item editors a module already owns — the
-Commerce product editor, the CMS entry editor — letting a merchant pin a specific layout to a specific
+Commerce product editor, the CMS entry editor — letting a tenant pin a specific layout to a specific
 record (writing the SB-owned per-item assignment via the SB API). The tenant default is set in the
 Site Builder Layouts surface, per target.
 
@@ -236,10 +236,10 @@ content-page layout assigned to the home content page.
 
 ## 8. Layout-driven authoring
 
-The payoff of the model: **content is authored _through_ its layout.** When a merchant creates or
+The payoff of the model: **content is authored _through_ its layout.** When a tenant creates or
 edits a CMS content page — and eventually a product — the editor renders the content **in the form of
 its selected (or default) layout**, and the content slots are editable in place. That is how the
-merchant sets the text / image / links / etc. — they see the page as it will render and edit it
+tenant sets the text / image / links / etc. — they see the page as it will render and edit it
 directly, instead of filling a flat form divorced from presentation.
 
 ### 8.1 The boundary — content type owns the fields, layout owns the arrangement
@@ -289,7 +289,7 @@ the registry, assignment, and the rename in place, plus CMS-editor coordination.
 
 ## 9. Sample-data preview (always-on)
 
-A merchant cannot design a product / collection / content layout before the store has data — and
+A tenant cannot design a product / collection / content layout before the store has data — and
 storefront PDP/PLP filter `status:'active'`, so even a draft product 404s in preview (the 3.3b sample
 picker hits exactly this: a fresh store shows the catalog/home fallback, never a real bound page).
 **This is the wrong order** (owner). The fix: preview bound layouts against **code-defined sample
@@ -318,7 +318,7 @@ generalization of `DEFAULT_TEMPLATES`). This keeps the first build tractable and
 code, and matches the platform's "infra is phased — start cheap" instinct.
 
 The catalog is **catalog-ready**: the model (a Template is instantiated into a Layout) does not change
-when a DB-backed, merchant- or partner-extensible catalog is added later. That later step is purely
+when a DB-backed, tenant- or partner-extensible catalog is added later. That later step is purely
 additive — a `PageTemplate` / `SiteTemplate` table read alongside the code catalog — and is **not** in
 the near-term scope.
 

@@ -1,8 +1,8 @@
 # Sparx Platform — Typesense Search Specification
 
-**Version:** 1.1
+**Version:** 1.1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -459,7 +459,7 @@ export async function reindexAll() {
 
 ## 6. Synonyms Configuration
 
-Synonyms are configured per-tenant, allowing merchants to define their own:
+Synonyms are configured per-tenant, allowing tenants to define their own:
 
 ```typescript
 // Built-in synonyms applied to all tenants
@@ -481,7 +481,7 @@ async function applySynonyms() {
 }
 ```
 
-Merchants can add custom synonyms from their dashboard (Settings → Search → Synonyms).
+Tenants can add custom synonyms from their dashboard (Settings → Search → Synonyms).
 
 ---
 

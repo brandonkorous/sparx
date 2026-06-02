@@ -1,4 +1,4 @@
-// Email automations — default flows (PRD §4) the merchant enables/configures.
+// Email automations — default flows (PRD §4) the tenant enables/configures.
 //
 //   GET   /v1/email/automations        → list
 //   GET   /v1/email/automations/:id    → one

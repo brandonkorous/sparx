@@ -1,8 +1,8 @@
 # Sparx Platform — TikTok Shop Integration Spec
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-30
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -41,7 +41,7 @@ What to prepare:
 - Sparx platform description and merchant value proposition
 - Tech stack overview (Next.js, Fastify, TypeScript)
 - Estimated merchant volume (honest — early stage)
-- Use case: commerce platform enabling merchants to sell on TikTok Shop
+- Use case: content and commerce platform enabling merchants to sell on TikTok Shop
 
 TikTok reviews ISV applications and provides API credentials, higher rate limits, and access to advanced endpoints not available to individual sellers.
 

@@ -25,7 +25,7 @@ describe('section registry', () => {
     expect(hero.align).toBe('center');
     expect(hero.overlayOpacity).toBe(40);
     // New sections ship with placeholder copy so they look intentional before
-    // the merchant edits them (rather than rendering blank).
+    // the tenant edits them (rather than rendering blank).
     expect(hero.heading).toBe('Your headline goes here');
     // A fresh hero ships with one solid CTA (multi-CTA model, docs/37).
     const ctas = hero.ctas as { label: string; style: string }[];

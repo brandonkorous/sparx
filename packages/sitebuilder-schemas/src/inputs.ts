@@ -63,7 +63,7 @@ export const InstantiateLayoutInput = z.object({
 });
 export type InstantiateLayoutInput = z.infer<typeof InstantiateLayoutInput>;
 
-// Rename a page layout — the merchant-facing label only. The `key` is immutable
+// Rename a page layout — the tenant-facing label only. The `key` is immutable
 // (it's the snapshot/resolver identity), so it is NOT editable here.
 export const RenamePageLayoutInput = z.object({
   name: z.string().min(1).max(255),
@@ -145,7 +145,7 @@ export const ScheduleInput = z.object({
 export type ScheduleInput = z.infer<typeof ScheduleInput>;
 
 // ── Saved themes (docs/36 Brand+Theme tier) ─────────────────────────────────
-// A tenant's NAMED theme — the merchant's own library, distinct from the
+// A tenant's NAMED theme — the tenant's own library, distinct from the
 // read-only platform presets. `presentation` is the v2 surface overlay;
 // `basePresetKey` is the preset it layers on; `brand` is the captured identity
 // "look" (colours/fonts/shape) so the theme is a self-contained snapshot.

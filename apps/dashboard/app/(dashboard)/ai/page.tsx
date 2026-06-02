@@ -6,12 +6,12 @@ export default function AiPage() {
     <ModuleStub
       icon={<Sparkles className="h-5 w-5" />}
       title="AI"
-      tagline="MCP server, agents, and merchant copilots."
-      description="The AI module exposes your storefront and back office to MCP-aware agents — and gives merchants a copilot that can query orders, customers, and inventory in plain English."
+      tagline="MCP server, agents, and copilots."
+      description="The AI module exposes your storefront and back office to MCP-aware agents — and gives you a copilot that can query orders, customers, and inventory in plain English."
       features={[
         { title: 'MCP server', description: 'First-class MCP endpoint with per-tenant scopes.' },
         {
-          title: 'Merchant copilot',
+          title: 'Tenant copilot',
           description: 'Chat over your store data with safe write actions.',
         },
         {

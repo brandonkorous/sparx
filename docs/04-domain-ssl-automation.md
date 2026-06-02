@@ -1,16 +1,16 @@
 # WizeWorks Platform — Domain & SSL Automation
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
 ## 1. Overview
 
-Every WizeWorks merchant gets a live HTTPS storefront the moment they sign up — no configuration required. The domain system handles three scenarios:
+Every WizeWorks tenant gets a live HTTPS site the moment they sign up — no configuration required. The domain system handles three scenarios:
 
-1. **Platform subdomain** (instant, automatic): `merchantslug.wizeworks.com`
+1. **Platform subdomain** (instant, automatic): `tenantslug.wizeworks.com`
 2. **Custom domain** (self-serve, automated): `theirstore.com` or `shop.theirstore.com`
 3. **Enterprise managed domain** (WizeWorks manages DNS entirely): full DNS delegation
 
@@ -20,7 +20,7 @@ Every WizeWorks merchant gets a live HTTPS storefront the moment they sign up �
 
 ### How It Works
 
-At merchant signup, a `slug` is chosen or auto-generated from business name:
+At tenant signup, a `slug` is chosen or auto-generated from business name:
 
 ```
 Business: "Acme Parts Co"  →  slug: "acme-parts"
@@ -44,9 +44,9 @@ Storefront URL: https://acme-parts.wizeworks.com
 
 ## 3. Custom Domain (Self-Serve, Automated)
 
-### Merchant Flow (UI)
+### Tenant Flow (UI)
 
-1. Merchant navigates to **Settings → Domains**
+1. Tenant navigates to **Settings → Domains**
 2. Enters their domain: `theirstore.com` or `shop.theirstore.com`
 3. Platform displays DNS records to add:
    ```
@@ -55,7 +55,7 @@ Storefront URL: https://acme-parts.wizeworks.com
    Value: customers.wizeworks.com
    TTL: Auto
    ```
-4. Merchant adds record to their DNS provider (Cloudflare, GoDaddy, Namecheap, etc.)
+4. Tenant adds record to their DNS provider (Cloudflare, GoDaddy, Namecheap, etc.)
 5. Platform polls for propagation — shows live status indicator
 6. Once verified: SSL cert issued automatically, custom domain goes live
 7. Platform subdomain (`slug.wizeworks.com`) redirects 301 to custom domain
@@ -75,7 +75,7 @@ POST /api/domains
     tenant_id, domain, status: "pending",
     verification_token: uuid, created_at
   }
-→ Return DNS instructions to merchant
+→ Return DNS instructions to tenant
 → Enqueue domain verification job (runs every 5 min)
 ```
 
@@ -129,7 +129,7 @@ This prevents unauthorized cert issuance.
 
 ### Cloudflare Detection (Fast Path)
 
-If the merchant's domain is proxied through Cloudflare, we detect this and can offer an even faster setup path using the Cloudflare API to add the CNAME record automatically (requires merchant to connect their Cloudflare account via OAuth).
+If the tenant's domain is proxied through Cloudflare, we detect this and can offer an even faster setup path using the Cloudflare API to add the CNAME record automatically (requires tenant to connect their Cloudflare account via OAuth).
 
 ---
 
@@ -159,7 +159,7 @@ CREATE INDEX idx_domains_status ON domains(status) WHERE status = 'pending';
 
 ## 5. Email Domain Authentication (DKIM/SPF/DMARC)
 
-When a merchant sets up a custom domain, WizeWorks also automates email authentication records so their transactional emails come from their own domain.
+When a tenant sets up a custom domain, WizeWorks also automates email authentication records so their transactional emails come from their own domain.
 
 ### Records Required
 
@@ -181,7 +181,7 @@ Value: v=DMARC1; p=quarantine; rua=mailto:dmarc@wizeworks.com
 
 1. When custom domain is added, platform generates DKIM keypair per tenant
 2. Private key stored in Google Secret Manager
-3. Public key displayed as DNS record for merchant to add
+3. Public key displayed as DNS record for tenant to add
 4. Platform validates all three records (SPF, DKIM, DMARC)
 5. Once validated, outbound emails use `From: store@theirdomain.com`
 6. Before custom domain: emails send from `store@slug.wizeworks.com`
@@ -211,7 +211,7 @@ async function validateEmailRecords(domain: string, tenantId: string) {
 
 - SSL expiry checked daily; renewal triggered 30 days before expiry
 - Domain resolution checked every 15 minutes for active custom domains
-- Merchant notified via email + dashboard alert if domain stops resolving
+- Tenant notified via email + dashboard alert if domain stops resolving
 - Automatic fallback to subdomain if custom domain fails for > 1 hour
 
 ---
@@ -221,6 +221,6 @@ async function validateEmailRecords(domain: string, tenantId: string) {
 Enterprise clients can delegate their entire DNS zone to WizeWorks (via Cloudflare nameservers). In this case:
 
 - WizeWorks manages all DNS records
-- Custom domain setup is instant (no merchant action required)
+- Custom domain setup is instant (no tenant action required)
 - Email records configured automatically
 - Full DNS audit log available in dashboard

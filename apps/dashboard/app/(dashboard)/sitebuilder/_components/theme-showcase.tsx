@@ -1,9 +1,9 @@
 'use client';
 
-// Live theme showcase — column 3 of the Brand & Theme center, and the merchant's
+// Live theme showcase — column 3 of the Brand & Theme center, and the tenant's
 // THEME-EVALUATION surface. It's a dense component gallery (modelled on the
 // daisyUI theme-builder board): every semantic colour, every control, every
-// radius tier, depth, and type — all visible at once, themed by the merchant's
+// radius tier, depth, and type — all visible at once, themed by the tenant's
 // compiled Token Model v2 (docs/33). The compiled CSS is SCOPED to
 // `#sf-theme-preview` via buildThemeCssV2({ rootSelector }), so it styles only
 // this preview (no iframe, no leakage), and everything reads `--sf-*` through the

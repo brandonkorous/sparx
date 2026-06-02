@@ -1,6 +1,6 @@
 # Site Builder Section System & Landing Composition
 
-**Version:** 1.0
+**Version:** 1.0.1
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-01
 
@@ -22,7 +22,7 @@ band of stat counters, and an embedded interactive map. We have none of those pr
 ### 1.1 Design principle: site-agnostic primitives
 
 The target was a **stress test, not a spec.** Nothing in this model is shaped to one brand: we add
-small, composable primitives (a media block, a CTA pair, a panel row) that any merchant assembles
+small, composable primitives (a media block, a CTA pair, a panel row) that any tenant assembles
 into any layout. A specific homepage is a useful adversary because it surfaces the missing
 primitives, but the deliverable is a **general toolkit** — the same pieces compose a SaaS landing, a
 restaurant page, an agency portfolio, or an editorial home equally well (§3.1 cross-checks this).
@@ -217,7 +217,7 @@ defers. Captured here so the landing-page story is whole, and recommended to fol
 build:
 
 - Transparent/overlay header mode (header renders over a full-bleed hero, opaque-on-scroll).
-- Arbitrary top-level nav (a menu the merchant defines, not only collection-derived links) + logo
+- Arbitrary top-level nav (a menu the tenant defines, not only collection-derived links) + logo
   sizing.
 - Footer: optional single centered legal row, real social glyphs (icon set, not first-letter), and
   "Powered by Sparx" as a **plan entitlement** (see §9).
@@ -269,7 +269,7 @@ sequenced by leverage and dependency:
 | **E** | **Slideshow/Carousel** container                                                                          | #7                                    | First interactive (client island); hydration + preview-bridge work.  |
 | **F** | Chrome: overlay header, custom nav, footer                                                                | #12, #13                              | **SiteLayout tier** — folds into doc 36's deferred SiteLayout build. |
 
-After Phases A–D, a merchant can build a static recreation of a modern brand homepage (full-bleed
+After Phases A–D, a tenant can build a static recreation of a modern brand homepage (full-bleed
 hero, panel rows, media+text bands, stats, embedded map) minus the swipe interaction; Phase E adds
 motion; Phase F makes the chrome match.
 
@@ -293,7 +293,7 @@ The theme-not-applying bug (brand color overrides masking a selected theme) was 
 ## 9. Open questions
 
 1. **Section nesting vs. self-contained containers.** We ship self-contained Panels (§4.2). Do
-   merchants ever need arbitrary nesting (sections inside panels)? If so it's a flat-model rework —
+   tenants ever need arbitrary nesting (sections inside panels)? If so it's a flat-model rework —
    revisit only on real demand.
 2. **Embed allowlist & CSP.** Which hosts (Google/Mapbox maps, YouTube/Vimeo, form providers)? The
    allowlist is enforced server-side at publish; the storefront's CSP `frame-src` must match. Needs a

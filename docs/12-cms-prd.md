@@ -1,8 +1,8 @@
 # Sparx Platform — CMS PRD
 
-**Version:** 2.0
+**Version:** 2.0.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -12,7 +12,7 @@ The Sparx CMS is a **standalone module** — it can be activated with or without
 
 When combined with Commerce, the CMS powers product descriptions, landing pages, and the blog. When used standalone, it is a full headless CMS with a visual editor, media library, SEO tools, and API access.
 
-This deliberate separation is a core Sparx differentiator — merchants pay for what they use.
+This deliberate separation is a core Sparx differentiator — tenants pay for what they use.
 
 ---
 
@@ -54,7 +54,7 @@ When Commerce module is active: rich text editor for product description field. 
 
 ### Custom Content Types (Pro+)
 
-Merchants can define custom content schemas — e.g. "Case Studies" with fields: client name, industry, challenge, solution, result. Content rendered via API.
+Teams can define custom content schemas — e.g. "Case Studies" with fields: client name, industry, challenge, solution, result. Content rendered via API.
 
 ### Theme Sections
 
@@ -161,7 +161,7 @@ Manual 301 redirects. Auto-created when page/product slug changes (prevents SEO 
 
 ## 8. Navigation Management
 
-Merchants manage navigation menus:
+Teams manage navigation menus:
 
 - Header navigation (main nav)
 - Footer navigation (multiple columns)

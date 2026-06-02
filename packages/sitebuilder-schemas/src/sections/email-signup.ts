@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SectionHeight, sectionHeightField } from '../common';
 import type { SectionField } from '../fields';
 
 export const EmailSignupConfig = z.object({
@@ -7,6 +8,7 @@ export const EmailSignupConfig = z.object({
   placeholder: z.string().max(80).default('Enter your email'),
   buttonLabel: z.string().max(40).default('Subscribe'),
   successMessage: z.string().max(200).default('Thanks for subscribing!'),
+  sectionHeight: SectionHeight.default('auto'),
 });
 export type EmailSignupConfig = z.infer<typeof EmailSignupConfig>;
 
@@ -16,4 +18,5 @@ export const emailSignupFields: SectionField[] = [
   { key: 'placeholder', label: 'Input placeholder', type: 'text' },
   { key: 'buttonLabel', label: 'Button label', type: 'text' },
   { key: 'successMessage', label: 'Success message', type: 'text' },
+  sectionHeightField(),
 ];

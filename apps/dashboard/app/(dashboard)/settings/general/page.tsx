@@ -11,7 +11,7 @@ interface TenantCard {
   plan: string;
 }
 
-// First real database-backed dashboard page. Now reads the merchant's tenant
+// First real database-backed dashboard page. Now reads the tenant
 // through api-rest (`GET /v1/tenant`) instead of Prisma directly — the
 // dashboard no longer touches the database.
 export default async function GeneralSettingsPage() {
@@ -28,7 +28,7 @@ export default async function GeneralSettingsPage() {
       <Stack gap={6} className="py-10">
         <PageHeader
           title="General settings"
-          description="Update how your merchant account presents itself."
+          description="Update how your account presents itself."
         />
         <GeneralForm
           tenant={{ name: tenant.name, email: tenant.email, slug: tenant.slug, plan: tenant.plan }}

@@ -6,7 +6,7 @@ const METRICS = [
   { value: '8 modules', accent: '#6366F1', subtitle: 'activate any combination' },
   { value: '$26K /yr saved', accent: '#6366F1', subtitle: 'average vs Shopify + HubSpot stack' },
   { value: '99.95% uptime', accent: '#6366F1', subtitle: '99.99% on Enterprise' },
-  { value: 'MCP', spark: '#EC4899', subtitle: 'first commerce platform' },
+  { value: 'MCP', spark: '#EC4899', subtitle: 'first content & commerce platform' },
 ] as const;
 
 export function FinalCta() {

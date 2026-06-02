@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { OptionalUuid } from '../common';
+import { OptionalUuid, SectionHeight, sectionHeightField } from '../common';
 import type { SectionField } from '../fields';
 
 export const TestimonialItem = z.object({
@@ -15,6 +15,7 @@ export const TestimonialsConfig = z.object({
   heading: z.string().max(120).default('What customers say'),
   items: z.array(TestimonialItem).max(12).default([]),
   columns: z.number().int().min(1).max(3).default(3),
+  sectionHeight: SectionHeight.default('auto'),
 });
 export type TestimonialsConfig = z.infer<typeof TestimonialsConfig>;
 
@@ -34,4 +35,5 @@ export const testimonialsFields: SectionField[] = [
     ],
   },
   { key: 'columns', label: 'Columns', type: 'range', min: 1, max: 3, step: 1 },
+  sectionHeightField(),
 ];

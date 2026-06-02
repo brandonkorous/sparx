@@ -11,7 +11,7 @@ import { api } from '@/lib/api-rest-client';
 export interface OnboardingState {
   /** User clicked "Skip" or finished — hide the welcome banner everywhere. */
   dismissed: boolean;
-  /** ISO wall-clock timestamp the merchant landed on /welcome the first time. */
+  /** ISO wall-clock timestamp the tenant landed on /welcome the first time. */
   startedAt: string | null;
   /** ISO timestamp when the user finished or dismissed onboarding. */
   finishedAt: string | null;

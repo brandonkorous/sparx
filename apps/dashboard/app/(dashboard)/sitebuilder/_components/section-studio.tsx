@@ -246,7 +246,7 @@ export function SectionStudio({ mode, definition }: SectionStudioProps) {
             <div className="flex flex-col gap-0.5">
               <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">Fields</h2>
               <p className="text-xs text-[var(--color-text-muted)]">
-                The editable settings a merchant fills in when they place this section.
+                The editable settings you fill in when you place this section.
               </p>
             </div>
             <FieldSpecEditor value={fieldSpec} onChange={setFieldSpec} />
@@ -295,7 +295,7 @@ export function SectionStudio({ mode, definition }: SectionStudioProps) {
             </TabsContent>
             <TabsContent value="form" className="flex flex-col gap-3">
               <p className="text-xs text-[var(--color-text-muted)]">
-                The settings form a merchant fills in when placing this section.
+                The settings form you fill in when placing this section.
               </p>
               <FormPreview fields={fieldSpec} />
             </TabsContent>

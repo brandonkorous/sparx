@@ -65,7 +65,7 @@ export const readTools: AnyMcpTool[] = [
   {
     name: 'list_custom_sections',
     description:
-      'List the tenant’s custom section types (merchant-defined sections, each a field spec + render template). Their placed-section type is `custom:<slug>`.',
+      'List the tenant’s custom section types (tenant-defined sections, each a field spec + render template). Their placed-section type is `custom:<slug>`.',
     scope: 'read:storefront',
     input: NoArgs,
     confirmation: false,

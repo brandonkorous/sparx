@@ -1,8 +1,8 @@
 # Email Section Composer
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-30
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -36,7 +36,7 @@ workstream, structured so a future shared "section kernel" absorbs both with no 
 
 ## 2. North star
 
-> An email is not a form with a text box. It is **a composition the merchant arranges in place** —
+> An email is not a form with a text box. It is **a composition the tenant arranges in place** —
 > seeing the real, branded result as they build, and seeing exactly which parts of it will differ
 > for each person who receives it.
 
@@ -46,7 +46,7 @@ Three commitments:
    section in the canvas and edit it in a docked inspector beside the live result — never a modal
    over the preview.
 2. **The data tier is visible.** Every section is one of three tiers — **Static**, **Dynamic**,
-   **Personalized** — surfaced as palette grouping, an on-block badge, and a legend. The merchant
+   **Personalized** — surfaced as palette grouping, an on-block badge, and a legend. The tenant
    learns _what varies per send_ by looking at the canvas (§4).
 3. **Preview as a real recipient.** Pick a customer and the Personalized + Dynamic blocks fill with
    _their_ actual data, in the canvas, with no test send (§9.3). This is the capability a page
@@ -103,7 +103,7 @@ The single concept that distinguishes email composition from page composition. E
 
 `tier` is not cosmetic — it **drives the render pipeline** (§7). A body with no `personalized`
 section renders once and fans out (today's fast path, unchanged). A body with any `personalized`
-section renders **per recipient**. The composer surfaces the tier so the merchant understands the
+section renders **per recipient**. The composer surfaces the tier so the tenant understands the
 cost/behavior they are opting into, and so "preview as recipient" knows what to resolve.
 
 This is the email analog of doc 30 §4.2's **static vs. bound** sections: a Personalized email
@@ -307,7 +307,7 @@ though personalization renders later.
   endpoint renders the section list. Render-once path end to end. _Ships: section templates send
   (static + dynamic)._
 - **P4 — Composer UI.** The full-bleed designer (palette · canvas · inspector · insert points · DnD ·
-  field forms), replacing the authored form; live branded canvas. _Ships: merchants compose visually._
+  field forms), replacing the authored form; live branded canvas. _Ships: tenants compose visually._
 - **P5 — Personalization.** Per-recipient render path (dispatch/worker); personalized resolvers
   (cart, recommendations, recent order, loyalty); "preview as recipient." _Ships: per-recipient
   email._

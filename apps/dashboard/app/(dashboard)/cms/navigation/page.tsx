@@ -3,7 +3,7 @@ import { Button, Card, Container, Heading, PageHeader, Stack, Text } from '@spar
 import { ArrowRight, Plus } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 
-// Navigation menus are CMS-owned content (docs/30 §8): the merchant builds the
+// Navigation menus are CMS-owned content (docs/30 §8): the tenant builds the
 // header / footer / mega / custom menu trees here. Site Builder consumes them
 // read-only — it binds a menu into a layout slot under /sitebuilder/navigation.
 

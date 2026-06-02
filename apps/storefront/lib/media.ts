@@ -10,7 +10,7 @@ const BASE_URL =
 
 /** Resolve a media reference → a stable public URL. Accepts either a media
  *  asset id (UUID, resolved via the public redirect) or an absolute http(s)
- *  URL (passed straight through, so a merchant can reference a self-hosted /
+ *  URL (passed straight through, so a tenant can reference a self-hosted /
  *  CDN asset without uploading it). Returns null for an empty ref so callers
  *  can fall back to a placeholder. */
 export function mediaUrl(assetId: string | null | undefined, tenantSlug: string): string | null {

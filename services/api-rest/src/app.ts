@@ -290,7 +290,7 @@ function commerceErrorMapper(
 }
 
 // Email-platform service-layer errors — same envelope vocabulary as CRM, with
-// PROVIDER_ERROR (→ 502) for Mailgun admin failures the merchant should see.
+// PROVIDER_ERROR (→ 502) for Mailgun admin failures the tenant should see.
 function emailErrorMapper(
   err: unknown,
   request: { id: string },

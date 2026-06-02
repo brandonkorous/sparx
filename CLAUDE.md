@@ -31,7 +31,7 @@ Nothing has been `pnpm install`ed yet — the first time anyone clones, they nee
 
 ## What this product is
 
-Sparx (sparx.works) is WizeWorks' modular commerce OS — a single platform combining storefront, commerce, CRM, CMS, email, B2B/wholesale, dropship, and MCP/AI integration. Modules activate independently; a merchant pays only for what they use. The first Enterprise client driving the initial feature set is **Gillett Diesel Service** (B2B + fleet + MCP requirements).
+Sparx (sparx.works) is WizeWorks' modular content and commerce OS — a single platform combining storefront, commerce, CRM, CMS, email, B2B/wholesale, dropship, and MCP/AI integration. It serves content, commerce, or both: a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class — selling is one capability, never the assumption. Modules activate independently; a tenant pays only for what they use. The first Enterprise client driving the initial feature set is **Gillett Diesel Service** (B2B + fleet + MCP requirements), but the platform is not commerce- or industry-specific.
 
 Read [docs/00-README.md](docs/00-README.md) first — it is the table of contents for everything else.
 

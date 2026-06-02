@@ -18,7 +18,7 @@ describe('registry', () => {
       const def = getEmailSectionDefinition(type);
       expect(def?.type).toBe(type);
       // schema.parse({}) must succeed (every field defaulted) so a freshly
-      // added section is valid before the merchant touches it.
+      // added section is valid before the tenant touches it.
       expect(() => defaultSectionConfig(type)).not.toThrow();
       // every field key exists on the parsed config or is a known passthrough.
       expect(def?.fields.length).toBeGreaterThan(0);

@@ -29,7 +29,8 @@ function fieldToZod(field: SectionField): z.ZodTypeAny {
       return z.string().max(RICHTEXT_MAX).default('');
     case 'url':
       return LinkUrl.default('');
-    case 'select': {
+    case 'select':
+    case 'buttongroup': {
       const [first, ...rest] = (field.options ?? []).map((o) => o.value);
       if (first === undefined) return z.string().default('');
       return z.enum([first, ...rest]).default(first);

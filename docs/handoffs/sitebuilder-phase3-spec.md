@@ -1,8 +1,8 @@
 # Site Builder Phase 3 — Layouts as Templates (Implementation Spec)
 
-**Version:** 1.0
+**Version:** 1.0.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-01
 
 > Implementation spec for **Phase 3** of the Site Builder redesign. The architecture contract is
 > [docs/30-sitebuilder-redesign.md](../30-sitebuilder-redesign.md) §4; this doc is the _how_ and must
@@ -17,10 +17,10 @@
 ## 1. Goal & the one-sentence shape
 
 **Goal (doc 30 §12).** The storefront stops being half-hardcoded React. A **product** page and a
-**collection** page each become a _composable, scoped layout_ the merchant edits in the same one-screen
+**collection** page each become a _composable, scoped layout_ the tenant edits in the same one-screen
 editor they already use for the homepage — with **bound** sections that pull from the page's assigned
 item at render. Day one, the seeded default layouts render **pixel-identical** to today's hardcoded
-PDP/PLP, so nothing visibly changes until a merchant chooses to edit.
+PDP/PLP, so nothing visibly changes until a tenant chooses to edit.
 
 **The shape, in one sentence.** Re-key the section model from a flat `pageKey` string to a
 `SiteTemplate` (typed by `scope`), add a **scope-restricted bound section family** to the registry,
@@ -213,7 +213,7 @@ collection grid+pagination stay one section for the same reason (`<ProductGrid>`
 unit driven by the same paged fetch). Filters/sort richness is a config flag now, a follow-on later.
 
 **Breadcrumbs + JSON-LD are page chrome, not sections.** They are SEO/navigation concerns the page
-shell keeps emitting around the rendered template (the merchant doesn't compose or remove them). This
+shell keeps emitting around the rendered template (the tenant doesn't compose or remove them). This
 keeps `generateMetadata` and structured data out of the section model.
 
 ### 4.3 Two senses of "bound" (doc 30 §4.2, preserved)
@@ -236,7 +236,7 @@ layout is a `const` composition in code, not DB rows.**
 - The product default expresses today's PDP exactly: `product-buy-box` → `product-description` →
   `product-fitment` → `product-reviews` → `product-questions` → `product-related`. The collection
   default: `collection-header` → `collection-products`.
-- When a merchant first **edits** the product/collection layout, the editor **materializes** the code
+- When a tenant first **edits** the product/collection layout, the editor **materializes** the code
   default into real `SiteSection` rows under a `(scope, key='default')` `SiteTemplate` ("duplicate to
   edit"). Until then, **zero rows** exist for that scope.
 
@@ -369,7 +369,7 @@ mapping table + override pointer.
 
 ## 9. Build increments (each independently shippable)
 
-Per deploy-early/deploy-small. The risky storefront cutover (3.2) ships and bakes **before** any merchant
+Per deploy-early/deploy-small. The risky storefront cutover (3.2) ships and bakes **before** any tenant
 can edit (3.3), and **parity is verifiable before edit exists**.
 
 - **3.0 — Schema + migration.** `SiteTemplate` + re-key `SiteSection`; hand-edited RLS; data-driven
@@ -445,7 +445,7 @@ verified live on E2E Shop (PDP bound-section parity, 2026-05-31)._
 3.3 turned out to be more than UI. The public section API is still `pageKey`-shaped, and
 `scopeKeyForPageKey` maps `home → home/default`, **everything else → `custom/<pageKey>`** — so **no
 `pageKey` reaches `scope='product'|'collection'`**. The editor cannot address the new scopes through
-today's API. §8 anticipated this. With **zero merchants on the platform**, the decision (B.K., 2026-05-31)
+today's API. §8 anticipated this. With **zero tenants on the platform**, the decision (B.K., 2026-05-31)
 is to do the correct fix — retire `pageKey` from the live section API rather than carry the translation
 layer — sequenced deploy-small so the e2e store never breaks mid-rollout.
 

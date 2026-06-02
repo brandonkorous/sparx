@@ -14,7 +14,7 @@ import type {
 // Server-action adapters for the onboarding wizard. Like the rest of the
 // dashboard, every call goes through api-rest with the server-held JWT — the
 // wizard islands never touch api-rest directly. Each step persists its result
-// AND advances `currentStep` so the flow resumes where the merchant left off.
+// AND advances `currentStep` so the flow resumes where the tenant left off.
 
 function fail(err: unknown): { ok: false; error: string } {
   const e = err as ApiRestError;
@@ -52,7 +52,7 @@ function toWizardTheme(t: ThemePreset): WizardThemeOption {
 // `storefront` + `commerce` modules so the later steps' endpoints respond
 // (theme catalog + product create are both module-gated). Also seeds the
 // tenant-level brand (docs/30 §6): businessName always, plus an optional logo
-// and primary color the merchant can set inline here. Brand is ungated, so this
+// and primary color the tenant can set inline here. Brand is ungated, so this
 // seeds the source of truth before any module choice — a tenant always has a
 // brand even if Storefront is later turned off.
 export async function saveBusinessAction(input: {

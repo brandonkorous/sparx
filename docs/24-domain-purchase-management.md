@@ -1,14 +1,14 @@
 # Sparx Platform — Domain Purchase & Management Spec
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
 ## 1. Overview
 
-Sparx integrates with the GoDaddy Reseller API to allow merchants to search, purchase, and instantly connect a custom domain during onboarding or from the dashboard. Domain goes live with HTTPS and email authentication in under 60 seconds. No DNS configuration required. No registrar login. No CNAME records to add manually.
+Sparx integrates with the GoDaddy Reseller API to allow tenants to search, purchase, and instantly connect a custom domain during onboarding or from the dashboard. Domain goes live with HTTPS and email authentication in under 60 seconds. No DNS configuration required. No registrar login. No CNAME records to add manually.
 
 This is a genuine differentiator. No other commerce platform does native domain purchase with instant automatic connection.
 
@@ -16,7 +16,7 @@ This is a genuine differentiator. No other commerce platform does native domain 
 
 ---
 
-## 2. The Merchant Experience
+## 2. The Tenant Experience
 
 During onboarding Step 4, instead of just showing the `sparx.works` subdomain:
 
@@ -112,16 +112,16 @@ GoDaddy DNS propagates in seconds for newly registered domains (GoDaddy controls
 
 ### Renewal
 
-Nightly cron checks domains expiring within 30 days. Email notifications at: 30 days, 14 days, 7 days, day of expiry. GoDaddy handles auto-renewal (`renewAuto: true` at purchase). Sparx charges merchant's saved payment method before GoDaddy charges us.
+Nightly cron checks domains expiring within 30 days. Email notifications at: 30 days, 14 days, 7 days, day of expiry. GoDaddy handles auto-renewal (`renewAuto: true` at purchase). Sparx charges tenant's saved payment method before GoDaddy charges us.
 
-### Transfer Out (Merchant Cancels Sparx)
+### Transfer Out (Tenant Cancels Sparx)
 
-Merchant owns their domain and can take it:
+Tenant owns their domain and can take it:
 
 1. `PATCH /v1/domains/{domain}` → `locked: false`
 2. `GET /v1/domains/{domain}/transferOut` → returns `authCode`
-3. Email auth code to merchant
-4. Merchant transfers to their own registrar
+3. Email auth code to tenant
+4. Tenant transfers to their own registrar
 
 ### WHOIS Privacy (Optional Upsell)
 
@@ -210,7 +210,7 @@ Application reads OTE in staging, production credentials in prod environment.
 
 Tools exposed to AI/MCP server:
 
-- `get_domains()` → lists all merchant domains
+- `get_domains()` → lists all tenant domains
 - `check_domain_availability(domain)` → availability + pricing
 - `suggest_domains(query)` → available suggestions for business name
 - `purchase_domain(domain, years)` → **requires explicit confirmation before executing**

@@ -11,7 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <Wordmark icon />
         </Link>
         <Text size="sm" variant="muted">
-          Merchant sign-in
+          Sign in
         </Text>
       </header>
       <main className="flex flex-1 items-center justify-center px-4 py-12">

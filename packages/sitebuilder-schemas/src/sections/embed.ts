@@ -5,7 +5,7 @@ import type { SectionField } from '../fields';
 // a form, a calendar, …) into the page from a single pasted URL.
 //
 // The platform deliberately does NOT build maps / video players / booking
-// widgets natively: a merchant brings their own and embeds it. `resolveEmbed()`
+// widgets natively: a tenant brings their own and embeds it. `resolveEmbed()`
 // normalizes the common providers (Google Maps, YouTube, Vimeo) to their iframe
 // `src` form and passes any other https URL straight through to a sandboxed
 // iframe — the browser still enforces the target's X-Frame-Options / CSP, so an
@@ -138,7 +138,7 @@ export function resolveEmbed(raw: string | null | undefined): ResolvedEmbed | nu
   }
 
   // ── Generic ──────────────────────────────────────────────────
-  // Render any other https URL in a sandboxed iframe. The merchant is
+  // Render any other https URL in a sandboxed iframe. The tenant is
   // responsible for pasting an embeddable URL; the browser enforces the rest.
   return {
     src: u.toString(),

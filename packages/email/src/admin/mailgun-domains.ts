@@ -1,7 +1,7 @@
-// Mailgun domain-admin client — provisions per-merchant sending domains via
+// Mailgun domain-admin client — provisions per-tenant sending domains via
 // the Mailgun v4 Domains API. Distinct from providers/mailgun.ts (which only
 // SENDS via /v3/{domain}/messages): this is the control-plane that creates a
-// domain, reads the DNS records the merchant must publish, and polls
+// domain, reads the DNS records the tenant must publish, and polls
 // verification.
 //
 //   POST   /v4/domains              → create + return sending_dns_records
@@ -39,7 +39,7 @@ export interface MailgunDomainResult {
 }
 
 /** Mailgun rejected an admin request permanently (4xx) — bad domain, already
- *  exists, plan limit. Callers map this to a merchant-visible PROVIDER_ERROR;
+ *  exists, plan limit. Callers map this to a tenant-visible PROVIDER_ERROR;
  *  it must NOT be retried. */
 export class MailgunAdminError extends Error {
   readonly status: number;

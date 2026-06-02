@@ -21,7 +21,7 @@ export function fontStack(name: string | null, fallbackName: string): string {
 }
 
 // ── WCAG contrast ────────────────────────────────────────────────────────────
-// A brand tool is the one place that owes the merchant a contrast check: the
+// A brand tool is the one place that owes the tenant a contrast check: the
 // primary / on-primary pair set here renders on every storefront and email
 // button. We rate it inline so an unreadable pair can never ship silently.
 

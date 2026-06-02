@@ -1,4 +1,4 @@
-// Site Builder — custom section definitions (docs/38 Phase C). The merchant's own
+// Site Builder — custom section definitions (docs/38 Phase C). The tenant's own
 // section TYPES (field spec + render-template AST), the data-defined analogue of
 // a code SECTION_REGISTRY entry. Placed sections reference one by `custom:<slug>`.
 //

@@ -1,8 +1,8 @@
 # Sparx Platform — Infrastructure & Deployment
 
-**Version:** 3.1
+**Version:** 3.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-28
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -78,7 +78,7 @@ monitoring      # Prometheus, Grafana (shared with WizeWorks)
 | Cache     | Redis GKE pod        | Memorystore (managed Redis)     | Auto-failover, persistence, no manual ops          |
 | Search    | PostgreSQL full-text | Typesense (self-hosted GKE)     | Faster faceted search, typo tolerance, still cheap |
 | CDN       | Cloudflare Free      | Cloudflare Pro ($20/mo)         | Better WAF, image optimization, analytics          |
-| Email IPs | Shared Postal pool   | Dedicated Postal IP pool        | Isolate high-volume merchant reputation            |
+| Email IPs | Shared Postal pool   | Dedicated Postal IP pool        | Isolate high-volume tenant reputation              |
 
 ### Phase 3 — Scale Stage (~$1,000–5,000/mo)
 
@@ -213,7 +213,7 @@ All deployments live in `sparx-prod` namespace.
 api-rest          # Fastify REST API
 api-graphql       # Pothos/Mercurius GraphQL
 api-mcp           # MCP server (AI integration)
-dashboard         # Next.js merchant admin
+dashboard         # Next.js tenant admin
 storefront        # Next.js multi-tenant storefronts
 caddy             # Reverse proxy + on-demand TLS
 redis             # Cache + BullMQ (Phase 1: pod, Phase 2: Memorystore)
@@ -288,7 +288,7 @@ Database migrations are forward-only. Schema rollbacks are a new forward migrati
 The single most important infrastructure decision: Caddy with on-demand TLS.
 
 ```
-New merchant signs up
+New tenant signs up
     → slug "acme-parts" claimed in DB
     → *.sparx.zone A record already points to GKE LB (set once, never changes)
     → First request to acme-parts.sparx.zone:
@@ -303,7 +303,7 @@ New merchant signs up
 Custom domain flow:
 
 ```
-Merchant adds "shop.acme.com"
+Tenant adds "shop.acme.com"
     → Platform shows: CNAME shop → customers.sparx.zone
     → Domain worker polls every 5 min for CNAME propagation
     → On propagation: domain.verified event to Pub/Sub
@@ -312,7 +312,7 @@ Merchant adds "shop.acme.com"
     → acme-parts.sparx.zone → 301 redirect to shop.acme.com
 ```
 
-No manual cert management. No per-tenant Caddy config. One Caddyfile serves all merchants.
+No manual cert management. No per-tenant Caddy config. One Caddyfile serves all tenants.
 
 ---
 

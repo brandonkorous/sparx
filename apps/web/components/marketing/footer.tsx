@@ -125,7 +125,8 @@ export function Footer() {
               margin: 0,
             }}
           >
-            Modular commerce OS by WizeWorks. Built in Visalia, California. Operating worldwide.
+            Modular content and commerce OS by WizeWorks. Built in Visalia, California. Operating
+            worldwide.
           </p>
           <span
             style={{

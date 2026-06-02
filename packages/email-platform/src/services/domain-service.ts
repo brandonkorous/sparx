@@ -1,7 +1,7 @@
 // domainService — per-tenant Mailgun sending domains.
 //
 // create() provisions the domain in Mailgun and persists the verbatim
-// sending_dns_records the merchant must publish (the SPF string is copied
+// sending_dns_records the tenant must publish (the SPF string is copied
 // exactly — Mailgun's verifier requires the canonical form). verify() asks
 // Mailgun to re-check DNS and flips state. The dashboard drives verify
 // on-demand ("Check verification"); a background re-check tick can call the

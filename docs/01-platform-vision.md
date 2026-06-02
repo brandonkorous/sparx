@@ -8,15 +8,15 @@
 
 ## 1. The Problem
 
-The commerce platform market is dominated by tools that have optimized for feature breadth at the expense of usability and honest pricing. Shopify's merchant onboarding now takes hours. HubSpot requires a dedicated admin. Combining them requires Zapier, custom integrations, and ongoing maintenance. The result: small and mid-size businesses paying $2,000–$3,000/month for a fragmented stack that still doesn't give them a unified view of their business.
+The content and commerce platform market is dominated by tools that have optimized for feature breadth at the expense of usability and honest pricing. Shopify's merchant onboarding now takes hours. HubSpot requires a dedicated admin. Combining them requires Zapier, custom integrations, and ongoing maintenance. The result: small and mid-size businesses paying $2,000–$3,000/month for a fragmented stack that still doesn't give them a unified view of their business.
 
-Worse: merchants are forced to buy features they don't need. A blogger who wants to sell a single digital product pays the same as a wholesale distributor managing 500 SKUs and 200 fleet accounts.
+Worse: businesses are forced to buy features they don't need. A blogger who just wants to publish — or to sell a single digital product — pays the same as a wholesale distributor managing 500 SKUs and 200 fleet accounts.
 
-AI tools (Claude, ChatGPT, Copilot) have become indispensable — but they have zero visibility into business data. A merchant cannot ask their AI "what are my top 10 customers this quarter" because no platform exposes that natively.
+AI tools (Claude, ChatGPT, Copilot) have become indispensable — but they have zero visibility into business data. A business owner cannot ask their AI "what are my top 10 customers this quarter" because no platform exposes that natively.
 
 ## 2. The Solution — Sparx
 
-Sparx is a modular commerce operating system. Merchants activate only what they need. Every module shares the same data layer, the same dashboard, and the same API — so there's never a sync problem, never a missing integration, never a "you need the $2,400/month plan for that."
+Sparx is a modular content and commerce operating system. You activate only the modules you need — content, commerce, or both. Every module shares the same data layer, the same dashboard, and the same API — so there's never a sync problem, never a missing integration, never a "you need the $2,400/month plan for that."
 
 **The modules:**
 
@@ -24,16 +24,16 @@ Sparx is a modular commerce operating system. Merchants activate only what they 
 - **Commerce** — Products, cart, checkout, orders, payments
 - **CMS** — Content editor, blog, media library, SEO (standalone — no shop required)
 - **CRM** — Customer intelligence, pipeline, activity log, automation
-- **Email** — Transactional and marketing email, tied to merchant's own domain, powered by Postal
+- **Email** — Transactional and marketing email, tied to the tenant's own domain, powered by Postal
 - **B2B/Wholesale** — Account pricing, RFQ, net terms, fleet management, service scheduling
 - **AI/MCP** — Native MCP server; Claude, ChatGPT, and Copilot speak your business data
 - **Dropship** — Supplier connectors, catalog sync, automated order routing
 
-Each module is independently activatable. A merchant running a content site pays for Storefront + CMS. A wholesale distributor pays for Commerce + B2B + CRM. A dropship entrepreneur pays for Commerce + Dropship.
+Each module is independently activatable. A publisher running a content site pays for Storefront + CMS. A wholesale distributor pays for Commerce + B2B + CRM. A dropship entrepreneur pays for Commerce + Dropship.
 
 ## 3. The WizeWorks Context
 
-Sparx is built and operated by WizeWorks (wize.works), based in Visalia, California, incorporated in 2026. WizeWorks owns and operates a portfolio of software products including kanNINJA (project management), HelpNinja (AI support), and others. Sparx is the flagship commerce platform.
+Sparx is built and operated by WizeWorks (wize.works), based in Visalia, California, incorporated in 2026. WizeWorks owns and operates a portfolio of software products including kanNINJA (project management), HelpNinja (AI support), and others. Sparx is the flagship content and commerce platform.
 
 The first Enterprise client is Gillett Diesel Service Inc. (Bluffdale, Utah) — migrating from Shopify + HubSpot ($35,400/year) to Sparx (custom frontend, managed hosting). Gillett's requirements drove the initial B2B, fleet, and MCP feature set.
 
@@ -108,7 +108,7 @@ For clients who want Sparx to operate their infrastructure:
 
 ## 7. The Sparx Promise
 
-> A merchant signs up, picks a theme, activates the modules they need, adds their first product, and is taking orders — in under 5 minutes. No developer required. No app store required. No Zapier required.
+> A new customer signs up, picks a theme, activates the modules they need, and is live — publishing their first page or taking their first order — in under 5 minutes. No developer required. No app store required. No Zapier required.
 
 Every product decision is evaluated against this promise. If a feature slows the 5-minute path, it goes behind "Advanced Settings." If it enables it, it gets prioritized.
 
@@ -122,7 +122,7 @@ Sparx owns a portfolio of domains creating independent SEO acquisition channels:
 - **sparxcrm.com** — CRM module acquisition ("CRM built for commerce")
 - **sparxemail.com** — Email module acquisition ("email marketing built in")
 - **sparxb2b.com** — B2B module acquisition ("wholesale platform")
-- **sparx.email** — Postal sending infrastructure + platform-to-merchant transactional emails (`sparx.mx` was unavailable; `sparx.email` now plays both roles)
+- **sparx.email** — Postal sending infrastructure + platform-to-tenant transactional emails (`sparx.mx` was unavailable; `sparx.email` now plays both roles)
 - **sparx.host** — Managed hosting product marketing (currently 301 → sparx.works/hosting)
 - **sparx.software** — Developer portal: SDK docs, API reference, MCP guides (currently 301 → sparx.works/docs)
 - **sparx.exchange** — Defensive registration (currently 301 → sparx.works)

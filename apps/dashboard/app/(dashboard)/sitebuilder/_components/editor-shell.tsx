@@ -127,7 +127,7 @@ export function EditorShell({
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const subscribers = React.useRef(new Set<(s: SectionSelection) => void>());
   // Last live state, re-emitted on `sparx-preview-ready` so a reload/navigation
-  // never drops the merchant's in-progress mode + theme edits.
+  // never drops the tenant's in-progress mode + theme edits.
   const lastMode = React.useRef<Mode>(initialMode);
   const lastCss = React.useRef<string | null>(null);
 

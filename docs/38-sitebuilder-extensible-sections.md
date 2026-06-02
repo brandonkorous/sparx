@@ -1,6 +1,6 @@
 # Site Builder — User-Extensible Sections
 
-**Version:** 1.2
+**Version:** 1.2.1
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-01
 
@@ -17,7 +17,7 @@ Adding one means an engineer touches five places and ships a deploy:
 4. **React renderer** in [apps/storefront/components/sections/](../apps/storefront/components/sections/)
 5. **`switch` case** in [section-renderer.tsx](../apps/storefront/components/section-renderer.tsx)
 
-This document specifies how we let **merchants and agencies add their own components without a deploy** — and
+This document specifies how we let **tenants and agencies add their own components without a deploy** — and
 just as importantly, where we deliberately stop, because the storefront render path is a multi-tenant server
 surface and arbitrary user code on it is a non-starter.
 
@@ -79,7 +79,7 @@ Two existing behaviors are load-bearing for everything below:
 - `SiteTheme` — a tenant-saved, named, RLS-scoped presentation artifact. Phase B is the same pattern for
   section content.
 - `DEFAULT_TEMPLATES` / `PAGE_TEMPLATES` — a code-first catalog instantiated into editable rows, explicitly
-  designed to grow a DB-backed merchant catalog additively.
+  designed to grow a DB-backed tenant catalog additively.
 
 ---
 
@@ -89,41 +89,41 @@ Sequenced by leverage and risk, each independently shippable ([[feedback_deploy_
 
 ### Phase A — Compose, don't author _(no new types; in flight)_
 
-Richer generic primitives plus a slot/container section, so merchants assemble novel layouts from **safe
+Richer generic primitives plus a slot/container section, so tenants assemble novel layouts from **safe
 building blocks they already have**. This is the road doc 37 is already on — `panels`, `media-text`, the
 shared `MediaBlock`, `ctas[]`.
 
-- **For:** non-technical merchants.
+- **For:** non-technical tenants.
 - **Render path:** unchanged (code renderers).
 - **New surface:** none. Highest ROI, zero new security surface. It dissolves most of the demand for "I need a
   new component" before we ever build an authoring system.
-- **Exit:** a merchant can build the majority of observed landing layouts from stock sections (doc 37 §3.1
+- **Exit:** a tenant can build the majority of observed landing layouts from stock sections (doc 37 §3.1
   archetype cross-check passes).
 
 ### Phase B — Saved blocks _(a tenant pattern library; pure data)_
 
-Let a merchant configure a section — or a group of sections — and **save it as a named, reusable block**
+Let a tenant configure a section — or a group of sections — and **save it as a named, reusable block**
 ("my product feature card"). It is `config` JSON (and an ordered section list) over **existing** types.
 
-- **For:** any merchant; the cheapest thing that literally answers "users add components they reuse."
+- **For:** any tenant; the cheapest thing that literally answers "users add components they reuse."
 - **Data/DB:** new `tenant_section_presets` (tenant-scoped, ENABLE+FORCE RLS) — `{ name, kind: section|group,
 payload: JSON }`. Mirrors `SiteTheme`.
 - **Render path:** unchanged — a block expands to ordinary `SiteSection` rows on insert.
 - **Editor:** a "Save as block" action and an "Insert block" picker beside the section library.
 - **Snapshot:** none needed — once inserted, a block is just sections; the saved preset is authoring-time only.
 - **API/MCP:** CRUD on presets; "insert preset into layout."
-- **Exit:** a merchant saves a configured section and re-inserts it on another page/layout.
+- **Exit:** a tenant saves a configured section and re-inserts it on another page/layout.
 
 ### Phase C — Declarative custom section types _(the strategic unlock — ✅ built 2026-06-01)_
 
-Let a technical merchant/agency define a **brand-new section type as data** — fields + a safe render template —
+Let a technical tenant/agency define a **brand-new section type as data** — fields + a safe render template —
 with no deploy. This is the phase that genuinely answers the title question; §4 specs it. **Built end-to-end**
 (DB → schemas → service → storefront render → REST/MCP → editor placement) per the build-status block in
 [the template-language spec](handoffs/sitebuilder-custom-section-template-spec.md) §10. The remaining
 authoring UX (a non-developer composing the template tree) is the deferred "section studio" slice (§6.2);
 definitions are created via API/MCP and placed/configured in the dashboard today.
 
-- **For:** technical merchants, agencies, and (via API/MCP) AI authoring.
+- **For:** technical tenants, agencies, and (via API/MCP) AI authoring.
 - **Data/DB:** `tenant_section_definitions` (tenant-scoped RLS) — `{ slug, label, icon, fieldSpec: JSON,
 template: JSON, version }`.
 - **Render path:** **new** — a sandboxed template interpreter; no user JS executes.
@@ -131,7 +131,7 @@ template: JSON, version }`.
   authors the field list + template.
 - **Snapshot:** publish **pins the definition** (or its version) into the version so render is deterministic.
 - **API/MCP:** define / update / version a section type.
-- **Exit:** a merchant defines a new section type, places it, publishes, and it renders on the storefront —
+- **Exit:** a tenant defines a new section type, places it, publishes, and it renders on the storefront —
   with no engineer involvement and no deploy.
 
 ### Phase D — Marketplace / partner sections _(vetted, platform-level)_
@@ -204,7 +204,7 @@ same target/binding gate as code sections.
 Publishing must capture the definition the page depends on. Either embed the resolved definition into
 `sectionsSnapshot`, or store a `definitionVersion` ref and snapshot the definition rows immutably alongside the
 `SiteVersion`. Requirement: **a published page renders identically forever, and rollback is exact**, even if
-the merchant later edits or deletes the live definition. The "unknown type degrades gracefully" property is
+the tenant later edits or deletes the live definition. The "unknown type degrades gracefully" property is
 preserved as the final fallback.
 
 ---
@@ -232,7 +232,7 @@ preserved as the final fallback.
 1. **Template language: build vs. adopt.** ~~A bespoke JSON primitive tree vs. a restricted templating
    grammar.~~ **Resolved** → typed JSON component AST, interpreted server-side, compiling to a closed
    `sf-tpl-*` class family. See [handoff spec](handoffs/sitebuilder-custom-section-template-spec.md).
-2. **Definition versioning & migration.** When a merchant edits a definition that live + published pages
+2. **Definition versioning & migration.** When a tenant edits a definition that live + published pages
    reference, what migrates and what stays pinned? (Ties to §4.5.)
 3. **Where the interpreter lives.** A new runtime package vs. extending `@sparx/sitebuilder-schemas` (which is
    deliberately zod-only and React-free). Likely a separate `@sparx/section-runtime` so backends never pull

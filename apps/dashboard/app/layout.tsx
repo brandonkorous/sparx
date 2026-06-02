@@ -16,7 +16,7 @@ const interWordmark = Inter({
 
 export const metadata: Metadata = {
   title: 'Sparx Dashboard',
-  description: 'Merchant admin for the Sparx commerce platform.',
+  description: 'Admin for the Sparx content and commerce platform.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

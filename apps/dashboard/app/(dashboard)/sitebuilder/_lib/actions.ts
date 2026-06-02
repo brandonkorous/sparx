@@ -66,7 +66,7 @@ export async function updateSettings(input: {
 }
 
 // ── Saved themes (docs/33 saved-themes contract) ───────────────────────────
-// The merchant's named themes (/v1/sitebuilder/saved-themes). A theme captures
+// The tenant's named themes (/v1/sitebuilder/saved-themes). A theme captures
 // its base preset, a presentation overlay, AND a brand "look" snapshot
 // (colours/fonts/shape), so it's self-contained. `apply` loads the base preset +
 // presentation into the draft; the dashboard separately writes the brand via
@@ -151,7 +151,7 @@ export async function materializeLayout(input: {
 
 // Instantiate a NEW named layout for a target from a Page Template (docs/36 §10).
 // Used by the Layouts surface "New layout" flow — creates an editable layout
-// (with the template's sections) the merchant then opens in the canvas editor.
+// (with the template's sections) the tenant then opens in the canvas editor.
 export async function instantiateLayout(input: {
   targetId: string;
   templateId: string;

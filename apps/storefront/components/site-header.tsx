@@ -23,7 +23,7 @@ export interface SiteHeaderProps {
   announcement?: string | null;
   /** Announcement link target (when the announcement bar links somewhere). */
   announcementHref?: string | null;
-  /** Hide the inline search box when the merchant's header config disables it. */
+  /** Hide the inline search box when the tenant's header config disables it. */
   showSearch?: boolean;
   /** Where the logo sits in the bar (Site Builder header config). */
   logoPlacement?: 'left' | 'center';
@@ -65,7 +65,7 @@ export function SiteHeader({
           <MobileNav nav={nav} brand={tenant.name} />
 
           <Link href="/" className="sf-header__brand" aria-label={`${tenant.name} home`}>
-            {/* Plain <img>: a merchant logo has unknown intrinsic dimensions and
+            {/* Plain <img>: a tenant logo has unknown intrinsic dimensions and
                 a redirecting media src, so next/image (which needs width+height
                 or a sized fill parent) doesn't fit; CSS caps it at 34px tall. */}
             {logo ? <img src={logo} alt={tenant.name} /> : tenant.name}

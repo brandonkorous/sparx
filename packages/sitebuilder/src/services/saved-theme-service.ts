@@ -169,7 +169,7 @@ export async function remove(ctx: ServiceContext, id: string): Promise<{ id: str
 
 // Load a saved theme into the working draft: set theme_key = basePresetKey and
 // merge its presentation into draftSettings (preserving tokens/customCss). Does
-// NOT publish — the merchant publishes or schedules afterward. The published
+// NOT publish — the tenant publishes or schedules afterward. The published
 // snapshot picks it up because publish reads the draft.
 export async function apply(
   ctx: ServiceContext,
@@ -184,7 +184,11 @@ export async function apply(
       where: { tenantId: ctx.tenantId },
       data: {
         themeKey: theme.basePresetKey,
-        draftSettings: { ...draft, presentation: theme.presentation },
+        // Record WHICH saved theme is applied (the pointer), alongside its
+        // presentation, so the dashboard rail restores the selection on reload.
+        // Stamped here (server-side, within the merge) so it can't race the
+        // dashboard's debounced settings autosave.
+        draftSettings: { ...draft, presentation: theme.presentation, activeSavedThemeId: id },
       },
     });
     await writeAuditLog({

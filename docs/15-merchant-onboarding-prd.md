@@ -1,14 +1,14 @@
 # WizeWorks Platform — Merchant Onboarding PRD
 
-**Version:** 1.0  
+**Version:** 1.0.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
 ## 1. The North Star: Live in 5 Minutes
 
-Every onboarding decision is evaluated against one metric: **time from signup to live store accepting orders**. Target: under 5 minutes. No exceptions made for "we need to collect this info."
+Every onboarding decision is evaluated against one metric: **time from signup to a live site** — a published page or a store accepting orders, depending on what the tenant is here to do. Target: under 5 minutes. No exceptions made for "we need to collect this info."
 
 If information can be collected later without blocking launch, it is collected later.
 
@@ -38,13 +38,13 @@ After submit:
 
 - Platform categorizes by business name keywords (e.g., "diesel", "trucking" → Industrial theme)
 - Shows top 3 recommended themes with live preview thumbnails
-- Merchant picks one
-- Store renders live with placeholder content immediately
+- Tenant picks one
+- Site renders live with placeholder content immediately
 
 Design rules:
 
 - Never show more than 3 options — choice paralysis kills conversion
-- Pre-select the best match — merchant just confirms or switches
+- Pre-select the best match — the tenant just confirms or switches
 - Live preview updates in real time as they hover
 
 ### Step 3 — First Product (90 seconds)
@@ -103,7 +103,7 @@ Large "Connect Stripe" button (OAuth flow):
 
 ## 3. Post-Onboarding: Progressive Feature Discovery
 
-After the merchant lands in dashboard, features are surfaced progressively over the first 7 days:
+After the tenant lands in dashboard, features are surfaced progressively over the first 7 days:
 
 | Day | Prompt                                                |
 | --- | ----------------------------------------------------- |
@@ -120,10 +120,10 @@ These are non-blocking tips in the dashboard — never modal popups that interru
 
 ## 4. Plan Selection
 
-Plan selection happens AFTER the store is live — not before. Merchant is on a 14-day trial of the Pro plan. On day 12, a prompt appears in dashboard:
+Plan selection happens AFTER the site is live — not before. The tenant is on a 14-day trial of the Pro plan. On day 12, a prompt appears in dashboard:
 
 > "Your trial ends in 2 days. You're currently on Pro ($699/mo).
-> Choose a plan to keep your store live."
+> Choose a plan to keep your site live."
 
 Options shown with current usage highlighted:
 
@@ -140,7 +140,7 @@ No credit card collected until trial end.
 
 | Metric                              | Target      |
 | ----------------------------------- | ----------- |
-| Time to live store                  | < 5 minutes |
+| Time to live site                   | < 5 minutes |
 | Onboarding completion rate          | > 80%       |
 | Payment connection rate (day 1)     | > 60%       |
 | Trial to paid conversion            | > 30%       |

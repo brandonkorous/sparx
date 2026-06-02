@@ -1,14 +1,14 @@
 # WizeWorks Platform — E-Commerce Engine PRD
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
 ## 1. Overview
 
-The e-commerce engine is the transactional core of WizeWorks. It handles everything from product catalog to checkout to fulfillment. It is designed to serve both direct-to-consumer (D2C) retail and B2B wholesale from the same codebase, with B2B-specific behavior toggled per merchant and per customer account.
+The e-commerce engine is the transactional core of WizeWorks. It handles everything from product catalog to checkout to fulfillment. It is designed to serve both direct-to-consumer (D2C) retail and B2B wholesale from the same codebase, with B2B-specific behavior toggled per tenant and per customer account.
 
 ---
 

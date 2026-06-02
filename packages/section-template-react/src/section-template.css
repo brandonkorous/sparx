@@ -6,7 +6,7 @@
 
    Every value reads a --sf-* token; variant selection is data-* only and scoped
    to the sf-tpl-* classes (never bare attribute selectors, which would collide
-   with the sf-sb-* sections' own data-cols/data-align). A merchant-authored
+   with the sf-sb-* sections' own data-cols/data-align). A tenant-authored
    template can therefore never emit an off-token value. */
 
 /* Stack — flex column/row */

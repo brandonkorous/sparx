@@ -2,7 +2,7 @@
 //
 //   GET /v1/public/search ?tenant=<slug>&q=<query>[&page=&perPage=]
 //
-// "Search everything" on the merchant's public website — products, collections,
+// "Search everything" on the tenant's public website — products, collections,
 // and CMS pages in one typo-tolerant query against the universal `entities`
 // collection. Hard-gated to PUBLIC-safe entity types + published/active status,
 // so internal entities (orders, customers, discounts, b2b accounts, quotes, …)

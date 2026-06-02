@@ -8,7 +8,7 @@
 // Phase 1 policy:
 //   - Allow the static platform hostnames (sparx.works + its subs, the
 //     module marketing domains, sparx.email, sparx.zone apex).
-//   - Deny everything else — `*.sparx.zone` tenant subdomains and merchant
+//   - Deny everything else — `*.sparx.zone` tenant subdomains and tenant
 //     custom domains land here too, but until the `domains` table exists
 //     there's no way to authorize them. They'll fail to issue a cert,
 //     which is the safe default.
@@ -20,7 +20,7 @@
 // Tenant subdomain authorization (Phase 1.5): `*.sparx.zone` subdomains are
 // authorized by looking up the slug in the `tenants` table. This is what
 // powers preview URLs from the dashboard (<tenant>.sparx.zone) and any
-// merchant landing on their own storefront before custom domains exist.
+// tenant landing on their own storefront before custom domains exist.
 //
 // Not in OpenAPI, no auth, no rate-limit interference — this is an internal
 // ClusterIP-only endpoint. Caddy hits it at most every 2 minutes per host

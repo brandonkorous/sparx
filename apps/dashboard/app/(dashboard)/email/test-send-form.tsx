@@ -58,7 +58,7 @@ export function TestSendForm({ devLastSend }: TestSendFormProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="welcome-merchant">Welcome (merchant)</SelectItem>
+                <SelectItem value="welcome-merchant">Welcome (tenant)</SelectItem>
                 <SelectItem value="password-reset">Password reset</SelectItem>
               </SelectContent>
             </Select>

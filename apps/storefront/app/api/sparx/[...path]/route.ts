@@ -7,7 +7,7 @@
 //   • api-rest has no CORS — a cross-origin browser fetch would be blocked.
 //   • The customer session is an httpOnly cookie. Routing through the
 //     storefront's own origin makes it first-party, so it's set and sent
-//     without SameSite=None gymnastics across merchant custom domains.
+//     without SameSite=None gymnastics across tenant custom domains.
 
 import { type NextRequest, NextResponse } from 'next/server';
 

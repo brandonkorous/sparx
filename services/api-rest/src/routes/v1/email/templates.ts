@@ -1,5 +1,5 @@
 // Email templates — two tracks: built-in transactional (constrained override)
-// and merchant-authored marketing (TipTap body).
+// and tenant-authored marketing (TipTap body).
 //
 //   GET    /v1/email/templates                          → list (builtins + authored)
 //   GET    /v1/email/templates/builtin/:key             → one built-in (+ override)

@@ -1,8 +1,8 @@
 # Sparx Platform — Domain Transfer Runbook
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -10,21 +10,21 @@
 
 Moving eight Sparx-owned domains from GoDaddy (current registrar) to Cloudflare (new registrar + DNS). After this is complete, Cloudflare manages all platform DNS via Terraform.
 
-| Domain           | Purpose                                                                                                       | Priority            |
-| ---------------- | ------------------------------------------------------------------------------------------------------------- | ------------------- |
-| `sparx.works`    | Platform brand — app, api, mcp, marketing                                                                     | **P0 — first**      |
-| `sparx.zone`     | Tenant storefronts (`*.sparx.zone`, `customers.sparx.zone`). Shopify-style split for reputation isolation.    | **P0 — also first** |
-| `sparx.email`    | Postal sending infrastructure **and** platform-to-merchant transactional emails (replaces planned `sparx.mx`) | P1                  |
-| `sparxcms.com`   | CMS module marketing site                                                                                     | P2                  |
-| `sparxcrm.com`   | CRM module marketing site                                                                                     | P2                  |
-| `sparxemail.com` | Email module marketing site                                                                                   | P2                  |
-| `sparxb2b.com`   | B2B module marketing site                                                                                     | P2                  |
-| `sparx.host`     | Managed hosting product marketing (301 → sparx.works/hosting for now)                                         | P3                  |
-| `sparx.software` | Developer portal (301 → sparx.works/docs for now)                                                             | P3                  |
-| `sparx.market`   | Future theme/plugin marketplace                                                                               | P3                  |
-| `sparx.exchange` | Defensive (301 → sparx.works)                                                                                 | P3                  |
+| Domain           | Purpose                                                                                                     | Priority            |
+| ---------------- | ----------------------------------------------------------------------------------------------------------- | ------------------- |
+| `sparx.works`    | Platform brand — app, api, mcp, marketing                                                                   | **P0 — first**      |
+| `sparx.zone`     | Tenant storefronts (`*.sparx.zone`, `customers.sparx.zone`). Shopify-style split for reputation isolation.  | **P0 — also first** |
+| `sparx.email`    | Postal sending infrastructure **and** platform-to-tenant transactional emails (replaces planned `sparx.mx`) | P1                  |
+| `sparxcms.com`   | CMS module marketing site                                                                                   | P2                  |
+| `sparxcrm.com`   | CRM module marketing site                                                                                   | P2                  |
+| `sparxemail.com` | Email module marketing site                                                                                 | P2                  |
+| `sparxb2b.com`   | B2B module marketing site                                                                                   | P2                  |
+| `sparx.host`     | Managed hosting product marketing (301 → sparx.works/hosting for now)                                       | P3                  |
+| `sparx.software` | Developer portal (301 → sparx.works/docs for now)                                                           | P3                  |
+| `sparx.market`   | Future theme/plugin marketplace                                                                             | P3                  |
+| `sparx.exchange` | Defensive (301 → sparx.works)                                                                               | P3                  |
 
-`sparx.mx` was the original plan for Postal sending; it is already registered to a third party. `sparx.email` plays both the infrastructure-sending and merchant-facing roles.
+`sparx.mx` was the original plan for Postal sending; it is already registered to a third party. `sparx.email` plays both the infrastructure-sending and tenant-facing roles.
 
 Do transfers in the order above. `sparx.works` is the only one with live traffic risk; the rest are pre-launch.
 

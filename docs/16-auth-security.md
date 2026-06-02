@@ -1,8 +1,8 @@
 # Sparx Platform — Authentication, Multi-Tenancy & Security
 
-**Version:** 2.0
+**Version:** 2.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -17,7 +17,7 @@ Rolling auth primitives from scratch — password hashing, token rotation, MFA, 
 ### Why Better Auth Over Auth0 / Clerk / Supabase Auth
 
 - **No SaaS dependency** — runs on our infrastructure, our database, our rules
-- **No per-user pricing** — critical for a multi-tenant platform with thousands of merchant customers
+- **No per-user pricing** — critical for a multi-tenant platform with thousands of tenant customers
 - **TypeScript-native** — first-class types, integrates cleanly with Fastify and Next.js
 - **Multi-tenant / organizations built in** — maps directly to our tenant model
 - **Full control** — customize any behavior without waiting for a vendor roadmap
@@ -26,7 +26,7 @@ Rolling auth primitives from scratch — password hashing, token rotation, MFA, 
 
 - Email/password authentication with secure hashing (Argon2)
 - Magic link (passwordless) authentication
-- OAuth2 social login (Google, GitHub, Apple — merchant staff)
+- OAuth2 social login (Google, GitHub, Apple — tenant staff)
 - Multi-factor authentication (TOTP, SMS)
 - Session management with refresh token rotation
 - Organization/tenant management (maps to our tenant model)
@@ -41,12 +41,12 @@ Rolling auth primitives from scratch — password hashing, token rotation, MFA, 
 
 Sparx has two distinct user populations requiring auth:
 
-### Layer 1 — Merchant Staff (Platform Users)
+### Layer 1 — Tenant Staff (Platform Users)
 
-Staff members managing a Sparx merchant account.
+Staff members managing a Sparx tenant account.
 
 ```
-Merchant Owner (Brandon's contact at GDS)
+Tenant Owner (Brandon's contact at GDS)
 ├── Creates Sparx account → becomes tenant owner
 ├── Invites staff → they receive email invite → set password
 ├── Staff auth: email/password OR magic link OR Google OAuth
@@ -59,11 +59,11 @@ Better Auth's organization plugin maps directly: **Organization = Tenant**. Orga
 - Organization member = Staff user with role
 - Roles: owner | admin | editor | viewer
 
-Example: Merchant Owner (e.g., Brandon's contact at Gillett Diesel Service) creates a Sparx account → becomes tenant owner → invites staff via Better Auth's organization invitations.
+Example: Tenant Owner (e.g., Brandon's contact at Gillett Diesel Service) creates a Sparx account → becomes tenant owner → invites staff via Better Auth's organization invitations.
 
-### Layer 2 — Merchant's Customers (Storefront Users)
+### Layer 2 — Tenant's Customers (Storefront Users)
 
-End customers logging into a merchant's storefront, B2B portal, or account page.
+End customers logging into a tenant's storefront, B2B portal, or account page.
 
 ```
 Customer of "Gillett Diesel"
@@ -73,7 +73,7 @@ Customer of "Gillett Diesel"
 └── Session: separate JWT pool, tenant-scoped
 ```
 
-Critical: a customer account at Tenant A has zero relationship to Tenant B. The same email address can register as a customer at multiple merchants — they are completely separate records with separate credentials.
+Critical: a customer account at Tenant A has zero relationship to Tenant B. The same email address can register as a customer at multiple tenants — they are completely separate records with separate credentials.
 
 ### Layer 3 — API Keys (Programmatic Access)
 
@@ -245,7 +245,7 @@ Customer PII (name, email, phone, address) is:
 
 - Never written to application logs
 - Masked in error reporting (Sentry)
-- Exportable by merchant (GDPR data export)
+- Exportable by tenant (GDPR data export)
 - Deletable on customer request (GDPR right to erasure, anonymizes while retaining order records for accounting)
 
 ---
@@ -302,9 +302,9 @@ Content-Security-Policy: [per-page policy]
 
 ## 10. GDPR & Privacy Compliance
 
-Merchant tools: data export, right to erasure, consent tracking (timestamp + IP), cookie consent banner, data retention configuration.
+Tenant tools: data export, right to erasure, consent tracking (timestamp + IP), cookie consent banner, data retention configuration.
 
-Sparx is data processor; merchants are data controllers. DPA available for all merchants, required for EU merchants.
+Sparx is data processor; tenants are data controllers. DPA available for all tenants, required for EU tenants.
 
 ---
 
@@ -316,4 +316,4 @@ Sparx is data processor; merchants are data controllers. DPA available for all m
 - OWASP Top 10 review before each major release
 - Bug bounty program (responsible disclosure policy)
 
-Breach notification: affected merchants notified within 72 hours per GDPR.
+Breach notification: affected tenants notified within 72 hours per GDPR.

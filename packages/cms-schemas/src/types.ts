@@ -143,7 +143,7 @@ export type FieldDef =
 // needs static .shape access on each branch, but lazy hides it. z.union
 // covers the same ground (each branch is still uniquely discriminated by
 // `type`); the perf delta on schemas of ~15 branches is negligible because
-// this validator runs only when a merchant defines a custom content type,
+// this validator runs only when a tenant defines a custom content type,
 // not on every entry write.
 
 const ObjectField = z.lazy(() =>

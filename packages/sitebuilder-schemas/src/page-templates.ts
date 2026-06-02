@@ -1,12 +1,12 @@
 // Page Template catalog — code-first presets a PageLayout begins from (docs/36
 // §3, §10). A Page Template is a PLATFORM-authored, read-only starting point
-// ("begin here"); instantiating one produces an editable PageLayout the merchant
+// ("begin here"); instantiating one produces an editable PageLayout the tenant
 // owns. This generalizes `DEFAULT_TEMPLATES` (the built-in product/collection
 // composition) into a catalog: the built-in defaults are two entries, plus a
 // "blank" start-from-nothing entry.
 //
 // Code-first, catalog-ready (§10): the templates live in the repo now; a
-// DB-backed, merchant-extensible catalog is a later, purely-additive step that
+// DB-backed, tenant-extensible catalog is a later, purely-additive step that
 // does NOT change this model (a Template is still instantiated into a Layout).
 
 import { DEFAULT_TEMPLATES, type DefaultTemplateSection } from './default-templates';
@@ -15,7 +15,7 @@ import { type TargetBinding, getLayoutTarget } from './layout-targets';
 export interface PageTemplate {
   /** Stable catalog id (the instantiate input references this). */
   id: string;
-  /** Merchant-facing name; the instantiated layout's default name. */
+  /** Tenant-facing name; the instantiated layout's default name. */
   name: string;
   description: string;
   /** The binding this template's bound sections require, or null for a template

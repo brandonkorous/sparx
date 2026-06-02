@@ -18,7 +18,7 @@ model SiteConfig {
   themeKey         String @default("apex") @map("theme_key") @db.VarChar(63)
   // light-only | dark-only | auto | toggle
   appearancePolicy String @default("light-only") @map("appearance_policy") @db.VarChar(20)
-  // Merchant overlay: { colors: { light, dark }, typography, layout, customCss }.
+  // Tenant overlay: { colors: { light, dark }, typography, layout, customCss }.
   // Shape validated by @sparx/sitebuilder-schemas, not the DB.
   draftSettings    Json   @default("{}") @map("draft_settings")
 
@@ -180,7 +180,7 @@ model SitePublishSchedule {
   @@map("sitebuilder_publish_schedules")
 }
 
-// A merchant-saved theme variant (docs/36 Brand+Theme tier). The tenant's own
+// A tenant-saved theme variant (docs/36 Brand+Theme tier). The tenant's own
 // NAMED presentation snapshots — distinct from the read-only platform presets
 // (THEME_LIST in @sparx/storefront-themes, which stay code-first). `presentation`
 // is the Token-Model-v2 presentation overlay only (brand identity/feel stay
@@ -253,7 +253,7 @@ model SiteLayoutAssignment {
   @@map("sitebuilder_layout_assignments")
 }
 
-// A merchant-defined custom section TYPE (docs/38 Phase C;
+// A tenant-defined custom section TYPE (docs/38 Phase C;
 // docs/handoffs/sitebuilder-custom-section-template-spec.md). This is the
 // data-defined analogue of a code-first SECTION_REGISTRY entry: `fieldSpec` is
 // the editor form spec (a SectionField[] — same shape the dashboard already

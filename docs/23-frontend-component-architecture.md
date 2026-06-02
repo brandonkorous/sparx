@@ -1,8 +1,8 @@
 # Sparx Platform — Frontend Component Architecture
 
-**Version:** 1.4
+**Version:** 1.5
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -797,7 +797,7 @@ npx shadcn@latest add dropdown-menu context-menu
 
 ## 13. Responsive Design
 
-**Every Sparx UI is mobile-first. A surface that doesn't work on a phone is a bug, not a "later" item.** The marketing site, the merchant dashboard, and the storefronts all have to render and remain usable from 320px up to 2560px wide. This is binding for any new feature or page.
+**Every Sparx UI is mobile-first. A surface that doesn't work on a phone is a bug, not a "later" item.** The marketing site, the tenant dashboard, and the storefronts all have to render and remain usable from 320px up to 2560px wide. This is binding for any new feature or page.
 
 ### Breakpoints
 

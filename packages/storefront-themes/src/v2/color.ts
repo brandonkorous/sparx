@@ -1,9 +1,9 @@
 // Color math for Token Model v2 (docs/33-token-model-v2.md §4).
 //
-// Merchants store base colors as hex. The only derivation that MUST be computed
+// Tenants store base colors as hex. The only derivation that MUST be computed
 // at compile time (rather than expressed as a CSS color-mix) is the auto-contrast
 // `-content` pair: picking a text/icon color that clears WCAG AA on an arbitrary
-// merchant color can't be done reliably in pure CSS. Everything else (hover,
+// tenant color can't be done reliably in pure CSS. Everything else (hover,
 // active, tint) is emitted as a `color-mix(in oklab …)` expression by the CSS
 // layer, so this module stays small: parse + relative luminance + contrast.
 
@@ -62,7 +62,7 @@ export const CONTENT_DARK_INK = '#0a0a0a';
 /**
  * Auto-derive the `-content` color (text/icon) for a base surface: pick
  * whichever of near-white / near-black has the higher contrast. Deterministic,
- * server-safe, and always the more legible of the two — merchants can override
+ * server-safe, and always the more legible of the two — tenants can override
  * any `-content` slot explicitly (docs/33 §3.1, the full-parity escape hatch).
  */
 export function deriveContent(

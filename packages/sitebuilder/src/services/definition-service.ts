@@ -210,7 +210,7 @@ export async function update(
  * Delete a definition. Refuses while DRAFT sections still place it (deleting
  * would leave unrenderable draft sections); already-published pages are
  * unaffected because publish pins the template into the version snapshot. The
- * merchant removes the placed sections first (or a future `archive` hides it from
+ * tenant removes the placed sections first (or a future `archive` hides it from
  * the library without breaking drafts).
  */
 export async function remove(ctx: ServiceContext, slug: string): Promise<{ slug: string }> {

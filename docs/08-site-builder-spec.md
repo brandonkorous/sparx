@@ -1,14 +1,14 @@
 # WizeWorks Platform — Site Builder Specification
 
-**Version:** 1.0  
+**Version:** 1.0.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
 ## 1. Overview
 
-The WizeWorks Site Builder enables merchants to launch a professional storefront in under 5 minutes, with no code required. It follows a **theme-first architecture** — merchants select a theme, customize colors, fonts, and content, and publish. Power users and developers can build fully custom frontends that connect to the WizeWorks API.
+The WizeWorks Site Builder enables tenants to launch a professional storefront in under 5 minutes, with no code required. It follows a **theme-first architecture** — a tenant selects a theme, customizes colors, fonts, and content, and publishes. Power users and developers can build fully custom frontends that connect to the WizeWorks API.
 
 ---
 
@@ -17,13 +17,13 @@ The WizeWorks Site Builder enables merchants to launch a professional storefront
 ### Tier 1 — Theme System (All Plans)
 
 - Curated, industry-optimized themes
-- Merchant customizes via settings panel (no code)
+- Tenant customizes via settings panel (no code)
 - Rendered by the platform's Next.js storefront service
-- Updates to theme engine automatically benefit all merchants on that theme
+- Updates to theme engine automatically benefit all tenants on that theme
 
 ### Tier 2 — Headless API (Pro + Enterprise)
 
-- Merchant (or their developer) builds any frontend
+- Tenant (or their developer) builds any frontend
 - Connects to WizeWorks REST/GraphQL API
 - Platform manages all commerce, CRM, email, MCP logic
 - Custom frontend is just a UI skin on the same backend
@@ -140,7 +140,7 @@ The homepage and CMS landing pages use a **section-based page builder**:
 - Pages can be duplicated as templates
 - SEO fields (title, description, OG image) per page
 
-This is explicitly NOT a full drag-and-drop visual editor (that's a v2 feature). It's section-based composition — powerful enough for 95% of merchant needs, simple enough to learn in 2 minutes.
+This is explicitly NOT a full drag-and-drop visual editor (that's a v2 feature). It's section-based composition — powerful enough for 95% of tenant needs, simple enough to learn in 2 minutes.
 
 ---
 
@@ -154,7 +154,7 @@ Step 1: Business Info (30 sec)
 
 Step 2: Theme (45 sec)
 ├── Platform recommends theme based on category
-├── Merchant previews 2-3 options
+├── Tenant previews 2-3 options
 └── Selects theme — store renders live instantly
 
 Step 3: First Product (90 sec)  [or connect dropship supplier]
@@ -165,7 +165,7 @@ Step 3: First Product (90 sec)  [or connect dropship supplier]
 
 Step 4: Domain (30 sec)
 ├── Subdomain auto-generated from business name
-├── Merchant can accept or change slug
+├── Tenant can accept or change slug
 └── Store is live at slug.wizeworks.com
 
 Step 5: Payments (60 sec)
@@ -201,7 +201,7 @@ For Enterprise clients (like Gillett Diesel) who want a fully custom frontend:
 
 ```
 Base URL: https://api.wizeworks.com/v1
-Auth: Bearer token (merchant API key)
+Auth: Bearer token (tenant API key)
 Content-Type: application/json
 
 # Or GraphQL:

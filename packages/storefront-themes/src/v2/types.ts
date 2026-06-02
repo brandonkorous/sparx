@@ -4,7 +4,7 @@
 //   • a ThemePresetV2 — the preset's complete defaults (shared + light/dark),
 //   • a BrandTokenDoc — tenant-level identity + shape + rhythm (brand-OWNED;
 //     wins for its slots; read-only to cms/commerce/email),
-//   • a PresentationOverlayV2 — the merchant's per-mode surface/status overrides.
+//   • a PresentationOverlayV2 — the tenant's per-mode surface/status overrides.
 //
 // Brand owns identity (color/type) + shape + rhythm; presentation owns surfaces,
 // neutral, status, border color, container width. `-content` pairs are derived

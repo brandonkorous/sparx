@@ -29,7 +29,7 @@ const VersionsQuery = z.object({
 
 // Site-preview token TTL. Long enough for an editing session, short enough that
 // no DB revocation row is needed (it's re-minted on every dashboard render, and
-// only ever exposes the merchant's own draft). See lib/preview.ts.
+// only ever exposes the tenant's own draft). See lib/preview.ts.
 const SITE_PREVIEW_TTL_SECONDS = 60 * 60;
 
 const publishRoutes: FastifyPluginAsync = (app) => {
@@ -50,7 +50,7 @@ const publishRoutes: FastifyPluginAsync = (app) => {
   // Mint a short-lived, tenant-scoped JWT that lets the PUBLIC storefront serve
   // this tenant's DRAFT site composition to the dashboard preview iframe. No DB
   // row (unlike CMS entry preview tokens) — the short TTL is the control, and it
-  // only exposes the merchant's own draft. `aud: site-preview` distinguishes it
+  // only exposes the tenant's own draft. `aud: site-preview` distinguishes it
   // from session + CMS-entry tokens. Verified by lib/preview.ts#tryVerifySitePreview.
   app.get('/v1/sitebuilder/preview-token', async (request) => {
     const auth = requireRole(request, 'editor');

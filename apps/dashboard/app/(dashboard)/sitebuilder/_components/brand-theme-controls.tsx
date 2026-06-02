@@ -2,7 +2,7 @@
 
 // Column 2 of the Brand & Theme center — every knob that drives the live
 // showcase, grouped by category (identity, colour, type, shape, layout) the way
-// a merchant thinks, not by which store owns it. Under the hood the two owners
+// a tenant thinks, not by which store owns it. Under the hood the two owners
 // stay clean (docs/33 §3.6): brand-owned fields (identity, colour, type, shape,
 // rhythm, effect) persist via the brand record; presentation-owned fields
 // (surfaces, status, container, appearance) persist via the site config. The

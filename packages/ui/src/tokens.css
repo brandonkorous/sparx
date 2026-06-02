@@ -37,7 +37,7 @@
      A categorical series palette for multi-series charts. Drawn from the
      module hues so charts read as part of the brand. A single "hero" series
      should use var(--module-active) instead, so it adopts the active module's
-     color. Consumed by @sparx/ui chart primitives; merchant themes may
+     color. Consumed by @sparx/ui chart primitives; tenant themes may
      override. */
   --chart-1: #6366f1;
   --chart-2: #14b8a6;
@@ -65,7 +65,7 @@
   --color-text-inverse: #ffffff;
 
   /* ── SEMANTIC PALETTE (Token Model v2 — docs/35 §3) ──────────
-     Each color is a base (hex, merchant/theme-overridable) + a `-content`
+     Each color is a base (hex, tenant/theme-overridable) + a `-content`
      pair (text/icon shown on the SOLID fill). The hover / tint / ink shades
      the variant treatments need are DERIVED in the .sx-c-* role classes
      below via color-mix — so a single base hex yields a coherent set and a

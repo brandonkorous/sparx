@@ -1,4 +1,4 @@
-// Storefront home. Renders (when present) the merchant's CMS `home` page on
+// Storefront home. Renders (when present) the tenant's CMS `home` page on
 // top, then a composed commerce homepage: hero, featured collections, and a
 // fresh-products rail. A brand-new store with no content still gets a polished
 // landing page rather than an empty shell.
@@ -28,7 +28,7 @@ export default async function StorefrontRoot({ searchParams }: RootPageProps) {
 
   const sp = (await searchParams) ?? {};
 
-  // Site Builder home composition wins when the merchant has published one — or,
+  // Site Builder home composition wins when the tenant has published one — or,
   // with a site-preview token, the current unsaved draft.
   const snapshot = await getPublishedSite(tenant.slug, sp.sparxSitePreview);
   const homeSections = sectionsForPage(snapshot, 'home');

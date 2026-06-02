@@ -102,7 +102,7 @@ interface SitePreviewClaims {
 // this is tenant-scoped (no entry, no per-token DB row): it authorizes reading
 // the tenant's whole draft site composition, and a short JWT TTL is the only
 // control — minting requires an authenticated dashboard editor, and the draft
-// it exposes is the merchant's own. Returns true when a valid token for
+// it exposes is the tenant's own. Returns true when a valid token for
 // `tenantId` is present, false when none is offered. Throws when a token IS
 // offered but invalid (a bad token is a signal, not a silent fall-through to
 // published — which is exactly the bug this whole change fixes).

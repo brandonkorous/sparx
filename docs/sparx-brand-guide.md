@@ -11,9 +11,9 @@
 **Platform:** Sparx
 **Company:** WizeWorks
 **Primary domain:** sparx.works
-**Tagline:** Commerce, ignited.
+**Tagline:** _[Offering]_, ignited. — the hero rotates the leading noun through the offerings (Commerce · Content · Customers · Email · Wholesale · AI · Everything), each landing on **ignited.** with the indigo spark. Static form for page titles, OG, and social: **Everything, ignited.**
 
-Sparx is a modular commerce operating system. The brand communicates precision, intelligence, and simplicity — not corporate friendliness or startup energy. The name contains a spark: the moment something ignites, the instant a business goes live.
+Sparx is a modular content and commerce operating system. The brand communicates precision, intelligence, and simplicity — not corporate friendliness or startup energy. The name contains a spark: the moment something ignites, the instant a business goes live.
 
 ---
 
@@ -106,7 +106,7 @@ The AI/MCP module is the only module that falls outside the cool/blue/green spec
 
 ### Typeface: Geist
 
-Geist is Vercel's open-source typeface, designed specifically for interfaces. It combines geometric precision with editorial warmth — exactly the balance Sparx needs between technical capability and merchant accessibility.
+Geist is Vercel's open-source typeface, designed specifically for interfaces. It combines geometric precision with editorial warmth — exactly the balance Sparx needs between technical capability and tenant accessibility.
 
 - **Display:** Geist 500, -0.025em tracking — page titles, hero headings
 - **Heading:** Geist 500, 0 tracking — section headers, card titles
@@ -161,23 +161,23 @@ No gradients, drop shadows (except functional focus rings), or blur effects. Eve
 
 ### Minimal chrome
 
-The UI gets out of the way of the merchant's work. Navigation is always visible but never dominant. Empty states are helpful, not decorative.
+The UI gets out of the way of the tenant's work. Navigation is always visible but never dominant. Empty states are helpful, not decorative.
 
 ### The 3px stripe rule
 
-The single most important UI pattern in the Sparx dashboard: every card, panel, and page header within a module context carries a 3px top border in that module's color. It tells the merchant exactly where they are without any additional labeling.
+The single most important UI pattern in the Sparx dashboard: every card, panel, and page header within a module context carries a 3px top border in that module's color. It tells the tenant exactly where they are without any additional labeling.
 
 ### Module isolation
 
-When a merchant is working inside the CMS module, the UI shifts subtly to teal accents. When they switch to AI/MCP, rose. The color transition reinforces the module context and makes the system feel coherent rather than arbitrary.
+When a tenant is working inside the CMS module, the UI shifts subtly to teal accents. When they switch to AI/MCP, rose. The color transition reinforces the module context and makes the system feel coherent rather than arbitrary.
 
 ### Progressive disclosure
 
-The onboarding path hides complexity. Advanced features (API keys, custom webhooks, MCP configuration, B2B pricing rules) exist but are never shown to a new merchant. The 5-minute path to live store is always clear.
+The onboarding path hides complexity. Advanced features (API keys, custom webhooks, MCP configuration, B2B pricing rules) exist but are never shown to a new tenant. The 5-minute path to a live site is always clear.
 
 ### Mobile-first, always
 
-Every Sparx surface — marketing pages, the merchant dashboard, customer-facing storefronts — must work and look intentional from a 320px phone to a 2560px monitor. Marketing pages in particular are read on phones far more than on desktops; a layout that "doesn't look great on mobile" is a broken layout. Display type uses fluid `clamp()` scaling rather than fixed pixel sizes; layouts reflow, never just shrink. See [docs/23 §13](23-frontend-component-architecture.md) for the implementation rules.
+Every Sparx surface — marketing pages, the tenant dashboard, customer-facing storefronts — must work and look intentional from a 320px phone to a 2560px monitor. Marketing pages in particular are read on phones far more than on desktops; a layout that "doesn't look great on mobile" is a broken layout. Display type uses fluid `clamp()` scaling rather than fixed pixel sizes; layouts reflow, never just shrink. See [docs/23 §13](23-frontend-component-architecture.md) for the implementation rules.
 
 ---
 

@@ -1,5 +1,5 @@
 // Storefront root layout. Resolves the tenant from the Host, injects the
-// merchant's theme tokens (light + dark), frames every page in header/footer
+// tenant's theme tokens (light + dark), frames every page in header/footer
 // chrome, and mounts the client providers.
 //
 // When the tenant has a published Site Builder snapshot, its compiled tokens
@@ -61,10 +61,10 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: tenant.name, template: `%s · ${tenant.name}` },
     description: `Shop ${tenant.name}.`,
     robots: { index: true, follow: true },
-    // The merchant's own favicon always wins. Until they set one, fall back to
+    // The tenant's own favicon always wins. Until they set one, fall back to
     // the Sparx mark (public/) rather than the browser's default globe — a
     // brand-new store still looks finished. Deliberately favicon-only: no
-    // apple-icon / manifest, so Sparx never brands a merchant's home-screen
+    // apple-icon / manifest, so Sparx never brands a tenant's home-screen
     // install. Assets: apps/storefront/public/{favicon.ico,sparx-icon.svg}.
     icons: favicon
       ? { icon: favicon }

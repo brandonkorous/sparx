@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 
-// Update the merchant's general settings via api-rest. The role gate and
+// Update the tenant's general settings via api-rest. The role gate and
 // audit trail live in the api-rest route (`PATCH /v1/tenant`, requires
 // admin role). Schema validation still happens here so the form error
 // surfaces inline without a round-trip.

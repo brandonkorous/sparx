@@ -9,9 +9,9 @@
 
 ## What Is Sparx?
 
-Sparx is WizeWorks' unified commerce operating system — a modular platform that gives merchants a live storefront, CRM, CMS, email, B2B wholesale, dropshipping, and AI integration in one place. Built and operated by WizeWorks.
+Sparx is WizeWorks' unified content and commerce operating system — a modular platform that gives any organization a live website, CMS, CRM, commerce, email, B2B wholesale, dropshipping, and AI integration in one place. Publish content, sell products, or both — you activate only the modules you need. Built and operated by WizeWorks.
 
-Sparx is to WizeWorks what Shopify is to its parent company — except Sparx is modular, open to headless use, MCP-native, and never charges merchants for features they don't need.
+Sparx is to WizeWorks what Shopify is to its parent company — except Sparx spans content and commerce, is modular, open to headless use, MCP-native, and never charges you for features you don't need.
 
 ## Domain Portfolio
 
@@ -19,7 +19,7 @@ Sparx is to WizeWorks what Shopify is to its parent company — except Sparx is 
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `sparx.works`    | Primary brand: marketing site, `app`, `api`, `mcp`                                                                                          |
 | `sparx.zone`     | Tenant storefronts (`acme.sparx.zone`) + `customers.sparx.zone` (custom-domain CNAME target). Shopify-style split for reputation isolation. |
-| `sparx.email`    | Postal sending infrastructure + platform→merchant transactional emails (replaces planned `sparx.mx` which was unavailable)                  |
+| `sparx.email`    | Postal sending infrastructure + platform→tenant transactional emails (replaces planned `sparx.mx` which was unavailable)                    |
 | `sparx.host`     | Managed hosting product marketing (301 → sparx.works/hosting until built)                                                                   |
 | `sparx.software` | Developer portal: SDK docs, API reference, MCP guides (301 → sparx.works/docs until built)                                                  |
 | `sparx.exchange` | Defensive registration (301 → sparx.works)                                                                                                  |
@@ -33,7 +33,7 @@ Sparx is to WizeWorks what Shopify is to its parent company — except Sparx is 
 
 Sparx is one of several products under the WizeWorks umbrella:
 
-- sparx.works — Commerce platform (this platform)
+- sparx.works — Content & commerce platform (this platform)
 - kanninja.com — Project management
 - helpninja.ai — AI support
 - stumbleable.com — TBD
@@ -44,12 +44,12 @@ Sparx is one of several products under the WizeWorks umbrella:
 
 ## Core Design Principles
 
-1. **Live in 5 minutes** — Default experience gets a merchant to a live store faster than any competitor
-2. **Modular by design** — Merchants pay only for what they use; modules activate independently
+1. **Live in 5 minutes** — Default experience gets you to a live site faster than any competitor
+2. **Modular by design** — You pay only for what you use; modules activate independently
 3. **Progressive disclosure** — Power features exist but never block the simple path
 4. **API-first** — Every feature accessible via API; the UI is one consumer among many
 5. **MCP-native** — AI integration is a first-class citizen, not a plugin
-6. **Own your data** — Merchants own their data; Sparx is the platform, not the warden
+6. **Own your data** — You own your data; Sparx is the platform, not the warden
 7. **Single pane of glass** — Every active module visible in one unified dashboard
 
 ## Module Structure
@@ -117,4 +117,4 @@ Decisions locked in during the v2 documentation pass (vs. the original WizeWorks
 | 34  | Platform Glossary & Concept Model   | Canonical terms; tenant → brand → site → modules; "storefront" overload                               |
 | 36  | Site Builder Layering Model         | Brand+Theme / SiteLayout / PageLayout tiers; template→layout; data-driven targets; assignment cascade |
 | 37  | Site Builder Section System         | Landing-composition gaps + target model: multi-CTA, full-bleed media, Panels/Media+Text/Stats/Embed   |
-| 38  | Site Builder Extensible Sections    | Letting merchants add components: compose → saved blocks → declarative custom types → marketplace     |
+| 38  | Site Builder Extensible Sections    | Letting tenants add components: compose → saved blocks → declarative custom types → marketplace       |

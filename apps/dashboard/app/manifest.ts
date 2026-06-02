@@ -1,13 +1,13 @@
 import type { MetadataRoute } from 'next';
 
-// PWA manifest for the merchant dashboard. Served at /manifest.webmanifest and
+// PWA manifest for the tenant dashboard. Served at /manifest.webmanifest and
 // auto-linked by Next from the metadata layer. The android-chrome icons live
 // in apps/dashboard/public/.
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Sparx Dashboard',
     short_name: 'Sparx',
-    description: 'Merchant admin for the Sparx commerce platform.',
+    description: 'Admin for the Sparx content and commerce platform.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

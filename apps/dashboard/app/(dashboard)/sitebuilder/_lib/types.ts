@@ -7,7 +7,7 @@ import type { SectionField, TemplateNode } from '@sparx/sitebuilder-schemas';
 
 export type ThemeDto = ThemePreset;
 
-// A merchant-defined custom section TYPE (docs/38 Phase C). Surfaced in the
+// A tenant-defined custom section TYPE (docs/38 Phase C). Surfaced in the
 // section library beside the code sections (placed as `custom:<slug>`) AND edited
 // in the Section Studio — so it carries the full definition: field spec + the
 // render-template AST + version.
@@ -43,7 +43,7 @@ export interface SavedThemeBrandDto {
   tokens?: BrandTokenDoc | null;
 }
 
-// A tenant-saved theme variant (docs/33 saved-themes contract). The merchant's
+// A tenant-saved theme variant (docs/33 saved-themes contract). The tenant's
 // own named theme snapshots — distinct from the read-only prebuilt presets
 // (ThemeDto). `presentation` is the v2 surface overlay; `basePresetKey` is the
 // preset it layers on; `brand` is the captured identity look so the theme is
@@ -63,6 +63,9 @@ export interface SiteSettingsDto {
   customCss?: string;
   // Token Model v2 presentation overlay (docs/33), edited by the theme inspector.
   presentation?: PresentationOverlayV2;
+  // The currently-applied saved theme (the "My themes" rail selection), so it
+  // survives a reload. Null/absent = editing a prebuilt preset base directly.
+  activeSavedThemeId?: string | null;
 }
 
 export interface SiteConfigDto {

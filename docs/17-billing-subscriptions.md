@@ -1,14 +1,14 @@
 # Sparx Platform — Billing & Subscriptions
 
-**Version:** 2.0
+**Version:** 2.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
 ## 1. Philosophy
 
-Sparx billing is modular and honest. Merchants pay only for what they activate. No hidden tiers. No "you need to upgrade to access that." Every module has a clear price and a clear value proposition.
+Sparx billing is modular and honest. Tenants pay only for what they activate. No hidden tiers. No "you need to upgrade to access that." Every module has a clear price and a clear value proposition.
 
 The CMS and Commerce engines are deliberately separated — a content publisher shouldn't pay for a shopping cart they'll never use, and a wholesale distributor shouldn't pay for a blog module they'll never touch.
 
@@ -59,7 +59,7 @@ Pre-configured bundles for common use cases:
 | **Business**   | All modules                                                   | $449    | $74   |
 | **Enterprise** | All modules + custom frontend + managed hosting + SLA         | Custom  | —     |
 
-Bundles are presented during onboarding and in billing settings. Merchants can always switch to module-by-module pricing if their needs are unusual.
+Bundles are presented during onboarding and in billing settings. Tenants can always switch to module-by-module pricing if their needs are unusual.
 
 ---
 
@@ -84,7 +84,7 @@ Bundles are presented during onboarding and in billing settings. Merchants can a
 | Storage above limit      | $0.02/GB/month                                      |
 | API requests above limit | $0.01/1K requests                                   |
 
-Merchants notified at 80% and 100% of plan limits. Overages billed on next invoice.
+Tenants notified at 80% and 100% of plan limits. Overages billed on next invoice.
 
 ---
 
@@ -104,7 +104,7 @@ For clients requiring custom frontends, dedicated infrastructure, or contractual
 
 ### Managed Hosting Add-On
 
-Available on any plan for merchants who want Sparx to operate their infrastructure:
+Available on any plan for tenants who want Sparx to operate their infrastructure:
 
 **$750/month includes:**
 
@@ -134,7 +134,7 @@ All billing handled via Stripe:
 
 ### Stripe Customer Portal
 
-Merchants manage billing via embedded Stripe Customer Portal:
+Tenants manage billing via embedded Stripe Customer Portal:
 
 - View current modules and usage
 - Add/remove modules

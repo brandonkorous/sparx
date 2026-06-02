@@ -506,7 +506,7 @@ function ItemList({
   );
 }
 
-// EntryField — picker over the merchant's published entries with a typed
+// EntryField — picker over the tenant's published entries with a typed
 // fallback for entries that aren't in the prefetched 200-entry shortlist
 // (tenants with more than that can still paste a UUID directly).
 function EntryField({

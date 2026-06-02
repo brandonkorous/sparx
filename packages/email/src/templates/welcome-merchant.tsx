@@ -6,13 +6,13 @@ import { EmailButton, EmailHeading, EmailParagraph } from '../components';
 export interface WelcomeMerchantEmailProps {
   /** Owner's first name (falls back to "there"). */
   name?: string;
-  /** Merchant's store name — the tenant they just created. */
+  /** Tenant's store/site name — the tenant they just created. */
   storeName: string;
   /** Where to send them to finish onboarding. */
   dashboardUrl: string;
-  /** Merchant-editable opening line (rendered after the greeting). */
+  /** Tenant-editable opening line (rendered after the greeting). */
   intro?: string;
-  /** Merchant-editable closing line (rendered after the CTA). */
+  /** Tenant-editable closing line (rendered after the CTA). */
   outro?: string;
 }
 
@@ -31,8 +31,8 @@ export function WelcomeMerchantEmail({
         {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
         <EmailParagraph>
           {storeName} is live on Sparx. A short checklist is waiting in your dashboard — confirm
-          your store details, add your first page, and pick a theme when the Sitebuilder module
-          ships. You can finish it now or come back anytime.
+          your details, add your first page, and pick a theme when the Sitebuilder module ships. You
+          can finish it now or come back anytime.
         </EmailParagraph>
         <EmailButton href={dashboardUrl}>Open dashboard</EmailButton>
         {outro ? <EmailParagraph>{outro}</EmailParagraph> : null}

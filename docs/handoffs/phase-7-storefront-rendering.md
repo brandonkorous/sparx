@@ -36,7 +36,7 @@ Response `data` shape (`PublishedSnapshot`, defined in
   themeKey: string; // 'apex' | 'industrial' | 'drift' | 'market' | 'fleet' | 'drop'
   appearancePolicy: 'light-only' | 'dark-only' | 'auto' | 'toggle';
   compiledTokens: {
-    light: Record<string, string>; // ThemeTokenKey → value (already merged: preset ← merchant overlay)
+    light: Record<string, string>; // ThemeTokenKey → value (already merged: preset ← tenant overlay)
     dark: Record<string, string>;
   }
   sections: Array<{

@@ -20,7 +20,7 @@ export interface SiteFooterProps {
   tenant: ResolvedTenant;
   columns: FooterColumn[];
   year: number;
-  /** Merchant copyright line (Site Builder footer config); falls back to the
+  /** Tenant copyright line (Site Builder footer config); falls back to the
    *  default "© {year} {name}" when empty. */
   copyright?: string | null;
   socialLinks?: FooterSocialLink[];

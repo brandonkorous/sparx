@@ -1,6 +1,6 @@
 // Token compilation + the StorefrontTheme write-through map.
 //
-// `compileTokens` overlays a merchant's per-mode token overrides on top of a
+// `compileTokens` overlays a tenant's per-mode token overrides on top of a
 // theme preset's defaults to produce the final { light, dark } token maps that
 // publishing snapshots into SiteVersion.compiledTokens. The light subset that
 // has a matching StorefrontTheme column is written through on publish so the
@@ -31,7 +31,7 @@ function pickKnown(partial: Partial<ThemeTokens> | undefined): Partial<ThemeToke
 }
 
 /**
- * Merge a theme preset's defaults with a merchant overlay → final tokens per
+ * Merge a theme preset's defaults with a tenant overlay → final tokens per
  * mode. Unknown overlay keys are dropped; missing overlay values fall back to
  * the preset default so the output is always a complete ThemeTokens map.
  */
@@ -74,9 +74,9 @@ export function toStorefrontThemeColumns(lightTokens: ThemeTokens): Record<strin
 // ─────────────────────────────────────────────────────────────────────────
 // Brand identity (docs/30 §6) — the subset of theme tokens the tenant-level
 // brand OWNS. These come from TenantBrand and WIN over theme presets and
-// merchant presentation overrides everywhere (brand colour = brand colour). The
+// tenant presentation overrides everywhere (brand colour = brand colour). The
 // rest of the tokens (background, foreground, muted, border, radius, container)
-// are presentation, owned by the theme/merchant. Logo/favicon/business name are
+// are presentation, owned by the theme/tenant. Logo/favicon/business name are
 // brand identity too but are not theme tokens — callers apply those separately.
 // ─────────────────────────────────────────────────────────────────────────
 

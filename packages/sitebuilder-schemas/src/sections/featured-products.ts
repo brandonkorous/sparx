@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Uuid, OptionalUuid } from '../common';
+import { Uuid, OptionalUuid, SectionHeight, sectionHeightField } from '../common';
 import type { SectionField } from '../fields';
 
 export const FeaturedProductsConfig = z.object({
@@ -11,6 +11,7 @@ export const FeaturedProductsConfig = z.object({
   productIds: z.array(Uuid).max(24).default([]),
   columns: z.number().int().min(1).max(4).default(4),
   limit: z.number().int().min(1).max(24).default(8),
+  sectionHeight: SectionHeight.default('auto'),
 });
 export type FeaturedProductsConfig = z.infer<typeof FeaturedProductsConfig>;
 
@@ -40,4 +41,5 @@ export const featuredProductsFields: SectionField[] = [
   },
   { key: 'columns', label: 'Columns', type: 'range', min: 1, max: 4, step: 1 },
   { key: 'limit', label: 'Max products', type: 'range', min: 1, max: 24, step: 1 },
+  sectionHeightField(),
 ];

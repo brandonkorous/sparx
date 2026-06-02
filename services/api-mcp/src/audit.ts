@@ -2,7 +2,7 @@
 //
 // Every tool call lands in audit_logs with action = `mcp.<tool_name>` so the
 // dashboard's "AI interaction history" view can render exactly what the LLM
-// did on the merchant's behalf. Inputs are stored as the validated payload
+// did on the tenant's behalf. Inputs are stored as the validated payload
 // (post-Zod); outputs aren't stored — they're the user-facing result and
 // often large, and audit forensics cares about what was requested, not what
 // came back.

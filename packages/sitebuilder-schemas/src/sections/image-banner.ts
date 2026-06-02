@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   Align,
   FocalPoint,
+  HEIGHT_BUTTON_OPTIONS,
   ObjectFit,
   OptionalMediaRef,
   ctas,
@@ -60,13 +61,8 @@ export const imageBannerFields: SectionField[] = [
   {
     key: 'height',
     label: 'Height',
-    type: 'select',
-    options: [
-      { label: 'Small', value: 'sm' },
-      { label: 'Medium', value: 'md' },
-      { label: 'Large', value: 'lg' },
-      { label: 'Full screen', value: 'screen' },
-    ],
+    type: 'buttongroup',
+    options: HEIGHT_BUTTON_OPTIONS,
   },
   { key: 'fullBleed', label: 'Full-bleed (edge to edge)', type: 'boolean' },
   {

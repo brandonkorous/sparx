@@ -44,7 +44,7 @@ const SeoSchema = z
     canonical: z.string().max(2048).optional(),
     robots: z.string().max(120).optional(),
     // OG image lives as a MediaAsset UUID *or* an absolute URL (in case
-    // the merchant pastes a CDN URL from outside the media library).
+    // the tenant pastes a CDN URL from outside the media library).
     ogImage: z.string().max(2048).optional(),
     jsonLdOverride: z.unknown().optional(),
   })

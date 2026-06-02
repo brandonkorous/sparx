@@ -5,7 +5,7 @@
 // CSS custom properties on the storefront via `tokensToCssVars` — the same
 // `--sf-*` variable names the storefront's app/storefront.css already reads,
 // so a token override cascades into every component (incl. @sparx/ui) without
-// per-merchant code.
+// per-tenant code.
 //
 // A subset of tokens maps 1:1 onto the commerce-owned `StorefrontTheme`
 // columns; publishing write-throughs that subset (see STOREFRONT_THEME_WRITETHROUGH

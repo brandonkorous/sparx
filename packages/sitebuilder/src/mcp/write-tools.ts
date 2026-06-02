@@ -131,7 +131,7 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'create_custom_section',
     description:
-      'Define a new custom section TYPE: a `slug`, `label`, an optional `binding` (product | collection), a `fieldSpec` (the editable fields), and a `template` (the render-template AST). Merchants then add it to layouts as `custom:<slug>`.',
+      'Define a new custom section TYPE: a `slug`, `label`, an optional `binding` (product | collection), a `fieldSpec` (the editable fields), and a `template` (the render-template AST). Tenants then add it to layouts as `custom:<slug>`.',
     scope: 'write:storefront',
     input: SectionDefinitionInput,
     confirmation: false,

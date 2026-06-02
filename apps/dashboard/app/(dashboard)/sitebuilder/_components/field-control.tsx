@@ -8,6 +8,7 @@
 import * as React from 'react';
 import {
   Button,
+  ButtonGroup,
   ColorPicker,
   Input,
   Label,
@@ -129,6 +130,27 @@ function Control({
             ))}
           </SelectContent>
         </Select>
+      );
+    case 'buttongroup':
+      return (
+        <ButtonGroup>
+          {(field.options ?? []).map((o) => {
+            const active = value === o.value;
+            return (
+              <Button
+                key={o.value}
+                type="button"
+                size="sm"
+                color={active ? 'module' : 'neutral'}
+                variant={active ? 'solid' : 'outline'}
+                aria-pressed={active}
+                onClick={() => onChange(o.value)}
+              >
+                {o.label}
+              </Button>
+            );
+          })}
+        </ButtonGroup>
       );
     case 'number':
       return (

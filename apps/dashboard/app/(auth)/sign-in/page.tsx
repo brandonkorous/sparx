@@ -46,7 +46,7 @@ export default function SignInPage() {
     <Card>
       <CardHeader>
         <Heading level={2}>Sign in</Heading>
-        <CardDescription>Welcome back. Sign in to your merchant account.</CardDescription>
+        <CardDescription>Welcome back. Sign in to your account.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} noValidate>

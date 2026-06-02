@@ -95,7 +95,7 @@ export default async function WarehousesPage() {
               <EmptyState
                 icon={<WarehouseIcon className="h-5 w-5" />}
                 title="No warehouses yet"
-                description="Add your first warehouse to start tracking stock. A merchant with only digital goods can use a single virtual warehouse."
+                description="Add your first warehouse to start tracking stock. If you sell only digital goods, a single virtual warehouse is all you need."
                 action={
                   <EntityCreateButton
                     entityType="warehouse"

@@ -22,7 +22,7 @@ function validBadge(valid: string) {
   return <Badge variant="outline">unknown</Badge>;
 }
 
-// Renders the exact DNS records the merchant must publish at their registrar.
+// Renders the exact DNS records the tenant must publish at their registrar.
 // Values are shown verbatim (the SPF string in particular must be copied
 // exactly — Mailgun's verifier rejects any extra mechanisms).
 export function DnsRecordsTable({ records }: { records: DnsRecord[] }) {

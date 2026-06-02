@@ -216,7 +216,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     // Storefront theme + commerce defaults travel with the tenant payload so
     // the storefront's root layout resolves everything in a single fetch.
     // Both rows are one-per-tenant (tenantId PK); a missing row means the
-    // merchant hasn't customized, so we fall back to nulls/defaults that the
+    // tenant hasn't customized, so we fall back to nulls/defaults that the
     // storefront's token layer interprets as "use the default theme".
     const [theme, storefront, brand] = await withTenant({ tenantId: tenant.id }, (tx) =>
       Promise.all([

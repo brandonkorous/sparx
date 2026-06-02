@@ -5,7 +5,7 @@
 // withTenant(), so Postgres RLS isolates all reads/writes to that tenant. The
 // tenant is always known up front (the storefront hostname), so there is no
 // pre-tenant lookup and no global-email requirement — the same email can be a
-// separate account at every merchant.
+// separate account at every tenant.
 //
 // Hard rules: passwords stored ONLY as Argon2id hashes; session/reset tokens
 // stored ONLY as SHA-256 hashes; login + reset-request are enumeration-safe.

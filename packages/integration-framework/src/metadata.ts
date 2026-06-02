@@ -16,7 +16,7 @@ export interface ProviderMetadataDescriptor {
   supportedCountries: string[];
   sandboxAvailable: boolean;
   whitelabelOf?: string;
-  /** JSON Schema (stringified) describing the merchant configuration form. */
+  /** JSON Schema (stringified) describing the tenant configuration form. */
   configSchemaJson: string;
   webhookPathTemplate: string;
   requiredScopes: string[];

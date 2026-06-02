@@ -6,7 +6,7 @@ import { SignOutLink } from './onboarding/_components/sign-out-link';
 // shell (no sidebar, no topbar) — a focused, full-screen guided setup. It wraps
 // everything in ModuleProvider module="storefront" so the Stepper + accents pick
 // up Storefront Indigo (the Site Builder module color), matching where the
-// merchant lands afterwards.
+// tenant lands afterwards.
 export default function OnboardingLayout({ children }: { children: React.ReactNode }) {
   return (
     <ModuleProvider module="storefront">

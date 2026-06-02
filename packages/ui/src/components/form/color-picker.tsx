@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../overlay/popover';
 // Popover with curated swatches. The native <input type="color"> isn't used
 // directly because its styling can't be tokenized; we offer it as an "advanced"
 // fallback via the keyboard hint. For now the curated palette covers the
-// merchant-theme use cases (per docs/23 sparx + module colors).
+// tenant-theme use cases (per docs/23 sparx + module colors).
 
 const DEFAULT_SWATCHES: string[] = [
   // Brand
@@ -24,7 +24,7 @@ const DEFAULT_SWATCHES: string[] = [
   '#475569',
   '#EC4899',
   '#10B981',
-  // Common merchant colors
+  // Common tenant colors
   '#EF4444',
   '#F59E0B',
   '#84CC16',

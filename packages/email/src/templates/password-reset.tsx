@@ -9,9 +9,9 @@ export interface PasswordResetEmailProps {
   resetUrl: string;
   /** How long the link is valid for, surfaced to the recipient. */
   expiresInMinutes?: number;
-  /** Merchant-editable opening line (rendered after the greeting). */
+  /** Tenant-editable opening line (rendered after the greeting). */
   intro?: string;
-  /** Merchant-editable closing line (rendered before the footer note). */
+  /** Tenant-editable closing line (rendered before the footer note). */
   outro?: string;
 }
 

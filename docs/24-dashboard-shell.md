@@ -1,8 +1,8 @@
 # Sparx Platform — Dashboard Shell
 
-**Version:** 1.3
+**Version:** 1.4
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-01
 
 > **1.3 (2026-05-31):** Implementation refinements to §5. The rail is **collapsible** (persisted icon-only ↔ icon+label toggle), and **Favorites + Recents live in the rail** (inline groups), not the panel — so the contextual panel is purely the current module's sections, and at platform level shows a labeled directory of the enabled modules.
 >
@@ -138,7 +138,7 @@ A special, non-manifest **Home** item lives on the rail (above the module icons)
 ### 4.2 Breadcrumb Behaviors
 
 The first segment is the **Workspace** (the user-facing name for the tenant; see
-[docs/32](32-workspace-switching-breadcrumb.md)). The breadcrumb is the merchant's
+[docs/32](32-workspace-switching-breadcrumb.md)). The breadcrumb is the tenant's
 primary "where am I / take me elsewhere" control, so the two leftmost segments are
 _switchers_, not just links.
 

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { authClient } from '@sparx/auth/client';
 import { Button } from '@sparx/ui';
 
-// Lightweight sign-out for the onboarding header — a merchant may want to bail
+// Lightweight sign-out for the onboarding header — a user may want to bail
 // out and come back later. Mirrors the dashboard shell's sign-out (Better Auth
 // client + redirect to /sign-in); progress is already persisted server-side, so
 // resuming drops them back on the saved step.

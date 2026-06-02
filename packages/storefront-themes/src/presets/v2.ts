@@ -11,7 +11,7 @@ import type { ThemeKey } from '../types';
 import type { ThemePresetV2 } from '../v2/types';
 
 // Status colors are themeable in v2 but ship sensible cross-theme defaults
-// (merchants/presets can override per slot). Dark variants are brightened for
+// (tenants/presets can override per slot). Dark variants are brightened for
 // legibility on dark surfaces. `-content` pairs are auto-derived.
 const STATUS_LIGHT = { info: '#0284c7', success: '#16a34a', warning: '#d97706', danger: '#dc2626' };
 const STATUS_DARK = { info: '#38bdf8', success: '#4ade80', warning: '#fbbf24', danger: '#f87171' };

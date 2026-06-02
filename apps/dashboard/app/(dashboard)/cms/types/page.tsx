@@ -3,7 +3,7 @@
 // Lists every content type the tenant can author, plus a count of entries
 // per type. Built-ins (page, blog_post, module, feature, faq_item,
 // editorial_section) are surfaced from api-rest's /v1/content/types; any
-// custom merchant-defined types (Pro+ plan) appear here too. Clicking a row
+// custom tenant-defined types (Pro+ plan) appear here too. Clicking a row
 // opens the type's detail (identity + schema editor for custom, read-only for
 // built-in) in the drawer/modal per the user's defaultDetailView.
 
@@ -64,7 +64,7 @@ export default async function ContentTypesPage() {
           icon={<Database className="h-5 w-5" />}
           title="Content types"
           badge={<Badge variant="outline">{rows.length}</Badge>}
-          description="Authoring spaces for blog posts, modules, FAQs, editorial sections, and any custom merchant type. Click a type to edit its schema; pages have their own dedicated tab."
+          description="Authoring spaces for blog posts, modules, FAQs, editorial sections, and any custom type. Click a type to edit its schema; pages have their own dedicated tab."
           actions={
             <EntityCreateButton
               entityType="content-type"

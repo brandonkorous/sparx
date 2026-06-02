@@ -4,6 +4,10 @@ import * as React from 'react';
 
 export type SparxModule =
   | 'storefront'
+  // The next-gen Builder (docs/40). A first-class module now; when Site Builder
+  // is retired, `storefront` goes with it and `builder` becomes the sole
+  // site-building identity.
+  | 'builder'
   | 'commerce'
   | 'cms'
   | 'crm'
@@ -21,6 +25,8 @@ interface ModuleColors {
 
 const MODULE_COLORS: Record<SparxModule, ModuleColors> = {
   storefront: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA' },
+  // Builder shares the site-building indigo lineage (Site Builder's successor).
+  builder: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA' },
   commerce: { color: '#F97316', tint: '#FFF7ED', text: '#C2410C' },
   cms: { color: '#14B8A6', tint: '#F0FDFA', text: '#0F766E' },
   crm: { color: '#06B6D4', tint: '#ECFEFF', text: '#0E7490' },

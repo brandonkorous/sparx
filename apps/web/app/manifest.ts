@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Sparx',
     short_name: 'Sparx',
-    description: 'A modular commerce operating system by WizeWorks.',
+    description: 'A modular content and commerce operating system by WizeWorks.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

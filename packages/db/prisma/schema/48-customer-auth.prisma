@@ -5,7 +5,7 @@
 // auth only adds credentials + sessions + reset tokens.
 //
 // Why not Better Auth: Better Auth keys credential sign-in on a GLOBALLY unique
-// email; shoppers must register the same email at different merchants as
+// email; shoppers must register the same email at different tenants as
 // separate accounts (unique per (tenantId, email)). For a shopper the tenant is
 // known BEFORE auth (it's the storefront hostname), so every operation runs in
 // withTenant() and RLS isolates by tenant — no global-email requirement.

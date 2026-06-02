@@ -1,15 +1,15 @@
 # Token Model v2
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-30
+**Last Updated:** 2026-06-01
 
 ---
 
 ## 1. Purpose & scope
 
 The storefront's design-token model is thin: **11 flat tokens**, one radius knob, no
-spacing scale, hardcoded shadows, and status colors that merchants can't touch. It was
+spacing scale, hardcoded shadows, and status colors that tenants can't touch. It was
 enough to ship Site Builder Phase 1, but it can't express a real design system and it
 would force us to build the Phase 2 theme inspector twice — once on the throwaway model,
 again after expanding it.
@@ -30,10 +30,10 @@ this doc wins and the older doc is amended in the phase that lands the change.
 
 | #   | Decision                       | Choice                                                                                                                                                                                                                                                                                                                                                    |
 | --- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Color space & storage**      | **Store hex, derive in CSS.** Merchants keep hex pickers (no input-UX change, no value migration). `-content` pairs, hover shades and tints are generated at render via CSS `color-mix` in OKLCH space.                                                                                                                                                   |
-| 2   | **Palette breadth**            | **Full DaisyUI parity.** `base-100/200/300`, `primary`, `secondary`, `accent`, `neutral`, `info`, `success`, `warning`, `danger`, each with a `-content` pair. All base color slots merchant-editable; `-content` pairs auto-derived by default, overridable as an escape hatch.                                                                          |
+| 1   | **Color space & storage**      | **Store hex, derive in CSS.** Tenants keep hex pickers (no input-UX change, no value migration). `-content` pairs, hover shades and tints are generated at render via CSS `color-mix` in OKLCH space.                                                                                                                                                     |
+| 2   | **Palette breadth**            | **Full DaisyUI parity.** `base-100/200/300`, `primary`, `secondary`, `accent`, `neutral`, `info`, `success`, `warning`, `danger`, each with a `-content` pair. All base color slots tenant-editable; `-content` pairs auto-derived by default, overridable as an escape hatch.                                                                            |
 | 3   | **Storage model**              | **JSON only, drop fallback.** Full token set lives in JSONB; the 3 legacy `StorefrontTheme` columns (`color_background`, `color_muted`, `radius_base`) are dropped. The public read path **compiles** a token document on the fly (preset defaults ← presentation overlay ← brand), so every tenant — published or not — always has a complete token map. |
-| 4   | **Ownership** (your directive) | **Brand owns identity (color/type) + shape + rhythm.** Theme/merchant owns surfaces, neutral, status, border color, container width.                                                                                                                                                                                                                      |
+| 4   | **Ownership** (your directive) | **Brand owns identity (color/type) + shape + rhythm.** Theme/tenant owns surfaces, neutral, status, border color, container width.                                                                                                                                                                                                                        |
 
 ---
 
@@ -49,10 +49,10 @@ fontBody, radiusBase, containerWidth`
   per-component radius.
 - **Rhythm doesn't exist.** [apps/storefront/app/storefront.css](../apps/storefront/app/storefront.css)
   hardcodes every gap, pad and `clamp()` as magic numbers. There is no spacing scale a
-  merchant could shift.
+  tenant could shift.
 - **Effects hardcoded.** `--sf-shadow-sm/md/lg`, `--sf-ease` live in CSS.
 - **Status colors not themeable.** `--color-success/warning/danger` come from @sparx/ui
-  globals, not the merchant theme.
+  globals, not the tenant theme.
 - **Two CSS layers**, bridged by aliasing: `--sparx-*` / `--color-*` (@sparx/ui) → `--sf-*`
   (storefront). @sparx/ui already ships `--space-1..16` and `--radius-sm..full` — the
   storefront just doesn't consume them.
@@ -67,7 +67,7 @@ fontBody, radiusBase, containerWidth`
 
 ### 3.1 Color — full DaisyUI-parity semantic palette
 
-Every color slot is a base color the merchant can set (hex). Each has a `-content` pair
+Every color slot is a base color the tenant can set (hex). Each has a `-content` pair
 (text/icon color shown on that surface) that is **auto-derived** by default and overridable.
 
 | Group   | Slot                        | `-content`              | Owner        | Maps to today                             |
@@ -144,7 +144,7 @@ BRAND (identity + shape + rhythm) — read-only to cms/commerce/email/etc:
   space-base  size-field  size-selector
   depth
 
-PRESENTATION (theme preset default ← merchant override):
+PRESENTATION (theme preset default ← tenant override):
   base-100  base-200  base-300  base-content
   neutral(+content?)
   info  success  warning  danger  (+content? each)
@@ -160,7 +160,7 @@ tokens — it points at the Brand panel.
 
 ## 4. Color derivation strategy (hex stored → CSS derived)
 
-Merchants set base colors as hex. Everything else is computed at render with `color-mix` in
+Tenants set base colors as hex. Everything else is computed at render with `color-mix` in
 OKLCH space (perceptually uniform), so a single hex pick yields a coherent set:
 
 ```css
@@ -177,7 +177,7 @@ against the slot's perceptual lightness so contrast clears WCAG AA. Where `relat
 syntax is available (`oklch(from var(--sf-primary) …)`) we read lightness directly; otherwise
 we compute the content color **at compile time** (server-side, in `@sparx/storefront-themes`)
 using a small OKLCH helper and emit a concrete hex, so SSR is deterministic and we don't depend
-on browser `relative-color` support. Either way, a merchant may **override** any `-content` slot
+on browser `relative-color` support. Either way, a tenant may **override** any `-content` slot
 (full-parity escape hatch); an explicit value wins over the derived one.
 
 No OKLCH is stored. No existing hex value migrates. This keeps decision #1 and #2 compatible:
@@ -307,7 +307,7 @@ one stacked column) — same rule as the rest of the builder.
 
 ## 8. Risks & open items
 
-- **`-content` derivation correctness.** Auto-contrast must clear AA for arbitrary merchant
+- **`-content` derivation correctness.** Auto-contrast must clear AA for arbitrary tenant
   hex. Mitigation: compile-time OKLCH computation with a tested helper + the manual override
   escape hatch; carry the contrast readout already built into the Brand board.
 - **Migration ordering (prod).** The column-drop migration must land **after** the

@@ -3,7 +3,7 @@ import { Badge, Button, Card, Heading, Stack, Text } from '@sparx/ui';
 import { ArrowRight } from 'lucide-react';
 import type { OnboardingProgress } from '../welcome/onboarding';
 
-// Compact welcome banner shown on the dashboard home until the merchant
+// Compact welcome banner shown on the dashboard home until the tenant
 // either finishes every actionable step OR dismisses onboarding. If the guided
 // wizard hasn't been finished yet, the CTA resumes it (/onboarding picks up at
 // the saved step); once finished, it points at the day-0+ checklist (/welcome).

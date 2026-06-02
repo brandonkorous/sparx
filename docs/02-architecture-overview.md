@@ -15,7 +15,7 @@ Core tenets:
 - **Modular** — Modules activate independently; disabled modules add zero overhead
 - **Stateless services** — No session state in application tier; all state in data layer
 - **Event-driven** — Business events (order placed, customer created) emit to Pub/Sub; all side effects are consumers
-- **Tenant isolation** — Every merchant's data is row-level isolated with PostgreSQL RLS
+- **Tenant isolation** — Every tenant's data is row-level isolated with PostgreSQL RLS
 - **Zero-downtime deploys** — Rolling updates; feature flags for gradual rollout
 - **MCP-native** — The MCP server is a first-class service, not an afterthought
 - **Auth via Better Auth** — Self-hosted, open source, no SaaS dependency
@@ -26,7 +26,7 @@ Core tenets:
 
 ```
 CLIENT LAYER
-  Merchant Storefront (Next.js, theme-driven, multi-tenant)
+  Tenant Storefront (Next.js, theme-driven, multi-tenant)
   Admin Dashboard (Next.js)
   B2B Portal (Next.js)
   Custom Frontends (headless API consumers — Enterprise)
@@ -70,7 +70,7 @@ EMAIL INFRASTRUCTURE (Postal)
   Dedicated IP pools
   Bounce/complaint processing
   Per-tenant DKIM signing
-  Merchant domain authentication
+  Tenant domain authentication
 ```
 
 ---
@@ -162,13 +162,13 @@ Each module is a feature-flagged set of services, routes, and UI components. Dis
 
 Module activation:
 
-1. Merchant activates module in billing settings
+1. Tenant activates module in billing settings
 2. Stripe subscription item added
 3. `module.activated` event published to Pub/Sub
 4. Feature flag updated in tenant settings (Redis cache + DB)
 5. API routes enabled, workers started if needed
 6. Dashboard navigation item appears
-7. Merchant notified via email
+7. Tenant notified via email
 
 ---
 
@@ -211,7 +211,7 @@ Email worker subscribes → renders React Email template
     ↓
 Sends to Postal via HTTP API
     ↓
-Postal routes via merchant's DKIM-signed domain (or sparx.email)
+Postal routes via the tenant's DKIM-signed domain (or sparx.email)
     ↓ Dedicated IP pool
 Recipient's inbox
     ↓

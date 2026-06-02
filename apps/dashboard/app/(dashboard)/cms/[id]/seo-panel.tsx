@@ -50,7 +50,7 @@ interface SeoPanelProps {
   // We don't know the storefront domain here — apps/dashboard runs on
   // app.sparx.works and the actual public URL depends on which storefront
   // the entry belongs to. For now we render `{previewOrigin}/{slug}` with
-  // the slug as authoritative; future-pass swap in the per-merchant
+  // the slug as authoritative; future-pass swap in the per-tenant
   // storefront origin.
   previewOrigin: string;
   slug: string;
@@ -142,7 +142,7 @@ export function SeoPanel({ value, onChange, previewOrigin, slug, fallbackTitle }
             />
             <Text size="xs" variant="muted">
               Used as the Open Graph image when this page is shared on Facebook, LinkedIn, Slack,
-              etc. Falls back to the merchant&apos;s default OG image when blank.
+              etc. Falls back to your default OG image when blank.
             </Text>
             <MediaPicker
               open={pickerOpen}

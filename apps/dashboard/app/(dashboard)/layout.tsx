@@ -33,11 +33,17 @@ export default async function DashboardLayout({
     listEnabledModules(user.tenantId),
   ]);
 
+  // The next-gen Builder ('builder' module, /builder) has no per-tenant feature
+  // flag yet — it's in active development. Surface it in the nav for every
+  // tenant until it graduates to a real activation. Remove this once Builder is
+  // gated like the rest (and Site Builder / `storefront` is retired).
+  const navModules = [...enabledModules, 'builder'];
+
   return (
     <DashboardShell
       user={user}
       tenantName={tenant?.name ?? 'Workspace'}
-      enabledModules={enabledModules}
+      enabledModules={navModules}
       favorites={favorites}
       recents={recents}
       preferences={preferences}

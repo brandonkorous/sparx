@@ -1,6 +1,6 @@
 'use client';
 
-// Light/dark mode toggle — rendered only when the merchant's appearancePolicy
+// Light/dark mode toggle — rendered only when the tenant's appearancePolicy
 // is `toggle`. Flips `data-theme` on <html> and persists the choice in a cookie
 // so SSR resolves the same mode on the next request (no flash). The cookie is
 // read by the layout's no-flash inline script (see app/layout.tsx).

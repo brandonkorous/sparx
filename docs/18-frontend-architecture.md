@@ -1,8 +1,8 @@
 # WizeWorks Platform — Frontend Architecture
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -10,7 +10,7 @@
 
 WizeWorks has three frontend applications sharing a common design system and component library:
 
-1. **Merchant Dashboard** — Admin interface for managing the store (Next.js)
+1. **Tenant Dashboard** — Admin interface for managing the tenant's modules (Next.js)
 2. **Storefront** — Customer-facing store (Next.js, multi-tenant, theme-driven)
 3. **B2B Portal** — Wholesale/fleet account portal (Next.js)
 
@@ -43,7 +43,7 @@ All three consume the WizeWorks REST/GraphQL API and share the `@sparx/ui` compo
 
 ```
 apps/
-├── dashboard/              # Merchant admin (Next.js)
+├── dashboard/              # Tenant admin (Next.js)
 ├── storefront/             # Customer storefront (Next.js, multi-tenant)
 └── b2b-portal/             # B2B wholesale portal (Next.js)
 
@@ -114,9 +114,9 @@ Defined in `packages/ui/tokens.css`:
 }
 ```
 
-### Theme Overrides (Merchant Themes)
+### Theme Overrides (Tenant Themes)
 
-Merchant themes override the base tokens via CSS custom properties on the `:root` of their storefront:
+Tenant themes override the base tokens via CSS custom properties on the `:root` of their storefront:
 
 ```css
 /* Industrial theme (Gillett Diesel) */
@@ -185,7 +185,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
 ---
 
-## 6. Merchant Dashboard
+## 6. Tenant Dashboard
 
 ### App Router Structure
 
@@ -332,7 +332,7 @@ export default async function RootLayout({ children }) {
 
 Key flows tested on every deploy to staging:
 
-- Merchant signup → onboarding → live store
+- Tenant signup → onboarding → live store
 - Add product → publish
 - Place order as customer → checkout
 - Order fulfillment flow

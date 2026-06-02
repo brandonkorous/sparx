@@ -7,7 +7,7 @@ export const Uuid = z.string().uuid();
 export const OptionalUuid = z.string().uuid().optional().nullable();
 
 // A media reference: either a media-library asset id (UUID) OR an absolute
-// http(s) image/video URL. The URL form lets a merchant drop in an asset they
+// http(s) image/video URL. The URL form lets a tenant drop in an asset they
 // already host (a CDN, a stock URL) without uploading into the library — the
 // storefront resolver passes absolute URLs straight through (apps/storefront
 // lib/media.ts). UUIDs still resolve via the public media redirect.
@@ -140,3 +140,39 @@ const clampPct = (n: number | null | undefined): number =>
 export function focalToPosition(focal?: { x?: number; y?: number } | null): string {
   return `${clampPct(focal?.x)}% ${clampPct(focal?.y)}%`;
 }
+
+// ── Section height ──────────────────────────────────────────────────────────
+// A universal per-section vertical size, settable by the tenant on ANY page
+// section. `auto` fits the content; the rest are fractions of the viewport
+// (¼/½/¾/full). Applied by the storefront section wrapper as a `min-height`
+// (so a tall section vertically centres its content). Hero/banner/carousel keep
+// their own `height` field — this covers every other section type.
+
+export const SectionHeight = z.enum(['auto', 'sm', 'md', 'lg', 'screen']);
+export type SectionHeight = z.infer<typeof SectionHeight>;
+
+/** The segmented "Section height" control shared by every static section. */
+export function sectionHeightField(): SectionField {
+  return {
+    key: 'sectionHeight',
+    label: 'Section height',
+    type: 'buttongroup',
+    help: 'How tall this section is — a fraction of the screen, or Auto to fit its content.',
+    options: [
+      { label: 'Auto', value: 'auto' },
+      { label: '¼', value: 'sm' },
+      { label: '½', value: 'md' },
+      { label: '¾', value: 'lg' },
+      { label: 'Full', value: 'screen' },
+    ],
+  };
+}
+
+/** The same options as a button group, without `auto`, for sections that are
+ *  always sized (hero / banner / carousel). */
+export const HEIGHT_BUTTON_OPTIONS: SectionField['options'] = [
+  { label: '¼', value: 'sm' },
+  { label: '½', value: 'md' },
+  { label: '¾', value: 'lg' },
+  { label: 'Full', value: 'screen' },
+];

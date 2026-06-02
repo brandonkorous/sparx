@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Align } from '../common';
+import { Align, SectionHeight, sectionHeightField } from '../common';
 import type { SectionField } from '../fields';
 
 export const RichTextConfig = z.object({
@@ -13,6 +13,7 @@ export const RichTextConfig = z.object({
     ),
   align: Align.default('left'),
   width: z.enum(['narrow', 'normal']).default('normal'),
+  sectionHeight: SectionHeight.default('auto'),
 });
 export type RichTextConfig = z.infer<typeof RichTextConfig>;
 
@@ -38,4 +39,5 @@ export const richTextFields: SectionField[] = [
       { label: 'Normal', value: 'normal' },
     ],
   },
+  sectionHeightField(),
 ];

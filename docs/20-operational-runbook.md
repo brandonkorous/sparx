@@ -1,8 +1,8 @@
 # WizeWorks Platform — Operational Runbook
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-28
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -33,13 +33,13 @@
 
 - For P0/P1: designate one person as IC to coordinate
 - IC runs the timeline, delegates diagnosis and fix
-- IC owns merchant communication (status page update within 15 min)
+- IC owns tenant communication (status page update within 15 min)
 
 ### Status Page
 
 - Hosted at `status.wizeworks.com` (Instatus or Statuspage.io)
 - Auto-updates from Prometheus alerting
-- Merchants subscribed to email/SMS updates
+- Tenants subscribed to email/SMS updates
 
 ---
 
@@ -117,7 +117,7 @@ kubectl -n wizeworks-prod rollout history deployment/api-rest
 
 ### Email Delivery Failure
 
-**Symptoms:** `email-worker` error rate spike, merchants report emails not sending
+**Symptoms:** `email-worker` error rate spike, tenants report emails not sending
 
 **Investigation:**
 
@@ -151,7 +151,7 @@ kubectl exec -n wizeworks-prod deploy/email-worker -- node scripts/retry-failed-
 
 ### Domain Verification Stuck
 
-**Symptoms:** Merchant reports custom domain not verifying after 30+ minutes
+**Symptoms:** Tenant reports custom domain not verifying after 30+ minutes
 
 **Investigation:**
 
@@ -175,7 +175,7 @@ kubectl -n wizeworks-prod logs -l app=domain-worker --tail=100
 
 ### Checkout Failures
 
-**Symptoms:** Orders not completing, merchants report customer complaints
+**Symptoms:** Orders not completing, tenants report customer complaints
 
 **Investigation:**
 
@@ -249,7 +249,7 @@ gcloud sql instances delete wizeworks-restore-test
 5. Update `DATABASE_URL` secret to point to restored instance
 6. Restart all application pods
 7. Verify platform functionality
-8. Notify affected merchants
+8. Notify affected tenants
 
 **RTO: < 1 hour | RPO: < 5 minutes**
 
@@ -353,7 +353,7 @@ jsonPayload.status="failed"
 - **Database vacuuming:** Automated, pg_autovacuum (no window needed)
 - **SSL cert renewal:** Automated via Caddy (no window needed)
 - **Dependency updates:** Weekly automated PRs via Dependabot
-- **Penetration testing:** Annual, scheduled in advance with 2-week merchant notice
+- **Penetration testing:** Annual, scheduled in advance with 2-week tenant notice
 
 ---
 
@@ -383,7 +383,7 @@ jsonPayload.status="failed"
 
 ### Impact
 
-- Merchants affected: [N]
+- Tenants affected: [N]
 - Orders affected: [N]
 - Revenue impact: [$]
 

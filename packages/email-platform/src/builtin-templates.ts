@@ -1,7 +1,7 @@
 // Built-in transactional template catalog.
 //
 // These render via code-defined React Email components in @sparx/email (keyed
-// by `key`). Merchants customize a constrained layer only — subject + intro/
+// by `key`). Tenants customize a constrained layer only — subject + intro/
 // outro slots + branding (branding is global, via brand-service) — never
 // structure, so the typed event props stay safe. The catalog drives the
 // dashboard Templates list + the preview's sample data.
@@ -16,7 +16,7 @@ export interface BuiltinTemplate {
   name: string;
   kind: 'transactional';
   description: string;
-  /** Variables available to the merchant (for the dashboard variable picker). */
+  /** Variables available to the tenant (for the dashboard variable picker). */
   variables: string[];
   /** Whether intro/outro editable slots are supported by the component. */
   supportsSlots: boolean;

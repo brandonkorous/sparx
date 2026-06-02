@@ -1,8 +1,8 @@
 # Sparx Platform — Monorepo Structure
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-28
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -31,8 +31,8 @@ sparx/
 │
 ├── apps/
 │   ├── web/                  # @sparx/web — sparx.works marketing site (Next.js)
-│   ├── dashboard/            # @sparx/dashboard — app.sparx.works merchant admin (Next.js)
-│   ├── storefront/           # @sparx/storefront — multi-tenant merchant storefronts (Next.js)
+│   ├── dashboard/            # @sparx/dashboard — app.sparx.works tenant admin (Next.js)
+│   ├── storefront/           # @sparx/storefront — multi-tenant storefronts (Next.js)
 │   └── api/                  # @sparx/api — Fastify REST + GraphQL + MCP server
 │
 ├── packages/

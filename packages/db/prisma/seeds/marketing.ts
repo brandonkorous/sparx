@@ -350,8 +350,8 @@ const MODULES: ModuleSeed[] = [
     headlineSecondary: 'anything',
     title: 'Sparx AI — Native MCP server for Claude, ChatGPT, Copilot.',
     description:
-      'Sparx is the first commerce platform built around the Model Context Protocol. Read live business data with plain English. No exports. No CSVs.',
-    lede: 'Sparx is the first commerce platform built around the Model Context Protocol. Connect Claude, ChatGPT, or Copilot once and read live business data with plain English. No exports. No CSVs. No Zapier.',
+      'Sparx is the first content and commerce platform built around the Model Context Protocol. Read live business data with plain English. No exports. No CSVs.',
+    lede: 'Sparx is the first content and commerce platform built around the Model Context Protocol. Connect Claude, ChatGPT, or Copilot once and read live business data with plain English. No exports. No CSVs. No Zapier.',
     pricing: {
       price: '$49',
       period: '/mo',

@@ -75,7 +75,7 @@ export function registerEmailEventConsumers(ctx: ConsumerContext): (() => void)[
           });
 
           // Unsubscribe flips do-not-contact. The email module also keeps
-          // its own suppression list; this is the merchant-visible mirror.
+          // its own suppression list; this is the tenant-visible mirror.
           if (topic === 'email.unsubscribed') {
             await tx.customer.update({
               where: { id: customerId },

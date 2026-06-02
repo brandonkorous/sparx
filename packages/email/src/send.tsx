@@ -146,7 +146,7 @@ export interface AuthoredEmailInput {
 }
 
 /**
- * Render a merchant-AUTHORED marketing email: the brand chrome (header/footer/
+ * Render a tenant-AUTHORED marketing email: the brand chrome (header/footer/
  * background from BrandTokens) wrapping sanitized prose HTML. The body HTML is
  * injected verbatim — callers MUST pass already-sanitized HTML (the CMS
  * serializer whitelists tags/URLs). Used by broadcasts + authored templates.

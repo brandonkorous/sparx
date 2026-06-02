@@ -1,5 +1,5 @@
 // Provider-side error vocabulary. Concrete providers throw these so the
-// platform can decide whether to retry, surface to the merchant, or
+// platform can decide whether to retry, surface to the tenant, or
 // fail the transaction.
 
 export class ProviderConfigurationError extends Error {

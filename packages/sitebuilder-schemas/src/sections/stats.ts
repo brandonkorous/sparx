@@ -1,5 +1,14 @@
 import { z } from 'zod';
-import { FocalPoint, ObjectFit, OptionalMediaRef, ctas, ctasField, mediaField } from '../common';
+import {
+  FocalPoint,
+  ObjectFit,
+  OptionalMediaRef,
+  SectionHeight,
+  ctas,
+  ctasField,
+  mediaField,
+  sectionHeightField,
+} from '../common';
 import type { SectionField } from '../fields';
 
 // A band of big figures + labels, with an optional lead image (e.g. a map), a
@@ -24,6 +33,7 @@ export const StatsConfig = z.object({
   // of the value is animated; any prefix/suffix like "$" or "+" is preserved).
   // Falls back to the static value without JS or under reduced-motion.
   animate: z.boolean().default(true),
+  sectionHeight: SectionHeight.default('auto'),
 });
 export type StatsConfig = z.infer<typeof StatsConfig>;
 
@@ -52,4 +62,5 @@ export const statsFields: SectionField[] = [
       { key: 'label', label: 'Label', type: 'text', placeholder: 'Superchargers' },
     ],
   },
+  sectionHeightField(),
 ];

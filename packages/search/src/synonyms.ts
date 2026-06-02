@@ -5,7 +5,7 @@
 // collection-level resource, and Sparx uses ONE shared `products` collection
 // partitioned by a `tenant_id` filter (not a collection per tenant). A synonym
 // added for one tenant would therefore apply to every tenant's queries — a
-// cross-tenant leak of merchant-configured vocabulary. So we ship a curated
+// cross-tenant leak of tenant-configured vocabulary. So we ship a curated
 // global set (diesel/auto/industrial terms that help every catalog) and do
 // NOT expose per-tenant custom synonyms. True per-tenant synonyms would
 // require the per-tenant-collection model (a future infra change); until then

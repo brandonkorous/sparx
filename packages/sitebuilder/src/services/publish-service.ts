@@ -109,7 +109,7 @@ export async function rollback(ctx: ServiceContext, rawInput: unknown): Promise<
 // Brand identity (docs/30 §6) is the tenant-level source of truth and is read
 // LIVE here, overlaid on top of the (published or draft) compiled tokens so a
 // brand edit reflects on the storefront without a full re-publish, and so brand
-// always WINS over theme/merchant identity values. Read-only — never written back.
+// always WINS over theme/tenant identity values. Read-only — never written back.
 //
 // This is also where the Token Model v2 set is compiled (docs/33): the same live
 // brand columns + the presentation overlay (from the version snapshot or the

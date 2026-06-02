@@ -146,7 +146,7 @@ function renderSection(
         <CollectionProductsSection config={c as unknown as CollectionProductsConfig} ctx={ctx} />
       );
     default: {
-      // A merchant-defined custom section (`custom:<slug>`): render its pinned
+      // A tenant-defined custom section (`custom:<slug>`): render its pinned
       // template AST via the interpreter. Unknown / unpinned types skip rather
       // than crash the page (forward-compat with newer snapshots).
       const template = customTemplates.get(section.sectionType);
@@ -174,20 +174,27 @@ export function SectionRenderer({
   );
   return (
     <>
-      {sections.map((section) => (
-        // data-section-* lets the Site Builder preview bridge resolve a click to
-        // a section without each section having to become a client component.
-        // data-sf-reveal opts the wrapper into the scroll-reveal entrance
-        // (RevealController + storefront.css); inert without JS / reduced motion.
-        <div
-          key={section.id}
-          data-section-id={section.id}
-          data-section-type={section.sectionType}
-          data-sf-reveal
-        >
-          {renderSection(section, ctx, customTemplates)}
-        </div>
-      ))}
+      {sections.map((section) => {
+        // Universal per-section height (docs/37): any static section can carry a
+        // `sectionHeight` (¼/½/¾/full svh); the wrapper enforces it as a
+        // min-height + vertically centres the content. `auto`/absent = unset.
+        const sh = (section.config as { sectionHeight?: string } | undefined)?.sectionHeight;
+        return (
+          // data-section-* lets the Site Builder preview bridge resolve a click to
+          // a section without each section having to become a client component.
+          // data-sf-reveal opts the wrapper into the scroll-reveal entrance
+          // (RevealController + storefront.css); inert without JS / reduced motion.
+          <div
+            key={section.id}
+            data-section-id={section.id}
+            data-section-type={section.sectionType}
+            data-section-height={sh && sh !== 'auto' ? sh : undefined}
+            data-sf-reveal
+          >
+            {renderSection(section, ctx, customTemplates)}
+          </div>
+        );
+      })}
     </>
   );
 }

@@ -1,8 +1,8 @@
 # Sparx Platform — Cost & Scaling Guide
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -18,7 +18,7 @@ Every infrastructure upgrade should be triggered by an observable problem — sl
 
 ### Phase 1 — Early Stage
 
-**Who:** 0–50 tenants. Gillett Diesel live. First paying merchants.
+**Who:** 0–50 tenants. Gillett Diesel live. First paying tenants.
 **Credits:** GCP startup credits cover most or all of this.
 
 | Line item                    | Monthly cost   |
@@ -55,7 +55,7 @@ Changes from Phase 1 and their triggers:
 | Redis pod → Memorystore basic | +$50          | Redis pod crash caused missed automations      |
 | Typesense pod (search)        | +$0\*         | Product search p95 > 200ms                     |
 | Cloudflare Pro                | +$20          | Need better WAF rules or image optimization    |
-| Postal dedicated IPs          | +$20–50       | Merchant email reputation complaints           |
+| Postal dedicated IPs          | +$20–50       | Tenant email reputation complaints             |
 | Sentry error tracking         | +$26          | Debug time costs more than $26/mo              |
 
 \*Typesense runs as a GKE pod — compute cost absorbed by cluster headroom.
@@ -154,7 +154,7 @@ GDS at $750/mo managed hosting + Enterprise plan is already 10x the infrastructu
 
 ## 5. Per-Tenant Marginal Cost
 
-What does it actually cost to add one new merchant?
+What does it actually cost to add one new tenant?
 
 **One-time provisioning cost:**
 
@@ -210,7 +210,7 @@ Some things are worth paying for even in Phase 1:
 
 **Sentry** — $26/mo developer plan. The first time you spend 4 hours debugging a production error that Sentry would have surfaced in 10 minutes, you'll wish you had it.
 
-**GCS versioning on media** — free, just a setting. A merchant accidentally deleting their product images is a support nightmare. Versioning means you restore in seconds.
+**GCS versioning on media** — free, just a setting. A tenant accidentally deleting their media is a support nightmare. Versioning means you restore in seconds.
 
 ---
 

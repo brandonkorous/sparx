@@ -1,8 +1,8 @@
 # Site Builder Architecture
 
-**Version:** 1.1
+**Version:** 1.1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-30
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -12,7 +12,7 @@ This document is the implementation contract for the **Site Builder** (the `stor
 module). [docs/08-site-builder-spec.md](08-site-builder-spec.md) is the product vision; this
 is _how it is built_ on top of the already-shipped platform.
 
-The Site Builder gives merchants a theme system, a visual customizer, section-based page
+The Site Builder gives tenants a theme system, a visual customizer, section-based page
 composition, light/dark theming, and a draft → publish → schedule → rollback lifecycle —
 all rendered by the existing tenant-aware storefront.
 
@@ -99,7 +99,7 @@ drop) as dependency-light TS presets. Each preset declares a settings schema (fi
 and `dark`**.
 
 `compileTokens(themeKey, overlay)` returns `{ light, dark }` — each mode merges that mode's
-preset defaults with the merchant's overlay into a flat CSS-custom-property map.
+preset defaults with the tenant's overlay into a flat CSS-custom-property map.
 
 **Write-through on publish:** `publish-service.publishNow` compiles, writes a `SiteVersion`,
 and upserts the **light** subset that maps to existing `StorefrontTheme` columns — all in
@@ -157,7 +157,7 @@ edit ─▶ draftSettings / SiteSection rows (autosave, ETag-guarded)
 
 ## 7. Light / dark
 
-Each merchant picks an `appearancePolicy`:
+Each tenant picks an `appearancePolicy`:
 
 | Policy       | Runtime behavior                                                              |
 | ------------ | ----------------------------------------------------------------------------- |
@@ -183,7 +183,7 @@ competing "Pages" UIs:
 - **Site Builder Pages** — marketing/landing pages _composed from sections_ (hero, product
   grids, testimonials). Owned by Site Builder, distinguished by `type_key`.
 
-The dashboard cross-links the two with a callout so a merchant always lands in the right
+The dashboard cross-links the two with a callout so a tenant always lands in the right
 editor; the storefront catch-all renders whichever exists for a slug, with sections
 composed around `PageView` when both are present.
 

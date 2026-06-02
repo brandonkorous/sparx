@@ -2,8 +2,8 @@
 //
 // The default theme lives in app/storefront.css as `--sf-*` token fallbacks. A
 // per-tenant <style> tag injected in the root layout overrides them with the
-// compiled v2 theme; anything the merchant hasn't customized falls through to
-// the preset / storefront.css default — zero code changes per merchant.
+// compiled v2 theme; anything the tenant hasn't customized falls through to
+// the preset / storefront.css default — zero code changes per tenant.
 
 import {
   buildLegacyThemeCss,

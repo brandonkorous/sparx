@@ -1,8 +1,8 @@
 # @sparx/ui Variant System (multi-axis)
 
-**Version:** 1.0
+**Version:** 1.0.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -212,7 +212,7 @@ treatment is authored once and reused by Button/Badge/Tag/Alert.
 
 ### 4.2 Why this beats codegen — custom theme colors
 
-This is the **decisive** advantage. A merchant/tenant custom theme color does **not**
+This is the **decisive** advantage. A tenant custom theme color does **not**
 require regenerating or rebuilding the component package, because the component CSS only
 ever references role vars and the `color` mapping is open-ended:
 
@@ -402,7 +402,7 @@ matrix grids collapse to fewer columns on small screens (no fixed desktop-only l
   `.sx-c-<name>` rule, the role vars fall back to the `neutral` defaults (graceful, not
   broken). The theme/inspector that introduces custom slots owns emitting the matching rule
   — documented as the contract, not enforced by the type.
-- **AA contrast on arbitrary `-content`.** Our palette is fixed (not merchant-set), so
+- **AA contrast on arbitrary `-content`.** Our palette is fixed (not tenant-set), so
   `-content` pairs are authored to clear AA once; no runtime contrast concern here (that's
   the storefront's problem, doc 33 §8).
 - **Scope creep toward full DaisyUI.** Accordion, radial progress, indicator-badge are

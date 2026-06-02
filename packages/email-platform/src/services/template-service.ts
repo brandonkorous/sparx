@@ -1,14 +1,14 @@
 // templateService — the two-track template surface.
 //
-//   builtin   → code-defined React Email components in @sparx/email. Merchants
+//   builtin   → code-defined React Email components in @sparx/email. Tenants
 //               customize a constrained layer (subject + intro/outro slots);
 //               branding is global (brand-service). The override is an
 //               EmailTemplate row (source='builtin', key=<template id>).
-//   authored  → merchant-authored marketing body (a CMS TipTap doc) rendered
+//   authored  → tenant-authored marketing body (a CMS TipTap doc) rendered
 //               into the brand chrome via renderAuthoredEmail. Stored as an
 //               EmailTemplate row (source='authored').
 //
-// Preview + test-send resolve the tenant brand so what the merchant sees
+// Preview + test-send resolve the tenant brand so what the tenant sees
 // matches what ships. Test-send uses the synchronous escape hatch (staff-
 // triggered smoke test) and stamps tenant_id for webhook attribution.
 

@@ -1,21 +1,21 @@
 # Sparx Platform — Customer Accounts & Storefront Authentication
 
-**Version:** 1.1
+**Version:** 1.1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-30
+**Last Updated:** 2026-06-01
 
 ---
 
 ## 1. Overview
 
 This document specifies **Layer 2 authentication** — accounts for the _shoppers_ who buy
-from a merchant's storefront. It is deliberately separate from **Layer 1** (merchant staff
+from a tenant's storefront. It is deliberately separate from **Layer 1** (tenant staff
 auth, [docs/16-auth-security.md](16-auth-security.md)), which uses Better Auth and lives in
 `packages/auth`.
 
 A shopper who registers at `acme.sparx.zone` is a customer of **Acme**, not of Sparx. They
 have no relationship to the Sparx dashboard, no `users` row, and no presence on any other
-merchant's store. The same person can hold a separate account at `bravo.sparx.zone` with the
+tenant's store. The same person can hold a separate account at `bravo.sparx.zone` with the
 **same email address** and a **different password** — the two are unrelated identities.
 
 > **Hard rule (non-negotiable):** we store password **hashes only**, never plaintext, never
@@ -53,7 +53,7 @@ per registration so the compound `(tenantId, email)` never actually mattered
 `findOne({ email })` with no tenant in the predicate.
 
 For shoppers that assumption is **wrong**: the same email must be able to register at two
-different merchants as two distinct accounts. To bend Better Auth to a `(tenantId, email)`
+different tenants as two distinct accounts. To bend Better Auth to a `(tenantId, email)`
 key you have to either (a) namespace the stored identifier (e.g. `tenantId\0email`), which
 corrupts the column you also want to email and index on, or (b) write a sign-in plugin that
 injects tenant into every internal query — fighting the framework on its hottest path. Both
@@ -350,7 +350,7 @@ register, logout, refresh }`; hydrates from `/account/me` on mount.
     renders the account nav tabs (the `.sf-account` / `.sf-tabs` CSS blocks already exist).
 - Header: the account icon links to `/account` when signed in, `/account/login` otherwise; the
   checkout flow offers "sign in for faster checkout" without ever _requiring_ it (guest checkout
-  stays first-class unless the merchant sets `requireAuthForCheckout`).
+  stays first-class unless the tenant sets `requireAuthForCheckout`).
 
 ---
 
@@ -397,8 +397,8 @@ automated; the storefront builds + typechecks + lints clean.
 
 - **Account email verification before first login** — Layer 1 ships with
   `requireEmailVerification: false`; customer accounts follow suit for the 5-minute-store goal,
-  with verification as an opt-in merchant setting later. (Default: not required.)
-- **Custom-domain cookie scope** — when merchants attach custom domains (`acme.com`), the
+  with verification as an opt-in tenant setting later. (Default: not required.)
+- **Custom-domain cookie scope** — when tenants attach custom domains (`acme.com`), the
   session cookie is naturally first-party on that origin via the proxy; no `Domain=` attribute
   is set, so each origin gets its own cookie. This is the desired isolation, documented here so
   it isn't "fixed" later by mistake.

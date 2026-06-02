@@ -1,13 +1,13 @@
 // Webhook subscriptions UI — placeholder.
 //
 // The audit (cms-audit-2026-05-29.md F-05) found that the CMS sub-nav linked
-// merchants straight into a 500 because no page.tsx existed. The audit's
+// tenants straight into a 500 because no page.tsx existed. The audit's
 // fix-A was "ship a minimal placeholder", which is what this is — the full
 // CRUD UI on top of /v1/webhooks/subscriptions is tracked as Phase 5+ work
 // in project_cms_phase5_deferred.md. Removing the sidebar tab was option B
 // and was rejected: webhooks are a real surface, just not built out yet.
 //
-// Until the editor lands, this page tells merchants that webhooks exist,
+// Until the editor lands, this page tells tenants that webhooks exist,
 // what they're for, and how to manage them via the API.
 
 import {

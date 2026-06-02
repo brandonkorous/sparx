@@ -8,9 +8,9 @@
 // The api-rest endpoint /v1/public/tenants/:slug accepts a slug, so case 1
 // would technically need a second endpoint that resolves by primary_domain.
 // That's deferred — for now we only handle case 2 (subdomain) and case 3
-// (dev fallback). Custom domains land when merchants need them.
+// (dev fallback). Custom domains land when tenants need them.
 //
-// The tenant payload now also carries the merchant's storefront THEME and
+// The tenant payload now also carries the tenant's storefront THEME and
 // commerce DEFAULTS so the root layout resolves colors/fonts/currency in a
 // single fetch (see app/layout.tsx + lib/theme.ts).
 

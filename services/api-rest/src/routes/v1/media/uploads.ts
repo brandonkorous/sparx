@@ -23,7 +23,7 @@ import { getStorage, originalKey } from '../../../lib/storage.js';
 import { badRequest, conflict, notFound } from '@sparx/api-core/errors';
 import { env } from '../../../env.js';
 
-// Conservative ceiling — anything bigger than 200 MB the merchant can
+// Conservative ceiling — anything bigger than 200 MB the tenant can
 // upload via the desktop CLI tool (when that exists) or escalate to
 // support. The bucket has a 50 GB / object hard limit but we'd rather
 // not let a typo cost $5 in egress.

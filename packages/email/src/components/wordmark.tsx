@@ -3,8 +3,8 @@ import { Img } from '@react-email/components';
 import { useBrand } from './brand';
 
 // EmailWordmark — the email header brand mark. Resolves from the active brand:
-//   • a merchant logo (when brand.logoUrl is set) → renders the image,
-//   • a merchant store name → renders it in the brand foreground,
+//   • a tenant logo (when brand.logoUrl is set) → renders the image,
+//   • a tenant store/site name → renders it in the brand foreground,
 //   • the Sparx default → the "Spar<x>" wordmark with the accent "x".
 //
 // Mail clients strip <style> blocks and don't honour CSS variables, so every
@@ -38,7 +38,7 @@ export function EmailWordmark({ size = 22 }: EmailWordmarkProps) {
     color: brand.foreground,
   };
 
-  // Merchant store name (anything other than the Sparx default) renders plain.
+  // Tenant store/site name (anything other than the Sparx default) renders plain.
   if (brand.storeName && brand.storeName !== 'Sparx') {
     return <span style={wordmarkStyle}>{brand.storeName}</span>;
   }

@@ -3,7 +3,7 @@
 
    Semantic `sf-*` classes only (no Tailwind utilities — ESLint-clean,
    matches apps/web's marketing.css approach). Every visual value reads a
-   `--sf-*` token; merchant StorefrontTheme overrides cascade in via the
+   `--sf-*` token; tenant StorefrontTheme overrides cascade in via the
    <style> tag the root layout injects (see lib/theme.ts). Base tokens come
    from @sparx/ui/tokens.css, imported before this file.
    ────────────────────────────────────────────────────────────── */
@@ -1650,7 +1650,7 @@
 
 /* ── Site Builder sections ─────────────────────────────────────
    Section components composed by the Site Builder snapshot. All values are
-   token-driven so merchant theme + light/dark overrides cascade in. */
+   token-driven so tenant theme + light/dark overrides cascade in. */
 
 /* Explicit column counts (featured-products, collection-grid, testimonials)
    from the section config. Auto-fill remains the default for grids without a
@@ -1723,16 +1723,20 @@
   color: var(--sf-base-content);
 }
 .sf-sb-hero[data-height='sm'] {
-  min-height: 320px;
+  min-height: 25svh;
+  max-height: 25svh;
 }
 .sf-sb-hero[data-height='md'] {
-  min-height: 460px;
+  min-height: 50svh;
+  max-height: 50svh;
 }
 .sf-sb-hero[data-height='lg'] {
-  min-height: 640px;
+  min-height: 75svh;
+  max-height: 75svh;
 }
 .sf-sb-hero[data-height='screen'] {
   min-height: 100svh;
+  max-height: 100svh;
 }
 .sf-sb-hero[data-valign='top'] {
   align-items: flex-start;
@@ -1817,16 +1821,20 @@
   color: var(--sf-base-content);
 }
 .sf-sb-banner[data-height='sm'] {
-  min-height: 240px;
+  min-height: 25svh;
+  max-height: 25svh;
 }
 .sf-sb-banner[data-height='md'] {
-  min-height: 360px;
+  min-height: 50svh;
+  max-height: 50svh;
 }
 .sf-sb-banner[data-height='lg'] {
-  min-height: 520px;
+  min-height: 75svh;
+  max-height: 75svh;
 }
 .sf-sb-banner[data-height='screen'] {
   min-height: 100svh;
+  max-height: 100svh;
 }
 .sf-sb-banner[data-valign='top'] {
   align-items: flex-start;
@@ -2035,7 +2043,7 @@
    Only present when the storefront is embedded in the editor iframe (the
    preview bridge sets data-sparx-preview on <html>). Editor-only affordances:
    sections become clickable and show a hover / selection ring. The ring color
-   is fixed (Sparx Indigo) so it stays legible on any merchant theme, and uses
+   is fixed (Sparx Indigo) so it stays legible on any tenant theme, and uses
    `outline` (not border) so selecting never shifts layout. */
 [data-sparx-preview] {
   --sf-preview-ring: #6366f1;
@@ -2422,6 +2430,41 @@ html.sf-reveal-ready [data-sf-reveal].is-visible {
   }
 }
 
+/* ─── Universal per-section height ───────────────────────────────────────────
+   Any section wrapper can carry data-section-height (¼/½/¾/full of the viewport,
+   set per-section by the tenant). The wrapper becomes a flex column that
+   vertically centres the section, so a section taller than its content reads as
+   a deliberate full-bleed band rather than top-loaded with empty space below.
+   Hero/banner/carousel size themselves and never set this. */
+[data-section-height] {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Fixed band — the chosen fraction is both the min AND max height, so the
+     section is exactly that tall and content beyond it is clipped (not pushed
+     into the next section). `auto` (no attr) keeps content-driven height. */
+  overflow: hidden;
+}
+[data-section-height] > * {
+  width: 100%;
+}
+[data-section-height='sm'] {
+  min-height: 25svh;
+  max-height: 25svh;
+}
+[data-section-height='md'] {
+  min-height: 50svh;
+  max-height: 50svh;
+}
+[data-section-height='lg'] {
+  min-height: 75svh;
+  max-height: 75svh;
+}
+[data-section-height='screen'] {
+  min-height: 100svh;
+  max-height: 100svh;
+}
+
 /* ─── Carousel section (docs/37 §6) ─────────────────────────────────────────
    A scroll-snap slider of full-bleed media slides. Native horizontal scroll
    handles swiping; the island layers arrows/dots/autoplay on top. Slide visuals
@@ -2465,16 +2508,20 @@ html.sf-reveal-ready [data-sf-reveal].is-visible {
   color: var(--sf-base-content);
 }
 .sf-sb-carousel__slide[data-height='sm'] {
-  min-height: 340px;
+  min-height: 25svh;
+  max-height: 25svh;
 }
 .sf-sb-carousel__slide[data-height='md'] {
-  min-height: 480px;
+  min-height: 50svh;
+  max-height: 50svh;
 }
 .sf-sb-carousel__slide[data-height='lg'] {
-  min-height: 640px;
+  min-height: 75svh;
+  max-height: 75svh;
 }
 .sf-sb-carousel__slide[data-height='screen'] {
   min-height: 100svh;
+  max-height: 100svh;
 }
 .sf-sb-carousel__slide[data-valign='top'] {
   align-items: flex-start;

@@ -16,7 +16,7 @@ export const ThemeOverlay = z.object({
 });
 export type ThemeOverlay = z.infer<typeof ThemeOverlay>;
 
-// Token Model v2 presentation overlay (docs/33 §3, §5) — the merchant-owned
+// Token Model v2 presentation overlay (docs/33 §3, §5) — the tenant-owned
 // surfaces / neutral / status / border / container, per mode, laid over a theme
 // preset by the v2 compiler. Brand identity (color/type/shape/rhythm/effect) is
 // NOT here — it lives on the tenant brand. Every field is nullable+optional so a
@@ -56,6 +56,13 @@ export const SiteSettings = z.object({
   customCss: z.string().max(20000).default(''),
   // Optional so existing drafts (tokens/customCss only) parse unchanged.
   presentation: PresentationOverlay.optional(),
+  // The tenant's currently-applied SAVED theme (the "My themes" rail), so the
+  // selection survives a reload. Null/absent = editing a prebuilt preset base
+  // directly. The base preset, presentation overlay, and brand snapshot already
+  // persist in their own fields; this is purely the POINTER that distinguishes
+  // "applied the Tesla theme" from "picked Tesla's base preset and these
+  // colours" — without it the rail can only re-derive the base preset.
+  activeSavedThemeId: z.string().uuid().nullish(),
 });
 export type SiteSettings = z.infer<typeof SiteSettings>;
 

@@ -10,6 +10,9 @@ export type SectionFieldType =
   | 'color'
   | 'font'
   | 'select'
+  // A single-select rendered as a segmented row of buttons (instead of a
+  // dropdown) — for short, glanceable option sets like size/alignment.
+  | 'buttongroup'
   | 'number'
   | 'range'
   | 'boolean'

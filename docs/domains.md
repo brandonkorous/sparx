@@ -1,8 +1,8 @@
 # Sparx Domain Portfolio
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 Current registrations (all in Cloudflare DNS):
 
@@ -11,7 +11,7 @@ Current registrations (all in Cloudflare DNS):
 | Hostname             | Purpose                                      |
 | -------------------- | -------------------------------------------- |
 | `sparx.works`        | Public marketing site (SSG/ISR, edge-cached) |
-| `app.sparx.works`    | Merchant dashboard (authenticated Next.js)   |
+| `app.sparx.works`    | Tenant dashboard (authenticated Next.js)     |
 | `api.sparx.works`    | REST + GraphQL API                           |
 | `mcp.sparx.works`    | MCP server (AI integration)                  |
 | `status.sparx.works` | Status page                                  |
@@ -23,12 +23,12 @@ Shopify-style split: tenant content lives on a different registrable domain from
 | Hostname               | Purpose                                             |
 | ---------------------- | --------------------------------------------------- |
 | `*.sparx.zone`         | Tenant subdomain storefronts (`acme.sparx.zone`)    |
-| `customers.sparx.zone` | CNAME target for merchant custom domains            |
+| `customers.sparx.zone` | CNAME target for tenant custom domains              |
 | `sparx.zone`           | Apex 301s to sparx.works (not a destination itself) |
 
 ## Email — sparx.email
 
-Postal sending infrastructure **and** platform-to-merchant transactional emails. `sparx.mx` was the original plan; it was unavailable, so `sparx.email` plays both roles.
+Postal sending infrastructure **and** platform-to-tenant transactional emails. `sparx.mx` was the original plan; it was unavailable, so `sparx.email` plays both roles.
 
 | Hostname           | Purpose                                 |
 | ------------------ | --------------------------------------- |

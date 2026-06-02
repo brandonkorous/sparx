@@ -31,7 +31,7 @@ export interface ThemePreset {
   category: ThemeCategory;
   description: string;
   version: string;
-  // Themes recommended to merchants in this category bucket during onboarding.
+  // Themes recommended to tenants in this category bucket during onboarding.
   recommendedFor: ThemeCategory[];
   settingsSchema: ThemeSettingField[];
   tokenDefaults: {
@@ -42,7 +42,7 @@ export interface ThemePreset {
   sectionTypes: string[];
 }
 
-// Merchant overlay stored in SiteConfig.draftSettings.tokens — a partial token
+// Tenant overlay stored in SiteConfig.draftSettings.tokens — a partial token
 // map per mode laid over the preset defaults at compile time.
 export interface ThemeOverlay {
   light?: Partial<ThemeTokens>;

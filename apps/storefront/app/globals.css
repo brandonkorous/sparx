@@ -27,7 +27,7 @@ body {
 }
 
 /* Storefront-rendered TipTap output. Style the basics so a freshly authored
-   page has reasonable typography out of the box. Merchants who want custom
+   page has reasonable typography out of the box. Tenants who want custom
    themes will override via tenant-scoped CSS. */
 .sparx-content h1 {
   font-size: 2.25rem;

@@ -15,7 +15,7 @@ model ApiKey {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid
 
-  // Human-readable label set by the merchant in the dashboard.
+  // Human-readable label set by the tenant in the dashboard.
   name String @db.VarChar(120)
 
   // First 12 chars of the displayed key — `sk_live_<8 random>`. Stored
@@ -31,11 +31,11 @@ model ApiKey {
   // checks during MCP tool dispatch.
   scopes String[] @db.Text
 
-  // Optional expiry the merchant sets at issuance; null = no expiry.
+  // Optional expiry the tenant sets at issuance; null = no expiry.
   expiresAt DateTime? @map("expires_at") @db.Timestamptz
 
   // Bumped each time the key successfully authenticates. The dashboard
-  // shows this so a merchant can confidently revoke a stale key.
+  // shows this so a tenant can confidently revoke a stale key.
   lastUsedAt DateTime? @map("last_used_at") @db.Timestamptz
 
   // Soft-delete: revocation sets `revokedAt`; verification rejects revoked

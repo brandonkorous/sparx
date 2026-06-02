@@ -231,7 +231,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // Subdomain availability check for the onboarding domain step. Returns
-  // { available, reason?, suggestions? } so the wizard can guide the merchant.
+  // { available, reason?, suggestions? } so the wizard can guide the tenant.
   app.get('/v1/tenant/slug-availability', async (request) => {
     const auth = requireAuth(request);
     const { slug } = SlugQuery.parse(request.query);

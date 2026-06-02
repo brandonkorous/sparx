@@ -1,8 +1,8 @@
 # WizeWorks Platform — API Specification
 
-**Version:** 1.0  
+**Version:** 1.0.1  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-01
 
 ---
 
@@ -30,7 +30,7 @@ MCP Server:  https://mcp.wizeworks.com/sse
 
 ## 3. Authentication
 
-### Merchant Dashboard (Browser)
+### Tenant Dashboard (Browser)
 
 - Short-lived JWT access token (15 min expiry)
 - Refresh token (30 day expiry, HTTP-only cookie)
@@ -446,7 +446,7 @@ Webhooks are signed with `X-WizeWorks-Signature: sha256={hmac}`.
 | `cart.abandoned`         | Cart inactive for threshold period |
 | `domain.verified`        | Custom domain verified             |
 | `domain.ssl_provisioned` | SSL cert issued                    |
-| `subscription.created`   | Merchant subscribed                |
+| `subscription.created`   | Tenant subscribed                  |
 | `subscription.upgraded`  | Plan upgraded                      |
 | `subscription.cancelled` | Subscription cancelled             |
 | `b2b.quote.created`      | New RFQ submitted                  |

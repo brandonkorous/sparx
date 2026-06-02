@@ -9,7 +9,7 @@ import type { EmailProvider, SendableEmail } from '../types';
 // Multi-tenant: the sending domain rides in the URL path, not the API key.
 // One account key authenticates calls against every verified domain in our
 // Mailgun account, so per-tenant routing is just "swap the path segment."
-// Today we send only from sparx.email; when merchant domains land, the
+// Today we send only from sparx.email; when tenant domains land, the
 // caller passes `senderDomain` to override the default.
 
 export interface MailgunConfig {

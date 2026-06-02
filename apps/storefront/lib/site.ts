@@ -3,7 +3,7 @@
 // `GET /v1/public/storefront/site?tenant=<slug>` returns the published
 // PublishedSnapshot (theme tokens for light + dark, ordered section list per
 // page, and the header/footer/announcement layout blocks) — or `null` when the
-// merchant has never published. The storefront layers this on top of the
+// tenant has never published. The storefront layers this on top of the
 // existing themeToCss(StorefrontTheme) path; a null snapshot keeps the legacy
 // composed-commerce homepage as the empty-store fallback.
 //
@@ -191,7 +191,7 @@ function resolveLayoutKey(
  * named layout directly, bypassing the cascade — so the dashboard canvas can show
  * the exact alternate layout being edited. The code-default fallback applies ONLY
  * to the canonical `default` key: a named alternate with no sections previews as
- * empty (the merchant is building it), never as the seeded default.
+ * empty (the tenant is building it), never as the seeded default.
  */
 export function resolveTemplateSections(
   snapshot: PublishedSnapshot | null,

@@ -1,7 +1,7 @@
 'use client';
 
 // A brand asset field (logo light/dark, favicon). Unlike the section-editor
-// MediaField — which only PICKS from existing assets — a fresh merchant has no
+// MediaField — which only PICKS from existing assets — a fresh tenant has no
 // media yet, so this also UPLOADS: it reuses the shared presigned-URL flow
 // (initUpload → browser PUT → completeUpload) and the CMS asset picker, then
 // reports the chosen asset id + a preview URL up to the parent. The brand form

@@ -1,6 +1,6 @@
 # Handoff Spec — Declarative Custom Section Template Language (doc 38 Phase C)
 
-**Version:** 1.0
+**Version:** 1.0.1
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-01
 **Resolves:** [docs/38](../38-sitebuilder-extensible-sections.md) §4.3 + open question #1
@@ -9,7 +9,7 @@
 
 ## 1. What this resolves
 
-Doc 38 establishes that letting merchants add components without a deploy reduces to one problem: **what
+Doc 38 establishes that letting tenants add components without a deploy reduces to one problem: **what
 replaces the React renderer for a user-authored section.** Steps 1–3 and 5 of the add-a-section chain are
 already data or trivial dispatch ([docs/38](../38-sitebuilder-extensible-sections.md) §1.1). This spec answers
 the renderer question concretely and locks doc 38's open question #1 (bespoke AST vs. a string templating
@@ -29,7 +29,7 @@ Rationale:
   parsing, no `dangerouslySetInnerHTML` except sanitized RichText, no user code executes.
 
 A string grammar (Liquid/Handlebars-style) would invert all three: arbitrary markup to sanitize after the
-fact, classes/styles a merchant could inject, and a parser to harden.
+fact, classes/styles a tenant could inject, and a parser to harden.
 
 ---
 
@@ -134,9 +134,9 @@ The interpreter emits **only** the closed `sf-tpl-*` family plus the existing `s
 [storefront.css](../../apps/storefront/app/storefront.css), every value reading a `--sf-*` token — identical
 to how `sf-sb-panels[data-cols]` / `sf-sb-hero[data-height]` already work. Consequences:
 
-- Merchant `StorefrontTheme` overrides + light/dark cascade in automatically (token-driven).
+- Tenant `StorefrontTheme` overrides + light/dark cascade in automatically (token-driven).
 - It is ESLint-clean (no Tailwind utilities, the storefront's standing rule).
-- A merchant **cannot** express an off-token color, arbitrary spacing, or a raw class — the prop enums are the
+- A tenant **cannot** express an off-token color, arbitrary spacing, or a raw class — the prop enums are the
   only inputs, and they map to `data-*` attributes the CSS interprets.
 
 Token mapping examples (the full table ships with the CSS):
@@ -252,7 +252,7 @@ A genuinely new section (not a stock type): a row of N items, each an icon + tit
 }
 ```
 
-**A merchant's config** (validated by the derived Zod, stored as `SiteSection.config` JSON):
+**A tenant's config** (validated by the derived Zod, stored as `SiteSection.config` JSON):
 
 ```jsonc
 {
@@ -282,7 +282,7 @@ A genuinely new section (not a stock type): a row of N items, each an icon + tit
 </div>
 ```
 
-The merchant authored a new section type, themed correctly on any merchant palette, with **no deploy** — and
+The tenant authored a new section type, themed correctly on any tenant palette, with **no deploy** — and
 it renders identically forever once published (§8).
 
 ---
@@ -344,8 +344,8 @@ applied to local docker; prod applies via the DB Migrate pipeline on push.
 - ✅ Dashboard editor: the section library merges the tenant's custom sections (a "Custom" badge), placing one
   works, and the inspector auto-renders its fields from the field spec.
 
-**Exit (met):** a merchant (via API/MCP) defines `custom:icon-grid`, the dashboard auto-generates its inspector
-form from the field spec, the merchant places + configures it, publishes, and it renders theme-correct on the
+**Exit (met):** a tenant (via API/MCP) defines `custom:icon-grid`, the dashboard auto-generates its inspector
+form from the field spec, the tenant places + configures it, publishes, and it renders theme-correct on the
 storefront — **no engineer, no deploy** — and a rollback reproduces it exactly (the integration test asserts the
 publish pin + version).
 
@@ -363,7 +363,7 @@ editor sanitizes); a defensive server-side pass is a future hardening.
    constrained to the bundled subset) is a clean follow-up.
 2. **Section studio UX.** How a non-developer composes a template tree (visual primitive builder vs. guided
    form). Its own design slice; the AST + interpreter are authorable by API/MCP first regardless.
-3. **Definition migration.** When a merchant changes a field spec under live + published pages — what migrates
+3. **Definition migration.** When a tenant changes a field spec under live + published pages — what migrates
    vs. stays pinned (§8 covers published; live drafts need a config-migration pass).
 4. **Interactivity.** Custom sections are static (RSC) in v1; client-island custom sections (carousels, etc.)
    stay platform-only, consistent with [docs/37](../37-sitebuilder-section-system.md) §7 Phase E.

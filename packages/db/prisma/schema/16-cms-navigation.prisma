@@ -1,7 +1,7 @@
 // CMS — navigation menus.
 //
 // Navigation menus are information architecture — content — and are owned by the
-// CMS module: the merchant edits header / footer / mega / custom_* menus under
+// CMS module: the tenant edits header / footer / mega / custom_* menus under
 // the CMS dashboard (/cms/navigation), and the storefront renders them via the
 // SiteLayoutBlock → NavigationMenu reference. Site Builder owns only the layout
 // SLOTS (header/footer/announcement) that point at a menu; it does not own the
