@@ -25,12 +25,12 @@ export async function getPublishedBuilderPage(
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/page?tenant=${encodeURIComponent(tenantSlug)}&slug=${encodeURIComponent(slug)}`,
       {
-        // Builder pages change on publish; the publish flow can purge this tag
-        // (builder:<slug>) later. Falls back to TTL until then.
-        next: {
-          revalidate: 300,
-          tags: ['sparx-storefront', `tenant:${tenantSlug}`, `builder:${tenantSlug}`],
-        },
+        // INTERIM: uncached so a publish reflects immediately. Builder content
+        // changes on publish, and no tag-purge is wired yet (that's the deferred
+        // Pub/Sub→cache-revalidation-worker slice) — a TTL here would just serve
+        // stale pages. Restore `next: { revalidate, tags: ['builder:<slug>'] }`
+        // once publish purges the tag.
+        cache: 'no-store',
       }
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedPageDto> | ErrorEnvelope;
@@ -51,12 +51,10 @@ export async function getPublishedBuilderLayout(
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/layout?tenant=${encodeURIComponent(tenantSlug)}`,
       {
-        // The layout changes on publish; the publish flow can purge this tag
-        // (builder-layout:<tenant>) later. Falls back to TTL until then.
-        next: {
-          revalidate: 300,
-          tags: ['sparx-storefront', `tenant:${tenantSlug}`, `builder-layout:${tenantSlug}`],
-        },
+        // INTERIM: uncached so a layout publish reflects immediately (see the
+        // page reader above) — no tag-purge is wired yet. Restore revalidate+tags
+        // once publish purges `builder-layout:<tenant>`.
+        cache: 'no-store',
       }
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedLayoutDto> | ErrorEnvelope;
