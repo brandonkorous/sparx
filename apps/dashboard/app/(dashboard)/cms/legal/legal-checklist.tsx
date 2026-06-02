@@ -93,6 +93,9 @@ export function LegalChecklist({ data }: { data: ChecklistData }) {
                   </div>
                   <Text size="xs" variant="muted">
                     /{item.entry?.slug ?? item.defaultSlug}
+                    {item.entry && !item.entry.acknowledged
+                      ? ' · starter text — review before publishing'
+                      : ''}
                   </Text>
                 </div>
               </div>
