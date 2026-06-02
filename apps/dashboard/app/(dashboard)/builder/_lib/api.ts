@@ -3,7 +3,7 @@
 
 import 'server-only';
 import { api } from '@/lib/api-rest-client';
-import type { BindingCatalog, BuilderPageDto } from '@sparx/builder-schemas';
+import type { BindingCatalog, BuilderLayoutDto, BuilderPageDto } from '@sparx/builder-schemas';
 
 // The tenant's pages. The list endpoint seeds the curated starter set on the
 // tenant's first call (docs/41 §5), so this never returns an empty editor.
@@ -11,6 +11,13 @@ import type { BindingCatalog, BuilderPageDto } from '@sparx/builder-schemas';
 export async function listPages(): Promise<BuilderPageDto[]> {
   const { pages } = await api.get<{ pages: BuilderPageDto[] }>('/v1/builder/pages');
   return pages;
+}
+
+// The tenant's site layout — the chrome shell (docs/45). Get-or-seed: the
+// endpoint seeds the starter header · outlet · footer on first call, so the site
+// editor never opens empty.
+export async function getLayout(): Promise<BuilderLayoutDto> {
+  return api.get<BuilderLayoutDto>('/v1/builder/layout');
 }
 
 // What a page can bind to (docs/43, the keystone): the tenant's real CMS

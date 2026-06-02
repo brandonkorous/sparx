@@ -279,6 +279,49 @@ function aboutTree(): BuilderNode {
   });
 }
 
+// The starter SITE LAYOUT (docs/45) — the chrome shell every page renders inside.
+// A header (logo + primary nav), the content Outlet, and a footer (footer nav +
+// social + copyright). Chrome binds to the `site` sources; the Outlet marks where
+// the routed page goes. One layout per tenant in v1.
+function siteLayoutTree(): BuilderNode {
+  return node('Section', {
+    box: { name: 'Site layout', padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
+    layout: { direction: 'stack', gap: 'none' },
+    children: [
+      node('Section', {
+        box: {
+          name: 'Header',
+          surface: 'none',
+          backgroundWidth: 'full',
+          contentWidth: 'contained',
+          padding: 'md',
+        },
+        layout: { direction: 'row', justify: 'between', alignItems: 'center' },
+        children: [
+          node('Logo', { bind: 'site.identity' }),
+          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.primaryNav' }),
+        ],
+      }),
+      node('Outlet'),
+      node('Section', {
+        box: {
+          name: 'Footer',
+          surface: 'muted',
+          backgroundWidth: 'full',
+          contentWidth: 'contained',
+          padding: 'lg',
+        },
+        layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
+        children: [
+          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.footerNav' }),
+          node('SocialLinks', { bind: 'site.social' }),
+          node('Text', { props: { variant: 'meta', text: '© Your brand' } }),
+        ],
+      }),
+    ],
+  });
+}
+
 // ── The curated set ──────────────────────────────────────────────────────────
 
 export interface StarterPage {
@@ -311,6 +354,15 @@ export const STARTER_PAGES: StarterPage[] = [
   },
   { key: 'about', name: 'About', kind: 'singleton', tree: aboutTree() },
 ];
+
+/** The single starter site layout (docs/45). Seeded on the tenant's first layout
+ *  load; from then on it's an ordinary editable layout. Built once at module load
+ *  so its node ids are stable (cf. STARTER_PAGES). */
+export interface StarterLayout {
+  name: string;
+  tree: BuilderNode;
+}
+export const STARTER_LAYOUT: StarterLayout = { name: 'Site layout', tree: siteLayoutTree() };
 
 /** A blank single-section page — the default when "New page" doesn't pick a
  *  starter. The root id is fixed; it's unique within its own (empty) tree. */

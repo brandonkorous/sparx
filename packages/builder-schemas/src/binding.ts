@@ -26,7 +26,7 @@ export type FieldKind =
 
 export type FieldCardinality = 'scalar' | 'object' | 'array';
 export type SourceCardinality = 'array' | 'object';
-export type SourceModule = 'cms' | 'commerce' | 'crm';
+export type SourceModule = 'cms' | 'commerce' | 'crm' | 'site';
 
 export interface FieldSchema {
   key: string;
@@ -193,3 +193,63 @@ export const CRM_SOURCES: DataSource[] = [
     ],
   },
 ];
+
+// ── Site-scope sources (the layout chrome — docs/45 §3) ───────────────────────
+//
+// The `site` module is what the SITE (layout) editor binds to: brand identity,
+// navigation, social. The SHAPE is fixed here; the DATA is fetched per tenant at
+// preview/render time from the platform's existing stores (TenantBrand,
+// NavigationMenu) — the Builder keeps no parallel nav/brand. These are NOT in the
+// page editor's catalog; chrome binds to site data, pages bind to content.
+
+const NAV_FIELDS: FieldSchema[] = [
+  { key: 'label', label: 'Label', kind: 'text', cardinality: 'scalar' },
+  { key: 'url', label: 'URL', kind: 'text', cardinality: 'scalar' },
+];
+
+export const SITE_SOURCES: DataSource[] = [
+  {
+    key: 'site.identity',
+    label: 'Brand identity',
+    module: 'site',
+    cardinality: 'object',
+    recordType: 'identity',
+    fields: [
+      { key: 'name', label: 'Name', kind: 'text', cardinality: 'scalar' },
+      { key: 'tagline', label: 'Tagline', kind: 'text', cardinality: 'scalar' },
+      { key: 'logo', label: 'Logo', kind: 'image', cardinality: 'scalar' },
+    ],
+  },
+  {
+    key: 'site.primaryNav',
+    label: 'Primary navigation',
+    module: 'site',
+    cardinality: 'array',
+    recordType: 'navItem',
+    fields: NAV_FIELDS,
+  },
+  {
+    key: 'site.footerNav',
+    label: 'Footer navigation',
+    module: 'site',
+    cardinality: 'array',
+    recordType: 'navItem',
+    fields: NAV_FIELDS,
+  },
+  {
+    key: 'site.social',
+    label: 'Social links',
+    module: 'site',
+    cardinality: 'array',
+    recordType: 'socialLink',
+    fields: [
+      { key: 'platform', label: 'Platform', kind: 'text', cardinality: 'scalar' },
+      { key: 'url', label: 'URL', kind: 'text', cardinality: 'scalar' },
+    ],
+  },
+];
+
+/** The site (layout) editor's binding catalog. Constant — tenant-independent in
+ *  shape — so the editor route passes it directly with no fetch (cf. the page
+ *  catalog, which must introspect the tenant's CMS content types). */
+export const SITE_CATALOG: BindingCatalog = { sources: SITE_SOURCES };

@@ -5,6 +5,7 @@
 
 export * from './node';
 export * from './page';
+export * from './layout';
 export * from './starters';
 export * from './binding';
 export * from './runtime';

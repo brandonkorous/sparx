@@ -28,6 +28,7 @@ const MODULE_COLOR: Record<string, string> = {
   commerce: '#f97316',
   crm: '#06b6d4',
   events: '#a855f7',
+  site: '#6366f1', // the storefront/chrome lineage (docs/45)
 };
 const SCOPE_COLOR = '#6366f1'; // item.* / index — resolved from the enclosing scope
 
@@ -185,7 +186,7 @@ export interface BindGroup {
   paths: { path: string; label: string }[];
 }
 
-const MODULE_ORDER = ['cms', 'commerce', 'crm', 'events'];
+const MODULE_ORDER = ['site', 'cms', 'commerce', 'crm', 'events'];
 
 /** Module-grouped paths the picker offers: an array source as a list (+ its
  *  first record), a record source plus each of its fields. The item.* paths

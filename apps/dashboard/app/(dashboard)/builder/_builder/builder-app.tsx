@@ -1,53 +1,27 @@
 'use client';
 
-// The builder app — the editor backbone at /builder/page.
+// The page editor shell — the Builder surface at /builder/page.
 //
-// Owns the working state (the loaded pages + which is active + selection +
-// device) and lays out the editor's working area INSIDE the dashboard shell
-// (which already provides the global header, main sidebar, and module sidebar):
-// a slim toolbar (page switcher + device toggle + actions), a context bar
-// stating which modules this page composes from, a left rail (Layers / Add),
-// the canvas, and the inspector. Below `lg` the three panes collapse to one
-// column with a Build / Preview switch — the builder must work on a phone.
+// Owns the PAGE-specific concerns: the catalog of pages (load + which is active),
+// the catalog ops (new / delete / publish / rename / slug), and the toolbar +
+// context bar. The editing brain — selection, mutations, autosave, the canvas /
+// inspector / layers body — is the shared `useBuilderEditor` hook +
+// `BuilderWorkspace`, identical to the site editor (docs/45 §2.2).
 //
 // PERSISTENCE (docs/41): pages load from api-rest via the server route and seed
-// this component's state. Draft-tree edits autosave (debounced) through the
-// savePageTree server action; New / Delete / Publish round-trip immediately.
+// this component's state. Draft-tree edits autosave (debounced) through the hook;
+// New / Delete / Publish round-trip immediately.
 
 import * as React from 'react';
-import {
-  Eye,
-  Layers,
-  Monitor,
-  Pencil,
-  Plus,
-  Save,
-  Smartphone,
-  Tablet,
-  Trash2,
-  Upload,
-} from 'lucide-react';
-import { Button, Input, ModuleProvider, NativeSelect, ScrollArea, cn } from '@sparx/ui';
+import { Eye, Monitor, Pencil, Plus, Save, Smartphone, Tablet, Trash2, Upload } from 'lucide-react';
+import { Button, Input, ModuleProvider, NativeSelect } from '@sparx/ui';
 import type { BindingCatalog, BuilderPageDto } from '@sparx/builder-schemas';
 
-import {
-  appendChild,
-  findNode,
-  removeNode,
-  updateNode,
-  type BoxBase,
-  type BuilderNode,
-  type Device,
-  type LayoutBase,
-  type PageTemplate,
-} from './model';
-import { buildPreviewData, scopeAt } from './binding-catalog';
-import { getDef, isContainer, makeNode } from './registry';
+import { type Device, type PageTemplate } from './model';
 import { MODULES } from './sample';
-import { Canvas } from './canvas';
-import { Inspector } from './inspector';
-import { LayersPanel } from './layers-panel';
-import { AddPalette } from './add-palette';
+import { PageSettings } from './inspector';
+import { BuilderWorkspace } from './builder-workspace';
+import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
 import {
   createPage,
   deletePage,
@@ -56,8 +30,6 @@ import {
   savePageTree,
   setPageSlug,
 } from '../_lib/actions';
-
-type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 // A loaded page reduced to the editor's working shape.
 function toTemplate(p: BuilderPageDto): PageTemplate {
@@ -69,17 +41,6 @@ function toTemplate(p: BuilderPageDto): PageTemplate {
     recordType: p.recordType ?? undefined,
     tree: p.tree,
   };
-}
-
-// Ancestors root→…→node (inclusive). [] when not found.
-function pathTo(root: BuilderNode, id: string, trail: BuilderNode[] = []): BuilderNode[] {
-  const next = [...trail, root];
-  if (root.id === id) return next;
-  for (const child of root.children ?? []) {
-    const hit = pathTo(child, id, next);
-    if (hit.length) return hit;
-  }
-  return [];
 }
 
 const DEVICES: { id: Device; label: string; icon: typeof Monitor }[] = [
@@ -104,8 +65,7 @@ const SAVE_LABEL: Record<SaveStatus, string> = {
 export interface BuilderAppProps {
   initialPages: BuilderPageDto[];
   /** What the page can bind to — the tenant's real CMS content types + the
-   *  code-defined Commerce/CRM sources (docs/43, the keystone). Drives the
-   *  inspector picker, the canvas preview data, and the layer chips. */
+   *  code-defined Commerce/CRM sources (docs/43, the keystone). */
   bindingCatalog: BindingCatalog;
 }
 
@@ -117,11 +77,6 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
     initialPages.map(toTemplate)
   );
   const [activeId, setActiveId] = React.useState<string | null>(() => initialPages[0]?.id ?? null);
-  const [selectedId, setSelectedId] = React.useState<string | null>(null);
-  const [device, setDevice] = React.useState<Device>('desktop');
-  const [railTab, setRailTab] = React.useState<'layers' | 'add'>('layers');
-  const [mobilePane, setMobilePane] = React.useState<'edit' | 'preview'>('preview');
-  const [saveStatus, setSaveStatus] = React.useState<SaveStatus>('idle');
   const [busy, setBusy] = React.useState(false);
   // Inline page rename: the switcher swaps to a text input. Enter/blur commits,
   // Esc cancels (skipRenameCommit suppresses the commit the cancel-blur fires).
@@ -133,41 +88,22 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
   const active = templates.find((t) => t.id === activeId) ?? templates[0] ?? null;
   const tree = active?.tree ?? null;
 
-  // ── Autosave (debounced draft-tree saves) ──────────────────────────────────
-  const saveTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pending = React.useRef<{ id: string; tree: BuilderNode } | null>(null);
-
-  const flushSave = React.useCallback(async () => {
-    if (saveTimer.current) {
-      clearTimeout(saveTimer.current);
-      saveTimer.current = null;
-    }
-    const p = pending.current;
-    if (!p) return;
-    pending.current = null;
-    setSaveStatus('saving');
-    const res = await savePageTree(p.id, p.tree);
-    setSaveStatus(res.ok ? 'saved' : 'error');
-  }, []);
-
-  const scheduleSave = React.useCallback(
-    (id: string, next: BuilderNode) => {
-      pending.current = { id, tree: next };
-      setSaveStatus('saving');
-      if (saveTimer.current) clearTimeout(saveTimer.current);
-      saveTimer.current = setTimeout(() => {
-        void flushSave();
-      }, 800);
+  // The shared editing brain. `save` persists the active page; `onTreeChange`
+  // writes the optimistic tree back into this component's catalog state.
+  const editor = useBuilderEditor({
+    tree,
+    catalog: bindingCatalog,
+    save: async (next) => {
+      if (!active) return false;
+      const res = await savePageTree(active.id, next);
+      return res.ok;
     },
-    [flushSave]
-  );
-
-  React.useEffect(
-    () => () => {
-      if (saveTimer.current) clearTimeout(saveTimer.current);
+    onTreeChange: (next) => {
+      if (!active) return;
+      const id = active.id;
+      setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, tree: next } : t)));
     },
-    []
-  );
+  });
 
   // Focus the rename input when it opens (avoids the autoFocus prop, which the
   // a11y lint rule forbids), and select the text for quick replace.
@@ -175,96 +111,26 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
     if (renaming) renameInputRef.current?.select();
   }, [renaming]);
 
-  // Typed placeholder data shaped to the binding schema — every offered path
-  // resolves, so the canvas previews bound nodes (real records come later).
-  const previewData = React.useMemo(
-    () => buildPreviewData(bindingCatalog.sources),
-    [bindingCatalog]
-  );
-
-  const selectedNode = tree && selectedId ? findNode(tree, selectedId) : null;
-  const chain = React.useMemo(
-    () => (tree && selectedId ? pathTo(tree, selectedId) : []),
-    [tree, selectedId]
-  );
-  // The item.* fields the selected node can read, derived from the scope its
-  // ancestors establish (a list/record binding above it).
-  const scope = React.useMemo(() => scopeAt(bindingCatalog, chain), [bindingCatalog, chain]);
-
-  // Where a palette drop lands: the selected container, else its nearest
-  // container ancestor, else the root.
-  const target = React.useMemo<BuilderNode | null>(() => {
-    if (!tree) return null;
-    if (!selectedNode) return tree;
-    if (isContainer(selectedNode.type)) return selectedNode;
-    return chain[chain.length - 2] ?? tree;
-  }, [tree, selectedNode, chain]);
-
-  // Mutations rewrite the ACTIVE page's tree + schedule an autosave.
-  const updateTree = (fn: (t: BuilderNode) => BuilderNode) => {
-    if (!active) return;
-    const next = fn(active.tree);
-    const id = active.id;
-    setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, tree: next } : t)));
-    scheduleSave(id, next);
-  };
-
-  const mutateSelected = (fn: (n: BuilderNode) => BuilderNode) => {
-    if (!selectedId) return;
-    updateTree((t) => updateNode(t, selectedId, fn));
-  };
-
-  const onBox = (patch: Partial<BoxBase>) =>
-    mutateSelected((n) => ({ ...n, box: { ...n.box, ...patch } }));
-  const onLayout = (patch: Partial<LayoutBase>) =>
-    mutateSelected((n) => (n.layout ? { ...n, layout: { ...n.layout, ...patch } } : n));
-  const onProp = (key: string, value: unknown) =>
-    mutateSelected((n) => ({ ...n, props: { ...n.props, [key]: value } }));
-  const onName = (name: string) =>
-    mutateSelected((n) => ({ ...n, box: { ...n.box, name: name || undefined } }));
-  const onBind = (path: string | null) =>
-    mutateSelected((n) => {
-      if (!path) {
-        const next = { ...n };
-        delete next.binding;
-        return next;
-      }
-      return { ...n, binding: { path } };
-    });
-
-  const onAdd = (type: string) => {
-    if (!target) return;
-    const child = makeNode(type);
-    updateTree((t) => appendChild(t, target.id, child));
-    setSelectedId(child.id);
-    setRailTab('layers');
-  };
-
-  const onRemove = (id: string) => {
-    updateTree((t) => removeNode(t, id));
-    setSelectedId((cur) => (cur === id ? null : cur));
-  };
-
   const onSelectTemplate = (id: string) => {
-    void flushSave(); // persist the page we're leaving before switching
+    void editor.flushSave(); // persist the page we're leaving before switching
     setActiveId(id);
-    setSelectedId(null);
+    editor.setSelectedId(null);
   };
 
   const onNewTemplate = async () => {
     setBusy(true);
-    await flushSave();
+    await editor.flushSave();
     const res = await createPage({ name: 'Untitled page', kind: 'singleton' });
     setBusy(false);
     if (!res.ok || !res.data) {
-      setSaveStatus('error');
+      editor.setSaveStatus('error');
       return;
     }
     const created = res.data;
     setTemplates((ts) => [...ts, toTemplate(created)]);
     setActiveId(created.id);
-    setSelectedId(created.tree.id);
-    setRailTab('add');
+    editor.setSelectedId(created.tree.id);
+    editor.setRailTab('add');
   };
 
   const onDeleteActive = async () => {
@@ -274,27 +140,27 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
     const res = await deletePage(removedId);
     setBusy(false);
     if (!res.ok) {
-      setSaveStatus('error');
+      editor.setSaveStatus('error');
       return;
     }
     const remaining = templates.filter((t) => t.id !== removedId);
     setTemplates(remaining);
     setActiveId((cur) => (cur === removedId ? (remaining[0]?.id ?? null) : cur));
-    setSelectedId(null);
+    editor.setSelectedId(null);
   };
 
   const onPublish = async () => {
     if (!active) return;
     setBusy(true);
-    await flushSave();
+    await editor.flushSave();
     const res = await publishPage(active.id);
     setBusy(false);
     if (res.ok && res.data) {
       const published = res.data;
       setTemplates((ts) => ts.map((t) => (t.id === published.id ? toTemplate(published) : t)));
-      setSaveStatus('saved');
+      editor.setSaveStatus('saved');
     } else {
-      setSaveStatus('error');
+      editor.setSaveStatus('error');
     }
   };
 
@@ -318,9 +184,9 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
     if (!name || name === active.name) return;
     const id = active.id;
     setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, name } : t)));
-    setSaveStatus('saving');
+    editor.setSaveStatus('saving');
     const res = await renamePage(id, name);
-    setSaveStatus(res.ok ? 'saved' : 'error');
+    editor.setSaveStatus(res.ok ? 'saved' : 'error');
   };
 
   // Set/clear the page's storefront slug (docs/44). Optimistic, then reflect the
@@ -331,22 +197,20 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
     const prev = active.slug;
     const optimistic = slug.trim() === '' ? null : slug.trim();
     setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, slug: optimistic } : t)));
-    setSaveStatus('saving');
+    editor.setSaveStatus('saving');
     const res = await setPageSlug(id, slug);
     if (res.ok && res.data) {
       const saved = res.data;
       setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, slug: saved.slug } : t)));
-      setSaveStatus('saved');
+      editor.setSaveStatus('saved');
     } else {
       setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, slug: prev } : t)));
-      setSaveStatus('error');
+      editor.setSaveStatus('error');
     }
   };
 
   const activeModules = MODULES.filter((m) => m.on);
   const offModules = MODULES.filter((m) => !m.on);
-  const targetDef = target ? getDef(target.type) : undefined;
-  const targetName = target?.box.name ?? targetDef?.label ?? 'page';
 
   // No pages (a failed load). Offer a way in rather than a blank editor.
   if (!active || !tree) {
@@ -373,9 +237,8 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
   return (
     <ModuleProvider module="builder">
       <div className="bx-shell">
-        {/* Editor toolbar — builder-specific actions only. The global header,
-            main sidebar, and module sidebar are provided by the dashboard
-            shell; this page renders inside that chrome. */}
+        {/* Editor toolbar — page-specific actions. The global header, main
+            sidebar, and module sidebar come from the dashboard shell. */}
         <div className="bx-toolbar">
           <div className="bx-toolbar__templates">
             {renaming ? (
@@ -449,10 +312,10 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
                   key={d.id}
                   type="button"
                   className="bx-device"
-                  data-on={device === d.id}
+                  data-on={editor.device === d.id}
                   aria-label={d.label}
-                  aria-pressed={device === d.id}
-                  onClick={() => setDevice(d.id)}
+                  aria-pressed={editor.device === d.id}
+                  onClick={() => editor.setDevice(d.id)}
                 >
                   <Icon aria-hidden />
                 </button>
@@ -460,9 +323,9 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
             })}
           </div>
           <div className="bx-toolbar__actions">
-            {saveStatus !== 'idle' ? (
-              <span className="bx-savestate" data-state={saveStatus}>
-                {SAVE_LABEL[saveStatus]}
+            {editor.saveStatus !== 'idle' ? (
+              <span className="bx-savestate" data-state={editor.saveStatus}>
+                {SAVE_LABEL[editor.saveStatus]}
               </span>
             ) : null}
             <Button size="sm" variant="ghost" leftIcon={<Eye className="h-3.5 w-3.5" />} disabled>
@@ -473,7 +336,7 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
               variant="soft"
               leftIcon={<Save className="h-3.5 w-3.5" />}
               disabled={busy}
-              onClick={() => void flushSave()}
+              onClick={() => void editor.flushSave()}
             >
               Save
             </Button>
@@ -513,96 +376,20 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
           </span>
         </div>
 
-        {/* Mobile pane switch */}
-        <div className="bx-paneswitch">
-          {(['edit', 'preview'] as const).map((p) => (
-            <button
-              key={p}
-              type="button"
-              className="bx-paneswitch__btn"
-              data-on={mobilePane === p}
-              onClick={() => setMobilePane(p)}
-            >
-              {p === 'edit' ? 'Build' : 'Preview'}
-            </button>
-          ))}
-        </div>
-
-        {/* Body */}
-        <div className="bx-body">
-          {/* Left rail */}
-          <aside
-            className={cn('bx-rail', mobilePane === 'edit' ? 'bx-pane--show' : 'bx-pane--hide')}
-          >
-            <div className="bx-rail__tabs">
-              <button
-                type="button"
-                className="bx-rail__tab"
-                data-on={railTab === 'layers'}
-                onClick={() => setRailTab('layers')}
-              >
-                <Layers aria-hidden /> Layers
-              </button>
-              <button
-                type="button"
-                className="bx-rail__tab"
-                data-on={railTab === 'add'}
-                onClick={() => setRailTab('add')}
-              >
-                <Plus aria-hidden /> Add
-              </button>
-            </div>
-            <ScrollArea className="bx-rail__body">
-              {railTab === 'layers' ? (
-                <LayersPanel
-                  tree={tree}
-                  catalog={bindingCatalog}
-                  selectedId={selectedId}
-                  onSelect={setSelectedId}
-                  onRemove={onRemove}
-                />
-              ) : (
-                <AddPalette targetName={targetName} onAdd={onAdd} />
-              )}
-            </ScrollArea>
-          </aside>
-
-          {/* Canvas */}
-          <main
-            className={cn('bx-stage', mobilePane === 'preview' ? 'bx-pane--show' : 'bx-pane--hide')}
-          >
-            <Canvas
-              tree={tree}
-              data={previewData}
-              catalog={bindingCatalog}
-              device={device}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
+        <BuilderWorkspace
+          tree={tree}
+          editor={editor}
+          catalog={bindingCatalog}
+          surface="page"
+          settings={
+            <PageSettings
+              name={active.name}
+              slug={active.slug}
+              kind={active.kind}
+              onSlug={onSlug}
             />
-          </main>
-
-          {/* Inspector */}
-          <aside
-            className={cn('bx-side', mobilePane === 'edit' ? 'bx-pane--show' : 'bx-pane--hide')}
-          >
-            <ScrollArea className="bx-side__scroll">
-              <Inspector
-                node={selectedNode}
-                catalog={bindingCatalog}
-                scope={scope}
-                pageName={active.name}
-                pageSlug={active.slug}
-                pageKind={active.kind}
-                onSlug={onSlug}
-                onName={onName}
-                onBind={onBind}
-                onProp={onProp}
-                onLayout={onLayout}
-                onBox={onBox}
-              />
-            </ScrollArea>
-          </aside>
-        </div>
+          }
+        />
       </div>
     </ModuleProvider>
   );

@@ -12,7 +12,12 @@
 
 import { revalidatePath } from 'next/cache';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
-import type { BuilderNode, BuilderPageDto, BuilderPageKind } from '@sparx/builder-schemas';
+import type {
+  BuilderLayoutDto,
+  BuilderNode,
+  BuilderPageDto,
+  BuilderPageKind,
+} from '@sparx/builder-schemas';
 
 export interface ActionResult<T = void> {
   ok: boolean;
@@ -20,10 +25,14 @@ export interface ActionResult<T = void> {
   error?: string;
 }
 
-async function run<T>(fn: () => Promise<T>, revalidate: boolean): Promise<ActionResult<T>> {
+async function run<T>(
+  fn: () => Promise<T>,
+  revalidate: boolean,
+  path = '/builder/page'
+): Promise<ActionResult<T>> {
   try {
     const data = await fn();
-    if (revalidate) revalidatePath('/builder/page', 'layout');
+    if (revalidate) revalidatePath(path, 'layout');
     return { ok: true, data };
   } catch (err) {
     const e = err as ApiRestError;
@@ -74,4 +83,21 @@ export async function reorderPages(
     () => api.post<{ pages: BuilderPageDto[] }>('/v1/builder/pages/reorder', { orderedIds }),
     true
   );
+}
+
+// ── Site layout (the chrome shell — docs/45) ─────────────────────────────────
+// One layout per tenant, so these are singular (no :id). Revalidate the /builder/site
+// route, not /builder/page.
+
+/** The autosave path — save the layout's draft tree. No revalidate. */
+export async function saveLayoutTree(tree: BuilderNode): Promise<ActionResult<BuilderLayoutDto>> {
+  return run(() => api.patch<BuilderLayoutDto>('/v1/builder/layout', { tree }), false);
+}
+
+export async function renameLayout(name: string): Promise<ActionResult<BuilderLayoutDto>> {
+  return run(() => api.patch<BuilderLayoutDto>('/v1/builder/layout', { name }), true, '/builder/site');
+}
+
+export async function publishLayout(): Promise<ActionResult<BuilderLayoutDto>> {
+  return run(() => api.post<BuilderLayoutDto>('/v1/builder/layout/publish'), true, '/builder/site');
 }

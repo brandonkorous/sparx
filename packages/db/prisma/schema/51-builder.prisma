@@ -44,3 +44,35 @@ model BuilderPage {
   @@index([tenantId, position])
   @@map("builder_pages")
 }
+
+// The site LAYOUT — the chrome shell (header / outlet / footer) every page
+// renders inside (docs/45). Same draft/publish lifecycle as BuilderPage. ONE row
+// per tenant in v1 (the global layout), enforced by the unique tenant_id; named
+// layouts + per-page assignment are deferred (docs/45 §7). The tree carries the
+// special `Outlet` node marking where the routed page goes; chrome binds to the
+// `site` sources (nav / identity / social), which reference existing platform
+// data — the Builder stores no parallel nav or brand.
+//
+// Tenant-scoped + FORCE RLS, like BuilderPage.
+model BuilderLayout {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  name String @db.VarChar(255)
+
+  // The editable BuilderNode root. Shape validated by @sparx/builder-schemas.
+  draftTree     Json      @map("draft_tree")
+  // Last published snapshot; null until first publish. The storefront renders
+  // the published layout as the chrome around every page (docs/45 §2.6).
+  publishedTree Json?     @map("published_tree")
+  publishedAt   DateTime? @map("published_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // One layout per tenant (v1). Drop this unique to introduce named layouts.
+  @@unique([tenantId])
+  @@map("builder_layouts")
+}

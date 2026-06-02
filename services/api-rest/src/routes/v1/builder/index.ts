@@ -3,10 +3,12 @@
 import type { FastifyPluginAsync } from 'fastify';
 
 import pageRoutes from './pages.js';
+import layoutRoutes from './layout.js';
 import bindingSchemaRoutes from './binding-schema.js';
 
 const builderRoutes: FastifyPluginAsync = async (app) => {
   await app.register(pageRoutes);
+  await app.register(layoutRoutes);
   await app.register(bindingSchemaRoutes);
 };
 

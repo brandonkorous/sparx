@@ -385,9 +385,11 @@ function BoxBasePanel({
   );
 }
 
-// ── Page settings (shown when no node is selected) ───────────────────────────
+// ── Settings panels (shown when no node is selected) ─────────────────────────
+// Each surface supplies its own (page settings vs. layout settings) via the
+// Inspector's `settings` slot; both reuse the inspector's Group/Field controls.
 
-function PageSettings({
+export function PageSettings({
   name,
   slug,
   kind,
@@ -446,16 +448,34 @@ function PageSettings({
   );
 }
 
+export function LayoutSettings({ name }: { name: string }) {
+  return (
+    <div className="bx-inspector">
+      <header className="bx-ins-head">
+        <div className="bx-ins-head__row">
+          <h3>{name}</h3>
+          <span className="bx-ins-kind">site</span>
+        </div>
+      </header>
+      <Group label="Site layout">
+        <p className="bx-grp__caption">
+          The chrome that wraps every page. The <strong>Page content</strong> block marks where each
+          routed page renders; everything around it (header, footer) persists across navigation.
+        </p>
+      </Group>
+      <p className="bx-inspector__tip">Select a layer to edit it.</p>
+    </div>
+  );
+}
+
 // ── The inspector ────────────────────────────────────────────────────────────
 
 export interface InspectorProps {
   node: BuilderNode | null;
   catalog: BindingCatalog;
   scope: ScopeInfo;
-  pageName: string;
-  pageSlug: string | null;
-  pageKind: 'singleton' | 'collection';
-  onSlug: (slug: string) => void;
+  /** Rendered when no node is selected — the surface's settings panel. */
+  settings: React.ReactNode;
   onName: (name: string) => void;
   onBind: (path: string | null) => void;
   onProp: (key: string, value: unknown) => void;
@@ -467,10 +487,7 @@ export function Inspector({
   node,
   catalog,
   scope,
-  pageName,
-  pageSlug,
-  pageKind,
-  onSlug,
+  settings,
   onName,
   onBind,
   onProp,
@@ -478,7 +495,7 @@ export function Inspector({
   onBox,
 }: InspectorProps) {
   if (!node) {
-    return <PageSettings name={pageName} slug={pageSlug} kind={pageKind} onSlug={onSlug} />;
+    return <>{settings}</>;
   }
   const def = getDef(node.type);
   if (!def) return null;

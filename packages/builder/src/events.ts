@@ -7,9 +7,10 @@
 // commits, so a rolled-back write never emits a phantom event. Mirrors
 // packages/sitebuilder/src/events.ts.
 //
-// `builder.page.published` is the meaningful business event — the future
-// storefront render path + universal-search projector consume it. Draft saves
-// are not events (too frequent, no external consumer).
+// `builder.page.published` / `builder.layout.published` are the meaningful
+// business events — the storefront render path consumes them (a published layout
+// or page changes what the live store serves). Draft saves are not events (too
+// frequent, no external consumer).
 
 export interface BuilderEvent {
   tenantId: string;
@@ -19,7 +20,7 @@ export interface BuilderEvent {
   occurredAt?: Date;
 }
 
-export type BuilderTopic = 'builder.page.published';
+export type BuilderTopic = 'builder.page.published' | 'builder.layout.published';
 
 export interface Publisher {
   publish(event: BuilderEvent): Promise<void>;

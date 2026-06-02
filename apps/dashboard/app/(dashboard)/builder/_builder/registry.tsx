@@ -15,16 +15,20 @@
 import * as React from 'react';
 import {
   DollarSign,
+  Fingerprint,
   Heading as HeadingIcon,
   Image as ImageIcon,
   Images,
   LayoutGrid,
   LayoutTemplate,
   Mail,
+  Menu,
   Minus,
   MousePointerClick,
   Rows3,
+  Share2,
   Square,
+  SquareDashed,
   Type,
   type LucideIcon,
 } from 'lucide-react';
@@ -40,8 +44,13 @@ import {
 } from './model';
 
 export type NodeKind = 'container' | 'leaf';
-export type ModuleKey = 'cms' | 'commerce' | 'crm' | 'events';
+export type ModuleKey = 'cms' | 'commerce' | 'crm' | 'events' | 'site';
 export type PaletteGroup = 'layout' | 'content' | 'data';
+/** Which editor surface a component belongs to. `page` = the content outlet
+ *  (per-record content); `site` = the layout shell (chrome zones). Most
+ *  primitives belong to BOTH; the Outlet + chrome components are site-only, and
+ *  per-record data leaves are page-only. */
+export type EditorSurface = 'page' | 'site';
 
 export interface PropSpec {
   key: string;
@@ -75,6 +84,9 @@ export interface ComponentDef {
   /** Height is only meaningful for big blocks; a button never offers a 25vh
    *  height. Defaults to false. */
   showHeight: boolean;
+  /** Editor surfaces this component appears in (docs/45 §2.5). Omitted = both
+   *  the page editor and the site (layout) editor. */
+  surfaces?: EditorSurface[];
   props: PropSpec[];
   /** Defaults applied when the component is dropped from the palette. */
   defaults: {
@@ -311,6 +323,7 @@ const DEFS: ComponentDef[] = [
     bindable: true,
     accepts: ['object', 'array', 'empty'],
     showHeight: false,
+    surfaces: ['page'],
     props: [
       {
         key: 'ratio',
@@ -350,6 +363,7 @@ const DEFS: ComponentDef[] = [
     bindable: true,
     accepts: ['scalar'],
     showHeight: false,
+    surfaces: ['page'],
     props: [],
     defaults: {},
     renderLeaf: ({ value, bound }) => {
@@ -368,6 +382,7 @@ const DEFS: ComponentDef[] = [
     bindable: true,
     accepts: ['object'],
     showHeight: false,
+    surfaces: ['page'],
     props: [{ key: 'cta', label: 'Button', control: 'text', placeholder: 'Subscribe' }],
     defaults: { props: { cta: 'Subscribe' } },
     renderLeaf: ({ node }) => (
@@ -376,6 +391,115 @@ const DEFS: ComponentDef[] = [
         <span className="bx-btn bx-btn--primary">{firstString(node.props.cta, 'Subscribe')}</span>
       </div>
     ),
+  },
+
+  // ---- Site chrome (Tier 2 — the layout shell, docs/45 §2.5) ----
+  // These appear only in the site (layout) editor. The Outlet marks where the
+  // routed page renders; NavMenu / Logo / SocialLinks bind to the `site` sources
+  // and own their own presentation (a tenant never hand-wires a nav <a>).
+  {
+    type: 'Outlet',
+    label: 'Page content',
+    kind: 'leaf',
+    group: 'layout',
+    icon: SquareDashed,
+    bindable: false,
+    accepts: [],
+    showHeight: false,
+    surfaces: ['site'],
+    props: [],
+    defaults: { box: { padding: 'none' } },
+    renderLeaf: () => (
+      <div className="bx-outlet">
+        <SquareDashed className="bx-outlet__icon" aria-hidden />
+        <span className="bx-outlet__label">Page content renders here</span>
+      </div>
+    ),
+  },
+  {
+    type: 'NavMenu',
+    label: 'Navigation',
+    kind: 'leaf',
+    group: 'data',
+    icon: Menu,
+    module: 'site',
+    bindable: true,
+    accepts: ['array'],
+    showHeight: false,
+    surfaces: ['site'],
+    props: [
+      {
+        key: 'orientation',
+        label: 'Orientation',
+        control: 'buttongroup',
+        options: [
+          { value: 'row', label: 'Row' },
+          { value: 'stack', label: 'Stack' },
+        ],
+      },
+    ],
+    defaults: { props: { orientation: 'row' } },
+    renderLeaf: ({ node, value, cardinality }) => {
+      const orientation = (node.props.orientation as string) ?? 'row';
+      const items = cardinality === 'array' ? (value as unknown[]) : [];
+      const labels =
+        items.length > 0
+          ? items.map((it) => firstString((it as { label?: unknown }).label, 'Link'))
+          : ['Home', 'Shop', 'About'];
+      return (
+        <nav className={`bx-nav bx-nav--${orientation}`}>
+          {labels.map((label, i) => (
+            <span key={`${i}-${label}`} className="bx-nav__item">
+              {label}
+            </span>
+          ))}
+        </nav>
+      );
+    },
+  },
+  {
+    type: 'Logo',
+    label: 'Logo',
+    kind: 'leaf',
+    group: 'data',
+    icon: Fingerprint,
+    module: 'site',
+    bindable: true,
+    accepts: ['object', 'empty'],
+    showHeight: false,
+    surfaces: ['site'],
+    props: [],
+    defaults: {},
+    renderLeaf: ({ value }) => {
+      const identity =
+        value && typeof value === 'object' ? (value as { name?: unknown }) : null;
+      return <span className="bx-logo">{firstString(identity?.name, 'Your brand')}</span>;
+    },
+  },
+  {
+    type: 'SocialLinks',
+    label: 'Social links',
+    kind: 'leaf',
+    group: 'data',
+    icon: Share2,
+    module: 'site',
+    bindable: true,
+    accepts: ['array'],
+    showHeight: false,
+    surfaces: ['site'],
+    props: [],
+    defaults: {},
+    renderLeaf: ({ value, cardinality }) => {
+      const items = cardinality === 'array' ? (value as unknown[]) : [];
+      const count = items.length > 0 ? items.length : 3;
+      return (
+        <div className="bx-social">
+          {Array.from({ length: count }).map((_, i) => (
+            <span key={`s${i}`} className="bx-social__dot" />
+          ))}
+        </div>
+      );
+    },
   },
 ];
 
@@ -390,6 +514,12 @@ export function isContainer(type: string): boolean {
 }
 
 export const PALETTE: ComponentDef[] = DEFS;
+
+/** The palette entries available in a given editor surface (docs/45 §2.5). A def
+ *  with no `surfaces` belongs to both; otherwise it must list the surface. */
+export function paletteForSurface(surface: EditorSurface): ComponentDef[] {
+  return DEFS.filter((d) => !d.surfaces || d.surfaces.includes(surface));
+}
 
 /** Build a fresh node from a palette entry. */
 export function makeNode(type: string): BuilderNode {

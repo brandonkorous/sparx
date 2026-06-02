@@ -8,7 +8,12 @@
 import * as React from 'react';
 import { cn } from '@sparx/ui';
 
-import { PALETTE, type ComponentDef, type PaletteGroup } from './registry';
+import {
+  paletteForSurface,
+  type ComponentDef,
+  type EditorSurface,
+  type PaletteGroup,
+} from './registry';
 import { moduleColor } from './binding-catalog';
 import { MODULES } from './sample';
 
@@ -37,18 +42,22 @@ function Tile({ def, onAdd }: { def: ComponentDef; onAdd: (type: string) => void
 export function AddPalette({
   targetName,
   onAdd,
+  surface = 'page',
 }: {
   targetName: string;
   onAdd: (type: string) => void;
+  /** Which editor this palette serves — gates which components show (docs/45). */
+  surface?: EditorSurface;
 }) {
   const offModules = MODULES.filter((m) => !m.on);
+  const palette = paletteForSurface(surface);
   return (
     <div className="bx-palette">
       <p className="bx-pal-target">
         Adds inside <strong>{targetName}</strong>
       </p>
       {GROUPS.map(({ group, label }) => {
-        const defs = PALETTE.filter((d) => d.group === group);
+        const defs = palette.filter((d) => d.group === group);
         if (defs.length === 0) return null;
         return (
           <section key={group} className="bx-pal-group">
@@ -58,7 +67,7 @@ export function AddPalette({
                 <Tile key={def.type} def={def} onAdd={onAdd} />
               ))}
             </div>
-            {group === 'data' && offModules.length > 0 ? (
+            {group === 'data' && surface === 'page' && offModules.length > 0 ? (
               <div className="bx-tiles">
                 {offModules.map((m) => (
                   <span key={m.key} className={cn('bx-tile', 'bx-tile--off')}>

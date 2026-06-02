@@ -193,6 +193,8 @@ model Tenant {
 
   // Builder module — composition-model page editor (docs/41)
   builderPages BuilderPage[]
+  // Builder module — the site layout / chrome shell (docs/45)
+  builderLayouts BuilderLayout[]
 
   // Email platform — management surface (docs/13)
   emailSettings       EmailSettings?
