@@ -3,22 +3,29 @@
 // chrome, semantic output, mapped to the live `--sf-*` tenant theme tokens
 // (the editor maps the same box/layout semantics to `--bxc-*`).
 //
-// SLICE A.1 — STATIC ONLY: leaves render their own props (Heading/Text/Button/
-// Divider/Image). Data bindings are NOT resolved yet; bound data-aware leaves
-// (PriceTag/ImageDisplay/Signup) render a neutral placeholder until A.2 wires
-// real-record resolution (docs/44 §3). Responsive `hiddenOn` is deferred too.
+// SLICE A.2 — BINDING-AWARE: bound nodes resolve against REAL records (passed in
+// as `data`) through the shared resolver. An array-bound container iterates its
+// children once per record (item scope); an object-bound container sets scope
+// and renders once; leaves resolve their bound value (text / richtext / price /
+// image). Unbound leaves render their own props (the A.1 static path). The CRM
+// Signup + per-record collection templates land in Slice B.
 
 import * as React from 'react';
-import type {
-  AlignX,
-  BoxBase,
-  BuilderNode,
-  GapScale,
-  HeightScale,
-  Justify,
-  LayoutBase,
-  SpaceScale,
-  Surface,
+import {
+  cardinalityOf,
+  resolvePath,
+  type AlignX,
+  type BoxBase,
+  type BuilderNode,
+  type Cardinality,
+  type DataSources,
+  type GapScale,
+  type HeightScale,
+  type Justify,
+  type LayoutBase,
+  type Scope,
+  type SpaceScale,
+  type Surface,
 } from '@sparx/builder-schemas';
 
 // ── Box-base → CSS (mirrors the editor canvas scales, --sf-* tokens) ──────────
@@ -115,6 +122,34 @@ function boxStyles(
   return { outer, inner };
 }
 
+// ── Bound-value coercion ─────────────────────────────────────────────────────
+
+function docToPlainText(node: unknown): string {
+  if (!node || typeof node !== 'object') return '';
+  const n = node as { text?: string; content?: unknown[] };
+  if (typeof n.text === 'string') return n.text;
+  if (Array.isArray(n.content)) return n.content.map(docToPlainText).join(' ');
+  return '';
+}
+
+/** A bound value as display text: a string as-is, a number stringified, a
+ *  rich-text doc flattened to plain text (full rich rendering is Slice B). */
+function asText(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  if (value && typeof value === 'object' && (value as { type?: string }).type === 'doc') {
+    return docToPlainText(value);
+  }
+  return '';
+}
+
+/** The first image of a bound image/images value, or null. */
+function firstImage(value: unknown): { url?: string; alt?: string } | null {
+  const candidate = Array.isArray(value) ? (value as unknown[])[0] : value;
+  if (candidate && typeof candidate === 'object') return candidate;
+  return null;
+}
+
 // ── Leaf rendering ─────────────────────────────────────────────────────────
 
 const HEADING_SIZE: Record<string, string> = { h1: '2.5rem', h2: '1.75rem', h3: '1.25rem' };
@@ -157,46 +192,72 @@ function buttonStyle(style: string): React.CSSProperties {
     return { ...base, background: 'var(--sf-base-200)', color: 'var(--sf-primary)' };
   return { ...base, background: 'var(--sf-primary)', color: 'var(--sf-primary-content)' };
 }
+function ratioOf(r: string): string {
+  return r === 'square' ? '1 / 1' : r === 'portrait' ? '3 / 4' : '16 / 9';
+}
 
-function renderLeaf(node: BuilderNode): React.ReactNode {
+function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.ReactNode {
   const p = node.props;
   const str = (k: string): string => (typeof p[k] === 'string' ? p[k] : '');
   switch (node.type) {
     case 'Heading': {
       const level = str('level') || 'h2';
       const Tag = (level === 'h1' ? 'h1' : level === 'h3' ? 'h3' : 'h2') as 'h1';
-      return <Tag style={headingStyle(level)}>{str('text')}</Tag>;
+      return <Tag style={headingStyle(level)}>{bound ? asText(value) : str('text')}</Tag>;
     }
     case 'Text':
-      return <p style={textStyle(str('variant') || 'body')}>{str('text')}</p>;
-    case 'Button':
-      return <span style={buttonStyle(str('style') || 'primary')}>{str('label') || 'Button'}</span>;
+      return (
+        <p style={textStyle(str('variant') || 'body')}>{bound ? asText(value) : str('text')}</p>
+      );
+    case 'Button': {
+      const label = (bound ? asText(value) : '') || str('label') || 'Button';
+      return <span style={buttonStyle(str('style') || 'primary')}>{label}</span>;
+    }
     case 'Divider':
       return (
         <hr
           style={{ border: 0, borderTop: '1px solid var(--sf-border)', width: '100%', margin: 0 }}
         />
       );
+    case 'PriceTag': {
+      const n = typeof value === 'number' ? value : null;
+      return <span style={{ fontWeight: 600 }}>{n != null ? `$${n.toFixed(2)}` : ''}</span>;
+    }
     case 'Image':
-    case 'ImageDisplay':
+    case 'ImageDisplay': {
+      const ratio = ratioOf(str('ratio'));
+      const img = bound ? firstImage(value) : null;
+      if (img?.url) {
+        // Plain <img>: media URLs 302-redirect to GCS; next/image optimization
+        // is a later pass (consistent with the rest of the storefront).
+        return (
+          <img
+            src={img.url}
+            alt={img.alt ?? str('alt')}
+            style={{
+              width: '100%',
+              aspectRatio: ratio,
+              objectFit: 'cover',
+              borderRadius: 'var(--sf-radius-box)',
+              display: 'block',
+            }}
+          />
+        );
+      }
       return (
         <div
           role="img"
-          aria-label={str('alt')}
+          aria-label={img?.alt ?? str('alt')}
           style={{
             width: '100%',
-            aspectRatio:
-              str('ratio') === 'square'
-                ? '1 / 1'
-                : str('ratio') === 'portrait'
-                  ? '3 / 4'
-                  : '16 / 9',
+            aspectRatio: ratio,
             background: 'var(--sf-base-300)',
             borderRadius: 'var(--sf-radius-box)',
           }}
         />
       );
-    // PriceTag / Signup need data + interactivity — rendered in a later slice.
+    }
+    // Signup (interactive) lands in Slice B.
     default:
       return null;
   }
@@ -204,26 +265,48 @@ function renderLeaf(node: BuilderNode): React.ReactNode {
 
 // ── Recursive node ───────────────────────────────────────────────────────────
 
-function RenderNode({ node }: { node: BuilderNode }): React.ReactNode {
+function RenderNode({ node, scope }: { node: BuilderNode; scope: Scope }): React.ReactNode {
   const isContainer = CONTAINERS.has(node.type);
+  const bound = Boolean(node.binding);
+  const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
+  const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
+
   const { outer, inner } = boxStyles(node.box, isContainer);
   const innerStyle = isContainer && node.layout ? { ...inner, ...layoutStyle(node.layout) } : inner;
 
+  let body: React.ReactNode;
+  if (isContainer) {
+    const kids = node.children ?? [];
+    if (bound && card === 'array') {
+      // Iterate: each record scopes its subtree to `item`.
+      body = (value as unknown[]).flatMap((item, i) =>
+        kids.map((child) => (
+          <RenderNode key={`${i}:${child.id}`} node={child} scope={{ ...scope, item, index: i }} />
+        ))
+      );
+    } else if (bound && card === 'object') {
+      // Set scope: render once, descendants resolve item.*
+      body = kids.map((child) => (
+        <RenderNode key={child.id} node={child} scope={{ ...scope, item: value }} />
+      ));
+    } else {
+      body = kids.map((child) => <RenderNode key={child.id} node={child} scope={scope} />);
+    }
+  } else {
+    body = renderLeaf(node, value, bound);
+  }
+
   return (
     <div style={outer} data-bx-type={node.type}>
-      <div style={innerStyle}>
-        {isContainer
-          ? (node.children ?? []).map((child) => <RenderNode key={child.id} node={child} />)
-          : renderLeaf(node)}
-      </div>
+      <div style={innerStyle}>{body}</div>
     </div>
   );
 }
 
-export function BuilderRenderer({ tree }: { tree: BuilderNode }) {
+export function BuilderRenderer({ tree, data }: { tree: BuilderNode; data: DataSources }) {
   return (
     <div className="bx-render" data-builder-page>
-      <RenderNode node={tree} />
+      <RenderNode node={tree} scope={{ root: data }} />
     </div>
   );
 }

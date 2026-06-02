@@ -27,6 +27,12 @@ export type {
   WidthMode,
 } from '@sparx/builder-schemas';
 
+// Binding RESOLUTION lives with the model now (docs/44 §2.3) so the editor and
+// the storefront renderer share one implementation. Re-exported here so the
+// editor keeps importing `resolvePath` / `cardinalityOf` / `Scope` from './model'.
+export { resolvePath, cardinalityOf } from '@sparx/builder-schemas';
+export type { Cardinality, DataSources, Scope } from '@sparx/builder-schemas';
+
 // The subset this file references in scope (option tables + tree ops below).
 import type {
   AlignX,
@@ -39,10 +45,6 @@ import type {
   Surface,
   WidthMode,
 } from '@sparx/builder-schemas';
-
-// ── Binding cardinality ───────────────────────────────────────────────────────
-
-export type Cardinality = 'scalar' | 'object' | 'array' | 'empty';
 
 // ── Page templates (the editor's in-memory page shape) ────────────────────────
 
@@ -63,58 +65,6 @@ export interface PageTemplate {
    *  (e.g. 'cms.post', 'commerce.product'). */
   recordType?: string;
   tree: BuilderNode;
-}
-
-// ── Data scope + binding resolution ──────────────────────────────────────────
-
-/** The root data the page composes from — one key per active module. This is
- *  mock data in the UI-first phase; the backend will supply the real shapes. */
-export type DataSources = Record<string, unknown>;
-
-/** A resolution context: the module-level root, plus the current `item` when
- *  inside an iterating container (so descendants resolve `item.*`). */
-export interface Scope {
-  root: DataSources;
-  item?: unknown;
-  /** Zero-based position within the current iteration (for `index`). */
-  index?: number;
-}
-
-/** Resolve a dotted/bracketed path against a scope. Paths beginning with
- *  `item` resolve against the iteration item; `index` is the loop counter;
- *  everything else resolves against the module root. */
-export function resolvePath(scope: Scope, path: string): unknown {
-  const trimmed = path.trim();
-  if (trimmed === '') return undefined;
-  if (trimmed === 'index') return scope.index;
-
-  const segments = trimmed
-    .replace(/\[(\d+)\]/g, '.$1')
-    .split('.')
-    .filter(Boolean);
-
-  let cursor: unknown;
-  if (segments[0] === 'item') {
-    cursor = scope.item;
-    segments.shift();
-  } else {
-    cursor = scope.root;
-  }
-
-  for (const seg of segments) {
-    if (cursor == null) return undefined;
-    cursor = (cursor as Record<string, unknown>)[seg];
-  }
-  return cursor;
-}
-
-/** Classify a resolved value so a component (and the canvas) can decide between
- *  render-once, set-scope, and iterate. */
-export function cardinalityOf(value: unknown): Cardinality {
-  if (value == null) return 'empty';
-  if (Array.isArray(value)) return 'array';
-  if (typeof value === 'object') return 'object';
-  return 'scalar';
 }
 
 // ── Immutable tree operations (addressed by node id) ─────────────────────────

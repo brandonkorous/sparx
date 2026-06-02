@@ -8,6 +8,7 @@ import { resolveTenant } from '@/lib/tenant';
 import { getPageBySlug } from '@/lib/content';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { getPublishedBuilderPage } from '@/lib/builder';
+import { loadBuilderData } from '@/lib/builder-data';
 import { PageView } from '@/components/page-view';
 import { SectionRenderer } from '@/components/section-renderer';
 import { BuilderRenderer } from '@/components/builder-renderer';
@@ -60,9 +61,13 @@ export default async function StorefrontPage({ params, searchParams }: SlugPageP
   const previewToken = sp.sparxPreview;
 
   // A published Builder page owns its slug (docs/44 §2.5): if one exists, render
-  // it and skip the legacy Site-Builder-sections + CMS-page paths entirely.
+  // it and skip the legacy Site-Builder-sections + CMS-page paths entirely. Its
+  // bindings resolve against real records fetched per source (docs/44 §3 A.2).
   const builderPage = await getPublishedBuilderPage(tenant.slug, slug);
-  if (builderPage) return <BuilderRenderer tree={builderPage.tree} />;
+  if (builderPage) {
+    const data = await loadBuilderData(tenant.slug, builderPage.tree);
+    return <BuilderRenderer tree={builderPage.tree} data={data} />;
+  }
 
   const [page, snapshot] = await Promise.all([
     getPageBySlug(tenant.slug, slug, previewToken ? { previewToken } : {}),
