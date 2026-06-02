@@ -28,14 +28,12 @@ import {
   Upload,
 } from 'lucide-react';
 import { Button, Input, ModuleProvider, NativeSelect, ScrollArea, cn } from '@sparx/ui';
-import type { BuilderPageDto } from '@sparx/builder-schemas';
+import type { BindingCatalog, BuilderPageDto } from '@sparx/builder-schemas';
 
 import {
   appendChild,
-  cardinalityOf,
   findNode,
   removeNode,
-  resolvePath,
   updateNode,
   type BoxBase,
   type BuilderNode,
@@ -43,8 +41,9 @@ import {
   type LayoutBase,
   type PageTemplate,
 } from './model';
+import { buildPreviewData, scopeAt } from './binding-catalog';
 import { getDef, isContainer, makeNode } from './registry';
-import { MODULES, SAMPLE_DATA } from './sample';
+import { MODULES } from './sample';
 import { Canvas } from './canvas';
 import { Inspector } from './inspector';
 import { LayersPanel } from './layers-panel';
@@ -75,16 +74,6 @@ function pathTo(root: BuilderNode, id: string, trail: BuilderNode[] = []): Build
   return [];
 }
 
-/** Does an ancestor set an `item` scope (bound to an object or array)? */
-function ancestorSetsScope(chain: BuilderNode[]): boolean {
-  return chain.slice(0, -1).some((n) => {
-    if (!n.binding) return false;
-    if (n.binding.path.startsWith('item')) return true;
-    const card = cardinalityOf(resolvePath({ root: SAMPLE_DATA }, n.binding.path));
-    return card === 'array' || card === 'object';
-  });
-}
-
 const DEVICES: { id: Device; label: string; icon: typeof Monitor }[] = [
   { id: 'desktop', label: 'Desktop', icon: Monitor },
   { id: 'tablet', label: 'Tablet', icon: Tablet },
@@ -106,9 +95,13 @@ const SAVE_LABEL: Record<SaveStatus, string> = {
 
 export interface BuilderAppProps {
   initialPages: BuilderPageDto[];
+  /** What the page can bind to — the tenant's real CMS content types + the
+   *  code-defined Commerce/CRM sources (docs/43, the keystone). Drives the
+   *  inspector picker, the canvas preview data, and the layer chips. */
+  bindingCatalog: BindingCatalog;
 }
 
-export function BuilderApp({ initialPages }: BuilderAppProps) {
+export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
   // Pages load from the server (docs/41 §5 seeds the curated set on first use)
   // and seed this state ONCE. From here the client is authoritative for the
   // session; the server is the persistence sink (autosave + structural ops).
@@ -174,12 +167,21 @@ export function BuilderApp({ initialPages }: BuilderAppProps) {
     if (renaming) renameInputRef.current?.select();
   }, [renaming]);
 
+  // Typed placeholder data shaped to the binding schema — every offered path
+  // resolves, so the canvas previews bound nodes (real records come later).
+  const previewData = React.useMemo(
+    () => buildPreviewData(bindingCatalog.sources),
+    [bindingCatalog]
+  );
+
   const selectedNode = tree && selectedId ? findNode(tree, selectedId) : null;
   const chain = React.useMemo(
     () => (tree && selectedId ? pathTo(tree, selectedId) : []),
     [tree, selectedId]
   );
-  const inScope = ancestorSetsScope(chain);
+  // The item.* fields the selected node can read, derived from the scope its
+  // ancestors establish (a list/record binding above it).
+  const scope = React.useMemo(() => scopeAt(bindingCatalog, chain), [bindingCatalog, chain]);
 
   // Where a palette drop lands: the selected container, else its nearest
   // container ancestor, else the root.
@@ -526,6 +528,7 @@ export function BuilderApp({ initialPages }: BuilderAppProps) {
               {railTab === 'layers' ? (
                 <LayersPanel
                   tree={tree}
+                  catalog={bindingCatalog}
                   selectedId={selectedId}
                   onSelect={setSelectedId}
                   onRemove={onRemove}
@@ -542,7 +545,8 @@ export function BuilderApp({ initialPages }: BuilderAppProps) {
           >
             <Canvas
               tree={tree}
-              data={SAMPLE_DATA}
+              data={previewData}
+              catalog={bindingCatalog}
               device={device}
               selectedId={selectedId}
               onSelect={setSelectedId}
@@ -556,7 +560,8 @@ export function BuilderApp({ initialPages }: BuilderAppProps) {
             <ScrollArea className="bx-side__scroll">
               <Inspector
                 node={selectedNode}
-                inScope={inScope}
+                catalog={bindingCatalog}
+                scope={scope}
                 onName={onName}
                 onBind={onBind}
                 onProp={onProp}

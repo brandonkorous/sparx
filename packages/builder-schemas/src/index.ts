@@ -6,3 +6,4 @@
 export * from './node';
 export * from './page';
 export * from './starters';
+export * from './binding';

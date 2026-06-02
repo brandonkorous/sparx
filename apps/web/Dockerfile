@@ -20,12 +20,14 @@ FROM base AS builder
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY apps/web/package.json apps/web/
 COPY packages/ui/package.json packages/ui/
+COPY packages/legal/package.json packages/legal/
 
 # Install only the @sparx/web subgraph (its deps + transitive workspace deps).
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile --filter @sparx/web...
 
 COPY packages/ui packages/ui
+COPY packages/legal packages/legal
 COPY apps/web apps/web
 
 # next.config.ts must have `output: 'standalone'` and outputFileTracingRoot

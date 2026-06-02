@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { requireSession, type ModuleSlug } from '@sparx/auth';
 import { OnboardingBanner } from './_components/onboarding-banner';
+import { LegalReacceptBanner } from './_components/legal-reaccept-banner';
 import { loadOnboardingProgress } from './welcome/onboarding';
 import {
   Badge,
@@ -161,9 +162,10 @@ function joinHome(home: HomeResponse): {
 
 export default async function DashboardHome() {
   const { user } = await requireSession();
-  const [home, onboarding] = await Promise.all([
+  const [home, onboarding, legalStatus] = await Promise.all([
     api.get<HomeResponse>('/v1/dashboard/home'),
     loadOnboardingProgress(user.tenantId),
+    api.get<{ stale: string[] }>('/v1/me/legal-status').catch(() => ({ stale: [] as string[] })),
   ]);
   const { active: activeModules, inactive: discoverModules } = joinHome(home);
 
@@ -178,6 +180,7 @@ export default async function DashboardHome() {
           <Button leftIcon={<Plus className="h-4 w-4" />}>New product</Button>
         </Stack>
 
+        <LegalReacceptBanner staleDocs={legalStatus.stale} />
         <OnboardingBanner progress={onboarding} />
 
         <Grid cols={1} mdCols={2} lgCols={4} gap={4}>

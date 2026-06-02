@@ -1,0 +1,90 @@
+Total messages: 12 (Errors: 6, Warnings: 0)
+Returning 6 messages for level "error"
+
+[ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/builder/page:0
+[ERROR] ./packages/auth/src/sign-up.ts:1:1
+Module not found: Can't resolve '@sparx/legal'
+> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { authPrisma } from './prisma';
+  3 | import { auth } from './server';
+  4 |
+
+Import trace:
+  Server Component:
+    ./packages/auth/src/sign-up.ts
+    ./packages/auth/src/index.ts
+    ./apps/dashboard/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3001/_next/static/chunks/0g21_next_dist_0l-gkz3._.js:1945
+[ERROR] ./packages/auth/src/sign-up.ts:1:1
+Module not found: Can't resolve '@sparx/legal'
+> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { authPrisma } from './prisma';
+  3 | import { auth } from './server';
+  4 |
+
+Import trace:
+  Server Component:
+    ./packages/auth/src/sign-up.ts
+    ./packages/auth/src/index.ts
+    ./apps/dashboard/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3001/_next/static/chunks/0g21_next_dist_0l-gkz3._.js:1945
+[ERROR] ./packages/auth/src/sign-up.ts:1:1
+Module not found: Can't resolve '@sparx/legal'
+> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { authPrisma } from './prisma';
+  3 | import { auth } from './server';
+  4 |
+
+Import trace:
+  Server Component:
+    ./packages/auth/src/sign-up.ts
+    ./packages/auth/src/index.ts
+    ./apps/dashboard/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3001/_next/static/chunks/0g21_next_dist_0l-gkz3._.js:1945
+[ERROR] ./packages/auth/src/sign-up.ts:1:1
+Module not found: Can't resolve '@sparx/legal'
+> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { authPrisma } from './prisma';
+  3 | import { auth } from './server';
+  4 |
+
+Import trace:
+  Server Component:
+    ./packages/auth/src/sign-up.ts
+    ./packages/auth/src/index.ts
+    ./apps/dashboard/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3001/_next/static/chunks/0g21_next_dist_0l-gkz3._.js:1945
+Error: ./packages/auth/src/sign-up.ts:1:1
+Module not found: Can't resolve '@sparx/legal'
+> 1 | import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  2 | import { authPrisma } from './prisma';
+  3 | import { auth } from './server';
+  4 |
+
+
+
+Import trace:
+  Server Component:
+    ./packages/auth/src/sign-up.ts
+    ./packages/auth/src/index.ts
+    ./apps/dashboard/app/(dashboard)/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (Error: ./packages/auth/src/sign-up.ts:1:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at Object.getCompilationErrors (file://G:\code\@wizeworks\sparx.works\node_modules\.pnpm\next@16.2.6_@opentelemetry+api@1.9.1_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6\node_modules\next\dist\server\dev\hot-reloader-turbopack.js:1186:59)
+    at DevBundlerService.getCompilationError (file://G:\code\@wizeworks\sparx.works\node_modules\.pnpm\next@16.2.6_@opentelemetry+api@1.9.1_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6\node_modules\next\dist\server\lib\dev-bundler-service.js:44:55)
+    at DevServer.getCompilationError (file://G:\code\@wizeworks\sparx.works\node_modules\.pnpm\next@16.2.6_@opentelemetry+api@1.9.1_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6\node_modules\next\dist\server\dev\next-dev-server.js:720:42)
+    at DevServer.findPageComponents (file://G:\code\@wizeworks\sparx.works\node_modules\.pnpm\next@16.2.6_@opentelemetry+api@1.9.1_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6\node_modules\next\dist\server\dev\next-dev-server.js:690:43)
+    at async DevServer.renderErrorToResponseImpl (file://G:\code\@wizeworks\sparx.works\node_modules\.pnpm\next@16.2.6_@opentelemetry+api@1.9.1_@playwright+test@1.60.0_react-dom@19.2.6_react@19.2.6__react@19.2.6\node_modules\next\dist\server\base-server.js:1753:26)

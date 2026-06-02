@@ -8,25 +8,31 @@
 import * as React from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@sparx/ui';
+import type { BindingCatalog } from '@sparx/builder-schemas';
 
-import { cardinalityOf, resolvePath, type BuilderNode } from './model';
-import { SAMPLE_DATA, moduleColor } from './sample';
+import { type BuilderNode } from './model';
+import { NO_SCOPE, cardinalityForPath, moduleColor, moduleForPath } from './binding-catalog';
 import { getDef } from './registry';
 
-function bindMeta(node: BuilderNode): { path: string; color: string; repeats: boolean } | null {
+function bindMeta(
+  node: BuilderNode,
+  catalog: BindingCatalog
+): { path: string; color: string; repeats: boolean } | null {
   if (!node.binding) return null;
   const path = node.binding.path;
-  const color = moduleColor(path.split(/[.[]/)[0]);
-  // Best-effort cardinality for the ↻ badge (item.* can't be resolved here).
+  const color = moduleColor(moduleForPath(catalog, path));
+  // Best-effort cardinality for the ↻ badge (item.* can't be resolved here, so
+  // it never shows the badge — its own iteration comes from an ancestor).
   const repeats = path.startsWith('item')
     ? false
-    : cardinalityOf(resolvePath({ root: SAMPLE_DATA }, path)) === 'array';
+    : cardinalityForPath(catalog, NO_SCOPE, path) === 'array';
   return { path, color, repeats };
 }
 
 function Row({
   node,
   depth,
+  catalog,
   selectedId,
   onSelect,
   onRemove,
@@ -34,6 +40,7 @@ function Row({
 }: {
   node: BuilderNode;
   depth: number;
+  catalog: BindingCatalog;
   selectedId: string | null;
   onSelect: (id: string) => void;
   onRemove: (id: string) => void;
@@ -42,7 +49,7 @@ function Row({
   const def = getDef(node.type);
   if (!def) return null;
   const Icon = def.icon;
-  const bind = bindMeta(node);
+  const bind = bindMeta(node, catalog);
 
   return (
     <>
@@ -88,6 +95,7 @@ function Row({
           key={child.id}
           node={child}
           depth={depth + 1}
+          catalog={catalog}
           selectedId={selectedId}
           onSelect={onSelect}
           onRemove={onRemove}
@@ -100,11 +108,13 @@ function Row({
 
 export function LayersPanel({
   tree,
+  catalog,
   selectedId,
   onSelect,
   onRemove,
 }: {
   tree: BuilderNode;
+  catalog: BindingCatalog;
   selectedId: string | null;
   onSelect: (id: string) => void;
   onRemove: (id: string) => void;
@@ -114,6 +124,7 @@ export function LayersPanel({
       <Row
         node={tree}
         depth={0}
+        catalog={catalog}
         selectedId={selectedId}
         onSelect={onSelect}
         onRemove={onRemove}

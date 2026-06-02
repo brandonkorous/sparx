@@ -39,6 +39,8 @@
     "@sparx/email-sections": "workspace:*",
     "@sparx/events": "workspace:*",
     "@sparx/integration-framework": "workspace:*",
+    "@sparx/legal": "workspace:*",
+    "@sparx/legal-templates": "workspace:*",
     "@sparx/provider-shippo": "workspace:*",
     "@sparx/provider-stripe": "workspace:*",
     "@sparx/search": "workspace:*",

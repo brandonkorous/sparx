@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import type { BuilderPageDto } from '@sparx/builder-schemas';
+import type { BindingCatalog, BuilderPageDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/storefront-themes';
 
 import { getBrand, getConfig } from '../../sitebuilder/_lib/api';
-import { listPages } from '../_lib/api';
+import { getBindingCatalog, listPages } from '../_lib/api';
 import { BuilderApp } from '../_builder/builder-app';
 import '../builder.css';
 
@@ -52,12 +52,26 @@ async function loadPages(): Promise<BuilderPageDto[]> {
   }
 }
 
+// What this page can bind to (docs/43). Defensive: a failed read yields an empty
+// catalog — the editor still runs, bindings just resolve to placeholders.
+async function loadCatalog(): Promise<BindingCatalog> {
+  try {
+    return await getBindingCatalog();
+  } catch {
+    return { sources: [] };
+  }
+}
+
 export default async function BuilderPageRoute() {
-  const [themeCss, pages] = await Promise.all([canvasThemeCss(), loadPages()]);
+  const [themeCss, pages, catalog] = await Promise.all([
+    canvasThemeCss(),
+    loadPages(),
+    loadCatalog(),
+  ]);
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-      <BuilderApp initialPages={pages} />
+      <BuilderApp initialPages={pages} bindingCatalog={catalog} />
     </>
   );
 }

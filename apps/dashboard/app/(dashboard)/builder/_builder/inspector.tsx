@@ -12,6 +12,7 @@
 
 import * as React from 'react';
 import { Input, NativeSelect, Switch, Textarea, cn } from '@sparx/ui';
+import type { BindingCatalog } from '@sparx/builder-schemas';
 
 import {
   ALIGN_OPTIONS,
@@ -22,14 +23,19 @@ import {
   SPACE_OPTIONS,
   SURFACE_OPTIONS,
   WIDTH_OPTIONS,
-  cardinalityOf,
-  resolvePath,
   type BoxBase,
   type BuilderNode,
   type Device,
   type LayoutBase,
 } from './model';
-import { BIND_PATHS, ITEM_PATHS, SAMPLE_DATA, moduleColor } from './sample';
+import {
+  bindGroups,
+  bindHint,
+  itemBindPaths,
+  moduleColor,
+  moduleForPath,
+  type ScopeInfo,
+} from './binding-catalog';
 import { getDef } from './registry';
 
 // ── Shared controls ──────────────────────────────────────────────────────────
@@ -92,25 +98,15 @@ function Group({ label, children }: { label: string; children: React.ReactNode }
 
 const UNBOUND = '__none';
 
-function bindingHint(path: string): string {
-  if (path.startsWith('item') || path === 'index') {
-    return 'Resolved per item from the enclosing list/record.';
-  }
-  const value = resolvePath({ root: SAMPLE_DATA }, path);
-  const card = cardinalityOf(value);
-  if (card === 'array') return 'An array → this node repeats once per item, scoping each to item.*';
-  if (card === 'object') return 'An object → renders once and sets the scope for item.* below.';
-  if (card === 'scalar') return 'A single value → shown in place.';
-  return 'No data at this path yet.';
-}
-
 function BindingBox({
   node,
-  inScope,
+  catalog,
+  scope,
   onBind,
 }: {
   node: BuilderNode;
-  inScope: boolean;
+  catalog: BindingCatalog;
+  scope: ScopeInfo;
   onBind: (path: string | null) => void;
 }) {
   const def = getDef(node.type)!;
@@ -128,7 +124,9 @@ function BindingBox({
   }
 
   const path = node.binding?.path ?? '';
-  const color = path ? moduleColor(path.split(/[.[]/)[0]) : undefined;
+  const color = path ? moduleColor(moduleForPath(catalog, path)) : undefined;
+  const groups = bindGroups(catalog);
+  const itemPaths = itemBindPaths(scope);
 
   return (
     <Group label="Data">
@@ -146,14 +144,14 @@ function BindingBox({
             <span className="bx-bind__path bx-bind__path--empty">Not bound</span>
           )}
         </div>
-        {path ? <p className="bx-bind__hint">{bindingHint(path)}</p> : null}
+        {path ? <p className="bx-bind__hint">{bindHint(catalog, scope, path)}</p> : null}
         <NativeSelect
           size="sm"
           value={path || UNBOUND}
           onChange={(e) => onBind(e.target.value === UNBOUND ? null : e.target.value)}
         >
           <option value={UNBOUND}>— Not bound (static) —</option>
-          {BIND_PATHS.map((grp) => (
+          {groups.map((grp) => (
             <optgroup key={grp.module} label={grp.module.toUpperCase()}>
               {grp.paths.map((p) => (
                 <option key={p.path} value={p.path}>
@@ -162,13 +160,15 @@ function BindingBox({
               ))}
             </optgroup>
           ))}
-          <optgroup label={inScope ? 'IN SCOPE (per item)' : 'PER ITEM (needs a list above)'}>
-            {ITEM_PATHS.map((p) => (
-              <option key={p.path} value={p.path}>
-                {p.label}
-              </option>
-            ))}
-          </optgroup>
+          {scope.inScope ? (
+            <optgroup label={scope.label ? `IN SCOPE · ${scope.label}` : 'IN SCOPE (per item)'}>
+              {itemPaths.map((p) => (
+                <option key={p.path} value={p.path}>
+                  {p.label}
+                </option>
+              ))}
+            </optgroup>
+          ) : null}
         </NativeSelect>
       </div>
     </Group>
@@ -389,7 +389,8 @@ function BoxBasePanel({
 
 export interface InspectorProps {
   node: BuilderNode | null;
-  inScope: boolean;
+  catalog: BindingCatalog;
+  scope: ScopeInfo;
   onName: (name: string) => void;
   onBind: (path: string | null) => void;
   onProp: (key: string, value: unknown) => void;
@@ -399,7 +400,8 @@ export interface InspectorProps {
 
 export function Inspector({
   node,
-  inScope,
+  catalog,
+  scope,
   onName,
   onBind,
   onProp,
@@ -430,7 +432,7 @@ export function Inspector({
         />
       </header>
 
-      <BindingBox node={node} inScope={inScope} onBind={onBind} />
+      <BindingBox node={node} catalog={catalog} scope={scope} onBind={onBind} />
       <PropsPanel node={node} onProp={onProp} />
       {def.kind === 'container' && node.layout ? (
         <LayoutPanel layout={node.layout} onLayout={onLayout} />

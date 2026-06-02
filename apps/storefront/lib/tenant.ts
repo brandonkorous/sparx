@@ -46,6 +46,19 @@ export interface TenantStorefront {
   requireAuthForCheckout: boolean;
 }
 
+/** Cookie-consent config (docs/42 §4) — travels in the tenant payload so the
+ *  layout decides off/quiet-notice/banner server-side with no client flash. */
+export interface TenantConsent {
+  mode: 'off' | 'gdpr' | 'ccpa';
+  categories: string[];
+  activeCategories: string[];
+  bannerEnabled: boolean;
+  bannerTitle: string | null;
+  bannerBody: string | null;
+  policyPageSlug: string;
+  policyVersion: string;
+}
+
 export interface ResolvedTenant {
   id: string;
   slug: string;
@@ -53,6 +66,7 @@ export interface ResolvedTenant {
   settings: Record<string, unknown>;
   theme: TenantTheme | null;
   storefront: TenantStorefront;
+  consent: TenantConsent;
 }
 
 // The API also returns `businessName` (the tenant-level brand display name,
@@ -71,6 +85,20 @@ const DEFAULT_STOREFRONT: TenantStorefront = {
   showStockBelow: 10,
   hidePricesWhenSignedOut: false,
   requireAuthForCheckout: false,
+};
+
+// Consent defaults to 'off' (no banner, no consent cookie) so storefronts
+// served by an older api-rest that doesn't yet return `consent` behave exactly
+// as before.
+const DEFAULT_CONSENT: TenantConsent = {
+  mode: 'off',
+  categories: ['strictly_necessary', 'preferences', 'analytics', 'marketing'],
+  activeCategories: [],
+  bannerEnabled: false,
+  bannerTitle: null,
+  bannerBody: null,
+  policyPageSlug: 'cookie-policy',
+  policyVersion: '1',
 };
 
 // Extracts the tenant slug from a host like `acme.sparx.zone` → `acme`.
@@ -118,6 +146,7 @@ export const resolveTenant = cache(async (): Promise<ResolvedTenant | null> => {
       ...data,
       name: display && display.length > 0 ? display : data.name,
       storefront: data.storefront ?? DEFAULT_STOREFRONT,
+      consent: data.consent ?? DEFAULT_CONSENT,
     };
   } catch {
     return null;

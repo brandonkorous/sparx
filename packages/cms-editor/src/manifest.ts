@@ -11,6 +11,7 @@ import {
   FileText,
   Image as ImageIcon,
   Navigation,
+  Scale,
   Tags,
   Upload,
   User,
@@ -31,6 +32,7 @@ export const cmsManifest: ModuleManifest = {
     { id: 'authors', label: 'Authors', icon: User, href: '/cms/authors' },
     { id: 'taxonomy', label: 'Taxonomy', icon: Tags, href: '/cms/taxonomy' },
     { id: 'redirects', label: 'Redirects', icon: CornerUpRight, href: '/cms/redirects' },
+    { id: 'legal', label: 'Legal', icon: Scale, href: '/cms/legal' },
     { id: 'webhooks', label: 'Webhooks', icon: Webhook, href: '/cms/webhooks' },
   ],
   actions: [

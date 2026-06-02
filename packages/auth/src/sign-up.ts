@@ -1,3 +1,4 @@
+import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
 import { authPrisma } from './prisma';
 import { auth } from './server';
 
@@ -14,6 +15,10 @@ export interface SignUpMerchantInput {
   password: string;
   name: string;
   storeName: string;
+  /** Captured from the sign-up request for the legal-acceptance record
+   *  (docs/42 §6). Null when unavailable (e.g. a non-HTTP caller). */
+  ipAddress?: string | null;
+  userAgent?: string | null;
 }
 
 export interface SignUpMerchantResult {
@@ -100,6 +105,21 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
           accountId: user.id,
           password: passwordHash,
         },
+      });
+
+      // Record acceptance of Sparx's platform legal docs (docs/42 §6) atomically
+      // with account creation — the sign-up form gates on the agreement
+      // checkbox, so reaching here means the owner accepted. DPA is EU-only and
+      // handled post-onboarding, so it's not in ONBOARDING_LEGAL_DOCS.
+      await tx.platformLegalAcceptance.createMany({
+        data: ONBOARDING_LEGAL_DOCS.map((docType) => ({
+          tenantId: tenant.id,
+          userId: user.id,
+          docType,
+          docVersion: LEGAL_DOC_VERSIONS[docType].version,
+          ipAddress: input.ipAddress ?? null,
+          userAgent: input.userAgent ?? null,
+        })),
       });
 
       return { userId: user.id, tenantId: tenant.id };

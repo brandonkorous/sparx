@@ -12,6 +12,7 @@
 
 import * as React from 'react';
 import { cn } from '@sparx/ui';
+import type { BindingCatalog } from '@sparx/builder-schemas';
 
 import {
   cardinalityOf,
@@ -27,6 +28,7 @@ import {
   type SpaceScale,
   type Surface,
 } from './model';
+import { moduleColor, moduleForPath } from './binding-catalog';
 import { getDef, type ComponentDef } from './registry';
 
 // ── Box-base → CSS ───────────────────────────────────────────────────────────
@@ -126,27 +128,18 @@ function boxStyles(
   return { outer, inner };
 }
 
-// ── Binding label colors ─────────────────────────────────────────────────────
-
-function pathColor(path: string): string {
-  const head = path.split(/[.[]/)[0];
-  if (head === 'cms' || head === 'page') return '#14b8a6';
-  if (head === 'commerce') return '#f97316';
-  if (head === 'crm') return '#06b6d4';
-  return '#6366f1'; // item.* / index — resolved from the enclosing scope
-}
-
 // ── The recursive node ───────────────────────────────────────────────────────
 
 interface NodeProps {
   node: BuilderNode;
   scope: Scope;
+  catalog: BindingCatalog;
   device: Device;
   selectedId: string | null;
   onSelect: (id: string) => void;
 }
 
-function CanvasNode({ node, scope, device, selectedId, onSelect }: NodeProps) {
+function CanvasNode({ node, scope, catalog, device, selectedId, onSelect }: NodeProps) {
   const def = getDef(node.type);
   if (!def) return null;
 
@@ -182,6 +175,7 @@ function CanvasNode({ node, scope, device, selectedId, onSelect }: NodeProps) {
             key={`${key}:${child.id}`}
             node={child}
             scope={s}
+            catalog={catalog}
             device={device}
             selectedId={selectedId}
             onSelect={onSelect}
@@ -218,8 +212,14 @@ function CanvasNode({ node, scope, device, selectedId, onSelect }: NodeProps) {
       <span className="bx-tag">
         <span className="bx-tag__name">{node.box.name ?? def.label}</span>
         {bound ? (
-          <span className="bx-tag__bind" style={{ color: pathColor(node.binding!.path) }}>
-            <span className="bx-tag__dot" style={{ background: pathColor(node.binding!.path) }} />
+          <span
+            className="bx-tag__bind"
+            style={{ color: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
+          >
+            <span
+              className="bx-tag__dot"
+              style={{ background: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
+            />
             {node.binding!.path}
           </span>
         ) : null}
@@ -238,6 +238,7 @@ function CanvasNode({ node, scope, device, selectedId, onSelect }: NodeProps) {
 export interface CanvasProps {
   tree: BuilderNode;
   data: Scope['root'];
+  catalog: BindingCatalog;
   device: Device;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
@@ -245,7 +246,7 @@ export interface CanvasProps {
 
 const DEVICE_WIDTH: Record<Device, number | null> = { desktop: null, tablet: 834, mobile: 390 };
 
-export function Canvas({ tree, data, device, selectedId, onSelect }: CanvasProps) {
+export function Canvas({ tree, data, catalog, device, selectedId, onSelect }: CanvasProps) {
   const width = DEVICE_WIDTH[device];
   return (
     <div
@@ -267,6 +268,7 @@ export function Canvas({ tree, data, device, selectedId, onSelect }: CanvasProps
         <CanvasNode
           node={tree}
           scope={{ root: data }}
+          catalog={catalog}
           device={device}
           selectedId={selectedId}
           onSelect={onSelect}

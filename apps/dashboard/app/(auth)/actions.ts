@@ -20,6 +20,7 @@ export async function signUpAction(formData: FormData): Promise<SignUpFormState>
   const password = readField('password');
   const name = readField('name');
   const storeName = readField('storeName');
+  const agreed = formData.get('agreeLegal') === 'on' || formData.get('agreeLegal') === 'true';
 
   if (!email || !password || !name || !storeName) {
     return { ok: false, error: 'All fields are required.' };
@@ -27,9 +28,21 @@ export async function signUpAction(formData: FormData): Promise<SignUpFormState>
   if (password.length < 8) {
     return { ok: false, error: 'Password must be at least 8 characters.' };
   }
+  if (!agreed) {
+    return {
+      ok: false,
+      error: 'Please accept the Terms of Service, Privacy Policy, and Acceptable Use Policy.',
+    };
+  }
+
+  // Captured for the legal-acceptance record (docs/42 §6). x-forwarded-for's
+  // first hop is the client behind Caddy/Cloudflare.
+  const hdrs = await headers();
+  const ipAddress = hdrs.get('x-forwarded-for')?.split(',')[0]?.trim() || null;
+  const userAgent = hdrs.get('user-agent');
 
   try {
-    await signUpMerchant({ email, password, name, storeName });
+    await signUpMerchant({ email, password, name, storeName, ipAddress, userAgent });
   } catch (err) {
     if (err instanceof SignUpError) {
       return { ok: false, error: err.message };

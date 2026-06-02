@@ -70,7 +70,7 @@ function homeTree(): BuilderNode {
           padding: 'xl',
         },
         layout: { direction: 'stack', gap: 'sm', justify: 'center', alignItems: 'center' },
-        bind: 'cms.posts[0]',
+        bind: 'cms.blog_post[0]',
         children: [
           node('Text', { props: { text: 'Latest essay', variant: 'eyebrow' } }),
           node('Heading', {
@@ -82,7 +82,7 @@ function homeTree(): BuilderNode {
         ],
       }),
 
-      // ARTICLES — a static header, then an iterating grid (CMS).
+      // ARTICLES — a static header, then an iterating grid (CMS blog posts).
       node('Section', {
         box: { name: 'Latest writing', padding: 'lg', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md' },
@@ -91,17 +91,16 @@ function homeTree(): BuilderNode {
           node('Grid', {
             box: { name: 'Posts grid', padding: 'none' },
             layout: { direction: 'grid', columns: 3, gap: 'lg' },
-            bind: 'cms.posts',
+            bind: 'cms.blog_post',
             children: [
               node('Card', {
                 box: { name: 'Article card', surface: 'subtle', padding: 'md' },
                 layout: { direction: 'stack', gap: 'sm' },
                 children: [
-                  node('ImageDisplay', { props: { ratio: 'wide' }, bind: 'item.cover' }),
-                  node('Text', { props: { variant: 'eyebrow' }, bind: 'item.tag' }),
+                  node('ImageDisplay', { props: { ratio: 'wide' }, bind: 'item.featuredImage' }),
+                  node('Text', { props: { text: 'Essay', variant: 'eyebrow' } }),
                   node('Heading', { props: { level: 'h3' }, bind: 'item.title' }),
                   node('Text', { props: { variant: 'body' }, bind: 'item.excerpt' }),
-                  node('Text', { props: { variant: 'meta' }, bind: 'item.author' }),
                 ],
               }),
             ],
@@ -118,13 +117,13 @@ function homeTree(): BuilderNode {
           node('Grid', {
             box: { name: 'Products grid', padding: 'none' },
             layout: { direction: 'grid', columns: 3, gap: 'lg' },
-            bind: 'commerce.products',
+            bind: 'commerce.product',
             children: [
               node('Card', {
                 box: { name: 'Product card', surface: 'none', padding: 'sm' },
                 layout: { direction: 'stack', gap: 'sm' },
                 children: [
-                  node('ImageDisplay', { props: { ratio: 'square' }, bind: 'item.image' }),
+                  node('ImageDisplay', { props: { ratio: 'square' }, bind: 'item.images' }),
                   node('Heading', { props: { level: 'h3' }, bind: 'item.title' }),
                   node('PriceTag', { bind: 'item.price' }),
                   node('Button', { props: { label: 'Add to cart', style: 'soft' } }),
@@ -192,17 +191,17 @@ function blogPostTree(): BuilderNode {
         },
         layout: { direction: 'stack', gap: 'sm', alignItems: 'center', justify: 'center' },
         children: [
-          node('Text', { props: { variant: 'eyebrow' }, bind: 'post.tag' }),
-          node('Heading', { props: { level: 'h1' }, bind: 'post.title' }),
-          node('Text', { props: { variant: 'meta' }, bind: 'post.author' }),
+          node('Text', { props: { text: 'Essay', variant: 'eyebrow' } }),
+          node('Heading', { props: { level: 'h1' }, bind: 'blog_post.title' }),
+          node('Text', { props: { variant: 'body' }, bind: 'blog_post.excerpt' }),
         ],
       }),
       node('Section', {
         box: { name: 'Body', padding: 'lg', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md' },
         children: [
-          node('ImageDisplay', { props: { ratio: 'wide' }, bind: 'post.cover' }),
-          node('Text', { props: { variant: 'body' }, bind: 'post.body' }),
+          node('ImageDisplay', { props: { ratio: 'wide' }, bind: 'blog_post.featuredImage' }),
+          node('Text', { props: { variant: 'body' }, bind: 'blog_post.body' }),
         ],
       }),
     ],
@@ -300,7 +299,7 @@ export const STARTER_PAGES: StarterPage[] = [
     key: 'blog-post',
     name: 'Blog post',
     kind: 'collection',
-    recordType: 'cms.post',
+    recordType: 'cms.blog_post',
     tree: blogPostTree(),
   },
   {

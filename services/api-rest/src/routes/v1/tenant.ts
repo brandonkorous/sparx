@@ -22,10 +22,46 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma, type Prisma } from '@sparx/db';
+import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { conflict, notFound } from '@sparx/api-core/errors';
 import { invalidateModuleCache, type ModuleSlug } from '@sparx/auth';
+import { computeBannerEnabled } from '../../lib/consent.js';
+
+const PatchConsent = z.object({
+  mode: z.enum(['off', 'gdpr', 'ccpa']).optional(),
+  activeCategories: z.array(z.enum(['preferences', 'analytics', 'marketing'])).optional(),
+  bannerTitle: z.string().max(255).nullable().optional(),
+  bannerBody: z.string().max(2000).nullable().optional(),
+  policyPageSlug: z.string().max(255).optional(),
+  policyVersion: z.string().max(20).optional(),
+});
+
+function serializeConsent(
+  row: {
+    mode: string;
+    activeCategories: unknown;
+    bannerTitle: string | null;
+    bannerBody: string | null;
+    policyPageSlug: string;
+    policyVersion: string;
+  } | null
+) {
+  const mode = row?.mode ?? 'off';
+  const activeCategories = Array.isArray(row?.activeCategories)
+    ? (row.activeCategories as unknown[]).filter((c): c is string => typeof c === 'string')
+    : [];
+  return {
+    mode,
+    activeCategories,
+    bannerTitle: row?.bannerTitle ?? null,
+    bannerBody: row?.bannerBody ?? null,
+    policyPageSlug: row?.policyPageSlug ?? 'cookie-policy',
+    policyVersion: row?.policyVersion ?? '1',
+    bannerEnabled: computeBannerEnabled(mode, activeCategories),
+  };
+}
 
 const MODULE_SLUGS: ModuleSlug[] = [
   'storefront',
@@ -230,6 +266,47 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     return ok(row);
   });
 
+  // Cookie-consent config (docs/42 §4). Read by any staff; edited by admins.
+  app.get('/v1/tenant/consent', async (request) => {
+    requireAuth(request);
+    const row = await withRequestTenant(request, (tx) =>
+      tx.consentSettings.findUnique({
+        where: { tenantId: requireAuth(request).tenantId },
+      })
+    );
+    return ok(serializeConsent(row));
+  });
+
+  app.patch('/v1/tenant/consent', async (request) => {
+    const auth = requireRole(request, 'admin');
+    const input = PatchConsent.parse(request.body);
+    const row = await withRequestTenant(request, (tx) =>
+      tx.consentSettings.upsert({
+        where: { tenantId: auth.tenantId },
+        create: {
+          tenantId: auth.tenantId,
+          mode: input.mode ?? 'off',
+          activeCategories: input.activeCategories ?? [],
+          bannerTitle: input.bannerTitle ?? null,
+          bannerBody: input.bannerBody ?? null,
+          policyPageSlug: input.policyPageSlug ?? 'cookie-policy',
+          policyVersion: input.policyVersion ?? '1',
+        },
+        update: {
+          ...(input.mode !== undefined ? { mode: input.mode } : {}),
+          ...(input.activeCategories !== undefined
+            ? { activeCategories: input.activeCategories }
+            : {}),
+          ...(input.bannerTitle !== undefined ? { bannerTitle: input.bannerTitle } : {}),
+          ...(input.bannerBody !== undefined ? { bannerBody: input.bannerBody } : {}),
+          ...(input.policyPageSlug !== undefined ? { policyPageSlug: input.policyPageSlug } : {}),
+          ...(input.policyVersion !== undefined ? { policyVersion: input.policyVersion } : {}),
+        },
+      })
+    );
+    return ok(serializeConsent(row));
+  });
+
   // Subdomain availability check for the onboarding domain step. Returns
   // { available, reason?, suggestions? } so the wizard can guide the tenant.
   app.get('/v1/tenant/slug-availability', async (request) => {
@@ -366,11 +443,14 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     if (!tenant) throw notFound('Tenant', auth.tenantId);
 
     const state = readOnboarding(tenant.settings ?? null);
-    // Page count is the only derived signal that lives outside the tenant
-    // row today. Reading through the bare prisma client is fine — the Page
-    // table is RLS-enabled, but we explicitly filter by tenantId here and
-    // never expose any per-page data, just the count.
-    const pageCount = await prisma.page.count({ where: { tenantId: auth.tenantId } });
+    // "First page" signal: count the tenant's own CMS pages (the live
+    // content_entries model — NOT the deprecated `Page` table, which no longer
+    // receives writes). Auto-seeded legal pages (legal_kind set, docs/42) are
+    // excluded so the step reflects a page the tenant actually created. Read
+    // inside withRequestTenant so the FORCE-RLS count is tenant-scoped.
+    const pageCount = await withRequestTenant(request, (tx) =>
+      tx.contentEntry.count({ where: { typeKey: 'page', legalKind: null, deletedAt: null } })
+    );
 
     const steps = [
       {

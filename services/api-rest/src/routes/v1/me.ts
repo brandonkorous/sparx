@@ -24,6 +24,12 @@ import { z } from 'zod';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireAuth } from '@sparx/api-core/auth';
+import { LEGAL_DOC_VERSIONS, staleLegalDocs, type LegalDocType } from '@sparx/legal';
+
+const LEGAL_DOC_TYPES = ['terms', 'privacy', 'dpa', 'aup'] as const;
+const LegalAcceptBody = z.object({
+  docTypes: z.array(z.enum(LEGAL_DOC_TYPES)).min(1).max(4),
+});
 
 const DEFAULT_DETAIL_VIEWS = ['drawer', 'modal', 'fullPage', 'newTab'] as const;
 const DEFAULT_LIST_VIEWS = ['table', 'card'] as const;
@@ -238,6 +244,48 @@ const meRoutes: FastifyPluginAsync = async (app) => {
       })
     );
     reply.code(204);
+  });
+
+  // ── Platform legal acceptance (docs/42 §6) ───────────────────────────────
+  // platform_legal_acceptance is ENABLE + NO FORCE (like `users`) — read by
+  // the owner connection during sign-up, but api-rest runs as sparx_app and is
+  // subject to the policy, so these go through withRequestTenant.
+  app.get('/v1/me/legal-status', async (request) => {
+    const auth = requireAuth(request);
+    const rows = await withRequestTenant(request, (tx) =>
+      tx.platformLegalAcceptance.findMany({
+        where: { userId: auth.actorId },
+        orderBy: { acceptedAt: 'desc' },
+        select: { docType: true, docVersion: true, acceptedAt: true },
+      })
+    );
+    // Latest accepted version per doc (rows are newest-first).
+    const accepted: Partial<Record<LegalDocType, string>> = {};
+    for (const r of rows) {
+      if (!(r.docType in accepted)) accepted[r.docType as LegalDocType] = r.docVersion;
+    }
+    return ok({ current: LEGAL_DOC_VERSIONS, accepted, stale: staleLegalDocs(accepted) });
+  });
+
+  app.post('/v1/me/legal-accept', async (request) => {
+    const auth = requireAuth(request);
+    const { docTypes } = LegalAcceptBody.parse(request.body);
+    const ua = request.headers['user-agent'];
+    const ipAddress = request.ip || null;
+    const userAgent = typeof ua === 'string' ? ua : null;
+    await withRequestTenant(request, (tx) =>
+      tx.platformLegalAcceptance.createMany({
+        data: docTypes.map((docType) => ({
+          tenantId: auth.tenantId,
+          userId: auth.actorId,
+          docType,
+          docVersion: LEGAL_DOC_VERSIONS[docType].version,
+          ipAddress,
+          userAgent,
+        })),
+      })
+    );
+    return ok({ accepted: docTypes });
   });
 };
 

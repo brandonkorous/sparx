@@ -9,7 +9,8 @@ import * as React from 'react';
 import { cn } from '@sparx/ui';
 
 import { PALETTE, type ComponentDef, type PaletteGroup } from './registry';
-import { MODULES, moduleColor } from './sample';
+import { moduleColor } from './binding-catalog';
+import { MODULES } from './sample';
 
 const GROUPS: { group: PaletteGroup; label: string }[] = [
   { group: 'layout', label: 'Layout' },

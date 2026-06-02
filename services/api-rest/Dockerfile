@@ -30,6 +30,8 @@ COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/crm ./packages/crm
 COPY packages/commerce-schemas ./packages/commerce-schemas
 COPY packages/integration-framework ./packages/integration-framework
+COPY packages/legal ./packages/legal
+COPY packages/legal-templates ./packages/legal-templates
 COPY packages/search ./packages/search
 COPY packages/commerce ./packages/commerce
 COPY packages/provider-stripe ./packages/provider-stripe

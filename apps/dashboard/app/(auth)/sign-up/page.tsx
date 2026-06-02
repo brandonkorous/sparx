@@ -10,12 +10,15 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
+  Checkbox,
   Heading,
   Input,
   Label,
   Stack,
   Text,
 } from '@sparx/ui';
+
+const LEGAL_BASE = 'https://sparx.works/legal';
 import { signUpAction } from '../actions';
 
 export default function SignUpPage() {
@@ -82,6 +85,46 @@ export default function SignUpPage() {
                 At least 8 characters.
               </Text>
             </Stack>
+
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="agreeLegal"
+                name="agreeLegal"
+                aria-label="I agree to the Terms of Service, Privacy Policy, and Acceptable Use Policy"
+                className="mt-1"
+                required
+              />
+              <Text size="sm" variant="muted">
+                I agree to the{' '}
+                <a
+                  href={`${LEGAL_BASE}/terms`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  Terms of Service
+                </a>
+                ,{' '}
+                <a
+                  href={`${LEGAL_BASE}/privacy`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  Privacy Policy
+                </a>
+                , and{' '}
+                <a
+                  href={`${LEGAL_BASE}/aup`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  Acceptable Use Policy
+                </a>
+                .
+              </Text>
+            </div>
 
             {error && (
               <Text size="sm" variant="danger" role="alert" aria-live="polite">

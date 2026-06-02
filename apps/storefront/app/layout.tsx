@@ -29,6 +29,7 @@ import { SiteHeader, type NavItem } from '@/components/site-header';
 import { SiteFooter, type FooterColumn } from '@/components/site-footer';
 import { listCollections } from '@/lib/commerce';
 import { getLegalFooterLinks } from '@/lib/legal';
+import { ConsentManager } from '@/components/consent/consent-manager';
 import { mediaUrl } from '@/lib/media';
 import { resolveTenant, type TenantTheme } from '@/lib/tenant';
 import { buildStorefrontThemeCss } from '@/lib/theme';
@@ -113,6 +114,12 @@ function noFlashScript(policy: 'auto' | 'toggle'): string {
 // when JS is off (this script never runs) or reduced motion is requested (the
 // class is not added), avoiding any flash of invisible content.
 const REVEAL_INIT_SCRIPT = `(function(){try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.documentElement.classList.add('sf-reveal-ready');}catch(e){}})();`;
+
+// Before-paint: reflect the recorded cookie-consent decision onto <html> as a
+// `data-consent` attribute (space-separated granted categories) so any deferred
+// tracker can self-check before initializing (docs/42 §4.4). Only injected when
+// the tenant runs a consent mode.
+const CONSENT_INIT_SCRIPT = `(function(){try{var m=document.cookie.match(/(?:^|;\\s*)sparx_consent_state=([^;]+)/);if(!m)return;var s=JSON.parse(decodeURIComponent(m[1]));var g=['strictly_necessary'];['preferences','analytics','marketing'].forEach(function(c){if(s[c])g.push(c)});document.documentElement.setAttribute('data-consent',g.join(' '));}catch(e){}})();`;
 
 // ── Header / footer chrome from the snapshot's layout blocks ─────────────────
 
@@ -271,6 +278,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <script dangerouslySetInnerHTML={{ __html: noFlashScript(dynamicPolicy) }} />
         ) : null}
         <script dangerouslySetInnerHTML={{ __html: REVEAL_INIT_SCRIPT }} />
+        {tenant && tenant.consent.mode !== 'off' ? (
+          <script dangerouslySetInnerHTML={{ __html: CONSENT_INIT_SCRIPT }} />
+        ) : null}
       </head>
       <body className="sf-body">
         <PreviewBridge />
@@ -309,6 +319,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   />
                 </div>
                 <MiniCart />
+                <ConsentManager tenant={tenant.slug} config={tenant.consent} />
               </CartProvider>
             </WishlistProvider>
           </CustomerProvider>
