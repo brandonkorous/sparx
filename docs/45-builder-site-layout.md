@@ -1,6 +1,6 @@
 # 45 — Builder: The Site Layout Editor
 
-Version: 1.0
+Version: 1.1
 Author: Brandon Korous
 Last Updated: 2026-06-02
 
@@ -59,13 +59,30 @@ already shared and unchanged. The site shell differs only in chrome: no slug fie
 no page kind, no "compose data from modules" context bar — instead a site context
 bar, and the site-scope catalog.
 
-**2.3 A `BuilderLayout` entity — one global layout per tenant (v1).**
+**2.3 A `BuilderLayout` entity — a per-tenant catalog, exactly one ACTIVE.**
 A sibling of `BuilderPage` with the same draft/publish lifecycle
-(`draftTree` / `publishedTree` / `publishedAt`). **Exactly one row per tenant** for
-v1 — the global site shell. Seeded on first load with a starter header · outlet ·
-footer. The door stays open for **named layouts + per-page assignment** (the
-deferred SiteLayout work, [40](40-sitebuilder-composition-model.md) §13) — but that
-is explicitly out of scope here.
+(`draftTree` / `publishedTree` / `publishedAt`) and the same catalog shape: a
+tenant keeps **many** layouts. The starter header · outlet · footer is seeded as
+the first (active) layout on first load. Two columns extend `BuilderPage`'s shape:
+
+- **`isActive`** — exactly one layout per tenant is the **live** chrome the
+  storefront serves. Enforced at the DB by a **partial unique index** on
+  `(tenant_id) WHERE is_active` (the canonical race-safe Postgres idiom; Prisma
+  can't express the predicate, so it lives in the migration SQL alongside the RLS
+  policies). `setActive(id)` clears the prior active and sets the new one inside
+  one transaction.
+- **`position`** — catalog ordering, like `BuilderPage.position`.
+
+**Publish and activate are separate**: publishing a layout snapshots its
+draft → published — a layout can be **published-but-idle**. A distinct _make
+active_ flips which **published** layout is live (activating an unpublished draft
+is refused — the storefront serves the active layout's _published_ tree). Deleting
+the live layout is refused; make another active first.
+
+This is the **named layouts** capability the v1 doc deferred
+([40](40-sitebuilder-composition-model.md) §13). **Per-page layout assignment**
+(a layout picker on the page, target-based defaults) remains deferred — every page
+still renders inside the single active layout.
 
 **2.4 Bind real site data; never rebuild it.** A published Builder layout's chrome
 binds to a NEW `site` source module, but that module **references the existing
@@ -99,13 +116,16 @@ A `surfaces?: ('page' | 'site')[]` field on each registry entry scopes the palet
 `Outlet`/`NavMenu`/`Logo`/`SocialLinks` are `site`-only; per-record data leaves
 (`PriceTag`, `Signup`) are `page`-only; the primitives are both. Default = both.
 
-**2.6 Render: the Builder layout wins when published (additive).** The storefront
-root layout fetches the tenant's published Builder layout. If one exists, it
-renders that tree as the chrome — the routed page is dropped at the `Outlet` — and
-the legacy `SiteHeader`/`SiteFooter` are skipped. If none, today's chrome renders
-unchanged. This mirrors the page render path's "Builder owns its slug, else fall
-through" ([44](44-builder-storefront-render.md) §2.5): the new system takes over
-only what a tenant has actually published into it.
+**2.6 Render: the ACTIVE published Builder layout wins (additive).** The storefront
+root layout fetches the tenant's **active** Builder layout and renders its
+**published** tree as the chrome — the routed page is dropped at the `Outlet` — and
+the legacy `SiteHeader`/`SiteFooter` are skipped. If the active layout has no
+published tree (or no layout is active), today's chrome renders unchanged. The
+public read (`getPublished`) resolves `WHERE is_active` then returns
+`publishedTree`, so swapping which layout is live is a single _make active_ away —
+no page touches it. This mirrors the page render path's "Builder owns its slug,
+else fall through" ([44](44-builder-storefront-render.md) §2.5): the new system
+takes over only what a tenant has actually published **and** activated.
 
 ## 3. The site-scope catalog (`SITE_SOURCES`)
 
@@ -140,10 +160,11 @@ than 500-ing the whole storefront — same defensive posture as the page loader.
 
 - **S0 — foundation.** `Outlet` + chrome registry entries + palette surface
   filter; `SITE_SOURCES`/`SITE_CATALOG`/`'site'` module + starter layout tree;
-  `BuilderLayout` table + migration + `layoutService` (get-or-seed / save / publish)
-  - REST (`/v1/builder/layout`, `/v1/public/builder/layout`) + dashboard api/actions;
-    extract `useBuilderEditor` and re-point the page editor through it (no behavior
-    change — verified in the browser).
+  `BuilderLayout` table + migration + `layoutService` — REST
+  (`/v1/builder/layouts*` catalog, `/v1/public/builder/layout`) + dashboard
+  api/actions; extract `useBuilderEditor` and re-point the page editor through it
+  (no behavior change — verified in the browser). _(S0 shipped one layout per
+  tenant; §2.3 later lifted it to a catalog with one active.)_
 - **S1 — the site editor.** `/builder/site` mounts the thin site shell on the one
   layout; canvas renders the `Outlet` placeholder + chrome components against the
   site catalog; autosave + publish.
@@ -163,8 +184,10 @@ interim.
 
 ## 7. Deferred (not in this doc's slices)
 
-- **Named layouts + per-page assignment** (multiple layouts, a layout picker on the
-  page, target-based defaults) — the docs/36 SiteLayout tier.
+- **Per-page layout assignment** (a layout picker on the page, target-based
+  defaults) — the docs/36 SiteLayout tier. The layout **catalog + active**
+  half shipped (§2.3); per-page assignment is what remains — every page still
+  renders inside the single active layout.
 - **Sidebar / announcement / ad-rail zones** — only header/outlet/footer in v1.
 - **Nested navigation** — `loadSiteData` flattens to the top level; child items
   later.

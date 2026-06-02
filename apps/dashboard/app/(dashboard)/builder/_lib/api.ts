@@ -13,11 +13,19 @@ export async function listPages(): Promise<BuilderPageDto[]> {
   return pages;
 }
 
-// The tenant's site layout — the chrome shell (docs/45). Get-or-seed: the
-// endpoint seeds the starter header · outlet · footer on first call, so the site
-// editor never opens empty.
-export async function getLayout(): Promise<BuilderLayoutDto> {
-  return api.get<BuilderLayoutDto>('/v1/builder/layout');
+// The tenant's site layouts — the chrome catalog (docs/45). The list endpoint
+// seeds the starter header · outlet · footer (active) on first call, so the site
+// editor never opens empty. Exactly one layout is `isActive` (the live chrome).
+export async function listLayouts(): Promise<BuilderLayoutDto[]> {
+  const { layouts } = await api.get<{ layouts: BuilderLayoutDto[] }>('/v1/builder/layouts');
+  return layouts;
+}
+
+// The ACTIVE (live) layout — the page editor renders it as a locked backdrop.
+// Seed-on-first-use, so it never returns null on a fresh tenant; null only if the
+// read fails (handled by the caller).
+export async function getActiveLayout(): Promise<BuilderLayoutDto | null> {
+  return api.get<BuilderLayoutDto | null>('/v1/builder/layouts/active');
 }
 
 // What a page can bind to (docs/43, the keystone): the tenant's real CMS

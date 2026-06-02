@@ -46,11 +46,13 @@ model BuilderPage {
 }
 
 // The site LAYOUT — the chrome shell (header / outlet / footer) every page
-// renders inside (docs/45). Same draft/publish lifecycle as BuilderPage. ONE row
-// per tenant in v1 (the global layout), enforced by the unique tenant_id; named
-// layouts + per-page assignment are deferred (docs/45 §7). The tree carries the
-// special `Outlet` node marking where the routed page goes; chrome binds to the
-// `site` sources (nav / identity / social), which reference existing platform
+// renders inside (docs/45). Same draft/publish lifecycle as BuilderPage. A tenant
+// now keeps MANY layouts (a catalog, like BuilderPage), but exactly one is the
+// ACTIVE one — the live chrome the storefront serves. Publishing a layout just
+// snapshots its draft → published (a layout can be published-but-idle); a
+// separate "make active" flips which published layout is live. The tree carries
+// the special `Outlet` node marking where the routed page goes; chrome binds to
+// the `site` sources (nav / identity / social), which reference existing platform
 // data — the Builder stores no parallel nav or brand.
 //
 // Tenant-scoped + FORCE RLS, like BuilderPage.
@@ -63,16 +65,22 @@ model BuilderLayout {
   // The editable BuilderNode root. Shape validated by @sparx/builder-schemas.
   draftTree     Json      @map("draft_tree")
   // Last published snapshot; null until first publish. The storefront renders
-  // the published layout as the chrome around every page (docs/45 §2.6).
+  // the ACTIVE published layout as the chrome around every page (docs/45 §2.6).
   publishedTree Json?     @map("published_tree")
   publishedAt   DateTime? @map("published_at") @db.Timestamptz
+  // The live layout — exactly one per tenant. "At most one active" is enforced in
+  // the DB by a partial unique index on (tenant_id) WHERE is_active (hand-added in
+  // the migration; Prisma can't express the predicate). Activation requires a
+  // prior publish (the storefront reads the active layout's published tree).
+  isActive  Boolean @default(false) @map("is_active")
+  // Catalog ordering (cf. BuilderPage.position).
+  position  Int     @default(0)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  // One layout per tenant (v1). Drop this unique to introduce named layouts.
-  @@unique([tenantId])
+  @@index([tenantId, position])
   @@map("builder_layouts")
 }

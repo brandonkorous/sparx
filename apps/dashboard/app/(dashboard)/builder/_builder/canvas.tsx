@@ -142,8 +142,12 @@ function boxStyles(
   const isOutlet = node.type === 'Outlet';
   const bgFull = isOutlet || b.backgroundWidth === 'full';
   const contentContained = !isOutlet && b.contentWidth === 'contained';
-  const minHeight = def.kind === 'container' ? HEIGHT_VH[b.height] : undefined;
-  const hasHeight = Boolean(minHeight);
+  // An explicit height is a FIXED height (min AND max) so a tall child can't blow
+  // past it. Grid-direction containers instead push the height onto their CELLS
+  // (the container branch), so the grid box itself stays auto and sizes to rows.
+  const isGrid = node.layout?.direction === 'grid';
+  const fixedHeight = def.kind === 'container' && !isGrid ? HEIGHT_VH[b.height] : undefined;
+  const hasHeight = Boolean(fixedHeight);
   // Background media lives on whichever element owns the background WIDTH: the
   // full-bleed outer when edge-to-edge, else the contained inner.
   const image = b.backgroundImage;
@@ -156,7 +160,11 @@ function boxStyles(
 
   const outer: React.CSSProperties = {
     position: pinned ? 'absolute' : 'relative',
-    ...(pinned ? { top: 0, left: 0, right: 0, zIndex: 40, width: '100%' } : { minHeight }),
+    ...(pinned
+      ? { top: 0, left: 0, right: 0, zIndex: 40, width: '100%' }
+      : fixedHeight
+        ? { minHeight: fixedHeight, maxHeight: fixedHeight }
+        : {}),
     ...(bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
     display: 'flex',
     justifyContent: contentContained ? 'center' : 'flex-start',
@@ -331,6 +339,13 @@ function CanvasNode({
     body = <CanvasCarousel slides={slideNodes} />;
   } else if (def.kind === 'container') {
     const kids = node.children ?? [];
+    // A grid-direction container's height governs its CELLS: each child adopts the
+    // grid's height (fixed) so cells are uniform and a tall child can't dominate;
+    // the grid box itself sizes to its rows. `auto` leaves children untouched.
+    const cellOf = (child: BuilderNode): BuilderNode =>
+      node.layout?.direction === 'grid' && node.box.height !== 'auto'
+        ? { ...child, box: { ...child.box, height: node.box.height } }
+        : child;
     let scopes: { s: Scope; key: string }[];
     if (bound && card === 'array') {
       scopes = (value as unknown[]).map((item, i) => ({
@@ -350,7 +365,7 @@ function CanvasNode({
         kids.map((child) => (
           <CanvasNode
             key={`${key}:${child.id}`}
-            node={child}
+            node={cellOf(child)}
             scope={s}
             catalog={catalog}
             device={device}

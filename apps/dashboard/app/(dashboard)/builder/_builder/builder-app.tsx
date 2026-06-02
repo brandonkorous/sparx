@@ -14,7 +14,7 @@
 
 import * as React from 'react';
 import { Eye, Monitor, Pencil, Plus, Save, Smartphone, Tablet, Trash2, Upload } from 'lucide-react';
-import { Button, Input, ModuleProvider, NativeSelect } from '@sparx/ui';
+import { Button, Input, ModuleProvider, NativeSelect, useConfirm } from '@sparx/ui';
 import { parsePageImport, toPageDocument } from '@sparx/builder-schemas';
 import type { BindingCatalog, BuilderNode, BuilderPageDto } from '@sparx/builder-schemas';
 
@@ -77,6 +77,7 @@ export interface BuilderAppProps {
 }
 
 export function BuilderApp({ initialPages, bindingCatalog, layoutTree }: BuilderAppProps) {
+  const confirm = useConfirm();
   // Pages load from the server (docs/41 §5 seeds the curated set on first use)
   // and seed this state ONCE. From here the client is authoritative for the
   // session; the server is the persistence sink (autosave + structural ops).
@@ -142,6 +143,13 @@ export function BuilderApp({ initialPages, bindingCatalog, layoutTree }: Builder
 
   const onDeleteActive = async () => {
     if (!active || templates.length <= 1) return; // keep at least one page
+    const ok = await confirm({
+      title: `Delete “${active.name}”?`,
+      description: 'This permanently removes the page and everything on it. This can’t be undone.',
+      confirmLabel: 'Delete page',
+      tone: 'danger',
+    });
+    if (!ok) return;
     const removedId = active.id;
     setBusy(true);
     const res = await deletePage(removedId);

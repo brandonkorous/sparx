@@ -3,7 +3,7 @@ import type { BindingCatalog, BuilderLayoutDto, BuilderPageDto } from '@sparx/bu
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/storefront-themes';
 
 import { getBrand, getConfig } from '../../sitebuilder/_lib/api';
-import { getBindingCatalog, getLayout, listPages } from '../_lib/api';
+import { getActiveLayout, getBindingCatalog, listPages } from '../_lib/api';
 import { BuilderApp } from '../_builder/builder-app';
 import '../builder.css';
 
@@ -62,12 +62,12 @@ async function loadCatalog(): Promise<BindingCatalog> {
   }
 }
 
-// The tenant's site layout — the page editor renders it as a locked backdrop
-// (header/footer) around the page so you edit in the chrome it ships in.
+// The tenant's ACTIVE (live) site layout — the page editor renders it as a locked
+// backdrop (header/footer) around the page so you edit in the chrome it ships in.
 // Defensive: a failed read just yields null (the editor renders unframed).
 async function loadLayout(): Promise<BuilderLayoutDto | null> {
   try {
-    return await getLayout();
+    return await getActiveLayout();
   } catch {
     return null;
   }

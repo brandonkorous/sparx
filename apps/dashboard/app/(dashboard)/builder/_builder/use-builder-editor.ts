@@ -13,6 +13,7 @@
 // layout) share this without either knowing the other's storage shape.
 
 import * as React from 'react';
+import { useConfirm } from '@sparx/ui';
 import type { BindingCatalog } from '@sparx/builder-schemas';
 
 import {
@@ -42,6 +43,12 @@ function pathTo(root: BuilderNode, id: string, trail: BuilderNode[] = []): Build
     if (hit.length) return hit;
   }
   return [];
+}
+
+// Subtree size beneath `node` (every descendant, excluding the node itself) —
+// used to tell the user how much a delete takes with it.
+function countDescendants(node: BuilderNode): number {
+  return (node.children ?? []).reduce((sum, c) => sum + 1 + countDescendants(c), 0);
 }
 
 export interface UseBuilderEditorArgs {
@@ -92,6 +99,7 @@ export function useBuilderEditor({
   save,
   onTreeChange,
 }: UseBuilderEditorArgs): BuilderEditor {
+  const confirm = useConfirm();
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [device, setDevice] = React.useState<Device>('desktop');
   const [railTab, setRailTab] = React.useState<RailTab>('layers');
@@ -203,9 +211,29 @@ export function useBuilderEditor({
     setRailTab('layers');
   };
 
+  // Deleting a node removes its WHOLE subtree, so confirm first — and say how
+  // much goes with it. The Layers root has no delete control, so `id` is always
+  // a removable, non-root node.
   const onRemove = (id: string) => {
-    updateTree((t) => removeNode(t, id));
-    setSelectedId((cur) => (cur === id ? null : cur));
+    if (!tree) return;
+    const node = findNode(tree, id);
+    if (!node) return;
+    const label = node.box.name ?? getDef(node.type)?.label ?? node.type;
+    const nested = countDescendants(node);
+    void (async () => {
+      const ok = await confirm({
+        title: `Delete “${label}”?`,
+        description:
+          nested > 0
+            ? `This also removes its ${nested} nested item${nested === 1 ? '' : 's'}. This can’t be undone.`
+            : 'This can’t be undone.',
+        confirmLabel: 'Delete',
+        tone: 'danger',
+      });
+      if (!ok) return;
+      updateTree((t) => removeNode(t, id));
+      setSelectedId((cur) => (cur === id ? null : cur));
+    })();
   };
 
   const targetDef = target ? getDef(target.type) : undefined;

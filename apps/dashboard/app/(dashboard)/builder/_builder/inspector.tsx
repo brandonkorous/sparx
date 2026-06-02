@@ -556,7 +556,9 @@ export function Inspector({
       {def.kind === 'container' && node.layout ? (
         <LayoutPanel layout={node.layout} onLayout={onLayout} />
       ) : null}
-      <BoxBasePanel box={node.box} showHeight={def.showHeight} onBox={onBox} />
+      {/* Height only does anything on containers (the renderer applies it to
+          containers; leaves size via ratio), so show the control there. */}
+      <BoxBasePanel box={node.box} showHeight={def.kind === 'container'} onBox={onBox} />
     </div>
   );
 }

@@ -85,23 +85,54 @@ export async function reorderPages(
   );
 }
 
-// ── Site layout (the chrome shell — docs/45) ─────────────────────────────────
-// One layout per tenant, so these are singular (no :id). Revalidate the /builder/site
-// route, not /builder/page.
+// ── Site layout catalog (the chrome shells — docs/45) ────────────────────────
+// A tenant keeps many layouts; exactly one is ACTIVE (the live chrome). These
+// mirror the page actions but revalidate /builder/site. Activate is the new op:
+// it flips which published layout the storefront serves.
 
-/** The autosave path — save the layout's draft tree. No revalidate. */
-export async function saveLayoutTree(tree: BuilderNode): Promise<ActionResult<BuilderLayoutDto>> {
-  return run(() => api.patch<BuilderLayoutDto>('/v1/builder/layout', { tree }), false);
+export async function createLayout(input: {
+  name: string;
+  tree?: BuilderNode;
+}): Promise<ActionResult<BuilderLayoutDto>> {
+  return run(() => api.post<BuilderLayoutDto>('/v1/builder/layouts', input), true, '/builder/site');
 }
 
-export async function renameLayout(name: string): Promise<ActionResult<BuilderLayoutDto>> {
+/** The autosave path — save the layout's draft tree. No revalidate. */
+export async function saveLayoutTree(
+  id: string,
+  tree: BuilderNode
+): Promise<ActionResult<BuilderLayoutDto>> {
+  return run(() => api.patch<BuilderLayoutDto>(`/v1/builder/layouts/${id}`, { tree }), false);
+}
+
+export async function renameLayout(
+  id: string,
+  name: string
+): Promise<ActionResult<BuilderLayoutDto>> {
   return run(
-    () => api.patch<BuilderLayoutDto>('/v1/builder/layout', { name }),
+    () => api.patch<BuilderLayoutDto>(`/v1/builder/layouts/${id}`, { name }),
     true,
     '/builder/site'
   );
 }
 
-export async function publishLayout(): Promise<ActionResult<BuilderLayoutDto>> {
-  return run(() => api.post<BuilderLayoutDto>('/v1/builder/layout/publish'), true, '/builder/site');
+export async function deleteLayout(id: string): Promise<ActionResult<{ id: string }>> {
+  return run(() => api.delete<{ id: string }>(`/v1/builder/layouts/${id}`), true, '/builder/site');
+}
+
+export async function publishLayout(id: string): Promise<ActionResult<BuilderLayoutDto>> {
+  return run(
+    () => api.post<BuilderLayoutDto>(`/v1/builder/layouts/${id}/publish`),
+    true,
+    '/builder/site'
+  );
+}
+
+/** Make a published layout the live one — flips what the storefront serves. */
+export async function activateLayout(id: string): Promise<ActionResult<BuilderLayoutDto>> {
+  return run(
+    () => api.post<BuilderLayoutDto>(`/v1/builder/layouts/${id}/activate`),
+    true,
+    '/builder/site'
+  );
 }

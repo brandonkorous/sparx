@@ -131,13 +131,17 @@ function layoutStyle(layout: LayoutBase): React.CSSProperties {
 
 function boxStyles(
   box: BoxBase,
-  isContainer: boolean
+  isContainer: boolean,
+  isGrid: boolean
 ): { outer: React.CSSProperties; inner: React.CSSProperties } {
   const surface = SURFACE[box.surface];
   const bgFull = box.backgroundWidth === 'full';
   const contentContained = box.contentWidth === 'contained';
-  const minHeight = isContainer ? HEIGHT_VH[box.height] : undefined;
-  const hasHeight = Boolean(minHeight);
+  // An explicit height is a FIXED height (min AND max) so a tall child can't blow
+  // past it. Grid-direction containers push the height onto their CELLS instead
+  // (the container branch), so the grid box itself stays auto and sizes to rows.
+  const fixedHeight = isContainer && !isGrid ? HEIGHT_VH[box.height] : undefined;
+  const hasHeight = Boolean(fixedHeight);
   const image = box.backgroundImage;
   const overlay = box.overlay ?? 'none';
   const tone = box.textTone ?? 'default';
@@ -147,7 +151,11 @@ function boxStyles(
 
   const outer: React.CSSProperties = {
     position: pinned ? 'absolute' : 'relative',
-    ...(pinned ? { top: 0, left: 0, right: 0, zIndex: 40, width: '100%' } : { minHeight }),
+    ...(pinned
+      ? { top: 0, left: 0, right: 0, zIndex: 40, width: '100%' }
+      : fixedHeight
+        ? { minHeight: fixedHeight, maxHeight: fixedHeight }
+        : {}),
     ...(bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
     display: 'flex',
     justifyContent: contentContained ? 'center' : 'flex-start',
@@ -535,7 +543,8 @@ function RenderNode({
     node.type === 'Outlet'
       ? { ...node.box, backgroundWidth: 'full', contentWidth: 'full' }
       : node.box;
-  const { outer, inner } = boxStyles(effBox, isContainer);
+  const isGrid = node.layout?.direction === 'grid';
+  const { outer, inner } = boxStyles(effBox, isContainer, isGrid);
   const innerStyle = isContainer && node.layout ? { ...inner, ...layoutStyle(node.layout) } : inner;
 
   let body: React.ReactNode;
@@ -586,13 +595,20 @@ function RenderNode({
     );
   } else if (isContainer) {
     const kids = node.children ?? [];
+    // A grid-direction container's height governs its CELLS: each child adopts the
+    // grid's height (fixed) so cells are uniform and a tall child can't dominate;
+    // the grid box itself sizes to its rows. `auto` leaves children untouched.
+    const cellOf = (child: BuilderNode): BuilderNode =>
+      node.layout?.direction === 'grid' && node.box.height !== 'auto'
+        ? { ...child, box: { ...child.box, height: node.box.height } }
+        : child;
     if (bound && card === 'array') {
       // Iterate: each record scopes its subtree to `item`.
       body = (value as unknown[]).flatMap((item, i) =>
         kids.map((child) => (
           <RenderNode
             key={`${i}:${child.id}`}
-            node={child}
+            node={cellOf(child)}
             scope={{ ...scope, item, index: i }}
             outlet={outlet}
           />
@@ -601,11 +617,16 @@ function RenderNode({
     } else if (bound && card === 'object') {
       // Set scope: render once, descendants resolve item.*
       body = kids.map((child) => (
-        <RenderNode key={child.id} node={child} scope={{ ...scope, item: value }} outlet={outlet} />
+        <RenderNode
+          key={child.id}
+          node={cellOf(child)}
+          scope={{ ...scope, item: value }}
+          outlet={outlet}
+        />
       ));
     } else {
       body = kids.map((child) => (
-        <RenderNode key={child.id} node={child} scope={scope} outlet={outlet} />
+        <RenderNode key={child.id} node={cellOf(child)} scope={scope} outlet={outlet} />
       ));
     }
   } else {

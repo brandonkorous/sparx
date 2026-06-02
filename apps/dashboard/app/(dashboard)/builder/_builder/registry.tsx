@@ -85,9 +85,6 @@ export interface ComponentDef {
   /** Cardinalities this component meaningfully handles — used for the binding
    *  hint and for deciding iterate-vs-once on containers. */
   accepts: Cardinality[];
-  /** Height is only meaningful for big blocks; a button never offers a 25vh
-   *  height. Defaults to false. */
-  showHeight: boolean;
   /** Editor surfaces this component appears in (docs/45 §2.5). Omitted = both
    *  the page editor and the site (layout) editor. */
   surfaces?: EditorSurface[];
@@ -168,7 +165,6 @@ const DEFS: ComponentDef[] = [
     icon: LayoutTemplate,
     bindable: true,
     accepts: ['object', 'array', 'empty'],
-    showHeight: true,
     props: [],
     defaults: { box: { padding: 'lg', contentWidth: 'contained' }, layout: { direction: 'stack' } },
     chromeClass: 'bx-section',
@@ -181,7 +177,6 @@ const DEFS: ComponentDef[] = [
     icon: LayoutGrid,
     bindable: true,
     accepts: ['array', 'empty'],
-    showHeight: false,
     props: [],
     defaults: { box: { padding: 'none' }, layout: { direction: 'grid', columns: 3, gap: 'lg' } },
     chromeClass: 'bx-grid',
@@ -194,7 +189,6 @@ const DEFS: ComponentDef[] = [
     icon: Rows3,
     bindable: true,
     accepts: ['object', 'array', 'empty'],
-    showHeight: false,
     props: [],
     defaults: { box: { padding: 'none' }, layout: { direction: 'stack', gap: 'md' } },
     chromeClass: 'bx-stack',
@@ -207,7 +201,6 @@ const DEFS: ComponentDef[] = [
     icon: Square,
     bindable: true,
     accepts: ['object', 'empty'],
-    showHeight: false,
     props: [],
     defaults: {
       box: { surface: 'subtle', padding: 'none' },
@@ -226,7 +219,6 @@ const DEFS: ComponentDef[] = [
     icon: GalleryHorizontal,
     bindable: true,
     accepts: ['array', 'empty'],
-    showHeight: true,
     props: [
       { key: 'autoplay', label: 'Autoplay', control: 'switch' },
       {
@@ -259,7 +251,6 @@ const DEFS: ComponentDef[] = [
     icon: HeadingIcon,
     bindable: true,
     accepts: ['scalar'],
-    showHeight: false,
     props: [
       {
         key: 'level',
@@ -289,7 +280,6 @@ const DEFS: ComponentDef[] = [
     icon: Type,
     bindable: true,
     accepts: ['scalar'],
-    showHeight: false,
     props: [
       {
         key: 'variant',
@@ -318,7 +308,6 @@ const DEFS: ComponentDef[] = [
     icon: ImageIcon,
     bindable: false,
     accepts: [],
-    showHeight: false,
     props: [
       {
         key: 'ratio',
@@ -348,7 +337,6 @@ const DEFS: ComponentDef[] = [
     icon: MousePointerClick,
     bindable: true,
     accepts: ['scalar'],
-    showHeight: false,
     props: [
       { key: 'label', label: 'Label', control: 'text', placeholder: 'Button label' },
       {
@@ -379,7 +367,6 @@ const DEFS: ComponentDef[] = [
     icon: Minus,
     bindable: false,
     accepts: [],
-    showHeight: false,
     props: [],
     defaults: {},
     renderLeaf: () => <hr className="bx-divider" />,
@@ -392,7 +379,6 @@ const DEFS: ComponentDef[] = [
     icon: PlayCircle,
     bindable: false,
     accepts: [],
-    showHeight: false,
     props: [
       {
         key: 'url',
@@ -437,7 +423,6 @@ const DEFS: ComponentDef[] = [
     icon: MapPin,
     bindable: false,
     accepts: [],
-    showHeight: false,
     props: [
       {
         key: 'query',
@@ -485,7 +470,6 @@ const DEFS: ComponentDef[] = [
     icon: Hash,
     bindable: true,
     accepts: ['scalar'],
-    showHeight: false,
     props: [
       { key: 'value', label: 'Value', control: 'text', placeholder: '37,412' },
       { key: 'label', label: 'Label', control: 'text', placeholder: 'Superchargers' },
@@ -511,7 +495,6 @@ const DEFS: ComponentDef[] = [
     icon: Images,
     bindable: true,
     accepts: ['object', 'array', 'empty'],
-    showHeight: false,
     surfaces: ['page'],
     props: [
       {
@@ -551,7 +534,6 @@ const DEFS: ComponentDef[] = [
     module: 'commerce',
     bindable: true,
     accepts: ['scalar'],
-    showHeight: false,
     surfaces: ['page'],
     props: [],
     defaults: {},
@@ -570,7 +552,6 @@ const DEFS: ComponentDef[] = [
     module: 'crm',
     bindable: true,
     accepts: ['object'],
-    showHeight: false,
     surfaces: ['page'],
     props: [{ key: 'cta', label: 'Button', control: 'text', placeholder: 'Subscribe' }],
     defaults: { props: { cta: 'Subscribe' } },
@@ -594,7 +575,6 @@ const DEFS: ComponentDef[] = [
     icon: SquareDashed,
     bindable: false,
     accepts: [],
-    showHeight: false,
     surfaces: ['site'],
     props: [],
     // Edge-to-edge: the routed page manages its own width (its sections do
@@ -616,7 +596,6 @@ const DEFS: ComponentDef[] = [
     module: 'site',
     bindable: true,
     accepts: ['array'],
-    showHeight: false,
     surfaces: ['site'],
     props: [
       {
@@ -666,7 +645,6 @@ const DEFS: ComponentDef[] = [
     module: 'site',
     bindable: true,
     accepts: ['object', 'empty'],
-    showHeight: false,
     surfaces: ['site'],
     props: [],
     defaults: {},
@@ -684,7 +662,6 @@ const DEFS: ComponentDef[] = [
     module: 'site',
     bindable: true,
     accepts: ['array'],
-    showHeight: false,
     surfaces: ['site'],
     props: [],
     defaults: {},

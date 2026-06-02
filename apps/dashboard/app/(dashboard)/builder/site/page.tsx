@@ -3,17 +3,19 @@ import { SITE_CATALOG, type BuilderLayoutDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/storefront-themes';
 
 import { getBrand, getConfig } from '../../sitebuilder/_lib/api';
-import { getLayout } from '../_lib/api';
+import { listLayouts } from '../_lib/api';
 import { SiteBuilderApp } from '../_builder/site-builder-app';
 import '../builder.css';
 
 // /builder/site — the site LAYOUT editor (docs/45): the chrome shell (header ·
 // outlet · footer) every page renders inside. Same editor as /builder/page, but
-// pointed at the tenant's single layout and the `site` binding sources.
+// pointed at the tenant's layout CATALOG and the `site` binding sources. A tenant
+// keeps many layouts; exactly one is ACTIVE (the live chrome), flipped by a
+// separate "make active" action.
 //
 // Like the page editor, we compile the tenant brand to CSS scoped to the canvas
-// so the chrome previews in the real brand. The layout get-or-seed endpoint seeds
-// the starter header · outlet · footer on first load.
+// so the chrome previews in the real brand. The list endpoint seeds the starter
+// header · outlet · footer (active) on first load.
 
 export const metadata: Metadata = {
   title: 'Builder · Site',
@@ -35,24 +37,24 @@ async function canvasThemeCss(): Promise<string> {
   }
 }
 
-// The tenant's single layout (the endpoint seeds the starter shell on first
-// call). Defensive: a failed read yields null so the route can show a recoverable
-// message rather than 500.
-async function loadLayout(): Promise<BuilderLayoutDto | null> {
+// The tenant's layout catalog (the endpoint seeds the starter shell, active, on
+// first call). Defensive: a failed read yields [] so the route can show a
+// recoverable message rather than 500.
+async function loadLayouts(): Promise<BuilderLayoutDto[]> {
   try {
-    return await getLayout();
+    return await listLayouts();
   } catch {
-    return null;
+    return [];
   }
 }
 
 export default async function BuilderSiteRoute() {
-  const [themeCss, layout] = await Promise.all([canvasThemeCss(), loadLayout()]);
-  if (!layout) {
+  const [themeCss, layouts] = await Promise.all([canvasThemeCss(), loadLayouts()]);
+  if (layouts.length === 0) {
     return (
       <div className="px-6 py-8 lg:px-10">
         <div className="rounded-xl border border-dashed border-[var(--color-border-default)] p-12 text-center text-sm text-[var(--color-text-muted)]">
-          Couldn’t load the site layout. Check that the Builder module is enabled, then reload.
+          Couldn’t load your site layouts. Check that the Builder module is enabled, then reload.
         </div>
       </div>
     );
@@ -60,7 +62,7 @@ export default async function BuilderSiteRoute() {
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-      <SiteBuilderApp initialLayout={layout} bindingCatalog={SITE_CATALOG} />
+      <SiteBuilderApp initialLayouts={layouts} bindingCatalog={SITE_CATALOG} />
     </>
   );
 }
