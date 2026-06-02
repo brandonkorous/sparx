@@ -219,9 +219,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
   // resolution as the by-id read. 404 when the tenant has no menu at that
   // location (the chrome nav then renders empty).
   app.get('/v1/public/content/navigation/by-location/:location', async (request) => {
-    const { location } = z
-      .object({ location: z.string().min(1).max(63) })
-      .parse(request.params);
+    const { location } = z.object({ location: z.string().min(1).max(63) }).parse(request.params);
     const q = z.object({ tenant: z.string().min(1).max(63) }).parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
 

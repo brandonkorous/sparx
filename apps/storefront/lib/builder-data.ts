@@ -123,7 +123,7 @@ export async function loadBuilderData(tenantSlug: string, tree: BuilderNode): Pr
 // v1 (docs/45 §7); social binds to the tenant brand's socials, which the public
 // tenant payload doesn't carry yet, so it's sourced empty for now.
 
-function navToItems(nodes: NavNode[]): Array<{ label: string; url: string }> {
+function navToItems(nodes: NavNode[]): { label: string; url: string }[] {
   return nodes.map((n) => ({ label: n.label, url: n.href }));
 }
 

@@ -260,15 +260,18 @@ function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.Re
     // ── Site chrome (docs/45) ────────────────────────────────────────────────
     case 'Logo': {
       const identity =
-        value && typeof value === 'object'
-          ? (value as { name?: unknown; logo?: unknown })
-          : null;
+        value && typeof value === 'object' ? (value as { name?: unknown; logo?: unknown }) : null;
       const name = typeof identity?.name === 'string' ? identity.name : '';
       const img = firstImage(identity?.logo);
       return (
         <a
           href="/"
-          style={{ display: 'inline-flex', alignItems: 'center', color: 'inherit', textDecoration: 'none' }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            color: 'inherit',
+            textDecoration: 'none',
+          }}
         >
           {img?.url ? (
             <img

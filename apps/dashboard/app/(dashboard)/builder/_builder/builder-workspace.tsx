@@ -58,7 +58,10 @@ export function BuilderWorkspace({
       <div className="bx-body">
         {/* Left rail */}
         <aside
-          className={cn('bx-rail', editor.mobilePane === 'edit' ? 'bx-pane--show' : 'bx-pane--hide')}
+          className={cn(
+            'bx-rail',
+            editor.mobilePane === 'edit' ? 'bx-pane--show' : 'bx-pane--hide'
+          )}
         >
           <div className="bx-rail__tabs">
             <button
@@ -112,7 +115,10 @@ export function BuilderWorkspace({
 
         {/* Inspector */}
         <aside
-          className={cn('bx-side', editor.mobilePane === 'edit' ? 'bx-pane--show' : 'bx-pane--hide')}
+          className={cn(
+            'bx-side',
+            editor.mobilePane === 'edit' ? 'bx-pane--show' : 'bx-pane--hide'
+          )}
         >
           <ScrollArea className="bx-side__scroll">
             <Inspector

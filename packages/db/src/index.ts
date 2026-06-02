@@ -138,6 +138,7 @@ export type {
   TenantSectionDefinition,
   // Builder
   BuilderPage,
+  BuilderLayout,
   // Email platform
   EmailSettings,
   SendingDomain,

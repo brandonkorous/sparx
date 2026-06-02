@@ -473,8 +473,7 @@ const DEFS: ComponentDef[] = [
     props: [],
     defaults: {},
     renderLeaf: ({ value }) => {
-      const identity =
-        value && typeof value === 'object' ? (value as { name?: unknown }) : null;
+      const identity = value && typeof value === 'object' ? (value as { name?: unknown }) : null;
       return <span className="bx-logo">{firstString(identity?.name, 'Your brand')}</span>;
     },
   },

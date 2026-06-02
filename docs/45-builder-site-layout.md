@@ -71,12 +71,12 @@ is explicitly out of scope here.
 binds to a NEW `site` source module, but that module **references the existing
 platform data**:
 
-| Site source        | Backed by (existing)                                                  |
-| ------------------ | --------------------------------------------------------------------- |
-| `site.identity`    | `Tenant.name` / `TenantBrand.businessName` · `…tagline` · logo media  |
-| `site.primaryNav`  | `NavigationMenu(location: 'header')` → `NavigationItem[]`             |
-| `site.footerNav`   | `NavigationMenu(location: 'footer')` → `NavigationItem[]`             |
-| `site.social`      | `TenantBrand.socials`                                                  |
+| Site source       | Backed by (existing)                                                 |
+| ----------------- | -------------------------------------------------------------------- |
+| `site.identity`   | `Tenant.name` / `TenantBrand.businessName` · `…tagline` · logo media |
+| `site.primaryNav` | `NavigationMenu(location: 'header')` → `NavigationItem[]`            |
+| `site.footerNav`  | `NavigationMenu(location: 'footer')` → `NavigationItem[]`            |
+| `site.social`     | `TenantBrand.socials`                                                |
 
 The Builder stores **no** parallel nav or brand. The catalog **sources** are
 code-defined (a fixed shape — `SITE_SOURCES`); the **data** is fetched per tenant
@@ -111,12 +111,12 @@ only what a tenant has actually published into it.
 
 A new `SourceModule = 'site'`. Code-defined, tenant-independent shape:
 
-| key               | cardinality | fields                                            |
-| ----------------- | ----------- | ------------------------------------------------- |
-| `site.identity`   | object      | `name` (text), `tagline` (text), `logo` (image)   |
-| `site.primaryNav` | array       | `label` (text), `url` (text)                      |
-| `site.footerNav`  | array       | `label` (text), `url` (text)                      |
-| `site.social`     | array       | `platform` (text), `url` (text)                   |
+| key               | cardinality | fields                                          |
+| ----------------- | ----------- | ----------------------------------------------- |
+| `site.identity`   | object      | `name` (text), `tagline` (text), `logo` (image) |
+| `site.primaryNav` | array       | `label` (text), `url` (text)                    |
+| `site.footerNav`  | array       | `label` (text), `url` (text)                    |
+| `site.social`     | array       | `platform` (text), `url` (text)                 |
 
 `SITE_CATALOG = { sources: SITE_SOURCES }` is a constant — the site editor route
 passes it directly (no fetch / no per-tenant query), unlike the page catalog which
@@ -141,9 +141,9 @@ than 500-ing the whole storefront — same defensive posture as the page loader.
 - **S0 — foundation.** `Outlet` + chrome registry entries + palette surface
   filter; `SITE_SOURCES`/`SITE_CATALOG`/`'site'` module + starter layout tree;
   `BuilderLayout` table + migration + `layoutService` (get-or-seed / save / publish)
-  + REST (`/v1/builder/layout`, `/v1/public/builder/layout`) + dashboard api/actions;
-  extract `useBuilderEditor` and re-point the page editor through it (no behavior
-  change — verified in the browser).
+  - REST (`/v1/builder/layout`, `/v1/public/builder/layout`) + dashboard api/actions;
+    extract `useBuilderEditor` and re-point the page editor through it (no behavior
+    change — verified in the browser).
 - **S1 — the site editor.** `/builder/site` mounts the thin site shell on the one
   layout; canvas renders the `Outlet` placeholder + chrome components against the
   site catalog; autosave + publish.

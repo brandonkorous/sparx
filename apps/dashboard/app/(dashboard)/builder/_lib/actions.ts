@@ -95,7 +95,11 @@ export async function saveLayoutTree(tree: BuilderNode): Promise<ActionResult<Bu
 }
 
 export async function renameLayout(name: string): Promise<ActionResult<BuilderLayoutDto>> {
-  return run(() => api.patch<BuilderLayoutDto>('/v1/builder/layout', { name }), true, '/builder/site');
+  return run(
+    () => api.patch<BuilderLayoutDto>('/v1/builder/layout', { name }),
+    true,
+    '/builder/site'
+  );
 }
 
 export async function publishLayout(): Promise<ActionResult<BuilderLayoutDto>> {
