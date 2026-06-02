@@ -82,6 +82,22 @@ resource "google_project_iam_member" "commerce_indexer_roles" {
   member  = "serviceAccount:${google_service_account.commerce_indexer.email}"
 }
 
+resource "google_service_account" "legal_seed_worker" {
+  account_id   = "sparx-legal-seed-worker"
+  display_name = "Sparx legal-seed-worker (Cloud Run)"
+  description  = "Runtime SA for the legal-seed-worker Cloud Run service. Reads the DB URL from Secret Manager and seeds a new tenant's starter legal pages + footer placements on tenant.created."
+}
+
+resource "google_project_iam_member" "legal_seed_worker_roles" {
+  for_each = toset([
+    "roles/cloudsql.client",
+    "roles/secretmanager.secretAccessor",
+  ])
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.legal_seed_worker.email}"
+}
+
 resource "google_service_account" "media_worker" {
   account_id   = "sparx-media-worker"
   display_name = "Sparx media-worker (Cloud Run)"
@@ -357,6 +373,58 @@ module "commerce_indexer_cloudrun" {
   depends_on = [
     module.pubsub,
     google_project_iam_member.commerce_indexer_roles,
+    google_service_account_iam_member.pubsub_invoker_token_creator,
+  ]
+}
+
+# ─── legal-seed-worker ────────────────────────────────────────────────────
+#
+# Seeds a new tenant's starter legal pages (privacy/terms/cookie-policy/
+# returns/shipping/refund) as editable CMS drafts + footer placements on
+# tenant.created (docs/42 §3). Light DB-only work; idempotent on redelivery.
+
+module "legal_seed_worker_cloudrun" {
+  source = "../../modules/cloud-run-worker"
+
+  name                  = "legal-seed-worker"
+  project_id            = var.project_id
+  region                = var.region
+  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/sparx/legal-seed-worker:latest"
+  service_account_email = google_service_account.legal_seed_worker.email
+  vpc_connector_id      = google_vpc_access_connector.workers.id
+
+  # A few Prisma writes per tenant — light. Scale-to-zero; tenant creation is
+  # infrequent so cold starts are acceptable.
+  min_instance_count    = 0
+  max_instance_count    = 4
+  container_concurrency = 8
+  cpu                   = "1"
+  memory                = "512Mi"
+  timeout_seconds       = 120
+
+  env_vars = {
+    NODE_ENV          = "production"
+    SERVICE_NAME      = "legal-seed-worker"
+    LOG_LEVEL         = "info"
+    PUBSUB_INVOKER_SA = google_service_account.pubsub_invoker.email
+  }
+
+  secrets = [
+    {
+      name      = "DATABASE_URL"
+      secret_id = "database-url"
+    },
+  ]
+
+  pubsub_topic                 = "tenant.created"
+  pubsub_subscription_name     = "tenant.created.legal-seed-worker-cloudrun"
+  pubsub_invoker_sa_email      = google_service_account.pubsub_invoker.email
+  pubsub_dead_letter_topic_id  = module.pubsub.dead_letter_topic == null ? null : "projects/${var.project_id}/topics/${module.pubsub.dead_letter_topic}"
+  pubsub_max_delivery_attempts = 5
+
+  depends_on = [
+    module.pubsub,
+    google_project_iam_member.legal_seed_worker_roles,
     google_service_account_iam_member.pubsub_invoker_token_creator,
   ]
 }

@@ -69,6 +69,12 @@ module "pubsub" {
   # Empty list = topic exists (publishable) but no subscriber yet — Phase 1
   # cost optimisation, since idle subscriptions still cost retention.
   topics = {
+    # Platform / tenant lifecycle — signUpMerchant publishes tenant.created;
+    # the legal-seed-worker consumes it via its Cloud Run PUSH subscription in
+    # serverless.tf (tenant.created.legal-seed-worker-cloudrun). Topic-only
+    # here (empty list = no idle pull subscription).
+    "tenant.created" = []
+
     # Commerce — catalog + inventory fan-in to commerce-indexer
     "product.created"    = ["commerce-indexer"]
     "product.updated"    = ["commerce-indexer"]

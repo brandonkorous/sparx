@@ -45,6 +45,7 @@ jobs:
           - media-worker
           - email-worker
           - commerce-indexer
+          - legal-seed-worker
           - domain-worker
           - dropship-worker
           - billing-worker
