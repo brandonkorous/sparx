@@ -48,6 +48,9 @@ model User {
   favorites UserFavorite[]
   recents   UserRecent[]
 
+  // Platform legal — Sparx ToS/Privacy/AUP/DPA acceptance (docs/42 §6)
+  legalAcceptances PlatformLegalAcceptance[]
+
   @@index([tenantId])
   @@map("users")
 }

@@ -22,6 +22,7 @@ import { ok, paged } from '@sparx/api-core/envelope';
 import { notFound, badRequest } from '@sparx/api-core/errors';
 import { serializeEntry } from '@sparx/api-core/entries';
 import { tryVerifyPreviewToken } from '../../../lib/preview.js';
+import { readPublicConsentConfig } from '../../../lib/consent.js';
 
 const ListQuery = z.object({
   tenant: z.string().min(1).max(63),
@@ -46,6 +47,16 @@ async function resolveTenantBySlug(slug: string): Promise<string> {
   const t = await prisma.tenant.findUnique({ where: { slug }, select: { id: true } });
   if (!t) throw notFound('Tenant', slug);
   return t.id;
+}
+
+// "privacy-policy" → "Privacy Policy". Used as the footer link label only when
+// a placement has no explicit label override (the seed always sets one).
+function prettifySlug(slug: string): string {
+  return slug
+    .split(/[-_/]/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
 }
 
 const publicContentRoutes: FastifyPluginAsync = (app) => {
@@ -186,6 +197,51 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     return ok({ id: menu.id, location: menu.location, name: menu.name, items: build(null) });
   });
 
+  // Public legal-document placements — the storefront resolves a tenant's
+  // legal pages (privacy/terms/cookie-policy/…) into footer/checkout/terms-gate
+  // links (docs/42 §5). Like nav resolution, a placement whose entry is
+  // unpublished / deleted / slugless is dropped so the storefront never renders
+  // a dead link. `source_kind='integration_doc'` placements (no entry) are
+  // skipped here until the integration-docs bridge lands.
+  app.get('/v1/public/legal/placements', async (request) => {
+    const q = z
+      .object({
+        tenant: z.string().min(1).max(63),
+        placement: z.enum(['footer', 'checkout', 'terms_gate']).default('footer'),
+      })
+      .parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+
+    const rows = await withTenant({ tenantId }, (tx) =>
+      tx.storefrontDocPlacement.findMany({
+        where: { placement: q.placement, enabled: true },
+        orderBy: { position: 'asc' },
+        select: {
+          id: true,
+          label: true,
+          legalKind: true,
+          columnKey: true,
+          entry: { select: { slug: true, status: true, deletedAt: true } },
+        },
+      })
+    );
+
+    const links = rows.flatMap((r) => {
+      const e = r.entry;
+      if (!e?.slug || e.status !== 'published' || e.deletedAt) return [];
+      return [
+        {
+          label: r.label ?? prettifySlug(e.slug),
+          href: `/${e.slug}`,
+          legalKind: r.legalKind,
+          columnKey: r.columnKey ?? 'legal',
+        },
+      ];
+    });
+
+    return ok(links);
+  });
+
   app.get('/v1/public/content/types/:key', async (request) => {
     const { key } = TypeKeyParams.parse(request.params);
     const q = TypeKeyQuery.parse(request.query);
@@ -218,7 +274,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     // Both rows are one-per-tenant (tenantId PK); a missing row means the
     // tenant hasn't customized, so we fall back to nulls/defaults that the
     // storefront's token layer interprets as "use the default theme".
-    const [theme, storefront, brand] = await withTenant({ tenantId: tenant.id }, (tx) =>
+    const [theme, storefront, brand, consent] = await withTenant({ tenantId: tenant.id }, (tx) =>
       Promise.all([
         // PRESENTATION tokens only. Identity (colours, type, logo, favicon) comes
         // from the tenant brand below — those StorefrontTheme columns were removed
@@ -258,6 +314,10 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
             faviconMediaId: true,
           },
         }),
+        // Cookie-consent config travels with the tenant payload so the
+        // storefront layout decides off/quiet-notice/banner server-side in
+        // the same fetch — no second round-trip, no client flash (docs/42 §4).
+        readPublicConsentConfig(tx, tenant.id),
       ])
     );
 
@@ -298,6 +358,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
         hidePricesWhenSignedOut: false,
         requireAuthForCheckout: false,
       },
+      consent,
     });
   });
   return Promise.resolve();

@@ -28,6 +28,7 @@ import { RevealController } from '@/components/reveal-controller';
 import { SiteHeader, type NavItem } from '@/components/site-header';
 import { SiteFooter, type FooterColumn } from '@/components/site-footer';
 import { listCollections } from '@/lib/commerce';
+import { getLegalFooterLinks } from '@/lib/legal';
 import { mediaUrl } from '@/lib/media';
 import { resolveTenant, type TenantTheme } from '@/lib/tenant';
 import { buildStorefrontThemeCss } from '@/lib/theme';
@@ -223,11 +224,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     },
     {
       title: 'Info',
-      links: [
-        { label: 'Contact', href: '/contact' },
-        { label: 'Shipping', href: '/shipping-policy' },
-        { label: 'Returns', href: '/returns-policy' },
-      ],
+      links: [{ label: 'Contact', href: '/contact' }],
     },
   ];
 
@@ -240,6 +237,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     const items = await getNavigationMenu(tenant.slug, footerBlock.navigationMenuId);
     const cols = navNodesToFooterColumns(items);
     if (cols.length > 0) footerColumns = cols;
+  }
+
+  // Legal pages (privacy/terms/cookie-policy/…) resolve from doc placements
+  // (docs/42) and append as a "Legal" column — independent of whether the
+  // footer above is default or nav-menu-driven, since legal links are
+  // compliance-driven, not editorial. Omitted entirely when nothing is
+  // published yet.
+  if (tenant) {
+    const legalLinks = await getLegalFooterLinks(tenant.slug);
+    if (legalLinks.length > 0) {
+      footerColumns = [
+        ...footerColumns,
+        { title: 'Legal', links: legalLinks.map((l) => ({ label: l.label, href: l.href })) },
+      ];
+    }
   }
 
   const announcement =

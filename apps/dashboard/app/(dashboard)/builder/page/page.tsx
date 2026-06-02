@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
+import type { BuilderPageDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/storefront-themes';
 
 import { getBrand, getConfig } from '../../sitebuilder/_lib/api';
+import { listPages } from '../_lib/api';
 import { BuilderApp } from '../_builder/builder-app';
 import '../builder.css';
 
@@ -39,12 +41,23 @@ async function canvasThemeCss(): Promise<string> {
   }
 }
 
+// The tenant's pages (the list endpoint seeds the curated starter set on first
+// load — docs/41 §5). Defensive: if the read fails (api down / module gated),
+// hand the editor an empty catalog rather than 500 the route.
+async function loadPages(): Promise<BuilderPageDto[]> {
+  try {
+    return await listPages();
+  } catch {
+    return [];
+  }
+}
+
 export default async function BuilderPageRoute() {
-  const themeCss = await canvasThemeCss();
+  const [themeCss, pages] = await Promise.all([canvasThemeCss(), loadPages()]);
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-      <BuilderApp />
+      <BuilderApp initialPages={pages} />
     </>
   );
 }

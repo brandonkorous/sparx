@@ -43,6 +43,7 @@ COPY packages/email-sections/package.json packages/email-sections/
 COPY packages/storefront-themes/package.json packages/storefront-themes/
 COPY packages/sitebuilder/package.json packages/sitebuilder/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
+COPY packages/builder-schemas/package.json packages/builder-schemas/
 # Root postinstall runs `pnpm --filter @sparx/db db:generate`, which needs
 # both the schema source AND the prisma config file (the new multi-file
 # schema lives in prisma/schema/, declared in prisma.config.ts).
@@ -78,6 +79,7 @@ COPY packages/email-sections packages/email-sections
 COPY packages/storefront-themes packages/storefront-themes
 COPY packages/sitebuilder packages/sitebuilder
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
+COPY packages/builder-schemas packages/builder-schemas
 COPY apps/dashboard apps/dashboard
 
 # Generate Prisma client (the dashboard imports @sparx/db which re-exports it).

@@ -13,7 +13,10 @@ export interface PageViewProps {
 export function PageView({ entry }: PageViewProps) {
   const body = entry.body;
   const title = typeof body.title === 'string' ? body.title : undefined;
-  const doc = body.content;
+  // The `page` content type stores its rich text under the `body` field
+  // (shape `{type:'doc',content:[...]}`). `content` is a legacy fallback for
+  // any older entry that stored the doc there.
+  const doc = body.body ?? body.content;
   const html = doc ? renderDocToHtml(doc) : '';
 
   return (

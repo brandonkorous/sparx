@@ -2,17 +2,33 @@
 
 // The builder app — the editor backbone at /builder/page.
 //
-// Owns the single source of truth (the templates + which is active + selection
-// + device) and lays out the editor's working area INSIDE the dashboard shell
+// Owns the working state (the loaded pages + which is active + selection +
+// device) and lays out the editor's working area INSIDE the dashboard shell
 // (which already provides the global header, main sidebar, and module sidebar):
-// a slim toolbar (template switcher + device toggle + actions), a context bar
+// a slim toolbar (page switcher + device toggle + actions), a context bar
 // stating which modules this page composes from, a left rail (Layers / Add),
 // the canvas, and the inspector. Below `lg` the three panes collapse to one
 // column with a Build / Preview switch — the builder must work on a phone.
+//
+// PERSISTENCE (docs/41): pages load from api-rest via the server route and seed
+// this component's state. Draft-tree edits autosave (debounced) through the
+// savePageTree server action; New / Delete / Publish round-trip immediately.
 
 import * as React from 'react';
-import { Eye, Layers, Monitor, Plus, Save, Smartphone, Tablet, Upload } from 'lucide-react';
-import { Button, ModuleProvider, NativeSelect, ScrollArea, cn } from '@sparx/ui';
+import {
+  Eye,
+  Layers,
+  Monitor,
+  Pencil,
+  Plus,
+  Save,
+  Smartphone,
+  Tablet,
+  Trash2,
+  Upload,
+} from 'lucide-react';
+import { Button, Input, ModuleProvider, NativeSelect, ScrollArea, cn } from '@sparx/ui';
+import type { BuilderPageDto } from '@sparx/builder-schemas';
 
 import {
   appendChild,
@@ -28,11 +44,25 @@ import {
   type PageTemplate,
 } from './model';
 import { getDef, isContainer, makeNode } from './registry';
-import { MODULES, SAMPLE_DATA, SEED_TEMPLATES, makeBlankTemplate } from './sample';
+import { MODULES, SAMPLE_DATA } from './sample';
 import { Canvas } from './canvas';
 import { Inspector } from './inspector';
 import { LayersPanel } from './layers-panel';
 import { AddPalette } from './add-palette';
+import { createPage, deletePage, publishPage, renamePage, savePageTree } from '../_lib/actions';
+
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
+// A loaded page reduced to the editor's working shape.
+function toTemplate(p: BuilderPageDto): PageTemplate {
+  return {
+    id: p.id,
+    name: p.name,
+    kind: p.kind,
+    recordType: p.recordType ?? undefined,
+    tree: p.tree,
+  };
+}
 
 // Ancestors root→…→node (inclusive). [] when not found.
 function pathTo(root: BuilderNode, id: string, trail: BuilderNode[] = []): BuilderNode[] {
@@ -67,18 +97,82 @@ function templateLabel(t: PageTemplate): string {
   return t.name;
 }
 
-export function BuilderApp() {
-  // Many page templates: Sparx ships a seeded handful; the user adds N more.
-  // The editor edits ONE at a time (the active template); the toolbar switches.
-  const [templates, setTemplates] = React.useState<PageTemplate[]>(SEED_TEMPLATES);
-  const [activeId, setActiveId] = React.useState<string | null>(null);
+const SAVE_LABEL: Record<SaveStatus, string> = {
+  idle: '',
+  saving: 'Saving…',
+  saved: 'Saved',
+  error: 'Save failed',
+};
+
+export interface BuilderAppProps {
+  initialPages: BuilderPageDto[];
+}
+
+export function BuilderApp({ initialPages }: BuilderAppProps) {
+  // Pages load from the server (docs/41 §5 seeds the curated set on first use)
+  // and seed this state ONCE. From here the client is authoritative for the
+  // session; the server is the persistence sink (autosave + structural ops).
+  const [templates, setTemplates] = React.useState<PageTemplate[]>(() =>
+    initialPages.map(toTemplate)
+  );
+  const [activeId, setActiveId] = React.useState<string | null>(() => initialPages[0]?.id ?? null);
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [device, setDevice] = React.useState<Device>('desktop');
   const [railTab, setRailTab] = React.useState<'layers' | 'add'>('layers');
   const [mobilePane, setMobilePane] = React.useState<'edit' | 'preview'>('preview');
+  const [saveStatus, setSaveStatus] = React.useState<SaveStatus>('idle');
+  const [busy, setBusy] = React.useState(false);
+  // Inline page rename: the switcher swaps to a text input. Enter/blur commits,
+  // Esc cancels (skipRenameCommit suppresses the commit the cancel-blur fires).
+  const [renaming, setRenaming] = React.useState(false);
+  const [nameDraft, setNameDraft] = React.useState('');
+  const skipRenameCommit = React.useRef(false);
+  const renameInputRef = React.useRef<HTMLInputElement>(null);
 
-  const active = templates.find((t) => t.id === activeId) ?? templates[0];
+  const active = templates.find((t) => t.id === activeId) ?? templates[0] ?? null;
   const tree = active?.tree ?? null;
+
+  // ── Autosave (debounced draft-tree saves) ──────────────────────────────────
+  const saveTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pending = React.useRef<{ id: string; tree: BuilderNode } | null>(null);
+
+  const flushSave = React.useCallback(async () => {
+    if (saveTimer.current) {
+      clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+    }
+    const p = pending.current;
+    if (!p) return;
+    pending.current = null;
+    setSaveStatus('saving');
+    const res = await savePageTree(p.id, p.tree);
+    setSaveStatus(res.ok ? 'saved' : 'error');
+  }, []);
+
+  const scheduleSave = React.useCallback(
+    (id: string, next: BuilderNode) => {
+      pending.current = { id, tree: next };
+      setSaveStatus('saving');
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      saveTimer.current = setTimeout(() => {
+        void flushSave();
+      }, 800);
+    },
+    [flushSave]
+  );
+
+  React.useEffect(
+    () => () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    },
+    []
+  );
+
+  // Focus the rename input when it opens (avoids the autoFocus prop, which the
+  // a11y lint rule forbids), and select the text for quick replace.
+  React.useEffect(() => {
+    if (renaming) renameInputRef.current?.select();
+  }, [renaming]);
 
   const selectedNode = tree && selectedId ? findNode(tree, selectedId) : null;
   const chain = React.useMemo(
@@ -96,10 +190,13 @@ export function BuilderApp() {
     return chain[chain.length - 2] ?? tree;
   }, [tree, selectedNode, chain]);
 
-  // Mutations rewrite the ACTIVE template's tree.
+  // Mutations rewrite the ACTIVE page's tree + schedule an autosave.
   const updateTree = (fn: (t: BuilderNode) => BuilderNode) => {
     if (!active) return;
-    setTemplates((ts) => ts.map((t) => (t.id === active.id ? { ...t, tree: fn(t.tree) } : t)));
+    const next = fn(active.tree);
+    const id = active.id;
+    setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, tree: next } : t)));
+    scheduleSave(id, next);
   };
 
   const mutateSelected = (fn: (n: BuilderNode) => BuilderNode) => {
@@ -139,15 +236,81 @@ export function BuilderApp() {
   };
 
   const onSelectTemplate = (id: string) => {
+    void flushSave(); // persist the page we're leaving before switching
     setActiveId(id);
     setSelectedId(null);
   };
-  const onNewTemplate = () => {
-    const created = makeBlankTemplate();
-    setTemplates((ts) => [...ts, created]);
+
+  const onNewTemplate = async () => {
+    setBusy(true);
+    await flushSave();
+    const res = await createPage({ name: 'Untitled page', kind: 'singleton' });
+    setBusy(false);
+    if (!res.ok || !res.data) {
+      setSaveStatus('error');
+      return;
+    }
+    const created = res.data;
+    setTemplates((ts) => [...ts, toTemplate(created)]);
     setActiveId(created.id);
     setSelectedId(created.tree.id);
     setRailTab('add');
+  };
+
+  const onDeleteActive = async () => {
+    if (!active || templates.length <= 1) return; // keep at least one page
+    const removedId = active.id;
+    setBusy(true);
+    const res = await deletePage(removedId);
+    setBusy(false);
+    if (!res.ok) {
+      setSaveStatus('error');
+      return;
+    }
+    const remaining = templates.filter((t) => t.id !== removedId);
+    setTemplates(remaining);
+    setActiveId((cur) => (cur === removedId ? (remaining[0]?.id ?? null) : cur));
+    setSelectedId(null);
+  };
+
+  const onPublish = async () => {
+    if (!active) return;
+    setBusy(true);
+    await flushSave();
+    const res = await publishPage(active.id);
+    setBusy(false);
+    if (res.ok && res.data) {
+      const published = res.data;
+      setTemplates((ts) => ts.map((t) => (t.id === published.id ? toTemplate(published) : t)));
+      setSaveStatus('saved');
+    } else {
+      setSaveStatus('error');
+    }
+  };
+
+  const startRename = () => {
+    if (!active) return;
+    setNameDraft(active.name);
+    setRenaming(true);
+  };
+
+  // Called once, on the input's blur (Enter blurs to commit; Esc blurs with the
+  // skip flag set). A no-op rename (empty or unchanged) just closes the input.
+  const commitRename = async () => {
+    if (skipRenameCommit.current) {
+      skipRenameCommit.current = false;
+      setRenaming(false);
+      return;
+    }
+    setRenaming(false);
+    if (!active) return;
+    const name = nameDraft.trim();
+    if (!name || name === active.name) return;
+    const id = active.id;
+    setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, name } : t)));
+    setSaveStatus('saving');
+    const res = await renamePage(id, name);
+    setSaveStatus(res.ok ? 'saved' : 'error');
   };
 
   const activeModules = MODULES.filter((m) => m.on);
@@ -155,7 +318,27 @@ export function BuilderApp() {
   const targetDef = target ? getDef(target.type) : undefined;
   const targetName = target?.box.name ?? targetDef?.label ?? 'page';
 
-  if (!active || !tree) return null;
+  // No pages (a failed load). Offer a way in rather than a blank editor.
+  if (!active || !tree) {
+    return (
+      <ModuleProvider module="builder">
+        <div className="bx-shell">
+          <div className="bx-noempty">
+            <p className="bx-noempty__lead">No pages yet.</p>
+            <Button
+              size="sm"
+              variant="solid"
+              leftIcon={<Plus className="h-3.5 w-3.5" />}
+              disabled={busy}
+              onClick={() => void onNewTemplate()}
+            >
+              Create a page
+            </Button>
+          </div>
+        </div>
+      </ModuleProvider>
+    );
+  }
 
   return (
     <ModuleProvider module="builder">
@@ -165,26 +348,67 @@ export function BuilderApp() {
             shell; this page renders inside that chrome. */}
         <div className="bx-toolbar">
           <div className="bx-toolbar__templates">
-            <NativeSelect
-              size="sm"
-              className="bx-tplselect"
-              value={active.id}
-              aria-label="Page template"
-              onChange={(e) => onSelectTemplate(e.target.value)}
-            >
-              {templates.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {templateLabel(t)}
-                </option>
-              ))}
-            </NativeSelect>
+            {renaming ? (
+              <Input
+                ref={renameInputRef}
+                size="sm"
+                className="bx-tplselect"
+                value={nameDraft}
+                aria-label="Page name"
+                onChange={(e) => setNameDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.currentTarget.blur();
+                  } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    skipRenameCommit.current = true;
+                    e.currentTarget.blur();
+                  }
+                }}
+                onBlur={() => void commitRename()}
+              />
+            ) : (
+              <NativeSelect
+                size="sm"
+                className="bx-tplselect"
+                value={active.id}
+                aria-label="Page"
+                onChange={(e) => onSelectTemplate(e.target.value)}
+              >
+                {templates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {templateLabel(t)}
+                  </option>
+                ))}
+              </NativeSelect>
+            )}
             <button
               type="button"
               className="bx-newtpl"
-              aria-label="New page template"
-              onClick={onNewTemplate}
+              aria-label="Rename this page"
+              disabled={busy || renaming}
+              onClick={startRename}
+            >
+              <Pencil aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="bx-newtpl"
+              aria-label="New page"
+              disabled={busy || renaming}
+              onClick={() => void onNewTemplate()}
             >
               <Plus aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="bx-newtpl"
+              aria-label="Delete this page"
+              disabled={busy || renaming || templates.length <= 1}
+              onClick={() => void onDeleteActive()}
+            >
+              <Trash2 aria-hidden />
             </button>
           </div>
           <div className="bx-toolbar__devices">
@@ -206,13 +430,30 @@ export function BuilderApp() {
             })}
           </div>
           <div className="bx-toolbar__actions">
-            <Button size="sm" variant="ghost" leftIcon={<Eye className="h-3.5 w-3.5" />}>
+            {saveStatus !== 'idle' ? (
+              <span className="bx-savestate" data-state={saveStatus}>
+                {SAVE_LABEL[saveStatus]}
+              </span>
+            ) : null}
+            <Button size="sm" variant="ghost" leftIcon={<Eye className="h-3.5 w-3.5" />} disabled>
               Preview
             </Button>
-            <Button size="sm" variant="soft" leftIcon={<Save className="h-3.5 w-3.5" />}>
+            <Button
+              size="sm"
+              variant="soft"
+              leftIcon={<Save className="h-3.5 w-3.5" />}
+              disabled={busy}
+              onClick={() => void flushSave()}
+            >
               Save
             </Button>
-            <Button size="sm" variant="solid" leftIcon={<Upload className="h-3.5 w-3.5" />}>
+            <Button
+              size="sm"
+              variant="solid"
+              leftIcon={<Upload className="h-3.5 w-3.5" />}
+              disabled={busy}
+              onClick={() => void onPublish()}
+            >
               Publish
             </Button>
           </div>

@@ -20,6 +20,7 @@ import {
   SitebuilderNotFoundError,
   SitebuilderValidationError,
 } from '@sparx/sitebuilder';
+import { BuilderConflictError, BuilderNotFoundError, BuilderValidationError } from '@sparx/builder';
 import {
   CommerceConflictError,
   CommerceNotFoundError,
@@ -65,10 +66,12 @@ import publicReviewRoutes from './routes/v1/public/reviews.js';
 import publicAccountRoutes from './routes/v1/public/account.js';
 import publicStorefrontRoutes from './routes/v1/public/storefront.js';
 import publicMediaRoutes from './routes/v1/public/media.js';
+import publicConsentRoutes from './routes/v1/public/consent.js';
 import uploadRoutes from './routes/v1/media/uploads.js';
 import mediaAssetRoutes from './routes/v1/media/assets.js';
 import crmRoutes from './routes/v1/crm/index.js';
 import sitebuilderRoutes from './routes/v1/sitebuilder/index.js';
+import builderRoutes from './routes/v1/builder/index.js';
 import commerceRoutes from './routes/v1/commerce/index.js';
 import tenantRoutes from './routes/v1/tenant.js';
 import brandRoutes from './routes/v1/brand.js';
@@ -182,6 +185,53 @@ function sitebuilderErrorMapper(
     return reply.code(422).send(body);
   }
   if (err instanceof SitebuilderConflictError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'CONFLICT',
+        message: err.message,
+        ...(err.field !== undefined ? { details: { field: err.field } } : {}),
+        request_id: requestId,
+      },
+    };
+    return reply.code(409).send(body);
+  }
+  return undefined;
+}
+
+// Builder (the docs/40 composition-model editor) service-layer errors — same
+// envelope vocabulary as Site Builder. Separate package, separate mapper.
+function builderErrorMapper(
+  err: unknown,
+  request: { id: string },
+  reply: FastifyReply
+): FastifyReply | undefined {
+  const requestId = request.id;
+  if (err instanceof BuilderNotFoundError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'NOT_FOUND',
+        message: err.message,
+        details: { entityType: err.entityType, entityId: err.entityId },
+        request_id: requestId,
+      },
+    };
+    return reply.code(404).send(body);
+  }
+  if (err instanceof BuilderValidationError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: err.message,
+        details: err.details,
+        request_id: requestId,
+      },
+    };
+    return reply.code(422).send(body);
+  }
+  if (err instanceof BuilderConflictError) {
     const body: ErrorEnvelope = {
       success: false,
       error: {
@@ -387,7 +437,13 @@ export async function createApp(): Promise<FastifyInstance> {
   // each route's schema is recorded.
   await app.register(
     createErrorsPlugin({
-      extraMappers: [crmErrorMapper, commerceErrorMapper, sitebuilderErrorMapper, emailErrorMapper],
+      extraMappers: [
+        crmErrorMapper,
+        commerceErrorMapper,
+        sitebuilderErrorMapper,
+        builderErrorMapper,
+        emailErrorMapper,
+      ],
     })
   );
   await app.register(openapiPlugin);
@@ -446,11 +502,13 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicAccountRoutes);
   await app.register(publicStorefrontRoutes);
   await app.register(publicMediaRoutes);
+  await app.register(publicConsentRoutes);
   await app.register(emailWebhookRoutes);
   await app.register(uploadRoutes);
   await app.register(mediaAssetRoutes);
   await app.register(crmRoutes);
   await app.register(sitebuilderRoutes);
+  await app.register(builderRoutes);
   await app.register(commerceRoutes);
   await app.register(tenantRoutes);
   await app.register(brandRoutes);

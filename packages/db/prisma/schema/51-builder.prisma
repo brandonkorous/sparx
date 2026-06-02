@@ -1,0 +1,41 @@
+// Builder — composition-model page editor persistence (docs/41-builder-page-model.md).
+//
+// One row per page a tenant has. A page TEMPLATE and a page INSTANCE are the
+// same row: Sparx ships a curated starter set (seeded on the tenant's first
+// list, at runtime by the service), the tenant edits them and creates more.
+// The node-tree JSON is validated by @sparx/builder-schemas, never by the DB.
+//
+// Distinct from the legacy `sitebuilder_*` tables — Builder is the successor
+// surface (docs/40), deliberately kept on its own clean storage so the eventual
+// Site Builder retirement is a deletion rather than a surgical extraction.
+//
+// Tenant-scoped + FORCE RLS so a callsite that forgets withTenant() returns
+// nothing rather than leaking cross-tenant pages.
+
+model BuilderPage {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  name       String  @db.VarChar(255)
+  // singleton | collection (docs/40 page types)
+  kind       String  @default("singleton") @db.VarChar(20)
+  // collection only — the content type each record fills (e.g. "cms.post").
+  recordType String? @map("record_type") @db.VarChar(63)
+
+  // The editable BuilderNode root. Shape validated by @sparx/builder-schemas.
+  draftTree     Json      @map("draft_tree")
+  // Last published snapshot; null until first publish. No storefront consumer
+  // yet (docs/41 §1) — publishing just snapshots draft → published.
+  publishedTree Json?     @map("published_tree")
+  publishedAt   DateTime? @map("published_at") @db.Timestamptz
+  // Catalog ordering.
+  position      Int       @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, position])
+  @@map("builder_pages")
+}

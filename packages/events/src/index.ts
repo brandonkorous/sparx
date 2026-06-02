@@ -1,4 +1,10 @@
-export type { EventType, SparxEvent, EmailSendPayload, SearchEntityChangedPayload } from './types';
+export type {
+  EventType,
+  SparxEvent,
+  EmailSendPayload,
+  SearchEntityChangedPayload,
+  TenantCreatedPayload,
+} from './types';
 export {
   createPublisher,
   publishEvent,

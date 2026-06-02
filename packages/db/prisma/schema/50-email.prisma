@@ -16,9 +16,9 @@
 model EmailSettings {
   tenantId String @id @map("tenant_id") @db.Uuid
 
-  fromName         String? @map("from_name") @db.VarChar(255)
-  fromAddress      String? @map("from_address") @db.VarChar(255)
-  replyTo          String? @map("reply_to") @db.VarChar(255)
+  fromName        String? @map("from_name") @db.VarChar(255)
+  fromAddress     String? @map("from_address") @db.VarChar(255)
+  replyTo         String? @map("reply_to") @db.VarChar(255)
   // CAN-SPAM / GDPR-required physical postal address rendered in the footer.
   physicalAddress String? @map("physical_address") @db.Text
 

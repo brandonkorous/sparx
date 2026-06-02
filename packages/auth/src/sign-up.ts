@@ -140,6 +140,25 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
       );
     }
 
+    // tenant.created → legal-seed worker seeds starter legal pages + footer
+    // placements (docs/42 §3). Fire-and-forget, same swallow ethos as above:
+    // a missing topic or Pub/Sub outage must never roll back sign-up.
+    try {
+      const { publishTenantCreated } = await import('./tenant-events');
+      await publishTenantCreated({ tenantId, actorId: userId, slug, name: input.storeName });
+    } catch (err) {
+      process.stderr.write(
+        JSON.stringify({
+          severity: 'ERROR',
+          source: 'auth.sign-up',
+          message: 'tenant.created publish failed',
+          tenantId,
+          userId,
+          err: err instanceof Error ? { name: err.name, message: err.message } : String(err),
+        }) + '\n'
+      );
+    }
+
     return { ok: true, userId, tenantId };
   } catch (err: unknown) {
     if (

@@ -45,10 +45,10 @@ model SiteVersion {
   themeKey         String @map("theme_key") @db.VarChar(63)
   appearancePolicy String @map("appearance_policy") @db.VarChar(20)
 
-  settingsSnapshot Json @map("settings_snapshot")
-  sectionsSnapshot Json @map("sections_snapshot")
-  layoutSnapshot   Json @map("layout_snapshot")
-  compiledTokens   Json @map("compiled_tokens")
+  settingsSnapshot    Json @map("settings_snapshot")
+  sectionsSnapshot    Json @map("sections_snapshot")
+  layoutSnapshot      Json @map("layout_snapshot")
+  compiledTokens      Json @map("compiled_tokens")
   // Pinned custom-section definitions (docs/38 Phase C) the snapshot's sections
   // reference, keyed by slug — so a `custom:<slug>` section renders deterministically
   // from the template AST as it was at publish, surviving later edits/deletes.

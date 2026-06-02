@@ -48,22 +48,34 @@ model ContentEntry {
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt     DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant          Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  author          Author?             @relation(fields: [authorId], references: [id], onDelete: SetNull)
-  parent          ContentEntry?       @relation("EntryLocalization", fields: [parentEntryId], references: [id], onDelete: SetNull)
-  localeVariants  ContentEntry[]      @relation("EntryLocalization")
+  // Legal pages (docs/42 §3) — a `page` entry that IS a tenant policy doc
+  // carries a stable `legalKind` discriminator. Set by the seed/instantiate
+  // path, never the CMS editor (so it survives edits regardless of form
+  // behaviour); the Legal checklist groups by it. `legalTemplateVersion`
+  // drives the "newer starter template available" indicator;
+  // `legalDisclaimerAckAt` is null until the tenant reviews the starter text.
+  legalKind            String?   @map("legal_kind") @db.VarChar(40)
+  legalTemplateVersion Int?      @map("legal_template_version")
+  legalDisclaimerAckAt DateTime? @map("legal_disclaimer_ack_at") @db.Timestamptz
+
+  tenant          Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  author          Author?                  @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  parent          ContentEntry?            @relation("EntryLocalization", fields: [parentEntryId], references: [id], onDelete: SetNull)
+  localeVariants  ContentEntry[]           @relation("EntryLocalization")
   revisions       ContentRevision[]
-  refsFrom        ContentReference[]  @relation("ContentReferenceFrom")
-  refsTo          ContentReference[]  @relation("ContentReferenceTo")
+  refsFrom        ContentReference[]       @relation("ContentReferenceFrom")
+  refsTo          ContentReference[]       @relation("ContentReferenceTo")
   terms           EntryTaxonomyTerm[]
   previewTokens   PreviewToken[]
   navigationItems NavigationItem[]
+  docPlacements   StorefrontDocPlacement[]
 
   @@unique([tenantId, typeKey, slug])
   @@index([tenantId, typeKey, status])
   @@index([tenantId, status, publishedAt(sort: Desc)])
   @@index([tenantId, updatedAt(sort: Desc)])
   @@index([tenantId, scheduledAt])
+  @@index([tenantId, legalKind])
   @@map("content_entries")
 }
 

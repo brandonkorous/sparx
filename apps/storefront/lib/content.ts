@@ -30,7 +30,7 @@ interface ErrorEnvelope {
   error: { code: string; message: string; request_id?: string };
 }
 
-async function publicGet<T>(
+export async function publicGet<T>(
   path: string,
   query: Record<string, string | number>,
   options: { previewToken?: string; tag?: string } = {}
@@ -66,10 +66,12 @@ async function publicGet<T>(
 
 export interface PageBody {
   title?: string;
+  // `body` is the rich-text field the `page` content type defines (shape
+  // `{type:'doc',content:[...]}`); `content` is a legacy fallback. PageView
+  // prefers `body`. Anything else shows up under body[key] and the renderer
+  // ignores unrecognized fields.
+  body?: { type: string; content?: unknown[] };
   content?: { type: string; content?: unknown[] };
-  // Tenants can use whatever body shape they want — `title` + `content`
-  // is the convention apps/dashboard's page schema uses. Anything else
-  // shows up under body[key] and the renderer ignores unrecognized fields.
   [key: string]: unknown;
 }
 

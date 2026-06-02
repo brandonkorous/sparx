@@ -62,6 +62,9 @@ importers:
       '@sparx/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@sparx/builder-schemas':
+        specifier: workspace:*
+        version: link:../../packages/builder-schemas
       '@sparx/cms-editor':
         specifier: workspace:*
         version: link:../../packages/cms-editor
@@ -376,6 +379,44 @@ importers:
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
+
+  packages/builder:
+    dependencies:
+      '@sparx/builder-schemas':
+        specifier: workspace:*
+        version: link:../builder-schemas
+      '@sparx/db':
+        specifier: workspace:*
+        version: link:../db
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
+  packages/builder-schemas:
+    dependencies:
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
   packages/cms-editor:
     dependencies:
@@ -763,6 +804,18 @@ importers:
       zod:
         specifier: ^4.4.3
         version: 4.4.3
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
+  packages/legal-templates:
     devDependencies:
       '@types/node':
         specifier: ^25.9.1
@@ -1305,6 +1358,9 @@ importers:
       '@sparx/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@sparx/builder':
+        specifier: workspace:*
+        version: link:../../packages/builder
       '@sparx/cms-editor':
         specifier: workspace:*
         version: link:../../packages/cms-editor
@@ -1464,6 +1520,43 @@ importers:
       '@sparx/email-platform':
         specifier: workspace:*
         version: link:../../packages/email-platform
+      pino:
+        specifier: ^9.5.0
+        version: 9.14.0
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.6.1
+      tsx:
+        specifier: ^4.19.2
+        version: 4.22.3
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
+  services/legal-seed-worker:
+    dependencies:
+      '@prisma/client':
+        specifier: ^6.19.3
+        version: 6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)
+      '@sparx/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@sparx/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@sparx/legal-templates':
+        specifier: workspace:*
+        version: link:../../packages/legal-templates
       pino:
         specifier: ^9.5.0
         version: 9.14.0

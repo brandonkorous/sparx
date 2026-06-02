@@ -191,6 +191,9 @@ model Tenant {
   siteLayoutAssign     SiteLayoutAssignment[]
   sectionDefinitions   TenantSectionDefinition[]
 
+  // Builder module — composition-model page editor (docs/41)
+  builderPages BuilderPage[]
+
   // Email platform — management surface (docs/13)
   emailSettings       EmailSettings?
   sendingDomains      SendingDomain[]
@@ -200,6 +203,12 @@ model Tenant {
   broadcasts          Broadcast[]
   emailEvents         EmailEvent[]
   emailSuppressions   EmailSuppression[]
+
+  // Legal & consent (docs/42)
+  storefrontDocPlacements StorefrontDocPlacement[]
+  consentSettings         ConsentSettings?
+  consentRecords          ConsentRecord[]
+  legalAcceptances        PlatformLegalAcceptance[]
 
   @@map("tenants")
 }

@@ -11,6 +11,8 @@
 //      it back here only if multiple publishers share the same payload).
 
 export type EventType =
+  // Platform / tenant lifecycle
+  | 'tenant.created'
   // Content
   | 'content.entry.created'
   | 'content.entry.updated'
@@ -99,6 +101,15 @@ export interface SearchEntityChangedPayload {
   entityType: string;
   recordId: string;
   op: 'upsert' | 'delete';
+}
+
+/** Payload for `tenant.created`. Consumed by the legal-seed worker to seed a
+ *  new tenant's starter legal pages + footer placements (docs/42 §3). The
+ *  tenant id is on the envelope; slug/name are carried for logging + future
+ *  consumers (e.g. welcome flows). */
+export interface TenantCreatedPayload {
+  slug: string;
+  name: string;
 }
 
 export interface SparxEvent<T = unknown> {

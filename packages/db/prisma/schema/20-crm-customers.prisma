@@ -74,6 +74,9 @@ model Customer {
   customerSessions CustomerSession[]
   passwordResets   CustomerPasswordReset[]
 
+  // Cookie consent — records this shopper authored while signed in (docs/42 §4)
+  consentRecords ConsentRecord[]
+
   @@unique([tenantId, email], map: "customers_tenant_email_unique")
   @@index([tenantId, type])
   @@index([tenantId, assignedRepId])

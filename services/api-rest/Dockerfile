@@ -38,6 +38,8 @@ COPY packages/customer-auth ./packages/customer-auth
 COPY packages/storefront-themes ./packages/storefront-themes
 COPY packages/sitebuilder-schemas ./packages/sitebuilder-schemas
 COPY packages/sitebuilder ./packages/sitebuilder
+COPY packages/builder-schemas ./packages/builder-schemas
+COPY packages/builder ./packages/builder
 COPY packages/cms-editor ./packages/cms-editor
 COPY packages/email-platform ./packages/email-platform
 COPY services/api-rest ./services/api-rest

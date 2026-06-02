@@ -1,0 +1,52 @@
+// Cookie consent — per-tenant config + append-only consent log. docs/42 §4.
+//
+// Config lives in its own 1:1-per-tenant table (NOT Tenant.settings, NOT the
+// Commerce-owned StorefrontSettings) because consent applies to content-only
+// tenants too and must never sit behind the Commerce module gate. The
+// `bannerEnabled` flag is DERIVED in code (mode != off AND a non-essential
+// category is active) — not stored.
+//
+// RLS: ENABLE + FORCE + tenant_isolation on both tables — every read/write
+// runs inside withTenant() (the storefront always knows the tenant up front).
+
+model ConsentSettings {
+  tenantId         String   @id @map("tenant_id") @db.Uuid
+  mode             String   @default("off") @db.VarChar(10) // off | gdpr | ccpa
+  activeCategories Json     @default("[]") @map("active_categories") // e.g. ["analytics","marketing"]
+  bannerTitle      String?  @map("banner_title") @db.VarChar(255)
+  bannerBody       String?  @map("banner_body") @db.Text
+  policyPageSlug   String   @default("cookie-policy") @map("policy_page_slug") @db.VarChar(255)
+  policyVersion    String   @default("1") @map("policy_version") @db.VarChar(20)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("consent_settings")
+}
+
+// Append-only (like audit_logs). The latest row per visitor_id is the current
+// consent state; the history is the legal proof of when consent was given or
+// changed. visitor_id is the UUID held in the strictly-necessary sparx_consent
+// cookie; customer_id is set only when the visitor is signed in.
+
+model ConsentRecord {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  visitorId     String   @map("visitor_id") @db.Uuid
+  customerId    String?  @map("customer_id") @db.Uuid
+  mode          String   @db.VarChar(10) // gdpr | ccpa (snapshot at decision time)
+  categories    Json // { strictly_necessary, preferences, analytics, marketing }
+  action        String   @db.VarChar(20) // accept_all | reject_all | save_prefs | opt_out
+  policyVersion String   @map("policy_version") @db.VarChar(20)
+  ipAddress     String?  @map("ip_address") @db.Inet
+  userAgent     String?  @map("user_agent") @db.Text
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, visitorId, createdAt(sort: Desc)])
+  @@index([tenantId, customerId])
+  @@map("consent_records")
+}

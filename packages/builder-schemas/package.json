@@ -1,0 +1,31 @@
+{
+  "name": "@sparx/builder-schemas",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Sparx Builder — the canonical node-tree + page Zod schemas and curated starter pages, shared by the service, REST, and the /builder editor. The serializable contract the backend matches (docs/41-builder-page-model.md).",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}
