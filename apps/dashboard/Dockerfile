@@ -44,6 +44,7 @@ COPY packages/email-sections/package.json packages/email-sections/
 COPY packages/storefront-themes/package.json packages/storefront-themes/
 COPY packages/sitebuilder/package.json packages/sitebuilder/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
+COPY packages/section-template-react/package.json packages/section-template-react/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
 # Root postinstall runs `pnpm --filter @sparx/db db:generate`, which needs
 # both the schema source AND the prisma config file (the new multi-file
@@ -81,6 +82,7 @@ COPY packages/email-sections packages/email-sections
 COPY packages/storefront-themes packages/storefront-themes
 COPY packages/sitebuilder packages/sitebuilder
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
+COPY packages/section-template-react packages/section-template-react
 COPY packages/builder-schemas packages/builder-schemas
 COPY apps/dashboard apps/dashboard
 
