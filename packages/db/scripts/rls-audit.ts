@@ -41,6 +41,12 @@ const ENABLE_ONLY_TABLES = new Set<string>([
   'verifications',
   'verification_tokens',
   'api_keys', // tenant-scoped at app layer; ENABLE-only to allow scoping by api_key_id
+  // Sparx platform legal acceptance (docs/42 §6) — written by signUpMerchant
+  // via the owner connection WITHOUT tenant context (FORCE's WITH CHECK would
+  // reject that insert since current_tenant_id() is null there). Same posture
+  // as the auth tables; /v1/me/legal-* reads go through withRequestTenant so
+  // the ENABLE policy still scopes sparx_app.
+  'platform_legal_acceptance',
   // Fitment reference tables — nullable tenant_id for Sparx-seeded
   // globals; carry an OR-clause policy that permits global + own rows.
   // FORCE would block the seed insert path.
