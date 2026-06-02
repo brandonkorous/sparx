@@ -56,6 +56,17 @@ export const BoxBaseSchema = z.object({
   align: AlignX,
   /** Breakpoints this node is hidden on. Empty array is treated as "all". */
   hiddenOn: z.array(Device),
+  /** A full-bleed background image URL — the primitive behind photo hero panels
+   *  (docs/45). Spans the node's `backgroundWidth`; covers + centers. Absent =
+   *  no image (the `surface` token color is used instead). A static URL for now;
+   *  a media-library picker + bound backgrounds are follow-ups. `.default`-free
+   *  (optional) so existing stored trees stay valid. */
+  backgroundImage: z.string().max(2048).optional(),
+  /** Scrim over the background image for text legibility. Optional so existing
+   *  stored trees (which lack the key) stay valid; consumers default to 'none'. */
+  overlay: Overlay.optional(),
+  /** Text color over the background, independent of `surface`. */
+  textTone: TextTone.optional(),
 });
 export type BoxBase = z.infer<typeof BoxBaseSchema>;
 
@@ -69,6 +80,8 @@ export const DEFAULT_BOX: BoxBase = {
   padding: 'none',
   align: 'start',
   hiddenOn: [],
+  overlay: 'none',
+  textTone: 'default',
 };
 
 // ── Layout base: containers only ────────────────────────────────────────────

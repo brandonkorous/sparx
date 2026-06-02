@@ -20,8 +20,10 @@ import {
   DIRECTION_OPTIONS,
   GAP_OPTIONS,
   HEIGHT_OPTIONS,
+  OVERLAY_OPTIONS,
   SPACE_OPTIONS,
   SURFACE_OPTIONS,
+  TONE_OPTIONS,
   WIDTH_OPTIONS,
   type BoxBase,
   type BuilderNode,
@@ -352,6 +354,33 @@ function BoxBasePanel({
           value={box.surface}
           options={SURFACE_OPTIONS}
           onChange={(v) => onBox({ surface: v })}
+        />
+      </Field>
+      <Field
+        label="Background image"
+        hint="Paste an image URL for a full-bleed photo panel — content renders over it."
+      >
+        <Input
+          value={box.backgroundImage ?? ''}
+          placeholder="https://…"
+          aria-label="Background image URL"
+          onChange={(e) => onBox({ backgroundImage: e.target.value || undefined })}
+        />
+      </Field>
+      {box.backgroundImage ? (
+        <Field label="Overlay" hint="Darken or lighten the photo so text stays readable.">
+          <Segmented
+            value={box.overlay ?? 'none'}
+            options={OVERLAY_OPTIONS}
+            onChange={(v) => onBox({ overlay: v })}
+          />
+        </Field>
+      ) : null}
+      <Field label="Text tone">
+        <Segmented
+          value={box.textTone ?? 'default'}
+          options={TONE_OPTIONS}
+          onChange={(v) => onBox({ textTone: v })}
         />
       </Field>
       <Field label="Align">

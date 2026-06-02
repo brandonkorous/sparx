@@ -54,6 +54,40 @@ const SURFACE: Record<Surface, { bg: string; fg?: string }> = {
   brand: { bg: 'var(--sf-primary)', fg: 'var(--sf-primary-content)' },
 };
 
+// Background-media scrims (docs/45) — mirror the editor canvas. A translucent
+// veil over the photo (below content) for text legibility; `gradient` darkens
+// top+bottom (the full-bleed hero case).
+const SCRIM: Record<string, string | null> = {
+  none: null,
+  dark: 'linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45))',
+  light: 'linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.55))',
+  gradient:
+    'linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.04) 28%, rgba(0,0,0,0.04) 62%, rgba(0,0,0,0.6))',
+};
+const TONE: Record<string, string | undefined> = {
+  default: undefined,
+  light: '#ffffff',
+  dark: '#0b0b0c',
+};
+
+/** Background CSS for the element owning the box's background width: a photo
+ *  (scrim layered above) when set, else the surface token color. */
+function bgProps(
+  image: string | undefined,
+  overlay: string,
+  colorBase: string
+): React.CSSProperties {
+  if (!image) return { background: colorBase };
+  const url = `url("${image.replace(/["\\]/g, '')}")`;
+  const scrim = SCRIM[overlay];
+  return {
+    backgroundImage: scrim ? `${scrim}, ${url}` : url,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
+}
+
 const FLEX_ALIGN: Record<string, string> = {
   start: 'flex-start',
   center: 'center',
@@ -102,11 +136,14 @@ function boxStyles(
   const contentContained = box.contentWidth === 'contained';
   const minHeight = isContainer ? HEIGHT_VH[box.height] : undefined;
   const hasHeight = Boolean(minHeight);
+  const image = box.backgroundImage;
+  const overlay = box.overlay ?? 'none';
+  const tone = box.textTone ?? 'default';
 
   const outer: React.CSSProperties = {
     position: 'relative',
     minHeight,
-    background: bgFull ? surface.bg : 'transparent',
+    ...(bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
     display: 'flex',
     justifyContent: contentContained ? 'center' : 'flex-start',
     alignItems: hasHeight ? 'center' : 'stretch',
@@ -116,8 +153,8 @@ function boxStyles(
     maxWidth: contentContained ? 'var(--sf-max)' : undefined,
     padding: PADDING[box.padding],
     textAlign: TEXT_ALIGN[box.align],
-    color: surface.fg,
-    background: !bgFull ? surface.bg : 'transparent',
+    color: TONE[tone] ?? surface.fg,
+    ...(!bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
   };
   return { outer, inner };
 }

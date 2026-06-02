@@ -59,6 +59,41 @@ const SURFACE: Record<Surface, SurfaceCss> = {
   brand: { bg: 'var(--bxc-primary)', fg: 'var(--bxc-primary-fg)' },
 };
 
+// Background-media scrims (docs/45) — a translucent veil layered OVER the photo
+// (below content) so overlaid text stays legible. `gradient` darkens top+bottom
+// (header + CTA zones) while leaving the photo's center clean — the hero case.
+const SCRIM: Record<string, string | null> = {
+  none: null,
+  dark: 'linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45))',
+  light: 'linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.55))',
+  gradient:
+    'linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.04) 28%, rgba(0,0,0,0.04) 62%, rgba(0,0,0,0.6))',
+};
+// Text color over a photo, decoupled from the surface tokens.
+const TONE: Record<string, string | undefined> = {
+  default: undefined,
+  light: '#ffffff',
+  dark: '#0b0b0c',
+};
+
+/** Background CSS for the element that owns the box's background width: a photo
+ *  (scrim layered above it) when set, else the surface token color. */
+function bgProps(
+  image: string | undefined,
+  overlay: string,
+  colorBase: string
+): React.CSSProperties {
+  if (!image) return { background: colorBase };
+  const url = `url("${image.replace(/["\\]/g, '')}")`;
+  const scrim = SCRIM[overlay];
+  return {
+    backgroundImage: scrim ? `${scrim}, ${url}` : url,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
+}
+
 const FLEX_ALIGN: Record<AlignX | 'stretch', string> = {
   start: 'flex-start',
   center: 'center',
@@ -105,11 +140,16 @@ function boxStyles(
   const contentContained = b.contentWidth === 'contained';
   const minHeight = def.kind === 'container' ? HEIGHT_VH[b.height] : undefined;
   const hasHeight = Boolean(minHeight);
+  // Background media lives on whichever element owns the background WIDTH: the
+  // full-bleed outer when edge-to-edge, else the contained inner.
+  const image = b.backgroundImage;
+  const overlay = b.overlay ?? 'none';
+  const tone = b.textTone ?? 'default';
 
   const outer: React.CSSProperties = {
     position: 'relative',
     minHeight,
-    background: bgFull ? surface.bg : 'transparent',
+    ...(bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
     display: 'flex',
     justifyContent: contentContained ? 'center' : 'flex-start',
     alignItems: hasHeight ? 'center' : 'stretch',
@@ -120,8 +160,8 @@ function boxStyles(
     maxWidth: contentContained ? CONTAINED_MAX : undefined,
     padding: PADDING_PX[b.padding],
     textAlign: b.align,
-    color: surface.fg,
-    background: !bgFull ? surface.bg : 'transparent',
+    color: TONE[tone] ?? surface.fg,
+    ...(!bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
     ...(def.kind === 'container' ? layoutStyle(node) : {}),
   };
 

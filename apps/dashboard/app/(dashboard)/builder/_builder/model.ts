@@ -22,8 +22,10 @@ export type {
   HeightScale,
   Justify,
   LayoutBase,
+  Overlay,
   SpaceScale,
   Surface,
+  TextTone,
   WidthMode,
 } from '@sparx/builder-schemas';
 
@@ -41,8 +43,10 @@ import type {
   Direction,
   GapScale,
   HeightScale,
+  Overlay,
   SpaceScale,
   Surface,
+  TextTone,
   WidthMode,
 } from '@sparx/builder-schemas';
 
@@ -149,6 +153,19 @@ export const SURFACE_OPTIONS: { value: Surface; label: string }[] = [
   { value: 'muted', label: 'Muted' },
   { value: 'inverse', label: 'Inverse' },
   { value: 'brand', label: 'Brand' },
+];
+
+export const OVERLAY_OPTIONS: { value: Overlay; label: string }[] = [
+  { value: 'none', label: 'None' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'light', label: 'Light' },
+  { value: 'gradient', label: 'Gradient' },
+];
+
+export const TONE_OPTIONS: { value: TextTone; label: string }[] = [
+  { value: 'default', label: 'Default' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
 ];
 
 export const SPACE_OPTIONS: { value: SpaceScale; label: string }[] = [

@@ -1,8 +1,9 @@
 name: Auto tag
 
 # On every push to main, analyze conventional-commit messages since the last
-# v* tag and push a new tag if there's something releasable. The tag push
-# fires build-images.yml and deploy-prod.yml.
+# v* tag and push a new tag if there's something releasable. The new tag fires
+# build-images.yml, which dispatches deploy-prod.yml only after every image has
+# built and pushed successfully — so the rollout never runs ahead of the image.
 #
 # Bump rules (driven by mathieudutour/github-tag-action's defaults):
 #   feat: / feat(scope):           → minor
@@ -13,10 +14,11 @@ name: Auto tag
 # If no releasable commits exist, the workflow runs but creates no tag.
 # Force a release manually with workflow_dispatch + the bump input.
 #
-# Why we explicitly dispatch the downstream workflows: tags pushed by the
-# default GITHUB_TOKEN don't trigger other workflows. We use `actions: write`
-# permission and `gh workflow run --ref <tag>` to kick them off ourselves —
-# no PAT required.
+# Why we explicitly dispatch build-images: tags pushed by the default
+# GITHUB_TOKEN don't trigger other workflows. We use `actions: write`
+# permission and `gh workflow run --ref <tag>` to kick it off ourselves —
+# no PAT required. build-images then dispatches deploy-prod once its image
+# builds succeed (see build-images.yml), so deploy never races the push.
 
 on:
   push:
@@ -79,7 +81,7 @@ jobs:
         run: echo "::notice::No releasable commits since last tag — skipping tag creation."
 
   dispatch:
-    name: Dispatch image build & deploy
+    name: Dispatch image build
     needs: tag
     if: needs.tag.outputs.new_tag != ''
     runs-on: ubuntu-latest
@@ -87,13 +89,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Trigger downstream workflows on new tag
+      - name: Trigger image build on new tag
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ needs.tag.outputs.new_tag }}
         run: |
           set -euo pipefail
+          # Only build-images is dispatched here. It chains deploy-prod itself
+          # once every image is pushed (see build-images.yml's dispatch-deploy
+          # job), so the rollout never runs ahead of the image — the
+          # ImagePullBackOff race that red-flagged v0.77.0's deploy.
           echo "Dispatching build-images.yml @ $TAG"
           gh workflow run build-images.yml --ref "$TAG"
-          echo "Dispatching deploy-prod.yml @ $TAG"
-          gh workflow run deploy-prod.yml --ref "$TAG"

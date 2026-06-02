@@ -127,3 +127,28 @@ jobs:
           format: table
           severity: CRITICAL,HIGH
           exit-code: '0' # report only — flip to '1' once base images are stable
+
+  # Gate the production rollout on a green build. Dispatching deploy-prod here
+  # (instead of firing it from auto-tag in parallel with this build) closes the
+  # race where deploy ran `kubectl set image :<tag>` before the image existed →
+  # ImagePullBackOff and a timed-out rollout (what red-flagged v0.77.0's deploy).
+  # `needs: build` only resolves to success once every matrix service is pushed,
+  # so a broken build never reaches production. Tag refs only — pushes to main
+  # build images but don't deploy.
+  dispatch-deploy:
+    name: Dispatch production deploy
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write # dispatch deploy-prod.yml
+    steps:
+      - name: Trigger deploy-prod on the built tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          echo "All images built & pushed for $TAG — dispatching deploy-prod.yml"
+          gh workflow run deploy-prod.yml --ref "$TAG"
