@@ -38,7 +38,8 @@ export async function signUpAction(formData: FormData): Promise<SignUpFormState>
   // Captured for the legal-acceptance record (docs/42 §6). x-forwarded-for's
   // first hop is the client behind Caddy/Cloudflare.
   const hdrs = await headers();
-  const ipAddress = hdrs.get('x-forwarded-for')?.split(',')[0]?.trim() || null;
+  const fwd = hdrs.get('x-forwarded-for')?.split(',')[0]?.trim();
+  const ipAddress = fwd && fwd.length > 0 ? fwd : null;
   const userAgent = hdrs.get('user-agent');
 
   try {
