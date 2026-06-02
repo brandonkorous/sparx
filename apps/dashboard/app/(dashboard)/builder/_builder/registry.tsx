@@ -16,15 +16,19 @@ import * as React from 'react';
 import {
   DollarSign,
   Fingerprint,
+  GalleryHorizontal,
+  Hash,
   Heading as HeadingIcon,
   Image as ImageIcon,
   Images,
   LayoutGrid,
   LayoutTemplate,
   Mail,
+  MapPin,
   Menu,
   Minus,
   MousePointerClick,
+  PlayCircle,
   Rows3,
   Share2,
   Square,
@@ -111,6 +115,38 @@ const firstString = (...vals: unknown[]): string => {
 const asImage = (v: unknown): { url?: string; alt?: string; description?: string } | null =>
   v && typeof v === 'object' && !Array.isArray(v) ? v : null;
 
+// YouTube watch/share/embed URL — or a bare id — → a privacy-friendly embed URL.
+// Mirrored in the storefront renderer (kept tiny + duplicated, like bgProps).
+export function youtubeEmbed(url: string): string | null {
+  const u = (url ?? '').trim();
+  if (!u) return null;
+  const m = /(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([\w-]{6,})/.exec(u);
+  const id = m?.[1] ?? (/^[\w-]{6,}$/.test(u) ? u : null);
+  return id ? `https://www.youtube-nocookie.com/embed/${id}?rel=0` : null;
+}
+
+// A Google Maps embed URL from an explicit embed URL or a free-text place query.
+// `?output=embed` needs no API key. Mirrored in the storefront renderer.
+export function mapEmbed(query: string, embedUrl: string): string | null {
+  if (embedUrl?.trim()) return embedUrl.trim();
+  const q = (query ?? '').trim();
+  return q ? `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed` : null;
+}
+
+// Hand-typed nav links — one per line, `Label` or `Label|/url`. The fallback for
+// a NavMenu that isn't bound to a CMS menu. Mirrored in the storefront renderer.
+export function parseNavLinks(raw: string): { label: string; url: string }[] {
+  return (raw ?? '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [label, url] = line.split('|');
+      return { label: (label ?? '').trim(), url: (url ?? '#').trim() || '#' };
+    })
+    .filter((l) => l.label !== '');
+}
+
 function Placeholder({ label, ratio }: { label: string; ratio?: string }) {
   return (
     <div className={`bx-ph bx-ratio-${ratio ?? 'wide'}`}>
@@ -178,6 +214,40 @@ const DEFS: ComponentDef[] = [
       layout: { direction: 'stack', gap: 'sm' },
     },
     chromeClass: 'bx-card',
+  },
+  {
+    // A rotator: each direct child is one SLIDE. The editor shows the slides
+    // stacked (so you can edit each); the storefront renders a real client
+    // carousel (BuilderCarousel) with the autoplay/arrows/dots set here.
+    type: 'Carousel',
+    label: 'Carousel',
+    kind: 'container',
+    group: 'layout',
+    icon: GalleryHorizontal,
+    bindable: true,
+    accepts: ['array', 'empty'],
+    showHeight: true,
+    props: [
+      { key: 'autoplay', label: 'Autoplay', control: 'switch' },
+      {
+        key: 'interval',
+        label: 'Seconds per slide',
+        control: 'select',
+        options: [
+          { value: '4', label: '4s' },
+          { value: '6', label: '6s' },
+          { value: '8', label: '8s' },
+          { value: '12', label: '12s' },
+        ],
+      },
+      { key: 'arrows', label: 'Arrows', control: 'switch' },
+      { key: 'dots', label: 'Dots', control: 'switch' },
+    ],
+    defaults: {
+      box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
+      layout: { direction: 'stack', gap: 'md' },
+      props: { autoplay: true, interval: '6', arrows: true, dots: true },
+    },
   },
 
   // ---- Content & media (leaves) ----
@@ -284,10 +354,12 @@ const DEFS: ComponentDef[] = [
       {
         key: 'style',
         label: 'Style',
-        control: 'buttongroup',
+        control: 'select',
         options: [
-          { value: 'primary', label: 'Primary' },
+          { value: 'primary', label: 'Primary (solid brand)' },
           { value: 'soft', label: 'Soft' },
+          { value: 'dark', label: 'Dark (solid)' },
+          { value: 'glass', label: 'Glass (translucent)' },
           { value: 'link', label: 'Link' },
         ],
       },
@@ -311,6 +383,123 @@ const DEFS: ComponentDef[] = [
     props: [],
     defaults: {},
     renderLeaf: () => <hr className="bx-divider" />,
+  },
+  {
+    type: 'Video',
+    label: 'Video',
+    kind: 'leaf',
+    group: 'content',
+    icon: PlayCircle,
+    bindable: false,
+    accepts: [],
+    showHeight: false,
+    props: [
+      {
+        key: 'url',
+        label: 'YouTube URL or ID',
+        control: 'text',
+        placeholder: 'https://youtu.be/…',
+      },
+      {
+        key: 'ratio',
+        label: 'Ratio',
+        control: 'buttongroup',
+        options: [
+          { value: 'wide', label: '16:9' },
+          { value: 'square', label: '1:1' },
+          { value: 'portrait', label: '9:16' },
+        ],
+      },
+    ],
+    defaults: { props: { url: '', ratio: 'wide' } },
+    renderLeaf: ({ node }) => {
+      const ratio = (node.props.ratio as string) ?? 'wide';
+      const src = youtubeEmbed((node.props.url as string) ?? '');
+      if (!src) return <Placeholder ratio={ratio} label="Add a YouTube URL" />;
+      return (
+        <div className={`bx-video bx-ratio-${ratio}`}>
+          <iframe
+            src={src}
+            title={firstString(node.box.name, 'Video')}
+            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            loading="lazy"
+          />
+        </div>
+      );
+    },
+  },
+  {
+    type: 'Map',
+    label: 'Map',
+    kind: 'leaf',
+    group: 'content',
+    icon: MapPin,
+    bindable: false,
+    accepts: [],
+    showHeight: false,
+    props: [
+      {
+        key: 'query',
+        label: 'Place / search',
+        control: 'text',
+        placeholder: 'e.g. Tesla Supercharger',
+      },
+      {
+        key: 'ratio',
+        label: 'Ratio',
+        control: 'buttongroup',
+        options: [
+          { value: 'wide', label: 'Wide' },
+          { value: 'pano', label: 'Pano' },
+          { value: 'square', label: 'Square' },
+        ],
+      },
+    ],
+    defaults: { props: { query: '', ratio: 'pano' } },
+    renderLeaf: ({ node }) => {
+      const ratio = (node.props.ratio as string) ?? 'pano';
+      const src = mapEmbed(
+        (node.props.query as string) ?? '',
+        (node.props.embedUrl as string) ?? ''
+      );
+      if (!src)
+        return <Placeholder ratio={ratio === 'pano' ? 'wide' : ratio} label="Add a place" />;
+      return (
+        <div className={`bx-map bx-ratio-${ratio}`}>
+          <iframe
+            src={src}
+            title={firstString(node.box.name, 'Map')}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
+      );
+    },
+  },
+  {
+    type: 'Stat',
+    label: 'Stat',
+    kind: 'leaf',
+    group: 'content',
+    icon: Hash,
+    bindable: true,
+    accepts: ['scalar'],
+    showHeight: false,
+    props: [
+      { key: 'value', label: 'Value', control: 'text', placeholder: '37,412' },
+      { key: 'label', label: 'Label', control: 'text', placeholder: 'Superchargers' },
+    ],
+    defaults: { props: { value: '0', label: 'Label' } },
+    renderLeaf: ({ node, value, bound }) => {
+      const big = bound ? firstString(value, '—') : firstString(node.props.value, '0');
+      return (
+        <div className="bx-stat">
+          <span className="bx-stat__value">{big}</span>
+          <span className="bx-stat__label">{firstString(node.props.label)}</span>
+        </div>
+      );
+    },
   },
 
   // ---- Data-aware (Tier 2) ----
@@ -439,15 +628,24 @@ const DEFS: ComponentDef[] = [
           { value: 'stack', label: 'Stack' },
         ],
       },
+      {
+        key: 'links',
+        label: 'Links (one per line, “Label|/url”)',
+        control: 'textarea',
+        placeholder: 'Vehicles\nEnergy\nCharging',
+      },
     ],
     defaults: { props: { orientation: 'row' } },
     renderLeaf: ({ node, value, cardinality }) => {
       const orientation = (node.props.orientation as string) ?? 'row';
       const items = cardinality === 'array' ? (value as unknown[]) : [];
+      const typed = parseNavLinks((node.props.links as string) ?? '');
       const labels =
         items.length > 0
           ? items.map((it) => firstString((it as { label?: unknown }).label, 'Link'))
-          : ['Home', 'Shop', 'About'];
+          : typed.length > 0
+            ? typed.map((l) => l.label)
+            : ['Home', 'Shop', 'About'];
       return (
         <nav className={`bx-nav bx-nav--${orientation}`}>
           {labels.map((label, i) => (

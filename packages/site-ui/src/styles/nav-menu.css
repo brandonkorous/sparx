@@ -1,0 +1,22 @@
+/* site-ui NavMenu — row or stacked nav links (docs/46 §5.2). */
+
+.sf-nav {
+  display: flex;
+  flex-wrap: wrap;
+}
+.sf-nav--row {
+  flex-direction: row;
+  align-items: center;
+  gap: 1.25rem;
+}
+.sf-nav--stack {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.sf-nav__item {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+}

@@ -1,7 +1,8 @@
-// Tenant resolution at the edge.
+// Tenant resolution at the edge (Next.js `proxy` file convention — formerly
+// `middleware`).
 //
 // Production: the tenant is derived from the Host header inside resolveTenant()
-// (subdomain of sparx.zone, or a custom domain later). Middleware doesn't need
+// (subdomain of sparx.zone, or a custom domain later). The proxy doesn't need
 // to do anything there.
 //
 // Local dev: there's no per-tenant DNS, so we accept `?tenant=<slug>`, stash it
@@ -20,7 +21,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 const COOKIE = 'sparx_dev_tenant';
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const fromQuery = req.nextUrl.searchParams.get('tenant');
   const fromCookie = req.cookies.get(COOKIE)?.value;
   const slug = fromQuery ?? fromCookie;

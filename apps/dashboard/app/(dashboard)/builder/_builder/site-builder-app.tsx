@@ -11,11 +11,13 @@
 import * as React from 'react';
 import { Eye, Globe, Monitor, Save, Smartphone, Tablet, Upload } from 'lucide-react';
 import { Button, ModuleProvider } from '@sparx/ui';
+import { parseLayoutImport, toLayoutDocument } from '@sparx/builder-schemas';
 import type { BindingCatalog, BuilderLayoutDto } from '@sparx/builder-schemas';
 
 import { type BuilderNode, type Device } from './model';
 import { LayoutSettings } from './inspector';
 import { BuilderWorkspace } from './builder-workspace';
+import { ImportExportControls } from './import-export-controls';
 import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
 import { publishLayout, saveLayoutTree } from '../_lib/actions';
 
@@ -59,6 +61,20 @@ export function SiteBuilderApp({ initialLayout, bindingCatalog }: SiteBuilderApp
     editor.setSaveStatus(res.ok ? 'saved' : 'error');
   };
 
+  // Import a layout document/tree: validate, replace the working tree, persist.
+  // Returns an error message (shown by the control) or null on success.
+  const onImportText = (text: string): string | null => {
+    const result = parseLayoutImport(text);
+    if (!result.ok) return result.error;
+    setTree(result.tree);
+    editor.setSelectedId(null);
+    editor.setSaveStatus('saving');
+    void saveLayoutTree(result.tree).then((res) =>
+      editor.setSaveStatus(res.ok ? 'saved' : 'error')
+    );
+    return null;
+  };
+
   return (
     <ModuleProvider module="builder">
       <div className="bx-shell">
@@ -96,6 +112,13 @@ export function SiteBuilderApp({ initialLayout, bindingCatalog }: SiteBuilderApp
             <Button size="sm" variant="ghost" leftIcon={<Eye className="h-3.5 w-3.5" />} disabled>
               Preview
             </Button>
+            <ImportExportControls
+              kind="layout"
+              name={initialLayout.name}
+              getDocument={() => toLayoutDocument({ name: initialLayout.name, tree })}
+              onImportText={onImportText}
+              disabled={busy}
+            />
             <Button
               size="sm"
               variant="soft"

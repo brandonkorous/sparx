@@ -120,7 +120,7 @@ export function slugFromHost(host: string | null | undefined): string | null {
 // dev fallback so `localhost:3004/?tenant=acme` works without DNS.
 async function resolveSlug(): Promise<string | null> {
   const hdrs = await headers();
-  // Middleware stashes the dev-fallback slug here so Server Components can
+  // The proxy stashes the dev-fallback slug here so Server Components can
   // read it without re-parsing searchParams on every page.
   const fromHeader = hdrs.get('x-tenant-slug');
   if (fromHeader) return fromHeader;

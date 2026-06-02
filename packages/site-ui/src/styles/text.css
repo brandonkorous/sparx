@@ -1,0 +1,24 @@
+/* site-ui Text — body / eyebrow / meta (docs/46 §5.2). */
+
+.sf-text {
+  margin: 0;
+}
+.sf-text--body {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: inherit;
+}
+.sf-text--eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sf-primary, #3f6b52);
+}
+.sf-text--meta {
+  font-size: 0.85rem;
+  color: var(
+    --sf-text-muted,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+  );
+}

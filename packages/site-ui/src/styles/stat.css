@@ -1,0 +1,25 @@
+/* site-ui Stat — headline figure + label + caption (docs/46 §5.2). */
+
+.sf-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.sf-stat__value {
+  font-family: var(--sf-font-heading, inherit);
+  font-weight: 600;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  color: inherit;
+}
+.sf-stat__label {
+  font-size: 0.95rem;
+  color: inherit;
+}
+.sf-stat__caption {
+  font-size: 0.8rem;
+  color: var(
+    --sf-text-muted,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+  );
+}

@@ -1,0 +1,50 @@
+/* site-ui Button — base layout + size scale only (docs/46 §6). Color and
+ * treatment come from the shared recipe (recipes.css `.sf-c-*` / `.sf-v-*`);
+ * this file owns just the button's chrome-agnostic shape and its padding scale.
+ * The focus ring picks up the active color's fill (`--c-bg`, set by the color
+ * recipe). */
+
+.sf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--sf-radius-field, 0.5rem);
+  font-family: var(--sf-font-body, inherit);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    filter 0.15s ease;
+}
+
+.sf-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--sf-primary, #3f6b52)) 40%, transparent);
+}
+
+.sf-btn:disabled,
+.sf-btn[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Size scale — what the shared sm/md/lg steps mean for a button. `md` keeps the
+ * storefront CTA proportions. */
+.sf-btn--sz-sm {
+  padding: 0.45rem 1.1rem;
+  font-size: 0.85rem;
+}
+.sf-btn--sz-md {
+  padding: 0.7rem 1.6rem;
+  font-size: 0.95rem;
+}
+.sf-btn--sz-lg {
+  padding: 0.85rem 2.1rem;
+  font-size: 1.05rem;
+}

@@ -23,6 +23,7 @@ export type {
   Justify,
   LayoutBase,
   Overlay,
+  Pin,
   SpaceScale,
   Surface,
   TextTone,
@@ -44,6 +45,7 @@ import type {
   GapScale,
   HeightScale,
   Overlay,
+  Pin,
   SpaceScale,
   Surface,
   TextTone,
@@ -166,6 +168,11 @@ export const TONE_OPTIONS: { value: TextTone; label: string }[] = [
   { value: 'default', label: 'Default' },
   { value: 'light', label: 'Light' },
   { value: 'dark', label: 'Dark' },
+];
+
+export const PIN_OPTIONS: { value: Pin; label: string }[] = [
+  { value: 'none', label: 'In flow' },
+  { value: 'top', label: 'Overlay top' },
 ];
 
 export const SPACE_OPTIONS: { value: SpaceScale; label: string }[] = [

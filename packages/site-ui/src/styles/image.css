@@ -1,0 +1,21 @@
+/* site-ui Image — ratio-locked, cover-fit, rounded to the tenant box radius
+ * (docs/46 §5.2). Storefront-renderer parity ratios. */
+
+.sf-img {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  border-radius: var(--sf-radius-box, 16px);
+}
+.sf-img--wide {
+  aspect-ratio: 16 / 9;
+}
+.sf-img--square {
+  aspect-ratio: 1 / 1;
+}
+.sf-img--portrait {
+  aspect-ratio: 3 / 4;
+}
+.sf-img--placeholder {
+  background: var(--sf-base-300, #e6e1d3);
+}

@@ -1,0 +1,19 @@
+/* site-ui Heading — tenant heading font, storefront-renderer parity sizes
+ * (docs/46 §5.2). Every value resolves to a --sf-* token. */
+
+.sf-h {
+  margin: 0;
+  font-family: var(--sf-font-heading, inherit);
+  font-weight: 600;
+  line-height: 1.15;
+  color: inherit;
+}
+.sf-h--1 {
+  font-size: 2.5rem;
+}
+.sf-h--2 {
+  font-size: 1.75rem;
+}
+.sf-h--3 {
+  font-size: 1.25rem;
+}

@@ -29,6 +29,10 @@ export interface BuilderWorkspaceProps {
   surface: EditorSurface;
   /** The inspector's panel when no node is selected (page vs. layout settings). */
   settings: React.ReactNode;
+  /** The site layout tree to frame the page in (page surface only): renders as a
+   *  locked backdrop with the page dropped at its Outlet. Omitted on the site
+   *  editor (it IS the layout). */
+  chrome?: BuilderNode | null;
 }
 
 export function BuilderWorkspace({
@@ -37,6 +41,7 @@ export function BuilderWorkspace({
   catalog,
   surface,
   settings,
+  chrome,
 }: BuilderWorkspaceProps) {
   return (
     <>
@@ -103,6 +108,13 @@ export function BuilderWorkspace({
             editor.mobilePane === 'preview' ? 'bx-pane--show' : 'bx-pane--hide'
           )}
         >
+          {chrome ? (
+            // Owned-elsewhere affordance: the header/footer are the site layout,
+            // not editable here. A click jumps to the site editor.
+            <a className="bx-frame-jump" href="/builder/site">
+              Header &amp; footer come from your Site layout · Edit&nbsp;→
+            </a>
+          ) : null}
           <Canvas
             tree={tree}
             data={editor.previewData}
@@ -110,6 +122,7 @@ export function BuilderWorkspace({
             device={editor.device}
             selectedId={editor.selectedId}
             onSelect={editor.setSelectedId}
+            chrome={chrome}
           />
         </main>
 

@@ -136,8 +136,12 @@ function boxStyles(
 ): { outer: React.CSSProperties; inner: React.CSSProperties } {
   const b = node.box;
   const surface = SURFACE[b.surface];
-  const bgFull = b.backgroundWidth === 'full';
-  const contentContained = b.contentWidth === 'contained';
+  // An Outlet is a width passthrough — the routed page owns its width, so never
+  // cap it (parity with the storefront renderer; a `contained` Outlet would
+  // silently constrain every page rendered into it).
+  const isOutlet = node.type === 'Outlet';
+  const bgFull = isOutlet || b.backgroundWidth === 'full';
+  const contentContained = !isOutlet && b.contentWidth === 'contained';
   const minHeight = def.kind === 'container' ? HEIGHT_VH[b.height] : undefined;
   const hasHeight = Boolean(minHeight);
   // Background media lives on whichever element owns the background WIDTH: the
@@ -145,10 +149,14 @@ function boxStyles(
   const image = b.backgroundImage;
   const overlay = b.overlay ?? 'none';
   const tone = b.textTone ?? 'default';
+  // `pin: top` lifts the block out of flow so the next block slides under it
+  // (overlay header). It anchors to the nearest positioned ancestor — every
+  // node's outer is `relative`, so it pins to the top of its parent.
+  const pinned = b.pin === 'top';
 
   const outer: React.CSSProperties = {
-    position: 'relative',
-    minHeight,
+    position: pinned ? 'absolute' : 'relative',
+    ...(pinned ? { top: 0, left: 0, right: 0, zIndex: 40, width: '100%' } : { minHeight }),
     ...(bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
     display: 'flex',
     justifyContent: contentContained ? 'center' : 'flex-start',
@@ -177,9 +185,88 @@ interface NodeProps {
   device: Device;
   selectedId: string | null;
   onSelect: (id: string) => void;
+  /** Locked = render as a non-interactive backdrop (no selection chrome, not
+   *  clickable). Used to frame the page editor in its site layout. */
+  locked?: boolean;
+  /** What to render where an `Outlet` node sits (the editable page subtree when
+   *  framing). Propagated down the locked chrome tree until the Outlet consumes
+   *  it. */
+  outletSlot?: React.ReactNode;
 }
 
-function CanvasNode({ node, scope, catalog, device, selectedId, onSelect }: NodeProps) {
+// In the editor a Carousel renders as a REAL carousel (active slide + arrows +
+// dots) so the preview matches the storefront — "what you see is what you ship."
+// Slides stay mounted (translated off-screen), so each is still selectable from
+// the Layers panel; control clicks don't bubble to node selection.
+function CanvasCarousel({ slides }: { slides: React.ReactNode[] }) {
+  const [index, setIndex] = React.useState(0);
+  const n = slides.length;
+  const go = (next: number) => setIndex(((next % n) + n) % n);
+  const stop = (fn: () => void) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    fn();
+  };
+  if (n === 0) return <div className="bx-empty">Carousel — add slides (each child is a slide)</div>;
+  return (
+    <div className="bx-ccarousel">
+      <div className="bx-ccarousel__viewport">
+        <div className="bx-ccarousel__track" style={{ transform: `translateX(-${index * 100}%)` }}>
+          {slides.map((slide, i) => (
+            <div className="bx-ccarousel__slide" key={i}>
+              {slide}
+            </div>
+          ))}
+        </div>
+      </div>
+      <span className="bx-ccarousel__badge">
+        Carousel · {n} {n === 1 ? 'slide' : 'slides'}
+      </span>
+      {n > 1 ? (
+        <>
+          <button
+            type="button"
+            className="bx-ccarousel__arrow bx-ccarousel__arrow--prev"
+            aria-label="Previous slide"
+            onClick={stop(() => go(index - 1))}
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            className="bx-ccarousel__arrow bx-ccarousel__arrow--next"
+            aria-label="Next slide"
+            onClick={stop(() => go(index + 1))}
+          >
+            ›
+          </button>
+          <div className="bx-ccarousel__dots">
+            {slides.map((_, i) => (
+              <button
+                type="button"
+                key={i}
+                className="bx-ccarousel__dot"
+                data-on={i === index}
+                aria-label={`Go to slide ${i + 1}`}
+                onClick={stop(() => go(i))}
+              />
+            ))}
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+function CanvasNode({
+  node,
+  scope,
+  catalog,
+  device,
+  selectedId,
+  onSelect,
+  locked,
+  outletSlot,
+}: NodeProps) {
   const def = getDef(node.type);
   if (!def) return null;
 
@@ -192,7 +279,57 @@ function CanvasNode({ node, scope, catalog, device, selectedId, onSelect }: Node
   const { outer, inner } = boxStyles(node, def);
 
   let body: React.ReactNode;
-  if (def.kind === 'container') {
+  if (node.type === 'Outlet' && outletSlot !== undefined) {
+    // Framing the page editor: the layout is a locked backdrop and the editable
+    // page subtree drops in here, exactly where the storefront mounts it.
+    body = outletSlot;
+  } else if (def.kind === 'container' && node.type === 'Carousel') {
+    // A Carousel renders as a real carousel (each child = a slide). Mirrors the
+    // storefront's iterate-or-static behaviour so the preview is faithful.
+    const kids = node.children ?? [];
+    // A carousel with an explicit height GOVERNS its slides: each slide adopts the
+    // carousel's height so the hero is exactly that tall. Without this a `full`
+    // slide dominates a `3/4` carousel (min-height can't shrink a taller child).
+    // `auto` leaves each slide its own height (carousel sizes to the tallest).
+    const slideOf = (child: BuilderNode): BuilderNode =>
+      node.box.height !== 'auto'
+        ? { ...child, box: { ...child.box, height: node.box.height } }
+        : child;
+    let slideNodes: React.ReactNode[];
+    if (bound && card === 'array') {
+      slideNodes = (value as unknown[]).flatMap((item, i) =>
+        kids.map((child) => (
+          <CanvasNode
+            key={`${i}:${child.id}`}
+            node={slideOf(child)}
+            scope={{ ...scope, item, index: i }}
+            catalog={catalog}
+            device={device}
+            selectedId={selectedId}
+            onSelect={onSelect}
+            locked={locked}
+            outletSlot={outletSlot}
+          />
+        ))
+      );
+    } else {
+      const s: Scope = bound && card === 'object' ? { ...scope, item: value } : scope;
+      slideNodes = kids.map((child) => (
+        <CanvasNode
+          key={child.id}
+          node={slideOf(child)}
+          scope={s}
+          catalog={catalog}
+          device={device}
+          selectedId={selectedId}
+          onSelect={onSelect}
+          locked={locked}
+          outletSlot={outletSlot}
+        />
+      ));
+    }
+    body = <CanvasCarousel slides={slideNodes} />;
+  } else if (def.kind === 'container') {
     const kids = node.children ?? [];
     let scopes: { s: Scope; key: string }[];
     if (bound && card === 'array') {
@@ -219,12 +356,31 @@ function CanvasNode({ node, scope, catalog, device, selectedId, onSelect }: Node
             device={device}
             selectedId={selectedId}
             onSelect={onSelect}
+            locked={locked}
+            outletSlot={outletSlot}
           />
         ))
       );
     }
   } else {
     body = def.renderLeaf?.({ node, value, cardinality: card, bound }) ?? null;
+  }
+
+  if (locked) {
+    // Locked chrome backdrop (page editor framing): faithful box + body, but no
+    // selection tag, no outline, not clickable. Device-hidden nodes still hide.
+    return (
+      <div
+        className={cn('bx-node', 'bx-chrome', hidden && 'bx-node--hidden')}
+        style={outer}
+        data-node-id={node.id}
+        data-bx-type={node.type}
+      >
+        <div className={cn('bx-inner', def.kind === 'container' && def.chromeClass)} style={inner}>
+          {body}
+        </div>
+      </div>
+    );
   }
 
   const iterating = def.kind === 'container' && bound && card === 'array';
@@ -282,12 +438,29 @@ export interface CanvasProps {
   device: Device;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
+  /** The site layout tree (page editor only). When present, the page is framed
+   *  inside it: the layout renders as a locked backdrop and `tree` is dropped at
+   *  the layout's Outlet — the same composition the storefront ships, so the
+   *  overlay header/footer preview correctly. */
+  chrome?: BuilderNode | null;
 }
 
 const DEVICE_WIDTH: Record<Device, number | null> = { desktop: null, tablet: 834, mobile: 390 };
 
-export function Canvas({ tree, data, catalog, device, selectedId, onSelect }: CanvasProps) {
+export function Canvas({ tree, data, catalog, device, selectedId, onSelect, chrome }: CanvasProps) {
   const width = DEVICE_WIDTH[device];
+  // The editable page subtree — fully selectable. When framing, it's handed to
+  // the locked chrome tree to render at the Outlet; otherwise it's the root.
+  const page = (
+    <CanvasNode
+      node={tree}
+      scope={{ root: data }}
+      catalog={catalog}
+      device={device}
+      selectedId={selectedId}
+      onSelect={onSelect}
+    />
+  );
   return (
     <div
       className="bx-canvas-scroll"
@@ -304,15 +477,22 @@ export function Canvas({ tree, data, catalog, device, selectedId, onSelect }: Ca
         data-theme="light"
         style={width ? { width, maxWidth: '100%' } : undefined}
         data-device={device}
+        data-framed={chrome ? '' : undefined}
       >
-        <CanvasNode
-          node={tree}
-          scope={{ root: data }}
-          catalog={catalog}
-          device={device}
-          selectedId={selectedId}
-          onSelect={onSelect}
-        />
+        {chrome ? (
+          <CanvasNode
+            node={chrome}
+            scope={{ root: data }}
+            catalog={catalog}
+            device={device}
+            selectedId={selectedId}
+            onSelect={onSelect}
+            locked
+            outletSlot={page}
+          />
+        ) : (
+          page
+        )}
       </div>
     </div>
   );

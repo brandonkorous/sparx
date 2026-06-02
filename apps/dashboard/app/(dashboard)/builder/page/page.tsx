@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import type { BindingCatalog, BuilderPageDto } from '@sparx/builder-schemas';
+import type { BindingCatalog, BuilderLayoutDto, BuilderPageDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/storefront-themes';
 
 import { getBrand, getConfig } from '../../sitebuilder/_lib/api';
-import { getBindingCatalog, listPages } from '../_lib/api';
+import { getBindingCatalog, getLayout, listPages } from '../_lib/api';
 import { BuilderApp } from '../_builder/builder-app';
 import '../builder.css';
 
@@ -62,16 +62,28 @@ async function loadCatalog(): Promise<BindingCatalog> {
   }
 }
 
+// The tenant's site layout — the page editor renders it as a locked backdrop
+// (header/footer) around the page so you edit in the chrome it ships in.
+// Defensive: a failed read just yields null (the editor renders unframed).
+async function loadLayout(): Promise<BuilderLayoutDto | null> {
+  try {
+    return await getLayout();
+  } catch {
+    return null;
+  }
+}
+
 export default async function BuilderPageRoute() {
-  const [themeCss, pages, catalog] = await Promise.all([
+  const [themeCss, pages, catalog, layout] = await Promise.all([
     canvasThemeCss(),
     loadPages(),
     loadCatalog(),
+    loadLayout(),
   ]);
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-      <BuilderApp initialPages={pages} bindingCatalog={catalog} />
+      <BuilderApp initialPages={pages} bindingCatalog={catalog} layoutTree={layout?.tree ?? null} />
     </>
   );
 }

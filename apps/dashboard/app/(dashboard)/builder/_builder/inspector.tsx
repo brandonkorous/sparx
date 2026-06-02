@@ -21,6 +21,7 @@ import {
   GAP_OPTIONS,
   HEIGHT_OPTIONS,
   OVERLAY_OPTIONS,
+  PIN_OPTIONS,
   SPACE_OPTIONS,
   SURFACE_OPTIONS,
   TONE_OPTIONS,
@@ -388,6 +389,13 @@ function BoxBasePanel({
           value={box.align}
           options={ALIGN_OPTIONS}
           onChange={(v) => onBox({ align: v })}
+        />
+      </Field>
+      <Field label="Position" hint="“Overlay top” floats this block over the one below it.">
+        <Segmented
+          value={box.pin ?? 'none'}
+          options={PIN_OPTIONS}
+          onChange={(v) => onBox({ pin: v })}
         />
       </Field>
       <div className="bx-field">

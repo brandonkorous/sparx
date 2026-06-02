@@ -15,12 +15,14 @@
 import * as React from 'react';
 import { Eye, Monitor, Pencil, Plus, Save, Smartphone, Tablet, Trash2, Upload } from 'lucide-react';
 import { Button, Input, ModuleProvider, NativeSelect } from '@sparx/ui';
-import type { BindingCatalog, BuilderPageDto } from '@sparx/builder-schemas';
+import { parsePageImport, toPageDocument } from '@sparx/builder-schemas';
+import type { BindingCatalog, BuilderNode, BuilderPageDto } from '@sparx/builder-schemas';
 
 import { type Device, type PageTemplate } from './model';
 import { MODULES } from './sample';
 import { PageSettings } from './inspector';
 import { BuilderWorkspace } from './builder-workspace';
+import { ImportExportControls } from './import-export-controls';
 import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
 import {
   createPage,
@@ -67,9 +69,14 @@ export interface BuilderAppProps {
   /** What the page can bind to — the tenant's real CMS content types + the
    *  code-defined Commerce/CRM sources (docs/43, the keystone). */
   bindingCatalog: BindingCatalog;
+  /** The tenant's site layout tree. The page editor renders it as a locked
+   *  backdrop (header/footer) around the page, with the page at its Outlet — so
+   *  you edit the page in the chrome it actually ships in. Null if unavailable
+   *  (the editor still works, just unframed). */
+  layoutTree?: BuilderNode | null;
 }
 
-export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
+export function BuilderApp({ initialPages, bindingCatalog, layoutTree }: BuilderAppProps) {
   // Pages load from the server (docs/41 §5 seeds the curated set on first use)
   // and seed this state ONCE. From here the client is authoritative for the
   // session; the server is the persistence sink (autosave + structural ops).
@@ -209,6 +216,23 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
     }
   };
 
+  // Import a page document/tree into the ACTIVE page: validate, replace its
+  // tree, persist. Keeps the page's identity (name/slug/kind) — only the tree is
+  // replaced. Returns an error message (shown by the control) or null.
+  const onImportText = (text: string): string | null => {
+    if (!active) return 'No active page to import into.';
+    const result = parsePageImport(text);
+    if (!result.ok) return result.error;
+    const id = active.id;
+    setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, tree: result.tree } : t)));
+    editor.setSelectedId(null);
+    editor.setSaveStatus('saving');
+    void savePageTree(id, result.tree).then((res) =>
+      editor.setSaveStatus(res.ok ? 'saved' : 'error')
+    );
+    return null;
+  };
+
   const activeModules = MODULES.filter((m) => m.on);
   const offModules = MODULES.filter((m) => !m.on);
 
@@ -331,6 +355,21 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
             <Button size="sm" variant="ghost" leftIcon={<Eye className="h-3.5 w-3.5" />} disabled>
               Preview
             </Button>
+            <ImportExportControls
+              kind="page"
+              name={active.name}
+              getDocument={() =>
+                toPageDocument({
+                  name: active.name,
+                  kind: active.kind,
+                  slug: active.slug,
+                  recordType: active.recordType ?? null,
+                  tree,
+                })
+              }
+              onImportText={onImportText}
+              disabled={busy}
+            />
             <Button
               size="sm"
               variant="soft"
@@ -381,6 +420,7 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
           editor={editor}
           catalog={bindingCatalog}
           surface="page"
+          chrome={layoutTree ?? null}
           settings={
             <PageSettings
               name={active.name}

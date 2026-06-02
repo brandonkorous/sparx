@@ -1,0 +1,26 @@
+/* @sparx/site-ui — the single tenant-themed stylesheet (docs/46 §3.1, §8).
+ *
+ * Consumers import this ONCE (storefront root layout, after storefront.css; the
+ * /builder editor route). Every rule is keyed on the tenant --sf-* tokens
+ * produced by @sparx/storefront-themes — site-ui consumes, never produces, the
+ * canonical tokens (docs/46 §3.3). Because it's a static, head-loaded
+ * stylesheet, the first paint is already themed in both SSR and the canvas —
+ * no flash of unstyled content (docs/46 §7).
+ *
+ * Component partials are aggregated here (alphabetical), then the shared variant
+ * recipe LAST so a treatment's resets (e.g. `.sf-v-link` padding:0) win over a
+ * component's size classes (docs/46 §3.6). */
+
+@import './styles/button.css';
+@import './styles/carousel.css';
+@import './styles/divider.css';
+@import './styles/embed-frame.css';
+@import './styles/heading.css';
+@import './styles/image.css';
+@import './styles/logo.css';
+@import './styles/nav-menu.css';
+@import './styles/price-tag.css';
+@import './styles/social-links.css';
+@import './styles/stat.css';
+@import './styles/text.css';
+@import './styles/recipes.css';

@@ -1,0 +1,6 @@
+/* site-ui PriceTag (docs/46 §5.2). */
+
+.sf-price {
+  font-weight: 600;
+  color: inherit;
+}

@@ -120,6 +120,72 @@
   color: var(--color-text-muted);
   white-space: nowrap;
 }
+
+/* Import notice — a visible, dismissible result anchored under the Import button
+ * (docs/47). Validation runs BEFORE anything is saved; on failure this shows the
+ * exact zod path + message so the author can fix the JSON. */
+.bx-impwrap {
+  position: relative;
+  display: inline-flex;
+}
+.bx-impnotice {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 60;
+  width: 320px;
+  max-width: 80vw;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+  text-align: left;
+}
+.bx-impnotice--error {
+  border-color: color-mix(
+    in srgb,
+    var(--color-text-danger, #dc2626) 55%,
+    var(--color-border-default)
+  );
+}
+.bx-impnotice--ok {
+  border-color: color-mix(in srgb, var(--color-success, #16a34a) 50%, var(--color-border-default));
+}
+.bx-impnotice__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.bx-impnotice__title {
+  font-size: 12px;
+  font-weight: 700;
+}
+.bx-impnotice--error .bx-impnotice__title {
+  color: var(--color-text-danger, #dc2626);
+}
+.bx-impnotice--ok .bx-impnotice__title {
+  color: var(--color-success, #16a34a);
+}
+.bx-impnotice__x {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1;
+  padding: 2px;
+}
+.bx-impnotice__msg {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--color-text-secondary, var(--color-text-muted));
+  word-break: break-word;
+  font-family: var(--bx-mono);
+}
 .bx-savestate[data-state='error'] {
   color: var(--color-text-danger, #dc2626);
 }
@@ -279,9 +345,51 @@
   border-left: 1px solid var(--color-border-default);
 }
 .bx-stage {
+  position: relative; /* anchors the framed-page "jump to site" chip */
   display: flex;
   min-height: 0;
   background: var(--color-bg-subtle);
+}
+
+/* Page-editor framing (docs/45): the site layout renders as a LOCKED backdrop
+   around the page — full fidelity, but not selectable and not clickable, so it
+   never reads as editable here. The page subtree (inside the Outlet) is normal
+   `.bx-node` and keeps its hover/select. */
+.bx-chrome,
+.bx-chrome:hover {
+  outline: none !important;
+  cursor: default;
+}
+/* "Header & footer come from your Site layout" — the owned-elsewhere affordance,
+   floating top-right over the canvas, fixed while the canvas scrolls. */
+.bx-frame-jump {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: calc(100% - 28px);
+  padding: 5px 11px;
+  border-radius: 999px;
+  font: 600 11px/1.4 var(--bx-mono);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--color-text-secondary, #4b5563);
+  background: color-mix(in srgb, var(--color-surface-raised, #fff) 86%, transparent);
+  border: 1px solid var(--color-border-default, #e5e7eb);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+  backdrop-filter: blur(6px);
+  text-decoration: none;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+.bx-frame-jump:hover,
+.bx-frame-jump:focus-visible {
+  color: var(--module-active, #6366f1);
+  border-color: color-mix(in srgb, var(--module-active, #6366f1) 60%, transparent);
 }
 
 @media (max-width: 1023px) {
@@ -881,6 +989,19 @@
   padding: 0;
   text-decoration: underline;
 }
+/* Translucent CTA pair — match the storefront renderer (frosted over photos). */
+.bx-btn--dark {
+  background: rgba(23, 26, 35, 0.78);
+  color: #fff;
+  backdrop-filter: blur(6px);
+  min-width: 150px;
+}
+.bx-btn--glass {
+  background: rgba(255, 255, 255, 0.86);
+  color: #171a23;
+  backdrop-filter: blur(6px);
+  min-width: 150px;
+}
 .bx-price {
   font-weight: 700;
   font-size: 16px;
@@ -1029,4 +1150,123 @@
   border: 1px dashed rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   width: 100%;
+}
+
+/* ── Video / Map embeds + Stat + Carousel (Tesla-recreation primitives) ──── */
+.bx-ratio-pano {
+  aspect-ratio: 21 / 9;
+}
+.bx-video,
+.bx-map {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--bxc-radius-sm);
+  background: var(--bxc-muted);
+}
+.bx-video iframe,
+.bx-map iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.bx-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: inherit;
+}
+.bx-stat__value {
+  font-family: var(--bxc-font-head);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1;
+}
+.bx-stat__label {
+  font-size: 13px;
+  opacity: 0.6;
+}
+/* Carousel in the editor — a real carousel (active slide + arrows + dots) so the
+ * preview matches the storefront. Slides stay mounted (translated), still
+ * selectable from Layers. */
+.bx-ccarousel {
+  position: relative;
+  width: 100%;
+}
+.bx-ccarousel__viewport {
+  width: 100%;
+  overflow: hidden;
+}
+.bx-ccarousel__track {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bx-ccarousel__slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+}
+.bx-ccarousel__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #111;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+.bx-ccarousel__arrow--prev {
+  left: 10px;
+}
+.bx-ccarousel__arrow--next {
+  right: 10px;
+}
+.bx-ccarousel__dots {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  gap: 6px;
+}
+.bx-ccarousel__dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition:
+    width 0.15s,
+    background 0.15s;
+}
+.bx-ccarousel__dot[data-on='true'] {
+  width: 18px;
+  background: #fff;
+}
+.bx-ccarousel__badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 4;
+  font: 600 10px/1.4 var(--bx-mono);
+  background: var(--module-active);
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 5px;
+  opacity: 0.85;
 }

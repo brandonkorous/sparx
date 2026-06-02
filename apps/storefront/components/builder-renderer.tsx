@@ -28,6 +28,8 @@ import {
   type Surface,
 } from '@sparx/builder-schemas';
 
+import { BuilderCarousel } from './builder-carousel';
+
 // ── Box-base → CSS (mirrors the editor canvas scales, --sf-* tokens) ──────────
 
 const HEIGHT_VH: Record<HeightScale, string | undefined> = {
@@ -106,7 +108,7 @@ const TEXT_ALIGN: Record<AlignX, 'left' | 'center' | 'right'> = {
   end: 'right',
 };
 
-const CONTAINERS = new Set(['Section', 'Grid', 'Stack', 'Card']);
+const CONTAINERS = new Set(['Section', 'Grid', 'Stack', 'Card', 'Carousel']);
 
 function layoutStyle(layout: LayoutBase): React.CSSProperties {
   const gap = GAP[layout.gap];
@@ -139,10 +141,13 @@ function boxStyles(
   const image = box.backgroundImage;
   const overlay = box.overlay ?? 'none';
   const tone = box.textTone ?? 'default';
+  // `pin: top` floats the block over the one that follows (overlay header),
+  // anchored to its parent (every node's outer is positioned).
+  const pinned = box.pin === 'top';
 
   const outer: React.CSSProperties = {
-    position: 'relative',
-    minHeight,
+    position: pinned ? 'absolute' : 'relative',
+    ...(pinned ? { top: 0, left: 0, right: 0, zIndex: 40, width: '100%' } : { minHeight }),
     ...(bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
     display: 'flex',
     justifyContent: contentContained ? 'center' : 'flex-start',
@@ -187,6 +192,65 @@ function firstImage(value: unknown): { url?: string; alt?: string } | null {
   return null;
 }
 
+// Embed helpers — mirror the editor registry (kept tiny + duplicated). A YouTube
+// watch/share/embed URL (or bare id) → a privacy-friendly embed; a place query →
+// a keyless Google Maps embed.
+function youtubeEmbed(url: string): string | null {
+  const u = (url ?? '').trim();
+  if (!u) return null;
+  const m = /(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([\w-]{6,})/.exec(u);
+  const id = m?.[1] ?? (/^[\w-]{6,}$/.test(u) ? u : null);
+  return id ? `https://www.youtube-nocookie.com/embed/${id}?rel=0` : null;
+}
+function mapEmbed(query: string, embedUrl: string): string | null {
+  if (embedUrl?.trim()) return embedUrl.trim();
+  const q = (query ?? '').trim();
+  return q ? `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed` : null;
+}
+// Hand-typed nav links (the fallback when a NavMenu isn't bound to a CMS menu).
+// One per line: `Label` or `Label|/url`. Mirrors the editor registry.
+function parseNavLinks(raw: string): { label: string; url: string }[] {
+  return (raw ?? '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [label, url] = line.split('|');
+      return { label: (label ?? '').trim(), url: (url ?? '#').trim() || '#' };
+    })
+    .filter((l) => l.label !== '');
+}
+const EMBED_RATIO: Record<string, string> = {
+  wide: '16 / 9',
+  square: '1 / 1',
+  portrait: '9 / 16',
+  pano: '21 / 9',
+};
+function embedFrame(src: string, title: string, ratio: string): React.ReactNode {
+  return (
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        aspectRatio: EMBED_RATIO[ratio] ?? '16 / 9',
+        borderRadius: 'var(--sf-radius-box)',
+        overflow: 'hidden',
+        background: 'var(--sf-base-300)',
+      }}
+    >
+      <iframe
+        src={src}
+        title={title}
+        loading="lazy"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        referrerPolicy="no-referrer-when-downgrade"
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
+      />
+    </div>
+  );
+}
+
 // ── Leaf rendering ─────────────────────────────────────────────────────────
 
 const HEADING_SIZE: Record<string, string> = { h1: '2.5rem', h2: '1.75rem', h3: '1.25rem' };
@@ -220,13 +284,21 @@ function buttonStyle(style: string): React.CSSProperties {
   }
   const base: React.CSSProperties = {
     display: 'inline-block',
-    padding: '0.625rem 1.25rem',
+    padding: '0.7rem 1.75rem',
     borderRadius: 'var(--sf-radius-field)',
     fontWeight: 600,
     fontSize: '0.95rem',
+    textAlign: 'center',
+    minWidth: '160px',
   };
+  // Translucent CTAs (the photo-panel pairing): a frosted dark "primary" and a
+  // frosted light "secondary" that stay legible over any background photo.
+  const frosted: React.CSSProperties = { ...base, backdropFilter: 'blur(6px)' };
   if (style === 'soft')
     return { ...base, background: 'var(--sf-base-200)', color: 'var(--sf-primary)' };
+  if (style === 'dark') return { ...frosted, background: 'rgba(23,26,35,0.78)', color: '#ffffff' };
+  if (style === 'glass')
+    return { ...frosted, background: 'rgba(255,255,255,0.86)', color: '#171a23' };
   return { ...base, background: 'var(--sf-primary)', color: 'var(--sf-primary-content)' };
 }
 function ratioOf(r: string): string {
@@ -294,6 +366,36 @@ function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.Re
         />
       );
     }
+    case 'Video': {
+      const src = youtubeEmbed(str('url'));
+      const ratio = str('ratio') || 'wide';
+      if (!src) return null;
+      return embedFrame(src, node.box.name ?? 'Video', ratio);
+    }
+    case 'Map': {
+      const src = mapEmbed(str('query'), str('embedUrl'));
+      const ratio = str('ratio') || 'pano';
+      if (!src) return null;
+      return embedFrame(src, node.box.name ?? 'Map', ratio);
+    }
+    case 'Stat': {
+      const big = (bound ? asText(value) : '') || str('value') || '0';
+      return (
+        <span style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+          <span
+            style={{
+              fontFamily: 'var(--sf-font-heading)',
+              fontWeight: 700,
+              fontSize: '2.25rem',
+              lineHeight: 1,
+            }}
+          >
+            {big}
+          </span>
+          <span style={{ fontSize: '0.9rem', color: 'var(--sf-text-muted)' }}>{str('label')}</span>
+        </span>
+      );
+    }
     // ── Site chrome (docs/45) ────────────────────────────────────────────────
     case 'Logo': {
       const identity =
@@ -333,7 +435,19 @@ function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.Re
     }
     case 'NavMenu': {
       const orientation = str('orientation') || 'row';
-      const items = Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
+      const boundItems = Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
+      // Bound CMS menu wins; otherwise fall back to hand-typed links (the
+      // unbound nav case — e.g. a static header). Empty → render nothing.
+      const list =
+        boundItems.length > 0
+          ? boundItems
+              .map((it) => ({
+                label: typeof it.label === 'string' ? it.label : '',
+                url: typeof it.url === 'string' ? it.url : '#',
+              }))
+              .filter((l) => l.label !== '')
+          : parseNavLinks(str('links'));
+      if (list.length === 0) return null;
       return (
         <nav
           style={{
@@ -344,25 +458,20 @@ function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.Re
             alignItems: orientation === 'stack' ? 'flex-start' : 'center',
           }}
         >
-          {items.map((it, i) => {
-            const label = typeof it.label === 'string' ? it.label : '';
-            const url = typeof it.url === 'string' ? it.url : '#';
-            if (!label) return null;
-            return (
-              <a
-                key={`${i}-${label}`}
-                href={url}
-                style={{
-                  color: 'inherit',
-                  textDecoration: 'none',
-                  fontWeight: 500,
-                  fontSize: '0.95rem',
-                }}
-              >
-                {label}
-              </a>
-            );
-          })}
+          {list.map((it, i) => (
+            <a
+              key={`${i}-${it.label}`}
+              href={it.url}
+              style={{
+                color: 'inherit',
+                textDecoration: 'none',
+                fontWeight: 500,
+                fontSize: '0.95rem',
+              }}
+            >
+              {it.label}
+            </a>
+          ))}
         </nav>
       );
     }
@@ -418,13 +527,63 @@ function RenderNode({
   const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
   const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
 
-  const { outer, inner } = boxStyles(node.box, isContainer);
+  // An Outlet is a width PASSTHROUGH — the routed page owns its own width. Never
+  // let it impose the contained max-width: a `contained` Outlet (e.g. from an
+  // import that didn't set the width axes — DEFAULT_BOX is `contained`) would
+  // silently cap header + page + footer at --sf-max and centre them. Force full.
+  const effBox: BoxBase =
+    node.type === 'Outlet'
+      ? { ...node.box, backgroundWidth: 'full', contentWidth: 'full' }
+      : node.box;
+  const { outer, inner } = boxStyles(effBox, isContainer);
   const innerStyle = isContainer && node.layout ? { ...inner, ...layoutStyle(node.layout) } : inner;
 
   let body: React.ReactNode;
   if (node.type === 'Outlet') {
     // The content outlet: render the routed page here (docs/45 §2.6).
     body = outlet ?? null;
+  } else if (node.type === 'Carousel') {
+    // Each direct child is a slide. When bound to an array, each record is a
+    // slide (its subtree rendered once per item). The client component owns the
+    // index state, autoplay, arrows + dots.
+    const kids = node.children ?? [];
+    // A carousel with an explicit height GOVERNS its slides: each slide adopts the
+    // carousel's height so the hero is exactly that tall. Without this a `full`
+    // slide dominates a `3/4` carousel (min-height can't shrink a taller child).
+    // `auto` leaves each slide its own height (carousel sizes to the tallest).
+    const slideOf = (child: BuilderNode): BuilderNode =>
+      node.box.height !== 'auto'
+        ? { ...child, box: { ...child.box, height: node.box.height } }
+        : child;
+    let slides: React.ReactNode[];
+    if (bound && card === 'array') {
+      slides = (value as unknown[]).map((item, i) => (
+        <React.Fragment key={`i${i}`}>
+          {kids.map((child) => (
+            <RenderNode
+              key={child.id}
+              node={slideOf(child)}
+              scope={{ ...scope, item, index: i }}
+              outlet={outlet}
+            />
+          ))}
+        </React.Fragment>
+      ));
+    } else {
+      const s: Scope = bound && card === 'object' ? { ...scope, item: value } : scope;
+      slides = kids.map((child) => (
+        <RenderNode key={child.id} node={slideOf(child)} scope={s} outlet={outlet} />
+      ));
+    }
+    body = (
+      <BuilderCarousel
+        slides={slides}
+        autoplay={node.props.autoplay !== false}
+        interval={Number(node.props.interval) || 6}
+        arrows={node.props.arrows !== false}
+        dots={node.props.dots !== false}
+      />
+    );
   } else if (isContainer) {
     const kids = node.children ?? [];
     if (bound && card === 'array') {

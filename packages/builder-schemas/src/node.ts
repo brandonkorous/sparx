@@ -35,6 +35,10 @@ export const Overlay = z.enum(['none', 'dark', 'light', 'gradient']);
 // Text color over a background image / photo, decoupled from `surface` (which
 // pairs bg+fg from tokens). `default` inherits the surface foreground.
 export const TextTone = z.enum(['default', 'light', 'dark']);
+// Pin a block out of normal flow so the block that follows it slides underneath
+// (docs/45): `top` floats it transparently across the top — the overlay-header
+// case (a header sitting over a full-bleed hero). `none` = normal flow.
+export const Pin = z.enum(['none', 'top']);
 
 export type HeightScale = z.infer<typeof HeightScale>;
 export type WidthMode = z.infer<typeof WidthMode>;
@@ -44,6 +48,7 @@ export type AlignX = z.infer<typeof AlignX>;
 export type Device = z.infer<typeof Device>;
 export type Overlay = z.infer<typeof Overlay>;
 export type TextTone = z.infer<typeof TextTone>;
+export type Pin = z.infer<typeof Pin>;
 
 export const BoxBaseSchema = z.object({
   /** Optional author-facing label, shown in the Layers tree. */
@@ -67,6 +72,10 @@ export const BoxBaseSchema = z.object({
   overlay: Overlay.optional(),
   /** Text color over the background, independent of `surface`. */
   textTone: TextTone.optional(),
+  /** Lift this block out of normal flow so the next block slides under it — the
+   *  overlay-header primitive (docs/45). Optional so existing trees stay valid;
+   *  consumers default to 'none'. */
+  pin: Pin.optional(),
 });
 export type BoxBase = z.infer<typeof BoxBaseSchema>;
 
