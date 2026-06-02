@@ -29,6 +29,12 @@ export const Surface = z.enum(['none', 'subtle', 'muted', 'inverse', 'brand']);
 export const SpaceScale = z.enum(['none', 'sm', 'md', 'lg', 'xl']);
 export const AlignX = z.enum(['start', 'center', 'end']);
 export const Device = z.enum(['desktop', 'tablet', 'mobile']);
+// A scrim laid over a background image so overlaid text stays legible (docs/45):
+// a uniform dark/light veil, or a top+bottom gradient (the full-bleed-hero case).
+export const Overlay = z.enum(['none', 'dark', 'light', 'gradient']);
+// Text color over a background image / photo, decoupled from `surface` (which
+// pairs bg+fg from tokens). `default` inherits the surface foreground.
+export const TextTone = z.enum(['default', 'light', 'dark']);
 
 export type HeightScale = z.infer<typeof HeightScale>;
 export type WidthMode = z.infer<typeof WidthMode>;
@@ -36,6 +42,8 @@ export type Surface = z.infer<typeof Surface>;
 export type SpaceScale = z.infer<typeof SpaceScale>;
 export type AlignX = z.infer<typeof AlignX>;
 export type Device = z.infer<typeof Device>;
+export type Overlay = z.infer<typeof Overlay>;
+export type TextTone = z.infer<typeof TextTone>;
 
 export const BoxBaseSchema = z.object({
   /** Optional author-facing label, shown in the Layers tree. */
