@@ -385,12 +385,77 @@ function BoxBasePanel({
   );
 }
 
+// ── Page settings (shown when no node is selected) ───────────────────────────
+
+function PageSettings({
+  name,
+  slug,
+  kind,
+  onSlug,
+}: {
+  name: string;
+  slug: string | null;
+  kind: 'singleton' | 'collection';
+  onSlug: (slug: string) => void;
+}) {
+  const [draft, setDraft] = React.useState(slug ?? '');
+  // Resync when the active page changes (slug prop is the source of truth).
+  React.useEffect(() => setDraft(slug ?? ''), [slug]);
+
+  return (
+    <div className="bx-inspector">
+      <header className="bx-ins-head">
+        <div className="bx-ins-head__row">
+          <h3>{name}</h3>
+          <span className="bx-ins-kind">{kind}</span>
+        </div>
+      </header>
+      {kind === 'collection' ? (
+        <Group label="Page">
+          <p className="bx-grp__caption">
+            A collection template renders once per record — it has no single page URL.
+          </p>
+        </Group>
+      ) : (
+        <Group label="Page">
+          <Field
+            label="Storefront URL"
+            hint={
+              draft.trim()
+                ? `Published, this page serves at /${draft.trim()}`
+                : 'Set a slug to serve this page on the storefront.'
+            }
+          >
+            <Input
+              value={draft}
+              placeholder="e.g. about"
+              aria-label="Page slug"
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') e.currentTarget.blur();
+              }}
+              onBlur={() => {
+                if ((draft.trim() || null) !== (slug ?? null)) onSlug(draft);
+              }}
+            />
+          </Field>
+        </Group>
+      )}
+      <p className="bx-inspector__tip">Select a layer to edit it.</p>
+    </div>
+  );
+}
+
 // ── The inspector ────────────────────────────────────────────────────────────
 
 export interface InspectorProps {
   node: BuilderNode | null;
   catalog: BindingCatalog;
   scope: ScopeInfo;
+  pageName: string;
+  pageSlug: string | null;
+  pageKind: 'singleton' | 'collection';
+  onSlug: (slug: string) => void;
   onName: (name: string) => void;
   onBind: (path: string | null) => void;
   onProp: (key: string, value: unknown) => void;
@@ -402,6 +467,10 @@ export function Inspector({
   node,
   catalog,
   scope,
+  pageName,
+  pageSlug,
+  pageKind,
+  onSlug,
   onName,
   onBind,
   onProp,
@@ -409,11 +478,7 @@ export function Inspector({
   onBox,
 }: InspectorProps) {
   if (!node) {
-    return (
-      <div className="bx-inspector bx-inspector--empty">
-        <p>Select a layer on the canvas or in the Layers tree to edit it.</p>
-      </div>
-    );
+    return <PageSettings name={pageName} slug={pageSlug} kind={pageKind} onSlug={onSlug} />;
   }
   const def = getDef(node.type);
   if (!def) return null;

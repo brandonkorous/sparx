@@ -65,6 +65,7 @@ import publicCheckoutRoutes from './routes/v1/public/checkout.js';
 import publicReviewRoutes from './routes/v1/public/reviews.js';
 import publicAccountRoutes from './routes/v1/public/account.js';
 import publicStorefrontRoutes from './routes/v1/public/storefront.js';
+import publicBuilderRoutes from './routes/v1/public/builder.js';
 import publicMediaRoutes from './routes/v1/public/media.js';
 import publicConsentRoutes from './routes/v1/public/consent.js';
 import uploadRoutes from './routes/v1/media/uploads.js';
@@ -502,6 +503,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicReviewRoutes);
   await app.register(publicAccountRoutes);
   await app.register(publicStorefrontRoutes);
+  await app.register(publicBuilderRoutes);
   await app.register(publicMediaRoutes);
   await app.register(publicConsentRoutes);
   await app.register(emailWebhookRoutes);

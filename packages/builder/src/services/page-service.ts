@@ -17,6 +17,7 @@ import {
   type BuilderNode,
   type BuilderPageDto,
   type BuilderPageKind,
+  type PublishedPageDto,
 } from '@sparx/builder-schemas';
 import type { BuilderPage, Prisma } from '@sparx/db';
 import { withTenant } from '@sparx/db';
@@ -30,6 +31,7 @@ function toDto(row: BuilderPage): BuilderPageDto {
   return {
     id: row.id,
     name: row.name,
+    slug: row.slug,
     kind: row.kind as BuilderPageKind,
     recordType: row.recordType,
     // Stored validated on write; the editor depends on a well-formed tree.
@@ -104,6 +106,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Bu
         name: input.name,
         kind: input.kind,
         recordType: input.recordType ?? null,
+        slug: input.slug ?? null,
         draftTree: asJson(input.tree ?? blankPageTree()),
         position,
       },
@@ -138,6 +141,7 @@ export async function update(
     if (input.name !== undefined) data.name = input.name;
     if (input.tree !== undefined) data.draftTree = asJson(input.tree);
     if (input.recordType !== undefined) data.recordType = input.recordType;
+    if (input.slug !== undefined) data.slug = input.slug;
 
     const updated = await tx.builderPage.update({ where: { id }, data });
     return toDto(updated);
@@ -225,4 +229,29 @@ export async function publish(ctx: ServiceContext, id: string): Promise<BuilderP
     payload: { pageId: dto.id, name: dto.name },
   });
   return dto;
+}
+
+/** The storefront read (docs/44 §2.2): the PUBLISHED tree for a page by slug, or
+ *  null when no page with that slug has been published. Returns the published
+ *  snapshot — never the draft. Tenant-scoped via withTenant (the public route
+ *  resolves the tenant by slug first). */
+export function getPublishedBySlug(
+  ctx: ServiceContext,
+  slug: string
+): Promise<PublishedPageDto | null> {
+  return withTenant(ctx, async (tx) => {
+    // slug is unique per tenant; RLS scopes to this tenant. Filter "published"
+    // in JS — the JSON column's NULL check needs a Prisma runtime value, but
+    // Prisma here is imported as a type only.
+    const row = await tx.builderPage.findFirst({ where: { slug } });
+    if (row?.publishedTree == null) return null;
+    return {
+      name: row.name,
+      slug: row.slug ?? slug,
+      kind: row.kind as BuilderPageKind,
+      recordType: row.recordType,
+      tree: row.publishedTree as unknown as BuilderNode,
+      publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
+    };
+  });
 }

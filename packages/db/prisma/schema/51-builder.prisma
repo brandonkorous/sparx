@@ -21,6 +21,10 @@ model BuilderPage {
   kind       String  @default("singleton") @db.VarChar(20)
   // collection only — the content type each record fills (e.g. "cms.post").
   recordType String? @map("record_type") @db.VarChar(63)
+  // The URL a published SINGLETON page serves at on the storefront (docs/44).
+  // Null for collection templates (they render per-record) and unrouted pages.
+  // Unique per tenant; Postgres treats NULLs as distinct, so many stay null.
+  slug       String? @db.VarChar(160)
 
   // The editable BuilderNode root. Shape validated by @sparx/builder-schemas.
   draftTree     Json      @map("draft_tree")
@@ -36,6 +40,7 @@ model BuilderPage {
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
+  @@unique([tenantId, slug])
   @@index([tenantId, position])
   @@map("builder_pages")
 }

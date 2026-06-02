@@ -52,6 +52,13 @@ export async function renamePage(id: string, name: string): Promise<ActionResult
   return run(() => api.patch<BuilderPageDto>(`/v1/builder/pages/${id}`, { name }), true);
 }
 
+/** Set (or clear, with '') the page's storefront slug (docs/44). An empty string
+ *  sends null to clear it; a value is validated server-side against PageSlug. */
+export async function setPageSlug(id: string, slug: string): Promise<ActionResult<BuilderPageDto>> {
+  const value = slug.trim() === '' ? null : slug.trim();
+  return run(() => api.patch<BuilderPageDto>(`/v1/builder/pages/${id}`, { slug: value }), true);
+}
+
 export async function deletePage(id: string): Promise<ActionResult<{ id: string }>> {
   return run(() => api.delete<{ id: string }>(`/v1/builder/pages/${id}`), true);
 }

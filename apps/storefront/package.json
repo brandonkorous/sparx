@@ -12,6 +12,7 @@
     "clean": "rm -rf .turbo .next *.tsbuildinfo"
   },
   "dependencies": {
+    "@sparx/builder-schemas": "workspace:*",
     "@sparx/cms-editor": "workspace:*",
     "@sparx/section-template-react": "workspace:*",
     "@sparx/sitebuilder-schemas": "workspace:*",

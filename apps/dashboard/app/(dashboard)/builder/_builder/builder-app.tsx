@@ -48,7 +48,14 @@ import { Canvas } from './canvas';
 import { Inspector } from './inspector';
 import { LayersPanel } from './layers-panel';
 import { AddPalette } from './add-palette';
-import { createPage, deletePage, publishPage, renamePage, savePageTree } from '../_lib/actions';
+import {
+  createPage,
+  deletePage,
+  publishPage,
+  renamePage,
+  savePageTree,
+  setPageSlug,
+} from '../_lib/actions';
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -57,6 +64,7 @@ function toTemplate(p: BuilderPageDto): PageTemplate {
   return {
     id: p.id,
     name: p.name,
+    slug: p.slug,
     kind: p.kind,
     recordType: p.recordType ?? undefined,
     tree: p.tree,
@@ -315,6 +323,26 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
     setSaveStatus(res.ok ? 'saved' : 'error');
   };
 
+  // Set/clear the page's storefront slug (docs/44). Optimistic, then reflect the
+  // server-normalized slug (or revert on a validation error).
+  const onSlug = async (slug: string) => {
+    if (!active) return;
+    const id = active.id;
+    const prev = active.slug;
+    const optimistic = slug.trim() === '' ? null : slug.trim();
+    setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, slug: optimistic } : t)));
+    setSaveStatus('saving');
+    const res = await setPageSlug(id, slug);
+    if (res.ok && res.data) {
+      const saved = res.data;
+      setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, slug: saved.slug } : t)));
+      setSaveStatus('saved');
+    } else {
+      setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, slug: prev } : t)));
+      setSaveStatus('error');
+    }
+  };
+
   const activeModules = MODULES.filter((m) => m.on);
   const offModules = MODULES.filter((m) => !m.on);
   const targetDef = target ? getDef(target.type) : undefined;
@@ -562,6 +590,10 @@ export function BuilderApp({ initialPages, bindingCatalog }: BuilderAppProps) {
                 node={selectedNode}
                 catalog={bindingCatalog}
                 scope={scope}
+                pageName={active.name}
+                pageSlug={active.slug}
+                pageKind={active.kind}
+                onSlug={onSlug}
                 onName={onName}
                 onBind={onBind}
                 onProp={onProp}

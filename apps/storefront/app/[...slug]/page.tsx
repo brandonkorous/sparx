@@ -7,8 +7,10 @@ import { notFound } from 'next/navigation';
 import { resolveTenant } from '@/lib/tenant';
 import { getPageBySlug } from '@/lib/content';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
+import { getPublishedBuilderPage } from '@/lib/builder';
 import { PageView } from '@/components/page-view';
 import { SectionRenderer } from '@/components/section-renderer';
+import { BuilderRenderer } from '@/components/builder-renderer';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +28,13 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   if (!tenant) return {};
   const slug = buildSlug((await params).slug);
   const previewToken = (await searchParams)?.sparxPreview;
+
+  // A Builder page owns its slug — title it from the page name (docs/44).
+  const builderPage = await getPublishedBuilderPage(tenant.slug, slug);
+  if (builderPage) {
+    return { title: `${builderPage.name} · ${tenant.name}`, robots: { index: true, follow: true } };
+  }
+
   const page = await getPageBySlug(tenant.slug, slug, previewToken ? { previewToken } : {});
   if (!page) return {};
 
@@ -49,6 +58,12 @@ export default async function StorefrontPage({ params, searchParams }: SlugPageP
   const slug = buildSlug((await params).slug);
   const sp = (await searchParams) ?? {};
   const previewToken = sp.sparxPreview;
+
+  // A published Builder page owns its slug (docs/44 §2.5): if one exists, render
+  // it and skip the legacy Site-Builder-sections + CMS-page paths entirely.
+  const builderPage = await getPublishedBuilderPage(tenant.slug, slug);
+  if (builderPage) return <BuilderRenderer tree={builderPage.tree} />;
+
   const [page, snapshot] = await Promise.all([
     getPageBySlug(tenant.slug, slug, previewToken ? { previewToken } : {}),
     getPublishedSite(tenant.slug, sp.sparxSitePreview),

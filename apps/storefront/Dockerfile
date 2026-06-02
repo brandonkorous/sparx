@@ -24,6 +24,7 @@ COPY packages/cms-editor/package.json packages/cms-editor/
 COPY packages/storefront-themes/package.json packages/storefront-themes/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
+COPY packages/builder-schemas/package.json packages/builder-schemas/
 
 # Install only the @sparx/storefront subgraph (its deps + transitive workspace deps).
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
@@ -34,6 +35,7 @@ COPY packages/cms-editor packages/cms-editor
 COPY packages/storefront-themes packages/storefront-themes
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
+COPY packages/builder-schemas packages/builder-schemas
 COPY apps/storefront apps/storefront
 
 # next.config.mjs has `output: 'standalone'` and outputFileTracingRoot

@@ -55,6 +55,9 @@ export type Cardinality = 'scalar' | 'object' | 'array' | 'empty';
 export interface PageTemplate {
   id: string;
   name: string;
+  /** The storefront URL a published singleton page serves at (docs/44). Null
+   *  for collection templates + unrouted pages. */
+  slug: string | null;
   kind: 'singleton' | 'collection';
   /** For collection templates: the content type each record comes from
    *  (e.g. 'cms.post', 'commerce.product'). */
