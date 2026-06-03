@@ -1,8 +1,8 @@
 # Sparx Brand Guide
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous / WizeWorks
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-06-03
 
 ---
 
@@ -191,10 +191,41 @@ Every Sparx surface — marketing pages, the tenant dashboard, customer-facing s
 | "Powerful features for growing businesses"                   | "Pay for what you use. Own everything."     |
 | "Our AI-powered insights help you understand your customers" | "Ask your AI anything about your business." |
 | "Flexible pricing for every stage"                           | "Add B2B for $99/mo. No upgrade required."  |
+| "Build a website with AI in seconds"                         | "AI builds it. Sparx keeps it."             |
 
 **Short sentences.** Subject, verb, done. Sparx doesn't explain itself — it demonstrates.
 
 **Second person, present tense.** "Your store is live" not "Merchants can launch their stores."
+
+### 7.1 Positioning: permanence
+
+A second message sits beneath the _"[Offering], ignited."_ tagline system — the durability story, written for the era of disposable, AI-generated sites. The lead line:
+
+> **AI builds it. Sparx keeps it.**
+
+Supporting lines (use one at a time, never stacked):
+
+- _Generated in a moment. Built to last._
+- _Coding optional. Permanence included._
+- _Your AI can start it. Sparx is where it lives._
+
+**Rules for this message:**
+
+- **Never anti-AI.** Sparx is MCP-native — the message is _AI + permanence_, not _AI vs. AI_. We are where AI output grows up, not a rejection of it.
+- **"Coding optional" = the escape ladder** (no-code by default, full code when you want it; [docs/47](47-class-first-authoring-model.md)). Never reduce it to a flat "no-code only" claim.
+- **Stay on the day-2 wedge.** Easy to _create_ is table stakes now; easy to _keep_ — maintain, enhance, own — is ours. Pair it with "Live in 5 minutes," never against it: fast to start, permanent to keep.
+
+### 7.2 Homepage hero concept (sparx.works)
+
+The current hero — the rotating _"[Offering], ignited."_ wordline plus the 5-minute / one-bill / MCP metric row ([apps/web/components/marketing/hero.tsx](../apps/web/components/marketing/hero.tsx)) — **stays as the primary.** Add permanence as the **section immediately below it**, not as a replacement:
+
+- **Eyebrow:** AI builds it. Sparx keeps it.
+- **Headline:** The website that's still yours next year.
+- **Subhead:** Generate it with AI if you want. Then maintain and enhance it yourself — no-code by default, full code when you want it — for years. You own the data. You own the site.
+- **Proof row (four chips):** No-code editor · Own your data · Headless API · MCP-native
+- **CTA:** Launch your store / See how it lasts
+
+Implementation note: this is a **new content section** in `apps/web` (a sibling of `hero.tsx`), not an edit to the indigo hero. Same voice — short sentences, second person, no "revolutionary."
 
 ---
 

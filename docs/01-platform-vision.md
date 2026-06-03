@@ -1,8 +1,8 @@
 # Sparx Platform — Vision & Strategy
 
-**Version:** 2.0
+**Version:** 2.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-03
 
 ---
 
@@ -13,6 +13,8 @@ The content and commerce platform market is dominated by tools that have optimiz
 Worse: businesses are forced to buy features they don't need. A blogger who just wants to publish — or to sell a single digital product — pays the same as a wholesale distributor managing 500 SKUs and 200 fleet accounts.
 
 AI tools (Claude, ChatGPT, Copilot) have become indispensable — but they have zero visibility into business data. A business owner cannot ask their AI "what are my top 10 customers this quarter" because no platform exposes that natively.
+
+And the newest problem runs the other way. A wave of AI tools can now generate an entire website from a prompt in seconds — but a generated site is a snapshot, not a system. The moment you need to maintain it, add real commerce, connect customer data, or change it next quarter, you are back to a developer or starting from scratch. The market is filling with sites that are effortless to _create_ and impossible to _keep_.
 
 ## 2. The Solution — Sparx
 
@@ -30,6 +32,8 @@ Sparx is a modular content and commerce operating system. You activate only the 
 - **Dropship** — Supplier connectors, catalog sync, automated order routing
 
 Each module is independently activatable. A publisher running a content site pays for Storefront + CMS. A wholesale distributor pays for Commerce + B2B + CRM. A dropship entrepreneur pays for Commerce + Dropship.
+
+And Sparx is built to _last_, not just to launch. Generate your site with AI if you want — Sparx is MCP-native, so you can. But Sparx is where a site **lives** afterward: you maintain and enhance it yourself in a visual, no-code editor, with full code available as an option and never a requirement (the four-tier escape ladder, [doc 47](47-class-first-authoring-model.md)). **AI to start; Sparx to last.**
 
 ## 3. The WizeWorks Context
 
@@ -53,20 +57,22 @@ Building product businesses without inventory. Need supplier sync, margin calcul
 
 ## 5. Competitive Differentiation
 
-| Capability              | Sparx | Shopify    | HubSpot | WordPress   |
-| ----------------------- | ----- | ---------- | ------- | ----------- |
-| Store live < 5 min      | ✅    | ❌         | ❌      | ❌          |
-| Modular pricing         | ✅    | ❌         | ❌      | ❌          |
-| Per-module activation   | ✅    | ❌         | ❌      | ❌          |
-| CMS standalone          | ✅    | ❌         | ❌      | ✅          |
-| Built-in CRM            | ✅    | ❌         | ✅      | ❌          |
-| Native MCP / AI         | ✅    | ❌         | ❌      | ❌          |
-| Built-in email (Postal) | ✅    | ❌         | ✅      | ❌          |
-| B2B / Wholesale native  | ✅    | +$2,400/mo | ❌      | ❌          |
-| Dropship native         | ✅    | Via apps   | ❌      | Via plugins |
-| Headless / API-first    | ✅    | +cost      | ❌      | Via REST    |
-| Single monthly bill     | ✅    | ❌         | ❌      | ❌          |
-| Self-hosted option      | ✅    | ❌         | ❌      | ✅          |
+| Capability                     | Sparx | Shopify    | HubSpot | WordPress   |
+| ------------------------------ | ----- | ---------- | ------- | ----------- |
+| Store live < 5 min             | ✅    | ❌         | ❌      | ❌          |
+| Modular pricing                | ✅    | ❌         | ❌      | ❌          |
+| Per-module activation          | ✅    | ❌         | ❌      | ❌          |
+| CMS standalone                 | ✅    | ❌         | ❌      | ✅          |
+| Built-in CRM                   | ✅    | ❌         | ✅      | ❌          |
+| Native MCP / AI                | ✅    | ❌         | ❌      | ❌          |
+| Built-in email (Postal)        | ✅    | ❌         | ✅      | ❌          |
+| B2B / Wholesale native         | ✅    | +$2,400/mo | ❌      | ❌          |
+| Dropship native                | ✅    | Via apps   | ❌      | Via plugins |
+| Headless / API-first           | ✅    | +cost      | ❌      | Via REST    |
+| Single monthly bill            | ✅    | ❌         | ❌      | ❌          |
+| Self-hosted option             | ✅    | ❌         | ❌      | ✅          |
+| No-code editing, code optional | ✅    | Themes/dev | ❌      | Plugins/dev |
+| Maintain & extend, no rebuild  | ✅    | Via apps   | ❌      | Via plugins |
 
 ## 6. Pricing Model
 
@@ -111,6 +117,14 @@ For clients who want Sparx to operate their infrastructure:
 > A new customer signs up, picks a theme, activates the modules they need, and is live — publishing their first page or taking their first order — in under 5 minutes. No developer required. No app store required. No Zapier required.
 
 Every product decision is evaluated against this promise. If a feature slows the 5-minute path, it goes behind "Advanced Settings." If it enables it, it gets prioritized.
+
+### The second promise: built to last
+
+The 5-minute promise gets you live. The permanence promise keeps you there. In an era when anyone can generate a website in seconds — and abandon it just as fast — Sparx is the platform a site grows up on. You maintain and enhance it yourself, in a no-code editor, for years: no rebuild, no developer on retainer. Coding is always optional, never required, and never out of reach when you want it ([doc 47](47-class-first-authoring-model.md) escape ladder). You own the data and the site; Sparx is the platform, not the warden.
+
+> **AI builds it. Sparx keeps it.**
+
+These two promises are one arc, not a tension: _fast to start, permanent to keep._ "Live in 5 minutes" is the on-ramp; "built to last" is why you stay.
 
 ## 8. Domain Strategy
 
