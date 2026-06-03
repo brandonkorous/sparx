@@ -136,7 +136,10 @@ function StyleControlField({
           )
         }
       >
-        <option value="">None</option>
+        {/* Empty = clear the group → inherit the archetype's own value. Distinct
+            from an explicit "None"/"Square"/"Flat" option, which force-overrides
+            it (the util-box classes win in the utilities layer). */}
+        <option value="">Default</option>
         {control.options.map((o) => (
           <option key={o.value} value={o.value}>
             {o.label}
