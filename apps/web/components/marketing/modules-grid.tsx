@@ -12,9 +12,9 @@ interface ModuleCard {
 
 const MODULES: ModuleCard[] = [
   {
-    id: 'storefront',
+    id: 'builder',
     number: '01',
-    label: 'Storefront',
+    label: 'Builder',
     title: 'Themes, pages, live URLs.',
     description:
       'The site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance.',
@@ -34,7 +34,7 @@ const MODULES: ModuleCard[] = [
     label: 'CMS',
     title: 'Words, media, SEO.',
     description:
-      'Editor, blog, media library, structured content. Works standalone — no storefront required.',
+      'Editor, blog, media library, structured content. Works standalone — no Builder required.',
     price: '$49/mo',
   },
   {

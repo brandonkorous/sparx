@@ -1,0 +1,12 @@
+/* Surface Label — form field label (docs/46 §5.2). Structural/typographic; the
+ * required marker is the fixed danger token. Authored with @apply. */
+
+.sf-label {
+  @apply inline-block text-sm leading-tight font-medium;
+  color: inherit;
+  font-family: var(--sf-font-body, inherit);
+}
+.sf-label__required {
+  @apply ml-0.5;
+  color: var(--sf-danger, #dc2626);
+}

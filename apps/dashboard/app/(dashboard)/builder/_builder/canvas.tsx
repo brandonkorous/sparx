@@ -426,7 +426,7 @@ function CanvasNode({
     // selection tag, no outline, not clickable. Device-hidden nodes still hide.
     return (
       <div
-        className={cn('bx-node', 'bx-chrome', hidden && 'bx-node--hidden')}
+        className={cn('bx-node', 'bx-chrome', hidden && 'bx-node--hidden', node.class)}
         style={outer}
         data-node-id={node.id}
         data-bx-type={node.type}
@@ -443,7 +443,12 @@ function CanvasNode({
 
   return (
     <div
-      className={cn('bx-node', selected && 'bx-node--selected', hidden && 'bx-node--hidden')}
+      className={cn(
+        'bx-node',
+        selected && 'bx-node--selected',
+        hidden && 'bx-node--hidden',
+        node.class
+      )}
       style={outer}
       data-node-id={node.id}
       role="button"

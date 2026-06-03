@@ -44,7 +44,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Headless SDKs',
-    body: 'Storefront SDK for Next.js, Remix, Astro. TypeScript types generated from your schema.',
+    body: 'Builder SDK for Next.js, Remix, Astro. TypeScript types generated from your schema.',
   },
   {
     icon: (
@@ -78,7 +78,7 @@ export function DeveloperSection() {
           lede={
             <>
               Every Sparx feature exists as a REST and GraphQL endpoint before it exists as a
-              screen. Webhook into Pub/Sub. Ship headless with the storefront SDK. Self-host if you
+              screen. Webhook into Pub/Sub. Ship headless with the Builder SDK. Self-host if you
               want it.
             </>
           }

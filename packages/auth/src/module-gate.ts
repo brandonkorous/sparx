@@ -20,7 +20,7 @@ import { prisma } from '@sparx/db';
 import type { SparxSession } from './session';
 
 export type ModuleSlug =
-  | 'storefront'
+  | 'builder'
   | 'commerce'
   | 'cms'
   | 'crm'
@@ -32,7 +32,7 @@ export type ModuleSlug =
 // Canonical ordering is irrelevant here — callers (sidebar, breadcrumb) order
 // by their own manifest list. This is just the closed set we probe.
 const ALL_MODULES: readonly ModuleSlug[] = [
-  'storefront',
+  'builder',
   'commerce',
   'cms',
   'crm',

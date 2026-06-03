@@ -39,12 +39,12 @@ interface ModuleSeed {
 
 const MODULES: ModuleSeed[] = [
   {
-    slug: 'storefront',
-    moduleKey: 'storefront',
-    label: 'Storefront',
+    slug: 'builder',
+    moduleKey: 'builder',
+    label: 'Builder',
     headlinePrimary: 'Themes, pages,',
     headlineSecondary: 'live URLs',
-    title: 'Sparx Storefront — Themes, pages, live URLs.',
+    title: 'Sparx Builder — Themes, pages, live URLs.',
     description:
       'The Sparx site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance. Live in five minutes.',
     lede: 'The site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance. The same theme system powers a five-product test store and a 50,000-SKU catalog.',
@@ -53,7 +53,7 @@ const MODULES: ModuleSeed[] = [
       period: '/mo',
       modifier: 'standalone',
       bundleNote:
-        'Storefront is the foundation module — required for shop modules. Free upgrade path to Pro ($299/mo all-in) when you add CRM, Email, and CMS.',
+        'Builder is the foundation module — required for shop modules. Free upgrade path to Pro ($299/mo all-in) when you add CRM, Email, and CMS.',
     },
     features: [
       {
@@ -79,7 +79,7 @@ const MODULES: ModuleSeed[] = [
       {
         number: '05',
         title: 'Headless if you want.',
-        body: 'Same data, different head. Storefront SDK for Next.js, Remix, Astro — TypeScript types generated from your schema.',
+        body: 'Same data, different head. Builder SDK for Next.js, Remix, Astro — TypeScript types generated from your schema.',
       },
       {
         number: '06',
@@ -146,14 +146,14 @@ const MODULES: ModuleSeed[] = [
     headlineSecondary: 'SEO',
     title: 'Sparx CMS — Words, media, SEO.',
     description:
-      'Editor, blog, media library, structured content. Works standalone — no storefront required.',
-    lede: 'Editor, blog, media library, structured content. Works standalone — no storefront required. The same publishing toolset whether you sell something or just write.',
+      'Editor, blog, media library, structured content. Works standalone — no Builder required.',
+    lede: 'Editor, blog, media library, structured content. Works standalone — no Builder required. The same publishing toolset whether you sell something or just write.',
     pricing: {
       price: '$49',
       period: '/mo',
       modifier: 'standalone',
       bundleNote:
-        'CMS can run alone ($49/mo, no Storefront required) or bundled into Content ($79/mo with Storefront) or all-in Pro ($299/mo).',
+        'CMS can run alone ($49/mo, no Builder required) or bundled into Content ($79/mo with Builder) or all-in Pro ($299/mo).',
     },
     marketingDomain: 'sparxcms.com',
     features: [
@@ -180,7 +180,7 @@ const MODULES: ModuleSeed[] = [
       {
         number: '05',
         title: 'Standalone or paired.',
-        body: 'Use CMS alone for a content site. Pair with Storefront + Commerce and your blog and shop share one design system.',
+        body: 'Use CMS alone for a content site. Pair with Builder + Commerce and your blog and shop share one design system.',
       },
       {
         number: '06',
@@ -204,7 +204,7 @@ const MODULES: ModuleSeed[] = [
       period: '/mo',
       modifier: 'additive',
       bundleNote:
-        'CRM activates on top of Storefront + Commerce. Bundled in Growth ($149/mo, with Email) and everything above.',
+        'CRM activates on top of Builder + Commerce. Bundled in Growth ($149/mo, with Email) and everything above.',
     },
     marketingDomain: 'sparxcrm.com',
     features: [
@@ -255,7 +255,7 @@ const MODULES: ModuleSeed[] = [
       period: '/mo',
       modifier: 'additive',
       bundleNote:
-        'Email activates on top of Storefront. Bundled in Growth ($149/mo, with CRM) and everything above.',
+        'Email activates on top of Builder. Bundled in Growth ($149/mo, with CRM) and everything above.',
     },
     marketingDomain: 'sparxemail.com',
     features: [
@@ -306,7 +306,7 @@ const MODULES: ModuleSeed[] = [
       period: '/mo',
       modifier: 'additive',
       bundleNote:
-        'B2B activates on top of Storefront + Commerce. The full Business bundle ($449/mo) includes B2B + every other module + 0% transaction fees.',
+        'B2B activates on top of Builder + Commerce. The full Business bundle ($449/mo) includes B2B + every other module + 0% transaction fees.',
     },
     marketingDomain: 'sparxb2b.com',
     features: [
@@ -357,7 +357,7 @@ const MODULES: ModuleSeed[] = [
       period: '/mo',
       modifier: 'additive',
       bundleNote:
-        'AI/MCP activates on top of Storefront. Bundled in Pro ($299/mo) and Business ($449/mo).',
+        'AI/MCP activates on top of Builder. Bundled in Pro ($299/mo) and Business ($449/mo).',
     },
     features: [
       {
@@ -406,7 +406,7 @@ const MODULES: ModuleSeed[] = [
       period: '/mo',
       modifier: 'additive',
       bundleNote:
-        'Dropship activates on top of Storefront + Commerce. Bundled in Pro ($299/mo) and Business ($449/mo).',
+        'Dropship activates on top of Builder + Commerce. Bundled in Pro ($299/mo) and Business ($449/mo).',
     },
     features: [
       {
@@ -523,7 +523,7 @@ async function ensureTenant(prisma: PrismaClient): Promise<string> {
       status: 'active',
       settings: {
         primaryDomain: 'sparx.works',
-        modules: { storefront: { enabled: true }, cms: { enabled: true } },
+        modules: { builder: { enabled: true }, cms: { enabled: true } },
       },
     },
   });

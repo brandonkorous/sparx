@@ -26,8 +26,8 @@ export type McpScope =
   | 'read:crm'
   | 'write:crm'
   | 'write:crm_bulk'
-  | 'read:storefront'
-  | 'write:storefront'
+  | 'read:builder'
+  | 'write:builder'
   | 'read:search';
 
 export interface McpAuthContext {
@@ -52,20 +52,20 @@ const DEFAULT_SCOPES_BY_ROLE: Record<StaffRole, McpScope[]> = {
     'read:crm',
     'write:crm',
     'write:crm_bulk',
-    'read:storefront',
-    'write:storefront',
+    'read:builder',
+    'write:builder',
     'read:search',
   ],
   admin: [
     'read:crm',
     'write:crm',
     'write:crm_bulk',
-    'read:storefront',
-    'write:storefront',
+    'read:builder',
+    'write:builder',
     'read:search',
   ],
-  editor: ['read:crm', 'write:crm', 'read:storefront', 'write:storefront', 'read:search'],
-  viewer: ['read:crm', 'read:storefront', 'read:search'],
+  editor: ['read:crm', 'write:crm', 'read:builder', 'write:builder', 'read:search'],
+  viewer: ['read:crm', 'read:builder', 'read:search'],
   // External api keys have no role-derived default; their scope list is
   // exactly what the dashboard issued.
   api: [],
@@ -102,11 +102,11 @@ export async function authenticate(request: FastifyRequest): Promise<McpAuthCont
 
   // The MCP server spans modules; allow access when ANY MCP-backed module is
   // active for the tenant. Per-tool scopes still gate which tools can run.
-  const [crmEnabled, storefrontEnabled] = await Promise.all([
+  const [crmEnabled, builderEnabled] = await Promise.all([
     isModuleEnabled(auth.tenantId, 'crm'),
-    isModuleEnabled(auth.tenantId, 'storefront'),
+    isModuleEnabled(auth.tenantId, 'builder'),
   ]);
-  if (!crmEnabled && !storefrontEnabled) {
+  if (!crmEnabled && !builderEnabled) {
     throw new AuthError('No MCP-enabled module is active for this tenant');
   }
 

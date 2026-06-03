@@ -23,6 +23,7 @@
   "dependencies": {
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/db": "workspace:*",
+    "@sparx/surface-compile": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

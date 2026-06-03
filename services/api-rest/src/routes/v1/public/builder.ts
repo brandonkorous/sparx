@@ -16,7 +16,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma } from '@sparx/db';
-import { pageService, layoutService } from '@sparx/builder';
+import { pageService, layoutService, surfaceCssService } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 
@@ -63,6 +63,16 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
     const layout = await layoutService.getPublished({ tenantId });
     if (!layout) throw notFound('Builder layout', q.tenant);
     return ok(layout);
+  });
+
+  // The compiled per-tenant Surface stylesheet (docs/47 §5): the CSS for every
+  // class authored across the tenant's published trees. Always 200 (never 404) —
+  // `css` is '' until classes are authored, so the storefront can inject
+  // unconditionally. Cached per class-set in the service.
+  app.get('/v1/public/builder/styles', async (request) => {
+    const q = TenantQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    return ok(await surfaceCssService.getPublishedStylesheet({ tenantId }));
   });
 
   return Promise.resolve();

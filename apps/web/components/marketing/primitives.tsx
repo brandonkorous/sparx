@@ -12,7 +12,7 @@
 import * as React from 'react';
 import { SparxMark } from '@sparx/ui';
 const MODULE_COLORS = {
-  storefront: { color: 'var(--module-storefront)', tint: '#EEF2FF', text: '#4338CA' },
+  builder: { color: 'var(--module-builder)', tint: '#EEF2FF', text: '#4338CA' },
   commerce: { color: 'var(--module-commerce)', tint: '#FFF7ED', text: '#C2410C' },
   cms: { color: 'var(--module-cms)', tint: '#F0FDFA', text: '#0F766E' },
   crm: { color: 'var(--module-crm)', tint: '#ECFEFF', text: '#0E7490' },

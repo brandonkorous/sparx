@@ -681,8 +681,12 @@ function RenderNode({
     );
   }
 
+  // The class-first authoring surface (docs/47): the node's brand-governed class
+  // string rides on the box element alongside the engine's inline box styles, so
+  // the published page and the editor canvas emit the same class. Absent on
+  // legacy trees → no className. The box→CSS engine still owns layout/structure.
   return (
-    <div style={outer} data-bx-type={node.type}>
+    <div className={node.class} style={outer} data-bx-type={node.type}>
       <div style={innerStyle}>{body}</div>
     </div>
   );

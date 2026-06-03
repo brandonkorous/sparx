@@ -1,4 +1,4 @@
-// Read-only Site Builder MCP tools. No confirmation; scope read:storefront.
+// Read-only Site Builder MCP tools. No confirmation; scope read:builder.
 
 import { z } from 'zod';
 import { TargetId, LayoutKey } from '@sparx/sitebuilder-schemas';
@@ -18,7 +18,7 @@ export const readTools: AnyMcpTool[] = [
     name: 'list_themes',
     description:
       'List the available storefront themes (Apex, Industrial, Drift, Market, Fleet, Drop) with their settings schema and category.',
-    scope: 'read:storefront',
+    scope: 'read:builder',
     input: NoArgs,
     confirmation: false,
     run: () => Promise.resolve(themeService.listThemes()),
@@ -27,7 +27,7 @@ export const readTools: AnyMcpTool[] = [
     name: 'get_site_config',
     description:
       'Get the current Site Builder draft config: selected theme, appearance policy (light/dark), and settings overlay.',
-    scope: 'read:storefront',
+    scope: 'read:builder',
     input: NoArgs,
     confirmation: false,
     run: (ctx) => themeService.getConfig(ctx),
@@ -36,7 +36,7 @@ export const readTools: AnyMcpTool[] = [
     name: 'get_sections',
     description:
       'List a layout’s sections in render order. `targetId` is the layout target (commerce:product | commerce:collection | cms:content-page | site:home | cms:content-type:<id>); `key` defaults to "default" (use a slug for a standalone content page).',
-    scope: 'read:storefront',
+    scope: 'read:builder',
     input: TargetArg,
     confirmation: false,
     run: (ctx, input) => {
@@ -47,7 +47,7 @@ export const readTools: AnyMcpTool[] = [
   {
     name: 'list_site_versions',
     description: 'List published Site Builder versions (newest first) for history and rollback.',
-    scope: 'read:storefront',
+    scope: 'read:builder',
     input: ListVersionsArgs,
     confirmation: false,
     run: (ctx, input) =>
@@ -57,7 +57,7 @@ export const readTools: AnyMcpTool[] = [
     name: 'get_published_site',
     description:
       'Get the currently-published storefront snapshot: theme, appearance policy, compiled tokens, sections, and layout.',
-    scope: 'read:storefront',
+    scope: 'read:builder',
     input: NoArgs,
     confirmation: false,
     run: (ctx) => publishService.getPublishedSnapshot(ctx),
@@ -66,7 +66,7 @@ export const readTools: AnyMcpTool[] = [
     name: 'list_custom_sections',
     description:
       'List the tenant’s custom section types (tenant-defined sections, each a field spec + render template). Their placed-section type is `custom:<slug>`.',
-    scope: 'read:storefront',
+    scope: 'read:builder',
     input: NoArgs,
     confirmation: false,
     run: (ctx) => definitionService.list(ctx),
@@ -75,7 +75,7 @@ export const readTools: AnyMcpTool[] = [
     name: 'get_custom_section',
     description:
       'Get one custom section definition by slug — its field spec, render template, binding, and version.',
-    scope: 'read:storefront',
+    scope: 'read:builder',
     input: SlugArg,
     confirmation: false,
     run: (ctx, input) => definitionService.get(ctx, (input as z.infer<typeof SlugArg>).slug),

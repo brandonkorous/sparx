@@ -27,6 +27,13 @@
     "clean": "rm -rf .turbo dist coverage *.tsbuildinfo"
   },
   "dependencies": {
+    "@radix-ui/react-accordion": "^1.2.12",
+    "@radix-ui/react-collapsible": "^1.1.12",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-popover": "^1.1.15",
+    "@radix-ui/react-tabs": "^1.1.13",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "@sparx/builder-schemas": "workspace:*"
   },
   "peerDependencies": {
@@ -34,9 +41,9 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
-    "@tailwindcss/cli": "^4.3.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "jsdom": "^29.1.1",

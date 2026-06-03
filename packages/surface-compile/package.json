@@ -1,0 +1,33 @@
+{
+  "name": "@sparx/surface-compile",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Surface per-tenant CSS compile (docs/47 §5): tree-shake authored class literals from a Builder node tree and compile them through a tenant-flavored Tailwind theme whose utilities resolve to --sf-* tokens. Server-side only — isolates the heavy Tailwind/lightningcss dependency to the publish path.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@sparx/builder-schemas": "workspace:*",
+    "@tailwindcss/node": "^4.3.0",
+    "tailwindcss": "^4.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

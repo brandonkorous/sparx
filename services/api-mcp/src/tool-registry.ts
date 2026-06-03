@@ -31,7 +31,7 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
 const WRITE_SCOPES: ReadonlySet<string> = new Set([
   'write:crm',
   'write:crm_bulk',
-  'write:storefront',
+  'write:builder',
   'write:email',
   'write:email_bulk',
 ]);

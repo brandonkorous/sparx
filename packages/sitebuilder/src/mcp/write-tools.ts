@@ -1,5 +1,5 @@
 // Write Site Builder MCP tools. Go-live actions (publish/rollback/schedule)
-// are confirmation-gated; scope write:storefront.
+// are confirmation-gated; scope write:builder.
 
 import { z } from 'zod';
 import {
@@ -43,7 +43,7 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'select_theme',
     description: 'Switch the storefront to a different theme (draft change — publish to go live).',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: SelectThemeInput,
     confirmation: false,
     run: (ctx, input) => themeService.selectTheme(ctx, input),
@@ -52,7 +52,7 @@ export const writeTools: AnyMcpTool[] = [
     name: 'update_site_settings',
     description:
       'Update the draft theme settings (colors per light/dark, fonts, layout, custom CSS) and/or the appearance policy.',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: UpdateSettingsInput,
     confirmation: false,
     run: (ctx, input) => themeService.updateSettings(ctx, input),
@@ -61,7 +61,7 @@ export const writeTools: AnyMcpTool[] = [
     name: 'add_section',
     description:
       'Add a section (hero, featured-products, testimonials, …) to a layout draft. Target the layout by `pageLayoutId`, or by `targetId` (commerce:product | commerce:collection | cms:content-page | site:home | cms:content-type:<id>) + optional `key`.',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: CreateSectionInput,
     confirmation: false,
     run: (ctx, input) => sectionService.create(ctx, input),
@@ -69,7 +69,7 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'update_section',
     description: "Update a section's config and/or visibility.",
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: UpdateSectionTool,
     confirmation: false,
     run: (ctx, input) => {
@@ -81,7 +81,7 @@ export const writeTools: AnyMcpTool[] = [
     name: 'reorder_sections',
     description:
       'Reorder a layout’s sections by supplying the section ids in the desired order. Target the layout by `pageLayoutId`, or by `targetId` (+ optional `key`).',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: ReorderSectionsInput,
     confirmation: false,
     run: (ctx, input) => sectionService.reorder(ctx, input),
@@ -89,7 +89,7 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'remove_section',
     description: 'Delete a section from a page draft.',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: RemoveSectionTool,
     confirmation: true,
     run: (ctx, input) =>
@@ -99,7 +99,7 @@ export const writeTools: AnyMcpTool[] = [
     name: 'upsert_layout',
     description:
       'Configure a header / footer / announcement slot (optionally linking a navigation menu).',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: UpsertLayoutInput,
     confirmation: false,
     run: (ctx, input) => layoutService.upsert(ctx, input),
@@ -107,7 +107,7 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'publish_site',
     description: 'Publish the current draft live to the storefront.',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: PublishInput,
     confirmation: true,
     run: (ctx, input) => publishService.publishNow(ctx, input),
@@ -115,7 +115,7 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'rollback_site',
     description: 'Roll the storefront back to a prior published version (creates a new version).',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: RollbackInput,
     confirmation: true,
     run: (ctx, input) => publishService.rollback(ctx, input),
@@ -123,7 +123,7 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'schedule_publish',
     description: 'Schedule the current draft to publish at a future time.',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: ScheduleInput,
     confirmation: true,
     run: (ctx, input) => scheduleService.schedule(ctx, input),
@@ -132,7 +132,7 @@ export const writeTools: AnyMcpTool[] = [
     name: 'create_custom_section',
     description:
       'Define a new custom section TYPE: a `slug`, `label`, an optional `binding` (product | collection), a `fieldSpec` (the editable fields), and a `template` (the render-template AST). Tenants then add it to layouts as `custom:<slug>`.',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: SectionDefinitionInput,
     confirmation: false,
     run: (ctx, input) => definitionService.create(ctx, input),
@@ -141,7 +141,7 @@ export const writeTools: AnyMcpTool[] = [
     name: 'update_custom_section',
     description:
       'Replace a custom section definition (by `slug`) — its label, binding, field spec, and template. Bumps the version; the next publish re-pins it.',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: UpdateDefinitionTool,
     confirmation: false,
     run: (ctx, input) => {
@@ -153,7 +153,7 @@ export const writeTools: AnyMcpTool[] = [
     name: 'delete_custom_section',
     description:
       'Delete a custom section definition by slug. Refused while draft sections still place it; published pages keep rendering from their pinned snapshot.',
-    scope: 'write:storefront',
+    scope: 'write:builder',
     input: DeleteDefinitionTool,
     confirmation: true,
     run: (ctx, input) =>

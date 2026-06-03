@@ -5,9 +5,9 @@ import { loadModuleData } from '@/lib/load-module-data';
 export const runtime = 'nodejs';
 export const size = OG_SIZE;
 export const contentType = 'image/png';
-export const alt = MODULES.storefront.title;
+export const alt = MODULES.builder.title;
 
 export default async function Image() {
-  const meta = await loadModuleData('storefront');
+  const meta = await loadModuleData('builder');
   return renderModuleOgImage(meta);
 }

@@ -1,4 +1,4 @@
 import { makeMetadata, makePage } from '@/lib/load-module';
 
-export const generateMetadata = makeMetadata('storefront');
-export default makePage('storefront');
+export const generateMetadata = makeMetadata('builder');
+export default makePage('builder');

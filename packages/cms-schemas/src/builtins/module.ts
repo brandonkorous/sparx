@@ -1,7 +1,7 @@
 import type { ContentTypeDefinition } from '../types';
 
 // Marketing module page (apps/web `ModuleMeta`). One entry per Sparx
-// product module (storefront, commerce, cms, …). `slug` equals the
+// product module (builder, commerce, cms, …). `slug` equals the
 // moduleKey, which doubles as the URL segment (/storefront, /cms, …) and
 // as the ModuleProvider theme key.
 //
@@ -31,7 +31,7 @@ export const moduleType: ContentTypeDefinition = {
         label: 'Module key',
         required: true,
         options: [
-          { value: 'storefront', label: 'Storefront' },
+          { value: 'builder', label: 'Builder' },
           { value: 'commerce', label: 'Commerce' },
           { value: 'cms', label: 'CMS' },
           { value: 'crm', label: 'CRM' },
@@ -117,7 +117,7 @@ export const moduleType: ContentTypeDefinition = {
               { value: 'additive', label: 'Additive (+)' },
             ],
             helpText:
-              'Standalone for modules that can run alone; additive for modules that activate on top of Storefront.',
+              'Standalone for modules that can run alone; additive for modules that activate on top of Builder.',
           },
           {
             key: 'bundleNote',

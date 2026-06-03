@@ -149,10 +149,10 @@ interface CustomerProfile {
   phone: string | null;
 }
 
-/** Resolve the tenant and assert the Storefront module is active (404 otherwise). */
+/** Resolve the tenant and assert the Builder module is active (404 otherwise). */
 async function accountContext(request: FastifyRequest): Promise<CustomerAuthContext> {
   const tenantId = await resolveTenantId(request);
-  if (!(await isModuleEnabled(tenantId, 'storefront'))) throw moduleDisabled('storefront');
+  if (!(await isModuleEnabled(tenantId, 'builder'))) throw moduleDisabled('builder');
   return { tenantId };
 }
 
@@ -289,7 +289,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/commerce/account/password/forgot', AUTH_RATE_LIMIT, async (request) => {
     const body = ForgotBody.parse(request.body);
     const tenantId = await resolveTenantId(request);
-    if (!(await isModuleEnabled(tenantId, 'storefront'))) throw moduleDisabled('storefront');
+    if (!(await isModuleEnabled(tenantId, 'builder'))) throw moduleDisabled('builder');
     const slug = (request.query as { tenant: string }).tenant;
 
     const reset = await requestPasswordReset({ tenantId }, body);
@@ -315,7 +315,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/commerce/account/password/reset', AUTH_RATE_LIMIT, async (request) => {
     const body = ResetBody.parse(request.body);
     const tenantId = await resolveTenantId(request);
-    if (!(await isModuleEnabled(tenantId, 'storefront'))) throw moduleDisabled('storefront');
+    if (!(await isModuleEnabled(tenantId, 'builder'))) throw moduleDisabled('builder');
     const okReset = await resetPassword({ tenantId }, body);
     if (!okReset) throw validationError('This reset link is invalid or has expired.');
     return ok({ ok: true });

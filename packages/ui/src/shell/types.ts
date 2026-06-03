@@ -49,8 +49,8 @@ export interface ModuleManifest {
   id: Exclude<SparxModule, 'platform'>;
   label: string;
   icon: ModuleIcon;
-  // URL prefix the module owns. Usually `/${id}` but the Storefront module
-  // is surfaced as `/sitebuilder` in the dashboard, so this is explicit.
+  // URL prefix the module owns. Usually `/${id}` but the legacy Site Builder
+  // (`storefront` id) is surfaced as `/sitebuilder`, so this is explicit.
   routePrefix: string;
   sections: ModuleSection[];
   actions: ModuleAction[];

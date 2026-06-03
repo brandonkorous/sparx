@@ -67,11 +67,11 @@ export const dynamic = 'force-dynamic';
 // the ModuleSlug enum so they line up with /settings/modules.
 const MODULE_REGISTRY: ModuleEntry[] = [
   {
-    slug: 'storefront',
-    id: 'storefront',
-    href: '/sitebuilder',
-    label: 'Storefront',
-    description: 'Themes, sections, visual editor',
+    slug: 'builder',
+    id: 'builder',
+    href: '/builder',
+    label: 'Builder',
+    description: 'Themes, layouts, pages, visual editor',
     icon: <LayoutTemplate className="h-4 w-4" />,
   },
   {

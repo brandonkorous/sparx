@@ -1,7 +1,7 @@
 import { Section, SectionHeader, Wordmark } from './primitives';
 
 const SIDEBAR_MODULES = [
-  { color: '#6366F1', label: 'Storefront' },
+  { color: '#6366F1', label: 'Builder' },
   { color: '#F97316', label: 'Commerce', active: true, badge: '12' },
   { color: '#14B8A6', label: 'CMS' },
   { color: '#06B6D4', label: 'CRM' },

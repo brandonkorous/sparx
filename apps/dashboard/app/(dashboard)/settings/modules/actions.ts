@@ -22,7 +22,7 @@ import { api, type ApiRestError } from '@/lib/api-rest-client';
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: { message: string } };
 
 const VALID_SLUGS: ReadonlySet<ModuleSlug> = new Set([
-  'storefront',
+  'builder',
   'commerce',
   'cms',
   'crm',

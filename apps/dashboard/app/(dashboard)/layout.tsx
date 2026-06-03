@@ -33,11 +33,13 @@ export default async function DashboardLayout({
     listEnabledModules(user.tenantId),
   ]);
 
-  // The next-gen Builder ('builder' module, /builder) has no per-tenant feature
-  // flag yet — it's in active development. Surface it in the nav for every
-  // tenant until it graduates to a real activation. Remove this once Builder is
-  // gated like the rest (and Site Builder / `storefront` is retired).
-  const navModules = [...enabledModules, 'builder'];
+  // `builder` is the billable site-building module (formerly "storefront"); it
+  // arrives via enabledModules like the rest. The legacy Site Builder
+  // (`storefront` id, /sitebuilder) still owns theme/publish surfaces not yet
+  // migrated into /builder, so surface it alongside Builder until /sitebuilder
+  // folds in. Drop the `storefront` push once that migration completes.
+  const navModules: string[] = [...enabledModules];
+  if (navModules.includes('builder')) navModules.push('storefront');
 
   return (
     <DashboardShell

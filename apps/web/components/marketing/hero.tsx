@@ -19,7 +19,7 @@ const ROTATING_WORDS = [
 // The hero runs on our primary indigo, so content is inverted to "on-color":
 // white at varying opacity reads cleaner on saturated indigo than the gray
 // invert scale used on the near-black sections. Elements that are normally
-// the primary color (the eyebrow dot, the "ignited." spark, the storefront
+// the primary color (the eyebrow dot, the "ignited." spark, the builder
 // module dot) are re-cast to white / ringed so they stay visible. To revert
 // the purple hero, restore this file from git.
 const ON = '#FFFFFF';
@@ -96,8 +96,8 @@ export function Hero() {
               margin: 0,
             }}
           >
-            A modular content and commerce OS. Storefront, CRM, CMS, email, B2B, and AI — one
-            platform, one bill, one data layer. Pay only for what you use. Live in five minutes.
+            A modular content and commerce OS. Builder, CRM, CMS, email, B2B, and AI — one platform,
+            one bill, one data layer. Pay only for what you use. Live in five minutes.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -141,7 +141,7 @@ export function Hero() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               {MODULE_DOTS.map((c) => (
                 // A white ring keeps every dot legible on the indigo field —
-                // including the storefront dot, which is the primary itself.
+                // including the builder dot, which is the primary itself.
                 <span
                   key={c}
                   style={{

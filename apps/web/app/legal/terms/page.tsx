@@ -45,7 +45,7 @@ export default function TermsPage() {
 
       <LegalSection heading="3. The Service & modules">
         <LegalP>
-          Sparx is modular. You activate only the modules you use — storefront, commerce, CRM, CMS,
+          Sparx is modular. You activate only the modules you use — builder, commerce, CRM, CMS,
           email, B2B/wholesale, dropship, and AI/MCP integration — and your subscription reflects
           that selection. We may add, change, or deprecate features over time; we will give
           reasonable notice of material changes that reduce core functionality you rely on.

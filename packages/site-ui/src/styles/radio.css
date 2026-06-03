@@ -1,0 +1,69 @@
+/* Surface Radio — appearance:none circle with an inner dot (docs/46 §3.6). The
+ * checked dot reads the role var `--c-bg`. RadioGroup is a simple flex layout. */
+
+.sf-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+  cursor: pointer;
+  background: var(--sf-base-100, #fff);
+  border: 1.5px solid var(--sf-border, #e3dfd2);
+  border-radius: 999px;
+  transition: border-color 0.15s ease;
+}
+.sf-radio:checked {
+  border-color: var(--c-bg, var(--sf-primary, #3f6b52));
+}
+.sf-radio:checked::after {
+  content: '';
+  position: absolute;
+  inset: 22%;
+  border-radius: 999px;
+  background: var(--c-bg, var(--sf-primary, #3f6b52));
+}
+.sf-radio:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--sf-primary, #3f6b52)) 25%, transparent);
+}
+.sf-radio:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Size axis. */
+.sf-radio--sz-xs {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+.sf-radio--sz-sm {
+  width: 1rem;
+  height: 1rem;
+}
+.sf-radio--sz-md {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.sf-radio--sz-lg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.sf-radio--sz-xl {
+  width: 1.85rem;
+  height: 1.85rem;
+}
+
+/* RadioGroup layout. */
+.sf-radio-group {
+  display: flex;
+  gap: 0.75rem;
+}
+.sf-radio-group--vertical {
+  flex-direction: column;
+}
+.sf-radio-group--horizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+}

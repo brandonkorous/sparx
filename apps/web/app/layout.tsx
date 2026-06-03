@@ -42,7 +42,7 @@ const PRODUCT_SCHEMA = {
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
   description:
-    'A modular content and commerce operating system. Storefront, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer.',
+    'A modular content and commerce operating system. Builder, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer.',
   offers: {
     '@type': 'Offer',
     price: '49',
@@ -59,7 +59,7 @@ const PRODUCT_SCHEMA = {
 export const metadata: Metadata = {
   title: 'Sparx — Everything, ignited.',
   description:
-    'A modular content and commerce operating system. Storefront, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer. Pay only for what you use. Live in five minutes.',
+    'A modular content and commerce operating system. Builder, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer. Pay only for what you use. Live in five minutes.',
   metadataBase: new URL('https://sparx.works'),
   alternates: {
     canonical: '/',

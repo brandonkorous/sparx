@@ -1,0 +1,66 @@
+/* Surface Stack — one-dimensional flex flow (docs/47 §11 B1). Authored with
+ * @apply; all axes are structural. */
+
+.sf-stack {
+  @apply flex;
+}
+.sf-stack--vertical {
+  @apply flex-col;
+}
+.sf-stack--horizontal {
+  @apply flex-row;
+}
+.sf-stack--wrap {
+  @apply flex-wrap;
+}
+
+/* Gap scale. */
+.sf-stack--gap-xs {
+  @apply gap-1;
+}
+.sf-stack--gap-sm {
+  @apply gap-2;
+}
+.sf-stack--gap-md {
+  @apply gap-4;
+}
+.sf-stack--gap-lg {
+  @apply gap-6;
+}
+.sf-stack--gap-xl {
+  @apply gap-10;
+}
+
+/* Cross-axis alignment. */
+.sf-stack--align-start {
+  @apply items-start;
+}
+.sf-stack--align-center {
+  @apply items-center;
+}
+.sf-stack--align-end {
+  @apply items-end;
+}
+.sf-stack--align-stretch {
+  @apply items-stretch;
+}
+.sf-stack--align-baseline {
+  @apply items-baseline;
+}
+
+/* Main-axis distribution. */
+.sf-stack--justify-start {
+  @apply justify-start;
+}
+.sf-stack--justify-center {
+  @apply justify-center;
+}
+.sf-stack--justify-end {
+  @apply justify-end;
+}
+.sf-stack--justify-between {
+  @apply justify-between;
+}
+.sf-stack--justify-around {
+  @apply justify-around;
+}

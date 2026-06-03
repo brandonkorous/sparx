@@ -26,7 +26,7 @@ export const COLOR_KEYS = [
 /** Per-module brand colors, addressable directly as a `color` slot (independent
  *  of the active ModuleProvider). Backed by `--module-{name}` + `.sx-c-{name}`. */
 export const MODULE_COLOR_KEYS = [
-  'storefront',
+  'builder',
   'commerce',
   'cms',
   'crm',

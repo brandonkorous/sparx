@@ -7,8 +7,16 @@
 // levels: every node is either a CONTAINER (arranges children) or a LEAF
 // (renders content), and every node carries the same shape:
 //
-//     { id, type, box, layout?, props, binding?, children? }
+//     { id, type, class?, box, layout?, props, binding?, children? }
 //
+//   · class   — the class-first authoring surface (docs/47). A brand-governed
+//               class string (archetype + safelisted token utilities) that owns
+//               the node's STYLING; the tree still owns structure + binding.
+//               ADDITIVE for now: the box still owns presentation during the
+//               migration, so legacy trees (which have no `class`) keep rendering
+//               unchanged. Vocabulary/allowlist validation arrives in docs/47
+//               Phase E; today it is a bounded free string our controls will
+//               write (no authoring UI emits it yet).
 //   · box     — the universal spine EVERY node has (alignment, height, width
 //               behaviour, spacing, surface, visibility).
 //   · layout  — containers only (direction / columns / gap / justify / align).
@@ -147,6 +155,13 @@ export interface BuilderNode {
   id: string;
   /** Registry key — what this node IS (Section, Heading, ImageDisplay, …). */
   type: string;
+  /** Class-first authoring surface (docs/47): a brand-governed class string —
+   *  archetype names plus safelisted token utilities — that owns the node's
+   *  STYLING. Optional + additive: absent on legacy trees (the box still owns
+   *  presentation during migration), so existing stored trees stay valid. The
+   *  per-tenant compile (docs/47 §5) tree-shakes these literals into the
+   *  tenant stylesheet; both render paths apply the string verbatim. */
+  class?: string;
   box: BoxBase;
   layout?: LayoutBase;
   props: Record<string, unknown>;
@@ -158,6 +173,10 @@ export const BuilderNodeSchema: z.ZodType<BuilderNode> = z.lazy(() =>
   z.object({
     id: z.string().min(1).max(255),
     type: z.string().min(1).max(63),
+    // Bounded free string for now; the class VOCABULARY (archetype names +
+    // allowlisted utilities) becomes a versioned contract in docs/47 Phase E.
+    // The cap is the only guard at this tier — our controls are the author.
+    class: z.string().max(500).optional(),
     box: BoxBaseSchema,
     layout: LayoutBaseSchema.optional(),
     props: z.record(z.string(), z.unknown()),

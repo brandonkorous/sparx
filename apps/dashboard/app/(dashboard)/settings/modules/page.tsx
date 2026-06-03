@@ -15,16 +15,16 @@ import { ModuleToggleRow } from './_components/module-toggle-row';
 export const dynamic = 'force-dynamic';
 
 interface ModuleMeta {
-  slug: 'storefront' | 'commerce' | 'cms' | 'crm' | 'email' | 'b2b' | 'dropship' | 'ai';
+  slug: 'builder' | 'commerce' | 'cms' | 'crm' | 'email' | 'b2b' | 'dropship' | 'ai';
   label: string;
   description: string;
 }
 
 const MODULES: ModuleMeta[] = [
   {
-    slug: 'storefront',
-    label: 'Storefront',
-    description: 'Public-facing store, themes, checkout shell.',
+    slug: 'builder',
+    label: 'Builder',
+    description: 'Site builder — themes, layouts, pages, custom domains.',
   },
   { slug: 'commerce', label: 'Commerce', description: 'Products, variants, inventory, pricing.' },
   { slug: 'cms', label: 'CMS', description: 'Pages, blog posts, media library, navigation.' },

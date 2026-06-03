@@ -1,6 +1,6 @@
 /**
  * Single source of truth for per-module marketing pages. Each module page
- * route (`app/storefront/page.tsx`, etc.) and its OG image hydrates from
+ * route (`app/builder/page.tsx`, etc.) and its OG image hydrates from
  * the matching entry here. See docs/sparx-brand-guide.md for the colors
  * and the per-module marketing-domain map.
  */
@@ -23,7 +23,7 @@ export interface ModulePricing {
 export interface ModuleMeta {
   slug: string;
   module: MarketingModule;
-  /** Eyebrow chip label (e.g. "Storefront", "AI · MCP") */
+  /** Eyebrow chip label (e.g. "Builder", "AI · MCP") */
   label: string;
   /** Tagline for hero headline — pair with `headlineSecondary` for the lede line */
   headlinePrimary: string;
@@ -39,13 +39,13 @@ export interface ModuleMeta {
 }
 
 export const MODULES: Record<MarketingModule, ModuleMeta> = {
-  storefront: {
-    slug: 'storefront',
-    module: 'storefront',
-    label: 'Storefront',
+  builder: {
+    slug: 'builder',
+    module: 'builder',
+    label: 'Builder',
     headlinePrimary: 'Themes, pages,',
     headlineSecondary: 'live URLs',
-    title: 'Sparx Storefront — Themes, pages, live URLs.',
+    title: 'Sparx Builder — Themes, pages, live URLs.',
     description:
       'The Sparx site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance. Live in five minutes.',
     lede: 'The site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance. The same theme system powers a five-product test store and a 50,000-SKU catalog.',
@@ -73,7 +73,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       {
         number: '05',
         title: 'Headless if you want.',
-        body: 'Same data, different head. Storefront SDK for Next.js, Remix, Astro — TypeScript types generated from your schema.',
+        body: 'Same data, different head. Builder SDK for Next.js, Remix, Astro — TypeScript types generated from your schema.',
       },
       {
         number: '06',
@@ -86,7 +86,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '',
       bundleNote:
-        'Storefront is the foundation module — required for shop modules. Free upgrade path to Pro ($299/mo all-in) when you add CRM, Email, and CMS.',
+        'Builder is the foundation module — required for shop modules. Free upgrade path to Pro ($299/mo all-in) when you add CRM, Email, and CMS.',
     },
   },
   commerce: {
@@ -136,7 +136,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'Commerce activates on top of Storefront. Bundled in Starter ($79/mo), Growth ($149/mo), Pro ($299/mo), and Business ($449/mo).',
+        'Commerce activates on top of Builder. Bundled in Starter ($79/mo), Growth ($149/mo), Pro ($299/mo), and Business ($449/mo).',
     },
   },
   cms: {
@@ -147,8 +147,8 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
     headlineSecondary: 'SEO',
     title: 'Sparx CMS — Words, media, SEO.',
     description:
-      'Editor, blog, media library, structured content. Works standalone — no storefront required.',
-    lede: 'Editor, blog, media library, structured content. Works standalone — no storefront required. The same publishing toolset whether you sell something or just write.',
+      'Editor, blog, media library, structured content. Works standalone — no Builder required.',
+    lede: 'Editor, blog, media library, structured content. Works standalone — no Builder required. The same publishing toolset whether you sell something or just write.',
     features: [
       {
         number: '01',
@@ -173,7 +173,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       {
         number: '05',
         title: 'Standalone or paired.',
-        body: 'Use CMS alone for a content site. Pair with Storefront + Commerce and your blog and shop share one design system.',
+        body: 'Use CMS alone for a content site. Pair with Builder + Commerce and your blog and shop share one design system.',
       },
       {
         number: '06',
@@ -186,7 +186,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '',
       bundleNote:
-        'CMS can run alone ($49/mo, no Storefront required) or bundled into Content ($79/mo with Storefront) or all-in Pro ($299/mo).',
+        'CMS can run alone ($49/mo, no Builder required) or bundled into Content ($79/mo with Builder) or all-in Pro ($299/mo).',
     },
     marketingDomain: 'sparxcms.com',
   },
@@ -237,7 +237,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'CRM activates on top of Storefront + Commerce. Bundled in Growth ($149/mo, with Email) and everything above.',
+        'CRM activates on top of Builder + Commerce. Bundled in Growth ($149/mo, with Email) and everything above.',
     },
     marketingDomain: 'sparxcrm.com',
   },
@@ -288,7 +288,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'Email activates on top of Storefront. Bundled in Growth ($149/mo, with CRM) and everything above.',
+        'Email activates on top of Builder. Bundled in Growth ($149/mo, with CRM) and everything above.',
     },
     marketingDomain: 'sparxemail.com',
   },
@@ -339,7 +339,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'B2B activates on top of Storefront + Commerce. The full Business bundle ($449/mo) includes B2B + every other module + 0% transaction fees.',
+        'B2B activates on top of Builder + Commerce. The full Business bundle ($449/mo) includes B2B + every other module + 0% transaction fees.',
     },
     marketingDomain: 'sparxb2b.com',
   },
@@ -390,7 +390,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'AI/MCP activates on top of Storefront. Bundled in Pro ($299/mo) and Business ($449/mo).',
+        'AI/MCP activates on top of Builder. Bundled in Pro ($299/mo) and Business ($449/mo).',
     },
   },
   dropship: {
@@ -439,13 +439,13 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'Dropship activates on top of Storefront + Commerce. Bundled in Pro ($299/mo) and Business ($449/mo).',
+        'Dropship activates on top of Builder + Commerce. Bundled in Pro ($299/mo) and Business ($449/mo).',
     },
   },
 };
 
 export const MODULE_ORDER: MarketingModule[] = [
-  'storefront',
+  'builder',
   'commerce',
   'cms',
   'crm',

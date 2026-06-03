@@ -13,7 +13,7 @@ import { type ModuleMeta } from '@/lib/modules';
 
 /**
  * Reusable per-module marketing page. Each module's route
- * (`app/storefront/page.tsx`, etc.) renders this with its `ModuleMeta`.
+ * (`app/builder/page.tsx`, etc.) renders this with its `ModuleMeta`.
  * The module color is pulled from tokens via `getModuleColor()` so the
  * hero accent, eyebrow badge, feature card stripes, and pricing chip
  * stay consistent with the rest of the brand.

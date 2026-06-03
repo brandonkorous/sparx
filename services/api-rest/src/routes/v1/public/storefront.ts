@@ -21,7 +21,7 @@ import { tryVerifySitePreview } from '../../../lib/preview.js';
 const publicStorefrontRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/storefront/site', async (request) => {
     const tenantId = await resolveTenantId(request);
-    if (!(await isModuleEnabled(tenantId, 'storefront'))) throw moduleDisabled('storefront');
+    if (!(await isModuleEnabled(tenantId, 'builder'))) throw moduleDisabled('builder');
     // With a valid `Authorization: Preview <site-preview jwt>` (minted by the
     // dashboard for its own tenant) serve the DRAFT composition; otherwise the
     // published snapshot. An invalid/expired token throws — it is NOT silently

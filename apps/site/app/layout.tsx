@@ -30,7 +30,7 @@ import { SiteFooter, type FooterColumn } from '@/components/site-footer';
 import { BuilderSiteChrome } from '@/components/builder-renderer';
 import { listCollections } from '@/lib/commerce';
 import { getLegalFooterLinks } from '@/lib/legal';
-import { getPublishedBuilderLayout } from '@/lib/builder';
+import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/builder';
 import { loadSiteData } from '@/lib/builder-data';
 import { ConsentManager } from '@/components/consent/consent-manager';
 import { mediaUrl } from '@/lib/media';
@@ -176,6 +176,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const builderLayout = tenant ? await getPublishedBuilderLayout(tenant.slug) : null;
   const siteData = tenant && builderLayout ? await loadSiteData(tenant) : null;
 
+  // The compiled Surface stylesheet (docs/47 §5): the utilities authored as
+  // node `class` strings across the tenant's published trees. Injected after the
+  // --sf-* theme block so the utilities resolve against the tenant tokens. '' (so
+  // nothing is injected) until class-first authoring is in use.
+  const surfaceCss = tenant ? await getPublishedBuilderStyles(tenant.slug) : '';
+
   // Active base theme preset (additive registry) for the no-snapshot path.
   const themePreset = (tenant?.settings as { theme?: { preset?: string } } | undefined)?.theme
     ?.preset;
@@ -286,6 +292,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <head>
         {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
+        {surfaceCss ? (
+          <style data-surface-tenant dangerouslySetInnerHTML={{ __html: surfaceCss }} />
+        ) : null}
         {dynamicPolicy ? (
           <script dangerouslySetInnerHTML={{ __html: noFlashScript(dynamicPolicy) }} />
         ) : null}

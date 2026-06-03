@@ -1,0 +1,52 @@
+/* Surface Progress — determinate / indeterminate bar (docs/46 §3.6). The fill
+ * reads the shared role var (`--c-bg`, set by `.sf-c-*`); the track is the neutral
+ * base. Heights are @apply'd; the fill color + indeterminate animation are raw. */
+
+.sf-progress {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--sf-base-300, #e6e1d3);
+}
+.sf-progress__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--c-bg, var(--sf-primary, #3f6b52));
+  transition: width 0.3s ease;
+}
+
+/* Size axis — the bar height. */
+.sf-progress--sz-xs {
+  @apply h-1;
+}
+.sf-progress--sz-sm {
+  @apply h-1.5;
+}
+.sf-progress--sz-md {
+  @apply h-2.5;
+}
+.sf-progress--sz-lg {
+  @apply h-3.5;
+}
+.sf-progress--sz-xl {
+  @apply h-5;
+}
+
+/* Indeterminate — a sliding partial fill. */
+.sf-progress--indeterminate .sf-progress__fill {
+  width: 40%;
+  animation: sf-progress-indeterminate 1.2s ease-in-out infinite;
+}
+@keyframes sf-progress-indeterminate {
+  0% {
+    margin-left: -40%;
+  }
+  100% {
+    margin-left: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sf-progress--indeterminate .sf-progress__fill {
+    animation-duration: 3s;
+  }
+}

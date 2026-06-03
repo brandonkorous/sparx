@@ -1,0 +1,30 @@
+/* Surface Pagination — page navigator (docs/46 §5.2). Structural; the active page
+ * uses the fixed primary accent. Layout @apply'd; colors are tokens. */
+
+.sf-pagination__list {
+  @apply m-0 flex flex-wrap items-center gap-1 p-0;
+  list-style: none;
+}
+.sf-pagination__link {
+  @apply inline-flex h-9 min-w-9 items-center justify-center px-2 text-sm no-underline;
+  border-radius: var(--sf-radius-field, 0.5rem);
+  color: var(--sf-base-content);
+  border: 1px solid transparent;
+}
+.sf-pagination__link:hover {
+  background: color-mix(in srgb, var(--sf-base-content, #23211c) 8%, transparent);
+}
+.sf-pagination__item--active .sf-pagination__link {
+  background: var(--sf-primary, #3f6b52);
+  color: var(--sf-primary-content, #fff);
+}
+.sf-pagination__item--disabled .sf-pagination__link {
+  @apply pointer-events-none opacity-40;
+}
+.sf-pagination__ellipsis {
+  @apply inline-flex h-9 min-w-9 items-center justify-center;
+  color: var(
+    --sf-text-muted,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+  );
+}

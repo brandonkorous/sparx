@@ -1,0 +1,63 @@
+/* Surface Switch (Toggle) — appearance:none track + sliding knob (docs/46 §3.6).
+ * Each size sets an internal `--h`; the track width / knob / travel derive from it.
+ * The checked track reads the role var `--c-bg`. */
+
+.sf-switch {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+  cursor: pointer;
+  --h: 1.25rem;
+  width: calc(var(--h) * 1.8);
+  height: var(--h);
+  border-radius: 999px;
+  background: var(--sf-base-300, #e6e1d3);
+  transition: background 0.15s ease;
+}
+.sf-switch::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0.125rem;
+  transform: translateY(-50%);
+  width: calc(var(--h) - 0.25rem);
+  height: calc(var(--h) - 0.25rem);
+  border-radius: 999px;
+  background: var(--sf-base-100, #fff);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: left 0.15s ease;
+}
+.sf-switch:checked {
+  background: var(--c-bg, var(--sf-primary, #3f6b52));
+}
+.sf-switch:checked::after {
+  left: calc(100% - (var(--h) - 0.25rem) - 0.125rem);
+}
+.sf-switch:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--sf-primary, #3f6b52)) 25%, transparent);
+}
+.sf-switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Size axis — sets the shared internal height. */
+.sf-switch--sz-xs {
+  --h: 0.9rem;
+}
+.sf-switch--sz-sm {
+  --h: 1.1rem;
+}
+.sf-switch--sz-md {
+  --h: 1.25rem;
+}
+.sf-switch--sz-lg {
+  --h: 1.6rem;
+}
+.sf-switch--sz-xl {
+  --h: 2rem;
+}

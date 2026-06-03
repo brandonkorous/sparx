@@ -17,6 +17,11 @@ interface ErrorEnvelope {
   error: { code: string; message: string };
 }
 
+interface PublishedStylesheet {
+  css: string;
+  hash: string;
+}
+
 export async function getPublishedBuilderPage(
   tenantSlug: string,
   slug: string
@@ -85,5 +90,24 @@ export async function getPublishedBuilderLayout(
     return json.data;
   } catch {
     return null;
+  }
+}
+
+/** The compiled per-tenant Surface stylesheet (docs/47 §5) — the CSS for every
+ *  class authored across the tenant's published Builder trees. The root layout
+ *  inlines it after the `--sf-*` theme block so authored utilities resolve. '' on
+ *  failure or when no classes are authored, so the storefront degrades cleanly. */
+export async function getPublishedBuilderStyles(tenantSlug: string): Promise<string> {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/v1/public/builder/styles?tenant=${encodeURIComponent(tenantSlug)}`,
+      // INTERIM: uncached so a publish reflects immediately (see the reads above).
+      { cache: 'no-store' }
+    );
+    const json = (await res.json()) as SuccessEnvelope<PublishedStylesheet> | ErrorEnvelope;
+    if (!res.ok || 'error' in json) return '';
+    return json.data.css;
+  } catch {
+    return '';
   }
 }

@@ -3,24 +3,24 @@ import { Section, SectionHeader, Spark } from './primitives';
 const PLANS = [
   {
     name: 'Starter',
-    description: 'Storefront + Commerce. Sell something today.',
+    description: 'Builder + Commerce. Sell something today.',
     price: '$79',
     period: '/mo',
-    includes: 'Storefront · Commerce · 0.5% txn fee',
+    includes: 'Builder · Commerce · 0.5% txn fee',
   },
   {
     name: 'Growth',
     description: 'Adds CRM and Email. Talk to customers.',
     price: '$149',
     period: '/mo',
-    includes: 'Storefront · Commerce · CRM · Email · 0.5% txn fee',
+    includes: 'Builder · Commerce · CRM · Email · 0.5% txn fee',
   },
   {
     name: 'Pro',
     description: 'All modules except B2B. Zero transaction fees.',
     price: '$299',
     period: '/mo',
-    includes: 'Storefront · Commerce · CMS · CRM · Email · AI/MCP · Dropship · 0% txn fee',
+    includes: 'Builder · Commerce · CMS · CRM · Email · AI/MCP · Dropship · 0% txn fee',
     featured: true,
   },
   {

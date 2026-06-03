@@ -1,0 +1,54 @@
+/* Surface Avatar — image or initials fallback (docs/46 §3.6). The placeholder
+ * fill reads the shared role vars (`--c-bg` / `--c-fg`, set by `.sf-c-*`); this
+ * file owns the size + shape scales and the status dot. Authored with @apply. */
+
+.sf-avatar {
+  @apply relative inline-flex shrink-0 items-center justify-center overflow-hidden align-middle leading-none font-semibold uppercase select-none;
+}
+.sf-avatar__img {
+  @apply block h-full w-full object-cover;
+}
+.sf-avatar--placeholder {
+  background: var(--c-bg, var(--sf-base-300));
+  color: var(--c-fg, var(--sf-base-content));
+}
+
+/* Shape axis. */
+.sf-avatar--circle {
+  @apply rounded-full;
+}
+.sf-avatar--rounded {
+  border-radius: var(--sf-radius-field, 0.5rem);
+}
+.sf-avatar--square {
+  @apply rounded-none;
+}
+
+/* Size axis. */
+.sf-avatar--sz-xs {
+  @apply h-6 w-6 text-[0.6rem];
+}
+.sf-avatar--sz-sm {
+  @apply h-8 w-8 text-xs;
+}
+.sf-avatar--sz-md {
+  @apply h-10 w-10 text-sm;
+}
+.sf-avatar--sz-lg {
+  @apply h-14 w-14 text-lg;
+}
+.sf-avatar--sz-xl {
+  @apply h-20 w-20 text-2xl;
+}
+
+/* Presence status dot. */
+.sf-avatar__status {
+  @apply absolute right-0 bottom-0 h-1/4 w-1/4 rounded-full;
+  box-shadow: 0 0 0 2px var(--sf-base-100, #fff);
+}
+.sf-avatar__status--online {
+  background: var(--sf-success, #16a34a);
+}
+.sf-avatar__status--offline {
+  background: var(--sf-base-300, #9ca3af);
+}

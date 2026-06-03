@@ -1,0 +1,65 @@
+/* Surface field controls — the shared `.sf-input` base used by Input, Textarea,
+ * and NativeSelect (docs/46 §3.6). The chrome is tokenized; the recipe shows up in
+ * the focus ring (reads `--c-bg`) and the invalid state (danger role). Structural
+ * bits are @apply'd; token/role-var values are raw declarations. */
+
+.sf-input {
+  @apply block w-full;
+  border: 1px solid var(--sf-border, #e3dfd2);
+  border-radius: var(--sf-radius-field, 0.5rem);
+  background: var(--sf-base-100, #fff);
+  color: var(--sf-base-content, #23211c);
+  font-family: var(--sf-font-body, inherit);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.sf-input::placeholder {
+  color: var(
+    --sf-text-muted,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 50%, transparent)
+  );
+}
+.sf-input:focus-visible {
+  @apply outline-none;
+  border-color: var(--c-bg, var(--sf-primary, #3f6b52));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--sf-primary, #3f6b52)) 25%, transparent);
+}
+.sf-input:disabled {
+  @apply cursor-not-allowed opacity-60;
+}
+
+/* Ghost — chromeless until focus. */
+.sf-input--ghost {
+  background: transparent;
+  border-color: transparent;
+}
+.sf-input--ghost:focus-visible {
+  background: var(--sf-base-100, #fff);
+}
+
+/* Invalid — danger border + ring (the danger role, not the color axis). */
+.sf-input--invalid {
+  border-color: var(--sf-danger, #dc2626);
+}
+.sf-input--invalid:focus-visible {
+  border-color: var(--sf-danger, #dc2626);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sf-danger, #dc2626) 25%, transparent);
+}
+
+/* Size axis. */
+.sf-input--sz-xs {
+  @apply px-2 py-1 text-xs;
+}
+.sf-input--sz-sm {
+  @apply px-2.5 py-1.5 text-sm;
+}
+.sf-input--sz-md {
+  @apply px-3 py-2 text-base;
+}
+.sf-input--sz-lg {
+  @apply px-3.5 py-2.5 text-lg;
+}
+.sf-input--sz-xl {
+  @apply px-4 py-3 text-xl;
+}

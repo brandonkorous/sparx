@@ -1,6 +1,6 @@
 # 46 — `@sparx/site-ui`: The Tenant-Themed Component Library
 
-Version: 1.3
+Version: 1.4
 Author: Brandon Korous
 Last Updated: 2026-06-02
 
@@ -288,6 +288,58 @@ box/layout vocabulary — a one-way dependency (`builder-schemas` is zod-only an
 never imports `site-ui`). `Video`/`Map` render through `EmbedFrame`; `youtubeEmbed`/`mapEmbed` are
 exported so the renderer can dedupe onto them at migration.
 
+### 5.3 Core-library expansion — Tier 1–3 (2026-06-02)
+
+The first wave harvested the renderer's leaves; this wave fills out the **core library** so
+Surface is a complete component set, not a starter. Everything below ships the same way: `sf-*`
+classes against the §4 tokens, a CSS partial aggregated into `styles.css` (recipes.css last), and a
+vitest per component. Server by default; none needed `'use client'`. Built priority-ordered:
+
+**Tier 1 — layout archetypes (docs/47 §11 B1).** The biggest hole, and the home for the one bit of
+box "magic."
+
+| Component   | Boundary | Axes / key props                                                     | Notes                                                                                                                                         |
+| ----------- | -------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Section`   | server   | `surface` (color recipe) · `contentWidth` full/contained · `padding` | The keystone: full-bleed band + contained inner; background via `photoPanelStyle` (+ `overlay`/`tone`). Re-homes the outer/inner box pattern. |
+| `Container` | server   | `width` sm/md/lg/full                                                | `lg` reads `--sf-container`.                                                                                                                  |
+| `Grid`      | server   | `cols` 1–6 · `gap` · `responsive`                                    | Mobile-first: single column below `md`; `responsive={false}` holds the count.                                                                 |
+| `Stack`     | server   | `direction` · `gap` · `align` · `justify` · `wrap`                   | One-dimensional flex flow.                                                                                                                    |
+
+**Tier 2 — color-bearing primitives (recipe consumers).** Each composes `color × variant (× size)`
+off the shared recipe — no flat enum (§3.6).
+
+| Component | Boundary | Axes / parts                                                 | Notes                                                                                                                                      |
+| --------- | -------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Badge`   | server   | `color` × `chipTreatment` × `size`                           | Status/count pill.                                                                                                                         |
+| `Tag`     | server   | `color` × `chipTreatment` × `size`, `dot`                    | Field-radius chip with an optional leading dot.                                                                                            |
+| `Alert`   | server   | `color` × `chipTreatment`, `vertical`; parts Icon/Title/Body | Compound (Card pattern); `role="alert"`.                                                                                                   |
+| `Callout` | server   | `color` × `chipTreatment`, `icon`, `title`                   | Editorial block with a left accent in `--c-bg`.                                                                                            |
+| `Avatar`  | server   | `color` (placeholder fill) × `size` × `shape`, `status`      | Initials fallback (`initials()` exported); presence dot.                                                                                   |
+| `Label`   | server   | `required` marker                                            | **Judgment: no color axis** — typographic (same split as Text/Heading); the required `*` is the fixed danger token, not a selectable axis. |
+
+**Tier 2b — structural primitives.**
+
+| Component    | Boundary | Axes / parts                            | Notes                                                                                                                                                                                          |
+| ------------ | -------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Skeleton`   | server   | `shape` block/text/circle               | Pulse animation, reduced-motion aware.                                                                                                                                                         |
+| `Spinner`    | server   | `kind` spinner/ring/dots/bars × `size`  | Color via `currentColor`; `role="status"` + visually-hidden label.                                                                                                                             |
+| `Progress`   | server   | `color` × `size`, `value`/`max`         | **Judgment: color-bearing** — its fill is a color, so hard-rule §3.6 wins over the "structural" grouping; daisyUI gives progress colors too. Defaults `primary`; omit `value` → indeterminate. |
+| `Breadcrumb` | server   | parts Item (`href`/`current`)           | Compound; `<nav><ol>`, CSS separators.                                                                                                                                                         |
+| `Pagination` | server   | `page`/`total`/`hrefFor`/`siblingCount` | Link-based (no onClick); `paginationRange()` exported; active = fixed primary accent (not a color axis).                                                                                       |
+
+**Tier 3 — form controls.** Presentational shells forwarding standard input props; the recipe shows
+up in the **focus ring** (`--c-bg`) and the **invalid** state (danger role).
+
+| Component              | Boundary | Axes / key props                                     | Notes                                                                 |
+| ---------------------- | -------- | ---------------------------------------------------- | --------------------------------------------------------------------- |
+| `Input`                | server   | `color` × `size`, `variant` default/ghost, `invalid` | Shared `.sf-input` base.                                              |
+| `Textarea`             | server   | same                                                 | `.sf-input` + `.sf-textarea` (min-height, vertical resize).           |
+| `NativeSelect`         | server   | same + children options                              | `.sf-input` + chevron via a `currentColor` mask (no hardcoded color). |
+| `Checkbox`             | server   | `color` × `size`                                     | `appearance:none`; checked fill `--c-bg`, masked tick `--c-fg`.       |
+| `Radio` / `RadioGroup` | server   | `color` × `size`; group `orientation`                | Inner dot `--c-bg`; group is a `role="radiogroup"` layout wrapper.    |
+| `Switch`               | server   | `color` × `size`                                     | Track + sliding knob; `role="switch"`; checked track `--c-bg`.        |
+| `Field`                | server   | `label`/`hint`/`error`/`required`                    | Wraps Label + control; error in danger, error overrides hint.         |
+
 ---
 
 ## 6. The reference component: `Button`
@@ -403,6 +455,15 @@ of duplicated style injection and the server renderer carries no CSS-in-JS runti
 - [x] `Button` reworked to four-axis `color × variant × size` as the reference consumer (§5.1, §6).
 - [x] Full first-wave inventory built greenfield (§5); `--sf-overlay-*` removed (§4.1, superseded).
 - [x] Gate green: site-ui **51 tests**, storefront-themes **55 tests**, tsc/eslint/prettier clean.
+- [x] **Core-library expansion built (§5.3)** — Tier 1 layout (Section/Container/Grid/Stack), Tier 2
+      color-bearing (Badge/Tag/Alert/Callout/Avatar/Label), Tier 2b structural
+      (Skeleton/Spinner/Progress/Breadcrumb/Pagination), Tier 3 forms
+      (Input/Textarea/NativeSelect/Checkbox/Radio+RadioGroup/Switch/Field). Exported, partials
+      imported (recipes.css last), **98 tests**, tsc/eslint clean, `dist/styles.css` compiles
+      (plain CSS, `--sf-*` preserved, no preflight).
+- [ ] **Tier 4 interactive** (Accordion/Tabs/Tooltip/Dialog/DropdownMenu/Popover) — pending the
+      hand-authored-vs-Radix decision (default: hand-authored, semantic `sf-` classes, matching
+      `@sparx/ui`).
 - [ ] **Button migration PULLED FORWARD** — team-lead wires `builder-renderer.tsx` + the editor
       canvas at `<Button>` and adds the `styles.css` imports (site-ui delivers; lead wires).
 - [ ] **HOLD: the rest of the §7 migration** — gated on the Tesla page being built + verified on

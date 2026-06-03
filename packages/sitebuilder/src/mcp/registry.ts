@@ -7,7 +7,7 @@
 import type { z } from 'zod';
 import type { ServiceContext } from '../errors';
 
-export type McpScope = 'read:storefront' | 'write:storefront';
+export type McpScope = 'read:builder' | 'write:builder';
 
 export interface McpToolDefinition<TInput = unknown, TOutput = unknown> {
   name: string;

@@ -5,7 +5,7 @@ import { type ModuleMeta } from './modules';
 // the marketing components (which pull React DOM). Keep in sync with
 // MODULE_COLORS in components/marketing/primitives.tsx.
 const MODULE_COLORS: Record<string, { color: string; tint: string; text: string }> = {
-  storefront: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA' },
+  builder: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA' },
   commerce: { color: '#F97316', tint: '#FFF7ED', text: '#C2410C' },
   cms: { color: '#14B8A6', tint: '#F0FDFA', text: '#0F766E' },
   crm: { color: '#06B6D4', tint: '#ECFEFF', text: '#0E7490' },

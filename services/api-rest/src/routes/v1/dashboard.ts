@@ -14,7 +14,7 @@ import { requireAuth } from '@sparx/api-core/auth';
 import { type ModuleSlug } from '@sparx/auth';
 
 const MODULE_SLUGS: ModuleSlug[] = [
-  'storefront',
+  'builder',
   'commerce',
   'cms',
   'crm',

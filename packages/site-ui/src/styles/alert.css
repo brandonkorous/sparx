@@ -1,0 +1,25 @@
+/* Surface Alert — compound feedback banner (docs/46 §3.6). Color + treatment come
+ * from the shared `.sf-c-*` / `.sf-v-*` recipe (soft tint, outline, etc.); this
+ * file owns the layout + the parts. Authored with @apply. */
+
+.sf-alert {
+  @apply flex items-start gap-3 p-4 text-sm;
+  border-radius: var(--sf-radius-box, 1rem);
+}
+.sf-alert--vertical {
+  @apply flex-col items-stretch;
+}
+
+/* ── Parts ──────────────────────────────────────────────────────────────────── */
+
+.sf-alert__icon {
+  @apply flex shrink-0 items-center justify-center;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.sf-alert__title {
+  @apply font-semibold;
+}
+.sf-alert__body {
+  @apply flex-1 leading-relaxed;
+}

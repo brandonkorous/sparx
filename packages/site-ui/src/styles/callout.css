@@ -1,0 +1,23 @@
+/* Surface Callout — editorial emphasis block (docs/46 §3.6). Color + treatment
+ * from the shared recipe; this file adds the left accent bar (always the active
+ * `--c-bg`) and the icon/title/body layout. Authored with @apply. */
+
+.sf-callout {
+  @apply flex items-start gap-3 p-4 text-sm;
+  border-radius: var(--sf-radius-box, 1rem);
+  border-left: 4px solid var(--c-bg, var(--sf-border));
+}
+.sf-callout__icon {
+  @apply flex shrink-0 items-center justify-center;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.sf-callout__content {
+  @apply min-w-0 flex-1;
+}
+.sf-callout__title {
+  @apply mb-1 font-semibold;
+}
+.sf-callout__body {
+  @apply leading-relaxed;
+}

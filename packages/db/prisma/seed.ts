@@ -26,7 +26,7 @@ async function main(): Promise<void> {
   const defaultSettings = {
     primaryDomain: 'e2e.sparx.test',
     modules: {
-      storefront: { enabled: true },
+      builder: { enabled: true },
       commerce: { enabled: true },
       cms: { enabled: true },
       crm: { enabled: true },

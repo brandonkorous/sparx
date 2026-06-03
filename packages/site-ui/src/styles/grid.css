@@ -1,0 +1,69 @@
+/* Surface Grid — responsive column grid (docs/47 §11 B1). Mobile-first: the base
+ * grid is a single implicit column (cells stack); the column count applies at
+ * `md`+. `.sf-grid--fixed` re-asserts the count below `md` too. The
+ * grid-template-columns values are structural (not tokens) and the responsive
+ * split needs media queries @apply can't express cleanly, so they're raw rules;
+ * display + gap are @apply'd. */
+
+.sf-grid {
+  @apply grid;
+}
+
+/* Gap scale — what xs…xl mean for a grid. */
+.sf-grid--gap-xs {
+  @apply gap-2;
+}
+.sf-grid--gap-sm {
+  @apply gap-4;
+}
+.sf-grid--gap-md {
+  @apply gap-6;
+}
+.sf-grid--gap-lg {
+  @apply gap-8;
+}
+.sf-grid--gap-xl {
+  @apply gap-12;
+}
+
+/* Column count — applied at md+ (mobile stays single-column). */
+@media (min-width: 48rem) {
+  .sf-grid--cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .sf-grid--cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sf-grid--cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .sf-grid--cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .sf-grid--cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .sf-grid--cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+/* Fixed — hold the column count at every width. */
+.sf-grid--fixed.sf-grid--cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.sf-grid--fixed.sf-grid--cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.sf-grid--fixed.sf-grid--cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.sf-grid--fixed.sf-grid--cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.sf-grid--fixed.sf-grid--cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.sf-grid--fixed.sf-grid--cols-6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}

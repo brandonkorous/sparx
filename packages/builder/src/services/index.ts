@@ -4,3 +4,4 @@
 export * as pageService from './page-service';
 export * as layoutService from './layout-service';
 export * as bindingService from './binding-service';
+export * as surfaceCssService from './surface-css-service';

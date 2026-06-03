@@ -1,12 +1,11 @@
-// Dashboard shell manifest for the next-gen Builder (docs/40 composition model).
+// Dashboard shell manifest for the Builder module (docs/40 composition model).
 //
-// A first-class `builder` module (indigo, the site-building lineage) owning the
-// `/builder` route prefix. It is surfaced in the nav as an in-development module
-// (see the dashboard layout) rather than via the per-tenant feature flag, since
-// it has no backend gate yet. Site Builder (`/sitebuilder`, the legacy
-// `storefront` module) stays in place until the Builder fully replaces it — the
-// two coexist in the rail for now; when Site Builder is dropped, `storefront`
-// goes with it.
+// `builder` is the billable site-building module (indigo, the site-building
+// lineage) owning the `/builder` route prefix — the foundation module formerly
+// marketed as "Storefront". The legacy Site Builder (`/sitebuilder`, manifest
+// id `storefront`) still owns the theme/publish surfaces not yet migrated into
+// /builder; the dashboard layout surfaces it alongside Builder until that
+// migration completes, at which point the `storefront` id retires.
 
 import type { ModuleManifest } from '@sparx/ui/shell';
 import { Boxes, Component, File, Fingerprint, Globe } from 'lucide-react';

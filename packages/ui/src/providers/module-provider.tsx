@@ -3,10 +3,12 @@
 import * as React from 'react';
 
 export type SparxModule =
+  // Legacy Site Builder color identity (the `/sitebuilder` dashboard surface).
+  // The billable site-building module is now `builder`; `storefront` survives
+  // only to color the legacy surfaces until /sitebuilder folds into /builder.
   | 'storefront'
-  // The next-gen Builder (docs/40). A first-class module now; when Site Builder
-  // is retired, `storefront` goes with it and `builder` becomes the sole
-  // site-building identity.
+  // The site-building module (docs/40), `/builder` — the billable foundation
+  // module (themes, layouts, pages, domains). Formerly marketed as "Storefront".
   | 'builder'
   | 'commerce'
   | 'cms'

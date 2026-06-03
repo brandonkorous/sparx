@@ -1,0 +1,25 @@
+/* Surface Badge — a pill carrying color × chip-treatment × size (docs/46 §3.6).
+ * Color + treatment come from the shared `.sf-c-*` / `.sf-v-*` recipe; this file
+ * owns the pill shape + the size scale. Authored with @apply. */
+
+.sf-badge {
+  @apply inline-flex items-center justify-center gap-1 rounded-full leading-none font-medium whitespace-nowrap;
+  font-family: var(--sf-font-body, inherit);
+}
+
+/* Size axis — what xs…xl mean for a badge. */
+.sf-badge--sz-xs {
+  @apply px-1.5 py-0.5 text-[0.625rem];
+}
+.sf-badge--sz-sm {
+  @apply px-2 py-0.5 text-xs;
+}
+.sf-badge--sz-md {
+  @apply px-2.5 py-1 text-xs;
+}
+.sf-badge--sz-lg {
+  @apply px-3 py-1 text-sm;
+}
+.sf-badge--sz-xl {
+  @apply px-3.5 py-1.5 text-base;
+}

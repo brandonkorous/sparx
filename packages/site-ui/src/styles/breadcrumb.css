@@ -1,0 +1,30 @@
+/* Surface Breadcrumb — navigation trail (docs/46 §5.2). Structural; separators are
+ * a CSS pseudo-element. Authored with @apply where structural; muted-text color is
+ * a token. */
+
+.sf-breadcrumb__list {
+  @apply m-0 flex flex-wrap items-center gap-2 p-0 text-sm;
+  list-style: none;
+}
+.sf-breadcrumb__item {
+  @apply inline-flex items-center gap-2;
+}
+.sf-breadcrumb__item:not(:first-child)::before {
+  content: '/';
+  opacity: 0.5;
+}
+.sf-breadcrumb__link {
+  color: var(
+    --sf-text-muted,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+  );
+  text-decoration: none;
+}
+.sf-breadcrumb__link:hover {
+  color: var(--sf-base-content);
+  text-decoration: underline;
+}
+.sf-breadcrumb__current {
+  @apply font-medium;
+  color: var(--sf-base-content);
+}

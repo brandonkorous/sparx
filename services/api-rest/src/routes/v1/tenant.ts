@@ -64,7 +64,7 @@ function serializeConsent(
 }
 
 const MODULE_SLUGS: ModuleSlug[] = [
-  'storefront',
+  'builder',
   'commerce',
   'cms',
   'crm',

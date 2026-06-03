@@ -18,12 +18,10 @@ export function toBuilderContext(request: FastifyRequest): ServiceContext {
 }
 
 /** Throws MODULE_DISABLED (→ 404 envelope) if the caller's tenant doesn't have
- *  the storefront module active. Builder is the successor to Site Builder and
- *  shares its activation flag (docs/41 §4); this retires with the
- *  `storefront` → `builder` rename. Pairs with requireAuth — call once per
- *  handler before any service call. */
+ *  the builder module active. Pairs with requireAuth — call once per handler
+ *  before any service call. */
 export async function requireBuilderModule(request: FastifyRequest): Promise<void> {
   const auth = requireAuth(request);
-  const enabled = await isModuleEnabled(auth.tenantId, 'storefront');
-  if (!enabled) throw moduleDisabled('storefront');
+  const enabled = await isModuleEnabled(auth.tenantId, 'builder');
+  if (!enabled) throw moduleDisabled('builder');
 }

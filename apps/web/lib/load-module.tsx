@@ -5,8 +5,8 @@
 //
 // Each marketing route is a one-liner above this:
 //
-//   export const generateMetadata = makeMetadata('storefront');
-//   export default makePage('storefront');
+//   export const generateMetadata = makeMetadata('builder');
+//   export default makePage('builder');
 //
 // When MODULES is finally deleted (CMS is the only source of truth),
 // this file is the only place that needs to change.

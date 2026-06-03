@@ -1,0 +1,39 @@
+/* Surface Section — full-bleed band + contained content (docs/47 §11 B1).
+ * Authored with @apply; the surface fill flows through the shared role vars
+ * (`--c-bg` / `--c-fg`, set by `.sf-c-*`), the container cap is the tenant
+ * `--sf-container` token, and a background image is composed inline by the
+ * component via `photoPanelStyle()`. */
+
+.sf-section {
+  @apply w-full bg-cover bg-center;
+  background-color: var(--c-bg, transparent);
+  color: var(--c-fg, inherit);
+}
+
+.sf-section__inner {
+  @apply mx-auto w-full;
+}
+.sf-section__inner--contained {
+  @apply px-6;
+  max-width: var(--sf-container, 80rem);
+}
+.sf-section__inner--full {
+  @apply w-full;
+}
+
+/* Vertical-rhythm scale — what xs…xl mean for a section band. */
+.sf-section--pad-xs {
+  @apply py-6;
+}
+.sf-section--pad-sm {
+  @apply py-10;
+}
+.sf-section--pad-md {
+  @apply py-14;
+}
+.sf-section--pad-lg {
+  @apply py-20;
+}
+.sf-section--pad-xl {
+  @apply py-28;
+}

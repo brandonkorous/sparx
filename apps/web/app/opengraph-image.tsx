@@ -6,7 +6,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 const MODULE_DOTS = [
-  '#6366F1', // storefront
+  '#6366F1', // builder
   '#F97316', // commerce
   '#14B8A6', // cms
   '#06B6D4', // crm
@@ -126,7 +126,7 @@ export default function Image() {
             maxWidth: 920,
           }}
         >
-          Storefront, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer. Live in
+          Builder, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer. Live in
           five minutes.
         </span>
       </div>

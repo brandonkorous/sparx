@@ -6,6 +6,6 @@ import { MODULES } from '@/lib/modules';
 export const runtime = 'nodejs';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-export const alt = MODULES.storefront.title;
+export const alt = MODULES.builder.title;
 
 export default Image;

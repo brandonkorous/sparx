@@ -9,7 +9,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
     title: 'Modules',
     links: [
-      { label: 'Storefront', href: '/storefront' },
+      { label: 'Builder', href: '/builder' },
       { label: 'Commerce', href: '/commerce' },
       { label: 'CMS', href: '/cms' },
       { label: 'CRM', href: '/crm' },
@@ -39,7 +39,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: 'GraphQL schema', href: 'https://sparx.software/graphql' },
       { label: 'MCP server spec', href: 'https://sparx.software/mcp' },
       { label: 'Webhook events', href: 'https://sparx.software/webhooks' },
-      { label: 'Storefront SDK', href: 'https://sparx.software/sdk' },
+      { label: 'Builder SDK', href: 'https://sparx.software/sdk' },
       { label: 'Self-hosting guide', href: 'https://sparx.software/self-host' },
       { label: 'Open source', href: '/open-source' },
     ],

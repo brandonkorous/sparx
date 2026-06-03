@@ -45,7 +45,7 @@ const OLD_STACK = [
 ] as const;
 
 const NEW_STACK = [
-  { initial: 'S', name: 'Sparx Storefront', color: '#6366F1' },
+  { initial: 'B', name: 'Sparx Builder', color: '#6366F1' },
   { initial: 'C', name: 'Sparx Commerce', color: '#F97316' },
   { initial: 'C', name: 'Sparx CRM', color: '#06B6D4' },
   { initial: 'E', name: 'Sparx Email', color: '#0EA5E9' },
