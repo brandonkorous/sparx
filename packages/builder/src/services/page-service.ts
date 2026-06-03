@@ -39,13 +39,35 @@ function toDto(row: BuilderPage): BuilderPageDto {
     published: row.publishedTree != null,
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
+    seoTitle: row.seoTitle,
+    seoDescription: row.seoDescription,
+    canonical: row.canonical,
+    ogImage: row.ogImage,
+    noindex: row.noindex,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
 }
 
+/** Shared SEO read projection for the public PublishedPageDto reads. */
+function publishedSeo(row: BuilderPage) {
+  return {
+    seoTitle: row.seoTitle,
+    seoDescription: row.seoDescription,
+    canonical: row.canonical,
+    ogImage: row.ogImage,
+    noindex: row.noindex,
+  };
+}
+
 const asJson = (tree: BuilderNode): Prisma.InputJsonValue =>
   tree as unknown as Prisma.InputJsonValue;
+
+// SEO text fields store null (not '') when blank, so a cleared field falls back
+// to the page name on the storefront. `??` can't express this (it keeps ''), so
+// this explicit empty-to-null helper carries the intent.
+const emptyToNull = (v: string | null | undefined): string | null =>
+  v != null && v.length > 0 ? v : null;
 
 /** List the tenant's pages. On first use (zero rows) seed the curated starter
  *  set — the lazy-materialization idiom (cf. getOrCreateConfig). Idempotent:
@@ -109,6 +131,11 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Bu
         slug: input.slug ?? null,
         draftTree: asJson(input.tree ?? blankPageTree()),
         position,
+        seoTitle: emptyToNull(input.seoTitle),
+        seoDescription: emptyToNull(input.seoDescription),
+        canonical: emptyToNull(input.canonical),
+        ogImage: emptyToNull(input.ogImage),
+        noindex: input.noindex ?? false,
       },
     });
     await writeAuditLog({
@@ -142,6 +169,13 @@ export async function update(
     if (input.tree !== undefined) data.draftTree = asJson(input.tree);
     if (input.recordType !== undefined) data.recordType = input.recordType;
     if (input.slug !== undefined) data.slug = input.slug;
+    // SEO — empty strings clear the column (store null), so the storefront falls
+    // back to the page name rather than rendering an empty <title>.
+    if (input.seoTitle !== undefined) data.seoTitle = emptyToNull(input.seoTitle);
+    if (input.seoDescription !== undefined) data.seoDescription = emptyToNull(input.seoDescription);
+    if (input.canonical !== undefined) data.canonical = emptyToNull(input.canonical);
+    if (input.ogImage !== undefined) data.ogImage = emptyToNull(input.ogImage);
+    if (input.noindex !== undefined) data.noindex = input.noindex;
 
     const updated = await tx.builderPage.update({ where: { id }, data });
     return toDto(updated);
@@ -251,6 +285,7 @@ export function getPublishedBySlug(
       kind: row.kind as BuilderPageKind,
       recordType: row.recordType,
       tree: row.publishedTree as unknown as BuilderNode,
+      ...publishedSeo(row),
       publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     };
   });
@@ -274,6 +309,7 @@ export function getDraftBySlug(
       kind: row.kind as BuilderPageKind,
       recordType: row.recordType,
       tree: row.draftTree as unknown as BuilderNode,
+      ...publishedSeo(row),
       publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     };
   });
@@ -304,6 +340,7 @@ export function getPublishedByRecordType(
       kind: row.kind as BuilderPageKind,
       recordType: row.recordType,
       tree: row.publishedTree as unknown as BuilderNode,
+      ...publishedSeo(row),
       publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     };
   });

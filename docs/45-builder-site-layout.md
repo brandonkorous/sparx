@@ -1,8 +1,8 @@
 # 45 — Builder: The Site Layout Editor
 
-Version: 1.1
+Version: 1.2
 Author: Brandon Korous
-Last Updated: 2026-06-02
+Last Updated: 2026-06-03
 
 > The Builder ([40](40-sitebuilder-composition-model.md)) models a website as a
 > **tree of nested layouts**: a layout owns **zones**, one of which — the content
@@ -93,7 +93,7 @@ platform data**:
 | `site.identity`   | `Tenant.name` / `TenantBrand.businessName` · `…tagline` · logo media |
 | `site.primaryNav` | `NavigationMenu(location: 'header')` → `NavigationItem[]`            |
 | `site.footerNav`  | `NavigationMenu(location: 'footer')` → `NavigationItem[]`            |
-| `site.social`     | `TenantBrand.socials`                                                |
+| `site.social`     | `Tenant.socials` (a site setting, edited in `/settings/general`)     |
 
 The Builder stores **no** parallel nav or brand. The catalog **sources** are
 code-defined (a fixed shape — `SITE_SOURCES`); the **data** is fetched per tenant
@@ -151,7 +151,9 @@ The storefront's analogue of `loadBuilderData` for the chrome:
   brand (logo via `mediaUrl(logoMediaId)`).
 - `site.primaryNav` / `site.footerNav` ← `getNavigationMenu(slug, 'header'|'footer')`
   flattened to `{ label, url }[]` (top level for v1; nested menus later).
-- `site.social` ← `TenantBrand.socials` mapped to `{ platform, url }[]`.
+- `site.social` ← `Tenant.socials` (a site-wide setting on the tenant, edited in
+  `/settings/general` and carried in the public tenant payload) mapped to
+  `{ platform, url }[]`. Theme-independent: switching themes never changes it.
 
 A failed fetch degrades a source to empty (the chrome renders without it) rather
 than 500-ing the whole storefront — same defensive posture as the page loader.

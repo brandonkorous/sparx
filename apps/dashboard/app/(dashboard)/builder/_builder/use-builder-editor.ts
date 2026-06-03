@@ -19,6 +19,7 @@ import type { BindingCatalog } from '@sparx/builder-schemas';
 import {
   appendChild,
   findNode,
+  moveNode,
   removeNode,
   updateNode,
   type BoxBase,
@@ -28,7 +29,7 @@ import {
   type LayoutBase,
 } from './model';
 import { buildPreviewData, scopeAt, type ScopeInfo } from './binding-catalog';
-import { getDef, isContainer, makeNode } from './registry';
+import { acceptsChildren, getDef, makeNode, retypeDropsChildren, retypeNode } from './registry';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 export type RailTab = 'layers' | 'add';
@@ -93,6 +94,12 @@ export interface BuilderEditor {
   onBind: (path: string | null) => void;
   onAdd: (type: string) => void;
   onRemove: (id: string) => void;
+  /** Re-parent / reorder from the Layers tree: move `dragId` to be child `index`
+   *  of `parentId`. A no-op for an illegal move (see model.moveNode). */
+  onMove: (dragId: string, parentId: string, index: number) => void;
+  /** Change the selected node's type (Card→Section, Button→Badge). Confirms first
+   *  when the change would drop nested items. */
+  onRetype: (targetType: string) => void;
 }
 
 export function useBuilderEditor({
@@ -164,7 +171,7 @@ export function useBuilderEditor({
   const target = React.useMemo<BuilderNode | null>(() => {
     if (!tree) return null;
     if (!selectedNode) return tree;
-    if (isContainer(selectedNode.type)) return selectedNode;
+    if (acceptsChildren(selectedNode.type)) return selectedNode;
     return chain[chain.length - 2] ?? tree;
   }, [tree, selectedNode, chain]);
 
@@ -241,6 +248,35 @@ export function useBuilderEditor({
     })();
   };
 
+  // Re-parent / reorder. moveNode is a no-op for illegal moves (root / cycle), so
+  // a bad drop just leaves the tree untouched.
+  const onMove = (dragId: string, parentId: string, index: number) =>
+    updateTree((t) => moveNode(t, dragId, parentId, index));
+
+  // Change the selected node's type. Same-kind targets keep children where the new
+  // type can hold them; the one lossy case (a leaf target that can't nest) is
+  // confirmed first, counting what goes with it.
+  const onRetype = (targetType: string) => {
+    if (!selectedNode || !selectedId) return;
+    const to = getDef(targetType);
+    if (!to || targetType === selectedNode.type) return;
+    const apply = () => mutateSelected((n) => retypeNode(n, targetType));
+    if (retypeDropsChildren(selectedNode, targetType)) {
+      const lost = countDescendants(selectedNode);
+      void (async () => {
+        const ok = await confirm({
+          title: `Change to ${to.label}?`,
+          description: `A ${to.label} can’t hold the ${lost} nested item${lost === 1 ? '' : 's'} inside this — ${lost === 1 ? 'it' : 'they'} will be removed. This can’t be undone.`,
+          confirmLabel: 'Change type',
+          tone: 'danger',
+        });
+        if (ok) apply();
+      })();
+    } else {
+      apply();
+    }
+  };
+
   const targetDef = target ? getDef(target.type) : undefined;
   const targetName = target?.box.name ?? targetDef?.label ?? 'page';
 
@@ -269,5 +305,7 @@ export function useBuilderEditor({
     onBind,
     onAdd,
     onRemove,
+    onMove,
+    onRetype,
   };
 }

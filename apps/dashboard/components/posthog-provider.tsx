@@ -3,7 +3,29 @@
 import posthog from 'posthog-js';
 import { PostHogProvider as PHProvider } from 'posthog-js/react';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useReportWebVitals } from 'next/web-vitals';
 import { useEffect, Suspense } from 'react';
+
+// Core Web Vitals → PostHog (docs/50 §4). Reports LCP / CLS / INP / FCP / TTFB
+// as a `web_vitals` event so field performance is trackable next to the rest of
+// product analytics. `rating` isn't on Next's metric type but the web-vitals
+// payload carries it, so we read it defensively.
+function PostHogWebVitals() {
+  useReportWebVitals((metric) => {
+    if (!posthog.__loaded) return;
+    // Next's web-vitals metric type doesn't resolve under type-aware lint, and the
+    // payload also carries `rating` ('good'|'needs-improvement'|'poor') which isn't
+    // on the published type — so normalize to a typed shape before reading.
+    const m = metric as { name: string; value: number; id: string; rating?: string };
+    posthog.capture('web_vitals', {
+      metric_name: m.name,
+      metric_value: m.value,
+      metric_id: m.id,
+      metric_rating: m.rating,
+    });
+  });
+  return null;
+}
 
 function PostHogPageView() {
   const pathname = usePathname();
@@ -38,6 +60,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       <Suspense fallback={null}>
         <PostHogPageView />
       </Suspense>
+      <PostHogWebVitals />
       {children}
     </PHProvider>
   );

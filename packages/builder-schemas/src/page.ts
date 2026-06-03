@@ -36,6 +36,12 @@ export interface BuilderPageDto {
   published: boolean;
   publishedAt: string | null;
   position: number;
+  // SEO (singleton pages) — see PageSeoShape below.
+  seoTitle: string | null;
+  seoDescription: string | null;
+  canonical: string | null;
+  ogImage: string | null;
+  noindex: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -48,10 +54,26 @@ export interface PublishedPageDto {
   kind: BuilderPageKind;
   recordType: string | null;
   tree: BuilderNode;
+  // SEO — the storefront titles/describes a published singleton from these.
+  seoTitle: string | null;
+  seoDescription: string | null;
+  canonical: string | null;
+  ogImage: string | null;
+  noindex: boolean;
   publishedAt: string | null;
 }
 
 // ── Service inputs (parsed at the service boundary, never by the DB) ──────────
+
+/** The editable SEO fields shared by Create/Update. `canonical` accepts a path
+ *  or absolute URL; empty strings normalize to null at the service boundary. */
+const PageSeoShape = {
+  seoTitle: z.string().max(255).nullish(),
+  seoDescription: z.string().max(500).nullish(),
+  canonical: z.string().max(2048).nullish(),
+  ogImage: z.string().max(2048).nullish(),
+  noindex: z.boolean().optional(),
+} as const;
 
 /** Create a page. `tree` omitted → the service starts from a blank root. */
 export const CreatePageInput = z.object({
@@ -60,6 +82,7 @@ export const CreatePageInput = z.object({
   recordType: z.string().max(63).nullish(),
   slug: PageSlug.nullish(),
   tree: BuilderNodeSchema.optional(),
+  ...PageSeoShape,
 });
 export type CreatePageInput = z.infer<typeof CreatePageInput>;
 
@@ -71,15 +94,11 @@ export const UpdatePageInput = z
     tree: BuilderNodeSchema.optional(),
     recordType: z.string().max(63).nullish(),
     slug: PageSlug.nullish(),
+    ...PageSeoShape,
   })
-  .refine(
-    (v) =>
-      v.name !== undefined ||
-      v.tree !== undefined ||
-      v.recordType !== undefined ||
-      v.slug !== undefined,
-    { message: 'Provide at least one of name, tree, recordType, or slug.' }
-  );
+  .refine((v) => Object.values(v).some((field) => field !== undefined), {
+    message: 'Provide at least one field to update.',
+  });
 export type UpdatePageInput = z.infer<typeof UpdatePageInput>;
 
 /** Reorder the page catalog. `orderedIds` is the full set of the tenant's page

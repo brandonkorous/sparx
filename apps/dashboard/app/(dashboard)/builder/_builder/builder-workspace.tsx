@@ -94,6 +94,7 @@ export function BuilderWorkspace({
                 selectedId={editor.selectedId}
                 onSelect={editor.setSelectedId}
                 onRemove={editor.onRemove}
+                onMove={editor.onMove}
               />
             ) : (
               <AddPalette targetName={editor.targetName} onAdd={editor.onAdd} surface={surface} />
@@ -138,6 +139,7 @@ export function BuilderWorkspace({
               node={editor.selectedNode}
               catalog={catalog}
               scope={editor.scope}
+              surface={surface}
               settings={settings}
               onName={editor.onName}
               onClass={editor.onClass}
@@ -145,6 +147,7 @@ export function BuilderWorkspace({
               onProp={editor.onProp}
               onLayout={editor.onLayout}
               onBox={editor.onBox}
+              onRetype={editor.onRetype}
             />
           </ScrollArea>
         </aside>

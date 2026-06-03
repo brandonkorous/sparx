@@ -53,7 +53,6 @@ interface ColorPair {
   label: string;
 }
 
-const SOCIAL_PLATFORMS = ['instagram', 'facebook', 'x', 'tiktok', 'youtube', 'linkedin'] as const;
 const INHERIT = 'default';
 
 // Surfaces are laid out as two stacks: the plain fills (Surface/Muted/Border) on
@@ -117,8 +116,6 @@ export interface BrandThemeControlsProps {
   setFontBody: (v: string | null) => void;
   tokens: BrandTokens;
   setTokens: React.Dispatch<React.SetStateAction<BrandTokens>>;
-  socials: Record<string, string>;
-  setSocial: (platform: string, value: string) => void;
 
   // Presentation (config-owned), edited for the mode the preview is showing
   themeKey: string;
@@ -158,8 +155,6 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
     setFontBody,
     tokens,
     setTokens,
-    socials,
-    setSocial,
     themeKey,
     mode,
     compiledColors,
@@ -422,25 +417,6 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
           options={POLICIES}
           onChange={(v) => onPolicyChange(v as AppearancePolicy)}
         />
-      </Section>
-
-      <Section title="Social links">
-        {SOCIAL_PLATFORMS.map((p) => (
-          <div key={p} className="flex flex-col gap-1.5">
-            <Label htmlFor={`brand-social-${p}`} className="capitalize">
-              {p}
-            </Label>
-            <Input
-              id={`brand-social-${p}`}
-              type="url"
-              inputMode="url"
-              autoComplete="off"
-              value={socials[p] ?? ''}
-              onChange={(e) => setSocial(p, e.target.value)}
-              placeholder={`https://${p === 'x' ? 'x.com' : `${p}.com`}/yourbrand`}
-            />
-          </div>
-        ))}
       </Section>
     </div>
   );

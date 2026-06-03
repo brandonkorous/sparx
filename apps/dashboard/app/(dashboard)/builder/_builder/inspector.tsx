@@ -2,13 +2,18 @@
 
 // The inspector — the right pane. For the selected node it shows, top to
 // bottom:
-//   1. Data   — the binding box (what this node reads, and what its cardinality
-//               means). Static when the component isn't bindable.
-//   2. <Component> — the node's own props (heading level, button label, …).
-//   3. Layout — containers only (direction / columns / gap / alignment).
-//   4. Layout & Style — the CONSTANT box base shown for EVERY node: background
-//               width, content width, height, spacing, surface, alignment,
-//               visibility. Same panel for everything — that's the point.
+//   1. Style    — the everyday recipe axes: Color + Variant (docs/47), written
+//                 to `node.class`.
+//   2. Advanced — the less-common recipe axes (Size / Margin / Corners / Border /
+//                 Shadow) + the raw `class` textarea (the final escape hatch).
+//                 Collapsed by default.
+//   3. Data     — the binding box (what this node reads, and what its cardinality
+//                 means). Static when the component isn't bindable.
+//   4. <Component> — the node's own props (heading level, button label, …).
+//   5. Arrangement — containers only (how children flow: direction / columns / gap).
+//   6. Layout   — the node's own box, RELEVANCE-GATED per component (width,
+//                 height, spacing, surface, background, align, position,
+//                 visibility) — see BoxBasePanel / visibleBoxAxes.
 
 import * as React from 'react';
 import { ChevronDown } from 'lucide-react';
@@ -31,6 +36,7 @@ import {
   type BuilderNode,
   type Device,
   type LayoutBase,
+  type PageSeo,
 } from './model';
 import {
   bindGroups,
@@ -40,7 +46,15 @@ import {
   moduleForPath,
   type ScopeInfo,
 } from './binding-catalog';
-import { getDef, type ComponentDef } from './registry';
+import {
+  compatibleRetypeTargets,
+  getDef,
+  visibleBoxAxes,
+  type BoxAxis,
+  type ComponentDef,
+  type EditorSurface,
+} from './registry';
+import { IconPicker } from './icon-picker';
 import {
   STYLE_CONTROLS,
   activeValue,
@@ -106,6 +120,43 @@ function Group({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+// Change a node's type in place (Card→Section, Button→Badge). Offers the
+// same-kind targets valid on this surface; the current type sits at the top,
+// disabled. The editor's onRetype carries name / box / binding / recipe across and
+// confirms if the change would drop nested items (registry.retypeNode).
+function RetypeControl({
+  def,
+  surface,
+  onRetype,
+}: {
+  def: ComponentDef;
+  surface: EditorSurface;
+  onRetype: (targetType: string) => void;
+}) {
+  const targets = compatibleRetypeTargets(def, surface);
+  if (targets.length === 0) return null;
+  return (
+    <NativeSelect
+      size="sm"
+      className="bx-ins-retype"
+      aria-label="Change block type"
+      value={def.type}
+      onChange={(e) => {
+        if (e.target.value !== def.type) onRetype(e.target.value);
+      }}
+    >
+      <option value={def.type} disabled>
+        {def.label} — change to…
+      </option>
+      {targets.map((t) => (
+        <option key={t.type} value={t.type}>
+          {t.label}
+        </option>
+      ))}
+    </NativeSelect>
+  );
+}
+
 // One recipe-axis selector (Color / Variant / Size). Writing a value also
 // backfills the node's archetype base + defaults for any unset axis, so styling a
 // component authored before class-first (no `sf-btn` base) doesn't collapse it to
@@ -163,7 +214,10 @@ function AdvancedPanel({
   def: ComponentDef;
   onClass: (value: string) => void;
 }) {
-  const controls = advancedControlsFor(def.defaults.class);
+  // Controls are built from the archetype (which AXES the element has) — distinct
+  // from defaults.class (what a fresh node gets). Icon declares a size axis on its
+  // archetype but ships sizeless, so the Size control shows reading "Default".
+  const controls = advancedControlsFor(def.archetype ?? def.defaults.class);
   return (
     <details className="bx-adv">
       <summary className="bx-adv__summary">
@@ -341,6 +395,16 @@ function PropsPanel({
             </div>
           );
         }
+        if (spec.control === 'icon') {
+          return (
+            <Field key={spec.key} label={spec.label}>
+              <IconPicker
+                value={(value as string) ?? ''}
+                onChange={(name) => onProp(spec.key, name)}
+              />
+            </Field>
+          );
+        }
         return (
           <Field key={spec.key} label={spec.label}>
             <Input
@@ -355,7 +419,10 @@ function PropsPanel({
   );
 }
 
-// ── Layout (containers) ──────────────────────────────────────────────────────
+// ── Arrangement (containers) ─────────────────────────────────────────────────
+// How a container arranges its CHILDREN (direction / columns / gap). Named
+// "Arrangement" to stay distinct from the per-node "Layout" panel (the block's
+// own box: width / spacing / surface / …), which every node shows.
 
 function LayoutPanel({
   layout,
@@ -365,7 +432,7 @@ function LayoutPanel({
   onLayout: (patch: Partial<LayoutBase>) => void;
 }) {
   return (
-    <Group label="Layout">
+    <Group label="Arrangement">
       <Field label="Direction">
         <Segmented
           value={layout.direction}
@@ -396,15 +463,19 @@ function LayoutPanel({
   );
 }
 
-// ── Box base (constant for every node) ───────────────────────────────────────
+// ── Layout panel (box base, relevance-gated per component) ────────────────────
+// Renders only the box-axis clusters relevant to the node (docs/47): containers
+// get the full set, leaves get align + visibility, and any axis the node already
+// uses is shown regardless — see `visibleBoxAxes`. Background image/binding are
+// DATA the box keeps; overlay/tone are presentation that migrates to classes.
 
 function BoxBasePanel({
   box,
-  showHeight,
+  axes,
   onBox,
 }: {
   box: BoxBase;
-  showHeight: boolean;
+  axes: Set<BoxAxis>;
   onBox: (patch: Partial<BoxBase>) => void;
 }) {
   const toggleDevice = (d: Device, visible: boolean) => {
@@ -413,28 +484,30 @@ function BoxBasePanel({
   };
 
   return (
-    <Group label="Layout & Style">
-      <p className="bx-grp__caption">
-        The same panel for every component — this is the shared base.
-      </p>
-      <Field
-        label="Background width"
-        hint="Does the surface span edge-to-edge, or hug the content?"
-      >
-        <Segmented
-          value={box.backgroundWidth}
-          options={WIDTH_OPTIONS}
-          onChange={(v) => onBox({ backgroundWidth: v })}
-        />
-      </Field>
-      <Field label="Content width">
-        <Segmented
-          value={box.contentWidth}
-          options={WIDTH_OPTIONS}
-          onChange={(v) => onBox({ contentWidth: v })}
-        />
-      </Field>
-      {showHeight ? (
+    <Group label="Layout">
+      <p className="bx-grp__caption">Structure, spacing &amp; backdrop for this block.</p>
+      {axes.has('width') ? (
+        <>
+          <Field
+            label="Background width"
+            hint="Does the surface span edge-to-edge, or hug the content?"
+          >
+            <Segmented
+              value={box.backgroundWidth}
+              options={WIDTH_OPTIONS}
+              onChange={(v) => onBox({ backgroundWidth: v })}
+            />
+          </Field>
+          <Field label="Content width">
+            <Segmented
+              value={box.contentWidth}
+              options={WIDTH_OPTIONS}
+              onChange={(v) => onBox({ contentWidth: v })}
+            />
+          </Field>
+        </>
+      ) : null}
+      {axes.has('height') ? (
         <Field label="Height">
           <Segmented
             value={box.height}
@@ -443,92 +516,106 @@ function BoxBasePanel({
           />
         </Field>
       ) : null}
-      <Field label="Spacing">
-        <Segmented
-          value={box.padding}
-          options={SPACE_OPTIONS}
-          onChange={(v) => onBox({ padding: v })}
-        />
-      </Field>
-      <Field label="Surface">
-        <Segmented
-          value={box.surface}
-          options={SURFACE_OPTIONS}
-          onChange={(v) => onBox({ surface: v })}
-        />
-      </Field>
-      <Field
-        label="Background image"
-        hint="Paste an image URL for a full-bleed photo panel — content renders over it."
-      >
-        <Input
-          value={box.backgroundImage ?? ''}
-          placeholder="https://…"
-          aria-label="Background image URL"
-          onChange={(e) => onBox({ backgroundImage: e.target.value || undefined })}
-        />
-      </Field>
-      <Field
-        label="Background from data"
-        hint="Bind the background to a record image (e.g. product.images, item.cover). The record's own photo fills the hero; the URL above is the fallback."
-      >
-        <Input
-          value={box.backgroundImageBinding ?? ''}
-          placeholder="product.images"
-          aria-label="Background image binding path"
-          onChange={(e) => onBox({ backgroundImageBinding: e.target.value || undefined })}
-        />
-      </Field>
-      {box.backgroundImage || box.backgroundImageBinding ? (
-        <Field label="Overlay" hint="Darken or lighten the photo so text stays readable.">
+      {axes.has('padding') ? (
+        <Field label="Spacing">
           <Segmented
-            value={box.overlay ?? 'none'}
-            options={OVERLAY_OPTIONS}
-            onChange={(v) => onBox({ overlay: v })}
+            value={box.padding}
+            options={SPACE_OPTIONS}
+            onChange={(v) => onBox({ padding: v })}
           />
         </Field>
       ) : null}
-      <Field label="Text tone">
-        <Segmented
-          value={box.textTone ?? 'default'}
-          options={TONE_OPTIONS}
-          onChange={(v) => onBox({ textTone: v })}
-        />
-      </Field>
-      <Field label="Align">
-        <Segmented
-          value={box.align}
-          options={ALIGN_OPTIONS}
-          onChange={(v) => onBox({ align: v })}
-        />
-      </Field>
-      <Field label="Position" hint="“Overlay top” floats this block over the one below it.">
-        <Segmented
-          value={box.pin ?? 'none'}
-          options={PIN_OPTIONS}
-          onChange={(v) => onBox({ pin: v })}
-        />
-      </Field>
-      <div className="bx-field">
-        <span className="bx-field__label">Visible on</span>
-        <div className="bx-vis">
-          {DEVICE_OPTIONS.map((d) => {
-            const visible = !box.hiddenOn.includes(d.value);
-            return (
-              <div key={d.value} className="bx-vis__row">
-                <span className={cn('bx-vis__name', !visible && 'bx-vis__name--off')}>
-                  {d.label}
-                </span>
-                <Switch
-                  size="sm"
-                  checked={visible}
-                  onCheckedChange={(v) => toggleDevice(d.value, v)}
-                />
-              </div>
-            );
-          })}
+      {axes.has('surface') ? (
+        <Field label="Surface">
+          <Segmented
+            value={box.surface}
+            options={SURFACE_OPTIONS}
+            onChange={(v) => onBox({ surface: v })}
+          />
+        </Field>
+      ) : null}
+      {axes.has('background') ? (
+        <>
+          <Field
+            label="Background image"
+            hint="Paste an image URL for a full-bleed photo panel — content renders over it."
+          >
+            <Input
+              value={box.backgroundImage ?? ''}
+              placeholder="https://…"
+              aria-label="Background image URL"
+              onChange={(e) => onBox({ backgroundImage: e.target.value || undefined })}
+            />
+          </Field>
+          <Field
+            label="Background from data"
+            hint="Bind the background to a record image (e.g. product.images, item.cover). The record's own photo fills the hero; the URL above is the fallback."
+          >
+            <Input
+              value={box.backgroundImageBinding ?? ''}
+              placeholder="product.images"
+              aria-label="Background image binding path"
+              onChange={(e) => onBox({ backgroundImageBinding: e.target.value || undefined })}
+            />
+          </Field>
+          {box.backgroundImage || box.backgroundImageBinding ? (
+            <Field label="Overlay" hint="Darken or lighten the photo so text stays readable.">
+              <Segmented
+                value={box.overlay ?? 'none'}
+                options={OVERLAY_OPTIONS}
+                onChange={(v) => onBox({ overlay: v })}
+              />
+            </Field>
+          ) : null}
+          <Field label="Text tone">
+            <Segmented
+              value={box.textTone ?? 'default'}
+              options={TONE_OPTIONS}
+              onChange={(v) => onBox({ textTone: v })}
+            />
+          </Field>
+        </>
+      ) : null}
+      {axes.has('align') ? (
+        <Field label="Align">
+          <Segmented
+            value={box.align}
+            options={ALIGN_OPTIONS}
+            onChange={(v) => onBox({ align: v })}
+          />
+        </Field>
+      ) : null}
+      {axes.has('position') ? (
+        <Field label="Position" hint="“Overlay top” floats this block over the one below it.">
+          <Segmented
+            value={box.pin ?? 'none'}
+            options={PIN_OPTIONS}
+            onChange={(v) => onBox({ pin: v })}
+          />
+        </Field>
+      ) : null}
+      {axes.has('visibility') ? (
+        <div className="bx-field">
+          <span className="bx-field__label">Visible on</span>
+          <div className="bx-vis">
+            {DEVICE_OPTIONS.map((d) => {
+              const visible = !box.hiddenOn.includes(d.value);
+              return (
+                <div key={d.value} className="bx-vis__row">
+                  <span className={cn('bx-vis__name', !visible && 'bx-vis__name--off')}>
+                    {d.label}
+                  </span>
+                  <Switch
+                    size="sm"
+                    checked={visible}
+                    onCheckedChange={(v) => toggleDevice(d.value, v)}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : null}
     </Group>
   );
 }
@@ -541,12 +628,16 @@ export function PageSettings({
   name,
   slug,
   kind,
+  seo,
   onSlug,
+  onSeo,
 }: {
   name: string;
   slug: string | null;
   kind: 'singleton' | 'collection';
+  seo: PageSeo;
   onSlug: (slug: string) => void;
+  onSeo: (patch: Partial<PageSeo>) => void;
 }) {
   const [draft, setDraft] = React.useState(slug ?? '');
   // Resync when the active page changes (slug prop is the source of truth).
@@ -563,36 +654,115 @@ export function PageSettings({
       {kind === 'collection' ? (
         <Group label="Page">
           <p className="bx-grp__caption">
-            A collection template renders once per record — it has no single page URL.
+            A collection template renders once per record — its SEO comes from each record (the
+            product or entry it binds), not the template.
           </p>
         </Group>
       ) : (
-        <Group label="Page">
-          <Field
-            label="Storefront URL"
-            hint={
-              draft.trim()
-                ? `Published, this page serves at /${draft.trim()}`
-                : 'Set a slug to serve this page on the storefront.'
-            }
-          >
-            <Input
-              value={draft}
-              placeholder="e.g. about"
-              aria-label="Page slug"
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') e.currentTarget.blur();
-              }}
-              onBlur={() => {
-                if ((draft.trim() || null) !== (slug ?? null)) onSlug(draft);
-              }}
-            />
-          </Field>
-        </Group>
+        <>
+          <Group label="Page">
+            <Field
+              label="Storefront URL"
+              hint={
+                draft.trim()
+                  ? `Published, this page serves at /${draft.trim()}`
+                  : 'Set a slug to serve this page on the storefront.'
+              }
+            >
+              <Input
+                value={draft}
+                placeholder="e.g. about"
+                aria-label="Page slug"
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.currentTarget.blur();
+                }}
+                onBlur={() => {
+                  if ((draft.trim() || null) !== (slug ?? null)) onSlug(draft);
+                }}
+              />
+            </Field>
+          </Group>
+          <PageSeoPanel seo={seo} onSeo={onSeo} />
+        </>
       )}
       <p className="bx-inspector__tip">Select a layer to edit it.</p>
     </div>
+  );
+}
+
+// The SEO panel for a singleton page (docs/50): title / description / canonical /
+// social image + an index toggle. Text fields keep a local draft and commit on
+// blur (like the slug field) so typing doesn't round-trip per keystroke; the
+// switch commits immediately. Blank fields fall back to the page name on the
+// storefront.
+function PageSeoPanel({ seo, onSeo }: { seo: PageSeo; onSeo: (patch: Partial<PageSeo>) => void }) {
+  const [title, setTitle] = React.useState(seo.title);
+  const [description, setDescription] = React.useState(seo.description);
+  const [canonical, setCanonical] = React.useState(seo.canonical);
+  const [ogImage, setOgImage] = React.useState(seo.ogImage);
+  // Resync when the active page changes (seo prop is the source of truth).
+  React.useEffect(() => {
+    setTitle(seo.title);
+    setDescription(seo.description);
+    setCanonical(seo.canonical);
+    setOgImage(seo.ogImage);
+  }, [seo.title, seo.description, seo.canonical, seo.ogImage]);
+
+  return (
+    <Group label="SEO">
+      <p className="bx-grp__caption">
+        How this page reads in search results and link previews. Leave a field blank to fall back to
+        the page name.
+      </p>
+      <Field label="Title" hint={`${title.length}/60 recommended`}>
+        <Input
+          value={title}
+          placeholder="Title shown in search results"
+          aria-label="SEO title"
+          onChange={(e) => setTitle(e.target.value)}
+          onBlur={() => title !== seo.title && onSeo({ title })}
+        />
+      </Field>
+      <Field label="Description" hint={`${description.length}/160 recommended`}>
+        <Textarea
+          rows={3}
+          value={description}
+          placeholder="One- or two-sentence summary for search results"
+          aria-label="Meta description"
+          onChange={(e) => setDescription(e.target.value)}
+          onBlur={() => description !== seo.description && onSeo({ description })}
+        />
+      </Field>
+      <Field
+        label="Canonical URL"
+        hint="Only if this page duplicates another — the absolute URL of the original."
+      >
+        <Input
+          value={canonical}
+          placeholder="https://…"
+          aria-label="Canonical URL"
+          onChange={(e) => setCanonical(e.target.value)}
+          onBlur={() => canonical !== seo.canonical && onSeo({ canonical })}
+        />
+      </Field>
+      <Field
+        label="Social image"
+        hint="Shown when the page is shared (Open Graph). A full image URL."
+      >
+        <Input
+          value={ogImage}
+          placeholder="https://…/cover.jpg"
+          aria-label="Social share image URL"
+          onChange={(e) => setOgImage(e.target.value)}
+          onBlur={() => ogImage !== seo.ogImage && onSeo({ ogImage })}
+        />
+      </Field>
+      <div className="bx-row">
+        <span className="bx-field__label">Allow search engines to index this page</span>
+        <Switch checked={!seo.noindex} onCheckedChange={(v) => onSeo({ noindex: !v })} />
+      </div>
+    </Group>
   );
 }
 
@@ -622,6 +792,8 @@ export interface InspectorProps {
   node: BuilderNode | null;
   catalog: BindingCatalog;
   scope: ScopeInfo;
+  /** Which editor surface (page/site) — scopes the retype targets. */
+  surface: EditorSurface;
   /** Rendered when no node is selected — the surface's settings panel. */
   settings: React.ReactNode;
   onName: (name: string) => void;
@@ -630,12 +802,14 @@ export interface InspectorProps {
   onProp: (key: string, value: unknown) => void;
   onLayout: (patch: Partial<LayoutBase>) => void;
   onBox: (patch: Partial<BoxBase>) => void;
+  onRetype: (targetType: string) => void;
 }
 
 export function Inspector({
   node,
   catalog,
   scope,
+  surface,
   settings,
   onName,
   onClass,
@@ -643,6 +817,7 @@ export function Inspector({
   onProp,
   onLayout,
   onBox,
+  onRetype,
 }: InspectorProps) {
   if (!node) {
     return <>{settings}</>;
@@ -662,6 +837,7 @@ export function Inspector({
           placeholder={`${def.label} name`}
           onChange={(e) => onName(e.target.value)}
         />
+        <RetypeControl def={def} surface={surface} onRetype={onRetype} />
       </header>
 
       <Group label="Style">
@@ -686,9 +862,10 @@ export function Inspector({
       {def.kind === 'container' && node.layout ? (
         <LayoutPanel layout={node.layout} onLayout={onLayout} />
       ) : null}
-      {/* Height only does anything on containers (the renderer applies it to
-          containers; leaves size via ratio), so show the control there. */}
-      <BoxBasePanel box={node.box} showHeight={def.kind === 'container'} onBox={onBox} />
+      {/* Relevance-gated per component (docs/47): only the box axes this node
+          exposes — plus any it already uses — so the panel fits the node instead
+          of showing all ~12 controls for everything. */}
+      <BoxBasePanel box={node.box} axes={visibleBoxAxes(def, node.box)} onBox={onBox} />
     </div>
   );
 }

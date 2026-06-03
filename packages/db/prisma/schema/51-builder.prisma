@@ -35,6 +35,18 @@ model BuilderPage {
   // Catalog ordering.
   position      Int       @default(0)
 
+  // SEO — applies to published SINGLETON pages (docs/50). The storefront's
+  // catch-all titles/describes the page from these; null falls back to the page
+  // `name`. Collection templates render per-record and inherit SEO from the
+  // bound record (product/entry), so these stay null there.
+  seoTitle       String?  @map("seo_title") @db.VarChar(255)
+  seoDescription String?  @map("seo_description") @db.VarChar(500)
+  canonical      String?  @db.VarChar(2048)
+  // A full image URL (the Builder is URL-first for images, cf. box.backgroundImage)
+  // — the storefront passes it straight to openGraph.images.
+  ogImage        String?  @map("og_image") @db.VarChar(2048)
+  noindex        Boolean  @default(false)
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 

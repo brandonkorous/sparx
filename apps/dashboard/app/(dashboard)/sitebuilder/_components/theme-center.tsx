@@ -80,7 +80,6 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     id: brand.faviconMediaId,
     url: media.favicon,
   });
-  const [socials, setSocials] = React.useState<Record<string, string>>(brand.socials ?? {});
   const [tokens, setTokens] = React.useState<BrandTokens>(brand.tokens ?? {});
 
   // ── Presentation state (persists via the site config) ──────────────────────
@@ -157,7 +156,6 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
       fontHeading,
       fontBody,
       tokens: cleanedTokens,
-      socials: Object.fromEntries(Object.entries(socials).filter(([, v]) => v.trim())),
     }),
     [
       businessName,
@@ -172,7 +170,6 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
       fontHeading,
       fontBody,
       cleanedTokens,
-      socials,
     ]
   );
   const savedBrandRef = React.useRef(JSON.stringify(brandPatch));
@@ -445,9 +442,6 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     });
   };
 
-  const setSocial = (platform: string, value: string) =>
-    setSocials((s) => ({ ...s, [platform]: value }));
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -505,8 +499,6 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
               setFontBody={setFontBody}
               tokens={tokens}
               setTokens={setTokens}
-              socials={socials}
-              setSocial={setSocial}
               themeKey={themeKey}
               mode={mode}
               compiledColors={compiled[mode]}

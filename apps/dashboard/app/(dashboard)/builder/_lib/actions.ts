@@ -68,6 +68,22 @@ export async function setPageSlug(id: string, slug: string): Promise<ActionResul
   return run(() => api.patch<BuilderPageDto>(`/v1/builder/pages/${id}`, { slug: value }), true);
 }
 
+/** Update a singleton page's SEO (docs/50). Empty strings clear a field
+ *  (stored null server-side). No revalidate — the editor holds the latest values
+ *  and only the published storefront read consumes them. */
+export async function updatePageSeo(
+  id: string,
+  seo: {
+    seoTitle: string;
+    seoDescription: string;
+    canonical: string;
+    ogImage: string;
+    noindex: boolean;
+  }
+): Promise<ActionResult<BuilderPageDto>> {
+  return run(() => api.patch<BuilderPageDto>(`/v1/builder/pages/${id}`, seo), false);
+}
+
 export async function deletePage(id: string): Promise<ActionResult<{ id: string }>> {
   return run(() => api.delete<{ id: string }>(`/v1/builder/pages/${id}`), true);
 }

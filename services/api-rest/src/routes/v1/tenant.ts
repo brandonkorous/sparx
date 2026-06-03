@@ -75,10 +75,36 @@ const MODULE_SLUGS: ModuleSlug[] = [
 ];
 const MODULE_SLUG_SET = new Set<string>(MODULE_SLUGS);
 
+// A single social link (a SITE setting, not brand identity — docs/45 §3).
+// `platform` is a known key (instagram, x, …) for icon mapping, or a free-text
+// label for an "Other" link. The same { platform, url } shape the storefront
+// `site.social` binding renders.
+const SocialLink = z.object({
+  platform: z.string().min(1).max(40),
+  url: z.string().min(1).max(2048),
+});
+
 const PatchTenant = z.object({
   name: z.string().min(1).max(255).optional(),
   email: z.string().email().max(255).optional(),
+  // An ORDERED array of links. A present-but-empty array clears them.
+  socials: z.array(SocialLink).max(50).optional(),
 });
+
+type SocialLink = z.infer<typeof SocialLink>;
+
+// The tenant row stores socials as a JSON array; normalize to a clean
+// { platform, url }[] for the API surface, dropping any malformed entries.
+function readSocials(raw: unknown): SocialLink[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((item) => {
+    if (!item || typeof item !== 'object') return [];
+    const { platform, url } = item as Record<string, unknown>;
+    if (typeof platform !== 'string' || typeof url !== 'string') return [];
+    if (!platform.trim() || !url.trim()) return [];
+    return [{ platform, url }];
+  });
+}
 
 // Storefront subdomain rules (docs/04 §2): 3–63 chars, lowercase alnum +
 // internal hyphens, plus a reserved-name guard.
@@ -249,10 +275,10 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     const auth = requireAuth(request);
     const row = await prisma.tenant.findUnique({
       where: { id: auth.tenantId },
-      select: { id: true, name: true, email: true, slug: true, plan: true },
+      select: { id: true, name: true, email: true, slug: true, plan: true, socials: true },
     });
     if (!row) throw notFound('Tenant', auth.tenantId);
-    return ok(row);
+    return ok({ ...row, socials: readSocials(row.socials) });
   });
 
   app.patch('/v1/tenant', async (request) => {
@@ -261,9 +287,9 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     const row = await prisma.tenant.update({
       where: { id: auth.tenantId },
       data: input,
-      select: { id: true, name: true, email: true, slug: true, plan: true },
+      select: { id: true, name: true, email: true, slug: true, plan: true, socials: true },
     });
-    return ok(row);
+    return ok({ ...row, socials: readSocials(row.socials) });
   });
 
   // Cookie-consent config (docs/42 §4). Read by any staff; edited by admins.

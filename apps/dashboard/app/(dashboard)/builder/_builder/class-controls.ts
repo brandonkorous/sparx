@@ -114,6 +114,18 @@ export const RADIUS_CONTROL: ClassControl = {
   ],
 };
 
+export const MARGIN_CONTROL: ClassControl = {
+  id: 'margin',
+  label: 'Margin',
+  options: [
+    { value: 'none', label: 'None', token: 'sf-m-none' },
+    { value: 'sm', label: 'S', token: 'sf-m-sm' },
+    { value: 'md', label: 'M', token: 'sf-m-md' },
+    { value: 'lg', label: 'L', token: 'sf-m-lg' },
+    { value: 'xl', label: 'XL', token: 'sf-m-xl' },
+  ],
+};
+
 export const BORDER_CONTROL: ClassControl = {
   id: 'border',
   label: 'Border',
@@ -144,7 +156,7 @@ export function advancedControlsFor(archetype: string | undefined): ClassControl
   const out: ClassControl[] = [];
   const size = sizeControlFor(archetype);
   if (size) out.push(size);
-  out.push(RADIUS_CONTROL, BORDER_CONTROL, SHADOW_CONTROL);
+  out.push(MARGIN_CONTROL, RADIUS_CONTROL, BORDER_CONTROL, SHADOW_CONTROL);
   return out;
 }
 

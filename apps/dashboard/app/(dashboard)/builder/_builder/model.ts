@@ -71,6 +71,19 @@ export interface PageTemplate {
    *  (e.g. 'cms.post', 'commerce.product'). */
   recordType?: string;
   tree: BuilderNode;
+  /** SEO for a published singleton (docs/50). Empty strings (not null) so the
+   *  inspector's inputs stay controlled; the service stores '' as null. */
+  seo: PageSeo;
+}
+
+/** The editable SEO fields for a singleton page. Mirrors the BuilderPageDto SEO
+ *  columns, with nullable strings collapsed to '' for controlled inputs. */
+export interface PageSeo {
+  title: string;
+  description: string;
+  canonical: string;
+  ogImage: string;
+  noindex: boolean;
 }
 
 // ── Immutable tree operations (addressed by node id) ─────────────────────────
@@ -114,6 +127,38 @@ export function appendChild(root: BuilderNode, parentId: string, child: BuilderN
     ...parent,
     children: [...(parent.children ?? []), child],
   }));
+}
+
+/** Move `dragId` to be a child of `parentId`, inserted at `index` within that
+ *  parent's children (the list AFTER the dragged node is pulled out of wherever
+ *  it currently sits). Drives the Layers tree's drag-reorder + re-parenting.
+ *
+ *  Returns the tree UNCHANGED when the move is illegal, so a bad drop is a no-op
+ *  rather than a corruption:
+ *    · moving the root (it has no parent),
+ *    · an unknown drag/parent id, or
+ *    · dropping a node into its own subtree (a cycle — `parentId` is the node
+ *      itself or one of its descendants). */
+export function moveNode(
+  root: BuilderNode,
+  dragId: string,
+  parentId: string,
+  index: number
+): BuilderNode {
+  if (dragId === root.id) return root;
+  const dragged = findNode(root, dragId);
+  if (!dragged) return root;
+  // Cycle guard: `parentId` must live OUTSIDE the dragged subtree (findNode on the
+  // subtree also catches parentId === dragId).
+  if (findNode(dragged, parentId)) return root;
+  if (!findNode(root, parentId)) return root;
+  const without = removeNode(root, dragId);
+  return updateNode(without, parentId, (parent) => {
+    const children = [...(parent.children ?? [])];
+    const at = Math.max(0, Math.min(index, children.length));
+    children.splice(at, 0, dragged);
+    return { ...parent, children };
+  });
 }
 
 /** Find the parent node of `id`, or null if `id` is the root / not found. */

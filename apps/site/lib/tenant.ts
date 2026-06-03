@@ -67,6 +67,10 @@ export interface ResolvedTenant {
   theme: TenantTheme | null;
   storefront: TenantStorefront;
   consent: TenantConsent;
+  // Site-wide social links (a SITE setting on the tenant, not brand/theme —
+  // docs/45 §3): an ordered { platform, url }[] the layout chrome binds
+  // `site.social` to.
+  socials: { platform: string; url: string }[];
 }
 
 // The API also returns `businessName` (the tenant-level brand display name,
@@ -147,6 +151,9 @@ export const resolveTenant = cache(async (): Promise<ResolvedTenant | null> => {
       name: display && display.length > 0 ? display : data.name,
       storefront: data.storefront ?? DEFAULT_STOREFRONT,
       consent: data.consent ?? DEFAULT_CONSENT,
+      // Defaults to [] so a storefront served by an older api-rest that doesn't
+      // yet return `socials` behaves exactly as before (no links).
+      socials: data.socials ?? [],
     };
   } catch {
     return null;

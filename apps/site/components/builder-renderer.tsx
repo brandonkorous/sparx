@@ -42,6 +42,7 @@ import {
 } from '@sparx/site-ui';
 
 import { BuilderCarousel } from './builder-carousel';
+import { BuilderIcon } from './builder-icon';
 import {
   BuilderAddToCart,
   BuilderBuyBox,
@@ -140,6 +141,8 @@ const CLASS_ON_LEAF = new Set([
   'Heading',
   'Text',
   'Button',
+  'Badge',
+  'Icon',
   'Stat',
   'Divider',
   'PriceTag',
@@ -305,7 +308,9 @@ function renderLeaf(
   bound: boolean,
   /** The node's brand class, threaded here for leaves that style themselves by
    *  class (Button) rather than via the box wrapper. Undefined otherwise. */
-  leafClass?: string
+  leafClass?: string,
+  /** Pre-rendered children for a leaf that nests them (Button → inline Icon). */
+  children?: React.ReactNode
 ): React.ReactNode {
   const p = node.props;
   const str = (k: string): string => (typeof p[k] === 'string' ? p[k] : '');
@@ -328,30 +333,44 @@ function renderLeaf(
     }
     case 'Button': {
       const label = (bound ? asText(value) : '') || str('label') || 'Button';
-      // A `href` turns the button into a real link (internal path or absolute
-      // URL); without one it stays a non-navigating span (e.g. a future
-      // form-submit / add-to-cart action owns its own behavior).
       const href = str('href');
-      // Class-first (docs/47 §7): a Surface-classed button renders the recipe
-      // class — `sf-btn sf-c-* sf-v-* sf-btn--sz-*` — on the element ITSELF,
-      // resolved against the loaded `@sparx/site-ui` stylesheet. Legacy trees with
-      // no class fall back to the inline `style`-prop treatment.
+      // Semantics (docs/47): a linked button is an `<a>`; an action button with no
+      // link is a real `<button type="button">` — accessible + keyboard-activatable,
+      // never a bare `<span>`. (The editor canvas uses an inert `<span>` ONLY because
+      // each node sits inside a `role="button"` selection wrapper; the published
+      // site has no such wrapper, so it ships the correct element.) A nested Icon
+      // renders inline AFTER the label via `children`.
+      // Class-first (docs/47 §7): a Surface-classed button carries the recipe class
+      // (`sf-btn sf-c-* sf-v-* sf-btn--sz-*`) on the element itself; legacy trees
+      // with no class fall back to the inline `style`-prop treatment (reset for the
+      // native <button> element).
       if (leafClass) {
         return href ? (
           <a href={href} className={leafClass}>
             {label}
+            {children}
           </a>
         ) : (
-          <span className={leafClass}>{label}</span>
+          <button type="button" className={leafClass}>
+            {label}
+            {children}
+          </button>
         );
       }
       const style = buttonStyle(str('style') || 'primary');
       return href ? (
         <a href={href} style={{ ...style, textDecoration: 'none' }}>
           {label}
+          {children}
         </a>
       ) : (
-        <span style={style}>{label}</span>
+        <button
+          type="button"
+          style={{ ...style, border: 'none', font: 'inherit', cursor: 'pointer' }}
+        >
+          {label}
+          {children}
+        </button>
       );
     }
     // Tier-2 commerce (docs/40 §7). BuyBox is self-contained (bound to `product`,
@@ -365,6 +384,25 @@ function renderLeaf(
       return <BuilderQuantity />;
     case 'AddToCart':
       return <BuilderAddToCart label={str('label') || undefined} />;
+    case 'Badge': {
+      // Class-first like Button (docs/47 §7): the recipe class string
+      // (`sf-badge sf-c-* sf-v-* sf-badge--sz-*`) rides on the element itself, so a
+      // raw span carries it verbatim — matching the editor canvas. A nested Icon
+      // renders inline after the label.
+      const label = (bound ? asText(value) : '') || str('label') || 'Badge';
+      return (
+        <span className={leafClass}>
+          {label}
+          {children}
+        </span>
+      );
+    }
+    case 'Icon': {
+      // Stable kebab-case name from a bound scalar (e.g. a CMS "Feature › Icon")
+      // or the static prop; rendered via the lazy DynamicIcon client boundary.
+      const name = (bound ? asText(value) : '') || str('name') || 'star';
+      return <BuilderIcon name={name} className={leafClass} />;
+    }
     case 'Divider':
       return <Divider className={leafClass} />;
     case 'PriceTag': {
@@ -568,7 +606,18 @@ function RenderNode({
       ));
     }
   } else {
-    body = renderLeaf(node, value, bound, leafStylesByClass ? node.class : undefined);
+    // A leaf may nest children (Button → an inline Icon, docs/47): render them in
+    // the current scope and hand them to renderLeaf, which places them itself.
+    const kids = (node.children ?? []).map((child) => (
+      <RenderNode key={child.id} node={child} scope={scope} outlet={outlet} />
+    ));
+    body = renderLeaf(
+      node,
+      value,
+      bound,
+      leafStylesByClass ? node.class : undefined,
+      kids.length > 0 ? kids : undefined
+    );
   }
 
   // A ProductForm container establishes the shared buy-box context over its

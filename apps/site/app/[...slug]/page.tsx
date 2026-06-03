@@ -6,6 +6,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { resolveTenant } from '@/lib/tenant';
 import { getPageBySlug } from '@/lib/content';
+import { ogImageUrl } from '@/lib/og';
+import { applyRedirect } from '@/lib/redirects';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { getPublishedBuilderPage, getPublishedBuilderStyles } from '@/lib/builder';
 import { loadBuilderData } from '@/lib/builder-data';
@@ -40,7 +42,37 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
     sitePreview ? { previewToken: sitePreview } : {}
   );
   if (builderPage) {
-    return { title: `${builderPage.name} · ${tenant.name}`, robots: { index: true, follow: true } };
+    // Author-set SEO (docs/50) wins; blank/whitespace fields fall back to the
+    // page name. `clean` collapses empty strings to undefined so the `??`
+    // fallbacks below fire (which `seoTitle ?? …` alone wouldn't).
+    const clean = (v: string | null): string | undefined => {
+      const t = v?.trim();
+      return t && t.length > 0 ? t : undefined;
+    };
+    const title = clean(builderPage.seoTitle) ?? `${builderPage.name} · ${tenant.name}`;
+    const description = clean(builderPage.seoDescription);
+    const canonical = clean(builderPage.canonical);
+    // Author-set OG URL wins; otherwise a tenant-branded generated card
+    // (docs/50 §5) so every Builder page has a real social image.
+    const ogImage =
+      clean(builderPage.ogImage) ??
+      ogImageUrl({
+        title: clean(builderPage.seoTitle) ?? builderPage.name,
+        eyebrow: 'Page',
+        brand: tenant.name,
+        accent: tenant.theme?.colorPrimary,
+      });
+    return {
+      title,
+      ...(description ? { description } : {}),
+      ...(canonical ? { alternates: { canonical } } : {}),
+      openGraph: {
+        title,
+        ...(description ? { description } : {}),
+        images: [{ url: ogImage }],
+      },
+      robots: builderPage.noindex ? { index: false, follow: false } : { index: true, follow: true },
+    };
   }
 
   const page = await getPageBySlug(tenant.slug, slug, previewToken ? { previewToken } : {});
@@ -55,6 +87,22 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   return {
     title,
     ...(seoDescription ? { description: seoDescription } : {}),
+    // CMS pages carry no image of their own — give them a tenant-branded
+    // generated social card (docs/50 §5).
+    openGraph: {
+      title,
+      ...(seoDescription ? { description: seoDescription } : {}),
+      images: [
+        {
+          url: ogImageUrl({
+            title,
+            eyebrow: 'Page',
+            brand: tenant.name,
+            accent: tenant.theme?.colorPrimary,
+          }),
+        },
+      ],
+    },
     robots: page.status === 'published' ? { index: true, follow: true } : { index: false },
   };
 }
@@ -101,8 +149,12 @@ export default async function StorefrontPage({ params, searchParams }: SlugPageP
   ]);
   const sections = sectionsForPage(snapshot, slug);
 
-  // Neither a CMS page nor Site Builder sections exist for this slug.
-  if (!page && sections.length === 0) notFound();
+  // Neither a CMS page nor Site Builder sections exist for this slug — last
+  // chance is a tenant-managed redirect before we 404.
+  if (!page && sections.length === 0) {
+    await applyRedirect(tenant.slug, `/${slug}`);
+    notFound();
+  }
 
   const { defaultCurrency, defaultLocale } = tenant.storefront;
   return (

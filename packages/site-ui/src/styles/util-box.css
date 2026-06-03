@@ -40,6 +40,26 @@
   border: var(--sf-border-width, 1px) solid var(--sf-border-strong, currentColor);
 }
 
+/* ── Margin (outer spacing, all sides) ────────────────────────────────────────
+ * Space AROUND the block — the complement to the box's padding (inner). All four
+ * sides, so "Margin" behaves the way authors expect rather than silently nudging
+ * only top/bottom. (Per-side control can come later if needed.) */
+.sf-m-none {
+  margin: 0;
+}
+.sf-m-sm {
+  margin: 0.5rem;
+}
+.sf-m-md {
+  margin: 1rem;
+}
+.sf-m-lg {
+  margin: 2rem;
+}
+.sf-m-xl {
+  margin: 4rem;
+}
+
 /* ── Shadow / elevation ───────────────────────────────────────────────────── */
 .sf-shadow-none {
   box-shadow: none;

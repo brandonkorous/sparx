@@ -46,8 +46,9 @@ model TenantBrand {
   // Null = no overrides → the theme preset's defaults apply.
   tokens Json? @db.JsonB
 
-  // Social handles / links, keyed by platform: { instagram: "https://…", … }.
-  socials Json @default("{}")
+  // NOTE: social links moved OUT of brand to Tenant.socials — they are a SITE
+  // setting (edited in /settings/general), not brand identity, and must not
+  // change when the theme changes (docs/45 §3).
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

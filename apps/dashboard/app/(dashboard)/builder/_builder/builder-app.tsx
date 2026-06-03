@@ -18,7 +18,7 @@ import { Button, Input, ModuleProvider, NativeSelect, useConfirm } from '@sparx/
 import { parsePageImport, toPageDocument } from '@sparx/builder-schemas';
 import type { BindingCatalog, BuilderNode, BuilderPageDto } from '@sparx/builder-schemas';
 
-import { type Device, type PageTemplate } from './model';
+import { type Device, type PageTemplate, type PageSeo } from './model';
 import { MODULES } from './sample';
 import { PageSettings } from './inspector';
 import { BuilderWorkspace } from './builder-workspace';
@@ -32,6 +32,7 @@ import {
   renamePage,
   savePageTree,
   setPageSlug,
+  updatePageSeo,
 } from '../_lib/actions';
 
 // A loaded page reduced to the editor's working shape.
@@ -43,6 +44,13 @@ function toTemplate(p: BuilderPageDto): PageTemplate {
     kind: p.kind,
     recordType: p.recordType ?? undefined,
     tree: p.tree,
+    seo: {
+      title: p.seoTitle ?? '',
+      description: p.seoDescription ?? '',
+      canonical: p.canonical ?? '',
+      ogImage: p.ogImage ?? '',
+      noindex: p.noindex,
+    },
   };
 }
 
@@ -254,6 +262,31 @@ export function BuilderApp({
       editor.setSaveStatus('saved');
     } else {
       setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, slug: prev } : t)));
+      editor.setSaveStatus('error');
+    }
+  };
+
+  // Patch the active singleton's SEO (docs/50). Optimistic like onSlug: write the
+  // merged values immediately, revert on a server error. Empty strings clear a
+  // field server-side, so the storefront falls back to the page name.
+  const onSeo = async (patch: Partial<PageSeo>) => {
+    if (!active) return;
+    const id = active.id;
+    const prev = active.seo;
+    const next = { ...prev, ...patch };
+    setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, seo: next } : t)));
+    editor.setSaveStatus('saving');
+    const res = await updatePageSeo(id, {
+      seoTitle: next.title,
+      seoDescription: next.description,
+      canonical: next.canonical,
+      ogImage: next.ogImage,
+      noindex: next.noindex,
+    });
+    if (res.ok) {
+      editor.setSaveStatus('saved');
+    } else {
+      setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, seo: prev } : t)));
       editor.setSaveStatus('error');
     }
   };
@@ -477,7 +510,9 @@ export function BuilderApp({
               name={active.name}
               slug={active.slug}
               kind={active.kind}
+              seo={active.seo}
               onSlug={onSlug}
+              onSeo={onSeo}
             />
           }
         />

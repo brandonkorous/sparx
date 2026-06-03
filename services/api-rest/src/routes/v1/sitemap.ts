@@ -2,13 +2,17 @@
 //
 //   GET /v1/sitemap.xml?tenant=<slug>     (public — no auth)
 //
-// Streams a basic sitemap from `content_entries` where the entry's
-// resolved content type has a `urlPattern`. Published entries only. The
-// route runs outside auth/RLS because it's a public consumer endpoint, so
-// we look up the tenant by slug and SET LOCAL the GUC ourselves.
+// Streams a sitemap covering everything the storefront serves for a tenant:
+// the home page, published CMS content entries (whose resolved content type
+// carries a `urlPattern`), active commerce products (`/products/{handle}`) and
+// collections (`/collections/{handle}`). The commerce index pages are only
+// listed when the tenant actually has commerce content, so a content-only
+// tenant doesn't advertise empty `/products` / `/collections` surfaces.
 //
-// Pure-RLS is preserved: we never bypass it, just choose which tenant to
-// scope to based on the public query parameter.
+// The route runs outside auth/RLS because it's a public consumer endpoint, so
+// we look up the tenant by slug and SET LOCAL the GUC ourselves. Pure-RLS is
+// preserved: we never bypass it, just choose which tenant to scope to based on
+// the public query parameter.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -16,6 +20,17 @@ import { prisma, withTenant } from '@sparx/db';
 import { badRequest, notFound } from '@sparx/api-core/errors';
 
 const Query = z.object({ tenant: z.string().min(1).max(63) });
+
+// Phase-1 catalogs are small; this is a guard against unbounded memory, not a
+// real cap. A tenant past this needs a paginated sitemap index — far future.
+const COMMERCE_URL_LIMIT = 20_000;
+
+interface SitemapEntry {
+  path: string;
+  lastmod?: Date;
+  changefreq?: string;
+  priority?: number;
+}
 
 function xmlEscape(s: string): string {
   return s.replace(/[<>&"']/g, (ch) => {
@@ -32,6 +47,14 @@ function xmlEscape(s: string): string {
         return '&#39;';
     }
   });
+}
+
+function urlNode(baseUrl: string, e: SitemapEntry): string {
+  const parts = [`<loc>${xmlEscape(`${baseUrl}${e.path}`)}</loc>`];
+  if (e.lastmod) parts.push(`<lastmod>${e.lastmod.toISOString()}</lastmod>`);
+  if (e.changefreq) parts.push(`<changefreq>${e.changefreq}</changefreq>`);
+  if (e.priority != null) parts.push(`<priority>${e.priority.toFixed(1)}</priority>`);
+  return `<url>${parts.join('')}</url>`;
 }
 
 const sitemapRoutes: FastifyPluginAsync = (app) => {
@@ -54,36 +77,115 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
         ? `https://${settings.primaryDomain}`
         : `https://${slug}.sparx.zone`;
 
-    // Pull all published, routable entries inside this tenant's context.
-    const rows = await withTenant({ tenantId: tenant.id }, (tx) =>
-      tx.contentEntry.findMany({
-        where: { status: 'published', deletedAt: null, slug: { not: null } },
-        select: { slug: true, typeKey: true, updatedAt: true, publishedAt: true },
-      })
+    // Everything is read inside this tenant's RLS context in one round-trip.
+    const { entries, types, products, collections, builderPages } = await withTenant(
+      { tenantId: tenant.id },
+      async (tx) => {
+        const [entries, products, collections, builderPages] = await Promise.all([
+          // Published, routable CMS entries.
+          tx.contentEntry.findMany({
+            where: { status: 'published', deletedAt: null, slug: { not: null } },
+            select: { slug: true, typeKey: true, updatedAt: true, publishedAt: true },
+          }),
+          // Active commerce products — mirrors the public PDP visibility filter
+          // (status active + not deleted).
+          tx.product.findMany({
+            where: { status: 'active', deletedAt: null },
+            select: { handle: true, updatedAt: true, publishedAt: true },
+            orderBy: { updatedAt: 'desc' },
+            take: COMMERCE_URL_LIMIT,
+          }),
+          // Collections — visible whenever not deleted (matches public reads).
+          tx.productCollection.findMany({
+            where: { deletedAt: null },
+            select: { handle: true, updatedAt: true },
+            orderBy: { updatedAt: 'desc' },
+            take: COMMERCE_URL_LIMIT,
+          }),
+          // Published Builder SINGLETON pages that own a storefront slug (docs/50).
+          // publishedAt is set on publish; noindex pages are filtered out below.
+          tx.builderPage.findMany({
+            where: { kind: 'singleton', slug: { not: null }, publishedAt: { not: null } },
+            select: { slug: true, updatedAt: true, publishedAt: true, noindex: true },
+          }),
+        ]);
+
+        // url patterns for the entry types in one more query.
+        const typeKeys = Array.from(new Set(entries.map((r) => r.typeKey)));
+        const types = typeKeys.length
+          ? await tx.contentType.findMany({
+              where: { key: { in: typeKeys }, urlPattern: { not: null } },
+              select: { key: true, urlPattern: true },
+            })
+          : [];
+
+        return { entries, types, products, collections, builderPages };
+      }
     );
 
-    // Look up url patterns for the relevant types in one round-trip.
-    const typeKeys = Array.from(new Set(rows.map((r) => r.typeKey)));
-    const types = await withTenant({ tenantId: tenant.id }, (tx) =>
-      tx.contentType.findMany({
-        where: { key: { in: typeKeys }, urlPattern: { not: null } },
-        select: { key: true, urlPattern: true },
-      })
-    );
     const patterns = new Map(types.map((t) => [t.key, t.urlPattern!]));
+    const seen = new Set<string>();
+    const out: SitemapEntry[] = [];
+    const push = (e: SitemapEntry) => {
+      if (seen.has(e.path)) return;
+      seen.add(e.path);
+      out.push(e);
+    };
 
-    const urls: string[] = [];
-    for (const r of rows) {
+    // Home first.
+    push({ path: '/', changefreq: 'daily', priority: 1.0, lastmod: new Date() });
+
+    // CMS content entries.
+    for (const r of entries) {
       const pattern = patterns.get(r.typeKey);
       if (!pattern || !r.slug) continue;
-      const path = pattern.replace('{slug}', r.slug);
-      const lastmod = (r.publishedAt ?? r.updatedAt).toISOString();
-      urls.push(
-        `<url><loc>${xmlEscape(`${baseUrl}${path}`)}</loc><lastmod>${lastmod}</lastmod></url>`
-      );
+      push({
+        path: pattern.replace('{slug}', r.slug),
+        lastmod: r.publishedAt ?? r.updatedAt,
+        changefreq: 'weekly',
+        priority: 0.8,
+      });
     }
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
+    // Published Builder singleton pages — skip any flagged noindex.
+    for (const b of builderPages) {
+      if (b.noindex || !b.slug) continue;
+      push({
+        path: `/${b.slug}`,
+        lastmod: b.publishedAt ?? b.updatedAt,
+        changefreq: 'weekly',
+        priority: 0.8,
+      });
+    }
+
+    // Commerce — only advertise the index surfaces when there's content behind
+    // them, so a content-only tenant never lists an empty /products page.
+    if (products.length) {
+      push({ path: '/products', changefreq: 'daily', priority: 0.8, lastmod: new Date() });
+      for (const p of products) {
+        push({
+          path: `/products/${p.handle}`,
+          lastmod: p.publishedAt ?? p.updatedAt,
+          changefreq: 'weekly',
+          priority: 0.7,
+        });
+      }
+    }
+    if (collections.length) {
+      push({ path: '/collections', changefreq: 'weekly', priority: 0.7, lastmod: new Date() });
+      for (const c of collections) {
+        push({
+          path: `/collections/${c.handle}`,
+          lastmod: c.updatedAt,
+          changefreq: 'weekly',
+          priority: 0.6,
+        });
+      }
+    }
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${out
+      .map((e) => urlNode(baseUrl, e))
+      .join('\n')}\n</urlset>`;
 
     reply
       .header('Content-Type', 'application/xml; charset=utf-8')

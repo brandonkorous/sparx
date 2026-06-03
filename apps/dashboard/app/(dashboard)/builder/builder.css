@@ -470,15 +470,86 @@
 .bx-layers {
   padding: 6px 6px 16px;
 }
+.bx-layers__bar {
+  display: flex;
+  gap: 4px;
+  padding: 2px 4px 6px;
+}
+.bx-layers__act {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+.bx-layers__act:hover {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+}
+.bx-layers__act svg {
+  width: 13px;
+  height: 13px;
+}
 .bx-layer {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   padding: 6px 8px;
   border-radius: 7px;
   cursor: pointer;
   font-size: 12.5px;
   color: var(--color-text-primary);
+}
+.bx-layer__caret {
+  display: flex;
+  flex: none;
+  width: 15px;
+  height: 15px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  border-radius: 4px;
+}
+.bx-layer__caret--spacer {
+  cursor: default;
+  pointer-events: none;
+}
+.bx-layer__caret:hover {
+  background: var(--color-bg-muted);
+  color: var(--color-text-primary);
+}
+.bx-layer__caret svg {
+  width: 13px;
+  height: 13px;
+}
+.bx-layer__grip {
+  display: flex;
+  flex: none;
+  align-items: center;
+  cursor: grab;
+  opacity: 0;
+  color: var(--color-text-muted);
+  touch-action: none;
+}
+.bx-layer__grip svg {
+  width: 13px;
+  height: 13px;
+}
+.bx-layer:hover .bx-layer__grip {
+  opacity: 0.7;
+}
+.bx-layer--dragging {
+  opacity: 0.45;
+  background: var(--color-bg-subtle);
 }
 .bx-layer:hover {
   background: var(--color-bg-subtle);
@@ -662,6 +733,9 @@
   background: var(--color-bg-subtle);
   color: var(--color-text-muted);
 }
+.bx-ins-retype {
+  width: 100%;
+}
 .bx-grp {
   padding: 14px 16px;
   border-bottom: 1px solid var(--color-border-default);
@@ -750,6 +824,69 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* Icon picker — a trigger styled like an Input, opening a searchable grid of the
+   full lucide catalog (each glyph lazy-loaded). */
+.bx-iconpick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 8px;
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+}
+.bx-iconpick:hover {
+  border-color: var(--module-active);
+}
+.bx-iconpick__preview {
+  display: inline-flex;
+  color: var(--module-active);
+  flex: none;
+}
+.bx-iconpick__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--bx-mono);
+  font-size: 12px;
+}
+.bx-iconpick__chev {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  opacity: 0.6;
+}
+.bx-iconpick__pop {
+  width: 280px;
+  padding: 0;
+}
+.bx-iconpick__grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  padding: 6px;
+}
+.bx-iconpick__opt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 7px;
+  color: var(--color-text-secondary, var(--color-text-muted));
+}
+.bx-iconpick__opt[data-on='true'] {
+  color: var(--module-active);
+  background: color-mix(in srgb, var(--module-active) 14%, transparent);
 }
 
 /* Segmented control */

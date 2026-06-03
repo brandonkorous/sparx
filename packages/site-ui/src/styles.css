@@ -52,6 +52,7 @@
 @import './styles/footer.css' layer(components);
 @import './styles/grid.css' layer(components);
 @import './styles/heading.css' layer(components);
+@import './styles/icon.css' layer(components);
 @import './styles/hero.css' layer(components);
 @import './styles/hover-3d-card.css' layer(components);
 @import './styles/hover-gallery.css' layer(components);

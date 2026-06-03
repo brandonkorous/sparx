@@ -429,7 +429,30 @@ function CanvasNode({
       );
     }
   } else {
-    body = def.renderLeaf?.({ node, value, cardinality: card, bound }) ?? null;
+    // A leaf may still nest children (Button → an inline Icon, docs/47). Render
+    // them as selectable nodes in the current scope and hand them to renderLeaf,
+    // which decides where they sit relative to its own content.
+    const kidNodes = (node.children ?? []).map((child) => (
+      <CanvasNode
+        key={child.id}
+        node={child}
+        scope={scope}
+        catalog={catalog}
+        device={device}
+        selectedId={selectedId}
+        onSelect={onSelect}
+        locked={locked}
+        outletSlot={outletSlot}
+      />
+    ));
+    body =
+      def.renderLeaf?.({
+        node,
+        value,
+        cardinality: card,
+        bound,
+        children: kidNodes.length > 0 ? kidNodes : undefined,
+      }) ?? null;
   }
 
   // docs/47 §7 — a leaf whose authored class styles the ELEMENT (Button → the

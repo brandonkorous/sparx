@@ -15,6 +15,14 @@ model Tenant {
   plan             String    @default("starter") @db.VarChar(50)
   status           String    @default("active") @db.VarChar(20)
   settings         Json      @default("{}")
+  // Site-wide social links — an ORDERED array of { platform, url } (the same
+  // shape the storefront `site.social` binding renders): `platform` is a known
+  // key (instagram, x, …) for icon mapping, or a free-text label for an "Other"
+  // link. A SITE setting (not brand identity, not theme): edited in
+  // /settings/general, theme-independent — switching the storefront theme never
+  // touches it. The public tenant payload carries it so the storefront chrome
+  // resolves real links. Moved here from TenantBrand.socials (docs/45 §3).
+  socials          Json      @default("[]")
   stripeCustomerId String?   @map("stripe_customer_id") @db.VarChar(255)
   trialEndsAt      DateTime? @map("trial_ends_at") @db.Timestamptz
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz

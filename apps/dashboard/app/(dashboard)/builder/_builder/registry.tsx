@@ -35,11 +35,19 @@ import {
   Share2,
   ShoppingBag,
   ShoppingCart,
+  Sparkles,
   Square,
   SquareDashed,
+  Tag,
   Type,
   type LucideIcon,
 } from 'lucide-react';
+// The full lucide catalog, lazy-loaded by name (code-split) — so the Icon node can
+// pick from ~1500 glyphs without bundling them all (docs/47). `iconNames` (the
+// searchable list) lives with the picker; here we only need the renderer.
+import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
+
+import { readClassGroup, setClassGroup } from '@sparx/builder-schemas';
 
 import {
   DEFAULT_BOX,
@@ -50,6 +58,7 @@ import {
   type Cardinality,
   type LayoutBase,
 } from './model';
+import { COLOR_CONTROL, VARIANT_CONTROL } from './class-controls';
 
 export type NodeKind = 'container' | 'leaf';
 export type ModuleKey = 'cms' | 'commerce' | 'crm' | 'events' | 'site';
@@ -60,10 +69,26 @@ export type PaletteGroup = 'layout' | 'content' | 'data';
  *  per-record data leaves are page-only. */
 export type EditorSurface = 'page' | 'site';
 
+/** A cluster of related box-base controls in the inspector's Layout panel. A
+ *  component declares which it exposes (`boxAxes`); the rest are hidden so the
+ *  panel is relevant to the node instead of the same ~12 controls for everything
+ *  (docs/47 box→data-only convergence). `background` = the photo-panel cluster
+ *  (image URL + data binding + overlay + text tone — the image is DATA the box
+ *  keeps; overlay/tone migrate to classes later). */
+export type BoxAxis =
+  | 'width'
+  | 'height'
+  | 'padding'
+  | 'surface'
+  | 'background'
+  | 'align'
+  | 'position'
+  | 'visibility';
+
 export interface PropSpec {
   key: string;
   label: string;
-  control: 'text' | 'textarea' | 'select' | 'buttongroup' | 'switch';
+  control: 'text' | 'textarea' | 'select' | 'buttongroup' | 'switch' | 'icon';
   options?: { value: string; label: string }[];
   placeholder?: string;
 }
@@ -74,6 +99,10 @@ export interface LeafRenderArgs {
   value: unknown;
   cardinality: Cardinality;
   bound: boolean;
+  /** Pre-rendered child nodes, for a leaf that `acceptsChildren` (Button → an
+   *  inline Icon). Undefined for leaves with no children. The leaf decides where
+   *  they sit relative to its own content (Button renders them after the label). */
+  children?: React.ReactNode;
 }
 
 export interface ComponentDef {
@@ -105,6 +134,26 @@ export interface ComponentDef {
      *  component against the loaded `@sparx/site-ui` stylesheet. */
     class?: string;
   };
+  /** The canonical class bundle describing which recipe AXES this element has —
+   *  used only to BUILD the inspector's controls (e.g. the Size control appears
+   *  iff this carries a `--sz-` token). Distinct from `defaults.class` (what a
+   *  fresh node actually gets): an element can declare a size axis here yet ship a
+   *  fresh node with NO size token, so the glyph inherits its context's size by
+   *  default and the Size control reads "Default" until the author picks one. The
+   *  Icon does exactly this so an in-button icon just fits the label. Omitted →
+   *  falls back to `defaults.class`. */
+  archetype?: string;
+  /** Which box-base control clusters this component exposes in the Layout panel
+   *  (docs/47). Omitted → defaults by kind (containers get the full set; leaves
+   *  get align + visibility). A node that already has a non-default value for a
+   *  hidden axis still shows it, so gating never strands authored values. */
+  boxAxes?: BoxAxis[];
+  /** A LEAF that can still nest children — a drop target without being a full
+   *  container (no Arrangement panel / layout). Button uses this so an Icon can be
+   *  dropped INSIDE it (icon + label); renderLeaf receives them as `children` and
+   *  places them itself. Containers nest children inherently, so they leave this
+   *  unset. */
+  acceptsChildren?: boolean;
   /** Extra chrome class for containers (e.g. Card border). */
   chromeClass?: string;
   /** Leaf whose authored `node.class` styles the ELEMENT itself, not the box
@@ -371,17 +420,88 @@ const DEFS: ComponentDef[] = [
       class: 'sf-btn sf-c-primary sf-v-solid sf-btn--sz-md',
     },
     leafStylesByClass: true,
-    renderLeaf: ({ node, value, bound }) => {
+    // A Button can nest an Icon (icon + label) without becoming a full container
+    // (docs/47). The dropped Icon renders inline AFTER the label via `children`.
+    acceptsChildren: true,
+    renderLeaf: ({ node, value, bound, children }) => {
       const label = bound ? firstString(value, 'Button') : firstString(node.props.label, 'Button');
       // Authored with the Surface recipe → render the REAL button so the
       // inspector's Color / Variant / size paint live against the canvas-scoped
       // @sparx/site-ui sheet (docs/47). Legacy buttons (no recipe class — e.g.
       // starter trees carrying `props.style`) keep the neutral primitive chrome.
       if (/(^|\s)sf-/.test(node.class ?? '')) {
-        return <span className={node.class}>{label}</span>;
+        return (
+          <span className={node.class}>
+            {label}
+            {children}
+          </span>
+        );
       }
       const style = (node.props.style as string) ?? 'primary';
-      return <span className={`bx-btn bx-btn--${style}`}>{label}</span>;
+      return (
+        <span className={`bx-btn bx-btn--${style}`}>
+          {label}
+          {children}
+        </span>
+      );
+    },
+  },
+  {
+    // A compact status / count pill — the Surface Badge (docs/46 §3.6). Same
+    // class-first recipe as Button (color × variant × size, written to `node.class`
+    // from the Style panel), so a Button↔Badge retype carries its colour/variant
+    // across. Like Button it can nest an Icon inline (icon + label).
+    type: 'Badge',
+    label: 'Badge',
+    kind: 'leaf',
+    group: 'content',
+    icon: Tag,
+    bindable: true,
+    accepts: ['scalar'],
+    props: [{ key: 'label', label: 'Label', control: 'text', placeholder: 'New' }],
+    defaults: {
+      props: { label: 'Badge' },
+      class: 'sf-badge sf-c-neutral sf-v-soft sf-badge--sz-md',
+    },
+    leafStylesByClass: true,
+    acceptsChildren: true,
+    renderLeaf: ({ node, value, bound, children }) => {
+      const label = bound ? firstString(value, 'Badge') : firstString(node.props.label, 'Badge');
+      return (
+        <span className={node.class ?? 'sf-badge sf-c-neutral sf-v-soft sf-badge--sz-md'}>
+          {label}
+          {children}
+        </span>
+      );
+    },
+  },
+  {
+    // A lucide glyph as a first-class node (docs/47). Stores a stable kebab-case
+    // name; both renderers resolve it with the lazy DynamicIcon. Color comes from
+    // the recipe (Advanced "Color"); the SIZE axis is declared on `archetype` (so
+    // the Size control shows) but LEFT OFF the fresh node's `class` — a sizeless
+    // `.sf-icon` inherits its context's font-size (1em), so an icon dropped into a
+    // Button just matches the label instead of jumping to 28px. Picking a size
+    // then grows it (and the button), which is the expected override. Bindable to a
+    // scalar field (e.g. a CMS "Feature › Icon") so a collection can drive glyphs.
+    type: 'Icon',
+    label: 'Icon',
+    kind: 'leaf',
+    group: 'content',
+    icon: Sparkles,
+    bindable: true,
+    accepts: ['scalar'],
+    props: [{ key: 'name', label: 'Icon', control: 'icon' }],
+    defaults: { props: { name: 'star' }, class: 'sf-icon' },
+    archetype: 'sf-icon sf-icon--sz-md',
+    leafStylesByClass: true,
+    renderLeaf: ({ node, value, bound }) => {
+      const name = (bound ? firstString(value) : '') || firstString(node.props.name, 'star');
+      return (
+        <span className={node.class ?? 'sf-icon'}>
+          <DynamicIcon name={name as IconName} />
+        </span>
+      );
     },
   },
   {
@@ -807,8 +927,79 @@ export function getDef(type: string): ComponentDef | undefined {
   return BY_TYPE.get(type);
 }
 
+// ── Box-axis relevance (docs/47 box→data-only convergence) ────────────────────
+// The Layout panel used to show the same ~12 controls for every node. Now a
+// component declares the axes it cares about (or defaults by kind), and the
+// inspector hides the rest — UNLESS the node already carries a non-default value
+// there, so relevance-gating never strands an authored value.
+
+const CONTAINER_AXES: BoxAxis[] = [
+  'width',
+  'height',
+  'padding',
+  'surface',
+  'background',
+  'align',
+  'position',
+  'visibility',
+];
+// Leaves render content; spacing comes from the parent's gap and the Margin
+// utility, color/shape from the recipe — so by default they expose only the two
+// truly universal axes. A leaf that needs more (a full-bleed media panel) opts in
+// via `boxAxes`.
+const LEAF_AXES: BoxAxis[] = ['align', 'visibility'];
+
+/** The box axes a component exposes by declaration, else by kind. */
+export function boxAxesFor(def: ComponentDef): BoxAxis[] {
+  return def.boxAxes ?? (def.kind === 'container' ? CONTAINER_AXES : LEAF_AXES);
+}
+
+/** Whether a node's box carries a non-default value on an axis — used so a hidden
+ *  axis still surfaces when it's actually in use (no stranded values). */
+export function boxAxisInUse(box: BoxBase, axis: BoxAxis): boolean {
+  switch (axis) {
+    case 'width':
+      return box.backgroundWidth !== 'contained' || box.contentWidth !== 'contained';
+    case 'height':
+      return box.height !== 'auto';
+    case 'padding':
+      return box.padding !== 'none';
+    case 'surface':
+      return box.surface !== 'none';
+    case 'background':
+      return (
+        Boolean(box.backgroundImage) ||
+        Boolean(box.backgroundImageBinding) ||
+        (box.overlay != null && box.overlay !== 'none') ||
+        (box.textTone != null && box.textTone !== 'default')
+      );
+    case 'position':
+      return Boolean(box.pin && box.pin !== 'none');
+    case 'align':
+    case 'visibility':
+      return true; // always shown
+  }
+}
+
+/** The box axes to render for a node: the component's declared set, plus any axis
+ *  the node already uses (so gating is non-destructive). */
+export function visibleBoxAxes(def: ComponentDef, box: BoxBase): Set<BoxAxis> {
+  const out = new Set(boxAxesFor(def));
+  for (const axis of CONTAINER_AXES) {
+    if (boxAxisInUse(box, axis)) out.add(axis);
+  }
+  return out;
+}
+
 export function isContainer(type: string): boolean {
   return getDef(type)?.kind === 'container';
+}
+
+/** Can this type hold children — a container, OR a leaf that opts in via
+ *  `acceptsChildren` (Button)? Used by the add-flow to pick a drop target. */
+export function acceptsChildren(type: string): boolean {
+  const def = getDef(type);
+  return def?.kind === 'container' || def?.acceptsChildren === true;
 }
 
 export const PALETTE: ComponentDef[] = DEFS;
@@ -831,6 +1022,96 @@ export function makeNode(type: string): BuilderNode {
   };
   if (def.defaults.class) out.class = def.defaults.class;
   if (def.kind === 'container') out.layout = { ...DEFAULT_LAYOUT, ...def.defaults.layout };
-  if (def.kind === 'container') out.children = [];
+  // Containers and children-accepting leaves (Button) start with an empty child
+  // list so a drop has somewhere to land.
+  if (def.kind === 'container' || def.acceptsChildren) out.children = [];
   return out;
+}
+
+// ── Retype (change a node's type — docs/47) ───────────────────────────────────
+// Changing a card to a section, a button to a badge, etc. We restrict targets to
+// the SAME kind (container↔container, leaf↔leaf) so a retype never silently
+// orphans a subtree — a container keeps its children, a leaf keeps any nested
+// children only when the target can still hold them (Button/Badge). The caller
+// confirms the one case where children WOULD be dropped.
+
+// Prop keys that all mean "the visible text/label" — migrated by VALUE on retype
+// so a Heading's text becomes a Button's label, a Button's label becomes a Stat's
+// value, etc.
+const TEXT_PROP_KEYS = ['text', 'label', 'value'];
+
+function carriedText(props: Record<string, unknown>): string | undefined {
+  for (const k of TEXT_PROP_KEYS) {
+    const v = props[k];
+    if (typeof v === 'string' && v.trim() !== '') return v;
+  }
+  return undefined;
+}
+
+function textPropKeyOf(def: ComponentDef): string | undefined {
+  return def.props.find((p) => TEXT_PROP_KEYS.includes(p.key))?.key;
+}
+
+/** The types a node may be changed INTO on a surface: every other registry entry
+ *  of the same kind that's valid here. Same-kind keeps the change non-destructive
+ *  by construction (children semantics are preserved). */
+export function compatibleRetypeTargets(def: ComponentDef, surface: EditorSurface): ComponentDef[] {
+  return paletteForSurface(surface).filter((d) => d.type !== def.type && d.kind === def.kind);
+}
+
+/** Whether retyping `node` to `targetType` would drop its children (a leaf target
+ *  that can't nest them). Drives the caller's destructive confirm. */
+export function retypeDropsChildren(node: BuilderNode, targetType: string): boolean {
+  const to = getDef(targetType);
+  if (!to) return false;
+  return (node.children?.length ?? 0) > 0 && to.kind === 'leaf' && !acceptsChildren(targetType);
+}
+
+/** Return `node` re-typed to `targetType`, carrying across everything that still
+ *  makes sense: identity (id), the universal box (incl. its name), the binding (if
+ *  the target is bindable), the recipe color × variant (if the target rides the
+ *  recipe), and the visible text/label. Props otherwise reset to the target's
+ *  defaults; layout resets to the target's natural arrangement; children are kept
+ *  when the target can hold them, else dropped. A no-op for an unknown target. */
+export function retypeNode(node: BuilderNode, targetType: string): BuilderNode {
+  const to = getDef(targetType);
+  if (!to || targetType === node.type) return node;
+
+  const next: BuilderNode = {
+    id: node.id, // identity preserved — selection + any saved refs stay valid
+    type: targetType,
+    box: { ...node.box }, // the universal box (and its name) carries over verbatim
+    props: { ...to.defaults.props },
+  };
+
+  // Best-effort text carry (Heading text → Button label → Stat value, …).
+  const text = carriedText(node.props);
+  const textKey = text !== undefined ? textPropKeyOf(to) : undefined;
+  if (textKey) next.props[textKey] = text;
+
+  // Binding survives only into a bindable target.
+  if (node.binding && to.bindable) next.binding = { ...node.binding };
+
+  // Class: start from the target's archetype/defaults, then preserve the author's
+  // recipe color × variant where the target also exposes that axis (so a primary
+  // soft Button stays primary soft as a Badge).
+  let cls = to.defaults.class;
+  if (cls) {
+    for (const control of [COLOR_CONTROL, VARIANT_CONTROL]) {
+      const tokens = control.options.map((o) => o.token);
+      const prev = readClassGroup(node.class, tokens);
+      if (prev && readClassGroup(cls, tokens)) cls = setClassGroup(cls, tokens, prev);
+    }
+    next.class = cls;
+  }
+
+  // Layout + children by kind. A container adopts the target's natural arrangement
+  // and keeps its children; a leaf keeps children only if it can nest them.
+  if (to.kind === 'container') {
+    next.layout = { ...DEFAULT_LAYOUT, ...to.defaults.layout };
+    next.children = node.children ?? [];
+  } else if (acceptsChildren(targetType)) {
+    next.children = node.children ?? [];
+  }
+  return next;
 }

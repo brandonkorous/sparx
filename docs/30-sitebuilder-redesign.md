@@ -1,8 +1,8 @@
 # Site Builder Redesign
 
-**Version:** 1.2.1
+**Version:** 1.2.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-03
 
 ---
 
@@ -363,7 +363,8 @@ policy on `current_tenant_id()`; RLS is **hand-edited into the migration SQL** �
 generate it, per the established pattern):
 
 - **`TenantBrand`** (new, tenant-level, **not** module-gated) — business name, logo light/dark +
-  favicon (media FKs), core color palette, typography, tagline, socials. The single source of
+  favicon (media FKs), core color palette, typography, tagline. (Social links are NOT brand — they
+  are a site setting on `Tenant.socials`, edited in `/settings/general`; docs/45 §3.) The single source of
   truth (§6). Migration **consolidates** Commerce `StorefrontTheme.{logoMediaId, logoDarkMediaId,
 faviconMediaId}` + Email `brandingOverride` into it; `resolveEmailBrand`, the storefront theme
   resolver, and the SB theme foundation all read it (no consumer override). Exact home (dedicated

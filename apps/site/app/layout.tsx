@@ -34,6 +34,7 @@ import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/buil
 import { loadSiteData } from '@/lib/builder-data';
 import { ConsentManager } from '@/components/consent/consent-manager';
 import { mediaUrl } from '@/lib/media';
+import { ogImageUrl } from '@/lib/og';
 import { resolveTenant, type TenantTheme } from '@/lib/tenant';
 import { buildStorefrontThemeCss } from '@/lib/theme';
 import {
@@ -67,9 +68,35 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
   const favicon = mediaUrl(tenant.theme?.faviconMediaId ?? null, tenant.slug);
+
+  // metadataBase makes every page's relative OG image (the `/api/og` fallback
+  // card, docs/50 §5) resolve to an absolute URL on THIS tenant's origin, so the
+  // social crawler fetches it from the right host. Built from the forwarded host.
+  const mdHdrs = await headers();
+  const host = mdHdrs.get('x-forwarded-host') ?? mdHdrs.get('host');
+  const proto = mdHdrs.get('x-forwarded-proto') ?? 'https';
+  const origin = host ? `${proto}://${host}` : undefined;
+
   return {
+    ...(origin ? { metadataBase: new URL(origin) } : {}),
     title: { default: tenant.name, template: `%s · ${tenant.name}` },
     description: `Shop ${tenant.name}.`,
+    // Site-level default social card. Pages with a real image (product photo,
+    // collection hero, author-set OG) override this with their own; pages without
+    // one inherit a tenant-branded generated card.
+    openGraph: {
+      type: 'website',
+      title: tenant.name,
+      description: `Shop ${tenant.name}.`,
+      images: [
+        ogImageUrl({
+          title: tenant.name,
+          eyebrow: 'Store',
+          brand: tenant.name,
+          accent: tenant.theme?.colorPrimary,
+        }),
+      ],
+    },
     robots: { index: true, follow: true },
     // The tenant's own favicon always wins. Until they set one, fall back to
     // the Sparx mark (public/) rather than the browser's default globe — a
@@ -170,7 +197,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Mirror of the `?sparxSitePreview=` token, set by the proxy so this layout
   // (which the App Router never hands searchParams) can render the DRAFT chrome
   // — header/footer/announcement — in the editor preview, not just published.
-  const sitePreviewToken = (await headers()).get('x-sparx-site-preview') ?? undefined;
+  const hdrs = await headers();
+  const sitePreviewToken = hdrs.get('x-sparx-site-preview') ?? undefined;
   const snapshot = tenant ? await getPublishedSite(tenant.slug, sitePreviewToken) : null;
 
   // A published Builder layout (docs/45) is the chrome shell, and it WINS over
@@ -288,6 +316,44 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     announceBlock && announceConfig.enabled && announceConfig.text ? announceConfig.text : null;
   const socialLinks = footerConfig.socialLinks ?? [];
 
+  // Site-wide structured data (docs/50): Organization identity (logo + social
+  // `sameAs`) and a WebSite with the storefront search action — so search and
+  // answer engines attribute pages to this store and can surface a sitelinks
+  // search box. Needs the public origin (forwarded host) for absolute URLs.
+  const sdHost = hdrs.get('x-forwarded-host') ?? hdrs.get('host');
+  const sdProto = hdrs.get('x-forwarded-proto') ?? 'https';
+  const origin = sdHost ? `${sdProto}://${sdHost}` : null;
+  const logo = tenant ? mediaUrl(tenant.theme?.logoMediaId ?? null, tenant.slug) : null;
+  const sameAs = tenant ? Object.values(tenant.socials).filter(Boolean) : [];
+  const orgJsonLd =
+    tenant && origin
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: tenant.name,
+          url: origin,
+          ...(logo ? { logo } : {}),
+          ...(sameAs.length > 0 ? { sameAs } : {}),
+        }
+      : null;
+  const siteJsonLd =
+    tenant && origin
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: tenant.name,
+          url: origin,
+          potentialAction: {
+            '@type': 'SearchAction',
+            target: {
+              '@type': 'EntryPoint',
+              urlTemplate: `${origin}/search?q={search_term_string}`,
+            },
+            'query-input': 'required name=search_term_string',
+          },
+        }
+      : null;
+
   return (
     <html
       lang="en"
@@ -306,6 +372,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: REVEAL_INIT_SCRIPT }} />
         {tenant && tenant.consent.mode !== 'off' ? (
           <script dangerouslySetInnerHTML={{ __html: CONSENT_INIT_SCRIPT }} />
+        ) : null}
+        {orgJsonLd ? (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+          />
+        ) : null}
+        {siteJsonLd ? (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+          />
         ) : null}
       </head>
       <body className="sf-body">

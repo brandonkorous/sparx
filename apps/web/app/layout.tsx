@@ -56,6 +56,22 @@ const PRODUCT_SCHEMA = {
   },
 };
 
+// WebSite entity (docs/50) — names the site as a whole so search/answer engines
+// can attribute pages and the brand. No SearchAction: the marketing site has no
+// public search URL, and a SearchAction pointing at a non-existent endpoint is
+// worse than omitting it.
+const WEBSITE_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Sparx',
+  url: 'https://sparx.works',
+  publisher: {
+    '@type': 'Organization',
+    name: 'WizeWorks, Inc.',
+    url: 'https://wize.works',
+  },
+};
+
 export const metadata: Metadata = {
   title: 'Sparx — Everything, ignited.',
   description:
@@ -113,6 +129,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(PRODUCT_SCHEMA) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_SCHEMA) }}
           />
           {children}
         </PostHogProvider>

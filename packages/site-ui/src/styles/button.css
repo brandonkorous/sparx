@@ -6,7 +6,7 @@
  * stay raw declarations — @apply can't express a `var(--x, fallback)`. */
 
 .sf-btn {
-  @apply inline-flex cursor-pointer items-center justify-center border-0 text-center leading-tight font-semibold no-underline transition duration-150 ease-in-out;
+  @apply inline-flex cursor-pointer items-center justify-center gap-2 border-0 text-center leading-tight font-semibold no-underline transition duration-150 ease-in-out;
   border-radius: var(--sf-radius-field, 0.5rem);
   font-family: var(--sf-font-body, inherit);
 }

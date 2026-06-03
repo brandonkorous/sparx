@@ -173,17 +173,29 @@ export async function loadBuilderData(
 
 // ── Site layout data (docs/45 §4) ────────────────────────────────────────────
 // The chrome (header/footer) binds to the `site` sources. Unlike page data,
-// these reference the platform's EXISTING stores (brand identity, CMS nav) — the
-// Builder keeps no parallel copy. Nested nav is flattened to the top level for
-// v1 (docs/45 §7); social binds to the tenant brand's socials, which the public
-// tenant payload doesn't carry yet, so it's sourced empty for now.
+// these reference the platform's EXISTING stores (brand identity, CMS nav, the
+// tenant's site settings) — the Builder keeps no parallel copy. Nested nav is
+// flattened to the top level for v1 (docs/45 §7); `site.social` maps the
+// tenant's site-wide social links (Tenant.socials, carried in the public tenant
+// payload) to `{ platform, url }[]`.
 
 function navToItems(nodes: NavNode[]): { label: string; url: string }[] {
   return nodes.map((n) => ({ label: n.label, url: n.href }));
 }
 
+// The tenant's social links → the `{ platform, url }[]` the SocialLinks leaf
+// binds. Already the right shape; just drop any blank/malformed entries.
+function socialsToItems(
+  socials: { platform: string; url: string }[]
+): { platform: string; url: string }[] {
+  return socials.filter(
+    (s) => typeof s?.platform === 'string' && typeof s?.url === 'string' && s.url.trim().length > 0
+  );
+}
+
 /** Build the `site` resolver root for the layout renderer: brand identity from
- *  the resolved tenant, header/footer nav from the CMS navigation menus. */
+ *  the resolved tenant, header/footer nav from the CMS navigation menus, social
+ *  links from the tenant's site settings. */
 export async function loadSiteData(tenant: ResolvedTenant): Promise<DataSources> {
   const root: DataSources = {};
 
@@ -201,7 +213,7 @@ export async function loadSiteData(tenant: ResolvedTenant): Promise<DataSources>
   ]);
   setAtPath(root, 'site.primaryNav', navToItems(header));
   setAtPath(root, 'site.footerNav', navToItems(footer));
-  setAtPath(root, 'site.social', []);
+  setAtPath(root, 'site.social', socialsToItems(tenant.socials));
 
   return root;
 }

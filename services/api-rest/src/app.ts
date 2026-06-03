@@ -68,6 +68,7 @@ import publicStorefrontRoutes from './routes/v1/public/storefront.js';
 import publicBuilderRoutes from './routes/v1/public/builder.js';
 import publicMediaRoutes from './routes/v1/public/media.js';
 import publicConsentRoutes from './routes/v1/public/consent.js';
+import publicRedirectRoutes from './routes/v1/public/redirects.js';
 import uploadRoutes from './routes/v1/media/uploads.js';
 import mediaAssetRoutes from './routes/v1/media/assets.js';
 import crmRoutes from './routes/v1/crm/index.js';
@@ -506,6 +507,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicBuilderRoutes);
   await app.register(publicMediaRoutes);
   await app.register(publicConsentRoutes);
+  await app.register(publicRedirectRoutes);
   await app.register(emailWebhookRoutes);
   await app.register(uploadRoutes);
   await app.register(mediaAssetRoutes);

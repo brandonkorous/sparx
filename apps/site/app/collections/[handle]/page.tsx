@@ -9,6 +9,8 @@ import { notFound } from 'next/navigation';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SectionRenderer } from '@/components/section-renderer';
 import { getCollection, listCollectionProducts } from '@/lib/commerce';
+import { mediaUrl } from '@/lib/media';
+import { ogImageUrl } from '@/lib/og';
 import {
   isSampleRequested,
   SAMPLE_COLLECTION,
@@ -16,6 +18,7 @@ import {
 } from '@/lib/sample-data';
 import { getPublishedSite, resolveTemplateSections } from '@/lib/site';
 import { resolveTenant } from '@/lib/tenant';
+import { applyRedirect } from '@/lib/redirects';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,9 +35,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { handle } = await params;
   const collection = await getCollection(tenant.slug, handle);
   if (!collection) return {};
+  // Author-set OG, then the collection hero, then a tenant-branded generated
+  // card (docs/50 §5) — so a collection always has a real social image.
+  const image =
+    mediaUrl(collection.ogImageId ?? collection.heroMediaId ?? null, tenant.slug) ??
+    ogImageUrl({
+      title: collection.seoTitle ?? collection.name,
+      eyebrow: 'Collection',
+      brand: tenant.name,
+      accent: tenant.theme?.colorPrimary,
+    });
   return {
     title: collection.seoTitle ?? collection.name,
     description: collection.seoDescription ?? collection.description ?? undefined,
+    openGraph: {
+      title: collection.seoTitle ?? collection.name,
+      description: collection.seoDescription ?? collection.description ?? undefined,
+      images: [{ url: image }],
+    },
   };
 }
 
@@ -51,7 +69,10 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
   // (draft) snapshot — only the bound data is swapped.
   const sample = isSampleRequested(sp);
   const collection = sample ? SAMPLE_COLLECTION : await getCollection(tenant.slug, handle);
-  if (!collection) notFound();
+  if (!collection) {
+    if (!sample) await applyRedirect(tenant.slug, `/collections/${handle}`);
+    notFound();
+  }
 
   // The commerce:collection layout: the merchant's published one, or the seeded
   // default (parity). A site-preview token resolves the draft instead. In preview

@@ -1,6 +1,7 @@
 // Tenant brand — the platform-wide source of truth for brand identity
 // (docs/30 §6). Business name, logo (light/dark), favicon, core palette,
-// typography, tagline, socials.
+// typography, tagline. (Social links are NOT here — they're a site setting on
+// the tenant, edited in /settings/general; see Tenant.socials, docs/45 §3.)
 //
 //   GET   /v1/brand   → current brand (defaults when unset)
 //   PATCH /v1/brand   → upsert (partial)
@@ -70,7 +71,6 @@ const PatchBrand = z.object({
   fontHeading: z.string().max(127).nullable().optional(),
   fontBody: z.string().max(127).nullable().optional(),
   tokens: BrandTokens.nullable().optional(),
-  socials: z.record(z.string().max(40), z.string().max(2048)).optional(),
 });
 
 interface BrandView {
@@ -89,7 +89,6 @@ interface BrandView {
   fontHeading: string | null;
   fontBody: string | null;
   tokens: BrandTokens | null;
-  socials: Record<string, string>;
 }
 
 function toView(
@@ -109,13 +108,8 @@ function toView(
     fontHeading: string | null;
     fontBody: string | null;
     tokens: unknown;
-    socials: unknown;
   } | null
 ): BrandView {
-  const socials =
-    row?.socials && typeof row.socials === 'object' && !Array.isArray(row.socials)
-      ? (row.socials as Record<string, string>)
-      : {};
   const tokens =
     row?.tokens && typeof row.tokens === 'object' && !Array.isArray(row.tokens)
       ? (row.tokens as BrandTokens)
@@ -136,7 +130,6 @@ function toView(
     fontHeading: row?.fontHeading ?? null,
     fontBody: row?.fontBody ?? null,
     tokens,
-    socials,
   };
 }
 
@@ -174,7 +167,6 @@ const brandRoutes: FastifyPluginAsync = async (app) => {
     if (input.fontBody !== undefined) data.fontBody = input.fontBody;
     // Json column: a present-null clears it (DB NULL); an object is stored as-is.
     if (input.tokens !== undefined) data.tokens = input.tokens ?? Prisma.DbNull;
-    if (input.socials !== undefined) data.socials = input.socials;
 
     const row = await withTenant({ tenantId: auth.tenantId, userId: auth.actorId }, (tx) =>
       tx.tenantBrand.upsert({

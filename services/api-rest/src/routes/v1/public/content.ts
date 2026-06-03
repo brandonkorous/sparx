@@ -303,7 +303,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     const params = z.object({ slug: z.string().min(1).max(63) }).parse(request.params);
     const tenant = await prisma.tenant.findUnique({
       where: { slug: params.slug },
-      select: { id: true, slug: true, name: true, settings: true },
+      select: { id: true, slug: true, name: true, settings: true, socials: true },
     });
     if (!tenant) throw notFound('Tenant', params.slug);
     if (tenant.id === '00000000-0000-0000-0000-000000000000') {
@@ -391,6 +391,9 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       name: tenant.name,
       businessName: brand?.businessName ?? null,
       settings: tenant.settings,
+      // Site-wide social links (a SITE setting on the tenant, not brand/theme —
+      // docs/45 §3): an ordered { platform, url }[] the storefront chrome renders.
+      socials: Array.isArray(tenant.socials) ? tenant.socials : [],
       theme: mergedTheme,
       storefront: storefront ?? {
         defaultCurrency: 'USD',

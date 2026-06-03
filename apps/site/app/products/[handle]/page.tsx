@@ -22,6 +22,8 @@ import {
   type PublicQuestion,
 } from '@/lib/commerce';
 import { mediaUrl } from '@/lib/media';
+import { ogImageUrl } from '@/lib/og';
+import { applyRedirect } from '@/lib/redirects';
 import { isSampleRequested, SAMPLE_PRODUCT, SAMPLE_PRODUCT_EXTRAS } from '@/lib/sample-data';
 import { getPublishedSite, resolveTemplateSections } from '@/lib/site';
 import { resolveTenant } from '@/lib/tenant';
@@ -41,14 +43,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { handle } = await params;
   const product = await getProduct(tenant.slug, handle);
   if (!product) return {};
-  const image = mediaUrl(product.images[0]?.mediaAssetId ?? null, tenant.slug);
+  // The product photo is the best OG image; fall back to a tenant-branded
+  // generated card (docs/50 §5) only when the product has no image.
+  const image =
+    mediaUrl(product.images[0]?.mediaAssetId ?? null, tenant.slug) ??
+    ogImageUrl({
+      title: product.seoTitle ?? product.title,
+      eyebrow: 'Product',
+      brand: tenant.name,
+      accent: tenant.theme?.colorPrimary,
+    });
   return {
     title: product.seoTitle ?? product.title,
     description: product.seoDescription ?? product.description ?? undefined,
     openGraph: {
       title: product.seoTitle ?? product.title,
       description: product.seoDescription ?? product.description ?? undefined,
-      ...(image ? { images: [{ url: image }] } : {}),
+      images: [{ url: image }],
     },
   };
 }
@@ -65,7 +76,10 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   // from the (draft) snapshot — only the bound data is swapped.
   const sample = isSampleRequested(sp);
   const product = sample ? SAMPLE_PRODUCT : await getProduct(tenant.slug, handle);
-  if (!product) notFound();
+  if (!product) {
+    if (!sample) await applyRedirect(tenant.slug, `/products/${handle}`);
+    notFound();
+  }
 
   // The generic per-record router (docs/44 §3 B): a published Builder
   // `commerce.product` collection template renders the PDP through the node tree

@@ -67,8 +67,25 @@ async function loadFaq(): Promise<FetchedFaqItem[]> {
 export async function Faq() {
   const items = await loadFaq();
 
+  // FAQPage structured data (docs/50) — lets Google render rich FAQ results and
+  // gives answer engines clean question/answer pairs to cite. Built from the same
+  // items the section renders, so the markup and the visible prose never diverge.
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
+  };
+
   return (
     <Section padding="xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
           eyebrow="Questions, answered"

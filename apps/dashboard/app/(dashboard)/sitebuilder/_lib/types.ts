@@ -169,8 +169,9 @@ export interface BrandDto {
   fontBody: string | null;
   // Brand-owned Token Model v2 shape/rhythm/effect (docs/33). Null = inherit the
   // theme preset. Colour/type stay in the dedicated fields above.
+  // (Social links are NOT brand — they're a site setting on the tenant, edited
+  // in /settings/general; see Tenant.socials, docs/45 §3.)
   tokens: BrandTokenDoc | null;
-  socials: Record<string, string>;
 }
 
 // Best-fit asset URLs for the three brand images, resolved server-side so the
