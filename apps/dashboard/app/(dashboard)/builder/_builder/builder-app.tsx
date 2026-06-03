@@ -27,6 +27,7 @@ import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
 import {
   createPage,
   deletePage,
+  mintBuilderPreviewToken,
   publishPage,
   renamePage,
   savePageTree,
@@ -74,9 +75,20 @@ export interface BuilderAppProps {
    *  you edit the page in the chrome it actually ships in. Null if unavailable
    *  (the editor still works, just unframed). */
   layoutTree?: BuilderNode | null;
+  /** The tenant slug + live-site origin, used to open the "Preview" tab at the
+   *  active page's slug with a freshly-minted draft-preview token (docs/45 §2.6).
+   *  Absent when the site context can't be resolved → Preview is disabled. */
+  tenantSlug?: string;
+  siteOrigin?: string;
 }
 
-export function BuilderApp({ initialPages, bindingCatalog, layoutTree }: BuilderAppProps) {
+export function BuilderApp({
+  initialPages,
+  bindingCatalog,
+  layoutTree,
+  tenantSlug,
+  siteOrigin,
+}: BuilderAppProps) {
   const confirm = useConfirm();
   // Pages load from the server (docs/41 §5 seeds the curated set on first use)
   // and seed this state ONCE. From here the client is authoritative for the
@@ -177,6 +189,28 @@ export function BuilderApp({ initialPages, bindingCatalog, layoutTree }: Builder
     } else {
       editor.setSaveStatus('error');
     }
+  };
+
+  // Open the live site at this page's slug, showing its DRAFT (docs/45 §2.6):
+  // flush the autosave so the draft on disk is current, mint a short-lived
+  // site-preview token, then open `<origin>/<slug>?…&sparxSitePreview=<token>` in
+  // a new tab. Requires a saved slug + a resolved site origin (else disabled).
+  const canPreview = Boolean(active?.slug && siteOrigin && tenantSlug);
+  const onPreview = async () => {
+    if (!active?.slug || !siteOrigin || !tenantSlug) return;
+    setBusy(true);
+    await editor.flushSave();
+    const res = await mintBuilderPreviewToken();
+    setBusy(false);
+    if (!res.ok || !res.data) {
+      editor.setSaveStatus('error');
+      return;
+    }
+    const path = active.slug.replace(/^\/+/, '');
+    const url =
+      `${siteOrigin}/${path}?tenant=${encodeURIComponent(tenantSlug)}` +
+      `&sparxSitePreview=${encodeURIComponent(res.data.token)}`;
+    window.open(url, '_blank', 'noopener');
   };
 
   const startRename = () => {
@@ -360,7 +394,16 @@ export function BuilderApp({ initialPages, bindingCatalog, layoutTree }: Builder
                 {SAVE_LABEL[editor.saveStatus]}
               </span>
             ) : null}
-            <Button size="sm" variant="ghost" leftIcon={<Eye className="h-3.5 w-3.5" />} disabled>
+            <Button
+              size="sm"
+              variant="ghost"
+              leftIcon={<Eye className="h-3.5 w-3.5" />}
+              disabled={busy || !canPreview}
+              title={
+                canPreview ? 'Open this page’s draft on the live site' : 'Set a page URL to preview'
+              }
+              onClick={() => void onPreview()}
+            >
               Preview
             </Button>
             <ImportExportControls

@@ -37,6 +37,11 @@ export interface PublishedStylesheet {
 // the compiled string. Replicas each warm independently — correctness is per
 // class-set, so they converge.
 const cache = new Map<string, { classHash: string; sheet: PublishedStylesheet }>();
+// The same cache shape for the DRAFT preview sheet (kept separate so a preview
+// never clobbers the published entry, and vice-versa). Drafts change often, but
+// caching per class-set still pays off: only a draft edit that adds/removes a
+// class recompiles; reloading the same preview is a hit.
+const draftCache = new Map<string, { classHash: string; sheet: PublishedStylesheet }>();
 
 /** Collect every tenant PUBLISHED tree (pages + active layout chrome). The
  *  `publishedTree != null` filter is done in JS — the JSON column's NULL check
@@ -77,6 +82,48 @@ export async function getPublishedStylesheet(ctx: ServiceContext): Promise<Publi
   const css = await compileClasses(classes, { minify: true });
   const sheet: PublishedStylesheet = { css, hash: contentHash(css) };
   cache.set(ctx.tenantId, { classHash, sheet });
+  return sheet;
+}
+
+/** Collect every tenant DRAFT tree (all page drafts + the active layout's draft
+ *  chrome) — the preview counterpart of readPublishedTrees. `draftTree` is
+ *  non-nullable, but the guard mirrors the published reader for symmetry. */
+function readDraftTrees(ctx: ServiceContext): Promise<BuilderNode[]> {
+  return withTenant(ctx, async (tx) => {
+    const trees: BuilderNode[] = [];
+    const pages = await tx.builderPage.findMany({ select: { draftTree: true } });
+    for (const page of pages) {
+      if (page.draftTree != null) trees.push(page.draftTree as unknown as BuilderNode);
+    }
+    const layout = await tx.builderLayout.findFirst({
+      where: { isActive: true },
+      select: { draftTree: true },
+    });
+    if (layout?.draftTree != null) {
+      trees.push(layout.draftTree as unknown as BuilderNode);
+    }
+    return trees;
+  });
+}
+
+/**
+ * The DRAFT Surface stylesheet for a tenant — the compiled CSS for every class
+ * authored across its DRAFT page + layout trees (a superset of the published
+ * sheet). The site injects this, instead of the published sheet, when serving a
+ * draft preview, so classes added since the last publish still resolve. Cached
+ * per draft class-set in `draftCache`.
+ */
+export async function getDraftStylesheet(ctx: ServiceContext): Promise<PublishedStylesheet> {
+  const trees = await readDraftTrees(ctx);
+  const classes = collectClasses(trees);
+  const classHash = contentHash(classes.join(' '));
+
+  const cached = draftCache.get(ctx.tenantId);
+  if (cached?.classHash === classHash) return cached.sheet;
+
+  const css = await compileClasses(classes, { minify: true });
+  const sheet: PublishedStylesheet = { css, hash: contentHash(css) };
+  draftCache.set(ctx.tenantId, { classHash, sheet });
   return sheet;
 }
 

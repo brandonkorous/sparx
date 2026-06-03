@@ -40,6 +40,7 @@ import {
   type ScopeInfo,
 } from './binding-catalog';
 import { getDef } from './registry';
+import { STYLE_CONTROLS, activeValue, applyValue } from './class-controls';
 
 // ── Shared controls ──────────────────────────────────────────────────────────
 
@@ -564,10 +565,32 @@ export function Inspector({
         />
       </header>
 
+      <Group label="Style">
+        <p className="bx-grp__caption">
+          Color + variant from the Surface recipe (docs/47), written as classes.
+        </p>
+        {STYLE_CONTROLS.map((control) => (
+          <Field key={control.id} label={control.label}>
+            <NativeSelect
+              size="sm"
+              value={activeValue(node.class, control) ?? ''}
+              onChange={(e) => onClass(applyValue(node.class, control, e.target.value || null))}
+            >
+              <option value="">None</option>
+              {control.options.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </NativeSelect>
+          </Field>
+        ))}
+      </Group>
+
       <Group label="Classes">
         <p className="bx-grp__caption">
-          Brand-governed styling classes — the class-first surface (docs/47). Space-separated;
-          compiled to the tenant stylesheet on publish.
+          Advanced — the raw class string (archetypes + utilities). Space-separated; compiled to the
+          tenant stylesheet on publish.
         </p>
         <Textarea
           rows={2}

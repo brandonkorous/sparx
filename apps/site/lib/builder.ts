@@ -1,8 +1,9 @@
-// Storefront reads for PUBLISHED Builder content (docs/44, docs/45). A published
+// Site reads for PUBLISHED Builder content (docs/44, docs/45). A published
 // singleton Builder page serves at `/{slug}`; a published Builder LAYOUT is the
 // chrome shell wrapping every page. Both fetch from api-rest's public endpoints
-// and return null when nothing is published (or the read fails) so the
-// storefront falls through to the legacy paths.
+// and return null when nothing is published (or the read fails) so the site
+// falls through to the legacy paths. With a site-preview token they serve the
+// DRAFT instead — the editor's "Preview" tab (docs/45 §2.6).
 
 import type { PublishedLayoutDto, PublishedPageDto } from '@sparx/builder-schemas';
 
@@ -22,9 +23,17 @@ interface PublishedStylesheet {
   hash: string;
 }
 
+/** Forward a site-preview token to api-rest as `Authorization: Preview <jwt>`
+ *  (the same convention the CMS preview path uses) so the public read serves the
+ *  DRAFT instead of the published snapshot. No token → no header → published. */
+function previewHeaders(previewToken?: string): HeadersInit | undefined {
+  return previewToken ? { Authorization: `Preview ${previewToken}` } : undefined;
+}
+
 export async function getPublishedBuilderPage(
   tenantSlug: string,
-  slug: string
+  slug: string,
+  opts: { previewToken?: string } = {}
 ): Promise<PublishedPageDto | null> {
   try {
     const res = await fetch(
@@ -36,6 +45,7 @@ export async function getPublishedBuilderPage(
         // stale pages. Restore `next: { revalidate, tags: ['builder:<slug>'] }`
         // once publish purges the tag.
         cache: 'no-store',
+        headers: previewHeaders(opts.previewToken),
       }
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedPageDto> | ErrorEnvelope;
@@ -97,12 +107,16 @@ export async function getPublishedBuilderLayout(
  *  class authored across the tenant's published Builder trees. The root layout
  *  inlines it after the `--sf-*` theme block so authored utilities resolve. '' on
  *  failure or when no classes are authored, so the storefront degrades cleanly. */
-export async function getPublishedBuilderStyles(tenantSlug: string): Promise<string> {
+export async function getPublishedBuilderStyles(
+  tenantSlug: string,
+  opts: { previewToken?: string } = {}
+): Promise<string> {
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/styles?tenant=${encodeURIComponent(tenantSlug)}`,
       // INTERIM: uncached so a publish reflects immediately (see the reads above).
-      { cache: 'no-store' }
+      // With a preview token the DRAFT sheet (a superset) comes back instead.
+      { cache: 'no-store', headers: previewHeaders(opts.previewToken) }
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedStylesheet> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return '';

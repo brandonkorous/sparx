@@ -11,7 +11,11 @@
 //
 // No auth (`/v1/public/` is an auth-exempt prefix). Tenant resolved by slug (the
 // tenants table is the only non-RLS row, safe to look up), then an RLS-scoped
-// read via the service. Returns the PUBLISHED tree only — never the draft.
+// read via the service. Returns the PUBLISHED tree by default; with a valid
+// `Authorization: Preview <site-preview jwt>` (minted by the dashboard for its own
+// tenant) the page + Surface styles serve the DRAFT instead — the editor's
+// "Preview" tab (docs/45 §2.6). An invalid/expired token throws (never silently
+// downgraded to published).
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -19,6 +23,7 @@ import { prisma } from '@sparx/db';
 import { pageService, layoutService, surfaceCssService } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
+import { tryVerifySitePreview } from '../../../lib/preview.js';
 
 const PageQuery = z.object({
   tenant: z.string().min(1).max(63),
@@ -44,7 +49,12 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/builder/page', async (request) => {
     const q = PageQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
-    const page = await pageService.getPublishedBySlug({ tenantId }, q.slug);
+    // A valid site-preview token serves the DRAFT page (the editor's Preview tab);
+    // otherwise the published snapshot.
+    const preview = tryVerifySitePreview(app, request, tenantId);
+    const page = preview
+      ? await pageService.getDraftBySlug({ tenantId }, q.slug)
+      : await pageService.getPublishedBySlug({ tenantId }, q.slug);
     if (!page) throw notFound('Builder page', q.slug);
     return ok(page);
   });
@@ -72,7 +82,14 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/builder/styles', async (request) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
-    return ok(await surfaceCssService.getPublishedStylesheet({ tenantId }));
+    // Under a site-preview token, serve the DRAFT sheet (a superset) so classes
+    // added since the last publish resolve in the preview tab.
+    const preview = tryVerifySitePreview(app, request, tenantId);
+    return ok(
+      preview
+        ? await surfaceCssService.getDraftStylesheet({ tenantId })
+        : await surfaceCssService.getPublishedStylesheet({ tenantId })
+    );
   });
 
   return Promise.resolve();

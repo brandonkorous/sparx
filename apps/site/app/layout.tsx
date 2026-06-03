@@ -48,6 +48,11 @@ import './site.css';
 // The custom-section template primitives (sf-tpl-*), shared with the dashboard
 // Section Studio preview so both render identically (docs/38 Phase C).
 import '@sparx/section-template-react/section-template.css';
+// The Surface component library (docs/46/47): the tenant-themed `sf-*` component
+// + recipe classes that authored `node.class` strings resolve against. Loaded
+// LAST so it owns the `sf-*` component vocabulary (supersedes the legacy
+// component rules in site.css). Plain compiled CSS — no preflight, --sf-* keyed.
+import '@sparx/site-ui/styles.css';
 
 const FOOTER_YEAR = 2026; // static so SSR output stays deterministic/cacheable
 const THEME_COOKIE = 'sparx_theme';

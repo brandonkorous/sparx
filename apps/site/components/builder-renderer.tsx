@@ -28,6 +28,19 @@ import {
   type Surface,
 } from '@sparx/builder-schemas';
 
+import {
+  Divider,
+  EmbedFrame,
+  Heading,
+  Image,
+  Logo,
+  NavMenu,
+  PriceTag,
+  SocialLinks,
+  Stat,
+  Text,
+} from '@sparx/site-ui';
+
 import { BuilderCarousel } from './builder-carousel';
 import {
   BuilderAddToCart,
@@ -117,6 +130,27 @@ const TEXT_ALIGN: Record<AlignX, 'left' | 'center' | 'right'> = {
 };
 
 const CONTAINERS = new Set(['Section', 'Grid', 'Stack', 'Card', 'Carousel', 'ProductForm']);
+
+// Presentational leaves whose Surface component (or, for Button, the recipe class)
+// owns the node's brand class ON ITS OWN ELEMENT (docs/47 §7). For these the box
+// wrapper omits node.class, so the class lands on exactly one element and never
+// double-paints. Leaves NOT listed (the interactive commerce atoms, Outlet) keep
+// the additive class on the box wrapper.
+const CLASS_ON_LEAF = new Set([
+  'Heading',
+  'Text',
+  'Button',
+  'Stat',
+  'Divider',
+  'PriceTag',
+  'Image',
+  'ImageDisplay',
+  'Video',
+  'Map',
+  'Logo',
+  'NavMenu',
+  'SocialLinks',
+]);
 
 function layoutStyle(layout: LayoutBase): React.CSSProperties {
   const gap = GAP[layout.gap];
@@ -239,64 +273,8 @@ function parseNavLinks(raw: string): { label: string; url: string }[] {
     })
     .filter((l) => l.label !== '');
 }
-const EMBED_RATIO: Record<string, string> = {
-  wide: '16 / 9',
-  square: '1 / 1',
-  portrait: '9 / 16',
-  pano: '21 / 9',
-};
-function embedFrame(src: string, title: string, ratio: string): React.ReactNode {
-  return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        aspectRatio: EMBED_RATIO[ratio] ?? '16 / 9',
-        borderRadius: 'var(--sf-radius-box)',
-        overflow: 'hidden',
-        background: 'var(--sf-base-300)',
-      }}
-    >
-      <iframe
-        src={src}
-        title={title}
-        loading="lazy"
-        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        referrerPolicy="no-referrer-when-downgrade"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }}
-      />
-    </div>
-  );
-}
-
 // ── Leaf rendering ─────────────────────────────────────────────────────────
 
-const HEADING_SIZE: Record<string, string> = { h1: '2.5rem', h2: '1.75rem', h3: '1.25rem' };
-
-function headingStyle(level: string): React.CSSProperties {
-  return {
-    fontFamily: 'var(--sf-font-heading)',
-    fontWeight: 600,
-    lineHeight: 1.15,
-    fontSize: HEADING_SIZE[level] ?? '1.75rem',
-    margin: 0,
-  };
-}
-function textStyle(variant: string): React.CSSProperties {
-  if (variant === 'eyebrow') {
-    return {
-      textTransform: 'uppercase',
-      letterSpacing: '0.08em',
-      fontSize: '0.75rem',
-      fontWeight: 600,
-      color: 'var(--sf-primary)',
-      margin: 0,
-    };
-  }
-  if (variant === 'meta') return { fontSize: '0.85rem', color: 'var(--sf-text-muted)', margin: 0 };
-  return { fontSize: '1rem', lineHeight: 1.6, color: 'inherit', margin: 0 };
-}
 function buttonStyle(style: string): React.CSSProperties {
   if (style === 'link') {
     return { color: 'var(--sf-primary)', textDecoration: 'underline', fontWeight: 600 };
@@ -320,30 +298,54 @@ function buttonStyle(style: string): React.CSSProperties {
     return { ...frosted, background: 'rgba(255,255,255,0.86)', color: '#171a23' };
   return { ...base, background: 'var(--sf-primary)', color: 'var(--sf-primary-content)' };
 }
-function ratioOf(r: string): string {
-  return r === 'square' ? '1 / 1' : r === 'portrait' ? '3 / 4' : '16 / 9';
-}
 
-function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.ReactNode {
+function renderLeaf(
+  node: BuilderNode,
+  value: unknown,
+  bound: boolean,
+  /** The node's brand class, threaded here for leaves that style themselves by
+   *  class (Button) rather than via the box wrapper. Undefined otherwise. */
+  leafClass?: string
+): React.ReactNode {
   const p = node.props;
   const str = (k: string): string => (typeof p[k] === 'string' ? p[k] : '');
   switch (node.type) {
     case 'Heading': {
-      const level = str('level') || 'h2';
-      const Tag = (level === 'h1' ? 'h1' : level === 'h3' ? 'h3' : 'h2') as 'h1';
-      return <Tag style={headingStyle(level)}>{bound ? asText(value) : str('text')}</Tag>;
-    }
-    case 'Text':
+      const level = (str('level') || 'h2') as 'h1' | 'h2' | 'h3';
       return (
-        <p style={textStyle(str('variant') || 'body')}>{bound ? asText(value) : str('text')}</p>
+        <Heading level={level} className={leafClass}>
+          {bound ? asText(value) : str('text')}
+        </Heading>
       );
+    }
+    case 'Text': {
+      const variant = (str('variant') || 'body') as 'body' | 'eyebrow' | 'meta';
+      return (
+        <Text variant={variant} className={leafClass}>
+          {bound ? asText(value) : str('text')}
+        </Text>
+      );
+    }
     case 'Button': {
       const label = (bound ? asText(value) : '') || str('label') || 'Button';
-      const style = buttonStyle(str('style') || 'primary');
       // A `href` turns the button into a real link (internal path or absolute
       // URL); without one it stays a non-navigating span (e.g. a future
       // form-submit / add-to-cart action owns its own behavior).
       const href = str('href');
+      // Class-first (docs/47 §7): a Surface-classed button renders the recipe
+      // class — `sf-btn sf-c-* sf-v-* sf-btn--sz-*` — on the element ITSELF,
+      // resolved against the loaded `@sparx/site-ui` stylesheet. Legacy trees with
+      // no class fall back to the inline `style`-prop treatment.
+      if (leafClass) {
+        return href ? (
+          <a href={href} className={leafClass}>
+            {label}
+          </a>
+        ) : (
+          <span className={leafClass}>{label}</span>
+        );
+      }
+      const style = buttonStyle(str('style') || 'primary');
       return href ? (
         <a href={href} style={{ ...style, textDecoration: 'none' }}>
           {label}
@@ -364,78 +366,43 @@ function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.Re
     case 'AddToCart':
       return <BuilderAddToCart label={str('label') || undefined} />;
     case 'Divider':
-      return (
-        <hr
-          style={{ border: 0, borderTop: '1px solid var(--sf-border)', width: '100%', margin: 0 }}
-        />
-      );
+      return <Divider className={leafClass} />;
     case 'PriceTag': {
       const n = typeof value === 'number' ? value : null;
-      return <span style={{ fontWeight: 600 }}>{n != null ? `$${n.toFixed(2)}` : ''}</span>;
+      return <PriceTag amount={n} className={leafClass} />;
     }
     case 'Image':
     case 'ImageDisplay': {
-      const ratio = ratioOf(str('ratio'));
+      const ratio = (str('ratio') || 'wide') as 'wide' | 'square' | 'portrait';
       const img = bound ? firstImage(value) : null;
-      if (img?.url) {
-        // Plain <img>: media URLs 302-redirect to GCS; next/image optimization
-        // is a later pass (consistent with the rest of the storefront).
-        return (
-          <img
-            src={img.url}
-            alt={img.alt ?? str('alt')}
-            style={{
-              width: '100%',
-              aspectRatio: ratio,
-              objectFit: 'cover',
-              borderRadius: 'var(--sf-radius-box)',
-              display: 'block',
-            }}
-          />
-        );
-      }
       return (
-        <div
-          role="img"
-          aria-label={img?.alt ?? str('alt')}
-          style={{
-            width: '100%',
-            aspectRatio: ratio,
-            background: 'var(--sf-base-300)',
-            borderRadius: 'var(--sf-radius-box)',
-          }}
-        />
+        <Image src={img?.url} alt={img?.alt ?? str('alt')} ratio={ratio} className={leafClass} />
       );
     }
     case 'Video': {
       const src = youtubeEmbed(str('url'));
-      const ratio = str('ratio') || 'wide';
+      const ratio = (str('ratio') || 'wide') as 'wide' | 'square' | 'portrait';
       if (!src) return null;
-      return embedFrame(src, node.box.name ?? 'Video', ratio);
+      return (
+        <EmbedFrame
+          src={src}
+          title={node.box.name ?? 'Video'}
+          ratio={ratio}
+          className={leafClass}
+        />
+      );
     }
     case 'Map': {
       const src = mapEmbed(str('query'), str('embedUrl'));
-      const ratio = str('ratio') || 'pano';
+      const ratio = (str('ratio') || 'pano') as 'wide' | 'square' | 'portrait' | 'pano';
       if (!src) return null;
-      return embedFrame(src, node.box.name ?? 'Map', ratio);
+      return (
+        <EmbedFrame src={src} title={node.box.name ?? 'Map'} ratio={ratio} className={leafClass} />
+      );
     }
     case 'Stat': {
       const big = (bound ? asText(value) : '') || str('value') || '0';
-      return (
-        <span style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-          <span
-            style={{
-              fontFamily: 'var(--sf-font-heading)',
-              fontWeight: 700,
-              fontSize: '2.25rem',
-              lineHeight: 1,
-            }}
-          >
-            {big}
-          </span>
-          <span style={{ fontSize: '0.9rem', color: 'var(--sf-text-muted)' }}>{str('label')}</span>
-        </span>
-      );
+      return <Stat value={big} label={str('label')} className={leafClass} />;
     }
     // ── Site chrome (docs/45) ────────────────────────────────────────────────
     case 'Logo': {
@@ -443,39 +410,10 @@ function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.Re
         value && typeof value === 'object' ? (value as { name?: unknown; logo?: unknown }) : null;
       const name = typeof identity?.name === 'string' ? identity.name : '';
       const img = firstImage(identity?.logo);
-      return (
-        <a
-          href="/"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            color: 'inherit',
-            textDecoration: 'none',
-          }}
-        >
-          {img?.url ? (
-            <img
-              src={img.url}
-              alt={img.alt ?? name}
-              style={{ height: '2rem', width: 'auto', display: 'block' }}
-            />
-          ) : (
-            <span
-              style={{
-                fontFamily: 'var(--sf-font-heading)',
-                fontWeight: 700,
-                fontSize: '1.25rem',
-                letterSpacing: '-0.02em',
-              }}
-            >
-              {name || 'Brand'}
-            </span>
-          )}
-        </a>
-      );
+      return <Logo name={name} src={img?.url} alt={img?.alt ?? name} className={leafClass} />;
     }
     case 'NavMenu': {
-      const orientation = str('orientation') || 'row';
+      const orientation = (str('orientation') || 'row') as 'row' | 'stack';
       const boundItems = Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
       // Bound CMS menu wins; otherwise fall back to hand-typed links (the
       // unbound nav case — e.g. a static header). Empty → render nothing.
@@ -489,59 +427,15 @@ function renderLeaf(node: BuilderNode, value: unknown, bound: boolean): React.Re
               .filter((l) => l.label !== '')
           : parseNavLinks(str('links'));
       if (list.length === 0) return null;
-      return (
-        <nav
-          style={{
-            display: 'flex',
-            flexDirection: orientation === 'stack' ? 'column' : 'row',
-            gap: orientation === 'stack' ? '0.5rem' : '1.25rem',
-            flexWrap: 'wrap',
-            alignItems: orientation === 'stack' ? 'flex-start' : 'center',
-          }}
-        >
-          {list.map((it, i) => (
-            <a
-              key={`${i}-${it.label}`}
-              href={it.url}
-              style={{
-                color: 'inherit',
-                textDecoration: 'none',
-                fontWeight: 500,
-                fontSize: '0.95rem',
-              }}
-            >
-              {it.label}
-            </a>
-          ))}
-        </nav>
-      );
+      return <NavMenu items={list} orientation={orientation} className={leafClass} />;
     }
     case 'SocialLinks': {
-      const items = Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
-      if (items.length === 0) return null;
-      return (
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          {items.map((it, i) => {
-            const platform = typeof it.platform === 'string' ? it.platform : '';
-            const url = typeof it.url === 'string' ? it.url : '#';
-            return (
-              <a
-                key={`${i}-${platform}`}
-                href={url}
-                aria-label={platform || 'social link'}
-                style={{
-                  color: 'inherit',
-                  textDecoration: 'none',
-                  fontSize: '0.85rem',
-                  textTransform: 'capitalize',
-                }}
-              >
-                {platform}
-              </a>
-            );
-          })}
-        </div>
-      );
+      const raw = Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
+      const items = raw.map((it) => ({
+        platform: typeof it.platform === 'string' ? it.platform : '',
+        url: typeof it.url === 'string' ? it.url : '#',
+      }));
+      return <SocialLinks items={items} className={leafClass} />;
     }
     // Outlet is handled in RenderNode (it renders the routed page, not a leaf
     // value); Signup (interactive) lands later.
@@ -564,6 +458,11 @@ function RenderNode({
   outlet?: React.ReactNode;
 }): React.ReactNode {
   const isContainer = CONTAINERS.has(node.type);
+  // Class-first (docs/47 §7): a presentational leaf carries node.class on its OWN
+  // element (its Surface component / the Button recipe), via renderLeaf; every
+  // other node carries it on the box wrapper. Exactly one element per node → no
+  // double-paint with the box engine (which never styled the leaf element itself).
+  const leafStylesByClass = !isContainer && CLASS_ON_LEAF.has(node.type);
   const bound = Boolean(node.binding);
   const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
   const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
@@ -669,7 +568,7 @@ function RenderNode({
       ));
     }
   } else {
-    body = renderLeaf(node, value, bound);
+    body = renderLeaf(node, value, bound, leafStylesByClass ? node.class : undefined);
   }
 
   // A ProductForm container establishes the shared buy-box context over its
@@ -682,11 +581,17 @@ function RenderNode({
   }
 
   // The class-first authoring surface (docs/47): the node's brand-governed class
-  // string rides on the box element alongside the engine's inline box styles, so
-  // the published page and the editor canvas emit the same class. Absent on
+  // string rides on the box wrapper alongside the engine's inline box styles, so
+  // the published page and the editor canvas emit the same class. The exception is
+  // a leaf that styles itself by class (Button) — there the class lives on the
+  // element via renderLeaf, so the wrapper omits it (no double-paint). Absent on
   // legacy trees → no className. The box→CSS engine still owns layout/structure.
   return (
-    <div className={node.class} style={outer} data-bx-type={node.type}>
+    <div
+      className={leafStylesByClass ? undefined : node.class}
+      style={outer}
+      data-bx-type={node.type}
+    >
       <div style={innerStyle}>{body}</div>
     </div>
   );

@@ -4,6 +4,7 @@
 // import from the editor's client components AND the server service layer.
 
 export * from './node';
+export * from './class-utils';
 export * from './page';
 export * from './layout';
 export * from './starters';

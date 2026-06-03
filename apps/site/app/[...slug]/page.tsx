@@ -7,7 +7,7 @@ import { notFound } from 'next/navigation';
 import { resolveTenant } from '@/lib/tenant';
 import { getPageBySlug } from '@/lib/content';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
-import { getPublishedBuilderPage } from '@/lib/builder';
+import { getPublishedBuilderPage, getPublishedBuilderStyles } from '@/lib/builder';
 import { loadBuilderData } from '@/lib/builder-data';
 import { PageView } from '@/components/page-view';
 import { SectionRenderer } from '@/components/section-renderer';
@@ -28,10 +28,17 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   const tenant = await resolveTenant();
   if (!tenant) return {};
   const slug = buildSlug((await params).slug);
-  const previewToken = (await searchParams)?.sparxPreview;
+  const sp = await searchParams;
+  const previewToken = sp?.sparxPreview;
+  const sitePreview = sp?.sparxSitePreview;
 
-  // A Builder page owns its slug — title it from the page name (docs/44).
-  const builderPage = await getPublishedBuilderPage(tenant.slug, slug);
+  // A Builder page owns its slug — title it from the page name (docs/44). Under a
+  // site-preview token, the DRAFT page's name.
+  const builderPage = await getPublishedBuilderPage(
+    tenant.slug,
+    slug,
+    sitePreview ? { previewToken: sitePreview } : {}
+  );
   if (builderPage) {
     return { title: `${builderPage.name} · ${tenant.name}`, robots: { index: true, follow: true } };
   }
@@ -62,11 +69,30 @@ export default async function StorefrontPage({ params, searchParams }: SlugPageP
 
   // A published Builder page owns its slug (docs/44 §2.5): if one exists, render
   // it and skip the legacy Site-Builder-sections + CMS-page paths entirely. Its
-  // bindings resolve against real records fetched per source (docs/44 §3 A.2).
-  const builderPage = await getPublishedBuilderPage(tenant.slug, slug);
+  // bindings resolve against real records fetched per source (docs/44 §3 A.2). A
+  // valid `?sparxSitePreview=<token>` swaps in the DRAFT page (docs/45 §2.6).
+  const sitePreview = sp.sparxSitePreview;
+  const builderPage = await getPublishedBuilderPage(
+    tenant.slug,
+    slug,
+    sitePreview ? { previewToken: sitePreview } : {}
+  );
   if (builderPage) {
     const data = await loadBuilderData(tenant.slug, builderPage.tree);
-    return <BuilderRenderer tree={builderPage.tree} data={data} />;
+    // In preview, inject the DRAFT Surface sheet so classes authored since the
+    // last publish resolve (the layout injects only the published sheet). A plain
+    // inline <style> in the body lands after it, simply adding the missing rules.
+    const draftCss = sitePreview
+      ? await getPublishedBuilderStyles(tenant.slug, { previewToken: sitePreview })
+      : '';
+    return (
+      <>
+        {draftCss ? (
+          <style data-surface-preview dangerouslySetInnerHTML={{ __html: draftCss }} />
+        ) : null}
+        <BuilderRenderer tree={builderPage.tree} data={data} />
+      </>
+    );
   }
 
   const [page, snapshot] = await Promise.all([

@@ -198,6 +198,9 @@ importers:
       '@sparx/site-themes':
         specifier: workspace:*
         version: link:../../packages/site-themes
+      '@sparx/site-ui':
+        specifier: workspace:*
+        version: link:../../packages/site-ui
       '@sparx/sitebuilder-schemas':
         specifier: workspace:*
         version: link:../../packages/sitebuilder-schemas

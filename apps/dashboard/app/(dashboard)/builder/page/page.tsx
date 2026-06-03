@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import type { BindingCatalog, BuilderLayoutDto, BuilderPageDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
-import { getBrand, getConfig } from '../../sitebuilder/_lib/api';
+import { getBrand, getConfig, getTenant } from '../../sitebuilder/_lib/api';
+import { storefrontOrigin } from '../../sitebuilder/_lib/storefront';
 import { getActiveLayout, getBindingCatalog, listPages } from '../_lib/api';
 import { BuilderApp } from '../_builder/builder-app';
 import '../builder.css';
@@ -73,17 +74,36 @@ async function loadLayout(): Promise<BuilderLayoutDto | null> {
   }
 }
 
+// The tenant slug + live-site origin, so the editor's "Preview" tab can open the
+// page's draft on the real site (docs/45 §2.6). Defensive: a failed read yields
+// null → the Preview button stays disabled, the rest of the editor is unaffected.
+async function loadSiteContext(): Promise<{ slug: string; origin: string } | null> {
+  try {
+    const tenant = await getTenant();
+    return { slug: tenant.slug, origin: storefrontOrigin(tenant.slug) };
+  } catch {
+    return null;
+  }
+}
+
 export default async function BuilderPageRoute() {
-  const [themeCss, pages, catalog, layout] = await Promise.all([
+  const [themeCss, pages, catalog, layout, site] = await Promise.all([
     canvasThemeCss(),
     loadPages(),
     loadCatalog(),
     loadLayout(),
+    loadSiteContext(),
   ]);
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-      <BuilderApp initialPages={pages} bindingCatalog={catalog} layoutTree={layout?.tree ?? null} />
+      <BuilderApp
+        initialPages={pages}
+        bindingCatalog={catalog}
+        layoutTree={layout?.tree ?? null}
+        tenantSlug={site?.slug}
+        siteOrigin={site?.origin}
+      />
     </>
   );
 }

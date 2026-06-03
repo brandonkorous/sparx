@@ -256,6 +256,29 @@ export function getPublishedBySlug(
   });
 }
 
+/** The DRAFT read for preview (docs/45 §2.6 — the site-preview path): the page's
+ *  unsaved DRAFT tree by slug, or null when no page owns that slug. Mirrors
+ *  getPublishedBySlug but returns `draftTree` with NO published gate, so the
+ *  editor's "Preview" tab shows work that hasn't been published. The public route
+ *  only calls this behind a valid site-preview token (the tenant's own draft). */
+export function getDraftBySlug(
+  ctx: ServiceContext,
+  slug: string
+): Promise<PublishedPageDto | null> {
+  return withTenant(ctx, async (tx) => {
+    const row = await tx.builderPage.findFirst({ where: { slug } });
+    if (!row) return null;
+    return {
+      name: row.name,
+      slug: row.slug ?? slug,
+      kind: row.kind as BuilderPageKind,
+      recordType: row.recordType,
+      tree: row.draftTree as unknown as BuilderNode,
+      publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
+    };
+  });
+}
+
 /** The collection-template read (docs/44 §3 B — the generic record router): the
  *  PUBLISHED tree of the collection page that renders EVERY record of
  *  `recordType` (e.g. `commerce.product`, `cms.page`, `cms.blog_post`), or null

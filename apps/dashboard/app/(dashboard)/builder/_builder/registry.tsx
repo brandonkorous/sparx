@@ -98,6 +98,12 @@ export interface ComponentDef {
     box?: Partial<BoxBase>;
     layout?: Partial<LayoutBase>;
     props?: Record<string, unknown>;
+    /** Archetype seed (docs/47 §11): the brand-governed class bundle a freshly
+     *  dropped node carries (e.g. a Button → `sf-btn sf-c-primary sf-v-solid
+     *  sf-btn--sz-md`). The inspector's Style controls then read / write its
+     *  `sf-c-*` / `sf-v-*` groups; the published site renders the real Surface
+     *  component against the loaded `@sparx/site-ui` stylesheet. */
+    class?: string;
   };
   /** Extra chrome class for containers (e.g. Card border). */
   chromeClass?: string;
@@ -349,21 +355,18 @@ const DEFS: ComponentDef[] = [
         control: 'text',
         placeholder: '/products/model-3 or https://…',
       },
-      {
-        key: 'style',
-        label: 'Style',
-        control: 'select',
-        options: [
-          { value: 'primary', label: 'Primary (solid brand)' },
-          { value: 'soft', label: 'Soft' },
-          { value: 'dark', label: 'Dark (solid)' },
-          { value: 'glass', label: 'Glass (translucent)' },
-          { value: 'link', label: 'Link' },
-        ],
-      },
     ],
-    defaults: { props: { label: 'Button', style: 'primary', href: '' } },
+    // Archetype (docs/47): a fresh Button IS the Surface button — the recipe's
+    // base + a default colour/treatment/size. The inspector's Style panel drives
+    // `sf-c-*` / `sf-v-*` from here, retiring the old freeform `style` prop (legacy
+    // trees that still carry `props.style` keep rendering via the canvas fallback).
+    defaults: {
+      props: { label: 'Button', href: '' },
+      class: 'sf-btn sf-c-primary sf-v-solid sf-btn--sz-md',
+    },
     renderLeaf: ({ node, value, bound }) => {
+      // Editor preview: the canvas carries no Surface stylesheet, so show the
+      // neutral primitive chrome (legacy `props.style` still previews its variant).
       const style = (node.props.style as string) ?? 'primary';
       const label = bound ? firstString(value, 'Button') : firstString(node.props.label, 'Button');
       return <span className={`bx-btn bx-btn--${style}`}>{label}</span>;
@@ -814,6 +817,7 @@ export function makeNode(type: string): BuilderNode {
     box: { ...DEFAULT_BOX, ...def.defaults.box },
     props: { ...def.defaults.props },
   };
+  if (def.defaults.class) out.class = def.defaults.class;
   if (def.kind === 'container') out.layout = { ...DEFAULT_LAYOUT, ...def.defaults.layout };
   if (def.kind === 'container') out.children = [];
   return out;

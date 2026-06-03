@@ -76,6 +76,13 @@ export async function publishPage(id: string): Promise<ActionResult<BuilderPageD
   return run(() => api.post<BuilderPageDto>(`/v1/builder/pages/${id}/publish`), true);
 }
 
+/** Mint a short-lived site-preview token so the editor's "Preview" tab can open
+ *  the live site showing this page's DRAFT (docs/45 §2.6). No revalidate — it's a
+ *  read that returns a fresh token each call. */
+export async function mintBuilderPreviewToken(): Promise<ActionResult<{ token: string }>> {
+  return run(() => api.get<{ token: string }>('/v1/builder/preview-token'), false);
+}
+
 export async function reorderPages(
   orderedIds: string[]
 ): Promise<ActionResult<{ pages: BuilderPageDto[] }>> {
