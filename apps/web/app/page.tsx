@@ -1,5 +1,6 @@
 import { Nav } from '@/components/marketing/nav';
 import { Hero } from '@/components/marketing/hero';
+import { Permanence } from '@/components/marketing/permanence';
 import { LogoStrip } from '@/components/marketing/logo-strip';
 import { StackReplacement } from '@/components/marketing/stack-replacement';
 import { ModulesGrid } from '@/components/marketing/modules-grid';
@@ -20,6 +21,7 @@ export default function HomePage() {
     <main>
       <Nav />
       <Hero />
+      <Permanence />
       <LogoStrip />
       <StackReplacement />
       <ModulesGrid />
