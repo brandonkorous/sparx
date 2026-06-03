@@ -8,7 +8,11 @@
 //
 // Best-effort by design: installing from a tarball or building in a Docker
 // layer without a `.git` dir should never fail the install, so a non-zero
-// `git config` (or missing git) is swallowed.
+// `git config` (or missing git) is swallowed here. The Docker install layer
+// also doesn't COPY this `scripts/` dir (only package.json + lockfile, for
+// cache reuse), so the file itself can be absent — that case is handled one
+// level up by `|| exit 0` on the root `prepare` script, since Node can't catch
+// its own MODULE_NOT_FOUND.
 
 import { execSync } from 'node:child_process';
 
