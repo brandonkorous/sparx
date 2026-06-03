@@ -1,5 +1,5 @@
 # Reference template for a Sparx app Deployment. Copy + adapt for api-graphql,
-# api-mcp, dashboard, storefront, marketing. See apps/README.md.
+# api-mcp, dashboard, site, marketing. See apps/README.md.
 ---
 apiVersion: apps/v1
 kind: Deployment

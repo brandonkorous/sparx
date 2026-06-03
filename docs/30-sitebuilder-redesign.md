@@ -277,7 +277,7 @@ This is the single highest-leverage fix and lands first.
 **Root cause.** `preview-frame.tsx` and `customizer.tsx` set the iframe src to
 `?sparxPreview=1`. The storefront treats `sparxPreview` as a **JWT preview token**, forwards it
 as `Authorization: Preview <jwt>`, and on an invalid/expired token **deliberately retries
-without preview**, returning the _published_ snapshot ([apps/storefront/lib/content.ts](../apps/storefront/lib/content.ts)).
+without preview**, returning the _published_ snapshot ([apps/site/lib/content.ts](../apps/site/lib/content.ts)).
 `1` is never a valid token, so the preview always renders published. Section edits save
 correctly but never appear; token (color) edits only _seem_ to work because the customizer
 injects them via `postMessage` CSS variables, bypassing the snapshot fetch entirely.

@@ -42,7 +42,7 @@ The interpreter does **not** replace the existing code-section path — it exten
   `SECTION_REGISTRY` first, then the tenant's custom definitions (resolved with tenant context). A custom def
   yields a `SectionDefinition` whose `schema` is **derived** from its field spec (§6) and whose render is the
   interpreter, not a React component.
-- **Dispatch.** [section-renderer.tsx](../../apps/storefront/components/section-renderer.tsx) gains one branch:
+- **Dispatch.** [section-renderer.tsx](../../apps/site/components/section-renderer.tsx) gains one branch:
   a code `sectionType` hits the existing component map; a `custom:*` type is interpreted. The existing
   "skip unknown type" behavior stays as the final fallback.
 - **Validation.** `parseSectionConfig` is unchanged in contract — it still validates + defaults config against
@@ -76,7 +76,7 @@ The node set is **closed** — additive only by the platform.
 | `RichText` | `html` _value-expr_ (must reference a `richtext` field)                                                         | `<div class="sf-prose">` — **sanitized**                                                                                               |
 | `Image`    | `src` _value-expr_ (media ref) · `alt` _value-expr_ · `ratio` auto\|1:1\|4:3\|16:9\|21:9 · `fit` cover\|contain | `<img class="sf-tpl-img" data-*>` — `src` resolved via the storefront media resolver                                                   |
 | `Icon`     | `name` _value-expr_ (allowlisted lucide name) · `size` sm\|md\|lg · `tone`                                      | inline SVG from the bundled lucide subset, `sf-tpl-icon[data-*]`                                                                       |
-| `Button`   | `label` _value-expr_ · `url` _value-expr_ · `variant` solid\|light\|dark\|ghost\|link                           | `SbLink` + `sf-btn sf-btn--{variant}` (the exact CTA mapping in [\_shared.tsx](../../apps/storefront/components/sections/_shared.tsx)) |
+| `Button`   | `label` _value-expr_ · `url` _value-expr_ · `variant` solid\|light\|dark\|ghost\|link                           | `SbLink` + `sf-btn sf-btn--{variant}` (the exact CTA mapping in [\_shared.tsx](../../apps/site/components/sections/_shared.tsx)) |
 | `Link`     | `label` · `url`                                                                                                 | `SbLink` + `sf-tpl-link`                                                                                                               |
 | `Divider`  | —                                                                                                               | `<hr class="sf-tpl-divider">`                                                                                                          |
 | `Spacer`   | `size` sm\|md\|lg\|xl                                                                                           | `sf-tpl-spacer[data-size]`                                                                                                             |
@@ -131,7 +131,7 @@ bound, but the resolved value must be a valid enum token or the interpreter fall
 
 The interpreter emits **only** the closed `sf-tpl-*` family plus the existing `sf-*` classes it reuses
 (`sf-h1/2/3`, `sf-prose`, `sf-btn--*`, `sf-cta-row`). The family is defined **once** in
-[storefront.css](../../apps/storefront/app/storefront.css), every value reading a `--sf-*` token — identical
+[storefront.css](../../apps/site/app/storefront.css), every value reading a `--sf-*` token — identical
 to how `sf-sb-panels[data-cols]` / `sf-sb-hero[data-height]` already work. Consequences:
 
 - Tenant `StorefrontTheme` overrides + light/dark cascade in automatically (token-driven).
@@ -326,8 +326,8 @@ applied to local docker; prod applies via the DB Migrate pipeline on push.
   the custom-aware lookups (`resolveSectionDefinition` / `parseSectionConfigWith` /
   `isSectionAllowedInTargetWith` / `mergedSectionsForTarget`), the `SectionField[]` CRUD schema, and the
   `SectionDefinitionInput` write contract. `CreateSectionInput.sectionType` now accepts code OR `custom:<slug>`.
-- ✅ Storefront (React): the thin interpreter [`custom-template.tsx`](../../apps/storefront/components/sections/custom-template.tsx),
-  the bundled icon subset, the `sf-tpl-*` CSS family ([`storefront-template.css`](../../apps/storefront/app/storefront-template.css)),
+- ✅ Storefront (React): the thin interpreter [`custom-template.tsx`](../../apps/site/components/sections/custom-template.tsx),
+  the bundled icon subset, the `sf-tpl-*` CSS family ([`storefront-template.css`](../../apps/site/app/storefront-template.css)),
   **and the `SectionRenderer` `custom:*` branch** — it resolves a section's pinned template from
   `snapshot.definitions` (threaded through all four page routes) and renders it. Image node = token-driven
   background-image div, not `<img>`.

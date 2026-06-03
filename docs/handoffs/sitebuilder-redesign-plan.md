@@ -29,7 +29,7 @@ corrected; brand becomes one source of truth. No new editor shell yet.
 - [x] Add a server action/endpoint that mints a Site Builder preview-token JWT (mirror CMS `/v1/content/preview-tokens`), scoped to tenant + page/scope.
 - [x] Replace the literal `sparxPreview=1` with the minted token in `preview-frame.tsx` and `customizer.tsx`.
 - [x] On every section save/mutation, re-fetch/refresh the canvas so the change shows without a manual reload.
-- [x] Confirm the storefront draft path (`apps/storefront/lib/content.ts` + `site.ts`) returns the draft for a valid token — expect **no** storefront change.
+- [x] Confirm the storefront draft path (`apps/site/lib/content.ts` + `site.ts`) returns the draft for a valid token — expect **no** storefront change.
 - [~] **Acceptance (Playwright):** _(pending deploy)_ edit a hero heading → Save → the preview shows the new value. Re-run the exact repro that failed in the eval.
 
 ### 1B · Padding, container & craft details (§10)
@@ -240,7 +240,7 @@ before build.
 **Now (independent, ships first):**
 
 - [x] **S0 · Sample-data preview (doc 36 §9)** — DONE + green + runtime-verified (2026-05-31). Always-on,
-      storefront-only, no schema change. NEW `apps/storefront/lib/sample-data.ts` (`SAMPLE_PRODUCT` +
+      storefront-only, no schema change. NEW `apps/site/lib/sample-data.ts` (`SAMPLE_PRODUCT` +
       extras, `SAMPLE_COLLECTION` + 8 grid items, `isSampleRequested(sp)` gate = `sparxSampleData=1` AND a
       `sparxSitePreview` token present — off the public site entirely). PDP + PLP take a `sample` branch:
       use the fixtures + skip the catalog fetch (and the `notFound`), layout still resolves from the draft

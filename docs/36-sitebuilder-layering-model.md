@@ -143,7 +143,7 @@ page can host a "related products" section, or "related blog posts," or "similar
 a `related-products` bound section — today restricted to commerce — becomes available inside a CMS
 content-page layout, resolving against a configured product set. The renderer already supports this:
 bound sections render purely from `SectionContext` and don't care where the data came from
-([section-renderer.tsx](../apps/storefront/components/section-renderer.tsx)). Cross-module availability
+([section-renderer.tsx](../apps/site/components/section-renderer.tsx)). Cross-module availability
 is a registry change (which targets a section declares), not a renderer change.
 
 ---

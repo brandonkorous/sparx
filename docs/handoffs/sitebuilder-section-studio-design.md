@@ -65,7 +65,7 @@ adapters**, so the storefront uses it as an RSC and the dashboard wraps it in a 
 
 - **Exports:** `<TemplateRenderer node config ctx adapters />` (the AST walk → `sf-tpl-*` markup, calling the
   shared pure evaluator from `@sparx/sitebuilder-schemas`); the bundled `<TemplateIcon>` + `TEMPLATE_ICON_NAMES`;
-  and `section-template.css` (the `sf-tpl-*` family, moved here from `apps/storefront/app/storefront-template.css`).
+  and `section-template.css` (the `sf-tpl-*` family, moved here from `apps/site/app/storefront-template.css`).
 - **Adapters (injected):** `Link` (storefront → `SbLink` / next; dashboard → plain `<a>`), `resolveMediaSrc`
   (storefront → `mediaUrl(ref, tenantSlug)`; dashboard → placeholder or media API), so the package owns no
   app-specific deps.

@@ -63,7 +63,7 @@ are worse than the alternative.
 
 **For a shopper, the tenant is known _before_ authentication.** It is the storefront's
 hostname (`acme.sparx.zone`, or `?tenant=acme` in dev), resolved at the edge in
-[apps/storefront/middleware.ts](../apps/storefront/middleware.ts) and carried to `api-rest` as
+[apps/site/middleware.ts](../apps/site/middleware.ts) and carried to `api-rest` as
 the `?tenant=<slug>` param the public commerce surface already uses. Staff sign-in can't do
 this — a staff member types only an email, and the tenant is _discovered_ from their user row.
 A shopper's tenant is ambient context.
@@ -100,7 +100,7 @@ package"; customer auth gets its own clearly-named home.
 Browser (acme.sparx.zone)
   │  POST /api/sparx/v1/public/commerce/account/register   { email, password, name }
   ▼
-apps/storefront  /api/sparx/[...path]  (same-origin proxy)
+apps/site  /api/sparx/[...path]  (same-origin proxy)
   │  forwards to api-rest; relays Set-Cookie back as first-party on acme.sparx.zone
   ▼
 services/api-rest  /v1/public/commerce/account/*   (tenant by ?tenant=<slug>)
@@ -122,7 +122,7 @@ Two cookies coexist on the storefront origin, never colliding with staff auth (w
 | `sparx_customer_session` | this doc | authenticated shopper session         | httpOnly, SameSite=Lax, Secure, Path=/ |
 
 The proxy already relays `Set-Cookie` and `cookie` in both directions
-([apps/storefront/app/api/sparx/[...path]/route.ts](../apps/storefront/app/api/sparx/%5B...path%5D/route.ts)),
+([apps/site/app/api/sparx/[...path]/route.ts](../apps/site/app/api/sparx/%5B...path%5D/route.ts)),
 so no proxy change is needed beyond ensuring the customer cookie name is forwarded.
 
 ---
@@ -331,7 +331,7 @@ is a later enhancement.
 
 ---
 
-## 7. Storefront UI (`apps/storefront`)
+## 7. Storefront UI (`apps/site`)
 
 All token-driven `sf-*` classes (no Tailwind in feature code), responsive, with loading/empty/
 error states. New customer-session client mirrors the existing `cart-provider` pattern.

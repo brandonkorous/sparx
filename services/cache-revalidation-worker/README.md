@@ -43,7 +43,7 @@ verify locally). To finish wiring the trigger:
    `SPARX_REVALIDATE_SECRET` (from Secret Manager) + `PUBSUB_INVOKER_SA`.
 3. **Secret** — add `sparx-revalidate-secret` to the `secrets` module
    `secret_ids`, and set the same value as `SPARX_REVALIDATE_SECRET` on the
-   **storefront** deployment (`k8s/apps/storefront.yaml`).
+   **storefront** deployment (`k8s/apps/site.yaml`).
 4. **Build + deploy** — add `cache-revalidation-worker` to the image matrices
    in `.github/workflows/build-images.yml` and `deploy-prod.yml` (Cloud Run
    workers deploy via the serverless path, per the deploy-workflow split).

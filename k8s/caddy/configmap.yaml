@@ -146,7 +146,7 @@ data:
       redir https://sparx.works{uri} permanent
     }
 
-    # ----- Catch-all: tenant storefronts -----
+    # ----- Catch-all: tenant sites -----
     # Matches slug.sparx.zone (wildcard DNS) and any custom domain pointing
     # to customers.sparx.zone. The /internal/domain-check API decides if a
     # cert is issued.
@@ -154,5 +154,5 @@ data:
       tls {
         on_demand
       }
-      reverse_proxy storefront.sparx-prod.svc.cluster.local:3000
+      reverse_proxy site.sparx-prod.svc.cluster.local:3000
     }

@@ -1,4 +1,4 @@
-// apps/storefront ESLint — extends root + same "no raw Tailwind in feature
+// apps/site ESLint — extends root + same "no raw Tailwind in feature
 // code" enforcement as apps/web. Layout chrome should compose @sparx/ui
 // primitives; CMS-rendered content (TipTap → HTML) is sanitized inside
 // @sparx/cms-editor's serializer.

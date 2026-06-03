@@ -42,7 +42,7 @@ export const TOKEN_KEYS: readonly ThemeTokenKey[] = [
 ] as const;
 
 // Token → CSS custom properties it drives. Mirrors (and extends) the VAR_MAP
-// in apps/storefront/lib/theme.ts so light and dark share one mapping.
+// in apps/site/lib/theme.ts so light and dark share one mapping.
 export const TOKEN_CSS_VARS: Record<ThemeTokenKey, readonly string[]> = {
   colorPrimary: ['--sf-primary', '--sparx-primary', '--color-action-primary'],
   colorPrimaryForeground: ['--sf-on-primary'],

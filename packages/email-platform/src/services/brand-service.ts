@@ -29,7 +29,7 @@ import type { ServiceContext } from '../errors';
 const PUBLIC_API_BASE =
   process.env.SPARX_PUBLIC_API_URL ?? process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
-// Public, cacheable media redirect (mirrors apps/storefront/lib/media.ts) — an
+// Public, cacheable media redirect (mirrors apps/site/lib/media.ts) — an
 // absolute URL so an <img> renders in any mail client.
 function logoUrlFor(mediaId: string | null | undefined, tenantSlug: string): string | undefined {
   if (!mediaId) return undefined;

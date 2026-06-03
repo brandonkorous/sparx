@@ -20,7 +20,7 @@ function section(type: SectionType): DefaultTemplateSection {
   return { sectionType: type, config: defaultSectionConfig(type) };
 }
 
-// Product PDP order (apps/storefront/app/products/[handle]/page.tsx):
+// Product PDP order (apps/site/app/products/[handle]/page.tsx):
 // buy box → description → compatibility → reviews → Q&A → related.
 const PRODUCT_DEFAULT: DefaultTemplateSection[] = [
   section('product-buy-box'),
@@ -31,7 +31,7 @@ const PRODUCT_DEFAULT: DefaultTemplateSection[] = [
   section('product-related'),
 ];
 
-// Collection PLP order (apps/storefront/app/collections/[handle]/page.tsx):
+// Collection PLP order (apps/site/app/collections/[handle]/page.tsx):
 // header → product grid.
 const COLLECTION_DEFAULT: DefaultTemplateSection[] = [
   section('collection-header'),

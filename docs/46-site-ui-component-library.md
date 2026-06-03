@@ -22,7 +22,7 @@ A Builder primitive — say a CTA button or a photo panel — exists in two plac
 | Surface             | Where                                                                          | How it's styled                              |
 | ------------------- | ------------------------------------------------------------------------------ | -------------------------------------------- |
 | **Editor canvas**   | `apps/dashboard/app/(dashboard)/builder/_builder/registry.tsx` + `builder.css` | `.bx-btn`, `.bx-btn--primary`, … (`--bxc-*`) |
-| **Live storefront** | `apps/storefront/components/builder-renderer.tsx`                              | inline `style={buttonStyle(...)}` (`--sf-*`) |
+| **Live storefront** | `apps/site/components/builder-renderer.tsx`                              | inline `style={buttonStyle(...)}` (`--sf-*`) |
 
 Two implementations of one thing. The canvas knows `primary | soft | link`; the storefront
 (after the Tesla work) knows `primary | soft | dark | glass | link`. They already disagree.
@@ -43,7 +43,7 @@ Two component libraries, cleanly split by **whose brand they wear**:
 | Library                     | Theme tokens                                          | Wears the brand of    | Consumers                                                         |
 | --------------------------- | ----------------------------------------------------- | --------------------- | ----------------------------------------------------------------- |
 | `@sparx/ui` (`packages/ui`) | `--color-*`, `--module-active`, `--sparx-*`           | **Sparx** (the admin) | `apps/dashboard`, marketing `apps/web`                            |
-| `@sparx/site-ui` (this doc) | `--sf-*` (Token Model v2, [33](33-token-model-v2.md)) | **the tenant**        | `apps/storefront` chrome, the Builder renderer, the editor canvas |
+| `@sparx/site-ui` (this doc) | `--sf-*` (Token Model v2, [33](33-token-model-v2.md)) | **the tenant**        | `apps/site` chrome, the Builder renderer, the editor canvas |
 
 They never overlap. `@sparx/ui` is the operator's tools, in Sparx Indigo. `@sparx/site-ui` is
 the tenant's published site, in the tenant's brand. The dashboard chrome around the Builder
@@ -174,7 +174,7 @@ is imported **last** so a treatment's resets (e.g. `.sf-v-link` → `padding:0`)
 ## 4. The token contract (`--sf-*` `site-ui` consumes)
 
 These are produced by `@sparx/site-themes` (`colorVars` + `sharedVars` in
-`packages/site-themes/src/v2/css.ts`) and declared as fallbacks in `apps/storefront/app/storefront.css`.
+`packages/site-themes/src/v2/css.ts`) and declared as fallbacks in `apps/site/app/storefront.css`.
 Every `site-ui` class reads from this set:
 
 **Color** — `--sf-base-100/200/300`, `--sf-base-content`, `--sf-primary` (+ `-content`, `-hover`,
@@ -335,7 +335,7 @@ no unstyled frame to flash.
 
 ### 7.1 New-package wiring checklist (migration-time, do NOT do during greenfield)
 
-- **Dockerfile COPY.** Each consumer image (`apps/storefront`, `apps/dashboard`) must add
+- **Dockerfile COPY.** Each consumer image (`apps/site`, `apps/dashboard`) must add
   `COPY packages/site-ui` lines (plus the transitive closure), or the image build fails even though
   `tsc`/`lint` pass locally — per the project's Dockerfile-package-wiring rule.
 - **Keep React out of backends.** `site-ui` is frontend-only; no `services/*` or backend package

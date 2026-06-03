@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1.7
 #
-# Multi-stage Next.js build for the @sparx/storefront tenant storefront.
+# Multi-stage Next.js build for the @sparx/site tenant storefront.
 # Mirrors apps/web/Dockerfile — same standalone output shape.
 #
 # Built from the repo root context (per .github/workflows/build-images.yml):
-#   docker build -f apps/storefront/Dockerfile -t sparx/storefront:tag .
+#   docker build -f apps/site/Dockerfile -t sparx/storefront:tag .
 
 ARG NODE_VERSION=24-alpine
 
@@ -18,7 +18,7 @@ FROM base AS builder
 
 # Workspace metadata first — maximises layer cache reuse across source changes.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
-COPY apps/storefront/package.json apps/storefront/
+COPY apps/site/package.json apps/site/
 COPY packages/ui/package.json packages/ui/
 COPY packages/cms-editor/package.json packages/cms-editor/
 COPY packages/site-themes/package.json packages/site-themes/
@@ -26,9 +26,9 @@ COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
 
-# Install only the @sparx/storefront subgraph (its deps + transitive workspace deps).
+# Install only the @sparx/site subgraph (its deps + transitive workspace deps).
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile --filter @sparx/storefront...
+    pnpm install --frozen-lockfile --filter @sparx/site...
 
 COPY packages/ui packages/ui
 COPY packages/cms-editor packages/cms-editor
@@ -36,11 +36,11 @@ COPY packages/site-themes packages/site-themes
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
 COPY packages/builder-schemas packages/builder-schemas
-COPY apps/storefront apps/storefront
+COPY apps/site apps/site
 
 # next.config.mjs has `output: 'standalone'` and outputFileTracingRoot
 # pointing at the monorepo root for this to work.
-RUN pnpm --filter @sparx/storefront build
+RUN pnpm --filter @sparx/site build
 
 # ----- Production runner -----
 FROM node:${NODE_VERSION} AS runner
@@ -55,14 +55,14 @@ RUN addgroup --system --gid 1001 nodejs \
  && adduser --system --uid 1001 --ingroup nodejs nextjs
 
 # Standalone bundle includes the minimal node_modules + server.js for the app.
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/storefront/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/storefront/.next/static ./apps/storefront/.next/static
+COPY --from=builder --chown=nextjs:nodejs /repo/apps/site/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /repo/apps/site/.next/static ./apps/site/.next/static
 # public/ is NOT bundled into standalone output — copy it explicitly so the
 # default favicon fallback (favicon.ico, sparx-icon.svg) serves.
-COPY --from=builder --chown=nextjs:nodejs /repo/apps/storefront/public ./apps/storefront/public
+COPY --from=builder --chown=nextjs:nodejs /repo/apps/site/public ./apps/site/public
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["node", "apps/storefront/server.js"]
+CMD ["node", "apps/site/server.js"]

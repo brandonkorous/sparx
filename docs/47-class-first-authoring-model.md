@@ -63,7 +63,7 @@ every page is reassembled from raw axes.
 ### 1.1 Today's renderer already emits uncontrolled CSS
 
 The reflex objection to "let authoring touch CSS" is multi-tenant safety. But the storefront
-renderer ([`builder-renderer.tsx`](../apps/storefront/components/builder-renderer.tsx)) **already
+renderer ([`builder-renderer.tsx`](../apps/site/components/builder-renderer.tsx)) **already
 emits arbitrary inline CSS on every node** from its box→CSS compiler:
 
 ```html
@@ -184,7 +184,7 @@ tenant's tree as the content source** and compile on the events that already exi
 
 | Layer                                                       | What                                         | When built                                                                       | Scope                                  |
 | ----------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------- |
-| **Token theme** (`--sf-*`)                                  | One stylesheet, runtime CSS vars             | per request (compiled by `@sparx/storefront-themes`, [33](33-token-model-v2.md)) | themes infinite tenants from one sheet |
+| **Token theme** (`--sf-*`)                                  | One stylesheet, runtime CSS vars             | per request (compiled by `@sparx/site-themes`, [33](33-token-model-v2.md)) | themes infinite tenants from one sheet |
 | **Component library** (`site-ui` semantic CSS + archetypes) | `navbar`, `hero`, `card-feature`, the recipe | once, at **platform** build                                                      | shipped to every tenant                |
 | **Per-tenant utility delta** (`tenant.css`)                 | Only the utilities a tenant actually typed   | on **save** (`temp.css`) and **publish** (`tenant.css`)                          | small static diff, one tenant          |
 

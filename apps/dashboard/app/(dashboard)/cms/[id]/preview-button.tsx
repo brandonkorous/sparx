@@ -4,7 +4,7 @@
 // and writes a copy-able URL to the clipboard. The URL points at the
 // tenant's storefront on <slug>.sparx.zone (or the platform marketing site
 // for the marketing tenant itself) with the token in the `?sparxPreview=`
-// query — apps/storefront and apps/web read that and switch their CMS
+// query — apps/site and apps/web read that and switch their CMS
 // fetcher to the draft-allowed code path.
 //
 // Falls back to a temporary text box if the Clipboard API isn't

@@ -32,7 +32,7 @@ sparx/
 ├── apps/
 │   ├── web/                  # @sparx/web — sparx.works marketing site (Next.js)
 │   ├── dashboard/            # @sparx/dashboard — app.sparx.works tenant admin (Next.js)
-│   ├── storefront/           # @sparx/storefront — multi-tenant storefronts (Next.js)
+│   ├── storefront/           # @sparx/site — multi-tenant storefronts (Next.js)
 │   └── api/                  # @sparx/api — Fastify REST + GraphQL + MCP server
 │
 ├── packages/
@@ -238,7 +238,7 @@ NEXT_PUBLIC_APP_URL | NEXT_PUBLIC_API_URL | NEXT_PUBLIC_STOREFRONT_URL
 8. `@sparx/api` (db, auth, email, types)
 9. `apps/web` (ui, types)
 10. `apps/dashboard` (ui, auth, db, types)
-11. `apps/storefront` (ui, sdk, types)
+11. `apps/site` (ui, sdk, types)
 12. `workers/*` (db, email, types)
 
 ---
@@ -254,6 +254,6 @@ NEXT_PUBLIC_APP_URL | NEXT_PUBLIC_API_URL | NEXT_PUBLIC_STOREFRONT_URL
 7. `apps/api` — Fastify, Better Auth middleware, all routes, Typesense, GoDaddy, Postal
 8. `apps/dashboard` — Next.js App Router, `tokens.css` in root layout, `ModuleProvider` per module section
 9. `apps/web` — Next.js marketing site, `@sparx/ui` components
-10. `apps/storefront` — Next.js, tenant resolution middleware, theme CSS vars
+10. `apps/site` — Next.js, tenant resolution middleware, theme CSS vars
 11. `workers/` — five Node.js Pub/Sub consumer processes
 12. `k8s/` and `infrastructure/` — manifests and Terraform

@@ -2991,7 +2991,7 @@ html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child
 }
 
 /* ──────────────────────────────────────────────────────────────
-   Builder Carousel (apps/storefront/components/builder-carousel.tsx)
+   Builder Carousel (apps/site/components/builder-carousel.tsx)
 
    The one builder primitive that needs runtime state, so it ships as a client
    component with classes (the rest of the renderer is inline-styled). Slides

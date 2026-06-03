@@ -15,7 +15,7 @@ import ts from 'typescript';
 import { readFileSync, writeFileSync, globSync } from 'node:fs';
 
 const WRITE = process.argv.includes('--write');
-const ROOTS = ['apps/dashboard', 'apps/web', 'apps/storefront'];
+const ROOTS = ['apps/dashboard', 'apps/web', 'apps/site'];
 const SKIP = [/app[\\/]showcase[\\/]/, /node_modules/, /[\\/]e2e[\\/]/, /\.test\./, /\.spec\./];
 const CHIP = new Set(['Badge', 'Tag']);
 

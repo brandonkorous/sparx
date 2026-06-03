@@ -70,7 +70,7 @@ export async function generateMetadata(): Promise<Metadata> {
     // the Sparx mark (public/) rather than the browser's default globe — a
     // brand-new store still looks finished. Deliberately favicon-only: no
     // apple-icon / manifest, so Sparx never brands a tenant's home-screen
-    // install. Assets: apps/storefront/public/{favicon.ico,sparx-icon.svg}.
+    // install. Assets: apps/site/public/{favicon.ico,sparx-icon.svg}.
     icons: favicon
       ? { icon: favicon }
       : {

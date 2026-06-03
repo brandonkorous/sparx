@@ -1,4 +1,4 @@
-# apps/storefront — multi-tenant Next.js storefront. Resolves the tenant
+# apps/site — multi-tenant Next.js site. Resolves the tenant
 # from Host (e.g. acme.sparx.zone → tenant slug `acme`) and renders the
 # requested page from that tenant's CMS via api-rest's /v1/public/content.
 #
@@ -8,10 +8,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: storefront
+  name: site
   namespace: sparx-prod
   labels:
-    app: storefront
+    app: site
     tier: web
 spec:
   replicas: 1 # TEMP: SSD_TOTAL_GB quota constrained; bump to 2 after quota
@@ -23,17 +23,17 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app: storefront
+      app: site
   template:
     metadata:
       labels:
-        app: storefront
+        app: site
         tier: web
     spec:
       serviceAccountName: sparx-app
       containers:
-        - name: storefront
-          image: us-central1-docker.pkg.dev/sparxworks/sparx/storefront:latest
+        - name: site
+          image: us-central1-docker.pkg.dev/sparxworks/sparx/site:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -45,7 +45,7 @@ spec:
             - name: NODE_ENV
               value: production
             - name: SERVICE_NAME
-              value: storefront
+              value: site
             - name: PORT
               value: '3000'
             - name: HOSTNAME
@@ -92,7 +92,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: storefront
+  name: site
   namespace: sparx-prod
 spec:
   type: ClusterIP
@@ -101,18 +101,18 @@ spec:
       port: 3000
       targetPort: 3000
   selector:
-    app: storefront
+    app: site
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: storefront
+  name: site
   namespace: sparx-prod
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: storefront
+    name: site
   minReplicas: 1
   maxReplicas: 1 # TEMP: clamped while SSD/CPU quota tight
   metrics:
@@ -139,10 +139,10 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: storefront
+  name: site
   namespace: sparx-prod
 spec:
   minAvailable: 1
   selector:
     matchLabels:
-      app: storefront
+      app: site

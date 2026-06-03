@@ -15,7 +15,7 @@ import 'server-only';
 // The local storefront resolves the tenant from the `?tenant=<slug>` query the
 // editor shell already appends to the iframe src (no *.sparx.zone DNS needed).
 const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
-const DEV_STOREFRONT_URL = 'http://localhost:3004'; // apps/storefront: next dev --port 3004
+const DEV_STOREFRONT_URL = 'http://localhost:3004'; // apps/site: next dev --port 3004
 
 export function storefrontOrigin(slug: string): string {
   const devOverride = process.env.SPARX_STOREFRONT_URL;

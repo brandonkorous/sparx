@@ -49,7 +49,7 @@ jobs:
                     api-graphql
                     api-mcp
                     dashboard
-                    storefront
+                    site
                     media-worker
                     email-worker
                     commerce-indexer

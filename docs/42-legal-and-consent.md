@@ -157,7 +157,7 @@ from the navigation menu editor.
 The placements table (§5) is the source of truth for legal footer links, intentionally
 separate from the Site Builder `FooterConfig` (which owns copyright / social / tagline)
 so the two never fight. The default footer in
-[apps/storefront/app/layout.tsx](../apps/storefront/app/layout.tsx) drops its broken
+[apps/site/app/layout.tsx](../apps/site/app/layout.tsx) drops its broken
 hardcoded `/shipping-policy` and `/returns-policy` links in favor of a
 placements-driven "Legal" column resolved server-side; unpublished or deleted entries
 are dropped exactly like dead nav items are in the public content route. The render
@@ -209,7 +209,7 @@ is the source of legal truth.
 
 ### 4.4 The script-gating contract
 
-A storefront client registry (`apps/storefront/lib/consent.ts`) exposes the single seam
+A storefront client registry (`apps/site/lib/consent.ts`) exposes the single seam
 every future tracker uses:
 
 - `getConsent()` — reads `sparx_consent_state`.

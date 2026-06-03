@@ -47,7 +47,7 @@ fontBody, radiusBase, containerWidth`
   ([packages/site-themes/src/tokens.ts](../packages/site-themes/src/tokens.ts)).
 - **Shape is one knob.** `--sf-radius: 14px` with `-sm`/`-lg` _computed_ off it. No
   per-component radius.
-- **Rhythm doesn't exist.** [apps/storefront/app/storefront.css](../apps/storefront/app/storefront.css)
+- **Rhythm doesn't exist.** [apps/site/app/storefront.css](../apps/site/app/storefront.css)
   hardcodes every gap, pad and `clamp()` as magic numbers. There is no spacing scale a
   tenant could shift.
 - **Effects hardcoded.** `--sf-shadow-sm/md/lg`, `--sf-ease` live in CSS.
@@ -59,7 +59,7 @@ fontBody, radiusBase, containerWidth`
 - **Storage:** brand identity on `TenantBrand` columns; presentation overlay is JSONB (Site
   Builder) write-through to 3 `StorefrontTheme` columns as the no-snapshot SSR fallback. The
   public `/v1/public/tenants/:slug` `theme` object reads those columns
-  ([apps/storefront/lib/tenant.ts](../apps/storefront/lib/tenant.ts) → [lib/theme.ts](../apps/storefront/lib/theme.ts)).
+  ([apps/site/lib/tenant.ts](../apps/site/lib/tenant.ts) → [lib/theme.ts](../apps/site/lib/theme.ts)).
 
 ---
 

@@ -190,7 +190,7 @@ Authentication: API key with `read:content` scope.
 
 Content types and custom fields are also queryable. This enables teams to use Sparx as a headless CMS feeding any frontend — Next.js, Astro, SvelteKit, native mobile, whatever.
 
-The `@sparx/storefront-sdk` NPM package includes typed helpers for all content types.
+The `@sparx/site-sdk` NPM package includes typed helpers for all content types.
 
 ---
 

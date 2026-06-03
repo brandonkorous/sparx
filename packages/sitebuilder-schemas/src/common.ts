@@ -9,7 +9,7 @@ export const OptionalUuid = z.string().uuid().optional().nullable();
 // A media reference: either a media-library asset id (UUID) OR an absolute
 // http(s) image/video URL. The URL form lets a tenant drop in an asset they
 // already host (a CDN, a stock URL) without uploading into the library — the
-// storefront resolver passes absolute URLs straight through (apps/storefront
+// storefront resolver passes absolute URLs straight through (apps/site
 // lib/media.ts). UUIDs still resolve via the public media redirect.
 const ABSOLUTE_URL = /^https?:\/\//i;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

@@ -1,6 +1,6 @@
 # Handoff — Phase 7: Storefront rendering of the Site Builder snapshot
 
-**To:** the storefront agent (owns `apps/storefront`)
+**To:** the storefront agent (owns `apps/site`)
 **From:** the Site Builder build (owns `packages/sitebuilder*`, `packages/site-themes`, `services/api-rest/.../sitebuilder/*`)
 **Status of the backend you depend on:** DONE + green. The public read endpoint, the
 compiled-token contract, the section registry, and the dashboard live-preview transport are
@@ -8,7 +8,7 @@ all built, tested, and stable. Nothing below is speculative — it's the shipped
 
 Your job is to make a published Site Builder config actually render on the storefront:
 themed tokens (light **and** dark), composed sections, and config-driven header/footer.
-Today `apps/storefront` has a single hardcoded design and ignores all of this.
+Today `apps/site` has a single hardcoded design and ignores all of this.
 
 ---
 
@@ -84,7 +84,7 @@ Inject two blocks in the storefront `<head>` / root layout:
 ```
 
 The light set maps onto the same `--sf-*` / `--color-*` variables the current
-`apps/storefront/lib/theme.ts` `themeToCss()` already emits (that path stays working via
+`apps/site/lib/theme.ts` `themeToCss()` already emits (that path stays working via
 publish write-through to `StorefrontTheme`). The **new** work is the `[data-theme="dark"]`
 block — add a `darkThemeToCss()` companion in `lib/theme.ts` (or just call `tokensToCss` on
 the dark map; prefer the shared helper).
@@ -102,7 +102,7 @@ the dashboard's `THEME_INIT_SCRIPT` pattern in `apps/dashboard/app/layout.tsx`):
 - `auto` → `prefers-color-scheme: dark` ? `dark` : `light`
 - `toggle` → read a cookie (default `light`), and render the shopper-facing toggle island
 
-The toggle (`apps/storefront/components/mode-toggle.tsx`, new client island) flips
+The toggle (`apps/site/components/mode-toggle.tsx`, new client island) flips
 `document.documentElement.dataset.theme` and persists the choice in a cookie so SSR stays
 correct on the next request. Render it in the header **only** when
 `appearancePolicy === 'toggle'`.
@@ -113,7 +113,7 @@ correct on the next request. Render it in the header **only** when
 
 The 7 section types and their config schemas live in `@sparx/sitebuilder-schemas`
 (`SECTION_REGISTRY`, `SECTION_TYPES`). Build one storefront component per type under
-`apps/storefront/components/sections/*` plus a `section-renderer.tsx` that maps
+`apps/site/components/sections/*` plus a `section-renderer.tsx` that maps
 `sectionType → component`:
 
 | `sectionType`       | renders                                             |
@@ -134,7 +134,7 @@ The 7 section types and their config schemas live in `@sparx/sitebuilder-schemas
   through the existing public commerce read path; the section `config` carries the selector
   (collection id, limit, etc.), not the products themselves.
 - **Brand rule:** storefront section components are themeable via `--sf-*` tokens only — no
-  raw Tailwind color classes in `apps/storefront`. Follow the existing storefront component
+  raw Tailwind color classes in `apps/site`. Follow the existing storefront component
   conventions.
 
 `SectionRenderer` consumes `sections` for the relevant `pageKey`:
@@ -148,7 +148,7 @@ The 7 section types and their config schemas live in `@sparx/sitebuilder-schemas
 
 ## 4. Layout (header / footer / announcement)
 
-`layout[]` replaces the hardcoded nav/footer in `apps/storefront/app/layout.tsx`:
+`layout[]` replaces the hardcoded nav/footer in `apps/site/app/layout.tsx`:
 
 - Each block has a `slot`, a nullable `navigationMenuId`, and a `config`.
 - `navigationMenuId` is a **reference** into a `NavigationMenu` (now Site-Builder-owned, but

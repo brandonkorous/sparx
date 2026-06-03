@@ -15,7 +15,7 @@ import { globSync } from 'node:fs';
 import { join } from 'node:path';
 
 const WRITE = process.argv.includes('--write');
-const ROOTS = ['apps/dashboard', 'apps/web', 'apps/storefront'];
+const ROOTS = ['apps/dashboard', 'apps/web', 'apps/site'];
 const SKIP = [/app[\\/]showcase[\\/]/, /node_modules/, /[\\/]e2e[\\/]/, /\.test\./, /\.spec\./];
 
 // value → replacement attribute text ('' means remove the attribute)

@@ -64,7 +64,7 @@ once in [section-registry.ts](packages/sitebuilder-schemas/src/section-registry.
 source consulted by the editor (form generation + the scope-restricted library), the service (config
 validation + defaults), and the storefront (rendering). **Adding a section means:** write its Zod
 schema + `SectionField[]`, register it in `SECTION_REGISTRY`, add a storefront component, and add a
-`case` to [section-renderer.tsx](apps/storefront/components/section-renderer.tsx).
+`case` to [section-renderer.tsx](apps/site/components/section-renderer.tsx).
 
 The critical structural fact: **sections do not nest.** A page is a flat stack of full-width blocks.
 There is no container that holds child blocks side by side. This single constraint is the root of the
@@ -160,7 +160,7 @@ ctas: z.array(Cta).max(2).default([]);
 
 Editor: a `list` field with `itemFields` (`text` label, `url`, `select` style) — **no new field
 type**. Storefront: `solid` → existing `sf-btn--primary`; `ghost` needs a new **`sf-btn--ghost`**
-(outline-on-image) variant in [storefront.css](apps/storefront/app/storefront.css); `link` → text
+(outline-on-image) variant in [storefront.css](apps/site/app/storefront.css); `link` → text
 link. `SbLink` already discriminates internal vs external. A small `SbCtaRow` wraps `ctas.map`.
 
 **`MediaBlock` (closes #2, #8, #9, #10, #11).** The shared "framed media with overlaid content"

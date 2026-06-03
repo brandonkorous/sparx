@@ -68,7 +68,7 @@ Three rules fall out of this and are **binding**:
 | **Site**                     | The tenant's **website** — the base layer: themes, layouts, pages, sections, nav. Synonym for "the Storefront module's output."                        | The shop. (Commerce is separate.) A separate hidden website under the storefront — there is none. | `SiteConfig`/`SiteVersion`/`SiteSection`/`SiteLayoutBlock`; `49-sitebuilder.prisma` |
 | **Storefront (module)**      | The paid module whose job is "site builder, themes, pages, live in 5 min." The base **website** capability. Internally the module key is `storefront`. | Commerce. The shop.                                                                               | `isModuleEnabled(tenantId, 'storefront')`; [01 §2](01-platform-vision.md)           |
 | **Site Builder**             | The dashboard **tool** that authors the site (one-screen editor, theme, brand, layouts, sections). The admin-side surface of the Storefront module.    | The rendered public site.                                                                         | `apps/dashboard/.../sitebuilder`; `packages/sitebuilder`                            |
-| **`apps/storefront`**        | The runtime **app** that renders the tenant's public website (tenant-aware, draft/published).                                                          | The admin/editor. The dashboard.                                                                  | `apps/storefront`                                                                   |
+| **`apps/site`**        | The runtime **app** that renders the tenant's public website (tenant-aware, draft/published).                                                          | The admin/editor. The dashboard.                                                                  | `apps/site`                                                                   |
 | **Storefront (public site)** | A tenant's live public website, e.g. `acme.sparx.zone`. The rendered output of the SITE for visitors.                                                  | The shop specifically (it shows products only if Commerce is on).                                 | `sparx.zone` per [00-README](00-README.md)                                          |
 | **Theme**                    | A **presentation** preset (apex, industrial, drift, market, fleet, drop) + the tenant's overlay. How the site looks.                                   | Brand/identity.                                                                                   | `packages/site-themes`; `StorefrontTheme`                                           |
 | **Commerce**                 | The module that adds products, cart, checkout, orders — "the shop."                                                                                    | The site. The storefront module.                                                                  | `commerce` module; `09-ecommerce-engine-prd.md`                                     |
@@ -82,7 +82,7 @@ The single word **storefront** legitimately appears at four levels:
 
 1. **Module** — `storefront` = the website-building capability (base layer).
 2. **Admin tool** — the Site Builder authors that module's data.
-3. **Runtime app** — `apps/storefront` renders it.
+3. **Runtime app** — `apps/site` renders it.
 4. **Public site** — `acme.sparx.zone`, the visitor-facing website.
 
 **None of the four mean "commerce / the shop."** Selling is always the separate **Commerce**
@@ -98,7 +98,7 @@ can hold a brand with no site published at all.
 
 Whether to **rename the `storefront` module to `Site`/`Website`** to kill the overload at the
 source is intentionally left open. It touches docs (01/08/29/30), the module flag
-(`isModuleEnabled('storefront')`), `apps/storefront`, and several packages — a real refactor,
+(`isModuleEnabled('storefront')`), `apps/site`, and several packages — a real refactor,
 not a doc edit. Until that's decided, the names stay and **this glossary is the source of truth
 for what they mean.** Revisit when the Site Builder redesign ([30](30-sitebuilder-redesign.md))
 and Token Model v2 ([33](33-token-model-v2.md)) land, since both already lean on the
