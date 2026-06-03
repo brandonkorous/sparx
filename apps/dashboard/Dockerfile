@@ -42,6 +42,7 @@ COPY packages/cms-schemas/package.json packages/cms-schemas/
 COPY packages/email-platform/package.json packages/email-platform/
 COPY packages/email-sections/package.json packages/email-sections/
 COPY packages/site-themes/package.json packages/site-themes/
+COPY packages/site-ui/package.json packages/site-ui/
 COPY packages/sitebuilder/package.json packages/sitebuilder/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
@@ -80,6 +81,7 @@ COPY packages/cms-schemas packages/cms-schemas
 COPY packages/email-platform packages/email-platform
 COPY packages/email-sections packages/email-sections
 COPY packages/site-themes packages/site-themes
+COPY packages/site-ui packages/site-ui
 COPY packages/sitebuilder packages/sitebuilder
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
@@ -88,6 +90,13 @@ COPY apps/dashboard apps/dashboard
 
 # Generate Prisma client (the dashboard imports @sparx/db which re-exports it).
 RUN pnpm --filter @sparx/db db:generate
+
+# @sparx/site-ui ships its stylesheets as BUILD artifacts (dist/styles.css +
+# dist/styles.canvas.css, Tailwind @apply → plain CSS); dist is gitignored, so a
+# fresh CI checkout lacks it. Build it before the app so the Builder canvas's
+# `import '@sparx/site-ui/styles.canvas.css'` resolves. tailwind CLI is an
+# installed devDep of site-ui (the filtered install above is not --prod).
+RUN pnpm --filter @sparx/site-ui build
 
 RUN pnpm --filter @sparx/dashboard build
 

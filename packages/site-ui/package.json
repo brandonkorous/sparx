@@ -12,14 +12,15 @@
       "types": "./src/index.ts",
       "default": "./src/index.ts"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./styles.canvas.css": "./dist/styles.canvas.css"
   },
   "files": [
     "src",
     "dist"
   ],
   "scripts": {
-    "build": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
+    "build": "tailwindcss -i ./src/styles.css -o ./dist/styles.css && node ./scripts/scope-canvas.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

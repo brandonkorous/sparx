@@ -184,6 +184,13 @@ function boxStyles(
   // (overlay header). It anchors to the nearest positioned ancestor — every
   // node's outer is `relative`, so it pins to the top of its parent.
   const pinned = b.pin === 'top';
+  // docs/47 — when a node is authored with Surface recipe classes (`sf-*`), the
+  // CLASS owns its look: the box base must NOT paint an inline background or text
+  // color, which (being inline) would override the @scope-injected recipe sheet.
+  // A background IMAGE still wins (a photo panel is box-level, not a recipe
+  // concern); structural box props (width / align / height / position / layout)
+  // still apply. This is what lets the inspector's Color / Variant render live.
+  const recipeOwned = !image && /(^|\s)sf-/.test(node.class ?? '');
 
   const outer: React.CSSProperties = {
     position: pinned ? 'absolute' : 'relative',
@@ -192,11 +199,13 @@ function boxStyles(
       : fixedHeight
         ? { minHeight: fixedHeight, maxHeight: fixedHeight }
         : {}),
-    ...(bgFull
-      ? boundUnresolved
-        ? BOUND_MEDIA_PLACEHOLDER
-        : bgProps(image, overlay, surface.bg)
-      : { background: 'transparent' }),
+    ...(recipeOwned
+      ? {}
+      : bgFull
+        ? boundUnresolved
+          ? BOUND_MEDIA_PLACEHOLDER
+          : bgProps(image, overlay, surface.bg)
+        : { background: 'transparent' }),
     display: 'flex',
     justifyContent: contentContained ? 'center' : 'flex-start',
     alignItems: hasHeight ? 'center' : 'stretch',
@@ -207,12 +216,14 @@ function boxStyles(
     maxWidth: contentContained ? CONTAINED_MAX : undefined,
     padding: PADDING_PX[b.padding],
     textAlign: b.align,
-    color: TONE[tone] ?? surface.fg,
-    ...(!bgFull
-      ? boundUnresolved
-        ? BOUND_MEDIA_PLACEHOLDER
-        : bgProps(image, overlay, surface.bg)
-      : { background: 'transparent' }),
+    ...(recipeOwned ? {} : { color: TONE[tone] ?? surface.fg }),
+    ...(recipeOwned
+      ? {}
+      : !bgFull
+        ? boundUnresolved
+          ? BOUND_MEDIA_PLACEHOLDER
+          : bgProps(image, overlay, surface.bg)
+        : { background: 'transparent' }),
     ...(def.kind === 'container' ? layoutStyle(node) : {}),
   };
 
@@ -421,12 +432,19 @@ function CanvasNode({
     body = def.renderLeaf?.({ node, value, cardinality: card, bound }) ?? null;
   }
 
+  // docs/47 §7 — a leaf whose authored class styles the ELEMENT (Button → the
+  // `<span>`, via renderLeaf) must NOT also carry that class on the `.bx-node`
+  // wrapper, or the recipe paints twice (a styled box around a styled button).
+  // Parity with the site renderer's `leafStylesByClass`.
+  const leafByClass = def.leafStylesByClass === true && /(^|\s)sf-/.test(node.class ?? '');
+  const wrapperClass = leafByClass ? undefined : node.class;
+
   if (locked) {
     // Locked chrome backdrop (page editor framing): faithful box + body, but no
     // selection tag, no outline, not clickable. Device-hidden nodes still hide.
     return (
       <div
-        className={cn('bx-node', 'bx-chrome', hidden && 'bx-node--hidden', node.class)}
+        className={cn('bx-node', 'bx-chrome', hidden && 'bx-node--hidden', wrapperClass)}
         style={outer}
         data-node-id={node.id}
         data-bx-type={node.type}
@@ -447,7 +465,7 @@ function CanvasNode({
         'bx-node',
         selected && 'bx-node--selected',
         hidden && 'bx-node--hidden',
-        node.class
+        wrapperClass
       )}
       style={outer}
       data-node-id={node.id}

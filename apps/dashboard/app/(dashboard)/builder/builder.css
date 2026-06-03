@@ -708,6 +708,50 @@
   gap: 12px;
 }
 
+/* Advanced (collapsible) — tucks the less-common style axes + the raw `class`
+   escape hatch behind a disclosure so the everyday Color / Variant stay
+   uncluttered (docs/47). A native <details>, so it's keyboard- + a11y-correct
+   with no JS state to manage. */
+.bx-adv {
+  border-bottom: 1px solid var(--color-border-default);
+}
+.bx-adv__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 13px 16px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  user-select: none;
+}
+.bx-adv__summary::-webkit-details-marker {
+  display: none;
+}
+.bx-adv__summary:hover {
+  color: var(--color-text-primary);
+}
+.bx-adv__chev {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  transition: transform 0.15s ease;
+}
+.bx-adv[open] .bx-adv__chev {
+  transform: rotate(180deg);
+}
+.bx-adv__body {
+  padding: 2px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 /* Segmented control */
 .bx-seg {
   display: flex;

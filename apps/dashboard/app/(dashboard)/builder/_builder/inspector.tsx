@@ -11,6 +11,7 @@
 //               visibility. Same panel for everything — that's the point.
 
 import * as React from 'react';
+import { ChevronDown } from 'lucide-react';
 import { Input, NativeSelect, Switch, Textarea, cn } from '@sparx/ui';
 import type { BindingCatalog } from '@sparx/builder-schemas';
 
@@ -39,8 +40,15 @@ import {
   moduleForPath,
   type ScopeInfo,
 } from './binding-catalog';
-import { getDef } from './registry';
-import { STYLE_CONTROLS, activeValue, applyValue } from './class-controls';
+import { getDef, type ComponentDef } from './registry';
+import {
+  STYLE_CONTROLS,
+  activeValue,
+  advancedControlsFor,
+  applyValue,
+  ensureArchetypeDefaults,
+  type ClassControl,
+} from './class-controls';
 
 // ── Shared controls ──────────────────────────────────────────────────────────
 
@@ -95,6 +103,94 @@ function Group({ label, children }: { label: string; children: React.ReactNode }
       <h4 className="bx-grp__label">{label}</h4>
       <div className="bx-grp__body">{children}</div>
     </section>
+  );
+}
+
+// One recipe-axis selector (Color / Variant / Size). Writing a value also
+// backfills the node's archetype base + defaults for any unset axis, so styling a
+// component authored before class-first (no `sf-btn` base) doesn't collapse it to
+// a bare element (docs/47). Shared by the everyday Style panel and the collapsed
+// Advanced panel so both write identically.
+function StyleControlField({
+  node,
+  def,
+  control,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  control: ClassControl;
+  onClass: (value: string) => void;
+}) {
+  return (
+    <Field label={control.label}>
+      <NativeSelect
+        size="sm"
+        value={activeValue(node.class, control) ?? ''}
+        onChange={(e) =>
+          onClass(
+            ensureArchetypeDefaults(
+              applyValue(node.class, control, e.target.value || null),
+              def.defaults.class
+            )
+          )
+        }
+      >
+        <option value="">None</option>
+        {control.options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </NativeSelect>
+    </Field>
+  );
+}
+
+// The collapsed "Advanced" disclosure — the less-common style axes (Size today;
+// radius / shadow / border / spacing / position as the recipe gains them) plus
+// the raw `class` textarea, the final escape hatch (docs/47 §4). Collapsed by
+// default so the everyday Color / Variant stay uncluttered.
+function AdvancedPanel({
+  node,
+  def,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  onClass: (value: string) => void;
+}) {
+  const controls = advancedControlsFor(def.defaults.class);
+  return (
+    <details className="bx-adv">
+      <summary className="bx-adv__summary">
+        <span>Advanced</span>
+        <ChevronDown className="bx-adv__chev" aria-hidden />
+      </summary>
+      <div className="bx-adv__body">
+        {controls.map((control) => (
+          <StyleControlField
+            key={control.id}
+            node={node}
+            def={def}
+            control={control}
+            onClass={onClass}
+          />
+        ))}
+        <Field
+          label="Classes"
+          hint="Power-user escape hatch — the raw class string (archetype + safelisted utilities). Space-separated; compiled to the tenant stylesheet on publish."
+        >
+          <Textarea
+            rows={2}
+            value={node.class ?? ''}
+            placeholder="e.g. hero bg-base-100 gap-6"
+            aria-label="Node classes"
+            onChange={(e) => onClass(e.target.value)}
+          />
+        </Field>
+      </div>
+    </details>
   );
 }
 
@@ -570,36 +666,17 @@ export function Inspector({
           Color + variant from the Surface recipe (docs/47), written as classes.
         </p>
         {STYLE_CONTROLS.map((control) => (
-          <Field key={control.id} label={control.label}>
-            <NativeSelect
-              size="sm"
-              value={activeValue(node.class, control) ?? ''}
-              onChange={(e) => onClass(applyValue(node.class, control, e.target.value || null))}
-            >
-              <option value="">None</option>
-              {control.options.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </NativeSelect>
-          </Field>
+          <StyleControlField
+            key={control.id}
+            node={node}
+            def={def}
+            control={control}
+            onClass={onClass}
+          />
         ))}
       </Group>
 
-      <Group label="Classes">
-        <p className="bx-grp__caption">
-          Advanced — the raw class string (archetypes + utilities). Space-separated; compiled to the
-          tenant stylesheet on publish.
-        </p>
-        <Textarea
-          rows={2}
-          value={node.class ?? ''}
-          placeholder="e.g. hero bg-base-100 gap-6"
-          aria-label="Node classes"
-          onChange={(e) => onClass(e.target.value)}
-        />
-      </Group>
+      <AdvancedPanel node={node} def={def} onClass={onClass} />
 
       <BindingBox node={node} catalog={catalog} scope={scope} onBind={onBind} />
       <PropsPanel node={node} onProp={onProp} />

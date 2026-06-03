@@ -41,6 +41,7 @@
     "@sparx/sitebuilder": "workspace:*",
     "@sparx/sitebuilder-schemas": "workspace:*",
     "@sparx/site-themes": "workspace:*",
+    "@sparx/site-ui": "workspace:*",
     "@sparx/ui": "workspace:*",
     "@tanstack/react-table": "^8.21.3",
     "better-auth": "^1.6.11",

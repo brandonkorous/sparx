@@ -7,18 +7,28 @@ import { storefrontOrigin } from '../../sitebuilder/_lib/storefront';
 import { getActiveLayout, getBindingCatalog, listPages } from '../_lib/api';
 import { BuilderApp } from '../_builder/builder-app';
 import '../builder.css';
+// The Surface RECIPE — @sparx/site-ui's `sf-*` component/color/variant classes,
+// PRE-SCOPED to `.bx-canvas` by site-ui's build (styles.canvas.css = the recipe
+// wrapped in `@scope (.bx-canvas)`). Loaded here so the Color/Variant a node is
+// authored with renders LIVE on the canvas, identical to the published site —
+// without the sheet's generic utilities / `:root` tokens touching the dashboard
+// chrome (docs/47 §5; the site loads the unscoped sibling globally).
+import '@sparx/site-ui/styles.canvas.css';
 
 // /builder/page — the page-editing surface of the Builder. The builder home
 // lives at /builder; sibling surfaces (brand, site, component) slot in beside
 // this one and reuse the shared internals under /builder/_builder.
 //
 // UI-FIRST: the editor runs on the in-memory node model with mock module data
-// (see _builder/sample.ts) — no backend is wired for the page tree yet. The ONE
-// piece of real data we pull is the tenant brand: we compile the tenant's saved
-// brand + theme and scope it to the canvas, so the preview renders in the real
-// brand (the same compileThemeForTenant → buildThemeCssV2 the /builder/brand
-// showcase and the live storefront use). builder.css aliases the canvas's
-// `--bxc-*` vars onto the compiled `--sf-*` set.
+// (see _builder/sample.ts) — no backend is wired for the page tree yet. Two
+// pieces of real data we pull:
+//  · the tenant BRAND — we compile the tenant's saved brand + theme and scope it
+//    to the canvas, so the preview renders in the real brand (the same
+//    compileThemeForTenant → buildThemeCssV2 the /builder/brand showcase and the
+//    live storefront use). builder.css aliases the canvas's `--bxc-*` vars onto
+//    the compiled `--sf-*` set.
+// The Surface recipe (`sf-*` classes) is loaded separately via a side-effect CSS
+// import below — see that import's note.
 
 export const metadata: Metadata = {
   title: 'Builder · Page',

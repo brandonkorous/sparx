@@ -1,0 +1,55 @@
+/* Surface box utilities — token-backed radius / border / shadow steps surfaced by
+ * the builder's Advanced panel (docs/47 §4: safelisted token utilities). Plain
+ * declarations rather than @apply, because each reads a tenant --sf-* token with a
+ * fallback and @apply can't express `var(--x, fallback)` (same reason button.css's
+ * radius/font lines stay raw). The `--sf-*` they read are emitted by every compiled
+ * tenant theme (site-themes v2 css.ts) AND the editor's `.bx-canvas` block, so they
+ * render identically in the designer and on the published site.
+ *
+ * Imported into the `utilities` layer so a node-level choice WINS over an
+ * archetype's own value (a `card` with `sf-radius-pill` rounds fully) — the
+ * Tier-3 override rule from docs/47 §4 / styles.css's layer note. */
+
+/* ── Radius ─────────────────────────────────────────────────────────────────
+ * none → square; sm/md map to the field/box tokens; lg is a generous fixed step
+ * for large hero panels; pill is the fully-round selector token. */
+.sf-radius-none {
+  border-radius: 0;
+}
+.sf-radius-sm {
+  border-radius: var(--sf-radius-field, 0.5rem);
+}
+.sf-radius-md {
+  border-radius: var(--sf-radius-box, 0.875rem);
+}
+.sf-radius-lg {
+  border-radius: 1.5rem;
+}
+.sf-radius-pill {
+  border-radius: 9999px;
+}
+
+/* ── Border ───────────────────────────────────────────────────────────────── */
+.sf-border-none {
+  border: 0;
+}
+.sf-border-thin {
+  border: var(--sf-border-width, 1px) solid var(--sf-border, currentColor);
+}
+.sf-border-strong {
+  border: var(--sf-border-width, 1px) solid var(--sf-border-strong, currentColor);
+}
+
+/* ── Shadow / elevation ───────────────────────────────────────────────────── */
+.sf-shadow-none {
+  box-shadow: none;
+}
+.sf-shadow-sm {
+  box-shadow: var(--sf-shadow-sm);
+}
+.sf-shadow-md {
+  box-shadow: var(--sf-shadow-md);
+}
+.sf-shadow-lg {
+  box-shadow: var(--sf-shadow-lg);
+}

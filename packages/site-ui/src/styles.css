@@ -100,3 +100,4 @@
 @import './styles/validator.css' layer(components);
 @import './styles/window.css' layer(components);
 @import './styles/recipes.css' layer(components);
+@import './styles/util-box.css' layer(utilities);

@@ -7,4 +7,11 @@
 
 import rootConfig from '../../eslint.config.js';
 
-export default [...rootConfig];
+export default [
+  // Build scripts (e.g. scope-canvas.mjs) are Node tooling, not library source —
+  // they sit outside the package tsconfig, so the typed-lint project service
+  // can't resolve them. Ignore them here, mirroring how the root config ignores
+  // *.config.* files.
+  { ignores: ['scripts/**'] },
+  ...rootConfig,
+];

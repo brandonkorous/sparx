@@ -107,6 +107,12 @@ export interface ComponentDef {
   };
   /** Extra chrome class for containers (e.g. Card border). */
   chromeClass?: string;
+  /** Leaf whose authored `node.class` styles the ELEMENT itself, not the box
+   *  wrapper (docs/47 §7 — e.g. Button → the `<span>`/`<a>`). When set, the canvas
+   *  renders `node.class` on the leaf (so the recipe paints it) and suppresses it
+   *  on the `.bx-node` wrapper to avoid double-paint — parity with the site
+   *  renderer's `leafStylesByClass`. */
+  leafStylesByClass?: boolean;
   renderLeaf?: (a: LeafRenderArgs) => React.ReactNode;
 }
 
@@ -364,11 +370,17 @@ const DEFS: ComponentDef[] = [
       props: { label: 'Button', href: '' },
       class: 'sf-btn sf-c-primary sf-v-solid sf-btn--sz-md',
     },
+    leafStylesByClass: true,
     renderLeaf: ({ node, value, bound }) => {
-      // Editor preview: the canvas carries no Surface stylesheet, so show the
-      // neutral primitive chrome (legacy `props.style` still previews its variant).
-      const style = (node.props.style as string) ?? 'primary';
       const label = bound ? firstString(value, 'Button') : firstString(node.props.label, 'Button');
+      // Authored with the Surface recipe → render the REAL button so the
+      // inspector's Color / Variant / size paint live against the canvas-scoped
+      // @sparx/site-ui sheet (docs/47). Legacy buttons (no recipe class — e.g.
+      // starter trees carrying `props.style`) keep the neutral primitive chrome.
+      if (/(^|\s)sf-/.test(node.class ?? '')) {
+        return <span className={node.class}>{label}</span>;
+      }
+      const style = (node.props.style as string) ?? 'primary';
       return <span className={`bx-btn bx-btn--${style}`}>{label}</span>;
     },
   },
