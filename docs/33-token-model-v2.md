@@ -44,7 +44,7 @@ Confirmed by reading the code, not docs:
 - **11 tokens**, all hex / font-name strings: `colorPrimary, colorPrimaryForeground,
 colorAccent, colorBackground, colorForeground, colorMuted, colorBorder, fontHeading,
 fontBody, radiusBase, containerWidth`
-  ([packages/storefront-themes/src/tokens.ts](../packages/storefront-themes/src/tokens.ts)).
+  ([packages/site-themes/src/tokens.ts](../packages/site-themes/src/tokens.ts)).
 - **Shape is one knob.** `--sf-radius: 14px` with `-sm`/`-lg` _computed_ off it. No
   per-component radius.
 - **Rhythm doesn't exist.** [apps/storefront/app/storefront.css](../apps/storefront/app/storefront.css)
@@ -175,7 +175,7 @@ OKLCH space (perceptually uniform), so a single hex pick yields a coherent set:
 **`-content` auto-derivation.** Default rule: choose `base-content`-dark or `base-100`-light
 against the slot's perceptual lightness so contrast clears WCAG AA. Where `relative-color`
 syntax is available (`oklch(from var(--sf-primary) …)`) we read lightness directly; otherwise
-we compute the content color **at compile time** (server-side, in `@sparx/storefront-themes`)
+we compute the content color **at compile time** (server-side, in `@sparx/site-themes`)
 using a small OKLCH helper and emit a concrete hex, so SSR is deterministic and we don't depend
 on browser `relative-color` support. Either way, a tenant may **override** any `-content` slot
 (full-parity escape hatch); an explicit value wins over the derived one.
@@ -252,7 +252,7 @@ on them and that's out of scope. Instead:
 - The existing `--sf-* : var(--color-*)` aliases stay as _fallback seeds_ (so an un-themed
   storefront still renders), but a compiled token always overrides them.
 
-Net: one place (`@sparx/storefront-themes`) owns the storefront token vocabulary; @sparx/ui is
+Net: one place (`@sparx/site-themes`) owns the storefront token vocabulary; @sparx/ui is
 untouched; the dashboard inspector and the storefront read the same compiled doc.
 
 ---
@@ -271,7 +271,7 @@ path that depends on data nothing writes.
 **Foundation — done:**
 
 1. ✅ **Token core** — v2 types + `compileTokensV2` + derivation helpers + the CSS emitter in
-   `@sparx/storefront-themes`; unit tests for compile + derivation + override precedence.
+   `@sparx/site-themes`; unit tests for compile + derivation + override precedence.
 2. ✅ **Presets** — the 6 presets migrated to the v2 schema (base-100/200/300, neutral, status,
    shape/rhythm/effect defaults). Snapshot + AA tests lock the compiled defaults.
 

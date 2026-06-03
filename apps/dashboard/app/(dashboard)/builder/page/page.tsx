@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import type { BindingCatalog, BuilderLayoutDto, BuilderPageDto } from '@sparx/builder-schemas';
-import { buildThemeCssV2, compileThemeForTenant } from '@sparx/storefront-themes';
+import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
 import { getBrand, getConfig } from '../../sitebuilder/_lib/api';
 import { getActiveLayout, getBindingCatalog, listPages } from '../_lib/api';

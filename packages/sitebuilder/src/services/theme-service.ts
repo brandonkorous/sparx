@@ -7,7 +7,7 @@
 import { SelectThemeInput, UpdateSettingsInput } from '@sparx/sitebuilder-schemas';
 import type { SiteConfig } from '@sparx/db';
 import { withTenant } from '@sparx/db';
-import { getTheme, THEME_LIST, type ThemePreset } from '@sparx/storefront-themes';
+import { getTheme, THEME_LIST, type ThemePreset } from '@sparx/site-themes';
 
 import { writeAuditLog } from '../audit';
 import { publishSitebuilderEvent } from '../events';

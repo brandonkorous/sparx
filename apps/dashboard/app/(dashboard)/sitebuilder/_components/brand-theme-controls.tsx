@@ -23,7 +23,7 @@ import {
   type ColorTokensV2,
   type PresentationColorOverlay,
   type PresentationOverlayV2,
-} from '@sparx/storefront-themes';
+} from '@sparx/site-themes';
 import { X } from 'lucide-react';
 import type { AppearancePolicy } from '../_lib/types';
 import { contrastRatio, rateContrast } from '../_lib/brand-preview';

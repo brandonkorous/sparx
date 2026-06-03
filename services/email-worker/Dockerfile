@@ -20,7 +20,7 @@ COPY packages/db ./packages/db
 COPY packages/email ./packages/email
 COPY packages/email-sections ./packages/email-sections
 COPY packages/events ./packages/events
-COPY packages/storefront-themes ./packages/storefront-themes
+COPY packages/site-themes ./packages/site-themes
 COPY packages/cms-editor ./packages/cms-editor
 COPY packages/email-platform ./packages/email-platform
 COPY services/email-worker ./services/email-worker

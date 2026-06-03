@@ -14,7 +14,7 @@ import {
   compileTokens,
   compileThemeForTenant,
   type PresentationOverlayV2,
-} from '@sparx/storefront-themes';
+} from '@sparx/site-themes';
 
 import { publishSitebuilderEvent } from '../events';
 import type { ServiceContext } from '../errors';

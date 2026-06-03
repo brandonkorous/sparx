@@ -37,7 +37,7 @@ COPY packages/commerce ./packages/commerce
 COPY packages/provider-stripe ./packages/provider-stripe
 COPY packages/provider-shippo ./packages/provider-shippo
 COPY packages/customer-auth ./packages/customer-auth
-COPY packages/storefront-themes ./packages/storefront-themes
+COPY packages/site-themes ./packages/site-themes
 COPY packages/sitebuilder-schemas ./packages/sitebuilder-schemas
 COPY packages/sitebuilder ./packages/sitebuilder
 COPY packages/builder-schemas ./packages/builder-schemas

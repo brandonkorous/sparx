@@ -6,47 +6,74 @@
   "recordType": "commerce.product",
   "tree": {
     "type": "Section",
-    "box": { "name": "Product", "padding": "lg", "backgroundWidth": "full", "contentWidth": "contained" },
-    "layout": { "direction": "stack", "gap": "lg" },
+    "box": { "name": "Product", "backgroundWidth": "full", "contentWidth": "full", "padding": "none" },
+    "layout": { "direction": "stack", "gap": "none" },
     "children": [
       {
         "type": "Section",
-        "box": { "name": "PDP", "padding": "none", "contentWidth": "full" },
-        "layout": { "direction": "row", "gap": "lg", "alignItems": "start" },
+        "box": {
+          "name": "Hero",
+          "height": "lg",
+          "backgroundWidth": "full",
+          "contentWidth": "contained",
+          "padding": "xl",
+          "surface": "inverse",
+          "backgroundImageBinding": "product.images",
+          "backgroundImage": "https://digitalassets.tesla.com/tesla-contents/image/upload/f_auto,q_auto/Model-3-Performance-Hero-Desktop-EMEA.jpg",
+          "overlay": "gradient",
+          "textTone": "light",
+          "align": "center"
+        },
+        "layout": { "direction": "stack", "gap": "md", "justify": "end", "alignItems": "center" },
         "children": [
           {
-            "type": "ImageDisplay",
-            "box": { "name": "Gallery" },
-            "props": { "ratio": "square" },
-            "binding": { "path": "product.images" }
+            "type": "Heading",
+            "box": { "name": "Title", "align": "center" },
+            "props": { "level": "h1" },
+            "binding": { "path": "product.title" }
           },
           {
-            "type": "Stack",
-            "box": { "name": "Buy", "padding": "none" },
-            "layout": { "direction": "stack", "gap": "md" },
+            "type": "PriceTag",
+            "box": { "name": "Price", "align": "center" },
+            "props": {},
+            "binding": { "path": "product.price" }
+          }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": {
+          "name": "Buy",
+          "backgroundWidth": "full",
+          "contentWidth": "contained",
+          "padding": "xl",
+          "align": "center"
+        },
+        "layout": { "direction": "stack", "gap": "lg", "justify": "center", "alignItems": "center" },
+        "children": [
+          {
+            "type": "ProductForm",
+            "box": { "name": "Buy form", "padding": "none", "align": "center" },
+            "layout": { "direction": "stack", "gap": "md", "alignItems": "center" },
+            "binding": { "path": "product" },
             "children": [
-              { "type": "Heading", "box": { "name": "Title" }, "props": { "level": "h1" }, "binding": { "path": "product.title" } },
-              { "type": "PriceTag", "box": { "name": "Price" }, "props": {}, "binding": { "path": "product.price" } },
+              { "type": "VariantPicker", "box": { "name": "Options", "align": "center" }, "props": {} },
               {
-                "type": "ProductForm",
-                "box": { "name": "Buy form", "padding": "none" },
-                "layout": { "direction": "stack", "gap": "md" },
-                "binding": { "path": "product" },
+                "type": "Stack",
+                "box": { "name": "Add row", "padding": "none" },
+                "layout": { "direction": "row", "gap": "sm", "justify": "center", "alignItems": "center" },
                 "children": [
-                  { "type": "VariantPicker", "box": { "name": "Options" }, "props": {} },
-                  {
-                    "type": "Stack",
-                    "box": { "name": "Add row", "padding": "none" },
-                    "layout": { "direction": "row", "gap": "sm", "alignItems": "center" },
-                    "children": [
-                      { "type": "Quantity", "box": { "name": "Qty" }, "props": {} },
-                      { "type": "AddToCart", "box": { "name": "Add" }, "props": { "label": "Add to cart" } }
-                    ]
-                  }
+                  { "type": "Quantity", "box": { "name": "Qty" }, "props": {} },
+                  { "type": "AddToCart", "box": { "name": "Add" }, "props": { "label": "Add to cart" } }
                 ]
-              },
-              { "type": "Text", "box": { "name": "Description" }, "props": { "variant": "body" }, "binding": { "path": "product.description" } }
+              }
             ]
+          },
+          {
+            "type": "Text",
+            "box": { "name": "Description", "contentWidth": "contained", "align": "center" },
+            "props": { "variant": "body" },
+            "binding": { "path": "product.description" }
           }
         ]
       }

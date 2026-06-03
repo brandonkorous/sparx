@@ -9,7 +9,7 @@
 // omit that branch from the doc so the brand never silently pins a default. A
 // set knob WINS over the preset (brand owns shape/rhythm/effect).
 
-import type { BrandTokenDoc } from '@sparx/storefront-themes';
+import type { BrandTokenDoc } from '@sparx/site-themes';
 
 export type BrandTokens = Pick<BrandTokenDoc, 'shape' | 'rhythm' | 'effect'>;
 

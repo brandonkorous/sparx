@@ -22,6 +22,7 @@ describe('Button', () => {
       'success',
       'warning',
       'danger',
+      'highlight',
       'surface',
     ];
     for (const color of colors) {
@@ -54,7 +55,7 @@ describe('Button', () => {
   });
 
   it('maps the size axis to a sf-btn--sz-{size} class', () => {
-    const sizes: SizeKey[] = ['sm', 'md', 'lg'];
+    const sizes: SizeKey[] = ['xs', 'sm', 'md', 'lg', 'xl'];
     for (const size of sizes) {
       const { unmount } = render(<Button size={size}>{size}</Button>);
       expect(screen.getByRole('button', { name: size })).toHaveClass(`sf-btn--sz-${size}`);

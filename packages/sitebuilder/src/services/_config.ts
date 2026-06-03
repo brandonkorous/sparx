@@ -5,7 +5,7 @@
 // keeps tenants who never use the module out of the table.
 
 import type { SiteConfig, TxClient } from '@sparx/db';
-import { DEFAULT_THEME_KEY } from '@sparx/storefront-themes';
+import { DEFAULT_THEME_KEY } from '@sparx/site-themes';
 
 export async function getOrCreateConfig(tx: TxClient, tenantId: string): Promise<SiteConfig> {
   const existing = await tx.siteConfig.findUnique({ where: { tenantId } });

@@ -21,7 +21,7 @@ import {
   buildThemeCssV2,
   compileThemeForTenant,
   type PresentationOverlayV2,
-} from '@sparx/storefront-themes';
+} from '@sparx/site-themes';
 import {
   applySavedTheme,
   deleteSavedTheme,

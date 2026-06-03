@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { resolveMediaUrl } from './api';
-import type { PresentationOverlayV2 } from '@sparx/storefront-themes';
+import type { PresentationOverlayV2 } from '@sparx/site-themes';
 import type { SectionField, TemplateNode } from '@sparx/sitebuilder-schemas';
 import type {
   AppearancePolicy,

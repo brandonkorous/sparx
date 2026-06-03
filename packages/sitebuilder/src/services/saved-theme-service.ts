@@ -2,7 +2,7 @@
 // tier). CRUD over SiteTheme rows + `apply`, which loads a saved theme's
 // presentation + base preset into the working draft (theme_key + draftSettings)
 // without publishing. Distinct from the read-only platform presets returned by
-// themeService.listThemes() — those stay code-first in @sparx/storefront-themes.
+// themeService.listThemes() — those stay code-first in @sparx/site-themes.
 //
 // Tenant-scoped via withTenant; SiteTheme is ENABLE+FORCE RLS, so a findUnique
 // by a cross-tenant id returns null → ownership is enforced (NotFound), the same

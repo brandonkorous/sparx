@@ -41,7 +41,7 @@ COPY packages/cms-editor/package.json packages/cms-editor/
 COPY packages/cms-schemas/package.json packages/cms-schemas/
 COPY packages/email-platform/package.json packages/email-platform/
 COPY packages/email-sections/package.json packages/email-sections/
-COPY packages/storefront-themes/package.json packages/storefront-themes/
+COPY packages/site-themes/package.json packages/site-themes/
 COPY packages/sitebuilder/package.json packages/sitebuilder/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
@@ -79,7 +79,7 @@ COPY packages/cms-editor packages/cms-editor
 COPY packages/cms-schemas packages/cms-schemas
 COPY packages/email-platform packages/email-platform
 COPY packages/email-sections packages/email-sections
-COPY packages/storefront-themes packages/storefront-themes
+COPY packages/site-themes packages/site-themes
 COPY packages/sitebuilder packages/sitebuilder
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react

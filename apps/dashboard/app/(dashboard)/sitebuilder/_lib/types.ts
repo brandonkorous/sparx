@@ -2,7 +2,7 @@
 // interfaces (not the Prisma row types) so client components can import them
 // without pulling the service package / Prisma into the browser bundle.
 
-import type { BrandTokenDoc, PresentationOverlayV2, ThemePreset } from '@sparx/storefront-themes';
+import type { BrandTokenDoc, PresentationOverlayV2, ThemePreset } from '@sparx/site-themes';
 import type { SectionField, TemplateNode } from '@sparx/sitebuilder-schemas';
 
 export type ThemeDto = ThemePreset;

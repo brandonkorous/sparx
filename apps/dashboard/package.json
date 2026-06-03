@@ -40,7 +40,7 @@
     "@sparx/section-template-react": "workspace:*",
     "@sparx/sitebuilder": "workspace:*",
     "@sparx/sitebuilder-schemas": "workspace:*",
-    "@sparx/storefront-themes": "workspace:*",
+    "@sparx/site-themes": "workspace:*",
     "@sparx/ui": "workspace:*",
     "@tanstack/react-table": "^8.21.3",
     "better-auth": "^1.6.11",

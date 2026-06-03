@@ -22,7 +22,7 @@ export type ThemeOverlay = z.infer<typeof ThemeOverlay>;
 // NOT here — it lives on the tenant brand. Every field is nullable+optional so a
 // blank inherits the preset default; values are validated loosely (the compiler
 // normalizes/keeps only what it recognizes). Mirrors PresentationOverlayV2 in
-// @sparx/storefront-themes — keep the two in sync.
+// @sparx/site-themes — keep the two in sync.
 const PresentationColors = z
   .object({
     base100: z.string().nullish(),

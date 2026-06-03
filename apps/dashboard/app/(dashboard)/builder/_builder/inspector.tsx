@@ -368,7 +368,18 @@ function BoxBasePanel({
           onChange={(e) => onBox({ backgroundImage: e.target.value || undefined })}
         />
       </Field>
-      {box.backgroundImage ? (
+      <Field
+        label="Background from data"
+        hint="Bind the background to a record image (e.g. product.images, item.cover). The record's own photo fills the hero; the URL above is the fallback."
+      >
+        <Input
+          value={box.backgroundImageBinding ?? ''}
+          placeholder="product.images"
+          aria-label="Background image binding path"
+          onChange={(e) => onBox({ backgroundImageBinding: e.target.value || undefined })}
+        />
+      </Field>
+      {box.backgroundImage || box.backgroundImageBinding ? (
         <Field label="Overlay" hint="Darken or lighten the photo so text stays readable.">
           <Segmented
             value={box.overlay ?? 'none'}

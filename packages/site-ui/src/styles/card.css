@@ -1,0 +1,106 @@
+/* Surface Card — a COMPOUND archetype proving the parts + multi-axis model
+ * (docs/47 §3, §5.3). Authored with @apply over Tailwind utilities.
+ *
+ *   parts     .sf-card-body / .sf-card-title / .sf-card-actions (+ a nested <figure>)
+ *   color     the shared role-var recipe (.sf-c-*) — drives the border color
+ *   style     .sf-card--border / .sf-card--dash      (the "border treatment" axis)
+ *   modifier  .sf-card--side / .sf-card--image-full   (layout variations)
+ *   size      .sf-card--sz-xs … --sz-xl               (body rhythm + title scale)
+ *
+ * Tenant tokens with a fallback stay raw declarations (@apply can't express
+ * `var(--x, fallback)`); everything structural is a utility. */
+
+.sf-card {
+  @apply relative flex flex-col overflow-hidden;
+  border-radius: var(--sf-radius-box, 1rem);
+  background: var(--sf-base-100);
+  color: var(--sf-base-content);
+}
+.sf-card > figure {
+  @apply m-0;
+}
+.sf-card > figure img {
+  @apply block h-full w-full object-cover;
+}
+
+/* ── Parts ──────────────────────────────────────────────────────────────────── */
+
+.sf-card-body {
+  @apply flex flex-1 flex-col gap-2 p-6;
+}
+.sf-card-title {
+  @apply text-lg leading-tight font-semibold;
+  font-family: var(--sf-font-heading, inherit);
+}
+.sf-card-actions {
+  @apply mt-2 flex flex-wrap items-center gap-2;
+}
+
+/* ── Style axis — border / dash (color from --c-bg, else the border token) ───── */
+
+.sf-card--border {
+  @apply border;
+  border-color: var(--c-bg, var(--sf-border));
+}
+.sf-card--dash {
+  @apply border border-dashed;
+  border-color: var(--c-bg, var(--sf-border));
+}
+
+/* ── Modifier axis — side (horizontal) / image-full (figure as backdrop) ─────── */
+
+.sf-card--side {
+  @apply flex-row;
+}
+.sf-card--side > figure {
+  @apply w-2/5 shrink-0;
+}
+.sf-card--image-full {
+  @apply grid;
+}
+.sf-card--image-full > figure,
+.sf-card--image-full > .sf-card-body {
+  grid-area: 1 / 1 / 2 / 2;
+}
+.sf-card--image-full > .sf-card-body {
+  @apply relative z-10;
+  color: #fff;
+}
+.sf-card--image-full > figure::after {
+  content: '';
+  @apply absolute inset-0;
+  background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45));
+}
+
+/* ── Size axis — body rhythm + title scale ──────────────────────────────────── */
+
+.sf-card--sz-xs .sf-card-body {
+  @apply gap-1 p-3;
+}
+.sf-card--sz-xs .sf-card-title {
+  @apply text-sm;
+}
+.sf-card--sz-sm .sf-card-body {
+  @apply gap-1.5 p-4;
+}
+.sf-card--sz-sm .sf-card-title {
+  @apply text-base;
+}
+.sf-card--sz-md .sf-card-body {
+  @apply gap-2 p-6;
+}
+.sf-card--sz-md .sf-card-title {
+  @apply text-lg;
+}
+.sf-card--sz-lg .sf-card-body {
+  @apply gap-3 p-8;
+}
+.sf-card--sz-lg .sf-card-title {
+  @apply text-xl;
+}
+.sf-card--sz-xl .sf-card-body {
+  @apply gap-4 p-10;
+}
+.sf-card--sz-xl .sf-card-title {
+  @apply text-2xl;
+}

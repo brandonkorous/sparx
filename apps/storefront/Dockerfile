@@ -21,7 +21,7 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY apps/storefront/package.json apps/storefront/
 COPY packages/ui/package.json packages/ui/
 COPY packages/cms-editor/package.json packages/cms-editor/
-COPY packages/storefront-themes/package.json packages/storefront-themes/
+COPY packages/site-themes/package.json packages/site-themes/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
@@ -32,7 +32,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 
 COPY packages/ui packages/ui
 COPY packages/cms-editor packages/cms-editor
-COPY packages/storefront-themes packages/storefront-themes
+COPY packages/site-themes packages/site-themes
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
 COPY packages/builder-schemas packages/builder-schemas

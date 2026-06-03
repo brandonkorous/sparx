@@ -29,6 +29,17 @@ export {
 
 // ── Components ─────────────────────────────────────────────
 export { Button, type ButtonProps } from './components/button';
+export {
+  Card,
+  CardBody,
+  CardTitle,
+  CardActions,
+  type CardProps,
+  type CardBorder,
+  type CardModifier,
+  type CardSlotProps,
+  type CardTitleProps,
+} from './components/card';
 export { Heading, type HeadingProps, type HeadingLevel } from './components/heading';
 export { Text, type TextProps, type TextVariant } from './components/text';
 export { Divider, type DividerProps } from './components/divider';

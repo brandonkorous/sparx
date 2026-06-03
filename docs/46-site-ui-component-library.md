@@ -1,6 +1,6 @@
 # 46 — `@sparx/site-ui`: The Tenant-Themed Component Library
 
-Version: 1.2
+Version: 1.3
 Author: Brandon Korous
 Last Updated: 2026-06-02
 
@@ -99,6 +99,14 @@ already ships `tokens.css`. It gives us:
 gap value chosen by the box/layout engine) → **inline style**, set by the renderer's existing
 box→CSS layer. Components own the former; the engine owns the latter. They compose on one element.
 
+> **Amended by [47](47-class-first-authoring-model.md) §5.3 (2026-06-02).** This decision rejected
+> _shipping unresolved Tailwind utilities_ — still correct. But `site-ui` is being grown into the
+> **Surface** system, which authors its semantic classes with `@apply` over a tenant-flavored
+> Tailwind theme (utilities → `--sf-*` vars) and **compiles to plain CSS at its own build**. So
+> consumers still receive a static, token-driven stylesheet and the coupling rejected here never
+> occurs; only the _authoring source_ is Tailwind, not the shipped output. The dynamic color × variant
+> axis stays a role var (`var(--c-*)`), since `@apply` cannot interpolate a `{color}`.
+
 ### 3.2 SSR-first, selective `'use client'`
 
 The storefront is server-rendered; the canvas is a client tree. Components must work in both, so
@@ -116,7 +124,7 @@ mirrors `@sparx/ui`'s selective-`'use client'` discipline ([23](23-frontend-comp
 
 ### 3.3 No canonical token ownership — `site-ui` _consumes_, `storefront-themes` _produces_
 
-`@sparx/storefront-themes` is the single producer of `--sf-*` (`buildThemeCssV2` /
+`@sparx/site-themes` is the single producer of `--sf-*` (`buildThemeCssV2` /
 `compileThemeForTenant`, [33](33-token-model-v2.md)). `site-ui` never emits a canonical token
 file — that would create a competing source of truth. It only **reads** `--sf-*`, with inline
 fallbacks for graceful degradation. The token contract `site-ui` depends on is enumerated in §4.
@@ -165,8 +173,8 @@ is imported **last** so a treatment's resets (e.g. `.sf-v-link` → `padding:0`)
 
 ## 4. The token contract (`--sf-*` `site-ui` consumes)
 
-These are produced by `@sparx/storefront-themes` (`colorVars` + `sharedVars` in
-`packages/storefront-themes/src/v2/css.ts`) and declared as fallbacks in `apps/storefront/app/storefront.css`.
+These are produced by `@sparx/site-themes` (`colorVars` + `sharedVars` in
+`packages/site-themes/src/v2/css.ts`) and declared as fallbacks in `apps/storefront/app/storefront.css`.
 Every `site-ui` class reads from this set:
 
 **Color** — `--sf-base-100/200/300`, `--sf-base-content`, `--sf-primary` (+ `-content`, `-hover`,
@@ -197,7 +205,7 @@ The `dark` and `glass` button variants the team-lead shipped are **legibility sc
 photos**, not tenant-brand colors — a tenant's `--sf-primary` over a busy hero photo is often
 illegible, so these are deliberately a frosted near-black / near-white. To honor "no hardcoded
 color" while staying faithful to the shipped look, `site-ui` reads them through **dedicated tokens
-now emitted by the v2 producer** (`sharedVars` in `packages/storefront-themes/src/v2/css.ts`), with
+now emitted by the v2 producer** (`sharedVars` in `packages/site-themes/src/v2/css.ts`), with
 the team-lead's exact values; `site-ui` CSS also keeps them as `var()` fallbacks for graceful
 degradation:
 

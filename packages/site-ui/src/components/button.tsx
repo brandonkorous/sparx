@@ -48,9 +48,11 @@ export interface ButtonProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
+  xs: 'sf-btn--sz-xs',
   sm: 'sf-btn--sz-sm',
   md: 'sf-btn--sz-md',
   lg: 'sf-btn--sz-lg',
+  xl: 'sf-btn--sz-xl',
 };
 
 export function Button(props: ButtonProps): React.ReactElement {

@@ -31,6 +31,9 @@ export interface ColorTokensV2 {
   success: string;
   warning: string;
   danger: string;
+  // Highlight — semantic attention/promo color (presentation-owned, themeable).
+  // Optional in a preset; the compiler supplies a distinct default when omitted.
+  highlight?: string;
   // Line (presentation-owned)
   border: string;
   // Optional explicit `-content` overrides (else derived from the base above)
@@ -42,6 +45,7 @@ export interface ColorTokensV2 {
   successContent?: string;
   warningContent?: string;
   dangerContent?: string;
+  highlightContent?: string;
 }
 
 // ── Shared tokens (mode-independent) ───────────────────────────────────────
@@ -124,6 +128,8 @@ export interface PresentationColorOverlay {
   successContent?: string | null;
   warningContent?: string | null;
   dangerContent?: string | null;
+  highlight?: string | null;
+  highlightContent?: string | null;
   border?: string | null;
 }
 
@@ -159,6 +165,8 @@ export interface CompiledColorTokensV2 {
   warningContent: string;
   danger: string;
   dangerContent: string;
+  highlight: string;
+  highlightContent: string;
   border: string;
 }
 

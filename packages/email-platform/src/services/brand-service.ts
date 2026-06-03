@@ -13,7 +13,7 @@
 // Light palette only (email-client dark mode is unreliable). We read concrete
 // token values — never CSS custom properties — because React Email inlines
 // styles and `var(--…)` doesn't survive in Gmail/Outlook. Theme compilation is
-// delegated to @sparx/storefront-themes; we never fork a second registry.
+// delegated to @sparx/site-themes; we never fork a second registry.
 
 import { withTenant } from '@sparx/db';
 import {
@@ -21,7 +21,7 @@ import {
   compileTokens,
   DEFAULT_THEME_KEY,
   type ThemeTokens,
-} from '@sparx/storefront-themes';
+} from '@sparx/site-themes';
 import type { BrandTokens } from '@sparx/email';
 
 import type { ServiceContext } from '../errors';
@@ -97,7 +97,7 @@ export async function resolveEmailBrand(ctx: ServiceContext): Promise<BrandToken
 
     // Overlay the brand's identity palette/typography over the default preset;
     // unset tokens inherit the preset. Email uses the light palette only. Same
-    // brand→token mapping the storefront uses (shared in @sparx/storefront-themes).
+    // brand→token mapping the storefront uses (shared in @sparx/site-themes).
     const overlay = brandIdentityOverlay(brand);
     const compiled = compileTokens(DEFAULT_THEME_KEY, { light: overlay }).light;
     return tokensToBrand(compiled, {

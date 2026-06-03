@@ -76,6 +76,25 @@ const TONE: Record<string, string | undefined> = {
   dark: '#0b0b0c',
 };
 
+// A diagonal-hatch stand-in shown when a node has a `backgroundImageBinding` but
+// no record data resolves it in the editor (the storefront fills it from the real
+// record). Signals "a bound image lands here" without faking a specific photo.
+const BOUND_MEDIA_PLACEHOLDER: React.CSSProperties = {
+  backgroundImage:
+    'repeating-linear-gradient(45deg, var(--bxc-subtle) 0 14px, var(--bxc-muted) 14px 28px)',
+};
+
+/** First image of a bound image/images value (the box-background case), or
+ *  undefined. Mirrors the storefront renderer's `firstImage`. */
+function firstBoundImageUrl(value: unknown): string | undefined {
+  const candidate = Array.isArray(value) ? (value as unknown[])[0] : value;
+  if (candidate && typeof candidate === 'object') {
+    const url = (candidate as { url?: unknown }).url;
+    if (typeof url === 'string' && url !== '') return url;
+  }
+  return undefined;
+}
+
 /** Background CSS for the element that owns the box's background width: a photo
  *  (scrim layered above it) when set, else the surface token color. */
 function bgProps(
@@ -132,7 +151,11 @@ function layoutStyle(node: BuilderNode): React.CSSProperties {
  *  including the independent background-width / content-width axes. */
 function boxStyles(
   node: BuilderNode,
-  def: ComponentDef
+  def: ComponentDef,
+  /** Image resolved from `box.backgroundImageBinding` against the editor scope.
+   *  When present it WINS over the static `backgroundImage`. Undefined when the
+   *  binding is absent or resolves to nothing (no record data in the editor). */
+  boundImage?: string
 ): { outer: React.CSSProperties; inner: React.CSSProperties } {
   const b = node.box;
   const surface = SURFACE[b.surface];
@@ -149,8 +172,12 @@ function boxStyles(
   const fixedHeight = def.kind === 'container' && !isGrid ? HEIGHT_VH[b.height] : undefined;
   const hasHeight = Boolean(fixedHeight);
   // Background media lives on whichever element owns the background WIDTH: the
-  // full-bleed outer when edge-to-edge, else the contained inner.
-  const image = b.backgroundImage;
+  // full-bleed outer when edge-to-edge, else the contained inner. A resolved
+  // bound image wins; the static URL is the fallback. When a binding is set but
+  // unresolved (no record data in the editor), show a hatch placeholder so the
+  // author sees the media slot — "what you see is what you ship".
+  const image = boundImage ?? b.backgroundImage;
+  const boundUnresolved = Boolean(b.backgroundImageBinding) && !image;
   const overlay = b.overlay ?? 'none';
   const tone = b.textTone ?? 'default';
   // `pin: top` lifts the block out of flow so the next block slides under it
@@ -165,7 +192,11 @@ function boxStyles(
       : fixedHeight
         ? { minHeight: fixedHeight, maxHeight: fixedHeight }
         : {}),
-    ...(bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
+    ...(bgFull
+      ? boundUnresolved
+        ? BOUND_MEDIA_PLACEHOLDER
+        : bgProps(image, overlay, surface.bg)
+      : { background: 'transparent' }),
     display: 'flex',
     justifyContent: contentContained ? 'center' : 'flex-start',
     alignItems: hasHeight ? 'center' : 'stretch',
@@ -177,7 +208,11 @@ function boxStyles(
     padding: PADDING_PX[b.padding],
     textAlign: b.align,
     color: TONE[tone] ?? surface.fg,
-    ...(!bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
+    ...(!bgFull
+      ? boundUnresolved
+        ? BOUND_MEDIA_PLACEHOLDER
+        : bgProps(image, overlay, surface.bg)
+      : { background: 'transparent' }),
     ...(def.kind === 'container' ? layoutStyle(node) : {}),
   };
 
@@ -284,7 +319,12 @@ function CanvasNode({
 
   const selected = node.id === selectedId;
   const hidden = node.box.hiddenOn.includes(device);
-  const { outer, inner } = boxStyles(node, def);
+  // Data-aware background: resolve the bound image against this node's scope so
+  // the editor preview matches the storefront when a record is in scope.
+  const boundBg = node.box.backgroundImageBinding
+    ? firstBoundImageUrl(resolvePath(scope, node.box.backgroundImageBinding))
+    : undefined;
+  const { outer, inner } = boxStyles(node, def, boundBg);
 
   let body: React.ReactNode;
   if (node.type === 'Outlet' && outletSlot !== undefined) {

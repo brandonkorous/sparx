@@ -31,7 +31,7 @@
   "dependencies": {
     "@sparx/db": "workspace:*",
     "@sparx/sitebuilder-schemas": "workspace:*",
-    "@sparx/storefront-themes": "workspace:*",
+    "@sparx/site-themes": "workspace:*",
     "@sparx/ui": "workspace:*",
     "lucide-react": "^0.577.0",
     "zod": "^4.4.3"

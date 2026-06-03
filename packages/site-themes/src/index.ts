@@ -1,4 +1,4 @@
-// @sparx/storefront-themes — barrel.
+// @sparx/site-themes — barrel.
 //
 // The six storefront themes as code-side presets (light + dark token
 // defaults), the token surface + CSS-var mapping, and the token compiler that

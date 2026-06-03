@@ -93,7 +93,7 @@ without RLS bypass; per-row writes still ride `withTenant`.
 
 ## 4. Theme engine & write-through
 
-`packages/storefront-themes` holds the six themes (apex, industrial, drift, market, fleet,
+`packages/site-themes` holds the six themes (apex, industrial, drift, market, fleet,
 drop) as dependency-light TS presets. Each preset declares a settings schema (field types:
 `color | font | select | text | number | boolean`) and **token defaults for both `light`
 and `dark`**.

@@ -45,7 +45,7 @@ describe('variant recipe', () => {
     expect(chipTreatmentVariants.solid).toBe(treatmentVariants.solid);
   });
 
-  it('exposes the sm/md/lg size scale', () => {
-    expect(SIZE_KEYS).toEqual(['sm', 'md', 'lg']);
+  it('exposes the xs…xl size scale', () => {
+    expect(SIZE_KEYS).toEqual(['xs', 'sm', 'md', 'lg', 'xl']);
   });
 });

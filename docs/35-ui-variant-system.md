@@ -142,7 +142,7 @@ resolving while we migrate. `--sparx-primary*` and `--module-active*` are untouc
 
 - No change to `--space-*`, `--radius-*`, `--shadow-*`, type tokens. Shape/rhythm stays
   as-is in the dashboard (v2's radius-trio / space-base are a storefront concern).
-- No change to the `--sf-*` layer or `@sparx/storefront-themes`.
+- No change to the `--sf-*` layer or `@sparx/site-themes`.
 - No new dark-mode declarations beyond the few base colors that need a dark variant
   (`neutral`, surfaces already present). Derived tokens inherit automatically.
 

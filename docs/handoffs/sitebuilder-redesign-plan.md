@@ -179,7 +179,7 @@ layout (keeps live preview + docked inspector + in-canvas selection).
       `colorAccentForeground`, `colorSecondary`, `colorSecondaryForeground` to `TenantBrand` (additive nullable
       `VarChar(7)`; migration `20260613000000_brand_secondary_accent_content`, no RLS/backfill — table already
       ENABLE+FORCE RLS; applied to LOCAL docker only). Wired: `PATCH /v1/brand` (PatchBrand/BrandView/toView +
-      forwarding, clear-via-null) + the `@sparx/storefront-themes` **v2** compile branch (`TenantBrandColumns` +
+      forwarding, clear-via-null) + the `@sparx/site-themes` **v2** compile branch (`TenantBrandColumns` +
       `brandColsToTokenDoc` now map the 3 cols onto the brand doc's secondary + accent-content + secondary-content
       colour slots, which `compileTokensV2` already consumed) + `publish-service` brand `select` +
       dashboard `BrandDto`. **Deliberately did NOT touch the v1 `BRAND_IDENTITY_TOKEN_KEYS`/`applyBrandIdentityTokens`

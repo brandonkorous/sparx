@@ -74,6 +74,14 @@
   --c-hover: color-mix(in oklch, var(--sf-danger) 86%, var(--sf-base-content));
   --c-tint: color-mix(in oklch, var(--sf-danger) 14%, transparent);
 }
+/* highlight — semantic attention / promo (sale badges, "new" tags, callouts). */
+.sf-c-highlight {
+  --c-bg: var(--sf-highlight);
+  --c-fg: var(--sf-highlight-content);
+  --c-ink: color-mix(in oklch, var(--sf-highlight) 60%, var(--sf-base-content));
+  --c-hover: color-mix(in oklch, var(--sf-highlight) 86%, var(--sf-base-content));
+  --c-tint: color-mix(in oklch, var(--sf-highlight) 14%, transparent);
+}
 /* surface — the neutral page surface (light-glass / chrome). */
 .sf-c-surface {
   --c-bg: var(--sf-base-100);

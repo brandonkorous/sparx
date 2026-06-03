@@ -46,6 +46,11 @@
   --sf-danger: var(--color-danger);
   --sf-danger-content: #ffffff;
 
+  /* Highlight — semantic promo / attention (sale badges, "new" tags, callouts) */
+  --sf-highlight: #ec4899;
+  --sf-highlight-content: #ffffff;
+  --sf-highlight-tint: color-mix(in oklab, var(--sf-highlight) 8%, transparent);
+
   /* Type */
   --sf-font-fallback: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
   --sf-font-body: var(--font-sans);

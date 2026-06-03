@@ -1,7 +1,7 @@
 # Handoff — Phase 7: Storefront rendering of the Site Builder snapshot
 
 **To:** the storefront agent (owns `apps/storefront`)
-**From:** the Site Builder build (owns `packages/sitebuilder*`, `packages/storefront-themes`, `services/api-rest/.../sitebuilder/*`)
+**From:** the Site Builder build (owns `packages/sitebuilder*`, `packages/site-themes`, `services/api-rest/.../sitebuilder/*`)
 **Status of the backend you depend on:** DONE + green. The public read endpoint, the
 compiled-token contract, the section registry, and the dashboard live-preview transport are
 all built, tested, and stable. Nothing below is speculative — it's the shipped contract.
@@ -65,12 +65,12 @@ Keep your existing preview-token gate; just swap which URL it fetches.
 
 ## 2. Tokens → CSS (light + dark) — use the shared helpers, don't re-derive
 
-`@sparx/storefront-themes` already owns the token→CSS-var mapping. **Do not hardcode a second
+`@sparx/site-themes` already owns the token→CSS-var mapping. **Do not hardcode a second
 copy of the variable names** — import the helpers so light/dark and the dashboard preview all
 stay in lockstep:
 
 ```ts
-import { tokensToCss } from '@sparx/storefront-themes';
+import { tokensToCss } from '@sparx/site-themes';
 
 const lightBody = tokensToCss(snapshot.compiledTokens.light); // "--sf-primary:#…;--sf-bg:#…;…"
 const darkBody = tokensToCss(snapshot.compiledTokens.dark);
@@ -89,7 +89,7 @@ publish write-through to `StorefrontTheme`). The **new** work is the `[data-them
 block — add a `darkThemeToCss()` companion in `lib/theme.ts` (or just call `tokensToCss` on
 the dark map; prefer the shared helper).
 
-`TOKEN_CSS_VARS` in `packages/storefront-themes/src/tokens.ts` is the authoritative list of
+`TOKEN_CSS_VARS` in `packages/site-themes/src/tokens.ts` is the authoritative list of
 which `--sf-*` vars each token drives — read it, don't guess.
 
 ### Appearance policy → which theme is active (no-flash)
@@ -206,7 +206,7 @@ reflect the latest draft via the preview endpoint. Guard the listener to the exp
 - **Don't** write `NavigationMenu`/`NavigationItem` rows from the storefront — reference only
   (navigation is edited in the Site Builder dashboard via `/v1/navigation/*`).
 - **Don't** fork the token→CSS mapping — import `tokensToCss` / `TOKEN_CSS_VARS` from
-  `@sparx/storefront-themes`.
+  `@sparx/site-themes`.
 - Live store zone is **`slug.sparx.zone`** (not `wizeworks.com` / `sparx.works`).
 
 Ping me (the Site Builder owner) if the snapshot shape doesn't give you something you need —

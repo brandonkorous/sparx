@@ -9,7 +9,7 @@ import {
   buildLegacyThemeCss,
   buildThemeCssV2,
   type CompiledThemeV2,
-} from '@sparx/storefront-themes';
+} from '@sparx/site-themes';
 
 import type { TenantTheme } from './tenant';
 
@@ -17,7 +17,7 @@ import type { TenantTheme } from './tenant';
 //
 // Compile the storefront's CSS through the v2 token engine, sourced from the
 // SAME data the layout already fetches — no API/schema change. The heavy v1→v2
-// mapping + compile lives in @sparx/storefront-themes' `buildLegacyThemeCss`
+// mapping + compile lives in @sparx/site-themes' `buildLegacyThemeCss`
 // (unit-tested there); here we only project the app's `TenantTheme` shape onto
 // its inputs. The emitter outputs the canonical `--sf-*` tokens PLUS the legacy
 // aliases the current storefront.css still reads, so the chrome upgrades to v2

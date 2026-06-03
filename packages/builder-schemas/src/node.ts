@@ -63,10 +63,17 @@ export const BoxBaseSchema = z.object({
   hiddenOn: z.array(Device),
   /** A full-bleed background image URL — the primitive behind photo hero panels
    *  (docs/45). Spans the node's `backgroundWidth`; covers + centers. Absent =
-   *  no image (the `surface` token color is used instead). A static URL for now;
-   *  a media-library picker + bound backgrounds are follow-ups. `.default`-free
-   *  (optional) so existing stored trees stay valid. */
+   *  no image (the `surface` token color is used instead). A STATIC URL; when a
+   *  `backgroundImageBinding` resolves to an image it WINS, and this becomes the
+   *  fallback. `.default`-free (optional) so existing stored trees stay valid. */
   backgroundImage: z.string().max(2048).optional(),
+  /** A data-aware background: a binding path (e.g. `product.images`, `item.cover`)
+   *  resolved against the node's data scope, the same way leaf bindings resolve.
+   *  The first image of the resolved value becomes the box's background — so a
+   *  product/collection/CMS record's own media drives the hero, no per-record
+   *  authoring. Falls back to `backgroundImage` when it resolves to nothing.
+   *  Optional so existing stored trees stay valid. */
+  backgroundImageBinding: z.string().max(255).optional(),
   /** Scrim over the background image for text legibility. Optional so existing
    *  stored trees (which lack the key) stay valid; consumers default to 'none'. */
   overlay: Overlay.optional(),

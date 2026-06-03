@@ -57,6 +57,8 @@ export function colorVars(c: CompiledColorTokensV2): Record<string, string> {
     '--sf-warning-content': c.warningContent,
     '--sf-danger': c.danger,
     '--sf-danger-content': c.dangerContent,
+    '--sf-highlight': c.highlight,
+    '--sf-highlight-content': c.highlightContent,
     '--sf-border': c.border,
   };
 }
@@ -92,6 +94,7 @@ export function sharedVars(s: SharedTokensV2): Record<string, string> {
   out['--sf-primary-active'] = 'color-mix(in oklab, var(--sf-primary) 74%, black)';
   out['--sf-primary-tint'] = 'color-mix(in oklab, var(--sf-primary) 8%, transparent)';
   out['--sf-accent-tint'] = 'color-mix(in oklab, var(--sf-accent) 8%, transparent)';
+  out['--sf-highlight-tint'] = 'color-mix(in oklab, var(--sf-highlight) 8%, transparent)';
 
   // Depth-scaled shadows (override storefront.css's hardcoded set).
   out['--sf-shadow-sm'] =

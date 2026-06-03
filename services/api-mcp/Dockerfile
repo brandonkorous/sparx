@@ -23,7 +23,7 @@ COPY packages/email-sections ./packages/email-sections
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/crm ./packages/crm
 COPY packages/search ./packages/search
-COPY packages/storefront-themes ./packages/storefront-themes
+COPY packages/site-themes ./packages/site-themes
 COPY packages/sitebuilder-schemas ./packages/sitebuilder-schemas
 COPY packages/sitebuilder ./packages/sitebuilder
 COPY packages/cms-editor ./packages/cms-editor

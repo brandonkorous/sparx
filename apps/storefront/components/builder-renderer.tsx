@@ -140,7 +140,10 @@ function layoutStyle(layout: LayoutBase): React.CSSProperties {
 function boxStyles(
   box: BoxBase,
   isContainer: boolean,
-  isGrid: boolean
+  isGrid: boolean,
+  /** A background image resolved from `box.backgroundImageBinding` against the
+   *  node's data scope. When present it WINS; `box.backgroundImage` is fallback. */
+  boundImage?: string
 ): { outer: React.CSSProperties; inner: React.CSSProperties } {
   const surface = SURFACE[box.surface];
   const bgFull = box.backgroundWidth === 'full';
@@ -150,7 +153,7 @@ function boxStyles(
   // (the container branch), so the grid box itself stays auto and sizes to rows.
   const fixedHeight = isContainer && !isGrid ? HEIGHT_VH[box.height] : undefined;
   const hasHeight = Boolean(fixedHeight);
-  const image = box.backgroundImage;
+  const image = boundImage ?? box.backgroundImage;
   const overlay = box.overlay ?? 'none';
   const tone = box.textTone ?? 'default';
   // `pin: top` floats the block over the one that follows (overlay header),
@@ -574,7 +577,13 @@ function RenderNode({
       ? { ...node.box, backgroundWidth: 'full', contentWidth: 'full' }
       : node.box;
   const isGrid = node.layout?.direction === 'grid';
-  const { outer, inner } = boxStyles(effBox, isContainer, isGrid);
+  // Data-aware background: resolve the bound image against THIS node's scope (the
+  // same scope its own binding/leaves see), take the first image, use its URL as
+  // the box background. Empty/unresolved → undefined, so the static fallback wins.
+  const boundBg = node.box.backgroundImageBinding
+    ? (firstImage(resolvePath(scope, node.box.backgroundImageBinding))?.url ?? undefined)
+    : undefined;
+  const { outer, inner } = boxStyles(effBox, isContainer, isGrid, boundBg);
   const innerStyle = isContainer && node.layout ? { ...inner, ...layoutStyle(node.layout) } : inner;
 
   let body: React.ReactNode;

@@ -78,6 +78,11 @@ function resolveShared(
   };
 }
 
+// Default for the semantic highlight (promo/attention) slot when a preset omits
+// it — a distinct hue, NOT a brand alias. Tenants override via the presentation
+// overlay (docs/47).
+const DEFAULT_HIGHLIGHT = '#ec4899';
+
 function resolveColors(
   base: ColorTokensV2,
   brand: BrandTokenDoc | null | undefined,
@@ -104,6 +109,7 @@ function resolveColors(
   const success = color(overlay?.success, base.success);
   const warning = color(overlay?.warning, base.warning);
   const danger = color(overlay?.danger, base.danger);
+  const highlight = color(overlay?.highlight, base.highlight ?? DEFAULT_HIGHLIGHT);
 
   // `-content`: explicit wins (brand for identity, overlay/preset elsewhere),
   // else auto-derive for AA legibility.
@@ -132,6 +138,9 @@ function resolveColors(
       optColor(overlay?.warningContent, base.warningContent) ?? deriveContent(warning),
     danger,
     dangerContent: optColor(overlay?.dangerContent, base.dangerContent) ?? deriveContent(danger),
+    highlight,
+    highlightContent:
+      optColor(overlay?.highlightContent, base.highlightContent) ?? deriveContent(highlight),
     border,
   };
 }

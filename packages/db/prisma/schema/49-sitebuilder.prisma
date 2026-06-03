@@ -182,7 +182,7 @@ model SitePublishSchedule {
 
 // A tenant-saved theme variant (docs/36 Brand+Theme tier). The tenant's own
 // NAMED presentation snapshots — distinct from the read-only platform presets
-// (THEME_LIST in @sparx/storefront-themes, which stay code-first). `presentation`
+// (THEME_LIST in @sparx/site-themes, which stay code-first). `presentation`
 // is the Token-Model-v2 presentation overlay only (brand identity/feel stay
 // brand-owned); `basePresetKey` is the preset it layers on. Applied to the draft
 // (theme_key + draftSettings presentation) on "Use this theme" or by a scheduled

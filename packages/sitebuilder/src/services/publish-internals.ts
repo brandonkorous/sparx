@@ -9,7 +9,7 @@ import {
   compileTokens,
   toStorefrontThemeColumns,
   type CompiledThemeV2,
-} from '@sparx/storefront-themes';
+} from '@sparx/site-themes';
 import { customSlugOf, type SectionField, type TemplateNode } from '@sparx/sitebuilder-schemas';
 
 import type { SnapshotAssignments } from './assignment-service';

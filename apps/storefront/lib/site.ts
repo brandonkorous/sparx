@@ -17,7 +17,7 @@
 // These interfaces mirror the publish output in
 // packages/sitebuilder/src/services/publish-internals.ts — keep them in sync.
 
-import type { CompiledThemeV2 } from '@sparx/storefront-themes';
+import type { CompiledThemeV2 } from '@sparx/site-themes';
 import {
   DEFAULT_TEMPLATES,
   type SectionField,

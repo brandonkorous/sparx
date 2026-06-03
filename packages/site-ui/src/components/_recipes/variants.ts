@@ -9,6 +9,12 @@
 // --c-fg / --c-ink / --c-hover / --c-tint), so color × variant composes
 // automatically — no cartesian product, no codegen. A runtime custom color
 // works as long as a matching `.sf-c-<name>` rule exists.
+//
+// AXES. `color` × `style` (treatment) × `size` are the SHARED axes standardized
+// here. Components add their own axes where they need them — e.g. Card's `modifier`
+// (side / image-full) and, later, a `behavior` axis (link / hoverable) — plus PARTS
+// (a card's body/title/actions). The shared three are the floor, not the ceiling
+// (docs/47 §3).
 
 /** The known semantic color slots for the tenant storefront. Components type
  *  `color` as `ColorKey | (string & {})` so a runtime custom-color name is
@@ -25,6 +31,7 @@ export const COLOR_KEYS = [
   'success',
   'warning',
   'danger',
+  'highlight',
   'surface',
 ] as const;
 
@@ -41,6 +48,7 @@ export const colorVariants = {
   success: 'sf-c-success',
   warning: 'sf-c-warning',
   danger: 'sf-c-danger',
+  highlight: 'sf-c-highlight',
   surface: 'sf-c-surface',
 } as const satisfies Record<ColorKey, string>;
 
@@ -81,9 +89,9 @@ export const chipTreatmentVariants = {
 export type ChipTreatmentKey = keyof typeof chipTreatmentVariants;
 
 // ── Size scale ──────────────────────────────────────────────────────────────
-// The shared size vocabulary. What each step MEANS dimensionally is
-// component-specific (a button's padding ≠ a chip's), defined in the
-// component's CSS partial (e.g. `.sf-btn--sz-md`).
+// The shared size vocabulary, xs…xl. What each step MEANS dimensionally is
+// component-specific (a button's padding ≠ a card's), defined in the component's
+// CSS partial (e.g. `.sf-btn--sz-md`, `.sf-card--sz-md`).
 
-export const SIZE_KEYS = ['sm', 'md', 'lg'] as const;
+export const SIZE_KEYS = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
 export type SizeKey = (typeof SIZE_KEYS)[number];

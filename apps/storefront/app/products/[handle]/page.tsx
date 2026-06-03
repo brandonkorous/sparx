@@ -81,18 +81,13 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
         key: 'product',
         value: productToBuilderRecord(product, tenant.slug, currency),
       });
-      return (
-        <div className="sf-container">
-          <Breadcrumbs
-            items={[
-              { label: 'Home', href: '/' },
-              { label: 'Products', href: '/products' },
-              { label: product.title },
-            ]}
-          />
-          <BuilderRenderer tree={builderTemplate.tree} data={data} />
-        </div>
-      );
+      // Render the builder tree BARE — exactly like the catch-all page route
+      // ([...slug]). The template owns its own width (full-bleed hero sections,
+      // contained content), so no `sf-container` wrapper or breadcrumbs: those
+      // would cap every section at the content max-width and sit under the
+      // overlay header. The site chrome (header/footer) still frames it via the
+      // root layout's Outlet.
+      return <BuilderRenderer tree={builderTemplate.tree} data={data} />;
     }
   }
 

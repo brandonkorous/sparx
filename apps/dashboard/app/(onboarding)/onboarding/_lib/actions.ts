@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { ThemePreset } from '@sparx/storefront-themes';
+import type { ThemePreset } from '@sparx/site-themes';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import type {
   OnboardingCompleted,

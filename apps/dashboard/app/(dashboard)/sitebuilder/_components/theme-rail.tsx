@@ -3,7 +3,7 @@
 // Column 1 of the Brand & Theme center — the theme picker. Two groups: the
 // tenant's own SAVED themes (named presentation snapshots, docs/33
 // saved-themes contract) and the read-only PREBUILT presets shipped in
-// @sparx/storefront-themes. Selecting a preset switches the base theme (keeping
+// @sparx/site-themes. Selecting a preset switches the base theme (keeping
 // any surface overrides); applying a saved theme loads its base + presentation.
 // Each row previews that theme's OWN palette (preset primary/accent/base), so
 // presets stay visually distinct even when the brand overrides an identity
@@ -11,7 +11,7 @@
 
 import * as React from 'react';
 import { Button, Input, cn } from '@sparx/ui';
-import { THEME_DEFAULTS_V2, THEME_LIST } from '@sparx/storefront-themes';
+import { THEME_DEFAULTS_V2, THEME_LIST } from '@sparx/site-themes';
 import { Check, Pencil, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import type { SiteThemeDto } from '../_lib/types';
 
