@@ -1,0 +1,33 @@
+/* Surface Footer — site footer (docs/46 §5.2). Responsive column grid; `center`
+ * collapses to a centered single row. */
+
+.sf-footer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 2rem;
+  padding: 2.5rem 1.5rem;
+  background: var(--sf-base-200, #f4f1e8);
+  color: var(--sf-base-content, #23211c);
+}
+.sf-footer--center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.sf-footer__col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.sf-footer__title {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(
+    --sf-text-muted,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+  );
+}

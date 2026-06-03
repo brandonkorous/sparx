@@ -1,0 +1,39 @@
+/* Surface Toast — fixed notification region (docs/46 §5.2). A full-viewport flex
+ * column (click-through) anchored by horizontal × vertical; the toasts stack at the
+ * anchor. */
+
+.sf-toast {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  pointer-events: none;
+}
+.sf-toast > * {
+  pointer-events: auto;
+}
+
+/* vertical anchor (main axis). */
+.sf-toast--v-top {
+  justify-content: flex-start;
+}
+.sf-toast--v-middle {
+  justify-content: center;
+}
+.sf-toast--v-bottom {
+  justify-content: flex-end;
+}
+
+/* horizontal anchor (cross axis). */
+.sf-toast--h-start {
+  align-items: flex-start;
+}
+.sf-toast--h-center {
+  align-items: center;
+}
+.sf-toast--h-end {
+  align-items: flex-end;
+}

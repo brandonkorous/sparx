@@ -1,5 +1,5 @@
 // EmbedFrame — a responsive, ratio-locked iframe wrapper (docs/46 §5.2). SERVER
-// component (an <iframe> needs no client runtime). Harvested from the storefront
+// component (an <iframe> needs no client runtime). Harvested from the site
 // renderer's `embedFrame`. With no `src` it renders an accessible placeholder in
 // the same ratio box (the unconfigured state shown in the editor canvas).
 

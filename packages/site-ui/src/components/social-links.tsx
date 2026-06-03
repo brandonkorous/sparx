@@ -1,5 +1,5 @@
 // SocialLinks — a row of platform links (docs/46 §5.2). SERVER component.
-// Harvested from the storefront renderer's SocialLinks leaf. Renders nothing
+// Harvested from the site renderer's SocialLinks leaf. Renders nothing
 // when there are no items.
 
 import * as React from 'react';

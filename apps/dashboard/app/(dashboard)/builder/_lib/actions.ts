@@ -85,6 +85,16 @@ export async function reorderPages(
   );
 }
 
+// ── Surface preview (docs/47 §5) ─────────────────────────────────────────────
+// Compile the class set the editor collected from the working tree into CSS for
+// the canvas (the `temp.css` live-preview path). Stateless + high-frequency
+// (debounced on edits), so — like autosave — it never revalidates.
+export async function compileSurfacePreview(
+  classes: string[]
+): Promise<ActionResult<{ css: string }>> {
+  return run(() => api.post<{ css: string }>('/v1/builder/surface/compile', { classes }), false);
+}
+
 // ── Site layout catalog (the chrome shells — docs/45) ────────────────────────
 // A tenant keeps many layouts; exactly one is ACTIVE (the live chrome). These
 // mirror the page actions but revalidate /builder/site. Activate is the new op:

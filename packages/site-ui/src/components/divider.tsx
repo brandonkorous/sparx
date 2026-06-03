@@ -1,5 +1,5 @@
 // Divider — a full-width hairline in the tenant border color (docs/46 §5.2).
-// SERVER component. Harvested from the storefront renderer's Divider leaf.
+// SERVER component. Harvested from the site renderer's Divider leaf.
 
 import * as React from 'react';
 import { cx } from '../utils/cx';

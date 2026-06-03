@@ -1,0 +1,50 @@
+/* Surface Dock — bottom navigation bar (docs/46 §5.2). Active item uses the fixed
+ * primary accent. Positioning (e.g. fixed bottom) is left to the consumer. */
+
+.sf-dock {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  width: 100%;
+  background: var(--sf-base-100, #fff);
+  border-top: 1px solid var(--sf-border, #e3dfd2);
+}
+.sf-dock__item {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.5rem;
+  color: var(
+    --sf-text-secondary,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 70%, transparent)
+  );
+  text-decoration: none;
+  cursor: pointer;
+}
+.sf-dock__item--active {
+  color: var(--sf-primary, #3f6b52);
+}
+.sf-dock__icon {
+  display: inline-flex;
+}
+.sf-dock__label {
+  line-height: 1;
+}
+.sf-dock--sz-xs .sf-dock__label {
+  font-size: 0.6rem;
+}
+.sf-dock--sz-sm .sf-dock__label {
+  font-size: 0.7rem;
+}
+.sf-dock--sz-md .sf-dock__label {
+  font-size: 0.75rem;
+}
+.sf-dock--sz-lg .sf-dock__label {
+  font-size: 0.85rem;
+}
+.sf-dock--sz-xl .sf-dock__label {
+  font-size: 0.95rem;
+}

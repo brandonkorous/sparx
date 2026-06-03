@@ -1,0 +1,82 @@
+/* Surface Drawer — off-canvas side sheet styling the Radix Dialog portal
+ * (docs/47 §11 B3). `side` pins the panel to an edge and sets the slide-in.
+ * Appearance is `sf-*` + tokens. */
+
+.sf-drawer__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: color-mix(in srgb, #000 50%, transparent);
+  animation: sf-overlay-in 0.15s ease;
+}
+.sf-drawer {
+  position: fixed;
+  z-index: 61;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  background: var(--sf-base-100, #fff);
+  color: var(--sf-base-content, #23211c);
+  box-shadow: var(--sf-shadow-lg, 0 20px 50px rgba(0, 0, 0, 0.28));
+  overflow: auto;
+}
+.sf-drawer--left,
+.sf-drawer--right {
+  top: 0;
+  bottom: 0;
+  width: min(22rem, 90vw);
+}
+.sf-drawer--left {
+  left: 0;
+  animation: sf-drawer-left 0.2s ease;
+}
+.sf-drawer--right {
+  right: 0;
+  animation: sf-drawer-right 0.2s ease;
+}
+.sf-drawer--top,
+.sf-drawer--bottom {
+  left: 0;
+  right: 0;
+  height: min(22rem, 80vh);
+}
+.sf-drawer--top {
+  top: 0;
+  animation: sf-drawer-top 0.2s ease;
+}
+.sf-drawer--bottom {
+  bottom: 0;
+  animation: sf-drawer-bottom 0.2s ease;
+}
+.sf-drawer__title {
+  margin: 0 0 1rem;
+  font-family: var(--sf-font-heading, inherit);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+@keyframes sf-drawer-left {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes sf-drawer-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes sf-drawer-top {
+  from {
+    transform: translateY(-100%);
+  }
+}
+@keyframes sf-drawer-bottom {
+  from {
+    transform: translateY(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sf-drawer,
+  .sf-drawer__overlay {
+    animation: none;
+  }
+}

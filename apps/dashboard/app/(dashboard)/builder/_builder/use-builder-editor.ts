@@ -88,6 +88,8 @@ export interface BuilderEditor {
   onLayout: (patch: Partial<LayoutBase>) => void;
   onProp: (key: string, value: unknown) => void;
   onName: (name: string) => void;
+  /** Set (or clear, with '') the node's class-first styling string (docs/47). */
+  onClass: (value: string) => void;
   onBind: (path: string | null) => void;
   onAdd: (type: string) => void;
   onRemove: (id: string) => void;
@@ -193,6 +195,9 @@ export function useBuilderEditor({
     mutateSelected((n) => ({ ...n, props: { ...n.props, [key]: value } }));
   const onName = (name: string) =>
     mutateSelected((n) => ({ ...n, box: { ...n.box, name: name || undefined } }));
+  // The class-first styling surface (docs/47): a brand-governed class string on
+  // the node. Empty → undefined so a blank field stores no class (cf. onName).
+  const onClass = (value: string) => mutateSelected((n) => ({ ...n, class: value || undefined }));
   const onBind = (path: string | null) =>
     mutateSelected((n) => {
       if (!path) {
@@ -260,6 +265,7 @@ export function useBuilderEditor({
     onLayout,
     onProp,
     onName,
+    onClass,
     onBind,
     onAdd,
     onRemove,

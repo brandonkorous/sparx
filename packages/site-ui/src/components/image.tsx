@@ -1,5 +1,5 @@
 // Image — a ratio-locked, cover-fit image with a graceful placeholder
-// (docs/46 §5.2). SERVER component. Harvested from the storefront renderer's
+// (docs/46 §5.2). SERVER component. Harvested from the site renderer's
 // Image/ImageDisplay leaf: ratios wide 16/9, square 1/1, portrait 3/4; rounded
 // to --sf-radius-box. With no `src` it renders an accessible placeholder box
 // (the unbound / empty state) instead of a broken image.
@@ -26,7 +26,7 @@ const RATIO_CLASS: Record<ImageRatio, string> = {
 export function Image({ src, alt = '', ratio = 'wide', className, style }: ImageProps) {
   if (src) {
     // Plain <img>: media URLs 302-redirect to GCS; next/image optimization is a
-    // later pass (consistent with the rest of the storefront).
+    // later pass (consistent with the rest of the site).
     return (
       <img
         src={src}

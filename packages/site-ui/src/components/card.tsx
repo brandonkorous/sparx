@@ -7,7 +7,7 @@
 // parts — Body / Title / Actions (+ a plain <figure> child) — are exposed both as
 // the compound `Card.Body` API and as named exports.
 //
-// SERVER component: markup + classes only, so the storefront and the editor canvas
+// SERVER component: markup + classes only, so the site and the editor canvas
 // render it identically. Interactivity (e.g. a whole-card link) is a `behavior`
 // axis added later, never an onClick on the base.
 

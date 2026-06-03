@@ -22,7 +22,7 @@
 }
 
 /* Size axis — what the shared xs…xl steps mean for a button. `md` keeps the
- * storefront CTA proportions. */
+ * site CTA proportions. */
 .sf-btn--sz-xs {
   @apply px-3 py-1.5 text-xs;
 }

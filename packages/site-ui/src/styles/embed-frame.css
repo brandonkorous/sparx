@@ -1,5 +1,5 @@
 /* site-ui EmbedFrame — responsive ratio box for Video / Map iframes
- * (docs/46 §5.2). Storefront-renderer parity ratios. */
+ * (docs/46 §5.2). Site-renderer parity ratios. */
 
 .sf-embed {
   position: relative;

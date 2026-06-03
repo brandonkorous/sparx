@@ -44,7 +44,7 @@ import {
 } from '@/lib/site';
 
 import './globals.css';
-import './storefront.css';
+import './site.css';
 // The custom-section template primitives (sf-tpl-*), shared with the dashboard
 // Section Studio preview so both render identically (docs/38 Phase C).
 import '@sparx/section-template-react/section-template.css';
@@ -88,7 +88,7 @@ export async function generateMetadata(): Promise<Metadata> {
 // key comes from the published snapshot when present, else the tenant's preset;
 // brand identity + presentation surfaces are sourced from the data the layout
 // already fetched. buildStorefrontThemeCss emits the canonical `--sf-*` tokens
-// plus the legacy aliases the current storefront.css still reads.
+// plus the legacy aliases the current site.css still reads.
 
 function buildThemeCss(
   snapshot: PublishedSnapshot | null,

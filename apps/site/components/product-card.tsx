@@ -1,5 +1,5 @@
 // Product tile for the PLP, collections, search, and "related" rails.
-// Token-driven via the .sf-card classes in storefront.css so tenant theme
+// Token-driven via the .sf-card classes in site.css so tenant theme
 // overrides flow through automatically.
 
 import Image from 'next/image';

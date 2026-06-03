@@ -1,0 +1,46 @@
+/* Surface ThemeController — light/dark/system switch (docs/46 §5.2). Drives
+ * `[data-theme]` (the @sparx/site-themes mechanism). Segmented variant is a small
+ * button group; the active option uses the surface/primary accent. */
+
+.sf-theme-controller {
+  display: inline-flex;
+  padding: 0.2rem;
+  gap: 0.15rem;
+  background: var(--sf-base-200, #f4f1e8);
+  border-radius: var(--sf-radius-field, 0.5rem);
+}
+.sf-theme-controller__option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.7rem;
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(
+    --sf-text-secondary,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 70%, transparent)
+  );
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--sf-radius-field, 0.5rem) - 0.15rem);
+  cursor: pointer;
+}
+.sf-theme-controller__option:hover {
+  color: var(--sf-base-content, #23211c);
+}
+.sf-theme-controller__option--active {
+  background: var(--sf-base-100, #fff);
+  color: var(--sf-base-content, #23211c);
+  box-shadow: var(--sf-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.12));
+}
+.sf-theme-controller__option:focus-visible {
+  outline: 2px solid var(--sf-primary, #3f6b52);
+  outline-offset: 2px;
+}
+
+/* select variant reuses the .sf-input base for chrome. */
+.sf-theme-controller__select {
+  width: auto;
+  padding: 0.4rem 0.6rem;
+}

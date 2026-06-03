@@ -140,6 +140,7 @@ export function BuilderWorkspace({
               scope={editor.scope}
               settings={settings}
               onName={editor.onName}
+              onClass={editor.onClass}
               onBind={editor.onBind}
               onProp={editor.onProp}
               onLayout={editor.onLayout}

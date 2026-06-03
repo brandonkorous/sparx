@@ -6,7 +6,7 @@
 // SERVER component — markup + classes + the background style the renderer's box
 // layer would otherwise compose. The `surface` axis is the shared role-var recipe
 // (a colored band reads --c-bg / --c-fg); the background image goes through the
-// existing `photoPanelStyle()` helper so it matches the storefront renderer
+// existing `photoPanelStyle()` helper so it matches the site renderer
 // exactly. `padding` is the section's own vertical-rhythm scale.
 
 import * as React from 'react';

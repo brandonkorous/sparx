@@ -2,7 +2,7 @@
   "name": "@sparx/site-ui",
   "version": "0.0.0",
   "private": true,
-  "description": "Sparx tenant-themed storefront component library (--sf-* tokens). Sibling of @sparx/ui; consumed by the storefront, the Builder renderer, and the editor canvas.",
+  "description": "Sparx tenant-themed site component library (--sf-* tokens). Sibling of @sparx/ui; consumed by the site, the Builder renderer, and the editor canvas.",
   "type": "module",
   "sideEffects": [
     "**/*.css"

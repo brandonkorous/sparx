@@ -9,7 +9,7 @@
  *   --c-hover solid hover fill / link hover ink (base nudged toward base-content)
  *   --c-tint  low-alpha wash (soft fill, outline/ghost hover)
  * mirrors @sparx/ui's derivation (oklch mixes toward the readable ink). Assumes
- * --sf-* are in scope (storefront.css default layer or the compiled tenant
+ * --sf-* are in scope (site.css default layer or the compiled tenant
  * block / .bx-canvas), exactly as @sparx/ui assumes tokens.css.
  *
  * VARIANT axis (`.sf-v-{variant}`): treatments authored ONCE against --c-*, so

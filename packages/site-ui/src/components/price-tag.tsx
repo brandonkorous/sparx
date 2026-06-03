@@ -1,5 +1,5 @@
 // PriceTag — a formatted monetary amount (docs/46 §5.2).
-// SERVER component. Harvested from the storefront renderer's PriceTag leaf
+// SERVER component. Harvested from the site renderer's PriceTag leaf
 // (`$${n.toFixed(2)}`); `currency` lets the symbol be overridden. An
 // absent/non-finite amount renders nothing (an unbound price).
 

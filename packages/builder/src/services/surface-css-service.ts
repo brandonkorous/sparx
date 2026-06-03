@@ -18,6 +18,7 @@
 // §5.2). Swapping to publish-time precompute + a stored sheet is a later, purely
 // internal change behind this same function.
 
+import { z } from 'zod';
 import { withTenant } from '@sparx/db';
 import { collectClasses, compileClasses, contentHash } from '@sparx/surface-compile';
 import type { BuilderNode } from '@sparx/builder-schemas';
@@ -77,4 +78,27 @@ export async function getPublishedStylesheet(ctx: ServiceContext): Promise<Publi
   const sheet: PublishedStylesheet = { css, hash: contentHash(css) };
   cache.set(ctx.tenantId, { classHash, sheet });
   return sheet;
+}
+
+// ── Editor live preview (the `temp.css` path, docs/47 §5.2) ───────────────────
+
+/** The editor sends the class tokens it collected from the WORKING (unsaved)
+ *  tree; we compile and hand the CSS back to inject into the canvas, so authored
+ *  classes render live — identical to what publish will serve. Bounded to keep
+ *  the compile cheap and reject pathological payloads. */
+export const CompilePreviewInput = z.object({
+  classes: z.array(z.string().max(200)).max(2000),
+});
+
+/**
+ * Compile an editor-supplied class set for canvas preview. Stateless — a pure
+ * function of the class list (the `--sf-*` tokens resolve in the browser), so it
+ * needs no tenant context. Non-minified for speed + readability; the Tailwind
+ * compiler is process-memoized, so repeat calls only pay the candidate build.
+ */
+export async function compilePreview(rawInput: unknown): Promise<{ css: string }> {
+  const { classes } = CompilePreviewInput.parse(rawInput);
+  // Dedupe + sort for compiler determinism (the editor sends a raw list).
+  const css = await compileClasses([...new Set(classes)].sort());
+  return { css };
 }

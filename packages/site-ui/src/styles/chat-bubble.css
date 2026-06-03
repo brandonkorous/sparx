@@ -1,0 +1,53 @@
+/* Surface ChatBubble — message row (docs/46 §3.6). The bubble reads the role vars
+ * when colored, else a neutral surface. `placement` flips the row side. */
+
+.sf-chat {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.75rem;
+  align-items: end;
+  padding: 0.25rem 0;
+}
+.sf-chat--end {
+  grid-template-columns: 1fr auto;
+}
+.sf-chat--end .sf-chat__avatar {
+  order: 2;
+}
+.sf-chat__avatar {
+  grid-row: span 3;
+  align-self: start;
+}
+.sf-chat__header {
+  font-size: 0.75rem;
+  color: var(
+    --sf-text-muted,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+  );
+}
+.sf-chat__bubble {
+  width: fit-content;
+  max-width: 80%;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--sf-radius-box, 1rem);
+  background: var(--sf-base-200, #f4f1e8);
+  color: var(--sf-base-content, #23211c);
+}
+.sf-chat__bubble--colored {
+  background: var(--c-bg, var(--sf-primary, #3f6b52));
+  color: var(--c-fg, var(--sf-primary-content, #fff));
+}
+.sf-chat--end .sf-chat__bubble {
+  margin-left: auto;
+}
+.sf-chat__footer {
+  font-size: 0.7rem;
+  color: var(
+    --sf-text-muted,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+  );
+}
+.sf-chat--end .sf-chat__header,
+.sf-chat--end .sf-chat__footer {
+  text-align: right;
+}

@@ -2,7 +2,7 @@
 
 // Carousel — the one interactive primitive (docs/46 §3.2, §5.2). CLIENT
 // component: it owns the runtime concerns a server component can't — active
-// index, autoplay timer, arrows, dots. Ported from the storefront's
+// index, autoplay timer, arrows, dots. Ported from the site's
 // builder-carousel.tsx (bx-carousel → sf-carousel); the server renderer builds
 // each child into a slide and hands them in as `slides`. Pure CSS-transform
 // transition (no animation lib): the track translates by -index * 100%.

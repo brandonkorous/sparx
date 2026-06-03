@@ -1,9 +1,9 @@
 // Storefront theme → CSS custom properties (Token Model v2, docs/33).
 //
-// The default theme lives in app/storefront.css as `--sf-*` token fallbacks. A
+// The default theme lives in app/site.css as `--sf-*` token fallbacks. A
 // per-tenant <style> tag injected in the root layout overrides them with the
 // compiled v2 theme; anything the tenant hasn't customized falls through to
-// the preset / storefront.css default — zero code changes per tenant.
+// the preset / site.css default — zero code changes per tenant.
 
 import { buildLegacyThemeCss, buildThemeCssV2, type CompiledThemeV2 } from '@sparx/site-themes';
 
@@ -16,7 +16,7 @@ import type { TenantTheme } from './tenant';
 // mapping + compile lives in @sparx/site-themes' `buildLegacyThemeCss`
 // (unit-tested there); here we only project the app's `TenantTheme` shape onto
 // its inputs. The emitter outputs the canonical `--sf-*` tokens PLUS the legacy
-// aliases the current storefront.css still reads, so the chrome upgrades to v2
+// aliases the current site.css still reads, so the chrome upgrades to v2
 // with no CSS rewrite.
 
 interface ThemeV2Sources {

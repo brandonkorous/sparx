@@ -147,8 +147,9 @@ jobs:
       - name: Trigger deploy-prod on the built tag
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
           echo "All images built & pushed for $TAG — dispatching deploy-prod.yml"
-          gh workflow run deploy-prod.yml --ref "$TAG"
+          gh workflow run deploy-prod.yml --repo "$GH_REPO" --ref "$TAG"

@@ -1,5 +1,5 @@
 // Text — body / eyebrow / meta paragraph (docs/46 §5.2).
-// SERVER component. Harvested from the storefront renderer's `textStyle`:
+// SERVER component. Harvested from the site renderer's `textStyle`:
 // `eyebrow` is the uppercase brand kicker, `meta` is muted fine print, `body`
 // inherits color at 1.6 line-height.
 

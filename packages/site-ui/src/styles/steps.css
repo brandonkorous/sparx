@@ -1,0 +1,89 @@
+/* Surface Steps — stepper (docs/46 §3.6). Completed/active markers read the role
+ * var `--c-bg`; the marker number is a CSS counter unless an icon is supplied. */
+
+.sf-steps {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: sf-step;
+}
+.sf-steps--horizontal {
+  flex-direction: row;
+}
+.sf-steps--vertical {
+  flex-direction: column;
+}
+.sf-step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  counter-increment: sf-step;
+}
+.sf-steps--horizontal .sf-step {
+  flex: 1;
+  flex-direction: column;
+  text-align: center;
+}
+.sf-steps--vertical .sf-step {
+  padding-bottom: 1.5rem;
+}
+.sf-step__marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--sf-base-300, #e6e1d3);
+  color: var(--sf-base-content, #23211c);
+}
+.sf-step:not(.sf-step--has-icon) .sf-step__marker::before {
+  content: counter(sf-step);
+}
+.sf-step--complete .sf-step__marker,
+.sf-step--active .sf-step__marker {
+  background: var(--c-bg, var(--sf-primary, #3f6b52));
+  color: var(--c-fg, var(--sf-primary-content, #fff));
+}
+.sf-step__label {
+  font-size: 0.85rem;
+}
+.sf-step--upcoming .sf-step__label {
+  color: var(
+    --sf-text-muted,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+  );
+}
+
+/* connector line between markers. */
+.sf-steps--horizontal .sf-step:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  top: 1rem;
+  right: 50%;
+  left: -50%;
+  height: 2px;
+  background: var(--sf-base-300, #e6e1d3);
+  z-index: -1;
+}
+.sf-steps--horizontal .sf-step--complete::before,
+.sf-steps--horizontal .sf-step--active::before {
+  background: var(--c-bg, var(--sf-primary, #3f6b52));
+}
+.sf-steps--vertical .sf-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 2rem;
+  left: 1rem;
+  bottom: 0;
+  width: 2px;
+  background: var(--sf-base-300, #e6e1d3);
+}
+.sf-steps--vertical .sf-step--complete::after {
+  background: var(--c-bg, var(--sf-primary, #3f6b52));
+}

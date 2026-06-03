@@ -1,5 +1,5 @@
 // Heading — h1/h2/h3 in the tenant heading font (docs/46 §5.2).
-// SERVER component. Harvested from the storefront renderer's `headingStyle`
+// SERVER component. Harvested from the site renderer's `headingStyle`
 // (the parity baseline): sizes 2.5 / 1.75 / 1.25rem, weight 600, line-height
 // 1.15. Themed by --sf-font-heading.
 

@@ -1,8 +1,8 @@
 // @sparx/site-ui — public barrel.
 //
-// The tenant-themed (--sf-*) storefront component library. Consumed by the
-// storefront chrome, the Builder renderer, and the editor canvas so the preview
-// renders the exact components the storefront ships (docs/46).
+// The tenant-themed (--sf-*) site component library. Consumed by the
+// site chrome, the Builder renderer, and the editor canvas so the preview
+// renders the exact components the site ships (docs/46).
 //
 // Components emit semantic `sf-*` classes; consumers must also import the
 // stylesheet once: `import '@sparx/site-ui/styles.css'`.
@@ -118,3 +118,151 @@ export {
 } from './components/radio';
 export { Switch, type SwitchProps } from './components/switch';
 export { Field, type FieldProps } from './components/field';
+
+// ── Tier 4: interactive (Radix behavior, Surface appearance) ─
+export {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+  type AccordionProps,
+  type AccordionIcon,
+} from './components/accordion';
+export { Collapse, CollapseTrigger, CollapseContent } from './components/collapse';
+export {
+  Tabs,
+  TabsList,
+  TabsTab,
+  TabsPanel,
+  type TabsProps,
+  type TabsVariant,
+} from './components/tabs';
+export { Tooltip, type TooltipProps, type TooltipSide } from './components/tooltip';
+export {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  type DialogContentProps,
+  type DialogPlacement,
+} from './components/dialog';
+export {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  type DrawerContentProps,
+  type DrawerSide,
+} from './components/drawer';
+export {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from './components/dropdown-menu';
+export { Popover, PopoverContent } from './components/popover';
+
+// ── Catalog: color-bearing / structural primitives ─────────
+export { Link, type LinkProps, type LinkUnderline } from './components/link';
+export { Status, type StatusProps } from './components/status';
+export { Kbd, type KbdProps } from './components/kbd';
+export {
+  Steps,
+  Step,
+  type StepsProps,
+  type StepProps,
+  type StepsOrientation,
+  type StepState,
+} from './components/steps';
+export { RadialProgress, type RadialProgressProps } from './components/radial-progress';
+export {
+  ChatBubble,
+  ChatAvatar,
+  ChatHeader,
+  ChatMessage,
+  ChatFooter,
+  type ChatBubbleProps,
+  type ChatMessageProps,
+  type ChatPlacement,
+} from './components/chat-bubble';
+export { Range, type RangeProps } from './components/range';
+export { Rating, type RatingProps } from './components/rating';
+
+// ── Catalog: layout / navigation ───────────────────────────
+export { Hero, type HeroProps, type HeroAlign } from './components/hero';
+export {
+  Footer,
+  FooterColumn,
+  FooterTitle,
+  type FooterProps,
+  type FooterSlotProps,
+} from './components/footer';
+export {
+  Navbar,
+  NavbarStart,
+  NavbarCenter,
+  NavbarEnd,
+  type NavbarProps,
+  type NavbarSlotProps,
+} from './components/navbar';
+export {
+  Menu,
+  MenuItem,
+  type MenuProps,
+  type MenuItemProps,
+  type MenuOrientation,
+} from './components/menu';
+export { Dock, DockItem, type DockProps, type DockItemProps } from './components/dock';
+export { List, ListRow, type ListProps, type ListRowProps } from './components/list';
+export { Table, type TableProps } from './components/table';
+export {
+  Indicator,
+  IndicatorItem,
+  type IndicatorProps,
+  type IndicatorItemProps,
+  type IndicatorPlacement,
+} from './components/indicator';
+export { Join, type JoinProps, type JoinOrientation } from './components/join';
+export { Mask, type MaskProps, type MaskShape } from './components/mask';
+export {
+  Toast,
+  type ToastProps,
+  type ToastHorizontal,
+  type ToastVertical,
+} from './components/toast';
+
+// ── Catalog: display / input ───────────────────────────────
+export { Countdown, type CountdownProps } from './components/countdown';
+export {
+  Diff,
+  DiffItem1,
+  DiffItem2,
+  DiffResizer,
+  type DiffProps,
+  type DiffSlotProps,
+} from './components/diff';
+export { Hover3DCard, type Hover3DCardProps } from './components/hover-3d-card';
+export {
+  HoverGallery,
+  type HoverGalleryProps,
+  type HoverGalleryImage,
+} from './components/hover-gallery';
+export { TextRotate, type TextRotateProps } from './components/text-rotate';
+export { Swap, type SwapProps, type SwapAnimation } from './components/swap';
+export { FAB, type FABProps, type FABPlacement } from './components/fab';
+export { Calendar, calendarMonth, type CalendarProps } from './components/calendar';
+export { FileInput, type FileInputProps } from './components/file-input';
+export { Filter, type FilterProps, type FilterOption } from './components/filter';
+export { Validator, type ValidatorProps } from './components/validator';
+export {
+  ThemeController,
+  type ThemeControllerProps,
+  type ThemeMode,
+  type ThemeControllerVariant,
+} from './components/theme-controller';
+
+// ── Catalog: mockups ───────────────────────────────────────
+export { Browser, type BrowserProps } from './components/browser';
+export { Code, CodeLine, type CodeProps, type CodeLineProps } from './components/code';
+export { Phone, type PhoneProps } from './components/phone';
+export { Window, type WindowProps } from './components/window';

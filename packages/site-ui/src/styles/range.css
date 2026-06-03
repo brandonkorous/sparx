@@ -1,0 +1,27 @@
+/* Surface Range — slider (docs/46 §3.6). The track/thumb take the role var `--c-bg`
+ * via accent-color; size sets the control height. */
+
+.sf-range {
+  width: 100%;
+  cursor: pointer;
+  accent-color: var(--c-bg, var(--sf-primary, #3f6b52));
+}
+.sf-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.sf-range--sz-xs {
+  height: 0.75rem;
+}
+.sf-range--sz-sm {
+  height: 1rem;
+}
+.sf-range--sz-md {
+  height: 1.25rem;
+}
+.sf-range--sz-lg {
+  height: 1.5rem;
+}
+.sf-range--sz-xl {
+  height: 1.85rem;
+}

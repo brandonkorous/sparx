@@ -16,7 +16,7 @@
 // (a card's body/title/actions). The shared three are the floor, not the ceiling
 // (docs/47 §3).
 
-/** The known semantic color slots for the tenant storefront. Components type
+/** The known semantic color slots for the tenant site. Components type
  *  `color` as `ColorKey | (string & {})` so a runtime custom-color name is
  *  still accepted (it maps to `sf-c-${color}`) while keeping autocomplete.
  *  `surface` is the neutral page-surface slot (base-100 fill / base-content

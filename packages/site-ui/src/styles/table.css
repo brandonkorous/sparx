@@ -1,0 +1,63 @@
+/* Surface Table — data table (docs/46 §5.2). zebra striping, pinned header/columns,
+ * a density scale. Layout @apply'd; colors are tokens. */
+
+.sf-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+.sf-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--sf-base-content, #23211c);
+  text-align: left;
+}
+.sf-table thead th {
+  font-weight: 600;
+  color: var(
+    --sf-text-secondary,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 70%, transparent)
+  );
+  border-bottom: 1px solid var(--sf-border, #e3dfd2);
+}
+.sf-table tbody tr {
+  border-bottom: 1px solid var(--sf-border, #e3dfd2);
+}
+.sf-table--zebra tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--sf-base-content, #23211c) 4%, transparent);
+}
+
+/* pinned header / columns. */
+.sf-table--pin-rows thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--sf-base-100, #fff);
+}
+.sf-table--pin-cols th:first-child,
+.sf-table--pin-cols td:first-child {
+  position: sticky;
+  left: 0;
+  background: var(--sf-base-100, #fff);
+}
+
+/* Density scale — cell padding. */
+.sf-table--sz-xs th,
+.sf-table--sz-xs td {
+  @apply px-2 py-1 text-xs;
+}
+.sf-table--sz-sm th,
+.sf-table--sz-sm td {
+  @apply px-2.5 py-1.5 text-sm;
+}
+.sf-table--sz-md th,
+.sf-table--sz-md td {
+  @apply px-3 py-2 text-sm;
+}
+.sf-table--sz-lg th,
+.sf-table--sz-lg td {
+  @apply px-4 py-3 text-base;
+}
+.sf-table--sz-xl th,
+.sf-table--sz-xl td {
+  @apply px-5 py-4 text-lg;
+}

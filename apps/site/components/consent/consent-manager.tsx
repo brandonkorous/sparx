@@ -8,7 +8,7 @@
 //
 // The decision is persisted client-side (the /api/sparx proxy relays only one
 // Set-Cookie, so the cookie is set here) and POSTed to /v1/public/consent for
-// the legal record. Built from sf-consent-* classes in storefront.css.
+// the legal record. Built from sf-consent-* classes in site.css.
 
 import { useEffect, useState } from 'react';
 import type { TenantConsent } from '@/lib/tenant';

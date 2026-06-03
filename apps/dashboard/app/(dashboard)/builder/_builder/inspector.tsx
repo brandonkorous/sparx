@@ -525,6 +525,7 @@ export interface InspectorProps {
   /** Rendered when no node is selected — the surface's settings panel. */
   settings: React.ReactNode;
   onName: (name: string) => void;
+  onClass: (value: string) => void;
   onBind: (path: string | null) => void;
   onProp: (key: string, value: unknown) => void;
   onLayout: (patch: Partial<LayoutBase>) => void;
@@ -537,6 +538,7 @@ export function Inspector({
   scope,
   settings,
   onName,
+  onClass,
   onBind,
   onProp,
   onLayout,
@@ -561,6 +563,20 @@ export function Inspector({
           onChange={(e) => onName(e.target.value)}
         />
       </header>
+
+      <Group label="Classes">
+        <p className="bx-grp__caption">
+          Brand-governed styling classes — the class-first surface (docs/47). Space-separated;
+          compiled to the tenant stylesheet on publish.
+        </p>
+        <Textarea
+          rows={2}
+          value={node.class ?? ''}
+          placeholder="e.g. hero bg-base-100 gap-6"
+          aria-label="Node classes"
+          onChange={(e) => onClass(e.target.value)}
+        />
+      </Group>
 
       <BindingBox node={node} catalog={catalog} scope={scope} onBind={onBind} />
       <PropsPanel node={node} onProp={onProp} />

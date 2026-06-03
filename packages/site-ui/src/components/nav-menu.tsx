@@ -1,5 +1,5 @@
 // NavMenu — a row or stacked list of nav links (docs/46 §5.2). SERVER
-// component. Harvested from the storefront renderer's NavMenu leaf. Takes a
+// component. Harvested from the site renderer's NavMenu leaf. Takes a
 // resolved `items: {label,url}[]`; the renderer maps EITHER source — a bound
 // array OR the hand-typed `links` fallback (one `Label|/url` per line) — onto
 // this contract, so this component never knows which.

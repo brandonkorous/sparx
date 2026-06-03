@@ -1,0 +1,39 @@
+/* Surface Browser mockup (docs/46 §5.2). Also defines the shared traffic-light
+ * `.sf-mockup__dots` used by Window (both are always bundled together). */
+
+.sf-mockup__dots {
+  display: inline-flex;
+  gap: 0.4rem;
+}
+.sf-mockup__dots > span {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: var(--sf-base-300, #cfcabb);
+}
+
+.sf-mockup-browser {
+  overflow: hidden;
+  background: var(--sf-base-100, #fff);
+  border: 1px solid var(--sf-border, #e3dfd2);
+  border-radius: var(--sf-radius-box, 1rem);
+}
+.sf-mockup-browser__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--sf-base-200, #f4f1e8);
+  border-bottom: 1px solid var(--sf-border, #e3dfd2);
+}
+.sf-mockup-browser__url {
+  flex: 1;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+  color: var(
+    --sf-text-muted,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+  );
+  background: var(--sf-base-100, #fff);
+  border-radius: 999px;
+}

@@ -1,5 +1,5 @@
 // Logo — the site identity: a logo image, or the brand name as a wordmark
-// fallback (docs/46 §5.2). SERVER component. Harvested from the storefront
+// fallback (docs/46 §5.2). SERVER component. Harvested from the site
 // renderer's Logo leaf. Links to `href` (default `/`).
 
 import * as React from 'react';

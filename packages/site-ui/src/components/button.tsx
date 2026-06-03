@@ -7,7 +7,7 @@
 // scale. No flat enum — the same recipe drives every color-bearing component.
 //
 // SERVER component (no 'use client'): emits markup + classes, no client runtime,
-// so the server storefront and the client editor canvas render it identically.
+// so the server site and the client editor canvas render it identically.
 // Presentational by design — interactivity via `href` (anchor) or a thin client
 // wrapper later, never an `onClick` on the base component.
 //

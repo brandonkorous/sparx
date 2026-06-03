@@ -2,7 +2,7 @@
 // team-lead). The Builder's box→CSS engine owns structure (it already emits the
 // outer/inner elements with box styles); this returns the {background, color}
 // the engine composes onto the box for a photo panel: a full-bleed image with a
-// legibility scrim and an independent text tone. Mirrors the storefront
+// legibility scrim and an independent text tone. Mirrors the site
 // renderer's `bgProps` + `SCRIM` + `TONE` exactly, so the migration is a
 // like-for-like swap (parity baseline).
 //

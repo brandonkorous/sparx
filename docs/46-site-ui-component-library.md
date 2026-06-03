@@ -1,17 +1,17 @@
 # 46 — `@sparx/site-ui`: The Tenant-Themed Component Library
 
-Version: 1.4
+Version: 1.5
 Author: Brandon Korous
-Last Updated: 2026-06-02
+Last Updated: 2026-06-03
 
 > The Builder composition model ([40](40-sitebuilder-composition-model.md)) walks a
-> node tree; the storefront render path ([44](44-builder-storefront-render.md)) turns a
+> node tree; the site render path ([44](44-builder-storefront-render.md)) turns a
 > published tree into live markup; the editor canvas previews the same tree inside the
 > dashboard. Today the **leaf and container visuals** in those two render paths are written
 > **twice** — once as `.bx-*` CSS in the editor canvas, once as inline styles in the
-> storefront renderer — and they drift. This doc defines **`@sparx/site-ui`**, a single
+> site renderer — and they drift. This doc defines **`@sparx/site-ui`**, a single
 > tenant-themed component library that **both** paths consume, so the editor renders the exact
-> components the storefront ships: _what you see is what you ship._
+> components the site ships: _what you see is what you ship._
 
 ---
 
@@ -19,19 +19,19 @@ Last Updated: 2026-06-02
 
 A Builder primitive — say a CTA button or a photo panel — exists in two places:
 
-| Surface             | Where                                                                          | How it's styled                              |
-| ------------------- | ------------------------------------------------------------------------------ | -------------------------------------------- |
-| **Editor canvas**   | `apps/dashboard/app/(dashboard)/builder/_builder/registry.tsx` + `builder.css` | `.bx-btn`, `.bx-btn--primary`, … (`--bxc-*`) |
-| **Live storefront** | `apps/site/components/builder-renderer.tsx`                                    | inline `style={buttonStyle(...)}` (`--sf-*`) |
+| Surface           | Where                                                                          | How it's styled                              |
+| ----------------- | ------------------------------------------------------------------------------ | -------------------------------------------- |
+| **Editor canvas** | `apps/dashboard/app/(dashboard)/builder/_builder/registry.tsx` + `builder.css` | `.bx-btn`, `.bx-btn--primary`, … (`--bxc-*`) |
+| **Live site**     | `apps/site/components/builder-renderer.tsx`                                    | inline `style={buttonStyle(...)}` (`--sf-*`) |
 
-Two implementations of one thing. The canvas knows `primary | soft | link`; the storefront
+Two implementations of one thing. The canvas knows `primary | soft | link`; the site
 (after the Tesla work) knows `primary | soft | dark | glass | link`. They already disagree.
 Every new primitive doubles the surface area and the drift. The north-star goal — recreate a
 reference landing page so the preview **exactly matches** production — is structurally
 impossible while the preview and production are different code.
 
 **`@sparx/site-ui` collapses both into one set of components**, themed entirely by the tenant
-`--sf-*` tokens. The storefront renderer and the editor canvas both render these components.
+`--sf-*` tokens. The site renderer and the editor canvas both render these components.
 The preview cannot drift from production because they are the same code.
 
 ---
@@ -76,22 +76,22 @@ This is the load-bearing decision. Three candidates were on the table:
    (`--color-*`), not the tenant's. We'd be reduced to arbitrary-value classes
    (`bg-[var(--sf-primary)]`) everywhere — Tailwind buying us nothing while adding a build
    coupling and a real risk of the canvas resolving the wrong palette.
-2. **Inline styles** (what the storefront renderer does today). Self-contained and FOUC-free,
+2. **Inline styles** (what the site renderer does today). Self-contained and FOUC-free,
    but inline styles **cannot express `:hover` / `:focus-visible` / `:disabled`** — a real
-   component library needs interaction states. (The current storefront buttons have none.)
+   component library needs interaction states. (The current site buttons have none.)
 3. **Self-contained semantic CSS, authored once against `--sf-*`, shipped as a stylesheet.**
    ✅ **Chosen.**
 
 `site-ui` components emit **semantic class names** (`sf-btn sf-btn--primary`) and ship a single
 token-driven stylesheet (`@sparx/site-ui/styles.css`). This is exactly the established pattern in
-this repo — `storefront.css` and `builder.css` are both plain token-driven CSS, and `@sparx/ui`
+this repo — `site.css` and `builder.css` are both plain token-driven CSS, and `@sparx/ui`
 already ships `tokens.css`. It gives us:
 
-- **One source of visual truth** consumed identically by storefront and canvas — no per-consumer
+- **One source of visual truth** consumed identically by site and canvas — no per-consumer
   Tailwind wiring, no palette ambiguity.
 - **Full interaction states** (`:hover`, `:focus-visible`, `:disabled`) that inline styles can't do.
 - **No FOUC**: a static stylesheet in the document head paints with the first frame, same as
-  `storefront.css`/`builder.css` today.
+  `site.css`/`builder.css` today.
 - **Server-renderable**: emitting a `className` requires no client runtime.
 
 **Division of labor between class and inline.** Visual _treatment_ (variant, surface, tone) →
@@ -109,7 +109,7 @@ box→CSS layer. Components own the former; the engine owns the latter. They com
 
 ### 3.2 SSR-first, selective `'use client'`
 
-The storefront is server-rendered; the canvas is a client tree. Components must work in both, so
+The site is server-rendered; the canvas is a client tree. Components must work in both, so
 they are **server components by default** — they emit markup + class names with no client runtime.
 Only components that genuinely need browser state opt into `'use client'`:
 
@@ -119,10 +119,10 @@ Only components that genuinely need browser state opt into `'use client'`:
 | Carousel                                                                                      | **`'use client'`** — index state, autoplay timer, drag                   |
 
 `'use client'` is a per-file boundary at the leaf, so importing `site-ui` from a server component
-(the storefront renderer) stays server-side except where a client island is actually used. This
+(the site renderer) stays server-side except where a client island is actually used. This
 mirrors `@sparx/ui`'s selective-`'use client'` discipline ([23](23-frontend-component-architecture.md)).
 
-### 3.3 No canonical token ownership — `site-ui` _consumes_, `storefront-themes` _produces_
+### 3.3 No canonical token ownership — `site-ui` _consumes_, `site-themes` _produces_
 
 `@sparx/site-themes` is the single producer of `--sf-*` (`buildThemeCssV2` /
 `compileThemeForTenant`, [33](33-token-model-v2.md)). `site-ui` never emits a canonical token
@@ -174,7 +174,7 @@ is imported **last** so a treatment's resets (e.g. `.sf-v-link` → `padding:0`)
 ## 4. The token contract (`--sf-*` `site-ui` consumes)
 
 These are produced by `@sparx/site-themes` (`colorVars` + `sharedVars` in
-`packages/site-themes/src/v2/css.ts`) and declared as fallbacks in `apps/site/app/storefront.css`.
+`packages/site-themes/src/v2/css.ts`) and declared as fallbacks in `apps/site/app/site.css`.
 Every `site-ui` class reads from this set:
 
 **Color** — `--sf-base-100/200/300`, `--sf-base-content`, `--sf-primary` (+ `-content`, `-hover`,
@@ -230,7 +230,7 @@ the team-lead. A tenant theme can later override them to tune scrim legibility.
 The first wave harvests the proven implementations in `builder-renderer.tsx` and the editor
 `registry.tsx` into typed components. Prop contracts are intentionally **presentational and
 SSR-safe** — no event handlers in the base components (interactivity arrives via `href` links or a
-thin client wrapper), so they render in both the server storefront and the client canvas.
+thin client wrapper), so they render in both the server site and the client canvas.
 
 > **Status: the full first wave is now BUILT** greenfield in `packages/site-ui` (gate green;
 > migration still on hold per §7). Each component below emits `sf-*` classes against the §4 tokens
@@ -340,6 +340,54 @@ up in the **focus ring** (`--c-bg`) and the **invalid** state (danger role).
 | `Switch`               | server   | `color` × `size`                                     | Track + sliding knob; `role="switch"`; checked track `--c-bg`.        |
 | `Field`                | server   | `label`/`hint`/`error`/`required`                    | Wraps Label + control; error in danger, error overrides hint.         |
 
+### 5.4 Tier 4 interactive + the full catalog (2026-06-03)
+
+To make Surface a complete library, the remaining daisyUI-class catalog was built in one pass.
+Two boundary notes:
+
+- **Tier 4 wraps Radix, styled entirely by Surface.** The interactive primitives use
+  `@radix-ui/react-*` for behavior only (focus, keyboard, portalling, `data-state`); **no Radix
+  class convention is adopted** — every part carries an `sf-*` class and is themed by `--sf-*` +
+  the role-var recipe, with interaction styling keyed off Radix's `data-state`/`data-highlighted`
+  attributes. This is a deliberate **dependency decision** (team-lead chose Radix over the
+  hand-authored approach `@sparx/ui` uses); the new runtime deps are `react-accordion`,
+  `-collapsible`, `-tabs`, `-tooltip`, `-dialog`, `-dropdown-menu`, `-popover`. Each is a
+  `'use client'` island.
+- **Expanded `'use client'` set (amends §3.2).** Beyond Carousel, the client components are now: all
+  Tier 4 (Radix) primitives, plus **HoverGallery** and **TextRotate** (hover/timer state). Swap is
+  server (a CSS-`:checked` toggle); everything else in the catalog stays server.
+
+**Tier 4 — interactive (Radix behavior, Surface CSS):** `Accordion` (icon: arrow/plus) · `Collapse`
+· `Tabs` (variant line/box/lift × color) · `Tooltip` (color × side) · `Dialog`/Modal (placement) ·
+`Drawer` (side) · `DropdownMenu` · `Popover` — all compound, parts attached + named-exported.
+
+**Catalog — color-bearing (recipe consumers):** `Link` (color × underline), `Status` (color × size,
+pulse), `Steps`/`Step` (color, orientation, per-step state), `RadialProgress` (color × size, conic
+mask), `ChatBubble` (placement; colored Message), `Range` (accent-color), `Rating` (color × size,
+interactive radios or readOnly), `FAB` (recipe solid), `Filter` (checked chip), `FileInput`
+(file-button color).
+
+**Catalog — structural (no color axis):** `Kbd`, `Hero`, `Footer`, `Navbar`, `Menu`, `Dock`, `List`,
+`Table` (zebra/pin/size), `Indicator` (9 placements), `Join`, `Mask` (clip/SVG shapes), `Toast`
+(anchor), `Countdown`, `Diff`, `Hover3DCard`, `HoverGallery`, `TextRotate`, `Swap`, `Calendar`
+(`calendarMonth` helper), `Validator` (`:user-invalid`), and the mockups `Browser` / `Code` / `Phone`
+/ `Window`. Menu/Dock/Calendar/Pagination active states use the fixed primary accent (a semantic
+token, not a selectable color axis — same judgment as Label).
+
+**`ThemeController`** (client) switches the site between **light / dark / system** by setting
+`data-theme` on the document root (or a target element). It persists to a **cookie** by default
+(`sparx_theme`, `light`/`dark`; `system` clears it) — the same contract the site's no-flash `<head>`
+script reads (`apps/site/app/layout.tsx`), so it's a drop-in for the hand-rolled `mode-toggle`;
+`localStorage` and `none` are also available via `persist`. It drives the exact contract
+`@sparx/site-themes` emits — `:root` (light) + `:root[data-theme="dark"]` + a `prefers-color-scheme`
+fallback an explicit `[data-theme="light"]` opts out of (`buildThemeCssV2`, docs/33). It is a **mode
+toggle within the tenant's one active brand**, _not_ a multi-named-theme picker: the brand designer
+(`/builder/brand`) manages many named themes (`SiteTheme` rows), but "Use this theme" applies one
+onto the tenant's single active brand, which the producer compiles to light + dark — so `data-theme`
+only takes `light` / `dark` / (absent = system). Runtime named-theme switching would require the
+producer to emit `[data-theme="<name>"]` blocks first; the control already writes an arbitrary
+attribute value, so it extends cleanly.
+
 ---
 
 ## 6. The reference component: `Button`
@@ -350,10 +398,10 @@ The first/reference consumer of the recipe (§3.6), proving the whole contract e
 - **Themed only by `--sf-*`** — Button owns nothing but base layout + the `sm/md/lg` padding scale
   in `styles/button.css`; all color/treatment comes from the shared `.sf-c-*` / `.sf-v-*` recipe.
   No hardcoded color. (The focus ring picks up the active `--c-bg`.)
-- **Renders identically in both contexts.** The storefront defines `--sf-*` globally (via
-  `storefront.css`); the editor canvas defines a compiled `--sf-*` block scoped to `.bx-canvas`
+- **Renders identically in both contexts.** The site defines `--sf-*` globally (via
+  `site.css`); the editor canvas defines a compiled `--sf-*` block scoped to `.bx-canvas`
   (today aliased to `--bxc-*`; see `builder.css`). Because `.sf-c-primary` reads `--sf-primary`
-  directly, the **same button** picks up the tenant brand in the storefront and the same compiled
+  directly, the **same button** picks up the tenant brand in the site and the same compiled
   brand in the canvas — no per-context code.
 
 `vitest` asserts each axis (color → `sf-c-*`, variant → `sf-v-*`, size → `sf-btn--sz-*`), the
@@ -363,15 +411,15 @@ no-`href`→`<button>` polymorphism; a recipe test covers `colorClass`, `treatme
 
 ---
 
-## 7. The canvas ↔ storefront unification plan (LATER — coordinated)
+## 7. The canvas ↔ site unification plan (LATER — coordinated)
 
 Greenfield work (the doc, the scaffold, Button) touches nothing else. The migration is a separate,
 coordinated pass **after the team-lead's Tesla primitives land**, executed roughly in this order:
 
-1. **Land `styles.css` import points.** Add `import '@sparx/site-ui/styles.css'` to the storefront
-   root layout (after `@sparx/ui/tokens.css`/`storefront.css`) and to the `/builder` editor route.
+1. **Land `styles.css` import points.** Add `import '@sparx/site-ui/styles.css'` to the site
+   root layout (after `@sparx/ui/tokens.css`/`site.css`) and to the `/builder` editor route.
    Static stylesheet → no FOUC.
-2. **Point the storefront renderer at `site-ui`.** Replace `buttonStyle`/leaf inline styles in
+2. **Point the site renderer at `site-ui`.** Replace `buttonStyle`/leaf inline styles in
    `builder-renderer.tsx` with `site-ui` components, leaf by leaf. The box/layout engine and
    binding resolution are untouched — only the leaf/container _visuals_ move.
 3. **Point the editor canvas at `site-ui`.** Replace the `.bx-*` leaf rendering in `registry.tsx`
@@ -382,7 +430,7 @@ coordinated pass **after the team-lead's Tesla primitives land**, executed rough
    the same components — confirm against the reference landing page (the team's north star).
 
 **No-FOUC guarantee.** Because treatment is a static, head-loaded stylesheet (not runtime-injected
-styles), the first paint is already themed in both SSR (storefront) and client (canvas) — there is
+styles), the first paint is already themed in both SSR (site) and client (canvas) — there is
 no unstyled frame to flash.
 
 ### 7.1 New-package wiring checklist (migration-time, do NOT do during greenfield)
@@ -454,16 +502,24 @@ of duplicated style injection and the server renderer carries no CSS-in-JS runti
 - [x] **Variant recipe** (`_recipes/variants.ts` + `recipes.css`) — the four-axis foundation (§3.6).
 - [x] `Button` reworked to four-axis `color × variant × size` as the reference consumer (§5.1, §6).
 - [x] Full first-wave inventory built greenfield (§5); `--sf-overlay-*` removed (§4.1, superseded).
-- [x] Gate green: site-ui **51 tests**, storefront-themes **55 tests**, tsc/eslint/prettier clean.
+- [x] Gate green: site-ui **51 tests**, site-themes **55 tests**, tsc/eslint/prettier clean.
 - [x] **Core-library expansion built (§5.3)** — Tier 1 layout (Section/Container/Grid/Stack), Tier 2
       color-bearing (Badge/Tag/Alert/Callout/Avatar/Label), Tier 2b structural
       (Skeleton/Spinner/Progress/Breadcrumb/Pagination), Tier 3 forms
       (Input/Textarea/NativeSelect/Checkbox/Radio+RadioGroup/Switch/Field). Exported, partials
       imported (recipes.css last), **98 tests**, tsc/eslint clean, `dist/styles.css` compiles
       (plain CSS, `--sf-*` preserved, no preflight).
-- [ ] **Tier 4 interactive** (Accordion/Tabs/Tooltip/Dialog/DropdownMenu/Popover) — pending the
-      hand-authored-vs-Radix decision (default: hand-authored, semantic `sf-` classes, matching
-      `@sparx/ui`).
+- [x] **Tier 4 interactive built (§5.4)** — Accordion/Collapse/Tabs/Tooltip/Dialog/Drawer/
+      DropdownMenu/Popover on `@radix-ui/react-*` (behavior only) wrapped in `sf-*` classes; the
+      team-lead chose Radix over hand-authoring. Client islands; jsdom polyfilled for tests.
+- [x] **Full daisyUI-class catalog built (§5.4)** — color-bearing (Link/Status/Steps/RadialProgress/
+      ChatBubble/Range/Rating/FAB/Filter/FileInput) + structural (Kbd/Hero/Footer/Navbar/Menu/Dock/
+      List/Table/Indicator/Join/Mask/Toast/Countdown/Diff/Hover3DCard/HoverGallery/TextRotate/Swap/
+      Calendar/Validator/ThemeController + Browser/Code/Phone/Window mockups). ThemeController drives
+      `data-theme` light/dark/system (one active brand), not a multi-named-theme picker.
+- [x] Gate green for the whole library: **142 tests** across 16 files, tsc/eslint clean,
+      `dist/styles.css` compiles (~101 KB plain CSS, `--sf-*` preserved, `@apply` fully resolved, no
+      preflight).
 - [ ] **Button migration PULLED FORWARD** — team-lead wires `builder-renderer.tsx` + the editor
       canvas at `<Button>` and adds the `styles.css` imports (site-ui delivers; lead wires).
 - [ ] **HOLD: the rest of the §7 migration** — gated on the Tesla page being built + verified on

@@ -1,0 +1,66 @@
+/* Surface Tabs — styles Radix's `data-state='active'` (docs/47 §11 B3). The active
+ * indicator reads the role var `--c-bg`; three strip treatments (line/box/lift).
+ * Appearance is `sf-*` + tokens. */
+
+.sf-tabs {
+  display: flex;
+  flex-direction: column;
+}
+.sf-tabs__list {
+  display: flex;
+  gap: 0.25rem;
+}
+.sf-tabs__tab {
+  @apply inline-flex cursor-pointer items-center gap-2 px-4 py-2 font-medium;
+  background: transparent;
+  border: 0;
+  color: var(
+    --sf-text-secondary,
+    color-mix(in oklab, var(--sf-base-content, #23211c) 70%, transparent)
+  );
+  font-family: var(--sf-font-body, inherit);
+}
+.sf-tabs__tab:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+.sf-tabs__panel {
+  padding-top: 1rem;
+}
+.sf-tabs__panel:focus-visible {
+  @apply outline-none;
+}
+
+/* line — underline indicator on the active tab. */
+.sf-tabs--line .sf-tabs__list {
+  border-bottom: 1px solid var(--sf-border, #e3dfd2);
+}
+.sf-tabs--line .sf-tabs__tab {
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.sf-tabs--line .sf-tabs__tab[data-state='active'] {
+  color: var(--c-bg, var(--sf-primary, #3f6b52));
+  border-bottom-color: var(--c-bg, var(--sf-primary, #3f6b52));
+}
+
+/* box — filled active tab. */
+.sf-tabs--box .sf-tabs__tab {
+  border-radius: var(--sf-radius-field, 0.5rem);
+}
+.sf-tabs--box .sf-tabs__tab[data-state='active'] {
+  background: var(--c-bg, var(--sf-primary, #3f6b52));
+  color: var(--c-fg, var(--sf-primary-content, #fff));
+}
+
+/* lift — raised card-tab joining the panel. */
+.sf-tabs--lift .sf-tabs__tab {
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-top-left-radius: var(--sf-radius-field, 0.5rem);
+  border-top-right-radius: var(--sf-radius-field, 0.5rem);
+}
+.sf-tabs--lift .sf-tabs__tab[data-state='active'] {
+  background: var(--sf-base-100, #fff);
+  border-color: var(--sf-border, #e3dfd2);
+  color: var(--c-bg, var(--sf-primary, #3f6b52));
+}

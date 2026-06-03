@@ -1,0 +1,64 @@
+/* Surface Indicator — pins an item to a corner/edge of its content (docs/46 §5.2).
+ * Nine placements via top/middle/bottom × start/center/end. */
+
+.sf-indicator {
+  position: relative;
+  display: inline-flex;
+}
+.sf-indicator__item {
+  position: absolute;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+/* vertical anchor */
+.sf-indicator__item--top-start,
+.sf-indicator__item--top-center,
+.sf-indicator__item--top-end {
+  top: 0;
+  transform: translateY(-50%);
+}
+.sf-indicator__item--middle-start,
+.sf-indicator__item--middle-center,
+.sf-indicator__item--middle-end {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.sf-indicator__item--bottom-start,
+.sf-indicator__item--bottom-center,
+.sf-indicator__item--bottom-end {
+  bottom: 0;
+  transform: translateY(50%);
+}
+
+/* horizontal anchor */
+.sf-indicator__item--top-start,
+.sf-indicator__item--middle-start,
+.sf-indicator__item--bottom-start {
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+.sf-indicator__item--top-center,
+.sf-indicator__item--middle-center,
+.sf-indicator__item--bottom-center {
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.sf-indicator__item--top-end,
+.sf-indicator__item--middle-end,
+.sf-indicator__item--bottom-end {
+  right: 0;
+  transform: translate(50%, -50%);
+}
+.sf-indicator__item--bottom-start {
+  transform: translate(-50%, 50%);
+}
+.sf-indicator__item--bottom-center {
+  transform: translate(-50%, 50%);
+}
+.sf-indicator__item--bottom-end {
+  transform: translate(50%, 50%);
+}
+.sf-indicator__item--middle-center {
+  transform: translate(-50%, -50%);
+}

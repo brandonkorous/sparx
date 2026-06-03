@@ -1,0 +1,65 @@
+/* Surface FileInput — styled native file input (docs/46 §3.6). The file-selector
+ * button reads the role var `--c-bg`/`--c-fg`; focus ring reads `--c-bg`. */
+
+.sf-file {
+  display: block;
+  width: 100%;
+  font-family: var(--sf-font-body, inherit);
+  font-size: 0.9rem;
+  color: var(--sf-base-content, #23211c);
+  background: var(--sf-base-100, #fff);
+  border: 1px solid var(--sf-border, #e3dfd2);
+  border-radius: var(--sf-radius-field, 0.5rem);
+  cursor: pointer;
+}
+.sf-file::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.5rem 0.85rem;
+  border: 0;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--c-bg, var(--sf-primary, #3f6b52));
+  color: var(--c-fg, var(--sf-primary-content, #fff));
+}
+.sf-file:focus-visible {
+  outline: none;
+  border-color: var(--c-bg, var(--sf-primary, #3f6b52));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--sf-primary, #3f6b52)) 25%, transparent);
+}
+.sf-file:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.sf-file--ghost {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* Size axis. */
+.sf-file--sz-xs {
+  font-size: 0.75rem;
+}
+.sf-file--sz-xs::file-selector-button {
+  padding: 0.3rem 0.6rem;
+}
+.sf-file--sz-sm {
+  font-size: 0.8rem;
+}
+.sf-file--sz-sm::file-selector-button {
+  padding: 0.4rem 0.7rem;
+}
+.sf-file--sz-md::file-selector-button {
+  padding: 0.5rem 0.85rem;
+}
+.sf-file--sz-lg {
+  font-size: 1rem;
+}
+.sf-file--sz-lg::file-selector-button {
+  padding: 0.6rem 1rem;
+}
+.sf-file--sz-xl {
+  font-size: 1.1rem;
+}
+.sf-file--sz-xl::file-selector-button {
+  padding: 0.75rem 1.25rem;
+}

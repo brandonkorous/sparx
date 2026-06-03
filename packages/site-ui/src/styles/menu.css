@@ -1,0 +1,51 @@
+/* Surface Menu — nav list (docs/46 §5.2). Active item uses the fixed primary tint.
+ * Layout @apply'd; colors are tokens. */
+
+.sf-menu {
+  @apply m-0 flex list-none p-0;
+}
+.sf-menu--vertical {
+  @apply flex-col;
+}
+.sf-menu--horizontal {
+  @apply flex-row flex-wrap items-center;
+}
+.sf-menu__li {
+  display: flex;
+}
+.sf-menu--vertical .sf-menu__li {
+  width: 100%;
+}
+.sf-menu__item {
+  @apply flex w-full items-center gap-2 no-underline;
+  border-radius: var(--sf-radius-field, 0.5rem);
+  color: inherit;
+  cursor: pointer;
+}
+.sf-menu__item:hover {
+  background: color-mix(in srgb, var(--sf-base-content, #23211c) 7%, transparent);
+}
+.sf-menu__item--active {
+  background: color-mix(in srgb, var(--sf-primary, #3f6b52) 14%, transparent);
+  color: var(--sf-primary, #3f6b52);
+}
+.sf-menu__item--disabled {
+  @apply pointer-events-none opacity-50;
+}
+
+/* Size axis — item padding + text. */
+.sf-menu--sz-xs .sf-menu__item {
+  @apply px-2 py-1 text-xs;
+}
+.sf-menu--sz-sm .sf-menu__item {
+  @apply px-2.5 py-1.5 text-sm;
+}
+.sf-menu--sz-md .sf-menu__item {
+  @apply px-3 py-2 text-base;
+}
+.sf-menu--sz-lg .sf-menu__item {
+  @apply px-3.5 py-2.5 text-lg;
+}
+.sf-menu--sz-xl .sf-menu__item {
+  @apply px-4 py-3 text-xl;
+}

@@ -1,4 +1,4 @@
-// Embed URL helpers (docs/46 §5.2). Harvested verbatim from the storefront
+// Embed URL helpers (docs/46 §5.2). Harvested verbatim from the site
 // renderer's `youtubeEmbed` / `mapEmbed` so the typed Video/Map components and
 // the renderer derive the same src; the renderer can dedupe onto these at
 // migration time. Server-safe (pure string functions).

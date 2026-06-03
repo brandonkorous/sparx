@@ -2,7 +2,7 @@
 
 // Scroll-reveal controller. Watches every `[data-sf-reveal]` element (the
 // Site Builder section wrappers) and adds `is-visible` as each scrolls into
-// view, driving the fade-up entrance defined in storefront.css. One-shot per
+// view, driving the fade-up entrance defined in site.css. One-shot per
 // element (unobserved after it reveals). Re-scans on route change so client
 // navigations pick up the new page's sections.
 //

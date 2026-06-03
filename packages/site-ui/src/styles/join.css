@@ -1,0 +1,44 @@
+/* Surface Join — seamless control group (docs/46 §5.2). Inner corners square up and
+ * borders collapse; outer corners keep the field radius. */
+
+.sf-join {
+  display: inline-flex;
+}
+.sf-join--horizontal {
+  flex-direction: row;
+}
+.sf-join--vertical {
+  flex-direction: column;
+}
+
+/* square every child, then restore the outer corners. */
+.sf-join > * {
+  border-radius: 0;
+}
+.sf-join--horizontal > *:not(:first-child) {
+  margin-left: -1px;
+}
+.sf-join--horizontal > *:first-child {
+  border-top-left-radius: var(--sf-radius-field, 0.5rem);
+  border-bottom-left-radius: var(--sf-radius-field, 0.5rem);
+}
+.sf-join--horizontal > *:last-child {
+  border-top-right-radius: var(--sf-radius-field, 0.5rem);
+  border-bottom-right-radius: var(--sf-radius-field, 0.5rem);
+}
+.sf-join--vertical > *:not(:first-child) {
+  margin-top: -1px;
+}
+.sf-join--vertical > *:first-child {
+  border-top-left-radius: var(--sf-radius-field, 0.5rem);
+  border-top-right-radius: var(--sf-radius-field, 0.5rem);
+}
+.sf-join--vertical > *:last-child {
+  border-bottom-left-radius: var(--sf-radius-field, 0.5rem);
+  border-bottom-right-radius: var(--sf-radius-field, 0.5rem);
+}
+.sf-join > *:hover,
+.sf-join > *:focus-within {
+  position: relative;
+  z-index: 1;
+}

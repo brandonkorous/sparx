@@ -1,0 +1,28 @@
+/* Surface Link — themed anchor (docs/46 §3.6). Text reads the role var `--c-ink`,
+ * hover `--c-hover`. */
+
+.sf-link {
+  color: var(--c-ink, var(--sf-primary, #3f6b52));
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.sf-link:hover {
+  color: var(--c-hover, var(--sf-primary, #3f6b52));
+}
+.sf-link:focus-visible {
+  outline: 2px solid var(--c-bg, var(--sf-primary, #3f6b52));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.sf-link--ul-always {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.sf-link--ul-hover:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.sf-link--ul-none {
+  text-decoration: none;
+}
