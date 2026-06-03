@@ -8,7 +8,7 @@ This directory holds the Deployment + Service + HPA + PDB for each app named in 
 | `api-graphql` | 1                  | Pothos + Mercurius                |
 | `api-mcp`     | 1                  | MCP server                        |
 | `dashboard`   | 1                  | Next.js merchant admin            |
-| `site`  | 2                  | Next.js multi-tenant sites  |
+| `site`        | 2                  | Next.js multi-tenant sites        |
 | `marketing`   | 1                  | Public sparx.works marketing site |
 
 ## Adding a new app

@@ -22,7 +22,7 @@ A Builder primitive — say a CTA button or a photo panel — exists in two plac
 | Surface             | Where                                                                          | How it's styled                              |
 | ------------------- | ------------------------------------------------------------------------------ | -------------------------------------------- |
 | **Editor canvas**   | `apps/dashboard/app/(dashboard)/builder/_builder/registry.tsx` + `builder.css` | `.bx-btn`, `.bx-btn--primary`, … (`--bxc-*`) |
-| **Live storefront** | `apps/site/components/builder-renderer.tsx`                              | inline `style={buttonStyle(...)}` (`--sf-*`) |
+| **Live storefront** | `apps/site/components/builder-renderer.tsx`                                    | inline `style={buttonStyle(...)}` (`--sf-*`) |
 
 Two implementations of one thing. The canvas knows `primary | soft | link`; the storefront
 (after the Tesla work) knows `primary | soft | dark | glass | link`. They already disagree.
@@ -40,9 +40,9 @@ The preview cannot drift from production because they are the same code.
 
 Two component libraries, cleanly split by **whose brand they wear**:
 
-| Library                     | Theme tokens                                          | Wears the brand of    | Consumers                                                         |
-| --------------------------- | ----------------------------------------------------- | --------------------- | ----------------------------------------------------------------- |
-| `@sparx/ui` (`packages/ui`) | `--color-*`, `--module-active`, `--sparx-*`           | **Sparx** (the admin) | `apps/dashboard`, marketing `apps/web`                            |
+| Library                     | Theme tokens                                          | Wears the brand of    | Consumers                                                   |
+| --------------------------- | ----------------------------------------------------- | --------------------- | ----------------------------------------------------------- |
+| `@sparx/ui` (`packages/ui`) | `--color-*`, `--module-active`, `--sparx-*`           | **Sparx** (the admin) | `apps/dashboard`, marketing `apps/web`                      |
 | `@sparx/site-ui` (this doc) | `--sf-*` (Token Model v2, [33](33-token-model-v2.md)) | **the tenant**        | `apps/site` chrome, the Builder renderer, the editor canvas |
 
 They never overlap. `@sparx/ui` is the operator's tools, in Sparx Indigo. `@sparx/site-ui` is
