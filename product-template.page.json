@@ -6,7 +6,12 @@
   "recordType": "commerce.product",
   "tree": {
     "type": "Section",
-    "box": { "name": "Product", "backgroundWidth": "full", "contentWidth": "full", "padding": "none" },
+    "box": {
+      "name": "Product",
+      "backgroundWidth": "full",
+      "contentWidth": "full",
+      "padding": "none"
+    },
     "layout": { "direction": "stack", "gap": "none" },
     "children": [
       {
@@ -49,7 +54,12 @@
           "padding": "xl",
           "align": "center"
         },
-        "layout": { "direction": "stack", "gap": "lg", "justify": "center", "alignItems": "center" },
+        "layout": {
+          "direction": "stack",
+          "gap": "lg",
+          "justify": "center",
+          "alignItems": "center"
+        },
         "children": [
           {
             "type": "ProductForm",
@@ -57,14 +67,27 @@
             "layout": { "direction": "stack", "gap": "md", "alignItems": "center" },
             "binding": { "path": "product" },
             "children": [
-              { "type": "VariantPicker", "box": { "name": "Options", "align": "center" }, "props": {} },
+              {
+                "type": "VariantPicker",
+                "box": { "name": "Options", "align": "center" },
+                "props": {}
+              },
               {
                 "type": "Stack",
                 "box": { "name": "Add row", "padding": "none" },
-                "layout": { "direction": "row", "gap": "sm", "justify": "center", "alignItems": "center" },
+                "layout": {
+                  "direction": "row",
+                  "gap": "sm",
+                  "justify": "center",
+                  "alignItems": "center"
+                },
                 "children": [
                   { "type": "Quantity", "box": { "name": "Qty" }, "props": {} },
-                  { "type": "AddToCart", "box": { "name": "Add" }, "props": { "label": "Add to cart" } }
+                  {
+                    "type": "AddToCart",
+                    "box": { "name": "Add" },
+                    "props": { "label": "Add to cart" }
+                  }
                 ]
               }
             ]

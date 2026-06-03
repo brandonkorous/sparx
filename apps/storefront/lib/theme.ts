@@ -5,11 +5,7 @@
 // compiled v2 theme; anything the tenant hasn't customized falls through to
 // the preset / storefront.css default — zero code changes per tenant.
 
-import {
-  buildLegacyThemeCss,
-  buildThemeCssV2,
-  type CompiledThemeV2,
-} from '@sparx/site-themes';
+import { buildLegacyThemeCss, buildThemeCssV2, type CompiledThemeV2 } from '@sparx/site-themes';
 
 import type { TenantTheme } from './tenant';
 

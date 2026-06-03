@@ -68,8 +68,8 @@ emits arbitrary inline CSS on every node** from its box→CSS compiler:
 
 ```html
 <!-- today, per node -->
-style="position:absolute; top:0; left:0; right:0; z-index:40; width:100%;
-       background:transparent; display:flex; justify-content:center; align-items:stretch;"
+style="position:absolute; top:0; left:0; right:0; z-index:40; width:100%; background:transparent;
+display:flex; justify-content:center; align-items:stretch;"
 ```
 
 That is custom CSS — raw values, per node, unbounded, just authored by our code instead of the
@@ -104,12 +104,12 @@ same classes against the same compiled sheet — makes _preview == production_ f
 
 The clean line that makes everything else fall into place:
 
-| Concern                                            | Owner                          | Form                                     |
-| -------------------------------------------------- | ------------------------------ | ---------------------------------------- |
-| **Structure** — nesting, parent/child, which node  | the **tree**                   | node graph                               |
+| Concern                                                  | Owner                  | Form                                           |
+| -------------------------------------------------------- | ---------------------- | ---------------------------------------------- |
+| **Structure** — nesting, parent/child, which node        | the **tree**           | node graph                                     |
 | **Data binding** — single / scope / iterate, cardinality | the **tree** (binding) | `binding` ([43](43-builder-binding-schema.md)) |
-| **Styling** — surface, rhythm, treatment, color    | the **class string**           | `navbar bg-base-100 shadow-sm`           |
-| **Per-instance data** — image URL, computed value  | **inline / data**              | `style`/`props` set by the engine        |
+| **Styling** — surface, rhythm, treatment, color          | the **class string**   | `navbar bg-base-100 shadow-sm`                 |
+| **Per-instance data** — image URL, computed value        | **inline / data**      | `style`/`props` set by the engine              |
 
 A class cannot express "iterate this subtree once per product in a bound array," nor the
 parent/child nesting — that stays the tree's job. So we are **not deleting the tree**; we are
@@ -151,12 +151,12 @@ archetype tier**. They are the lower rungs of a ladder: more power, more danger,
 less the further down you go. This realizes doc 40 §5.4's "smart defaults, explicit overrides —
 never magic without an escape hatch."
 
-| Tier | Surface | Vocabulary | Safety | Who |
-| ---- | ------- | ---------- | ------ | --- |
-| **1 — Archetypes** _(default)_ | Pick a brand-governed component ("Hero", "Feature Card", "Stat Row") | Named `site-ui` component classes | Can't break things — coherent by construction | All tenants |
-| **2 — Box axes** _(advanced)_ | The existing box/layout axes | Closed enums, token-backed scales | Bounded; the engine's inline compiler | All tenants |
-| **3 — Token utilities** _(power)_ | A class field on the node | **Safelisted** utilities mapped to `--sf-*` (`bg-base-100`, `gap-6`, `shadow-md`) | Allowlisted vocabulary; compiled per tenant (§5) | Power users |
-| **4 — Raw CSS** _(expert)_ | A scoped CSS block | Arbitrary CSS | **Scoped + sanitized + security-reviewed** (§6) | Gated to a Code / Enterprise tier |
+| Tier                              | Surface                                                              | Vocabulary                                                                        | Safety                                           | Who                               |
+| --------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------ | --------------------------------- |
+| **1 — Archetypes** _(default)_    | Pick a brand-governed component ("Hero", "Feature Card", "Stat Row") | Named `site-ui` component classes                                                 | Can't break things — coherent by construction    | All tenants                       |
+| **2 — Box axes** _(advanced)_     | The existing box/layout axes                                         | Closed enums, token-backed scales                                                 | Bounded; the engine's inline compiler            | All tenants                       |
+| **3 — Token utilities** _(power)_ | A class field on the node                                            | **Safelisted** utilities mapped to `--sf-*` (`bg-base-100`, `gap-6`, `shadow-md`) | Allowlisted vocabulary; compiled per tenant (§5) | Power users                       |
+| **4 — Raw CSS** _(expert)_        | A scoped CSS block                                                   | Arbitrary CSS                                                                     | **Scoped + sanitized + security-reviewed** (§6)  | Gated to a Code / Enterprise tier |
 
 Tiers 1–2 are the "easy, safe, default" path and serve >95% of authoring. Tier 3 is the
 power-user lever for the bespoke layout. Tier 4 is the nuclear option, gated and constrained. A
@@ -182,11 +182,11 @@ tenant's tree as the content source** and compile on the events that already exi
 
 ### 5.1 Three layers, not one
 
-| Layer | What | When built | Scope |
-| ----- | ---- | ---------- | ----- |
-| **Token theme** (`--sf-*`) | One stylesheet, runtime CSS vars | per request (compiled by `@sparx/storefront-themes`, [33](33-token-model-v2.md)) | themes infinite tenants from one sheet |
-| **Component library** (`site-ui` semantic CSS + archetypes) | `navbar`, `hero`, `card-feature`, the recipe | once, at **platform** build | shipped to every tenant |
-| **Per-tenant utility delta** (`tenant.css`) | Only the utilities a tenant actually typed | on **save** (`temp.css`) and **publish** (`tenant.css`) | small static diff, one tenant |
+| Layer                                                       | What                                         | When built                                                                       | Scope                                  |
+| ----------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------- |
+| **Token theme** (`--sf-*`)                                  | One stylesheet, runtime CSS vars             | per request (compiled by `@sparx/storefront-themes`, [33](33-token-model-v2.md)) | themes infinite tenants from one sheet |
+| **Component library** (`site-ui` semantic CSS + archetypes) | `navbar`, `hero`, `card-feature`, the recipe | once, at **platform** build                                                      | shipped to every tenant                |
+| **Per-tenant utility delta** (`tenant.css`)                 | Only the utilities a tenant actually typed   | on **save** (`temp.css`) and **publish** (`tenant.css`)                          | small static diff, one tenant          |
 
 The per-tenant delta is the _only_ new artifact, and it is small — it is the utilities **beyond**
 the shipped archetype/recipe CSS, generated from that one tenant's pages.
@@ -223,8 +223,8 @@ never baked values:
 ```css
 @layer components {
   .card {
-    @apply rounded border shadow-sm;   /* static utilities → --sf-* vars via the Surface theme */
-    border-color: var(--c-bg);         /* color axis: role var (or @apply border-[color:var(--c-bg)]) */
+    @apply rounded border shadow-sm; /* static utilities → --sf-* vars via the Surface theme */
+    border-color: var(--c-bg); /* color axis: role var (or @apply border-[color:var(--c-bg)]) */
   }
 }
 ```

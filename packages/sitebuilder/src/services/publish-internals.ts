@@ -5,11 +5,7 @@
 // SAME transaction as the publish.
 
 import type { Prisma, SiteConfig, SiteVersion, TxClient } from '@sparx/db';
-import {
-  compileTokens,
-  toStorefrontThemeColumns,
-  type CompiledThemeV2,
-} from '@sparx/site-themes';
+import { compileTokens, toStorefrontThemeColumns, type CompiledThemeV2 } from '@sparx/site-themes';
 import { customSlugOf, type SectionField, type TemplateNode } from '@sparx/sitebuilder-schemas';
 
 import type { SnapshotAssignments } from './assignment-service';
