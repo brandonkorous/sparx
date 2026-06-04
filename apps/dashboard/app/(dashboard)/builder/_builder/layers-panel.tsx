@@ -55,6 +55,30 @@ import {
 // dragging is the depth you get.
 const INDENT = 16;
 
+// Per-tree collapse state is remembered in localStorage, keyed by the tree's root
+// id (stable per page/layout, distinct across them). New trees start collapsed —
+// the default below — until the user expands something.
+const COLLAPSE_STORE = 'sparx.builder.layers.collapsed.v1:';
+
+function loadCollapsed(treeId: string): string[] | null {
+  try {
+    const raw = window.localStorage.getItem(COLLAPSE_STORE + treeId);
+    if (!raw) return null;
+    const arr: unknown = JSON.parse(raw);
+    return Array.isArray(arr) ? arr.filter((x): x is string => typeof x === 'string') : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveCollapsed(treeId: string, ids: ReadonlySet<string>): void {
+  try {
+    window.localStorage.setItem(COLLAPSE_STORE + treeId, JSON.stringify([...ids]));
+  } catch {
+    /* private mode / quota — collapse state is a nicety, not worth surfacing */
+  }
+}
+
 function bindMeta(
   node: BuilderNode,
   catalog: BindingCatalog
@@ -117,6 +141,7 @@ function Row({
         sortable.isDragging && 'bx-layer--dragging'
       )}
       style={style}
+      data-layer-id={node.id}
       role="button"
       tabIndex={0}
       aria-pressed={node.id === selectedId}
@@ -198,7 +223,21 @@ export function LayersPanel({
   /** Re-parent / reorder: move `dragId` to be child `index` of `parentId`. */
   onMove: (dragId: string, parentId: string, index: number) => void;
 }) {
-  const [collapsed, setCollapsed] = React.useState<ReadonlySet<string>>(() => new Set());
+  // Collapse state starts COLLAPSED BY DEFAULT (every collapsible row). This
+  // initializer is deterministic from `tree`, so SSR and the first client render
+  // match; the localStorage load below then overrides it post-mount (client only),
+  // avoiding a hydration mismatch.
+  const [collapsed, setCollapsed] = React.useState<ReadonlySet<string>>(
+    () => new Set(collapsibleIds(tree))
+  );
+  // Refs hold the latest tree + collapsed so the handlers/effects read current
+  // values without stale closures or re-subscribing on every edit.
+  const treeRef = React.useRef(tree);
+  treeRef.current = tree;
+  const collapsedRef = React.useRef(collapsed);
+  collapsedRef.current = collapsed;
+  const layersRef = React.useRef<HTMLDivElement>(null);
+
   // Live drag state — drives the projection (where the drop will land).
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [overId, setOverId] = React.useState<string | null>(null);
@@ -210,30 +249,59 @@ export function LayersPanel({
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } })
   );
 
-  // Selecting a node (often from the canvas) reveals its row by expanding any
-  // collapsed ancestor.
-  React.useEffect(() => {
-    if (!selectedId) return;
-    const trail = ancestorIds(tree, selectedId);
-    setCollapsed((prev) => {
-      if (!trail.some((id) => prev.has(id))) return prev;
-      const next = new Set(prev);
-      for (const id of trail) next.delete(id);
-      return next;
-    });
-  }, [selectedId, tree]);
-
-  const toggle = React.useCallback((id: string) => {
-    setCollapsed((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+  // Set + remember collapse state. Persistence lives here (in the actual
+  // mutators), not in a state-watching effect — so the post-mount load below can
+  // restore state WITHOUT a stale write clobbering it.
+  const commit = React.useCallback((next: ReadonlySet<string>) => {
+    setCollapsed(next);
+    saveCollapsed(treeRef.current.id, next);
   }, []);
 
-  const expandAll = () => setCollapsed(new Set());
-  const collapseAll = () => setCollapsed(new Set(collapsibleIds(tree)));
+  // Restore this tree's saved collapse state on mount, and again when switching to
+  // a different page/layout. No saved state → collapsed-by-default. (Load only;
+  // never writes, so it can't clobber what it just read.)
+  React.useEffect(() => {
+    const saved = loadCollapsed(tree.id);
+    setCollapsed(saved ? new Set(saved) : new Set(collapsibleIds(treeRef.current)));
+  }, [tree.id]);
+
+  // Selecting a node (often from the canvas) reveals its row by expanding any
+  // collapsed ancestor, and scrolls that row into view.
+  React.useEffect(() => {
+    if (!selectedId) return;
+    const trail = ancestorIds(treeRef.current, selectedId);
+    if (trail.some((id) => collapsedRef.current.has(id))) {
+      const next = new Set(collapsedRef.current);
+      for (const id of trail) next.delete(id);
+      commit(next);
+    }
+  }, [selectedId, commit]);
+
+  // Scroll the selected row into view (the tree side of select→reveal). `nearest`
+  // makes it a no-op when the row is already visible, so clicking a row never makes
+  // the tree jump. Re-runs when the visible rows change (after a reveal expands an
+  // ancestor) so the freshly shown row gets scrolled to.
+  React.useEffect(() => {
+    if (!selectedId) return;
+    // `window.CSS` — the dnd-kit `CSS` transform helper shadows the global name here.
+    const el = layersRef.current?.querySelector(
+      `[data-layer-id="${window.CSS.escape(selectedId)}"]`
+    );
+    el?.scrollIntoView({ block: 'nearest' });
+  }, [selectedId, collapsed]);
+
+  const toggle = React.useCallback(
+    (id: string) => {
+      const next = new Set(collapsedRef.current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      commit(next);
+    },
+    [commit]
+  );
+
+  const expandAll = () => commit(new Set());
+  const collapseAll = () => commit(new Set(collapsibleIds(treeRef.current)));
 
   // While dragging, hide the active node's subtree (add it to the collapse set)
   // so it travels as one unit and never projects against its own children.
@@ -276,7 +344,7 @@ export function LayersPanel({
   };
 
   return (
-    <div className="bx-layers">
+    <div className="bx-layers" ref={layersRef}>
       <div className="bx-layers__bar">
         <button type="button" className="bx-layers__act" onClick={expandAll} title="Expand all">
           <ChevronsUpDown aria-hidden /> Expand all

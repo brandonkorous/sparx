@@ -157,7 +157,7 @@ Tracked here so the gaps are explicit, not silently dropped:
 - **CSP + Permissions-Policy** as a Report-Only-first pass (the deferred half of security headers).
 - **Sentry** (or equivalent) wired behind a DSN env var, attaching at the `console.error` hooks.
 - **CI perf budgets** (Lighthouse / bundlesize) — CWV is now measured; budgets aren't enforced.
-- **SEO audit scorecard** in the CMS/Builder (per-page title/desc/h1/alt checks with a score).
+- **SEO audit scorecard** in the CMS/Builder — now in build; design + check catalog in §7.
 - **hreflang / i18n** — deferred platform-wide ([12](12-cms-prd.md) Phase 2).
 - **Marketing `title.template`** — deferred. Every marketing page already carries the brand in its
   `<title>` (module pages "Sparx X — …", static pages "X — Sparx"), so a root template is pure DRY
@@ -177,3 +177,84 @@ Tracked here so the gaps are explicit, not silently dropped:
   `robots` groups, not by removing the `llms.txt`/sitemap signals.
 - SEO controls belong in the authoring tool for the surface that owns the content; the render path
   only _consumes_ the stored fields.
+
+## 7. SEO Audit Scorecard
+
+A per-entity SEO health score the tenant sees **while authoring** — graded 0–100, and, more to the
+point, _told what to fix_. Decided 2026-06-03; this section is the build record for the `docs/50 §7`
+references threaded through the code.
+
+### 7.1 Shape
+
+- **Engine** — `@sparx/seo-audit`, a dependency-free pure function `auditEntity(input) → Scorecard`.
+  No I/O, no clock, no React; deterministic and unit-tested. It scores a normalized
+  `AuditableEntity` (never raw rows), so every surface scores identically.
+- **Live API** — `GET /v1/seo/audit?type=&id=` gathers the signals under RLS — inspecting the
+  **published** tree/HTML, not just the draft fields — builds the `AuditableEntity`, and returns the
+  `Scorecard`. Powers the in-editor score.
+- **Stored snapshot** — on `*.published` / `*.updated`, a consumer recomputes and persists
+  `{ score, grade, computedAt }` per entity (`seo_audits`, FORCE RLS) so the **site-wide overview**
+  can rank every page without N live audits. Live in the editor, stored for the list.
+
+### 7.2 One data source, three views (no duplication)
+
+The scorecard appears in many places but is **three shared components over one fetch**
+(`useSeoAudit(type, id)`) — never re-implemented per surface. This is the deliberate answer to "don't
+clone the report into four editors and create a maintenance nightmare":
+
+- **`<SeoScoreChip>`** — the ring + grade. The universal atom: it sits in every entity's SEO panel
+  and in each row of the overview list. Cheap — renders the stored score, or fetches live in-editor.
+- **`<SeoScorePopover>`** — **on hover/focus of the chip**, lazily loads the audit and shows a
+  compact summary (category bars + "fix first" + the top issues). This is the lightweight surface
+  that rides along on _most_ pages without its own layout.
+- **`<SeoReport>`** — the full expanded card (all 12 checks, tips, action links). Rendered only where
+  it earns the room: a **dedicated SEO section** of the page editor and the **overview detail**.
+
+So: the chip is everywhere, the popover is the hover-expand, the heavy report lives in the one or two
+places that warrant it — same components, same endpoint throughout. Broaden the cheap surface; don't
+duplicate the expensive one.
+
+### 7.3 Check catalog (v1 — 12 checks, 100 points)
+
+| #   | Category (max)    | Check                 | wt  | pass / warn / fail                                        |
+| --- | ----------------- | --------------------- | --- | --------------------------------------------------------- |
+| 1   | Title & Meta (30) | Title present         | 12  | present / — / empty                                       |
+| 2   |                   | Title length          | 8   | 30–60 / 10–29 or 61–70 / <10 or >70 chars                 |
+| 3   |                   | Description present   | 6   | present / empty / —                                       |
+| 4   |                   | Description length    | 4   | 70–160 / outside / —                                      |
+| 5   | Indexability (25) | Indexable             | 9   | `noindex` off / — / — (→ `info` when `noindex` on)        |
+| 6   |                   | In sitemap            | 8   | listed / not listed / — (→ `info` when `noindex` on)      |
+| 7   |                   | Canonical + slug      | 8   | clean slug / messy or missing / —                         |
+| 8   | Content (25)      | Image alt text        | 10  | 0 missing / <⅓ missing / ≥⅓ missing (pass if no images)   |
+| 9   |                   | Heading structure     | 7   | exactly 1 H1 / >1 H1 / 0 H1                               |
+| 10  |                   | Content depth + links | 8   | ≥ threshold words & ≥1 internal link / below / —          |
+| 11  | Social & AIO (20) | Social image          | 10  | custom / auto-generated / none                            |
+| 12  |                   | Structured data       | 10  | expected JSON-LD present / partial or none / —            |
+| —   |                   | AI-discoverable       | 0   | `info` — in `llms.txt` (platform-wide; shown, not scored) |
+
+**Scoring.** `earned` = weight (pass) · weight/2 (warn) · 0 (fail). `info` checks score nothing **and
+are excluded from the denominator**, so an intentional `noindex` — which flips checks 5–6 to `info` —
+normalizes the score over the _remaining_ max instead of tanking it. `score = round(Σ earned ÷ Σ
+scored-weight × 100)`. Grade: ≥90 excellent · ≥70 good · ≥50 needs-work · <50 poor. `fixFirst` = the
+check with the largest single point shortfall (fails before warns). Word-count threshold is
+entity-aware (prose pages expect more than a product blurb).
+
+### 7.4 Phased build
+
+- **A — engine** (`@sparx/seo-audit`) + unit tests. Pure, no infra. _(Foundation.)_
+- **B — live API** `GET /v1/seo/audit` + per-entity-type signal extractors.
+- **C — chip + hover popover**, wired into the Builder / CMS / product / collection SEO panels.
+- **D — `seo_audits` table + publish-event consumer + site-wide overview + the dedicated report.**
+
+### 7.5 Decisions
+
+- **12 checks, all from data we already hold** — no external crawl in v1. Cross-page checks
+  (duplicate titles/descriptions, orphan pages, broken internal links) are deferred; they need the
+  search index, not a single-entity audit.
+- **Live in-editor _and_ stored on publish** — the editor never shows a stale number; the overview
+  never fires N audits.
+- **Hover-popover everywhere cheap; full report only on dedicated surfaces** — one component set, one
+  endpoint, no per-surface forks.
+- **Auto-generated OG = warn, not fail** — 3.10 means a card always exists; the nudge is "upload a
+  custom image", not a penalty.
+- **`noindex` informs, doesn't penalize** — an intentionally hidden page isn't a failing page.

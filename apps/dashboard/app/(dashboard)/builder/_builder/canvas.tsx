@@ -550,6 +550,16 @@ const DEVICE_WIDTH: Record<Device, number | null> = { desktop: null, tablet: 834
 
 export function Canvas({ tree, data, catalog, device, selectedId, onSelect, chrome }: CanvasProps) {
   const width = DEVICE_WIDTH[device];
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  // Scroll the selected node into view (the preview side of select→reveal — e.g.
+  // selecting a layer in the tree). `nearest` makes it a no-op when the node is
+  // already visible, so clicking a node in the canvas never makes it jump.
+  React.useEffect(() => {
+    if (!selectedId) return;
+    const el = scrollRef.current?.querySelector(`[data-node-id="${CSS.escape(selectedId)}"]`);
+    el?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [selectedId]);
   // The editable page subtree — fully selectable. When framing, it's handed to
   // the locked chrome tree to render at the Outlet; otherwise it's the root.
   const page = (
@@ -565,6 +575,7 @@ export function Canvas({ tree, data, catalog, device, selectedId, onSelect, chro
   return (
     <div
       className="bx-canvas-scroll"
+      ref={scrollRef}
       role="button"
       tabIndex={-1}
       aria-label="Clear selection"

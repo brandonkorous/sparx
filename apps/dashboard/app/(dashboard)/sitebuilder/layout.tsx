@@ -2,6 +2,7 @@ import { ModuleProvider } from '@sparx/ui';
 import { getConfig, getSitePreviewToken, getTenant } from './_lib/api';
 import { storefrontOrigin } from './_lib/storefront';
 import { EditorShell } from './_components/editor-shell';
+import { requireModuleOrUpsell } from '../../../components/module-gate';
 
 // Site Builder editor shell (Phase 2 §2). The contextual-panel module nav
 // switches the child route (= the inspector for a scope); this layout — and the
@@ -11,6 +12,12 @@ import { EditorShell } from './_components/editor-shell';
 // canvas needs (tenant slug, storefront origin, draft preview token) is resolved
 // once here rather than per scope page.
 export default async function SitebuilderLayout({ children }: { children: React.ReactNode }) {
+  // Legacy Site Builder is a surface of the billable `builder` module — gate on
+  // it (and bail before the editor data fetch) so a tenant without Builder gets
+  // the activation upsell, not a half-loaded editor.
+  const upsell = await requireModuleOrUpsell('builder');
+  if (upsell) return upsell;
+
   const [tenant, config, previewToken] = await Promise.all([
     getTenant(),
     getConfig(),

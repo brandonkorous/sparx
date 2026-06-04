@@ -13,7 +13,7 @@
 
 import type { BuilderNode, DataSources } from '@sparx/builder-schemas';
 
-import { publicGet, type ApiEntry } from './content';
+import { publicGet, type ApiEntry, type BlogPostBody } from './content';
 import { listProducts, type PublicProduct, type PublicProductListItem } from './commerce';
 import { getNavByLocation, type NavNode } from './site';
 import { mediaUrl } from './media';
@@ -120,6 +120,40 @@ export function productToBuilderRecord(
       available: v.available,
       optionValueIds: v.optionValueIds,
     })),
+  };
+}
+
+// A published date → a readable "Month D, YYYY". Blank for a missing/invalid date.
+function formatPublishedDate(iso: string | null): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(d);
+}
+
+/** Map a published blog_post entry into the single in-scope record a `cms.blog_post`
+ *  collection template binds (`blog_post.*`): title + excerpt, the rich-text body
+ *  doc passed through verbatim (the Prose leaf serializes it on render), the
+ *  featured-image asset id resolved to a `{ url, alt }`, and a human-readable
+ *  published date. The CMS analogue of productToBuilderRecord. */
+export function postToBuilderRecord(
+  entry: ApiEntry<BlogPostBody>,
+  tenantSlug: string
+): Record<string, unknown> {
+  const body = entry.body ?? {};
+  const title = typeof body.title === 'string' ? body.title : '';
+  const featured = typeof body.featuredImage === 'string' ? body.featuredImage : null;
+  const url = mediaUrl(featured, tenantSlug);
+  return {
+    title,
+    excerpt: typeof body.excerpt === 'string' ? body.excerpt : '',
+    body: body.body ?? null,
+    featuredImage: url ? { url, alt: title } : null,
+    date: formatPublishedDate(entry.published_at),
   };
 }
 

@@ -110,3 +110,51 @@ export async function getPageBySlug(
     throw err;
   }
 }
+
+// A blog_post entry's body field map — the `blog_post` content type's fields
+// (title/excerpt/body/featuredImage). `body` is the rich-text TipTap doc; the
+// Prose leaf serializes it. `featuredImage` is a media-asset id (or absolute URL).
+export interface BlogPostBody {
+  title?: string;
+  excerpt?: string;
+  body?: { type: string; content?: unknown[] };
+  featuredImage?: string | null;
+  [key: string]: unknown;
+}
+
+/** A published blog post by slug — the per-record CMS read for the `/blog/[slug]`
+ *  route. Mirrors getPageBySlug but for the `blog_post` content type (its own
+ *  urlPattern `/blog/{slug}`). Returns null when no published post owns the slug;
+ *  honors a preview token for draft access. */
+export async function getBlogPostBySlug(
+  tenantSlug: string,
+  slug: string,
+  options: { previewToken?: string } = {}
+): Promise<ApiEntry<BlogPostBody> | null> {
+  const fetchOnce = (withPreview: boolean) =>
+    publicGet<ApiEntry<BlogPostBody>>(
+      '/v1/public/content/entries/by-slug',
+      { tenant: tenantSlug, type: 'blog_post', slug },
+      {
+        ...(withPreview && options.previewToken ? { previewToken: options.previewToken } : {}),
+        tag: `entry:${tenantSlug}:blog_post:${slug}`,
+      }
+    );
+
+  try {
+    return await fetchOnce(true);
+  } catch (err) {
+    const code = (err as { code?: string }).code;
+    if (code === 'NOT_FOUND') return null;
+    if (code === 'UNAUTHORIZED' && options.previewToken) {
+      try {
+        return await fetchOnce(false);
+      } catch (innerErr) {
+        const innerCode = (innerErr as { code?: string }).code;
+        if (innerCode === 'NOT_FOUND') return null;
+        throw innerErr;
+      }
+    }
+    throw err;
+  }
+}

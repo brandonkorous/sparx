@@ -1,27 +1,18 @@
-import { Truck } from 'lucide-react';
 import { ModuleStub } from '../../../components/module-stub';
+import { moduleCatalog } from '../../../components/module-catalog';
 
+// Dropship is gated at the layout: a tenant without the module sees the upsell,
+// so this page only renders when Dropship is active — the "coming online"
+// preview until the real UI ships. Copy comes from the shared catalog.
 export default function DropshipPage() {
+  const { Icon, title, tagline, description, features } = moduleCatalog.dropship;
   return (
     <ModuleStub
-      icon={<Truck className="h-5 w-5" />}
-      title="Dropship"
-      tagline="Supplier catalogs and order routing."
-      description="The Dropship module syncs supplier catalogs, routes orders automatically, and reconciles invoices — keeping your inventory and fulfilment honest."
-      features={[
-        { title: 'Supplier catalogs', description: 'CSV / API / EDI feeds with nightly sync.' },
-        {
-          title: 'Order routing',
-          description: 'Auto-split orders by supplier, location, or rule.',
-        },
-        { title: 'Inventory sync', description: 'Live stock pulls so you do not oversell.' },
-        { title: 'Margin rules', description: 'Per-supplier markup, MAP enforcement, exclusions.' },
-        { title: 'Tracking', description: 'Push tracking back to the customer automatically.' },
-        {
-          title: 'Reconciliation',
-          description: 'Match supplier invoices to orders with variance flags.',
-        },
-      ]}
+      icon={<Icon className="h-5 w-5" />}
+      title={title}
+      tagline={tagline}
+      description={description}
+      features={features}
     />
   );
 }

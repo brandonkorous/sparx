@@ -1,33 +1,18 @@
-import { Building2 } from 'lucide-react';
 import { ModuleStub } from '../../../components/module-stub';
+import { moduleCatalog } from '../../../components/module-catalog';
 
+// B2B is gated at the layout: a tenant without the module sees the upsell, so
+// this page only renders when B2B is active — the "coming online" preview until
+// the real UI ships. Copy comes from the shared catalog.
 export default function B2bPage() {
+  const { Icon, title, tagline, description, features } = moduleCatalog.b2b;
   return (
     <ModuleStub
-      icon={<Building2 className="h-5 w-5" />}
-      title="B2B"
-      tagline="Wholesale, fleet, and net-terms commerce."
-      description="The B2B module layers company accounts, approval flows, and custom price lists onto your storefront — ready for accounts like Gillett Diesel."
-      features={[
-        {
-          title: 'Company accounts',
-          description: 'Parent companies with multiple buyers and roles.',
-        },
-        {
-          title: 'Price lists',
-          description: 'Per-company pricing, tiered breaks, contract overrides.',
-        },
-        { title: 'Quotes', description: 'Sales-assisted quotes that convert to orders.' },
-        { title: 'Net terms', description: 'Net 30/60 invoicing backed by Stripe.' },
-        {
-          title: 'Approval flows',
-          description: 'Spend limits, multi-step approvals, audit trail.',
-        },
-        {
-          title: 'Fleet management',
-          description: 'VIN/asset-tagged ordering for service operations.',
-        },
-      ]}
+      icon={<Icon className="h-5 w-5" />}
+      title={title}
+      tagline={tagline}
+      description={description}
+      features={features}
     />
   );
 }

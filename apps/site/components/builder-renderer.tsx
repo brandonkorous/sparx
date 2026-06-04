@@ -40,6 +40,9 @@ import {
   Stat,
   Text,
 } from '@sparx/site-ui';
+// Server-safe JSON→HTML serializer (no React/jsdom) — the same path CMS pages
+// render through. Used by the Prose leaf to render a bound rich-text body.
+import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 
 import { BuilderCarousel } from './builder-carousel';
 import { BuilderIcon } from './builder-icon';
@@ -140,6 +143,7 @@ const CONTAINERS = new Set(['Section', 'Grid', 'Stack', 'Card', 'Carousel', 'Pro
 const CLASS_ON_LEAF = new Set([
   'Heading',
   'Text',
+  'Prose',
   'Button',
   'Badge',
   'Icon',
@@ -330,6 +334,21 @@ function renderLeaf(
           {bound ? asText(value) : str('text')}
         </Text>
       );
+    }
+    case 'Prose': {
+      // The post body: serialize the bound rich-text doc to sanitised HTML through
+      // the shared CMS serializer, into the storefront's `.sparx-content` prose
+      // styles. `renderDocToHtml` returns '' for a non-doc value, so a legacy plain
+      // string falls back to a single paragraph; nothing bound → render nothing.
+      const cls = leafClass ? `sparx-content ${leafClass}` : 'sparx-content';
+      const html = bound ? renderDocToHtml(value) : '';
+      if (html) return <article className={cls} dangerouslySetInnerHTML={{ __html: html }} />;
+      const plain = bound ? asText(value) : '';
+      return plain ? (
+        <article className={cls}>
+          <p>{plain}</p>
+        </article>
+      ) : null;
     }
     case 'Button': {
       const label = (bound ? asText(value) : '') || str('label') || 'Button';

@@ -30,6 +30,7 @@ import {
   MousePointerClick,
   Package,
   Palette,
+  Pilcrow,
   PlayCircle,
   Rows3,
   Share2,
@@ -363,6 +364,36 @@ const DEFS: ComponentDef[] = [
       const variant = (node.props.variant as string) ?? 'body';
       const text = bound ? firstString(value, '—') : firstString(node.props.text, 'Some text');
       return <p className={`bx-text bx-text--${variant}`}>{text}</p>;
+    },
+  },
+  {
+    // Rich prose bound to a CMS rich-text field (docs/47) — the BODY of a blog post
+    // / article, where Text would flatten a multi-paragraph doc to one run-on line.
+    // The published site serializes the real TipTap doc to sanitised HTML via
+    // @sparx/cms-editor (the exact path CMS pages render through), styled by the
+    // storefront's `.sparx-content` prose rules. The editor canvas keeps the doc
+    // serializer OUT of its bundle and just shows the binding's representative
+    // paragraph (richtext preview data is a plain string), so the node reads as body
+    // copy while editing. Bind to a `richtext` scalar (e.g. "Blog post › Body").
+    type: 'Prose',
+    label: 'Rich text',
+    kind: 'leaf',
+    group: 'content',
+    icon: Pilcrow,
+    bindable: true,
+    accepts: ['scalar'],
+    props: [],
+    defaults: {},
+    renderLeaf: ({ value, bound }) => {
+      const text =
+        bound && typeof value === 'string'
+          ? value
+          : 'Rich body content renders here — paragraphs, headings, lists, quotes, links.';
+      return (
+        <div className="bx-prose">
+          <p className="bx-text bx-text--body">{text}</p>
+        </div>
+      );
     },
   },
   {

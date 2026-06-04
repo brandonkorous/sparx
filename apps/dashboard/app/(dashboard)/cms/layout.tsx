@@ -1,9 +1,16 @@
 import { ModuleProvider } from '@sparx/ui';
 
-// Wrapping the entire CMS subtree in ModuleProvider shifts --module-active
-// to teal for every component inside. Buttons with variant="module",
-// Cards with variant="module", Badge with variant="module", the active Tab
-// underline, etc., all switch colors with zero per-component config.
+import { ModuleGate } from '../../../components/module-gate';
+
+// Wrapping the entire CMS subtree in ModuleProvider shifts --module-active to
+// teal for every component inside, and ModuleGate ensures a tenant without the
+// CMS module sees the activation upsell rather than the editor. A module flip
+// via /settings/modules calls revalidatePath('/cms', 'layout') so the next
+// request re-checks.
 export default function CmsLayout({ children }: { children: React.ReactNode }) {
-  return <ModuleProvider module="cms">{children}</ModuleProvider>;
+  return (
+    <ModuleProvider module="cms">
+      <ModuleGate module="cms">{children}</ModuleGate>
+    </ModuleProvider>
+  );
 }
