@@ -1,87 +1,24 @@
-import { notFound } from 'next/navigation';
-import type { FieldDef } from '@sparx/cms-schemas';
-import { cmsContentTypeTargetId } from '@sparx/sitebuilder-schemas';
-import { Badge, Container, PageHeader, Stack, Text } from '@sparx/ui';
+import { Container, Stack } from '@sparx/ui';
 
-import { api } from '@/lib/api-rest-client';
-import { EditEntryForm } from './edit-entry-form';
-// Site-Builder-owned layout assignment (docs/36 §6). The content type's stable
-// `key` is the target identifier; the entry id is the item. Self-hides when Site
-// Builder is inactive. Only shown for types that have storefront pages.
-import { LayoutAssignmentSection } from '../../../../sitebuilder/_components/layout-assignment-section';
+import { ContentEntryDetailContent } from './_content';
 
 export const dynamic = 'force-dynamic';
-
-interface ApiContentType {
-  key: string;
-  name: string;
-  plural_name: string;
-  url_pattern: string | null;
-  schema_json: { fields: unknown[] };
-}
-
-interface ApiEntry {
-  id: string;
-  type_key: string;
-  slug: string | null;
-  status: string;
-  body: Record<string, unknown>;
-  seo: Record<string, unknown>;
-  published_at: string | null;
-  updated_at: string;
-}
 
 interface PageProps {
   params: Promise<{ typeKey: string; id: string }>;
 }
 
+// Full-page route wrapper for a content-type entry. The editing UI lives in
+// `_content.tsx` so it can also mount inside the dashboard shell's detail panel
+// (drawer / modal). The route adds the full-page chrome the panel doesn't:
+// the width-constrained Container. `showOpenInFull={false}` because the
+// "Open full editor" link would point at this very page.
 export default async function EditEntryPage({ params }: PageProps) {
-  const { typeKey, id } = await params;
-
-  let type: ApiContentType;
-  let entry: ApiEntry;
-  try {
-    [type, entry] = await Promise.all([
-      api.get<ApiContentType>(`/v1/content/types/${encodeURIComponent(typeKey)}`),
-      api.get<ApiEntry>(`/v1/content/entries/${id}`),
-    ]);
-  } catch {
-    notFound();
-  }
-
+  const { id } = await params;
   return (
     <Container size="xl">
       <Stack gap={6} className="py-10">
-        <PageHeader
-          title={`Edit ${type.name.toLowerCase()}`}
-          badge={
-            <Stack direction="row" align="center" gap={2}>
-              <Badge color={entry.status === 'published' ? 'success' : 'outline'}>
-                {entry.status}
-              </Badge>
-              {entry.slug && (
-                <Text size="xs" variant="muted">
-                  /{entry.slug}
-                </Text>
-              )}
-            </Stack>
-          }
-        />
-        <EditEntryForm
-          id={entry.id}
-          typeKey={type.key}
-          urlPattern={type.url_pattern}
-          schema={type.schema_json as { fields: FieldDef[] }}
-          initialBody={entry.body}
-          initialStatus={entry.status}
-        />
-        {type.url_pattern ? (
-          <LayoutAssignmentSection
-            targetId={cmsContentTypeTargetId(type.key)}
-            itemRef={entry.id}
-            note="Saved now; takes effect on the storefront once content pages render through layouts."
-          />
-        ) : null}
+        <ContentEntryDetailContent id={id} showOpenInFull={false} />
       </Stack>
     </Container>
   );

@@ -9,6 +9,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
+import { ArticleJsonLd } from '@/components/article-json-ld';
 import { BuilderRenderer } from '@/components/builder-renderer';
 import { PageView } from '@/components/page-view';
 import { getPublishedBuilderCollection } from '@/lib/builder';
@@ -35,14 +36,21 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps):
   if (!post) return {};
 
   const body = post.body ?? {};
+  // Per-entry SEO authored in the CMS editor (docs/50). title/description override
+  // the body; canonical, social image, and the index toggle are honoured below so
+  // none of those authoring controls is a dead end.
   const seo = post.seo ?? {};
-  const seoTitle = typeof seo.title === 'string' && seo.title ? seo.title : undefined;
-  const seoDescription =
-    typeof seo.description === 'string' && seo.description ? seo.description : undefined;
+  const str = (v: unknown): string | undefined => (typeof v === 'string' && v ? v : undefined);
+  const seoTitle = str(seo.title);
+  const seoDescription = str(seo.description);
+  const canonical = str(seo.canonical);
   const title = seoTitle ?? body.title ?? tenant.name;
   const description = seoDescription ?? body.excerpt ?? undefined;
-  // The featured image is the best OG card; else a tenant-branded generated one.
-  const featured =
+  // OG image: the author's chosen social image wins (a media id or absolute URL),
+  // then the post's featured image, then a tenant-branded generated card.
+  const seoOg = str(seo.ogImage);
+  const ogImage =
+    (seoOg ? (seoOg.startsWith('http') ? seoOg : mediaUrl(seoOg, tenant.slug)) : undefined) ??
     mediaUrl(typeof body.featuredImage === 'string' ? body.featuredImage : null, tenant.slug) ??
     ogImageUrl({
       title: body.title ?? tenant.name,
@@ -50,15 +58,19 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps):
       brand: tenant.name,
       accent: tenant.theme?.colorPrimary,
     });
+  // Indexable only when published AND the author hasn't flagged the entry noindex.
+  const noindex = typeof seo.robots === 'string' && seo.robots.includes('noindex');
+  const indexable = post.status === 'published' && !noindex;
   return {
     title,
     ...(description ? { description } : {}),
+    ...(canonical ? { alternates: { canonical } } : {}),
     openGraph: {
       title,
       ...(description ? { description } : {}),
-      images: [{ url: featured }],
+      images: [{ url: ogImage }],
     },
-    robots: post.status === 'published' ? { index: true, follow: true } : { index: false },
+    robots: indexable ? { index: true, follow: true } : { index: false },
   };
 }
 
@@ -84,10 +96,20 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
       key: 'blog_post',
       value: postToBuilderRecord(post, tenant.slug),
     });
-    return <BuilderRenderer tree={builderTemplate.tree} data={data} />;
+    return (
+      <>
+        <ArticleJsonLd post={post} tenant={tenant} />
+        <BuilderRenderer tree={builderTemplate.tree} data={data} />
+      </>
+    );
   }
 
   // No builder template published — degrade to a bare CMS article so the post is
   // still readable (PageView already renders the body doc + title).
-  return <PageView entry={post} />;
+  return (
+    <>
+      <ArticleJsonLd post={post} tenant={tenant} />
+      <PageView entry={post} />
+    </>
+  );
 }

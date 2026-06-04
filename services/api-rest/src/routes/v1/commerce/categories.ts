@@ -5,7 +5,9 @@ import { z } from 'zod';
 import { categoryService, collectionService } from '@sparx/commerce';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
+import { withRequestTenant } from '@sparx/api-core/db';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
+import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
@@ -92,18 +94,29 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/v1/commerce/collections', async (request, reply) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireCommerceModule(request);
     const created = await collectionService.create(toCommerceContext(request), request.body);
+    // Collections have no publish lifecycle — they're live on existence — so seed
+    // the SEO snapshot at create so the new collection shows in the overview
+    // (docs/50 §7). Best-effort.
+    await withRequestTenant(request, (tx) =>
+      auditAndStore(tx, auth.tenantId, 'collection', created.id)
+    ).catch(() => undefined);
     reply.code(201);
     return ok(created);
   });
 
   app.patch('/v1/commerce/collections/:id', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireCommerceModule(request);
     const { id } = PathId.parse(request.params);
-    return ok(await collectionService.update(toCommerceContext(request), id, request.body));
+    const updated = await collectionService.update(toCommerceContext(request), id, request.body);
+    // A collection edit is live immediately — refresh the snapshot. Best-effort.
+    await withRequestTenant(request, (tx) =>
+      auditAndStore(tx, auth.tenantId, 'collection', id)
+    ).catch(() => undefined);
+    return ok(updated);
   });
 
   app.delete('/v1/commerce/collections/:id', async (request, reply) => {

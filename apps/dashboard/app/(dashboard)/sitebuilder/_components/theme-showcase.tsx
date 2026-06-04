@@ -71,7 +71,9 @@ export interface ThemeShowcaseProps {
   /** Compiled, scoped theme CSS (buildThemeCssV2 with rootSelector '#sf-theme-preview'). */
   css: string;
   mode: Mode;
-  onModeChange: (mode: Mode) => void;
+  /** When provided, renders the Light/Dark toggle in the preview header. Omitted
+   *  when an outer toolbar owns the toggle (the Builder brand editor, docs/45). */
+  onModeChange?: (mode: Mode) => void;
   brandName: string | null;
   logoLightUrl: string | null;
   logoDarkUrl: string | null;
@@ -96,19 +98,21 @@ export function ThemeShowcase({
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <span className="text-sm font-semibold text-[var(--color-text-primary)]">Preview</span>
-        <div className="flex rounded-md border border-[var(--color-border-default)] p-0.5">
-          {(['light', 'dark'] as const).map((m) => (
-            <Button
-              key={m}
-              size="xs"
-              variant={mode === m ? 'soft' : 'ghost'}
-              onClick={() => onModeChange(m)}
-              aria-pressed={mode === m}
-            >
-              {m === 'light' ? '☀ Light' : '☾ Dark'}
-            </Button>
-          ))}
-        </div>
+        {onModeChange ? (
+          <div className="flex rounded-md border border-[var(--color-border-default)] p-0.5">
+            {(['light', 'dark'] as const).map((m) => (
+              <Button
+                key={m}
+                size="xs"
+                variant={mode === m ? 'soft' : 'ghost'}
+                onClick={() => onModeChange(m)}
+                aria-pressed={mode === m}
+              >
+                {m === 'light' ? '☀ Light' : '☾ Dark'}
+              </Button>
+            ))}
+          </div>
+        ) : null}
       </div>
 
       {/* The compiled theme, scoped to this subtree only. */}

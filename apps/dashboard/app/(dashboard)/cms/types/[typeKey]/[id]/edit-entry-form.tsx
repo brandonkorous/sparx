@@ -1,95 +1,581 @@
 'use client';
 
+// Edit container for one content-type entry. The entries analog of the CMS
+// Pages editor's `EditPageForm` — same card layout (Status / Content / SEO /
+// footer) and the same per-keystroke autosave + ETag conflict machinery, so
+// editing a blog post feels identical to editing a page.
+//
+// Two things differ from the Pages editor:
+//   - The body is SCHEMA-DRIVEN. The content type owns its fields, so the
+//     Content card hosts a controlled `<ContentEntryForm>` (one
+//     FieldRenderer per field) rather than a fixed title/slug/rich-text set.
+//     `slug`, `title`, etc. are body keys the schema declares.
+//   - Autosave is PRE-VALIDATED on the client. A schema-invalid body (e.g.
+//     the editor cleared the slug on a routable type) would 422 the whole
+//     PATCH, so we skip the round-trip and show a soft "needs attention"
+//     indicator instead of a scary error/conflict banner.
+//
+// Body + SEO (+ slug) ride in ONE PATCH against ONE ETag cursor — see
+// `autosaveEntry`. SEO reuses the Pages editor's `SeoPanel` verbatim.
+
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Stack, useConfirm } from '@sparx/ui';
-import { Trash2 } from 'lucide-react';
-import type { FieldDef } from '@sparx/cms-schemas';
-import { ContentEntryForm } from '../../../_components/content-entry-form';
-import { deleteEntry, setEntryStatus, updateEntry } from '../../actions';
+import Link from 'next/link';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  DatePicker,
+  Heading,
+  Label,
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  Stack,
+  Text,
+  toast,
+} from '@sparx/ui';
+import { CalendarClock, History, Trash2 } from 'lucide-react';
+import { validateBody, type FieldDef } from '@sparx/cms-schemas';
+import { ContentEntryForm, missingRequiredFields } from '../../../_components/content-entry-form';
+import { SeoPanel, type SeoFields } from '../../../[id]/seo-panel';
+import { PreviewButton } from '../../../[id]/preview-button';
+import {
+  autosaveEntry,
+  deleteEntry,
+  saveEntry,
+  scheduleEntryPublish,
+  setEntryStatus,
+} from '../../actions';
 
-interface Props {
+const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
+const AUTOSAVE_DEBOUNCE_MS = 600;
+
+function storefrontOrigin(tenantSlug: string | null): string {
+  if (tenantSlug) return `https://${tenantSlug}.${ZONE_DOMAIN}`;
+  return process.env.NEXT_PUBLIC_MARKETING_URL ?? 'https://sparx.works';
+}
+
+function str(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+type SaveState =
+  | { kind: 'idle' }
+  | { kind: 'saving' }
+  | { kind: 'saved'; at: Date }
+  | { kind: 'invalid'; count: number }
+  | { kind: 'conflict' }
+  | { kind: 'error'; message: string };
+
+export interface EditEntryFormProps {
   id: string;
   typeKey: string;
+  /** Human label for the type, e.g. "Blog post" — used in copy. */
+  typeName: string;
+  /** Routable types carry a URL pattern; null ⇒ no slug / SEO / preview. */
   urlPattern: string | null;
   schema: { fields: FieldDef[] };
   initialBody: Record<string, unknown>;
+  initialSeo: SeoFields;
   initialStatus: string;
+  publishedAt: Date | null;
+  scheduledAt: Date | null;
+  initialEtag: string | null;
+  tenantSlug: string | null;
 }
 
 export function EditEntryForm({
   id,
   typeKey,
+  typeName,
   urlPattern,
   schema,
   initialBody,
+  initialSeo,
   initialStatus,
-}: Props) {
+  publishedAt,
+  scheduledAt,
+  initialEtag,
+  tenantSlug,
+}: EditEntryFormProps) {
   const router = useRouter();
-  const confirm = useConfirm();
+  const routable = Boolean(urlPattern);
+  const previewOrigin = storefrontOrigin(tenantSlug);
+
+  const [error, setError] = React.useState<string | null>(null);
+  const [message, setMessage] = React.useState<string | null>(null);
+  const [pending, startTransition] = React.useTransition();
+
+  const [body, setBody] = React.useState<Record<string, unknown>>(initialBody);
+  const [seo, setSeo] = React.useState<SeoFields>(initialSeo);
   const [status, setStatus] = React.useState(initialStatus);
-  const [busy, setBusy] = React.useState(false);
 
-  const togglePublish = async () => {
-    setBusy(true);
-    const next = status === 'published' ? 'draft' : 'published';
-    const res = await setEntryStatus(id, typeKey, next);
-    if (res.ok) setStatus(next);
-    setBusy(false);
+  // Autosave bookkeeping (mirrors EditPageForm).
+  const [saveState, setSaveState] = React.useState<SaveState>({ kind: 'idle' });
+  const etagRef = React.useRef<string | null>(initialEtag);
+  const inFlightRef = React.useRef(false);
+  const dirtyRef = React.useRef(false);
+  const hydratedRef = React.useRef(false);
+  // The conflict guard reads save state through a ref so `runAutosave` stays a
+  // STABLE callback. If it depended on `saveState.kind`, its identity would
+  // churn on every save transition, re-arming the debounce effect below and
+  // re-saving an untouched entry in a loop.
+  const saveStateRef = React.useRef(saveState);
+  React.useEffect(() => {
+    saveStateRef.current = saveState;
+  }, [saveState]);
+
+  const [scheduleOpen, setScheduleOpen] = React.useState(false);
+  const [scheduleAt, setScheduleAt] = React.useState<Date | undefined>(scheduledAt ?? undefined);
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
+
+  // Stable refs so the debounce closure reads current values without
+  // re-arming the timer on every keystroke.
+  const bodyRef = React.useRef(body);
+  const seoRef = React.useRef(seo);
+  React.useEffect(() => {
+    bodyRef.current = body;
+  }, [body]);
+  React.useEffect(() => {
+    seoRef.current = seo;
+  }, [seo]);
+
+  const slugFromBody = (): string | undefined => {
+    const s = bodyRef.current.slug;
+    return routable && typeof s === 'string' && s.length > 0 ? s : undefined;
   };
 
-  const handleDelete = async () => {
-    const ok = await confirm({
-      title: 'Soft-delete this entry?',
-      description:
-        'The entry will be hidden from the storefront and lists but kept in the database. You can restore it from the deleted view.',
-      confirmLabel: 'Soft-delete',
-      tone: 'danger',
+  const slug = str(body.slug);
+  const fallbackTitle = str(body.title);
+
+  const runAutosave = React.useCallback(async () => {
+    if (inFlightRef.current) return;
+    if (saveStateRef.current.kind === 'conflict') return;
+    // Pre-validate: a schema-invalid body (cleared slug, missing required key)
+    // would 422 the PATCH. Skip the round-trip and show a soft indicator so the
+    // editor isn't startled by an error/conflict banner mid-typing.
+    const check = validateBody({ fields: schema.fields }, bodyRef.current);
+    if (!check.ok) {
+      setSaveState({ kind: 'invalid', count: Object.keys(check.errors ?? {}).length });
+      return;
+    }
+    inFlightRef.current = true;
+    dirtyRef.current = false;
+    setSaveState({ kind: 'saving' });
+    const result = await autosaveEntry(
+      id,
+      { body: bodyRef.current, seo: seoRef.current, slug: slugFromBody() },
+      etagRef.current
+    );
+    inFlightRef.current = false;
+    if (!result.ok) {
+      if (result.error === 'CONFLICT') {
+        setSaveState({ kind: 'conflict' });
+      } else {
+        setSaveState({ kind: 'error', message: result.error ?? 'Autosave failed.' });
+      }
+      return;
+    }
+    etagRef.current = result.data?.etag ?? etagRef.current;
+    setSaveState({ kind: 'saved', at: new Date() });
+    // Catch-up: the editor typed during the save.
+    if (dirtyRef.current) {
+      void runAutosave();
+    }
+    // `schema`/`routable`/`id` are stable for the editor's lifetime; conflict
+    // state is read via `saveStateRef`. Keeping the dep list free of changing
+    // values is what makes this callback stable (see saveStateRef above).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, routable]);
+
+  // Debounce: mark dirty + schedule a save 600ms after the last edit. Skip the
+  // first render so prop hydration doesn't trigger a needless save.
+  React.useEffect(() => {
+    if (!hydratedRef.current) {
+      hydratedRef.current = true;
+      return;
+    }
+    dirtyRef.current = true;
+    const handle = setTimeout(() => {
+      void runAutosave();
+    }, AUTOSAVE_DEBOUNCE_MS);
+    return () => {
+      clearTimeout(handle);
+    };
+  }, [body, seo, runAutosave]);
+
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setMessage(null);
+    const missing = missingRequiredFields({ fields: schema.fields }, bodyRef.current);
+    if (missing.length) {
+      setError(`Required: ${missing.join(', ')}.`);
+      return;
+    }
+    startTransition(async () => {
+      const result = await saveEntry(
+        id,
+        typeKey,
+        { body: bodyRef.current, seo: seoRef.current, slug: slugFromBody() },
+        etagRef.current
+      );
+      if (!result.ok) {
+        if (result.error === 'CONFLICT') {
+          setSaveState({ kind: 'conflict' });
+          return;
+        }
+        setError(result.error ?? 'Could not save changes.');
+        return;
+      }
+      etagRef.current = result.data?.etag ?? etagRef.current;
+      setSaveState({ kind: 'saved', at: new Date() });
+      setMessage('Saved.');
+      router.refresh();
     });
-    if (!ok) return;
-    setBusy(true);
-    const res = await deleteEntry(id, typeKey);
-    setBusy(false);
-    if (res.ok) router.push(`/cms/types/${typeKey}`);
-  };
+  }
+
+  function onTogglePublish() {
+    setError(null);
+    setMessage(null);
+    const target = status === 'published' ? 'draft' : 'published';
+    startTransition(async () => {
+      const result = await setEntryStatus(id, typeKey, target);
+      if (!result.ok) {
+        setError(result.error ?? 'Could not update status.');
+        return;
+      }
+      setStatus(target);
+      setMessage(target === 'published' ? 'Published.' : 'Reverted to draft.');
+      router.refresh();
+    });
+  }
+
+  function confirmSchedule() {
+    if (!scheduleAt) {
+      setError('Pick a date and time to schedule the publish.');
+      return;
+    }
+    if (scheduleAt.getTime() <= Date.now()) {
+      setError('Pick a time in the future.');
+      return;
+    }
+    setError(null);
+    setMessage(null);
+    const target = scheduleAt;
+    startTransition(async () => {
+      const result = await scheduleEntryPublish(id, typeKey, target.toISOString());
+      if (!result.ok) {
+        setError(result.error ?? 'Could not schedule publish.');
+        return;
+      }
+      setScheduleOpen(false);
+      setStatus('scheduled');
+      setMessage(`Scheduled for ${target.toLocaleString()}.`);
+      toast.success(`Scheduled for ${target.toLocaleString()}`);
+      router.refresh();
+    });
+  }
+
+  function executeDelete() {
+    setDeleteOpen(false);
+    setError(null);
+    setMessage(null);
+    startTransition(async () => {
+      const result = await deleteEntry(id, typeKey);
+      if (!result.ok) {
+        setError(result.error ?? 'Could not delete entry.');
+        return;
+      }
+      router.push(`/cms/types/${typeKey}`);
+      router.refresh();
+    });
+  }
+
+  const lowerType = typeName.toLowerCase();
 
   return (
-    <Stack gap={5}>
-      <Stack direction="row" align="center" justify="end" gap={2}>
-        <Button
-          type="button"
-          color="module"
-          variant={status === 'published' ? 'outline' : 'solid'}
-          size="sm"
-          onClick={() => void togglePublish()}
-          disabled={busy}
-        >
-          {status === 'published' ? 'Unpublish' : 'Publish'}
+    <form onSubmit={onSubmit} noValidate>
+      <Stack gap={6}>
+        <Card variant="module">
+          <CardHeader>
+            <Stack direction="row" align="center" justify="between">
+              <Stack direction="row" align="center" gap={2}>
+                <Heading level={3}>Status</Heading>
+                <Badge color={status === 'published' ? 'success' : 'outline'}>{status}</Badge>
+                <AutosaveIndicator
+                  state={saveState}
+                  onDiscardMine={() => {
+                    setSaveState({ kind: 'idle' });
+                    router.refresh();
+                  }}
+                  onKeepMine={() => {
+                    // Force save: drop the stale If-Match so the next PATCH
+                    // wins over whatever the other tab wrote. Local edits stay.
+                    etagRef.current = null;
+                    setSaveState({ kind: 'idle' });
+                    dirtyRef.current = true;
+                    void runAutosave();
+                  }}
+                />
+              </Stack>
+              <Stack direction="row" align="center" gap={2}>
+                {routable && (
+                  <PreviewButton
+                    entryId={id}
+                    slug={slug}
+                    typeKey={typeKey}
+                    tenantSlug={tenantSlug}
+                  />
+                )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  leftIcon={<History className="h-3.5 w-3.5" />}
+                >
+                  <Link href={`/cms/${id}/revisions`}>Revisions</Link>
+                </Button>
+                {status !== 'published' && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    leftIcon={<CalendarClock className="h-3.5 w-3.5" />}
+                    onClick={() => setScheduleOpen(true)}
+                    disabled={pending}
+                  >
+                    Schedule
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  color={status === 'published' ? 'neutral' : 'module'}
+                  variant={status === 'published' ? 'outline' : 'solid'}
+                  size="sm"
+                  onClick={onTogglePublish}
+                  disabled={pending}
+                >
+                  {status === 'published' ? 'Unpublish' : 'Publish'}
+                </Button>
+              </Stack>
+            </Stack>
+          </CardHeader>
+          {(publishedAt ?? scheduledAt) && (
+            <CardContent>
+              <Stack gap={1}>
+                {scheduledAt && (
+                  <Text size="sm" variant="muted">
+                    Scheduled for {scheduledAt.toLocaleString()}
+                  </Text>
+                )}
+                {publishedAt && (
+                  <Text size="sm" variant="muted">
+                    Last published {publishedAt.toLocaleString()}
+                  </Text>
+                )}
+              </Stack>
+            </CardContent>
+          )}
+        </Card>
+
+        <Card variant="module">
+          <CardHeader>
+            <Heading level={3}>Content</Heading>
+            <CardDescription>
+              The {lowerType}&apos;s fields. Autosaves every keystroke after a brief pause.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ContentEntryForm schema={schema} body={body} onBodyChange={setBody} />
+          </CardContent>
+        </Card>
+
+        {routable && (
+          <SeoPanel
+            value={seo}
+            onChange={setSeo}
+            previewOrigin={previewOrigin}
+            slug={slug}
+            fallbackTitle={fallbackTitle}
+            entryId={id}
+          />
+        )}
+
+        <Card variant="module">
+          <CardContent>
+            <Stack gap={2}>
+              {error && (
+                <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                  {error}
+                </Text>
+              )}
+              {message && (
+                <Text size="sm" variant="success" aria-live="polite">
+                  {message}
+                </Text>
+              )}
+            </Stack>
+          </CardContent>
+          <CardFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              leftIcon={<Trash2 className="h-4 w-4" />}
+              onClick={() => setDeleteOpen(true)}
+              disabled={pending}
+            >
+              Delete
+            </Button>
+            <Button type="submit" color="module" disabled={pending} loading={pending}>
+              Save changes
+            </Button>
+          </CardFooter>
+        </Card>
+      </Stack>
+
+      <Modal open={scheduleOpen} onOpenChange={setScheduleOpen}>
+        <ModalContent>
+          <ModalHeader>
+            <ModalTitle>Schedule publish</ModalTitle>
+            <ModalDescription>
+              Pick when this {lowerType} should flip to <strong>published</strong>. Times are
+              interpreted in your local timezone ({Intl.DateTimeFormat().resolvedOptions().timeZone}
+              ) and stored as UTC on the server.
+            </ModalDescription>
+          </ModalHeader>
+          <div className="px-6 py-4">
+            <Stack gap={3}>
+              <Label htmlFor="schedule-at" required>
+                When
+              </Label>
+              <DatePicker value={scheduleAt} onChange={setScheduleAt} />
+              {scheduleAt && (
+                <Text size="xs" variant="muted" aria-live="polite">
+                  Will publish at <strong>{scheduleAt.toLocaleString()}</strong>
+                  {' · '}UTC <code>{scheduleAt.toISOString()}</code>
+                </Text>
+              )}
+              {error && (
+                <Text size="sm" variant="danger" role="alert" aria-live="polite">
+                  {error}
+                </Text>
+              )}
+            </Stack>
+          </div>
+          <ModalFooter>
+            <Button type="button" variant="ghost" onClick={() => setScheduleOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              color="module"
+              onClick={confirmSchedule}
+              disabled={pending || !scheduleAt}
+              loading={pending}
+            >
+              Schedule publish
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this {lowerType}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <strong>{fallbackTitle || '(untitled)'}</strong>
+              {slug && (
+                <>
+                  {' '}
+                  at <code>/{slug}</code>
+                </>
+              )}{' '}
+              will be soft-deleted. The entry stays recoverable in the database for 30 days but will
+              not render on your site or appear in lists. Use <em>Unpublish</em> instead if you want
+              it to stay editable.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={executeDelete}>Delete {lowerType}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </form>
+  );
+}
+
+// Status pill next to the Status badge — same contract as the Pages editor's,
+// plus an `invalid` state for the client pre-validation skip.
+function AutosaveIndicator({
+  state,
+  onDiscardMine,
+  onKeepMine,
+}: {
+  state: SaveState;
+  onDiscardMine: () => void;
+  onKeepMine: () => void;
+}) {
+  if (state.kind === 'idle') return null;
+  if (state.kind === 'saving') {
+    return (
+      <Text size="xs" variant="muted" aria-live="polite">
+        Saving…
+      </Text>
+    );
+  }
+  if (state.kind === 'saved') {
+    return (
+      <Text size="xs" variant="muted" aria-live="polite">
+        Saved {state.at.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      </Text>
+    );
+  }
+  if (state.kind === 'invalid') {
+    return (
+      <Text size="xs" variant="muted" aria-live="polite">
+        {state.count === 1 ? '1 field needs attention' : `${state.count} fields need attention`}{' '}
+        before autosave
+      </Text>
+    );
+  }
+  if (state.kind === 'conflict') {
+    return (
+      <Stack direction="row" align="center" gap={2}>
+        <Text size="xs" variant="danger" aria-live="polite">
+          Someone else saved this entry since you started editing.
+        </Text>
+        <Button type="button" variant="ghost" size="xs" onClick={onDiscardMine}>
+          Discard mine
         </Button>
-        <Button
-          type="button"
-          color="danger"
-          size="sm"
-          onClick={() => void handleDelete()}
-          disabled={busy}
-          leftIcon={<Trash2 className="h-3 w-3" />}
-        >
-          Delete
+        <Button type="button" color="module" variant="outline" size="xs" onClick={onKeepMine}>
+          Keep mine (force save)
         </Button>
       </Stack>
-      <ContentEntryForm
-        schema={schema}
-        initialBody={initialBody}
-        submitLabel="Save changes"
-        onSubmit={async (body) => {
-          const slug =
-            urlPattern && typeof body.slug === 'string' && body.slug.length > 0
-              ? body.slug
-              : undefined;
-          const res = await updateEntry(id, body, slug);
-          return { ok: res.ok, error: res.error };
-        }}
-      />
-    </Stack>
+    );
+  }
+  return (
+    <Text size="xs" variant="danger" aria-live="polite">
+      Autosave failed: {state.message}
+    </Text>
   );
 }

@@ -10,6 +10,7 @@
 // One `useSeoAudit` hook backs all of it, so no surface re-implements scoring UI.
 
 import * as React from 'react';
+import Link from 'next/link';
 
 import { Button, Popover, PopoverTrigger, PopoverContent } from '@sparx/ui';
 import type {
@@ -42,7 +43,7 @@ const TRACK = '#e5e5e5';
 
 // ── Data hook ────────────────────────────────────────────────────────────────
 
-function useSeoAudit(type: EntityType, id: string, enabled: boolean) {
+export function useSeoAudit(type: EntityType, id: string, enabled: boolean) {
   const [card, setCard] = React.useState<Scorecard | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -113,6 +114,32 @@ function Ring({ score, color, size }: { score: number | null; color: string; siz
       >
         {score ?? '·'}
       </span>
+    </span>
+  );
+}
+
+// ── Plain badge (no popover) ─────────────────────────────────────────────────
+
+// A static score ring with no hover popover — for surfaces that already open the
+// full report on click (the /seo overview), where a hover popover would just
+// duplicate the row's own detail. Renders the stored score; never fetches.
+export function SeoScoreBadge({
+  score,
+  grade,
+  size = 30,
+}: {
+  score: number | null;
+  grade?: Grade | null;
+  size?: number;
+}) {
+  const color = grade ? GRADE[grade].color : NEUTRAL;
+  const label =
+    score != null
+      ? `SEO health ${score} of 100${grade ? ` — ${GRADE[grade].label}` : ''}`
+      : 'SEO health';
+  return (
+    <span aria-label={label} style={{ display: 'inline-flex' }}>
+      <Ring score={score} color={color} size={size} />
     </span>
   );
 }
@@ -191,6 +218,14 @@ export function SeoScoreChip({
       <PopoverContent
         align="end"
         sideOffset={8}
+        // This is a hover/focus popover, not a click-dialog. Radix's default is to
+        // pull focus into the content on open and shove it back to the trigger on
+        // close — which here fires the trigger's onBlur (→ closeSoon) then, on
+        // close, its onFocus (→ openNow), oscillating open/closed every ~140ms.
+        // Suppressing both auto-focus moves keeps focus on the trigger and stops
+        // the flicker; keyboard users still open it via the trigger's onFocus.
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        onCloseAutoFocus={(e) => e.preventDefault()}
         onMouseEnter={openNow}
         onMouseLeave={closeSoon}
         style={{ width: 360, padding: 0, maxHeight: '70vh', overflow: 'auto' }}
@@ -210,11 +245,17 @@ export function SeoReport({
   loading,
   error,
   onReload,
+  editHref,
+  editLabel,
 }: {
   card: Scorecard | null;
   loading: boolean;
   error: string | null;
   onReload: () => void;
+  /** When set, render a link to the entity's editor so the reader can jump to
+   *  fix the issues. Omitted in editor-embedded contexts (you're already there). */
+  editHref?: string;
+  editLabel?: string;
 }) {
   if (!card) {
     return (
@@ -274,6 +315,28 @@ export function SeoReport({
           {loading ? 'Running…' : 'Re-run'}
         </Button>
       </div>
+
+      {/* Jump to the entity's editor to actually make the fixes. */}
+      {editHref ? (
+        <div
+          style={{
+            padding: '10px 16px',
+            borderBottom: '1px solid var(--color-border, #e5e5e5)',
+          }}
+        >
+          <Link
+            href={editHref}
+            style={{
+              fontSize: 12,
+              fontWeight: 500,
+              color: 'var(--module-active, #6366f1)',
+              textDecoration: 'none',
+            }}
+          >
+            {editLabel ?? 'Open editor'} →
+          </Link>
+        </div>
+      ) : null}
 
       {/* Category bars */}
       <div

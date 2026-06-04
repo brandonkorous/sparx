@@ -1,8 +1,8 @@
 # 50 — SEO, AIO & Discoverability
 
-Version: 1.0
+Version: 1.3
 Author: Brandon Korous
-Last Updated: 2026-06-03
+Last Updated: 2026-06-04
 
 > Discoverability is a **platform capability**, not a per-app chore. It spans two audiences —
 > traditional search crawlers and the new wave of answer/generative engines (AIO) — and two
@@ -123,12 +123,16 @@ positioning) rather than the common default of blocking AI crawlers.
 A second pass landed the lower-risk web-best-practice gaps:
 
 - **Structured-data breadth** — storefront layout now emits **Organization** (logo + social `sameAs`)
-  and **WebSite + SearchAction** (`/search?q=`); the marketing layout emits **WebSite**. (FAQPage
-  landed in §2.4.) Still open: Article/BlogPosting for CMS posts.
+  and **WebSite + SearchAction** (`/search?q=`); the marketing layout emits **WebSite**; CMS blog
+  posts emit **BlogPosting / Article** (`apps/site/components/article-json-ld.tsx`, wired around both
+  the builder-collection and bare-`PageView` render paths). (FAQPage landed in §2.4; **BreadcrumbList**
+  auto-emits from the shared `<Breadcrumbs>`.)
 - **Security headers** — a Caddy `(security_headers)` snippet adds **HSTS, X-Content-Type-Options,
   X-Frame-Options (SAMEORIGIN), Referrer-Policy** to the browser-facing + API hostnames. Deliberately
   **no CSP / Permissions-Policy** yet (they need per-app tuning around Stripe/checkout, PostHog,
-  Satori) — those land as a **Report-Only** pass. Deploys via `bootstrap.yml`.
+  Satori) — those land as a **Report-Only** pass. Deploys via `bootstrap.yml` — note Caddy runs with
+  `admin off` and reads its Caddyfile only at startup, so the bootstrap caddy step **force-rolls the
+  Deployment** (a ConfigMap apply alone won't reload the running pod).
 - **Error boundaries** — `error.tsx` + `global-error.tsx` in all three apps (web, site, dashboard),
   theme-agnostic, with a `console.error` hook where a tracker attaches later. **Sentry intentionally
   skipped** for now (no DSN/dependency).
@@ -149,16 +153,29 @@ A second pass landed the lower-risk web-best-practice gaps:
 
 ## 5. Deferred / roadmap
 
-Tracked here so the gaps are explicit, not silently dropped:
+Parked deliberately — captured here as future-work items so the gaps are explicit, not silently
+dropped. Each item notes what it needs and the trigger for picking it up. (The SEO-scorecard's own
+remaining follow-ups live with the feature in §7.6.)
 
-- **Markdown content endpoints** for LLM ingest (`/<path>.md`) — needs a doc→Markdown serializer in
-  `@sparx/cms-editor` (today only `renderDocToHtml` exists). The single largest remaining AIO piece.
-- **Article/BlogPosting** structured data for CMS blog posts.
-- **CSP + Permissions-Policy** as a Report-Only-first pass (the deferred half of security headers).
-- **Sentry** (or equivalent) wired behind a DSN env var, attaching at the `console.error` hooks.
-- **CI perf budgets** (Lighthouse / bundlesize) — CWV is now measured; budgets aren't enforced.
-- **SEO audit scorecard** in the CMS/Builder — now in build; design + check catalog in §7.
-- **hreflang / i18n** — deferred platform-wide ([12](12-cms-prd.md) Phase 2).
+- **Markdown content endpoints for LLM ingest** (`/<path>.md`) — serve a clean Markdown twin of every
+  public page so AI crawlers ingest structure without HTML noise.
+  _Needs:_ a doc→Markdown serializer in `@sparx/cms-editor` (today only `renderDocToHtml` exists) + a
+  `.md` route on the storefront. _Trigger:_ the largest remaining AIO lever — do next when AIO is
+  prioritized.
+- **CSP + Permissions-Policy (Report-Only first)** — the deferred half of the security headers (§4).
+  _Needs:_ a report sink (`report-to`/`report-uri` endpoint) + per-app allow-list tuning around
+  Stripe/checkout, PostHog, and Satori; ship Report-Only, watch violations, then enforce. _Trigger:_
+  before any compliance/pentest milestone.
+- **CI perf budgets (Lighthouse / bundlesize)** — CWV is measured in prod (§4) but nothing gates a
+  regression. _Needs:_ a Lighthouse-CI (or bundlesize) workflow + agreed score/byte floors; decide
+  advisory vs blocking. _Trigger:_ once the apps' routes stabilize enough that budgets aren't noise.
+- **Sentry (or equivalent) error tracking** behind a DSN env var, attaching at the existing
+  `console.error` hooks in `error.tsx` / `global-error.tsx`. _Needs:_ a DSN + dependency decision.
+- **Cross-page SEO checks** (duplicate titles/descriptions, orphan pages, broken internal links) — the
+  single-entity scorecard (§7) can't see these. _Needs:_ the Typesense index, not one row. _Trigger:_
+  fold into the search-index read path.
+- **hreflang / i18n** — deferred platform-wide ([12](12-cms-prd.md) Phase 2). Multi-locale content +
+  `hreflang` alternates + locale-aware sitemap. _Trigger:_ first multi-locale tenant.
 - **Marketing `title.template`** — deferred. Every marketing page already carries the brand in its
   `<title>` (module pages "Sparx X — …", static pages "X — Sparx"), so a root template is pure DRY
   with no SEO gain and would double-brand unless all ~17 pages + `makeMetadata` were converted to
@@ -202,8 +219,10 @@ The scorecard appears in many places but is **three shared components over one f
 (`useSeoAudit(type, id)`) — never re-implemented per surface. This is the deliberate answer to "don't
 clone the report into four editors and create a maintenance nightmare":
 
-- **`<SeoScoreChip>`** — the ring + grade. The universal atom: it sits in every entity's SEO panel
-  and in each row of the overview list. Cheap — renders the stored score, or fetches live in-editor.
+- **`<SeoScoreChip>`** — the ring + grade with a hover/focus popover. The universal atom in every
+  entity's SEO panel; renders the stored score, or fetches live in-editor. (On the `/seo` overview the
+  row itself opens the report, so there the score renders as a non-interactive `<SeoScoreBadge>` — the
+  same ring without the popover, since a hover report would duplicate the row's own detail.)
 - **`<SeoScorePopover>`** — **on hover/focus of the chip**, lazily loads the audit and shows a
   compact summary (category bars + "fix first" + the top issues). This is the lightweight surface
   that rides along on _most_ pages without its own layout.
@@ -241,10 +260,12 @@ entity-aware (prose pages expect more than a product blurb).
 
 ### 7.4 Phased build
 
-- **A — engine** (`@sparx/seo-audit`) + unit tests. Pure, no infra. _(Foundation.)_
-- **B — live API** `GET /v1/seo/audit` + per-entity-type signal extractors.
-- **C — chip + hover popover**, wired into the Builder / CMS / product / collection SEO panels.
-- **D — `seo_audits` table + publish-event consumer + site-wide overview + the dedicated report.**
+- **A — engine** (`@sparx/seo-audit`) + unit tests. Pure, no infra. ✅ _(Foundation.)_
+- **B — live API** `GET /v1/seo/audit` + per-entity-type signal extractors. ✅
+- **C — chip + hover popover.** ✅ Builder inspector, overview rows, and the CMS / product /
+  collection editor SEO panels.
+- **D — `seo_audits` table + publish/update recompute + site-wide overview** ✅ (plus the `/seo` rail
+  tile, ⌘K entry, and the row → full-report detail in the user's `defaultDetailView` surface).
 
 ### 7.5 Decisions
 
@@ -258,3 +279,45 @@ entity-aware (prose pages expect more than a product blurb).
 - **Auto-generated OG = warn, not fail** — 3.10 means a card always exists; the nudge is "upload a
   custom image", not a penalty.
 - **`noindex` informs, doesn't penalize** — an intentionally hidden page isn't a failing page.
+
+### 7.6 Remaining follow-ups
+
+Engine, live API, storage, publish/update recompute, the `/seo` overview, the rail-nav tile, and the
+⌘K entry shipped first; the 2026-06-04 pass closed the rest of the surface gaps:
+
+- ✅ **Chip in every authoring editor** — `<SeoScoreChip>` renders in each SEO panel: the Builder
+  inspector, the CMS page editor (`cms/[id]/seo-panel.tsx`), the **typed content-type entry editor**
+  (`cms/_components/entry-seo-section.tsx` — the per-entry SEO panel where `blog_post` + every custom
+  type is authored), product (`product-edit-form.tsx`), and collection (`collection-meta-form.tsx`),
+  plus the overview rows. The "everywhere cheap" promise (§7.2) is met. (Both CMS surfaces author the
+  entry's `seo` JSONB, so the `cms_page` audit reflects them regardless of which editor was used.)
+- ✅ **Overview row → full report, conformant to the list + detail-view system (docs/34 §7).** `/seo`
+  is a standard Collection/List surface: full width, a `ListToolbar` with a **type filter** and the
+  **Table/Cards toggle** (per-page `?view`, falling back to the user's `defaultListView`), worst-first
+  rows. Clicking a row opens the full `<SeoReport>` in whatever surface the user's `defaultDetailView`
+  selects — `drawer`/`modal` overlay it in place (`seo/_components/seo-row-link.tsx`), `fullPage`/`newTab`
+  route to the dedicated `/seo/[type]/[id]` report page (`seo/_components/seo-report-panel.tsx`). Same
+  power-shortcuts as `EntityRowLink` (alt = drawer, shift = full page, ⌘/middle-click = new tab). The
+  report links onward to the entity's editor (`components/seo/links.ts`) so you can jump to the fixes.
+  On the overview the score is a plain `<SeoScoreBadge>` — **no hover popover** (redundant when the row
+  already opens the report); the in-editor chips keep the interactive `<SeoScoreChip>`.
+- ✅ **Re-scan gating** — the `/seo` page resolves the session role and renders Re-scan only for
+  owner/admin/editor (reindex is an `editor` write), so viewers no longer see an action that 403s.
+- ✅ **Popover flicker fixed** — the chip's hover popover oscillated open/closed because Radix's default
+  auto-focus moved focus into the content on open (→ trigger `onBlur` → close) and back on close (→
+  `onFocus` → reopen). `onOpenAutoFocus` / `onCloseAutoFocus` are now `preventDefault()`-ed, keeping
+  focus on the trigger.
+- ✅ **Builder per-page deep link** — the report's "Open in builder" link now targets the exact page:
+  `entityEditorHref('builder_page')` → `/builder/page?page=<id>`, and `builder/page/page.tsx` reads the
+  param and passes `initialPageId` so `BuilderApp` opens that page active on mount (falling back to the
+  first page when absent/unknown).
+
+Still open:
+
+- **Reindex as a background job** — `POST /v1/seo/audits/reindex` loops every entity in one request/tx
+  (`REINDEX_LIMIT=500`/type). Fine at Phase-1 scale; move to a job before catalogs grow.
+
+_Impl note:_ the design's three components (§7.2) collapsed to two in code — the chip's hover popover
+renders the full `<SeoReport>` directly (no separate compact `<SeoScorePopover>`), and both the overview
+overlays (drawer/modal) and the `/seo/[type]/[id]` page reuse that same `<SeoReport>`. Fine for now;
+revisit only if the popover gets too heavy on rows.

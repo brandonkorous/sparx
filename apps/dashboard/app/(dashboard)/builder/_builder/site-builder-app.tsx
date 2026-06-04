@@ -408,9 +408,8 @@ export function SiteBuilderApp({ initialLayouts, bindingCatalog }: SiteBuilderAp
           <span className="bx-ctx__note">
             The header and footer persist across navigation; the <strong>Page content</strong> block
             is where each routed page renders. Only the <strong>Live</strong> layout is served on
-            your storefront — publish a layout, then make it active to switch. Navigation, brand,
-            and social bind to your existing site data — editing them lives in Navigation &amp;
-            Brand.
+            your site — publish a layout, then make it active to switch. Navigation, brand, and
+            social bind to your existing site data — editing them lives in Navigation &amp; Brand.
           </span>
         </div>
 

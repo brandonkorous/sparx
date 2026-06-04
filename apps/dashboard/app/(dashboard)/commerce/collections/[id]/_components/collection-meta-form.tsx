@@ -19,6 +19,8 @@ import {
   Textarea,
 } from '@sparx/ui';
 
+import { SeoScoreChip } from '@/components/seo/seo-score';
+
 import { updateCollectionAction } from '../../../collection-actions';
 
 interface Props {
@@ -118,7 +120,11 @@ export function CollectionMetaForm({
             </Stack>
 
             <Stack gap={2} className="border-t border-[var(--color-border-default)] pt-4">
-              <Heading level={4}>SEO</Heading>
+              <div className="flex items-center justify-between gap-3">
+                <Heading level={4}>SEO</Heading>
+                {/* Live SEO health for the saved collection; hover for the full report. */}
+                <SeoScoreChip type="collection" id={collectionId} size={30} />
+              </div>
               <Stack gap={2}>
                 <Label htmlFor="seoTitle">Page title</Label>
                 <Input id="seoTitle" name="seoTitle" defaultValue={seoTitle ?? ''} />

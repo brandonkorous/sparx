@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { Gauge, Plus } from 'lucide-react';
 import {
   CommandEmpty,
   CommandGroup,
@@ -10,7 +11,7 @@ import {
   CommandPalette as UICommandPalette,
   CommandShortcut,
 } from '@sparx/ui';
-import { findFavoritableById, listFavoritableItems } from '../_shell/registry';
+import { findFavoritableById, listFavoritableItems, moduleManifests } from '../_shell/registry';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
 import { searchEntities, type PaletteResults } from './search-action';
 
@@ -29,13 +30,48 @@ import { searchEntities, type PaletteResults } from './search-action';
 interface CommandPaletteProps {
   favorites: FavoriteRow[];
   recents: RecentRow[];
+  /** Active module slugs — gates the "Add a module" command to tenants that
+   *  actually have something left to activate (mirrors the rail). */
+  enabledModules: readonly string[];
 }
 
 const EMPTY_RESULTS: PaletteResults = { products: [], customers: [], orders: [], other: [] };
 const MIN_DEEP_QUERY = 2;
 const DEBOUNCE_MS = 200;
 
-export function CommandPalette({ favorites, recents }: CommandPaletteProps) {
+// Cross-cutting platform destinations that aren't module-manifest entries (so
+// they never come through listFavoritableItems) but should still be reachable
+// from ⌘K. Keep this list tiny — it's for true platform tools, not module nav.
+interface PlatformCommand {
+  id: string;
+  label: string;
+  href: string;
+  keywords: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+const PLATFORM_COMMANDS: readonly PlatformCommand[] = [
+  {
+    id: 'platform.seo',
+    label: 'SEO',
+    href: '/seo',
+    keywords: 'seo audit score search discoverability',
+    icon: Gauge,
+  },
+];
+
+// The ⌘K twin of the rail's "Add a module" entry — makes activation reachable
+// by typing "add" / "activate" / "upgrade". Appended only when the tenant has
+// an inactive module (see hasInactiveModules below). Routes to the activation
+// surface; the owner/admin gate lives there.
+const ADD_MODULE_COMMAND: PlatformCommand = {
+  id: 'platform.add-module',
+  label: 'Add a module',
+  href: '/settings/modules',
+  keywords: 'add activate enable module modules upgrade plan billing subscription marketplace',
+  icon: Plus,
+};
+
+export function CommandPalette({ favorites, recents, enabledModules }: CommandPaletteProps) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
@@ -116,6 +152,16 @@ export function CommandPalette({ favorites, recents }: CommandPaletteProps) {
 
   const visibleFavorites = favoritedItems.filter((i) => matchesNeedle(i.label, i.moduleId));
   const visibleRecents = recentItems.filter((i) => matchesNeedle(i.label, i.moduleId));
+
+  // Same gate as the rail: only offer activation when there's an inactive
+  // billable module. `storefront` is the `builder` alias, not a separate unit.
+  const hasInactiveModules = moduleManifests.some(
+    (m) => m.id !== 'storefront' && !enabledModules.includes(m.id)
+  );
+  const platformCommands = hasInactiveModules
+    ? [...PLATFORM_COMMANDS, ADD_MODULE_COMMAND]
+    : PLATFORM_COMMANDS;
+  const visiblePlatform = platformCommands.filter((c) => matchesNeedle(c.label, c.keywords));
 
   const resultCount =
     results.products.length +
@@ -207,7 +253,7 @@ export function CommandPalette({ favorites, recents }: CommandPaletteProps) {
           </CommandGroup>
         )}
 
-        {everythingElse.length > 0 && (
+        {(everythingElse.length > 0 || visiblePlatform.length > 0) && (
           <CommandGroup heading={hasResults ? 'Go to' : 'Everything'}>
             {everythingElse.map((item) => (
               <CommandItem key={item.id} value={`nav-${item.id}`} onSelect={() => go(item.href)}>
@@ -216,6 +262,16 @@ export function CommandPalette({ favorites, recents }: CommandPaletteProps) {
                 <CommandShortcut>{item.moduleId}</CommandShortcut>
               </CommandItem>
             ))}
+            {visiblePlatform.map((item) => {
+              const Icon = item.icon;
+              return (
+                <CommandItem key={item.id} value={`nav-${item.id}`} onSelect={() => go(item.href)}>
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                  <CommandShortcut>platform</CommandShortcut>
+                </CommandItem>
+              );
+            })}
           </CommandGroup>
         )}
       </CommandList>

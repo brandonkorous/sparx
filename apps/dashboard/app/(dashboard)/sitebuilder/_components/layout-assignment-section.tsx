@@ -1,5 +1,5 @@
 // LayoutAssignmentSection (server, docs/36 §6, P-C). The SB-owned card the
-// Commerce product editor + CMS entry editor mount to assign a storefront layout
+// Commerce product editor + CMS entry editor mount to assign a site layout
 // to one record. It encapsulates the Site-Builder API reads + the picker so the
 // consuming module needs only (targetId, itemRef) — keeping the assignment logic
 // on the Site-Builder side of the boundary (docs/02). Renders nothing when Site
@@ -22,8 +22,8 @@ export interface LayoutAssignmentSectionProps {
 export async function LayoutAssignmentSection({
   targetId,
   itemRef,
-  title = 'Storefront layout',
-  description = 'Which layout this renders through on the storefront.',
+  title = 'Site layout',
+  description = 'Which layout this renders through on your site.',
   note,
 }: LayoutAssignmentSectionProps) {
   try {

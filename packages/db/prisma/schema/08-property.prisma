@@ -1,0 +1,45 @@
+// Property — a tenant's web property (a distinct site: presentation + page tree
+// + domain) over the shared back office. The multi-site axis (docs/49): one
+// TENANT has one-or-more PROPERTIES. Phase 1 seeds exactly one is_primary
+// property per tenant and changes no behavior; the Builder presentation layer
+// (builder_pages / builder_layouts) re-keys onto property_id in a later slice.
+//
+// NOT a security boundary. tenant_id remains the only RLS isolation boundary;
+// property_id is application-tier scoping WITHIN a tenant (docs/49 §2). Two
+// properties in one tenant can read each other's rows as far as Postgres is
+// concerned — the app scopes by property_id. A tenant needing hard isolation
+// uses two WORKSPACES, not two properties.
+//
+// Tenant-scoped + ENABLE/FORCE RLS on tenant_id (policy in the migration). The
+// "exactly one primary per tenant" rule is a PARTIAL UNIQUE index
+// (tenant_id) WHERE is_primary — hand-added in the migration (Prisma can't
+// express the predicate), mirroring builder_layouts_one_active_per_tenant.
+
+model Property {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Stable per-tenant handle. The primary property is seeded as 'primary'.
+  slug String @db.VarChar(63)
+  name String @db.VarChar(255)
+
+  // Exactly one per tenant (DB-enforced by the partial unique index). The
+  // primary keeps the tenant's existing subdomain for backward compatibility;
+  // additional properties get their own hostnames (Phase 2).
+  isPrimary Boolean @default(false) @map("is_primary")
+
+  // active | paused | archived
+  status String @default("active") @db.VarChar(20)
+
+  // Per-property settings bag (shape validated in the service, not the DB).
+  settings Json @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@map("properties")
+}

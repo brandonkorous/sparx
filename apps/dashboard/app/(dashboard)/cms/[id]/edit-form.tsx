@@ -419,6 +419,7 @@ export function EditPageForm({
           previewOrigin={previewOrigin}
           slug={slug}
           fallbackTitle={title}
+          entryId={page.id}
         />
 
         <Card variant="module">

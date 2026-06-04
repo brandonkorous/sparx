@@ -31,6 +31,11 @@ model Tenant {
   // Platform core — brand identity (tenant-level source of truth, docs/30 §6)
   brand TenantBrand?
 
+  // Multi-property (multi-site) — a tenant's web properties (docs/49). Phase 1
+  // seeds exactly one is_primary property per tenant; the Builder presentation
+  // layer re-keys onto property_id in a later slice.
+  properties Property[]
+
   // Auth + audit
   users     User[]
   auditLogs AuditLog[]

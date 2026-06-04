@@ -92,6 +92,7 @@ export function BuilderWorkspace({
                 tree={tree}
                 catalog={catalog}
                 selectedId={editor.selectedId}
+                homeLabel={surface === 'site' ? 'Site' : 'Page'}
                 onSelect={editor.setSelectedId}
                 onRemove={editor.onRemove}
                 onMove={editor.onMove}
@@ -141,6 +142,7 @@ export function BuilderWorkspace({
               scope={editor.scope}
               surface={surface}
               settings={settings}
+              onBack={() => editor.setSelectedId(null)}
               onName={editor.onName}
               onClass={editor.onClass}
               onBind={editor.onBind}

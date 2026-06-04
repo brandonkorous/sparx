@@ -36,7 +36,9 @@ import { z } from 'zod';
 import { productService, variantService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
+import { withRequestTenant } from '@sparx/api-core/db';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
+import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ProductIdParam = z.object({ productId: z.string().uuid() });
@@ -98,10 +100,17 @@ const productRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.patch('/v1/commerce/products/:id', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireCommerceModule(request);
     const { id } = PathId.parse(request.params);
-    return ok(await productService.update(toCommerceContext(request), id, request.body));
+    const updated = await productService.update(toCommerceContext(request), id, request.body);
+    // A PATCH to a product is live immediately (no draft/publish split for its
+    // fields), so refresh the stored SEO snapshot (docs/50 §7). Best-effort —
+    // a snapshot write must never fail the edit.
+    await withRequestTenant(request, (tx) => auditAndStore(tx, auth.tenantId, 'product', id)).catch(
+      () => undefined
+    );
+    return ok(updated);
   });
 
   app.post('/v1/commerce/products/:id/archive', async (request) => {
@@ -121,10 +130,14 @@ const productRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/v1/commerce/products/:id/publish', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireCommerceModule(request);
     const { id } = PathId.parse(request.params);
     await productService.publish(toCommerceContext(request), id);
+    // Going active flips the product into the sitemap — refresh the snapshot.
+    await withRequestTenant(request, (tx) => auditAndStore(tx, auth.tenantId, 'product', id)).catch(
+      () => undefined
+    );
     return ok({ id, published: true });
   });
 

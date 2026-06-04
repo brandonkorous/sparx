@@ -16,7 +16,7 @@
 //                 visibility) — see BoxBasePanel / visibleBoxAxes.
 
 import * as React from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronLeft } from 'lucide-react';
 import { Input, NativeSelect, Switch, Textarea, cn } from '@sparx/ui';
 import type { BindingCatalog } from '@sparx/builder-schemas';
 
@@ -694,11 +694,11 @@ export function PageSettings({
         <>
           <Group label="Page">
             <Field
-              label="Storefront URL"
+              label="Site URL"
               hint={
                 draft.trim()
                   ? `Published, this page serves at /${draft.trim()}`
-                  : 'Set a slug to serve this page on the storefront.'
+                  : 'Set a slug to serve this page on your site.'
               }
             >
               <Input
@@ -840,6 +840,9 @@ export interface InspectorProps {
   surface: EditorSurface;
   /** Rendered when no node is selected — the surface's settings panel. */
   settings: React.ReactNode;
+  /** Clear the selection — returns the inspector to the `settings` panel (page /
+   *  site settings). Powers the "‹ Page settings" back control. */
+  onBack: () => void;
   onName: (name: string) => void;
   onClass: (value: string) => void;
   onBind: (path: string | null) => void;
@@ -855,6 +858,7 @@ export function Inspector({
   scope,
   surface,
   settings,
+  onBack,
   onName,
   onClass,
   onBind,
@@ -871,6 +875,13 @@ export function Inspector({
 
   return (
     <div className="bx-inspector">
+      {/* Selecting a node replaces the page/site settings panel; this returns to
+          it without leaving the editor (the canvas's click-empty / Esc are easy
+          to miss when the page fills the canvas). */}
+      <button type="button" className="bx-ins-back" onClick={onBack}>
+        <ChevronLeft aria-hidden />
+        {surface === 'site' ? 'Site settings' : 'Page settings'}
+      </button>
       <header className="bx-ins-head">
         <div className="bx-ins-head__row">
           <h3>{def.label}</h3>

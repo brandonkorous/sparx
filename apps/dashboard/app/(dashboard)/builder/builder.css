@@ -495,6 +495,32 @@
   width: 13px;
   height: 13px;
 }
+/* Settings-home row — a peer pinned atop the content layers (selecting it shows
+   the page/site settings: URL + SEO). Reads like a layer row but bolded, with a
+   thin divider separating it from the content tree below. */
+.bx-layers__home {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  border: none;
+  border-bottom: 1px solid var(--color-border-default);
+  border-radius: 7px 7px 0 0;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+.bx-layers__home:hover {
+  background: var(--color-bg-subtle);
+}
+.bx-layers__home--on {
+  background: color-mix(in srgb, var(--module-active) 12%, transparent);
+}
 .bx-layer {
   display: flex;
   align-items: center;
@@ -706,6 +732,32 @@
   margin: 0;
   color: var(--color-text-muted);
   font-size: 12px;
+}
+/* "‹ Page settings" — returns the inspector to the no-selection settings panel
+   (a discoverable alternative to clicking empty canvas / pressing Esc). */
+.bx-ins-back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 9px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--color-border-default);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+.bx-ins-back:hover {
+  color: var(--color-text-primary);
+}
+.bx-ins-back svg {
+  width: 14px;
+  height: 14px;
+  margin-left: -2px;
 }
 .bx-ins-head {
   padding: 14px 16px;

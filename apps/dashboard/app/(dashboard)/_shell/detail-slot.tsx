@@ -13,6 +13,7 @@ import { PageCreateForm } from '../cms/_components/page-create-form';
 import { ContentTypeCreateForm } from '../cms/types/_components/content-type-create-form';
 import { AuthorDetailContent } from '../cms/authors/[id]/_content';
 import { ContentTypeDetailContent } from '../cms/types/[typeKey]/_content';
+import { ContentEntryDetailContent } from '../cms/types/[typeKey]/[id]/_content';
 import { CmsPageDetailContent } from '../cms/[id]/_content';
 import { MediaAssetDetailContent } from '../cms/media/[id]/_content';
 import { MenuDetailContent } from '../cms/navigation/menu-detail';
@@ -58,6 +59,7 @@ const detailComponents: Record<string, DetailComponent> = {
   taxonomy: TaxonomyDetailContent,
   menu: MenuDetailContent,
   'content-type': ContentTypeDetailContent,
+  'content-entry': ContentEntryDetailContent,
   // CRM
   customer: CustomerDetailContent,
   'b2b-account': B2bAccountDetailContent,
@@ -97,6 +99,7 @@ const detailModules: Record<string, SparxModule> = {
   taxonomy: 'cms',
   menu: 'cms',
   'content-type': 'cms',
+  'content-entry': 'cms',
   // CRM
   customer: 'crm',
   'b2b-account': 'crm',

@@ -105,6 +105,14 @@ jobs:
           # idempotent: if already bound, this is a no-op patch.
           kubectl patch service caddy -n "$NAMESPACE" \
             -p "{\"spec\":{\"loadBalancerIP\":\"$INGRESS_IP\"}}"
+          # Caddy reads its Caddyfile only at startup and runs with `admin off`,
+          # so there is no hot-reload path — applying the ConfigMap alone leaves
+          # the running pod on the OLD config. Force a rollout so Caddyfile
+          # changes (e.g. the security-header snippet) actually take effect.
+          # NOTE: single-replica + Recreate strategy ⇒ a brief (~10-30s) ingress
+          # blip while the pod recreates; on-demand certs reload from the PVC so
+          # there's no re-issuance.
+          kubectl rollout restart deployment/caddy -n "$NAMESPACE"
           kubectl rollout status deployment/caddy -n "$NAMESPACE" --timeout=5m
 
       - name: Apply Redis
@@ -225,11 +233,22 @@ jobs:
 
       # Worker Deployments (Pub/Sub consumers). Same pattern as apps —
       # deploy-prod only rolls images; this step creates the Deployments.
+      #
+      # As of 2026-05-29 every worker runs on Cloud Run, so k8s/workers/
+      # has `resources: []` and kustomize renders nothing. `kubectl apply -k`
+      # on an empty render errors with "no objects passed to apply" and, under
+      # `set -euo pipefail`, fails the whole all-platform run. Guard on the
+      # render being non-empty so this step is a no-op until a GKE worker is
+      # added back, instead of a hard failure.
       - name: Apply worker Deployments
         if: ${{ inputs.components == 'all-platform' || inputs.components == 'workers' }}
         run: |
           set -euo pipefail
-          kubectl apply -k k8s/workers/
+          if [ -n "$(kubectl kustomize k8s/workers/)" ]; then
+            kubectl apply -k k8s/workers/
+          else
+            echo "::notice::No GKE worker manifests (all workers run on Cloud Run) — skipping."
+          fi
 
       # CRM scheduled jobs — k8s CronJobs that POST to api-rest's
       # /internal/crm/* endpoints with the shared secret. See

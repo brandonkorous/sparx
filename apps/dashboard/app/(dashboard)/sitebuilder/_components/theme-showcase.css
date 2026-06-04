@@ -39,6 +39,11 @@
   padding: var(--sf-space-5, 1.25rem);
 }
 #sf-theme-preview .sfx-masonry {
+  /* Honour the brand's Content-width knob: the page CONTENT (this board) caps at
+     --sf-container and centres, so Narrow/Medium/Wide/Full visibly reflow — the
+     header chrome above stays full-bleed, exactly like the live storefront. */
+  max-width: var(--sf-container);
+  margin-inline: auto;
   column-count: 1;
   column-gap: var(--sf-space-3, 0.75rem);
 }
@@ -522,7 +527,9 @@
 #sf-theme-preview .sfx-media {
   position: relative;
   aspect-ratio: 5 / 4;
-  border-radius: var(--sf-radius-field);
+  /* Media is a large surface, so it follows the BOX radius — not the field
+     radius, which at "Pill" (9999px) would balloon the image into a blob. */
+  border-radius: var(--sf-radius-box);
   overflow: hidden;
   background: linear-gradient(
     135deg,
@@ -710,19 +717,23 @@
   font-size: 0.8rem;
   line-height: 1.4;
 }
+/* Bubbles round on the BOX radius, with one tighter "tail" corner pointing at
+   the speaker. The tail is min(field, box) so it stays the tighter corner on
+   normal themes, but collapses to the box radius at "Pill" (field 9999px) —
+   a clean, uniformly-rounded bubble instead of a lopsided blob. */
 #sf-theme-preview .sfx-chat-in {
   align-self: flex-start;
   background: var(--sf-base-300);
   color: var(--sf-base-content);
   border-radius: var(--sf-radius-box) var(--sf-radius-box) var(--sf-radius-box)
-    var(--sf-radius-field);
+    min(var(--sf-radius-field), var(--sf-radius-box));
 }
 #sf-theme-preview .sfx-chat-out {
   align-self: flex-end;
   background: var(--sf-primary);
   color: var(--sf-primary-content);
-  border-radius: var(--sf-radius-box) var(--sf-radius-box) var(--sf-radius-field)
-    var(--sf-radius-box);
+  border-radius: var(--sf-radius-box) var(--sf-radius-box)
+    min(var(--sf-radius-field), var(--sf-radius-box)) var(--sf-radius-box);
 }
 
 /* ── Storefront header chrome ─────────────────────────────────────────────── */

@@ -16,7 +16,12 @@ import {
   TooltipTrigger,
 } from '@sparx/ui';
 import { Maximize2, PanelRight, Square, X } from 'lucide-react';
-import { CREATE_SENTINEL, findEntityType, parseDetailToken } from '../_shell/detail-registry';
+import {
+  CREATE_SENTINEL,
+  findEntityType,
+  fullPageHrefFor,
+  parseDetailToken,
+} from '../_shell/detail-registry';
 
 // Client chrome for the dashboard detail view. The detail BODY is rendered
 // server-side by the `@detail` parallel slot and passed in as `children`;
@@ -117,8 +122,11 @@ function DetailHeader({ target }: { target: DetailTarget }) {
   const searchParams = useSearchParams();
   const found = findEntityType(target.typeId);
   if (!found) return null;
-  const { entityType, manifest } = found;
-  const fullPageHref = `${entityType.routePrefix}/${target.entityId}`;
+  const { manifest } = found;
+  // Null when the route needs more than (type, id) to address — e.g. a
+  // content-entry, whose full editor lives at /cms/types/<typeKey>/<id>. The
+  // detail body renders its own "Open full editor" link in that case.
+  const fullPageHref = fullPageHrefFor(target.typeId, target.entityId);
 
   function close() {
     const next = new URLSearchParams(searchParams ?? '');
@@ -152,16 +160,18 @@ function DetailHeader({ target }: { target: DetailTarget }) {
           <TooltipContent>Close</TooltipContent>
         </Tooltip>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="sm" aria-label="Open in full page" asChild>
-              <Link href={fullPageHref}>
-                <Maximize2 className="h-4 w-4" />
-              </Link>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Open in full page</TooltipContent>
-        </Tooltip>
+        {fullPageHref && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" aria-label="Open in full page" asChild>
+                <Link href={fullPageHref}>
+                  <Maximize2 className="h-4 w-4" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Open in full page</TooltipContent>
+          </Tooltip>
+        )}
 
         <Tooltip>
           <TooltipTrigger asChild>

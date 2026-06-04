@@ -20,6 +20,8 @@ import {
   NativeSelect,
 } from '@sparx/ui';
 
+import { SeoScoreChip } from '@/components/seo/seo-score';
+
 import { updateProductAction } from '../../../product-actions';
 
 interface ProductOverview {
@@ -222,8 +224,14 @@ export function ProductEditForm({ product }: { product: ProductOverview }) {
 
         <Card>
           <CardHeader>
-            <Heading level={3}>SEO</Heading>
-            <CardDescription>What search engines see.</CardDescription>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <Heading level={3}>SEO</Heading>
+                <CardDescription>What search engines see.</CardDescription>
+              </div>
+              {/* Live SEO health for the saved product; hover for the full report. */}
+              <SeoScoreChip type="product" id={product.id} />
+            </div>
           </CardHeader>
           <CardContent>
             <Stack gap={4}>

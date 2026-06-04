@@ -50,9 +50,14 @@ export const cmsManifest: ModuleManifest = {
     // The content-TYPE definition is keyed by its `key` string, so the drawer
     // token `?drawer=content-type:<key>` resolves fine — the drawer shows the
     // type's identity + schema editor (custom) / read-only schema (built-in).
-    // (Content-type ENTRIES still open full-page: that token can't yet carry
-    // the typeKey + entryId pair. Tracked in [[content-entry-drawer-deferred]].)
     { id: 'content-type', label: 'Content type', routePrefix: '/cms/types', hasDetailView: true },
+    // Content-type ENTRIES (a blog post, an FAQ item, …). One generic type for
+    // all of them: the token is `content-entry:<id>` (id only — UUIDs are
+    // unique), and the detail content resolves the type key from the fetched
+    // entry. The full-page href is `/cms/types/<typeKey>/<id>`, which can't be
+    // built from routePrefix + id alone, so the drawer's maximize button is
+    // suppressed (fullPageHrefFor → null) in favour of an in-body link.
+    { id: 'content-entry', label: 'Entry', routePrefix: '/cms/types', hasDetailView: true },
     { id: 'media', label: 'Media', routePrefix: '/cms/media', hasDetailView: true },
     { id: 'author', label: 'Author', routePrefix: '/cms/authors', hasDetailView: true },
     // Menus are keyed by location string, not UUID — the entity id for the

@@ -59,15 +59,20 @@ const INHERIT = 'default';
 // the left, the fills that carry their own text colour (Page/Neutral) on the
 // right. base-200/300 share base-content (shown once on Page), so they carry no
 // own content swatch.
-const SURFACE_COL1: ColorPair[] = [
-  { base: 'base200', content: null, label: 'Surface' },
-  { base: 'base300', content: null, label: 'Muted' },
-  { base: 'border', content: null, label: 'Border' },
+// The three base layers as a palette scale (DaisyUI-style base-100/200/300),
+// not use-specific names. All share the single `baseContent` surface text colour
+// (docs/33: base-200/300 share base-content) — so the "Sx" on every layer edits
+// the one surface text colour, which makes that colour editable from each layer.
+const BASE_LAYERS: ColorPair[] = [
+  { base: 'base100', content: 'baseContent', label: 'Base-100' },
+  { base: 'base200', content: 'baseContent', label: 'Base-200' },
+  { base: 'base300', content: 'baseContent', label: 'Base-300' },
 ];
-const SURFACE_COL2: ColorPair[] = [
-  { base: 'base100', content: 'baseContent', label: 'Page' },
-  { base: 'neutral', content: 'neutralContent', label: 'Neutral' },
-];
+// Neutral is the UI-fill colour (with its own -content). There is no standalone
+// border colour slot: borders draw in whichever palette role the component uses
+// (primary/secondary/accent/base-*/neutral/status), so the tenant never sets a
+// separate brand border colour.
+const SURFACE_NEUTRAL: ColorPair = { base: 'neutral', content: 'neutralContent', label: 'Neutral' };
 
 const STATUS_PAIRS: ColorPair[] = [
   { base: 'info', content: 'infoContent', label: 'Info' },
@@ -110,6 +115,20 @@ export interface BrandThemeControlsProps {
   setColorAccent: (v: string | null) => void;
   colorAccentForeground: string | null;
   setColorAccentForeground: (v: string | null) => void;
+  colorSecondary: string | null;
+  setColorSecondary: (v: string | null) => void;
+  colorSecondaryForeground: string | null;
+  setColorSecondaryForeground: (v: string | null) => void;
+  // Last-saved identity colours: a swatch shows its "revert" control only while
+  // it differs from these (so the control clears once the edit is saved).
+  savedBrandColors: {
+    colorPrimary: string | null;
+    colorPrimaryForeground: string | null;
+    colorAccent: string | null;
+    colorAccentForeground: string | null;
+    colorSecondary: string | null;
+    colorSecondaryForeground: string | null;
+  };
   fontHeading: string | null;
   setFontHeading: (v: string | null) => void;
   fontBody: string | null;
@@ -149,6 +168,11 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
     setColorAccent,
     colorAccentForeground,
     setColorAccentForeground,
+    colorSecondary,
+    setColorSecondary,
+    colorSecondaryForeground,
+    setColorSecondaryForeground,
+    savedBrandColors,
     fontHeading,
     setFontHeading,
     fontBody,
@@ -179,7 +203,6 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
     <ColorSwatch
       key={s.base}
       label={s.label}
-      value=""
       color={compiledColors[s.base]}
       onChange={(v) => onSlot(s.base, v)}
       content={
@@ -300,13 +323,19 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
 
       {/* Brand-owned colour identity — applies across storefront, email, and CMS. */}
       <Section title="Brand colors" hint="The Sx mark previews the text colour on each fill.">
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-3 gap-2.5">
           <ColorSwatch
             label="Primary"
-            value={colorPrimary ?? ''}
             color={colorPrimary ?? compiledColors.primary}
             onChange={setColorPrimary}
-            onClear={() => setColorPrimary(null)}
+            canClear={
+              colorPrimary !== savedBrandColors.colorPrimary ||
+              colorPrimaryForeground !== savedBrandColors.colorPrimaryForeground
+            }
+            onClear={() => {
+              setColorPrimary(savedBrandColors.colorPrimary);
+              setColorPrimaryForeground(savedBrandColors.colorPrimaryForeground);
+            }}
             warn={onPrimaryRating === 'Fail'}
             content={{
               color: colorPrimaryForeground ?? compiledColors.primaryContent,
@@ -314,11 +343,34 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
             }}
           />
           <ColorSwatch
+            label="Secondary"
+            color={colorSecondary ?? compiledColors.secondary}
+            onChange={setColorSecondary}
+            canClear={
+              colorSecondary !== savedBrandColors.colorSecondary ||
+              colorSecondaryForeground !== savedBrandColors.colorSecondaryForeground
+            }
+            onClear={() => {
+              setColorSecondary(savedBrandColors.colorSecondary);
+              setColorSecondaryForeground(savedBrandColors.colorSecondaryForeground);
+            }}
+            content={{
+              color: colorSecondaryForeground ?? compiledColors.secondaryContent,
+              onChange: setColorSecondaryForeground,
+            }}
+          />
+          <ColorSwatch
             label="Accent"
-            value={colorAccent ?? ''}
             color={colorAccent ?? compiledColors.accent}
             onChange={setColorAccent}
-            onClear={() => setColorAccent(null)}
+            canClear={
+              colorAccent !== savedBrandColors.colorAccent ||
+              colorAccentForeground !== savedBrandColors.colorAccentForeground
+            }
+            onClear={() => {
+              setColorAccent(savedBrandColors.colorAccent);
+              setColorAccentForeground(savedBrandColors.colorAccentForeground);
+            }}
             content={{
               color: colorAccentForeground ?? compiledColors.accentContent,
               onChange: setColorAccentForeground,
@@ -335,14 +387,17 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
 
       {/* Presentation-owned surfaces, edited per mode. */}
       <Section title="Surfaces" hint={`Editing ${modeLabel} mode — switch it in the preview.`}>
-        <div className="grid grid-cols-2 gap-2.5">
-          <div className="flex flex-col gap-2.5">{SURFACE_COL1.map(renderSwatch)}</div>
-          <div className="flex flex-col gap-2.5">{SURFACE_COL2.map(renderSwatch)}</div>
+        {/* The base scale (base-100/200/300) plus the neutral UI fill. The Sx on
+            each base layer previews — and edits — the shared surface text colour;
+            Neutral wraps to the next row, aligned under Base-100. */}
+        <div className="grid grid-cols-3 gap-2.5">
+          {BASE_LAYERS.map(renderSwatch)}
+          {renderSwatch(SURFACE_NEUTRAL)}
         </div>
       </Section>
 
       <Section title="Status colors">
-        <div className="grid grid-cols-2 gap-2.5">{STATUS_PAIRS.map(renderSwatch)}</div>
+        <div className="grid grid-cols-3 gap-2.5">{STATUS_PAIRS.map(renderSwatch)}</div>
       </Section>
 
       <Section title="Typography">
@@ -443,29 +498,34 @@ function Section({
 }
 
 // A named-colour tile: a FILL swatch and (optionally) its text/-content swatch,
-// with the name under. `value` is the stored fill ('' = inherit) and drives the
-// clear affordance; `color` is the resolved colour the block shows.
+// with the name under. `color` is the resolved colour the block shows. When
+// `onClear` + `canClear` are set, a corner "revert" control appears — shown only
+// while the swatch has an unsaved edit (canClear), so it clears once saved.
 function ColorSwatch({
   label,
-  value,
   color,
   onChange,
   onClear,
+  canClear,
   warn,
   content,
 }: {
   label: string;
-  value: string;
   color: string;
   onChange: (color: string) => void;
   onClear?: () => void;
+  canClear?: boolean;
   warn?: boolean;
   content?: { color: string; onChange: (color: string) => void };
 }) {
+  // A fill-only tile (Surface/Muted/Border) has no paired text swatch, so it
+  // gets the column's full width as a rounded rectangle; tiles that pair a fill
+  // with their -content "Sx" swatch read better as two rounded squares.
+  const single = !content;
   return (
     <div className="flex flex-col items-center gap-1">
-      <div className="relative flex w-full gap-0.5">
-        <SwatchInput fill={color} onChange={onChange} ariaLabel={label} warn={warn} />
+      <div className={`relative flex gap-1${single ? ' w-full' : ''}`}>
+        <SwatchInput fill={color} onChange={onChange} ariaLabel={label} warn={warn} wide={single} />
         {content ? (
           <SwatchInput
             fill={color}
@@ -474,11 +534,12 @@ function ColorSwatch({
             ariaLabel={`${label} text`}
           />
         ) : null}
-        {onClear && value ? (
+        {onClear && canClear ? (
           <button
             type="button"
             onClick={onClear}
-            aria-label={`Clear ${label}`}
+            aria-label={`Discard unsaved ${label} change`}
+            title="Discard unsaved change"
             className="absolute -top-1.5 -right-1.5 rounded-full border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-0.5 shadow-sm"
           >
             <X className="h-2.5 w-2.5" />
@@ -501,16 +562,22 @@ function SwatchInput({
   onChange,
   ariaLabel,
   warn,
+  wide,
 }: {
   fill: string;
   ink?: string;
   onChange: (color: string) => void;
   ariaLabel: string;
   warn?: boolean;
+  // Fill the column as a rounded rectangle (single fill-only tiles) instead of
+  // the default fixed rounded square.
+  wide?: boolean;
 }) {
   return (
     <label
-      className={`relative flex h-10 min-w-0 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-md border ${
+      className={`relative flex h-14 cursor-pointer items-center justify-center overflow-hidden rounded-lg border ${
+        wide ? 'w-full min-w-0 flex-1' : 'w-14'
+      } ${
         warn
           ? 'border-[var(--color-danger-text)] ring-1 ring-[var(--color-danger-text)]'
           : 'border-[var(--color-border-default)]'

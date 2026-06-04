@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ModuleProvider, useRailExpanded, Wordmark } from '@sparx/ui';
-import { Clock, Home, Plus, Search, Settings, Star } from 'lucide-react';
+import { Clock, Gauge, Home, Plus, Search, Settings, Star } from 'lucide-react';
 import {
   moduleManifests,
   findFavoritableById,
@@ -203,6 +203,21 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
           {expanded && <span className="flex-1 truncate text-left">Add a module</span>}
         </Link>
       )}
+
+      {/* SEO is a cross-cutting platform tool (audits every module's pages), not
+          a module — so it pins to the bottom cluster beside Settings rather than
+          living in a module manifest. See docs/50 §7. */}
+      <Link
+        href="/seo"
+        title="SEO"
+        aria-label="SEO"
+        className={tileClass(isActivePath(pathname, '/seo'), expanded)}
+      >
+        <span className={tileIconClass(isActivePath(pathname, '/seo'))}>
+          <Gauge className="h-4 w-4" />
+        </span>
+        {expanded && <span className="flex-1 truncate text-left">SEO</span>}
+      </Link>
 
       <Link
         href="/settings"

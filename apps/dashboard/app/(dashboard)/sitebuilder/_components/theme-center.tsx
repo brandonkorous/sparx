@@ -16,15 +16,32 @@
 // the two owners stay clean even though they share one form (docs/33 §3.6).
 
 import * as React from 'react';
-import { toast, useConfirm } from '@sparx/ui';
+import { ChevronDown, Copy, Moon, Pencil, Plus, Save, Sun, Trash2, Upload } from 'lucide-react';
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  Input,
+  toast,
+  useConfirm,
+} from '@sparx/ui';
 import {
   buildThemeCssV2,
   compileThemeForTenant,
+  THEME_DEFAULTS_V2,
+  THEME_LIST,
+  type PresentationColorOverlay,
   type PresentationOverlayV2,
 } from '@sparx/site-themes';
 import {
   applySavedTheme,
   deleteSavedTheme,
+  publishNow,
   saveTheme,
   selectTheme,
   updateBrand,
@@ -41,11 +58,100 @@ import type {
 } from '../_lib/types';
 import { cleanTokens, type BrandTokens } from '../_lib/brand-feel';
 import { BrandThemeControls, type MediaState } from './brand-theme-controls';
-import { ThemeRail } from './theme-rail';
 import { ThemeShowcase } from './theme-showcase';
 
 type Mode = 'light' | 'dark';
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+
+// Toolbar autosave label — mirrors the page/site editors' bx-savestate (docs/45).
+const SAVE_LABEL: Record<SaveState, string> = {
+  idle: '',
+  saving: 'Saving…',
+  saved: 'Saved',
+  error: 'Save failed',
+};
+
+// The per-mode colour slots — everything in the presentation overlay. Brand
+// identity (primary/secondary/accent), type, and shape are mode-independent, so
+// they're NOT part of this; only surfaces, neutral, status, highlight, and the
+// line colour differ between light and dark. Used by "copy this mode → other".
+const COPYABLE_MODE_KEYS = [
+  'base100',
+  'base200',
+  'base300',
+  'baseContent',
+  'neutral',
+  'neutralContent',
+  'info',
+  'infoContent',
+  'success',
+  'successContent',
+  'warning',
+  'warningContent',
+  'danger',
+  'dangerContent',
+  'highlight',
+  'highlightContent',
+  'border',
+] as const satisfies readonly (keyof PresentationColorOverlay)[];
+
+// The brand identity colours that carry a per-swatch "revert" affordance. Held
+// as the last-SAVED snapshot so a swatch only shows its reset control while it
+// differs from what's persisted (it clears once the debounced save commits).
+interface BrandColorSnapshot {
+  colorPrimary: string | null;
+  colorPrimaryForeground: string | null;
+  colorAccent: string | null;
+  colorAccentForeground: string | null;
+  colorSecondary: string | null;
+  colorSecondaryForeground: string | null;
+}
+function pickBrandColors(src: Partial<BrandColorSnapshot>): BrandColorSnapshot {
+  return {
+    colorPrimary: src.colorPrimary ?? null,
+    colorPrimaryForeground: src.colorPrimaryForeground ?? null,
+    colorAccent: src.colorAccent ?? null,
+    colorAccentForeground: src.colorAccentForeground ?? null,
+    colorSecondary: src.colorSecondary ?? null,
+    colorSecondaryForeground: src.colorSecondaryForeground ?? null,
+  };
+}
+
+// A theme's signature palette — primary · accent · base100 — surfaced as three
+// dots on the switcher so the tenant can see what a theme looks like before
+// applying it (mirrors the old picker rail's swatches). For a prebuilt preset
+// that's the preset's own light tokens; for a saved theme it overlays the
+// captured brand identity + presentation base100 so two saved themes read
+// distinctly.
+function swatchFor(
+  presetKey: string,
+  opts?: { primary?: string | null; accent?: string | null; base100?: string | null }
+): string[] {
+  const preset = THEME_DEFAULTS_V2[presetKey as keyof typeof THEME_DEFAULTS_V2];
+  const light = preset?.light ?? THEME_DEFAULTS_V2.apex.light;
+  return [
+    opts?.primary ?? light.primary,
+    opts?.accent ?? light.accent,
+    opts?.base100 ?? light.base100,
+  ];
+}
+
+// Three overlapping color dots — the per-theme preview shown on the switcher
+// trigger and every dropdown row. Background colors ride on inline `style`
+// (real palette values, not design-system tokens), so this isn't a re-skin.
+function ThemeDots({ colors }: { colors: string[] }) {
+  return (
+    <span className="flex flex-none -space-x-1" aria-hidden>
+      {colors.map((c, i) => (
+        <span
+          key={i}
+          className="h-4 w-4 rounded-full border border-[var(--color-border-default)]"
+          style={{ backgroundColor: c }}
+        />
+      ))}
+    </span>
+  );
+}
 
 export interface ThemeCenterProps {
   brand: BrandDto;
@@ -65,6 +171,15 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
   const [colorAccent, setColorAccent] = React.useState<string | null>(brand.colorAccent);
   const [colorAccentForeground, setColorAccentForeground] = React.useState<string | null>(
     brand.colorAccentForeground
+  );
+  const [colorSecondary, setColorSecondary] = React.useState<string | null>(brand.colorSecondary);
+  const [colorSecondaryForeground, setColorSecondaryForeground] = React.useState<string | null>(
+    brand.colorSecondaryForeground
+  );
+  // Last-saved brand identity colours — drives each swatch's "revert" control so
+  // it only appears while a colour is edited-but-unsaved (see the brand autosave).
+  const [savedBrandColors, setSavedBrandColors] = React.useState<BrandColorSnapshot>(() =>
+    pickBrandColors(brand)
   );
   const [fontHeading, setFontHeading] = React.useState<string | null>(brand.fontHeading);
   const [fontBody, setFontBody] = React.useState<string | null>(brand.fontBody);
@@ -118,6 +233,8 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
       colorPrimaryForeground,
       colorAccent,
       colorAccentForeground,
+      colorSecondary,
+      colorSecondaryForeground,
       fontHeading,
       fontBody,
       tokens: cleanedTokens,
@@ -127,6 +244,8 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
       colorPrimaryForeground,
       colorAccent,
       colorAccentForeground,
+      colorSecondary,
+      colorSecondaryForeground,
       fontHeading,
       fontBody,
       cleanedTokens,
@@ -153,6 +272,8 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
       colorPrimaryForeground,
       colorAccent,
       colorAccentForeground,
+      colorSecondary,
+      colorSecondaryForeground,
       fontHeading,
       fontBody,
       tokens: cleanedTokens,
@@ -167,6 +288,8 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
       colorPrimaryForeground,
       colorAccent,
       colorAccentForeground,
+      colorSecondary,
+      colorSecondaryForeground,
       fontHeading,
       fontBody,
       cleanedTokens,
@@ -182,6 +305,7 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
         const res = await updateBrand(brandPatch);
         if (res.ok) {
           savedBrandRef.current = cur;
+          setSavedBrandColors(pickBrandColors(brandPatch));
           setStatus('saved');
         } else {
           setError(res.error ?? 'Could not save your brand.');
@@ -288,6 +412,8 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     setColorPrimaryForeground(null);
     setColorAccent(null);
     setColorAccentForeground(null);
+    setColorSecondary(null);
+    setColorSecondaryForeground(null);
   };
 
   const onSelectPreset = (key: string) => {
@@ -307,14 +433,6 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
         setStatus('error');
       }
     });
-  };
-
-  // The active preset row's reset affordance ("Reset color overrides to this
-  // preset"): clear BOTH the presentation overlay and the brand colour overrides
-  // so the preset renders exactly as shipped — matching the control's label.
-  const onResetOverrides = () => {
-    setPresentation({ v: 2 });
-    clearBrandColorOverrides();
   };
 
   const onPolicyChange = (p: AppearancePolicy) => {
@@ -414,9 +532,14 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
       setColorPrimaryForeground(tb.colorPrimaryForeground ?? null);
       setColorAccent(tb.colorAccent ?? null);
       setColorAccentForeground(tb.colorAccentForeground ?? null);
+      setColorSecondary(tb.colorSecondary ?? null);
+      setColorSecondaryForeground(tb.colorSecondaryForeground ?? null);
       setFontHeading(tb.fontHeading ?? null);
       setFontBody(tb.fontBody ?? null);
       setTokens(tb.tokens ?? {});
+      // The applied theme's colours are persisted server-side (applyBrandLook),
+      // so they're the new "saved" baseline — no stale revert affordance.
+      setSavedBrandColors(pickBrandColors(tb));
     }
     // This saved theme is now the one being edited — presentation AND brand edits
     // write back into it (see the autosave effects).
@@ -442,38 +565,331 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     });
   };
 
+  // ── Toolbar: switcher · new/rename/delete · save · publish (docs/45 parity) ──
+  // The brand editor adopts the page/site editors' toolbar so all three Builder
+  // surfaces share one shape. The theme switcher (saved + prebuilt) replaces the
+  // old "My themes" rail; New saves the current look as a theme; Save force-flushes
+  // the debounced autosave; Publish compiles the draft into the live storefront.
+  const [renaming, setRenaming] = React.useState(false);
+  const [nameDraft, setNameDraft] = React.useState('');
+  const skipRenameCommit = React.useRef(false);
+  const renameInputRef = React.useRef<HTMLInputElement>(null);
+  React.useEffect(() => {
+    if (renaming) renameInputRef.current?.select();
+  }, [renaming]);
+
+  // Switcher value: a saved theme (`saved:<id>`) when one is selected, else the
+  // prebuilt base (`preset:<key>`). Selecting either applies it.
+  const switcherValue = activeSavedThemeId ? `saved:${activeSavedThemeId}` : `preset:${themeKey}`;
+  const onSwitcherChange = (value: string) => {
+    if (value.startsWith('saved:')) onApplySaved(value.slice('saved:'.length));
+    else if (value.startsWith('preset:')) onSelectPreset(value.slice('preset:'.length));
+  };
+
+  // The trigger mirrors the selected row: the active theme's name + its three
+  // signature dots.
+  const activeSaved = activeSavedThemeId
+    ? savedThemes.find((t) => t.id === activeSavedThemeId)
+    : undefined;
+  const currentName = activeSaved
+    ? activeSaved.name
+    : (THEME_LIST.find((t) => t.key === themeKey)?.name ?? themeKey);
+  const currentColors = activeSaved
+    ? swatchFor(activeSaved.basePresetKey, {
+        primary: activeSaved.brand?.colorPrimary,
+        accent: activeSaved.brand?.colorAccent,
+        base100: activeSaved.presentation.light?.base100,
+      })
+    : swatchFor(themeKey);
+
+  const startRename = () => {
+    if (!activeSavedThemeId) return;
+    setNameDraft(savedThemes.find((t) => t.id === activeSavedThemeId)?.name ?? '');
+    setRenaming(true);
+  };
+  const commitRename = () => {
+    if (skipRenameCommit.current) {
+      skipRenameCommit.current = false;
+      setRenaming(false);
+      return;
+    }
+    setRenaming(false);
+    const id = activeSavedThemeId;
+    if (!id) return;
+    const name = nameDraft.trim();
+    const current = savedThemes.find((t) => t.id === id);
+    if (!name || name === current?.name) return;
+    onRenameSaved(id, name);
+  };
+
+  // Force-flush the debounced autosave: persist brand + settings now (the live
+  // preview already reflects the edit). Mirrors the page/site "Save".
+  const onSaveNow = () => {
+    startTransition(async () => {
+      setStatus('saving');
+      const [b, s] = await Promise.all([
+        updateBrand(brandPatch),
+        updateSettings({
+          settings: {
+            tokens: draftTokens.current,
+            customCss: draftCss.current,
+            presentation,
+            activeSavedThemeId,
+          },
+        }),
+      ]);
+      if (b.ok && s.ok) {
+        savedBrandRef.current = JSON.stringify(brandPatch);
+        setSavedBrandColors(pickBrandColors(brandPatch));
+        savedSettingsRef.current = JSON.stringify({ presentation, activeSavedThemeId });
+        setStatus('saved');
+      } else {
+        setError((b.ok ? s.error : b.error) ?? 'Could not save.');
+        setStatus('error');
+        toast.error('Could not save your changes.');
+      }
+    });
+  };
+
+  // Publish compiles the draft theme's light tokens into the live storefront
+  // (docs/51) — the same backend the storefront reads. Gated behind a confirm.
+  const onPublish = () => {
+    void (async () => {
+      const ok = await confirm({
+        title: 'Publish brand & theme?',
+        description: 'Makes your current brand and theme live across your storefront.',
+        confirmLabel: 'Publish',
+        tone: 'module',
+      });
+      if (!ok) return;
+      startTransition(async () => {
+        setStatus('saving');
+        const res = await publishNow();
+        if (res.ok) {
+          setStatus('saved');
+          toast.success('Brand & theme published — live on your storefront.');
+        } else {
+          setError(res.error ?? 'Publish failed.');
+          setStatus('error');
+          toast.error(res.error ?? 'Publish failed.');
+        }
+      });
+    })();
+  };
+
+  // Copy the mode you're editing onto the other mode, so light and dark stay in
+  // sync without re-entering every surface/status colour. It snapshots the
+  // RESOLVED per-mode colours (preset + your overlay) into the other mode's
+  // overlay, so the other mode renders identically. Brand identity, type, and
+  // shape are mode-independent and untouched. Overwrites the other mode → confirm.
+  const otherMode: Mode = mode === 'light' ? 'dark' : 'light';
+  const onCopyToOtherMode = () => {
+    void (async () => {
+      const ok = await confirm({
+        title: `Copy ${mode} colours to ${otherMode}?`,
+        description: `Replaces ${otherMode} mode's surface, neutral, and status colours with the ${mode} colours shown now. Brand identity colours are shared across modes and aren't affected.`,
+        confirmLabel: `Copy to ${otherMode}`,
+        tone: 'module',
+      });
+      if (!ok) return;
+      const src = compiled[mode];
+      const copied: PresentationColorOverlay = {};
+      for (const key of COPYABLE_MODE_KEYS) copied[key] = src[key];
+      setPresentation({ ...presentation, v: 2, [otherMode]: copied });
+      toast.success(`Copied ${mode} colours to ${otherMode}.`);
+    })();
+  };
+
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h1 className="text-lg font-semibold text-[var(--color-text-primary)]">
-            Brand &amp; Theme
-          </h1>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            Your identity and theme in one place — every change previews live across the platform.
-          </p>
+    <div className="flex flex-col">
+      {/* Toolbar — the shared Builder shape (docs/45): theme switcher (saved +
+          prebuilt) · new/rename/delete · Light/Dark · Save · Publish. Reuses the
+          page/site `bx-toolbar` classes for true symmetry; /builder/brand loads
+          builder.css so they resolve. */}
+      <div className="bx-toolbar">
+        <div className="bx-toolbar__templates">
+          {renaming ? (
+            <Input
+              ref={renameInputRef}
+              size="sm"
+              className="bx-tplselect"
+              value={nameDraft}
+              aria-label="Theme name"
+              onChange={(e) => setNameDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.currentTarget.blur();
+                } else if (e.key === 'Escape') {
+                  e.preventDefault();
+                  skipRenameCommit.current = true;
+                  e.currentTarget.blur();
+                }
+              }}
+              onBlur={commitRename}
+            />
+          ) : (
+            // Custom dropdown (not a native <select>) so each row — and the
+            // trigger — can show the theme's three signature color dots. The
+            // trigger is styled to read like the page/site editors' switcher
+            // field; text color inherits from the toolbar (the dots + name carry
+            // the meaning), which also keeps it clear of the raw-Tailwind rule.
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Theme"
+                  disabled={pending}
+                  className="bx-tplselect inline-flex h-8 items-center gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] py-1.5 pr-2.5 pl-2.5 text-xs transition-colors hover:border-[var(--color-border-strong)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <ThemeDots colors={currentColors} />
+                  <span className="min-w-0 flex-1 truncate text-left font-medium">
+                    {currentName}
+                  </span>
+                  <ChevronDown aria-hidden className="h-4 w-4 shrink-0 opacity-50" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="max-h-[60vh] w-[260px] overflow-y-auto">
+                <DropdownMenuRadioGroup value={switcherValue} onValueChange={onSwitcherChange}>
+                  <DropdownMenuLabel>My themes</DropdownMenuLabel>
+                  {savedThemes.length === 0 ? (
+                    <p className="px-2 py-1.5 text-xs text-[var(--color-text-muted)]">
+                      No saved themes yet
+                    </p>
+                  ) : (
+                    savedThemes.map((t) => (
+                      <DropdownMenuRadioItem key={t.id} value={`saved:${t.id}`}>
+                        <ThemeDots
+                          colors={swatchFor(t.basePresetKey, {
+                            primary: t.brand?.colorPrimary,
+                            accent: t.brand?.colorAccent,
+                            base100: t.presentation.light?.base100,
+                          })}
+                        />
+                        <span className="min-w-0 flex-1 truncate">{t.name}</span>
+                      </DropdownMenuRadioItem>
+                    ))
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Prebuilt</DropdownMenuLabel>
+                  {THEME_LIST.map((t) => (
+                    <DropdownMenuRadioItem key={t.key} value={`preset:${t.key}`}>
+                      <ThemeDots colors={swatchFor(t.key)} />
+                      <span className="min-w-0 flex-1 truncate">{t.name}</span>
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          <button
+            type="button"
+            className="bx-newtpl"
+            aria-label="Rename this theme"
+            disabled={pending || renaming || !activeSavedThemeId}
+            onClick={startRename}
+          >
+            <Pencil aria-hidden />
+          </button>
+          <button
+            type="button"
+            className="bx-newtpl"
+            aria-label="Save current look as a new theme"
+            disabled={pending || renaming}
+            onClick={() => onSaveCurrent('Untitled theme')}
+          >
+            <Plus aria-hidden />
+          </button>
+          <button
+            type="button"
+            className="bx-newtpl"
+            aria-label="Delete this theme"
+            disabled={pending || renaming || !activeSavedThemeId}
+            onClick={() => activeSavedThemeId && onDeleteSaved(activeSavedThemeId)}
+          >
+            <Trash2 aria-hidden />
+          </button>
         </div>
-        <SaveStatus status={status} error={error} />
+
+        <div className="bx-toolbar__devices">
+          {(['light', 'dark'] as const).map((m) => {
+            const Icon = m === 'light' ? Sun : Moon;
+            return (
+              <button
+                key={m}
+                type="button"
+                className="bx-device"
+                data-on={mode === m}
+                aria-label={m === 'light' ? 'Light' : 'Dark'}
+                aria-pressed={mode === m}
+                onClick={() => setMode(m)}
+              >
+                <Icon aria-hidden />
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Mirror the mode you're editing onto the other one — so light and dark
+            stay aligned without re-entering every surface/status colour. */}
+        <Button
+          size="sm"
+          variant="ghost"
+          leftIcon={<Copy className="h-3.5 w-3.5" />}
+          onClick={onCopyToOtherMode}
+          disabled={pending}
+          title={`Copy the ${mode} palette onto ${otherMode} mode`}
+        >
+          Copy to {otherMode}
+        </Button>
+
+        <div className="bx-toolbar__actions">
+          {status !== 'idle' ? (
+            <span
+              className="bx-savestate"
+              data-state={status}
+              title={status === 'error' ? (error ?? undefined) : undefined}
+            >
+              {SAVE_LABEL[status]}
+            </span>
+          ) : null}
+          <Button
+            size="sm"
+            variant="soft"
+            leftIcon={<Save className="h-3.5 w-3.5" />}
+            disabled={pending}
+            onClick={onSaveNow}
+          >
+            Save
+          </Button>
+          <Button
+            size="sm"
+            variant="solid"
+            leftIcon={<Upload className="h-3.5 w-3.5" />}
+            disabled={pending}
+            onClick={onPublish}
+          >
+            Publish
+          </Button>
+        </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[15rem_22rem_minmax(0,1fr)]">
-        <div className="xl:sticky xl:top-4 xl:self-start">
-          <ThemeRail
-            savedThemes={savedThemes}
-            activeThemeKey={themeKey}
-            activeSavedThemeId={activeSavedThemeId}
-            onSelectPreset={onSelectPreset}
-            onResetOverrides={onResetOverrides}
-            onApplySaved={onApplySaved}
-            onSaveCurrent={onSaveCurrent}
-            onRenameSaved={onRenameSaved}
-            onDeleteSaved={onDeleteSaved}
-            busy={pending}
-          />
-        </div>
+      {/* Context bar — mirrors the page/site editors. */}
+      <div className="bx-ctx">
+        <span className="bx-ctx__lead">Your brand identity &amp; theme</span>
+        <span className="bx-ctx__note">
+          Pick a theme, tune identity and surfaces, and preview live below. Edits save to your
+          draft; <strong>Publish</strong> pushes the theme across your storefront.
+        </span>
+      </div>
 
-        <div className="grid gap-4 lg:grid-cols-2 xl:contents">
-          <div className="min-w-0 xl:col-start-2">
+      <div className="px-6 py-6 lg:px-8">
+        {/* Controls take a fixed inspector width; the live preview fills the
+            rest (and grows on wider screens). Stacks to one column below lg.
+            Like the page/site editors: the controls are a light surface panel and
+            the preview sits on the darker "stage" (base-200). */}
+        <div className="grid gap-4 lg:grid-cols-[400px_1fr]">
+          <div className="min-w-0 rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4">
             <BrandThemeControls
               businessName={businessName}
               setBusinessName={setBusinessName}
@@ -493,6 +909,11 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
               setColorAccent={setColorAccent}
               colorAccentForeground={colorAccentForeground}
               setColorAccentForeground={setColorAccentForeground}
+              colorSecondary={colorSecondary}
+              setColorSecondary={setColorSecondary}
+              colorSecondaryForeground={colorSecondaryForeground}
+              setColorSecondaryForeground={setColorSecondaryForeground}
+              savedBrandColors={savedBrandColors}
               fontHeading={fontHeading}
               setFontHeading={setFontHeading}
               fontBody={fontBody}
@@ -509,11 +930,10 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
             />
           </div>
 
-          <div className="min-w-0 lg:sticky lg:top-4 lg:self-start xl:col-start-3">
+          <div className="min-w-0 rounded-[var(--radius-lg)] bg-[var(--color-bg-subtle)] p-4 lg:sticky lg:top-4 lg:self-start">
             <ThemeShowcase
               css={css}
               mode={mode}
-              onModeChange={setMode}
               brandName={businessName.trim() || brand.businessName}
               logoLightUrl={logoLight.url}
               logoDarkUrl={logoDark.url}
@@ -524,21 +944,5 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
         </div>
       </div>
     </div>
-  );
-}
-
-function SaveStatus({ status, error }: { status: SaveState; error: string | null }) {
-  if (status === 'error') {
-    return (
-      <span role="alert" className="text-xs text-[var(--color-danger-text)]">
-        {error ?? 'Could not save.'}
-      </span>
-    );
-  }
-  const label = status === 'saving' ? 'Saving…' : status === 'saved' ? 'All changes saved' : '';
-  return (
-    <span role="status" aria-live="polite" className="text-xs text-[var(--color-text-muted)]">
-      {label}
-    </span>
   );
 }

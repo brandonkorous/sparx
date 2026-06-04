@@ -73,3 +73,16 @@ export function findEntityType(typeId: string) {
 export function hasDetailView(typeId: string): boolean {
   return findEntityType(typeId)?.entityType.hasDetailView === true;
 }
+
+// The full-page href for an open detail, or null when the entity can't build
+// one from (typeId, id) alone. Most entities live at `routePrefix/<id>`, but a
+// `content-entry` route is `/cms/types/<typeKey>/<id>` — the token carries only
+// the id, not the type key, so the drawer's "maximize" affordance is hidden for
+// it (the detail body renders its own type-aware "Open full editor" link). Pure
+// + client-safe so the detail-panel chrome can call it.
+export function fullPageHrefFor(typeId: string, id: string): string | null {
+  if (typeId === 'content-entry') return null;
+  const found = findEntityType(typeId);
+  if (!found) return null;
+  return `${found.entityType.routePrefix}/${id}`;
+}

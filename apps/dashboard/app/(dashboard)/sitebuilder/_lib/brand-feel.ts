@@ -16,13 +16,16 @@ export type BrandTokens = Pick<BrandTokenDoc, 'shape' | 'rhythm' | 'effect'>;
 export const UNSET = '';
 
 // Corner roundness → the three radii at once (selector = pills/badges, field =
-// inputs/buttons, box = cards/panels).
+// inputs/buttons, box = cards/panels). The scale rounds the FIELD radius (the
+// most prominent control) in lockstep with the selector, so each step reads
+// clearly on buttons; "Pill" takes both fully round (a true pill button/input),
+// while cards (box) cap at a generous finite radius — a card can't be a pill.
 export const CORNER_OPTIONS = [
   { key: 'sharp', label: 'Sharp', selector: '0px', field: '0px', box: '0px' },
   { key: 'subtle', label: 'Subtle', selector: '0.25rem', field: '0.25rem', box: '0.375rem' },
   { key: 'rounded', label: 'Rounded', selector: '0.5rem', field: '0.5rem', box: '0.75rem' },
   { key: 'soft', label: 'Soft', selector: '0.75rem', field: '0.75rem', box: '1rem' },
-  { key: 'pill', label: 'Pill', selector: '9999px', field: '0.75rem', box: '1.25rem' },
+  { key: 'pill', label: 'Pill', selector: '9999px', field: '9999px', box: '1.5rem' },
 ] as const;
 
 export const BORDER_OPTIONS = [

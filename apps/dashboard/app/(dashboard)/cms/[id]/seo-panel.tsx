@@ -33,6 +33,7 @@ import {
   Textarea,
 } from '@sparx/ui';
 import { ImageOff, Pencil } from 'lucide-react';
+import { SeoScoreChip } from '@/components/seo/seo-score';
 import { MediaPicker, type PickedAsset } from '../_components/media-picker';
 
 export interface SeoFields {
@@ -55,6 +56,10 @@ interface SeoPanelProps {
   previewOrigin: string;
   slug: string;
   fallbackTitle: string;
+  // The content entry's id — when present, the SEO health chip renders in the
+  // header (live audit + hover report). Optional so the panel still works in
+  // any context that doesn't have a persisted entry yet.
+  entryId?: string;
 }
 
 const ROBOTS_OPTIONS = [
@@ -68,7 +73,14 @@ const ROBOTS_OPTIONS = [
 const TITLE_MAX = 60;
 const DESCRIPTION_MAX = 160;
 
-export function SeoPanel({ value, onChange, previewOrigin, slug, fallbackTitle }: SeoPanelProps) {
+export function SeoPanel({
+  value,
+  onChange,
+  previewOrigin,
+  slug,
+  fallbackTitle,
+  entryId,
+}: SeoPanelProps) {
   const update = <K extends keyof SeoFields>(k: K, v: SeoFields[K]) => {
     onChange({ ...value, [k]: v });
   };
@@ -84,10 +96,16 @@ export function SeoPanel({ value, onChange, previewOrigin, slug, fallbackTitle }
   return (
     <Card variant="module">
       <CardHeader>
-        <Heading level={3}>SEO</Heading>
-        <CardDescription>
-          Controls how this page appears in Google and on social shares.
-        </CardDescription>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <Heading level={3}>SEO</Heading>
+            <CardDescription>
+              Controls how this page appears in Google and on social shares.
+            </CardDescription>
+          </div>
+          {/* Live SEO health for the saved entry; hover for the full report. */}
+          {entryId ? <SeoScoreChip type="cms_page" id={entryId} /> : null}
+        </div>
       </CardHeader>
       <CardContent>
         <Stack gap={5}>

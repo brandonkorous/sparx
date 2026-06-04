@@ -16,6 +16,7 @@ import { conflict, notFound } from '@sparx/api-core/errors';
 import { recordRevision, serializeEntry } from '@sparx/api-core/entries';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
+import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PublishBody = z.object({
@@ -95,6 +96,12 @@ const publishRoutes: FastifyPluginAsync = (app) => {
         scheduledAt: updated.scheduledAt?.toISOString() ?? null,
       }
     );
+
+    // Refresh the stored SEO snapshot so the overview reflects the now-published
+    // entry (docs/50 §7). Best-effort — never fail the publish on a snapshot write.
+    await withRequestTenant(request, (tx) =>
+      auditAndStore(tx, auth.tenantId, 'cms_page', id)
+    ).catch(() => undefined);
 
     return ok(serializeEntry(updated));
   });

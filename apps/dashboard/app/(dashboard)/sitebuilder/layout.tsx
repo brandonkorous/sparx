@@ -27,6 +27,18 @@ export default async function SitebuilderLayout({ children }: { children: React.
 
   return (
     <ModuleProvider module="storefront">
+      {/* Deprecation banner — the Site Builder is superseded by the Builder
+          (/builder). Brand authoring already forwards there; pages + layouts are
+          edited in /builder/page and /builder/site. Kept live for version history
+          + rollback during the transition. */}
+      <div className="border-b border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-4 py-2 text-sm text-[var(--color-text-secondary)]">
+        <strong className="text-[var(--color-text-primary)]">Deprecated.</strong> The Site Builder
+        is being replaced by the{' '}
+        <a className="font-medium underline" href="/builder">
+          Builder
+        </a>{' '}
+        — edit pages, layouts, and brand there.
+      </div>
       <EditorShell
         slug={tenant.slug}
         storefrontUrl={storefrontOrigin(tenant.slug)}

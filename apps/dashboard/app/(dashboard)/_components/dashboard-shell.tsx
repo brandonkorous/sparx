@@ -114,7 +114,7 @@ export function DashboardShell({
       {/* ⌘K palette — mounted once at the shell, listens globally for the
           shortcut. Receives favorites + recents so they appear at the top
           of the search results without an extra fetch. */}
-      <CommandPalette favorites={favorites} recents={recents} />
+      <CommandPalette favorites={favorites} recents={recents} enabledModules={enabledModules} />
     </PreferencesProvider>
   );
 }

@@ -19,6 +19,7 @@ import {
   ChevronsDownUp,
   ChevronsUpDown,
   GripVertical,
+  SlidersHorizontal,
   X,
 } from 'lucide-react';
 import {
@@ -211,6 +212,7 @@ export function LayersPanel({
   tree,
   catalog,
   selectedId,
+  homeLabel,
   onSelect,
   onRemove,
   onMove,
@@ -218,7 +220,11 @@ export function LayersPanel({
   tree: BuilderNode;
   catalog: BindingCatalog;
   selectedId: string | null;
-  onSelect: (id: string) => void;
+  /** Label for the settings-home row pinned atop the tree ("Page" / "Site").
+   *  Selecting it clears the selection → the inspector shows that surface's
+   *  settings (URL + SEO for a page). */
+  homeLabel: string;
+  onSelect: (id: string | null) => void;
   onRemove: (id: string) => void;
   /** Re-parent / reorder: move `dragId` to be child `index` of `parentId`. */
   onMove: (dragId: string, parentId: string, index: number) => void;
@@ -353,6 +359,19 @@ export function LayersPanel({
           <ChevronsDownUp aria-hidden /> Collapse all
         </button>
       </div>
+      {/* Settings home — the always-present top of the tree. Selecting it clears
+          the node selection so the inspector shows the page/site settings (URL +
+          SEO). Not a draggable layer: it sits above the content, like a document
+          root, so there's a stable "back to settings" target. */}
+      <button
+        type="button"
+        className={cn('bx-layers__home', selectedId === null && 'bx-layers__home--on')}
+        aria-pressed={selectedId === null}
+        onClick={() => onSelect(null)}
+      >
+        <SlidersHorizontal className="bx-layer__icon" aria-hidden />
+        <span className="bx-layer__name">{homeLabel} settings</span>
+      </button>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}

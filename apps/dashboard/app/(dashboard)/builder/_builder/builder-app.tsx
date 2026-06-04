@@ -89,6 +89,10 @@ export interface BuilderAppProps {
    *  Absent when the site context can't be resolved → Preview is disabled. */
   tenantSlug?: string;
   siteOrigin?: string;
+  /** Deep-link target: open this page active on mount (e.g. the SEO overview's
+   *  "Open in builder" link → `/builder/page?page=<id>`). Falls back to the
+   *  first page when absent or not found in `initialPages`. */
+  initialPageId?: string;
 }
 
 export function BuilderApp({
@@ -97,6 +101,7 @@ export function BuilderApp({
   layoutTree,
   tenantSlug,
   siteOrigin,
+  initialPageId,
 }: BuilderAppProps) {
   const confirm = useConfirm();
   // Pages load from the server (docs/41 §5 seeds the curated set on first use)
@@ -105,7 +110,11 @@ export function BuilderApp({
   const [templates, setTemplates] = React.useState<PageTemplate[]>(() =>
     initialPages.map(toTemplate)
   );
-  const [activeId, setActiveId] = React.useState<string | null>(() => initialPages[0]?.id ?? null);
+  const [activeId, setActiveId] = React.useState<string | null>(() =>
+    initialPageId && initialPages.some((p) => p.id === initialPageId)
+      ? initialPageId
+      : (initialPages[0]?.id ?? null)
+  );
   const [busy, setBusy] = React.useState(false);
   // Inline page rename: the switcher swaps to a text input. Enter/blur commits,
   // Esc cancels (skipRenameCommit suppresses the commit the cancel-blur fires).

@@ -96,14 +96,23 @@ async function loadSiteContext(): Promise<{ slug: string; origin: string } | nul
   }
 }
 
-export default async function BuilderPageRoute() {
-  const [themeCss, pages, catalog, layout, site] = await Promise.all([
+interface BuilderPageRouteProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function BuilderPageRoute({ searchParams }: BuilderPageRouteProps) {
+  const [sp, themeCss, pages, catalog, layout, site] = await Promise.all([
+    searchParams,
     canvasThemeCss(),
     loadPages(),
     loadCatalog(),
     loadLayout(),
     loadSiteContext(),
   ]);
+  // Deep-link target: `?page=<id>` opens that page active on mount (the SEO
+  // overview's "Open in builder" link points here). The editor falls back to
+  // the first page when it's absent or not found.
+  const initialPageId = typeof sp.page === 'string' ? sp.page : undefined;
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
@@ -113,6 +122,7 @@ export default async function BuilderPageRoute() {
         layoutTree={layout?.tree ?? null}
         tenantSlug={site?.slug}
         siteOrigin={site?.origin}
+        initialPageId={initialPageId}
       />
     </>
   );
