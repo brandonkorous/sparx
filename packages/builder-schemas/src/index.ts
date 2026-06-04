@@ -8,6 +8,7 @@ export * from './class-utils';
 export * from './page';
 export * from './layout';
 export * from './email';
+export * from './component';
 export * from './starters';
 export * from './binding';
 export * from './runtime';

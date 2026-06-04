@@ -59,4 +59,41 @@ describe('renderEmailTree', () => {
     expect(out.html).toContain('Widget A');
     expect(out.html).toContain('Widget B');
   });
+
+  it('renders per-recipient bindings + a bound image (personalization)', async () => {
+    const tree: BuilderNode = {
+      id: 'root',
+      type: 'Section',
+      box: { ...DEFAULT_BOX },
+      layout: { ...DEFAULT_LAYOUT, direction: 'stack' },
+      props: {},
+      children: [
+        // A per-recipient greeting bound to recipient.firstName.
+        node('Heading', { props: { level: 'h1' }, binding: { path: 'recipient.firstName' } }),
+        // A bound product image (ImageDisplay) iterated by the grid below.
+        node('Grid', {
+          props: {},
+          layout: { ...DEFAULT_LAYOUT, direction: 'grid', columns: 2 },
+          binding: { path: 'commerce.product' },
+          children: [node('ImageDisplay', { props: {}, binding: { path: 'item.imageUrl' } })],
+        }),
+      ],
+    };
+    const out = await renderEmailTree(
+      {
+        tree,
+        subject: 'Hi',
+        to: 'x@y.com',
+        data: {
+          recipient: { firstName: 'Dana' },
+          commerce: {
+            product: [{ imageUrl: 'https://cdn.example.com/a.png' }, { imageUrl: '' }],
+          },
+        },
+      },
+      { brand }
+    );
+    expect(out.html).toContain('Dana');
+    expect(out.html).toContain('https://cdn.example.com/a.png');
+  });
 });

@@ -212,6 +212,9 @@ model Tenant {
   builderPageAssignments BuilderPageAssignment[]
   // Builder module — the Email Builder's emails (docs/52)
   builderEmails          BuilderEmail[]
+  // Builder module — tenant-authored components + their versions (docs/53)
+  builderComponents        BuilderComponent[]
+  builderComponentVersions BuilderComponentVersion[]
 
   // SEO — stored audit scorecard snapshots for the site-wide overview (docs/50 §7)
   seoAudits SeoAudit[]

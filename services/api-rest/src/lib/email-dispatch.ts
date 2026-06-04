@@ -13,10 +13,12 @@
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
-import { renderSections } from '@sparx/email';
+import { renderEmailTree, renderSections } from '@sparx/email';
+import { emailService } from '@sparx/builder';
 import { brandService } from '@sparx/email-platform';
 import { normalizeBody, type EmailSectionInstance } from '@sparx/email-sections';
 import { resolveBody } from './email-sections.js';
+import { resolveEmailData } from './email-data.js';
 
 const EMAIL_DISPATCH_LOCK_KEY = 4242_4244;
 const DEFAULT_INTERVAL_MS = 60_000;
@@ -34,9 +36,10 @@ interface SendPayload {
   automationKey?: string | null;
   /** Pre-rendered broadcast/authored body — delivered as-is by the worker. */
   raw?: { subject: string; html: string; text: string; templateId?: string };
-  /** Per-recipient deferred render (docs/31 §7): resolve the template's section
-   *  data for THIS recipient + render here, at dispatch. */
-  defer?: { templateId: string; subject: string; preheader?: string };
+  /** Per-recipient deferred render: resolve the body for THIS recipient + render
+   *  here, at dispatch. A section template (docs/31 §7) by `templateId`, or a
+   *  Builder email tree (docs/52 §6) by `builderEmailId` — exactly one is set. */
+  defer?: { templateId?: string; builderEmailId?: string; subject: string; preheader?: string };
   /** Extra Mailgun user variables (broadcast_id, automation_key, campaign). */
   variables?: Record<string, string>;
 }
@@ -85,10 +88,12 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             });
             return null;
           }
-          // For deferred per-recipient renders, load the template's section list
-          // inside the claim tx (RLS-scoped); rendering happens after the claim.
+          // For a deferred SECTION render, load the template's section list inside
+          // the claim tx (RLS-scoped); rendering happens after the claim. A deferred
+          // BUILDER-email render loads its published tree after the claim (its own
+          // RLS-scoped read), so nothing to pre-load here.
           let deferSections: EmailSectionInstance[] | null = null;
-          if (payload.defer) {
+          if (payload.defer?.templateId) {
             const tmpl = await tx.emailTemplate.findUnique({
               where: { id: payload.defer.templateId },
             });
@@ -122,7 +127,41 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
         };
 
         let data: Record<string, unknown>;
-        if (payload.defer && deferSections) {
+        if (payload.defer?.builderEmailId) {
+          // Designed (Builder) email, personalized: reload the published tree,
+          // resolve THIS recipient's data, and render here at dispatch (docs/52 §6).
+          const tenantCtx = { tenantId: row.tenant_id };
+          const doc = await emailService.getPublishedById(tenantCtx, payload.defer.builderEmailId);
+          if (!doc) {
+            logger.warn(
+              { sendId: row.id, builderEmailId: payload.defer.builderEmailId },
+              'email-dispatch: designed email no longer published — skipping recipient'
+            );
+            continue;
+          }
+          const emailData = await resolveEmailData(tenantCtx, doc.tree, {
+            email: to,
+            customerId: customerId ?? undefined,
+          });
+          const brand = (await brandService.resolveEmailBrand(tenantCtx)) ?? undefined;
+          const rendered = await renderEmailTree(
+            {
+              tree: doc.tree,
+              subject: payload.defer.subject,
+              preheader: payload.defer.preheader,
+              to,
+              data: emailData,
+            },
+            { brand }
+          );
+          data = {
+            kind: 'raw',
+            subject: rendered.subject,
+            html: rendered.html,
+            text: rendered.text,
+            ...common,
+          };
+        } else if (payload.defer && deferSections) {
           // Resolve this recipient's section data + render, here at dispatch.
           const tenantCtx = { tenantId: row.tenant_id };
           const sectionData = await resolveBody(tenantCtx, deferSections, {

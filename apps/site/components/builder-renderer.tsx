@@ -312,7 +312,11 @@ function parseFeatureItems(raw: string): { number: string; title: string; body: 
       const parts = line.split('|').map((p) => p.trim());
       const auto = String(i + 1).padStart(2, '0');
       if (parts.length >= 3) {
-        return { number: parts[0] ?? auto, title: parts[1] ?? '', body: parts.slice(2).join(' | ') };
+        return {
+          number: parts[0] ?? auto,
+          title: parts[1] ?? '',
+          body: parts.slice(2).join(' | '),
+        };
       }
       if (parts.length === 2) return { number: auto, title: parts[0] ?? '', body: parts[1] ?? '' };
       return { number: auto, title: parts[0] ?? '', body: '' };

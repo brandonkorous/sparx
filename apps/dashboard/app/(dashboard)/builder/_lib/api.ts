@@ -40,6 +40,14 @@ export async function getBindingCatalog(): Promise<BindingCatalog> {
   return api.get<BindingCatalog>('/v1/builder/binding-schema');
 }
 
+// What an EMAIL can bind to (docs/52 §7): the per-recipient / per-send
+// EMAIL_SOURCES (recipient, order, cart, loyalty, products, promotion) plus the
+// tenant's CMS collection sources (latest posts). Drives the email editor's
+// binding picker + canvas preview.
+export async function getEmailBindingCatalog(): Promise<BindingCatalog> {
+  return api.get<BindingCatalog>('/v1/builder/email-binding-schema');
+}
+
 // The tenant's emails — the Email Builder catalog (docs/52). The list endpoint
 // seeds the curated starter set on the tenant's first call, so the email editor
 // never opens empty.

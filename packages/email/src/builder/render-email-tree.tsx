@@ -93,6 +93,19 @@ function asText(value: unknown): string {
   return '';
 }
 
+/** A bound value as an image URL — a plain URL string, an `{ url }` asset object,
+ *  or the first entry of an images array (the shapes the data resolver / catalog
+ *  placeholders produce). '' when there's no usable URL. */
+function asImageUrl(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value)) return asImageUrl(value[0]);
+  if (value && typeof value === 'object' && 'url' in value) {
+    const url: unknown = value.url;
+    return typeof url === 'string' ? url : '';
+  }
+  return '';
+}
+
 // ── Leaf rendering ─────────────────────────────────────────────────────────
 
 function Leaf({
@@ -130,9 +143,13 @@ function Leaf({
     }
     case 'Divider':
       return <EmailDivider />;
-    case 'Image': {
-      // Static URL-first image (the email image case): props.src, else nothing.
-      const src = str(p, 'src');
+    case 'Image':
+    case 'ImageDisplay': {
+      // `Image` is a static URL (props.src); `ImageDisplay` is a bound image — a
+      // product / cart / post image resolved per item. A bound value (URL string,
+      // `{ url }` asset, or images array) wins over the static src.
+      const boundSrc = bound ? asImageUrl(value) : '';
+      const src = boundSrc || str(p, 'src');
       if (!src) return null;
       return (
         <Img

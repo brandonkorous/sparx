@@ -16,7 +16,9 @@ import {
   TableRow,
   Text,
 } from '@sparx/ui';
+import type { ComponentDto, PropKind } from '@sparx/builder-schemas';
 
+import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { boxAxesFor, type BoxAxis, type PropSpec } from '../../_builder/registry';
 import {
   CARDINALITY_LABELS,
@@ -29,14 +31,16 @@ import {
   surfaceLabel,
   type ComponentDef,
 } from '../_lib/catalog';
+import { LucideByName } from '../_lib/lucide-by-name';
+import { CopyComponentButton } from '../_components/copy-component-button';
+import { DeleteComponentButton } from '../_components/delete-component-button';
 
-// Reference detail for one catalog component (docs/34 §3, Record Detail). It is
-// read-only — it reports what the registry declares about the component
-// (binding, configuration, composition) so an author understands a block before
-// dropping it in the builder. Rendered both at /builder/components/[type] and in
-// the dashboard drawer/modal via the detail-slot registry. `id` is the
-// component's `type` (the catalog's stable id), matching the slot's `{ id }`
-// contract.
+// Detail for one catalog component (docs/34 §3, Record Detail). A SYSTEM
+// component (the in-code registry) renders a read-only reference + a "Copy"
+// action that seeds a tenant component from it. A TENANT component (docs/53)
+// renders its identity + fields + a Delete action. Rendered both at
+// /builder/components/[type] and in the dashboard drawer/modal via the
+// detail-slot registry; `id` is the system `type` or the custom component key.
 
 interface Props {
   id: string;
@@ -49,6 +53,15 @@ const CONTROL_LABELS: Record<PropSpec['control'], string> = {
   buttongroup: 'Choice',
   switch: 'Toggle',
   icon: 'Icon picker',
+};
+
+const PROP_KIND_LABELS: Record<PropKind, string> = {
+  text: 'Text',
+  richtext: 'Rich text',
+  url: 'URL',
+  image: 'Image',
+  number: 'Number',
+  boolean: 'Toggle',
 };
 
 const BOX_AXIS_LABELS: Record<BoxAxis, string> = {
@@ -80,10 +93,26 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-export function ComponentDetailContent({ id }: Props) {
-  const def: ComponentDef | undefined = getComponentDef(id);
-  if (!def) notFound();
+// Custom keys are lowercase (^[a-z…]); system types are PascalCase — so a
+// registry hit unambiguously means "system", and anything else is a tenant
+// component fetched from api-rest.
+export async function ComponentDetailContent({ id }: Props) {
+  const def = getComponentDef(id);
+  if (def) return <SystemComponentDetail def={def} />;
 
+  let component: ComponentDto;
+  try {
+    component = await api.get<ComponentDto>(`/v1/builder/components/${encodeURIComponent(id)}`);
+  } catch (err) {
+    if ((err as ApiRestError)?.status === 404) notFound();
+    throw err;
+  }
+  return <CustomComponentDetail component={component} />;
+}
+
+// ── System component (read-only reference + Copy) ─────────────────────────────
+
+function SystemComponentDetail({ def }: { def: ComponentDef }) {
   const Icon = def.icon;
   const cards = boundCardinalities(def);
   const acceptsEmpty = def.accepts.includes('empty');
@@ -91,19 +120,22 @@ export function ComponentDetailContent({ id }: Props) {
 
   return (
     <Stack gap={6}>
-      <Stack direction="row" align="center" gap={3} wrap>
-        <Icon className="h-7 w-7 shrink-0 text-[var(--module-active)]" aria-hidden />
-        <Stack gap={2} className="min-w-0">
-          <Stack direction="row" align="center" gap={3} wrap>
-            <Heading level={1}>{def.label}</Heading>
-            <Badge variant="outline">{KIND_LABELS[def.kind]}</Badge>
-            <Badge color="module" variant="soft">
-              {GROUP_LABELS[def.group]}
-            </Badge>
-            {def.module ? <Badge variant="outline">{MODULE_LABELS[def.module]}</Badge> : null}
+      <Stack direction="row" align="start" justify="between" gap={3} wrap>
+        <Stack direction="row" align="center" gap={3} wrap className="min-w-0">
+          <Icon className="h-7 w-7 shrink-0 text-[var(--module-active)]" aria-hidden />
+          <Stack gap={2} className="min-w-0">
+            <Stack direction="row" align="center" gap={3} wrap>
+              <Heading level={1}>{def.label}</Heading>
+              <Badge variant="outline">{KIND_LABELS[def.kind]}</Badge>
+              <Badge color="module" variant="soft">
+                {GROUP_LABELS[def.group]}
+              </Badge>
+              {def.module ? <Badge variant="outline">{MODULE_LABELS[def.module]}</Badge> : null}
+            </Stack>
+            <Text variant="muted">{summaryOf(def)}</Text>
           </Stack>
-          <Text variant="muted">{summaryOf(def)}</Text>
         </Stack>
+        <CopyComponentButton systemType={def.type} label={def.label} />
       </Stack>
 
       {/* Overview */}
@@ -277,6 +309,118 @@ export function ComponentDetailContent({ id }: Props) {
             </Field>
           </Stack>
         </CardContent>
+      </Card>
+    </Stack>
+  );
+}
+
+// ── Tenant component (identity + fields + Delete) ─────────────────────────────
+
+function CustomComponentDetail({ component }: { component: ComponentDto }) {
+  const surfacesLabel =
+    component.surfaces.includes('page') && component.surfaces.includes('site')
+      ? 'Page & layout'
+      : component.surfaces.includes('site')
+        ? 'Site layout'
+        : 'Page';
+
+  return (
+    <Stack gap={6}>
+      <Stack direction="row" align="start" justify="between" gap={3} wrap>
+        <Stack direction="row" align="center" gap={3} wrap className="min-w-0">
+          <LucideByName
+            name={component.icon}
+            className="h-7 w-7 shrink-0 text-[var(--module-active)]"
+          />
+          <Stack gap={2} className="min-w-0">
+            <Stack direction="row" align="center" gap={3} wrap>
+              <Heading level={1}>{component.name}</Heading>
+              <Badge color="module" variant="soft">
+                Custom
+              </Badge>
+              <Badge variant="outline">{GROUP_LABELS[component.group]}</Badge>
+              <Badge variant="outline">v{component.latestVersion}</Badge>
+            </Stack>
+            <Text variant="muted">{component.description ?? 'A component you built.'}</Text>
+          </Stack>
+        </Stack>
+        <DeleteComponentButton
+          componentKey={component.key}
+          name={component.name}
+          redirectTo="/builder/components"
+        />
+      </Stack>
+
+      {/* Overview */}
+      <Card>
+        <CardHeader>
+          <Heading level={3}>Overview</Heading>
+        </CardHeader>
+        <CardContent>
+          <Stack gap={3}>
+            <Field label="Key">
+              <Text size="sm" className="font-mono">
+                custom:{component.key}
+              </Text>
+            </Field>
+            <Field label="Group">
+              <Text size="sm">{GROUP_LABELS[component.group]}</Text>
+            </Field>
+            <Field label="Surfaces">
+              <Text size="sm">{surfacesLabel}</Text>
+            </Field>
+            <Field label="Version">
+              <Text size="sm">v{component.latestVersion} (latest)</Text>
+            </Field>
+          </Stack>
+        </CardContent>
+      </Card>
+
+      {/* Fields (parameterization — docs/53 §5) */}
+      <Card padding="none">
+        <CardHeader className="px-6 pt-6">
+          <Stack gap={1}>
+            <Heading level={3}>Fields</Heading>
+            <CardDescription>
+              {component.propSpec.length > 0
+                ? 'The configurable slots each placement of this component can fill.'
+                : 'No configurable fields — every placement renders the same. Editing the component (coming soon) updates them all.'}
+            </CardDescription>
+          </Stack>
+        </CardHeader>
+        {component.propSpec.length > 0 ? (
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Field</TableHead>
+                  <TableHead>Type</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {component.propSpec.map((p) => (
+                  <TableRow key={p.key}>
+                    <TableCell>
+                      <Stack gap={1}>
+                        <Text size="sm" className="font-medium">
+                          {p.label}
+                        </Text>
+                        <Text size="xs" variant="muted" className="font-mono">
+                          {p.key}
+                        </Text>
+                      </Stack>
+                    </TableCell>
+                    <TableCell>
+                      <Text size="sm" variant="muted">
+                        {PROP_KIND_LABELS[p.kind]}
+                      </Text>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        ) : null}
       </Card>
     </Stack>
   );

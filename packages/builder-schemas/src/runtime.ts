@@ -58,3 +58,56 @@ export function cardinalityOf(value: unknown): Cardinality {
   if (typeof value === 'object') return 'object';
   return 'scalar';
 }
+
+// ── Binding-path introspection (which sources a tree references) ──────────────
+//
+// Pure tree walks used to decide what a tree binds to WITHOUT resolving data:
+// selective data resolution (resolve only referenced sources) and personalization
+// detection (does any binding hit a per-recipient source). Decoupled from the full
+// BuilderNode/Zod shape — just the binding + children the walk needs.
+
+interface BindableNode {
+  binding?: { path: string } | null;
+  children?: BindableNode[];
+}
+
+/** Every binding path in a node tree, depth-first (duplicates kept — callers
+ *  dedupe if they need to). */
+export function collectBindingPaths(node: BindableNode): string[] {
+  const out: string[] = [];
+  const walk = (n: BindableNode): void => {
+    if (n.binding?.path) out.push(n.binding.path);
+    for (const c of n.children ?? []) walk(c);
+  };
+  walk(node);
+  return out;
+}
+
+/** The leading segment of a binding path — `commerce.product` → `commerce`,
+ *  `recipient.firstName` → `recipient`, `item.title` → `item`, `cart[0]` →
+ *  `cart`. '' for an empty path. */
+export function bindingRoot(path: string): string {
+  return (
+    path
+      .trim()
+      .replace(/\[(\d+)\]/g, '.$1')
+      .split('.')
+      .find(Boolean) ?? ''
+  );
+}
+
+/** The SOURCE KEY a path roots at — the first segment, except two-level module
+ *  sources (`cms.*`, `commerce.*`) keep their second segment so the resolver can
+ *  tell `cms.blog_post` from `cms.page`. Scope-relative paths (`item.*`, `index`)
+ *  return '' (they resolve from the enclosing scope, not a root source). */
+export function bindingSourceKey(path: string): string {
+  const segs = path
+    .trim()
+    .replace(/\[(\d+)\]/g, '.$1')
+    .split('.')
+    .filter(Boolean);
+  const head = segs[0];
+  if (!head || head === 'item' || head === 'index') return '';
+  if ((head === 'cms' || head === 'commerce') && segs[1]) return `${head}.${segs[1]}`;
+  return head;
+}

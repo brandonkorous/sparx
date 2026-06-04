@@ -1,6 +1,6 @@
 # 52 · Email Builder
 
-Version: 0.1.0
+Version: 0.2.0
 Author: Brandon Korous
 Last Updated: 2026-06-04
 
@@ -131,20 +131,29 @@ A published `BuilderEmail` becomes a broadcast body. `Broadcast` gains an option
 - **Builder email** → `renderEmailTree({ tree, subject, preheader, data }, { brand })`.
 - **Legacy section list** → `renderSections(...)` (until §8 completes).
 
-Slice-1 emails are **static** (no bindings), so the body renders **once** into the
-existing `raw` dispatch payload — the simplest send path, no per-recipient resolver.
-Data-aware emails (Phase 4) reuse the personalized/deferred path that already exists
-for section bodies (`bodyIsPersonalized` → defer render to dispatch).
+Static / per-send emails render **once** into the existing `raw` dispatch payload —
+the per-send data (products/promotion/posts) is resolved once and the same body
+fans out. Per-recipient emails **defer**: `treeIsEmailPersonalized(tree)` (true when
+any node binds `recipient`/`order`/`cart`/`loyalty`) makes `enqueueAndMark` write a
+`defer.builderEmailId` payload instead of a rendered body; the email-dispatch tick
+([services/api-rest/src/lib/email-dispatch.ts](../services/api-rest/src/lib/email-dispatch.ts))
+reloads the published tree, resolves THIS recipient's data via the injected
+`resolveEmailData`, and renders per recipient — exactly the branch the section
+`defer.templateId` path already takes. `@sparx/email-platform` stays commerce-free:
+api-rest injects `emailDataResolver(ctx)` (which has `@sparx/commerce`).
 
 ## 7. Binding catalog (`EMAIL_CATALOG`)
 
-Like `SITE_CATALOG`, a constant catalog of the sources an email can bind to
-(`@sparx/builder-schemas/binding`): **recipient/customer** (personalized),
-**order / cart / loyalty** (personalized), **products / collections / blog posts /
-active promotion** (tenant-level dynamic). Shapes are fixed here; the **data** is
-produced at send/preview time by an email `DataSources` resolver in api-rest
-(generalizing today's `sectionResolver`). Phase 1 ships the catalog shape but no
-data-aware components in the palette, so nothing binds yet.
+`EMAIL_SOURCES` (`@sparx/builder-schemas/binding`) fixes the code-defined sources:
+**recipient** (personalized), **order / cart / loyalty** (personalized), **products
+/ active promotion** (per-send). Email products carry DISPLAY-ready fields
+(`priceLabel`/`imageUrl`/`url`) rather than the page catalog's raw numeric `price`,
+since email leaves bind to plain text/image. The per-tenant catalog is served by
+api-rest's `bindingService.getEmailSchema` (`/v1/builder/email-binding-schema`):
+`EMAIL_SOURCES` **plus the tenant's CMS COLLECTION sources** (e.g. latest posts) —
+record (object) CMS sources are dropped, an email has no in-scope single record.
+Shapes are fixed; the **data** is produced at send/preview by `resolveEmailData`
+(§6), which resolves only the sources a tree binds.
 
 ## 8. Migration & sunset of `@sparx/email-sections`
 
@@ -171,9 +180,24 @@ Transactional code builtins are untouched throughout.
 - **Phase 3 — Broadcast send.** `Broadcast.builderEmailId`; `broadcastService` render
   branch; worker raw path; composer picks a Builder email; send to a segment.
   **Deployable.**
-- **Phase 4 — Data-aware.** Email `DataSources` resolver; Tier-2 email components
-  (featured products, abandoned cart, recent order, loyalty, latest posts, active
-  promotion); per-recipient deferred render.
+- **Phase 4 — Data-aware. _(Built 2026-06-04.)_** The email `DataSources` resolver
+  ([services/api-rest/src/lib/email-data.ts](../services/api-rest/src/lib/email-data.ts),
+  `resolveEmailData`/`emailDataResolver`) reads commerce + CRM + CMS and resolves
+  only the sources a tree binds (`bindingSourceKey` over its paths). The editor
+  receives the real `EMAIL_CATALOG` (`/v1/builder/email-binding-schema` =
+  `EMAIL_SOURCES` + the tenant's CMS collections), so nodes bind to recipient /
+  order / cart / loyalty / products / promotion / latest-posts; the data-aware
+  leaves `Image` (static or bound URL) and `ImageDisplay` (bound) join the palette.
+  **Per-recipient deferred render:** `treeIsEmailPersonalized` decides the dispatch
+  shape — a tree binding a per-recipient source (recipient/order/cart/loyalty)
+  defers (`defer.builderEmailId`); the dispatch tick reloads the published tree,
+  resolves THIS recipient's data, and renders per recipient. A per-send tree
+  (products/promotion/posts) resolves once and fans out as `raw`. Preview +
+  test-send resolve the tree's per-send data so the editor shows real content.
+  **Deferred within P4:** `Prose` (bound richtext → HTML) in email — needs a
+  TipTap→table-safe HTML serializer, not yet wired; product/cart images are empty
+  until a product carries an explicit PRIMARY image (`productService.list` returns
+  `imageUrl: null` today). Bind a `Text` to `item.excerpt` for post teasers meanwhile.
 - **Phase 5 — Migrate & retire.** Convert authored bodies; retire the section model.
 
 ## 10. Non-obvious commitments

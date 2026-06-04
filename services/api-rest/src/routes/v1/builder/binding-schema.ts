@@ -1,8 +1,10 @@
 // Builder — the binding schema (docs/43, the keystone).
 //
-//   GET /v1/builder/binding-schema → what a page can bind to (the tenant's real
-//                                     CMS content types + code-defined
-//                                     Commerce/CRM domain sources)
+//   GET /v1/builder/binding-schema       → what a PAGE can bind to (the tenant's
+//                                           real CMS content types + code-defined
+//                                           Commerce/CRM domain sources)
+//   GET /v1/builder/email-binding-schema → what an EMAIL can bind to (docs/52 §7):
+//                                           the EMAIL_SOURCES + CMS collections
 //
 // Read-only; the editor's binding picker + preview consume it (Phase 1b).
 
@@ -17,6 +19,13 @@ const builderBindingRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
     const schema = await bindingService.getSchema(toBuilderContext(request));
+    return ok(schema);
+  });
+
+  app.get('/v1/builder/email-binding-schema', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const schema = await bindingService.getEmailSchema(toBuilderContext(request));
     return ok(schema);
   });
 

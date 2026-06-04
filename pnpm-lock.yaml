@@ -1498,6 +1498,9 @@ importers:
       '@sparx/builder':
         specifier: workspace:*
         version: link:../../packages/builder
+      '@sparx/builder-schemas':
+        specifier: workspace:*
+        version: link:../../packages/builder-schemas
       '@sparx/cms-editor':
         specifier: workspace:*
         version: link:../../packages/cms-editor

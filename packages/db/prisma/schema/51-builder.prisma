@@ -175,3 +175,73 @@ model BuilderEmail {
   @@index([tenantId, position])
   @@map("builder_emails")
 }
+
+// A TENANT-AUTHORED component (docs/53) — the user's own reusable building block,
+// composed in the builder rather than shipped in code. Distinct from SYSTEM
+// components (the in-code registry, which carry a renderLeaf function): a tenant
+// component is purely DECLARATIVE — a saved node tree + a prop schema — so it can
+// be stored, validated, and rendered by EXPANSION through the same trusted
+// renderers, never as user code (no RCE on the multi-tenant SSR surface).
+//
+// Identity lives here; the editable content lives in versioned snapshots
+// (BuilderComponentVersion) so a placement can PIN a version and opt into
+// upgrades. `latestVersion` points at the newest version row.
+//
+// Tenant-scoped + ENABLE/FORCE RLS (hand-added in the migration), like every
+// other builder_* table.
+model BuilderComponent {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Stable key, unique per tenant (^[a-z][a-z0-9_]*$); the placement type is
+  // `custom:<key>`, so key ≤ 56 keeps the namespaced type ≤ VarChar(63).
+  key         String  @db.VarChar(56)
+  name        String  @db.VarChar(120)
+  // Palette group: layout | content | data (mirrors the registry PaletteGroup).
+  group       String  @default("content") @db.VarChar(20)
+  // Lucide icon name shown in the catalog + palette.
+  icon        String  @default("box") @db.VarChar(64)
+  description String? @db.VarChar(500)
+  // Editor surfaces this component appears in (e.g. ["page","site"]).
+  surfaces    Json    @default("[\"page\"]")
+  // Points at the newest BuilderComponentVersion.version. Bumped on every edit.
+  latestVersion Int   @default(1) @map("latest_version")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  versions BuilderComponentVersion[]
+
+  @@unique([tenantId, key])
+  @@index([tenantId, group])
+  @@map("builder_components")
+}
+
+// One immutable version snapshot of a BuilderComponent (docs/53 §6). Editing a
+// component creates a NEW version and bumps the parent's latestVersion; old
+// versions persist so pages pinned to them keep rendering. The `tree` is a
+// BuilderNode (validated by @sparx/builder-schemas, never the DB); `propSpec` is
+// the instance-fillable slot schema (docs/53 §5).
+//
+// Tenant-scoped + ENABLE/FORCE RLS (hand-added in the migration).
+model BuilderComponentVersion {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+  componentId String @map("component_id") @db.Uuid
+  version     Int
+
+  // The editable BuilderNode root for this version. Shape validated by @sparx/builder-schemas.
+  tree     Json
+  // PropSpec[] — the instance-fillable slots (docs/53 §5). [] = a fixed component.
+  propSpec Json @default("[]") @map("prop_spec")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant    Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  component BuilderComponent @relation(fields: [componentId], references: [id], onDelete: Cascade)
+
+  @@unique([componentId, version])
+  @@index([tenantId, componentId])
+  @@map("builder_component_versions")
+}

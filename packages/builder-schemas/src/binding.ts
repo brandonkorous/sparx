@@ -8,6 +8,9 @@
 // Plain TS types (no Zod): this is computed read-only data we produce + consume,
 // not a persisted shape validated at a trust boundary (cf. node.ts / page.ts).
 
+import { bindingSourceKey, collectBindingPaths } from './runtime';
+import type { BuilderNode } from './node';
+
 // ── Field + source shapes ─────────────────────────────────────────────────────
 
 export type FieldKind =
@@ -278,6 +281,17 @@ const ORDER_FIELDS: FieldSchema[] = [
   { key: 'dateLabel', label: 'Date', kind: 'text', cardinality: 'scalar' },
 ];
 
+// Email products are DISPLAY-ready (price already a currency string, an image
+// URL, a clickable link) — unlike the page catalog's COMMERCE_SOURCES, whose
+// `price` is a raw number for interactive commerce components. Email leaves bind
+// to plain text/image, so the resolver hands back exactly what renders.
+const EMAIL_PRODUCT_FIELDS: FieldSchema[] = [
+  { key: 'title', label: 'Title', kind: 'text', cardinality: 'scalar' },
+  { key: 'priceLabel', label: 'Price', kind: 'text', cardinality: 'scalar' },
+  { key: 'imageUrl', label: 'Image', kind: 'image', cardinality: 'scalar' },
+  { key: 'url', label: 'Link', kind: 'text', cardinality: 'scalar' },
+];
+
 export const EMAIL_SOURCES: DataSource[] = [
   {
     key: 'recipient',
@@ -308,12 +322,23 @@ export const EMAIL_SOURCES: DataSource[] = [
     ],
   },
   {
+    key: 'loyalty',
+    label: 'Loyalty / store credit',
+    module: 'crm',
+    cardinality: 'object',
+    recordType: 'loyalty',
+    fields: [
+      { key: 'pointsLabel', label: 'Balance', kind: 'text', cardinality: 'scalar' },
+      { key: 'tierName', label: 'Tier', kind: 'text', cardinality: 'scalar' },
+    ],
+  },
+  {
     key: 'commerce.product',
     label: 'Products',
     module: 'commerce',
     cardinality: 'array',
     recordType: 'product',
-    fields: PRODUCT_FIELDS,
+    fields: EMAIL_PRODUCT_FIELDS,
   },
   {
     key: 'promotion',
@@ -331,6 +356,30 @@ export const EMAIL_SOURCES: DataSource[] = [
 ];
 
 /** The Email Builder's binding catalog (docs/52 §7). The code-defined sources are
- *  constant; tenant CMS sources merge in when the data-aware palette lands. The
- *  Phase-1 (static) editor passes an EMPTY catalog so nothing binds yet. */
+ *  constant; the per-tenant catalog (api-rest's `getEmailSchema`) merges these
+ *  with the tenant's CMS COLLECTION sources so an email can iterate latest posts. */
 export const EMAIL_CATALOG: BindingCatalog = { sources: EMAIL_SOURCES };
+
+// ── Personalization (per-recipient vs per-send) ───────────────────────────────
+//
+// Some email sources resolve PER RECIPIENT (the recipient, their recent order /
+// abandoned cart / loyalty balance); the rest resolve ONCE per send (products,
+// promotion, latest posts). A tree that binds any per-recipient source must defer
+// rendering to dispatch so each recipient gets their own copy (docs/52 §6, §9 P4);
+// a tree that doesn't renders once and fans out. These keys are the per-recipient
+// SOURCE roots (`bindingSourceKey` reduces a path to its source key).
+
+export const EMAIL_PERSONALIZED_ROOTS: readonly string[] = [
+  'recipient',
+  'order',
+  'cart',
+  'loyalty',
+];
+
+/** Does this email tree bind any per-recipient source? Drives render-once vs
+ *  per-recipient deferred render in the broadcast send path. */
+export function treeIsEmailPersonalized(tree: BuilderNode): boolean {
+  return collectBindingPaths(tree).some((p) =>
+    EMAIL_PERSONALIZED_ROOTS.includes(bindingSourceKey(p))
+  );
+}

@@ -465,6 +465,10 @@ const DEFS: ComponentDef[] = [
           { value: 'portrait', label: 'Tall' },
         ],
       },
+      // A static image URL — the email renderer's <Img src> (docs/52 §3). The page/
+      // site canvas keeps showing the placeholder (it composes real images from the
+      // box background / ImageDisplay binding); only email reads this prop today.
+      { key: 'src', label: 'Image URL', control: 'text', placeholder: 'https://…/banner.png' },
       { key: 'alt', label: 'Alt text', control: 'text', placeholder: 'Describe the image' },
     ],
     defaults: { props: { ratio: 'wide', alt: '' } },
@@ -914,6 +918,9 @@ const DEFS: ComponentDef[] = [
     icon: Images,
     bindable: true,
     accepts: ['object', 'array', 'empty'],
+    // page (surfaces) + email (EMAIL_TYPES allowlist): a bound image — a product /
+    // cart / post image resolved per item. The email renderer reads the bound value
+    // as a URL (asImageUrl), docs/52 §7.
     surfaces: ['page'],
     props: [
       {
@@ -1282,8 +1289,10 @@ export const PALETTE: ComponentDef[] = DEFS;
  *  width and non-interactive, so the palette is OPT-IN: only these types appear,
  *  never the page/site default. Excludes site chrome (Outlet/NavMenu/Logo/Social),
  *  interactive commerce (ProductForm + atoms), and effects with no email analogue
- *  (Carousel/Video/Map). Data-aware email components join this set in Phase 4.
- *  Bound-only leaves (Prose/ImageDisplay) stay out until the data resolver lands. */
+ *  (Carousel/Video/Map). Phase 4 (docs/52 §9) adds the data-aware leaves the email
+ *  renderer + data resolver support: `Image` (a static URL or a bound product/post
+ *  image) and `ImageDisplay` (a bound image). `Prose` (bound richtext→HTML in
+ *  email) is deferred — see docs/52 §9. */
 const EMAIL_TYPES: ReadonlySet<string> = new Set([
   'Section',
   'Stack',
@@ -1293,6 +1302,8 @@ const EMAIL_TYPES: ReadonlySet<string> = new Set([
   'Text',
   'Button',
   'Divider',
+  'Image',
+  'ImageDisplay',
 ]);
 
 /** The palette entries available in a given editor surface (docs/45 §2.5, docs/52

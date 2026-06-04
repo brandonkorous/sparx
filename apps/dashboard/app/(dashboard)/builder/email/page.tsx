@@ -3,7 +3,7 @@ import type { BindingCatalog, BuilderEmailDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
 import { getBrand, getConfig } from '../_brand/lib/api';
-import { listEmails } from '../_lib/api';
+import { getEmailBindingCatalog, listEmails } from '../_lib/api';
 import { EmailBuilderApp } from '../_builder/email-builder-app';
 import '../builder.css';
 // The Surface RECIPE — same canvas-scoped sheet the page/site editors load, so a
@@ -15,9 +15,10 @@ import '@sparx/site-ui/styles.canvas.css';
 // keeps a catalog of emails; the list endpoint seeds the starter set on first use.
 //
 // Like the page editor, we compile the tenant brand to CSS scoped to the canvas so
-// the body previews in the real brand. Phase 1 is STATIC — the editor receives an
-// EMPTY binding catalog (the static slice has no data-aware components yet, docs/52
-// §9), so nothing binds.
+// the body previews in the real brand. The editor receives the EMAIL binding
+// catalog (docs/52 §7) — recipient / order / cart / loyalty / products / promotion
+// plus the tenant's CMS collections — so nodes can bind to per-recipient and
+// per-send data (the true render resolves it at preview/send, docs/52 §9 P4).
 
 export const metadata: Metadata = {
   title: 'Builder · Email',
@@ -50,13 +51,22 @@ async function loadEmails(): Promise<BuilderEmailDto[]> {
   }
 }
 
-// Phase 1 (static) passes an EMPTY catalog — no data-aware email components exist
-// yet, so nothing binds. The EMAIL_CATALOG shape is wired in Phase 4 alongside the
-// data resolver.
-const EMPTY_CATALOG: BindingCatalog = { sources: [] };
+// What an email can bind to (docs/52 §7). Defensive: a failed read yields an empty
+// catalog — the editor still runs, bindings just resolve to placeholders.
+async function loadCatalog(): Promise<BindingCatalog> {
+  try {
+    return await getEmailBindingCatalog();
+  } catch {
+    return { sources: [] };
+  }
+}
 
 export default async function BuilderEmailRoute() {
-  const [themeCss, emails] = await Promise.all([canvasThemeCss(), loadEmails()]);
+  const [themeCss, emails, catalog] = await Promise.all([
+    canvasThemeCss(),
+    loadEmails(),
+    loadCatalog(),
+  ]);
   if (emails.length === 0) {
     return (
       <div className="px-6 py-8 lg:px-10">
@@ -69,7 +79,7 @@ export default async function BuilderEmailRoute() {
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-      <EmailBuilderApp initialEmails={emails} bindingCatalog={EMPTY_CATALOG} />
+      <EmailBuilderApp initialEmails={emails} bindingCatalog={catalog} />
     </>
   );
 }

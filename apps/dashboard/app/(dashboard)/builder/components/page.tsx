@@ -1,10 +1,10 @@
-// /builder/components — the component catalog (docs/51 §4.2). The standard
-// Collection/List surface (docs/34 §7): URL-driven search + Group / Kind /
-// Surface facets + a Table/Cards toggle. Rows open the component's reference
-// detail in the user's preferred surface via EntityRowLink. The catalog is the
-// builder's component registry; tenant-authored components (docs/38/47) will
-// land here once their backend exists, so there's no create action yet. The
-// Builder module gate runs in layout.tsx.
+// /builder/components — the component catalog (docs/51 §4.2, docs/53). The
+// standard Collection/List surface (docs/34 §7): URL-driven search + Group / Kind
+// / Surface facets + a Table/Cards toggle. Shows SYSTEM components (the in-code
+// registry, read-only) and TENANT components (builder_components, badged
+// "Custom") side by side. Rows open the component's detail in the user's
+// preferred surface via EntityRowLink, where Copy (system) / Delete (custom)
+// live. The Builder module gate runs in layout.tsx.
 
 import { Boxes, Component } from 'lucide-react';
 
@@ -29,18 +29,8 @@ import {
 import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
-import {
-  GROUP_LABELS,
-  KIND_LABELS,
-  MODULE_LABELS,
-  boundCardinalities,
-  CARDINALITY_LABELS,
-  filterComponents,
-  listComponents,
-  summaryOf,
-  surfaceLabel,
-  type ComponentDef,
-} from './_lib/catalog';
+import { catalogCount, loadCatalog, type CatalogEntry } from './_lib/catalog';
+import { LucideByName } from './_lib/lucide-by-name';
 
 export const dynamic = 'force-dynamic';
 
@@ -68,11 +58,13 @@ function stringParam(v: string | string[] | undefined): string | undefined {
   return undefined;
 }
 
-function bindingSummary(def: ComponentDef): string {
-  if (!def.bindable) return 'Static';
-  const cards = boundCardinalities(def);
-  if (cards.length === 0) return 'Any';
-  return cards.map((c) => CARDINALITY_LABELS[c]).join(', ');
+// System icons are a component reference; custom icons are a lucide NAME rendered
+// through the client island (DynamicIcon needs a client boundary).
+function EntryIcon({ entry, className }: { entry: CatalogEntry; className?: string }) {
+  if (typeof entry.icon === 'string')
+    return <LucideByName name={entry.icon} className={className} />;
+  const Icon = entry.icon;
+  return <Icon className={className} aria-hidden />;
 }
 
 export default async function BuilderComponentsPage({ searchParams }: PageProps) {
@@ -82,9 +74,11 @@ export default async function BuilderComponentsPage({ searchParams }: PageProps)
   const surface = stringParam(params.surface);
   const q = stringParam(params.q);
 
-  const [prefs] = await Promise.all([getUserPreferences()]);
-  const items = filterComponents({ group, kind, surface, q });
-  const total = listComponents().length;
+  const [prefs, items, total] = await Promise.all([
+    getUserPreferences(),
+    loadCatalog({ group, kind, surface, q }),
+    catalogCount(),
+  ]);
   const isFiltered = Boolean(group ?? kind ?? surface ?? q);
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -99,7 +93,7 @@ export default async function BuilderComponentsPage({ searchParams }: PageProps)
               {total} component{total === 1 ? '' : 's'}
             </Badge>
           }
-          description="The catalog of building blocks you compose pages and layouts from — layout primitives, content & media, and data-aware components that bind to your modules."
+          description="The catalog of building blocks you compose pages and layouts from — system primitives and data-aware components, plus the custom components you build. Open a system component to copy it as a starting point."
         />
 
         <ListToolbar
@@ -126,50 +120,51 @@ export default async function BuilderComponentsPage({ searchParams }: PageProps)
           </Card>
         ) : view === 'card' ? (
           <Grid minItemWidth="20rem" gap={4}>
-            {items.map((def) => {
-              const Icon = def.icon;
-              return (
-                <Card key={def.type} variant="module" padding="md">
-                  <Stack gap={3}>
-                    <Stack direction="row" align="start" justify="between" gap={2}>
-                      <Stack direction="row" align="center" gap={2} className="min-w-0">
-                        <Icon
-                          className="h-5 w-5 shrink-0 text-[var(--module-active)]"
-                          aria-hidden
-                        />
-                        <EntityRowLink
-                          href={`/builder/components/${def.type}`}
-                          entityType="builder-component"
-                          entityId={def.type}
-                          className="truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                        >
-                          {def.label}
-                        </EntityRowLink>
-                      </Stack>
-                      {def.module ? (
-                        <Badge color="module" variant="soft" className="shrink-0 text-xs">
-                          {MODULE_LABELS[def.module]}
-                        </Badge>
-                      ) : null}
+            {items.map((entry) => (
+              <Card key={`${entry.provenance}:${entry.id}`} variant="module" padding="md">
+                <Stack gap={3}>
+                  <Stack direction="row" align="start" justify="between" gap={2}>
+                    <Stack direction="row" align="center" gap={2} className="min-w-0">
+                      <EntryIcon
+                        entry={entry}
+                        className="h-5 w-5 shrink-0 text-[var(--module-active)]"
+                      />
+                      <EntityRowLink
+                        href={`/builder/components/${entry.id}`}
+                        entityType="builder-component"
+                        entityId={entry.id}
+                        className="truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+                      >
+                        {entry.label}
+                      </EntityRowLink>
                     </Stack>
-                    <Text size="sm" variant="muted" className="line-clamp-2">
-                      {summaryOf(def)}
-                    </Text>
-                    <Stack direction="row" align="center" gap={2} wrap>
-                      <Badge variant="outline" className="text-xs">
-                        {GROUP_LABELS[def.group]}
+                    {entry.provenance === 'custom' ? (
+                      <Badge color="module" variant="soft" className="shrink-0 text-xs">
+                        Custom
                       </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {KIND_LABELS[def.kind]}
+                    ) : entry.moduleLabel ? (
+                      <Badge color="module" variant="soft" className="shrink-0 text-xs">
+                        {entry.moduleLabel}
                       </Badge>
-                      <Text size="xs" variant="muted">
-                        {bindingSummary(def)}
-                      </Text>
-                    </Stack>
+                    ) : null}
                   </Stack>
-                </Card>
-              );
-            })}
+                  <Text size="sm" variant="muted" className="line-clamp-2">
+                    {entry.summary}
+                  </Text>
+                  <Stack direction="row" align="center" gap={2} wrap>
+                    <Badge variant="outline" className="text-xs">
+                      {entry.groupLabel}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {entry.kindLabel}
+                    </Badge>
+                    <Text size="xs" variant="muted">
+                      {entry.bindingLabel}
+                    </Text>
+                  </Stack>
+                </Stack>
+              </Card>
+            ))}
           </Grid>
         ) : (
           <Card padding="none">
@@ -185,59 +180,60 @@ export default async function BuilderComponentsPage({ searchParams }: PageProps)
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {items.map((def) => {
-                    const Icon = def.icon;
-                    return (
-                      <TableRow key={def.type}>
-                        <TableCell>
-                          <Stack direction="row" align="center" gap={3} className="min-w-0">
-                            <Icon
-                              className="h-4 w-4 shrink-0 text-[var(--module-active)]"
-                              aria-hidden
-                            />
-                            <Stack gap={1} className="min-w-0">
-                              <Stack direction="row" align="center" gap={2}>
-                                <EntityRowLink
-                                  href={`/builder/components/${def.type}`}
-                                  entityType="builder-component"
-                                  entityId={def.type}
-                                  className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                                >
-                                  {def.label}
-                                </EntityRowLink>
-                                {def.module ? (
-                                  <Badge color="module" variant="soft" className="text-xs">
-                                    {MODULE_LABELS[def.module]}
-                                  </Badge>
-                                ) : null}
-                              </Stack>
-                              <Text size="xs" variant="muted" className="line-clamp-1">
-                                {summaryOf(def)}
-                              </Text>
+                  {items.map((entry) => (
+                    <TableRow key={`${entry.provenance}:${entry.id}`}>
+                      <TableCell>
+                        <Stack direction="row" align="center" gap={3} className="min-w-0">
+                          <EntryIcon
+                            entry={entry}
+                            className="h-4 w-4 shrink-0 text-[var(--module-active)]"
+                          />
+                          <Stack gap={1} className="min-w-0">
+                            <Stack direction="row" align="center" gap={2}>
+                              <EntityRowLink
+                                href={`/builder/components/${entry.id}`}
+                                entityType="builder-component"
+                                entityId={entry.id}
+                                className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
+                              >
+                                {entry.label}
+                              </EntityRowLink>
+                              {entry.provenance === 'custom' ? (
+                                <Badge color="module" variant="soft" className="text-xs">
+                                  Custom
+                                </Badge>
+                              ) : entry.moduleLabel ? (
+                                <Badge color="module" variant="soft" className="text-xs">
+                                  {entry.moduleLabel}
+                                </Badge>
+                              ) : null}
                             </Stack>
+                            <Text size="xs" variant="muted" className="line-clamp-1">
+                              {entry.summary}
+                            </Text>
                           </Stack>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-xs">
-                            {GROUP_LABELS[def.group]}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Text size="sm">{KIND_LABELS[def.kind]}</Text>
-                        </TableCell>
-                        <TableCell>
-                          <Text size="sm" variant="muted">
-                            {bindingSummary(def)}
-                          </Text>
-                        </TableCell>
-                        <TableCell>
-                          <Text size="sm" variant="muted">
-                            {surfaceLabel(def)}
-                          </Text>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">
+                          {entry.groupLabel}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Text size="sm">{entry.kindLabel}</Text>
+                      </TableCell>
+                      <TableCell>
+                        <Text size="sm" variant="muted">
+                          {entry.bindingLabel}
+                        </Text>
+                      </TableCell>
+                      <TableCell>
+                        <Text size="sm" variant="muted">
+                          {entry.surfaceLabel}
+                        </Text>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>

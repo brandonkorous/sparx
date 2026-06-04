@@ -140,6 +140,8 @@ export type {
   BuilderPage,
   BuilderLayout,
   BuilderEmail,
+  BuilderComponent,
+  BuilderComponentVersion,
   // Email platform
   EmailSettings,
   SendingDomain,

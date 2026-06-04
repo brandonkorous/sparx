@@ -25,6 +25,7 @@ import { builderEmailService } from '@sparx/email-platform';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
+import { emailDataResolver } from '../../../lib/email-data.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
 
@@ -91,11 +92,11 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     const ctx = toBuilderContext(request);
     const { id } = IdParam.parse(request.params);
     const email = await emailService.get(ctx, id);
-    const preview = await builderEmailService.renderPreview(ctx, {
-      tree: email.tree,
-      subject: email.subject,
-      preheader: email.preheader,
-    });
+    const preview = await builderEmailService.renderPreview(
+      ctx,
+      { tree: email.tree, subject: email.subject, preheader: email.preheader },
+      emailDataResolver(ctx)
+    );
     return ok(preview);
   });
 
@@ -109,7 +110,8 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     const result = await builderEmailService.testSend(
       ctx,
       { tree: email.tree, subject: email.subject, preheader: email.preheader },
-      request.body
+      request.body,
+      emailDataResolver(ctx)
     );
     return ok(result);
   });

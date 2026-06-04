@@ -12,7 +12,7 @@
 // reuses renderEmailTree the same way.
 
 import { renderEmailTree, sendEmail, type DeliveryResult } from '@sparx/email';
-import type { BuilderNode } from '@sparx/builder-schemas';
+import type { BuilderNode, DataSources } from '@sparx/builder-schemas';
 
 import { TestSendInput } from '../schemas/templates';
 import type { ServiceContext } from '../errors';
@@ -25,6 +25,22 @@ function buildFrom(fromName: string | null, fromAddress: string | null): string 
   if (!fromAddress) return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;
   return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
 }
+
+/** Resolve a Builder email tree's bound DataSources (docs/52 §7). Injected by the
+ *  caller (api-rest's emailDataResolver, which has @sparx/commerce) so this package
+ *  stays commerce-free — the same pattern as ResolveSectionData. `recipient` is
+ *  absent for the render-once path (preview / non-personalized broadcast), where
+ *  per-recipient sources resolve empty. Defined here (the render module) and reused
+ *  by broadcast-service. */
+export type ResolveEmailData = (
+  tree: BuilderNode,
+  recipient?: { email: string; customerId?: string | null }
+) => Promise<DataSources>;
+
+// No-resolver default: static data only (bound nodes fall back to their props /
+// render empty). Used by callers without commerce wiring (e.g. the MCP tool),
+// mirroring makeStaticResolver for sections.
+export const noEmailDataResolver: ResolveEmailData = () => Promise.resolve({});
 
 /** A Builder email reduced to what the render needs — the published or draft body
  *  tree plus its document fields. The caller loads this from @sparx/builder. */
@@ -41,37 +57,48 @@ export interface RenderedPreview {
 }
 
 /** Render a Builder email to inlined HTML + plain text for the editor preview.
- *  Resolves the tenant brand so the preview matches what ships. Static (Phase 1)
- *  trees render with no data; data-aware trees pass `data` in Phase 4. */
+ *  Resolves the tenant brand so the preview matches what ships. The injected
+ *  `resolveData` resolves the tree's bound sources (products/promotion/posts) so
+ *  the preview shows real data; per-recipient sources resolve empty here (no
+ *  recipient), exactly like the section preview. */
 export async function renderPreview(
   ctx: ServiceContext,
-  doc: BuilderEmailDoc
+  doc: BuilderEmailDoc,
+  resolveData: ResolveEmailData = noEmailDataResolver
 ): Promise<RenderedPreview> {
-  const brand = (await resolveEmailBrand(ctx)) ?? undefined;
+  const [brand, data] = await Promise.all([resolveEmailBrand(ctx), resolveData(doc.tree)]);
   const rendered = await renderEmailTree(
     {
       tree: doc.tree,
       subject: doc.subject,
       preheader: doc.preheader ?? undefined,
       to: 'preview@example.com',
+      data,
     },
-    { brand }
+    { brand: brand ?? undefined }
   );
   return { subject: rendered.subject, html: rendered.html, text: rendered.text };
 }
 
 /** Render + immediately deliver a Builder email to one address — the staff smoke
  *  test (the synchronous escape hatch, like templateService.testSend). Stamps
- *  tenant_id so any resulting webhook events attribute correctly. */
+ *  tenant_id so any resulting webhook events attribute correctly. The recipient's
+ *  own data is resolved (the test address as the recipient), so a personalized
+ *  email smoke-tests the per-recipient render too. */
 export async function testSend(
   ctx: ServiceContext,
   doc: BuilderEmailDoc,
-  rawInput: unknown
+  rawInput: unknown,
+  resolveData: ResolveEmailData = noEmailDataResolver
 ): Promise<DeliveryResult> {
   const { to } = TestSendInput.parse(rawInput);
-  const [brand, settings] = await Promise.all([resolveEmailBrand(ctx), getSettings(ctx)]);
+  const [brand, settings, data] = await Promise.all([
+    resolveEmailBrand(ctx),
+    getSettings(ctx),
+    resolveData(doc.tree, { email: to }),
+  ]);
   const rendered = await renderEmailTree(
-    { tree: doc.tree, subject: doc.subject, preheader: doc.preheader ?? undefined, to },
+    { tree: doc.tree, subject: doc.subject, preheader: doc.preheader ?? undefined, to, data },
     { brand: brand ?? undefined }
   );
   return sendEmail({

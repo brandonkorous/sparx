@@ -10,6 +10,10 @@ import 'server-only';
 // Tenant-authored custom components (docs/38/47, Phase 5+) will append to this
 // same catalog once the backend exists; the list surface is built to absorb them.
 
+import type { LucideIcon } from 'lucide-react';
+import type { ComponentGroup, ComponentSummaryDto } from '@sparx/builder-schemas';
+
+import { api, type ApiRestError } from '@/lib/api-rest-client';
 import {
   PALETTE,
   getDef,
@@ -152,4 +156,130 @@ export function filterComponents(filters: CatalogFilters): ComponentDef[] {
       return true;
     })
     .sort((a, b) => GROUP_ORDER[a.group] - GROUP_ORDER[b.group] || a.label.localeCompare(b.label));
+}
+
+// ── Unified catalog (system + tenant components — docs/53) ────────────────────
+//
+// The list/detail surfaces show SYSTEM components (the in-code registry) and
+// TENANT components (the builder_components table) side by side. A CatalogEntry
+// normalizes both into pre-labeled display fields so the page renders without
+// branching on provenance — except the icon (a registry entry carries a React
+// component; a tenant component stores a lucide NAME, rendered client-side) and
+// the row actions (Copy on system, Edit/Delete on custom).
+
+export type Provenance = 'system' | 'custom';
+
+export interface CatalogEntry {
+  /** Route segment for /builder/components/<id>: a system `type` or a custom key. */
+  id: string;
+  label: string;
+  provenance: Provenance;
+  /** A React component (system) or a lucide icon NAME (custom, client-rendered). */
+  icon: LucideIcon | string;
+  group: PaletteGroup;
+  groupLabel: string;
+  /** Pre-rendered cell text — the page never recomputes these. */
+  kindLabel: string;
+  bindingLabel: string;
+  surfaceLabel: string;
+  summary: string;
+  moduleLabel?: string;
+  // Filter inputs.
+  kindFilter?: NodeKind;
+  surfaces: EditorSurface[];
+}
+
+const CUSTOM_GROUP_LABEL: Record<ComponentGroup, string> = {
+  layout: 'Layout',
+  content: 'Content & media',
+  data: 'Data-aware',
+};
+
+function toSystemEntry(def: ComponentDef): CatalogEntry {
+  return {
+    id: def.type,
+    label: def.label,
+    provenance: 'system',
+    icon: def.icon,
+    group: def.group,
+    groupLabel: GROUP_LABELS[def.group],
+    kindLabel: KIND_LABELS[def.kind],
+    bindingLabel: !def.bindable
+      ? 'Static'
+      : boundCardinalities(def)
+          .map((c) => CARDINALITY_LABELS[c])
+          .join(', ') || 'Any',
+    surfaceLabel: surfaceLabel(def),
+    summary: summaryOf(def),
+    moduleLabel: def.module ? MODULE_LABELS[def.module] : undefined,
+    kindFilter: def.kind,
+    surfaces: surfacesOf(def),
+  };
+}
+
+function toCustomEntry(c: ComponentSummaryDto): CatalogEntry {
+  return {
+    id: c.key,
+    label: c.name,
+    provenance: 'custom',
+    icon: c.icon,
+    group: c.group,
+    groupLabel: CUSTOM_GROUP_LABEL[c.group],
+    // A tenant component is a tree, not a single kind; binding/parameterization
+    // arrive in later phases (docs/53 §5), so these read as not-applicable for now.
+    kindLabel: 'Component',
+    bindingLabel: '—',
+    surfaceLabel:
+      c.surfaces.includes('page') && c.surfaces.includes('site')
+        ? 'Page & layout'
+        : c.surfaces.includes('site')
+          ? 'Site layout'
+          : 'Page',
+    summary: c.description ?? 'A component you built.',
+    surfaces: c.surfaces,
+  };
+}
+
+/** Fetch the tenant's custom components from api-rest. Degrades to [] when the
+ *  Builder module is off (404) or the call fails — the catalog still shows the
+ *  system components. */
+async function loadCustomComponents(): Promise<ComponentSummaryDto[]> {
+  try {
+    const { components } = await api.get<{ components: ComponentSummaryDto[] }>(
+      '/v1/builder/components'
+    );
+    return components;
+  } catch (err) {
+    if ((err as ApiRestError)?.status === 404) return [];
+    return [];
+  }
+}
+
+/** The merged catalog (system + custom), filtered + stable-sorted. Custom
+ *  components sort after system within each group so the built-ins stay the
+ *  familiar reference. */
+export async function loadCatalog(filters: CatalogFilters): Promise<CatalogEntry[]> {
+  const custom = await loadCustomComponents();
+  const entries = [...PALETTE.map(toSystemEntry), ...custom.map(toCustomEntry)];
+  const q = filters.q?.trim().toLowerCase();
+  return entries
+    .filter((e) => {
+      if (filters.group && e.group !== filters.group) return false;
+      if (filters.kind && e.kindFilter !== filters.kind) return false;
+      if (filters.surface && !e.surfaces.includes(filters.surface as EditorSurface)) return false;
+      if (q && !`${e.label} ${e.id}`.toLowerCase().includes(q)) return false;
+      return true;
+    })
+    .sort(
+      (a, b) =>
+        GROUP_ORDER[a.group] - GROUP_ORDER[b.group] ||
+        (a.provenance === b.provenance ? 0 : a.provenance === 'system' ? -1 : 1) ||
+        a.label.localeCompare(b.label)
+    );
+}
+
+/** Total count across system + custom (for the page header badge). */
+export async function catalogCount(): Promise<number> {
+  const custom = await loadCustomComponents();
+  return PALETTE.length + custom.length;
 }
