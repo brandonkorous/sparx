@@ -125,3 +125,15 @@ body {
 .sparx-content .sparx-callout--danger {
   border-color: var(--color-danger, #ef4444);
 }
+
+/* Builder-rendered post body (docs/44): the Prose leaf emits `.sparx-content` into
+   a contained Section (full `--sf-max`), which is too wide to read comfortably.
+   Inside a Builder page only, cap it to a reading measure and centre it — without
+   touching the legacy PageView path, which already wraps prose at its own width. */
+[data-builder-page] .sparx-content {
+  max-width: 68ch;
+  margin-inline: auto;
+}
+[data-builder-page] .sparx-content > :first-child {
+  margin-top: 0;
+}

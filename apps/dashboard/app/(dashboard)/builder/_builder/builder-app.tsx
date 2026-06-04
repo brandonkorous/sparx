@@ -507,6 +507,7 @@ export function BuilderApp({
           chrome={layoutTree ?? null}
           settings={
             <PageSettings
+              pageId={active.id}
               name={active.name}
               slug={active.slug}
               kind={active.kind}

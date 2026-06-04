@@ -17,7 +17,9 @@ import { z } from 'zod';
 import { pageService } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
+import { withRequestTenant } from '@sparx/api-core/db';
 import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
+import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
 
@@ -68,10 +70,16 @@ const builderPageRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.post('/v1/builder/pages/:id/publish', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
     const page = await pageService.publish(toBuilderContext(request), id);
+    // Refresh the stored SEO snapshot against the just-published tree so the
+    // overview stays current (docs/50 §7). Best-effort — a snapshot write must
+    // never fail the publish itself.
+    await withRequestTenant(request, (tx) =>
+      auditAndStore(tx, auth.tenantId, 'builder_page', id)
+    ).catch(() => undefined);
     return ok(page);
   });
 

@@ -33,6 +33,7 @@ COPY packages/integration-framework ./packages/integration-framework
 COPY packages/legal ./packages/legal
 COPY packages/legal-templates ./packages/legal-templates
 COPY packages/search ./packages/search
+COPY packages/seo-audit ./packages/seo-audit
 COPY packages/commerce ./packages/commerce
 COPY packages/provider-stripe ./packages/provider-stripe
 COPY packages/provider-shippo ./packages/provider-shippo

@@ -200,9 +200,12 @@ model Tenant {
   sectionDefinitions   TenantSectionDefinition[]
 
   // Builder module — composition-model page editor (docs/41)
-  builderPages BuilderPage[]
+  builderPages   BuilderPage[]
   // Builder module — the site layout / chrome shell (docs/45)
   builderLayouts BuilderLayout[]
+
+  // SEO — stored audit scorecard snapshots for the site-wide overview (docs/50 §7)
+  seoAudits SeoAudit[]
 
   // Email platform — management surface (docs/13)
   emailSettings       EmailSettings?

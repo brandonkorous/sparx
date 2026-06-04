@@ -1,0 +1,69 @@
+{
+  "format": "sparx.builder/v1",
+  "type": "page",
+  "name": "Blog post",
+  "kind": "collection",
+  "recordType": "cms.blog_post",
+  "tree": {
+    "type": "Section",
+    "box": {
+      "name": "Blog post",
+      "padding": "none",
+      "backgroundWidth": "full",
+      "contentWidth": "full"
+    },
+    "layout": { "direction": "stack", "gap": "none" },
+    "children": [
+      {
+        "type": "Section",
+        "box": {
+          "name": "Hero",
+          "height": "lg",
+          "surface": "inverse",
+          "backgroundWidth": "full",
+          "contentWidth": "contained",
+          "backgroundImageBinding": "blog_post.featuredImage",
+          "overlay": "gradient",
+          "textTone": "light",
+          "align": "center",
+          "padding": "xl"
+        },
+        "layout": {
+          "direction": "stack",
+          "gap": "sm",
+          "alignItems": "center",
+          "justify": "center"
+        },
+        "children": [
+          { "type": "Text", "props": { "variant": "eyebrow", "text": "Article" } },
+          {
+            "type": "Heading",
+            "props": { "level": "h1" },
+            "binding": { "path": "blog_post.title" }
+          },
+          {
+            "type": "Text",
+            "props": { "variant": "body" },
+            "binding": { "path": "blog_post.excerpt" }
+          },
+          {
+            "type": "Text",
+            "props": { "variant": "meta" },
+            "binding": { "path": "blog_post.date" }
+          }
+        ]
+      },
+      {
+        "type": "Section",
+        "box": {
+          "name": "Body",
+          "padding": "xl",
+          "backgroundWidth": "full",
+          "contentWidth": "contained"
+        },
+        "layout": { "direction": "stack", "gap": "md" },
+        "children": [{ "type": "Prose", "binding": { "path": "blog_post.body" } }]
+      }
+    ]
+  }
+}

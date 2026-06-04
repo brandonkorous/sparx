@@ -20,6 +20,8 @@ import { ChevronDown } from 'lucide-react';
 import { Input, NativeSelect, Switch, Textarea, cn } from '@sparx/ui';
 import type { BindingCatalog } from '@sparx/builder-schemas';
 
+import { SeoScoreChip } from '@/components/seo/seo-score';
+
 import {
   ALIGN_OPTIONS,
   DEVICE_OPTIONS,
@@ -625,6 +627,7 @@ function BoxBasePanel({
 // Inspector's `settings` slot; both reuse the inspector's Group/Field controls.
 
 export function PageSettings({
+  pageId,
   name,
   slug,
   kind,
@@ -632,6 +635,7 @@ export function PageSettings({
   onSlug,
   onSeo,
 }: {
+  pageId: string;
   name: string;
   slug: string | null;
   kind: 'singleton' | 'collection';
@@ -683,7 +687,7 @@ export function PageSettings({
               />
             </Field>
           </Group>
-          <PageSeoPanel seo={seo} onSeo={onSeo} />
+          <PageSeoPanel pageId={pageId} seo={seo} onSeo={onSeo} />
         </>
       )}
       <p className="bx-inspector__tip">Select a layer to edit it.</p>
@@ -696,7 +700,15 @@ export function PageSettings({
 // blur (like the slug field) so typing doesn't round-trip per keystroke; the
 // switch commits immediately. Blank fields fall back to the page name on the
 // storefront.
-function PageSeoPanel({ seo, onSeo }: { seo: PageSeo; onSeo: (patch: Partial<PageSeo>) => void }) {
+function PageSeoPanel({
+  pageId,
+  seo,
+  onSeo,
+}: {
+  pageId: string;
+  seo: PageSeo;
+  onSeo: (patch: Partial<PageSeo>) => void;
+}) {
   const [title, setTitle] = React.useState(seo.title);
   const [description, setDescription] = React.useState(seo.description);
   const [canonical, setCanonical] = React.useState(seo.canonical);
@@ -711,6 +723,10 @@ function PageSeoPanel({ seo, onSeo }: { seo: PageSeo; onSeo: (patch: Partial<Pag
 
   return (
     <Group label="SEO">
+      <div className="bx-row" style={{ marginBottom: 8 }}>
+        <span className="bx-field__label">SEO health — hover for the report</span>
+        <SeoScoreChip type="builder_page" id={pageId} />
+      </div>
       <p className="bx-grp__caption">
         How this page reads in search results and link previews. Leave a field blank to fall back to
         the page name.

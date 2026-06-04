@@ -13,7 +13,7 @@ import {
   Text,
   Wordmark,
 } from '@sparx/ui';
-import { Home, Search, Settings } from 'lucide-react';
+import { Home, Plus, Search, Settings } from 'lucide-react';
 import { getManifestForPath, moduleManifests } from '../_shell/registry';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
 import { FavoritesSection } from './favorites-section';
@@ -40,6 +40,13 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
   const visible = moduleManifests.filter((m) => enabledModules.includes(m.id));
   const manifest = pathname ? getManifestForPath(pathname) : undefined;
   const activeModule = manifest && enabledModules.includes(manifest.id) ? manifest : undefined;
+
+  // One ambient "Add a module" pointer (Option A), shown only when a billable
+  // module is inactive. `storefront` is the `builder` alias, not a separate
+  // activatable unit, so it's excluded from the comparison.
+  const hasInactiveModules = moduleManifests.some(
+    (m) => m.id !== 'storefront' && !enabledModules.includes(m.id)
+  );
 
   return (
     <>
@@ -85,6 +92,11 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
               </ModuleProvider>
             );
           })}
+          {hasInactiveModules && (
+            <SidebarItem asChild icon={<Plus className="h-4 w-4" />}>
+              <Link href="/settings/modules">Add a module</Link>
+            </SidebarItem>
+          )}
         </SidebarSection>
 
         <FavoritesSection favorites={favorites} />

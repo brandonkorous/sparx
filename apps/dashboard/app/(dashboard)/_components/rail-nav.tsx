@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ModuleProvider, useRailExpanded, Wordmark } from '@sparx/ui';
-import { Clock, Home, Search, Settings, Star } from 'lucide-react';
+import { Clock, Home, Plus, Search, Settings, Star } from 'lucide-react';
 import {
   moduleManifests,
   findFavoritableById,
@@ -69,6 +69,14 @@ interface RailNavProps {
 export function RailNav({ pathname, enabledModules, favorites, recents }: RailNavProps) {
   const visible = moduleManifests.filter((m) => enabledModules.includes(m.id));
   const expanded = useRailExpanded();
+
+  // Whether any billable module is inactive — drives the single "Add a module"
+  // entry (Option A: one ambient upgrade pointer, not a locked tile per module).
+  // The legacy `storefront` manifest is the `builder` module's alias, not a
+  // separately activatable unit, so it's excluded from the comparison.
+  const hasInactiveModules = moduleManifests.some(
+    (m) => m.id !== 'storefront' && !enabledModules.includes(m.id)
+  );
 
   // Optimistic recents (mirrors the former panel section): on navigation,
   // promote the current path to the top of the local list and fire the server
@@ -177,6 +185,24 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
       </div>
 
       <RailDivider expanded={expanded} />
+
+      {/* Option A: a single ambient "Add a module" pointer to the activation
+          surface, shown only when there's something to add. Rendered inactive
+          like Search — it's a CTA shortcut, not a primary destination (so it
+          doesn't fight Settings for the active state on /settings/modules). */}
+      {hasInactiveModules && (
+        <Link
+          href="/settings/modules"
+          title="Add a module"
+          aria-label="Add a module"
+          className={tileClass(false, expanded)}
+        >
+          <span className={tileIconClass(false)}>
+            <Plus className="h-4 w-4" />
+          </span>
+          {expanded && <span className="flex-1 truncate text-left">Add a module</span>}
+        </Link>
+      )}
 
       <Link
         href="/settings"

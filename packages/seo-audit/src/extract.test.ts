@@ -79,7 +79,9 @@ describe('extractCmsDocSignals', () => {
         { type: 'sparxImage', attrs: { src: 'https://x/b.jpg' } }, // missing alt
         {
           type: 'paragraph',
-          content: [{ type: 'sparxReference', attrs: { entryId: 'e1', typeKey: 'post', label: 'X' } }],
+          content: [
+            { type: 'sparxReference', attrs: { entryId: 'e1', typeKey: 'post', label: 'X' } },
+          ],
         },
       ],
     };
@@ -89,6 +91,26 @@ describe('extractCmsDocSignals', () => {
     expect(s.imagesMissingAlt).toBe(1);
     expect(s.internalLinkCount).toBe(2); // one link mark + one sparxReference
     expect(s.wordCount).toBe(3 + 2 + 2 + 2);
+  });
+
+  it('finds the doc inside a field bag (ContentEntry.body wraps fields)', () => {
+    // body is a field bag; the rich-text doc lives in a field (here `content`).
+    const body = {
+      title: 'Page Title',
+      content: {
+        type: 'doc',
+        content: [
+          {
+            type: 'heading',
+            attrs: { level: 1 },
+            content: [{ type: 'text', text: 'Hello World' }],
+          },
+        ],
+      },
+    };
+    const s = extractCmsDocSignals(body);
+    expect(s.h1Count).toBe(1);
+    expect(s.wordCount).toBe(2);
   });
 
   it('returns empty signals for a non-doc', () => {

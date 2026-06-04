@@ -37,6 +37,7 @@ COPY packages/provider-shippo/package.json packages/provider-shippo/
 COPY packages/provider-stripe/package.json packages/provider-stripe/
 COPY packages/provider-taxjar/package.json packages/provider-taxjar/
 COPY packages/search/package.json packages/search/
+COPY packages/seo-audit/package.json packages/seo-audit/
 COPY packages/cms-editor/package.json packages/cms-editor/
 COPY packages/cms-schemas/package.json packages/cms-schemas/
 COPY packages/email-platform/package.json packages/email-platform/
@@ -76,6 +77,7 @@ COPY packages/provider-shippo packages/provider-shippo
 COPY packages/provider-stripe packages/provider-stripe
 COPY packages/provider-taxjar packages/provider-taxjar
 COPY packages/search packages/search
+COPY packages/seo-audit packages/seo-audit
 COPY packages/cms-editor packages/cms-editor
 COPY packages/cms-schemas packages/cms-schemas
 COPY packages/email-platform packages/email-platform

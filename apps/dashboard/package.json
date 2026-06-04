@@ -38,6 +38,7 @@
     "@sparx/provider-stripe": "workspace:*",
     "@sparx/provider-taxjar": "workspace:*",
     "@sparx/section-template-react": "workspace:*",
+    "@sparx/seo-audit": "workspace:*",
     "@sparx/sitebuilder": "workspace:*",
     "@sparx/sitebuilder-schemas": "workspace:*",
     "@sparx/site-themes": "workspace:*",

@@ -116,6 +116,9 @@ importers:
       '@sparx/section-template-react':
         specifier: workspace:*
         version: link:../../packages/section-template-react
+      '@sparx/seo-audit':
+        specifier: workspace:*
+        version: link:../../packages/seo-audit
       '@sparx/site-themes':
         specifier: workspace:*
         version: link:../../packages/site-themes
@@ -1540,6 +1543,9 @@ importers:
       '@sparx/search':
         specifier: workspace:*
         version: link:../../packages/search
+      '@sparx/seo-audit':
+        specifier: workspace:*
+        version: link:../../packages/seo-audit
       '@sparx/sitebuilder':
         specifier: workspace:*
         version: link:../../packages/sitebuilder

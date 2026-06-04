@@ -44,6 +44,7 @@
     "@sparx/provider-shippo": "workspace:*",
     "@sparx/provider-stripe": "workspace:*",
     "@sparx/search": "workspace:*",
+    "@sparx/seo-audit": "workspace:*",
     "@sparx/sitebuilder": "workspace:*",
     "fastify": "^5.6.1",
     "fastify-plugin": "^5.0.1",

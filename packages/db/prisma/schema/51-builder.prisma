@@ -39,13 +39,13 @@ model BuilderPage {
   // catch-all titles/describes the page from these; null falls back to the page
   // `name`. Collection templates render per-record and inherit SEO from the
   // bound record (product/entry), so these stay null there.
-  seoTitle       String?  @map("seo_title") @db.VarChar(255)
-  seoDescription String?  @map("seo_description") @db.VarChar(500)
-  canonical      String?  @db.VarChar(2048)
+  seoTitle       String? @map("seo_title") @db.VarChar(255)
+  seoDescription String? @map("seo_description") @db.VarChar(500)
+  canonical      String? @db.VarChar(2048)
   // A full image URL (the Builder is URL-first for images, cf. box.backgroundImage)
   // — the storefront passes it straight to openGraph.images.
-  ogImage        String?  @map("og_image") @db.VarChar(2048)
-  noindex        Boolean  @default(false)
+  ogImage        String? @map("og_image") @db.VarChar(2048)
+  noindex        Boolean @default(false)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
@@ -84,9 +84,9 @@ model BuilderLayout {
   // the DB by a partial unique index on (tenant_id) WHERE is_active (hand-added in
   // the migration; Prisma can't express the predicate). Activation requires a
   // prior publish (the storefront reads the active layout's published tree).
-  isActive  Boolean @default(false) @map("is_active")
+  isActive      Boolean   @default(false) @map("is_active")
   // Catalog ordering (cf. BuilderPage.position).
-  position  Int     @default(0)
+  position      Int       @default(0)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
