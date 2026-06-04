@@ -143,7 +143,8 @@ export default async function ContentListPage({ searchParams }: PageProps) {
   const nextHref = nextCursor
     ? `/cms/content?${buildQuery({ ...baseParams, cursor: nextCursor })}`
     : null;
-  const isFiltered = Boolean(type && type !== 'all') || Boolean(status && status !== 'all') || Boolean(q);
+  const isFiltered =
+    Boolean(type && type !== 'all') || Boolean(status && status !== 'all') || Boolean(q);
   const isPaged = Boolean(cursor);
 
   return (
@@ -155,7 +156,12 @@ export default async function ContentListPage({ searchParams }: PageProps) {
           title="Content"
           badge={<Badge variant="outline">{entries.length}</Badge>}
           description="Every page, post, and entry across your content types."
-          actions={<ContentNewButton types={NEW_TYPES} activeType={type && type !== 'all' ? type : undefined} />}
+          actions={
+            <ContentNewButton
+              types={NEW_TYPES}
+              activeType={type && type !== 'all' ? type : undefined}
+            />
+          }
         />
 
         <ListToolbar
@@ -212,7 +218,10 @@ export default async function ContentListPage({ searchParams }: PageProps) {
                         </Text>
                       )}
                     </Stack>
-                    <Badge color={e.status === 'published' ? 'success' : 'outline'} className="text-xs">
+                    <Badge
+                      color={e.status === 'published' ? 'success' : 'outline'}
+                      className="text-xs"
+                    >
                       {e.status}
                     </Badge>
                   </Stack>
@@ -272,7 +281,10 @@ export default async function ContentListPage({ searchParams }: PageProps) {
                         </TableCell>
                       )}
                       <TableCell>
-                        <Badge color={e.status === 'published' ? 'success' : 'outline'} className="text-xs">
+                        <Badge
+                          color={e.status === 'published' ? 'success' : 'outline'}
+                          className="text-xs"
+                        >
                           {e.status}
                         </Badge>
                       </TableCell>

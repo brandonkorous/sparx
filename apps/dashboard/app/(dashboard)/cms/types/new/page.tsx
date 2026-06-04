@@ -46,9 +46,7 @@ export default async function NewContentTypePage({ searchParams }: PageProps) {
 
   if (from) {
     try {
-      const src = await api.get<ApiContentType>(
-        `/v1/content/types/${encodeURIComponent(from)}`
-      );
+      const src = await api.get<ApiContentType>(`/v1/content/types/${encodeURIComponent(from)}`);
       initial = {
         key: `${src.key}_copy`,
         name: `${src.name} copy`,

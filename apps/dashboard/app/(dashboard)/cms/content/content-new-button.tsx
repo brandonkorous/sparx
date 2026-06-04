@@ -3,7 +3,13 @@
 import * as React from 'react';
 import Link from 'next/link';
 import type { Route } from 'next';
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@sparx/ui';
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@sparx/ui';
 import { ChevronDown, Plus } from 'lucide-react';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
