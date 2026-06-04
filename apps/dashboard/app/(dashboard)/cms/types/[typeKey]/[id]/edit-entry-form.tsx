@@ -90,6 +90,10 @@ export interface EditEntryFormProps {
   typeName: string;
   /** Routable types carry a URL pattern; null ⇒ no slug / SEO / preview. */
   urlPattern: string | null;
+  /** The entry's top-level `slug` column. The routing slug of record — used for
+   *  the SEO preview + Preview link. Types whose schema has no editable slug
+   *  field (e.g. blog_post, auto-derived) keep their slug here, not in body. */
+  initialSlug: string;
   schema: { fields: FieldDef[] };
   initialBody: Record<string, unknown>;
   initialSeo: SeoFields;
@@ -105,6 +109,7 @@ export function EditEntryForm({
   typeKey,
   typeName,
   urlPattern,
+  initialSlug,
   schema,
   initialBody,
   initialSeo,
@@ -161,7 +166,9 @@ export function EditEntryForm({
     return routable && typeof s === 'string' && s.length > 0 ? s : undefined;
   };
 
-  const slug = str(body.slug);
+  // The effective routing slug: an editable `slug` field in the body wins (the
+  // user can retype it); otherwise the persisted column (auto-derived types).
+  const slug = str(body.slug) || initialSlug;
   const fallbackTitle = str(body.title);
 
   const runAutosave = React.useCallback(async () => {

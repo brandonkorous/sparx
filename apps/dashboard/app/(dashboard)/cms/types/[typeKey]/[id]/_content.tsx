@@ -119,6 +119,7 @@ export async function ContentEntryDetailContent({
         typeKey={type.key}
         typeName={type.name}
         urlPattern={type.url_pattern}
+        initialSlug={entry.slug ?? ''}
         schema={type.schema_json}
         initialBody={entry.body}
         initialSeo={initialSeo}
