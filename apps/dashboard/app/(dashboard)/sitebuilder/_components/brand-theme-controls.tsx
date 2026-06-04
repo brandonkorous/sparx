@@ -524,7 +524,7 @@ function ColorSwatch({
   const single = !content;
   return (
     <div className="flex flex-col items-center gap-1">
-      <div className={`relative flex gap-1${single ? ' w-full' : ''}`}>
+      <div className={`relative flex gap-1${single ? 'w-full' : ''}`}>
         <SwatchInput fill={color} onChange={onChange} ariaLabel={label} warn={warn} wide={single} />
         {content ? (
           <SwatchInput
