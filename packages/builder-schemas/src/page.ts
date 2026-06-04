@@ -36,6 +36,10 @@ export interface BuilderPageDto {
   published: boolean;
   publishedAt: string | null;
   position: number;
+  /** Whether this collection template is the DEFAULT for its `recordType`
+   *  (docs/51 §6) — the per-type winner the storefront renders when a record has
+   *  no per-record override. At most one per (tenant, recordType). */
+  isDefault: boolean;
   // SEO (singleton pages) — see PageSeoShape below.
   seoTitle: string | null;
   seoDescription: string | null;
@@ -107,3 +111,35 @@ export const ReorderPagesInput = z.object({
   orderedIds: z.array(z.string().uuid()).min(1),
 });
 export type ReorderPagesInput = z.infer<typeof ReorderPagesInput>;
+
+// ── Template resolution (docs/51 §6) ─────────────────────────────────────────
+
+/** A collection template a record type can resolve to — the option set the
+ *  entry-editor's per-record template picker lists, with the type default
+ *  flagged. `published` is false for a draft-only template (still selectable,
+ *  but it won't render on the storefront until published). */
+export interface BuilderTemplateOption {
+  id: string;
+  name: string;
+  isDefault: boolean;
+  published: boolean;
+}
+
+/** Set (or clear) a per-record template OVERRIDE (docs/51 §6). `recordType` is
+ *  the source key the template targets (`cms.blog_post`, `commerce.product`);
+ *  `itemRef` is the record's stable id. `builderPageId: null` CLEARS the override
+ *  so the record falls back to the type default. */
+export const SetAssignmentInput = z.object({
+  recordType: z.string().min(1).max(63),
+  itemRef: z.string().min(1).max(255),
+  builderPageId: z.string().uuid().nullable(),
+});
+export type SetAssignmentInput = z.infer<typeof SetAssignmentInput>;
+
+/** The current per-record override for a (recordType, itemRef), or null when the
+ *  record uses the type default. */
+export interface BuilderAssignmentDto {
+  recordType: string;
+  itemRef: string;
+  builderPageId: string;
+}

@@ -70,6 +70,10 @@ export interface PageTemplate {
   /** For collection templates: the content type each record comes from
    *  (e.g. 'cms.post', 'commerce.product'). */
   recordType?: string;
+  /** Whether this collection template is the DEFAULT for its recordType
+   *  (docs/51 §6) — the per-type winner the storefront renders absent a
+   *  per-record override. */
+  isDefault: boolean;
   tree: BuilderNode;
   /** SEO for a published singleton (docs/50). Empty strings (not null) so the
    *  inspector's inputs stay controlled; the service stores '' as null. */

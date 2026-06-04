@@ -25,7 +25,8 @@ import { withTenant } from '@sparx/db';
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
 import type { ServiceContext } from '../errors';
-import { BuilderNotFoundError } from '../errors';
+import { BuilderNotFoundError, BuilderValidationError } from '../errors';
+import { getSchema } from './binding-service';
 
 function toDto(row: BuilderPage): BuilderPageDto {
   return {
@@ -39,6 +40,7 @@ function toDto(row: BuilderPage): BuilderPageDto {
     published: row.publishedTree != null,
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
+    isDefault: row.isDefault,
     seoTitle: row.seoTitle,
     seoDescription: row.seoDescription,
     canonical: row.canonical,
@@ -68,6 +70,21 @@ const asJson = (tree: BuilderNode): Prisma.InputJsonValue =>
 // this explicit empty-to-null helper carries the intent.
 const emptyToNull = (v: string | null | undefined): string | null =>
   v != null && v.length > 0 ? v : null;
+
+/** First-class link integrity (docs/51 §6): a collection template's `recordType`
+ *  must name a REAL source — a tenant/platform content type or a code-defined
+ *  Commerce/CRM source — so the template↔content link can't drift to a key that
+ *  no longer resolves (the seed-drift bug docs/51 was written to kill). Reads the
+ *  binding catalog (its own withTenant) BEFORE the caller's transaction, so it
+ *  never nests transactions. */
+async function assertValidRecordType(ctx: ServiceContext, recordType: string): Promise<void> {
+  const { sources } = await getSchema(ctx);
+  if (!sources.some((s) => s.key === recordType)) {
+    throw new BuilderValidationError('Unknown record type for this template.', [
+      { field: 'recordType', message: `No content type or source matches "${recordType}".` },
+    ]);
+  }
+}
 
 /** List the tenant's pages. On first use (zero rows) seed the curated starter
  *  set — the lazy-materialization idiom (cf. getOrCreateConfig). Idempotent:
@@ -116,6 +133,7 @@ export function get(ctx: ServiceContext, id: string): Promise<BuilderPageDto> {
 
 export async function create(ctx: ServiceContext, rawInput: unknown): Promise<BuilderPageDto> {
   const input = CreatePageInput.parse(rawInput);
+  if (input.recordType) await assertValidRecordType(ctx, input.recordType);
   return withTenant(ctx, async (tx) => {
     const last = await tx.builderPage.findFirst({
       orderBy: { position: 'desc' },
@@ -160,6 +178,8 @@ export async function update(
   rawInput: unknown
 ): Promise<BuilderPageDto> {
   const input = UpdatePageInput.parse(rawInput);
+  // Retargeting at a real source keeps the template↔content link from drifting.
+  if (input.recordType) await assertValidRecordType(ctx, input.recordType);
   return withTenant(ctx, async (tx) => {
     const existing = await tx.builderPage.findUnique({ where: { id }, select: { id: true } });
     if (!existing) throw new BuilderNotFoundError('BuilderPage', id);
@@ -265,6 +285,40 @@ export async function publish(ctx: ServiceContext, id: string): Promise<BuilderP
   return dto;
 }
 
+/** Mark a collection template as the DEFAULT for its `recordType` (docs/51 §6) —
+ *  the per-type winner the storefront resolves to when a record has no per-record
+ *  override. Clears any prior default for the same recordType first, in the same
+ *  transaction, so the partial unique index never trips. The page must be a
+ *  collection WITH a recordType. */
+export async function setDefault(ctx: ServiceContext, id: string): Promise<BuilderPageDto> {
+  return withTenant(ctx, async (tx) => {
+    const row = await tx.builderPage.findUnique({ where: { id } });
+    if (!row) throw new BuilderNotFoundError('BuilderPage', id);
+    if (row.kind !== 'collection' || !row.recordType) {
+      throw new BuilderValidationError(
+        'Only a collection template that targets a record type can be made the default.'
+      );
+    }
+    // Clear the prior default for this recordType, then set this one (one tx).
+    await tx.builderPage.updateMany({
+      where: { recordType: row.recordType, isDefault: true, NOT: { id } },
+      data: { isDefault: false },
+    });
+    const updated = await tx.builderPage.update({ where: { id }, data: { isDefault: true } });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'builder.page.set_default',
+      entityType: 'BuilderPage',
+      entityId: id,
+      diff: { after: { recordType: row.recordType } },
+    });
+    return toDto(updated);
+  });
+}
+
 /** The storefront read (docs/44 §2.2): the PUBLISHED tree for a page by slug, or
  *  null when no page with that slug has been published. Returns the published
  *  snapshot — never the draft. Tenant-scoped via withTenant (the public route
@@ -316,32 +370,57 @@ export function getDraftBySlug(
 }
 
 /** The collection-template read (docs/44 §3 B — the generic record router): the
- *  PUBLISHED tree of the collection page that renders EVERY record of
- *  `recordType` (e.g. `commerce.product`, `cms.page`, `cms.blog_post`), or null
- *  when the tenant has published none. A tenant may keep several collection
- *  pages for a type; the lowest-`position` PUBLISHED one wins (deterministic).
- *  The storefront binds the in-scope record into this tree (`product.*` etc.). */
+ *  PUBLISHED tree that renders a record of `recordType` (e.g. `commerce.product`,
+ *  `cms.page`, `cms.blog_post`), or null when none resolves.
+ *
+ *  Resolution order (docs/51 §6) — the first PUBLISHED candidate wins:
+ *    1. per-record OVERRIDE  (BuilderPageAssignment for `recordId`, if given)
+ *    2. the type DEFAULT     (BuilderPage.isDefault for this recordType)
+ *    3. FALLBACK             (lowest-position published — the prior behaviour)
+ *
+ *  An unpublished override/default falls through to the next candidate so the
+ *  storefront always renders a published tree (never a draft). The caller binds
+ *  the in-scope record into the tree (`product.*`, `post.*`). publishedTree's
+ *  NULL check is in JS (Prisma is a type-only import here — cf. getPublishedBySlug). */
 export function getPublishedByRecordType(
   ctx: ServiceContext,
-  recordType: string
+  recordType: string,
+  recordId?: string
 ): Promise<PublishedPageDto | null> {
   return withTenant(ctx, async (tx) => {
-    // Ordered candidates; pick the first PUBLISHED one. publishedTree's NULL
-    // check is in JS (Prisma is a type-only import here — cf. getPublishedBySlug).
     const rows = await tx.builderPage.findMany({
       where: { recordType, kind: 'collection' },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
-    const row = rows.find((r) => r.publishedTree != null);
-    if (row?.publishedTree == null) return null;
+    if (rows.length === 0) return null;
+
+    // Per-record override (a specific template pinned to this exact record).
+    let overrideId: string | null = null;
+    if (recordId) {
+      const assignment = await tx.builderPageAssignment.findFirst({
+        where: { recordType, itemRef: recordId },
+        select: { builderPageId: true },
+      });
+      overrideId = assignment?.builderPageId ?? null;
+    }
+
+    const isPublished = (r: (typeof rows)[number] | undefined): boolean => r?.publishedTree != null;
+    const override = overrideId ? rows.find((r) => r.id === overrideId) : undefined;
+
+    const chosen =
+      (isPublished(override) ? override : undefined) ??
+      rows.find((r) => r.isDefault && r.publishedTree != null) ??
+      rows.find((r) => r.publishedTree != null);
+
+    if (chosen?.publishedTree == null) return null;
     return {
-      name: row.name,
-      slug: row.slug ?? recordType,
-      kind: row.kind as BuilderPageKind,
-      recordType: row.recordType,
-      tree: row.publishedTree as unknown as BuilderNode,
-      ...publishedSeo(row),
-      publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
+      name: chosen.name,
+      slug: chosen.slug ?? recordType,
+      kind: chosen.kind as BuilderPageKind,
+      recordType: chosen.recordType,
+      tree: chosen.publishedTree as unknown as BuilderNode,
+      ...publishedSeo(chosen),
+      publishedAt: chosen.publishedAt ? chosen.publishedAt.toISOString() : null,
     };
   });
 }

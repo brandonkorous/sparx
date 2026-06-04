@@ -17,6 +17,7 @@ import {
   DollarSign,
   Fingerprint,
   GalleryHorizontal,
+  Grid2x2,
   Hash,
   Heading as HeadingIcon,
   Image as ImageIcon,
@@ -26,10 +27,12 @@ import {
   Mail,
   MapPin,
   Menu,
+  MessagesSquare,
   Minus,
   MousePointerClick,
   Package,
   Palette,
+  PanelTop,
   Pilcrow,
   PlayCircle,
   Rows3,
@@ -65,10 +68,12 @@ export type NodeKind = 'container' | 'leaf';
 export type ModuleKey = 'cms' | 'commerce' | 'crm' | 'events' | 'site';
 export type PaletteGroup = 'layout' | 'content' | 'data';
 /** Which editor surface a component belongs to. `page` = the content outlet
- *  (per-record content); `site` = the layout shell (chrome zones). Most
- *  primitives belong to BOTH; the Outlet + chrome components are site-only, and
- *  per-record data leaves are page-only. */
-export type EditorSurface = 'page' | 'site';
+ *  (per-record content); `site` = the layout shell (chrome zones); `email` = the
+ *  Email Builder body (docs/52). Most primitives belong to page+site; the Outlet
+ *  + chrome components are site-only, and per-record data leaves are page-only.
+ *  Email is OPT-IN — a curated, render-safe subset (see EMAIL_TYPES), never the
+ *  page/site default — so interactive/chrome components can't land in an email. */
+export type EditorSurface = 'page' | 'site' | 'email';
 
 /** A cluster of related box-base controls in the inspector's Layout panel. A
  *  component declares which it exposes (`boxAxes`); the rest are hidden so the
@@ -208,6 +213,51 @@ export function parseNavLinks(raw: string): { label: string; url: string }[] {
       return { label: (label ?? '').trim(), url: (url ?? '#').trim() || '#' };
     })
     .filter((l) => l.label !== '');
+}
+
+// Authored-inline Q&A pairs for the FAQ component (the fallback when it isn't
+// bound to a content list). Items are separated by a line of three-or-more
+// dashes; within a block the FIRST non-empty line is the question and the rest
+// (joined) is the answer. Mirrored in the storefront renderer.
+export function parseFaqItems(raw: string): { question: string; answer: string }[] {
+  return (raw ?? '')
+    .split(/\n\s*-{3,}\s*\n/)
+    .map((block) => {
+      const lines = block.split('\n').map((l) => l.trim());
+      const start = lines.findIndex((l) => l !== '');
+      if (start === -1) return null;
+      const question = lines[start];
+      const answer = lines
+        .slice(start + 1)
+        .filter(Boolean)
+        .join('\n\n');
+      return question ? { question, answer } : null;
+    })
+    .filter((x): x is { question: string; answer: string } => x !== null);
+}
+
+// Authored-inline feature cards for the FeatureGrid component. One per line,
+// `Title | Body` (auto-numbered 01, 02, …) or `Number | Title | Body` to set the
+// ordinal explicitly. Mirrored in the storefront renderer.
+export function parseFeatureItems(raw: string): { number: string; title: string; body: string }[] {
+  return (raw ?? '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line, i) => {
+      const parts = line.split('|').map((p) => p.trim());
+      const auto = String(i + 1).padStart(2, '0');
+      if (parts.length >= 3) {
+        return {
+          number: firstString(parts[0], auto),
+          title: parts[1] ?? '',
+          body: parts.slice(2).join(' | '),
+        };
+      }
+      if (parts.length === 2) return { number: auto, title: parts[0] ?? '', body: parts[1] ?? '' };
+      return { number: auto, title: parts[0] ?? '', body: '' };
+    })
+    .filter((f) => f.title !== '');
 }
 
 function Placeholder({ label, ratio }: { label: string; ratio?: string }) {
@@ -661,6 +711,199 @@ const DEFS: ComponentDef[] = [
       );
     },
   },
+  {
+    // A long-form marketing block — eyebrow, headline, body, optional CTA
+    // (docs/51 §7). Authored inline here; a power user can also bind it to an
+    // object with the same field names (e.g. a CMS record). Replaces the old
+    // `editorial_section` content TYPE — it's page content, not a content item.
+    type: 'EditorialSection',
+    label: 'Editorial section',
+    kind: 'leaf',
+    group: 'content',
+    icon: PanelTop,
+    bindable: true,
+    accepts: ['object', 'empty'],
+    props: [
+      { key: 'eyebrow', label: 'Eyebrow', control: 'text', placeholder: 'Short kicker' },
+      {
+        key: 'headline',
+        label: 'Headline',
+        control: 'text',
+        placeholder: 'A headline that sells',
+      },
+      { key: 'body', label: 'Body', control: 'textarea', placeholder: 'Supporting copy…' },
+      { key: 'ctaLabel', label: 'CTA label', control: 'text', placeholder: 'Learn more' },
+      { key: 'ctaUrl', label: 'CTA URL', control: 'text', placeholder: '/contact or https://…' },
+    ],
+    defaults: {
+      props: {
+        eyebrow: '',
+        headline: 'A headline that sells',
+        body: 'One or two sentences that explain the value and earn the click.',
+        ctaLabel: '',
+        ctaUrl: '',
+      },
+    },
+    renderLeaf: ({ node, value, bound }) => {
+      const obj =
+        bound && value && typeof value === 'object' && !Array.isArray(value)
+          ? (value as Record<string, unknown>)
+          : null;
+      const pick = (k: string, prop: string, dflt = '') =>
+        firstString(obj?.[k], node.props[prop], dflt);
+      const eyebrow = pick('eyebrow', 'eyebrow');
+      const headline = pick('headline', 'headline', 'Headline');
+      const body = pick('body', 'body');
+      const ctaLabel = pick('ctaLabel', 'ctaLabel');
+      return (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
+            alignItems: 'inherit',
+          }}
+        >
+          {eyebrow ? <span className="bx-text bx-text--eyebrow">{eyebrow}</span> : null}
+          <span className="bx-h bx-h2">{headline}</span>
+          {body ? <p className="bx-text bx-text--body">{body}</p> : null}
+          {ctaLabel ? <span className="bx-btn bx-btn--primary">{ctaLabel}</span> : null}
+        </div>
+      );
+    },
+  },
+  {
+    // A list of question/answer pairs (docs/51 §7). Authored inline via a simple
+    // block format, or bound to an array of `{question, answer}` records.
+    // Replaces the old `faq_item` content type — FAQ entries are page content,
+    // not standalone content items.
+    type: 'FAQ',
+    label: 'FAQ',
+    kind: 'leaf',
+    group: 'content',
+    icon: MessagesSquare,
+    bindable: true,
+    accepts: ['array', 'empty'],
+    props: [
+      {
+        key: 'items',
+        label: 'Q&A — first line is the question, then the answer; “---” between items',
+        control: 'textarea',
+        placeholder:
+          'Can I get a live site in five minutes?\nYes — that’s the design target.\n---\nWhat if I turn a module off?\nBilling stops; your data stays.',
+      },
+    ],
+    defaults: {
+      props: {
+        items:
+          'Can I get a live site in five minutes?\nYes — that’s the design target the whole platform is built around.\n---\nWhat happens if I turn a module off?\nBilling stops on the next cycle; your data stays exactly where it was.',
+      },
+    },
+    renderLeaf: ({ node, value, cardinality }) => {
+      const items =
+        cardinality === 'array' && Array.isArray(value)
+          ? (value as Record<string, unknown>[]).map((it) => ({
+              question: firstString(it.question),
+              answer: firstString(it.answer),
+            }))
+          : parseFaqItems(firstString(node.props.items));
+      const list = items.filter((it) => it.question);
+      const show = list.length
+        ? list
+        : [{ question: 'Your question here?', answer: 'And the answer here.' }];
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
+          {show.map((it, i) => (
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              <p className="bx-text" style={{ fontWeight: 600 }}>
+                {it.question}
+              </p>
+              {it.answer ? <p className="bx-text bx-text--body">{it.answer}</p> : null}
+            </div>
+          ))}
+        </div>
+      );
+    },
+  },
+  {
+    // A responsive grid of numbered feature cards (docs/51 §7). Authored inline
+    // (`Title | Body` per line), or bound to an array of `{number?, title, body}`
+    // records. Replaces the old `feature` content type and `module.features`.
+    type: 'FeatureGrid',
+    label: 'Feature grid',
+    kind: 'leaf',
+    group: 'content',
+    icon: Grid2x2,
+    bindable: true,
+    accepts: ['array', 'empty'],
+    props: [
+      {
+        key: 'columns',
+        label: 'Columns',
+        control: 'buttongroup',
+        options: [
+          { value: '2', label: '2' },
+          { value: '3', label: '3' },
+          { value: '4', label: '4' },
+        ],
+      },
+      {
+        key: 'items',
+        label: 'Features — one per line, “Title | Body”',
+        control: 'textarea',
+        placeholder:
+          'Theme-first | Pick a polished theme, customize what matters, publish.\nBlock editor | Drag, drop, edit. Responsive and accessible by default.',
+      },
+    ],
+    defaults: {
+      props: {
+        columns: '3',
+        items:
+          'Theme-first | Pick a polished theme, customize what matters, publish.\nBlock editor | Drag, drop, edit. Responsive and accessible by default.\nCustom domain + SSL | Point your DNS; we provision the certificate automatically.',
+      },
+    },
+    renderLeaf: ({ node, value, cardinality }) => {
+      const items =
+        cardinality === 'array' && Array.isArray(value)
+          ? (value as Record<string, unknown>[]).map((it, i) => ({
+              number: firstString(it.number, String(i + 1).padStart(2, '0')),
+              title: firstString(it.title),
+              body: firstString(it.body),
+            }))
+          : parseFeatureItems(firstString(node.props.items));
+      const list = items.filter((f) => f.title);
+      const show = list.length
+        ? list
+        : [
+            { number: '01', title: 'Feature one', body: 'What it does.' },
+            { number: '02', title: 'Feature two', body: 'What it does.' },
+            { number: '03', title: 'Feature three', body: 'What it does.' },
+          ];
+      const cols = Math.min(4, Math.max(2, Number(node.props.columns) || 3));
+      return (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+            gap: '1.25rem',
+            width: '100%',
+          }}
+        >
+          {show.map((f, i) => (
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              <span className="bx-stat__value" style={{ fontSize: '20px', opacity: 0.5 }}>
+                {f.number}
+              </span>
+              <span className="bx-text" style={{ fontWeight: 600 }}>
+                {f.title}
+              </span>
+              {f.body ? <span className="bx-text bx-text--body">{f.body}</span> : null}
+            </div>
+          ))}
+        </div>
+      );
+    },
+  },
 
   // ---- Data-aware (Tier 2) ----
   {
@@ -1035,9 +1278,29 @@ export function acceptsChildren(type: string): boolean {
 
 export const PALETTE: ComponentDef[] = DEFS;
 
-/** The palette entries available in a given editor surface (docs/45 §2.5). A def
- *  with no `surfaces` belongs to both; otherwise it must list the surface. */
+/** The render-safe subset an EMAIL can compose from (docs/52 §4). Email is fixed-
+ *  width and non-interactive, so the palette is OPT-IN: only these types appear,
+ *  never the page/site default. Excludes site chrome (Outlet/NavMenu/Logo/Social),
+ *  interactive commerce (ProductForm + atoms), and effects with no email analogue
+ *  (Carousel/Video/Map). Data-aware email components join this set in Phase 4.
+ *  Bound-only leaves (Prose/ImageDisplay) stay out until the data resolver lands. */
+const EMAIL_TYPES: ReadonlySet<string> = new Set([
+  'Section',
+  'Stack',
+  'Grid',
+  'Card',
+  'Heading',
+  'Text',
+  'Button',
+  'Divider',
+]);
+
+/** The palette entries available in a given editor surface (docs/45 §2.5, docs/52
+ *  §4). For page/site, a def with no `surfaces` belongs to both; otherwise it must
+ *  list the surface. Email is the exception — a curated allowlist (EMAIL_TYPES),
+ *  never the omitted-surfaces default, so nothing leaks into an email by accident. */
 export function paletteForSurface(surface: EditorSurface): ComponentDef[] {
+  if (surface === 'email') return DEFS.filter((d) => EMAIL_TYPES.has(d.type));
   return DEFS.filter((d) => !d.surfaces || d.surfaces.includes(surface));
 }
 

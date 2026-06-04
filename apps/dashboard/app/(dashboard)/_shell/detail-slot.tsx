@@ -39,6 +39,7 @@ import { ShippingZoneDetailContent } from '../commerce/shipping/zones/[id]/_cont
 import { SubscriptionDetailContent } from '../commerce/subscriptions/[id]/_content';
 import { TaxZoneDetailContent } from '../commerce/tax/zones/[id]/_content';
 import { WarehouseDetailContent } from '../commerce/warehouses/[id]/_content';
+import { ComponentDetailContent } from '../builder/components/[type]/_content';
 
 // Server-only registry mapping a manifest entity type id → its detail content
 // component. These are React Server Components that fetch their own data
@@ -83,6 +84,8 @@ const detailComponents: Record<string, DetailComponent> = {
   'shipping-profile': ShippingProfileDetailContent,
   'shipping-zone': ShippingZoneDetailContent,
   'tax-zone': TaxZoneDetailContent,
+  // Builder
+  'builder-component': ComponentDetailContent,
 };
 
 // Each entity type's owning module. The `@detail` slot renders OUTSIDE any
@@ -123,6 +126,8 @@ const detailModules: Record<string, SparxModule> = {
   'shipping-profile': 'commerce',
   'shipping-zone': 'commerce',
   'tax-zone': 'commerce',
+  // Builder
+  'builder-component': 'builder',
 };
 
 // Create-form registry, parallel to `detailComponents`. Keyed by the same

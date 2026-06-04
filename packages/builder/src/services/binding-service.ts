@@ -19,10 +19,18 @@ import type { ServiceContext } from '../errors';
 
 export function getSchema(ctx: ServiceContext): Promise<BindingCatalog> {
   return withTenant(ctx, async (tx) => {
-    // Built-ins first, then the tenant's custom types — stable order.
-    const types = await tx.contentType.findMany({
+    // Tenant-owned types first (isBuiltIn ASC), then platform built-ins —
+    // stable order. A tenant fork (is_built_in=false) of a built-in shadows
+    // the platform row of the same key, so dedupe keeping the first per key.
+    const rows = await tx.contentType.findMany({
       orderBy: [{ isBuiltIn: 'asc' }, { key: 'asc' }],
       select: { key: true, name: true, pluralName: true, isSingleton: true, schemaJson: true },
+    });
+    const seen = new Set<string>();
+    const types = rows.filter((t) => {
+      if (seen.has(t.key)) return false;
+      seen.add(t.key);
+      return true;
     });
 
     const cmsSources = types.flatMap((t) => {

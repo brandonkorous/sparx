@@ -253,3 +253,84 @@ export const SITE_SOURCES: DataSource[] = [
  *  shape — so the editor route passes it directly with no fetch (cf. the page
  *  catalog, which must introspect the tenant's CMS content types). */
 export const SITE_CATALOG: BindingCatalog = { sources: SITE_SOURCES };
+
+// ── Email-scope sources (the Email Builder — docs/52 §7) ──────────────────────
+//
+// What an email can bind to. The SHAPE is fixed here; the DATA is produced per
+// send/recipient at dispatch time by an email DataSources resolver in api-rest
+// (the generalization of today's section `sectionResolver`). Two tiers:
+//   · personalized — resolved PER RECIPIENT (recipient / order / cart / loyalty);
+//   · dynamic      — resolved once per send (products / collections / promotion).
+// Tenant CMS sources (e.g. latest blog posts) are introspected per tenant like
+// the page catalog; they're merged in when the data-aware palette lands (Phase 4),
+// so this constant carries only the code-defined sources.
+
+const CUSTOMER_FIELDS: FieldSchema[] = [
+  { key: 'firstName', label: 'First name', kind: 'text', cardinality: 'scalar' },
+  { key: 'lastName', label: 'Last name', kind: 'text', cardinality: 'scalar' },
+  { key: 'email', label: 'Email', kind: 'text', cardinality: 'scalar' },
+];
+
+const ORDER_FIELDS: FieldSchema[] = [
+  { key: 'numberLabel', label: 'Order number', kind: 'text', cardinality: 'scalar' },
+  { key: 'statusLabel', label: 'Status', kind: 'text', cardinality: 'scalar' },
+  { key: 'totalLabel', label: 'Total', kind: 'text', cardinality: 'scalar' },
+  { key: 'dateLabel', label: 'Date', kind: 'text', cardinality: 'scalar' },
+];
+
+export const EMAIL_SOURCES: DataSource[] = [
+  {
+    key: 'recipient',
+    label: 'Recipient',
+    module: 'crm',
+    cardinality: 'object',
+    recordType: 'customer',
+    fields: CUSTOMER_FIELDS,
+  },
+  {
+    key: 'order',
+    label: 'Recent order',
+    module: 'commerce',
+    cardinality: 'object',
+    recordType: 'order',
+    fields: ORDER_FIELDS,
+  },
+  {
+    key: 'cart',
+    label: 'Abandoned cart',
+    module: 'commerce',
+    cardinality: 'array',
+    recordType: 'cartLine',
+    fields: [
+      { key: 'title', label: 'Title', kind: 'text', cardinality: 'scalar' },
+      { key: 'priceLabel', label: 'Price', kind: 'text', cardinality: 'scalar' },
+      { key: 'imageUrl', label: 'Image', kind: 'image', cardinality: 'scalar' },
+    ],
+  },
+  {
+    key: 'commerce.product',
+    label: 'Products',
+    module: 'commerce',
+    cardinality: 'array',
+    recordType: 'product',
+    fields: PRODUCT_FIELDS,
+  },
+  {
+    key: 'promotion',
+    label: 'Active promotion',
+    module: 'commerce',
+    cardinality: 'object',
+    recordType: 'promotion',
+    fields: [
+      { key: 'title', label: 'Title', kind: 'text', cardinality: 'scalar' },
+      { key: 'body', label: 'Body', kind: 'text', cardinality: 'scalar' },
+      { key: 'ctaLabel', label: 'CTA label', kind: 'text', cardinality: 'scalar' },
+      { key: 'ctaHref', label: 'CTA link', kind: 'text', cardinality: 'scalar' },
+    ],
+  },
+];
+
+/** The Email Builder's binding catalog (docs/52 §7). The code-defined sources are
+ *  constant; tenant CMS sources merge in when the data-aware palette lands. The
+ *  Phase-1 (static) editor passes an EMPTY catalog so nothing binds yet. */
+export const EMAIL_CATALOG: BindingCatalog = { sources: EMAIL_SOURCES };

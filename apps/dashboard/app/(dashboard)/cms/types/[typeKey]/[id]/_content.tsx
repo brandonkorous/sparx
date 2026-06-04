@@ -1,16 +1,11 @@
 import { notFound } from 'next/navigation';
 import { Badge, Heading, Stack, Text } from '@sparx/ui';
 import type { FieldDef } from '@sparx/cms-schemas';
-import { cmsContentTypeTargetId } from '@sparx/sitebuilder-schemas';
+import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { EditEntryForm } from './edit-entry-form';
 import { type SeoFields } from '../../../[id]/seo-panel';
-// Site-Builder-owned layout assignment (docs/36 §6). The content type's stable
-// `key` is the target identifier; the entry id is the item. Self-hides when
-// Site Builder is inactive. Server component — rendered here, not inside the
-// client EditEntryForm.
-import { LayoutAssignmentSection } from '../../../../sitebuilder/_components/layout-assignment-section';
 
 // Detail content for one content-type entry. Used by both:
 //   - cms/types/[typeKey]/[id]/page.tsx (the full route)
@@ -87,6 +82,27 @@ export async function ContentEntryDetailContent({ id }: ContentEntryDetailConten
   const title = typeof entry.body.title === 'string' ? entry.body.title : '';
   const lowerType = type.name.toLowerCase();
 
+  // Per-record builder template override (docs/51 §6). Only relevant when the
+  // Builder module is on AND the type has collection template(s) — a 404 (module
+  // off) or empty list leaves both null, so the editor hides the picker.
+  let templateOptions: BuilderTemplateOption[] | null = null;
+  let currentTemplateId: string | null = null;
+  try {
+    const recordType = `cms.${entry.type_key}`;
+    const { options } = await api.get<{ options: BuilderTemplateOption[] }>(
+      `/v1/builder/template-options?recordType=${encodeURIComponent(recordType)}`
+    );
+    if (options.length > 0) {
+      templateOptions = options;
+      const { assignment } = await api.get<{ assignment: { builderPageId: string } | null }>(
+        `/v1/builder/assignment?recordType=${encodeURIComponent(recordType)}&itemRef=${encodeURIComponent(entry.id)}`
+      );
+      currentTemplateId = assignment?.builderPageId ?? null;
+    }
+  } catch {
+    templateOptions = null;
+  }
+
   return (
     <Stack gap={6}>
       <Stack gap={2}>
@@ -116,17 +132,9 @@ export async function ContentEntryDetailContent({ id }: ContentEntryDetailConten
         scheduledAt={entry.scheduled_at ? new Date(entry.scheduled_at) : null}
         initialEtag={initialEtag}
         tenantSlug={tenant?.slug ?? null}
+        templateOptions={templateOptions}
+        currentTemplateId={currentTemplateId}
       />
-
-      {/* SEO + layout only matter for types that render on the site (have a URL
-          pattern). Per-entry layout so every record can target its own. */}
-      {type.url_pattern ? (
-        <LayoutAssignmentSection
-          targetId={cmsContentTypeTargetId(type.key)}
-          itemRef={entry.id}
-          note="Saved now; takes effect on your site once content pages render through layouts."
-        />
-      ) : null}
     </Stack>
   );
 }

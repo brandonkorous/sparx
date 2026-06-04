@@ -188,11 +188,15 @@ model Broadcast {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid
 
-  name       String  @db.VarChar(160)
-  templateId String? @map("template_id") @db.Uuid
-  body       Json    @default("{}") // inline body when not using a template
-  subject    String  @db.VarChar(255)
-  preheader  String? @db.VarChar(255)
+  name           String  @db.VarChar(160)
+  templateId     String? @map("template_id") @db.Uuid
+  // A published Builder email used as the body (docs/52). Soft reference (no FK,
+  // like segmentId) — the Builder module owns the row. The body source is exactly
+  // one of templateId (legacy section list) or builderEmailId (the node tree).
+  builderEmailId String? @map("builder_email_id") @db.Uuid
+  body           Json    @default("{}") // inline body when not using a template
+  subject        String  @db.VarChar(255)
+  preheader      String? @db.VarChar(255)
 
   segmentId String? @map("segment_id") @db.Uuid // soft reference to CRM Segment
   audience  Json    @default("{}") // alternate audience definition

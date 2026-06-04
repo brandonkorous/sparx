@@ -50,6 +50,15 @@ export {
   type SectionRenderProps,
 } from './sections/components';
 
+// Builder email node-tree render (docs/52): walk a BuilderNode tree → branded,
+// table-based React Email. The node-tree successor to renderSections.
+export {
+  renderEmailTree,
+  composeEmailTree,
+  type RenderEmailTreeInput,
+  type RenderEmailTreeOptions,
+} from './builder/render-email-tree';
+
 export {
   PasswordResetEmail,
   WelcomeMerchantEmail,

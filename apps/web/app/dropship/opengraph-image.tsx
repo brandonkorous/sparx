@@ -7,7 +7,7 @@ export const size = OG_SIZE;
 export const contentType = 'image/png';
 export const alt = MODULES.dropship.title;
 
-export default async function Image() {
-  const meta = await loadModuleData('dropship');
+export default function Image() {
+  const meta = loadModuleData('dropship');
   return renderModuleOgImage(meta);
 }

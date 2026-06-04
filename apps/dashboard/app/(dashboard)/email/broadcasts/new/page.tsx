@@ -1,16 +1,32 @@
 import { Card, CardContent, CardHeader, CardTitle, Container, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-import { BroadcastComposer } from '../_components/broadcast-composer';
+import { BroadcastComposer, type BuilderEmailOption } from '../_components/broadcast-composer';
 import type { SegmentOption, TemplateListResponse } from '../../_lib/types';
 
 export const dynamic = 'force-dynamic';
 
+// A Builder email a broadcast can use as its body (docs/52). Only PUBLISHED ones
+// are selectable — the send renders the published snapshot.
+interface BuilderEmailListItem {
+  id: string;
+  name: string;
+  published: boolean;
+}
+
 export default async function NewBroadcastPage() {
-  const [segments, templateList] = await Promise.all([
+  const [segments, templateList, builderEmails] = await Promise.all([
     api.get<SegmentOption[]>('/v1/crm/segments').catch(() => [] as SegmentOption[]),
     api.get<TemplateListResponse>('/v1/email/templates'),
+    api
+      .get<{ emails: BuilderEmailListItem[] }>('/v1/builder/emails')
+      .then((r) => r.emails)
+      .catch(() => [] as BuilderEmailListItem[]),
   ]);
+
+  const designedEmails: BuilderEmailOption[] = builderEmails
+    .filter((e) => e.published)
+    .map((e) => ({ id: e.id, name: e.name }));
 
   return (
     <Container size="md">
@@ -25,6 +41,7 @@ export default async function NewBroadcastPage() {
             <BroadcastComposer
               segments={segments.map((s) => ({ id: s.id, name: s.name }))}
               templates={templateList.authored}
+              designedEmails={designedEmails}
             />
           </CardContent>
         </Card>

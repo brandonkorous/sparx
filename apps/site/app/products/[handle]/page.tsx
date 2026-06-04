@@ -88,7 +88,11 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   // tenant without a builder product page is unaffected. Sample-data previews
   // (the merchant designing before a product exists) keep the legacy path.
   if (!sample) {
-    const builderTemplate = await getPublishedBuilderCollection(tenant.slug, 'commerce.product');
+    const builderTemplate = await getPublishedBuilderCollection(
+      tenant.slug,
+      'commerce.product',
+      product.id
+    );
     if (builderTemplate) {
       const currency = tenant.storefront.defaultCurrency;
       const data = await loadBuilderData(tenant.slug, builderTemplate.tree, {

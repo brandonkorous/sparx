@@ -32,7 +32,7 @@ import { buildPreviewData, scopeAt, type ScopeInfo } from './binding-catalog';
 import { acceptsChildren, getDef, makeNode, retypeDropsChildren, retypeNode } from './registry';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
-export type RailTab = 'layers' | 'add';
+export type RailTab = 'layers' | 'add' | 'fields';
 export type MobilePane = 'edit' | 'preview';
 
 // Ancestors root→…→node (inclusive). [] when not found.

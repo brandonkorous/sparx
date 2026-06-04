@@ -7,7 +7,7 @@ export const size = OG_SIZE;
 export const contentType = 'image/png';
 export const alt = MODULES.crm.title;
 
-export default async function Image() {
-  const meta = await loadModuleData('crm');
+export default function Image() {
+  const meta = loadModuleData('crm');
   return renderModuleOgImage(meta);
 }

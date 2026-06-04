@@ -90,7 +90,11 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
   // The generic per-record router (docs/44 §3 B): a published `cms.blog_post`
   // collection template renders the post through the node tree, binding THIS entry
   // as `blog_post`. Falls through to the legacy render when none is published.
-  const builderTemplate = await getPublishedBuilderCollection(tenant.slug, 'cms.blog_post');
+  const builderTemplate = await getPublishedBuilderCollection(
+    tenant.slug,
+    'cms.blog_post',
+    post.id
+  );
   if (builderTemplate) {
     const data = await loadBuilderData(tenant.slug, builderTemplate.tree, {
       key: 'blog_post',

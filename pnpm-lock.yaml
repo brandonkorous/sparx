@@ -719,6 +719,9 @@ importers:
       '@react-email/render':
         specifier: ^2.0.8
         version: 2.0.8(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@sparx/builder-schemas':
+        specifier: workspace:*
+        version: link:../builder-schemas
       '@sparx/email-sections':
         specifier: workspace:*
         version: link:../email-sections
@@ -747,6 +750,9 @@ importers:
 
   packages/email-platform:
     dependencies:
+      '@sparx/builder-schemas':
+        specifier: workspace:*
+        version: link:../builder-schemas
       '@sparx/cms-editor':
         specifier: workspace:*
         version: link:../cms-editor

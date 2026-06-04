@@ -2,12 +2,20 @@
 // GET    /v1/content/types/:key     → fetch one
 // POST   /v1/content/types          → create a tenant-custom type
 // PATCH  /v1/content/types/:key     → update a tenant-custom type (built-ins are read-only)
+// PUT    /v1/content/types/:key/schema → author the field schema (FORKS a built-in)
 // DELETE /v1/content/types/:key     → remove a tenant-custom type (built-ins are read-only)
 //
 // Custom-type schemas are validated against the FieldDef union from
 // @sparx/cms-schemas — the same validator that's used at entry write
 // time, so a schema can never persist in a shape the body validator
 // won't accept.
+//
+// PUT :key/schema is the docs/51 keystone: the schema is OWNED by the
+// content type but AUTHORED from the builder. Editing a platform built-in's
+// fields transparently FORKS it into a tenant-owned copy (same key,
+// is_built_in=false) that shadows the platform row — read paths dedupe by
+// key with the tenant copy winning (see content-types.ts `resolveType`,
+// bindingService.getSchema, and the GET list below).
 
 import type { FastifyPluginAsync } from 'fastify';
 import type { Prisma } from '@sparx/db';
@@ -52,6 +60,22 @@ const UpdateBody = z.object({
   schema: ContentTypeSchema.optional(),
 });
 
+const SchemaBody = z.object({ schema: ContentTypeSchema });
+
+// Read-path dedup: keep the first row per key. The query orders built-ins
+// last (isBuiltIn ASC, key ASC), so a tenant-owned fork of a built-in
+// shadows the platform row of the same key — never both.
+function dedupeByKey<T extends { key: string }>(rows: T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const row of rows) {
+    if (seen.has(row.key)) continue;
+    seen.add(row.key);
+    out.push(row);
+  }
+  return out;
+}
+
 const contentTypeRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/content/types', async (request) => {
     requireAuth(request);
@@ -60,7 +84,9 @@ const contentTypeRoutes: FastifyPluginAsync = (app) => {
         orderBy: [{ isBuiltIn: 'asc' }, { key: 'asc' }],
       })
     );
-    return ok(rows.map(serializeContentType));
+    // A tenant fork (is_built_in=false) shadows the platform built-in of the
+    // same key — list the fork, drop the shadowed built-in.
+    return ok(dedupeByKey(rows).map(serializeContentType));
   });
 
   app.get('/v1/content/types/:key', async (request) => {
@@ -152,6 +178,83 @@ const contentTypeRoutes: FastifyPluginAsync = (app) => {
       typeKey: updated.key,
     });
     return ok(serializeContentType(updated));
+  });
+
+  // ──────────────────────────────────────────────────────────────────────
+  // AUTHOR SCHEMA (fork-on-edit) — the docs/51 keystone.
+  //
+  // Editing a tenant-owned type updates its schemaJson in place. Editing a
+  // platform built-in FORKS it: a tenant-owned copy of the same key is
+  // created with the new schema and shadows the platform row everywhere
+  // (read paths dedupe by key, tenant copy wins). Either way the response
+  // carries `forked` so the client can surface "this is now your copy".
+  // ──────────────────────────────────────────────────────────────────────
+
+  app.put('/v1/content/types/:key/schema', async (request) => {
+    const auth = requireRole(request, 'editor');
+    const { key } = KeyParams.parse(request.params);
+    const { schema } = SchemaBody.parse(request.body);
+
+    const result = await withRequestTenant(request, async (tx) => {
+      // Resolve by key, tenant row preferred (isBuiltIn ASC → a fork wins
+      // over the platform built-in of the same key).
+      const existing = await tx.contentType.findFirst({
+        where: { key },
+        orderBy: [{ isBuiltIn: 'asc' }, { updatedAt: 'desc' }],
+      });
+      if (!existing) throw notFound('Content type', key);
+
+      // Tenant already owns it (custom type or a prior fork) → update in place.
+      if (!existing.isBuiltIn) {
+        const row = await tx.contentType.update({
+          where: { id: existing.id },
+          data: { schemaJson: schema },
+        });
+        await writeAudit(tx, request, auth, {
+          action: 'content_type.upserted',
+          entityType: 'content_type',
+          entityId: row.id,
+          before: {
+            key: row.key,
+            fields: (existing.schemaJson as { fields?: unknown[] })?.fields?.length ?? 0,
+          },
+          after: { key: row.key, fields: schema.fields.length },
+        });
+        return { row, forked: false };
+      }
+
+      // Platform built-in → FORK into a tenant-owned copy. @@unique([tenantId,
+      // key]) lets (platform,key) + (tenant,key) coexist; WITH CHECK pins the
+      // insert to current_tenant_id(), so the tenant can only ever fork into
+      // its own scope.
+      const row = await tx.contentType.create({
+        data: {
+          tenantId: auth.tenantId,
+          key: existing.key,
+          name: existing.name,
+          pluralName: existing.pluralName,
+          description: existing.description,
+          icon: existing.icon,
+          urlPattern: existing.urlPattern,
+          isSingleton: existing.isSingleton,
+          isBuiltIn: false,
+          schemaJson: schema,
+        },
+      });
+      await writeAudit(tx, request, auth, {
+        action: 'content_type.upserted',
+        entityType: 'content_type',
+        entityId: row.id,
+        before: { key: existing.key, forkedFromBuiltIn: true },
+        after: { key: row.key, fields: schema.fields.length },
+      });
+      return { row, forked: true };
+    });
+
+    await publish(request.log, 'content_type.upserted', auth.tenantId, auth.actorId, {
+      typeKey: result.row.key,
+    });
+    return ok({ ...serializeContentType(result.row), forked: result.forked });
   });
 
   app.delete('/v1/content/types/:key', async (request, reply) => {

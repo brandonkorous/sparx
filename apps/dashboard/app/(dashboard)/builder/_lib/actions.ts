@@ -13,6 +13,7 @@
 import { revalidatePath } from 'next/cache';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import type {
+  BuilderEmailDto,
   BuilderLayoutDto,
   BuilderNode,
   BuilderPageDto,
@@ -77,6 +78,13 @@ export async function retargetPage(
   recordType: string | null
 ): Promise<ActionResult<BuilderPageDto>> {
   return run(() => api.patch<BuilderPageDto>(`/v1/builder/pages/${id}`, { recordType }), true);
+}
+
+/** Make a collection template the DEFAULT for its recordType (docs/51 §6) — the
+ *  per-type winner the storefront renders when a record has no per-record
+ *  override. Mirrors the layout "activate" action. */
+export async function setPageDefault(id: string): Promise<ActionResult<BuilderPageDto>> {
+  return run(() => api.post<BuilderPageDto>(`/v1/builder/pages/${id}/default`), true);
 }
 
 /** Update a singleton page's SEO (docs/50). Empty strings clear a field
@@ -178,5 +186,97 @@ export async function activateLayout(id: string): Promise<ActionResult<BuilderLa
     () => api.post<BuilderLayoutDto>(`/v1/builder/layouts/${id}/activate`),
     true,
     '/builder/site'
+  );
+}
+
+// ── Email Builder catalog (the email documents — docs/52) ────────────────────
+// Mirror the page actions but revalidate /builder/email. An email is ONE
+// self-contained body tree, with document-level subject + preheader fields.
+
+export async function createEmail(input: {
+  name: string;
+  subject?: string;
+  preheader?: string | null;
+  tree?: BuilderNode;
+}): Promise<ActionResult<BuilderEmailDto>> {
+  return run(() => api.post<BuilderEmailDto>('/v1/builder/emails', input), true, '/builder/email');
+}
+
+/** The autosave path — save the email's draft body tree. No revalidate. */
+export async function saveEmailTree(
+  id: string,
+  tree: BuilderNode
+): Promise<ActionResult<BuilderEmailDto>> {
+  return run(() => api.patch<BuilderEmailDto>(`/v1/builder/emails/${id}`, { tree }), false);
+}
+
+export async function renameEmail(
+  id: string,
+  name: string
+): Promise<ActionResult<BuilderEmailDto>> {
+  return run(
+    () => api.patch<BuilderEmailDto>(`/v1/builder/emails/${id}`, { name }),
+    true,
+    '/builder/email'
+  );
+}
+
+/** Set the email subject line. No revalidate — the editor holds the latest value
+ *  and only the send/preview read consumes it. */
+export async function setEmailSubject(
+  id: string,
+  subject: string
+): Promise<ActionResult<BuilderEmailDto>> {
+  return run(() => api.patch<BuilderEmailDto>(`/v1/builder/emails/${id}`, { subject }), false);
+}
+
+/** Set (or clear, with '') the inbox preheader. An empty string sends null. */
+export async function setEmailPreheader(
+  id: string,
+  preheader: string
+): Promise<ActionResult<BuilderEmailDto>> {
+  const value = preheader.trim() === '' ? null : preheader;
+  return run(
+    () => api.patch<BuilderEmailDto>(`/v1/builder/emails/${id}`, { preheader: value }),
+    false
+  );
+}
+
+export async function deleteEmail(id: string): Promise<ActionResult<{ id: string }>> {
+  return run(() => api.delete<{ id: string }>(`/v1/builder/emails/${id}`), true, '/builder/email');
+}
+
+export async function publishEmail(id: string): Promise<ActionResult<BuilderEmailDto>> {
+  return run(
+    () => api.post<BuilderEmailDto>(`/v1/builder/emails/${id}/publish`),
+    true,
+    '/builder/email'
+  );
+}
+
+/** Render the email's DRAFT body to inlined HTML for the editor preview iframe
+ *  (docs/52 Phase 2). No revalidate — a stateless render. */
+export async function previewEmail(
+  id: string
+): Promise<ActionResult<{ subject: string; html: string; text: string }>> {
+  return run(
+    () =>
+      api.get<{ subject: string; html: string; text: string }>(`/v1/builder/emails/${id}/preview`),
+    false
+  );
+}
+
+/** Render + deliver the draft to one address — the staff smoke test. */
+export async function testSendEmail(
+  id: string,
+  to: string
+): Promise<ActionResult<{ id: string; provider: string; acceptedAt: string }>> {
+  return run(
+    () =>
+      api.post<{ id: string; provider: string; acceptedAt: string }>(
+        `/v1/builder/emails/${id}/test-send`,
+        { to }
+      ),
+    false
   );
 }

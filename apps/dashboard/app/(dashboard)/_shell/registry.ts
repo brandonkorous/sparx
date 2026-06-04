@@ -13,7 +13,6 @@ import { crmManifest } from '@sparx/crm/manifest';
 import { cmsManifest } from '@sparx/cms-editor/manifest';
 import { emailManifest } from '@sparx/email-platform/manifest';
 
-import { sitebuilderManifest } from '../sitebuilder/manifest';
 import { builderManifest } from '../builder/manifest';
 import { b2bManifest } from '../b2b/manifest';
 import { dropshipManifest } from '../dropship/manifest';
@@ -21,7 +20,6 @@ import { aiManifest } from '../ai/manifest';
 
 // Ordered. This is the sidebar display order under the "Modules" section.
 export const moduleManifests: readonly ModuleManifest[] = [
-  sitebuilderManifest,
   builderManifest,
   commerceManifest,
   cmsManifest,

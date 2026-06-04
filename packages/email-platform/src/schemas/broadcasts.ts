@@ -6,6 +6,8 @@ export const CreateBroadcastInput = z
     subject: z.string().min(1).max(255),
     preheader: z.string().max(255).optional(),
     templateId: z.string().uuid().optional(),
+    // A published Builder email as the body (docs/52). Alternative to templateId.
+    builderEmailId: z.string().uuid().optional(),
     segmentId: z.string().uuid().optional(),
   })
   .strict();
@@ -18,6 +20,7 @@ export const UpdateBroadcastInput = z
     subject: z.string().min(1).max(255).optional(),
     preheader: z.string().max(255).nullable().optional(),
     templateId: z.string().uuid().nullable().optional(),
+    builderEmailId: z.string().uuid().nullable().optional(),
     segmentId: z.string().uuid().nullable().optional(),
   })
   .strict();

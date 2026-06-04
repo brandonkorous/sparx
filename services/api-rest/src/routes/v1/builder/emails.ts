@@ -1,0 +1,120 @@
+// Builder — the Email Builder catalog and draft/publish lifecycle (docs/52).
+// Mirrors the page catalog (pages.ts); an email is ONE self-contained body tree.
+//
+//   GET    /v1/builder/emails              → list the tenant's emails (seeds the
+//                                            curated starter set on first call)
+//   POST   /v1/builder/emails              → create an email (from a tree or blank)
+//   POST   /v1/builder/emails/reorder      → reorder the catalog
+//   GET    /v1/builder/emails/:id          → one email
+//   PATCH  /v1/builder/emails/:id          → rename / set subject·preheader / save tree
+//   DELETE /v1/builder/emails/:id          → remove
+//   POST   /v1/builder/emails/:id/publish  → snapshot draft → published
+//   GET    /v1/builder/emails/:id/preview  → render the DRAFT body to inlined HTML
+//   POST   /v1/builder/emails/:id/test-send→ render + deliver the draft to one address
+//
+// Bodies are validated by the service-layer Zod schemas (the established route ↔
+// service boundary), so api-rest keeps no @sparx/builder-schemas dependency. The
+// render path loads the tree here (@sparx/builder) and injects it into
+// @sparx/email-platform's builderEmailService — keeping that package free of a
+// @sparx/builder dependency (docs/52 §6, the section-resolver injection pattern).
+
+import type { FastifyPluginAsync } from 'fastify';
+import { z } from 'zod';
+import { emailService } from '@sparx/builder';
+import { builderEmailService } from '@sparx/email-platform';
+import { ok } from '@sparx/api-core/envelope';
+import { requireRole } from '@sparx/api-core/auth';
+import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
+
+const IdParam = z.object({ id: z.string().uuid() });
+
+const builderEmailRoutes: FastifyPluginAsync = (app) => {
+  app.get('/v1/builder/emails', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const emails = await emailService.listOrSeed(toBuilderContext(request));
+    return ok({ emails });
+  });
+
+  app.post('/v1/builder/emails', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const email = await emailService.create(toBuilderContext(request), request.body);
+    return ok(email);
+  });
+
+  app.post('/v1/builder/emails/reorder', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const emails = await emailService.reorder(toBuilderContext(request), request.body);
+    return ok({ emails });
+  });
+
+  app.get('/v1/builder/emails/:id', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.get(toBuilderContext(request), id);
+    return ok(email);
+  });
+
+  app.patch('/v1/builder/emails/:id', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.update(toBuilderContext(request), id, request.body);
+    return ok(email);
+  });
+
+  app.delete('/v1/builder/emails/:id', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    await emailService.remove(toBuilderContext(request), id);
+    return ok({ id });
+  });
+
+  app.post('/v1/builder/emails/:id/publish', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.publish(toBuilderContext(request), id);
+    return ok(email);
+  });
+
+  // Render the DRAFT body to inlined HTML + plain text for the editor preview.
+  // `emailService.get` returns the draft tree (and throws a mapped 404 if the
+  // email doesn't exist); builderEmailService resolves the brand + renders.
+  app.get('/v1/builder/emails/:id/preview', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const ctx = toBuilderContext(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.get(ctx, id);
+    const preview = await builderEmailService.renderPreview(ctx, {
+      tree: email.tree,
+      subject: email.subject,
+      preheader: email.preheader,
+    });
+    return ok(preview);
+  });
+
+  // Render + immediately deliver the draft to one address — the staff smoke test.
+  app.post('/v1/builder/emails/:id/test-send', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const ctx = toBuilderContext(request);
+    const { id } = IdParam.parse(request.params);
+    const email = await emailService.get(ctx, id);
+    const result = await builderEmailService.testSend(
+      ctx,
+      { tree: email.tree, subject: email.subject, preheader: email.preheader },
+      request.body
+    );
+    return ok(result);
+  });
+
+  return Promise.resolve();
+};
+
+export default builderEmailRoutes;

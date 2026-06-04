@@ -384,3 +384,68 @@ export function blankPageTree(): BuilderNode {
     children: [],
   };
 }
+
+// ── Email starters (docs/52) ──────────────────────────────────────────────────
+//
+// An email is ONE self-contained body tree (no site/page split, no Outlet). The
+// branded frame (wordmark header + legal footer) is fixed chrome the email
+// renderer supplies, so a starter is just the body: a Section that stacks the
+// content. Static (no bindings) — the Phase-1 slice (docs/52 §9).
+
+function welcomeEmailTree(): BuilderNode {
+  return node('Section', {
+    box: { name: 'Email body', padding: 'none', contentWidth: 'full' },
+    layout: { direction: 'stack', gap: 'md' },
+    children: [
+      node('Heading', { props: { level: 'h1', text: 'Welcome aboard 👋' } }),
+      node('Text', {
+        props: {
+          variant: 'body',
+          text: "Thanks for joining. We're glad you're here — here's what to do next.",
+        },
+      }),
+      node('Button', {
+        props: { label: 'Get started', href: '' },
+        box: { align: 'start' },
+      }),
+      node('Divider'),
+      node('Text', {
+        props: { variant: 'meta', text: 'Questions? Just reply to this email.' },
+      }),
+    ],
+  });
+}
+
+/** A blank single-section email body — the default when "New email" doesn't pick
+ *  a starter. The root id is fixed; it's unique within its own (empty) tree. */
+export function blankEmailTree(): BuilderNode {
+  return {
+    id: 'root',
+    type: 'Section',
+    box: { ...DEFAULT_BOX, name: 'Email body', padding: 'none', contentWidth: 'full' },
+    layout: { ...DEFAULT_LAYOUT, direction: 'stack', gap: 'md' },
+    props: {},
+    children: [],
+  };
+}
+
+export interface StarterEmail {
+  /** Stable starter identifier (independent of the per-tenant row id). */
+  key: string;
+  name: string;
+  subject: string;
+  preheader?: string;
+  tree: BuilderNode;
+}
+
+/** The curated starter emails Sparx ships. Seeded on the tenant's first email
+ *  list; from then on they're ordinary editable emails (cf. STARTER_PAGES). */
+export const STARTER_EMAILS: StarterEmail[] = [
+  {
+    key: 'welcome',
+    name: 'Welcome',
+    subject: 'Welcome to {{store}} 👋',
+    preheader: "You're in — here's how to get started.",
+    tree: welcomeEmailTree(),
+  },
+];

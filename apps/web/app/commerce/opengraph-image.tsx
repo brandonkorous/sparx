@@ -7,7 +7,7 @@ export const size = OG_SIZE;
 export const contentType = 'image/png';
 export const alt = MODULES.commerce.title;
 
-export default async function Image() {
-  const meta = await loadModuleData('commerce');
+export default function Image() {
+  const meta = loadModuleData('commerce');
   return renderModuleOgImage(meta);
 }

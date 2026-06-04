@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import type { BindingCatalog, BuilderLayoutDto, BuilderPageDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
-import { getBrand, getConfig, getTenant } from '../../sitebuilder/_lib/api';
-import { storefrontOrigin } from '../../sitebuilder/_lib/storefront';
+import { getBrand, getConfig, getTenant } from '../_brand/lib/api';
+import { propertyOrigin } from '../_brand/lib/property';
 import { getActiveLayout, getBindingCatalog, listPages } from '../_lib/api';
 import { BuilderApp } from '../_builder/builder-app';
 import '../builder.css';
@@ -90,7 +90,7 @@ async function loadLayout(): Promise<BuilderLayoutDto | null> {
 async function loadSiteContext(): Promise<{ slug: string; origin: string } | null> {
   try {
     const tenant = await getTenant();
-    return { slug: tenant.slug, origin: storefrontOrigin(tenant.slug) };
+    return { slug: tenant.slug, origin: propertyOrigin(tenant.slug) };
   } catch {
     return null;
   }

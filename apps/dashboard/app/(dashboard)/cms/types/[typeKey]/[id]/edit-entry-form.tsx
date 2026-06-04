@@ -52,9 +52,11 @@ import {
 } from '@sparx/ui';
 import { CalendarClock, History, Trash2 } from 'lucide-react';
 import { validateBody, type FieldDef } from '@sparx/cms-schemas';
+import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 import { ContentEntryForm, missingRequiredFields } from '../../../_components/content-entry-form';
 import { SeoPanel, type SeoFields } from '../../../[id]/seo-panel';
 import { PreviewButton } from '../../../[id]/preview-button';
+import { EntryTemplatePicker } from './entry-template-picker';
 import {
   autosaveEntry,
   deleteEntry,
@@ -102,6 +104,11 @@ export interface EditEntryFormProps {
   scheduledAt: Date | null;
   initialEtag: string | null;
   tenantSlug: string | null;
+  /** Per-record template override (docs/51 §6). Null when the Builder module is
+   *  off or the type has no collection template — the picker then doesn't render. */
+  templateOptions?: BuilderTemplateOption[] | null;
+  /** The currently-pinned template id, or null when this entry uses the default. */
+  currentTemplateId?: string | null;
 }
 
 export function EditEntryForm({
@@ -118,6 +125,8 @@ export function EditEntryForm({
   scheduledAt,
   initialEtag,
   tenantSlug,
+  templateOptions,
+  currentTemplateId,
 }: EditEntryFormProps) {
   const router = useRouter();
   const routable = Boolean(urlPattern);
@@ -425,6 +434,16 @@ export function EditEntryForm({
             slug={slug}
             fallbackTitle={fallbackTitle}
             entryId={id}
+          />
+        )}
+
+        {templateOptions && templateOptions.length > 0 && (
+          <EntryTemplatePicker
+            typeKey={typeKey}
+            itemRef={id}
+            typeName={typeName}
+            options={templateOptions}
+            current={currentTemplateId ?? null}
           />
         )}
 

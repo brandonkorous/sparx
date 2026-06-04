@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Button, ColorPicker, Heading, Input, Label, Stack, Text } from '@sparx/ui';
 import { saveBusinessAction } from '../_lib/actions';
-import { BrandImageField } from '@/app/(dashboard)/sitebuilder/_components/brand-image-field';
+import { BrandImageField } from '@/app/(dashboard)/builder/_brand/components/brand-image-field';
 import type { StepNav } from './onboarding-wizard';
 
 // A small, opinionated category list. It's stored on the tenant's onboarding
@@ -60,7 +60,7 @@ export function StepBusiness({
       <Stack gap={1}>
         <Heading level={3}>Tell us about your business</Heading>
         <Text variant="muted">
-          We&apos;ll turn on your storefront and commerce so the next steps are ready to go.
+          We&apos;ll turn on your site and commerce so the next steps are ready to go.
         </Text>
       </Stack>
 

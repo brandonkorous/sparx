@@ -10,7 +10,6 @@ import { expect, test } from '@playwright/test';
 // It still belongs in the sidebar nav check below.
 
 const MODULES = [
-  { path: '/sitebuilder', title: 'Sitebuilder', dataModule: 'storefront' },
   { path: '/commerce', title: 'Commerce', dataModule: 'commerce' },
   { path: '/crm', title: 'CRM', dataModule: 'crm' },
   { path: '/b2b', title: 'B2B', dataModule: 'b2b' },

@@ -8,7 +8,7 @@
 // migration completes, at which point the `storefront` id retires.
 
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Boxes, Component, File, Fingerprint, Globe } from 'lucide-react';
+import { Boxes, Component, File, Fingerprint, Globe, Mail } from 'lucide-react';
 
 export const builderManifest: ModuleManifest = {
   id: 'builder',
@@ -23,9 +23,22 @@ export const builderManifest: ModuleManifest = {
     { id: 'site', label: 'Site', icon: Globe, href: '/builder/site' },
     // Page — the page-template editor (the backbone built first).
     { id: 'page', label: 'Page', icon: File, href: '/builder/page' },
-    // Component — the data-aware component catalog (Tier 2) + authoring.
-    { id: 'component', label: 'Component', icon: Component, href: '/builder/component' },
+    // Email — the Email Builder: one self-contained email per document (docs/52).
+    { id: 'email', label: 'Email', icon: Mail, href: '/builder/email' },
+    // Components — the catalog of building blocks (Tier-1 primitives + Tier-2
+    // data-aware components) a template composes from (docs/51 §4.2).
+    { id: 'component', label: 'Components', icon: Component, href: '/builder/components' },
   ],
   actions: [],
-  entityTypes: [],
+  entityTypes: [
+    // A catalog component opened in the drawer/modal detail view. The entity id
+    // is the component's registry `type` (e.g. `Button`); routePrefix +
+    // `/<type>` resolves the full page at /builder/components/<type>.
+    {
+      id: 'builder-component',
+      label: 'Component',
+      routePrefix: '/builder/components',
+      hasDetailView: true,
+    },
+  ],
 };

@@ -29,8 +29,13 @@ import {
 } from '@sparx/builder-schemas';
 
 import {
+  Button,
+  Card,
+  CardBody,
+  CardTitle,
   Divider,
   EmbedFrame,
+  Grid,
   Heading,
   Image,
   Logo,
@@ -280,6 +285,40 @@ function parseNavLinks(raw: string): { label: string; url: string }[] {
     })
     .filter((l) => l.label !== '');
 }
+// Authored-inline FAQ pairs / feature cards (the fallback when the FAQ /
+// FeatureGrid leaf isn't bound to a content list). Mirror the editor registry.
+function parseFaqItems(raw: string): { question: string; answer: string }[] {
+  return (raw ?? '')
+    .split(/\n\s*-{3,}\s*\n/)
+    .map((block) => {
+      const lines = block.split('\n').map((l) => l.trim());
+      const start = lines.findIndex((l) => l !== '');
+      if (start === -1) return null;
+      const question = lines[start];
+      const answer = lines
+        .slice(start + 1)
+        .filter(Boolean)
+        .join('\n\n');
+      return question ? { question, answer } : null;
+    })
+    .filter((x): x is { question: string; answer: string } => x !== null);
+}
+function parseFeatureItems(raw: string): { number: string; title: string; body: string }[] {
+  return (raw ?? '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line, i) => {
+      const parts = line.split('|').map((p) => p.trim());
+      const auto = String(i + 1).padStart(2, '0');
+      if (parts.length >= 3) {
+        return { number: parts[0] ?? auto, title: parts[1] ?? '', body: parts.slice(2).join(' | ') };
+      }
+      if (parts.length === 2) return { number: auto, title: parts[0] ?? '', body: parts[1] ?? '' };
+      return { number: auto, title: parts[0] ?? '', body: '' };
+    })
+    .filter((f) => f.title !== '');
+}
 // ── Leaf rendering ─────────────────────────────────────────────────────────
 
 function buttonStyle(style: string): React.CSSProperties {
@@ -460,6 +499,85 @@ function renderLeaf(
     case 'Stat': {
       const big = (bound ? asText(value) : '') || str('value') || '0';
       return <Stat value={big} label={str('label')} className={leafClass} />;
+    }
+    // ── Page-content widgets (docs/51 §7 — reclassified from content types) ───
+    case 'EditorialSection': {
+      // Authored inline, or bound to an object with the same field names.
+      const obj =
+        bound && value && typeof value === 'object' && !Array.isArray(value)
+          ? (value as Record<string, unknown>)
+          : null;
+      const pick = (k: string, prop: string) => (obj ? asText(obj[k]) : '') || str(prop);
+      const eyebrow = pick('eyebrow', 'eyebrow');
+      const headline = pick('headline', 'headline');
+      const body = pick('body', 'body');
+      const ctaLabel = pick('ctaLabel', 'ctaLabel');
+      const ctaUrl = (obj && typeof obj.ctaUrl === 'string' ? obj.ctaUrl : '') || str('ctaUrl');
+      // Full-width children (default flex stretch) so the box's text-align governs
+      // horizontal alignment; the CTA is wrapped in a block so text-align reaches it.
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
+          {eyebrow ? <Text variant="eyebrow">{eyebrow}</Text> : null}
+          {headline ? <Heading level="h2">{headline}</Heading> : null}
+          {body ? <Text variant="body">{body}</Text> : null}
+          {ctaLabel ? (
+            <div>
+              <Button href={ctaUrl || undefined} variant="solid">
+                {ctaLabel}
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      );
+    }
+    case 'FAQ': {
+      // Bound to an array of `{question, answer}` records, else authored inline.
+      const items =
+        bound && Array.isArray(value)
+          ? (value as Record<string, unknown>[]).map((it) => ({
+              question: asText(it.question),
+              answer: asText(it.answer),
+            }))
+          : parseFaqItems(str('items'));
+      const list = items.filter((it) => it.question);
+      if (!list.length) return null;
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
+          {list.map((it, i) => (
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <Heading level="h3">{it.question}</Heading>
+              {it.answer ? <Text variant="body">{it.answer}</Text> : null}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    case 'FeatureGrid': {
+      // Bound to an array of `{number?, title, body}` records, else authored inline.
+      const items =
+        bound && Array.isArray(value)
+          ? (value as Record<string, unknown>[]).map((it, i) => ({
+              number: asText(it.number) || String(i + 1).padStart(2, '0'),
+              title: asText(it.title),
+              body: asText(it.body),
+            }))
+          : parseFeatureItems(str('items'));
+      const list = items.filter((f) => f.title);
+      if (!list.length) return null;
+      const cols = Math.min(4, Math.max(2, Number(str('columns')) || 3)) as 2 | 3 | 4;
+      return (
+        <Grid cols={cols} gap="lg">
+          {list.map((f, i) => (
+            <Card key={i}>
+              <CardBody>
+                <Text variant="meta">{f.number}</Text>
+                <CardTitle as="h3">{f.title}</CardTitle>
+                {f.body ? <Text variant="body">{f.body}</Text> : null}
+              </CardBody>
+            </Card>
+          ))}
+        </Grid>
+      );
     }
     // ── Site chrome (docs/45) ────────────────────────────────────────────────
     case 'Logo': {

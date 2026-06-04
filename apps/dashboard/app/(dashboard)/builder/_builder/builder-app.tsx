@@ -13,6 +13,7 @@
 // New / Delete / Publish round-trip immediately.
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import { Eye, Monitor, Pencil, Plus, Save, Smartphone, Tablet, Trash2, Upload } from 'lucide-react';
 import { Button, Input, ModuleProvider, NativeSelect, useConfirm } from '@sparx/ui';
 import { parsePageImport, toPageDocument } from '@sparx/builder-schemas';
@@ -22,6 +23,8 @@ import { type Device, type PageTemplate, type PageSeo } from './model';
 import { MODULES } from './sample';
 import { PageSettings } from './inspector';
 import { BuilderWorkspace } from './builder-workspace';
+import { FieldsPanel } from './fields-panel';
+import { deriveFieldKey, makeFieldDef, type CreatableType } from './field-kinds';
 import { ImportExportControls } from './import-export-controls';
 import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
 import {
@@ -32,9 +35,11 @@ import {
   renamePage,
   retargetPage,
   savePageTree,
+  setPageDefault,
   setPageSlug,
   updatePageSeo,
 } from '../_lib/actions';
+import { getContentTypeSchema, saveContentTypeSchema } from '../_lib/schema-actions';
 
 // A loaded page reduced to the editor's working shape.
 function toTemplate(p: BuilderPageDto): PageTemplate {
@@ -44,6 +49,7 @@ function toTemplate(p: BuilderPageDto): PageTemplate {
     slug: p.slug,
     kind: p.kind,
     recordType: p.recordType ?? undefined,
+    isDefault: p.isDefault,
     tree: p.tree,
     seo: {
       title: p.seoTitle ?? '',
@@ -104,6 +110,7 @@ export function BuilderApp({
   initialPageId,
 }: BuilderAppProps) {
   const confirm = useConfirm();
+  const router = useRouter();
   // Pages load from the server (docs/41 §5 seeds the curated set on first use)
   // and seed this state ONCE. From here the client is authoritative for the
   // session; the server is the persistence sink (autosave + structural ops).
@@ -125,6 +132,14 @@ export function BuilderApp({
 
   const active = templates.find((t) => t.id === activeId) ?? templates[0] ?? null;
   const tree = active?.tree ?? null;
+
+  // The content type this collection template renders, if any — its key drives
+  // the "Fields" rail tab and the inspector's inline "+ New field" (docs/51
+  // keystone). A singleton page or an untargeted/commerce template has none.
+  const contentTypeKey =
+    active?.kind === 'collection' && active.recordType?.startsWith('cms.')
+      ? active.recordType.slice('cms.'.length)
+      : null;
 
   // The shared editing brain. `save` persists the active page; `onTreeChange`
   // writes the optimistic tree back into this component's catalog state.
@@ -297,6 +312,54 @@ export function BuilderApp({
       setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, recordType: prev } : t)));
       editor.setSaveStatus('error');
     }
+  };
+
+  // Make the active collection template the DEFAULT for its recordType (docs/51
+  // §6). Optimistic: flag this one and clear the others sharing the recordType
+  // (one default per type); revert all on a server error.
+  const onMakeDefault = async () => {
+    if (!active?.recordType) return;
+    const id = active.id;
+    const rt = active.recordType;
+    const prev = templates
+      .filter((t) => t.recordType === rt)
+      .map((t) => ({ id: t.id, isDefault: t.isDefault }));
+    setTemplates((ts) =>
+      ts.map((t) => (t.recordType === rt ? { ...t, isDefault: t.id === id } : t))
+    );
+    editor.setSaveStatus('saving');
+    const res = await setPageDefault(id);
+    if (res.ok) {
+      editor.setSaveStatus('saved');
+    } else {
+      setTemplates((ts) =>
+        ts.map((t) => {
+          const p = prev.find((x) => x.id === t.id);
+          return p ? { ...t, isDefault: p.isDefault } : t;
+        })
+      );
+      editor.setSaveStatus('error');
+    }
+  };
+
+  // Inline "+ New field" from the inspector binding picker (docs/51 keystone) —
+  // the quick path that adds a field to the active template's content type and
+  // returns its key so the picker can bind the node to it. Fetches the raw
+  // schema (the binding catalog is lossy — no required/max), appends, and saves;
+  // a built-in forks server-side. Refreshes so the catalog gains the field.
+  const onAddField = async (label: string, kind: CreatableType): Promise<string | null> => {
+    if (!contentTypeKey) return null;
+    const cur = await getContentTypeSchema(contentTypeKey);
+    if (!cur.ok || !cur.data) return null;
+    const existing = cur.data.schema_json.fields ?? [];
+    const key = deriveFieldKey(label, existing);
+    const res = await saveContentTypeSchema(contentTypeKey, [
+      ...existing,
+      makeFieldDef(kind, key, label),
+    ]);
+    if (!res.ok) return null;
+    router.refresh();
+    return key;
   };
 
   // Patch the active singleton's SEO (docs/50). Optimistic like onSlug: write the
@@ -538,6 +601,9 @@ export function BuilderApp({
           catalog={bindingCatalog}
           surface="page"
           chrome={layoutTree ?? null}
+          contentTypeKey={contentTypeKey}
+          onAddField={onAddField}
+          fields={contentTypeKey ? <FieldsPanel typeKey={contentTypeKey} /> : undefined}
           settings={
             <PageSettings
               pageId={active.id}
@@ -545,11 +611,13 @@ export function BuilderApp({
               slug={active.slug}
               kind={active.kind}
               recordType={active.recordType ?? null}
+              isDefault={active.isDefault}
               catalog={bindingCatalog}
               seo={active.seo}
               onSlug={onSlug}
               onSeo={onSeo}
               onRetarget={onRetarget}
+              onMakeDefault={onMakeDefault}
             />
           }
         />

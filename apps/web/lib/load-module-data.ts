@@ -1,39 +1,13 @@
-// Data-only module loader. Same fetch + fallback shape as load-module.tsx
-// but with zero React/DOM imports so the edge-runtime OG and Twitter image
-// routes can import it without dragging react-dom into their bundles.
+// Resolves a marketing module's page data. The hand-coded TS in lib/modules.ts
+// is the source of truth: module pages were briefly CMS-backed via a `module`
+// content type, but that type was reclassified into builder components
+// (docs/51 §7), so the static map is authoritative again. Kept as its own
+// zero-React helper so the edge-runtime OG / Twitter image routes can import it
+// without dragging react-dom into their bundles.
 
 import type { MarketingModule } from '@/components/marketing/primitives';
 import { MODULES, type ModuleMeta } from '@/lib/modules';
-import { getModule } from '@/lib/sparx-content';
 
-export async function loadModuleData(
-  slug: MarketingModule,
-  previewToken?: string
-): Promise<ModuleMeta> {
-  try {
-    const fetched = await getModule(slug, previewToken ? { previewToken } : {});
-    if (!fetched) return MODULES[slug];
-    return {
-      slug: fetched.slug,
-      module: slug,
-      label: fetched.meta.label,
-      headlinePrimary: fetched.meta.headlinePrimary,
-      headlineSecondary: fetched.meta.headlineSecondary,
-      title: fetched.meta.title,
-      description: fetched.meta.description,
-      lede: fetched.meta.lede,
-      features: fetched.features,
-      pricing: {
-        price: fetched.meta.pricing.price,
-        period: fetched.meta.pricing.period,
-        modifier: fetched.meta.pricing.modifier === 'additive' ? '+' : '',
-        bundleNote: fetched.meta.pricing.bundleNote,
-      },
-      ...(fetched.meta.marketingDomain
-        ? { marketingDomain: fetched.meta.marketingDomain.replace(/^https?:\/\//, '') }
-        : {}),
-    };
-  } catch {
-    return MODULES[slug];
-  }
+export function loadModuleData(slug: MarketingModule): ModuleMeta {
+  return MODULES[slug];
 }

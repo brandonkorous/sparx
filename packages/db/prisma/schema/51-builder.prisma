@@ -35,6 +35,13 @@ model BuilderPage {
   // Catalog ordering.
   position      Int       @default(0)
 
+  // The DEFAULT template for `recordType` — the per-type winner the storefront
+  // renders when a record has no per-record override (docs/51 §6). At most one
+  // per (tenant, recordType): a partial unique index hand-added in the migration
+  // (Prisma can't express the predicate — cf. BuilderLayout.isActive). Only
+  // meaningful on a `kind='collection'` page that has a recordType.
+  isDefault Boolean @default(false) @map("is_default")
+
   // SEO — applies to published SINGLETON pages (docs/50). The storefront's
   // catch-all titles/describes the page from these; null falls back to the page
   // `name`. Collection templates render per-record and inherit SEO from the
@@ -50,11 +57,44 @@ model BuilderPage {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant      Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  assignments BuilderPageAssignment[]
 
   @@unique([tenantId, slug])
   @@index([tenantId, position])
   @@map("builder_pages")
+}
+
+// Per-record template OVERRIDE (docs/51 §6) — pins ONE record (a content entry,
+// a product, …) to a specific collection template, beating that record type's
+// default. The builder-owned analogue of the legacy sections tier's
+// SiteLayoutAssignment: `itemRef` is the owning module's record id, referenced
+// WITHOUT a cross-module FK (the module owns its data). `recordType` is the same
+// source key the template targets (`cms.blog_post`, `commerce.product`).
+//
+// Resolution order (page-service): override → type default (BuilderPage.isDefault)
+// → lowest-position published fallback. Additive + no backfill — a record with no
+// row resolves to the type default, preserving prior behaviour.
+//
+// Tenant-scoped + ENABLE/FORCE RLS (hand-added in the migration), like every
+// other builder_* table.
+model BuilderPageAssignment {
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String @map("tenant_id") @db.Uuid
+  recordType    String @map("record_type") @db.VarChar(63)
+  itemRef       String @map("item_ref") @db.VarChar(255)
+  builderPageId String @map("builder_page_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  builderPage BuilderPage @relation(fields: [builderPageId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, recordType, itemRef])
+  @@index([tenantId, recordType])
+  @@index([builderPageId])
+  @@map("builder_page_assignments")
 }
 
 // The site LAYOUT — the chrome shell (header / outlet / footer) every page
@@ -95,4 +135,43 @@ model BuilderLayout {
 
   @@index([tenantId, position])
   @@map("builder_layouts")
+}
+
+// The Builder EMAIL — the Email Builder's persisted unit (docs/52). One row per
+// email a tenant has, with the SAME draft/publish lifecycle as BuilderPage. An
+// email is ONE self-contained body tree: no site/page split, no Outlet, no
+// layout tier. Two document-level fields the page model lacks — `subject` (the
+// email subject line) and `preheader` (inbox preview text); no slug, kind,
+// recordType, or SEO. The branded frame (wordmark header + legal footer) is fixed
+// chrome the email renderer supplies, so the tree is just the body.
+//
+// Supersedes the legacy section-list bodies (EmailTemplate.body / Broadcast.body
+// on @sparx/email-sections — docs/31), which are migrated off + retired (docs/52
+// §8). Tenant-scoped + FORCE RLS, like BuilderPage.
+model BuilderEmail {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  name      String  @db.VarChar(255)
+  // The email subject line. Stored '' when blank (not null) — always present.
+  subject   String  @default("") @db.VarChar(255)
+  // Inbox preview text shown after the subject; null when unset.
+  preheader String? @db.VarChar(255)
+
+  // The editable BuilderNode root (the email body). Validated by @sparx/builder-schemas.
+  draftTree     Json      @map("draft_tree")
+  // Last published snapshot; null until first publish. A broadcast/template that
+  // references this email renders its published tree (docs/52 §6).
+  publishedTree Json?     @map("published_tree")
+  publishedAt   DateTime? @map("published_at") @db.Timestamptz
+  // Catalog ordering (cf. BuilderPage.position).
+  position      Int       @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, position])
+  @@map("builder_emails")
 }

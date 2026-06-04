@@ -7,7 +7,7 @@ export const size = OG_SIZE;
 export const contentType = 'image/png';
 export const alt = MODULES.builder.title;
 
-export default async function Image() {
-  const meta = await loadModuleData('builder');
+export default function Image() {
+  const meta = loadModuleData('builder');
   return renderModuleOgImage(meta);
 }

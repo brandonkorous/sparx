@@ -7,7 +7,7 @@ export const size = OG_SIZE;
 export const contentType = 'image/png';
 export const alt = MODULES.cms.title;
 
-export default async function Image() {
-  const meta = await loadModuleData('cms');
+export default function Image() {
+  const meta = loadModuleData('cms');
   return renderModuleOgImage(meta);
 }

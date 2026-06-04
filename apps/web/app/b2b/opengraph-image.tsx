@@ -7,7 +7,7 @@ export const size = OG_SIZE;
 export const contentType = 'image/png';
 export const alt = MODULES.b2b.title;
 
-export default async function Image() {
-  const meta = await loadModuleData('b2b');
+export default function Image() {
+  const meta = loadModuleData('b2b');
   return renderModuleOgImage(meta);
 }

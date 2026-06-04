@@ -11,12 +11,13 @@
 // `settings` panel (page settings vs. layout settings).
 
 import * as React from 'react';
-import { Layers, Plus } from 'lucide-react';
+import { Layers, Plus, Table2 } from 'lucide-react';
 import { ScrollArea, cn } from '@sparx/ui';
 import type { BindingCatalog, BuilderNode } from '@sparx/builder-schemas';
 
 import type { BuilderEditor } from './use-builder-editor';
 import type { EditorSurface } from './registry';
+import type { CreatableType } from './field-kinds';
 import { Canvas } from './canvas';
 import { Inspector } from './inspector';
 import { LayersPanel } from './layers-panel';
@@ -33,6 +34,16 @@ export interface BuilderWorkspaceProps {
    *  locked backdrop with the page dropped at its Outlet. Omitted on the site
    *  editor (it IS the layout). */
   chrome?: BuilderNode | null;
+  /** The "Fields" rail-tab panel (docs/51 keystone) — present only when the
+   *  active page is a collection template targeting a content type. Absent ⇒ the
+   *  tab is hidden and `fields` falls back to Layers. */
+  fields?: React.ReactNode;
+  /** The active template's content-type key (recordType `cms.<key>`) — powers the
+   *  inspector's inline "+ New field". Null for singletons / non-CMS targets. */
+  contentTypeKey?: string | null;
+  /** Add a field to `contentTypeKey` and resolve its key (or null on failure) —
+   *  the inspector binds the node to the new field. Omit when not authoring CMS. */
+  onAddField?: (label: string, kind: CreatableType) => Promise<string | null>;
 }
 
 export function BuilderWorkspace({
@@ -42,7 +53,14 @@ export function BuilderWorkspace({
   surface,
   settings,
   chrome,
+  fields,
+  contentTypeKey,
+  onAddField,
 }: BuilderWorkspaceProps) {
+  // The Fields tab only exists when this surface supplies a panel. If the rail is
+  // parked on 'fields' and the panel goes away (e.g. you switch to a singleton
+  // page), fall back to Layers so the rail never shows an empty body.
+  const railTab = editor.railTab === 'fields' && !fields ? 'layers' : editor.railTab;
   return (
     <>
       {/* Mobile pane switch */}
@@ -72,7 +90,7 @@ export function BuilderWorkspace({
             <button
               type="button"
               className="bx-rail__tab"
-              data-on={editor.railTab === 'layers'}
+              data-on={railTab === 'layers'}
               onClick={() => editor.setRailTab('layers')}
             >
               <Layers aria-hidden /> Layers
@@ -80,14 +98,24 @@ export function BuilderWorkspace({
             <button
               type="button"
               className="bx-rail__tab"
-              data-on={editor.railTab === 'add'}
+              data-on={railTab === 'add'}
               onClick={() => editor.setRailTab('add')}
             >
               <Plus aria-hidden /> Add
             </button>
+            {fields ? (
+              <button
+                type="button"
+                className="bx-rail__tab"
+                data-on={railTab === 'fields'}
+                onClick={() => editor.setRailTab('fields')}
+              >
+                <Table2 aria-hidden /> Fields
+              </button>
+            ) : null}
           </div>
           <ScrollArea className="bx-rail__body">
-            {editor.railTab === 'layers' ? (
+            {railTab === 'layers' ? (
               <LayersPanel
                 tree={tree}
                 catalog={catalog}
@@ -97,6 +125,8 @@ export function BuilderWorkspace({
                 onRemove={editor.onRemove}
                 onMove={editor.onMove}
               />
+            ) : railTab === 'fields' ? (
+              fields
             ) : (
               <AddPalette targetName={editor.targetName} onAdd={editor.onAdd} surface={surface} />
             )}
@@ -142,6 +172,8 @@ export function BuilderWorkspace({
               scope={editor.scope}
               surface={surface}
               settings={settings}
+              contentTypeKey={contentTypeKey}
+              onAddField={onAddField}
               onBack={() => editor.setSelectedId(null)}
               onName={editor.onName}
               onClass={editor.onClass}

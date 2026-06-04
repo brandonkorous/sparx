@@ -22,9 +22,6 @@ import { InventoryPanel } from './_components/inventory-panel';
 import { ProductEditForm } from './_components/product-edit-form';
 import { ProductStatusBar } from './_components/product-status-bar';
 import { VariantsPanel } from './_components/variants-panel';
-// Site-Builder-owned layout assignment (docs/36 §6) — renders the storefront
-// layout picker for this product. Self-hides when Site Builder is inactive.
-import { LayoutAssignmentSection } from '../../../sitebuilder/_components/layout-assignment-section';
 
 type ProductStatus = 'active' | 'draft' | 'archived';
 
@@ -269,7 +266,6 @@ export async function ProductDetailContent({ id }: Props) {
         <TabsContent value="overview">
           <Stack gap={6}>
             <ProductEditForm product={product} />
-            <LayoutAssignmentSection targetId="commerce:product" itemRef={product.id} />
           </Stack>
         </TabsContent>
 

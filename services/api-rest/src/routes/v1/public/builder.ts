@@ -3,9 +3,11 @@
 //
 //   GET /v1/public/builder/page        ?tenant=<slug>&slug=<pageSlug>
 //     → the published page tree + meta, or 404 if no published page has that slug
-//   GET /v1/public/builder/collection  ?tenant=<slug>&recordType=<type>
+//   GET /v1/public/builder/collection  ?tenant=<slug>&recordType=<type>&recordId=<id?>
 //     → the published COLLECTION template for a record type (commerce.product,
-//       cms.page, …) — the generic per-record router (docs/44 §3 B). 404 if none.
+//       cms.page, …) — the generic per-record router (docs/44 §3 B). With an
+//       optional recordId, a per-record template override wins over the type
+//       default (docs/51 §6). 404 if none resolves.
 //   GET /v1/public/builder/layout      ?tenant=<slug>
 //     → the published chrome tree + meta, or 404 if no layout has been published
 //
@@ -33,6 +35,9 @@ const PageQuery = z.object({
 const CollectionQuery = z.object({
   tenant: z.string().min(1).max(63),
   recordType: z.string().min(1).max(63),
+  // The specific record being rendered — lets a per-record template override win
+  // over the type default (docs/51 §6). Omitted on list/index renders.
+  recordId: z.string().min(1).max(255).optional(),
 });
 
 const TenantQuery = z.object({
@@ -62,7 +67,7 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/builder/collection', async (request) => {
     const q = CollectionQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
-    const page = await pageService.getPublishedByRecordType({ tenantId }, q.recordType);
+    const page = await pageService.getPublishedByRecordType({ tenantId }, q.recordType, q.recordId);
     if (!page) throw notFound('Builder collection template', q.recordType);
     return ok(page);
   });

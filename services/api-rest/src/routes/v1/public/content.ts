@@ -167,8 +167,8 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
   });
 
   // Public lookup by id — used for `reference` field resolution where a
-  // non-routable type (feature, faq_item) has slug=null and can't be fetched
-  // via /by-slug. Honors preview tokens the same way.
+  // referenced entry has slug=null and can't be fetched via /by-slug. Honors
+  // preview tokens the same way.
   app.get('/v1/public/content/entries/:id', async (request) => {
     const { id } = ByIdParams.parse(request.params);
     const q = ByIdQuery.parse(request.query);

@@ -1,9 +1,16 @@
 import { Section, SectionHeader, Spark } from './primitives';
-import { listFaqItems, type FetchedFaqItem } from '@/lib/sparx-content';
 
-// Fallback used when api-rest is unreachable. Mirrors the seeded faq_item
-// entries so a CMS outage degrades gracefully into the same prose.
-const STATIC_FAQ: FetchedFaqItem[] = [
+// The marketing FAQ — authored here as the source of truth. These are page
+// content, not CMS "content items": the old `faq_item` content type was
+// reclassified into a builder FAQ component (docs/51 §7).
+interface FaqItem {
+  id: string;
+  order: number;
+  question: string;
+  answer: string;
+}
+
+const FAQ_ITEMS: FaqItem[] = [
   {
     id: 'static-1',
     order: 10,
@@ -55,17 +62,8 @@ const STATIC_FAQ: FetchedFaqItem[] = [
   },
 ];
 
-async function loadFaq(): Promise<FetchedFaqItem[]> {
-  try {
-    const items = await listFaqItems();
-    return items.length ? items : STATIC_FAQ;
-  } catch {
-    return STATIC_FAQ;
-  }
-}
-
-export async function Faq() {
-  const items = await loadFaq();
+export function Faq() {
+  const items = FAQ_ITEMS;
 
   // FAQPage structured data (docs/50) — lets Google render rich FAQ results and
   // gives answer engines clean question/answer pairs to cite. Built from the same

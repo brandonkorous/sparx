@@ -7,7 +7,7 @@ export const size = OG_SIZE;
 export const contentType = 'image/png';
 export const alt = MODULES.ai.title;
 
-export default async function Image() {
-  const meta = await loadModuleData('ai');
+export default function Image() {
+  const meta = loadModuleData('ai');
   return renderModuleOgImage(meta);
 }

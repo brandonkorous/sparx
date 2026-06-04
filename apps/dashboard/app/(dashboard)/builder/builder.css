@@ -90,6 +90,39 @@
   color: var(--module-active);
   border-color: var(--module-active);
 }
+
+/* Default-template control in PageSettings (docs/51 §6). */
+.bx-default {
+  margin-top: 8px;
+}
+.bx-default__set {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border-default);
+  border-radius: 7px;
+  background: var(--color-bg-surface);
+  color: var(--color-text-default);
+  font-size: 12px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.bx-default__set:hover {
+  color: var(--module-active);
+  border-color: var(--module-active);
+}
+.bx-default__on {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--module-active);
+}
+.bx-default__hint {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
 .bx-newtpl svg {
   width: 15px;
   height: 15px;
@@ -1502,4 +1535,242 @@
   padding: 2px 7px;
   border-radius: 5px;
   opacity: 0.85;
+}
+
+/* ── Fields rail tab (docs/51 keystone) — author the content type's schema ──── */
+.bx-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bx-fields__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bx-fields__lead {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.bx-fields__badge {
+  flex: none;
+  font: 600 10px/1.4 var(--bx-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+}
+.bx-fields__err {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--color-text-danger, #dc2626);
+}
+.bx-fields__loading {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.bx-fields__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* One field row */
+.bx-fieldrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 8px;
+  padding: 7px 9px;
+  background: var(--color-bg-surface);
+}
+.bx-fieldrow--editing {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+.bx-fieldrow__main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.bx-fieldrow__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 550;
+}
+.bx-fieldrow__req {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--module-active);
+}
+.bx-fieldrow__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.bx-fieldrow__key {
+  font-family: var(--bx-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+.bx-fieldrow__kind {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+.bx-fieldrow__actions {
+  display: inline-flex;
+  gap: 2px;
+  flex: none;
+}
+.bx-fieldrow__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.bx-fieldrow__icon svg {
+  width: 14px;
+  height: 14px;
+}
+.bx-fieldrow__icon:hover {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-default);
+}
+.bx-fieldrow__icon--danger:hover {
+  color: var(--color-text-danger, #dc2626);
+}
+.bx-fieldrow__icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.bx-fieldrow__icon:disabled:hover {
+  background: none;
+  color: var(--color-text-muted);
+}
+.bx-fieldrow__editactions {
+  display: flex;
+  gap: 6px;
+}
+.bx-fieldrow__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 7px;
+  background: var(--color-bg-surface);
+  color: var(--color-text-default);
+  font-size: 12px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.bx-fieldrow__btn svg {
+  width: 13px;
+  height: 13px;
+}
+.bx-fieldrow__btn:hover {
+  border-color: var(--module-active);
+  color: var(--module-active);
+}
+.bx-fieldrow__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.bx-fieldrow__btn:disabled:hover {
+  border-color: var(--color-border-default);
+  color: var(--color-text-default);
+}
+
+/* Add-field form */
+.bx-fields__add {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--color-border-default);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+.bx-fields__addbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px dashed var(--color-border-default);
+  border-radius: 8px;
+  background: none;
+  color: var(--color-text-default);
+  font-size: 12.5px;
+  font-weight: 550;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.bx-fields__addbtn svg {
+  width: 15px;
+  height: 15px;
+}
+.bx-fields__addbtn:hover {
+  border-color: var(--module-active);
+  color: var(--module-active);
+}
+.bx-fields__addbtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.bx-fields__addbtn:disabled:hover {
+  border-color: var(--color-border-default);
+  color: var(--color-text-default);
+}
+
+/* Inline "+ New field" in the binding picker (docs/51 keystone) */
+.bx-bind__addfield {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  align-self: flex-start;
+  border: none;
+  background: none;
+  padding: 2px 0;
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--bind, var(--module-active));
+  cursor: pointer;
+}
+.bx-bind__addfield svg {
+  width: 14px;
+  height: 14px;
+}
+.bx-bind__addfield:hover {
+  text-decoration: underline;
+}
+.bx-bind__addform {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px dashed var(--color-border-default);
+  padding-top: 8px;
+}
+.bx-bind__addactions {
+  display: flex;
+  gap: 6px;
 }

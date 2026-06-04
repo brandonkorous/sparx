@@ -39,6 +39,16 @@ export const BuilderLayoutDocumentSchema = z.object({
 });
 export type BuilderLayoutDocument = z.infer<typeof BuilderLayoutDocumentSchema>;
 
+export const BuilderEmailDocumentSchema = z.object({
+  format: z.literal(BUILDER_DOC_FORMAT),
+  type: z.literal('email'),
+  name: z.string().min(1).max(255),
+  subject: z.string().max(255).optional(),
+  preheader: z.string().max(255).nullish(),
+  tree: BuilderNodeSchema,
+});
+export type BuilderEmailDocument = z.infer<typeof BuilderEmailDocumentSchema>;
+
 // ── Export builders ──────────────────────────────────────────────────────────
 
 export function toPageDocument(input: {
@@ -64,6 +74,22 @@ export function toLayoutDocument(input: {
   tree: BuilderNode;
 }): BuilderLayoutDocument {
   return { format: BUILDER_DOC_FORMAT, type: 'layout', name: input.name, tree: input.tree };
+}
+
+export function toEmailDocument(input: {
+  name: string;
+  subject?: string;
+  preheader?: string | null;
+  tree: BuilderNode;
+}): BuilderEmailDocument {
+  return {
+    format: BUILDER_DOC_FORMAT,
+    type: 'email',
+    name: input.name,
+    subject: input.subject ?? '',
+    preheader: input.preheader ?? null,
+    tree: input.tree,
+  };
 }
 
 // ── Id hygiene (import robustness) ───────────────────────────────────────────
@@ -137,6 +163,11 @@ export interface PageImportMeta {
 }
 export interface LayoutImportMeta {
   name?: string;
+}
+export interface EmailImportMeta {
+  name?: string;
+  subject?: string;
+  preheader?: string | null;
 }
 
 function coerce(raw: unknown): unknown {
@@ -226,5 +257,40 @@ export function parseLayoutImport(raw: unknown): ImportParse<LayoutImportMeta> {
   return {
     ok: false,
     error: 'Expected a Builder layout document (with "format" + "tree") or a bare node tree.',
+  };
+}
+
+/** Validate a raw import for an EMAIL (same rules as page/layout; email meta). */
+export function parseEmailImport(raw: unknown): ImportParse<EmailImportMeta> {
+  const data = coerce(raw);
+  if (typeof data === 'symbol') return { ok: false, error: 'Not valid JSON.' };
+
+  if (data && typeof data === 'object' && !Array.isArray(data) && 'format' in data) {
+    const withIds = {
+      ...(data as Record<string, unknown>),
+      tree: normalizeRaw((data as Record<string, unknown>).tree, { n: 0 }),
+    };
+    const parsed = BuilderEmailDocumentSchema.safeParse(withIds);
+    if (!parsed.success) return { ok: false, error: friendly(parsed.error) };
+    return {
+      ok: true,
+      tree: ensureUniqueIds(parsed.data.tree),
+      meta: {
+        name: parsed.data.name,
+        subject: parsed.data.subject,
+        preheader: parsed.data.preheader ?? null,
+      },
+    };
+  }
+
+  if (looksLikeNode(data)) {
+    const parsed = BuilderNodeSchema.safeParse(normalizeRaw(data, { n: 0 }));
+    if (!parsed.success) return { ok: false, error: friendly(parsed.error) };
+    return { ok: true, tree: ensureUniqueIds(parsed.data), meta: {} };
+  }
+
+  return {
+    ok: false,
+    error: 'Expected a Builder email document (with "format" + "tree") or a bare node tree.',
   };
 }

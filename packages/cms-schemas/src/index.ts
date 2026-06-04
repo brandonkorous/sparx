@@ -13,8 +13,4 @@ export {
   jobPostingType,
   helpArticleType,
   announcementType,
-  moduleType,
-  featureType,
-  faqItemType,
-  editorialSectionType,
 } from './builtins/index';

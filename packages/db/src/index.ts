@@ -139,6 +139,7 @@ export type {
   // Builder
   BuilderPage,
   BuilderLayout,
+  BuilderEmail,
   // Email platform
   EmailSettings,
   SendingDomain,

@@ -24,7 +24,8 @@ export interface BuilderEvent {
 export type BuilderTopic =
   | 'builder.page.published'
   | 'builder.layout.published'
-  | 'builder.layout.activated';
+  | 'builder.layout.activated'
+  | 'builder.email.published';
 
 export interface Publisher {
   publish(event: BuilderEvent): Promise<void>;

@@ -19,6 +19,7 @@ export * as templateService from './template-service';
 export * as automationService from './automation-service';
 export * as broadcastService from './broadcast-service';
 export * as analyticsService from './analytics-service';
+export * as builderEmailService from './builder-email-service';
 
 export { BUILTIN_TEMPLATES, getBuiltinTemplate, type BuiltinTemplate } from '../builtin-templates';
 export {

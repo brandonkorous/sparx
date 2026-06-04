@@ -198,6 +198,29 @@ export async function scheduleEntryPublish(
   return { ok: true };
 }
 
+// Per-record builder template OVERRIDE (docs/51 §6) — pin THIS entry to a
+// specific collection template, or clear it (builderPageId=null) so it falls
+// back to the content type's default. A content entry's recordType is
+// `cms.<typeKey>`. Routes through the builder assignment endpoint; the picker
+// only renders when the Builder module is on, so a 404 here is unexpected.
+export async function setEntryTemplate(
+  typeKey: string,
+  itemRef: string,
+  builderPageId: string | null
+): Promise<ActionResult> {
+  try {
+    await api.put('/v1/builder/assignment', {
+      recordType: `cms.${typeKey}`,
+      itemRef,
+      builderPageId,
+    });
+    revalidatePath(`/cms/types/${typeKey}/${itemRef}`);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: friendly(err) };
+  }
+}
+
 export async function deleteEntry(id: string, typeKey: string): Promise<ActionResult> {
   try {
     await api.delete(`/v1/content/entries/${id}`);

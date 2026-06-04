@@ -16,9 +16,11 @@
 //                 visibility) — see BoxBasePanel / visibleBoxAxes.
 
 import * as React from 'react';
-import { ChevronDown, ChevronLeft } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, Plus, X } from 'lucide-react';
 import { Input, NativeSelect, Switch, Textarea, cn } from '@sparx/ui';
 import type { BindingCatalog } from '@sparx/builder-schemas';
+
+import { CREATABLE_KINDS, type CreatableType } from './field-kinds';
 
 import { SeoScoreChip } from '@/components/seo/seo-score';
 
@@ -257,15 +259,106 @@ function AdvancedPanel({
 
 const UNBOUND = '__none';
 
+// Inline "+ New field" (docs/51 keystone) — the quick path to add a field to the
+// page's content type and bind this node to it in one step, without leaving for
+// the Fields tab. Shown only on a collection template that targets a content
+// type. The bound path follows the node's scope: an in-scope (iterating) node
+// reads `item.<key>`; otherwise it reads the per-record `<typeKey>.<key>` (the
+// bare record source a collection template renders against).
+function InlineFieldAdd({
+  contentTypeKey,
+  scope,
+  onAddField,
+  onBind,
+}: {
+  contentTypeKey: string;
+  scope: ScopeInfo;
+  onAddField: (label: string, kind: CreatableType) => Promise<string | null>;
+  onBind: (path: string | null) => void;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [label, setLabel] = React.useState('');
+  const [kind, setKind] = React.useState<CreatableType>('text');
+  const [busy, setBusy] = React.useState(false);
+
+  const submit = async () => {
+    const trimmed = label.trim();
+    if (!trimmed) return;
+    setBusy(true);
+    const key = await onAddField(trimmed, kind);
+    setBusy(false);
+    if (!key) return;
+    onBind(scope.inScope ? `item.${key}` : `${contentTypeKey}.${key}`);
+    setLabel('');
+    setKind('text');
+    setOpen(false);
+  };
+
+  if (!open) {
+    return (
+      <button type="button" className="bx-bind__addfield" onClick={() => setOpen(true)}>
+        <Plus aria-hidden /> New field
+      </button>
+    );
+  }
+
+  return (
+    <div className="bx-bind__addform">
+      <Input
+        size="sm"
+        value={label}
+        placeholder="Field label"
+        aria-label="New field label"
+        onChange={(e) => setLabel(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            void submit();
+          }
+        }}
+      />
+      <NativeSelect
+        size="sm"
+        value={kind}
+        aria-label="New field type"
+        onChange={(e) => setKind(e.target.value as CreatableType)}
+      >
+        {CREATABLE_KINDS.map((k) => (
+          <option key={k.type} value={k.type}>
+            {k.label}
+          </option>
+        ))}
+      </NativeSelect>
+      <div className="bx-bind__addactions">
+        <button
+          type="button"
+          className="bx-fieldrow__btn"
+          disabled={busy || !label.trim()}
+          onClick={() => void submit()}
+        >
+          <Check aria-hidden /> Add &amp; bind
+        </button>
+        <button type="button" className="bx-fieldrow__btn" onClick={() => setOpen(false)}>
+          <X aria-hidden /> Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function BindingBox({
   node,
   catalog,
   scope,
+  contentTypeKey,
+  onAddField,
   onBind,
 }: {
   node: BuilderNode;
   catalog: BindingCatalog;
   scope: ScopeInfo;
+  contentTypeKey?: string | null;
+  onAddField?: (label: string, kind: CreatableType) => Promise<string | null>;
   onBind: (path: string | null) => void;
 }) {
   const def = getDef(node.type)!;
@@ -329,6 +422,14 @@ function BindingBox({
             </optgroup>
           ) : null}
         </NativeSelect>
+        {contentTypeKey && onAddField ? (
+          <InlineFieldAdd
+            contentTypeKey={contentTypeKey}
+            scope={scope}
+            onAddField={onAddField}
+            onBind={onBind}
+          />
+        ) : null}
       </div>
     </Group>
   );
@@ -632,11 +733,13 @@ export function PageSettings({
   slug,
   kind,
   recordType,
+  isDefault = false,
   catalog,
   seo,
   onSlug,
   onSeo,
   onRetarget,
+  onMakeDefault,
 }: {
   pageId: string;
   name: string;
@@ -645,11 +748,15 @@ export function PageSettings({
   /** A collection template's target — the content type / source it renders per
    *  record (docs/51 §6). Undefined for singletons. */
   recordType?: string | null;
+  /** Whether this collection template is the DEFAULT for its recordType — the
+   *  per-type winner the storefront renders absent a per-record override. */
+  isDefault?: boolean;
   catalog: BindingCatalog;
   seo: PageSeo;
   onSlug: (slug: string) => void;
   onSeo: (patch: Partial<PageSeo>) => void;
   onRetarget: (recordType: string | null) => void;
+  onMakeDefault: () => void;
 }) {
   const [draft, setDraft] = React.useState(slug ?? '');
   // Resync when the active page changes (slug prop is the source of truth).
@@ -689,6 +796,22 @@ export function PageSettings({
             A collection template renders once per record — its SEO comes from each record (the
             product or entry it binds), not the template.
           </p>
+          {recordType ? (
+            <div className="bx-default">
+              {isDefault ? (
+                <span className="bx-default__on">✓ Default template for this type</span>
+              ) : (
+                <button type="button" className="bx-default__set" onClick={onMakeDefault}>
+                  Make default for this type
+                </button>
+              )}
+              <p className="bx-default__hint">
+                {isDefault
+                  ? 'Records of this type render through this template unless an individual record overrides it.'
+                  : 'Until this is the default (or pinned to a record), published records of this type keep rendering through the current default.'}
+              </p>
+            </div>
+          ) : null}
         </Group>
       ) : (
         <>
@@ -830,6 +953,72 @@ export function LayoutSettings({ name }: { name: string }) {
   );
 }
 
+// The no-selection panel for the Email Builder (docs/52): the document-level
+// subject + inbox preheader. Both keep a local draft and commit on blur (like the
+// page slug field) so typing doesn't round-trip per keystroke.
+export function EmailSettings({
+  name,
+  subject,
+  preheader,
+  onSubject,
+  onPreheader,
+}: {
+  name: string;
+  subject: string;
+  preheader: string | null;
+  onSubject: (value: string) => void;
+  onPreheader: (value: string) => void;
+}) {
+  const [subjectDraft, setSubjectDraft] = React.useState(subject);
+  const [preheaderDraft, setPreheaderDraft] = React.useState(preheader ?? '');
+  // Resync when the active email changes (props are the source of truth).
+  React.useEffect(() => setSubjectDraft(subject), [subject]);
+  React.useEffect(() => setPreheaderDraft(preheader ?? ''), [preheader]);
+
+  return (
+    <div className="bx-inspector">
+      <header className="bx-ins-head">
+        <div className="bx-ins-head__row">
+          <h3>{name}</h3>
+          <span className="bx-ins-kind">email</span>
+        </div>
+      </header>
+      <Group label="Message">
+        <Field label="Subject" hint="The subject line shown in the inbox.">
+          <Input
+            value={subjectDraft}
+            placeholder="e.g. Welcome to the shop"
+            aria-label="Email subject"
+            onChange={(e) => setSubjectDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') e.currentTarget.blur();
+            }}
+            onBlur={() => subjectDraft !== subject && onSubject(subjectDraft)}
+          />
+        </Field>
+        <Field
+          label="Preview text"
+          hint="The preheader shown after the subject in most inboxes. Optional."
+        >
+          <Textarea
+            rows={2}
+            value={preheaderDraft}
+            placeholder="A short teaser shown next to the subject"
+            aria-label="Email preheader"
+            onChange={(e) => setPreheaderDraft(e.target.value)}
+            onBlur={() => preheaderDraft !== (preheader ?? '') && onPreheader(preheaderDraft)}
+          />
+        </Field>
+        <p className="bx-grp__caption">
+          The branded frame — your wordmark header and the legal footer — wraps this body
+          automatically. You compose the content; the chrome is added on send.
+        </p>
+      </Group>
+      <p className="bx-inspector__tip">Select a layer to edit it.</p>
+    </div>
+  );
+}
+
 // ── The inspector ────────────────────────────────────────────────────────────
 
 export interface InspectorProps {
@@ -840,6 +1029,12 @@ export interface InspectorProps {
   surface: EditorSurface;
   /** Rendered when no node is selected — the surface's settings panel. */
   settings: React.ReactNode;
+  /** The active template's content-type key — enables the binding picker's inline
+   *  "+ New field" (docs/51 keystone). Null/undefined hides it. */
+  contentTypeKey?: string | null;
+  /** Add a field to `contentTypeKey`, resolving its key so the picker binds the
+   *  node to the new field. */
+  onAddField?: (label: string, kind: CreatableType) => Promise<string | null>;
   /** Clear the selection — returns the inspector to the `settings` panel (page /
    *  site settings). Powers the "‹ Page settings" back control. */
   onBack: () => void;
@@ -858,6 +1053,8 @@ export function Inspector({
   scope,
   surface,
   settings,
+  contentTypeKey,
+  onAddField,
   onBack,
   onName,
   onClass,
@@ -880,7 +1077,11 @@ export function Inspector({
           to miss when the page fills the canvas). */}
       <button type="button" className="bx-ins-back" onClick={onBack}>
         <ChevronLeft aria-hidden />
-        {surface === 'site' ? 'Site settings' : 'Page settings'}
+        {surface === 'site'
+          ? 'Site settings'
+          : surface === 'email'
+            ? 'Email settings'
+            : 'Page settings'}
       </button>
       <header className="bx-ins-head">
         <div className="bx-ins-head__row">
@@ -912,7 +1113,14 @@ export function Inspector({
 
       <AdvancedPanel node={node} def={def} onClass={onClass} />
 
-      <BindingBox node={node} catalog={catalog} scope={scope} onBind={onBind} />
+      <BindingBox
+        node={node}
+        catalog={catalog}
+        scope={scope}
+        contentTypeKey={contentTypeKey}
+        onAddField={onAddField}
+        onBind={onBind}
+      />
       <PropsPanel node={node} onProp={onProp} />
       {def.kind === 'container' && node.layout ? (
         <LayoutPanel layout={node.layout} onLayout={onLayout} />

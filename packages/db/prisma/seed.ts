@@ -9,7 +9,6 @@
 
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from 'better-auth/crypto';
-import { seedMarketingContent } from './seeds/marketing.js';
 
 const prisma = new PrismaClient();
 
@@ -110,10 +109,6 @@ async function main(): Promise<void> {
       `[seed] e2e-store staff user upsert skipped: ${err instanceof Error ? err.message : String(err)}`
     );
   }
-
-  // Seed the Sparx Marketing tenant + its module/feature content entries.
-  // Idempotent; safe to re-run.
-  await seedMarketingContent(prisma);
 }
 
 main()

@@ -13,6 +13,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { broadcastService } from '@sparx/email-platform';
+import { emailService as builderEmailService } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
@@ -71,7 +72,14 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     await requireEmailModule(request);
     const { id } = IdParam.parse(request.params);
     const ctx = toEmailContext(request);
-    return ok(await broadcastService.sendNow(ctx, id, sectionResolver(ctx)));
+    // The Builder-email resolver loads the published body tree (docs/52 §6); the
+    // section resolver handles legacy template bodies. The service uses whichever
+    // the broadcast references.
+    return ok(
+      await broadcastService.sendNow(ctx, id, sectionResolver(ctx), (beId) =>
+        builderEmailService.getPublishedById(ctx, beId)
+      )
+    );
   });
 
   app.post('/v1/email/broadcasts/:id/schedule', async (request) => {
@@ -79,7 +87,11 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     await requireEmailModule(request);
     const { id } = IdParam.parse(request.params);
     const ctx = toEmailContext(request);
-    return ok(await broadcastService.schedule(ctx, id, request.body, sectionResolver(ctx)));
+    return ok(
+      await broadcastService.schedule(ctx, id, request.body, sectionResolver(ctx), (beId) =>
+        builderEmailService.getPublishedById(ctx, beId)
+      )
+    );
   });
 
   app.post('/v1/email/broadcasts/:id/cancel', async (request) => {

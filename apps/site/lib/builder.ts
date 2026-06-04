@@ -57,17 +57,20 @@ export async function getPublishedBuilderPage(
 }
 
 /** The PUBLISHED collection template for a record type (docs/44 §3 B — the
- *  generic per-record router): the tree that renders EVERY record of
- *  `recordType` (`commerce.product`, `cms.page`, `cms.blog_post`, …). Null when
- *  the tenant has published none, so the caller keeps its legacy render path.
- *  The caller binds the in-scope record into the tree before rendering. */
+ *  generic per-record router): the tree that renders a record of `recordType`
+ *  (`commerce.product`, `cms.page`, `cms.blog_post`, …). Null when the tenant has
+ *  published none, so the caller keeps its legacy render path. The caller binds
+ *  the in-scope record into the tree before rendering. Pass the record's id so a
+ *  per-record template override wins over the type default (docs/51 §6). */
 export async function getPublishedBuilderCollection(
   tenantSlug: string,
-  recordType: string
+  recordType: string,
+  recordId?: string
 ): Promise<PublishedPageDto | null> {
   try {
+    const recordParam = recordId ? `&recordId=${encodeURIComponent(recordId)}` : '';
     const res = await fetch(
-      `${BASE_URL}/v1/public/builder/collection?tenant=${encodeURIComponent(tenantSlug)}&recordType=${encodeURIComponent(recordType)}`,
+      `${BASE_URL}/v1/public/builder/collection?tenant=${encodeURIComponent(tenantSlug)}&recordType=${encodeURIComponent(recordType)}${recordParam}`,
       // INTERIM: uncached so a publish reflects immediately (see getPublishedBuilderPage).
       { cache: 'no-store' }
     );

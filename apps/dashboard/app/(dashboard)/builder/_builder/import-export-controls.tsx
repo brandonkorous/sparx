@@ -23,8 +23,8 @@ function slugify(name: string): string {
 }
 
 export interface ImportExportControlsProps {
-  /** 'page' | 'layout' — drives the filename suffix + labels. */
-  kind: 'page' | 'layout';
+  /** 'page' | 'layout' | 'email' — drives the filename suffix + labels. */
+  kind: 'page' | 'layout' | 'email';
   /** The document name (used to build the download filename). */
   name: string;
   /** Build the export document (called on click so it reflects the latest tree). */

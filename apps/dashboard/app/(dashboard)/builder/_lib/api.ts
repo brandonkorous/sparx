@@ -3,7 +3,12 @@
 
 import 'server-only';
 import { api } from '@/lib/api-rest-client';
-import type { BindingCatalog, BuilderLayoutDto, BuilderPageDto } from '@sparx/builder-schemas';
+import type {
+  BindingCatalog,
+  BuilderEmailDto,
+  BuilderLayoutDto,
+  BuilderPageDto,
+} from '@sparx/builder-schemas';
 
 // The tenant's pages. The list endpoint seeds the curated starter set on the
 // tenant's first call (docs/41 §5), so this never returns an empty editor.
@@ -33,4 +38,12 @@ export async function getActiveLayout(): Promise<BuilderLayoutDto | null> {
 // picker, canvas preview, and layer chips all derive from this.
 export async function getBindingCatalog(): Promise<BindingCatalog> {
   return api.get<BindingCatalog>('/v1/builder/binding-schema');
+}
+
+// The tenant's emails — the Email Builder catalog (docs/52). The list endpoint
+// seeds the curated starter set on the tenant's first call, so the email editor
+// never opens empty.
+export async function listEmails(): Promise<BuilderEmailDto[]> {
+  const { emails } = await api.get<{ emails: BuilderEmailDto[] }>('/v1/builder/emails');
+  return emails;
 }
