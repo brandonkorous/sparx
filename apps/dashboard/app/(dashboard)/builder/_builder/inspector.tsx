@@ -631,17 +631,25 @@ export function PageSettings({
   name,
   slug,
   kind,
+  recordType,
+  catalog,
   seo,
   onSlug,
   onSeo,
+  onRetarget,
 }: {
   pageId: string;
   name: string;
   slug: string | null;
   kind: 'singleton' | 'collection';
+  /** A collection template's target — the content type / source it renders per
+   *  record (docs/51 §6). Undefined for singletons. */
+  recordType?: string | null;
+  catalog: BindingCatalog;
   seo: PageSeo;
   onSlug: (slug: string) => void;
   onSeo: (patch: Partial<PageSeo>) => void;
+  onRetarget: (recordType: string | null) => void;
 }) {
   const [draft, setDraft] = React.useState(slug ?? '');
   // Resync when the active page changes (slug prop is the source of truth).
@@ -656,7 +664,27 @@ export function PageSettings({
         </div>
       </header>
       {kind === 'collection' ? (
-        <Group label="Page">
+        <Group label="Renders">
+          <Field
+            label="Content type"
+            hint="Every record of this type renders through this template (docs/51). Editing the type’s fields affects all of its templates and every API/MCP consumer."
+          >
+            <NativeSelect
+              size="sm"
+              value={recordType ?? ''}
+              aria-label="Content type this template renders"
+              onChange={(e) => onRetarget(e.target.value || null)}
+            >
+              <option value="">— Choose a content type —</option>
+              {catalog.sources
+                .filter((s) => s.cardinality === 'array')
+                .map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {`${s.module.toUpperCase()} · ${s.label}`}
+                  </option>
+                ))}
+            </NativeSelect>
+          </Field>
           <p className="bx-grp__caption">
             A collection template renders once per record — its SEO comes from each record (the
             product or entry it binds), not the template.

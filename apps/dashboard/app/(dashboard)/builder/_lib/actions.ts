@@ -68,6 +68,17 @@ export async function setPageSlug(id: string, slug: string): Promise<ActionResul
   return run(() => api.patch<BuilderPageDto>(`/v1/builder/pages/${id}`, { slug: value }), true);
 }
 
+/** Retarget a collection template at the record source it renders per record
+ *  (docs/51 §6) — a content type (`cms.<key>`) or a code-defined domain source
+ *  (`commerce.product`). Picking from the real binding catalog (vs. a hand-typed
+ *  string) is what keeps the template↔content link from drifting. Null clears it. */
+export async function retargetPage(
+  id: string,
+  recordType: string | null
+): Promise<ActionResult<BuilderPageDto>> {
+  return run(() => api.patch<BuilderPageDto>(`/v1/builder/pages/${id}`, { recordType }), true);
+}
+
 /** Update a singleton page's SEO (docs/50). Empty strings clear a field
  *  (stored null server-side). No revalidate — the editor holds the latest values
  *  and only the published storefront read consumes them. */

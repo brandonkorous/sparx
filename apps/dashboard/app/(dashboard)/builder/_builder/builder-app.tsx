@@ -30,6 +30,7 @@ import {
   mintBuilderPreviewToken,
   publishPage,
   renamePage,
+  retargetPage,
   savePageTree,
   setPageSlug,
   updatePageSeo,
@@ -262,6 +263,29 @@ export function BuilderApp({
       editor.setSaveStatus('saved');
     } else {
       setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, slug: prev } : t)));
+      editor.setSaveStatus('error');
+    }
+  };
+
+  // Retarget a collection template at the content type / source it renders per
+  // record (docs/51 §6). Optimistic like onSlug; reflect the server value or revert.
+  const onRetarget = async (recordType: string | null) => {
+    if (!active) return;
+    const id = active.id;
+    const prev = active.recordType;
+    setTemplates((ts) =>
+      ts.map((t) => (t.id === id ? { ...t, recordType: recordType ?? undefined } : t))
+    );
+    editor.setSaveStatus('saving');
+    const res = await retargetPage(id, recordType);
+    if (res.ok && res.data) {
+      const saved = res.data;
+      setTemplates((ts) =>
+        ts.map((t) => (t.id === id ? { ...t, recordType: saved.recordType ?? undefined } : t))
+      );
+      editor.setSaveStatus('saved');
+    } else {
+      setTemplates((ts) => ts.map((t) => (t.id === id ? { ...t, recordType: prev } : t)));
       editor.setSaveStatus('error');
     }
   };
@@ -511,9 +535,12 @@ export function BuilderApp({
               name={active.name}
               slug={active.slug}
               kind={active.kind}
+              recordType={active.recordType ?? null}
+              catalog={bindingCatalog}
               seo={active.seo}
               onSlug={onSlug}
               onSeo={onSeo}
+              onRetarget={onRetarget}
             />
           }
         />
