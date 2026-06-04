@@ -13,7 +13,7 @@ import { BuilderRenderer } from '@/components/builder-renderer';
 import { PageView } from '@/components/page-view';
 import { getPublishedBuilderCollection } from '@/lib/builder';
 import { loadBuilderData, postToBuilderRecord } from '@/lib/builder-data';
-import { getBlogPostBySlug, type ApiEntry, type PageBody } from '@/lib/content';
+import { getBlogPostBySlug } from '@/lib/content';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
@@ -89,5 +89,5 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
 
   // No builder template published — degrade to a bare CMS article so the post is
   // still readable (PageView already renders the body doc + title).
-  return <PageView entry={post as unknown as ApiEntry<PageBody>} />;
+  return <PageView entry={post} />;
 }
