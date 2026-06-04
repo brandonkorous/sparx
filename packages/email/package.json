@@ -31,7 +31,7 @@
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.0.8",
     "@sparx/builder-schemas": "workspace:*",
-    "@sparx/email-sections": "workspace:*",
+    "@sparx/cms-editor": "workspace:*",
     "zod": "^4.4.3"
   },
   "peerDependencies": {

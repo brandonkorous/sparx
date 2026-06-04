@@ -16,10 +16,21 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, Monitor, Pencil, Plus, Save, Smartphone, Tablet, Trash2, Upload } from 'lucide-react';
 import { Button, Input, ModuleProvider, NativeSelect, useConfirm } from '@sparx/ui';
-import { parsePageImport, toPageDocument } from '@sparx/builder-schemas';
-import type { BindingCatalog, BuilderNode, BuilderPageDto } from '@sparx/builder-schemas';
+import {
+  collectComponentRefs,
+  makeCustomNode,
+  parsePageImport,
+  toPageDocument,
+} from '@sparx/builder-schemas';
+import type {
+  BindingCatalog,
+  BuilderNode,
+  BuilderPageDto,
+  ComponentDto,
+} from '@sparx/builder-schemas';
 
-import { type Device, type PageTemplate, type PageSeo } from './model';
+import { makeId, type Device, type PageTemplate, type PageSeo } from './model';
+import { getDef } from './registry';
 import { MODULES } from './sample';
 import { PageSettings } from './inspector';
 import { BuilderWorkspace } from './builder-workspace';
@@ -39,6 +50,7 @@ import {
   setPageSlug,
   updatePageSeo,
 } from '../_lib/actions';
+import { copyComponent } from '../components/_lib/component-actions';
 import { getContentTypeSchema, saveContentTypeSchema } from '../_lib/schema-actions';
 
 // A loaded page reduced to the editor's working shape.
@@ -99,6 +111,9 @@ export interface BuilderAppProps {
    *  "Open in builder" link → `/builder/page?page=<id>`). Falls back to the
    *  first page when absent or not found in `initialPages`. */
   initialPageId?: string;
+  /** The tenant's custom components with their latest trees (docs/53 P-B) — feeds
+   *  the Add palette ("Your components") and the canvas's live expansion. */
+  components?: ComponentDto[];
 }
 
 export function BuilderApp({
@@ -108,6 +123,7 @@ export function BuilderApp({
   tenantSlug,
   siteOrigin,
   initialPageId,
+  components = [],
 }: BuilderAppProps) {
   const confirm = useConfirm();
   const router = useRouter();
@@ -133,6 +149,13 @@ export function BuilderApp({
   const active = templates.find((t) => t.id === activeId) ?? templates[0] ?? null;
   const tree = active?.tree ?? null;
 
+  // Custom components keyed by component key — drives insertion (version pin),
+  // the canvas's live expansion, and the layers/inspector labels (docs/53 P-B).
+  const componentsByKey = React.useMemo(
+    () => new Map(components.map((c) => [c.key, c])),
+    [components]
+  );
+
   // The content type this collection template renders, if any — its key drives
   // the "Fields" rail tab and the inspector's inline "+ New field" (docs/51
   // keystone). A singleton page or an untargeted/commerce template has none.
@@ -146,6 +169,7 @@ export function BuilderApp({
   const editor = useBuilderEditor({
     tree,
     catalog: bindingCatalog,
+    components: componentsByKey,
     save: async (next) => {
       if (!active) return false;
       const res = await savePageTree(active.id, next);
@@ -360,6 +384,41 @@ export function BuilderApp({
     if (!res.ok) return null;
     router.refresh();
     return key;
+  };
+
+  // "Save as component" (docs/53 P-C): turn the selected subtree into a reusable
+  // tenant component, then replace it in-place with a pinned placement. A subtree
+  // that already contains a component is rejected (v1 forbids nesting). The new
+  // component seeds with a sensible name (rename + parameterize in the component
+  // editor); router.refresh reloads the component map so the placement previews.
+  const onSaveAsComponent = async (node: BuilderNode) => {
+    if (collectComponentRefs(node).length > 0) {
+      editor.setSaveStatus('error');
+      return;
+    }
+    const def = getDef(node.type);
+    setBusy(true);
+    const res = await copyComponent({
+      name: node.box.name ?? def?.label ?? 'Component',
+      group: def?.group ?? 'content',
+      icon: 'box',
+      surfaces: ['page'],
+      tree: node,
+    });
+    if (!res.ok || !res.data) {
+      setBusy(false);
+      editor.setSaveStatus('error');
+      return;
+    }
+    const created = res.data;
+    editor.replaceNode(
+      node.id,
+      makeCustomNode(created.key, created.latestVersion, makeId('custom'))
+    );
+    await editor.flushSave();
+    setBusy(false);
+    editor.setSaveStatus('saved');
+    router.refresh();
   };
 
   // Patch the active singleton's SEO (docs/50). Optimistic like onSlug: write the
@@ -601,8 +660,10 @@ export function BuilderApp({
           catalog={bindingCatalog}
           surface="page"
           chrome={layoutTree ?? null}
+          components={componentsByKey}
           contentTypeKey={contentTypeKey}
           onAddField={onAddField}
+          onSaveAsComponent={onSaveAsComponent}
           fields={contentTypeKey ? <FieldsPanel typeKey={contentTypeKey} /> : undefined}
           settings={
             <PageSettings

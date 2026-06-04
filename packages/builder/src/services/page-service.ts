@@ -27,6 +27,7 @@ import { publishBuilderEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { BuilderNotFoundError, BuilderValidationError } from '../errors';
 import { getSchema } from './binding-service';
+import { expandTreeForPublish } from './component-service';
 
 function toDto(row: BuilderPage): BuilderPageDto {
   return {
@@ -252,16 +253,18 @@ export async function reorder(ctx: ServiceContext, rawInput: unknown): Promise<B
   });
 }
 
-/** Snapshot the draft tree into the published tree. No storefront consumer yet
- *  (docs/41 §1); the publish event is emitted for the future render path. */
+/** Snapshot the draft tree into the published tree, expanding any tenant
+ *  components into concrete primitives first (docs/53 §3). The publish event is
+ *  emitted for the storefront render path. */
 export async function publish(ctx: ServiceContext, id: string): Promise<BuilderPageDto> {
   const dto = await withTenant(ctx, async (tx) => {
     const existing = await tx.builderPage.findUnique({ where: { id } });
     if (!existing) throw new BuilderNotFoundError('BuilderPage', id);
+    const published = await expandTreeForPublish(tx, existing.draftTree as unknown as BuilderNode);
     const updated = await tx.builderPage.update({
       where: { id },
       data: {
-        publishedTree: existing.draftTree as Prisma.InputJsonValue,
+        publishedTree: asJson(published),
         publishedAt: new Date(),
       },
     });

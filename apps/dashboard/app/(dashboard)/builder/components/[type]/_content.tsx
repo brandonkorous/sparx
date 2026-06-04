@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
+import { Pencil } from 'lucide-react';
 import {
   Badge,
+  Button,
   Card,
   CardContent,
   CardDescription,
@@ -16,7 +18,12 @@ import {
   TableRow,
   Text,
 } from '@sparx/ui';
-import type { ComponentDto, PropKind } from '@sparx/builder-schemas';
+import type {
+  ComponentDto,
+  ComponentUsageDto,
+  ComponentVersionDto,
+  PropKind,
+} from '@sparx/builder-schemas';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { boxAxesFor, type BoxAxis, type PropSpec } from '../../_builder/registry';
@@ -49,6 +56,7 @@ interface Props {
 const CONTROL_LABELS: Record<PropSpec['control'], string> = {
   text: 'Text',
   textarea: 'Multi-line text',
+  richtext: 'Rich text',
   select: 'Dropdown',
   buttongroup: 'Choice',
   switch: 'Toggle',
@@ -107,7 +115,20 @@ export async function ComponentDetailContent({ id }: Props) {
     if ((err as ApiRestError)?.status === 404) notFound();
     throw err;
   }
-  return <CustomComponentDetail component={component} />;
+  // Version history + where-used (docs/53 P-E / §6). Best-effort: a failed read
+  // just hides the panel rather than 500-ing the detail.
+  const [versions, usage] = await Promise.all([
+    api
+      .get<{ versions: ComponentVersionDto[] }>(
+        `/v1/builder/components/${encodeURIComponent(id)}/versions`
+      )
+      .then((r) => r.versions)
+      .catch(() => [] as ComponentVersionDto[]),
+    api
+      .get<ComponentUsageDto>(`/v1/builder/components/${encodeURIComponent(id)}/usages`)
+      .catch(() => null),
+  ]);
+  return <CustomComponentDetail component={component} versions={versions} usage={usage} />;
 }
 
 // ── System component (read-only reference + Copy) ─────────────────────────────
@@ -316,7 +337,22 @@ function SystemComponentDetail({ def }: { def: ComponentDef }) {
 
 // ── Tenant component (identity + fields + Delete) ─────────────────────────────
 
-function CustomComponentDetail({ component }: { component: ComponentDto }) {
+function fmtDate(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime())
+    ? iso
+    : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function CustomComponentDetail({
+  component,
+  versions,
+  usage,
+}: {
+  component: ComponentDto;
+  versions: ComponentVersionDto[];
+  usage: ComponentUsageDto | null;
+}) {
   const surfacesLabel =
     component.surfaces.includes('page') && component.surfaces.includes('site')
       ? 'Page & layout'
@@ -344,11 +380,18 @@ function CustomComponentDetail({ component }: { component: ComponentDto }) {
             <Text variant="muted">{component.description ?? 'A component you built.'}</Text>
           </Stack>
         </Stack>
-        <DeleteComponentButton
-          componentKey={component.key}
-          name={component.name}
-          redirectTo="/builder/components"
-        />
+        <Stack direction="row" align="center" gap={2}>
+          <Button asChild size="sm" variant="soft">
+            <a href={`/builder/components/${component.key}/edit`}>
+              <Pencil className="h-3.5 w-3.5" /> Edit
+            </a>
+          </Button>
+          <DeleteComponentButton
+            componentKey={component.key}
+            name={component.name}
+            redirectTo="/builder/components"
+          />
+        </Stack>
       </Stack>
 
       {/* Overview */}
@@ -384,7 +427,7 @@ function CustomComponentDetail({ component }: { component: ComponentDto }) {
             <CardDescription>
               {component.propSpec.length > 0
                 ? 'The configurable slots each placement of this component can fill.'
-                : 'No configurable fields — every placement renders the same. Editing the component (coming soon) updates them all.'}
+                : 'No configurable fields — every placement renders the same. Edit the component to add fields and structure.'}
             </CardDescription>
           </Stack>
         </CardHeader>
@@ -422,6 +465,93 @@ function CustomComponentDetail({ component }: { component: ComponentDto }) {
           </CardContent>
         ) : null}
       </Card>
+
+      {/* Used on (where-used — docs/53 §6) */}
+      <Card>
+        <CardHeader>
+          <Stack gap={1}>
+            <Heading level={3}>Used on</Heading>
+            <CardDescription>
+              The pages and layouts that place this component. It can’t be deleted while it’s in
+              use.
+            </CardDescription>
+          </Stack>
+        </CardHeader>
+        <CardContent>
+          {usage && usage.total > 0 ? (
+            <Stack direction="row" align="center" gap={2} wrap>
+              {usage.pages.map((p) => (
+                <Badge key={`p:${p.id}`} variant="outline">
+                  {p.name}
+                </Badge>
+              ))}
+              {usage.layouts.map((l) => (
+                <Badge key={`l:${l.id}`} color="module" variant="soft">
+                  {l.name} (layout)
+                </Badge>
+              ))}
+            </Stack>
+          ) : (
+            <Text size="sm" variant="muted">
+              Not placed anywhere yet.
+            </Text>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Version history (docs/53 §4 / P-E) */}
+      {versions.length > 0 ? (
+        <Card padding="none">
+          <CardHeader className="px-6 pt-6">
+            <Stack gap={1}>
+              <Heading level={3}>Version history</Heading>
+              <CardDescription>
+                Each save is an immutable version. Placements pin a version and update on your
+                terms.
+              </CardDescription>
+            </Stack>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Version</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead>Fields</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {versions.map((v) => (
+                  <TableRow key={v.version}>
+                    <TableCell>
+                      <Stack direction="row" align="center" gap={2}>
+                        <Text size="sm" className="font-medium">
+                          v{v.version}
+                        </Text>
+                        {v.version === component.latestVersion ? (
+                          <Badge color="module" variant="soft" className="text-xs">
+                            Latest
+                          </Badge>
+                        ) : null}
+                      </Stack>
+                    </TableCell>
+                    <TableCell>
+                      <Text size="sm" variant="muted">
+                        {fmtDate(v.createdAt)}
+                      </Text>
+                    </TableCell>
+                    <TableCell>
+                      <Text size="sm" variant="muted">
+                        {v.propSpec.length}
+                      </Text>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      ) : null}
     </Stack>
   );
 }

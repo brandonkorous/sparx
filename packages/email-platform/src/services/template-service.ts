@@ -1,12 +1,13 @@
-// templateService — the two-track template surface.
+// templateService — the BUILTIN (transactional) template surface.
 //
-//   builtin   → code-defined React Email components in @sparx/email. Tenants
-//               customize a constrained layer (subject + intro/outro slots);
-//               branding is global (brand-service). The override is an
-//               EmailTemplate row (source='builtin', key=<template id>).
-//   authored  → tenant-authored marketing body (a CMS TipTap doc) rendered
-//               into the brand chrome via renderAuthoredEmail. Stored as an
-//               EmailTemplate row (source='authored').
+//   builtin → code-defined React Email components in @sparx/email. Tenants
+//             customize a constrained layer (subject + intro/outro slots);
+//             branding is global (brand-service). The override is an
+//             EmailTemplate row (source='builtin', key=<template id>).
+//
+// Marketing emails are authored in the Builder (docs/52, @sparx/builder's
+// BuilderEmail) — the section-list "authored template" model is retired (docs/52
+// §8). This service now owns builtins only.
 //
 // Preview + test-send resolve the tenant brand so what the tenant sees
 // matches what ships. Test-send uses the synchronous escape hatch (staff-
@@ -14,34 +15,13 @@
 
 import { withTenant } from '@sparx/db';
 import type { EmailTemplate, Prisma } from '@sparx/db';
-import {
-  renderSections,
-  renderTemplate,
-  sendEmail,
-  type DeliveryResult,
-  type TemplateSend,
-} from '@sparx/email';
-import {
-  ImageConfig,
-  RichTextConfig,
-  normalizeBody,
-  parseBody,
-  type EmailSectionInstance,
-  type SectionDataMap,
-} from '@sparx/email-sections';
-import { renderDocToHtml } from '@sparx/cms-editor/serialize';
-import type { CmsDoc } from '@sparx/cms-editor';
+import { renderTemplate, sendEmail, type DeliveryResult, type TemplateSend } from '@sparx/email';
 
 import { writeAuditLog } from '../audit';
 import { publishEmailEvent } from '../events';
-import { EmailNotFoundError, EmailValidationError, type ServiceContext } from '../errors';
+import { EmailNotFoundError, type ServiceContext } from '../errors';
 import { BUILTIN_TEMPLATES, getBuiltinTemplate } from '../builtin-templates';
-import {
-  CreateAuthoredTemplateInput,
-  SaveBuiltinOverrideInput,
-  TestSendInput,
-  UpdateAuthoredTemplateInput,
-} from '../schemas/templates';
+import { SaveBuiltinOverrideInput, TestSendInput } from '../schemas/templates';
 import { resolveEmailBrand } from './brand-service';
 import { get as getSettings } from './settings-service';
 
@@ -50,48 +30,6 @@ const FALLBACK_FROM = 'Sparx <noreply@sparx.email>';
 function buildFrom(fromName: string | null, fromAddress: string | null): string {
   if (!fromAddress) return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;
   return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
-}
-
-// Resolves a section list to its data map (commerce/CMS reads). Injected by the
-// caller (api-rest) so this package stays free of @sparx/commerce — keeping the
-// email-worker image, which imports this barrel, lean (docs/31 §8).
-export type ResolveSectionData = (sections: EmailSectionInstance[]) => Promise<SectionDataMap>;
-
-const MEDIA_API_BASE =
-  process.env.SPARX_PUBLIC_API_URL ?? process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
-
-// Static-only fallback resolver. Resolves rich-text (serialize) + image (media
-// URL) without @sparx/commerce; dynamic/personalized sections render empty.
-// Used when a caller supplies no resolver (e.g. the MCP send_broadcast tool,
-// which runs without commerce). The dashboard/api-rest pass a full resolver so
-// dynamic sections resolve there.
-export function makeStaticResolver(ctx: ServiceContext): ResolveSectionData {
-  return async (sections) => {
-    const tenant = await withTenant(ctx, (tx) =>
-      tx.tenant.findUnique({ where: { id: ctx.tenantId }, select: { slug: true } })
-    );
-    const slug = tenant?.slug ?? '';
-    const out: SectionDataMap = {};
-    for (const s of sections) {
-      if (s.type === 'rich-text') {
-        const parsed = RichTextConfig.safeParse(s.config);
-        const doc = (parsed.success ? parsed.data.doc : { type: 'doc', content: [] }) as CmsDoc;
-        out[s.id] = { kind: 'rich-text', html: renderDocToHtml(doc) };
-      } else if (s.type === 'image') {
-        const parsed = ImageConfig.safeParse(s.config);
-        const mediaId = parsed.success ? parsed.data.mediaId : null;
-        out[s.id] = {
-          kind: 'image',
-          src: mediaId
-            ? `${MEDIA_API_BASE}/v1/public/media/${encodeURIComponent(mediaId)}?tenant=${encodeURIComponent(slug)}`
-            : undefined,
-        };
-      } else {
-        out[s.id] = { kind: 'none' };
-      }
-    }
-    return out;
-  };
 }
 
 // ── Views ──────────────────────────────────────────────────────────────────
@@ -108,17 +46,6 @@ export interface BuiltinTemplateView {
   intro: string | null;
   outro: string | null;
   customized: boolean;
-}
-
-export interface AuthoredTemplateView {
-  source: 'authored';
-  id: string;
-  name: string;
-  kind: string;
-  subject: string;
-  preheader: string | null;
-  status: string;
-  updatedAt: string;
 }
 
 interface BuiltinSlots {
@@ -144,35 +71,17 @@ function builtinView(catalogKey: string, override: EmailTemplate | undefined): B
   };
 }
 
-function authoredView(row: EmailTemplate): AuthoredTemplateView {
-  return {
-    source: 'authored',
-    id: row.id,
-    name: row.name,
-    kind: row.kind,
-    subject: row.subject ?? '',
-    preheader: row.preheader,
-    status: row.status,
-    updatedAt: row.updatedAt.toISOString(),
-  };
-}
-
 // ── List / get ───────────────────────────────────────────────────────────
 
-export async function list(
-  ctx: ServiceContext
-): Promise<{ builtins: BuiltinTemplateView[]; authored: AuthoredTemplateView[] }> {
+export async function list(ctx: ServiceContext): Promise<{ builtins: BuiltinTemplateView[] }> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.emailTemplate.findMany({
-      where: { OR: [{ source: 'builtin' }, { source: 'authored', status: { not: 'archived' } }] },
+      where: { source: 'builtin' },
       orderBy: { updatedAt: 'desc' },
     });
-    const overrides = new Map(
-      rows.filter((r) => r.source === 'builtin' && r.key).map((r) => [r.key!, r])
-    );
+    const overrides = new Map(rows.filter((r) => r.key).map((r) => [r.key!, r]));
     const builtins = BUILTIN_TEMPLATES.map((t) => builtinView(t.key, overrides.get(t.key)));
-    const authored = rows.filter((r) => r.source === 'authored').map(authoredView);
-    return { builtins, authored };
+    return { builtins };
   });
 }
 
@@ -184,12 +93,6 @@ export async function getBuiltin(ctx: ServiceContext, key: string): Promise<Buil
     })
   );
   return builtinView(key, override ?? undefined);
-}
-
-export async function getAuthored(ctx: ServiceContext, id: string): Promise<EmailTemplate> {
-  const row = await withTenant(ctx, (tx) => tx.emailTemplate.findUnique({ where: { id } }));
-  if (row?.source !== 'authored') throw new EmailNotFoundError('EmailTemplate', id);
-  return row;
 }
 
 // ── Built-in override ────────────────────────────────────────────────────
@@ -251,93 +154,12 @@ export async function saveBuiltinOverride(
   return builtinView(key, row);
 }
 
-// ── Authored CRUD ────────────────────────────────────────────────────────
+// ── Preview + test send (builtin only) ────────────────────────────────────
 
-export async function createAuthored(
-  ctx: ServiceContext,
-  rawInput: unknown
-): Promise<EmailTemplate> {
-  const input = CreateAuthoredTemplateInput.parse(rawInput);
-  const row = await withTenant(ctx, async (tx) => {
-    const created = await tx.emailTemplate.create({
-      data: {
-        tenantId: ctx.tenantId,
-        source: 'authored',
-        kind: 'marketing',
-        name: input.name,
-        subject: input.subject,
-        preheader: input.preheader ?? null,
-        body: parseBody(input.body) as unknown as Prisma.InputJsonValue,
-        status: 'draft',
-        createdById: ctx.userId ?? null,
-      },
-    });
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: ctx.userId ? 'user' : 'system',
-      action: 'email.template.created',
-      entityType: 'EmailTemplate',
-      entityId: created.id,
-      diff: { after: { name: created.name } },
-    });
-    return created;
-  });
-  await publishEmailEvent({
-    tenantId: ctx.tenantId,
-    topic: 'email.template.created',
-    payload: { source: 'authored', templateId: row.id },
-    dedupeKey: `email.template.created:${row.id}`,
-  });
-  return row;
+export interface PreviewTarget {
+  source: 'builtin';
+  key: string;
 }
-
-export async function updateAuthored(
-  ctx: ServiceContext,
-  id: string,
-  rawInput: unknown
-): Promise<EmailTemplate> {
-  const input = UpdateAuthoredTemplateInput.parse(rawInput);
-  await getAuthored(ctx, id); // 404 guard
-
-  return withTenant(ctx, async (tx) => {
-    const updated = await tx.emailTemplate.update({
-      where: { id },
-      data: {
-        ...(input.name !== undefined ? { name: input.name } : {}),
-        ...(input.subject !== undefined ? { subject: input.subject } : {}),
-        ...(input.preheader !== undefined ? { preheader: input.preheader } : {}),
-        ...(input.body !== undefined
-          ? { body: parseBody(input.body) as unknown as Prisma.InputJsonValue }
-          : {}),
-        ...(input.status !== undefined ? { status: input.status } : {}),
-      },
-    });
-    await writeAuditLog({
-      tx,
-      tenantId: ctx.tenantId,
-      actorId: ctx.userId ?? null,
-      actorType: ctx.userId ? 'user' : 'system',
-      action: 'email.template.updated',
-      entityType: 'EmailTemplate',
-      entityId: id,
-      diff: { after: { name: updated.name, status: updated.status } },
-    });
-    return updated;
-  });
-}
-
-export async function archiveAuthored(ctx: ServiceContext, id: string): Promise<void> {
-  await getAuthored(ctx, id);
-  await withTenant(ctx, (tx) =>
-    tx.emailTemplate.update({ where: { id }, data: { status: 'archived' } })
-  );
-}
-
-// ── Preview + test send ──────────────────────────────────────────────────
-
-export type PreviewTarget = { source: 'builtin'; key: string } | { source: 'authored'; id: string };
 
 export interface RenderedPreview {
   subject: string;
@@ -348,66 +170,42 @@ export interface RenderedPreview {
 async function renderTarget(
   ctx: ServiceContext,
   target: PreviewTarget,
-  to: string,
-  resolveData: ResolveSectionData
-): Promise<RenderedPreview & { templateId?: string }> {
+  to: string
+): Promise<RenderedPreview & { templateId: string }> {
   const brand = (await resolveEmailBrand(ctx)) ?? undefined;
-
-  if (target.source === 'builtin') {
-    const view = await getBuiltin(ctx, target.key);
-    const catalog = getBuiltinTemplate(target.key);
-    if (!catalog) throw new EmailNotFoundError('BuiltinTemplate', target.key);
-    const props = {
-      ...catalog.sampleProps,
-      ...(view.intro ? { intro: view.intro } : {}),
-      ...(view.outro ? { outro: view.outro } : {}),
-    };
-    const send = { template: target.key, to, props } as TemplateSend;
-    const rendered = await renderTemplate(send, { brand });
-    return {
-      subject: view.subject,
-      html: rendered.html,
-      text: rendered.text,
-      templateId: target.key,
-    };
-  }
-
-  const row = await getAuthored(ctx, target.id);
-  if (!row.subject) throw new EmailValidationError('Template has no subject.');
-  const { sections } = normalizeBody(row.body);
-  const data = await resolveData(sections);
-  const rendered = await renderSections(
-    { sections, subject: row.subject, preheader: row.preheader ?? undefined, to, data },
-    { brand }
-  );
-  return { subject: row.subject, html: rendered.html, text: rendered.text };
+  const view = await getBuiltin(ctx, target.key);
+  const catalog = getBuiltinTemplate(target.key);
+  if (!catalog) throw new EmailNotFoundError('BuiltinTemplate', target.key);
+  const props = {
+    ...catalog.sampleProps,
+    ...(view.intro ? { intro: view.intro } : {}),
+    ...(view.outro ? { outro: view.outro } : {}),
+  };
+  const send = { template: target.key, to, props } as TemplateSend;
+  const rendered = await renderTemplate(send, { brand });
+  return {
+    subject: view.subject,
+    html: rendered.html,
+    text: rendered.text,
+    templateId: target.key,
+  };
 }
 
 export async function renderPreview(
   ctx: ServiceContext,
-  target: PreviewTarget,
-  resolveData: ResolveSectionData = makeStaticResolver(ctx)
+  target: PreviewTarget
 ): Promise<RenderedPreview> {
-  const { subject, html, text } = await renderTarget(
-    ctx,
-    target,
-    'preview@example.com',
-    resolveData
-  );
+  const { subject, html, text } = await renderTarget(ctx, target, 'preview@example.com');
   return { subject, html, text };
 }
 
 export async function testSend(
   ctx: ServiceContext,
   target: PreviewTarget,
-  rawInput: unknown,
-  resolveData: ResolveSectionData = makeStaticResolver(ctx)
+  rawInput: unknown
 ): Promise<DeliveryResult> {
   const { to } = TestSendInput.parse(rawInput);
-  const [rendered, settings] = await Promise.all([
-    renderTarget(ctx, target, to, resolveData),
-    getSettings(ctx),
-  ]);
+  const [rendered, settings] = await Promise.all([renderTarget(ctx, target, to), getSettings(ctx)]);
 
   // Synchronous escape hatch — staff-triggered smoke test. Stamp tenant_id so
   // any resulting webhook events attribute correctly.
@@ -418,7 +216,7 @@ export async function testSend(
     subject: rendered.subject,
     html: rendered.html,
     text: rendered.text,
-    ...(rendered.templateId ? { templateId: rendered.templateId } : {}),
+    templateId: rendered.templateId,
     variables: { tenant_id: ctx.tenantId },
   });
   return result;

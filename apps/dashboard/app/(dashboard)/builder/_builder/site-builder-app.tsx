@@ -15,6 +15,7 @@
 // `site` sources.
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Eye,
   Monitor,
@@ -28,10 +29,16 @@ import {
   Upload,
 } from 'lucide-react';
 import { Badge, Button, Input, ModuleProvider, NativeSelect } from '@sparx/ui';
-import { parseLayoutImport, toLayoutDocument } from '@sparx/builder-schemas';
-import type { BindingCatalog, BuilderLayoutDto } from '@sparx/builder-schemas';
+import {
+  collectComponentRefs,
+  makeCustomNode,
+  parseLayoutImport,
+  toLayoutDocument,
+} from '@sparx/builder-schemas';
+import type { BindingCatalog, BuilderLayoutDto, ComponentDto } from '@sparx/builder-schemas';
 
-import { type BuilderNode, type Device } from './model';
+import { makeId, type BuilderNode, type Device } from './model';
+import { getDef } from './registry';
 import { LayoutSettings } from './inspector';
 import { BuilderWorkspace } from './builder-workspace';
 import { ImportExportControls } from './import-export-controls';
@@ -44,6 +51,7 @@ import {
   renameLayout,
   saveLayoutTree,
 } from '../_lib/actions';
+import { copyComponent } from '../components/_lib/component-actions';
 
 // A loaded layout reduced to the editor's working shape.
 interface LayoutItem {
@@ -75,9 +83,17 @@ export interface SiteBuilderAppProps {
   initialLayouts: BuilderLayoutDto[];
   /** The `site` sources — navigation / brand / social (docs/45 §3). Constant. */
   bindingCatalog: BindingCatalog;
+  /** The tenant's custom components with their latest trees (docs/53 P-B) — feeds
+   *  the Add palette and the canvas's live expansion in the layout editor. */
+  components?: ComponentDto[];
 }
 
-export function SiteBuilderApp({ initialLayouts, bindingCatalog }: SiteBuilderAppProps) {
+export function SiteBuilderApp({
+  initialLayouts,
+  bindingCatalog,
+  components = [],
+}: SiteBuilderAppProps) {
+  const router = useRouter();
   // The catalog loads from the server (list-or-seed) and seeds this state ONCE;
   // from here the client is authoritative and the server is the persistence sink.
   // We open on the live layout (fallback: the first).
@@ -97,11 +113,19 @@ export function SiteBuilderApp({ initialLayouts, bindingCatalog }: SiteBuilderAp
   const editing = items.find((l) => l.id === editingId) ?? items[0] ?? null;
   const tree = editing?.tree ?? null;
 
+  // Custom components keyed by component key — site-surface ones can be placed in
+  // layout chrome (docs/53 P-B); drives insertion + the canvas's live expansion.
+  const componentsByKey = React.useMemo(
+    () => new Map(components.map((c) => [c.key, c])),
+    [components]
+  );
+
   // The shared editing brain. `save` persists the layout being edited;
   // `onTreeChange` writes the optimistic tree back into the catalog state.
   const editor = useBuilderEditor({
     tree,
     catalog: bindingCatalog,
+    components: componentsByKey,
     save: async (next) => {
       if (!editing) return false;
       const res = await saveLayoutTree(editing.id, next);
@@ -231,6 +255,39 @@ export function SiteBuilderApp({ initialLayouts, bindingCatalog }: SiteBuilderAp
       editor.setSaveStatus(res.ok ? 'saved' : 'error')
     );
     return null;
+  };
+
+  // "Save as component" (docs/53 P-C): turn the selected layout subtree into a
+  // reusable site-surface component, then swap it for a pinned placement. Rejects a
+  // subtree that already nests a component (v1 has no nesting).
+  const onSaveAsComponent = async (node: BuilderNode) => {
+    if (collectComponentRefs(node).length > 0) {
+      editor.setSaveStatus('error');
+      return;
+    }
+    const def = getDef(node.type);
+    setBusy(true);
+    const res = await copyComponent({
+      name: node.box.name ?? def?.label ?? 'Component',
+      group: def?.group ?? 'content',
+      icon: 'box',
+      surfaces: ['site'],
+      tree: node,
+    });
+    if (!res.ok || !res.data) {
+      setBusy(false);
+      editor.setSaveStatus('error');
+      return;
+    }
+    const created = res.data;
+    editor.replaceNode(
+      node.id,
+      makeCustomNode(created.key, created.latestVersion, makeId('custom'))
+    );
+    await editor.flushSave();
+    setBusy(false);
+    editor.setSaveStatus('saved');
+    router.refresh();
   };
 
   // No layouts (a failed load). Offer a way in rather than a blank editor.
@@ -418,6 +475,8 @@ export function SiteBuilderApp({ initialLayouts, bindingCatalog }: SiteBuilderAp
           editor={editor}
           catalog={bindingCatalog}
           surface="site"
+          components={componentsByKey}
+          onSaveAsComponent={onSaveAsComponent}
           settings={<LayoutSettings name={editing.name} />}
         />
       </div>

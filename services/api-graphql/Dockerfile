@@ -21,6 +21,12 @@ COPY packages/api-core ./packages/api-core
 COPY packages/cms-schemas ./packages/cms-schemas
 COPY packages/events ./packages/events
 COPY packages/email ./packages/email
+# @sparx/email's index re-exports the Builder email renderer, which imports
+# @sparx/cms-editor/serialize (the React-free JSON→HTML path) at module load —
+# so any image that has @sparx/email must also carry cms-editor or it crashes at
+# boot (docs/52 §9). @sparx/ui (cms-editor's only workspace dep) is intentionally
+# NOT copied: the /serialize subpath never loads it, so the symlink stays unused.
+COPY packages/cms-editor ./packages/cms-editor
 COPY packages/auth ./packages/auth
 COPY packages/legal ./packages/legal
 COPY packages/crm-schemas ./packages/crm-schemas

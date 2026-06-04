@@ -4,9 +4,12 @@ import { useState, useTransition } from 'react';
 import { Monitor, Send, Smartphone } from 'lucide-react';
 import { Button, Input, Stack, Text, toast } from '@sparx/ui';
 
-import { testSendAuthoredAction, testSendBuiltinAction } from '../actions';
+import { testSendBuiltinAction } from '../actions';
 
-export type PreviewTarget = { kind: 'builtin'; key: string } | { kind: 'authored'; id: string };
+export interface PreviewTarget {
+  kind: 'builtin';
+  key: string;
+}
 
 export function PreviewFrame({ html, target }: { html: string; target: PreviewTarget }) {
   const [width, setWidth] = useState<'desktop' | 'mobile'>('desktop');
@@ -19,10 +22,7 @@ export function PreviewFrame({ html, target }: { html: string; target: PreviewTa
       return;
     }
     startTransition(async () => {
-      const result =
-        target.kind === 'builtin'
-          ? await testSendBuiltinAction(target.key, to.trim())
-          : await testSendAuthoredAction(target.id, to.trim());
+      const result = await testSendBuiltinAction(target.key, to.trim());
       if (result.ok) toast.success(`Test sent to ${to.trim()} (${result.data.provider}).`);
       else toast.error(result.error.message);
     });

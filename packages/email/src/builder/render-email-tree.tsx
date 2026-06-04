@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { render } from '@react-email/render';
 import { Column, Img, Row, Section } from '@react-email/components';
+// The React-free JSON→HTML serializer (the audited CMS path) — turns an authored
+// Prose doc into sanitised, inline-safe HTML at send time (docs/52 §9).
+import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 import {
   cardinalityOf,
   resolvePath,
@@ -20,6 +23,7 @@ import {
   EmailMuted,
   EmailParagraph,
   spacing,
+  typography,
   useBrand,
   type BrandTokens,
 } from '../components';
@@ -106,6 +110,14 @@ function asImageUrl(value: unknown): string {
   return '';
 }
 
+/** A CMS/TipTap document — the shape an authored Prose node stores in `props.doc`
+ *  (and the shape a bound richtext field resolves to). */
+function isProseDoc(value: unknown): boolean {
+  return (
+    typeof value === 'object' && value !== null && (value as { type?: unknown }).type === 'doc'
+  );
+}
+
 // ── Leaf rendering ─────────────────────────────────────────────────────────
 
 function Leaf({
@@ -118,6 +130,7 @@ function Leaf({
   bound: boolean;
 }): React.ReactElement | null {
   const p = node.props;
+  const brand = useBrand();
   switch (node.type) {
     case 'Heading': {
       const level = str(p, 'level') || 'h2';
@@ -134,6 +147,26 @@ function Leaf({
         <EmailParagraph>{text}</EmailParagraph>
       ) : (
         <EmailMuted>{text}</EmailMuted>
+      );
+    }
+    case 'Prose': {
+      // Free-form authored rich text (docs/52 §9). Serialize the stored CMS/TipTap
+      // doc to sanitised HTML (the audited, React-free serializer) and inline it.
+      // A bound richtext field wins when it resolves to a doc; a bound string
+      // renders as one representative paragraph. Base typography is set on the
+      // wrapper so prose inherits the email body's font/color — headings keep the
+      // mail client's own sizing (no <style> block to lean on).
+      if (bound && typeof value === 'string') {
+        return value ? <EmailParagraph>{value}</EmailParagraph> : null;
+      }
+      const doc = bound && isProseDoc(value) ? value : p.doc;
+      const html = renderDocToHtml(doc);
+      if (!html) return null;
+      return (
+        <div
+          style={{ ...typography.body, color: brand.foreground, fontFamily: brand.fontBody }}
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
       );
     }
     case 'Button': {

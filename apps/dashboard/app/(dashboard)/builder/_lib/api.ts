@@ -8,6 +8,7 @@ import type {
   BuilderEmailDto,
   BuilderLayoutDto,
   BuilderPageDto,
+  ComponentDto,
 } from '@sparx/builder-schemas';
 
 // The tenant's pages. The list endpoint seeds the curated starter set on the
@@ -54,4 +55,20 @@ export async function getEmailBindingCatalog(): Promise<BindingCatalog> {
 export async function listEmails(): Promise<BuilderEmailDto[]> {
   const { emails } = await api.get<{ emails: BuilderEmailDto[] }>('/v1/builder/emails');
   return emails;
+}
+
+// The tenant's custom components WITH their latest version trees (docs/53 P-B) —
+// what the editor needs to expand `custom:*` placements live on the canvas and to
+// offer them in the Add palette. `?include=tree` returns the tree-bearing DTOs.
+// Defensive: a failed read (Builder module off, etc.) yields [] so the editor
+// still runs with only the system palette.
+export async function listComponentsFull(): Promise<ComponentDto[]> {
+  try {
+    const { components } = await api.get<{ components: ComponentDto[] }>(
+      '/v1/builder/components?include=tree'
+    );
+    return components;
+  } catch {
+    return [];
+  }
 }

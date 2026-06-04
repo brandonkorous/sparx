@@ -16,6 +16,7 @@ import type {
   ComponentGroup,
   ComponentSummaryDto,
   ComponentSurface,
+  ComponentUsageDto,
   PropSpec,
 } from '@sparx/builder-schemas';
 import type { ActionResult } from '../../_lib/actions';
@@ -59,6 +60,20 @@ export async function deleteComponent(key: string): Promise<ActionResult<{ key: 
   return run(() =>
     api.delete<{ key: string }>(`/v1/builder/components/${encodeURIComponent(key)}`)
   );
+}
+
+// Where a component is placed (docs/53 §6) — read before deleting so the UI can
+// warn instead of letting the server reject. A read, so no revalidate.
+export async function getComponentUsages(key: string): Promise<ActionResult<ComponentUsageDto>> {
+  try {
+    const data = await api.get<ComponentUsageDto>(
+      `/v1/builder/components/${encodeURIComponent(key)}/usages`
+    );
+    return { ok: true, data };
+  } catch (err) {
+    const e = err as ApiRestError;
+    return { ok: false, error: e.message ?? 'Something went wrong.' };
+  }
 }
 
 // camelCase/underscore a name into a valid component key (^[a-z][a-z0-9_]*$),

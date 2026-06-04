@@ -52,6 +52,10 @@ import {
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 
 import { readClassGroup, setClassGroup } from '@sparx/builder-schemas';
+// The React-free JSON→HTML serializer (the audited CMS path). Lets the canvas
+// preview an authored Prose doc as real HTML without pulling the TipTap editor
+// into this widely-imported registry chunk (docs/52 §9).
+import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 
 import {
   DEFAULT_BOX,
@@ -94,10 +98,16 @@ export type BoxAxis =
 export interface PropSpec {
   key: string;
   label: string;
-  control: 'text' | 'textarea' | 'select' | 'buttongroup' | 'switch' | 'icon';
+  control: 'text' | 'textarea' | 'select' | 'buttongroup' | 'switch' | 'icon' | 'richtext';
   options?: { value: string; label: string }[];
   placeholder?: string;
 }
+
+// The empty CMS/TipTap document — the default authored body for a Prose node.
+// Inlined (not imported from @sparx/cms-editor) to keep the editor out of this
+// chunk; the serializer renders it to '' and the inspector's rich-text control
+// seeds the real ContentBlockEditor with it.
+const EMPTY_PROSE_DOC = { type: 'doc', content: [] } as const;
 
 export interface LeafRenderArgs {
   node: BuilderNode;
@@ -417,14 +427,18 @@ const DEFS: ComponentDef[] = [
     },
   },
   {
-    // Rich prose bound to a CMS rich-text field (docs/47) — the BODY of a blog post
-    // / article, where Text would flatten a multi-paragraph doc to one run-on line.
-    // The published site serializes the real TipTap doc to sanitised HTML via
-    // @sparx/cms-editor (the exact path CMS pages render through), styled by the
-    // storefront's `.sparx-content` prose rules. The editor canvas keeps the doc
-    // serializer OUT of its bundle and just shows the binding's representative
-    // paragraph (richtext preview data is a plain string), so the node reads as body
-    // copy while editing. Bind to a `richtext` scalar (e.g. "Blog post › Body").
+    // Rich prose — free-form authored body copy (paragraphs, headings, lists,
+    // quotes, links), OR bound to a CMS rich-text field (docs/47, docs/52 §9).
+    //   · AUTHORED: the `doc` prop holds a TipTap/CMS document, edited inline via
+    //     the inspector's rich-text control (ContentBlockEditor). The email
+    //     renderer serializes it to sanitised, inline-safe HTML; the published
+    //     site does the same via the `.sparx-content` prose rules. This is the one
+    //     thing the retired authored-template editor did that the Builder couldn't.
+    //   · BOUND: the BODY of a blog post / article — bind to a `richtext` scalar
+    //     (e.g. "Blog post › Body"); richtext preview data is a plain string, so
+    //     while editing the node reads as a representative paragraph.
+    // The canvas previews the authored doc as real HTML (via the React-free
+    // serializer) so the block reads WYSIWYG.
     type: 'Prose',
     label: 'Rich text',
     kind: 'leaf',
@@ -432,16 +446,30 @@ const DEFS: ComponentDef[] = [
     icon: Pilcrow,
     bindable: true,
     accepts: ['scalar'],
-    props: [],
-    defaults: {},
-    renderLeaf: ({ value, bound }) => {
-      const text =
-        bound && typeof value === 'string'
-          ? value
-          : 'Rich body content renders here — paragraphs, headings, lists, quotes, links.';
+    props: [{ key: 'doc', label: 'Content', control: 'richtext' }],
+    defaults: { props: { doc: EMPTY_PROSE_DOC } },
+    renderLeaf: ({ node, value, bound }) => {
+      // Bound to a CMS richtext field → preview data is a representative string.
+      if (bound && typeof value === 'string') {
+        return (
+          <div className="bx-prose">
+            <p className="bx-text bx-text--body">{value}</p>
+          </div>
+        );
+      }
+      // Authored → serialize the doc to HTML and preview it (the same audited
+      // path the email + site renderers use), styled by `.sparx-content`.
+      const html = node.props.doc ? renderDocToHtml(node.props.doc) : '';
+      if (html) {
+        return (
+          <div className="bx-prose sparx-content" dangerouslySetInnerHTML={{ __html: html }} />
+        );
+      }
       return (
         <div className="bx-prose">
-          <p className="bx-text bx-text--body">{text}</p>
+          <p className="bx-text bx-text--body">
+            Rich body content renders here — paragraphs, headings, lists, quotes, links.
+          </p>
         </div>
       );
     },
@@ -1289,10 +1317,12 @@ export const PALETTE: ComponentDef[] = DEFS;
  *  width and non-interactive, so the palette is OPT-IN: only these types appear,
  *  never the page/site default. Excludes site chrome (Outlet/NavMenu/Logo/Social),
  *  interactive commerce (ProductForm + atoms), and effects with no email analogue
- *  (Carousel/Video/Map). Phase 4 (docs/52 §9) adds the data-aware leaves the email
- *  renderer + data resolver support: `Image` (a static URL or a bound product/post
- *  image) and `ImageDisplay` (a bound image). `Prose` (bound richtext→HTML in
- *  email) is deferred — see docs/52 §9. */
+ *  (Carousel/Video/Map). The data-aware leaves the email renderer + data resolver
+ *  support are included: `Image` (a static URL or a bound product/post image) and
+ *  `ImageDisplay` (a bound image). `Prose` carries free-form authored rich text
+ *  (paragraphs / headings / lists / links), serialized to inline-safe HTML on send
+ *  — the authoring surface the retired authored-template editor used to own
+ *  (docs/52 §9). */
 const EMAIL_TYPES: ReadonlySet<string> = new Set([
   'Section',
   'Stack',
@@ -1300,6 +1330,7 @@ const EMAIL_TYPES: ReadonlySet<string> = new Set([
   'Card',
   'Heading',
   'Text',
+  'Prose',
   'Button',
   'Divider',
   'Image',

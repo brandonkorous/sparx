@@ -5,8 +5,8 @@ export const CreateBroadcastInput = z
     name: z.string().min(1).max(160),
     subject: z.string().min(1).max(255),
     preheader: z.string().max(255).optional(),
-    templateId: z.string().uuid().optional(),
-    // A published Builder email as the body (docs/52). Alternative to templateId.
+    // The body is a published Builder email (docs/52). The legacy section-list
+    // "marketing template" body is retired (docs/52 §8).
     builderEmailId: z.string().uuid().optional(),
     segmentId: z.string().uuid().optional(),
   })
@@ -19,7 +19,6 @@ export const UpdateBroadcastInput = z
     name: z.string().min(1).max(160).optional(),
     subject: z.string().min(1).max(255).optional(),
     preheader: z.string().max(255).nullable().optional(),
-    templateId: z.string().uuid().nullable().optional(),
     builderEmailId: z.string().uuid().nullable().optional(),
     segmentId: z.string().uuid().nullable().optional(),
   })

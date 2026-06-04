@@ -34,10 +34,8 @@
   },
   "dependencies": {
     "@sparx/builder-schemas": "workspace:*",
-    "@sparx/cms-editor": "workspace:*",
     "@sparx/db": "workspace:*",
     "@sparx/email": "workspace:*",
-    "@sparx/email-sections": "workspace:*",
     "@sparx/events": "workspace:*",
     "@sparx/site-themes": "workspace:*",
     "@sparx/ui": "workspace:*",

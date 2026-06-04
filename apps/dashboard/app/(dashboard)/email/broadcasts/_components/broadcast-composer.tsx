@@ -18,7 +18,7 @@ import {
 } from '@sparx/ui';
 
 import { createBroadcastAction } from '../actions';
-import type { AuthoredTemplateView, SegmentOption } from '../../_lib/types';
+import type { SegmentOption } from '../../_lib/types';
 
 /** A published Builder email usable as a broadcast body (docs/52). */
 export interface BuilderEmailOption {
@@ -26,28 +26,19 @@ export interface BuilderEmailOption {
   name: string;
 }
 
-type BodySource = 'designed' | 'template';
-
 interface ComposerProps {
   segments: SegmentOption[];
-  templates: AuthoredTemplateView[];
   designedEmails: BuilderEmailOption[];
 }
 
-export function BroadcastComposer({ segments, templates, designedEmails }: ComposerProps) {
+export function BroadcastComposer({ segments, designedEmails }: ComposerProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [name, setName] = useState('');
   const [subject, setSubject] = useState('');
   const [preheader, setPreheader] = useState('');
   const [segmentId, setSegmentId] = useState('');
-  const [templateId, setTemplateId] = useState('');
   const [builderEmailId, setBuilderEmailId] = useState('');
-  // Default to the designed-email body (the Builder is the primary email model,
-  // docs/52) when any published designed email exists; else fall back to templates.
-  const [bodySource, setBodySource] = useState<BodySource>(
-    designedEmails.length > 0 ? 'designed' : 'template'
-  );
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -61,8 +52,7 @@ export function BroadcastComposer({ segments, templates, designedEmails }: Compo
         subject: subject.trim(),
         preheader: preheader.trim() || undefined,
         segmentId: segmentId || undefined,
-        templateId: bodySource === 'template' ? templateId || undefined : undefined,
-        builderEmailId: bodySource === 'designed' ? builderEmailId || undefined : undefined,
+        builderEmailId: builderEmailId || undefined,
       });
       if (result.ok) {
         toast.success('Draft created.');
@@ -131,61 +121,24 @@ export function BroadcastComposer({ segments, templates, designedEmails }: Compo
         </Stack>
 
         <Stack gap={2}>
-          <Label htmlFor="body-source">Body</Label>
-          <Select
-            value={bodySource}
-            onValueChange={(v) => setBodySource(v as BodySource)}
-            disabled={pending}
-          >
-            <SelectTrigger id="body-source" className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="designed">Designed email (Builder)</SelectItem>
-              <SelectItem value="template">Marketing template</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {bodySource === 'designed' ? (
-            designedEmails.length === 0 ? (
-              <Text size="sm" variant="muted">
-                No published emails yet.{' '}
-                <Link href="/builder/email" className="underline">
-                  Design one in the Builder
-                </Link>{' '}
-                and publish it to use as the body.
-              </Text>
-            ) : (
-              <Select value={builderEmailId} onValueChange={setBuilderEmailId} disabled={pending}>
-                <SelectTrigger id="designed-email" className="w-full">
-                  <SelectValue placeholder="Choose a designed email" />
-                </SelectTrigger>
-                <SelectContent>
-                  {designedEmails.map((e) => (
-                    <SelectItem key={e.id} value={e.id}>
-                      {e.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )
-          ) : templates.length === 0 ? (
+          <Label htmlFor="designed-email">Email</Label>
+          {designedEmails.length === 0 ? (
             <Text size="sm" variant="muted">
-              No marketing templates yet.{' '}
-              <Link href="/email/templates/new" className="underline">
-                Create one
+              No published emails yet.{' '}
+              <Link href="/builder/email" className="underline">
+                Design one in the Email Builder
               </Link>{' '}
-              to use as the body.
+              and publish it to use as the body.
             </Text>
           ) : (
-            <Select value={templateId} onValueChange={setTemplateId} disabled={pending}>
-              <SelectTrigger id="template" className="w-full">
-                <SelectValue placeholder="Choose a template" />
+            <Select value={builderEmailId} onValueChange={setBuilderEmailId} disabled={pending}>
+              <SelectTrigger id="designed-email" className="w-full">
+                <SelectValue placeholder="Choose a designed email" />
               </SelectTrigger>
               <SelectContent>
-                {templates.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    {t.name}
+                {designedEmails.map((e) => (
+                  <SelectItem key={e.id} value={e.id}>
+                    {e.name}
                   </SelectItem>
                 ))}
               </SelectContent>

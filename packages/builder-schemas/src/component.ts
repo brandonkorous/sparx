@@ -8,7 +8,7 @@
 // import from the editor's client components AND the server service layer.
 
 import { z } from 'zod';
-import { BuilderNodeSchema, type BuilderNode } from './node';
+import { BuilderNodeSchema, DEFAULT_BOX, type BuilderNode } from './node';
 
 // ── Group + surfaces (mirror the dashboard registry's PaletteGroup / EditorSurface) ──
 
@@ -120,6 +120,15 @@ export interface ComponentDto {
   propSpec: PropSpec[];
   createdAt: string;
   updatedAt: string;
+}
+
+/** Where a component is placed — the delete-impact / where-used read (docs/53
+ *  §6). A page/layout appears if EITHER its draft or published tree references the
+ *  component, so deleting it can't silently break the live site. */
+export interface ComponentUsageDto {
+  pages: { id: string; name: string }[];
+  layouts: { id: string; name: string }[];
+  total: number;
 }
 
 /** A component without its tree — the list/catalog row. */
@@ -246,4 +255,94 @@ export function collectComponentRefs(
   };
   walk(tree);
   return out;
+}
+
+// ── Placement + expansion (docs/53 §3, P-B) ───────────────────────────────────
+// A page references a tenant component by a `custom:<key>` PLACEMENT node that
+// pins a version under `props.$ref`; its other props are the instance's slot
+// values. The editor expands the placement live for preview; publish expands it
+// into concrete primitives so the storefront renderer never sees a `custom:*`
+// type. Both call the same pure expander here.
+
+/** A fresh placement node for component `key`, pinned to `version`. The caller
+ *  supplies the id (the editor's makeId / a server id) — this module is id-gen
+ *  free so it stays pure + SSR-safe. Instance prop values arrive later (P-D); a
+ *  fresh placement carries only the version pin. */
+export function makeCustomNode(key: string, version: number, id: string): BuilderNode {
+  return {
+    id,
+    type: customType(key),
+    box: { ...DEFAULT_BOX },
+    props: { [REF_KEY]: { version } },
+  };
+}
+
+/** Fill `{ $prop: key }` slots in a component's version tree with an instance's
+ *  values (falling back to the propSpec default), and rewrite every node id to a
+ *  page-unique id derived from `idPrefix` so multiple placements of the same
+ *  component never collide. Pure. A slot whose value resolves to nothing drops
+ *  the prop key, so the underlying component default rendering shows through. */
+export function expandComponentTree(
+  versionTree: BuilderNode,
+  instanceProps: Record<string, unknown>,
+  propSpec: PropSpec[],
+  idPrefix: string
+): BuilderNode {
+  const defaults = new Map(propSpec.map((p) => [p.key, p.default]));
+  const resolveSlot = (slot: PropSlot): unknown => {
+    const v = instanceProps[slot.$prop];
+    if (v !== undefined && v !== null && v !== '') return v;
+    return defaults.get(slot.$prop);
+  };
+  const walk = (node: BuilderNode): BuilderNode => {
+    const props: Record<string, unknown> = {};
+    for (const [k, value] of Object.entries(node.props)) {
+      if (isPropSlot(value)) {
+        const filled = resolveSlot(value);
+        if (filled !== undefined) props[k] = filled;
+      } else {
+        props[k] = value;
+      }
+    }
+    const next: BuilderNode = { ...node, id: `${idPrefix}~${node.id}`, props };
+    if (node.children) next.children = node.children.map(walk);
+    return next;
+  };
+  return walk(versionTree);
+}
+
+/** A component version resolved for expansion (its tree + the slots it declares). */
+export interface ResolvedComponentVersion {
+  tree: BuilderNode;
+  propSpec: PropSpec[];
+}
+
+/** Replace every `custom:<key>` placement in `tree` with the expanded component
+ *  subtree (the pinned version's tree, slots filled from the placement's props).
+ *  Pure — the DB lookup is the injected `resolve` (publish reads the pinned
+ *  version; the editor previews the latest). A placement that can't resolve
+ *  (component deleted / version missing) is DROPPED: the publish path guards
+ *  deletes, so this only bites a corrupted tree, where omitting the node beats
+ *  shipping a broken `custom:*` the storefront can't render. */
+export function expandCustomNodes(
+  tree: BuilderNode,
+  resolve: (key: string, version: number | null) => ResolvedComponentVersion | null
+): BuilderNode {
+  const walk = (node: BuilderNode): BuilderNode | null => {
+    const key = customKeyOf(node.type);
+    if (key) {
+      const resolved = resolve(key, readComponentRef(node.props)?.version ?? null);
+      if (!resolved) return null;
+      const instanceProps = { ...node.props };
+      delete instanceProps[REF_KEY];
+      return expandComponentTree(resolved.tree, instanceProps, resolved.propSpec, node.id);
+    }
+    if (!node.children) return node;
+    const children = node.children.map(walk).filter((c): c is BuilderNode => c !== null);
+    return { ...node, children };
+  };
+  // A page root is never a custom placement (insertion always nests inside a
+  // container), so the root walk only returns null on a corrupted tree — fall
+  // back to the original so publish always has a tree to snapshot.
+  return walk(tree) ?? tree;
 }

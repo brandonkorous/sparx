@@ -4,7 +4,7 @@ import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
 import { getBrand, getConfig, getTenant } from '../_brand/lib/api';
 import { propertyOrigin } from '../_brand/lib/property';
-import { getActiveLayout, getBindingCatalog, listPages } from '../_lib/api';
+import { getActiveLayout, getBindingCatalog, listComponentsFull, listPages } from '../_lib/api';
 import { BuilderApp } from '../_builder/builder-app';
 import '../builder.css';
 // The Surface RECIPE — @sparx/site-ui's `sf-*` component/color/variant classes,
@@ -101,13 +101,14 @@ interface BuilderPageRouteProps {
 }
 
 export default async function BuilderPageRoute({ searchParams }: BuilderPageRouteProps) {
-  const [sp, themeCss, pages, catalog, layout, site] = await Promise.all([
+  const [sp, themeCss, pages, catalog, layout, site, components] = await Promise.all([
     searchParams,
     canvasThemeCss(),
     loadPages(),
     loadCatalog(),
     loadLayout(),
     loadSiteContext(),
+    listComponentsFull(),
   ]);
   // Deep-link target: `?page=<id>` opens that page active on mount (the SEO
   // overview's "Open in builder" link points here). The editor falls back to
@@ -123,6 +124,7 @@ export default async function BuilderPageRoute({ searchParams }: BuilderPageRout
         tenantSlug={site?.slug}
         siteOrigin={site?.origin}
         initialPageId={initialPageId}
+        components={components}
       />
     </>
   );

@@ -18,7 +18,6 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
 COPY packages/email ./packages/email
-COPY packages/email-sections ./packages/email-sections
 # @sparx/email now imports @sparx/builder-schemas (the Email Builder render path,
 # docs/52) — copy it or the filtered install can't resolve the workspace dep.
 COPY packages/builder-schemas ./packages/builder-schemas

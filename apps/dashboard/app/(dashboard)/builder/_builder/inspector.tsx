@@ -16,9 +16,18 @@
 //                 visibility) — see BoxBasePanel / visibleBoxAxes.
 
 import * as React from 'react';
-import { Check, ChevronDown, ChevronLeft, Plus, X } from 'lucide-react';
+import { Boxes, Check, ChevronDown, ChevronLeft, ExternalLink, Plus, X } from 'lucide-react';
 import { Input, NativeSelect, Switch, Textarea, cn } from '@sparx/ui';
-import type { BindingCatalog } from '@sparx/builder-schemas';
+import {
+  REF_KEY,
+  customKeyOf,
+  isCustomType,
+  isPropSlot,
+  readComponentRef,
+  type BindingCatalog,
+  type ComponentDto,
+  type PropSpec as ComponentPropSpec,
+} from '@sparx/builder-schemas';
 
 import { CREATABLE_KINDS, type CreatableType } from './field-kinds';
 
@@ -59,6 +68,7 @@ import {
   type EditorSurface,
 } from './registry';
 import { IconPicker } from './icon-picker';
+import { ProseControl } from './prose-control';
 import {
   STYLE_CONTROLS,
   activeValue,
@@ -437,12 +447,29 @@ function BindingBox({
 
 // ── Component props ──────────────────────────────────────────────────────────
 
+/** Slot authoring (docs/53 §5, P-D) — present ONLY in the component editor. Lets a
+ *  node's text prop be turned INTO a configurable field: each placement then fills
+ *  it (per-instance), and the expander substitutes the value. */
+export interface SlotEditor {
+  /** Turn the selected node's prop into a field (creates the slot, binds it). */
+  onBind: (
+    propKey: string,
+    propLabel: string,
+    control: ComponentDef['props'][number]['control']
+  ) => void;
+  /** Unbind: drop the slot reference back to a plain (empty) literal. */
+  onUnbind: (propKey: string) => void;
+}
+
 function PropsPanel({
   node,
   onProp,
+  slotEditor,
 }: {
   node: BuilderNode;
   onProp: (key: string, value: unknown) => void;
+  /** When set (component editor), text props gain a "Make a field" affordance. */
+  slotEditor?: SlotEditor;
 }) {
   const def = getDef(node.type)!;
   if (def.props.length === 0) return null;
@@ -450,6 +477,35 @@ function PropsPanel({
     <Group label={def.label}>
       {def.props.map((spec) => {
         const value = node.props[spec.key];
+        // A prop already wired to a field (component editor): show the link + an
+        // unlink, instead of the literal control.
+        if (slotEditor && isPropSlot(value)) {
+          return (
+            <div key={spec.key} className="bx-slotrow">
+              <span className="bx-field__label">{spec.label}</span>
+              <span className="bx-slotrow__tag">field · {value.$prop}</span>
+              <button
+                type="button"
+                className="bx-fieldrow__btn"
+                onClick={() => slotEditor.onUnbind(spec.key)}
+              >
+                <X aria-hidden /> Unlink
+              </button>
+            </div>
+          );
+        }
+        // "Make a field" is offered for free-text props only (the common slot case).
+        const makeField =
+          slotEditor && (spec.control === 'text' || spec.control === 'textarea') ? (
+            <button
+              type="button"
+              className="bx-makefield"
+              onClick={() => slotEditor.onBind(spec.key, spec.label, spec.control)}
+            >
+              <Boxes aria-hidden /> Make a field
+            </button>
+          ) : null;
+
         if (spec.control === 'buttongroup' && spec.options) {
           return (
             <Field key={spec.key} label={spec.label}>
@@ -487,6 +543,7 @@ function PropsPanel({
                 placeholder={spec.placeholder}
                 onChange={(e) => onProp(spec.key, e.target.value)}
               />
+              {makeField}
             </Field>
           );
         }
@@ -496,6 +553,19 @@ function PropsPanel({
               <span className="bx-field__label">{spec.label}</span>
               <Switch checked={Boolean(value)} onCheckedChange={(v) => onProp(spec.key, v)} />
             </div>
+          );
+        }
+        if (spec.control === 'richtext') {
+          // Free-form authored body (docs/52 §9) — the full TipTap editor, edited
+          // in place. The doc is stored on the prop; renderers serialize it to HTML.
+          return (
+            <Field key={spec.key} label={spec.label}>
+              <ProseControl
+                value={value}
+                onChange={(doc) => onProp(spec.key, doc)}
+                placeholder={spec.placeholder}
+              />
+            </Field>
           );
         }
         if (spec.control === 'icon') {
@@ -515,6 +585,7 @@ function PropsPanel({
               placeholder={spec.placeholder}
               onChange={(e) => onProp(spec.key, e.target.value)}
             />
+            {makeField}
           </Field>
         );
       })}
@@ -1019,6 +1090,172 @@ export function EmailSettings({
   );
 }
 
+// ── Custom-component placement (docs/53 P-B + P-D) ────────────────────────────
+// A selected `custom:*` placement: the component's name + a rename, its
+// configurable fields (per-instance values written to node.props), the pinned
+// version, and a link to edit the component itself. Has no Style / Layout panels —
+// a component owns its own structure + styling; the placement only carries data.
+
+function CustomPropField({
+  spec,
+  value,
+  onChange,
+}: {
+  spec: ComponentPropSpec;
+  value: unknown;
+  onChange: (value: unknown) => void;
+}) {
+  if (spec.kind === 'boolean') {
+    return (
+      <div className="bx-row">
+        <span className="bx-field__label">{spec.label}</span>
+        <Switch checked={Boolean(value)} onCheckedChange={(v) => onChange(v)} />
+      </div>
+    );
+  }
+  if (spec.kind === 'richtext') {
+    return (
+      <Field label={spec.label}>
+        <Textarea
+          rows={3}
+          value={(value as string) ?? ''}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      </Field>
+    );
+  }
+  if (spec.kind === 'number') {
+    return (
+      <Field label={spec.label}>
+        <Input
+          type="number"
+          value={typeof value === 'number' || typeof value === 'string' ? String(value) : ''}
+          onChange={(e) => onChange(e.target.value === '' ? undefined : Number(e.target.value))}
+        />
+      </Field>
+    );
+  }
+  // text / url / image — a plain string slot.
+  return (
+    <Field
+      label={spec.label}
+      hint={
+        spec.kind === 'image' ? 'An image URL.' : spec.kind === 'url' ? 'A link URL.' : undefined
+      }
+    >
+      <Input value={(value as string) ?? ''} onChange={(e) => onChange(e.target.value)} />
+    </Field>
+  );
+}
+
+function CustomNodeInspector({
+  node,
+  component,
+  surface,
+  onBack,
+  onName,
+  onProp,
+}: {
+  node: BuilderNode;
+  component?: ComponentDto;
+  surface: EditorSurface;
+  onBack: () => void;
+  onName: (name: string) => void;
+  onProp: (key: string, value: unknown) => void;
+}) {
+  const key = customKeyOf(node.type) ?? '';
+  const pinned = readComponentRef(node.props)?.version ?? null;
+  const latest = component?.latestVersion ?? null;
+  // The component has moved on since this placement was pinned (docs/53 P-E) —
+  // offer a one-click re-pin. Publish always expands the PINNED version, so a page
+  // never changes under the author until they choose to update.
+  const canUpgrade = pinned != null && latest != null && pinned < latest;
+  const backLabel =
+    surface === 'site' ? 'Site settings' : surface === 'email' ? 'Email settings' : 'Page settings';
+
+  return (
+    <div className="bx-inspector">
+      <button type="button" className="bx-ins-back" onClick={onBack}>
+        <ChevronLeft aria-hidden />
+        {backLabel}
+      </button>
+      <header className="bx-ins-head">
+        <div className="bx-ins-head__row">
+          <h3>{component?.name ?? key}</h3>
+          <span className="bx-ins-kind">component</span>
+        </div>
+        <Input
+          value={node.box.name ?? ''}
+          placeholder={`${component?.name ?? 'Component'} name`}
+          onChange={(e) => onName(e.target.value)}
+        />
+      </header>
+
+      {!component ? (
+        <Group label="Unavailable">
+          <p className="bx-grp__caption">
+            This component (<span className="bx-mono">custom:{key}</span>) is no longer available.
+            Remove it from the Layers panel.
+          </p>
+        </Group>
+      ) : (
+        <>
+          {component.propSpec.length > 0 ? (
+            <Group label="Content">
+              <p className="bx-grp__caption">
+                Fill this placement’s fields. Leave one blank to use the component’s default.
+              </p>
+              {component.propSpec.map((spec) => (
+                <CustomPropField
+                  key={spec.key}
+                  spec={spec}
+                  value={node.props[spec.key]}
+                  onChange={(v) => onProp(spec.key, v)}
+                />
+              ))}
+            </Group>
+          ) : (
+            <Group label={component.name}>
+              <p className="bx-grp__caption">
+                {component.description ??
+                  'This component has no configurable fields — every placement renders the same.'}{' '}
+                Edit the component to change it everywhere it’s used.
+              </p>
+            </Group>
+          )}
+
+          <Group label="Component">
+            <Field label="Source">
+              <span className="bx-mono">
+                custom:{key}
+                {pinned ? ` · v${pinned}` : ''}
+              </span>
+            </Field>
+            {canUpgrade ? (
+              <div className="bx-upgrade">
+                <p className="bx-upgrade__note">
+                  This component is now at v{latest}. This placement renders v{pinned} until you
+                  update it — the canvas shows the latest as a preview.
+                </p>
+                <button
+                  type="button"
+                  className="bx-upgrade__btn"
+                  onClick={() => onProp(REF_KEY, { version: latest })}
+                >
+                  Update to v{latest}
+                </button>
+              </div>
+            ) : null}
+            <a className="bx-ins-editlink" href={`/builder/components/${key}`}>
+              <ExternalLink aria-hidden /> Edit component
+            </a>
+          </Group>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ── The inspector ────────────────────────────────────────────────────────────
 
 export interface InspectorProps {
@@ -1029,12 +1266,22 @@ export interface InspectorProps {
   surface: EditorSurface;
   /** Rendered when no node is selected — the surface's settings panel. */
   settings: React.ReactNode;
+  /** Tenant components keyed by key (docs/53 P-B) — resolves the panel for a
+   *  selected `custom:*` placement (its name, version, and configurable fields). */
+  components?: ReadonlyMap<string, ComponentDto>;
   /** The active template's content-type key — enables the binding picker's inline
    *  "+ New field" (docs/51 keystone). Null/undefined hides it. */
   contentTypeKey?: string | null;
   /** Add a field to `contentTypeKey`, resolving its key so the picker binds the
    *  node to the new field. */
   onAddField?: (label: string, kind: CreatableType) => Promise<string | null>;
+  /** "Save as component" (docs/53 P-C): turn the selected subtree into a reusable
+   *  tenant component, replacing it with a placement. Omitted ⇒ the action is
+   *  hidden (e.g. inside the component editor itself — no nesting). */
+  onSaveAsComponent?: (node: BuilderNode) => void;
+  /** Slot authoring (docs/53 P-D) — present only in the component editor: lets a
+   *  node's text prop become a configurable field. */
+  slotEditor?: SlotEditor;
   /** Clear the selection — returns the inspector to the `settings` panel (page /
    *  site settings). Powers the "‹ Page settings" back control. */
   onBack: () => void;
@@ -1053,8 +1300,11 @@ export function Inspector({
   scope,
   surface,
   settings,
+  components,
   contentTypeKey,
   onAddField,
+  onSaveAsComponent,
+  slotEditor,
   onBack,
   onName,
   onClass,
@@ -1066,6 +1316,20 @@ export function Inspector({
 }: InspectorProps) {
   if (!node) {
     return <>{settings}</>;
+  }
+  // A `custom:*` placement (docs/53 P-B) has its own panel — identity, version
+  // pin, configurable fields, and a link to edit the component itself.
+  if (isCustomType(node.type)) {
+    return (
+      <CustomNodeInspector
+        node={node}
+        component={components?.get(customKeyOf(node.type) ?? '')}
+        surface={surface}
+        onBack={onBack}
+        onName={onName}
+        onProp={onProp}
+      />
+    );
   }
   const def = getDef(node.type);
   if (!def) return null;
@@ -1094,6 +1358,16 @@ export function Inspector({
           onChange={(e) => onName(e.target.value)}
         />
         <RetypeControl def={def} surface={surface} onRetype={onRetype} />
+        {onSaveAsComponent ? (
+          <button
+            type="button"
+            className="bx-ins-saveas"
+            onClick={() => onSaveAsComponent(node)}
+            title="Turn this block into a reusable component"
+          >
+            <Boxes aria-hidden /> Save as component
+          </button>
+        ) : null}
       </header>
 
       <Group label="Style">
@@ -1121,7 +1395,7 @@ export function Inspector({
         onAddField={onAddField}
         onBind={onBind}
       />
-      <PropsPanel node={node} onProp={onProp} />
+      <PropsPanel node={node} onProp={onProp} slotEditor={slotEditor} />
       {def.kind === 'container' && node.layout ? (
         <LayoutPanel layout={node.layout} onLayout={onLayout} />
       ) : null}

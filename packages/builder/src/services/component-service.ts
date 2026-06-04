@@ -14,12 +14,15 @@
 import {
   CreateComponentInput,
   UpdateComponentInput,
+  collectComponentRefs,
+  expandCustomNodes,
   validateComponentTree,
   type BuilderNode,
   type ComponentDto,
   type ComponentSummaryDto,
   type ComponentSurface,
   type ComponentGroup,
+  type ComponentUsageDto,
   type ComponentVersionDto,
   type PropSpec,
 } from '@sparx/builder-schemas';
@@ -91,6 +94,32 @@ export function list(ctx: ServiceContext): Promise<ComponentSummaryDto[]> {
       orderBy: [{ group: 'asc' }, { name: 'asc' }],
     });
     return rows.map(toSummary);
+  });
+}
+
+/** Every component WITH its latest version's content — what the Builder editor
+ *  needs to expand `custom:*` placements live on the canvas (docs/53 P-B). One
+ *  extra query over `list`; the page editor calls this, the catalog uses `list`. */
+export function listFull(ctx: ServiceContext): Promise<ComponentDto[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.builderComponent.findMany({
+      orderBy: [{ group: 'asc' }, { name: 'asc' }],
+    });
+    if (rows.length === 0) return [];
+    const versions = await tx.builderComponentVersion.findMany({
+      where: { componentId: { in: rows.map((r) => r.id) } },
+    });
+    const latest = new Map<string, BuilderComponentVersion>();
+    for (const v of versions) {
+      const cur = latest.get(v.componentId);
+      if (!cur || v.version > cur.version) latest.set(v.componentId, v);
+    }
+    return rows
+      .map((row) => {
+        const v = latest.get(row.id);
+        return v ? toDto(row, v) : null;
+      })
+      .filter((d): d is ComponentDto => d !== null);
   });
 }
 
@@ -255,12 +284,88 @@ export async function update(
   });
 }
 
-/** Delete a component and all its versions (cascade). Where-used impact analysis
- *  (blocking on live placements) lands with insertion in P-B. */
+/** Expand every `custom:<key>` placement in `draft` into concrete primitives for
+ *  publish (docs/53 §3): each placement → its PINNED version's tree with instance
+ *  slots filled, so the storefront renderer never sees a `custom:*` type. Shared
+ *  by pageService.publish + layoutService.publish; runs inside their transaction.
+ *  A placement that no longer resolves (deleted component) is dropped. */
+export async function expandTreeForPublish(
+  tx: Prisma.TransactionClient,
+  draft: BuilderNode
+): Promise<BuilderNode> {
+  const refs = collectComponentRefs(draft);
+  if (refs.length === 0) return draft;
+  const keys = [...new Set(refs.map((r) => r.key))];
+  const comps = await tx.builderComponent.findMany({ where: { key: { in: keys } } });
+  const byKey = new Map(comps.map((c) => [c.key, c]));
+  const versionRows = await tx.builderComponentVersion.findMany({
+    where: { componentId: { in: comps.map((c) => c.id) } },
+  });
+  const byKeyVer = new Map<string, BuilderComponentVersion>();
+  for (const v of versionRows) {
+    const comp = comps.find((c) => c.id === v.componentId);
+    if (comp) byKeyVer.set(`${comp.key}@${v.version}`, v);
+  }
+  return expandCustomNodes(draft, (key, version) => {
+    const comp = byKey.get(key);
+    if (!comp) return null;
+    const row = byKeyVer.get(`${key}@${version ?? comp.latestVersion}`);
+    if (!row) return null;
+    return {
+      tree: row.tree as unknown as BuilderNode,
+      propSpec: (row.propSpec as unknown as PropSpec[]) ?? [],
+    };
+  });
+}
+
+/** Where a component is placed (docs/53 §6): the pages + layouts whose draft OR
+ *  published tree references `custom:<key>`. Powers the delete-impact warning and
+ *  the detail page's "Used on" panel. Scans within the caller's transaction so it
+ *  shares the publish/delete consistency snapshot. */
+async function scanUsages(tx: Prisma.TransactionClient, key: string): Promise<ComponentUsageDto> {
+  const usesKey = (tree: unknown): boolean =>
+    collectComponentRefs(tree as BuilderNode).some((r) => r.key === key);
+  const [pages, layouts] = [
+    await tx.builderPage.findMany({
+      select: { id: true, name: true, draftTree: true, publishedTree: true },
+    }),
+    await tx.builderLayout.findMany({
+      select: { id: true, name: true, draftTree: true, publishedTree: true },
+    }),
+  ];
+  const pageHits = pages
+    .filter((p) => usesKey(p.draftTree) || (p.publishedTree != null && usesKey(p.publishedTree)))
+    .map((p) => ({ id: p.id, name: p.name }));
+  const layoutHits = layouts
+    .filter((l) => usesKey(l.draftTree) || (l.publishedTree != null && usesKey(l.publishedTree)))
+    .map((l) => ({ id: l.id, name: l.name }));
+  return { pages: pageHits, layouts: layoutHits, total: pageHits.length + layoutHits.length };
+}
+
+/** Where-used for one component (its own transaction). 404 if the key is unknown. */
+export function usages(ctx: ServiceContext, key: string): Promise<ComponentUsageDto> {
+  return withTenant(ctx, async (tx) => {
+    const row = await tx.builderComponent.findFirst({ where: { key }, select: { id: true } });
+    if (!row) throw new BuilderNotFoundError('BuilderComponent', key);
+    return scanUsages(tx, key);
+  });
+}
+
+/** Delete a component and all its versions (cascade). BLOCKS when the component
+ *  is still placed on any page/layout (docs/53 §6) — deleting a live placement
+ *  would orphan it (publish-expand drops unresolved refs), so the caller must
+ *  remove the placements first. The dashboard surfaces where-used before asking. */
 export async function remove(ctx: ServiceContext, key: string): Promise<void> {
   await withTenant(ctx, async (tx) => {
     const existing = await tx.builderComponent.findFirst({ where: { key } });
     if (!existing) throw new BuilderNotFoundError('BuilderComponent', key);
+    const used = await scanUsages(tx, key);
+    if (used.total > 0) {
+      throw new BuilderValidationError(
+        'This component is still placed on pages or layouts. Remove those placements before deleting it.',
+        [{ field: 'key', message: `In use in ${used.total} place${used.total === 1 ? '' : 's'}.` }]
+      );
+    }
     await tx.builderComponent.delete({ where: { id: existing.id } });
     await writeAuditLog({
       tx,

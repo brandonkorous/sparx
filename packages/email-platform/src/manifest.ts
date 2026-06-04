@@ -28,21 +28,17 @@ export const emailManifest: ModuleManifest = {
       icon: Send,
       href: '/email/broadcasts/new',
     },
+    // Marketing emails are designed in the Email Builder (docs/52); built-in
+    // transactional templates are customized in place, never created.
     {
-      id: 'email.template.create',
-      label: 'New template',
+      id: 'email.design',
+      label: 'Design email',
       icon: LayoutTemplate,
-      href: '/email/templates/new',
+      href: '/builder/email',
     },
   ],
   entityTypes: [
     { id: 'broadcast', label: 'Broadcast', routePrefix: '/email/broadcasts', hasDetailView: true },
-    {
-      id: 'email-template',
-      label: 'Template',
-      routePrefix: '/email/templates',
-      hasDetailView: true,
-    },
     {
       id: 'automation',
       label: 'Automation',

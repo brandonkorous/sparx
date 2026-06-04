@@ -1,13 +1,12 @@
-// Email DataSources resolver (docs/52 §7, §9 Phase 4) — the node-tree successor
-// to the section `sectionResolver` (email-sections.ts). Reads tenant data
+// Email DataSources resolver (docs/52 §7, §9 Phase 4). Reads tenant data
 // (commerce + CRM + CMS) and produces the `DataSources` map the Builder email
 // renderer (`renderEmailTree`) resolves bindings against, keyed to match
 // `EMAIL_SOURCES` in @sparx/builder-schemas.
 //
 // Lives in api-rest — the composition root that already has @sparx/commerce — so
 // @sparx/email-platform (imported by the lean email-worker) stays commerce-free.
-// Injected into the broadcast send path + the dispatch tick as the `resolveEmailData`
-// callback, the same pattern `sectionResolver` uses (docs/52 §6).
+// Injected into the broadcast send path + the dispatch tick as the
+// `resolveEmailData` callback (docs/52 §6).
 //
 // Two tiers of source (EMAIL_PERSONALIZED_ROOTS draws the line):
 //   · per-recipient — recipient / order / cart / loyalty: resolved against THIS

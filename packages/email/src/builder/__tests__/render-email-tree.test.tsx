@@ -96,4 +96,76 @@ describe('renderEmailTree', () => {
     expect(out.html).toContain('Dana');
     expect(out.html).toContain('https://cdn.example.com/a.png');
   });
+
+  it('serializes an authored Prose doc to sanitised HTML', async () => {
+    const doc = {
+      type: 'doc',
+      content: [
+        { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Big news' }] },
+        {
+          type: 'paragraph',
+          content: [
+            { type: 'text', text: 'Hello ' },
+            { type: 'text', marks: [{ type: 'bold' }], text: 'world' },
+            { type: 'text', text: '. Visit ' },
+            {
+              type: 'text',
+              marks: [{ type: 'link', attrs: { href: 'https://example.com' } }],
+              text: 'us',
+            },
+            // A hostile link: the audited serializer must drop the protocol.
+            {
+              type: 'text',
+              marks: [{ type: 'link', attrs: { href: 'javascript:alert(1)' } }],
+              text: 'danger',
+            },
+          ],
+        },
+        {
+          type: 'bulletList',
+          content: [
+            {
+              type: 'listItem',
+              content: [{ type: 'paragraph', content: [{ type: 'text', text: 'First point' }] }],
+            },
+          ],
+        },
+      ],
+    };
+    const tree: BuilderNode = {
+      id: 'root',
+      type: 'Section',
+      box: { ...DEFAULT_BOX },
+      layout: { ...DEFAULT_LAYOUT, direction: 'stack' },
+      props: {},
+      children: [node('Prose', { props: { doc } })],
+    };
+    const out = await renderEmailTree({ tree, subject: 'News', to: 'x@y.com' }, { brand });
+    expect(out.html).toContain('Big news');
+    expect(out.html).toContain('<strong>world</strong>');
+    // safeHref normalizes via new URL() (a trailing slash may be added).
+    expect(out.html).toContain('href="https://example.com');
+    expect(out.html).toContain('First point');
+    // Sanitization is in the path — the javascript: link is stripped to plain text.
+    expect(out.html).not.toContain('javascript:');
+    expect(out.html).toContain('danger');
+    // Plain-text generation walks the same HTML (headings get uppercased there).
+    expect(out.text).toContain('Hello world');
+  });
+
+  it('omits an empty Prose node', async () => {
+    const tree: BuilderNode = {
+      id: 'root',
+      type: 'Section',
+      box: { ...DEFAULT_BOX },
+      layout: { ...DEFAULT_LAYOUT, direction: 'stack' },
+      props: {},
+      children: [
+        node('Prose', { props: { doc: { type: 'doc', content: [] } } }),
+        node('Text', { props: { variant: 'body', text: 'Only this shows.' } }),
+      ],
+    };
+    const out = await renderEmailTree({ tree, subject: 'Hi', to: 'x@y.com' }, { brand });
+    expect(out.html).toContain('Only this shows.');
+  });
 });

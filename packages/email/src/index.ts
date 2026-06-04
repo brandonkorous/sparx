@@ -36,22 +36,9 @@ export {
   type AuthoredEmailInput,
 } from './send';
 
-// Section-composed bodies (docs/31): render an ordered section-instance list +
-// resolved data map into a branded SendableEmail.
-export {
-  renderSections,
-  composeSections,
-  type RenderSectionsInput,
-  type RenderSectionsOptions,
-} from './sections/render';
-export {
-  SECTION_COMPONENTS,
-  type SectionComponent,
-  type SectionRenderProps,
-} from './sections/components';
-
 // Builder email node-tree render (docs/52): walk a BuilderNode tree → branded,
-// table-based React Email. The node-tree successor to renderSections.
+// table-based React Email. The successor to the retired section composer
+// (docs/52 §8) — marketing emails are authored in the Builder.
 export {
   renderEmailTree,
   composeEmailTree,

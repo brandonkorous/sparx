@@ -11,34 +11,9 @@ export const SaveBuiltinOverrideInput = z
 
 export type SaveBuiltinOverrideInput = z.infer<typeof SaveBuiltinOverrideInput>;
 
-// Authored marketing template — a section-composer body (docs/31 §5). The body
-// shape (a {version, sections[]} list, or a legacy bare CmsDoc) is validated +
-// normalized by @sparx/email-sections' parseBody in the service; here it is an
-// opaque object so the zod layer doesn't duplicate the section registry.
-const SectionBody = z.unknown();
-
-export const CreateAuthoredTemplateInput = z
-  .object({
-    name: z.string().min(1).max(160),
-    subject: z.string().min(1).max(255),
-    preheader: z.string().max(255).optional(),
-    body: SectionBody,
-  })
-  .strict();
-
-export type CreateAuthoredTemplateInput = z.infer<typeof CreateAuthoredTemplateInput>;
-
-export const UpdateAuthoredTemplateInput = z
-  .object({
-    name: z.string().min(1).max(160).optional(),
-    subject: z.string().min(1).max(255).optional(),
-    preheader: z.string().max(255).nullable().optional(),
-    body: SectionBody.optional(),
-    status: z.enum(['draft', 'active', 'archived']).optional(),
-  })
-  .strict();
-
-export type UpdateAuthoredTemplateInput = z.infer<typeof UpdateAuthoredTemplateInput>;
+// Marketing emails are authored in the Builder (docs/52, BuilderEmail), not as
+// section-list "authored templates" — that model is retired (docs/52 §8). This
+// service owns builtins only, so the authored-template inputs are gone.
 
 export const TestSendInput = z.object({ to: z.string().email() }).strict();
 export type TestSendInput = z.infer<typeof TestSendInput>;

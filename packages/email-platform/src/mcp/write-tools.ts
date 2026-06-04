@@ -10,13 +10,13 @@ import type { McpToolDefinition } from './registry';
 export const sendBroadcast: McpToolDefinition = {
   name: 'send_broadcast',
   description:
-    'Create and immediately send a broadcast to a CRM segment using an authored marketing template. Sends real email — always confirm the segment + recipient count first.',
+    'Create and immediately send a broadcast to a CRM segment using a PUBLISHED designed email (built in the Email Builder). Sends real email — always confirm the segment + recipient count first. Tenant-level dynamic data (products, promotions) renders; per-recipient personalization resolves at dispatch.',
   scope: 'write:email_bulk',
   confirmation: true,
   input: z.object({
     name: z.string().min(1).max(160),
     subject: z.string().min(1).max(255),
-    templateId: z.string().uuid(),
+    builderEmailId: z.string().uuid(),
     segmentId: z.string().uuid(),
     preheader: z.string().max(255).optional(),
   }),
@@ -24,7 +24,7 @@ export const sendBroadcast: McpToolDefinition = {
     const args = input as {
       name: string;
       subject: string;
-      templateId: string;
+      builderEmailId: string;
       segmentId: string;
       preheader?: string;
     };

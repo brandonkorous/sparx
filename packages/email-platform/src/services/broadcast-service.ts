@@ -1,23 +1,22 @@
 // broadcastService — segment-targeted marketing campaigns.
 //
-// A broadcast renders ONCE (authored template → branded email) and fans out to
-// every segment member minus suppressions. Send + schedule both enqueue a
-// per-recipient ScheduledSend with a pre-rendered "raw" body; the shared
-// email-dispatch tick delivers them (immediately for send, at scheduledAt for
-// schedule), so scheduling needs no separate worker. Cancel removes pending
-// rows. Stats aggregate EmailEvent rows joined by the broadcast_id variable the
-// webhook stamps back.
+// A broadcast renders a published Builder email (docs/52) and fans out to every
+// segment member minus suppressions. Static / per-send bodies render ONCE → a
+// "raw" payload; a per-recipient body (recipient/order/cart/loyalty bindings)
+// defers, rendering per recipient at dispatch. Send + schedule both enqueue a
+// per-recipient ScheduledSend; the shared email-dispatch tick delivers them
+// (immediately for send, at scheduledAt for schedule), so scheduling needs no
+// separate worker. Cancel removes pending rows. Stats aggregate EmailEvent rows
+// joined by the broadcast_id variable the webhook stamps back.
 
 import { withTenant } from '@sparx/db';
 import type { Broadcast, EmailTemplate } from '@sparx/db';
-import { renderEmailTree, renderSections } from '@sparx/email';
-import { bodyIsPersonalized, normalizeBody } from '@sparx/email-sections';
+import { renderEmailTree } from '@sparx/email';
 import { treeIsEmailPersonalized, type BuilderNode } from '@sparx/builder-schemas';
 
 import { writeAuditLog } from '../audit';
 import { publishEmailEvent } from '../events';
 import { EmailNotFoundError, EmailValidationError, type ServiceContext } from '../errors';
-import { makeStaticResolver, type ResolveSectionData } from './template-service';
 import { noEmailDataResolver, type ResolveEmailData } from './builder-email-service';
 import {
   CreateBroadcastInput,
@@ -34,17 +33,24 @@ function buildFrom(fromName: string | null, fromAddress: string | null): string 
   return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
 }
 
-/** Resolve a published Builder email's body tree (+ its own subject/preheader) by
- *  id, or null when it hasn't been published (docs/52 §6). Injected by the caller
- *  (api-rest loads it from @sparx/builder's emailService) so this package keeps no
- *  @sparx/builder dependency — the same injection pattern as ResolveSectionData. */
-export type ResolveBuilderEmail = (
+/** The published body of a Builder email (docs/52 §6). Read straight from the
+ *  shared `builder_emails` table (RLS-scoped) — no @sparx/builder dependency, the
+ *  same way this service reads broadcasts / templates / segments. Null when the
+ *  email doesn't exist or hasn't been published. */
+async function loadPublishedBuilderEmail(
+  ctx: ServiceContext,
   builderEmailId: string
-) => Promise<{ tree: BuilderNode; subject: string; preheader: string | null } | null>;
-
-const noBuilderEmailResolver: ResolveBuilderEmail = () => {
-  throw new EmailValidationError('Designed-email broadcasts are not available from this caller.');
-};
+): Promise<{ tree: BuilderNode; subject: string; preheader: string | null } | null> {
+  const row = await withTenant(ctx, (tx) =>
+    tx.builderEmail.findUnique({ where: { id: builderEmailId } })
+  );
+  if (row?.publishedTree == null) return null;
+  return {
+    tree: row.publishedTree as unknown as BuilderNode,
+    subject: row.subject,
+    preheader: row.preheader,
+  };
+}
 
 export async function list(ctx: ServiceContext): Promise<Broadcast[]> {
   return withTenant(ctx, (tx) =>
@@ -67,7 +73,6 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Br
         name: input.name,
         subject: input.subject,
         preheader: input.preheader ?? null,
-        templateId: input.templateId ?? null,
         builderEmailId: input.builderEmailId ?? null,
         segmentId: input.segmentId ?? null,
         status: 'draft',
@@ -112,7 +117,6 @@ export async function update(
         ...(input.name !== undefined ? { name: input.name } : {}),
         ...(input.subject !== undefined ? { subject: input.subject } : {}),
         ...(input.preheader !== undefined ? { preheader: input.preheader } : {}),
-        ...(input.templateId !== undefined ? { templateId: input.templateId } : {}),
         ...(input.builderEmailId !== undefined ? { builderEmailId: input.builderEmailId } : {}),
         ...(input.segmentId !== undefined ? { segmentId: input.segmentId } : {}),
       },
@@ -132,39 +136,6 @@ export async function estimateRecipients(
 }
 
 // ── Send / schedule ──────────────────────────────────────────────────────
-
-async function renderBody(
-  ctx: ServiceContext,
-  broadcast: Broadcast,
-  resolveData: ResolveSectionData
-): Promise<{ subject: string; html: string; text: string }> {
-  if (!broadcast.templateId) {
-    throw new EmailValidationError('Attach a template before sending.');
-  }
-  const template = await withTenant(ctx, (tx) =>
-    tx.emailTemplate.findUnique({ where: { id: broadcast.templateId! } })
-  );
-  if (template?.source !== 'authored') {
-    throw new EmailNotFoundError('EmailTemplate', broadcast.templateId);
-  }
-  // Render ONCE (no recipient) — broadcasts fan out the same body. Personalized
-  // sections render empty here and omit themselves; per-recipient broadcasts
-  // land with the personalization pipeline (docs/31 §7, P5).
-  const { sections } = normalizeBody(template.body);
-  const data = await resolveData(sections);
-  const brand = (await resolveEmailBrand(ctx)) ?? undefined;
-  const rendered = await renderSections(
-    {
-      sections,
-      to: 'broadcast@example.com',
-      subject: broadcast.subject,
-      preheader: broadcast.preheader ?? undefined,
-      data,
-    },
-    { brand }
-  );
-  return { subject: rendered.subject, html: rendered.html, text: rendered.text };
-}
 
 interface Recipient {
   email: string;
@@ -202,8 +173,6 @@ async function enqueueAndMark(
   id: string,
   dueAt: Date,
   finalStatus: 'sent' | 'scheduled',
-  resolveData: ResolveSectionData,
-  resolveBuilderEmail: ResolveBuilderEmail,
   resolveEmailData: ResolveEmailData
 ): Promise<Broadcast> {
   const broadcast = await get(ctx, id);
@@ -211,9 +180,8 @@ async function enqueueAndMark(
     throw new EmailValidationError(`Broadcast is already ${broadcast.status}.`);
   }
 
-  const usingBuilderEmail = Boolean(broadcast.builderEmailId);
-  if (!usingBuilderEmail && !broadcast.templateId) {
-    throw new EmailValidationError('Attach a template or a designed email before sending.');
+  if (!broadcast.builderEmailId) {
+    throw new EmailValidationError('Attach a designed email before sending.');
   }
 
   const [recipients, settings] = await Promise.all([
@@ -221,67 +189,40 @@ async function enqueueAndMark(
     getSettings(ctx),
   ]);
 
-  // The body source decides the dispatch shape:
-  //   · Builder email — per-recipient binding (recipient/order/cart/loyalty) defers
-  //     to dispatch (docs/52 §6); otherwise resolve the per-send data + render once.
-  //   · authored template — personalized sections defer per recipient (docs/31 §7);
-  //     otherwise render once → raw.
-  let personalized = false;
-  let deferTemplateId: string | null = null;
-  let deferBuilderEmailId: string | null = null;
-  let body: { subject: string; html: string; text: string } | null = null;
+  const doc = await loadPublishedBuilderEmail(ctx, broadcast.builderEmailId);
+  if (!doc) throw new EmailNotFoundError('BuilderEmail', broadcast.builderEmailId);
 
-  if (usingBuilderEmail) {
-    const doc = await resolveBuilderEmail(broadcast.builderEmailId!);
-    if (!doc) throw new EmailNotFoundError('BuilderEmail', broadcast.builderEmailId!);
-    personalized = treeIsEmailPersonalized(doc.tree);
-    if (personalized) {
-      // Per recipient — the dispatch tick reloads the published tree, resolves
-      // THIS recipient's data, and renders (defer.builderEmailId).
-      deferBuilderEmailId = broadcast.builderEmailId;
-    } else {
-      // Static across recipients — resolve the per-send data (products/promotion/
-      // posts) once, render once, fan the same body out as `raw`.
-      const [data, brand] = await Promise.all([resolveEmailData(doc.tree), resolveEmailBrand(ctx)]);
-      const rendered = await renderEmailTree(
-        {
-          tree: doc.tree,
-          to: 'broadcast@example.com',
-          subject: broadcast.subject,
-          preheader: broadcast.preheader ?? undefined,
-          data,
-        },
-        { brand: brand ?? undefined }
-      );
-      body = { subject: rendered.subject, html: rendered.html, text: rendered.text };
-    }
-  } else {
-    const template = await withTenant(ctx, (tx) =>
-      tx.emailTemplate.findUnique({ where: { id: broadcast.templateId! } })
+  // The body decides the dispatch shape (docs/52 §6):
+  //   · per-recipient binding (recipient/order/cart/loyalty) → defer; the dispatch
+  //     tick reloads the published tree, resolves THIS recipient's data, renders.
+  //   · static / per-send (products/promotion/posts) → resolve once, render once,
+  //     fan the same body out as `raw`.
+  const personalized = treeIsEmailPersonalized(doc.tree);
+  let body: { subject: string; html: string; text: string } | null = null;
+  if (!personalized) {
+    const [data, brand] = await Promise.all([resolveEmailData(doc.tree), resolveEmailBrand(ctx)]);
+    const rendered = await renderEmailTree(
+      {
+        tree: doc.tree,
+        to: 'broadcast@example.com',
+        subject: broadcast.subject,
+        preheader: broadcast.preheader ?? undefined,
+        data,
+      },
+      { brand: brand ?? undefined }
     );
-    if (template?.source !== 'authored') {
-      throw new EmailNotFoundError('EmailTemplate', broadcast.templateId!);
-    }
-    personalized = bodyIsPersonalized(normalizeBody(template.body));
-    deferTemplateId = template.id;
-    body = personalized ? null : await renderBody(ctx, broadcast, resolveData);
+    body = { subject: rendered.subject, html: rendered.html, text: rendered.text };
   }
 
   const campaignTag = `bcast_${id}`;
   const from = buildFrom(settings.fromName, settings.fromAddress);
   const variables = { broadcast_id: id, campaign: campaignTag };
 
-  // The defer payload carries whichever body source the tick re-renders per
-  // recipient — a Builder email tree by id, or an authored section template.
-  const deferBody = deferBuilderEmailId
-    ? { builderEmailId: deferBuilderEmailId }
-    : { templateId: deferTemplateId! };
-
   const buildPayload = () =>
     personalized
       ? {
           defer: {
-            ...deferBody,
+            builderEmailId: broadcast.builderEmailId!,
             subject: broadcast.subject,
             ...(broadcast.preheader ? { preheader: broadcast.preheader } : {}),
           },
@@ -350,27 +291,15 @@ async function enqueueAndMark(
 export async function sendNow(
   ctx: ServiceContext,
   id: string,
-  resolveData: ResolveSectionData = makeStaticResolver(ctx),
-  resolveBuilderEmail: ResolveBuilderEmail = noBuilderEmailResolver,
   resolveEmailData: ResolveEmailData = noEmailDataResolver
 ): Promise<Broadcast> {
-  return enqueueAndMark(
-    ctx,
-    id,
-    new Date(),
-    'sent',
-    resolveData,
-    resolveBuilderEmail,
-    resolveEmailData
-  );
+  return enqueueAndMark(ctx, id, new Date(), 'sent', resolveEmailData);
 }
 
 export async function schedule(
   ctx: ServiceContext,
   id: string,
   rawInput: unknown,
-  resolveData: ResolveSectionData = makeStaticResolver(ctx),
-  resolveBuilderEmail: ResolveBuilderEmail = noBuilderEmailResolver,
   resolveEmailData: ResolveEmailData = noEmailDataResolver
 ): Promise<Broadcast> {
   const { scheduledAt } = ScheduleBroadcastInput.parse(rawInput);
@@ -378,15 +307,7 @@ export async function schedule(
   if (dueAt.getTime() <= Date.now()) {
     throw new EmailValidationError('Scheduled time must be in the future.');
   }
-  return enqueueAndMark(
-    ctx,
-    id,
-    dueAt,
-    'scheduled',
-    resolveData,
-    resolveBuilderEmail,
-    resolveEmailData
-  );
+  return enqueueAndMark(ctx, id, dueAt, 'scheduled', resolveEmailData);
 }
 
 export async function cancel(ctx: ServiceContext, id: string): Promise<Broadcast> {

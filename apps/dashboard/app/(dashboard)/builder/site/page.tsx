@@ -3,7 +3,7 @@ import { SITE_CATALOG, type BuilderLayoutDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
 import { getBrand, getConfig } from '../_brand/lib/api';
-import { listLayouts } from '../_lib/api';
+import { listComponentsFull, listLayouts } from '../_lib/api';
 import { SiteBuilderApp } from '../_builder/site-builder-app';
 import '../builder.css';
 
@@ -49,7 +49,11 @@ async function loadLayouts(): Promise<BuilderLayoutDto[]> {
 }
 
 export default async function BuilderSiteRoute() {
-  const [themeCss, layouts] = await Promise.all([canvasThemeCss(), loadLayouts()]);
+  const [themeCss, layouts, components] = await Promise.all([
+    canvasThemeCss(),
+    loadLayouts(),
+    listComponentsFull(),
+  ]);
   if (layouts.length === 0) {
     return (
       <div className="px-6 py-8 lg:px-10">
@@ -62,7 +66,11 @@ export default async function BuilderSiteRoute() {
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-      <SiteBuilderApp initialLayouts={layouts} bindingCatalog={SITE_CATALOG} />
+      <SiteBuilderApp
+        initialLayouts={layouts}
+        bindingCatalog={SITE_CATALOG}
+        components={components}
+      />
     </>
   );
 }

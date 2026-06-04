@@ -1,6 +1,6 @@
 # 52 · Email Builder
 
-Version: 0.2.0
+Version: 0.4.0
 Author: Brandon Korous
 Last Updated: 2026-06-04
 
@@ -155,16 +155,36 @@ record (object) CMS sources are dropped, an email has no in-scope single record.
 Shapes are fixed; the **data** is produced at send/preview by `resolveEmailData`
 (§6), which resolves only the sources a tree binds.
 
-## 8. Migration & sunset of `@sparx/email-sections`
+## 8. Migration & sunset of `@sparx/email-sections` — _done (2026-06-04)_
 
-1. Ship `/builder/email` + renderer + broadcast wiring (Phases 1–3).
-2. Port the data-aware sections to node components (Phase 4) so there is no
-   capability regression.
-3. Convert existing authored `EmailTemplate.body` section lists → node trees
-   (one-time, lossless: each section → its node equivalent), and repoint the
-   `/email/templates` authored editor at `/builder/email`.
-4. Remove `@sparx/email-sections`, `@sparx/email`'s `sections/*`, and the legacy
-   composer once no body references the section shape.
+The section model is **retired**. How it landed (it diverged from the original
+plan because the section COMPOSER UI was never shipped — the "authored template"
+was only ever a single TipTap rich-text body, an explicit stopgap for "when the
+Builder arrives"):
+
+1. Shipped `/builder/email` + renderer + broadcast wiring (Phases 1–3) and the
+   data-aware palette + resolver (Phase 4) — the Builder email is the marketing
+   authoring model.
+2. **Removed the authored/section path wholesale** rather than converting rows
+   (there were none seeded; automations use builtin `templateKey`, not section
+   bodies): broadcasts are `builderEmailId`-only; `templateService` owns BUILTIN
+   transactional templates only; the dispatch tick's section-defer branch is gone;
+   the `/email/templates` "Marketing" tab + authored editor are replaced by a link
+   to `/builder/email`; the MCP `send_broadcast` tool takes a `builderEmailId`.
+3. **Deleted** `@sparx/email-sections`, `@sparx/email`'s `sections/*`
+   (`renderSections`/`SECTION_COMPONENTS`), and api-rest's section resolver
+   (`lib/email-sections.ts`); pruned the dep from every `package.json`/Dockerfile.
+4. **Untouched:** built-in transactional templates (OTP / password-reset / welcome
+   …) — code React Email components on the worker `template` path.
+
+**The one capability gap is now closed (§9, built 2026-06-04):** the authored
+editor was the only place to write free-form rich text in an email. The `Prose`
+node now carries an authored TipTap/CMS document (a `richtext` inspector control
+wrapping `ContentBlockEditor`), and the email renderer serializes it to sanitised,
+inline-safe HTML via the audited `@sparx/cms-editor/serialize` path — so the
+Builder covers BOTH structured blocks and free-form prose. `EmailTemplate.body` /
+`Broadcast.templateId` columns are left in place (nullable, unused) — no
+destructive migration.
 
 Transactional code builtins are untouched throughout.
 
@@ -194,11 +214,27 @@ Transactional code builtins are untouched throughout.
   resolves THIS recipient's data, and renders per recipient. A per-send tree
   (products/promotion/posts) resolves once and fans out as `raw`. Preview +
   test-send resolve the tree's per-send data so the editor shows real content.
-  **Deferred within P4:** `Prose` (bound richtext → HTML) in email — needs a
-  TipTap→table-safe HTML serializer, not yet wired; product/cart images are empty
-  until a product carries an explicit PRIMARY image (`productService.list` returns
-  `imageUrl: null` today). Bind a `Text` to `item.excerpt` for post teasers meanwhile.
-- **Phase 5 — Migrate & retire.** Convert authored bodies; retire the section model.
+  **Still open after P4:** product/cart images are empty until a product carries an
+  explicit PRIMARY image (`productService.list` returns `imageUrl: null` today). Bind
+  a `Text` to `item.excerpt` for post teasers meanwhile.
+- **Phase 5 — Migrate & retire. _(Built 2026-06-04.)_** The section model is gone
+  (§8): no authored-template path, `@sparx/email-sections` deleted, broadcasts +
+  MCP repointed to the Builder email. Marketing email = Builder; transactional =
+  builtins.
+- **Phase 6 — Authored rich text (`Prose`). _(Built 2026-06-04.)_** Closes the §8
+  gap — free-form prose authored IN the Builder, the one thing the retired authored
+  editor did. The `Prose` node gains an authored `doc` prop (a TipTap/CMS document)
+  edited via a new `richtext` inspector control wrapping
+  [`ContentBlockEditor`](../packages/cms-editor/src/editor.tsx) — the same editor CMS
+  pages use. The email renderer's `Prose` leaf serializes the doc to sanitised,
+  inline-safe HTML through [`@sparx/cms-editor/serialize`](../packages/cms-editor/src/serialize.ts)
+  (the audited path — a hostile `javascript:` link is stripped) and inlines it under
+  the email's base typography; the canvas previews the same HTML, and `Prose` joins
+  `EMAIL_TYPES`. `@sparx/email` gains a `@sparx/cms-editor` dependency (the React-free
+  `/serialize` subpath only) — so every image carrying `@sparx/email` must also COPY
+  `packages/cms-editor` ([api-graphql](../services/api-graphql/Dockerfile) was the
+  one gap, now fixed); `@sparx/ui` (cms-editor's only workspace dep) stays a dangling,
+  unused symlink, exactly as in api-rest. Migration-free. **Deployable.**
 
 ## 10. Non-obvious commitments
 
@@ -206,8 +242,10 @@ Transactional code builtins are untouched throughout.
   default (§4); an interactive control in an email is a defect.
 - **One renderer, one binding runtime** — the email renderer reuses
   `resolvePath`/`cardinalityOf`; it must never fork iterate/scope semantics (§3).
-- **`@sparx/email` gains a `@sparx/builder-schemas` dependency** — add it to the
-  package and to **every consumer Dockerfile** (api-rest, email-worker, dashboard)
-  per the workspace-wiring rule, or image builds fail at runtime.
+- **`@sparx/email` gains `@sparx/builder-schemas` + `@sparx/cms-editor` dependencies**
+  — add them to the package and to **every consumer Dockerfile** (api-rest,
+  api-mcp, email-worker, api-graphql, dashboard) per the workspace-wiring rule. The
+  index re-exports the Builder renderer, which loads `@sparx/cms-editor/serialize` at
+  import time, so a missing COPY crashes the service at boot — not at build.
 - **Branded frame stays fixed chrome** in Phase 1 — the legal footer (physical
   address + unsubscribe) is not author-removable.

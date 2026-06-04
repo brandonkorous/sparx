@@ -1,6 +1,6 @@
 # Builder Tenant Components — user-authored components without a deploy
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-04
 
@@ -199,18 +199,35 @@ the API rejects any mutation of a system type defensively (never trust client pr
 
 ## 10. Phasing (each slice independently deployable)
 
-- **P-A — Foundation:** the two tables + RLS migration; `@sparx/builder-schemas` component /
+**P-A → P-E all built 2026-06-04** (gate-green: typecheck + lint + format across
+`@sparx/builder-schemas`, `@sparx/builder`, `@sparx/api-rest`, `@sparx/dashboard`; UNPUSHED;
+migration-free after P-A).
+
+- **P-A — Foundation ✅:** the two tables + RLS migration; `@sparx/builder-schemas` component /
   version / propSpec / instance-ref schemas + validators; `component-service` CRUD + version
   bump; `/v1/builder/components` routes; catalog union (System + Custom badges); the
-  `/builder/components` list + detail; **Copy** (system → tenant). _No insertion/render yet._
-- **P-B — Use on pages (core loop):** custom components in the Add palette; insertion adds a
-  pinned reference node; canvas expansion (preview); publish expansion (→ concrete nodes);
-  delete impact analysis. _Fixed trees, no per-instance props._
-- **P-C — Author from canvas:** “Save selection as component”; component **tree editor**
-  (reuse the builder canvas).
-- **P-D — Parameterization:** propSpec editor; `{ $prop }` slots; per-instance config form in
-  the inspector; merge at expand; `propSpec → zod`.
-- **P-E — Versioning UI:** per-placement pin + “Upgrade to vN”; bulk update; version history.
+  `/builder/components` list + detail; **Copy** (system → tenant).
+- **P-B — Use on pages (core loop) ✅:** custom components in the Add palette ("Your
+  components"); insertion adds a pinned `custom:<key>` reference (`makeCustomNode`); the canvas
+  expands the latest version for a live, selectable-as-one-unit preview (`expandComponentTree`);
+  **publish expansion** (`expandTreeForPublish` in page + layout `publish` → concrete nodes via
+  the pinned version) so the storefront renderer never sees a `custom:*` type; **delete-impact**
+  (`usages` where-used scan blocks delete + the detail "Used on" panel). Layers/inspector label
+  - handle custom nodes.
+- **P-C — Author from canvas ✅:** "Save as component" (inspector → `copyComponent` + replace
+  selection with a placement, `editor.replaceNode`); the component **tree editor** at
+  `/builder/components/[key]/edit` (`ComponentBuilderApp`, 4th Builder surface) reuses
+  `useBuilderEditor` + `BuilderWorkspace` with `autosave:false` — **Save version** commits a new
+  immutable version (no version-per-keystroke).
+- **P-D — Parameterization ✅:** the propSpec editor ("Fields" rail tab = `PropSpecPanel`);
+  `{ $prop }` slots created from a node's text prop via the inspector's **Make a field**
+  (`slotEditor`); per-instance config form in the custom-node inspector; merge at expand
+  (`expandComponentTree` fills slots from instance props, default fallback). _`propSpec → zod`
+  deferred (slots are plain strings/numbers/bools today)._
+- **P-E — Versioning UI ✅:** per-placement pin shown + **Update to vN** (re-pins `props.$ref`)
+  when latest > pinned; version history table on the detail page. _Bulk update deferred. Editor
+  preview shows the LATEST version even for an older-pinned placement (publish is always faithful
+  to the pin); exact-pinned-version preview deferred — needs per-(key,version) fetch._
 
 The data model (version table + `prop_spec` column) is built in **P-A** so later phases add
 **no migrations**.

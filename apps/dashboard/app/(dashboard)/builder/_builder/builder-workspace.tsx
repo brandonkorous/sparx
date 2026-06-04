@@ -13,13 +13,13 @@
 import * as React from 'react';
 import { Layers, Plus, Table2 } from 'lucide-react';
 import { ScrollArea, cn } from '@sparx/ui';
-import type { BindingCatalog, BuilderNode } from '@sparx/builder-schemas';
+import type { BindingCatalog, BuilderNode, ComponentDto } from '@sparx/builder-schemas';
 
 import type { BuilderEditor } from './use-builder-editor';
 import type { EditorSurface } from './registry';
 import type { CreatableType } from './field-kinds';
 import { Canvas } from './canvas';
-import { Inspector } from './inspector';
+import { Inspector, type SlotEditor } from './inspector';
 import { LayersPanel } from './layers-panel';
 import { AddPalette } from './add-palette';
 
@@ -34,6 +34,10 @@ export interface BuilderWorkspaceProps {
    *  locked backdrop with the page dropped at its Outlet. Omitted on the site
    *  editor (it IS the layout). */
   chrome?: BuilderNode | null;
+  /** The tenant's custom components keyed by key (docs/53 P-B) — the Add palette
+   *  lists them, and the canvas/layers/inspector expand + label `custom:*` nodes.
+   *  Omitted ⇒ no custom components on this surface. */
+  components?: ReadonlyMap<string, ComponentDto>;
   /** The "Fields" rail-tab panel (docs/51 keystone) — present only when the
    *  active page is a collection template targeting a content type. Absent ⇒ the
    *  tab is hidden and `fields` falls back to Layers. */
@@ -44,6 +48,12 @@ export interface BuilderWorkspaceProps {
   /** Add a field to `contentTypeKey` and resolve its key (or null on failure) —
    *  the inspector binds the node to the new field. Omit when not authoring CMS. */
   onAddField?: (label: string, kind: CreatableType) => Promise<string | null>;
+  /** "Save as component" (docs/53 P-C) — turn the selected subtree into a tenant
+   *  component. Omitted on the component editor (no nesting). */
+  onSaveAsComponent?: (node: BuilderNode) => void;
+  /** Slot authoring (docs/53 P-D) — present only in the component editor: a node's
+   *  text prop can be turned into a configurable field. */
+  slotEditor?: SlotEditor;
 }
 
 export function BuilderWorkspace({
@@ -53,9 +63,12 @@ export function BuilderWorkspace({
   surface,
   settings,
   chrome,
+  components,
   fields,
   contentTypeKey,
   onAddField,
+  onSaveAsComponent,
+  slotEditor,
 }: BuilderWorkspaceProps) {
   // The Fields tab only exists when this surface supplies a panel. If the rail is
   // parked on 'fields' and the panel goes away (e.g. you switch to a singleton
@@ -119,6 +132,7 @@ export function BuilderWorkspace({
               <LayersPanel
                 tree={tree}
                 catalog={catalog}
+                components={components}
                 selectedId={editor.selectedId}
                 homeLabel={surface === 'site' ? 'Site' : 'Page'}
                 onSelect={editor.setSelectedId}
@@ -128,7 +142,12 @@ export function BuilderWorkspace({
             ) : railTab === 'fields' ? (
               fields
             ) : (
-              <AddPalette targetName={editor.targetName} onAdd={editor.onAdd} surface={surface} />
+              <AddPalette
+                targetName={editor.targetName}
+                onAdd={editor.onAdd}
+                surface={surface}
+                customComponents={components ? [...components.values()] : undefined}
+              />
             )}
           </ScrollArea>
         </aside>
@@ -151,6 +170,7 @@ export function BuilderWorkspace({
             tree={tree}
             data={editor.previewData}
             catalog={catalog}
+            components={components}
             device={editor.device}
             selectedId={editor.selectedId}
             onSelect={editor.setSelectedId}
@@ -172,8 +192,11 @@ export function BuilderWorkspace({
               scope={editor.scope}
               surface={surface}
               settings={settings}
+              components={components}
               contentTypeKey={contentTypeKey}
               onAddField={onAddField}
+              onSaveAsComponent={onSaveAsComponent}
+              slotEditor={slotEditor}
               onBack={() => editor.setSelectedId(null)}
               onName={editor.onName}
               onClass={editor.onClass}

@@ -12,7 +12,14 @@
 
 import * as React from 'react';
 import { cn } from '@sparx/ui';
-import type { BindingCatalog } from '@sparx/builder-schemas';
+import {
+  REF_KEY,
+  customKeyOf,
+  expandComponentTree,
+  isCustomType,
+  type BindingCatalog,
+  type ComponentDto,
+} from '@sparx/builder-schemas';
 
 import {
   cardinalityOf,
@@ -236,6 +243,9 @@ interface NodeProps {
   node: BuilderNode;
   scope: Scope;
   catalog: BindingCatalog;
+  /** Tenant components keyed by key (docs/53 P-B) — expands `custom:*` placements
+   *  for a live preview. */
+  components?: ReadonlyMap<string, ComponentDto>;
   device: Device;
   selectedId: string | null;
   onSelect: (id: string) => void;
@@ -311,16 +321,144 @@ function CanvasCarousel({ slides }: { slides: React.ReactNode[] }) {
   );
 }
 
-function CanvasNode({
+// A `custom:<key>` placement (docs/53 P-B): resolve the tenant component, expand
+// its latest version (instance slots filled), and render the result LOCKED inside
+// a selectable wrapper — so the whole component reads as one unit (you select /
+// delete it as a block; you edit its internals in the component editor). A
+// reference that no longer resolves shows a small removable marker.
+function CustomCanvasNode({
   node,
   scope,
   catalog,
+  components,
   device,
   selectedId,
   onSelect,
   locked,
   outletSlot,
 }: NodeProps) {
+  const key = customKeyOf(node.type) ?? '';
+  const comp = components?.get(key);
+  const hidden = node.box.hiddenOn.includes(device);
+  const selected = node.id === selectedId;
+
+  if (!comp) {
+    if (locked) return null;
+    return (
+      <div
+        className={cn(
+          'bx-node',
+          'bx-node--custom',
+          'bx-node--missing',
+          selected && 'bx-node--selected',
+          hidden && 'bx-node--hidden'
+        )}
+        style={{ position: 'relative' }}
+        data-node-id={node.id}
+        role="button"
+        tabIndex={-1}
+        aria-label="Missing component"
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect(node.id);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.stopPropagation();
+            onSelect(node.id);
+          }
+        }}
+      >
+        <span className="bx-tag">
+          <span className="bx-tag__name">Missing component</span>
+        </span>
+        <div className="bx-custom-missing">This component is no longer available — remove it.</div>
+      </div>
+    );
+  }
+
+  const instanceProps = { ...node.props };
+  delete instanceProps[REF_KEY];
+  const expanded = expandComponentTree(comp.tree, instanceProps, comp.propSpec, node.id);
+  const body = (
+    <CanvasNode
+      node={expanded}
+      scope={scope}
+      catalog={catalog}
+      components={components}
+      device={device}
+      selectedId={selectedId}
+      onSelect={onSelect}
+      locked
+      outletSlot={outletSlot}
+    />
+  );
+
+  // Already inside locked chrome (the page framed in its layout): just the body.
+  if (locked) return body;
+
+  return (
+    <div
+      className={cn(
+        'bx-node',
+        'bx-node--custom',
+        selected && 'bx-node--selected',
+        hidden && 'bx-node--hidden'
+      )}
+      style={{ position: 'relative' }}
+      data-node-id={node.id}
+      role="button"
+      tabIndex={-1}
+      aria-label={node.box.name ?? comp.name}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect(node.id);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.stopPropagation();
+          onSelect(node.id);
+        }
+      }}
+    >
+      <span className="bx-tag">
+        <span className="bx-tag__name">{node.box.name ?? comp.name}</span>
+        <span className="bx-tag__component">component</span>
+        {hidden ? <span className="bx-tag__hidden">hidden · {device}</span> : null}
+      </span>
+      {body}
+    </div>
+  );
+}
+
+function CanvasNode({
+  node,
+  scope,
+  catalog,
+  components,
+  device,
+  selectedId,
+  onSelect,
+  locked,
+  outletSlot,
+}: NodeProps) {
+  // A tenant-component placement expands to a live preview (docs/53 P-B) — handled
+  // before the registry lookup, which has no entry for `custom:*` types.
+  if (isCustomType(node.type)) {
+    return (
+      <CustomCanvasNode
+        node={node}
+        scope={scope}
+        catalog={catalog}
+        components={components}
+        device={device}
+        selectedId={selectedId}
+        onSelect={onSelect}
+        locked={locked}
+        outletSlot={outletSlot}
+      />
+    );
+  }
   const def = getDef(node.type);
   if (!def) return null;
 
@@ -363,6 +501,7 @@ function CanvasNode({
             node={slideOf(child)}
             scope={{ ...scope, item, index: i }}
             catalog={catalog}
+            components={components}
             device={device}
             selectedId={selectedId}
             onSelect={onSelect}
@@ -379,6 +518,7 @@ function CanvasNode({
           node={slideOf(child)}
           scope={s}
           catalog={catalog}
+          components={components}
           device={device}
           selectedId={selectedId}
           onSelect={onSelect}
@@ -419,6 +559,7 @@ function CanvasNode({
             node={cellOf(child)}
             scope={s}
             catalog={catalog}
+            components={components}
             device={device}
             selectedId={selectedId}
             onSelect={onSelect}
@@ -438,6 +579,7 @@ function CanvasNode({
         node={child}
         scope={scope}
         catalog={catalog}
+        components={components}
         device={device}
         selectedId={selectedId}
         onSelect={onSelect}
@@ -536,6 +678,9 @@ export interface CanvasProps {
   tree: BuilderNode;
   data: Scope['root'];
   catalog: BindingCatalog;
+  /** Tenant components keyed by key (docs/53 P-B) — expands `custom:*` placements
+   *  for a live preview. */
+  components?: ReadonlyMap<string, ComponentDto>;
   device: Device;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
@@ -548,7 +693,16 @@ export interface CanvasProps {
 
 const DEVICE_WIDTH: Record<Device, number | null> = { desktop: null, tablet: 834, mobile: 390 };
 
-export function Canvas({ tree, data, catalog, device, selectedId, onSelect, chrome }: CanvasProps) {
+export function Canvas({
+  tree,
+  data,
+  catalog,
+  components,
+  device,
+  selectedId,
+  onSelect,
+  chrome,
+}: CanvasProps) {
   const width = DEVICE_WIDTH[device];
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
@@ -567,6 +721,7 @@ export function Canvas({ tree, data, catalog, device, selectedId, onSelect, chro
       node={tree}
       scope={{ root: data }}
       catalog={catalog}
+      components={components}
       device={device}
       selectedId={selectedId}
       onSelect={onSelect}
@@ -596,6 +751,7 @@ export function Canvas({ tree, data, catalog, device, selectedId, onSelect, chro
             node={chrome}
             scope={{ root: data }}
             catalog={catalog}
+            components={components}
             device={device}
             selectedId={selectedId}
             onSelect={onSelect}

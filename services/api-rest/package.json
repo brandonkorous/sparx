@@ -37,7 +37,6 @@
     "@sparx/db": "workspace:*",
     "@sparx/email": "workspace:*",
     "@sparx/email-platform": "workspace:*",
-    "@sparx/email-sections": "workspace:*",
     "@sparx/events": "workspace:*",
     "@sparx/integration-framework": "workspace:*",
     "@sparx/legal": "workspace:*",

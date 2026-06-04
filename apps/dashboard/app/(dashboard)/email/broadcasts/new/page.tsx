@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, Container, PageHeader, Stack 
 
 import { api } from '@/lib/api-rest-client';
 import { BroadcastComposer, type BuilderEmailOption } from '../_components/broadcast-composer';
-import type { SegmentOption, TemplateListResponse } from '../../_lib/types';
+import type { SegmentOption } from '../../_lib/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,9 +15,8 @@ interface BuilderEmailListItem {
 }
 
 export default async function NewBroadcastPage() {
-  const [segments, templateList, builderEmails] = await Promise.all([
+  const [segments, builderEmails] = await Promise.all([
     api.get<SegmentOption[]>('/v1/crm/segments').catch(() => [] as SegmentOption[]),
-    api.get<TemplateListResponse>('/v1/email/templates'),
     api
       .get<{ emails: BuilderEmailListItem[] }>('/v1/builder/emails')
       .then((r) => r.emails)
@@ -40,7 +39,6 @@ export default async function NewBroadcastPage() {
           <CardContent>
             <BroadcastComposer
               segments={segments.map((s) => ({ id: s.id, name: s.name }))}
-              templates={templateList.authored}
               designedEmails={designedEmails}
             />
           </CardContent>

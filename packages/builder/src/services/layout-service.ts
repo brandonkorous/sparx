@@ -24,6 +24,7 @@ import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { BuilderConflictError, BuilderNotFoundError, BuilderValidationError } from '../errors';
+import { expandTreeForPublish } from './component-service';
 
 function toDto(row: BuilderLayout): BuilderLayoutDto {
   return {
@@ -174,10 +175,13 @@ export async function publish(ctx: ServiceContext, id: string): Promise<BuilderL
   const dto = await withTenant(ctx, async (tx) => {
     const existing = await tx.builderLayout.findUnique({ where: { id } });
     if (!existing) throw new BuilderNotFoundError('BuilderLayout', id);
+    // Expand tenant components into concrete primitives (docs/53 §3) so the
+    // storefront chrome renderer never sees a `custom:*` type.
+    const published = await expandTreeForPublish(tx, existing.draftTree as unknown as BuilderNode);
     const updated = await tx.builderLayout.update({
       where: { id },
       data: {
-        publishedTree: existing.draftTree as Prisma.InputJsonValue,
+        publishedTree: asJson(published),
         publishedAt: new Date(),
       },
     });

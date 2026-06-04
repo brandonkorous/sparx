@@ -13,11 +13,9 @@
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
-import { renderEmailTree, renderSections } from '@sparx/email';
+import { renderEmailTree } from '@sparx/email';
 import { emailService } from '@sparx/builder';
 import { brandService } from '@sparx/email-platform';
-import { normalizeBody, type EmailSectionInstance } from '@sparx/email-sections';
-import { resolveBody } from './email-sections.js';
 import { resolveEmailData } from './email-data.js';
 
 const EMAIL_DISPATCH_LOCK_KEY = 4242_4244;
@@ -34,12 +32,11 @@ interface SendPayload {
   template?: string;
   props?: Record<string, unknown>;
   automationKey?: string | null;
-  /** Pre-rendered broadcast/authored body — delivered as-is by the worker. */
+  /** Pre-rendered broadcast body — delivered as-is by the worker. */
   raw?: { subject: string; html: string; text: string; templateId?: string };
-  /** Per-recipient deferred render: resolve the body for THIS recipient + render
-   *  here, at dispatch. A section template (docs/31 §7) by `templateId`, or a
-   *  Builder email tree (docs/52 §6) by `builderEmailId` — exactly one is set. */
-  defer?: { templateId?: string; builderEmailId?: string; subject: string; preheader?: string };
+  /** Per-recipient deferred render (docs/52 §6): reload the published Builder
+   *  email tree by `builderEmailId`, resolve THIS recipient's data, render here. */
+  defer?: { builderEmailId: string; subject: string; preheader?: string };
   /** Extra Mailgun user variables (broadcast_id, automation_key, campaign). */
   variables?: Record<string, string>;
 }
@@ -88,17 +85,6 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             });
             return null;
           }
-          // For a deferred SECTION render, load the template's section list inside
-          // the claim tx (RLS-scoped); rendering happens after the claim. A deferred
-          // BUILDER-email render loads its published tree after the claim (its own
-          // RLS-scoped read), so nothing to pre-load here.
-          let deferSections: EmailSectionInstance[] | null = null;
-          if (payload.defer?.templateId) {
-            const tmpl = await tx.emailTemplate.findUnique({
-              where: { id: payload.defer.templateId },
-            });
-            deferSections = normalizeBody(tmpl?.body ?? null).sections;
-          }
           const settings = await tx.emailSettings.findUnique({
             where: { tenantId: row.tenant_id },
           });
@@ -110,7 +96,6 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             to: send.recipient,
             customerId: send.customerId,
             payload,
-            deferSections,
             from: buildFrom(settings?.fromName ?? null, settings?.fromAddress ?? null),
             replyTo: settings?.replyTo ?? undefined,
           };
@@ -118,7 +103,7 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
 
         if (!dispatch) continue;
 
-        const { payload, to, from, replyTo, customerId, deferSections } = dispatch;
+        const { payload, to, from, replyTo, customerId } = dispatch;
         const common = {
           to,
           from,
@@ -161,33 +146,8 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             text: rendered.text,
             ...common,
           };
-        } else if (payload.defer && deferSections) {
-          // Resolve this recipient's section data + render, here at dispatch.
-          const tenantCtx = { tenantId: row.tenant_id };
-          const sectionData = await resolveBody(tenantCtx, deferSections, {
-            email: to,
-            customerId: customerId ?? undefined,
-          });
-          const brand = (await brandService.resolveEmailBrand(tenantCtx)) ?? undefined;
-          const rendered = await renderSections(
-            {
-              sections: deferSections,
-              subject: payload.defer.subject,
-              preheader: payload.defer.preheader,
-              to,
-              data: sectionData,
-            },
-            { brand }
-          );
-          data = {
-            kind: 'raw',
-            subject: rendered.subject,
-            html: rendered.html,
-            text: rendered.text,
-            ...common,
-          };
         } else if (payload.raw) {
-          // Pre-rendered (broadcast / authored) → delivered as-is.
+          // Pre-rendered (broadcast) → delivered as-is.
           data = {
             kind: 'raw',
             subject: payload.raw.subject,

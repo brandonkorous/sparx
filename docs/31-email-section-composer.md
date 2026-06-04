@@ -1,8 +1,15 @@
 # Email Section Composer
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-04
+
+> **RETIRED (2026-06-04).** The section model described here is superseded by the
+> **Email Builder** node-tree model ([docs/52](52-email-builder.md)). `@sparx/email-sections`,
+> `@sparx/email`'s `sections/*` (`renderSections`), and the authored-template path
+> were deleted in docs/52 Phase 5 (§8). Marketing emails are authored in
+> `/builder/email`; built-in transactional templates are unchanged. This doc is
+> kept for historical context — do not build against the section model.
 
 ---
 

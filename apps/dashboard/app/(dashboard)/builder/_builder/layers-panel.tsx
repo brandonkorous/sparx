@@ -14,6 +14,7 @@
 
 import * as React from 'react';
 import {
+  Boxes,
   ChevronDown,
   ChevronRight,
   ChevronsDownUp,
@@ -37,7 +38,12 @@ import {
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { cn } from '@sparx/ui';
-import type { BindingCatalog } from '@sparx/builder-schemas';
+import {
+  customKeyOf,
+  isCustomType,
+  type BindingCatalog,
+  type ComponentDto,
+} from '@sparx/builder-schemas';
 
 import { type BuilderNode } from './model';
 import { NO_SCOPE, cardinalityForPath, moduleColor, moduleForPath } from './binding-catalog';
@@ -98,6 +104,7 @@ function bindMeta(
 function Row({
   flat,
   catalog,
+  components,
   selectedId,
   collapsed,
   draggable,
@@ -108,6 +115,7 @@ function Row({
 }: {
   flat: FlatNode;
   catalog: BindingCatalog;
+  components?: ReadonlyMap<string, ComponentDto>;
   selectedId: string | null;
   collapsed: boolean;
   /** Root is shown but never dragged. */
@@ -121,11 +129,18 @@ function Row({
 }) {
   const { node } = flat;
   const def = getDef(node.type);
+  const custom = isCustomType(node.type);
   const sortable = useSortable({ id: node.id, disabled: !draggable });
-  if (!def) return null;
-  const Icon = def.icon;
-  const bind = bindMeta(node, catalog);
-  const hasCaret = draggable && acceptsChildren(node.type) && (node.children?.length ?? 0) > 0;
+  if (!def && !custom) return null;
+  // A `custom:*` placement (docs/53 P-B) has no registry def — label it from the
+  // resolved component (or its key) and use a generic component glyph.
+  const customComp = custom ? components?.get(customKeyOf(node.type) ?? '') : undefined;
+  const Icon = def?.icon ?? Boxes;
+  const label =
+    node.box.name ?? def?.label ?? customComp?.name ?? customKeyOf(node.type) ?? node.type;
+  const bind = def ? bindMeta(node, catalog) : null;
+  const hasCaret =
+    draggable && !!def && acceptsChildren(node.type) && (node.children?.length ?? 0) > 0;
 
   const style: React.CSSProperties = {
     paddingLeft: 8 + dragDepth * INDENT,
@@ -182,7 +197,8 @@ function Row({
         </span>
       ) : null}
       <Icon className="bx-layer__icon" aria-hidden />
-      <span className="bx-layer__name">{node.box.name ?? def.label}</span>
+      <span className="bx-layer__name">{label}</span>
+      {custom ? <span className="bx-layer__component">component</span> : null}
       {bind ? (
         <span className="bx-layer__chip" style={{ color: bind.color }}>
           <span className="bx-layer__dot" style={{ background: bind.color }} />
@@ -211,6 +227,7 @@ function Row({
 export function LayersPanel({
   tree,
   catalog,
+  components,
   selectedId,
   homeLabel,
   onSelect,
@@ -219,6 +236,8 @@ export function LayersPanel({
 }: {
   tree: BuilderNode;
   catalog: BindingCatalog;
+  /** Tenant components keyed by key (docs/53 P-B) — labels `custom:*` rows. */
+  components?: ReadonlyMap<string, ComponentDto>;
   selectedId: string | null;
   /** Label for the settings-home row pinned atop the tree ("Page" / "Site").
    *  Selecting it clears the selection → the inspector shows that surface's
@@ -391,6 +410,7 @@ export function LayersPanel({
                 key={f.node.id}
                 flat={f}
                 catalog={catalog}
+                components={components}
                 selectedId={selectedId}
                 collapsed={collapsed.has(f.node.id)}
                 draggable={!isRoot}

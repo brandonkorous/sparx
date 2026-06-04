@@ -15,29 +15,10 @@ export interface BuiltinTemplateView {
   customized: boolean;
 }
 
-export interface AuthoredTemplateView {
-  source: 'authored';
-  id: string;
-  name: string;
-  kind: string;
-  subject: string;
-  preheader: string | null;
-  status: string;
-  updatedAt: string;
-}
-
+// Marketing emails are authored in the Email Builder (docs/52, /builder/email);
+// this surface owns built-in transactional templates only (docs/52 §8).
 export interface TemplateListResponse {
   builtins: BuiltinTemplateView[];
-  authored: AuthoredTemplateView[];
-}
-
-export interface AuthoredTemplateDetail {
-  id: string;
-  name: string;
-  subject: string | null;
-  preheader: string | null;
-  body: unknown; // TipTap CmsDoc
-  status: string;
 }
 
 export interface RenderedPreview {

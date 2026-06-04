@@ -14,11 +14,17 @@
 
 import * as React from 'react';
 import { useConfirm } from '@sparx/ui';
-import type { BindingCatalog } from '@sparx/builder-schemas';
+import {
+  customKeyOf,
+  makeCustomNode,
+  type BindingCatalog,
+  type ComponentDto,
+} from '@sparx/builder-schemas';
 
 import {
   appendChild,
   findNode,
+  makeId,
   moveNode,
   removeNode,
   updateNode,
@@ -57,6 +63,14 @@ export interface UseBuilderEditorArgs {
   tree: BuilderNode | null;
   /** What this surface can bind to (the page catalog, or SITE_CATALOG). */
   catalog: BindingCatalog;
+  /** The tenant's custom components, keyed by component key (docs/53 P-B) — used
+   *  to pin the right version when a `custom:*` placement is added. Omitted ⇒ no
+   *  custom components available on this surface. */
+  components?: ReadonlyMap<string, ComponentDto>;
+  /** Debounced autosave on every edit (default true). The component editor sets
+   *  this false: editing a component COMMITS a new version (docs/53), so it saves
+   *  explicitly, not per-keystroke. Mutations still flow through `onTreeChange`. */
+  autosave?: boolean;
   /** Persist a changed tree. Debounced for edits, immediate on flush. ok=true. */
   save: (tree: BuilderNode) => Promise<boolean>;
   /** Apply a new tree to the owner's state (synchronous / optimistic). */
@@ -93,6 +107,9 @@ export interface BuilderEditor {
   onClass: (value: string) => void;
   onBind: (path: string | null) => void;
   onAdd: (type: string) => void;
+  /** Replace the node `id` with `next` (same position), selecting it. Used by
+   *  "Save as component" to swap a subtree for a `custom:*` placement. */
+  replaceNode: (id: string, next: BuilderNode) => void;
   onRemove: (id: string) => void;
   /** Re-parent / reorder from the Layers tree: move `dragId` to be child `index`
    *  of `parentId`. A no-op for an illegal move (see model.moveNode). */
@@ -105,6 +122,8 @@ export interface BuilderEditor {
 export function useBuilderEditor({
   tree,
   catalog,
+  components,
+  autosave = true,
   save,
   onTreeChange,
 }: UseBuilderEditorArgs): BuilderEditor {
@@ -181,9 +200,9 @@ export function useBuilderEditor({
       if (!tree) return;
       const next = fn(tree);
       onTreeChange(next);
-      scheduleSave(next);
+      if (autosave) scheduleSave(next);
     },
-    [tree, onTreeChange, scheduleSave]
+    [tree, onTreeChange, scheduleSave, autosave]
   );
 
   const mutateSelected = React.useCallback(
@@ -215,12 +234,31 @@ export function useBuilderEditor({
       return { ...n, binding: { path } };
     });
 
+  // Add a node inside the current target. A `custom:<key>` type drops a tenant
+  // component placement pinned to its latest version (docs/53 P-B); everything
+  // else builds a fresh system node from the registry. An unknown custom key
+  // (component vanished mid-session) is a no-op rather than a crash.
   const onAdd = (type: string) => {
     if (!target) return;
-    const child = makeNode(type);
+    const key = customKeyOf(type);
+    let child: BuilderNode;
+    if (key) {
+      const comp = components?.get(key);
+      if (!comp) return;
+      child = makeCustomNode(key, comp.latestVersion, makeId('custom'));
+    } else {
+      child = makeNode(type);
+    }
     updateTree((t) => appendChild(t, target.id, child));
     setSelectedId(child.id);
     setRailTab('layers');
+  };
+
+  // Swap the node `id` for `next` (same position) — "Save as component" replaces a
+  // subtree with its `custom:*` placement. Selects the new node.
+  const replaceNode = (id: string, next: BuilderNode) => {
+    updateTree((t) => updateNode(t, id, () => next));
+    setSelectedId(next.id);
   };
 
   // Deleting a node removes its WHOLE subtree, so confirm first — and say how
@@ -230,7 +268,12 @@ export function useBuilderEditor({
     if (!tree) return;
     const node = findNode(tree, id);
     if (!node) return;
-    const label = node.box.name ?? getDef(node.type)?.label ?? node.type;
+    const ckey = customKeyOf(node.type);
+    const label =
+      node.box.name ??
+      getDef(node.type)?.label ??
+      (ckey ? components?.get(ckey)?.name : undefined) ??
+      node.type;
     const nested = countDescendants(node);
     void (async () => {
       const ok = await confirm({
@@ -304,6 +347,7 @@ export function useBuilderEditor({
     onClass,
     onBind,
     onAdd,
+    replaceNode,
     onRemove,
     onMove,
     onRetype,

@@ -28,18 +28,16 @@ function buildFrom(fromName: string | null, fromAddress: string | null): string 
 
 /** Resolve a Builder email tree's bound DataSources (docs/52 §7). Injected by the
  *  caller (api-rest's emailDataResolver, which has @sparx/commerce) so this package
- *  stays commerce-free — the same pattern as ResolveSectionData. `recipient` is
- *  absent for the render-once path (preview / non-personalized broadcast), where
- *  per-recipient sources resolve empty. Defined here (the render module) and reused
- *  by broadcast-service. */
+ *  stays commerce-free. `recipient` is absent for the render-once path (preview /
+ *  non-personalized broadcast), where per-recipient sources resolve empty. Defined
+ *  here (the render module) and reused by broadcast-service. */
 export type ResolveEmailData = (
   tree: BuilderNode,
   recipient?: { email: string; customerId?: string | null }
 ) => Promise<DataSources>;
 
 // No-resolver default: static data only (bound nodes fall back to their props /
-// render empty). Used by callers without commerce wiring (e.g. the MCP tool),
-// mirroring makeStaticResolver for sections.
+// render empty). Used by callers without commerce wiring (e.g. the MCP tool).
 export const noEmailDataResolver: ResolveEmailData = () => Promise.resolve({});
 
 /** A Builder email reduced to what the render needs — the published or draft body
