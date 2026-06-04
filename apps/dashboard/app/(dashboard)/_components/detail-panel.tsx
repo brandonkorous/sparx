@@ -123,9 +123,9 @@ function DetailHeader({ target }: { target: DetailTarget }) {
   const found = findEntityType(target.typeId);
   if (!found) return null;
   const { manifest } = found;
-  // Null when the route needs more than (type, id) to address — e.g. a
-  // content-entry, whose full editor lives at /cms/types/<typeKey>/<id>. The
-  // detail body renders its own "Open full editor" link in that case.
+  // Null only when the token genuinely can't address a full page. content-entry
+  // encodes <typeKey>:<id> so this resolves to /cms/types/<typeKey>/<id> like
+  // any other entity — the maximize button shows for it too.
   const fullPageHref = fullPageHrefFor(target.typeId, target.entityId);
 
   function close() {

@@ -296,7 +296,7 @@ export default async function DashboardHome() {
               description="When you have things to do, they'll show up here."
               action={
                 <Button variant="outline" size="sm" asChild>
-                  <Link href="/cms/pages">Set up your first page</Link>
+                  <Link href="/cms/content">Create your first content</Link>
                 </Button>
               }
             />

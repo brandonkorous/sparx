@@ -1,7 +1,5 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { Badge, Button, Heading, Stack, Text } from '@sparx/ui';
-import { ExternalLink } from 'lucide-react';
+import { Badge, Heading, Stack, Text } from '@sparx/ui';
 import type { FieldDef } from '@sparx/cms-schemas';
 import { cmsContentTypeTargetId } from '@sparx/sitebuilder-schemas';
 
@@ -19,10 +17,10 @@ import { LayoutAssignmentSection } from '../../../../sitebuilder/_components/lay
 //   - the dashboard shell's `@detail` slot (drawer / modal)
 //
 // Chrome-free, exactly like cms/[id]/_content.tsx — the route page adds the
-// width-constrained Container; the drawer/modal mounts it as-is. Because the
-// detail token (`content-entry:<id>`) can't carry the type key, the drawer's
-// "maximize to full page" affordance is suppressed (see fullPageHrefFor); we
-// render our own "Open full editor" link here instead, which knows the key.
+// width-constrained Container; the drawer/modal mounts it as-is. The detail
+// token encodes `content-entry:<typeKey>:<id>` so the drawer chrome's standard
+// "maximize to full page" button can rebuild /cms/types/<typeKey>/<id> (see
+// fullPageHrefFor) — no bespoke in-body link, same as every other entity.
 
 export const dynamic = 'force-dynamic';
 
@@ -48,19 +46,17 @@ interface ApiEntry {
 
 interface ContentEntryDetailContentProps {
   id: string;
-  /** The drawer/modal renders the "Open full editor" link; the full route
-   *  passes false (it would link to itself). */
-  showOpenInFull?: boolean;
 }
 
-export async function ContentEntryDetailContent({
-  id,
-  showOpenInFull = true,
-}: ContentEntryDetailContentProps) {
+export async function ContentEntryDetailContent({ id }: ContentEntryDetailContentProps) {
+  // The drawer token encodes `<typeKey>:<id>`; the full route passes a bare id.
+  // Entry ids are UUIDs (no colons), so the segment after the last colon is the
+  // id regardless of which caller invoked us.
+  const entryId = id.includes(':') ? id.slice(id.lastIndexOf(':') + 1) : id;
   const [entryResult, tenant] = await Promise.all([
     (async () => {
       try {
-        return await api.getWithEtag<ApiEntry>(`/v1/content/entries/${id}`);
+        return await api.getWithEtag<ApiEntry>(`/v1/content/entries/${entryId}`);
       } catch (err) {
         const e = err as ApiRestError;
         if (e?.status === 404) notFound();
@@ -103,14 +99,6 @@ export async function ContentEntryDetailContent({
           <Text size="sm" variant="muted">
             <code>/{entry.slug}</code>
           </Text>
-        )}
-        {showOpenInFull && (
-          <Button variant="link" size="sm" asChild className="w-fit px-0">
-            <Link href={`/cms/types/${type.key}/${id}`}>
-              Open full editor
-              <ExternalLink className="ml-1 h-3.5 w-3.5" />
-            </Link>
-          </Button>
         )}
       </Stack>
 

@@ -140,7 +140,7 @@ export function PageCreateForm({ surface }: PageCreateFormProps) {
               </Button>
             ) : (
               <Button type="button" variant="ghost" asChild>
-                <Link href="/cms/pages">Cancel</Link>
+                <Link href="/cms/content">Cancel</Link>
               </Button>
             )}
             <Button type="submit" color="module" disabled={pending} loading={pending}>

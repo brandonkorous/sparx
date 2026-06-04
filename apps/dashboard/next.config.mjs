@@ -20,6 +20,12 @@ const config = {
   typedRoutes: true,
   output: 'standalone',
   outputFileTracingRoot: join(__dirname, '../../'),
+  async redirects() {
+    return [
+      // /cms/pages was the single-type list; it's now the unified content list.
+      { source: '/cms/pages', destination: '/cms/content', permanent: true },
+    ];
+  },
 };
 
 export default config;

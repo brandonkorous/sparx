@@ -42,22 +42,33 @@ const SAMPLE_SCHEMA = JSON.stringify(
   2
 );
 
-interface ContentTypeCreateFormProps {
-  surface: 'page' | 'overlay';
-  initialSchema?: string;
+interface ContentTypeInitial {
+  key?: string;
+  name?: string;
+  pluralName?: string;
+  description?: string;
+  urlPattern?: string;
+  isSingleton?: boolean;
+  /** JSON string seeded into the schema textarea. */
+  schema?: string;
 }
 
-export function ContentTypeCreateForm({
-  surface,
-  initialSchema = SAMPLE_SCHEMA,
-}: ContentTypeCreateFormProps) {
+interface ContentTypeCreateFormProps {
+  surface: 'page' | 'overlay';
+  /** Prefill values — e.g. duplicating an existing type into a new custom one.
+   *  Identity fields are uncontrolled defaults (freely editable); schema and
+   *  singleton seed controlled state. */
+  initial?: ContentTypeInitial;
+}
+
+export function ContentTypeCreateForm({ surface, initial }: ContentTypeCreateFormProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-  const [schemaText, setSchemaText] = React.useState(initialSchema);
-  const [isSingleton, setIsSingleton] = React.useState(false);
+  const [schemaText, setSchemaText] = React.useState(initial?.schema ?? SAMPLE_SCHEMA);
+  const [isSingleton, setIsSingleton] = React.useState(initial?.isSingleton ?? false);
   const [validationHint, setValidationHint] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -145,7 +156,14 @@ export function ContentTypeCreateForm({
                     <Label htmlFor="key" required>
                       Key
                     </Label>
-                    <Input id="key" name="key" placeholder="case_study" required aria-required />
+                    <Input
+                      id="key"
+                      name="key"
+                      defaultValue={initial?.key ?? ''}
+                      placeholder="case_study"
+                      required
+                      aria-required
+                    />
                     <Text size="xs" variant="muted">
                       Immutable URL-safe identifier (lowercase, underscores).
                     </Text>
@@ -154,7 +172,14 @@ export function ContentTypeCreateForm({
                     <Label htmlFor="name" required>
                       Name
                     </Label>
-                    <Input id="name" name="name" placeholder="Case study" required aria-required />
+                    <Input
+                      id="name"
+                      name="name"
+                      defaultValue={initial?.name ?? ''}
+                      placeholder="Case study"
+                      required
+                      aria-required
+                    />
                   </Stack>
                   <Stack gap={1} className="flex-1">
                     <Label htmlFor="plural_name" required>
@@ -163,6 +188,7 @@ export function ContentTypeCreateForm({
                     <Input
                       id="plural_name"
                       name="plural_name"
+                      defaultValue={initial?.pluralName ?? ''}
                       placeholder="Case studies"
                       required
                       aria-required
@@ -174,6 +200,7 @@ export function ContentTypeCreateForm({
                   <Textarea
                     id="description"
                     name="description"
+                    defaultValue={initial?.description ?? ''}
                     rows={2}
                     placeholder="Optional short note shown in the dashboard listing."
                   />
@@ -181,7 +208,12 @@ export function ContentTypeCreateForm({
                 <Stack direction="row" gap={3}>
                   <Stack gap={1} className="flex-1">
                     <Label htmlFor="url_pattern">URL pattern (optional)</Label>
-                    <Input id="url_pattern" name="url_pattern" placeholder="/case-studies/{slug}" />
+                    <Input
+                      id="url_pattern"
+                      name="url_pattern"
+                      defaultValue={initial?.urlPattern ?? ''}
+                      placeholder="/case-studies/{slug}"
+                    />
                     <Text size="xs" variant="muted">
                       Leave blank for non-routable types (referenced from other entries).
                     </Text>

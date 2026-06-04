@@ -77,6 +77,7 @@ import builderRoutes from './routes/v1/builder/index.js';
 import commerceRoutes from './routes/v1/commerce/index.js';
 import tenantRoutes from './routes/v1/tenant.js';
 import brandRoutes from './routes/v1/brand.js';
+import propertiesRoutes from './routes/v1/properties.js';
 import legalRoutes from './routes/v1/legal.js';
 import meRoutes from './routes/v1/me.js';
 import userRoutes from './routes/v1/users.js';
@@ -518,6 +519,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(commerceRoutes);
   await app.register(tenantRoutes);
   await app.register(brandRoutes);
+  await app.register(propertiesRoutes);
   await app.register(legalRoutes);
   await app.register(meRoutes);
   await app.register(userRoutes);

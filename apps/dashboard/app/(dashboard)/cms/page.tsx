@@ -17,18 +17,14 @@ import {
 import { OverviewChartCard, SAMPLE_CMS_PUBLISHING_8W } from '../_components/overview-charts';
 
 // CMS overview — the module landing (docs/34 §4 Module Overview archetype).
-// Publishing snapshot + section cards; the Pages list lives one level deeper
-// at /cms/pages. Module gate runs in layout.tsx.
+// Publishing snapshot + section cards; the content list lives one level deeper
+// at /cms/content. Module gate runs in layout.tsx.
 
 export const dynamic = 'force-dynamic';
 
-// "Pages" leads; the rest of the surfaces come straight from the manifest so
-// the overview and the panel nav never drift.
-const PAGES_SECTION = { id: 'pages', label: 'Pages', href: '/cms/pages', icon: FileText };
-const MANAGE = [
-  PAGES_SECTION,
-  ...cmsManifest.sections.filter((s) => s.href !== cmsManifest.routePrefix && s.id !== 'pages'),
-];
+// Surfaces come straight from the manifest (Content leads) so the overview and
+// the panel nav never drift.
+const MANAGE = cmsManifest.sections.filter((s) => s.href !== cmsManifest.routePrefix);
 
 export default function CmsOverviewPage() {
   return (
@@ -38,7 +34,7 @@ export default function CmsOverviewPage() {
           className="mb-0"
           icon={<FileText className="h-5 w-5" />}
           title="CMS"
-          description="Pages, content types, media, and navigation for your storefront."
+          description="Content, content types, media, and navigation for your storefront."
           actions={
             <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
               <Link href="/cms/new">New page</Link>

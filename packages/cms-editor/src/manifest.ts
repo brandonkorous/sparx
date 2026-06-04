@@ -25,7 +25,7 @@ export const cmsManifest: ModuleManifest = {
   icon: FileText,
   routePrefix: '/cms',
   sections: [
-    { id: 'pages', label: 'Pages', icon: FileText, href: '/cms/pages' },
+    { id: 'content', label: 'Content', icon: FileText, href: '/cms/content' },
     { id: 'types', label: 'Content types', icon: Database, href: '/cms/types' },
     { id: 'navigation', label: 'Navigation', icon: Navigation, href: '/cms/navigation' },
     { id: 'media', label: 'Media', icon: ImageIcon, href: '/cms/media' },
@@ -52,11 +52,10 @@ export const cmsManifest: ModuleManifest = {
     // type's identity + schema editor (custom) / read-only schema (built-in).
     { id: 'content-type', label: 'Content type', routePrefix: '/cms/types', hasDetailView: true },
     // Content-type ENTRIES (a blog post, an FAQ item, …). One generic type for
-    // all of them: the token is `content-entry:<id>` (id only — UUIDs are
-    // unique), and the detail content resolves the type key from the fetched
-    // entry. The full-page href is `/cms/types/<typeKey>/<id>`, which can't be
-    // built from routePrefix + id alone, so the drawer's maximize button is
-    // suppressed (fullPageHrefFor → null) in favour of an in-body link.
+    // all of them: the token is `content-entry:<typeKey>:<id>` — the typeKey
+    // lets the chrome rebuild the full-page href `/cms/types/<typeKey>/<id>`
+    // (fullPageHrefFor), while the detail body re-derives the type from the
+    // fetched entry. routePrefix is unused for it (the href is built specially).
     { id: 'content-entry', label: 'Entry', routePrefix: '/cms/types', hasDetailView: true },
     { id: 'media', label: 'Media', routePrefix: '/cms/media', hasDetailView: true },
     { id: 'author', label: 'Author', routePrefix: '/cms/authors', hasDetailView: true },

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Copy } from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, Heading, Stack, Text } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
@@ -57,16 +57,24 @@ export async function ContentTypeDetailContent({ id }: { id: string }) {
             </Text>
           )}
         </Stack>
-        <div>
+        <Stack direction="row" align="center" gap={2} wrap>
           <Button
             asChild
             variant="outline"
             size="sm"
             rightIcon={<ArrowRight className="h-3.5 w-3.5" />}
           >
-            <Link href={`/cms/types/${type.key}`}>View {type.plural_name.toLowerCase()}</Link>
+            <Link href={`/cms/content?type=${type.key}`}>
+              View {type.plural_name.toLowerCase()}
+            </Link>
           </Button>
-        </div>
+          {/* Fork this type's schema into a new editable custom type (docs/51
+              §7). Works for built-in and custom sources alike; the original is
+              left untouched. */}
+          <Button asChild variant="outline" size="sm" leftIcon={<Copy className="h-3.5 w-3.5" />}>
+            <Link href={`/cms/types/new?from=${type.key}`}>Duplicate</Link>
+          </Button>
+        </Stack>
       </Stack>
 
       {type.is_built_in ? (
@@ -77,8 +85,9 @@ export async function ContentTypeDetailContent({ id }: { id: string }) {
           <CardContent>
             <Stack gap={3}>
               <Text size="sm" variant="muted">
-                Built-in types are maintained in <code>packages/cms-schemas</code>. Fork into a
-                custom type to tailor it for your tenant.
+                Built-in types are maintained in <code>packages/cms-schemas</code> and can&apos;t be
+                edited directly. Use <strong>Duplicate</strong> above to fork it into a custom type
+                you can tailor.
               </Text>
               <pre className="overflow-auto rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3 font-mono text-xs">
                 {schemaText}

@@ -1,12 +1,12 @@
-// Content type browser.
+// Content type browser — the schemas/models, not the items.
 //
-// Lists every content type the tenant can author, plus a count of entries
-// per type. Built-ins (page, blog_post, module, feature, faq_item,
-// editorial_section) are surfaced from api-rest's /v1/content/types; any
-// custom tenant-defined types (Pro+ plan) appear here too. Clicking a row
-// opens the type's detail (identity + schema editor for custom, read-only for
-// built-in) in the drawer/modal per the user's defaultDetailView.
+// Lists every content type the tenant can author (built-ins + any custom
+// tenant-defined types), with a per-type entry count. The type name and count
+// link to that type's items on the unified content list (/cms/content?type=...);
+// the "Schema" action opens the type's identity + schema editor (custom) /
+// read-only schema (built-in) in the user's preferred detail surface.
 
+import Link from 'next/link';
 import {
   Badge,
   Card,
@@ -54,17 +54,14 @@ export default async function ContentTypesPage() {
   const counts = new Map<string, number>();
   for (const e of entries) counts.set(e.type_key, (counts.get(e.type_key) ?? 0) + 1);
 
-  // Pages have their own dedicated section; everything else lives here.
-  const rows = types.filter((t) => t.key !== 'page');
-
   return (
     <Container size="full">
       <Stack gap={6} className="py-10">
         <PageHeader
           icon={<Database className="h-5 w-5" />}
           title="Content types"
-          badge={<Badge variant="outline">{rows.length}</Badge>}
-          description="Authoring spaces for blog posts, modules, FAQs, editorial sections, and any custom type. Click a type to edit its schema; pages have their own dedicated tab."
+          badge={<Badge variant="outline">{types.length}</Badge>}
+          description="The authoring shapes behind your content — pages, posts, FAQs, and any custom type. Click a type to see its items, or open its schema to edit the fields."
           actions={
             <EntityCreateButton
               entityType="content-type"
@@ -77,7 +74,7 @@ export default async function ContentTypesPage() {
           }
         />
 
-        {rows.length === 0 ? (
+        {types.length === 0 ? (
           <Card variant="module" padding="none">
             <EmptyState
               icon={<Database className="h-5 w-5" />}
@@ -104,24 +101,23 @@ export default async function ContentTypesPage() {
                     <TableHead>Type</TableHead>
                     <TableHead>Kind</TableHead>
                     <TableHead>URL pattern</TableHead>
-                    <TableHead className="text-right">Entries</TableHead>
+                    <TableHead className="text-right">Items</TableHead>
+                    <TableHead className="text-right">Schema</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {rows.map((t) => {
+                  {types.map((t) => {
                     const count = counts.get(t.key) ?? 0;
                     return (
                       <TableRow key={t.key}>
                         <TableCell>
                           <Stack gap={1}>
-                            <EntityRowLink
-                              href={`/cms/types/${t.key}`}
-                              entityType="content-type"
-                              entityId={t.key}
+                            <Link
+                              href={`/cms/content?type=${t.key}`}
                               className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
                             >
                               {t.plural_name}
-                            </EntityRowLink>
+                            </Link>
                             {t.description && (
                               <Text size="xs" variant="muted" className="line-clamp-1">
                                 {t.description}
@@ -153,7 +149,22 @@ export default async function ContentTypesPage() {
                           )}
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
-                          <Text size="sm">{count}</Text>
+                          <Link
+                            href={`/cms/content?type=${t.key}`}
+                            className="hover:text-[var(--module-active)] hover:underline"
+                          >
+                            {count}
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <EntityRowLink
+                            href={`/cms/types/${t.key}`}
+                            entityType="content-type"
+                            entityId={t.key}
+                            className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--module-active)] hover:underline"
+                          >
+                            {t.is_built_in ? 'View' : 'Edit'}
+                          </EntityRowLink>
                         </TableCell>
                       </TableRow>
                     );

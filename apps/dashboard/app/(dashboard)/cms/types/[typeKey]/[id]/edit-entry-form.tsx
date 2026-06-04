@@ -310,7 +310,9 @@ export function EditEntryForm({
         setError(result.error ?? 'Could not delete entry.');
         return;
       }
-      router.push(`/cms/types/${typeKey}`);
+      // Back to this type's items on the unified content list (/cms/types/<key>
+      // is now the schema page, not the entry list).
+      router.push(`/cms/content?type=${typeKey}`);
       router.refresh();
     });
   }
