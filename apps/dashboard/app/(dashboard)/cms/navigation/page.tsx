@@ -3,9 +3,11 @@ import { Button, Card, Container, Heading, PageHeader, Stack, Text } from '@spar
 import { ArrowRight, Plus } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 
-// Navigation menus are CMS-owned content (docs/30 §8): the tenant builds the
-// header / footer / mega / custom menu trees here. Site Builder consumes them
-// read-only — it binds a menu into a layout slot under /sitebuilder/navigation.
+// DEPRECATED (docs/57): navigation has moved to the Builder — it's site chrome
+// owned by the NavMenu node, authored per site, not CMS content. This surface is
+// no longer linked from the CMS sidebar; it stays reachable only by direct URL as
+// a dormant rollback net until the verified-in-prod teardown removes it (and the
+// navigation_menus / navigation_items tables). Do not wire new entry points to it.
 
 export const dynamic = 'force-dynamic';
 

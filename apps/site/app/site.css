@@ -3093,3 +3093,162 @@ html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child
   width: 22px;
   background: #ffffff;
 }
+
+/* ──────────────────────────────────────────────────────────────
+   Builder responsive layout (docs/59-responsive-rendering.md)
+
+   The storefront renderer (builder-renderer.tsx) emits these classes instead
+   of baking grid columns / flex-direction / height / padding into inline
+   styles, so a single authored layout responds to the viewport. Mobile-first:
+   the base rule is the phone layout; min-width queries widen it. Properties
+   that DON'T swap (gap, surface, background, text color/align, contained
+   max-width) stay inline. The desktop row alignment that WOULD be wrong when
+   stacked rides --bx-ai / --bx-jc so the stacked rule can override it.
+
+   Tiers: mobile < 640px · tablet 640–1023px · desktop ≥ 1024px (grids);
+   rows stack < 768px. Kept in lockstep with the editor canvas, which derives
+   the same rules from its `device` prop (site.css @media can't reach the
+   editor's fixed-width canvas).
+   ────────────────────────────────────────────────────────────── */
+
+/* Grid — 1 col (mobile) → 2 col (≥640) → N col (≥1024). N via --cN modifier. */
+.bx-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 640px) {
+  .bx-grid--c2,
+  .bx-grid--c3,
+  .bx-grid--c4,
+  .bx-grid--c5,
+  .bx-grid--c6,
+  .bx-grid--c7,
+  .bx-grid--c8,
+  .bx-grid--c9,
+  .bx-grid--c10,
+  .bx-grid--c11,
+  .bx-grid--c12 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .bx-grid--c2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .bx-grid--c3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .bx-grid--c4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .bx-grid--c5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .bx-grid--c6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .bx-grid--c7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .bx-grid--c8 {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .bx-grid--c9 {
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+  }
+  .bx-grid--c10 {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+  .bx-grid--c11 {
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+  }
+  .bx-grid--c12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+/* Flex stack (column) — gap / align / justify stay inline. */
+.bx-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Inline row that holds at every width (leaf lockups: logo+name, button+icon). */
+.bx-row {
+  display: flex;
+  flex-direction: row;
+}
+
+/* Responsive row — stacked on mobile, becomes a row at ≥768px. The authored
+   desktop align/justify ride --bx-ai / --bx-jc (set inline) so the stacked
+   state can reset to stretch / flex-start without inline styles winning. */
+.bx-row--resp {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+@media (min-width: 768px) {
+  .bx-row--resp {
+    flex-direction: row;
+    align-items: var(--bx-ai, stretch);
+    justify-content: var(--bx-jc, flex-start);
+  }
+}
+
+/* Fixed section heights — ease on small screens so heroes aren't overlong. */
+.bx-h-sm {
+  min-height: 25vh;
+  max-height: 25vh;
+}
+.bx-h-md {
+  min-height: 50vh;
+  max-height: 50vh;
+}
+.bx-h-lg {
+  min-height: 75vh;
+  max-height: 75vh;
+}
+.bx-h-full {
+  min-height: 100vh;
+  max-height: 100vh;
+}
+@media (max-width: 767px) {
+  .bx-h-md {
+    min-height: 40vh;
+    max-height: 40vh;
+  }
+  .bx-h-lg {
+    min-height: 55vh;
+    max-height: 55vh;
+  }
+  .bx-h-full {
+    min-height: 85vh;
+    max-height: 85vh;
+  }
+}
+
+/* Padding scale — the large steps relax on small screens. */
+.bx-p-none {
+  padding: 0;
+}
+.bx-p-sm {
+  padding: 0.75rem;
+}
+.bx-p-md {
+  padding: 1.5rem;
+}
+.bx-p-lg {
+  padding: 2.5rem;
+}
+.bx-p-xl {
+  padding: 4.5rem;
+}
+@media (max-width: 767px) {
+  .bx-p-lg {
+    padding: 1.5rem;
+  }
+  .bx-p-xl {
+    padding: 2rem;
+  }
+}

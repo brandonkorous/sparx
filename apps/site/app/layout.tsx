@@ -211,7 +211,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // binds to the `site` sources resolved here. The snapshot is still read above
   // for THEME (the Builder layout carries chrome, not tokens).
   const builderLayout = tenant ? await getPublishedBuilderLayout(tenant.slug) : null;
-  const siteData = tenant && builderLayout ? await loadSiteData(tenant) : null;
+  const siteData = tenant && builderLayout ? loadSiteData(tenant) : null;
 
   // The compiled Surface stylesheet (docs/47 §5): the utilities authored as
   // node `class` strings across the tenant's published trees. Injected after the

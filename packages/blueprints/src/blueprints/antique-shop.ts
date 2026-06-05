@@ -515,7 +515,17 @@ function siteLayoutTree(): BuilderNode {
               node('Heading', { props: { level: 'h3', text: 'Marrow & Hale' } }),
             ],
           }),
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.primaryNav' }),
+          node('NavMenu', {
+            props: {
+              orientation: 'row',
+              links: [
+                { label: 'Shop', href: '/products' },
+                { label: 'The story', href: '/the-story' },
+                { label: 'Journal', href: '/journal' },
+                { label: 'Visit', href: '/visit' },
+              ],
+            },
+          }),
         ],
       }),
       node('Outlet', { box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' } }),
@@ -529,7 +539,16 @@ function siteLayoutTree(): BuilderNode {
         },
         layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
         children: [
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.footerNav' }),
+          node('NavMenu', {
+            props: {
+              orientation: 'row',
+              links: [
+                { label: 'Shop', href: '/products' },
+                { label: 'The story', href: '/the-story' },
+                { label: 'Visit', href: '/visit' },
+              ],
+            },
+          }),
           node('SocialLinks', { bind: 'site.social' }),
           node('Text', { props: { variant: 'meta', text: '© Marrow & Hale' } }),
         ],

@@ -1110,8 +1110,9 @@ const DEFS: ComponentDef[] = [
 
   // ---- Site chrome (Tier 2 — the layout shell, docs/45 §2.5) ----
   // These appear only in the site (layout) editor. The Outlet marks where the
-  // routed page renders; NavMenu / Logo / SocialLinks bind to the `site` sources
-  // and own their own presentation (a tenant never hand-wires a nav <a>).
+  // routed page renders; Logo / SocialLinks bind to the `site` sources. NavMenu
+  // OWNS its links (docs/57) — navigation is Builder-owned site chrome, authored
+  // here per site, never bound to a CMS menu.
   {
     type: 'Outlet',
     label: 'Page content',
@@ -1139,8 +1140,12 @@ const DEFS: ComponentDef[] = [
     group: 'data',
     icon: Menu,
     module: 'site',
-    bindable: true,
-    accepts: ['array'],
+    // Node-owned (docs/57): the links live in `props.links`, authored via the
+    // navlinks control — not bound to a CMS menu. Existing CMS-bound nodes were
+    // migrated to node-owned links (20260706_nav_into_builder), so there's no
+    // storefront fallback anymore.
+    bindable: false,
+    accepts: [],
     surfaces: ['site'],
     props: [
       {

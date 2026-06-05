@@ -342,8 +342,25 @@ function siteLayoutTree(): BuilderNode {
         },
         layout: { direction: 'row', justify: 'between', alignItems: 'center' },
         children: [
-          node('Logo', { bind: 'site.identity' }),
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.primaryNav' }),
+          node('Stack', {
+            box: { padding: 'none' },
+            layout: { direction: 'row', gap: 'sm', alignItems: 'center' },
+            children: [
+              node('Logo', { bind: 'site.identity' }),
+              node('Heading', { props: { level: 'h3', text: 'Driftwood Supply Co.' } }),
+            ],
+          }),
+          node('NavMenu', {
+            props: {
+              orientation: 'row',
+              links: [
+                { label: 'Shop', href: '/products' },
+                { label: 'Journal', href: '/blog' },
+                { label: 'About', href: '/about' },
+                { label: 'Contact', href: '/contact' },
+              ],
+            },
+          }),
         ],
       }),
       node('Outlet', { box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' } }),
@@ -357,7 +374,16 @@ function siteLayoutTree(): BuilderNode {
         },
         layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
         children: [
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.footerNav' }),
+          node('NavMenu', {
+            props: {
+              orientation: 'row',
+              links: [
+                { label: 'Shop', href: '/products' },
+                { label: 'About', href: '/about' },
+                { label: 'Contact', href: '/contact' },
+              ],
+            },
+          }),
           node('SocialLinks', { bind: 'site.social' }),
           node('Text', { props: { variant: 'meta', text: '© Driftwood Supply Co.' } }),
         ],
@@ -456,7 +482,11 @@ const manifest = {
   },
 
   assets: [
-    { id: 'logo', url: pic('driftwood-logo', 400, 120), alt: 'Driftwood Supply Co.' },
+    {
+      id: 'logo',
+      url: 'https://ui-avatars.com/api/?name=Driftwood+Supply&background=3F6212&color=FFFFFF&bold=true&size=128&format=svg',
+      alt: 'Driftwood Supply Co.',
+    },
     { id: 'blog-1-img', url: pic('post-materials'), alt: 'Raw materials on a workbench' },
     { id: 'blog-2-img', url: pic('post-care'), alt: 'Folded garments' },
     { id: 'blog-3-img', url: pic('post-makers'), alt: 'A maker at work' },

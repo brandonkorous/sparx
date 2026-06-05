@@ -199,16 +199,12 @@ export const CRM_SOURCES: DataSource[] = [
 
 // ── Site-scope sources (the layout chrome — docs/45 §3) ───────────────────────
 //
-// The `site` module is what the SITE (layout) editor binds to: brand identity,
-// navigation, social. The SHAPE is fixed here; the DATA is fetched per tenant at
-// preview/render time from the platform's existing stores (TenantBrand,
-// NavigationMenu) — the Builder keeps no parallel nav/brand. These are NOT in the
-// page editor's catalog; chrome binds to site data, pages bind to content.
-
-const NAV_FIELDS: FieldSchema[] = [
-  { key: 'label', label: 'Label', kind: 'text', cardinality: 'scalar' },
-  { key: 'url', label: 'URL', kind: 'text', cardinality: 'scalar' },
-];
+// The `site` module is what the SITE (layout) editor binds to: brand identity +
+// social. The SHAPE is fixed here; the DATA is fetched per tenant at
+// preview/render time from the platform's existing stores (TenantBrand). These
+// are NOT in the page editor's catalog; chrome binds to site data, pages bind to
+// content. Navigation is NOT a binding — it's Builder-owned (docs/57), authored
+// on the NavMenu node's own `props.links`, never read from a CMS menu.
 
 export const SITE_SOURCES: DataSource[] = [
   {
@@ -222,22 +218,6 @@ export const SITE_SOURCES: DataSource[] = [
       { key: 'tagline', label: 'Tagline', kind: 'text', cardinality: 'scalar' },
       { key: 'logo', label: 'Logo', kind: 'image', cardinality: 'scalar' },
     ],
-  },
-  {
-    key: 'site.primaryNav',
-    label: 'Primary navigation',
-    module: 'site',
-    cardinality: 'array',
-    recordType: 'navItem',
-    fields: NAV_FIELDS,
-  },
-  {
-    key: 'site.footerNav',
-    label: 'Footer navigation',
-    module: 'site',
-    cardinality: 'array',
-    recordType: 'navItem',
-    fields: NAV_FIELDS,
   },
   {
     key: 'site.social',

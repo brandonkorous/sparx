@@ -10,7 +10,6 @@ import {
   Database,
   FileText,
   Image as ImageIcon,
-  Navigation,
   Scale,
   Tags,
   Upload,
@@ -27,7 +26,10 @@ export const cmsManifest: ModuleManifest = {
   sections: [
     { id: 'content', label: 'Content', icon: FileText, href: '/cms/content' },
     { id: 'types', label: 'Content types', icon: Database, href: '/cms/types' },
-    { id: 'navigation', label: 'Navigation', icon: Navigation, href: '/cms/navigation' },
+    // Navigation moved to the Builder (docs/57) — site navigation is Builder-owned
+    // site chrome, authored on the NavMenu node per site, not in the CMS module.
+    // The legacy /cms/navigation surface + its tables remain dormant (reachable
+    // only by direct URL) as a rollback net pending the verified-in-prod teardown.
     { id: 'media', label: 'Media', icon: ImageIcon, href: '/cms/media' },
     { id: 'authors', label: 'Authors', icon: User, href: '/cms/authors' },
     { id: 'taxonomy', label: 'Taxonomy', icon: Tags, href: '/cms/taxonomy' },

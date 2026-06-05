@@ -61,7 +61,7 @@ function PlatformHero() {
   const metrics = [
     { v: '8', s: 'modules, one platform' },
     { v: '1', s: 'shared data layer' },
-    { v: '$49', suffix: '/mo', s: 'starting price' },
+    { v: '$10', suffix: '/mo', s: 'starting price' },
     { v: 'MCP', spark: true, s: 'native AI access' },
     { v: '100%', s: 'API-first, your data' },
   ] as const;
@@ -1340,9 +1340,9 @@ function Foundations() {
 // ── PRICING TEASER ─────────────────────────────────────────────────────────
 function PricingTeaser() {
   const tiers = [
-    { name: 'Start', price: '$49', note: 'one module', highlight: false },
-    { name: 'Grow', price: '$149', note: 'typical 3-module mix', highlight: true },
-    { name: 'Everything', price: '$449', note: 'the full platform', highlight: false },
+    { name: 'Start', price: '$10', note: 'one module', highlight: false },
+    { name: 'Grow', price: '$108', note: 'Builder + Commerce + CMS', highlight: true },
+    { name: 'Everything', price: '$363', note: 'all eight modules', highlight: false },
   ];
 
   return (
@@ -1366,7 +1366,7 @@ function PricingTeaser() {
               color: 'var(--color-text-secondary)',
             }}
           >
-            Start with one module from $49/mo. Add the next when you need it. No bundles, no seat
+            Start with one module from $10/mo. Add the next when you need it. No bundles, no seat
             tax, no &ldquo;contact us for content.&rdquo; Turn anything off and it stops billing the
             same day.
           </p>

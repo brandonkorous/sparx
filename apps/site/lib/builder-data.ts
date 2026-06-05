@@ -15,7 +15,6 @@ import type { BuilderNode, DataSources } from '@sparx/builder-schemas';
 
 import { publicGet, type ApiEntry, type BlogPostBody } from './content';
 import { listProducts, type PublicProduct, type PublicProductListItem } from './commerce';
-import { getNavByLocation, type NavNode } from './site';
 import { mediaUrl } from './media';
 import type { ResolvedTenant } from './tenant';
 import type { BuilderProduct } from '../components/builder-commerce';
@@ -224,16 +223,10 @@ export async function loadBuilderData(
 }
 
 // ── Site layout data (docs/45 §4) ────────────────────────────────────────────
-// The chrome (header/footer) binds to the `site` sources. Unlike page data,
-// these reference the platform's EXISTING stores (brand identity, CMS nav, the
-// tenant's site settings) — the Builder keeps no parallel copy. Nested nav is
-// flattened to the top level for v1 (docs/45 §7); `site.social` maps the
-// tenant's site-wide social links (Tenant.socials, carried in the public tenant
-// payload) to `{ platform, url }[]`.
-
-function navToItems(nodes: NavNode[]): { label: string; url: string }[] {
-  return nodes.map((n) => ({ label: n.label, url: n.href }));
-}
+// The chrome binds to the `site` sources for brand identity + social links —
+// platform-sourced data the Builder keeps no parallel copy of. Navigation is NOT
+// here: it's Builder-owned (docs/57), carried on the NavMenu node's own
+// `props.links` (migrated off the old CMS menus by 20260706_nav_into_builder).
 
 // The tenant's social links → the `{ platform, url }[]` the SocialLinks leaf
 // binds. Already the right shape; just drop any blank/malformed entries.
@@ -245,10 +238,10 @@ function socialsToItems(
   );
 }
 
-/** Build the `site` resolver root for the layout renderer: brand identity from
- *  the resolved tenant, header/footer nav from the CMS navigation menus, social
- *  links from the tenant's site settings. */
-export async function loadSiteData(tenant: ResolvedTenant): Promise<DataSources> {
+/** Build the `site` resolver root for the layout renderer: brand identity + social
+ *  links from the resolved tenant. Navigation is Builder-owned (docs/57) — it
+ *  lives on the NavMenu node, not here. */
+export function loadSiteData(tenant: ResolvedTenant): DataSources {
   const root: DataSources = {};
 
   const logo = mediaUrl(tenant.theme?.logoMediaId ?? null, tenant.slug);
@@ -258,13 +251,6 @@ export async function loadSiteData(tenant: ResolvedTenant): Promise<DataSources>
     logo: logo ? { url: logo, alt: tenant.name } : null,
   });
 
-  // getNavByLocation already degrades to [] on failure / no menu.
-  const [header, footer] = await Promise.all([
-    getNavByLocation(tenant.slug, 'header'),
-    getNavByLocation(tenant.slug, 'footer'),
-  ]);
-  setAtPath(root, 'site.primaryNav', navToItems(header));
-  setAtPath(root, 'site.footerNav', navToItems(footer));
   setAtPath(root, 'site.social', socialsToItems(tenant.socials));
 
   return root;

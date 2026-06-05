@@ -21,11 +21,9 @@ import {
   type Cardinality,
   type DataSources,
   type GapScale,
-  type HeightScale,
   type Justify,
   type LayoutBase,
   type Scope,
-  type SpaceScale,
   type Surface,
 } from '@sparx/builder-schemas';
 
@@ -63,21 +61,16 @@ import {
 
 // ── Box-base → CSS (mirrors the editor canvas scales, --sf-* tokens) ──────────
 
-const HEIGHT_VH: Record<HeightScale, string | undefined> = {
-  auto: undefined,
-  sm: '25vh',
-  md: '50vh',
-  lg: '75vh',
-  full: '100vh',
-};
-const PADDING: Record<SpaceScale, string> = {
-  none: '0',
-  sm: '0.75rem',
-  md: '1.5rem',
-  lg: '2.5rem',
-  xl: '4.5rem',
-};
+// Section height + padding scales no longer live here as inline values — they
+// ride the `.bx-h-*` / `.bx-p-*` classes in site.css, which ease on small
+// screens (docs/59). The gap scale stays inline (it doesn't swap responsively).
 const GAP: Record<GapScale, string> = { none: '0', sm: '0.5rem', md: '1rem', lg: '1.5rem' };
+
+/** Join class fragments, dropping falsy ones; undefined when empty. */
+function cls(...parts: (string | false | null | undefined)[]): string | undefined {
+  const joined = parts.filter(Boolean).join(' ');
+  return joined || undefined;
+}
 
 const SURFACE: Record<Surface, { bg: string; fg?: string }> = {
   none: { bg: 'transparent' },
@@ -165,22 +158,58 @@ const CLASS_ON_LEAF = new Set([
   'SocialLinks',
 ]);
 
-function layoutStyle(layout: LayoutBase): React.CSSProperties {
+/** A row of CONTAINERS is a layout band (image+text, multi-column) that must
+ *  stack on mobile; a row of LEAVES is an inline lockup (logo+name, button+icon)
+ *  that must stay inline. This signal decides which (docs/59 §2). `custom:*`
+ *  placements are containers (they expand to sections) — though the storefront
+ *  only ever sees them already expanded. */
+function hasContainerChild(children?: BuilderNode[]): boolean {
+  return (children ?? []).some((c) => c.type.startsWith('custom:') || CONTAINERS.has(c.type));
+}
+
+/** A container's layout → the responsive class (grid columns / row / stack) plus
+ *  the residual inline style for properties that DON'T swap (gap) or that the
+ *  stacked state must be able to override (desktop align/justify, passed as the
+ *  --bx-ai / --bx-jc custom props). The breakpoints live in site.css (docs/59). */
+function resolveLayout(
+  layout: LayoutBase,
+  children?: BuilderNode[]
+): { className: string; style: React.CSSProperties } {
   const gap = GAP[layout.gap];
   if (layout.direction === 'grid') {
+    const n = Math.min(12, Math.max(1, layout.columns));
+    return { className: `bx-grid bx-grid--c${n}`, style: { gap } };
+  }
+  if (layout.direction === 'row') {
+    if (hasContainerChild(children)) {
+      // Stacks < 768px; the desktop axes ride custom props so the stacked rule
+      // (align stretch / justify start) can win without inline styles blocking it.
+      return {
+        className: 'bx-row--resp',
+        style: {
+          gap,
+          ['--bx-ai']: FLEX_ALIGN[layout.alignItems] ?? 'stretch',
+          ['--bx-jc']: FLEX_JUSTIFY[layout.justify] ?? 'flex-start',
+        } as React.CSSProperties,
+      };
+    }
     return {
-      display: 'grid',
-      gridTemplateColumns: `repeat(${Math.max(1, layout.columns)}, minmax(0, 1fr))`,
-      gap,
+      className: 'bx-row',
+      style: {
+        gap,
+        alignItems: FLEX_ALIGN[layout.alignItems] ?? 'stretch',
+        justifyContent: FLEX_JUSTIFY[layout.justify] ?? 'flex-start',
+        flexWrap: layout.wrap ? 'wrap' : 'nowrap',
+      },
     };
   }
   return {
-    display: 'flex',
-    flexDirection: layout.direction === 'row' ? 'row' : 'column',
-    flexWrap: layout.direction === 'row' && layout.wrap ? 'wrap' : 'nowrap',
-    gap,
-    alignItems: FLEX_ALIGN[layout.alignItems] ?? 'stretch',
-    justifyContent: FLEX_JUSTIFY[layout.justify] ?? 'flex-start',
+    className: 'bx-stack',
+    style: {
+      gap,
+      alignItems: FLEX_ALIGN[layout.alignItems] ?? 'stretch',
+      justifyContent: FLEX_JUSTIFY[layout.justify] ?? 'flex-start',
+    },
   };
 }
 
@@ -195,34 +224,30 @@ function boxStyles(
   const surface = SURFACE[box.surface];
   const bgFull = box.backgroundWidth === 'full';
   const contentContained = box.contentWidth === 'contained';
-  // An explicit height is a FIXED height (min AND max) so a tall child can't blow
-  // past it. Grid-direction containers push the height onto their CELLS instead
-  // (the container branch), so the grid box itself stays auto and sizes to rows.
-  const fixedHeight = isContainer && !isGrid ? HEIGHT_VH[box.height] : undefined;
-  const hasHeight = Boolean(fixedHeight);
-  const image = boundImage ?? box.backgroundImage;
-  const overlay = box.overlay ?? 'none';
-  const tone = box.textTone ?? 'default';
   // `pin: top` floats the block over the one that follows (overlay header),
   // anchored to its parent (every node's outer is positioned).
   const pinned = box.pin === 'top';
+  // An explicit height is a FIXED height (min AND max), realized by the `.bx-h-*`
+  // class on the outer (which eases on mobile). Here we only need the BOOLEAN to
+  // center content vertically. Grids push height onto their CELLS instead, and a
+  // pinned block opts out, so neither carries a height.
+  const hasHeight = isContainer && !isGrid && !pinned && box.height !== 'auto';
+  const image = boundImage ?? box.backgroundImage;
+  const overlay = box.overlay ?? 'none';
+  const tone = box.textTone ?? 'default';
 
   const outer: React.CSSProperties = {
     position: pinned ? 'absolute' : 'relative',
-    ...(pinned
-      ? { top: 0, left: 0, right: 0, zIndex: 40, width: '100%' }
-      : fixedHeight
-        ? { minHeight: fixedHeight, maxHeight: fixedHeight }
-        : {}),
+    ...(pinned ? { top: 0, left: 0, right: 0, zIndex: 40, width: '100%' } : {}),
     ...(bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
     display: 'flex',
     justifyContent: contentContained ? 'center' : 'flex-start',
     alignItems: hasHeight ? 'center' : 'stretch',
   };
+  // Padding rides the `.bx-p-*` class on this inner element (eases on mobile).
   const inner: React.CSSProperties = {
     width: '100%',
     maxWidth: contentContained ? 'var(--sf-max)' : undefined,
-    padding: PADDING[box.padding],
     textAlign: TEXT_ALIGN[box.align],
     color: TONE[tone] ?? surface.fg,
     ...(!bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
@@ -581,9 +606,10 @@ function renderLeaf(
     }
     case 'NavMenu': {
       const orientation = (str('orientation') || 'row') as 'row' | 'stack';
-      // Navigation is owned by the node (docs/57): structured `props.links` wins;
-      // a legacy CMS binding (value) and the legacy hand-typed string are kept as
-      // fallbacks through the transition. P1 renders flat (children ignored).
+      // Navigation is node-owned (docs/57): the links live in `props.links`
+      // (existing CMS-bound nodes were migrated by 20260706_nav_into_builder).
+      // `value` is now always nullish for nav — coerceNavLinks keeps the bound
+      // path only as defensive normalization. Renders flat (children ignored).
       const list = coerceNavLinks(node.props.links, value).map((l) => ({
         label: l.label,
         url: l.href,
@@ -646,7 +672,21 @@ function RenderNode({
     ? (firstImage(resolvePath(scope, node.box.backgroundImageBinding))?.url ?? undefined)
     : undefined;
   const { outer, inner } = boxStyles(effBox, isContainer, isGrid, boundBg);
-  const innerStyle = isContainer && node.layout ? { ...inner, ...layoutStyle(node.layout) } : inner;
+  // Responsive layout → a class on the inner (display/columns/direction) plus the
+  // residual inline style; the @media breakpoints live in site.css (docs/59).
+  const layout = isContainer ? node.layout : undefined;
+  const resolvedLayout = layout ? resolveLayout(layout, node.children) : undefined;
+  const innerStyle = resolvedLayout ? { ...inner, ...resolvedLayout.style } : inner;
+  // Fixed-height containers carry `.bx-h-*` on the OUTER (grids push height onto
+  // cells; pinned blocks opt out). Padding + layout ride classes on the INNER.
+  // All three ease on small screens. The class-first `node.class` stays on the
+  // outer unless a leaf styles itself by class (then renderLeaf owns it).
+  const heightClass =
+    isContainer && !isGrid && effBox.pin !== 'top' && effBox.height !== 'auto'
+      ? `bx-h-${effBox.height}`
+      : undefined;
+  const outerClass = cls(leafStylesByClass ? undefined : node.class, heightClass);
+  const innerClass = cls(`bx-p-${effBox.padding}`, resolvedLayout?.className);
 
   let body: React.ReactNode;
   if (node.type === 'Outlet') {
@@ -755,18 +795,17 @@ function RenderNode({
   }
 
   // The class-first authoring surface (docs/47): the node's brand-governed class
-  // string rides on the box wrapper alongside the engine's inline box styles, so
-  // the published page and the editor canvas emit the same class. The exception is
-  // a leaf that styles itself by class (Button) — there the class lives on the
-  // element via renderLeaf, so the wrapper omits it (no double-paint). Absent on
-  // legacy trees → no className. The box→CSS engine still owns layout/structure.
+  // string rides on the box wrapper (folded into `outerClass`) alongside the
+  // engine's inline box styles, so the published page and the editor canvas emit
+  // the same class. The exception is a leaf that styles itself by class (Button) —
+  // there the class lives on the element via renderLeaf, so the wrapper omits it
+  // (no double-paint). The inner carries the responsive layout + padding classes
+  // (docs/59); the box→CSS engine still owns the non-responsive structure inline.
   return (
-    <div
-      className={leafStylesByClass ? undefined : node.class}
-      style={outer}
-      data-bx-type={node.type}
-    >
-      <div style={innerStyle}>{body}</div>
+    <div className={outerClass} style={outer} data-bx-type={node.type}>
+      <div className={innerClass} style={innerStyle}>
+        {body}
+      </div>
     </div>
   );
 }

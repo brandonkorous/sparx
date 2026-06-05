@@ -16,8 +16,17 @@
 //                 visibility) — see BoxBasePanel / visibleBoxAxes.
 
 import * as React from 'react';
-import { Boxes, Check, ChevronDown, ChevronLeft, ExternalLink, Plus, X } from 'lucide-react';
-import { Input, NativeSelect, Switch, Textarea, cn } from '@sparx/ui';
+import {
+  Boxes,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronUp,
+  ExternalLink,
+  Plus,
+  X,
+} from 'lucide-react';
+import { Input, NativeSelect, Switch, Textarea, cn, useConfirm } from '@sparx/ui';
 import {
   REF_KEY,
   bindSlotKey,
@@ -25,9 +34,11 @@ import {
   customKeyOf,
   isCustomType,
   isPropSlot,
+  parseNavLinks,
   readComponentRef,
   type BindingCatalog,
   type ComponentDto,
+  type NavLink,
   type PropSpec as ComponentPropSpec,
 } from '@sparx/builder-schemas';
 
@@ -133,6 +144,131 @@ function Group({ label, children }: { label: string; children: React.ReactNode }
       <h4 className="bx-grp__label">{label}</h4>
       <div className="bx-grp__body">{children}</div>
     </section>
+  );
+}
+
+// Lenient normalization for the nav-link EDITOR — keeps empty-label rows (so a
+// row doesn't vanish mid-edit) and converts a legacy hand-typed string into rows
+// on first edit. The storefront renderer's coerceNavLinks does the strict pass
+// (dropping empties); this is the editable mirror.
+function editableNavRows(value: unknown): NavLink[] {
+  if (Array.isArray(value)) {
+    return value.map((it) => {
+      const o = (it ?? {}) as Record<string, unknown>;
+      const href =
+        typeof o.href === 'string' && o.href.length > 0
+          ? o.href
+          : typeof o.url === 'string'
+            ? o.url
+            : '';
+      return {
+        label: typeof o.label === 'string' ? o.label : '',
+        href,
+        openInNewTab: o.openInNewTab === true || o.open_in_new_tab === true,
+      };
+    });
+  }
+  if (typeof value === 'string' && value.trim()) return parseNavLinks(value);
+  return [];
+}
+
+// The NavMenu node's link editor (docs/57). Site navigation is Builder-owned site
+// chrome, authored here per site — label + target + new-tab, with reorder and
+// remove. Fully controlled: it normalizes the stored prop into editable rows and
+// writes the whole array back on every change (the editor autosaves, like the
+// textarea control). dnd reorder is a polish follow-on; up/down is functional.
+function NavLinksControl({
+  value,
+  onChange,
+}: {
+  value: unknown;
+  onChange: (links: NavLink[]) => void;
+}) {
+  const confirm = useConfirm();
+  const rows = editableNavRows(value);
+
+  const patch = (i: number, p: Partial<NavLink>) =>
+    onChange(rows.map((r, idx) => (idx === i ? { ...r, ...p } : r)));
+  const add = () => onChange([...rows, { label: '', href: '/' }]);
+  const move = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= rows.length) return;
+    const next = rows.slice();
+    const tmp = next[i]!;
+    next[i] = next[j]!;
+    next[j] = tmp;
+    onChange(next);
+  };
+  const remove = async (i: number) => {
+    const current = rows[i]?.label;
+    const name = current && current.length > 0 ? current : 'this link';
+    const ok = await confirm({
+      title: `Remove “${name}”?`,
+      description: 'Removes the navigation link. You can add it back manually.',
+      confirmLabel: 'Remove',
+      tone: 'danger',
+    });
+    if (ok) onChange(rows.filter((_, idx) => idx !== i));
+  };
+
+  return (
+    <div className="bx-navlinks">
+      {rows.map((row, i) => (
+        <div key={i} className="bx-navlinks__row">
+          <Input
+            value={row.label}
+            placeholder="Label"
+            onChange={(e) => patch(i, { label: e.target.value })}
+          />
+          <Input
+            value={row.href}
+            placeholder="/page or https://…"
+            onChange={(e) => patch(i, { href: e.target.value })}
+          />
+          <div className="bx-navlinks__foot">
+            <span className="bx-navlinks__newtab">
+              <Switch
+                checked={Boolean(row.openInNewTab)}
+                onCheckedChange={(v) => patch(i, { openInNewTab: v })}
+                aria-label="Open this link in a new tab"
+              />
+              New tab
+            </span>
+            <div className="bx-navlinks__actions">
+              <button
+                type="button"
+                className="bx-navlinks__icon"
+                aria-label="Move up"
+                disabled={i === 0}
+                onClick={() => move(i, -1)}
+              >
+                <ChevronUp aria-hidden />
+              </button>
+              <button
+                type="button"
+                className="bx-navlinks__icon"
+                aria-label="Move down"
+                disabled={i === rows.length - 1}
+                onClick={() => move(i, 1)}
+              >
+                <ChevronDown aria-hidden />
+              </button>
+              <button
+                type="button"
+                className="bx-navlinks__icon"
+                aria-label="Remove link"
+                onClick={() => void remove(i)}
+              >
+                <X aria-hidden />
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+      <button type="button" className="bx-navlinks__add" onClick={add}>
+        <Plus aria-hidden /> Add link
+      </button>
+    </div>
   );
 }
 
@@ -623,6 +759,15 @@ function PropsPanel({
                 value={(value as string) ?? ''}
                 onChange={(name) => onProp(spec.key, name)}
               />
+            </Field>
+          );
+        }
+        if (spec.control === 'navlinks') {
+          // Site navigation is Builder-owned (docs/57) — author the links here,
+          // per site, instead of in the CMS module.
+          return (
+            <Field key={spec.key} label={spec.label}>
+              <NavLinksControl value={value} onChange={(links) => onProp(spec.key, links)} />
             </Field>
           );
         }

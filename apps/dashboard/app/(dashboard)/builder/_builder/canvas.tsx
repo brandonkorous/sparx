@@ -52,8 +52,20 @@ const HEIGHT_VH: Record<HeightScale, string | undefined> = {
   lg: '75vh',
   full: '100vh',
 };
+// Fixed heights ease on the mobile device preview so heroes aren't overlong —
+// kept in lockstep with site.css's `.bx-h-*` @media (docs/59 §2).
+const HEIGHT_VH_MOBILE: Record<HeightScale, string | undefined> = {
+  auto: undefined,
+  sm: '25vh',
+  md: '40vh',
+  lg: '55vh',
+  full: '85vh',
+};
 
 const PADDING_PX: Record<SpaceScale, number> = { none: 0, sm: 12, md: 24, lg: 40, xl: 72 };
+// Large padding steps relax on the mobile device preview — matches site.css's
+// `.bx-p-*` @media (docs/59 §2).
+const PADDING_PX_MOBILE: Record<SpaceScale, number> = { none: 0, sm: 12, md: 24, lg: 24, xl: 32 };
 const GAP_PX: Record<GapScale, number> = { none: 0, sm: 8, md: 16, lg: 24 };
 const CONTAINED_MAX = 1120;
 
@@ -138,24 +150,47 @@ const FLEX_JUSTIFY: Record<Justify, string> = {
   between: 'space-between',
 };
 
-function layoutStyle(node: BuilderNode): React.CSSProperties {
+// The editor simulates a device by fixing the canvas WIDTH (not the viewport),
+// so site.css @media can't reach it — instead we derive the same responsive
+// rules (docs/59 §3) from the `device` prop in JS. Grid columns step
+// 1 (mobile) → min(N, 2) (tablet) → N (desktop).
+function responsiveCols(n: number, device: Device): number {
+  if (device === 'mobile') return 1;
+  if (device === 'tablet') return Math.min(n, 2);
+  return n;
+}
+
+/** A row of CONTAINERS is a layout band that stacks on mobile; a row of LEAVES
+ *  is an inline lockup that stays inline (docs/59 §2). `custom:*` placements
+ *  expand to sections, so they count as containers. */
+function hasContainerChild(node: BuilderNode): boolean {
+  return (node.children ?? []).some(
+    (c) => isCustomType(c.type) || getDef(c.type)?.kind === 'container'
+  );
+}
+
+function layoutStyle(node: BuilderNode, device: Device): React.CSSProperties {
   const l = node.layout;
   if (!l) return {};
   const gap = GAP_PX[l.gap];
   if (l.direction === 'grid') {
+    const cols = responsiveCols(Math.max(1, l.columns), device);
     return {
       display: 'grid',
-      gridTemplateColumns: `repeat(${Math.max(1, l.columns)}, minmax(0, 1fr))`,
+      gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
       gap,
     };
   }
+  // A container row stacks on the mobile preview (< 768px storefront parity).
+  const stack = l.direction === 'row' && device === 'mobile' && hasContainerChild(node);
+  const asRow = l.direction === 'row' && !stack;
   return {
     display: 'flex',
-    flexDirection: l.direction === 'row' ? 'row' : 'column',
-    flexWrap: l.direction === 'row' && l.wrap ? 'wrap' : 'nowrap',
+    flexDirection: asRow ? 'row' : 'column',
+    flexWrap: asRow && l.wrap ? 'wrap' : 'nowrap',
     gap,
-    alignItems: FLEX_ALIGN[l.alignItems],
-    justifyContent: FLEX_JUSTIFY[l.justify],
+    alignItems: stack ? 'stretch' : FLEX_ALIGN[l.alignItems],
+    justifyContent: stack ? 'flex-start' : FLEX_JUSTIFY[l.justify],
   };
 }
 
@@ -164,6 +199,9 @@ function layoutStyle(node: BuilderNode): React.CSSProperties {
 function boxStyles(
   node: BuilderNode,
   def: ComponentDef,
+  /** The active device preview — heights, padding, and layout collapse for it,
+   *  mirroring the storefront's viewport breakpoints (docs/59 §3). */
+  device: Device,
   /** Image resolved from `box.backgroundImageBinding` against the editor scope.
    *  When present it WINS over the static `backgroundImage`. Undefined when the
    *  binding is absent or resolves to nothing (no record data in the editor). */
@@ -181,7 +219,8 @@ function boxStyles(
   // past it. Grid-direction containers instead push the height onto their CELLS
   // (the container branch), so the grid box itself stays auto and sizes to rows.
   const isGrid = node.layout?.direction === 'grid';
-  const fixedHeight = def.kind === 'container' && !isGrid ? HEIGHT_VH[b.height] : undefined;
+  const heights = device === 'mobile' ? HEIGHT_VH_MOBILE : HEIGHT_VH;
+  const fixedHeight = def.kind === 'container' && !isGrid ? heights[b.height] : undefined;
   const hasHeight = Boolean(fixedHeight);
   // Background media lives on whichever element owns the background WIDTH: the
   // full-bleed outer when edge-to-edge, else the contained inner. A resolved
@@ -223,10 +262,11 @@ function boxStyles(
     alignItems: hasHeight ? 'center' : 'stretch',
   };
 
+  const padScale = device === 'mobile' ? PADDING_PX_MOBILE : PADDING_PX;
   const inner: React.CSSProperties = {
     width: '100%',
     maxWidth: contentContained ? CONTAINED_MAX : undefined,
-    padding: PADDING_PX[b.padding],
+    padding: padScale[b.padding],
     textAlign: b.align,
     ...(recipeOwned ? {} : { color: TONE[tone] ?? surface.fg }),
     ...(recipeOwned
@@ -236,7 +276,7 @@ function boxStyles(
           ? BOUND_MEDIA_PLACEHOLDER
           : bgProps(image, overlay, surface.bg)
         : { background: 'transparent' }),
-    ...(def.kind === 'container' ? layoutStyle(node) : {}),
+    ...(def.kind === 'container' ? layoutStyle(node, device) : {}),
   };
 
   return { outer, inner };
@@ -535,7 +575,7 @@ function CanvasNode({
   const boundBg = node.box.backgroundImageBinding
     ? firstBoundImageUrl(resolvePath(scope, node.box.backgroundImageBinding))
     : undefined;
-  const { outer, inner } = boxStyles(node, def, boundBg);
+  const { outer, inner } = boxStyles(node, def, device, boundBg);
 
   let body: React.ReactNode;
   if (node.type === 'Outlet' && outletSlot !== undefined) {

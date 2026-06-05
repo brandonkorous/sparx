@@ -711,7 +711,17 @@ function siteLayoutTree(): BuilderNode {
               node('Heading', { props: { level: 'h3', text: 'Ironleaf Tattoo' } }),
             ],
           }),
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.primaryNav' }),
+          node('NavMenu', {
+            props: {
+              orientation: 'row',
+              links: [
+                { label: 'Journal', href: '/journal' },
+                { label: 'The studio', href: '/the-studio' },
+                { label: 'Shop', href: '/products' },
+                { label: 'Visit', href: '/visit' },
+              ],
+            },
+          }),
         ],
       }),
       node('Outlet', { box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' } }),
@@ -725,7 +735,16 @@ function siteLayoutTree(): BuilderNode {
         },
         layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
         children: [
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.footerNav' }),
+          node('NavMenu', {
+            props: {
+              orientation: 'row',
+              links: [
+                { label: 'The studio', href: '/the-studio' },
+                { label: 'Shop', href: '/products' },
+                { label: 'Visit', href: '/visit' },
+              ],
+            },
+          }),
           node('SocialLinks', { bind: 'site.social' }),
           node('Text', { props: { variant: 'meta', text: '© Ironleaf Tattoo' } }),
         ],

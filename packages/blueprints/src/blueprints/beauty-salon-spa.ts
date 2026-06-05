@@ -519,7 +519,17 @@ function siteLayoutTree(): BuilderNode {
               node('Heading', { props: { level: 'h3', text: 'Maren & Wilde' } }),
             ],
           }),
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.primaryNav' }),
+          node('NavMenu', {
+            props: {
+              orientation: 'row',
+              links: [
+                { label: 'Shop', href: '/products' },
+                { label: 'Journal', href: '/journal' },
+                { label: 'About', href: '/about' },
+                { label: 'Visit', href: '/visit' },
+              ],
+            },
+          }),
         ],
       }),
       node('Outlet', { box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' } }),
@@ -533,7 +543,16 @@ function siteLayoutTree(): BuilderNode {
         },
         layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
         children: [
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.footerNav' }),
+          node('NavMenu', {
+            props: {
+              orientation: 'row',
+              links: [
+                { label: 'Shop', href: '/products' },
+                { label: 'About', href: '/about' },
+                { label: 'Visit', href: '/visit' },
+              ],
+            },
+          }),
           node('SocialLinks', { bind: 'site.social' }),
           node('Text', { props: { variant: 'meta', text: '© Maren & Wilde' } }),
         ],

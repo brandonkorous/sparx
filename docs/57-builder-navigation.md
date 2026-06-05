@@ -1,15 +1,50 @@
 # Sparx Platform — Navigation in the Builder
 
-**Version:** 0.1 (design — not yet built)
+**Version:** 0.3 (P1 + migration + fallback removal BUILT; CMS-surface teardown deferred)
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-05
 
-> **Status: DESIGN.** Moves site **navigation** out of the CMS module and into the
-> **Builder**, where it belongs: nav is site chrome, every site has it, and it must
-> work without the CMS module. Per-site falls out for free (Builder layouts are
-> already `property_id`-scoped). Reverses the docs/45 §3 decision ("the Builder
-> keeps no parallel nav — it reads the CMS `NavigationMenu`"). Build follows this
-> doc in three phases (§10).
+> **Status: BUILT — UNPUSHED, gate-green.** Site **navigation** now lives on the
+> Builder `NavMenu` node, not the CMS module: nav is site chrome, every site has
+> it, and it works without the CMS module. Per-site falls out for free (Builder
+> layouts are already `property_id`-scoped). Reverses the docs/45 §3 decision ("the
+> Builder keeps no parallel nav"). **No CMS fallback remains** — existing data was
+> migrated.
+>
+> **What shipped (2026-06-05):**
+>
+> - **Authoring (P1):** a shared `coerceNavLinks` normalizer
+>   (`packages/builder-schemas/src/nav.ts`); the storefront renderer + editor
+>   preview read node-owned `props.links`; a `navlinks` inspector control (label /
+>   href / new-tab, add / remove / reorder); `site-ui` `NavMenu` honours
+>   `openInNewTab`; the starter site layout seeds default node-owned links;
+>   `NavMenu` is **non-bindable** (authors use the links editor, never a CMS
+>   binding). Unit-tested (`nav.test.ts`).
+> - **Migration (P2):** `20260706_nav_into_builder` converts every existing
+>   CMS-menu-bound `NavMenu` node in `builder_layouts`/`builder_pages` trees
+>   (draft + published) into node-owned `props.links`, mirroring the storefront's
+>   exact resolution (top-level items, `external_url` else `/<slug>` for a
+>   published non-deleted entry, else dropped; `open_in_new_tab` carried). Recursive
+>   `jsonb` rewrite, looped per tenant with `set_config('app.tenant_id')` for
+>   FORCE-RLS. **Verified end-to-end** against the local DB (seeded a real menu →
+>   `migrate deploy` → 0 bound NavMenu nodes remain, links correct).
+> - **Fallback removed (P2):** `loadSiteData` no longer resolves
+>   `site.primaryNav`/`footerNav` (only identity + social); those two sources are
+>   gone from `SITE_SOURCES`. The renderer's `coerceNavLinks` bound path stays only
+>   as defensive normalization.
+> - **CMS (P3, partial):** Navigation removed from the CMS module sidebar
+>   (`@sparx/cms-editor` manifest); the `/cms/navigation` page is header-commented
+>   DEPRECATED.
+>
+> **Still deferred (verified-in-prod teardown):** removing the dormant
+> `/cms/navigation` page + `/v1/navigation/menus` routes + the
+> `navigation_menus`/`navigation_items` tables (kept as a rollback net). **Open
+> follow-on:** the marketplace **blueprints** still author `NavMenu` nodes bound to
+> `site.primaryNav`/`footerNav`; with the fallback gone a fresh blueprint install
+> renders empty nav (no regression — blueprints never created CMS menus, so their
+> nav was already empty) and shows a blank links editor until re-authored. The
+> blueprint definitions should seed node-owned `props.links` like the starter does.
+> The phase table in §9 is the original plan; these inline notes are what's built.
 
 ---
 

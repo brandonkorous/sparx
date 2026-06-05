@@ -500,7 +500,17 @@ function siteLayoutTree(): BuilderNode {
               node('Heading', { props: { level: 'h3', text: 'Ironhaul Diesel & Fleet' } }),
             ],
           }),
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.primaryNav' }),
+          node('NavMenu', {
+            props: {
+              orientation: 'row',
+              links: [
+                { label: 'Parts', href: '/products' },
+                { label: 'Fleet accounts', href: '/fleet-accounts' },
+                { label: 'Shop talk', href: '/journal' },
+                { label: 'Support', href: '/support' },
+              ],
+            },
+          }),
         ],
       }),
       node('Outlet', { box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' } }),
@@ -514,7 +524,16 @@ function siteLayoutTree(): BuilderNode {
         },
         layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
         children: [
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.footerNav' }),
+          node('NavMenu', {
+            props: {
+              orientation: 'row',
+              links: [
+                { label: 'Parts', href: '/products' },
+                { label: 'Fleet accounts', href: '/fleet-accounts' },
+                { label: 'Support', href: '/support' },
+              ],
+            },
+          }),
           node('SocialLinks', { bind: 'site.social' }),
           node('Text', { props: { variant: 'meta', text: '© Ironhaul Diesel & Fleet' } }),
         ],

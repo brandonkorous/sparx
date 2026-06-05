@@ -279,10 +279,20 @@ function aboutTree(): BuilderNode {
   });
 }
 
+// Default node-owned navigation links seeded into a new site's header/footer
+// (docs/57). Navigation is Builder-owned site chrome, so a brand-new site gets a
+// sensible, editable nav out of the box — no CMS module required.
+const STARTER_NAV_LINKS = [
+  { label: 'Home', href: '/' },
+  { label: 'Shop', href: '/products' },
+  { label: 'About', href: '/about' },
+];
+
 // The starter SITE LAYOUT (docs/45) — the chrome shell every page renders inside.
 // A header (logo + primary nav), the content Outlet, and a footer (footer nav +
-// social + copyright). Chrome binds to the `site` sources; the Outlet marks where
-// the routed page goes. One layout per tenant in v1.
+// social + copyright). The Logo + SocialLinks bind to `site` sources; the NavMenu
+// nodes OWN their links (docs/57). The Outlet marks where the routed page goes.
+// One layout per tenant in v1.
 function siteLayoutTree(): BuilderNode {
   return node('Section', {
     box: { name: 'Site layout', padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
@@ -299,7 +309,7 @@ function siteLayoutTree(): BuilderNode {
         layout: { direction: 'row', justify: 'between', alignItems: 'center' },
         children: [
           node('Logo', { bind: 'site.identity' }),
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.primaryNav' }),
+          node('NavMenu', { props: { orientation: 'row', links: STARTER_NAV_LINKS } }),
         ],
       }),
       node('Outlet', {
@@ -315,7 +325,7 @@ function siteLayoutTree(): BuilderNode {
         },
         layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
         children: [
-          node('NavMenu', { props: { orientation: 'row' }, bind: 'site.footerNav' }),
+          node('NavMenu', { props: { orientation: 'row', links: STARTER_NAV_LINKS } }),
           node('SocialLinks', { bind: 'site.social' }),
           node('Text', { props: { variant: 'meta', text: '© Your brand' } }),
         ],
