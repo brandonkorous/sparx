@@ -21,34 +21,33 @@ export async function ensureSchemas(client: Client = getClient()): Promise<{
   const existing: string[] = [];
   const altered: string[] = [];
   for (const { name, schema } of allSchemas()) {
-    let live: { fields?: { name: string }[] };
     try {
-      live = (await client.collections(name).retrieve()) as { fields?: { name: string }[] };
+      const live = await client.collections(name).retrieve();
       existing.push(name);
+
+      // Self-heal additive schema bumps: add any OPTIONAL schema field the live
+      // collection is missing (e.g. a new facet like `property_ids`). Typesense
+      // only permits adding optional fields to a populated collection — which is
+      // precisely what an additive bump is — so a deploy that introduces a field
+      // reconciles itself on the next indexer boot, no manual reindex/recreate.
+      // We never modify or drop existing fields (matched by name), so this is
+      // safe to run every boot.
+      const liveNames = new Set(live.fields?.map((f) => f.name));
+      const missing = (schema.fields ?? []).filter(
+        (f) => f.optional === true && !liveNames.has(f.name)
+      );
+      if (missing.length > 0) {
+        await client.collections(name).update({ fields: missing });
+        altered.push(name);
+      }
     } catch (err: unknown) {
       const status = (err as { httpStatus?: number }).httpStatus;
       if (status === 404) {
         await client.collections().create(schema);
         created.push(name);
-        continue;
+      } else {
+        throw err;
       }
-      throw err;
-    }
-
-    // Self-heal additive schema bumps: add any OPTIONAL schema field the live
-    // collection is missing (e.g. a new facet like `property_ids`). Typesense
-    // only permits adding optional fields to a populated collection — which is
-    // precisely what an additive bump is — so a deploy that introduces a field
-    // reconciles itself on the next indexer boot, no manual reindex/recreate.
-    // We never modify or drop existing fields (matched by name), so this is safe
-    // to run every boot.
-    const liveNames = new Set((live.fields ?? []).map((f) => f.name));
-    const missing = (schema.fields ?? []).filter(
-      (f) => f.optional === true && !liveNames.has(f.name)
-    );
-    if (missing.length > 0) {
-      await client.collections(name).update({ fields: missing });
-      altered.push(name);
     }
   }
   return { created, existing, altered };
