@@ -1,4 +1,4 @@
-import { Container, Eyebrow } from './primitives';
+import { Container } from './primitives';
 
 const LOGOS = [
   { name: 'Gillett Diesel' },
@@ -24,7 +24,15 @@ export function LogoStrip() {
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Eyebrow>Operating live on Sparx</Eyebrow>
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '13px',
+              color: 'var(--color-text-secondary)',
+            }}
+          >
+            Operating live on Sparx
+          </span>
           <span
             style={{
               fontFamily: 'var(--font-mono)',

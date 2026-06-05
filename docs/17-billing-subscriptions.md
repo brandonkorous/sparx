@@ -1,8 +1,8 @@
 # Sparx Platform — Billing & Subscriptions
 
-**Version:** 2.1
+**Version:** 2.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-05
 
 ---
 
@@ -129,6 +129,12 @@ All billing handled via Stripe:
 - Modules as Stripe subscription items (add/remove mid-cycle, prorated)
 - Annual plans as upfront charge with Stripe subscription
 - Managed hosting as a recurring add-on line item
+- **Additional sites** as a recurring per-site add-on line item — the tenant's
+  **primary** web property is included in the base plan; each **additional** site
+  (`properties` rows where `is_primary = false`) is one add-on, same shape as a
+  module item ([49-multi-site-per-tenant.md §7](49-multi-site-per-tenant.md)).
+  Metering/gating is deferred — create-site is open until the billing build wires
+  this item; the Sites settings page is where the count surfaces.
 - Transaction fees calculated via Stripe Connect (when applicable)
 - Failed payment: 3 retry attempts over 7 days → store read-only → 30 days → deactivated (data retained 90 days)
 

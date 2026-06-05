@@ -4,6 +4,7 @@ import type { FieldDef } from '@sparx/cms-schemas';
 import type { BuilderTemplateOption } from '@sparx/builder-schemas';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { listProperties, type Property } from '@/lib/sites';
 import { EditEntryForm } from './edit-entry-form';
 import { type SeoFields } from '../../../[id]/seo-panel';
 
@@ -37,6 +38,8 @@ interface ApiEntry {
   published_at: string | null;
   scheduled_at: string | null;
   updated_at: string;
+  // Model B per-site scoping (docs/49 §3). Empty = visible on all sites.
+  propertyIds?: string[];
 }
 
 interface ContentEntryDetailContentProps {
@@ -48,7 +51,7 @@ export async function ContentEntryDetailContent({ id }: ContentEntryDetailConten
   // Entry ids are UUIDs (no colons), so the segment after the last colon is the
   // id regardless of which caller invoked us.
   const entryId = id.includes(':') ? id.slice(id.lastIndexOf(':') + 1) : id;
-  const [entryResult, tenant] = await Promise.all([
+  const [entryResult, tenant, sites] = await Promise.all([
     (async () => {
       try {
         return await api.getWithEtag<ApiEntry>(`/v1/content/entries/${entryId}`);
@@ -59,6 +62,7 @@ export async function ContentEntryDetailContent({ id }: ContentEntryDetailConten
       }
     })(),
     api.get<{ slug: string }>('/v1/tenant'),
+    listProperties().catch(() => [] as Property[]),
   ]);
   const entry = entryResult.data;
   const initialEtag = entryResult.etag;
@@ -134,6 +138,8 @@ export async function ContentEntryDetailContent({ id }: ContentEntryDetailConten
         tenantSlug={tenant?.slug ?? null}
         templateOptions={templateOptions}
         currentTemplateId={currentTemplateId}
+        sites={sites}
+        initialPropertyIds={entry.propertyIds ?? []}
       />
     </Stack>
   );

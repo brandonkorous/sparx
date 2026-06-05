@@ -13,6 +13,10 @@
 export type EventType =
   // Platform / tenant lifecycle
   | 'tenant.created'
+  // Tenant blueprints (docs/54) — one-click marketplace template installs
+  | 'template.install'
+  | 'template.installed'
+  | 'template.install_failed'
   // Content
   | 'content.entry.created'
   | 'content.entry.updated'

@@ -1,10 +1,10 @@
 # Sparx Platform — Multi-Site per Tenant
 
-**Version:** 1.0 (Phases 1–4 built)
+**Version:** 1.1 (Phases 1–5 built)
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-04
+**Last Updated:** 2026-06-05
 
-> **Status: BUILT — Phases 1–4 shipped (2026-06-04); Phase 5 foundation-laid, enforcement deferred.**
+> **Status: BUILT — Phases 1–4 shipped (2026-06-04); Phase 5 (Model B per-site catalog + content, search facet, make-primary subdomain-follow) built 2026-06-05. Remaining: per-site module_scope, billing metering, per-site StorefrontSettings/nav, explicit cross-site sharing.**
 > One tenant can run **more than one website** (e.g. a main brand site + a campaign microsite, a
 > wholesale site and a retail site over the same catalog, a publisher with several publications).
 >
@@ -97,11 +97,37 @@ products, CRM customers, orders, inventory, pricing, billing/subscription, staff
 search index. This is the **smallest structural change** and covers multi-brand / microsite /
 multi-publication out of the box. Recommended first, per the platform's "deploy small" discipline.
 
-**Model B — Scoped multi-site (opt-in, later).**
-Add the ability to scope a _subset_ of shared data to a site: which collections/products a site
-exposes, which content types/entries publish to which site, per-site pricing visibility. Mechanism:
-a nullable `site_id` (or a site↔entity join) on the relevant catalog/content rows, where `null`
-means "all sites." Lets the wholesale and retail sites show different slices of one catalog.
+**Model B — Scoped multi-site. ✅ BUILT (catalog + content), 2026-06-05.**
+Scope a _subset_ of shared data to a site: which products a site exposes, which content entries
+publish to which site. Mechanism (shipped): a **site↔entity JOIN** — `commerce_product_properties`
+(product↔site) and `content_entry_properties` (entry↔site), composite-PK junctions with NO
+`tenant_id` (tenant isolation rides the FK parents, like `commerce_collection_products`).
+**Semantics: EMPTY join = visible on ALL sites** (the default — existing catalogs/content stay
+global with zero backfill); one-or-more rows = visible ONLY on those sites. The storefront read
+filters `propertyLinks none OR some(propertyId)` (`api-rest/src/lib/property.ts`), resolved for
+EVERY public read so the primary shows only global + primary-scoped items. Assigned per-item from
+the dashboard ("Visible on sites" control) and via the product/content APIs (`propertyIds` /
+`property_ids`). Lets a wholesale and a retail site show different slices of one catalog.
+
+> **Still tenant-wide (not yet per-site):** per-site _pricing visibility_, per-site _module scope_,
+> and the Typesense _search facet_ (search results are post-filtered in Postgres for now, so the
+> hit count can skew slightly until a `property_ids` facet lands in the index — docs/49 §9).
+
+> **🔖 BOOKMARK — future: explicit SHARING modes (share by choice).** Today the model is
+> binary: empty = everywhere, listed = only-those. A future iteration should let a tenant choose
+> how catalog/content is shared across sites, rather than assuming one default:
+>
+> - **Per-site default policy** — a site flag for "starts empty, opt products/content IN" (curated
+>   microsite) vs. today's "starts with everything, opt OUT" (the current global default).
+> - **Shared collections/segments** — assign a whole COLLECTION or content TAXONOMY to a set of
+>   sites in one action, instead of per-item (the junction already supports it; needs a bulk UI +
+>   a collection↔site / taxonomy↔site join).
+> - **Inheritance / linked catalogs** — a site that mirrors another's catalog by reference (changes
+>   propagate) vs. a one-time copy.
+> - **Per-site pricing visibility** — show a product on two sites but at different price-list
+>   visibility (ties into the deferred pricing-visibility item above).
+>   The junction tables are forward-compatible with all of these — they are additive on top of the
+>   shipped model, no migration of existing scope rows required.
 
 **Model C — Fully isolated sites.**
 Separate customers, separate orders, separate everything per site. **This is just
@@ -249,16 +275,22 @@ multi-site is purely additive from there.
 
 - **Per-site brand override** (§3) — the deliberate amendment to doc-34's "brand overridable by
   none." Decide scope: full identity override, or presentation-only.
-- **Model B scoping** — when (if) catalog/content gets a nullable `site_id`; whether pricing
-  visibility is per-site.
+- **Model B scoping** — ✅ BUILT 2026-06-05 (catalog + content) via per-site junction tables
+  (EMPTY = all sites). Implemented as join tables rather than a nullable `site_id` column so an
+  item can be on _several_ sites, not just one. Whether **pricing visibility** is per-site is still
+  open (the junctions don't carry price). Explicit cross-site **sharing** modes are the §3 🔖
+  bookmark.
 - **Per-site module scope** — can a site expose a subset of the tenant's enabled modules
   (`sites.module_scope`)? Enforcement deferred.
 - **Customer accounts across sites** — one shopper logging into two sibling sites
   ([27-customer-accounts-storefront-auth.md](27-customer-accounts-storefront-auth.md)): shared
   login across the tenant's sites, or per-site? (Leaning shared, since customers are tenant-level.)
-- **Search** — universal/Typesense ([39-universal-search.md](39-universal-search.md),
-  [22-typesense-search-spec.md](22-typesense-search-spec.md)) is tenant-scoped; a site-scoped
-  storefront search needs `site_id` as a filter facet.
+- **Search** — ✅ BUILT 2026-06-05. The storefront `products` collection gained a `property_ids`
+  facet; a global product carries the `__all__` sentinel, a scoped product its property ids, and
+  the storefront filters `property_ids:=[__all__,<propertyId>]` so per-site search (incl. the
+  `found` count) is site-correct. Admin/dashboard search stays unscoped (sees every product).
+  `ensureSchemas` self-heals the additive field on the next indexer boot. Universal/⌘K search
+  ([39-universal-search.md](39-universal-search.md)) is admin-facing, so it stays tenant-scoped.
 - **Email from-identity per site** — a per-site sending domain / from-address
   ([13-email-platform-prd.md](13-email-platform-prd.md))? Defer.
 - **Hard isolation** is explicitly **not** a multi-site feature — that's multi-workspace (§2).
@@ -267,24 +299,25 @@ multi-site is purely additive from there.
 
 ## 10. Phasing
 
-| Phase | Scope                                                                                                                                                                                                                                                                                                                                                                                                    | Depends on                                                                        |
-| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| 1 ✅  | `Property` entity + migration (one primary site per tenant); re-key the **Builder** presentation layer (`builder_pages`/`builder_layouts`/`builder_page_assignments`) to `property_id`; **no UX change**. Legacy `sitebuilder_*` left single-site (retiring).                                                                                                                                            | DB Migrate pipeline; hand-authored RLS/keys SQL                                   |
-| 2 ✅  | Host→property routing (`domains` dispatch table + resolver + Caddy authorization); create-additional-site flow; per-site `*.sparx.zone` subdomain + BYO custom-domain connect/verify; storefront renders the resolved site (`apps/site` host→property threading).                                                                                                                                        | Phase 1; [04](04-domain-ssl-automation.md)/[24](24-domain-purchase-management.md) |
-| 3 ✅  | Dashboard **Sites** settings hub + in-builder **site switcher** (cookie → `x-sparx-property-id`); single-site tenants see nothing new.                                                                                                                                                                                                                                                                   | Phase 2; doc 32 breadcrumb; [24](24-dashboard-shell.md)                           |
-| 4 ✅  | Per-site **brand override** (`Property.brand_override` JSON; presentation-only identity — display name + theme colours + logo; merged over the tenant brand in the public payload). Amends [34](34-platform-glossary.md)/[33](33-token-model-v2.md).                                                                                                                                                     | Phase 3                                                                           |
-| 5 ◐   | **Foundation laid, enforcement deferred** (per §3 — Model B is "opt-in, later"). Additive `property_id` scoping on catalog/content, per-site `module_scope`, billing add-on metering, site-scoped search facet are NOT yet built — the schema is forward-compatible (nullable `property_id` = "all sites") and the billing decision is recorded (§7). Build when a tenant actually needs split catalogs. | [17](17-billing-subscriptions.md), [39](39-universal-search.md)                   |
+| Phase | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Depends on                                                                        |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| 1 ✅  | `Property` entity + migration (one primary site per tenant); re-key the **Builder** presentation layer (`builder_pages`/`builder_layouts`/`builder_page_assignments`) to `property_id`; **no UX change**. Legacy `sitebuilder_*` left single-site (retiring).                                                                                                                                                                                                                                                                                                                                                  | DB Migrate pipeline; hand-authored RLS/keys SQL                                   |
+| 2 ✅  | Host→property routing (`domains` dispatch table + resolver + Caddy authorization); create-additional-site flow; per-site `*.sparx.zone` subdomain + BYO custom-domain connect/verify; storefront renders the resolved site (`apps/site` host→property threading).                                                                                                                                                                                                                                                                                                                                              | Phase 1; [04](04-domain-ssl-automation.md)/[24](24-domain-purchase-management.md) |
+| 3 ✅  | Dashboard **Sites** settings hub + in-builder **site switcher** (cookie → `x-sparx-property-id`); single-site tenants see nothing new.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Phase 2; doc 32 breadcrumb; [24](24-dashboard-shell.md)                           |
+| 4 ✅  | Per-site **brand override** (`Property.brand_override` JSON; presentation-only identity — display name + theme colours + logo; merged over the tenant brand in the public payload). Amends [34](34-platform-glossary.md)/[33](33-token-model-v2.md).                                                                                                                                                                                                                                                                                                                                                           | Phase 3                                                                           |
+| 5 ✅  | **Model B per-site scoping — BUILT (2026-06-05).** Per-site **catalog + content** via `commerce_product_properties` / `content_entry_properties` junctions (EMPTY = all sites, the default); storefront reads + **sitemap** + **Typesense `property_ids` facet** all site-scoped; dashboard **"Visible on sites"** control on the product + Pages + content-entry editors; **make-primary** now re-points the bare host (subdomain-follow). **Still deferred:** per-site `module_scope`, billing add-on metering, per-site StorefrontSettings/nav, explicit cross-site **sharing** modes (the §3 🔖 bookmark). | [17](17-billing-subscriptions.md), [39](39-universal-search.md)                   |
 
 ---
 
 ## 11. Docs to update when this lands
 
-- [32-workspace-switching-breadcrumb.md](32-workspace-switching-breadcrumb.md) §2 — soften the "no
-  Site model" statement to "no Site model _for the workspace axis_"; point here for the site axis.
-- [34-platform-glossary.md](34-platform-glossary.md) — add **Site** as a first-class term ("a
-  tenant has one _or more_ sites"); record the brand-override amendment.
-- [05-data-model.md](05-data-model.md) — the `sites` table and the `site_id` scoping column.
-- [02-architecture-overview.md](02-architecture-overview.md) / [04](04-domain-ssl-automation.md) /
-  [24-domain-purchase-management.md](24-domain-purchase-management.md) — host→site resolution.
-- [17-billing-subscriptions.md](17-billing-subscriptions.md) — per-site add-on.
+- ✅ [32-workspace-switching-breadcrumb.md](32-workspace-switching-breadcrumb.md) §2 — softened the
+  "no Site model" statement to "no Site model _for the workspace axis_"; points here for the site axis.
+- ✅ [34-platform-glossary.md](34-platform-glossary.md) — **Site** added as a first-class term ("a
+  tenant has one _or more_ sites"); brand-override amendment recorded.
+- ✅ [05-data-model.md](05-data-model.md) — `properties` table + the `property_id` scoping column +
+  the Model B junction tables noted (the model is junction-table, not a single `site_id` column).
+- ✅ [02-architecture-overview.md](02-architecture-overview.md) / [04](04-domain-ssl-automation.md) /
+  [24-domain-purchase-management.md](24-domain-purchase-management.md) — host→site resolution noted.
+- ✅ [17-billing-subscriptions.md](17-billing-subscriptions.md) — per-additional-site add-on noted.
 - [00-README.md](00-README.md) — index entry (already stale; see note in §9 of doc 48 work).

@@ -1,5 +1,5 @@
 import { Button } from '@sparx/ui';
-import { Container, Display, EyebrowBadge, Spark } from './primitives';
+import { Container, Display, Spark } from './primitives';
 
 const METRICS = [
   { value: '5 minutes', subtitle: 'average time-to-live' },
@@ -29,12 +29,9 @@ export function FinalCta() {
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', maxWidth: '920px' }}>
-            <EyebrowBadge color="#818CF8" background="#1E1B4B" text="#818CF8">
-              Ready when you are
-            </EyebrowBadge>
             <Display size={104} lineHeight={96} color="#FFFFFF">
               Light the spark
-              <Spark />
+              <Spark color="#818CF8" />
             </Display>
             <p
               style={{

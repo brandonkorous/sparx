@@ -1,8 +1,8 @@
 # Tenant Blueprints — one-click templates that provision a whole tenant
 
-**Version:** 0.2.0
+**Version:** 0.3.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-04
+**Last Updated:** 2026-06-05
 
 ---
 
@@ -366,13 +366,29 @@ renders the themed home/PDP/blog and the product add-to-cart works.
 **Build order (each shippable):**
 
 1. ✅ **BUILT (2026-06-04)** — `@sparx/blueprints` manifest type + integrity validator + the
-   `retail-store-blog` flagship (ships the Driftwood theme), no installer yet. Typecheck +
-   lint + 15 tests green. (`packages/blueprints/`).
-2. `template-installer` worker + `template.install` event; install **commerce + content +
-   brand/theme** slices first (the data-heavy ones), draft. Verify in a scratch tenant.
-3. Add **pages + layout + emails + components** slices; verify themed previews.
-4. Catalog tables + a single seeded blueprint row; minimal **Install** button (no browse UI).
-5. Marketplace **browse** + **Review & go live** surface.
+   `retail-store-blog` flagship (ships the Driftwood theme). Typecheck + lint + 15 tests green.
+   (`packages/blueprints/`).
+2. ✅ **BUILT (2026-06-05)** — the installer (`services/api-rest/src/lib/blueprint-installer.ts`):
+   `installBlueprint` (all slices: modules → assets → brand → theme → content → commerce →
+   components → layout → pages → emails, draft) + `goLiveInstall` (publish all). Synchronous,
+   called from the route; structured to lift into the async worker later. Reuses every existing
+   service; the only DB write helpers it owns are the install row + external MediaAsset rows.
+3. ✅ **BUILT (2026-06-05)** — events (`template.installed` / `template.install_failed`) +
+   `mediaPublicUrl` absolute-URL pass-through + `tenant_blueprint_installs` table (migration
+   `20260703000000`, RLS, applied locally, no drift).
+4. ✅ **BUILT (2026-06-05)** — REST: `GET /v1/blueprints`, `GET /v1/blueprints/:key`,
+   `POST /v1/blueprints/:key/install`, `GET /v1/blueprints/installs[/:id]`,
+   `POST /v1/blueprints/installs/:id/go-live` (install/go-live admin-only, install into the
+   ACTIVE property). `@sparx/blueprints` wired into api-rest (dep + Dockerfile COPY).
+5. ✅ **BUILT (2026-06-05)** — dashboard **Templates** marketplace (`/templates`): browse cards
+   with contents breakdown, confirm-gated **Install**, draft → **Go live**, rail-nav entry.
+
+> **Verified end-to-end (2026-06-05):** a throwaway-tenant harness ran `installBlueprint` +
+> `goLiveInstall` through the real service layer + RLS against the local DB — 28/28 assertions
+> passed (every artifact created; go-live published pages, activated the layout, set products
+> active, published content, status → live). Backend fully exercised; UI typecheck-clean.
+> The async `template-installer` Cloud Run worker (+ `template.install` topic in TF) remains the
+> production target — the synchronous installer is structured to lift into it unchanged.
 
 **Deferred (build on it later, per the user's framing):**
 
@@ -390,10 +406,10 @@ renders the themed home/PDP/blog and the product add-to-cart works.
 
 1. **Billing gate (§7):** install-what-you-can + upsell, or block at the button? (Recommend
    the former; needs a docs/17 cross-check.)
-2. **Starter-seed coexistence (§5):** confirm `listOrSeed` only seeds on an empty catalog so
-   installer pages suppress starters; otherwise add an explicit provisioned sentinel.
-3. **Re-install semantics:** is re-installing the same blueprint a no-op merge, or blocked
-   once `tenant_blueprint_installs` has a row? (Recommend blocked-by-default with an explicit
-   "reset & reinstall".)
+2. ✅ **Resolved — Starter-seed coexistence (§5):** the installer calls `pageService.create`
+   directly (never `listOrSeed`), so no starters leak — the verify run created exactly 5 pages.
+3. ✅ **Resolved — Re-install semantics:** blocked by default. A second install for the same
+   (tenant, property, blueprint) returns 409 (`findInstall` guard + the unique index). An
+   explicit "reset & reinstall" (delete the row + artifacts) is not built yet.
 4. **Default property:** always install into primary, or let the marketplace choose a property
    when multi-site is on?

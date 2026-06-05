@@ -180,6 +180,10 @@ export const CreateProductInput = z.object({
   hsCode: z.string().max(15).optional(), // Harmonized System code for customs
   categoryIds: z.array(Uuid).max(20).default([]),
   collectionIds: z.array(Uuid).max(50).default([]),
+  // Model B per-site scoping (docs/49 §3): the web PROPERTIES this product is
+  // visible on. EMPTY = visible on ALL sites (the default). Update sends the full
+  // replacement set; UpdateProductInput inherits it as optional via .partial().
+  propertyIds: z.array(Uuid).max(50).default([]),
   defaultWarehouseId: Uuid.optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
   ...SeoFields.shape,

@@ -104,6 +104,22 @@ function friendly(err: unknown): string {
   return 'An error occurred.';
 }
 
+// The Pages editor serializes its site-scope selection (docs/49 §3 Model B) as a
+// JSON array of property ids in the `property_ids` form field. Absent/blank ⇒
+// `undefined` (single-site tenants, or no change) so the PATCH omits the key and
+// api-rest leaves the existing scope untouched. A present array (even empty,
+// meaning "all sites") is a full-replacement set.
+function parsePropertyIds(raw: string): string[] | undefined {
+  if (!raw) return undefined;
+  try {
+    const arr: unknown = JSON.parse(raw);
+    if (Array.isArray(arr) && arr.every((x) => typeof x === 'string')) return arr;
+  } catch {
+    /* malformed → leave scope unchanged */
+  }
+  return undefined;
+}
+
 export async function createPage(formData: FormData): Promise<ActionResult<{ id: string }>> {
   const parsed = CreateSchema.safeParse({
     title: readField(formData, 'title'),
@@ -150,6 +166,11 @@ export async function updatePage(id: string, formData: FormData): Promise<Action
     return { ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid input.' };
   }
 
+  // Model B per-site scoping (docs/49 §3). The form serializes the selected
+  // property ids as a JSON array; multi-site only (single-site tenants don't
+  // render the control, so the field is absent → scope left unchanged).
+  const propertyIds = parsePropertyIds(readField(formData, 'property_ids'));
+
   try {
     await api.patch(`/v1/content/entries/${id}`, {
       slug: parsed.data.slug,
@@ -167,6 +188,7 @@ export async function updatePage(id: string, formData: FormData): Promise<Action
         ...(parsed.data.robots ? { robots: parsed.data.robots } : {}),
         ...(parsed.data.ogImage ? { ogImage: parsed.data.ogImage } : {}),
       },
+      ...(propertyIds !== undefined ? { property_ids: propertyIds } : {}),
     });
   } catch (err) {
     return { ok: false, error: friendly(err) };
@@ -273,6 +295,10 @@ export interface AutosaveInput {
   slug: string;
   content: Record<string, unknown>;
   seo: SeoPayload;
+  // Model B per-site scoping (docs/49 §3): the web PROPERTIES this page shows on.
+  // EMPTY = all sites (the default). Full-replacement set; omit to leave the
+  // scope unchanged. Only sent by multi-site tenants.
+  propertyIds?: string[];
 }
 
 export async function autosavePage(
@@ -300,6 +326,7 @@ export async function autosavePage(
           ...(input.seo.robots ? { robots: input.seo.robots } : {}),
           ...(input.seo.ogImage ? { ogImage: input.seo.ogImage } : {}),
         },
+        ...(input.propertyIds !== undefined ? { property_ids: input.propertyIds } : {}),
       },
       ifMatch ? { ifMatch } : {}
     );

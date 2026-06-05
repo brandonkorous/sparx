@@ -1,4 +1,4 @@
-import { Container, Display, Eyebrow, Spark } from './primitives';
+import { Container, Display, Spark } from './primitives';
 
 const STEPS = [
   {
@@ -47,7 +47,6 @@ export function Promise() {
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '900px' }}>
-          <Eyebrow>The Sparx promise</Eyebrow>
           <Display size={72} lineHeight={76}>
             Live in five
             <br />

@@ -18,6 +18,7 @@ import {
   bulkUpsertProducts,
 } from '../src/bulk';
 import { palette, searchAll, searchCustomers, searchOrders, searchProducts } from '../src/search';
+import { GLOBAL_SITE_SCOPE } from '../src/schemas';
 import { ensureSynonyms, GLOBAL_PRODUCT_SYNONYMS } from '../src/synonyms';
 import { generateScopedSearchKeyWithExpiry } from '../src/keys';
 import type {
@@ -172,6 +173,44 @@ describe.skipIf(!AVAILABLE)('@sparx/search round-trip', () => {
     }
     // Tenant B's identical "Bosch Fuel Injector" must never appear for A.
     expect(res.hits.every((h) => h.document.product_id !== 'p9')).toBe(true);
+  });
+
+  it('scopes products to the active site via the Model B property facet', async () => {
+    // A separate tenant so this doesn't perturb TENANT_A's count assertions.
+    const TENANT_C = 'tenant-cccccccc';
+    const SITE_A = 'prop-aaaaaaaa';
+    const SITE_B = 'prop-bbbbbbbb';
+    await bulkUpsertProducts([
+      // Global — the sentinel makes it visible on every site.
+      product(TENANT_C, 'g1', {
+        title: 'Global Widget',
+        handle: 'global-widget',
+        property_ids: [GLOBAL_SITE_SCOPE],
+      }),
+      product(TENANT_C, 'sa', {
+        title: 'Site A Widget',
+        handle: 'site-a-widget',
+        property_ids: [SITE_A],
+      }),
+      product(TENANT_C, 'sb', {
+        title: 'Site B Widget',
+        handle: 'site-b-widget',
+        property_ids: [SITE_B],
+      }),
+    ]);
+
+    // Site A search → global + A's exclusive, never B's.
+    const a = await searchProducts({ tenantId: TENANT_C, q: '*', propertyId: SITE_A });
+    expect(a.hits.map((h) => h.document.product_id).sort()).toEqual(['g1', 'sa']);
+    expect(a.found).toBe(2);
+
+    // Site B search → global + B's exclusive, never A's.
+    const b = await searchProducts({ tenantId: TENANT_C, q: '*', propertyId: SITE_B });
+    expect(b.hits.map((h) => h.document.product_id).sort()).toEqual(['g1', 'sb']);
+
+    // No property filter (admin/dashboard) → all three.
+    const all = await searchProducts({ tenantId: TENANT_C, q: '*' });
+    expect(all.found).toBe(3);
   });
 
   it('returns facet counts for products', async () => {

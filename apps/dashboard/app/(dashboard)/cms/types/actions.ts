@@ -132,6 +132,11 @@ export interface AutosaveEntryInput {
   seo: AutosaveSeoInput;
   /** Routable types only; omitted (and ignored server-side) otherwise. */
   slug?: string;
+  // Model B per-site scoping (docs/49 §3): the web PROPERTIES this entry shows
+  // on. EMPTY = all sites (the default). Full-replacement set; omit to leave the
+  // scope unchanged. Only sent by multi-site tenants — the entry editor passes
+  // `undefined` for single-site tenants so a stray PATCH never writes scope rows.
+  propertyIds?: string[];
 }
 
 export async function autosaveEntry(
@@ -145,6 +150,7 @@ export async function autosaveEntry(
     if (!slugParsed.success) return { ok: false, error: slugParsed.error.issues[0]?.message };
     payload.slug = slugParsed.data;
   }
+  if (input.propertyIds !== undefined) payload.property_ids = input.propertyIds;
   try {
     const result = await api.patchWithEtag<ApiEntry>(
       `/v1/content/entries/${id}`,

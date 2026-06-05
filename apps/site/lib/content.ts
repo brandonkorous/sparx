@@ -6,6 +6,8 @@
 // the token and, if it grants this entry, returns the draft body. Failing
 // validation just falls back to the published-only path.
 
+import { resolveActivePropertySlug } from './tenant';
+
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
 export interface ApiEntry<TBody = Record<string, unknown>> {
@@ -38,6 +40,10 @@ export async function publicGet<T>(
   const qs = new URLSearchParams(
     Object.fromEntries(Object.entries(query).map(([k, v]) => [k, String(v)]))
   );
+  // Model B (docs/49 §3): scope every public content read to the active site.
+  // Null for the primary (api-rest defaults), so single-site is unchanged.
+  const propertySlug = await resolveActivePropertySlug();
+  if (propertySlug && !qs.has('property')) qs.set('property', propertySlug);
   const headers: Record<string, string> = {};
   if (options.previewToken) {
     headers.Authorization = `Preview ${options.previewToken}`;

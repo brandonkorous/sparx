@@ -69,6 +69,7 @@ model ContentEntry {
   previewTokens   PreviewToken[]
   navigationItems NavigationItem[]
   docPlacements   StorefrontDocPlacement[]
+  propertyLinks   ContentEntryProperty[]
 
   @@unique([tenantId, typeKey, slug])
   @@index([tenantId, typeKey, status])
@@ -77,6 +78,23 @@ model ContentEntry {
   @@index([tenantId, scheduledAt])
   @@index([tenantId, legalKind])
   @@map("content_entries")
+}
+
+// Per-site content scoping (docs/49 §3 Model B) — which web PROPERTIES a content
+// entry publishes to. NO rows = ALL sites (the default, backward-compatible);
+// rows = only those sites. Junction (composite PK, NO tenant_id — rides the FK
+// parents like ProductProperty), so existing entries stay global with no
+// backfill. The public read filters `propertyLinks none OR some(propertyId)`.
+model ContentEntryProperty {
+  propertyId String @map("property_id") @db.Uuid
+  entryId    String @map("entry_id") @db.Uuid
+
+  property Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  entry    ContentEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, entryId])
+  @@index([entryId])
+  @@map("content_entry_properties")
 }
 
 // Every PATCH creates a revision tagged `autosave`; explicit Save/Publish

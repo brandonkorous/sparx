@@ -6,6 +6,14 @@ import type { CollectionCreateSchema } from 'typesense/lib/Typesense/Collections
 
 export const PRODUCTS_COLLECTION = 'products';
 
+// Multi-site scope sentinel (docs/49 §3 Model B). A GLOBAL product (visible on
+// every site) carries this single value in `property_ids`; a site-scoped product
+// carries its property ids instead. The storefront filter matches
+// `property_ids:=[<sentinel>,<propertyId>]` → global + this-site items. A plain
+// token (not `*`, which Typesense's filter grammar treats as a wildcard) and
+// never a real property id (those are UUIDs), so the two can't collide.
+export const GLOBAL_SITE_SCOPE = '__all__';
+
 export function productsSchema(
   collectionName: string = PRODUCTS_COLLECTION
 ): CollectionCreateSchema {
@@ -26,6 +34,14 @@ export function productsSchema(
       { name: 'tags', type: 'string[]', facet: true, optional: true },
       { name: 'category_ids', type: 'string[]', facet: true, optional: true },
       { name: 'collection_ids', type: 'string[]', facet: true, optional: true },
+
+      // Multi-site scope (docs/49 §3 Model B). A GLOBAL product carries the
+      // `GLOBAL_SITE_SCOPE` sentinel; a site-scoped product carries its property
+      // ids. The storefront filters `property_ids:=[<sentinel>,<propertyId>]` so
+      // a per-site search returns global + this-site items and never another
+      // site's exclusive products — which also makes Typesense's `found` count
+      // site-correct. Admin/dashboard search omits the filter (sees everything).
+      { name: 'property_ids', type: 'string[]', facet: false, optional: true },
 
       // Price + inventory facets (storefront price-range filter, in-stock toggle).
       { name: 'price_min_cents', type: 'int32', facet: true },
@@ -70,6 +86,9 @@ export interface ProductSearchDocument {
   tags?: string[];
   category_ids?: string[];
   collection_ids?: string[];
+  // Model B site scope (docs/49 §3). `[GLOBAL_SITE_SCOPE]` = global (all sites);
+  // otherwise the property ids the product is scoped to.
+  property_ids?: string[];
   price_min_cents: number;
   price_max_cents: number;
   in_stock: boolean;

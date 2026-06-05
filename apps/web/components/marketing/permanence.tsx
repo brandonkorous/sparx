@@ -1,5 +1,5 @@
 import { Button } from '@sparx/ui';
-import { Container, Display, EyebrowBadge, Spark } from './primitives';
+import { Container, Display, Spark } from './primitives';
 
 // The permanence beat — the "second promise" from docs/01 §7 and the brand
 // guide §7.2. It sits directly below the hero (indigo) as a near-black band, so
@@ -38,12 +38,9 @@ export function Permanence() {
           style={{ justifyContent: 'space-between', gap: '40px' }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', maxWidth: '920px' }}>
-            <EyebrowBadge color="#818CF8" background="#1E1B4B" text="#818CF8">
-              AI builds it. Sparx keeps it.
-            </EyebrowBadge>
             <Display size={88} lineHeight={84} color="#FFFFFF">
               The website that&apos;s still yours next year
-              <Spark />
+              <Spark color="#818CF8" />
             </Display>
             <p
               style={{
@@ -55,8 +52,9 @@ export function Permanence() {
                 margin: 0,
               }}
             >
-              Generate it with AI if you want. Then maintain and enhance it yourself — no-code by
-              default, full code when you want it — for years. You own the data. You own the site.
+              <span style={{ color: '#818CF8' }}>AI builds it. Sparx keeps it.</span> Generate it
+              with AI if you want. Then maintain and enhance it yourself — no-code by default, full
+              code when you want it — for years. You own the data. You own the site.
             </p>
           </div>
 

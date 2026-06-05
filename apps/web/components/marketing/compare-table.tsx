@@ -117,7 +117,6 @@ export function CompareTable() {
     <Section surface="surface" padding="xl">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
-          eyebrow="Vs everything else"
           headline={
             <>
               The capability gap

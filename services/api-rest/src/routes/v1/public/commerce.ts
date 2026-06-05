@@ -21,11 +21,20 @@ import { ok, paged } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 import { prisma, withTenant } from '@sparx/db';
 import { searchProducts } from '@sparx/search';
+import { resolvePublicPropertyId, productSiteVisibilityWhere } from '../../../lib/property.js';
 
-const TenantQuery = z.object({ tenant: z.string().min(1).max(63) });
+// `property` (a stable site slug) scopes catalog reads to one web PROPERTY
+// (docs/49 Model B). The storefront passes it for non-primary sites; omitted →
+// the tenant's primary site. Resolved on EVERY read so the primary shows only
+// global + primary-scoped products, never another site's exclusive items.
+const TenantQuery = z.object({
+  tenant: z.string().min(1).max(63),
+  property: z.string().min(1).max(63).optional(),
+});
 
 const PagingQuery = z.object({
   tenant: z.string().min(1).max(63),
+  property: z.string().min(1).max(63).optional(),
   page: z.coerce.number().int().min(1).default(1),
   perPage: z.coerce.number().int().min(1).max(100).default(24),
 });
@@ -179,31 +188,29 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const { handle } = HandleParams.parse(request.params);
     const q = PagingQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const result = await withTenant({ tenantId }, async (tx) => {
       const collection = await tx.productCollection.findFirst({
         where: { handle, deletedAt: null },
         select: { id: true },
       });
       if (!collection) return null;
+      // Model B: products in the collection AND visible on the active site.
+      const where = {
+        collectionLinks: { some: { collectionId: collection.id } },
+        status: 'active' as const,
+        deletedAt: null,
+        ...productSiteVisibilityWhere(propertyId),
+      };
       const [rows, total] = await Promise.all([
         tx.product.findMany({
-          where: {
-            collectionLinks: { some: { collectionId: collection.id } },
-            status: 'active',
-            deletedAt: null,
-          },
+          where,
           orderBy: { updatedAt: 'desc' },
           take: q.perPage,
           skip: (q.page - 1) * q.perPage,
           select: productSelect(),
         }),
-        tx.product.count({
-          where: {
-            collectionLinks: { some: { collectionId: collection.id } },
-            status: 'active',
-            deletedAt: null,
-          },
-        }),
+        tx.product.count({ where }),
       ]);
       return { rows, total };
     });
@@ -220,9 +227,12 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/commerce/products', async (request) => {
     const q = ProductListQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const where = {
       status: 'active' as const,
       deletedAt: null,
+      // Model B: only products visible on the active site (global or scoped here).
+      ...productSiteVisibilityWhere(propertyId),
       ...(q.vendor ? { vendor: q.vendor } : {}),
       ...(q.productType ? { productType: q.productType } : {}),
       ...(q.tag ? { tags: { has: q.tag } } : {}),
@@ -279,6 +289,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/commerce/search', async (request) => {
     const q = SearchQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
 
     // Build the price filter in Typesense grammar (cents, matching the index).
     const priceParts: string[] = [];
@@ -294,6 +305,9 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
 
     const result = await searchProducts({
       tenantId,
+      // Model B (docs/49 §3): scope the Typesense query to the active site so the
+      // `found` count + facets are site-correct, not just the hydrated rows.
+      propertyId,
       q: q.q,
       page: q.page,
       perPage: q.perPage,
@@ -311,7 +325,16 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     if (ids.length > 0) {
       const rows = await withTenant({ tenantId }, (tx) =>
         tx.product.findMany({
-          where: { id: { in: ids }, status: 'active', deletedAt: null },
+          // Model B: Typesense now scopes by `property_ids` (so `found` is
+          // site-correct), but we keep this PG visibility filter as a
+          // belt-and-suspenders for the rolling-reindex window where a freshly
+          // re-scoped product hasn't been re-projected yet.
+          where: {
+            id: { in: ids },
+            status: 'active',
+            deletedAt: null,
+            ...productSiteVisibilityWhere(propertyId),
+          },
           select: productSelect(),
         })
       );
@@ -373,9 +396,16 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const { handle } = HandleParams.parse(request.params);
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const result = await withTenant({ tenantId }, async (tx) => {
       const product = await tx.product.findFirst({
-        where: { handle, status: 'active', deletedAt: null },
+        // Model B: a product not visible on the active site 404s by URL too.
+        where: {
+          handle,
+          status: 'active',
+          deletedAt: null,
+          ...productSiteVisibilityWhere(propertyId),
+        },
         select: {
           id: true,
           title: true,

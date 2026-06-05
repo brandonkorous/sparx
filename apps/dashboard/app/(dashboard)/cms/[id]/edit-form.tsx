@@ -51,6 +51,7 @@ import {
 import { ContentBlockEditor, EMPTY_DOC, type CmsDoc } from '@sparx/cms-editor';
 import Link from 'next/link';
 import { CalendarClock, History, Trash2 } from 'lucide-react';
+import type { Property } from '@/lib/sites';
 import {
   autosavePage,
   deletePage,
@@ -58,6 +59,7 @@ import {
   setPageStatus,
   updatePage,
 } from '../actions';
+import { SiteScopeField } from '../../_components/site-scope-field';
 import { SeoPanel, type SeoFields } from './seo-panel';
 import { PreviewButton } from './preview-button';
 
@@ -93,13 +95,20 @@ export function EditPageForm({
   page,
   tenantSlug,
   initialEtag,
+  sites,
+  initialPropertyIds,
 }: {
   page: EditableTenantPage;
   tenantSlug: string | null;
   initialEtag: string | null;
+  // Multi-site (docs/49 §3) — the tenant's sites + this page's current scope.
+  // SiteScopeField hides itself for single-site tenants.
+  sites: Property[];
+  initialPropertyIds: string[];
 }) {
   const previewOrigin = storefrontOrigin(tenantSlug);
   const router = useRouter();
+  const multiSite = sites.length > 1;
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
@@ -107,6 +116,7 @@ export function EditPageForm({
   const [title, setTitle] = React.useState(page.title);
   const [slug, setSlug] = React.useState(page.slug);
   const [seo, setSeo] = React.useState<SeoFields>(page.seo);
+  const [propertyIds, setPropertyIds] = React.useState<string[]>(initialPropertyIds);
 
   // Autosave bookkeeping.
   const [saveState, setSaveState] = React.useState<SaveState>({ kind: 'idle' });
@@ -130,6 +140,7 @@ export function EditPageForm({
   const slugRef = React.useRef(slug);
   const docRef = React.useRef(doc);
   const seoRef = React.useRef(seo);
+  const propertyIdsRef = React.useRef(propertyIds);
   React.useEffect(() => {
     titleRef.current = title;
   }, [title]);
@@ -142,6 +153,9 @@ export function EditPageForm({
   React.useEffect(() => {
     seoRef.current = seo;
   }, [seo]);
+  React.useEffect(() => {
+    propertyIdsRef.current = propertyIds;
+  }, [propertyIds]);
 
   const runAutosave = React.useCallback(async () => {
     if (inFlightRef.current) return;
@@ -162,6 +176,7 @@ export function EditPageForm({
           ...(seoRef.current.robots ? { robots: seoRef.current.robots } : {}),
           ...(seoRef.current.ogImage ? { ogImage: seoRef.current.ogImage } : {}),
         },
+        propertyIds: multiSite ? propertyIdsRef.current : undefined,
       },
       etagRef.current
     );
@@ -180,11 +195,12 @@ export function EditPageForm({
     if (dirtyRef.current) {
       void runAutosave();
     }
-  }, [page.id, saveState.kind]);
+  }, [page.id, saveState.kind, multiSite]);
 
   // Debounce: whenever a controlled value changes, mark dirty + schedule
   // a save 600ms after the last edit. Skips the very first render so the
-  // initial prop hydration doesn't trigger a needless save.
+  // initial prop hydration doesn't trigger a needless save. Site scope
+  // (propertyIds) rides the same PATCH, so a scope change autosaves like any edit.
   React.useEffect(() => {
     if (!hydratedRef.current) {
       hydratedRef.current = true;
@@ -197,7 +213,7 @@ export function EditPageForm({
     return () => {
       clearTimeout(handle);
     };
-  }, [title, slug, doc, seo, runAutosave]);
+  }, [title, slug, doc, seo, propertyIds, runAutosave]);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -210,6 +226,10 @@ export function EditPageForm({
     formData.set('canonical', seo.canonical);
     formData.set('robots', seo.robots);
     formData.set('ogImage', seo.ogImage);
+    // Model B per-site scoping (docs/49 §3) — multi-site only. Single-site
+    // tenants don't render the control, so the key stays absent and api-rest
+    // leaves the page's scope untouched.
+    if (multiSite) formData.set('property_ids', JSON.stringify(propertyIds));
 
     startTransition(async () => {
       const result = await updatePage(page.id, formData);
@@ -412,6 +432,18 @@ export function EditPageForm({
             </Stack>
           </CardContent>
         </Card>
+
+        {multiSite && (
+          <Card variant="module">
+            <CardHeader>
+              <Heading level={3}>Sites</Heading>
+              <CardDescription>Which of your sites show this page.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SiteScopeField sites={sites} value={propertyIds} onChange={setPropertyIds} />
+            </CardContent>
+          </Card>
+        )}
 
         <SeoPanel
           value={seo}

@@ -37,7 +37,6 @@ export function Pricing() {
     <Section id="pricing" padding="xl">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
-          eyebrow="Pricing"
           headline={
             <>
               Pay for what you use.

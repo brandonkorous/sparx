@@ -58,7 +58,6 @@ export function StackReplacement() {
     <Section id="platform" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
-          eyebrow="Stack consolidation"
           headline={
             <>
               Six tabs.

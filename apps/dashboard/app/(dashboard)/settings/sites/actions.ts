@@ -76,6 +76,21 @@ export async function createSite(formData: FormData): Promise<ActionResult> {
   return { ok: true };
 }
 
+/** Delete a site (refused for the primary by api-rest). Removes its pages,
+ *  layouts, domains, and per-site catalog/content scope; shared back office is
+ *  untouched. */
+export async function deleteSite(propertyId: string): Promise<ActionResult> {
+  try {
+    await api.delete(`/v1/properties/${propertyId}`);
+  } catch (err) {
+    return fail(err);
+  }
+  // The active-site cookie may now point at a deleted site; resolvePropertyId
+  // fails closed to the primary, so a broad revalidate is enough.
+  revalidatePath('/', 'layout');
+  return { ok: true };
+}
+
 /** Make a site the tenant's primary (dashboard default + billing anchor). */
 export async function makeSitePrimary(propertyId: string): Promise<ActionResult> {
   try {

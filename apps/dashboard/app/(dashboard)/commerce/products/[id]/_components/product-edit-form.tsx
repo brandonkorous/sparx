@@ -21,6 +21,8 @@ import {
 } from '@sparx/ui';
 
 import { SeoScoreChip } from '@/components/seo/seo-score';
+import type { Property } from '@/lib/sites';
+import { SiteScopeField } from '../../../../_components/site-scope-field';
 
 import { updateProductAction } from '../../../product-actions';
 
@@ -44,12 +46,23 @@ interface ProductOverview {
 // fields the merchant touched are sent because the server treats
 // `undefined` as "leave alone" (the Zod schema is .partial()).
 
-export function ProductEditForm({ product }: { product: ProductOverview }) {
+export function ProductEditForm({
+  product,
+  sites,
+  initialPropertyIds,
+}: {
+  product: ProductOverview;
+  // Multi-site (docs/49 §3) — the tenant's sites + this product's current scope.
+  // SiteScopeField hides itself for single-site tenants.
+  sites: Property[];
+  initialPropertyIds: string[];
+}) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
   const [savedAt, setSavedAt] = React.useState<number | null>(null);
+  const [propertyIds, setPropertyIds] = React.useState<string[]>(initialPropertyIds);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -74,6 +87,9 @@ export function ProductEditForm({ product }: { product: ProductOverview }) {
       taxClass: stringOrNull(form.get('taxClass')),
       seoTitle: stringOrNull(form.get('seoTitle')),
       seoDescription: stringOrNull(form.get('seoDescription')),
+      // Model B (docs/49 §3): full-replacement site scope. Only sent for
+      // multi-site tenants so single-site saves never write/clear scope rows.
+      ...(sites.length > 1 ? { propertyIds } : {}),
     };
 
     startTransition(async () => {
@@ -124,6 +140,18 @@ export function ProductEditForm({ product }: { product: ProductOverview }) {
             </Stack>
           </CardContent>
         </Card>
+
+        {sites.length > 1 && (
+          <Card>
+            <CardHeader>
+              <Heading level={3}>Sites</Heading>
+              <CardDescription>Which of your sites show this product.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SiteScopeField sites={sites} value={propertyIds} onChange={setPropertyIds} />
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>

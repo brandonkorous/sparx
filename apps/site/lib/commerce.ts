@@ -3,6 +3,8 @@
 // the rendering layer can treat both content + commerce reads the same
 // way.
 
+import { resolveActivePropertySlug } from './tenant';
+
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
 interface SuccessEnvelope<T> {
@@ -29,6 +31,11 @@ async function publicGet<T>(
   tags: string[]
 ): Promise<{ data: T; meta?: SuccessEnvelope<T>['meta'] }> {
   const params = new URLSearchParams();
+  // Model B (docs/49 §3): scope every public commerce read to the active site —
+  // injected once here. Null for the primary site (api-rest defaults), so
+  // single-site storefronts are unchanged. An explicit query `property` wins.
+  const propertySlug = await resolveActivePropertySlug();
+  if (propertySlug && query.property === undefined) params.set('property', propertySlug);
   for (const [key, value] of Object.entries(query)) {
     if (value !== undefined && value !== '') params.set(key, String(value));
   }

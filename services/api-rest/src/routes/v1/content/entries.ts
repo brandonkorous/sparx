@@ -67,6 +67,10 @@ const UpdateBody = z.object({
   seo: SeoSchema.optional(),
   author_id: z.string().uuid().nullable().optional(),
   locale_code: z.string().max(10).nullable().optional(),
+  // Model B per-site scoping (docs/49 §3): the web PROPERTIES this entry
+  // publishes to. EMPTY = all sites (the default). Full-replacement set; omit to
+  // leave the scope unchanged.
+  property_ids: z.array(z.string().uuid()).max(50).optional(),
 });
 
 const ListQuery = z.object({
@@ -137,11 +141,19 @@ const entryRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     const { id } = PathId.parse(request.params);
     const row = await withRequestTenant(request, (tx) =>
-      tx.contentEntry.findFirst({ where: { id, deletedAt: null } })
+      tx.contentEntry.findFirst({
+        where: { id, deletedAt: null },
+        // Model B (docs/49 §3): the editor needs the current site scope to
+        // pre-fill its "Visible on sites" control. Empty = all sites.
+        include: { propertyLinks: { select: { propertyId: true } } },
+      })
     );
     if (!row) throw notFound('Entry', id);
     void reply.header('ETag', computeEntryEtag(row));
-    return ok(serializeEntry(row));
+    return ok({
+      ...serializeEntry(row),
+      propertyIds: row.propertyLinks.map((l) => l.propertyId),
+    });
   });
 
   // ──────────────────────────────────────────────────────────────────────
@@ -297,6 +309,17 @@ const entryRoutes: FastifyPluginAsync = (app) => {
           updatedAt: new Date(),
         },
       });
+
+      // Model B site scoping (docs/49 §3): full-replacement set. Empty → no rows
+      // → published to all sites again. Omitted → unchanged.
+      if (input.property_ids !== undefined) {
+        await tx.contentEntryProperty.deleteMany({ where: { entryId: after.id } });
+        if (input.property_ids.length > 0) {
+          await tx.contentEntryProperty.createMany({
+            data: input.property_ids.map((propertyId) => ({ propertyId, entryId: after.id })),
+          });
+        }
+      }
 
       await syncReferences(tx, auth.tenantId, after.id, schema, nextBody);
       await recordRevision(tx, {

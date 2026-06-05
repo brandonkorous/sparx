@@ -1,4 +1,4 @@
-import { EyebrowBadge, Section, SectionHeader, Spark } from './primitives';
+import { Section, SectionHeader, Spark } from './primitives';
 
 const FEATURES = [
   {
@@ -46,11 +46,6 @@ export function B2bSpotlight() {
         <SectionHeader
           headlineSize={64}
           headlineLineHeight={68}
-          eyebrow={
-            <EyebrowBadge color="#475569" background="#F1F5F9" text="#334155">
-              B2B · Wholesale · Fleet
-            </EyebrowBadge>
-          }
           headline={
             <>
               Industrial-grade,

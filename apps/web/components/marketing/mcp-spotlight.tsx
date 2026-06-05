@@ -1,4 +1,4 @@
-import { Container, EyebrowBadge, SectionHeader, Spark } from './primitives';
+import { Container, SectionHeader, Spark } from './primitives';
 
 const FEATURES = [
   {
@@ -64,11 +64,6 @@ export function McpSpotlight() {
           invert
           headlineSize={64}
           headlineLineHeight={68}
-          eyebrow={
-            <EyebrowBadge color="#EC4899" background="#2D0A1E" text="#EC4899">
-              AI · MCP
-            </EyebrowBadge>
-          }
           headline={
             <>
               Ask your AI

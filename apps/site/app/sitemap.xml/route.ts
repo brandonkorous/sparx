@@ -1,8 +1,9 @@
-// Tenant-scoped sitemap. Proxies api-rest's /v1/sitemap.xml?tenant=<slug>
-// keyed off the Host header. Cached at the edge for 5 min (same as
-// api-rest's own Cache-Control on the underlying endpoint).
+// Per-SITE sitemap. Proxies api-rest's /v1/sitemap.xml?tenant=<slug>[&property=<slug>]
+// keyed off the Host header — so each web property (docs/49) advertises only its
+// own pages/products/content at its own canonical host. Cached at the edge for
+// 5 min (same as api-rest's own Cache-Control on the underlying endpoint).
 
-import { resolveTenant } from '@/lib/tenant';
+import { resolveTenant, resolveActivePropertySlug } from '@/lib/tenant';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -14,9 +15,19 @@ export async function GET() {
   if (!tenant) {
     return new Response('Not found', { status: 404 });
   }
+  const propertySlug = await resolveActivePropertySlug();
 
-  const res = await fetch(`${BASE_URL}/v1/sitemap.xml?tenant=${encodeURIComponent(tenant.slug)}`, {
-    next: { revalidate: 300, tags: [`tenant:${tenant.slug}`, 'sparx-storefront'] },
+  const upstream = new URL(`${BASE_URL}/v1/sitemap.xml`);
+  upstream.searchParams.set('tenant', tenant.slug);
+  if (propertySlug) upstream.searchParams.set('property', propertySlug);
+
+  const res = await fetch(upstream, {
+    next: {
+      revalidate: 300,
+      tags: propertySlug
+        ? [`tenant:${tenant.slug}`, `tenant:${tenant.slug}:${propertySlug}`, 'sparx-storefront']
+        : [`tenant:${tenant.slug}`, 'sparx-storefront'],
+    },
   });
   if (!res.ok) {
     return new Response('', { status: 502 });

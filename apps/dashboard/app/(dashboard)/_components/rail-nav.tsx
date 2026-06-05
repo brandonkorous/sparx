@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ModuleProvider, useRailExpanded, Wordmark } from '@sparx/ui';
-import { Clock, Gauge, Home, Plus, Search, Settings, Star } from 'lucide-react';
+import { Clock, Gauge, Home, LayoutTemplate, Plus, Search, Settings, Star } from 'lucide-react';
 import {
   moduleManifests,
   findFavoritableById,
@@ -211,6 +211,21 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
           {expanded && <span className="flex-1 truncate text-left">Add a module</span>}
         </Link>
       )}
+
+      {/* Templates — the blueprint marketplace (docs/54): one-click install of a
+          whole themed site onto the active property. Platform-level, not a module,
+          so it pins to the bottom cluster beside SEO + Settings. */}
+      <Link
+        href="/templates"
+        title="Templates"
+        aria-label="Templates"
+        className={tileClass(isActivePath(pathname, '/templates'), expanded)}
+      >
+        <span className={tileIconClass(isActivePath(pathname, '/templates'))}>
+          <LayoutTemplate className="h-4 w-4" />
+        </span>
+        {expanded && <span className="flex-1 truncate text-left">Templates</span>}
+      </Link>
 
       {/* SEO is a cross-cutting platform tool (audits every module's pages), not
           a module — so it pins to the bottom cluster beside Settings rather than

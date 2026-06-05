@@ -1501,6 +1501,9 @@ importers:
       '@sparx/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@sparx/blueprints':
+        specifier: workspace:*
+        version: link:../../packages/blueprints
       '@sparx/builder':
         specifier: workspace:*
         version: link:../../packages/builder

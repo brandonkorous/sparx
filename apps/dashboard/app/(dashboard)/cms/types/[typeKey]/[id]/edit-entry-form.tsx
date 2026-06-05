@@ -53,7 +53,9 @@ import {
 import { CalendarClock, History, Trash2 } from 'lucide-react';
 import { validateBody, type FieldDef } from '@sparx/cms-schemas';
 import type { BuilderTemplateOption } from '@sparx/builder-schemas';
+import type { Property } from '@/lib/sites';
 import { ContentEntryForm, missingRequiredFields } from '../../../_components/content-entry-form';
+import { SiteScopeField } from '../../../../_components/site-scope-field';
 import { SeoPanel, type SeoFields } from '../../../[id]/seo-panel';
 import { PreviewButton } from '../../../[id]/preview-button';
 import { EntryTemplatePicker } from './entry-template-picker';
@@ -109,6 +111,11 @@ export interface EditEntryFormProps {
   templateOptions?: BuilderTemplateOption[] | null;
   /** The currently-pinned template id, or null when this entry uses the default. */
   currentTemplateId?: string | null;
+  // Multi-site (docs/49 §3) — the tenant's sites + this entry's current scope.
+  // SiteScopeField hides itself for single-site tenants, so the Sites card only
+  // appears once a tenant runs more than one property.
+  sites: Property[];
+  initialPropertyIds: string[];
 }
 
 export function EditEntryForm({
@@ -127,10 +134,13 @@ export function EditEntryForm({
   tenantSlug,
   templateOptions,
   currentTemplateId,
+  sites,
+  initialPropertyIds,
 }: EditEntryFormProps) {
   const router = useRouter();
   const routable = Boolean(urlPattern);
   const previewOrigin = storefrontOrigin(tenantSlug);
+  const multiSite = sites.length > 1;
 
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
@@ -139,6 +149,7 @@ export function EditEntryForm({
   const [body, setBody] = React.useState<Record<string, unknown>>(initialBody);
   const [seo, setSeo] = React.useState<SeoFields>(initialSeo);
   const [status, setStatus] = React.useState(initialStatus);
+  const [propertyIds, setPropertyIds] = React.useState<string[]>(initialPropertyIds);
 
   // Autosave bookkeeping (mirrors EditPageForm).
   const [saveState, setSaveState] = React.useState<SaveState>({ kind: 'idle' });
@@ -163,12 +174,16 @@ export function EditEntryForm({
   // re-arming the timer on every keystroke.
   const bodyRef = React.useRef(body);
   const seoRef = React.useRef(seo);
+  const propertyIdsRef = React.useRef(propertyIds);
   React.useEffect(() => {
     bodyRef.current = body;
   }, [body]);
   React.useEffect(() => {
     seoRef.current = seo;
   }, [seo]);
+  React.useEffect(() => {
+    propertyIdsRef.current = propertyIds;
+  }, [propertyIds]);
 
   const slugFromBody = (): string | undefined => {
     const s = bodyRef.current.slug;
@@ -196,7 +211,12 @@ export function EditEntryForm({
     setSaveState({ kind: 'saving' });
     const result = await autosaveEntry(
       id,
-      { body: bodyRef.current, seo: seoRef.current, slug: slugFromBody() },
+      {
+        body: bodyRef.current,
+        seo: seoRef.current,
+        slug: slugFromBody(),
+        propertyIds: multiSite ? propertyIdsRef.current : undefined,
+      },
       etagRef.current
     );
     inFlightRef.current = false;
@@ -214,14 +234,15 @@ export function EditEntryForm({
     if (dirtyRef.current) {
       void runAutosave();
     }
-    // `schema`/`routable`/`id` are stable for the editor's lifetime; conflict
-    // state is read via `saveStateRef`. Keeping the dep list free of changing
-    // values is what makes this callback stable (see saveStateRef above).
+    // `schema`/`routable`/`id`/`multiSite` are stable for the editor's lifetime;
+    // conflict state is read via `saveStateRef`. Keeping the dep list free of
+    // changing values is what makes this callback stable (see saveStateRef above).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, routable]);
 
   // Debounce: mark dirty + schedule a save 600ms after the last edit. Skip the
-  // first render so prop hydration doesn't trigger a needless save.
+  // first render so prop hydration doesn't trigger a needless save. Site scope
+  // (propertyIds) rides the same PATCH, so a scope change autosaves like any edit.
   React.useEffect(() => {
     if (!hydratedRef.current) {
       hydratedRef.current = true;
@@ -234,7 +255,7 @@ export function EditEntryForm({
     return () => {
       clearTimeout(handle);
     };
-  }, [body, seo, runAutosave]);
+  }, [body, seo, propertyIds, runAutosave]);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -249,7 +270,12 @@ export function EditEntryForm({
       const result = await saveEntry(
         id,
         typeKey,
-        { body: bodyRef.current, seo: seoRef.current, slug: slugFromBody() },
+        {
+          body: bodyRef.current,
+          seo: seoRef.current,
+          slug: slugFromBody(),
+          propertyIds: multiSite ? propertyIdsRef.current : undefined,
+        },
         etagRef.current
       );
       if (!result.ok) {
@@ -425,6 +451,18 @@ export function EditEntryForm({
             <ContentEntryForm schema={schema} body={body} onBodyChange={setBody} />
           </CardContent>
         </Card>
+
+        {multiSite && (
+          <Card variant="module">
+            <CardHeader>
+              <Heading level={3}>Sites</Heading>
+              <CardDescription>Which of your sites show this {lowerType}.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SiteScopeField sites={sites} value={propertyIds} onChange={setPropertyIds} />
+            </CardContent>
+          </Card>
+        )}
 
         {routable && (
           <SeoPanel

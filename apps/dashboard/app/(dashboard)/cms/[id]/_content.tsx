@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { Badge, Heading, Stack, Text } from '@sparx/ui';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { listProperties, type Property } from '@/lib/sites';
 import { EditPageForm, type EditableTenantPage } from './edit-form';
 
 // Detail content for a CMS page. Used by both:
@@ -23,6 +24,8 @@ interface ApiEntry {
   published_at: string | null;
   scheduled_at: string | null;
   updated_at: string;
+  // Model B per-site scoping (docs/49 §3). Empty = visible on all sites.
+  propertyIds?: string[];
 }
 
 interface CmsPageDetailContentProps {
@@ -30,7 +33,7 @@ interface CmsPageDetailContentProps {
 }
 
 export async function CmsPageDetailContent({ id }: CmsPageDetailContentProps) {
-  const [entryResult, tenant] = await Promise.all([
+  const [entryResult, tenant, sites] = await Promise.all([
     (async () => {
       try {
         return await api.getWithEtag<ApiEntry>(`/v1/content/entries/${id}`);
@@ -41,6 +44,7 @@ export async function CmsPageDetailContent({ id }: CmsPageDetailContentProps) {
       }
     })(),
     api.get<{ slug: string }>('/v1/tenant'),
+    listProperties().catch(() => [] as Property[]),
   ]);
   const entry = entryResult.data;
   const initialEtag = entryResult.etag;
@@ -87,7 +91,13 @@ export async function CmsPageDetailContent({ id }: CmsPageDetailContentProps) {
         )}
       </Stack>
 
-      <EditPageForm page={editable} tenantSlug={tenant?.slug ?? null} initialEtag={initialEtag} />
+      <EditPageForm
+        page={editable}
+        tenantSlug={tenant?.slug ?? null}
+        initialEtag={initialEtag}
+        sites={sites}
+        initialPropertyIds={entry.propertyIds ?? []}
+      />
     </Stack>
   );
 }

@@ -1,0 +1,43 @@
+// Tenant blueprint installs (docs/54 §9) — one row per marketplace template a
+// tenant installs into one of its web properties. The record is the idempotency
+// key (one install per blueprint per property), the audit trail, the id map for
+// the "Review & go live" surface, and the status (draft `installed` → `live`).
+//
+// Tenant-scoped, ENABLE + FORCE RLS on tenant_id (policy in the migration),
+// mirroring `properties`. `property_id` is application-tier scoping (which site
+// the blueprint was installed into), NOT a security boundary — no FK, no policy
+// of its own (docs/49 §2).
+
+model TenantBlueprintInstall {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // The web property (site) the blueprint was installed into. App-tier scope.
+  propertyId String @map("property_id") @db.Uuid
+
+  // The blueprint key + the version installed (from the @sparx/blueprints catalog).
+  blueprintKey     String @map("blueprint_key") @db.VarChar(63)
+  blueprintVersion String @map("blueprint_version") @db.VarChar(20)
+
+  // installed — artifacts created as drafts; live — the tenant published/went
+  // live; failed — a run errored (partial artifacts may exist).
+  status String @default("installed") @db.VarChar(20)
+
+  // The id map (handle/key → created UUID) + per-slice counts + any upsell flags.
+  result Json @default("{}")
+
+  // Failure detail when status = failed.
+  error String? @db.Text
+
+  installedAt DateTime  @default(now()) @map("installed_at") @db.Timestamptz
+  liveAt      DateTime? @map("live_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // One install per blueprint per property (re-install is an explicit reset).
+  @@unique([tenantId, propertyId, blueprintKey])
+  @@index([tenantId])
+  @@map("tenant_blueprint_installs")
+}

@@ -44,7 +44,11 @@ export type EventType =
   // Search — admin-triggered full reindex; consumed by commerce-indexer,
   // which bulk-projects the tenant's products/customers/orders from
   // Postgres into Typesense. See services/commerce-indexer/src/reindex.ts.
-  | 'search.reindex.requested';
+  | 'search.reindex.requested'
+  // Tenant blueprints (docs/54) — emitted after a one-click template install
+  // succeeds or fails. No subscribers yet (best-effort observability).
+  | 'template.installed'
+  | 'template.install_failed';
 
 export interface SparxEvent<T = unknown> {
   type: EventType;

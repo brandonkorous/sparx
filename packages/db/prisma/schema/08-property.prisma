@@ -57,6 +57,11 @@ model Property {
   // Custom + purchased hostnames pointing at this site (docs/49 §5, docs/24).
   domains Domain[]
 
+  // Model B per-site scoping (docs/49 §3) — which products / content entries this
+  // site exposes. EMPTY = the site shows ALL (the default, Model A behavior).
+  productLinks      ProductProperty[]
+  contentEntryLinks ContentEntryProperty[]
+
   @@unique([tenantId, slug])
   @@index([tenantId])
   @@map("properties")

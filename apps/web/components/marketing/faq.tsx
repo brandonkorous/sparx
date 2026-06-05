@@ -86,7 +86,6 @@ export function Faq() {
       />
       <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
-          eyebrow="Questions, answered"
           headline={
             <>
               Frequently asked

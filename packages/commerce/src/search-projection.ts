@@ -9,10 +9,11 @@
 // keep them in sync; a missing/typo'd field is a runtime failure at
 // `documents().upsert()`.
 
-import type {
-  CustomerSearchDocument,
-  OrderSearchDocument,
-  ProductSearchDocument,
+import {
+  GLOBAL_SITE_SCOPE,
+  type CustomerSearchDocument,
+  type OrderSearchDocument,
+  type ProductSearchDocument,
 } from '@sparx/search';
 import { withTenant } from '@sparx/db';
 
@@ -64,6 +65,9 @@ export async function projectProduct(
         },
         categoryLinks: { select: { categoryId: true } },
         collectionLinks: { select: { collectionId: true } },
+        // Model B site scope (docs/49 §3) — which web properties this product is
+        // visible on. Empty ⇒ global (all sites).
+        propertyLinks: { select: { propertyId: true } },
         images: {
           // The product hero: the explicit primary wins, else the first
           // product-level image by position (parity with productService.list).
@@ -146,6 +150,13 @@ export async function projectProduct(
         product.collectionLinks.length > 0
           ? product.collectionLinks.map((l) => l.collectionId)
           : undefined,
+      // Model B (docs/49 §3): global products get the GLOBAL_SITE_SCOPE sentinel
+      // so they match every site's storefront filter; scoped products carry their
+      // property ids and match only those sites.
+      property_ids:
+        product.propertyLinks.length > 0
+          ? product.propertyLinks.map((l) => l.propertyId)
+          : [GLOBAL_SITE_SCOPE],
       price_min_cents: priceMinCents,
       price_max_cents: priceMaxCents,
       in_stock: product.inStock,

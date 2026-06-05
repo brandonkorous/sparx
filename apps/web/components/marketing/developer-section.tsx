@@ -66,7 +66,6 @@ export function DeveloperSection() {
     <Section id="docs" padding="xl">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
-          eyebrow="Developers"
           headline={
             <>
               API-first means

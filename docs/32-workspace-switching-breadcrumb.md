@@ -1,8 +1,8 @@
 # 32 — Workspace Switching & the Smart Breadcrumb
 
-**Version:** 0.2 (Phase 1 shipped)
+**Version:** 0.3 (Phase 1 shipped; Site segment added)
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-30
+**Last Updated:** 2026-06-05
 
 ---
 
@@ -40,8 +40,14 @@ dependency, while segment 1's switch/create depends on auth machinery that is
 > One tenant = one Better Auth organization (1:1), per
 > [02-architecture-overview.md](02-architecture-overview.md) and
 > [16-auth-security.md §2](16-auth-security.md). "Workspace" is the label on top
-> of that pair. There is **no** separate `Store`/`Site` model and we are not
-> introducing one.
+> of that pair. There is **no** separate `Store`/`Site` model **for the workspace
+> axis** — switching workspaces means switching tenants.
+>
+> A **Site** model does exist on a different axis: a single tenant can run
+> multiple web **Properties** (sites) over one back office ([49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)).
+> That's the **Site** breadcrumb segment (`Workspace › Site › Module › Section`),
+> not a second workspace — sites share the tenant's RLS, data, and login; only
+> presentation + host differ. See §3.x for the shipped Site segment.
 
 ## 3. Current state
 

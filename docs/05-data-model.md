@@ -1,8 +1,8 @@
 # WizeWorks Platform — Data Model
 
-**Version:** 1.0.1  
+**Version:** 1.0.2  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-05
 
 ---
 
@@ -14,6 +14,15 @@
 - Soft deletes via `deleted_at` on high-value records (orders, customers, products)
 - JSON/JSONB for flexible metadata and settings without schema migrations
 - All foreign keys indexed
+- **Multi-site:** a tenant owns one-or-more **Properties** (sites) over one back
+  office ([49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)). `property_id`
+  is **application-tier scoping, never an RLS boundary** (`tenant_id` stays the
+  only one). Presentation rows (`builder_pages`/`builder_layouts`/`builder_page_assignments`)
+  carry `property_id`; catalog/content scope **per-site via junction tables**
+  (`commerce_product_properties`, `content_entry_properties`) where an **empty**
+  join = visible on **all** sites (the default). The `domains` host→site dispatch
+  table is intentionally **non-RLS** (resolution runs before a tenant is known;
+  globally-unique `host` is the cross-tenant guard).
 
 ---
 

@@ -1,8 +1,8 @@
 # WizeWorks Platform — Domain & SSL Automation
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-05
 
 ---
 
@@ -13,6 +13,15 @@ Every WizeWorks tenant gets a live HTTPS site the moment they sign up — no con
 1. **Platform subdomain** (instant, automatic): `tenantslug.wizeworks.com`
 2. **Custom domain** (self-serve, automated): `theirstore.com` or `shop.theirstore.com`
 3. **Enterprise managed domain** (WizeWorks manages DNS entirely): full DNS delegation
+
+Every host now resolves to a tenant **AND a specific web property (site)** — a
+tenant can run multiple sites over one back office
+([49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)). Each site has its
+own stable `<tenant>-<slug>.sparx.zone` subdomain and/or its own connected custom
+domain; the bare `<tenant>.sparx.zone` is a primary **alias** that follows the
+primary site. The host→site mapping lives in the **non-RLS `domains` dispatch
+table** (globally-unique `host` is the cross-tenant guard); Caddy's on-demand-TLS
+ask endpoint authorizes a host by the same lookup.
 
 ---
 

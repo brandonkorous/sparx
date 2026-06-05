@@ -88,12 +88,12 @@ export function ModulesGrid() {
     <Section id="modules" surface="surface" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <SectionHeader
-          eyebrow="The modules"
+          accent="var(--sparx-primary)"
           headline={
             <>
               Eight pieces.{' '}
               <span style={{ color: 'var(--color-text-tertiary)' }}>
-                Activate only what you need.
+                Activate only what you need
               </span>
             </>
           }

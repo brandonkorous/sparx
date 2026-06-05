@@ -243,21 +243,27 @@ export function Section({
  * CTA), pass an <EyebrowBadge> as `eyebrow` instead of a plain string.
  */
 export function SectionHeader({
-  eyebrow,
-  eyebrowColor,
   headline,
   lede,
   invert,
   headlineSize,
   headlineLineHeight,
+  accent,
 }: {
+  /** @deprecated Eyebrows are removed brand-wide (the uppercase kicker reads as
+   *  generic-SaaS slop). Kept so existing callers still type-check; the value
+   *  is ignored. Use `accent` for the section's colored spark instead. */
   eyebrow?: React.ReactNode;
+  /** @deprecated see `eyebrow`. */
   eyebrowColor?: string;
   headline: React.ReactNode;
   lede?: React.ReactNode;
   invert?: boolean;
   headlineSize?: number;
   headlineLineHeight?: number;
+  /** Section identity. Renders the closing "spark" period in this color at the
+   *  end of the headline — carries the section's color with no kicker tier. */
+  accent?: string;
 }) {
   const textPrimary = invert ? '#FFFFFF' : 'var(--color-text-primary)';
   const textSecondary = invert ? '#A1A1AA' : 'var(--color-text-secondary)';
@@ -270,16 +276,10 @@ export function SectionHeader({
         alignItems: 'flex-start',
       }}
     >
-      {eyebrow ? (
-        typeof eyebrow === 'string' ? (
-          <Eyebrow color={eyebrowColor}>{eyebrow}</Eyebrow>
-        ) : (
-          eyebrow
-        )
-      ) : null}
       <div style={{ maxWidth: '960px' }}>
         <Display color={textPrimary} size={headlineSize} lineHeight={headlineLineHeight}>
           {headline}
+          {accent ? <Spark color={accent} /> : null}
         </Display>
       </div>
       {lede ? (

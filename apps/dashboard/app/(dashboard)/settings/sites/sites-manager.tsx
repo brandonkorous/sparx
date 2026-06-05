@@ -23,6 +23,7 @@ import {
   connectDomain,
   createSite,
   deleteDomain,
+  deleteSite,
   makeSitePrimary,
   setActiveSite,
   setDomainCanonical,
@@ -111,6 +112,18 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
     const fd = new FormData(e.currentTarget);
     fd.set('propertyId', propertyId);
     run(() => updateBrandOverride(fd), 'Brand override saved.');
+  };
+
+  const onDeleteSite = async (property: Property) => {
+    const domainCount = (domainsByProperty.get(property.id) ?? []).length;
+    const ok = await confirm({
+      title: `Delete “${property.name}”?`,
+      description: `This permanently removes this site — its pages, layout, and ${domainCount} domain${domainCount === 1 ? '' : 's'}. Your products, content, and orders are not affected. This can’t be undone.`,
+      confirmLabel: 'Delete site',
+      tone: 'danger',
+    });
+    if (!ok) return;
+    run(() => deleteSite(property.id), `“${property.name}” deleted.`);
   };
 
   const onDisconnect = async (d: Domain) => {
@@ -379,6 +392,16 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
                       }
                     >
                       <Star className="size-4" /> Make primary
+                    </Button>
+                  )}
+                  {!property.isPrimary && (
+                    <Button
+                      variant="ghost"
+                      color="danger"
+                      disabled={pending}
+                      onClick={() => void onDeleteSite(property)}
+                    >
+                      <Trash2 className="size-4" /> Delete site
                     </Button>
                   )}
                 </div>

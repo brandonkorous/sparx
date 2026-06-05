@@ -24,9 +24,13 @@ import { serializeEntry } from '@sparx/api-core/entries';
 import { tryVerifyPreviewToken } from '../../../lib/preview.js';
 import { readPublicConsentConfig } from '../../../lib/consent.js';
 import { parseBrandOverride, mergeBrandIdentity } from '../../../lib/property-brand.js';
+import { resolvePublicPropertyId, contentSiteVisibilityWhere } from '../../../lib/property.js';
 
+// `property` (a stable site slug) scopes content to one web PROPERTY (docs/49
+// Model B). The storefront passes it for non-primary sites; omitted → primary.
 const ListQuery = z.object({
   tenant: z.string().min(1).max(63),
+  property: z.string().min(1).max(63).optional(),
   type: z.string().min(1).max(63),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(250).default(50),
@@ -34,6 +38,7 @@ const ListQuery = z.object({
 
 const BySlugQuery = z.object({
   tenant: z.string().min(1).max(63),
+  property: z.string().min(1).max(63).optional(),
   type: z.string().min(1).max(63),
   slug: z.string().min(1).max(255),
 });
@@ -42,7 +47,10 @@ const TypeKeyParams = z.object({ key: z.string().min(1).max(63) });
 const TypeKeyQuery = z.object({ tenant: z.string().min(1).max(63) });
 
 const ByIdParams = z.object({ id: z.string().uuid() });
-const ByIdQuery = z.object({ tenant: z.string().min(1).max(63) });
+const ByIdQuery = z.object({
+  tenant: z.string().min(1).max(63),
+  property: z.string().min(1).max(63).optional(),
+});
 
 async function resolveTenantBySlug(slug: string): Promise<string> {
   const t = await prisma.tenant.findUnique({ where: { slug }, select: { id: true } });
@@ -130,9 +138,16 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/content/entries', async (request) => {
     const q = ListQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const rows = await withTenant({ tenantId }, (tx) =>
       tx.contentEntry.findMany({
-        where: { typeKey: q.type, status: 'published', deletedAt: null },
+        // Model B: only entries published to the active site (global or scoped here).
+        where: {
+          typeKey: q.type,
+          status: 'published',
+          deletedAt: null,
+          ...contentSiteVisibilityWhere(propertyId),
+        },
         orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
         take: q.limit + 1,
         ...(q.cursor ? { cursor: { id: q.cursor }, skip: 1 } : {}),
@@ -147,6 +162,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/content/entries/by-slug', async (request) => {
     const q = BySlugQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const preview = await tryVerifyPreviewToken(app, request);
     const row = await withTenant({ tenantId }, (tx) =>
       tx.contentEntry.findFirst({
@@ -154,6 +170,8 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
           typeKey: q.type,
           slug: q.slug,
           deletedAt: null,
+          // Model B: an entry not on the active site 404s by URL too.
+          ...contentSiteVisibilityWhere(propertyId),
           // Preview token grants draft access only for the entry it's
           // scoped to. For any other entry the default published-only
           // filter applies.

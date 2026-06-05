@@ -16,6 +16,7 @@ import {
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { listProperties, type Property } from '@/lib/sites';
 
 import { FitmentPanel } from './_components/fitment-panel';
 import { InventoryPanel } from './_components/inventory-panel';
@@ -35,6 +36,8 @@ interface ProductDetail {
   productType: string | null;
   vendor: string | null;
   tags: string[];
+  // Model B (docs/49 §3): web PROPERTIES this product is scoped to (empty = all).
+  propertyIds?: string[];
   fulfillmentType: string;
   weightGrams: number | null;
   lengthMm: number | null;
@@ -187,12 +190,15 @@ export async function ProductDetailContent({ id }: Props) {
     throw err;
   }
 
-  const [options, variants, fitments, domains, warehouses] = await Promise.all([
+  const [options, variants, fitments, domains, warehouses, sites] = await Promise.all([
     api.get<OptionRow[]>(`/v1/commerce/products/${id}/variants/options`),
     api.get<VariantRow[]>(`/v1/commerce/products/${id}/variants?include_archived=true`),
     api.get<ProductFitmentRow[]>(`/v1/commerce/products/${id}/fitment`),
     api.get<FitmentDomainRow[]>('/v1/commerce/fitment/domains'),
     api.get<WarehouseRow[]>('/v1/commerce/warehouses'),
+    // Multi-site (docs/49 §3): the "Visible on sites" control. Defensive — a
+    // failed read just hides the control (single-site behavior).
+    listProperties().catch(() => [] as Property[]),
   ]);
 
   const inventoryLevels = await Promise.all(
@@ -265,7 +271,11 @@ export async function ProductDetailContent({ id }: Props) {
 
         <TabsContent value="overview">
           <Stack gap={6}>
-            <ProductEditForm product={product} />
+            <ProductEditForm
+              product={product}
+              sites={sites}
+              initialPropertyIds={product.propertyIds ?? []}
+            />
           </Stack>
         </TabsContent>
 

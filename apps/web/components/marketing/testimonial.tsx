@@ -1,4 +1,4 @@
-import { Container, Eyebrow } from './primitives';
+import { Container } from './primitives';
 
 const METRICS = [
   { label: 'Annual savings', value: '$26,400' },
@@ -23,7 +23,15 @@ export function Testimonial() {
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Eyebrow>Customer · Enterprise</Eyebrow>
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '13px',
+              color: 'var(--color-text-tertiary)',
+            }}
+          >
+            Customer · Enterprise
+          </span>
           <span
             style={{
               fontFamily: 'var(--font-mono)',

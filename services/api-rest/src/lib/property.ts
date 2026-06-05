@@ -9,7 +9,31 @@
 // is application-tier scoping, not a security boundary (docs/49 §2).
 
 import { withTenant } from '@sparx/db';
+import type { Prisma } from '@prisma/client';
 import { notFound } from '@sparx/api-core/errors';
+
+// ── Model B per-site scoping (docs/49 §3) ──────────────────────────────────
+// A product / content entry is visible on a site if it has NO scope rows
+// (global — the default) OR a scope row for that site. Returned as an `AND`
+// fragment so it composes with any existing top-level `OR` (e.g. text search)
+// without key-colliding; spread into the storefront read's `where`. The
+// storefront resolves `propertyId` for EVERY public read (primary included), so
+// the primary site shows only global + primary-scoped items, never another
+// site's exclusive items. Single-site tenants have no scope rows → matches all.
+
+/** Product visibility `where` fragment for the active site. */
+export function productSiteVisibilityWhere(propertyId: string): Prisma.ProductWhereInput {
+  return {
+    AND: [{ OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }] }],
+  };
+}
+
+/** Content-entry visibility `where` fragment for the active site. */
+export function contentSiteVisibilityWhere(propertyId: string): Prisma.ContentEntryWhereInput {
+  return {
+    AND: [{ OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }] }],
+  };
+}
 
 /** The tenant's PRIMARY property id. Every tenant has exactly one (guaranteed by
  *  migration 20260626000000_properties + the partial-unique index). */

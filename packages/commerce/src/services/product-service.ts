@@ -41,9 +41,27 @@ export interface ListProductsFilter {
   hasFitment?: boolean;
   includeArchived?: boolean;
   includeDeleted?: boolean;
+  // Model B (docs/49 §3): restrict to products visible on this web PROPERTY —
+  // i.e. products with NO site scope (visible on all) OR scoped to this site.
+  // Omit (storefront default for the primary / single-site) → no restriction.
+  propertyId?: string;
   take?: number;
   skip?: number;
   sortBy?: 'updatedAt' | 'createdAt' | 'title' | 'priceMinCents';
+}
+
+/** The Model B visibility predicate (docs/49 §3): a product is on a site if it
+ *  has NO scope rows (global) OR a scope row for that site. Wrapped in `AND` so
+ *  it composes with any existing top-level `OR` (e.g. text search) without
+ *  key-colliding. */
+function productSiteVisibility(propertyId: string): Prisma.ProductWhereInput {
+  return {
+    AND: [
+      {
+        OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }],
+      },
+    ],
+  };
 }
 
 export interface ProductListItem {
@@ -89,6 +107,8 @@ export async function list(
             ],
           }
         : {}),
+      // Model B: restrict to products visible on the active site (none = global).
+      ...(filter.propertyId ? productSiteVisibility(filter.propertyId) : {}),
     };
 
     const sortField = filter.sortBy ?? 'updatedAt';
@@ -197,6 +217,9 @@ export interface ProductDetail {
   optionCount: number;
   categoryIds: string[];
   collectionIds: string[];
+  // Model B (docs/49 §3): web PROPERTIES this product is scoped to. EMPTY =
+  // visible on ALL sites (the default).
+  propertyIds: string[];
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
@@ -209,6 +232,7 @@ export async function get(ctx: ServiceContext, productId: string): Promise<Produ
       include: {
         categoryLinks: { select: { categoryId: true } },
         collectionLinks: { select: { collectionId: true } },
+        propertyLinks: { select: { propertyId: true } },
         _count: { select: { variants: true, options: true } },
       },
     })
@@ -217,13 +241,24 @@ export async function get(ctx: ServiceContext, productId: string): Promise<Produ
   return toProductDetail(product);
 }
 
-export async function getByHandle(ctx: ServiceContext, handle: string): Promise<ProductDetail> {
+export async function getByHandle(
+  ctx: ServiceContext,
+  handle: string,
+  // Model B (docs/49 §3): when set (storefront on a non-primary site), a product
+  // not visible on that site 404s by URL too — not just hidden from the list.
+  propertyId?: string
+): Promise<ProductDetail> {
   const product = await withTenant(ctx, (tx) =>
     tx.product.findFirst({
-      where: { handle, deletedAt: null },
+      where: {
+        handle,
+        deletedAt: null,
+        ...(propertyId ? productSiteVisibility(propertyId) : {}),
+      },
       include: {
         categoryLinks: { select: { categoryId: true } },
         collectionLinks: { select: { collectionId: true } },
+        propertyLinks: { select: { propertyId: true } },
         _count: { select: { variants: true, options: true } },
       },
     })
@@ -304,6 +339,14 @@ export async function create(
         skipDuplicates: true,
       });
     }
+    // Model B site scoping (docs/49 §3): empty = visible on all sites, so we only
+    // write rows when the caller pins specific sites.
+    if (input.propertyIds.length > 0) {
+      await tx.productProperty.createMany({
+        data: input.propertyIds.map((propertyId) => ({ propertyId, productId: product.id })),
+        skipDuplicates: true,
+      });
+    }
 
     await writeAuditLog({
       tx,
@@ -342,6 +385,7 @@ export async function update(
       include: {
         categoryLinks: { select: { categoryId: true } },
         collectionLinks: { select: { collectionId: true } },
+        propertyLinks: { select: { propertyId: true } },
         _count: { select: { variants: true, options: true } },
       },
     });
@@ -396,6 +440,7 @@ export async function update(
       include: {
         categoryLinks: { select: { categoryId: true } },
         collectionLinks: { select: { collectionId: true } },
+        propertyLinks: { select: { propertyId: true } },
         _count: { select: { variants: true, options: true } },
       },
     });
@@ -425,6 +470,16 @@ export async function update(
             position: idx,
             addedBy: 'manual',
           })),
+        });
+      }
+    }
+    // Model B site scoping: full-replacement set. Empty array → no rows → visible
+    // on all sites again.
+    if (input.propertyIds !== undefined) {
+      await tx.productProperty.deleteMany({ where: { productId } });
+      if (input.propertyIds.length > 0) {
+        await tx.productProperty.createMany({
+          data: input.propertyIds.map((propertyId) => ({ propertyId, productId })),
         });
       }
     }
@@ -594,6 +649,7 @@ export async function bulkTag(
 type ProductWithIncludes = Product & {
   categoryLinks: { categoryId: string }[];
   collectionLinks: { collectionId: string }[];
+  propertyLinks: { propertyId: string }[];
   _count: { variants: number; options: number };
 };
 
@@ -632,6 +688,7 @@ function toProductDetail(p: ProductWithIncludes): ProductDetail {
     optionCount: p._count.options,
     categoryIds: p.categoryLinks.map((c) => c.categoryId),
     collectionIds: p.collectionLinks.map((c) => c.collectionId),
+    propertyIds: p.propertyLinks.map((l) => l.propertyId),
     createdAt: p.createdAt.toISOString(),
     updatedAt: p.updatedAt.toISOString(),
     publishedAt: p.publishedAt?.toISOString() ?? null,

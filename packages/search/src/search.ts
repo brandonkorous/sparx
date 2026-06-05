@@ -9,6 +9,7 @@ import {
   type CustomerSearchDocument,
   ENTITIES_COLLECTION,
   type UniversalSearchDocument,
+  GLOBAL_SITE_SCOPE,
   ORDERS_COLLECTION,
   type OrderSearchDocument,
   PRODUCTS_COLLECTION,
@@ -37,6 +38,11 @@ export interface SearchResult<T> {
 export interface ProductSearchInput {
   tenantId: string;
   q?: string;
+  /** Active web property (docs/49 §3 Model B). When set, results are scoped to
+   *  this site: global products (sentinel `*`) plus products explicitly scoped
+   *  here, never another site's exclusive items. Omit for admin/dashboard search
+   *  (which sees every product regardless of site). */
+  propertyId?: string;
   /** Composed by the storefront ("vendor:=Bosch && tag:=injectors"). */
   filterBy?: string;
   /** Comma-separated facet field list. */
@@ -58,6 +64,12 @@ function joinFilter(parts: (string | null | undefined)[]): string {
 
 function buildProductFilter(input: ProductSearchInput): string {
   const parts: (string | null)[] = [`tenant_id:=${input.tenantId}`, 'status:=active'];
+  // Model B site scope (docs/49 §3): match global products (the GLOBAL_SITE_SCOPE
+  // sentinel) OR products scoped to the active property. Backtick-quoted so the
+  // values can't break the filter grammar.
+  if (input.propertyId) {
+    parts.push(`property_ids:=[\`${GLOBAL_SITE_SCOPE}\`,\`${input.propertyId}\`]`);
+  }
   if (input.fitmentMakes?.length) {
     parts.push(`fitment_makes:=[${input.fitmentMakes.map((s) => `\`${s}\``).join(',')}]`);
   }

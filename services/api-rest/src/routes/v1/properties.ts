@@ -15,12 +15,15 @@
 // boundary — tenant_id (the RLS GUC) is; property scoping is application-tier
 // (docs/49 §2).
 //
-// SUBDOMAINS ARE STABLE FROM BIRTH: a property's `*.sparx.zone` host is minted at
-// create time (`<tenant>-<slug>.sparx.zone`; the primary keeps the bare
-// `<tenant>.sparx.zone`) and never moves. make-primary flips the `is_primary`
-// flag (dashboard default + billing anchor) but does NOT reassign hostnames —
-// every site keeps its permanent address. The `domains` table is non-RLS, so its
-// writes use the bare client / the withTenant tx without a policy concern.
+// HOST MODEL (docs/49 §5): every property has a STABLE per-site
+// `<tenant>-<slug>.sparx.zone` subdomain, minted at create time and never moved —
+// a site's permanent address, so links to it never break. The bare
+// `<tenant>.sparx.zone` is a separate primary ALIAS that FOLLOWS the primary:
+// make-primary re-points it at the new primary and guarantees the demoted site
+// its own per-site subdomain (so nothing becomes unreachable). Custom/purchased
+// domains are attached explicitly per-site and are never reassigned here. The
+// `domains` table is non-RLS, so its writes use the bare client / the withTenant
+// tx without a policy concern; `host` is globally unique (the cross-tenant guard).
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -212,26 +215,122 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
     return ok(toView(row));
   });
 
-  // Make this property the tenant's primary. Flips the `is_primary` flag only —
-  // hostnames are stable from birth (see the header note), so the bare
-  // `<tenant>.sparx.zone` keeps pointing at whichever site was primary at
-  // creation. Clears the prior primary then sets this one in ONE tx so the
-  // partial-unique `properties_one_primary_per_tenant` never sees two.
+  // Make this property the tenant's primary. Flips `is_primary` (dashboard
+  // default + billing anchor) AND makes the bare `<tenant>.sparx.zone` host
+  // follow the primary (docs/49 §5): it re-points to the new primary, and the
+  // demoted site is guaranteed its own stable `<tenant>-<slug>.sparx.zone`
+  // subdomain so it stays reachable. Per-site subdomains never move; only the
+  // bare alias does. Custom/purchased domains are untouched. All in ONE tx so the
+  // partial-unique `properties_one_primary_per_tenant` never sees two primaries.
   app.post('/v1/properties/:id/make-primary', async (request) => {
     const auth = requireRole(request, 'editor');
     const { id } = IdParam.parse(request.params);
+
+    // Tenant slug anchors every *.sparx.zone host (`tenants` is non-RLS). The
+    // bare host is `<tenant>.sparx.zone` (mintZoneHost ignores the slug arg when
+    // isPrimary=true).
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: auth.tenantId },
+      select: { slug: true },
+    });
+    if (!tenant) throw notFound('Tenant', auth.tenantId);
+    const bareHost = mintZoneHost(tenant.slug, 'primary', true);
+
     const row = await withTenant({ tenantId: auth.tenantId, userId: auth.actorId }, async (tx) => {
       const target = await tx.property.findUnique({ where: { id } });
       if (!target) return null;
       if (target.isPrimary) return target; // already primary — no-op
-      await tx.property.updateMany({
+
+      const prevPrimary = await tx.property.findFirst({
         where: { isPrimary: true },
-        data: { isPrimary: false },
+        select: { id: true, slug: true },
       });
-      return tx.property.update({ where: { id }, data: { isPrimary: true } });
+
+      // Flip the flag (clear the old primary first so the partial-unique index
+      // never sees two).
+      await tx.property.updateMany({ where: { isPrimary: true }, data: { isPrimary: false } });
+      const updated = await tx.property.update({ where: { id }, data: { isPrimary: true } });
+
+      // (a) Guarantee the demoted site a stable per-site subdomain and make it
+      //     that site's canonical (it's about to lose the bare host). Upsert by
+      //     the globally-unique host so re-running make-primary is idempotent.
+      if (prevPrimary) {
+        const demotedHost = mintZoneHost(tenant.slug, prevPrimary.slug, false);
+        await tx.domain.upsert({
+          where: { host: demotedHost },
+          update: { propertyId: prevPrimary.id, status: 'active' },
+          create: {
+            tenantId: auth.tenantId,
+            propertyId: prevPrimary.id,
+            host: demotedHost,
+            type: 'subdomain',
+            status: 'active',
+            isCanonical: false,
+          },
+        });
+        // Sole canonical per property — clear-then-set, mirroring the
+        // /v1/domains canonical route.
+        await tx.domain.updateMany({
+          where: { propertyId: prevPrimary.id, isCanonical: true },
+          data: { isCanonical: false },
+        });
+        await tx.domain.update({ where: { host: demotedHost }, data: { isCanonical: true } });
+      }
+
+      // (b) Re-point the bare host to the new primary, creating it if it never
+      //     existed (older tenant relying on the resolver's primary fallback).
+      await tx.domain.upsert({
+        where: { host: bareHost },
+        update: { propertyId: updated.id, status: 'active' },
+        create: {
+          tenantId: auth.tenantId,
+          propertyId: updated.id,
+          host: bareHost,
+          type: 'subdomain',
+          status: 'active',
+          isCanonical: false,
+        },
+      });
+      // (c) New primary's sole canonical = the bare host (clear-then-set).
+      await tx.domain.updateMany({
+        where: { propertyId: updated.id, isCanonical: true },
+        data: { isCanonical: false },
+      });
+      await tx.domain.update({ where: { host: bareHost }, data: { isCanonical: true } });
+
+      return updated;
     });
     if (!row) throw notFound('Property', id);
     return ok(toView(row));
+  });
+
+  // Delete a site. Refuses the primary (make another primary first) — a tenant
+  // must always have exactly one. The FK cascade removes the site's Builder
+  // pages/layouts/assignments, its domains, and its Model B product/content
+  // scope rows; the shared back office (products, content, orders) is untouched.
+  app.delete('/v1/properties/:id', async (request) => {
+    const auth = requireRole(request, 'editor');
+    const { id } = IdParam.parse(request.params);
+    const result = await withTenant(
+      { tenantId: auth.tenantId, userId: auth.actorId },
+      async (tx) => {
+        const existing = await tx.property.findUnique({
+          where: { id },
+          select: { id: true, isPrimary: true },
+        });
+        if (!existing) return { error: 'not_found' as const };
+        if (existing.isPrimary) return { error: 'primary' as const };
+        await tx.property.delete({ where: { id } });
+        return { ok: true as const };
+      }
+    );
+    if ('error' in result) {
+      if (result.error === 'not_found') throw notFound('Property', id);
+      throw conflict('You can’t delete your primary site. Make another site primary first.', {
+        field: 'isPrimary',
+      });
+    }
+    return ok({ id });
   });
 };
 

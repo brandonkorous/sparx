@@ -1,5 +1,5 @@
 import { Button } from '@sparx/ui';
-import { Container, Display, Dot, Eyebrow, Spark } from './primitives';
+import { Container, Display, Spark } from './primitives';
 import { RotatingWord } from './rotating-word';
 
 // The hero tagline rotates its leading noun through every offering, so the
@@ -62,11 +62,6 @@ export function Hero() {
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Dot color={ON} />
-          <Eyebrow color={ON_STRONG}>Sparx Platform · v1.0</Eyebrow>
-        </div>
-
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '1100px' }}>
           <Display as="h1" size={120} lineHeight={104} color={ON}>
             <RotatingWord words={ROTATING_WORDS} />,
@@ -137,7 +132,9 @@ export function Hero() {
           }}
         >
           <div className="mkt-cluster" style={{ gap: '24px' }}>
-            <Eyebrow color={ON_MUTED}>8 modules</Eyebrow>
+            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: ON_MUTED }}>
+              8 modules
+            </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               {MODULE_DOTS.map((c) => (
                 // A white ring keeps every dot legible on the indigo field —

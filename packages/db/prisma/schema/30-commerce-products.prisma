@@ -69,6 +69,7 @@ model Product {
   fitments               ProductFitment[]
   collectionLinks        CollectionProduct[]
   categoryLinks          CategoryProduct[]
+  propertyLinks          ProductProperty[]
   shippingProfileLinks   ShippingProfileProduct[]
   bundlesAsWrapper       Bundle[]                 @relation("BundleWrapper")
   bundleComponents       BundleComponent[]
@@ -85,6 +86,25 @@ model Product {
   @@index([tenantId, updatedAt(sort: Desc)])
   @@index([tenantId, deletedAt])
   @@map("commerce_products")
+}
+
+// Per-site catalog scoping (docs/49 §3 Model B) — which web PROPERTIES a product
+// is visible on. NO rows for a product = visible on ALL sites (the default,
+// backward-compatible); one-or-more rows = visible ONLY on those sites. A
+// junction (composite PK, NO tenant_id — tenant scoping rides the FK parents,
+// exactly like CollectionProduct), so "empty means all" keeps existing catalogs
+// global with zero backfill. The storefront read filters
+// `propertyLinks none OR propertyLinks some(propertyId)` (lib/property-scope.ts).
+model ProductProperty {
+  propertyId String @map("property_id") @db.Uuid
+  productId  String @map("product_id") @db.Uuid
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, productId])
+  @@index([productId])
+  @@map("commerce_product_properties")
 }
 
 // Localized title / description / SEO. Optional — Phase 1 ships en-US

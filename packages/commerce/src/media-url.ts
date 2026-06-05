@@ -7,6 +7,10 @@
 // Shared by product-service (list imageUrl) and search-projection (index
 // image_url) so the resolution lives in one place.
 export function mediaPublicUrl(key: string): string {
+  // Hot-linked / external assets store an absolute URL as their key (blueprint
+  // installs, docs/54 §6) — return it verbatim rather than prefixing the CDN or
+  // bucket. A future "copy into tenant media" pass replaces these with real keys.
+  if (/^https?:\/\//i.test(key)) return key;
   const cdn = process.env.SPARX_MEDIA_CDN_URL;
   if (cdn) return `${cdn.replace(/\/$/, '')}/${key.replace(/^\//, '')}`;
   const bucket = process.env.GCS_MEDIA_PUBLIC_BUCKET ?? process.env.GCS_MEDIA_BUCKET;

@@ -1,8 +1,8 @@
 # Sparx Platform — Architecture Overview
 
-**Version:** 2.0
+**Version:** 2.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-27
+**Last Updated:** 2026-06-05
 
 ---
 
@@ -192,11 +192,18 @@ Request: shop.acme.com
 Cloudflare (DNS proxy, WAF, DDoS)
     ↓
 Caddy (on-demand TLS — issues Let's Encrypt cert automatically)
-    ↓ Looks up domain in domains table → resolves tenant
-Next.js storefront (reads tenant_id, loads theme, renders)
+    ↓ Looks up host in domains table → resolves tenant + SITE (property)
+Next.js storefront (reads tenant_id + property_id, loads theme, renders)
     ↓
-API (tenant context from Better Auth JWT or domain lookup)
+API (tenant context from Better Auth JWT or host lookup)
 ```
+
+The host lookup resolves to a **tenant AND a web property (site)** — a tenant can
+run multiple sites over one back office ([49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)).
+The `domains` table is a **non-RLS dispatch table** (resolution runs before a
+tenant is known; globally-unique `host` is the cross-tenant guard); the bare
+`<tenant>.sparx.zone` is a primary **alias** that follows the primary site, while
+each site also keeps a stable `<tenant>-<slug>.sparx.zone` subdomain.
 
 ---
 

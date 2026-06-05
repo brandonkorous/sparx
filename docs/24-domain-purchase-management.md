@@ -1,8 +1,8 @@
 # Sparx Platform — Domain Purchase & Management Spec
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-05
 
 ---
 
@@ -11,6 +11,13 @@
 Sparx integrates with the GoDaddy Reseller API to allow tenants to search, purchase, and instantly connect a custom domain during onboarding or from the dashboard. Domain goes live with HTTPS and email authentication in under 60 seconds. No DNS configuration required. No registrar login. No CNAME records to add manually.
 
 This is a genuine differentiator. No other commerce platform does native domain purchase with instant automatic connection.
+
+A purchased or connected domain attaches to a **specific web property (site)** of
+the tenant, not just the tenant — a tenant can run multiple sites over one back
+office ([49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)). The host→site
+mapping is the **non-RLS `domains` dispatch table** (one row per host, FK to its
+property; globally-unique `host`); the same row drives both storefront routing and
+Caddy's on-demand-TLS authorization.
 
 **Why GoDaddy Reseller (not Cloudflare Registrar):** WizeWorks has held a GoDaddy reseller account for 20 years. Wholesale pricing established, account standing proven, full TLD catalog, API access already in good standing. Build against it immediately.
 
