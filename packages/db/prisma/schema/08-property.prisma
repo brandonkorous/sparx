@@ -67,6 +67,9 @@ model Property {
   orders Order[]
   carts  Cart[]
 
+  // Per-site customer MEMBERSHIPS (docs/58 D2) — shoppers who belong to this site.
+  customerMemberships Customer[]
+
   @@unique([tenantId, slug])
   @@index([tenantId])
   @@map("properties")

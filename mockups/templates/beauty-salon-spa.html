@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maren &amp; Wilde — Hair &amp; Skin Studio</title>
+    <!--
+      TENANT TEMPLATE MOCKUP — Salon & Spa blueprint
+      Brand: "Maren & Wilde" — a warm, premium-but-grounded hair & skin studio
+             (an independent salon brand; NOT the Sparx platform brand).
+
+      Real sites researched for direction (synthesized, not copied):
+        - Sono Felice by Christine (LA Koreatown) — sonofelicebychristine.com
+            warm-brown + black/white neutral palette, Karla + Abhaya Libre,
+            signature-service clarity. Via Mangomint's salon-design roundup.
+        - Winslow Salon (Kirkland, WA) — winslowsalon.com — boutique, stylist-led.
+        - The Salon Business spa-website gallery — thesalonbusiness.com/spa-websites
+            consensus: sage/earth tones, generous whitespace, serif elegance.
+        - The Salon Business salon-website gallery — thesalonbusiness.com/top-salon-websites
+        - Mangomint salon-design roundup — mangomint.com/blog/8-beautiful-hair-salon-web-designs
+
+      Palette (CSS custom properties on :root):
+        --cream    #F7F3EC   page base / warm paper
+        --sand     #EFE7DA   panel / alt-band
+        --linen    #E4D8C6   hairlines on cream / soft fills
+        --clay     #C9A98C   warm accent line / dividers
+        --sage     #8C9A82   primary brand accent (muted eucalyptus green)
+        --sage-deep#6E7C64   accent hover / deep botanical
+        --bark     #3D352C   ink / display text (warm near-black)
+        --stone    #6F665B   body / muted brown-grey
+        --mist     #9C9388   faint captions
+        --white    #FFFFFF
+
+      Fonts (Google Fonts):
+        Heading/display — "Fraunces" (modern high-contrast serif, optical sizing)
+        Body/UI         — "Jost" (clean geometric humanist sans)
+
+      Rationale: an elevated yet warm salon identity — cream paper, eucalyptus-sage
+      accent, and a high-contrast serif over a quiet sans — so atmospheric imagery
+      and a scannable, priced service menu carry the booking conversion. No eyebrows.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Jost:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --cream: #f7f3ec;
+        --sand: #efe7da;
+        --linen: #e4d8c6;
+        --clay: #c9a98c;
+        --sage: #8c9a82;
+        --sage-deep: #6e7c64;
+        --bark: #3d352c;
+        --stone: #6f665b;
+        --mist: #9c9388;
+        --white: #ffffff;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        font-family: 'Jost', system-ui, -apple-system, sans-serif;
+        color: var(--bark);
+        background: var(--cream);
+        font-weight: 400;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: inherit; text-decoration: none; }
+      img { display: block; max-width: 100%; }
+      h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; margin: 0; letter-spacing: -0.01em; }
+      .wrap { max-width: 1160px; margin: 0 auto; padding: 0 36px; }
+
+      /* ---- buttons ---- */
+      .btn {
+        display: inline-flex; align-items: center; gap: 9px;
+        font-family: 'Jost', sans-serif; font-weight: 500; font-size: 14px;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        border: none; border-radius: 999px; cursor: pointer;
+        padding: 13px 26px; transition: background 0.2s, color 0.2s, border-color 0.2s;
+      }
+      .btn-primary { background: var(--sage); color: var(--white); }
+      .btn-primary:hover { background: var(--sage-deep); }
+      .btn-outline { background: transparent; color: var(--bark); border: 1px solid var(--clay); }
+      .btn-outline:hover { background: var(--bark); color: var(--cream); border-color: var(--bark); }
+      .btn-light { background: var(--white); color: var(--bark); }
+      .btn-light:hover { background: var(--sand); }
+      .btn-lg { font-size: 15px; padding: 16px 34px; }
+      .btn-sm { font-size: 12px; padding: 9px 18px; }
+
+      /* ---- header ---- */
+      .topbar {
+        position: sticky; top: 0; z-index: 60;
+        background: rgba(247, 243, 236, 0.86);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--linen);
+      }
+      .topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 78px; }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .brand .mark { color: var(--sage); flex-shrink: 0; }
+      .brand .name {
+        font-family: 'Fraunces', serif; font-weight: 500; font-size: 23px;
+        letter-spacing: 0.01em; line-height: 1; color: var(--bark);
+      }
+      .brand .name em { font-style: italic; font-weight: 400; color: var(--sage-deep); }
+      .nav { display: flex; align-items: center; gap: 30px; }
+      .nav a {
+        font-size: 14px; letter-spacing: 0.05em; color: var(--stone);
+        transition: color 0.2s;
+      }
+      .nav a:hover { color: var(--bark); }
+      .nav .nav-links { display: flex; align-items: center; gap: 30px; }
+
+      /* ---- hero ---- */
+      .hero { position: relative; }
+      .hero .grid { display: flex; align-items: stretch; min-height: 640px; }
+      .hero .copy {
+        flex: 1 1 46%; display: flex; flex-direction: column; justify-content: center;
+        padding: 96px 72px 96px 0;
+      }
+      .hero .media { flex: 1 1 54%; position: relative; overflow: hidden; border-bottom-left-radius: 220px; }
+      .hero .media img { width: 100%; height: 100%; object-fit: cover; }
+      .hero h1 {
+        font-size: 76px; line-height: 0.98; font-weight: 500;
+        letter-spacing: -0.025em; max-width: 540px;
+      }
+      .hero h1 em { font-style: italic; color: var(--sage-deep); font-weight: 400; }
+      .hero .sub {
+        margin: 28px 0 0; max-width: 430px; font-size: 18px;
+        line-height: 1.65; color: var(--stone); font-weight: 300;
+      }
+      .hero .actions { display: flex; align-items: center; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
+      .hero .meta {
+        margin-top: 52px; display: flex; gap: 40px; flex-wrap: wrap;
+        padding-top: 28px; border-top: 1px solid var(--linen);
+      }
+      .hero .meta .stat .n { font-family: 'Fraunces', serif; font-size: 30px; color: var(--bark); line-height: 1; }
+      .hero .meta .stat .l { margin-top: 6px; font-size: 13px; letter-spacing: 0.04em; color: var(--mist); }
+
+      /* ---- section scaffolding ---- */
+      section { padding: 110px 0; }
+      .band-sand { background: var(--sand); }
+      .band-bark { background: var(--bark); color: var(--cream); }
+      .sec-head { max-width: 620px; }
+      .sec-head h2 { font-size: 50px; line-height: 1.04; letter-spacing: -0.02em; }
+      .sec-head h2 em { font-style: italic; color: var(--sage-deep); font-weight: 400; }
+      .band-bark .sec-head h2 em { color: var(--clay); }
+      .sec-head .lede { margin: 20px 0 0; font-size: 18px; line-height: 1.6; color: var(--stone); font-weight: 300; }
+      .band-bark .sec-head .lede { color: rgba(247, 243, 236, 0.7); }
+      .sec-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; flex-wrap: wrap; }
+
+      /* ---- services menu ---- */
+      .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 64px; margin-top: 64px; }
+      .menu-col h3 {
+        font-size: 14px; font-family: 'Jost', sans-serif; font-weight: 500;
+        letter-spacing: 0.14em; text-transform: uppercase; color: var(--sage-deep);
+        padding-bottom: 16px; border-bottom: 1px solid var(--clay);
+        display: flex; align-items: center; gap: 10px;
+      }
+      .menu-col h3 .ic { color: var(--sage); flex-shrink: 0; }
+      .svc { display: flex; align-items: baseline; gap: 14px; padding: 20px 0; border-bottom: 1px solid var(--linen); }
+      .svc:last-child { border-bottom: none; }
+      .svc .info { flex: 1; }
+      .svc .nm { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 500; color: var(--bark); }
+      .svc .ds { margin-top: 4px; font-size: 14px; color: var(--stone); font-weight: 300; line-height: 1.5; }
+      .svc .dur { font-size: 13px; letter-spacing: 0.03em; color: var(--mist); white-space: nowrap; min-width: 60px; text-align: right; }
+      .svc .pr { font-family: 'Fraunces', serif; font-size: 20px; color: var(--bark); white-space: nowrap; min-width: 64px; text-align: right; }
+      .svc .pr .from { font-family: 'Jost', sans-serif; font-size: 12px; color: var(--mist); display: block; letter-spacing: 0.04em; }
+
+      /* ---- team ---- */
+      .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 64px; }
+      .stylist .ph { position: relative; overflow: hidden; border-radius: 14px; aspect-ratio: 3 / 4; }
+      .stylist .ph img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+      .stylist:hover .ph img { transform: scale(1.04); }
+      .stylist .nm { margin-top: 18px; font-family: 'Fraunces', serif; font-size: 22px; color: var(--bark); }
+      .stylist .role { margin-top: 4px; font-size: 13px; letter-spacing: 0.05em; color: var(--sage-deep); }
+      .stylist .spec { margin-top: 8px; font-size: 14px; color: var(--stone); font-weight: 300; line-height: 1.5; }
+
+      /* ---- shop / retail ---- */
+      .shop-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 64px; }
+      .product {
+        background: var(--cream); border: 1px solid var(--linen); border-radius: 16px;
+        overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.25s, transform 0.25s;
+      }
+      .band-sand .product { background: var(--white); border-color: var(--linen); }
+      .product:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(61, 53, 44, 0.1); }
+      .product .ph { aspect-ratio: 1 / 1; background: var(--sand); overflow: hidden; }
+      .product .ph img { width: 100%; height: 100%; object-fit: cover; }
+      .product .body { padding: 20px 20px 22px; display: flex; flex-direction: column; flex: 1; }
+      .product .cat { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mist); }
+      .product .nm { margin-top: 6px; font-family: 'Fraunces', serif; font-size: 19px; color: var(--bark); line-height: 1.2; }
+      .product .foot { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--linen); }
+      .product .price { font-family: 'Fraunces', serif; font-size: 19px; color: var(--bark); }
+
+      /* ---- lookbook gallery ---- */
+      .gallery { display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: 150px; gap: 16px; margin-top: 56px; }
+      .gallery figure { margin: 0; overflow: hidden; border-radius: 12px; }
+      .gallery figure img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+      .gallery figure:hover img { transform: scale(1.05); }
+      .g-tall { grid-row: span 2; }
+      .g-wide { grid-column: span 2; }
+      .g-big { grid-column: span 2; grid-row: span 2; }
+
+      /* ---- journal ---- */
+      .journal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; margin-top: 64px; }
+      .article .ph { aspect-ratio: 4 / 3; border-radius: 14px; overflow: hidden; }
+      .article .ph img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+      .article:hover .ph img { transform: scale(1.04); }
+      .article .tag { margin-top: 20px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sage-deep); }
+      .article h3 { margin-top: 10px; font-size: 25px; line-height: 1.2; color: var(--bark); }
+      .article .ex { margin-top: 10px; font-size: 15px; color: var(--stone); font-weight: 300; line-height: 1.55; }
+      .article .read { margin-top: 14px; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--bark); display: inline-flex; align-items: center; gap: 7px; }
+      .article:hover .read { color: var(--sage-deep); }
+
+      /* ---- about / story band ---- */
+      .story .grid { display: flex; align-items: center; gap: 80px; }
+      .story .media { flex: 1 1 44%; }
+      .story .media img { width: 100%; border-radius: 18px; aspect-ratio: 4 / 5; object-fit: cover; }
+      .story .copy { flex: 1 1 56%; }
+      .story h2 { font-size: 46px; line-height: 1.08; letter-spacing: -0.02em; }
+      .story h2 em { font-style: italic; color: var(--clay); font-weight: 400; }
+      .story p { margin: 22px 0 0; font-size: 17px; line-height: 1.75; color: rgba(247, 243, 236, 0.78); font-weight: 300; max-width: 520px; }
+      .story .sig { margin-top: 30px; font-family: 'Fraunces', serif; font-style: italic; font-size: 26px; color: var(--clay); }
+
+      /* ---- conversion band ---- */
+      .convert { text-align: center; padding: 128px 0; background: var(--sand); }
+      .convert h2 { font-size: 58px; line-height: 1.02; letter-spacing: -0.025em; max-width: 760px; margin: 0 auto; }
+      .convert h2 em { font-style: italic; color: var(--sage-deep); font-weight: 400; }
+      .convert .sub { margin: 22px auto 0; max-width: 480px; font-size: 18px; color: var(--stone); font-weight: 300; }
+      .convert .form {
+        margin: 40px auto 0; max-width: 480px; display: flex; gap: 10px;
+        background: var(--white); border: 1px solid var(--linen); border-radius: 999px; padding: 7px 7px 7px 24px;
+      }
+      .convert .form input {
+        flex: 1; border: none; background: transparent; outline: none;
+        font-family: 'Jost', sans-serif; font-size: 15px; color: var(--bark);
+      }
+      .convert .form input::placeholder { color: var(--mist); }
+      .convert .actions { margin-top: 30px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+      .convert .fineprint { margin-top: 18px; font-size: 13px; color: var(--mist); }
+
+      /* ---- footer ---- */
+      footer { background: var(--bark); color: var(--cream); padding: 84px 0 40px; }
+      footer .top { display: flex; gap: 64px; flex-wrap: wrap; justify-content: space-between; }
+      footer .brand-col { flex: 1 1 280px; max-width: 320px; }
+      footer .brand-col .name { font-family: 'Fraunces', serif; font-size: 26px; color: var(--cream); }
+      footer .brand-col .name em { font-style: italic; color: var(--clay); }
+      footer .brand-col p { margin: 16px 0 0; font-size: 14px; line-height: 1.7; color: rgba(247, 243, 236, 0.6); font-weight: 300; }
+      footer .social { display: flex; gap: 14px; margin-top: 22px; }
+      footer .social a {
+        width: 38px; height: 38px; border-radius: 999px; border: 1px solid rgba(247, 243, 236, 0.22);
+        display: flex; align-items: center; justify-content: center; color: rgba(247, 243, 236, 0.75);
+        transition: background 0.2s, color 0.2s, border-color 0.2s;
+      }
+      footer .social a:hover { background: var(--sage); border-color: var(--sage); color: var(--white); }
+      footer .cols { display: flex; gap: 56px; flex-wrap: wrap; }
+      footer .col h4 { font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--clay); margin: 0 0 18px; }
+      footer .col a, footer .col .line { display: block; font-size: 14px; color: rgba(247, 243, 236, 0.7); margin-bottom: 12px; font-weight: 300; transition: color 0.2s; }
+      footer .col a:hover { color: var(--cream); }
+      footer .legal {
+        margin-top: 60px; padding-top: 28px; border-top: 1px solid rgba(247, 243, 236, 0.14);
+        display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+        font-size: 13px; color: rgba(247, 243, 236, 0.5);
+      }
+      footer .legal a { color: rgba(247, 243, 236, 0.5); }
+      footer .legal a:hover { color: var(--cream); }
+
+      /* ---- responsive ---- */
+      @media (max-width: 1024px) {
+        .team-grid, .shop-grid { grid-template-columns: repeat(2, 1fr); }
+        .hero h1 { font-size: 60px; }
+      }
+      @media (max-width: 820px) {
+        .wrap { padding: 0 22px; }
+        section { padding: 72px 0; }
+        .nav .nav-links { display: none; }
+
+        .hero .grid { flex-direction: column; min-height: 0; }
+        .hero .copy { padding: 56px 0 48px; flex-basis: auto; }
+        .hero .media { flex-basis: auto; width: 100%; height: 360px; border-bottom-left-radius: 90px; }
+        .hero h1 { font-size: 48px; }
+        .hero .meta { gap: 28px; }
+
+        .sec-head h2 { font-size: 36px; }
+        .convert h2 { font-size: 38px; }
+        .story h2 { font-size: 34px; }
+
+        .menu-grid { grid-template-columns: 1fr; gap: 0; margin-top: 44px; }
+        .menu-col { margin-bottom: 40px; }
+        .team-grid, .shop-grid, .journal-grid { grid-template-columns: 1fr; gap: 28px; }
+        .story .grid { flex-direction: column; gap: 40px; }
+        .story .media { width: 100%; }
+
+        .gallery { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 160px; }
+        .g-big, .g-wide { grid-column: span 1; }
+        .g-big { grid-row: span 2; }
+
+        .convert .form { flex-direction: column; border-radius: 18px; padding: 16px; }
+        .convert .form input { padding: 8px 4px; }
+        .convert .form .btn { justify-content: center; }
+
+        footer .top { flex-direction: column; gap: 40px; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ HEADER ============ -->
+    <header class="topbar">
+      <div class="wrap">
+        <a class="brand" href="#">
+          <span class="mark" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+              <path d="M16 3C16 11 11 16 3 16c8 0 13 5 13 13 0-8 5-13 13-13-8 0-13-5-13-13Z" fill="currentColor" opacity="0.92"/>
+              <circle cx="16" cy="16" r="3.1" fill="#F7F3EC"/>
+            </svg>
+          </span>
+          <span class="name">Maren <em>&amp;</em> Wilde</span>
+        </a>
+        <nav class="nav">
+          <div class="nav-links">
+            <a href="#services">Services</a>
+            <a href="#team">Team</a>
+            <a href="#shop">Shop</a>
+            <a href="#journal">Journal</a>
+          </div>
+          <button class="btn btn-primary btn-sm">Book appointment</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="grid">
+          <div class="copy">
+            <h1>Hair and skin, <em>tended</em> like a garden.</h1>
+            <p class="sub">
+              A warm, light-filled studio in the old quarter — where colour, cut and
+              skincare are slow craft, never assembly line. Come as you are; leave more yourself.
+            </p>
+            <div class="actions">
+              <button class="btn btn-primary btn-lg">
+                Book appointment
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+              </button>
+              <button class="btn btn-outline btn-lg">View the menu</button>
+            </div>
+            <div class="meta">
+              <div class="stat"><div class="n">12 yrs</div><div class="l">In the neighbourhood</div></div>
+              <div class="stat"><div class="n">4.9★</div><div class="l">Across 800+ reviews</div></div>
+              <div class="stat"><div class="n">Mon–Sat</div><div class="l">By appointment</div></div>
+            </div>
+          </div>
+          <div class="media">
+            <img src="https://picsum.photos/seed/marenwilde-hero-studio/1100/1300" alt="The Maren & Wilde studio interior with warm natural light" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SERVICES MENU ============ -->
+    <section id="services" class="band-sand">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>The <em>menu</em>.</h2>
+          <p class="lede">
+            Pricing starts where the work begins; your stylist confirms the exact figure
+            at consultation. Every visit includes a quiet cup of something and time to settle in.
+          </p>
+        </div>
+
+        <div class="menu-grid">
+          <!-- HAIR -->
+          <div class="menu-col">
+            <h3>
+              <span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c4-8 9-12 9-18 0 6 5 10 9 18"/><circle cx="12" cy="4" r="1.4"/></svg></span>
+              Hair
+            </h3>
+            <div class="svc">
+              <div class="info">
+                <div class="nm">Cut &amp; finish</div>
+                <div class="ds">Consultation, wash, precision cut and a styled finish.</div>
+              </div>
+              <div class="dur">75 min</div>
+              <div class="pr">$85<span class="from">from</span></div>
+            </div>
+            <div class="svc">
+              <div class="info">
+                <div class="nm">Balayage &amp; gloss</div>
+                <div class="ds">Hand-painted dimension with a glaze to seal the tone.</div>
+              </div>
+              <div class="dur">3 hr</div>
+              <div class="pr">$240<span class="from">from</span></div>
+            </div>
+            <div class="svc">
+              <div class="info">
+                <div class="nm">Full colour</div>
+                <div class="ds">Single-process root-to-end colour, toned and conditioned.</div>
+              </div>
+              <div class="dur">2 hr</div>
+              <div class="pr">$150<span class="from">from</span></div>
+            </div>
+            <div class="svc">
+              <div class="info">
+                <div class="nm">Smoothing treatment</div>
+                <div class="ds">Keratin therapy for softer, frizz-calmed lengths.</div>
+              </div>
+              <div class="dur">2.5 hr</div>
+              <div class="pr">$210<span class="from">from</span></div>
+            </div>
+          </div>
+
+          <!-- SKIN -->
+          <div class="menu-col">
+            <h3>
+              <span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg></span>
+              Skin
+            </h3>
+            <div class="svc">
+              <div class="info">
+                <div class="nm">Signature facial</div>
+                <div class="ds">A bespoke cleanse, treat and massage for your skin that day.</div>
+              </div>
+              <div class="dur">60 min</div>
+              <div class="pr">$120<span class="from">from</span></div>
+            </div>
+            <div class="svc">
+              <div class="info">
+                <div class="nm">Dewglow peel</div>
+                <div class="ds">Gentle resurfacing for tone, texture and a lit-from-within finish.</div>
+              </div>
+              <div class="dur">45 min</div>
+              <div class="pr">$135<span class="from">from</span></div>
+            </div>
+            <div class="svc">
+              <div class="info">
+                <div class="nm">Brow &amp; lash shape</div>
+                <div class="ds">Tailored mapping, tint and tidy to frame the face.</div>
+              </div>
+              <div class="dur">30 min</div>
+              <div class="pr">$55<span class="from">from</span></div>
+            </div>
+
+            <h3 style="margin-top:36px;">
+              <span class="ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12c0-4 3-7 7-7s7 3 7 7-3 7-7 7"/><path d="M12 12c2 0 3-1 3-3"/></svg></span>
+              Nails &amp; hands
+            </h3>
+            <div class="svc">
+              <div class="info">
+                <div class="nm">Garden manicure</div>
+                <div class="ds">Soak, shape, cuticle care and a botanical hand massage.</div>
+              </div>
+              <div class="dur">45 min</div>
+              <div class="pr">$48<span class="from">from</span></div>
+            </div>
+            <div class="svc">
+              <div class="info">
+                <div class="nm">Gel &amp; restore pedicure</div>
+                <div class="ds">Long-wear colour with a warming foot and calf ritual.</div>
+              </div>
+              <div class="dur">60 min</div>
+              <div class="pr">$72<span class="from">from</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TEAM ============ -->
+    <section id="team">
+      <div class="wrap">
+        <div class="sec-top">
+          <div class="sec-head">
+            <h2>Hands you'll come to <em>trust</em>.</h2>
+            <p class="lede">A small, senior team — each with their own quiet specialty.</p>
+          </div>
+          <button class="btn btn-outline">Meet everyone</button>
+        </div>
+
+        <div class="team-grid">
+          <div class="stylist">
+            <div class="ph"><img src="https://picsum.photos/seed/marenwilde-stylist-maren/600/800" alt="Maren Vidal, founder and colourist" /></div>
+            <div class="nm">Maren Vidal</div>
+            <div class="role">Founder · Master Colourist</div>
+            <div class="spec">Lived-in balayage and warm, low-maintenance brunettes.</div>
+          </div>
+          <div class="stylist">
+            <div class="ph"><img src="https://picsum.photos/seed/marenwilde-stylist-wilde/600/800" alt="Theo Wilde, senior stylist" /></div>
+            <div class="nm">Theo Wilde</div>
+            <div class="role">Co-founder · Senior Stylist</div>
+            <div class="spec">Editorial cuts and the kind of fringe that grows out beautifully.</div>
+          </div>
+          <div class="stylist">
+            <div class="ph"><img src="https://picsum.photos/seed/marenwilde-stylist-juniper/600/800" alt="Juniper Cho, esthetician" /></div>
+            <div class="nm">Juniper Cho</div>
+            <div class="role">Lead Esthetician</div>
+            <div class="spec">Barrier-first facials and skin that behaves long after you leave.</div>
+          </div>
+          <div class="stylist">
+            <div class="ph"><img src="https://picsum.photos/seed/marenwilde-stylist-ines/600/800" alt="Inès Moreau, nail artist" /></div>
+            <div class="nm">Inès Moreau</div>
+            <div class="role">Nail Artist</div>
+            <div class="spec">Quiet-luxury sets — soft naturals and clean, fine line work.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SHOP / RETAIL ============ -->
+    <section id="shop" class="band-sand">
+      <div class="wrap">
+        <div class="sec-top">
+          <div class="sec-head">
+            <h2>Take the studio <em>home</em>.</h2>
+            <p class="lede">The same considered formulas we reach for at the chair — nothing we wouldn't use ourselves.</p>
+          </div>
+          <button class="btn btn-outline">Shop all</button>
+        </div>
+
+        <div class="shop-grid">
+          <div class="product">
+            <div class="ph"><img src="https://picsum.photos/seed/marenwilde-prod-shampoo/600/600" alt="Botanic repair shampoo bottle" /></div>
+            <div class="body">
+              <div class="cat">Haircare</div>
+              <div class="nm">Botanic Repair Shampoo</div>
+              <div class="foot">
+                <span class="price">$32</span>
+                <button class="btn btn-primary btn-sm">Add</button>
+              </div>
+            </div>
+          </div>
+          <div class="product">
+            <div class="ph"><img src="https://picsum.photos/seed/marenwilde-prod-oil/600/600" alt="Featherlight finishing oil bottle" /></div>
+            <div class="body">
+              <div class="cat">Styling</div>
+              <div class="nm">Featherlight Finishing Oil</div>
+              <div class="foot">
+                <span class="price">$38</span>
+                <button class="btn btn-primary btn-sm">Add</button>
+              </div>
+            </div>
+          </div>
+          <div class="product">
+            <div class="ph"><img src="https://picsum.photos/seed/marenwilde-prod-serum/600/600" alt="Dewglow vitamin C serum bottle" /></div>
+            <div class="body">
+              <div class="cat">Skincare</div>
+              <div class="nm">Dewglow Vitamin C Serum</div>
+              <div class="foot">
+                <span class="price">$58</span>
+                <button class="btn btn-primary btn-sm">Add</button>
+              </div>
+            </div>
+          </div>
+          <div class="product">
+            <div class="ph"><img src="https://picsum.photos/seed/marenwilde-prod-balm/600/600" alt="Garden hand and cuticle balm jar" /></div>
+            <div class="body">
+              <div class="cat">Hands</div>
+              <div class="nm">Garden Hand &amp; Cuticle Balm</div>
+              <div class="foot">
+                <span class="price">$24</span>
+                <button class="btn btn-primary btn-sm">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LOOKBOOK / GALLERY ============ -->
+    <section id="lookbook">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>From the <em>chair</em>.</h2>
+          <p class="lede">A few recent looks, colours and quiet corners of the studio.</p>
+        </div>
+        <div class="gallery">
+          <figure class="g-big"><img src="https://picsum.photos/seed/marenwilde-look-1/800/800" alt="Lived-in balayage colour result" /></figure>
+          <figure><img src="https://picsum.photos/seed/marenwilde-look-2/400/400" alt="Soft natural manicure" /></figure>
+          <figure class="g-tall"><img src="https://picsum.photos/seed/marenwilde-look-3/400/600" alt="Editorial cut and blow-dry" /></figure>
+          <figure><img src="https://picsum.photos/seed/marenwilde-look-4/400/400" alt="Studio detail with plants" /></figure>
+          <figure class="g-wide"><img src="https://picsum.photos/seed/marenwilde-look-5/800/400" alt="Facial treatment room" /></figure>
+          <figure><img src="https://picsum.photos/seed/marenwilde-look-6/400/400" alt="Warm brunette colour close-up" /></figure>
+          <figure class="g-tall"><img src="https://picsum.photos/seed/marenwilde-look-7/400/600" alt="Glossy finished hair detail" /></figure>
+          <figure class="g-wide"><img src="https://picsum.photos/seed/marenwilde-look-8/800/400" alt="Retail shelf and products" /></figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ JOURNAL / BLOG TEASER ============ -->
+    <section id="journal" class="band-sand">
+      <div class="wrap">
+        <div class="sec-top">
+          <div class="sec-head">
+            <h2>The <em>journal</em>.</h2>
+            <p class="lede">Notes on care, colour and the rituals worth keeping.</p>
+          </div>
+          <button class="btn btn-outline">All writing</button>
+        </div>
+
+        <div class="journal-grid">
+          <article class="article">
+            <div class="ph"><img src="https://picsum.photos/seed/marenwilde-journal-1/800/600" alt="Hair-washing ritual" /></div>
+            <div class="tag">Haircare</div>
+            <h3>How to make a fresh colour last the season</h3>
+            <p class="ex">The small at-home habits that protect a salon investment — from water temperature to the oils worth skipping.</p>
+            <a class="read" href="#">Read the note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></a>
+          </article>
+          <article class="article">
+            <div class="ph"><img src="https://picsum.photos/seed/marenwilde-journal-2/800/600" alt="Skincare flatlay" /></div>
+            <div class="tag">Skin</div>
+            <h3>Barrier-first: the case for doing less</h3>
+            <p class="ex">Why our estheticians keep paring routines back — and the three steps that actually move the needle.</p>
+            <a class="read" href="#">Read the note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></a>
+          </article>
+          <article class="article">
+            <div class="ph"><img src="https://picsum.photos/seed/marenwilde-journal-3/800/600" alt="Studio plants and morning light" /></div>
+            <div class="tag">Studio</div>
+            <h3>A morning in the old quarter</h3>
+            <p class="ex">The light, the espresso, the records we play before the doors open — a look at how the day begins.</p>
+            <a class="read" href="#">Read the note <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ABOUT / STORY BAND ============ -->
+    <section class="story band-bark">
+      <div class="wrap">
+        <div class="grid">
+          <div class="media">
+            <img src="https://picsum.photos/seed/marenwilde-story-founders/700/880" alt="Maren and Theo, the founders, in the studio" />
+          </div>
+          <div class="copy">
+            <h2>We opened the studio we always <em>wished existed</em>.</h2>
+            <p>
+              Maren &amp; Wilde began with two chairs, a stubborn idea, and a long lease on a
+              corner full of afternoon light. We wanted unhurried appointments, honest advice,
+              and a room that smelled of eucalyptus and good coffee — a place where the work
+              is exacting but the feeling is easy.
+            </p>
+            <p>
+              Twelve years on, the idea hasn't changed. Small team, real conversation, and
+              colour and care that look like you on your best ordinary day.
+            </p>
+            <div class="sig">— Maren &amp; Theo</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONVERSION BAND ============ -->
+    <section class="convert">
+      <div class="wrap">
+        <h2>Your chair is <em>waiting</em>.</h2>
+        <p class="sub">Book online in under a minute — or join the list for seasonal openings, new treatments and the occasional studio note.</p>
+        <div class="actions">
+          <button class="btn btn-primary btn-lg">Book appointment</button>
+          <button class="btn btn-outline btn-lg">Call the studio</button>
+        </div>
+        <form class="form" onsubmit="return false;">
+          <input type="email" placeholder="Your email, for studio notes" aria-label="Email address" />
+          <button type="submit" class="btn btn-primary">Join</button>
+        </form>
+        <p class="fineprint">No noise. Unsubscribe whenever you like.</p>
+      </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer>
+      <div class="wrap">
+        <div class="top">
+          <div class="brand-col">
+            <div class="name">Maren <em>&amp;</em> Wilde</div>
+            <p>Hair &amp; skin studio in the old quarter. Slow craft, warm room, honest advice — by appointment, Monday through Saturday.</p>
+            <div class="social">
+              <a href="#" aria-label="Instagram">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              </a>
+              <a href="#" aria-label="Pinterest">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-.5-2 0-4 1-7 .5-1.5 0-3 1.5-4 2-1.3 5-.5 5.5 2 .6 3-1 6-3.5 6-1.2 0-2-1-1.7-2.2"/><path d="M11 12 9.5 21"/></svg>
+              </a>
+              <a href="#" aria-label="Facebook">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h-2.5A3.5 3.5 0 0 0 9 7.5V10H7v3h2v7h3v-7h2.2l.6-3H12V7.8c0-.6.4-.8.9-.8H15V4Z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="cols">
+            <div class="col">
+              <h4>Studio</h4>
+              <a href="#services">Services</a>
+              <a href="#team">Team</a>
+              <a href="#shop">Shop</a>
+              <a href="#journal">Journal</a>
+              <a href="#">Book appointment</a>
+            </div>
+            <div class="col">
+              <h4>Visit</h4>
+              <span class="line">14 Linden Court</span>
+              <span class="line">Old Quarter, Visalia CA</span>
+              <span class="line">Tue–Fri · 9–7</span>
+              <span class="line">Sat · 9–5 · Closed Sun &amp; Mon</span>
+            </div>
+            <div class="col">
+              <h4>Contact</h4>
+              <a href="tel:+15595550168">(559) 555-0168</a>
+              <a href="mailto:hello@marenandwilde.com">hello@marenandwilde.com</a>
+              <a href="#">Gift cards</a>
+              <a href="#">Careers</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="legal">
+          <span>© 2026 Maren &amp; Wilde Studio. All rights reserved.</span>
+          <span>
+            <a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a> &nbsp;·&nbsp; <a href="#">Cancellation policy</a>
+          </span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

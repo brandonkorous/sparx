@@ -34,6 +34,8 @@ export interface ListCustomersFilter {
   type?: 'prospect' | 'retail' | 'b2b';
   assignedRepId?: string | null;
   b2bAccountId?: string | null;
+  // Membership site filter (docs/58 D2) — customers belonging to one site.
+  propertyId?: string;
   tag?: string;
   q?: string; // full-text-ish: matches first/last/company/email substring
   includeDeleted?: boolean;
@@ -53,6 +55,7 @@ export async function list(
       ...(filter.type ? { type: filter.type } : {}),
       ...(filter.assignedRepId !== undefined ? { assignedRepId: filter.assignedRepId } : {}),
       ...(filter.b2bAccountId !== undefined ? { b2bAccountId: filter.b2bAccountId } : {}),
+      ...(filter.propertyId ? { propertyId: filter.propertyId } : {}),
       ...(filter.tag ? { tags: { has: filter.tag } } : {}),
       ...(filter.q
         ? {

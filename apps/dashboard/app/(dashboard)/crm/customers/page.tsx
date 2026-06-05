@@ -21,6 +21,7 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { EntityRowLink } from '../../_components/entity-row-link';
@@ -99,15 +100,36 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
   const sort = (VALID_SORTS as readonly string[]).includes(stringParam(params.sort) ?? '')
     ? (stringParam(params.sort) as SortKey)
     : ('updatedAt' satisfies SortKey);
+  // Membership site filter (docs/58 D2) — follows the global site switcher:
+  // absent → the active site; `all` → the whole tenant; an id → that site.
+  const siteParam = stringParam(params.site);
 
   // With a query, search via Typesense (typo-tolerant across name / email /
   // company); without one, list straight from Postgres with the type facet +
   // sort. The search doc carries full_name (not first/last) and omits the DNC
   // flag + updated date, so those degrade gracefully on search-result rows.
-  const prefsPromise = getUserPreferences();
+  const [prefs, sites, activeCookieId] = await Promise.all([
+    getUserPreferences(),
+    listProperties().catch(() => [] as Property[]),
+    getActivePropertyId(),
+  ]);
+  const multiSite = sites.length > 1;
+  const activePropertyId = multiSite
+    ? (sites.find((s) => s.id === activeCookieId)?.id ??
+      sites.find((s) => s.isPrimary)?.id ??
+      sites[0]?.id)
+    : undefined;
+  const propertyFilter = !multiSite
+    ? undefined
+    : siteParam === 'all'
+      ? undefined
+      : (siteParam ?? activePropertyId);
+
   let customers: CustomerListRow[];
   let total: number;
   if (q) {
+    // NOTE: customer SEARCH is not yet site-scoped (a follow-on, docs/58 §5); the
+    // browse list below IS site-scoped.
     const sq = new URLSearchParams({ q, per_page: '100' });
     const { data, meta } = await api.getPaged<CustomerSearchDoc[]>(
       `/v1/search/customers?${sq.toString()}`
@@ -132,15 +154,30 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
     query.set('sort_by', sort);
     if (type === 'prospect' || type === 'retail' || type === 'b2b') query.set('type', type);
     if (tag) query.set('tag', tag);
+    if (propertyFilter) query.set('property', propertyFilter);
     const { data, meta } = await api.getPaged<CustomerListRow[]>(
       `/v1/crm/customers?${query.toString()}`
     );
     customers = data;
     total = (meta?.total as number | undefined) ?? customers.length;
   }
-  const prefs = await prefsPromise;
   // `?view=` overrides; absent → the user's saved default.
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
+  // The Site filter only appears for multi-site tenants; it defaults to the active
+  // site (mirroring the global switcher) with an "All sites" escape.
+  const siteFilter = multiSite
+    ? [
+        {
+          key: 'site',
+          label: 'Site',
+          defaultValue: activePropertyId,
+          options: [
+            { value: 'all', label: 'All sites' },
+            ...sites.map((s) => ({ value: s.id, label: s.name })),
+          ],
+        },
+      ]
+    : [];
 
   return (
     <Container size="full">
@@ -174,7 +211,7 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
 
         <ListToolbar
           searchPlaceholder="Search name, email, company…"
-          filters={[{ key: 'type', label: 'Types', options: TYPE_OPTIONS }]}
+          filters={[{ key: 'type', label: 'Types', options: TYPE_OPTIONS }, ...siteFilter]}
           sortKey="sort"
           sortOptions={SORT_OPTIONS}
           enableViewToggle

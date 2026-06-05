@@ -193,6 +193,7 @@ model Tenant {
   storefrontTheme    StorefrontTheme?
 
   // Customer-auth (Layer 2) — storefront shopper credentials/sessions (docs/27)
+  customerIdentities     CustomerIdentity[]
   customerCredentials    CustomerCredential[]
   customerAuthSessions   CustomerSession[]
   customerPasswordResets CustomerPasswordReset[]

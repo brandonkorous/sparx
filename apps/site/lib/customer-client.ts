@@ -25,8 +25,12 @@ export class AccountError extends Error {
   }
 }
 
-function url(path: string, tenantSlug: string): string {
-  return `${API_BASE}${path}?tenant=${encodeURIComponent(tenantSlug)}`;
+function url(path: string, tenantSlug: string, propertySlug?: string): string {
+  const qs = new URLSearchParams({ tenant: tenantSlug });
+  // Active site (docs/58 D2) — register/login create/resolve the membership on
+  // this site. Other endpoints omit it (the session already names the membership).
+  if (propertySlug) qs.set('property', propertySlug);
+  return `${API_BASE}${path}?${qs.toString()}`;
 }
 
 function cartTokenHeader(): Record<string, string> {
@@ -54,9 +58,10 @@ async function parse<T>(res: Response): Promise<T> {
 
 export async function register(
   tenantSlug: string,
-  input: { email: string; password: string; firstName?: string; lastName?: string }
+  input: { email: string; password: string; firstName?: string; lastName?: string },
+  propertySlug?: string
 ): Promise<Customer> {
-  const res = await fetch(url('/v1/public/commerce/account/register', tenantSlug), {
+  const res = await fetch(url('/v1/public/commerce/account/register', tenantSlug, propertySlug), {
     method: 'POST',
     headers: { 'content-type': 'application/json', ...cartTokenHeader() },
     body: JSON.stringify(input),
@@ -66,9 +71,10 @@ export async function register(
 
 export async function login(
   tenantSlug: string,
-  input: { email: string; password: string }
+  input: { email: string; password: string },
+  propertySlug?: string
 ): Promise<Customer> {
-  const res = await fetch(url('/v1/public/commerce/account/login', tenantSlug), {
+  const res = await fetch(url('/v1/public/commerce/account/login', tenantSlug, propertySlug), {
     method: 'POST',
     headers: { 'content-type': 'application/json', ...cartTokenHeader() },
     body: JSON.stringify(input),

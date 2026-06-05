@@ -28,12 +28,11 @@ export function OnThisPage({ items }: { items: TocItem[] }) {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting);
-        if (visible.length > 0) {
-          // Pick the topmost visible section.
-          visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-          setActiveId(visible[0].target.id);
-        }
+        // Pick the topmost visible section.
+        const top = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (top) setActiveId(top.target.id);
       },
       { rootMargin: '-80px 0px -70% 0px' }
     );
@@ -51,7 +50,9 @@ export function OnThisPage({ items }: { items: TocItem[] }) {
         <a
           key={item.id}
           href={`#${item.id}`}
-          className={`${item.sub ? 'sub ' : ''}${activeId === item.id ? 'active' : ''}`}
+          className={[item.sub ? 'sub' : '', activeId === item.id ? 'active' : '']
+            .filter(Boolean)
+            .join(' ')}
         >
           {item.label}
         </a>

@@ -4,7 +4,13 @@ import { useState } from 'react';
 import { Button } from '@sparx/ui';
 import { Wordmark } from './primitives';
 
-const LINKS = ['Platform', 'Modules', 'Pricing', 'Docs', 'Customers'] as const;
+const LINKS = [
+  { label: 'Platform', href: '#platform' },
+  { label: 'Modules', href: '#modules' },
+  { label: 'Pricing', href: '#pricing' },
+  { label: 'Docs', href: '/docs' },
+  { label: 'Customers', href: '#customers' },
+] as const;
 
 export function Nav() {
   const [open, setOpen] = useState(false);
@@ -37,8 +43,8 @@ export function Nav() {
         >
           {LINKS.map((link) => (
             <a
-              key={link}
-              href={`#${link.toLowerCase()}`}
+              key={link.label}
+              href={link.href}
               style={{
                 fontFamily: 'var(--font-sans)',
                 fontWeight: 400,
@@ -48,7 +54,7 @@ export function Nav() {
                 transition: 'color var(--transition-base)',
               }}
             >
-              {link}
+              {link.label}
             </a>
           ))}
         </div>
@@ -89,8 +95,8 @@ export function Nav() {
         <div className="mkt-mobile-drawer" style={{ display: 'flex' }}>
           {LINKS.map((link) => (
             <a
-              key={link}
-              href={`#${link.toLowerCase()}`}
+              key={link.label}
+              href={link.href}
               onClick={() => setOpen(false)}
               style={{
                 fontFamily: 'var(--font-sans)',
@@ -102,7 +108,7 @@ export function Nav() {
                 borderBottom: '1px solid var(--color-border-default)',
               }}
             >
-              {link}
+              {link.label}
             </a>
           ))}
           <a

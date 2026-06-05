@@ -30,6 +30,8 @@ const ListQuery = z.object({
   type: z.enum(['prospect', 'retail', 'b2b']).optional(),
   assigned_rep_id: z.string().uuid().nullable().optional(),
   b2b_account_id: z.string().uuid().nullable().optional(),
+  // Membership site filter (docs/58 D2) — the dashboard Customers Site filter.
+  property: z.string().uuid().optional(),
   tag: z.string().max(64).optional(),
   q: z.string().max(255).optional(),
   include_deleted: z.coerce.boolean().optional(),
@@ -58,6 +60,7 @@ const customerRoutes: FastifyPluginAsync = (app) => {
       type: q.type,
       assignedRepId: q.assigned_rep_id ?? undefined,
       b2bAccountId: q.b2b_account_id ?? undefined,
+      propertyId: q.property,
       tag: q.tag,
       q: q.q,
       includeDeleted: q.include_deleted,

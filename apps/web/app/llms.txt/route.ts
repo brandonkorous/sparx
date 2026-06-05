@@ -7,6 +7,7 @@
 // from the live module set.
 
 import { MODULES, MODULE_ORDER } from '@/lib/modules';
+import { DOC_PAGES } from '@/lib/docs';
 
 export const dynamic = 'force-static';
 
@@ -50,6 +51,8 @@ export function GET(): Response {
     (l) => `- [${l.label}](${BASE}${l.path}): ${l.note}`
   ).join('\n');
 
+  const docLines = DOC_PAGES.map((p) => `- [${p.title}](${BASE}${p.href})`).join('\n');
+
   const body = `# Sparx
 
 > Sparx (by WizeWorks) is a modular content and commerce operating system: storefront, commerce, CRM, CMS, email, B2B/wholesale, dropship, and a first-class AI/MCP integration in one platform. Tenants activate only the modules they need — a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class.
@@ -63,6 +66,12 @@ ${moduleLines}
 ## Platform
 
 ${platformLines}
+
+## Documentation
+
+Developer documentation — guides, REST & GraphQL API reference, SDKs, and the MCP server. The canonical developer home is ${BASE}/docs.
+
+${docLines}
 
 ## More
 

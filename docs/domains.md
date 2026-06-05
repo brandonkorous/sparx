@@ -1,8 +1,8 @@
 # Sparx Domain Portfolio
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-05
 
 Current registrations (all in Cloudflare DNS):
 
@@ -50,12 +50,14 @@ Each module has its own marketing/landing domain — independent SEO channels.
 
 Currently 301-redirect to the corresponding section on `sparx.works`. Replaced with real sites as the products mature.
 
-| Domain           | Eventual purpose                                  | Today                     |
-| ---------------- | ------------------------------------------------- | ------------------------- |
-| `sparx.host`     | Managed hosting product marketing                 | 301 → sparx.works/hosting |
-| `sparx.software` | Developer portal (SDK, API reference, MCP guides) | 301 → sparx.works/docs    |
-| `sparx.market`   | Theme/plugin/connector marketplace                | 301 → sparx.works/market  |
-| `sparx.exchange` | Defensive registration                            | 301 → sparx.works         |
+| Domain           | Eventual purpose                           | Today                     |
+| ---------------- | ------------------------------------------ | ------------------------- |
+| `sparx.host`     | Managed hosting product marketing          | 301 → sparx.works/hosting |
+| `sparx.software` | Developer-brand funnel (**permanent** 301) | 301 → sparx.works/docs    |
+| `sparx.market`   | Theme/plugin/connector marketplace         | 301 → sparx.works/market  |
+| `sparx.exchange` | Defensive registration                     | 301 → sparx.works         |
+
+> **Docs live on `sparx.works/docs`, not `sparx.software`.** Developer documentation is the strongest organic-backlink earner we have (API references get linked from forums, READMEs, tutorials), so it stays on the primary domain to consolidate link equity rather than splitting it across a second site. `sparx.software` is kept as a permanent 301 funnel + defensive hold — not a future standalone destination. The docs framework lives in `apps/web/app/docs/` (registry: `apps/web/lib/docs.ts`).
 
 ## Not acquired
 

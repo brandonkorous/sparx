@@ -44,7 +44,12 @@ export const DOC_NAV: DocGroup[] = [
       { title: 'Building a site', href: '/docs/guides/building-a-site', soon: true },
       { title: 'Templates & blueprints', href: '/docs/guides/blueprints', soon: true },
       { title: 'Webhooks & events', href: '/docs/guides/webhooks', soon: true },
-      { title: 'Multi-property sites', href: '/docs/guides/multi-property', badge: 'new', soon: true },
+      {
+        title: 'Multi-property sites',
+        href: '/docs/guides/multi-property',
+        badge: 'new',
+        soon: true,
+      },
       { title: 'Migrating to Sparx', href: '/docs/guides/migrating', soon: true },
     ],
   },

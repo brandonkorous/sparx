@@ -49,6 +49,7 @@ import {
 } from '@sparx/api-core/errors';
 
 import { env } from '../../../env.js';
+import { resolvePublicPropertyId } from '../../../lib/property.js';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
 
 const RegisterBody = z.object({
@@ -225,9 +226,15 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/commerce/account/register', AUTH_RATE_LIMIT, async (request, reply) => {
     const body = RegisterBody.parse(request.body);
     const ctx = await accountContext(request);
+    // Origin site (docs/58 D2): create the membership on the active site
+    // (defaults to the tenant's primary when the storefront sends no `?property=`).
+    const propertyId = await resolvePublicPropertyId(
+      ctx.tenantId,
+      (request.query as { property?: string }).property ?? null
+    );
     let session;
     try {
-      session = await registerCustomer(ctx, body, sessionMeta(request));
+      session = await registerCustomer(ctx, propertyId, body, sessionMeta(request));
     } catch (err) {
       if (err instanceof CustomerAuthError) {
         if (err.code === 'EMAIL_TAKEN') throw conflict(err.message);
@@ -243,7 +250,14 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/public/commerce/account/login', AUTH_RATE_LIMIT, async (request, reply) => {
     const body = LoginBody.parse(request.body);
     const ctx = await accountContext(request);
-    const session = await authenticateCustomer(ctx, body, sessionMeta(request));
+    // Recognition (docs/58 D6): sign in resolves the tenant-wide identity, then
+    // ensures a membership on the active site (created with fresh consent on a
+    // first cross-site visit). Defaults to primary when no `?property=` is sent.
+    const propertyId = await resolvePublicPropertyId(
+      ctx.tenantId,
+      (request.query as { property?: string }).property ?? null
+    );
+    const session = await authenticateCustomer(ctx, propertyId, body, sessionMeta(request));
     if (!session) throw unauthorized('Invalid email or password.');
     setSessionCookie(reply, session.sessionToken);
     await claimGuestCart(ctx, request, session.customerId);
@@ -300,7 +314,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
         emailPublisher,
         'email.send',
         tenantId,
-        reset.customerId,
+        reset.identityId,
         {
           to: reset.email,
           template: 'password-reset' as const,

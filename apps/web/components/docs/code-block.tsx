@@ -48,7 +48,7 @@ export function CodeBlock({
   };
 
   return (
-    <div className={`docs-code${variant === 'resp' ? ' resp' : ''}`}>
+    <div className={variant === 'resp' ? 'docs-code resp' : 'docs-code'}>
       <div className="docs-code-head">
         {caption ? <span className="docs-code-cap">{caption}</span> : null}
         <div className="docs-code-tabs" role="tablist">
@@ -58,7 +58,7 @@ export function CodeBlock({
               type="button"
               role="tab"
               aria-selected={active === i}
-              className={`docs-code-tab${active === i ? ' active' : ''}`}
+              className={active === i ? 'docs-code-tab active' : 'docs-code-tab'}
               onClick={() => setActive(i)}
             >
               {tab.label}
@@ -73,7 +73,15 @@ export function CodeBlock({
         ) : (
           <button type="button" className="docs-code-copy" onClick={copy}>
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" aria-hidden>
-              <rect x={9} y={9} width={11} height={11} rx={2} stroke="currentColor" strokeWidth={2} />
+              <rect
+                x={9}
+                y={9}
+                width={11}
+                height={11}
+                rx={2}
+                stroke="currentColor"
+                strokeWidth={2}
+              />
               <path d="M5 15V5a2 2 0 012-2h10" stroke="currentColor" strokeWidth={2} />
             </svg>
             <span>{copied ? 'Copied' : 'Copy'}</span>
@@ -81,7 +89,10 @@ export function CodeBlock({
         )}
       </div>
       {tabs.map((tab, i) => (
-        <div key={tab.label} className={`docs-code-panel${active === i ? ' active' : ''}`}>
+        <div
+          key={tab.label}
+          className={active === i ? 'docs-code-panel active' : 'docs-code-panel'}
+        >
           <pre
             className="docs-code-lines"
             ref={(el) => {

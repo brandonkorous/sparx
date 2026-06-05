@@ -35,10 +35,15 @@ export interface SessionMeta {
 }
 
 export interface IssuedSession {
+  /** The per-site MEMBERSHIP (a `customers` row) this session belongs to. */
   customerId: string;
   /** Plaintext session token — set as the cookie value; never stored. */
   sessionToken: string;
   expiresAt: Date;
+  /** True when this call created the membership for the active site — i.e. the
+   *  person already had a login on a SISTER site and we recognized + linked them
+   *  here (docs/58 D6). The new membership starts with FRESH consent. */
+  recognized?: boolean;
 }
 
 const emailSchema = z.string().trim().toLowerCase().email().max(255);
@@ -89,68 +94,133 @@ async function openSession(
   return { customerId, sessionToken: token, expiresAt };
 }
 
+// ─── membership helper ─────────────────────────────────────────────────────
+
+/**
+ * Find or create the per-site MEMBERSHIP (`customers` row) for (property, email)
+ * and link it to the tenant-wide identity (docs/58 D2). A pre-existing row on
+ * this site (e.g. a guest checkout) is adopted: linked to the identity and
+ * promoted prospect → retail. Returns whether the membership was newly created
+ * (drives the D6 "recognized" signal). Consent is NEVER copied across sites — a
+ * brand-new membership starts with empty `gdprConsent`.
+ */
+async function ensureMembership(
+  tx: TxClient,
+  tenantId: string,
+  propertyId: string | null,
+  email: string,
+  identityId: string,
+  names: { firstName?: string; lastName?: string }
+): Promise<{ customerId: string; created: boolean }> {
+  const existing = await tx.customer.findFirst({
+    where: { propertyId, email, deletedAt: null },
+    select: { id: true, type: true, firstName: true, lastName: true, identityId: true },
+  });
+  if (existing) {
+    await tx.customer.update({
+      where: { id: existing.id },
+      data: {
+        ...(existing.identityId ? {} : { identityId }),
+        ...(existing.type === 'prospect' ? { type: 'retail' } : {}),
+        ...(names.firstName && !existing.firstName ? { firstName: names.firstName } : {}),
+        ...(names.lastName && !existing.lastName ? { lastName: names.lastName } : {}),
+      },
+    });
+    return { customerId: existing.id, created: false };
+  }
+  const created = await tx.customer.create({
+    data: {
+      tenantId,
+      propertyId,
+      identityId,
+      type: 'retail',
+      email,
+      firstName: names.firstName ?? null,
+      lastName: names.lastName ?? null,
+    },
+    select: { id: true },
+  });
+  return { customerId: created.id, created: true };
+}
+
 // ─── register ──────────────────────────────────────────────────────────────
 
 /**
- * Create a storefront account. If a `customers` row already exists for this
- * (tenant, email) without a credential — a guest who checked out, or a
- * CRM-imported prospect — the credential is attached to that row rather than
- * creating a duplicate (preserving the single customer spine). Throws
- * EMAIL_TAKEN if a credential already exists.
+ * Create a storefront account on the active SITE (docs/58 D2). Resolves the
+ * tenant-wide IDENTITY for the email:
+ *  - No identity / no credential yet → create the identity + credential + a
+ *    membership on this site, and open a session.
+ *  - Identity already has a credential AND a membership on THIS site → EMAIL_TAKEN.
+ *  - Identity has a credential but NO membership here → the person has an account
+ *    on a SISTER site. Link them here only if the supplied password matches their
+ *    existing login (we can't silently adopt an account); the new membership gets
+ *    FRESH consent (D6). Wrong password → EMAIL_TAKEN ("sign in instead").
+ * `propertyId` is the active site (null only for tenants with no sites, e.g.
+ * tests); a guest `customers` row on this site is adopted, not duplicated.
  */
 export function registerCustomer(
   ctx: CustomerAuthContext,
+  propertyId: string | null,
   rawInput: unknown,
   meta: SessionMeta = {}
 ): Promise<IssuedSession> {
   const input = parse(RegisterInput, rawInput);
 
   return withTenant(ctx, async (tx) => {
-    const existing = await tx.customer.findFirst({
-      where: { email: input.email, deletedAt: null },
-      select: {
-        id: true,
-        type: true,
-        firstName: true,
-        lastName: true,
-        credential: { select: { id: true } },
-      },
+    const identity = await tx.customerIdentity.findFirst({
+      where: { email: input.email },
+      select: { id: true, credential: { select: { id: true, passwordHash: true } } },
     });
 
-    let customerId: string;
-    if (existing) {
-      if (existing.credential) {
-        throw new CustomerAuthError('EMAIL_TAKEN', 'An account with that email already exists.');
-      }
-      customerId = existing.id;
-      await tx.customer.update({
-        where: { id: existing.id },
-        data: {
-          // Promote a prospect to a retail customer; fill in names if absent.
-          ...(existing.type === 'prospect' ? { type: 'retail' } : {}),
-          ...(input.firstName && !existing.firstName ? { firstName: input.firstName } : {}),
-          ...(input.lastName && !existing.lastName ? { lastName: input.lastName } : {}),
-        },
-      });
-    } else {
-      const created = await tx.customer.create({
-        data: {
-          tenantId: ctx.tenantId,
-          type: 'retail',
-          email: input.email,
-          firstName: input.firstName ?? null,
-          lastName: input.lastName ?? null,
-        },
+    // The email already has a login somewhere in this tenant.
+    if (identity?.credential) {
+      const membershipHere = await tx.customer.findFirst({
+        where: { propertyId, email: input.email, deletedAt: null },
         select: { id: true },
       });
-      customerId = created.id;
+      if (membershipHere) {
+        throw new CustomerAuthError('EMAIL_TAKEN', 'An account with that email already exists.');
+      }
+      // Cross-site link — only if they prove ownership with the right password.
+      const ownsAccount = await verifyPassword(identity.credential.passwordHash, input.password);
+      if (!ownsAccount) {
+        throw new CustomerAuthError('EMAIL_TAKEN', 'An account with that email already exists.');
+      }
+      const { customerId } = await ensureMembership(
+        tx,
+        ctx.tenantId,
+        propertyId,
+        input.email,
+        identity.id,
+        input
+      );
+      const session = await openSession(tx, ctx.tenantId, customerId, identity.credential.id, meta);
+      return { ...session, recognized: true };
     }
+
+    // No login yet — create the identity (if absent) + its credential.
+    const identityId =
+      identity?.id ??
+      (
+        await tx.customerIdentity.create({
+          data: { tenantId: ctx.tenantId, email: input.email },
+          select: { id: true },
+        })
+      ).id;
 
     const passwordHash = await hashPassword(input.password);
     const credential = await tx.customerCredential.create({
-      data: { tenantId: ctx.tenantId, customerId, passwordHash },
+      data: { tenantId: ctx.tenantId, identityId, passwordHash },
       select: { id: true },
     });
+    const { customerId } = await ensureMembership(
+      tx,
+      ctx.tenantId,
+      propertyId,
+      input.email,
+      identityId,
+      input
+    );
 
     return openSession(tx, ctx.tenantId, customerId, credential.id, meta);
   });
@@ -166,32 +236,45 @@ export function registerCustomer(
  */
 export function authenticateCustomer(
   ctx: CustomerAuthContext,
+  propertyId: string | null,
   rawInput: unknown,
   meta: SessionMeta = {}
 ): Promise<IssuedSession | null> {
   const input = parse(LoginInput, rawInput);
 
   return withTenant(ctx, async (tx) => {
-    const customer = await tx.customer.findFirst({
-      where: { email: input.email, deletedAt: null },
+    const identity = await tx.customerIdentity.findFirst({
+      where: { email: input.email },
       select: { id: true, credential: { select: { id: true, passwordHash: true } } },
     });
 
-    if (!customer?.credential) {
+    if (!identity?.credential) {
       // No account / no password set — burn equivalent time, then fail.
       await dummyVerify(input.password);
       return null;
     }
 
-    const ok = await verifyPassword(customer.credential.passwordHash, input.password);
+    const ok = await verifyPassword(identity.credential.passwordHash, input.password);
     if (!ok) return null;
 
     await tx.customerCredential.update({
-      where: { id: customer.credential.id },
+      where: { id: identity.credential.id },
       data: { lastLoginAt: new Date() },
     });
 
-    return openSession(tx, ctx.tenantId, customer.id, customer.credential.id, meta);
+    // Recognition (docs/58 D6): ensure a membership on the active site. A first
+    // sign-in here creates one with FRESH consent — never inheriting another
+    // site's consent.
+    const { customerId, created } = await ensureMembership(
+      tx,
+      ctx.tenantId,
+      propertyId,
+      input.email,
+      identity.id,
+      {}
+    );
+    const session = await openSession(tx, ctx.tenantId, customerId, identity.credential.id, meta);
+    return { ...session, recognized: created };
   });
 }
 
@@ -251,7 +334,8 @@ export function revokeCustomerSession(ctx: CustomerAuthContext, token: string): 
 // ─── password reset ──────────────────────────────────────────────────────
 
 export interface ResetRequest {
-  customerId: string;
+  /** The tenant-wide identity whose login is being reset. */
+  identityId: string;
   email: string;
   /** Plaintext reset token — put in the emailed link; never stored. */
   resetToken: string;
@@ -271,19 +355,19 @@ export function requestPasswordReset(
   const input = parse(ForgotInput, rawInput);
 
   return withTenant(ctx, async (tx) => {
-    const customer = await tx.customer.findFirst({
-      where: { email: input.email, deletedAt: null },
+    const identity = await tx.customerIdentity.findFirst({
+      where: { email: input.email },
       select: { id: true, email: true, credential: { select: { id: true } } },
     });
-    if (!customer?.credential || !customer.email) return null;
+    if (!identity?.credential || !identity.email) return null;
 
     const { token, tokenHash } = mintToken();
     const expiresAt = expiryFromNow(RESET_TTL_SECONDS);
     await tx.customerPasswordReset.create({
-      data: { tenantId: ctx.tenantId, customerId: customer.id, tokenHash, expiresAt },
+      data: { tenantId: ctx.tenantId, identityId: identity.id, tokenHash, expiresAt },
     });
 
-    return { customerId: customer.id, email: customer.email, resetToken: token, expiresAt };
+    return { identityId: identity.id, email: identity.email, resetToken: token, expiresAt };
   });
 }
 
@@ -299,22 +383,23 @@ export function resetPassword(ctx: CustomerAuthContext, rawInput: unknown): Prom
   return withTenant(ctx, async (tx) => {
     const reset = await tx.customerPasswordReset.findFirst({
       where: { tokenHash },
-      select: { id: true, customerId: true, expiresAt: true, usedAt: true },
+      select: { id: true, identityId: true, expiresAt: true, usedAt: true },
     });
     if (!reset || reset.usedAt || reset.expiresAt.getTime() <= Date.now()) return false;
 
     const passwordHash = await hashPassword(input.password);
-    await tx.customerCredential.update({
-      where: { customerId: reset.customerId },
+    const credential = await tx.customerCredential.update({
+      where: { identityId: reset.identityId },
       data: { passwordHash },
+      select: { id: true },
     });
     await tx.customerPasswordReset.update({
       where: { id: reset.id },
       data: { usedAt: new Date() },
     });
-    // Revoke every active session for this customer — a reset implies the old
-    // credential may be compromised.
-    await tx.customerSession.deleteMany({ where: { customerId: reset.customerId } });
+    // Revoke every active session for this IDENTITY (across all its site
+    // memberships) — a reset implies the old credential may be compromised.
+    await tx.customerSession.deleteMany({ where: { credentialId: credential.id } });
     return true;
   });
 }

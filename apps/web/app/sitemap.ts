@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
 import { MODULE_ORDER, MODULES } from '@/lib/modules';
+import { DOC_PAGES } from '@/lib/docs';
 
 const BASE = 'https://sparx.works';
 
@@ -23,6 +24,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.8,
+    })),
+    // Docs pages that actually have a route (lib/docs.ts, `soon` excluded), so
+    // the sitemap never lists a 404. Developer docs are strong organic-link
+    // earners — keeping them on the primary domain consolidates that equity.
+    ...DOC_PAGES.map((page) => ({
+      url: `${BASE}${page.href}`,
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: page.href === '/docs' ? 0.7 : 0.6,
     })),
     ...staticPages(now),
   ];

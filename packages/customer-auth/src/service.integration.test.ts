@@ -7,6 +7,10 @@
 //
 // The key claim under test is tenant isolation: a session minted for tenant A
 // must be invisible under tenant B, enforced by RLS — not by application code.
+//
+// Identity/membership model (docs/58 D2): the tenant-wide identity owns the
+// login; the per-site membership owns the customer record. These tenants have no
+// sites, so the membership's property is null (the auth service accepts that).
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -45,13 +49,16 @@ describe.skipIf(!RUN)('customer-auth service (integration)', () => {
   });
 
   afterAll(async () => {
-    // Cascade removes customers/credentials/sessions/resets.
+    // Cascade removes identities/customers/credentials/sessions/resets.
     await prisma.tenant.deleteMany({ where: { id: { in: [tenantA, tenantB] } } });
     await prisma.$disconnect();
   });
 
   it('registers a shopper and opens a session', async () => {
-    const res = await registerCustomer({ tenantId: tenantA }, { email, password: 'hunter2-good' });
+    const res = await registerCustomer({ tenantId: tenantA }, null, {
+      email,
+      password: 'hunter2-good',
+    });
     expect(res.customerId).toMatch(/^[0-9a-f-]{36}$/);
     expect(res.sessionToken.length).toBeGreaterThan(20);
     expect(res.expiresAt.getTime()).toBeGreaterThan(Date.now());
@@ -59,36 +66,39 @@ describe.skipIf(!RUN)('customer-auth service (integration)', () => {
   });
 
   it('allows the SAME email to register at a different tenant as a separate account', async () => {
-    const resB = await registerCustomer({ tenantId: tenantB }, { email, password: 'other-pw-99' });
+    const resB = await registerCustomer({ tenantId: tenantB }, null, {
+      email,
+      password: 'other-pw-99',
+    });
     expect(resB.customerId).not.toBe(customerIdA);
   });
 
-  it('rejects a duplicate registration at the same tenant', async () => {
+  it('rejects a duplicate registration at the same tenant + site', async () => {
     await expect(
-      registerCustomer({ tenantId: tenantA }, { email, password: 'whatever-123' })
+      registerCustomer({ tenantId: tenantA }, null, { email, password: 'whatever-123' })
     ).rejects.toBeInstanceOf(CustomerAuthError);
   });
 
   it('authenticates with the right password and rejects wrong/unknown', async () => {
     await expect(
-      authenticateCustomer({ tenantId: tenantA }, { email, password: 'hunter2-good' })
+      authenticateCustomer({ tenantId: tenantA }, null, { email, password: 'hunter2-good' })
     ).resolves.not.toBeNull();
     await expect(
-      authenticateCustomer({ tenantId: tenantA }, { email, password: 'wrong-pw' })
+      authenticateCustomer({ tenantId: tenantA }, null, { email, password: 'wrong-pw' })
     ).resolves.toBeNull();
     await expect(
-      authenticateCustomer(
-        { tenantId: tenantA },
-        { email: `nobody-${suffix}@x.test`, password: 'x' }
-      )
+      authenticateCustomer({ tenantId: tenantA }, null, {
+        email: `nobody-${suffix}@x.test`,
+        password: 'x',
+      })
     ).resolves.toBeNull();
   });
 
   it('isolates sessions across tenants via RLS', async () => {
-    const session = await authenticateCustomer(
-      { tenantId: tenantA },
-      { email, password: 'hunter2-good' }
-    );
+    const session = await authenticateCustomer({ tenantId: tenantA }, null, {
+      email,
+      password: 'hunter2-good',
+    });
     expect(session).not.toBeNull();
     const token = session!.sessionToken;
 
@@ -103,10 +113,10 @@ describe.skipIf(!RUN)('customer-auth service (integration)', () => {
   });
 
   it('resets a password, invalidating old sessions and the old password', async () => {
-    const live = await authenticateCustomer(
-      { tenantId: tenantA },
-      { email, password: 'hunter2-good' }
-    );
+    const live = await authenticateCustomer({ tenantId: tenantA }, null, {
+      email,
+      password: 'hunter2-good',
+    });
     const oldToken = live!.sessionToken;
 
     const reset = await requestPasswordReset({ tenantId: tenantA }, { email });
@@ -121,10 +131,10 @@ describe.skipIf(!RUN)('customer-auth service (integration)', () => {
     // Old session revoked, old password dead, new password works.
     await expect(verifyCustomerSession({ tenantId: tenantA }, oldToken)).resolves.toBeNull();
     await expect(
-      authenticateCustomer({ tenantId: tenantA }, { email, password: 'hunter2-good' })
+      authenticateCustomer({ tenantId: tenantA }, null, { email, password: 'hunter2-good' })
     ).resolves.toBeNull();
     await expect(
-      authenticateCustomer({ tenantId: tenantA }, { email, password: 'brand-new-pw-1' })
+      authenticateCustomer({ tenantId: tenantA }, null, { email, password: 'brand-new-pw-1' })
     ).resolves.not.toBeNull();
 
     // A used reset token can't be replayed.

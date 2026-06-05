@@ -33,14 +33,14 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
   },
   {
     title: 'Developers',
-    // Developer portal lives on sparx.software per docs/domains.md.
+    // Docs are first-class on sparx.works/docs (the canonical developer home) —
+    // sparx.software 301s here. Only live routes are linked; the rest of the IA
+    // (GraphQL, MCP, SDK, self-host) is visible in the docs sidebar as upcoming.
     links: [
-      { label: 'API reference', href: 'https://sparx.software/api' },
-      { label: 'GraphQL schema', href: 'https://sparx.software/graphql' },
-      { label: 'MCP server spec', href: 'https://sparx.software/mcp' },
-      { label: 'Webhook events', href: 'https://sparx.software/webhooks' },
-      { label: 'Builder SDK', href: 'https://sparx.software/sdk' },
-      { label: 'Self-hosting guide', href: 'https://sparx.software/self-host' },
+      { label: 'Documentation', href: '/docs' },
+      { label: 'Quickstart', href: '/docs/quickstart' },
+      { label: 'API reference', href: '/docs/api/orders/create' },
+      { label: 'Changelog', href: '/changelog' },
       { label: 'Open source', href: '/open-source' },
     ],
   },

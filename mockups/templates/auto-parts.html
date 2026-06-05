@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ironhaul — Diesel & Fleet Parts Supply</title>
+    <!--
+      SPARX TEMPLATE MOCKUP — "Auto / Truck / Diesel & Fleet Parts"
+      Supplier brand: IRONHAUL DIESEL & FLEET SUPPLY (fictional tenant storefront).
+
+      Real sites drawn from (patterns, not copied):
+        - McMaster-Carr            https://www.mcmaster.com/        (relentless utility, spec-led legibility, single confident accent, no carousels/popups, speed-first hierarchy)
+        - RockAuto                 https://www.rockauto.com/        (persistent Year/Make/Model fitment as THE interaction)
+        - Summit Racing            https://www.summitracing.com/    (category-led department tiles + brand-carried trust)
+        - XDP / Diesel Power Prod. https://www.xtremediesel.com/ , https://dieselpowerproducts.com/ (diesel-segment framing: Cummins / Power Stroke / Duramax)
+        - Web Shop Manager (ref)   https://webshopmanager.com/      (native YMM + ACES/PIES B2C+B2B buying paths; gated trade pricing)
+        - OroCommerce / Miva (ref) (B2B: net terms, POs, role-based accounts, "sign in to see your price", fast reorder)
+
+      Palette (hex):
+        --ink     #11161c   (gunmetal black — text + dark bands)
+        --steel   #1c2530   (steel panel)
+        --slate   #3a4654   (mid slate — secondary text on light)
+        --mist    #6b7785   (muted gray)
+        --line    #e3e7ec   (hairline borders)
+        --paper   #f6f7f9   (cool off-white surface)
+        --amber   #f4820b   (hi-vis safety amber — the accent)
+        --amber-d #d96d00   (amber hover)
+        --hi       #ffb53d  (lighter amber for dark-band highlights)
+        --ok      #16a34a   (in-stock green)
+      Fonts: headings = Archivo (700/800, tight), body = Inter (400/500/600), part numbers = IBM Plex Mono.
+
+      Rationale: a tough, utilitarian, high-legibility parts storefront — McMaster-grade clarity with a
+      single hi-vis amber accent on a gunmetal/steel field — that leads with vehicle fitment and quietly
+      surfaces fleet/trade capability (account pricing, net terms/POs, fast reorder) without looking like a spreadsheet.
+      NO eyebrows: hierarchy carried by size/weight/color only.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #11161c;
+        --steel: #1c2530;
+        --slate: #3a4654;
+        --mist: #6b7785;
+        --line: #e3e7ec;
+        --paper: #f6f7f9;
+        --amber: #f4820b;
+        --amber-d: #d96d00;
+        --hi: #ffb53d;
+        --ok: #16a34a;
+        --radius: 10px;
+        --shadow: 0 1px 2px rgba(17, 22, 28, 0.05), 0 8px 24px rgba(17, 22, 28, 0.06);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.5;
+      }
+      h1, h2, h3 { font-family: 'Archivo', system-ui, sans-serif; margin: 0; letter-spacing: -0.02em; }
+      a { color: inherit; text-decoration: none; }
+      .mono { font-family: 'IBM Plex Mono', monospace; }
+      .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+
+      /* ---------- buttons ---------- */
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px;
+        border: 1px solid transparent; border-radius: 8px; cursor: pointer; line-height: 1;
+        padding: 11px 18px; transition: background .15s, border-color .15s, color .15s;
+      }
+      .btn-amber { background: var(--amber); color: #1a1102; }
+      .btn-amber:hover { background: var(--amber-d); color: #fff; }
+      .btn-dark { background: var(--ink); color: #fff; }
+      .btn-dark:hover { background: #000; }
+      .btn-ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+      .btn-ghost:hover { border-color: #c7ced6; }
+      .btn-outline-light { background: transparent; color: #fff; border-color: rgba(255,255,255,0.28); }
+      .btn-outline-light:hover { border-color: rgba(255,255,255,0.6); }
+      .btn-lg { font-size: 15px; padding: 14px 24px; border-radius: 9px; }
+      .btn-block { width: 100%; }
+
+      /* ---------- header ---------- */
+      .util {
+        background: var(--ink); color: rgba(255,255,255,0.72); font-size: 12.5px;
+      }
+      .util .wrap { display: flex; align-items: center; justify-content: space-between; height: 36px; }
+      .util .l, .util .r { display: flex; align-items: center; gap: 18px; }
+      .util a:hover { color: #fff; }
+      .util .pill {
+        display: inline-flex; align-items: center; gap: 6px; color: var(--hi); font-weight: 600;
+      }
+
+      .topbar { position: sticky; top: 0; z-index: 60; background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+      .topbar .wrap { display: flex; align-items: center; gap: 22px; height: 76px; }
+
+      .brand { display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
+      .brand .mark { width: 38px; height: 38px; flex-shrink: 0; }
+      .brand .name { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 21px; letter-spacing: -0.03em; line-height: 1; }
+      .brand .name .sub { display: block; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 10px; letter-spacing: 0.04em; color: var(--mist); margin-top: 3px; }
+
+      /* header search */
+      .hsearch { flex: 1; min-width: 0; }
+      .hsearch .field {
+        display: flex; align-items: center; background: var(--paper);
+        border: 1px solid var(--line); border-radius: 9px; overflow: hidden;
+      }
+      .hsearch .field:focus-within { border-color: var(--amber); background: #fff; }
+      .hsearch .veh {
+        display: inline-flex; align-items: center; gap: 7px; padding: 0 14px; height: 44px;
+        font-size: 13px; font-weight: 600; color: var(--slate); border-right: 1px solid var(--line);
+        white-space: nowrap; cursor: pointer;
+      }
+      .hsearch .veh svg { color: var(--amber); }
+      .hsearch input {
+        flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+        height: 44px; padding: 0 14px; font-size: 14px; font-family: inherit; color: var(--ink);
+      }
+      .hsearch .go {
+        height: 44px; width: 48px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+        background: var(--amber); color: #1a1102; cursor: pointer;
+      }
+      .hsearch .go:hover { background: var(--amber-d); color: #fff; }
+
+      .hactions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+      .signin { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--slate); }
+      .signin .price-cue { color: var(--mist); font-weight: 500; }
+      .signin svg { color: var(--slate); }
+
+      /* primary nav row */
+      .nav2 { border-bottom: 1px solid var(--line); background: #fff; }
+      .nav2 .wrap { display: flex; align-items: center; gap: 4px; height: 50px; }
+      .nav2 a { font-size: 14px; font-weight: 600; color: var(--slate); padding: 8px 14px; border-radius: 7px; }
+      .nav2 a:hover { background: var(--paper); color: var(--ink); }
+      .nav2 .cat { display: inline-flex; align-items: center; gap: 9px; background: var(--ink); color: #fff; padding: 9px 16px; border-radius: 7px; margin-right: 8px; }
+      .nav2 .cat:hover { background: #000; color: #fff; }
+      .nav2 .spacer { flex: 1; }
+      .nav2 .ship { font-size: 13px; font-weight: 600; color: var(--ok); display: inline-flex; align-items: center; gap: 7px; }
+
+      /* ---------- hero ---------- */
+      .hero { position: relative; background: var(--steel); color: #fff; overflow: hidden; }
+      .hero::after {
+        content: ""; position: absolute; inset: 0;
+        background:
+          linear-gradient(105deg, rgba(17,22,28,0.96) 0%, rgba(28,37,48,0.86) 46%, rgba(28,37,48,0.32) 100%),
+          url('https://picsum.photos/seed/ironhaul-diesel-bay/1600/900') center/cover;
+        z-index: 0;
+      }
+      .hero .wrap { position: relative; z-index: 1; padding: 78px 28px 84px; }
+      .hero .grid { display: flex; gap: 56px; align-items: flex-start; flex-wrap: wrap; }
+      .hero .copy { flex: 1.05; min-width: 320px; }
+      .hero h1 { font-weight: 800; font-size: 56px; line-height: 1.02; letter-spacing: -0.035em; max-width: 580px; }
+      .hero h1 em { font-style: normal; color: var(--hi); }
+      .hero .sub { margin: 22px 0 0; max-width: 470px; font-size: 18px; line-height: 1.55; color: rgba(255,255,255,0.74); }
+      .hero .stats { display: flex; gap: 34px; margin-top: 34px; flex-wrap: wrap; }
+      .hero .stat .n { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 26px; letter-spacing: -0.02em; }
+      .hero .stat .l { font-size: 12.5px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+      .hero .actions { display: flex; gap: 13px; margin-top: 32px; flex-wrap: wrap; }
+
+      /* fitment card */
+      .fitcard {
+        flex: 0 0 360px; background: #fff; color: var(--ink); border-radius: 14px;
+        box-shadow: 0 26px 60px rgba(0,0,0,0.4); overflow: hidden; max-width: 100%;
+      }
+      .fitcard .fh { padding: 18px 22px 14px; border-bottom: 1px solid var(--line); }
+      .fitcard .fh .t { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 18px; letter-spacing: -0.02em; }
+      .fitcard .fh .d { font-size: 13px; color: var(--mist); margin-top: 3px; }
+      .fitcard .fb { padding: 18px 22px 22px; }
+      .selectrow { position: relative; margin-bottom: 11px; }
+      .selectrow svg { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); color: var(--mist); pointer-events: none; }
+      .selectrow select {
+        width: 100%; appearance: none; -webkit-appearance: none; font-family: inherit; font-size: 14px;
+        font-weight: 500; color: var(--ink); background: var(--paper); border: 1px solid var(--line);
+        border-radius: 8px; padding: 12px 38px 12px 14px; cursor: pointer;
+      }
+      .selectrow select:focus { outline: none; border-color: var(--amber); background: #fff; }
+      .fitcard .recent {
+        margin-top: 14px; font-size: 12.5px; color: var(--mist); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      }
+      .fitcard .recent .chip {
+        font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--slate);
+        background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; cursor: pointer;
+      }
+      .fitcard .recent .chip:hover { border-color: var(--amber); color: var(--ink); }
+
+      /* ---------- section scaffolding ---------- */
+      section.block { padding: 76px 0; }
+      .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 34px; flex-wrap: wrap; }
+      .sec-head h2 { font-weight: 800; font-size: 34px; line-height: 1.08; letter-spacing: -0.03em; }
+      .sec-head p { margin: 8px 0 0; font-size: 15.5px; color: var(--mist); max-width: 520px; }
+      .sec-head .more { font-size: 14px; font-weight: 600; color: var(--amber-d); display: inline-flex; align-items: center; gap: 6px; }
+      .sec-head .more:hover { color: var(--amber); }
+
+      /* ---------- category grid ---------- */
+      .catgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+      .cattile {
+        position: relative; display: block; border: 1px solid var(--line); border-radius: var(--radius);
+        overflow: hidden; background: #fff; transition: border-color .15s, box-shadow .15s, transform .15s;
+      }
+      .cattile:hover { border-color: #c7ced6; box-shadow: var(--shadow); transform: translateY(-2px); }
+      .cattile .img { height: 116px; background: var(--paper) center/cover; position: relative; }
+      .cattile .img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(17,22,28,0) 40%, rgba(17,22,28,0.28) 100%); }
+      .cattile .body { padding: 14px 16px 16px; }
+      .cattile .name { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: -0.01em; }
+      .cattile .count { font-size: 12.5px; color: var(--mist); margin-top: 3px; }
+      .cattile .bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--amber); transform: scaleX(0); transform-origin: left; transition: transform .2s; }
+      .cattile:hover .bar { transform: scaleX(1); }
+
+      /* ---------- featured parts grid ---------- */
+      .partsgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+      .part {
+        display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--radius);
+        overflow: hidden; background: #fff; transition: border-color .15s, box-shadow .15s;
+      }
+      .part:hover { border-color: #c7ced6; box-shadow: var(--shadow); }
+      .part .pimg { position: relative; height: 168px; background: var(--paper) center/cover; }
+      .part .tag {
+        position: absolute; top: 10px; left: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
+        background: var(--ink); color: #fff; padding: 4px 9px; border-radius: 6px;
+      }
+      .part .tag.fit { background: var(--ok); }
+      .part .pbody { padding: 14px 15px 0; flex: 1; display: flex; flex-direction: column; }
+      .part .brand { font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--amber-d); }
+      .part .pname { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 15.5px; line-height: 1.25; letter-spacing: -0.01em; margin-top: 5px; }
+      .part .pn { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--mist); margin-top: 7px; }
+      .part .fitnote { font-size: 12.5px; color: var(--slate); margin-top: 9px; display: flex; align-items: flex-start; gap: 6px; }
+      .part .fitnote svg { color: var(--ok); flex-shrink: 0; margin-top: 1px; }
+      .part .pricewrap { padding: 13px 15px 15px; margin-top: 13px; border-top: 1px solid var(--line); }
+      .part .price { display: flex; align-items: baseline; gap: 8px; }
+      .part .price .now { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 21px; letter-spacing: -0.02em; }
+      .part .price .was { font-size: 13px; color: var(--mist); text-decoration: line-through; }
+      .part .fleetcue { font-size: 12px; color: var(--mist); margin-top: 5px; display: flex; align-items: center; gap: 6px; }
+      .part .fleetcue b { color: var(--amber-d); font-weight: 600; }
+      .part .addrow { display: flex; gap: 8px; margin-top: 12px; }
+      .part .addrow .btn { flex: 1; padding: 10px 12px; }
+      .part .iconbtn {
+        width: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+        border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--slate); cursor: pointer;
+      }
+      .part .iconbtn:hover { border-color: #c7ced6; color: var(--ink); }
+
+      /* ---------- fleet value band ---------- */
+      .fleet { background: var(--ink); color: #fff; }
+      .fleet .wrap { padding: 78px 28px; }
+      .fleet .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; flex-wrap: wrap; margin-bottom: 40px; }
+      .fleet h2 { font-weight: 800; font-size: 36px; line-height: 1.06; letter-spacing: -0.03em; max-width: 560px; }
+      .fleet h2 em { font-style: normal; color: var(--hi); }
+      .fleet .lede { margin: 12px 0 0; font-size: 16px; color: rgba(255,255,255,0.66); max-width: 520px; }
+      .capgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+      .cap {
+        border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius); padding: 22px 20px;
+        background: rgba(255,255,255,0.03);
+      }
+      .cap .ic {
+        width: 42px; height: 42px; border-radius: 9px; display: flex; align-items: center; justify-content: center;
+        background: rgba(244,130,11,0.16); color: var(--hi); margin-bottom: 15px;
+      }
+      .cap h3 { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+      .cap p { margin: 8px 0 0; font-size: 13.5px; line-height: 1.5; color: rgba(255,255,255,0.62); }
+      .fleet .actions { display: flex; gap: 13px; margin-top: 38px; flex-wrap: wrap; }
+
+      /* ---------- brands strip ---------- */
+      .brands { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      .brands .wrap { padding: 40px 28px; }
+      .brands .label { text-align: center; font-size: 14px; font-weight: 600; color: var(--mist); margin-bottom: 22px; }
+      .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+      .chips .chip {
+        font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: -0.01em; color: var(--slate);
+        background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 11px 20px; transition: border-color .15s, color .15s;
+      }
+      .chips .chip:hover { border-color: var(--amber); color: var(--ink); }
+
+      /* ---------- journal ---------- */
+      .journal .artgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+      .art {
+        display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--radius);
+        overflow: hidden; background: #fff; transition: border-color .15s, box-shadow .15s, transform .15s;
+      }
+      .art:hover { border-color: #c7ced6; box-shadow: var(--shadow); transform: translateY(-2px); }
+      .art .aimg { height: 178px; background: var(--paper) center/cover; }
+      .art .abody { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+      .art .meta { font-size: 12.5px; font-weight: 600; color: var(--amber-d); }
+      .art h3 { font-weight: 700; font-size: 19px; line-height: 1.22; letter-spacing: -0.015em; margin-top: 9px; }
+      .art p { margin: 10px 0 0; font-size: 14px; line-height: 1.55; color: var(--mist); }
+      .art .read { margin-top: 16px; font-size: 13.5px; font-weight: 600; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
+      .art:hover .read { color: var(--amber-d); }
+
+      /* ---------- conversion band ---------- */
+      .convert { position: relative; overflow: hidden; background: var(--steel); color: #fff; }
+      .convert::after {
+        content: ""; position: absolute; inset: 0; z-index: 0;
+        background: linear-gradient(100deg, rgba(17,22,28,0.95) 0%, rgba(28,37,48,0.8) 60%, rgba(244,130,11,0.22) 100%),
+          url('https://picsum.photos/seed/ironhaul-fleet-yard/1600/600') center/cover;
+      }
+      .convert .wrap { position: relative; z-index: 1; padding: 66px 28px; display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
+      .convert .lead { flex: 1; min-width: 300px; }
+      .convert h2 { font-weight: 800; font-size: 38px; line-height: 1.06; letter-spacing: -0.03em; max-width: 540px; }
+      .convert p { margin: 14px 0 0; font-size: 16px; color: rgba(255,255,255,0.74); max-width: 480px; }
+      .convert .form { flex: 0 0 360px; max-width: 100%; }
+      .convert .formcard { background: #fff; color: var(--ink); border-radius: 14px; padding: 26px 24px; box-shadow: 0 26px 60px rgba(0,0,0,0.35); }
+      .convert .formcard h3 { font-weight: 800; font-size: 19px; letter-spacing: -0.02em; }
+      .convert .formcard p { margin: 6px 0 16px; font-size: 13.5px; color: var(--mist); }
+      .convert .formcard input {
+        width: 100%; border: 1px solid var(--line); background: var(--paper); border-radius: 8px;
+        padding: 12px 14px; font-family: inherit; font-size: 14px; color: var(--ink); margin-bottom: 10px;
+      }
+      .convert .formcard input:focus { outline: none; border-color: var(--amber); background: #fff; }
+      .convert .formcard .note { font-size: 12px; color: var(--mist); margin: 12px 0 0; text-align: center; }
+
+      /* ---------- footer ---------- */
+      footer.site { background: var(--ink); color: rgba(255,255,255,0.66); }
+      footer.site .wrap { padding: 60px 28px 30px; }
+      .fcols { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr; gap: 36px; }
+      .fcol .ft { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.02em; color: #fff; margin-bottom: 14px; }
+      .fcol a { display: block; font-size: 13.5px; color: rgba(255,255,255,0.6); padding: 5px 0; }
+      .fcol a:hover { color: #fff; }
+      .fbrand .brand .name { color: #fff; }
+      .fbrand p { font-size: 13.5px; line-height: 1.55; color: rgba(255,255,255,0.6); margin: 16px 0 0; max-width: 280px; }
+      .fbrand .hours { margin-top: 16px; font-size: 13px; color: rgba(255,255,255,0.78); }
+      .fbrand .hours b { color: #fff; font-weight: 600; }
+      .fbrand .social { display: flex; gap: 10px; margin-top: 18px; }
+      .fbrand .social a {
+        width: 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.14);
+        display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.78);
+      }
+      .fbrand .social a:hover { border-color: var(--amber); color: var(--hi); }
+      .fbot {
+        margin-top: 44px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.1);
+        display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+        font-size: 12.5px; color: rgba(255,255,255,0.5);
+      }
+      .fbot .links { display: flex; gap: 18px; flex-wrap: wrap; }
+      .fbot a:hover { color: #fff; }
+
+      /* ---------- responsive ---------- */
+      @media (max-width: 1040px) {
+        .catgrid, .partsgrid, .capgrid { grid-template-columns: repeat(2, 1fr); }
+        .journal .artgrid { grid-template-columns: 1fr 1fr; }
+        .fcols { grid-template-columns: 1fr 1fr 1fr; }
+        .fbrand { grid-column: 1 / -1; }
+      }
+      @media (max-width: 820px) {
+        .wrap { padding: 0 18px; }
+        .util { display: none; }
+        .topbar .wrap { flex-wrap: wrap; height: auto; padding-top: 14px; padding-bottom: 14px; gap: 14px; }
+        .hsearch { order: 3; flex-basis: 100%; }
+        .hactions { margin-left: auto; }
+        .signin .price-cue { display: none; }
+        .nav2 { overflow-x: auto; }
+        .nav2 .wrap { gap: 2px; }
+        .nav2 .spacer, .nav2 .ship { display: none; }
+
+        .hero .wrap { padding: 48px 18px 54px; }
+        .hero .grid { gap: 36px; }
+        .hero h1 { font-size: 38px; }
+        .fitcard { flex-basis: 100%; }
+
+        section.block { padding: 52px 0; }
+        .sec-head h2 { font-size: 27px; }
+        .catgrid, .partsgrid, .capgrid, .journal .artgrid { grid-template-columns: 1fr; }
+        .fleet .wrap, .convert .wrap, .brands .wrap, footer.site .wrap { padding-left: 18px; padding-right: 18px; }
+        .fleet h2, .convert h2 { font-size: 28px; }
+        .convert .wrap { padding: 44px 18px; }
+        .convert .form { flex-basis: 100%; }
+        .fcols { grid-template-columns: 1fr 1fr; }
+        .fbot { flex-direction: column; align-items: flex-start; }
+      }
+      @media (max-width: 480px) {
+        .fcols { grid-template-columns: 1fr; }
+        .hero h1 { font-size: 32px; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- utility bar -->
+    <div class="util">
+      <div class="wrap">
+        <div class="l">
+          <span class="pill">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            Free freight on parts orders over $250
+          </span>
+          <a href="#">Same-day shipping until 4pm PT</a>
+        </div>
+        <div class="r">
+          <a href="#">Track an order</a>
+          <a href="#">Warranty & returns</a>
+          <a href="#">Call 1-800-IRONHAUL</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- header -->
+    <header class="topbar">
+      <div class="wrap">
+        <a href="#" class="brand" aria-label="Ironhaul home">
+          <svg class="mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="37" height="37" rx="8" fill="#11161c"/>
+            <path d="M11 27V13l9 7 9-7v14" stroke="#f4820b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="20" cy="20" r="2.4" fill="#ffb53d"/>
+          </svg>
+          <span class="name">IRONHAUL<span class="sub">DIESEL & FLEET SUPPLY</span></span>
+        </a>
+
+        <div class="hsearch">
+          <div class="field">
+            <span class="veh">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 13l2-6h14l2 6M3 13v4M21 13v4"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg>
+              2019 RAM 3500 6.7L Cummins
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+            <input type="text" placeholder="Search part #, name, or VIN…" aria-label="Search parts" />
+            <button class="go" aria-label="Search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="hactions">
+          <a href="#" class="signin">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Sign in <span class="price-cue">· see your pricing</span></span>
+          </a>
+          <button class="btn btn-amber">Open a fleet account</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- primary nav -->
+    <nav class="nav2">
+      <div class="wrap">
+        <a href="#" class="cat">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          Catalog
+        </a>
+        <a href="#">Brands</a>
+        <a href="#">Fleet &amp; Trade</a>
+        <a href="#">Service</a>
+        <a href="#">Support</a>
+        <span class="spacer"></span>
+        <span class="ship">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          1.4M parts · ships from 6 warehouses
+        </span>
+      </div>
+    </nav>
+
+    <!-- hero -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="grid">
+          <div class="copy">
+            <h1>The right diesel part, <em>fits the first time.</em></h1>
+            <p class="sub">
+              OE-replacement and performance parts for Cummins, Power Stroke, and Duramax — backed by real fitment data,
+              six stocking warehouses, and counter-grade support. Built for fleets that can't afford a wrong part.
+            </p>
+            <div class="stats">
+              <div class="stat"><div class="n">1.4M+</div><div class="l">parts in catalog</div></div>
+              <div class="stat"><div class="n">120+</div><div class="l">brands carried</div></div>
+              <div class="stat"><div class="n">98.6%</div><div class="l">order-accuracy rate</div></div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-amber btn-lg">Shop your vehicle</button>
+              <button class="btn btn-outline-light btn-lg">Open a fleet account</button>
+            </div>
+          </div>
+
+          <div class="fitcard">
+            <div class="fh">
+              <div class="t">Find parts that fit</div>
+              <div class="d">Select your vehicle once — we'll filter every result.</div>
+            </div>
+            <div class="fb">
+              <div class="selectrow">
+                <select aria-label="Year"><option>Year</option><option selected>2019</option><option>2020</option><option>2021</option></select>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="selectrow">
+                <select aria-label="Make"><option>Make</option><option selected>RAM</option><option>Ford</option><option>Chevrolet / GMC</option></select>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="selectrow">
+                <select aria-label="Model"><option>Model</option><option selected>3500 · 6.7L Cummins</option><option>2500 · 6.7L Cummins</option></select>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <button class="btn btn-dark btn-block" style="margin-top:6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Show parts for this truck
+              </button>
+              <div class="recent">
+                Recent:
+                <span class="chip">2017 F-250 6.7L</span>
+                <span class="chip">2015 Sierra 2500 Duramax</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- shop by category -->
+    <section class="block">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <h2>Shop by system</h2>
+            <p>Every department filtered to your vehicle the moment it's selected — no wrong-part guesswork.</p>
+          </div>
+          <a href="#" class="more">Full catalog
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+        <div class="catgrid">
+          <a href="#" class="cattile"><span class="bar"></span><div class="img" style="background-image:url('https://picsum.photos/seed/ih-engine/600/360')"></div><div class="body"><div class="name">Engine &amp; rebuild</div><div class="count">38,400 parts</div></div></a>
+          <a href="#" class="cattile"><span class="bar"></span><div class="img" style="background-image:url('https://picsum.photos/seed/ih-fuel/600/360')"></div><div class="body"><div class="name">Fuel &amp; injection</div><div class="count">21,900 parts</div></div></a>
+          <a href="#" class="cattile"><span class="bar"></span><div class="img" style="background-image:url('https://picsum.photos/seed/ih-brakes/600/360')"></div><div class="body"><div class="name">Brakes &amp; chassis</div><div class="count">29,600 parts</div></div></a>
+          <a href="#" class="cattile"><span class="bar"></span><div class="img" style="background-image:url('https://picsum.photos/seed/ih-filter/600/360')"></div><div class="body"><div class="name">Filtration</div><div class="count">12,300 parts</div></div></a>
+          <a href="#" class="cattile"><span class="bar"></span><div class="img" style="background-image:url('https://picsum.photos/seed/ih-elec/600/360')"></div><div class="body"><div class="name">Electrical &amp; sensors</div><div class="count">18,700 parts</div></div></a>
+          <a href="#" class="cattile"><span class="bar"></span><div class="img" style="background-image:url('https://picsum.photos/seed/ih-drive/600/360')"></div><div class="body"><div class="name">Drivetrain &amp; axle</div><div class="count">15,100 parts</div></div></a>
+          <a href="#" class="cattile"><span class="bar"></span><div class="img" style="background-image:url('https://picsum.photos/seed/ih-cool/600/360')"></div><div class="body"><div class="name">Cooling</div><div class="count">9,800 parts</div></div></a>
+          <a href="#" class="cattile"><span class="bar"></span><div class="img" style="background-image:url('https://picsum.photos/seed/ih-exhaust/600/360')"></div><div class="body"><div class="name">Exhaust &amp; emissions</div><div class="count">11,400 parts</div></div></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- featured parts -->
+    <section class="block" style="background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <h2>Top parts for your Cummins</h2>
+            <p>Filtered to your 2019 RAM 3500. Prices shown are list — sign in for your fleet pricing.</p>
+          </div>
+          <a href="#" class="more">See all fitting parts
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+        <div class="partsgrid">
+          <!-- part 1 -->
+          <div class="part">
+            <div class="pimg" style="background-image:url('https://picsum.photos/seed/ih-injector/600/420')"><span class="tag fit">Fits your truck</span></div>
+            <div class="pbody">
+              <div class="brand">Bosch</div>
+              <div class="pname">Common-Rail Fuel Injector</div>
+              <div class="pn mono">PN&nbsp;0445120238</div>
+              <div class="fitnote"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>2007.5–2018 6.7L Cummins</div>
+            </div>
+            <div class="pricewrap">
+              <div class="price"><span class="now">$312.00</span><span class="was">$368.00</span></div>
+              <div class="fleetcue"><b>Fleet price</b> at sign-in</div>
+              <div class="addrow">
+                <button class="btn btn-amber">Add to order</button>
+                <button class="iconbtn" aria-label="Save"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <!-- part 2 -->
+          <div class="part">
+            <div class="pimg" style="background-image:url('https://picsum.photos/seed/ih-turbo/600/420')"><span class="tag">Stocked · 6 WH</span></div>
+            <div class="pbody">
+              <div class="brand">Holset / Cummins</div>
+              <div class="pname">HE351VE Turbocharger</div>
+              <div class="pn mono">PN&nbsp;3796619RX</div>
+              <div class="fitnote"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>2007.5–2012 6.7L Cummins</div>
+            </div>
+            <div class="pricewrap">
+              <div class="price"><span class="now">$1,189.00</span></div>
+              <div class="fleetcue"><b>Fleet price</b> at sign-in</div>
+              <div class="addrow">
+                <button class="btn btn-amber">Add to order</button>
+                <button class="iconbtn" aria-label="Save"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <!-- part 3 -->
+          <div class="part">
+            <div class="pimg" style="background-image:url('https://picsum.photos/seed/ih-fuelfilter/600/420')"><span class="tag fit">Fits your truck</span></div>
+            <div class="pbody">
+              <div class="brand">Fleetguard</div>
+              <div class="pname">Fuel/Water Separator Kit</div>
+              <div class="pn mono">PN&nbsp;FS43255</div>
+              <div class="fitnote"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>2013–2018 6.7L Cummins</div>
+            </div>
+            <div class="pricewrap">
+              <div class="price"><span class="now">$48.50</span><span class="was">$59.00</span></div>
+              <div class="fleetcue"><b>Fleet price</b> at sign-in</div>
+              <div class="addrow">
+                <button class="btn btn-amber">Add to order</button>
+                <button class="iconbtn" aria-label="Save"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+              </div>
+            </div>
+          </div>
+          <!-- part 4 -->
+          <div class="part">
+            <div class="pimg" style="background-image:url('https://picsum.photos/seed/ih-egr/600/420')"><span class="tag">New arrival</span></div>
+            <div class="pbody">
+              <div class="brand">Dorman HD Solutions</div>
+              <div class="pname">EGR Cooler Assembly</div>
+              <div class="pn mono">PN&nbsp;904-5500</div>
+              <div class="fitnote"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>2013–2018 6.7L Cummins</div>
+            </div>
+            <div class="pricewrap">
+              <div class="price"><span class="now">$427.00</span></div>
+              <div class="fleetcue"><b>Fleet price</b> at sign-in</div>
+              <div class="addrow">
+                <button class="btn btn-amber">Add to order</button>
+                <button class="iconbtn" aria-label="Save"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- fleet / trade value band -->
+    <section class="fleet">
+      <div class="wrap">
+        <div class="top">
+          <div>
+            <h2>Built for the shop, <em>not the spreadsheet.</em></h2>
+            <p class="lede">Open a fleet account and your team buys the way a parts counter actually works — your price, your terms, your reorder history.</p>
+          </div>
+        </div>
+        <div class="capgrid">
+          <div class="cap">
+            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <h3>Account pricing</h3>
+            <p>Per-account price lists and volume breaks apply automatically the second you sign in — no quoting back-and-forth.</p>
+          </div>
+          <div class="cap">
+            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+            <h3>Net terms &amp; POs</h3>
+            <p>Pay on Net 15/30/60. Drop a PO number at checkout, routed to the right unit and cost center — invoice follows.</p>
+          </div>
+          <div class="cap">
+            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div>
+            <h3>One-click reorder</h3>
+            <p>Saved lists, order history, and recurring replenishment — rebuild last month's PM order in a single click.</p>
+          </div>
+          <div class="cap">
+            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 13l2-6h14l2 6M3 13v4M21 13v4"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg></div>
+            <h3>Fleet management</h3>
+            <p>Track every unit by VIN, store fitment per truck, and split spend across drivers, bays, and locations.</p>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-amber btn-lg">Open a fleet account</button>
+          <button class="btn btn-outline-light btn-lg">Talk to a parts specialist</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- brands carried -->
+    <section class="brands">
+      <div class="wrap">
+        <div class="label">120+ brands, stocked and ready — the names your techs already trust</div>
+        <div class="chips">
+          <span class="chip">Cummins</span>
+          <span class="chip">Bosch</span>
+          <span class="chip">Holset</span>
+          <span class="chip">Fleetguard</span>
+          <span class="chip">BD Diesel</span>
+          <span class="chip">Garrett</span>
+          <span class="chip">AirDog</span>
+          <span class="chip">FASS</span>
+          <span class="chip">Dorman HD</span>
+          <span class="chip">S&amp;B Filters</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- journal / shop talk -->
+    <section class="block journal">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <h2>Shop talk</h2>
+            <p>Maintenance guides, fitment tips, and field notes from techs who actually turn the wrenches.</p>
+          </div>
+          <a href="#" class="more">All articles
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+        <div class="artgrid">
+          <a href="#" class="art">
+            <div class="aimg" style="background-image:url('https://picsum.photos/seed/ih-art-injector/600/360')"></div>
+            <div class="abody">
+              <div class="meta">Maintenance · 7 min read</div>
+              <h3>6.7L Cummins injector replacement: a fleet PM walkthrough</h3>
+              <p>Torque specs, return-line gotchas, and the OE part numbers that keep a wrong-part return off your dock.</p>
+              <span class="read">Read guide
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
+            </div>
+          </a>
+          <a href="#" class="art">
+            <div class="aimg" style="background-image:url('https://picsum.photos/seed/ih-art-fitment/600/360')"></div>
+            <div class="abody">
+              <div class="meta">Fitment tips · 5 min read</div>
+              <h3>Reading a VIN to nail Power Stroke fitment every time</h3>
+              <p>The 8th and 10th digits decide which turbo, EGR cooler, and harness actually bolt up. Here's the cheat sheet.</p>
+              <span class="read">Read guide
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
+            </div>
+          </a>
+          <a href="#" class="art">
+            <div class="aimg" style="background-image:url('https://picsum.photos/seed/ih-art-filter/600/360')"></div>
+            <div class="abody">
+              <div class="meta">Field notes · 4 min read</div>
+              <h3>Fuel-filter intervals that actually protect a CP4 pump</h3>
+              <p>Why the spec interval isn't the safe interval for high-mileage fleet trucks — and what to stock ahead.</p>
+              <span class="read">Read guide
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- conversion band -->
+    <section class="convert">
+      <div class="wrap">
+        <div class="lead">
+          <h2>Open a fleet account in minutes.</h2>
+          <p>Net terms, your team's pricing, and a dedicated parts specialist — set up today, ordering by tomorrow. No card required to apply.</p>
+        </div>
+        <div class="form">
+          <div class="formcard">
+            <h3>Get fleet pricing</h3>
+            <p>Tell us where to send your account details and price list.</p>
+            <input type="text" placeholder="Company / shop name" aria-label="Company name" />
+            <input type="email" placeholder="Work email" aria-label="Work email" />
+            <button class="btn btn-amber btn-block btn-lg">Apply for an account</button>
+            <p class="note">Or call a specialist at 1-800-IRONHAUL</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- footer -->
+    <footer class="site">
+      <div class="wrap">
+        <div class="fcols">
+          <div class="fcol fbrand">
+            <a href="#" class="brand">
+              <svg class="mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                <rect x="1.5" y="1.5" width="37" height="37" rx="8" fill="#1c2530"/>
+                <path d="M11 27V13l9 7 9-7v14" stroke="#f4820b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="20" cy="20" r="2.4" fill="#ffb53d"/>
+              </svg>
+              <span class="name">IRONHAUL<span class="sub" style="color:rgba(255,255,255,0.5)">DIESEL & FLEET SUPPLY</span></span>
+            </a>
+            <p>Heavy-duty diesel and fleet parts, shipped fast and fit right — from six stocking warehouses across the West.</p>
+            <div class="hours"><b>Counter &amp; phone:</b> Mon–Fri 6am–6pm PT · Sat 7am–2pm</div>
+            <div class="social">
+              <a href="#" aria-label="Facebook"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.5 9.9v-7H8v-2.9h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6v1.8H16l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z"/></svg></a>
+              <a href="#" aria-label="Instagram"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg></a>
+              <a href="#" aria-label="YouTube"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.5a3 3 0 0 0-2.1-2.1C19 5 12 5 12 5s-7 0-8.9.4A3 3 0 0 0 1 7.5 31 31 0 0 0 .6 12 31 31 0 0 0 1 16.5a3 3 0 0 0 2.1 2.1C5 19 12 19 12 19s7 0 8.9-.4a3 3 0 0 0 2.1-2.1A31 31 0 0 0 23.4 12 31 31 0 0 0 23 7.5zM9.8 15.3V8.7l5.7 3.3z"/></svg></a>
+            </div>
+          </div>
+
+          <div class="fcol">
+            <div class="ft">SHOP</div>
+            <a href="#">Engine &amp; rebuild</a>
+            <a href="#">Fuel &amp; injection</a>
+            <a href="#">Brakes &amp; chassis</a>
+            <a href="#">Filtration</a>
+            <a href="#">Electrical</a>
+            <a href="#">Drivetrain</a>
+          </div>
+          <div class="fcol">
+            <div class="ft">FLEET &amp; TRADE</div>
+            <a href="#">Open a fleet account</a>
+            <a href="#">Net terms &amp; POs</a>
+            <a href="#">Account pricing</a>
+            <a href="#">Reorder lists</a>
+            <a href="#">Bulk &amp; core program</a>
+          </div>
+          <div class="fcol">
+            <div class="ft">SUPPORT</div>
+            <a href="#">Find my part</a>
+            <a href="#">Fitment &amp; VIN help</a>
+            <a href="#">Track an order</a>
+            <a href="#">Warranty &amp; returns</a>
+            <a href="#">Contact us</a>
+          </div>
+          <div class="fcol">
+            <div class="ft">COMPANY</div>
+            <a href="#">About Ironhaul</a>
+            <a href="#">Warehouses</a>
+            <a href="#">Shop talk</a>
+            <a href="#">Careers</a>
+            <a href="#">Brands carried</a>
+          </div>
+        </div>
+
+        <div class="fbot">
+          <span>© 2026 Ironhaul Diesel &amp; Fleet Supply, LLC · Visalia, CA</span>
+          <div class="links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Shipping policy</a>
+            <a href="#">Accessibility</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

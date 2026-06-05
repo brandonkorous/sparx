@@ -38,9 +38,13 @@ export function useCustomer(): CustomerContextValue {
 
 export function CustomerProvider({
   tenantSlug,
+  propertySlug,
   children,
 }: {
   tenantSlug: string;
+  /** Active site slug (docs/58 D2) — sent on login/register so the membership is
+   *  created/resolved on this site. */
+  propertySlug?: string;
   children: React.ReactNode;
 }) {
   const [customer, setCustomer] = useState<Customer | null>(null);
@@ -63,20 +67,20 @@ export function CustomerProvider({
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const me = await accountApi.login(tenantSlug, { email, password });
+      const me = await accountApi.login(tenantSlug, { email, password }, propertySlug);
       setCustomer(me);
       setStatus('authenticated');
     },
-    [tenantSlug]
+    [tenantSlug, propertySlug]
   );
 
   const register = useCallback(
     async (input: { email: string; password: string; firstName?: string; lastName?: string }) => {
-      const me = await accountApi.register(tenantSlug, input);
+      const me = await accountApi.register(tenantSlug, input, propertySlug);
       setCustomer(me);
       setStatus('authenticated');
     },
-    [tenantSlug]
+    [tenantSlug, propertySlug]
   );
 
   const logout = useCallback(async () => {

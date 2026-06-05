@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ironleaf Tattoo — Custom tattoo studio</title>
+    <!--
+      TENANT TEMPLATE MOCKUP — "Ironleaf Tattoo"
+      A fictional independent custom tattoo studio. This is the TENANT's own site
+      (its own brand identity), NOT the Sparx marketing brand. To become a Sparx
+      blueprint: site layout (sticky header + footer) + home page sections.
+
+      Real sites researched for direction (synthesized, not copied):
+        - Bang Bang Tattoo, NYC — https://www.bangbangforever.com/
+            (video/graphic-led, 30+ artists, fineline/illustrative; artist-led booking)
+        - Three Kings Tattoo, Brooklyn — https://www.threekingstattoo.com/
+            (elevated craft register, browse-by-artist, custom + consultation)
+        - Kings Avenue Tattoo, NY — https://kingsavetattoo.com/
+            (strong centered logo/brand identity, ink-stamped type, artist-as-portfolio)
+      Aggregators consulted: sitebuilderreport.com, muffingroup.com, colorlib.com
+      (dark, near-black editorial backgrounds; gallery-first portfolio; serif
+       typography to elevate ink to fine art; warm/metallic accent on blackwork).
+
+      Palette (hex):
+        --bg #0b0a09 (near-black warm)   --bg-2 #121110   --panel #17150f
+        --ink #f4efe6 (warm bone)        --muted #b3aa9b  --faint #7c7468
+        --line rgba(244,239,230,.10)     --gold #c9a24b (primary accent)
+        --gold-soft #e6c878             --ember #9a3b2e (secondary accent)
+      Fonts: Cormorant Garamond (display serif, headings) + Inter (body/UI) +
+             Space Grotesk (numerals / small detail labels).
+      Rationale: a warm near-black gallery with a single gold accent and a high-
+      contrast serif/sans pairing treats tattoo work as fine art while staying
+      legible and bookings-forward — no eyebrows; hierarchy carried by scale/weight/color.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0b0a09;
+        --bg-2: #121110;
+        --panel: #17150f;
+        --panel-2: #1c1a13;
+        --ink: #f4efe6;
+        --muted: #b3aa9b;
+        --faint: #7c7468;
+        --line: rgba(244, 239, 230, 0.1);
+        --line-2: rgba(244, 239, 230, 0.06);
+        --gold: #c9a24b;
+        --gold-soft: #e6c878;
+        --ember: #9a3b2e;
+        --serif: "Cormorant Garamond", Georgia, serif;
+        --sans: "Inter", system-ui, -apple-system, sans-serif;
+        --mono: "Space Grotesk", "Inter", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      html { scroll-behavior: smooth; }
+      body {
+        font-family: var(--sans);
+        color: var(--ink);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.6;
+      }
+      .wrap { max-width: 1180px; margin: 0 auto; padding: 0 36px; }
+      a { color: inherit; text-decoration: none; }
+      img { display: block; max-width: 100%; }
+      h1, h2, h3 { font-family: var(--serif); font-weight: 500; letter-spacing: -0.01em; margin: 0; }
+
+      /* ---------- buttons ---------- */
+      .btn {
+        display: inline-flex; align-items: center; gap: 9px;
+        font-family: var(--sans); font-weight: 500; font-size: 14px;
+        border-radius: 999px; cursor: pointer; border: 1px solid transparent;
+        transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+      }
+      .btn-gold { background: var(--gold); color: #19150b; padding: 12px 22px; }
+      .btn-gold:hover { background: var(--gold-soft); }
+      .btn-outline { background: transparent; color: var(--ink); border-color: var(--line); padding: 12px 22px; }
+      .btn-outline:hover { border-color: var(--gold); color: var(--gold-soft); }
+      .btn-ghost { background: transparent; color: var(--muted); padding: 9px 0; }
+      .btn-ghost:hover { color: var(--gold-soft); }
+      .btn-lg { font-size: 15px; padding: 15px 28px; }
+      .arrow { width: 15px; height: 15px; }
+
+      .lede { font-size: 18px; line-height: 1.7; color: var(--muted); }
+
+      /* ---------- header ---------- */
+      .topbar {
+        position: sticky; top: 0; z-index: 60;
+        background: rgba(11, 10, 9, 0.78);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line-2);
+      }
+      .topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 74px; }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .brand .mark { color: var(--gold); flex-shrink: 0; }
+      .brand .name {
+        font-family: var(--serif); font-weight: 600; font-size: 24px;
+        letter-spacing: 0.06em; text-transform: uppercase;
+      }
+      .nav { display: flex; align-items: center; gap: 30px; }
+      .nav a { font-size: 14px; color: var(--muted); transition: color 0.16s ease; }
+      .nav a:hover { color: var(--ink); }
+      .nav .cta { margin-left: 4px; }
+
+      /* ---------- hero ---------- */
+      .hero { position: relative; min-height: 84vh; display: flex; align-items: flex-end; overflow: hidden; }
+      .hero .bg { position: absolute; inset: 0; }
+      .hero .bg img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.25) contrast(1.05); }
+      .hero .scrim {
+        position: absolute; inset: 0;
+        background:
+          linear-gradient(180deg, rgba(11,10,9,0.55) 0%, rgba(11,10,9,0.12) 38%, rgba(11,10,9,0.92) 100%),
+          radial-gradient(120% 80% at 80% 10%, rgba(201,162,75,0.14), transparent 55%);
+      }
+      .hero .inner { position: relative; z-index: 2; width: 100%; padding: 0 0 76px; }
+      .hero h1 {
+        font-size: clamp(46px, 8vw, 104px);
+        line-height: 0.98; letter-spacing: -0.02em; max-width: 14ch;
+      }
+      .hero h1 em { font-style: italic; color: var(--gold-soft); }
+      .hero .sub { margin-top: 26px; max-width: 50ch; font-size: 19px; color: var(--muted); }
+      .hero .actions { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
+      .hero .meta {
+        display: flex; gap: 28px; margin-top: 44px; flex-wrap: wrap;
+        font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.04em; color: var(--faint);
+      }
+      .hero .meta span { display: inline-flex; align-items: center; gap: 8px; }
+      .hero .meta .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+
+      /* ---------- section scaffolding ---------- */
+      section { position: relative; }
+      .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; flex-wrap: wrap; }
+      .section-head h2 { font-size: clamp(34px, 5vw, 56px); line-height: 1.02; max-width: 18ch; }
+      .section-head p { margin: 0; max-width: 40ch; }
+      .pad { padding: 110px 0; }
+      .pad-sm { padding: 84px 0; }
+
+      /* ---------- portfolio ---------- */
+      .portfolio { background: var(--bg); }
+      .gallery { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; margin-top: 52px; }
+      .tile {
+        position: relative; overflow: hidden; border-radius: 6px;
+        border: 1px solid var(--line-2); background: var(--panel);
+      }
+      .tile img {
+        width: 100%; height: 100%; object-fit: cover;
+        filter: grayscale(0.15); transition: transform 0.5s ease, filter 0.4s ease;
+      }
+      .tile:hover img { transform: scale(1.05); filter: grayscale(0); }
+      .tile .tag {
+        position: absolute; left: 14px; bottom: 14px; z-index: 2;
+        font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.05em;
+        color: var(--ink); background: rgba(11, 10, 9, 0.62);
+        backdrop-filter: blur(4px); padding: 5px 11px; border-radius: 999px;
+        border: 1px solid var(--line);
+      }
+      .tile::after {
+        content: ""; position: absolute; inset: 0; z-index: 1;
+        background: linear-gradient(180deg, transparent 55%, rgba(11, 10, 9, 0.5));
+        opacity: 0; transition: opacity 0.4s ease;
+      }
+      .tile:hover::after { opacity: 1; }
+      .t-tall { grid-column: span 4; aspect-ratio: 3 / 4; }
+      .t-wide { grid-column: span 8; aspect-ratio: 16 / 9; }
+      .t-sq { grid-column: span 4; aspect-ratio: 1 / 1; }
+      .gallery-foot { display: flex; justify-content: center; margin-top: 40px; }
+
+      /* ---------- artists ---------- */
+      .artists { background: var(--bg-2); border-top: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); }
+      .roster { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 52px; }
+      .artist {
+        background: var(--panel); border: 1px solid var(--line-2); border-radius: 10px;
+        overflow: hidden; transition: border-color 0.2s ease, transform 0.2s ease;
+      }
+      .artist:hover { border-color: var(--line); transform: translateY(-3px); }
+      .artist .photo { aspect-ratio: 3 / 4; overflow: hidden; }
+      .artist .photo img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.35); transition: filter 0.4s ease; }
+      .artist:hover .photo img { filter: grayscale(0); }
+      .artist .body { padding: 20px 20px 22px; }
+      .artist .name { font-family: var(--serif); font-size: 25px; line-height: 1.1; }
+      .artist .style { margin-top: 6px; font-size: 13.5px; color: var(--gold-soft); }
+      .artist .blurb { margin-top: 12px; font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+      .artist .link { display: inline-flex; align-items: center; gap: 7px; margin-top: 16px; font-size: 13px; color: var(--ink); }
+      .artist .link:hover { color: var(--gold-soft); }
+
+      /* ---------- booking / how it works ---------- */
+      .booking { background: var(--bg); }
+      .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 56px; }
+      .step { padding: 0 34px; position: relative; }
+      .step:first-child { padding-left: 0; }
+      .step + .step { border-left: 1px solid var(--line-2); }
+      .step .n { font-family: var(--mono); font-size: 14px; color: var(--gold); letter-spacing: 0.08em; }
+      .step h3 { font-size: 27px; margin-top: 14px; }
+      .step p { margin: 12px 0 0; font-size: 15px; color: var(--muted); }
+      .pricing {
+        margin-top: 60px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+      }
+      .price {
+        background: var(--panel); border: 1px solid var(--line-2); border-radius: 12px; padding: 28px 26px;
+      }
+      .price.feature { border-color: rgba(201, 162, 75, 0.4); background: var(--panel-2); }
+      .price .t { font-family: var(--serif); font-size: 24px; }
+      .price .amt { margin-top: 14px; font-family: var(--mono); font-size: 34px; color: var(--ink); letter-spacing: -0.01em; }
+      .price .amt small { font-size: 15px; color: var(--faint); font-family: var(--sans); }
+      .price .d { margin-top: 12px; font-size: 14px; color: var(--muted); line-height: 1.55; }
+      .price .badge {
+        display: inline-block; margin-top: 16px; font-size: 12px; color: var(--gold-soft);
+        border: 1px solid rgba(201,162,75,0.4); border-radius: 999px; padding: 4px 12px;
+      }
+
+      /* ---------- journal ---------- */
+      .journal { background: var(--bg-2); border-top: 1px solid var(--line-2); }
+      .articles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 52px; }
+      .article { display: flex; flex-direction: column; }
+      .article .cover { aspect-ratio: 4 / 3; border-radius: 8px; overflow: hidden; border: 1px solid var(--line-2); }
+      .article .cover img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.2); transition: transform 0.5s ease; }
+      .article:hover .cover img { transform: scale(1.04); }
+      .article .kicker { margin-top: 18px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.05em; color: var(--gold); }
+      .article h3 { font-size: 24px; margin-top: 8px; line-height: 1.15; }
+      .article p { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+      .article .read { margin-top: 14px; font-size: 13px; color: var(--ink); display: inline-flex; align-items: center; gap: 7px; }
+      .article:hover .read { color: var(--gold-soft); }
+
+      /* ---------- about story band ---------- */
+      .about { background: var(--bg); }
+      .about .grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 64px; align-items: center; }
+      .about .frame { border-radius: 12px; overflow: hidden; border: 1px solid var(--line-2); }
+      .about .frame img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(0.3); }
+      .about h2 { font-size: clamp(34px, 5vw, 54px); line-height: 1.04; }
+      .about .body { margin-top: 22px; }
+      .about .body p { color: var(--muted); font-size: 16.5px; }
+      .about .body p + p { margin-top: 18px; }
+      .about .body p em { color: var(--ink); font-style: italic; font-family: var(--serif); font-size: 1.12em; }
+      .about .sig { margin-top: 26px; font-family: var(--serif); font-style: italic; font-size: 26px; color: var(--gold-soft); }
+
+      /* ---------- conversion band ---------- */
+      .convert { position: relative; overflow: hidden; }
+      .convert .bg { position: absolute; inset: 0; }
+      .convert .bg img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.5) brightness(0.5); }
+      .convert .scrim {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(11,10,9,0.86), rgba(11,10,9,0.7)),
+          radial-gradient(80% 120% at 50% 0%, rgba(201,162,75,0.18), transparent 60%);
+      }
+      .convert .inner { position: relative; z-index: 2; text-align: center; padding: 120px 0; }
+      .convert h2 { font-size: clamp(38px, 6vw, 72px); line-height: 1; margin: 0 auto; max-width: 16ch; }
+      .convert h2 em { font-style: italic; color: var(--gold-soft); }
+      .convert p { margin: 22px auto 0; max-width: 48ch; font-size: 18px; color: var(--muted); }
+      .convert .actions { display: flex; gap: 14px; justify-content: center; margin-top: 34px; flex-wrap: wrap; }
+      .convert .signup {
+        display: flex; gap: 10px; justify-content: center; margin-top: 28px; flex-wrap: wrap;
+      }
+      .convert .signup input {
+        background: rgba(244, 239, 230, 0.06); border: 1px solid var(--line);
+        border-radius: 999px; padding: 13px 20px; color: var(--ink);
+        font-family: var(--sans); font-size: 14px; width: 280px; max-width: 100%;
+      }
+      .convert .signup input::placeholder { color: var(--faint); }
+      .convert .signup input:focus { outline: none; border-color: var(--gold); }
+      .convert .fineprint { margin-top: 14px; font-size: 12.5px; color: var(--faint); }
+
+      /* ---------- footer ---------- */
+      footer { background: var(--bg-2); border-top: 1px solid var(--line-2); }
+      .foot-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 40px; padding: 72px 0 56px; }
+      .foot .brand .name { font-size: 26px; }
+      .foot .tag { margin-top: 16px; max-width: 32ch; font-size: 14px; color: var(--muted); }
+      .foot .socials { display: flex; gap: 12px; margin-top: 22px; }
+      .foot .socials a {
+        width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line);
+        display: inline-flex; align-items: center; justify-content: center; color: var(--muted);
+        transition: border-color 0.18s ease, color 0.18s ease;
+      }
+      .foot .socials a:hover { border-color: var(--gold); color: var(--gold-soft); }
+      .foot .col h4 { font-family: var(--sans); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); margin: 0 0 16px; font-weight: 600; }
+      .foot .col a { display: block; font-size: 14px; color: var(--muted); padding: 5px 0; }
+      .foot .col a:hover { color: var(--ink); }
+      .foot .hours { font-size: 14px; color: var(--muted); line-height: 1.7; }
+      .foot .hours b { color: var(--ink); font-weight: 500; }
+      .foot-bar {
+        border-top: 1px solid var(--line-2); padding: 22px 0;
+        display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+      }
+      .foot-bar .legal { font-size: 13px; color: var(--faint); }
+      .foot-bar .legal a { color: var(--faint); }
+      .foot-bar .legal a:hover { color: var(--muted); }
+
+      /* ---------- responsive ---------- */
+      @media (max-width: 980px) {
+        .roster { grid-template-columns: repeat(2, 1fr); }
+        .articles { grid-template-columns: 1fr 1fr; }
+      }
+      @media (max-width: 820px) {
+        .wrap { padding: 0 22px; }
+        .nav { display: none; }
+        .pad { padding: 72px 0; }
+        .pad-sm { padding: 56px 0; }
+        .hero { min-height: 78vh; }
+        .hero .inner { padding-bottom: 52px; }
+        .gallery { grid-template-columns: 1fr; gap: 14px; }
+        .t-tall, .t-wide, .t-sq { grid-column: span 1; aspect-ratio: 4 / 3; }
+        .roster { grid-template-columns: 1fr; }
+        .steps { grid-template-columns: 1fr; gap: 34px; }
+        .step { padding: 0; }
+        .step + .step { border-left: none; border-top: 1px solid var(--line-2); padding-top: 30px; }
+        .pricing { grid-template-columns: 1fr; }
+        .articles { grid-template-columns: 1fr; }
+        .about .grid { grid-template-columns: 1fr; gap: 36px; }
+        .convert .inner { padding: 80px 0; }
+        .foot-grid { grid-template-columns: 1fr 1fr; gap: 36px 24px; }
+      }
+      @media (max-width: 520px) {
+        .foot-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ HEADER ============ -->
+    <header class="topbar">
+      <div class="wrap">
+        <a class="brand" href="#top" aria-label="Ironleaf Tattoo home">
+          <span class="mark" aria-hidden="true">
+            <svg width="26" height="30" viewBox="0 0 26 30" fill="none">
+              <path d="M13 1C13 1 4 9 4 17a9 9 0 0 0 18 0c0-8-9-16-9-16Z" stroke="currentColor" stroke-width="1.6" />
+              <path d="M13 7v21M13 13l-5-3M13 17l5-3M13 21l-5-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="name">Ironleaf</span>
+        </a>
+        <nav class="nav">
+          <a href="#portfolio">Work</a>
+          <a href="#artists">Artists</a>
+          <a href="#booking">Shop</a>
+          <a href="#journal">Journal</a>
+          <a href="#booking">Book</a>
+          <a class="btn btn-gold cta" href="#convert">Book a consultation</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="top">
+      <div class="bg">
+        <img src="https://picsum.photos/seed/ironleaf-hero-arm/1920/1200" alt="Detail of a custom blackwork sleeve in progress" />
+      </div>
+      <div class="scrim"></div>
+      <div class="wrap inner">
+        <h1>Ink that ages like <em>iron</em>, not a trend.</h1>
+        <p class="sub">
+          A custom blackwork and fine-line studio in Greenpoint. We draw every piece by
+          hand, for your skin and your story — booked one consultation at a time.
+        </p>
+        <div class="actions">
+          <a class="btn btn-gold btn-lg" href="#convert">
+            Book a consultation
+            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="#19150b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </a>
+          <a class="btn btn-outline btn-lg" href="#portfolio">See the work</a>
+        </div>
+        <div class="meta">
+          <span><span class="dot"></span>Est. 2011 · Greenpoint, Brooklyn</span>
+          <span><span class="dot"></span>Custom · Blackwork · Fine line</span>
+          <span><span class="dot"></span>By appointment &amp; select walk-ins</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PORTFOLIO ============ -->
+    <section class="portfolio pad" id="portfolio">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Recent work &amp; available flash.</h2>
+          <p class="lede">Hand-drawn pieces from the bench — blackwork, dotwork, fine line and the occasional bold traditional. Flash marked available is first-come.</p>
+        </div>
+        <div class="gallery">
+          <div class="tile t-tall"><img src="https://picsum.photos/seed/ironleaf-pf-1/700/930" alt="Blackwork botanical sleeve" /><span class="tag">Blackwork · sleeve</span></div>
+          <div class="tile t-wide"><img src="https://picsum.photos/seed/ironleaf-pf-2/1100/620" alt="Fine line landscape across the ribs" /><span class="tag">Fine line · ribs</span></div>
+          <div class="tile t-sq"><img src="https://picsum.photos/seed/ironleaf-pf-3/640/640" alt="Dotwork moth on the forearm" /><span class="tag">Dotwork · available flash</span></div>
+          <div class="tile t-sq"><img src="https://picsum.photos/seed/ironleaf-pf-4/640/640" alt="Neo-traditional dagger and rose" /><span class="tag">Traditional · flash</span></div>
+          <div class="tile t-tall"><img src="https://picsum.photos/seed/ironleaf-pf-5/700/930" alt="Ornamental blackwork on the spine" /><span class="tag">Ornamental · spine</span></div>
+          <div class="tile t-wide"><img src="https://picsum.photos/seed/ironleaf-pf-6/1100/620" alt="Illustrative wolf back piece" /><span class="tag">Illustrative · back</span></div>
+          <div class="tile t-sq"><img src="https://picsum.photos/seed/ironleaf-pf-7/640/640" alt="Micro fine-line script" /><span class="tag">Micro · script</span></div>
+          <div class="tile t-sq"><img src="https://picsum.photos/seed/ironleaf-pf-8/640/640" alt="Geometric mandala on the hand" /><span class="tag">Geometric · available flash</span></div>
+        </div>
+        <div class="gallery-foot">
+          <a class="btn btn-outline" href="#portfolio">Browse the full portfolio
+            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ARTISTS ============ -->
+    <section class="artists pad" id="artists">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>The people at the bench.</h2>
+          <p class="lede">Four resident artists, each with their own hand. Browse a portfolio, then request the one whose line speaks to you.</p>
+        </div>
+        <div class="roster">
+          <article class="artist">
+            <div class="photo"><img src="https://picsum.photos/seed/ironleaf-artist-mara/600/800" alt="Portrait of Mara Vance" /></div>
+            <div class="body">
+              <div class="name">Mara Vance</div>
+              <div class="style">Ornamental blackwork &amp; dotwork</div>
+              <p class="blurb">Founder. Builds dense, symmetrical pieces that wrap the body like armor.</p>
+              <a class="link" href="#artists">View portfolio
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+              </a>
+            </div>
+          </article>
+          <article class="artist">
+            <div class="photo"><img src="https://picsum.photos/seed/ironleaf-artist-eli/600/800" alt="Portrait of Eli Sato" /></div>
+            <div class="body">
+              <div class="name">Eli Sato</div>
+              <div class="style">Fine line &amp; micro-realism</div>
+              <p class="blurb">Whisper-thin botanicals and portraits that read clean for decades.</p>
+              <a class="link" href="#artists">View portfolio
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+              </a>
+            </div>
+          </article>
+          <article class="artist">
+            <div class="photo"><img src="https://picsum.photos/seed/ironleaf-artist-juno/600/800" alt="Portrait of Juno Reyes" /></div>
+            <div class="body">
+              <div class="name">Juno Reyes</div>
+              <div class="style">Neo-traditional &amp; bold color</div>
+              <p class="blurb">Saturated, high-contrast work with a flair for animals and folklore.</p>
+              <a class="link" href="#artists">View portfolio
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+              </a>
+            </div>
+          </article>
+          <article class="artist">
+            <div class="photo"><img src="https://picsum.photos/seed/ironleaf-artist-knox/600/800" alt="Portrait of Knox Aldridge" /></div>
+            <div class="body">
+              <div class="name">Knox Aldridge</div>
+              <div class="style">Illustrative &amp; large-scale</div>
+              <p class="blurb">Story-driven back pieces and sleeves drawn straight onto the skin.</p>
+              <a class="link" href="#artists">View portfolio
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+              </a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BOOKING / HOW IT WORKS ============ -->
+    <section class="booking pad" id="booking">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>How a tattoo gets made here.</h2>
+          <p class="lede">Every custom piece starts with a conversation. No surprise pricing, no rushed line — just a clear path from idea to healed skin.</p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="n">01</div>
+            <h3>Consult</h3>
+            <p>Share your reference, placement and size. We talk it through in person or over video and match you to the right artist — free, no obligation.</p>
+          </div>
+          <div class="step">
+            <div class="n">02</div>
+            <h3>Design &amp; deposit</h3>
+            <p>A $100 deposit reserves your date and goes toward the final cost. Your artist draws a custom piece; we refine it together before the day.</p>
+          </div>
+          <div class="step">
+            <div class="n">03</div>
+            <h3>Session &amp; aftercare</h3>
+            <p>Show up rested and fed. We tattoo in a private, single-use, fully licensed station and send you home with a written aftercare plan.</p>
+          </div>
+        </div>
+
+        <div class="pricing">
+          <div class="price">
+            <div class="t">Flash &amp; small work</div>
+            <div class="amt">$150<small> minimum</small></div>
+            <p class="d">Pre-drawn flash and pieces under two hours. Priced per design — what you see is what you pay.</p>
+          </div>
+          <div class="price feature">
+            <div class="t">Custom, by the hour</div>
+            <div class="amt">$220<small> / hour</small></div>
+            <p class="d">Fully custom blackwork, fine line and color. Most half-day sittings land between three and five hours.</p>
+            <span class="badge">Most requested</span>
+          </div>
+          <div class="price">
+            <div class="t">Full-day &amp; large-scale</div>
+            <div class="amt">$1,500<small> / day</small></div>
+            <p class="d">Sleeves, back pieces and multi-session projects. A flat day rate that beats the hourly for big work.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ JOURNAL ============ -->
+    <section class="journal pad" id="journal">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>From the journal.</h2>
+          <p class="lede">Notes from the bench — aftercare, the craft, and the stories behind pieces we loved making.</p>
+        </div>
+        <div class="articles">
+          <a class="article" href="#journal">
+            <div class="cover"><img src="https://picsum.photos/seed/ironleaf-journal-1/720/540" alt="Fresh tattoo being wrapped" /></div>
+            <div class="kicker">Aftercare</div>
+            <h3>The first two weeks, done right.</h3>
+            <p>A day-by-day guide to healing your tattoo so the line stays crisp and the color stays true.</p>
+            <span class="read">Read the guide
+              <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+            </span>
+          </a>
+          <a class="article" href="#journal">
+            <div class="cover"><img src="https://picsum.photos/seed/ironleaf-journal-2/720/540" alt="Artist sketching a design" /></div>
+            <div class="kicker">The craft</div>
+            <h3>Why we draw every piece by hand.</h3>
+            <p>Stencils have their place — but a custom line drawn for your body is what makes a tattoo yours alone.</p>
+            <span class="read">Read more
+              <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+            </span>
+          </a>
+          <a class="article" href="#journal">
+            <div class="cover"><img src="https://picsum.photos/seed/ironleaf-journal-3/720/540" alt="Detail of a healed blackwork tattoo" /></div>
+            <div class="kicker">Studio</div>
+            <h3>How blackwork ages over ten years.</h3>
+            <p>We revisited five clients a decade on. Here's what holds, what softens, and how to plan for it.</p>
+            <span class="read">Read more
+              <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ABOUT / STORY ============ -->
+    <section class="about pad" id="about">
+      <div class="wrap">
+        <div class="grid">
+          <div class="frame">
+            <img src="https://picsum.photos/seed/ironleaf-studio-interior/900/1125" alt="The Ironleaf studio interior, warm and low-lit" />
+          </div>
+          <div>
+            <h2>A quiet room, a steady hand, and time to do it right.</h2>
+            <div class="body">
+              <p>Ironleaf opened in 2011 with one rule that hasn't changed: <em>nobody leaves with a tattoo they'll outgrow.</em> We'd rather talk you into the right piece than rush you through the wrong one.</p>
+              <p>The space is small on purpose — three stations, no music too loud to think over, and a sketchbook for every client. We tattoo people who want their ink to mean something in twenty years, not twenty likes.</p>
+            </div>
+            <div class="sig">— Mara &amp; the Ironleaf crew</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONVERSION BAND ============ -->
+    <section class="convert" id="convert">
+      <div class="bg">
+        <img src="https://picsum.photos/seed/ironleaf-convert-bg/1920/1000" alt="Tattoo machine and inks on a workbench" />
+      </div>
+      <div class="scrim"></div>
+      <div class="wrap inner">
+        <h2>Ready when you are. Let's <em>draw something.</em></h2>
+        <p>Book a free consultation and we'll match you with the right artist, or join the list for new flash drops and open dates.</p>
+        <div class="actions">
+          <a class="btn btn-gold btn-lg" href="#convert">
+            Book a consultation
+            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="#19150b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </a>
+          <a class="btn btn-outline btn-lg" href="#portfolio">See available flash</a>
+        </div>
+        <form class="signup" onsubmit="return false">
+          <input type="email" placeholder="you@email.com" aria-label="Email address" />
+          <button class="btn btn-outline" type="submit">Join the flash list</button>
+        </form>
+        <p class="fineprint">New flash &amp; open dates, a few times a month. No spam, unsubscribe anytime.</p>
+      </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="foot">
+      <div class="wrap">
+        <div class="foot-grid">
+          <div>
+            <div class="brand">
+              <span class="mark" aria-hidden="true" style="color: var(--gold)">
+                <svg width="22" height="26" viewBox="0 0 26 30" fill="none">
+                  <path d="M13 1C13 1 4 9 4 17a9 9 0 0 0 18 0c0-8-9-16-9-16Z" stroke="currentColor" stroke-width="1.6" />
+                  <path d="M13 7v21M13 13l-5-3M13 17l5-3M13 21l-5-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+                </svg>
+              </span>
+              <span class="name">Ironleaf</span>
+            </div>
+            <p class="tag">Custom blackwork &amp; fine-line tattooing in Greenpoint, Brooklyn. Hand-drawn, by appointment.</p>
+            <div class="socials">
+              <a href="#" aria-label="Instagram">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>
+              </a>
+              <a href="#" aria-label="TikTok">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4c.5 2.5 2.5 4.5 5 5" /></svg>
+              </a>
+              <a href="#" aria-label="Pinterest">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-.5-1.5-.3-3 .5-6 .4-1.5 0-3 1.5-4a3 3 0 1 1 3 5c-1 1.5-3 1.5-3 0" /><circle cx="12" cy="12" r="9" /></svg>
+              </a>
+            </div>
+          </div>
+          <div class="col">
+            <h4>Explore</h4>
+            <a href="#portfolio">Work &amp; flash</a>
+            <a href="#artists">Artists</a>
+            <a href="#booking">How booking works</a>
+            <a href="#journal">Journal</a>
+          </div>
+          <div class="col">
+            <h4>Visit</h4>
+            <a href="#about">About the studio</a>
+            <a href="#convert">Book a consultation</a>
+            <a href="#booking">Pricing</a>
+            <a href="#convert">Gift cards</a>
+          </div>
+          <div class="col">
+            <h4>Find us</h4>
+            <p class="hours">
+              <b>148 Iron Street</b><br />
+              Greenpoint, Brooklyn, NY 11222<br /><br />
+              <b>Tue–Sat</b> · 12–8pm<br />
+              <b>Sun–Mon</b> · By appointment<br /><br />
+              hello@ironleaf.studio
+            </p>
+          </div>
+        </div>
+        <div class="foot-bar">
+          <span class="legal">© 2026 Ironleaf Tattoo · All work hand-drawn</span>
+          <span class="legal">
+            <a href="#">Privacy</a> · <a href="#">Aftercare</a> · <a href="#">Deposit &amp; cancellation policy</a>
+          </span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

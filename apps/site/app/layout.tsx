@@ -394,7 +394,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <PreviewBridge />
         <RevealController />
         {tenant ? (
-          <CustomerProvider tenantSlug={tenant.slug}>
+          <CustomerProvider tenantSlug={tenant.slug} propertySlug={activePropertySlug ?? undefined}>
             <WishlistProvider>
               <CartProvider
                 tenantSlug={tenant.slug}
