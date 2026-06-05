@@ -354,6 +354,10 @@ export const BlueprintSchema = z.object({
   name: z.string().min(1).max(120),
   summary: z.string().min(1).max(500),
   vertical: BlueprintVertical,
+  // A marketplace preview image (a screenshot of the installed site). Rendered on
+  // the browse/detail card (docs/54 §9). A site-absolute path (served from the
+  // dashboard's public/) or an absolute URL.
+  preview: z.string().min(1).max(1024).optional(),
   requiresModules: z.array(BlueprintModuleSlug).min(1),
   brand: BrandDecl,
   theme: ThemeDecl,
@@ -376,6 +380,7 @@ export interface BlueprintSummary {
   name: string;
   summary: string;
   vertical: BlueprintVertical;
+  preview?: string;
   requiresModules: BlueprintModuleSlug[];
 }
 
@@ -386,6 +391,7 @@ export function toSummary(bp: Blueprint): BlueprintSummary {
     name: bp.name,
     summary: bp.summary,
     vertical: bp.vertical,
+    ...(bp.preview ? { preview: bp.preview } : {}),
     requiresModules: bp.requiresModules,
   };
 }

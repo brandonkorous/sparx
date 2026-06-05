@@ -10,8 +10,11 @@ import { notFound } from 'next/navigation';
 import { PageView } from '@/components/page-view';
 import { ProductCard } from '@/components/product-card';
 import { SectionRenderer } from '@/components/section-renderer';
+import { BuilderRenderer } from '@/components/builder-renderer';
 import { listCollections, listProducts } from '@/lib/commerce';
 import { getPageBySlug } from '@/lib/content';
+import { getPublishedBuilderHome, getPublishedBuilderStyles } from '@/lib/builder';
+import { loadBuilderData } from '@/lib/builder-data';
 import { mediaUrl } from '@/lib/media';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { resolveTenant } from '@/lib/tenant';
@@ -27,6 +30,31 @@ export default async function StorefrontRoot({ searchParams }: RootPageProps) {
   if (!tenant) notFound();
 
   const sp = (await searchParams) ?? {};
+
+  // A published Builder HOME page (the slugless singleton) owns `/` and wins over
+  // every legacy path — the same additive "Builder owns it, else fall through"
+  // rule as the [...slug] route (docs/44 §2.5). Per-property (docs/49): each site
+  // resolves its OWN home, so a secondary site renders its home here instead of
+  // inheriting the tenant-wide snapshot. A site-preview token swaps in the DRAFT.
+  const sitePreview = sp.sparxSitePreview;
+  const builderHome = await getPublishedBuilderHome(
+    tenant.slug,
+    sitePreview ? { previewToken: sitePreview } : {}
+  );
+  if (builderHome) {
+    const data = await loadBuilderData(tenant.slug, builderHome.tree);
+    const draftCss = sitePreview
+      ? await getPublishedBuilderStyles(tenant.slug, { previewToken: sitePreview })
+      : '';
+    return (
+      <>
+        {draftCss ? (
+          <style data-surface-preview dangerouslySetInnerHTML={{ __html: draftCss }} />
+        ) : null}
+        <BuilderRenderer tree={builderHome.tree} data={data} />
+      </>
+    );
+  }
 
   // Site Builder home composition wins when the tenant has published one — or,
   // with a site-preview token, the current unsaved draft.

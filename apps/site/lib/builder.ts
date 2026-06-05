@@ -67,6 +67,29 @@ export async function getPublishedBuilderPage(
   }
 }
 
+/** The property's PUBLISHED home page (docs/49 multi-site): the slugless singleton
+ *  that serves at `/`. Null when this site has published no home, so the storefront
+ *  root falls through to its legacy composition. Per-property — a secondary site
+ *  resolves its OWN home, not the tenant-wide snapshot's. With a site-preview token
+ *  the DRAFT home comes back instead (the editor's Preview tab). */
+export async function getPublishedBuilderHome(
+  tenantSlug: string,
+  opts: { previewToken?: string } = {}
+): Promise<PublishedPageDto | null> {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/v1/public/builder/home?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
+      // INTERIM: uncached so a publish reflects immediately (see getPublishedBuilderPage).
+      { cache: 'no-store', headers: previewHeaders(opts.previewToken) }
+    );
+    const json = (await res.json()) as SuccessEnvelope<PublishedPageDto> | ErrorEnvelope;
+    if (!res.ok || 'error' in json) return null;
+    return json.data;
+  } catch {
+    return null;
+  }
+}
+
 /** The PUBLISHED collection template for a record type (docs/44 §3 B — the
  *  generic per-record router): the tree that renders a record of `recordType`
  *  (`commerce.product`, `cms.page`, `cms.blog_post`, …). Null when the tenant has

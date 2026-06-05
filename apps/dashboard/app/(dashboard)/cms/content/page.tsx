@@ -31,6 +31,7 @@ import {
 import { FileText } from 'lucide-react';
 
 import { api } from '@/lib/api-rest-client';
+import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
 import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -108,28 +109,63 @@ export default async function ContentListPage({ searchParams }: PageProps) {
   const q = asString(sp.q);
   const cursor = asString(sp.cursor);
   const viewParam = asString(sp.view);
+  // Model B (docs/49 §3): which site's content to show. Like the catalog, the
+  // list follows the global site switcher — absent `?site=` → the ACTIVE site;
+  // `?site=all` → every site; a specific id → that site.
+  const siteParam = asString(sp.site);
 
-  const prefsPromise = getUserPreferences();
-  const typesPromise = api.get<ApiContentType[]>('/v1/content/types');
+  // Resolve the active site BEFORE the entries fetch so the list defaults to it.
+  const [prefs, types, sites, activeCookieId] = await Promise.all([
+    getUserPreferences(),
+    api.get<ApiContentType[]>('/v1/content/types'),
+    listProperties().catch(() => [] as Property[]),
+    getActivePropertyId(),
+  ]);
+  const multiSite = sites.length > 1;
+  const activePropertyId = multiSite
+    ? (sites.find((s) => s.id === activeCookieId)?.id ??
+      sites.find((s) => s.isPrimary)?.id ??
+      sites[0]?.id)
+    : undefined;
+  const propertyFilter = !multiSite
+    ? undefined
+    : siteParam === 'all'
+      ? undefined
+      : (siteParam ?? activePropertyId);
+
   const paged = await api.getPaged<ApiEntry[]>(
     `/v1/content/entries?${buildQuery({
       limit: String(PAGE_SIZE),
       ...(type && type !== 'all' ? { type } : {}),
       ...(status && status !== 'all' ? { status } : {}),
       ...(q ? { q } : {}),
+      ...(propertyFilter ? { property: propertyFilter } : {}),
       ...(cursor ? { cursor } : {}),
     })}`
   );
   const entries = paged.data;
   const nextCursor = typeof paged.meta?.next_cursor === 'string' ? paged.meta.next_cursor : null;
-  const types = await typesPromise;
-  const prefs = await prefsPromise;
   // `?view=` overrides; absent → the user's saved default (docs/34 §7.2).
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   const typeName = new Map(types.map((t) => [t.key, t.name]));
   const TYPE_OPTIONS = types.map((t) => ({ value: t.key, label: t.plural_name }));
   const NEW_TYPES = types.map((t) => ({ key: t.key, name: t.name }));
+  // The Site filter only appears for multi-site tenants; it defaults to the
+  // active site (mirroring the global switcher) with an "All sites" escape.
+  const siteFilter = multiSite
+    ? [
+        {
+          key: 'site',
+          label: 'Site',
+          defaultValue: activePropertyId,
+          options: [
+            { value: 'all', label: 'All sites' },
+            ...sites.map((s) => ({ value: s.id, label: s.name })),
+          ],
+        },
+      ]
+    : [];
   // When a single type is selected every row shares it, so the Type column is
   // redundant noise — hide it.
   const showType = !(type && type !== 'all');
@@ -138,6 +174,7 @@ export default async function ContentListPage({ searchParams }: PageProps) {
     ...(type && type !== 'all' ? { type } : {}),
     ...(status && status !== 'all' ? { status } : {}),
     ...(q ? { q } : {}),
+    ...(siteParam ? { site: siteParam } : {}),
     ...(viewParam ? { view: viewParam } : {}),
   };
   const nextHref = nextCursor
@@ -169,6 +206,7 @@ export default async function ContentListPage({ searchParams }: PageProps) {
           filters={[
             { key: 'type', label: 'Types', options: TYPE_OPTIONS },
             { key: 'status', label: 'Statuses', options: STATUS_OPTIONS },
+            ...siteFilter,
           ]}
           enableViewToggle
         />

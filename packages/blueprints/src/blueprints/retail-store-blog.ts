@@ -106,7 +106,6 @@ function homeTree(): BuilderNode {
         },
         layout: { direction: 'stack', gap: 'sm', justify: 'center', alignItems: 'center' },
         children: [
-          node('Text', { props: { text: 'New season', variant: 'eyebrow' } }),
           node('Heading', { props: { level: 'h1', text: 'Everyday goods, built to last' } }),
           node('Text', {
             props: { variant: 'body', text: 'Considered staples for home and wardrobe.' },
@@ -174,7 +173,6 @@ function homeTree(): BuilderNode {
                 layout: { direction: 'stack', gap: 'sm' },
                 children: [
                   node('ImageDisplay', { props: { ratio: 'wide' }, bind: 'item.featuredImage' }),
-                  node('Text', { props: { text: 'Journal', variant: 'eyebrow' } }),
                   node('Heading', { props: { level: 'h3' }, bind: 'item.title' }),
                   node('Text', { props: { variant: 'body' }, bind: 'item.excerpt' }),
                 ],
@@ -254,7 +252,6 @@ function blogPostTree(): BuilderNode {
         },
         layout: { direction: 'stack', gap: 'sm', alignItems: 'center', justify: 'center' },
         children: [
-          node('Text', { props: { text: 'Journal', variant: 'eyebrow' } }),
           node('Heading', { props: { level: 'h1' }, bind: 'blog_post.title' }),
           node('Text', { props: { variant: 'body' }, bind: 'blog_post.excerpt' }),
         ],
@@ -423,6 +420,9 @@ const manifest = {
   summary:
     'A clean direct-to-consumer storefront with a small catalog, a journal/blog, marketing emails, and the Driftwood theme — everything themed and ready to review.',
   vertical: 'retail',
+  // Marketplace preview — a screenshot of the installed Driftwood home, served
+  // from the dashboard's public/ (apps/dashboard/public/blueprint-previews/).
+  preview: '/blueprint-previews/retail-store-blog.png',
   requiresModules: ['builder', 'commerce', 'cms', 'email'],
 
   brand: {

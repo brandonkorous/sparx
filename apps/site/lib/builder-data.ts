@@ -157,6 +157,24 @@ export function postToBuilderRecord(
   };
 }
 
+/** Resolve a list entry's body for the iterate/list context (`item.*`). Asset
+ *  fields are stored as a media-id string; resolve the conventional `featuredImage`
+ *  to a `{ url, alt }` so an `<ImageDisplay bind="item.featuredImage">` renders —
+ *  the list analogue of postToBuilderRecord (which does this for the single PDP
+ *  record). Untouched bodies pass through. */
+function resolveEntryBodyAssets(
+  body: Record<string, unknown> | null | undefined,
+  tenantSlug: string
+): Record<string, unknown> {
+  const b = { ...(body ?? {}) };
+  if (typeof b.featuredImage === 'string') {
+    const url = mediaUrl(b.featuredImage, tenantSlug);
+    const alt = typeof b.title === 'string' ? b.title : '';
+    b.featuredImage = url ? { url, alt } : null;
+  }
+  return b;
+}
+
 /** Fetch every source the tree binds to and return the resolver `root`. A
  *  failed fetch degrades that source to empty rather than failing the page.
  *  `record` (collection templates) injects a single in-scope record at its
@@ -177,7 +195,7 @@ export async function loadBuilderData(
           setAtPath(
             root,
             `cms.${type}`,
-            entries.map((e) => e.body)
+            entries.map((e) => resolveEntryBodyAssets(e.body, tenantSlug))
           )
         )
         .catch(() => setAtPath(root, `cms.${type}`, []))

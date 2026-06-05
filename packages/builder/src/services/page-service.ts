@@ -363,6 +363,55 @@ export function getPublishedBySlug(
   });
 }
 
+/** The storefront HOME read (docs/49 multi-site): the PUBLISHED tree for the
+ *  property's home page — the singleton with NO slug (a slugless singleton is the
+ *  site root `/`; a singleton WITH a slug serves at `/{slug}`). Lowest position
+ *  wins if more than one exists. Null when the property has published no home, so
+ *  the storefront `/` falls through to its legacy composition. Per-property: each
+ *  site resolves its OWN home, so a secondary site no longer inherits another
+ *  site's (or the tenant-wide snapshot's) homepage. */
+export function getPublishedHome(ctx: PropertyContext): Promise<PublishedPageDto | null> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.builderPage.findMany({
+      where: { kind: 'singleton', slug: null, propertyId: ctx.propertyId },
+      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+    });
+    const row = rows.find((r) => r.publishedTree != null);
+    if (row?.publishedTree == null) return null;
+    return {
+      name: row.name,
+      slug: '',
+      kind: row.kind as BuilderPageKind,
+      recordType: row.recordType,
+      tree: row.publishedTree as unknown as BuilderNode,
+      ...publishedSeo(row),
+      publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
+    };
+  });
+}
+
+/** Draft counterpart of getPublishedHome for the site-preview tab — the home
+ *  singleton's unsaved DRAFT tree (no published gate). */
+export function getDraftHome(ctx: PropertyContext): Promise<PublishedPageDto | null> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.builderPage.findMany({
+      where: { kind: 'singleton', slug: null, propertyId: ctx.propertyId },
+      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+    });
+    const row = rows[0];
+    if (!row) return null;
+    return {
+      name: row.name,
+      slug: '',
+      kind: row.kind as BuilderPageKind,
+      recordType: row.recordType,
+      tree: row.draftTree as unknown as BuilderNode,
+      ...publishedSeo(row),
+      publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
+    };
+  });
+}
+
 /** The DRAFT read for preview (docs/45 §2.6 — the site-preview path): the page's
  *  unsaved DRAFT tree by slug, or null when no page owns that slug. Mirrors
  *  getPublishedBySlug but returns `draftTree` with NO published gate, so the

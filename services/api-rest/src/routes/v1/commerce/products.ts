@@ -39,6 +39,7 @@ import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -56,6 +57,10 @@ const ListProductsQuery = z.object({
   has_fitment: z.coerce.boolean().optional(),
   include_archived: z.coerce.boolean().optional(),
   include_deleted: z.coerce.boolean().optional(),
+  // Model B (docs/49 §3): scope the back-office list to one site — products
+  // VISIBLE on it (global + scoped-here), matching that site's storefront.
+  // Omitted → the whole catalog (the shared back office's default view).
+  property: z.string().uuid().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
   sort_by: z.enum(['updatedAt', 'createdAt', 'title', 'priceMinCents']).optional(),
@@ -78,6 +83,7 @@ const productRoutes: FastifyPluginAsync = async (app) => {
       hasFitment: q.has_fitment,
       includeArchived: q.include_archived,
       includeDeleted: q.include_deleted,
+      propertyId: q.property,
       take: q.take,
       skip: q.skip,
       sortBy: q.sort_by,
@@ -86,9 +92,27 @@ const productRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/v1/commerce/products', async (request, reply) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireCommerceModule(request);
-    const created = await productService.create(toCommerceContext(request), request.body);
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    // Model B (docs/49 §3): a NEW product defaults to the ACTIVE site, so
+    // "different products per site" is the default once a tenant runs more than
+    // one. An explicit `propertyIds` (including `[]` = all sites) is honored
+    // verbatim; single-site tenants are unchanged (no scope rows). This is the
+    // load-bearing default — it covers every create path (dashboard, drawer, API,
+    // MCP), not just one form.
+    if (body.propertyIds === undefined) {
+      const siteCount = await withRequestTenant(request, (tx) => tx.property.count());
+      if (siteCount > 1) {
+        const header = request.headers['x-sparx-property-id'];
+        const activePropertyId = await resolvePropertyId(
+          auth.tenantId,
+          typeof header === 'string' ? header : null
+        );
+        body.propertyIds = [activePropertyId];
+      }
+    }
+    const created = await productService.create(toCommerceContext(request), body);
     reply.code(201);
     return ok(created);
   });

@@ -183,32 +183,66 @@ export async function installBlueprint(
     }
     const asset = (id?: string): string | undefined => (id ? assetMap.get(id) : undefined);
 
+    // Is the target the tenant's PRIMARY site? The brand step scopes on this
+    // (docs/49 §3): the primary writes the tenant-wide brand; a SECONDARY site
+    // writes its own per-property `brand_override`, so installing onto one site
+    // never rebrands its siblings.
+    const isPrimary = await withTenant(ctx, async (tx) => {
+      const prop = await tx.property.findUnique({
+        where: { id: propertyId },
+        select: { isPrimary: true },
+      });
+      return prop?.isPrimary ?? true;
+    });
+
     // 3. Brand identity
     const b = blueprint.brand;
-    await withTenant(ctx, async (tx) => {
-      const data: Prisma.TenantBrandUncheckedCreateInput = {
-        tenantId,
+    if (isPrimary) {
+      await withTenant(ctx, async (tx) => {
+        const data: Prisma.TenantBrandUncheckedCreateInput = {
+          tenantId,
+          businessName: b.businessName,
+          ...(b.tagline !== undefined ? { tagline: b.tagline } : {}),
+          colorPrimary: b.colors.primary,
+          ...(b.colors.primaryForeground
+            ? { colorPrimaryForeground: b.colors.primaryForeground }
+            : {}),
+          ...(b.colors.accent ? { colorAccent: b.colors.accent } : {}),
+          ...(b.colors.accentForeground
+            ? { colorAccentForeground: b.colors.accentForeground }
+            : {}),
+          ...(b.colors.secondary ? { colorSecondary: b.colors.secondary } : {}),
+          ...(b.colors.secondaryForeground
+            ? { colorSecondaryForeground: b.colors.secondaryForeground }
+            : {}),
+          fontHeading: b.fonts.heading,
+          fontBody: b.fonts.body,
+          ...(asset(b.logoLightAssetId) ? { logoLightMediaId: asset(b.logoLightAssetId) } : {}),
+          ...(asset(b.logoDarkAssetId) ? { logoDarkMediaId: asset(b.logoDarkAssetId) } : {}),
+          ...(asset(b.faviconAssetId) ? { faviconMediaId: asset(b.faviconAssetId) } : {}),
+        };
+        const { tenantId: _t, ...update } = data;
+        await tx.tenantBrand.upsert({ where: { tenantId }, create: data, update });
+      });
+    } else {
+      // Secondary site: the per-site override (docs/49 §3) carries only the
+      // identity fields it supports (businessName + the brand colors + logo);
+      // everything else inherits the tenant brand.
+      const override: Record<string, string> = {
         businessName: b.businessName,
-        ...(b.tagline !== undefined ? { tagline: b.tagline } : {}),
         colorPrimary: b.colors.primary,
-        ...(b.colors.primaryForeground
-          ? { colorPrimaryForeground: b.colors.primaryForeground }
-          : {}),
-        ...(b.colors.accent ? { colorAccent: b.colors.accent } : {}),
-        ...(b.colors.accentForeground ? { colorAccentForeground: b.colors.accentForeground } : {}),
-        ...(b.colors.secondary ? { colorSecondary: b.colors.secondary } : {}),
-        ...(b.colors.secondaryForeground
-          ? { colorSecondaryForeground: b.colors.secondaryForeground }
-          : {}),
-        fontHeading: b.fonts.heading,
-        fontBody: b.fonts.body,
-        ...(asset(b.logoLightAssetId) ? { logoLightMediaId: asset(b.logoLightAssetId) } : {}),
-        ...(asset(b.logoDarkAssetId) ? { logoDarkMediaId: asset(b.logoDarkAssetId) } : {}),
-        ...(asset(b.faviconAssetId) ? { faviconMediaId: asset(b.faviconAssetId) } : {}),
       };
-      const { tenantId: _t, ...update } = data;
-      await tx.tenantBrand.upsert({ where: { tenantId }, create: data, update });
-    });
+      if (b.colors.primaryForeground) override.colorPrimaryForeground = b.colors.primaryForeground;
+      if (b.colors.accent) override.colorAccent = b.colors.accent;
+      const logo = asset(b.logoLightAssetId);
+      if (logo) override.logoMediaId = logo;
+      await withTenant(ctx, (tx) =>
+        tx.property.update({
+          where: { id: propertyId },
+          data: { brandOverride: override },
+        })
+      );
+    }
 
     // 4. Theme — create the shipped SiteTheme, apply it (working draft), and apply
     //    its captured brand "look". (docs/54 D5)
@@ -443,24 +477,53 @@ export async function installBlueprint(
       result.layoutId = layout.id;
     }
 
-    // 9. Pages (draft; set defaults for collection templates).
+    // 9. Pages (draft; set defaults for collection templates). A slugless
+    //    singleton is the site HOME (docs/49 — it serves at `/`). A property has
+    //    exactly one `/`, so if one already exists (the seeded starter, or a prior
+    //    home), REPLACE its tree/SEO rather than adding a second home — otherwise
+    //    the storefront can't tell which slugless singleton is the homepage.
     for (const pg of blueprint.pages) {
-      const page = await pageService.create(propCtx, {
-        name: pg.name,
-        kind: pg.kind,
-        recordType: pg.recordType ?? null,
-        slug: pg.slug ?? null,
-        tree: pg.tree,
-        seoTitle: pg.seoTitle,
-        seoDescription: pg.seoDescription,
-        canonical: pg.canonical,
-        ogImage: pg.ogImage,
-        noindex: pg.noindex,
-      });
-      if (pg.isDefault) await pageService.setDefault(propCtx, page.id);
+      const isHome = pg.kind === 'singleton' && !pg.slug;
+      let pageId: string;
+      const existingHome = isHome
+        ? await withTenant(propCtx, (tx) =>
+            tx.builderPage.findFirst({
+              where: { propertyId, kind: 'singleton', slug: null },
+              orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+              select: { id: true },
+            })
+          )
+        : null;
+      if (existingHome) {
+        const updated = await pageService.update(propCtx, existingHome.id, {
+          name: pg.name,
+          tree: pg.tree,
+          seoTitle: pg.seoTitle,
+          seoDescription: pg.seoDescription,
+          canonical: pg.canonical,
+          ogImage: pg.ogImage,
+          noindex: pg.noindex,
+        });
+        pageId = updated.id;
+      } else {
+        const page = await pageService.create(propCtx, {
+          name: pg.name,
+          kind: pg.kind,
+          recordType: pg.recordType ?? null,
+          slug: pg.slug ?? null,
+          tree: pg.tree,
+          seoTitle: pg.seoTitle,
+          seoDescription: pg.seoDescription,
+          canonical: pg.canonical,
+          ogImage: pg.ogImage,
+          noindex: pg.noindex,
+        });
+        if (pg.isDefault) await pageService.setDefault(propCtx, page.id);
+        pageId = page.id;
+      }
       result.pages.push({
         name: pg.name,
-        id: page.id,
+        id: pageId,
         recordType: pg.recordType ?? null,
         slug: pg.slug ?? null,
       });

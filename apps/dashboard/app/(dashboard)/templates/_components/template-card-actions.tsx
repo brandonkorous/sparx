@@ -32,7 +32,11 @@ export function TemplateCardActions({ blueprintKey, blueprintName, install, canI
   }
 
   function onInstall(): void {
-    startTransition(async () => {
+    // confirm() opens a dialog via React state — it MUST run outside
+    // startTransition, or the transition holds the dialog-open update and the
+    // dialog never appears (the await then never resolves → button spins
+    // forever). Only the mutation belongs in the transition.
+    void (async () => {
       const ok = await confirm({
         title: `Install “${blueprintName}”?`,
         description:
@@ -41,27 +45,29 @@ export function TemplateCardActions({ blueprintKey, blueprintName, install, canI
         tone: 'module',
       });
       if (!ok) return;
-      try {
-        const res = await installBlueprintAction(blueprintKey);
-        if (res.ok) {
-          toast.success(`${blueprintName} installed`, {
-            description: 'Created as drafts. Review, customize, then go live.',
+      startTransition(async () => {
+        try {
+          const res = await installBlueprintAction(blueprintKey);
+          if (res.ok) {
+            toast.success(`${blueprintName} installed`, {
+              description: 'Created as drafts. Review, customize, then go live.',
+            });
+            router.refresh();
+          } else {
+            toast.error("Couldn't install", { description: res.error.message });
+          }
+        } catch (err) {
+          toast.error("Couldn't install", {
+            description: err instanceof Error ? err.message : String(err),
           });
-          router.refresh();
-        } else {
-          toast.error("Couldn't install", { description: res.error.message });
         }
-      } catch (err) {
-        toast.error("Couldn't install", {
-          description: err instanceof Error ? err.message : String(err),
-        });
-      }
-    });
+      });
+    })();
   }
 
   function onGoLive(): void {
     if (!install) return;
-    startTransition(async () => {
+    void (async () => {
       const ok = await confirm({
         title: `Go live with “${blueprintName}”?`,
         description:
@@ -70,20 +76,22 @@ export function TemplateCardActions({ blueprintKey, blueprintName, install, canI
         tone: 'module',
       });
       if (!ok) return;
-      try {
-        const res = await goLiveAction(install.id);
-        if (res.ok) {
-          toast.success('Your site is live');
-          router.refresh();
-        } else {
-          toast.error("Couldn't go live", { description: res.error.message });
+      startTransition(async () => {
+        try {
+          const res = await goLiveAction(install.id);
+          if (res.ok) {
+            toast.success('Your site is live');
+            router.refresh();
+          } else {
+            toast.error("Couldn't go live", { description: res.error.message });
+          }
+        } catch (err) {
+          toast.error("Couldn't go live", {
+            description: err instanceof Error ? err.message : String(err),
+          });
         }
-      } catch (err) {
-        toast.error("Couldn't go live", {
-          description: err instanceof Error ? err.message : String(err),
-        });
-      }
-    });
+      });
+    })();
   }
 
   if (!install) {

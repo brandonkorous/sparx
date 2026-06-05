@@ -23,6 +23,10 @@ export interface ListToolbarFilterConfig {
   key: string;
   label: string;
   options: ListToolbarOption[];
+  /** Value to show as selected when the URL has no param for this filter — e.g.
+   *  the multi-site "Site" filter shows the ACTIVE site by default (docs/49), so
+   *  the list follows the global site switcher without an explicit `?site=`. */
+  defaultValue?: string;
 }
 
 export interface ListToolbarProps {
@@ -101,7 +105,10 @@ export function ListToolbar({
       searchValue={searchable ? search : undefined}
       onSearchChange={searchable ? onSearchChange : undefined}
       searchPlaceholder={searchPlaceholder}
-      filters={filters.map((f) => ({ ...f, value: searchParams?.get(f.key) ?? '' }))}
+      filters={filters.map(({ defaultValue, ...f }) => ({
+        ...f,
+        value: searchParams?.get(f.key) ?? defaultValue ?? '',
+      }))}
       onFilterChange={(key, value) => commit({ [key]: value })}
       sort={
         sortOptions

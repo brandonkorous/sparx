@@ -33,6 +33,7 @@ import { publish } from '@sparx/api-core/pubsub';
 import { slugify, uniqueSlug } from '@sparx/api-core/slug';
 import { conflict, notFound } from '@sparx/api-core/errors';
 import { assertIfMatch, computeEntryEtag } from '@sparx/api-core/etag';
+import { contentSiteVisibilityWhere, resolvePropertyId } from '../../../lib/property.js';
 
 const SeoSchema = z
   .object({
@@ -59,6 +60,10 @@ const CreateBody = z.object({
   seo: SeoSchema.optional(),
   author_id: z.string().uuid().optional(),
   locale_code: z.string().max(10).optional(),
+  // Model B per-site scoping (docs/49 §3): the web PROPERTIES this entry
+  // publishes to. Omitted → defaults to the ACTIVE site for multi-site tenants
+  // (so a page authored on site B belongs to site B); `[]` = all sites.
+  property_ids: z.array(z.string().uuid()).max(50).optional(),
 });
 
 const UpdateBody = z.object({
@@ -81,6 +86,10 @@ const ListQuery = z.object({
   author: z.string().uuid().optional(),
   locale: z.string().max(10).optional(),
   updated_after: z.string().datetime().optional(),
+  // Model B (docs/49 §3): scope the back-office list to one site — entries
+  // VISIBLE on it (global + scoped-here), matching that site's storefront. The
+  // dashboard content list defaults this to the active site; omitted → all.
+  property: z.string().uuid().optional(),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(250).default(50),
 });
@@ -115,6 +124,10 @@ const entryRoutes: FastifyPluginAsync = (app) => {
             ],
           }
         : {}),
+      // Site scope composes as its own `AND` fragment so it never collides with
+      // the search `OR` above (a foreign/stale id just yields global-only rows;
+      // tenant_id RLS is the real boundary, not property_id).
+      ...(q.property ? contentSiteVisibilityWhere(q.property) : {}),
     };
 
     const rows = await withRequestTenant(request, (tx) =>
@@ -163,6 +176,24 @@ const entryRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/content/entries', async (request, reply) => {
     const auth = requireRole(request, 'editor');
     const input = CreateBody.parse(request.body);
+
+    // Model B (docs/49 §3): default a new entry's site scope to the ACTIVE site
+    // for multi-site tenants (so "New page" authored on site B belongs to site
+    // B, not every site). An explicit `property_ids` (including `[]` = all
+    // sites) is honored; single-site tenants get no scope rows. Mirrors the
+    // products POST default — the load-bearing default for every create path.
+    let scopePropertyIds = input.property_ids;
+    if (scopePropertyIds === undefined) {
+      const siteCount = await withRequestTenant(request, (tx) => tx.property.count());
+      if (siteCount > 1) {
+        const header = request.headers['x-sparx-property-id'];
+        const activePropertyId = await resolvePropertyId(
+          auth.tenantId,
+          typeof header === 'string' ? header : null
+        );
+        scopePropertyIds = [activePropertyId];
+      }
+    }
 
     const created = await withRequestTenant(request, async (tx) => {
       const type = await resolveType(tx, input.type_key);
@@ -218,6 +249,13 @@ const entryRoutes: FastifyPluginAsync = (app) => {
           localeCode: input.locale_code ?? null,
         },
       });
+
+      // Model B site scoping: persist the resolved default (or explicit set).
+      if (scopePropertyIds && scopePropertyIds.length > 0) {
+        await tx.contentEntryProperty.createMany({
+          data: scopePropertyIds.map((propertyId) => ({ propertyId, entryId: entry.id })),
+        });
+      }
 
       await syncReferences(tx, auth.tenantId, entry.id, schema, body);
       await recordRevision(tx, {

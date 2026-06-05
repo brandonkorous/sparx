@@ -35,6 +35,9 @@ const SearchProductsQuery = z.object({
   filter_by: z.string().optional(),
   facet_by: z.string().optional(),
   sort_by: z.string().optional(),
+  // Model B (docs/49 §3): scope the back-office product search to one site
+  // (the dashboard catalog's Site filter). Omitted → the whole catalog.
+  property: z.string().uuid().optional(),
   // Fitment filters accept comma-separated values; the wrapper composes
   // them into Typesense filter grammar so callers don't learn it.
   fitment_makes: z.string().optional(),
@@ -89,6 +92,7 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     const q = SearchProductsQuery.parse(request.query);
     const result = await searchProducts({
       tenantId: auth.tenantId,
+      propertyId: q.property,
       q: q.q,
       page: q.page,
       perPage: q.per_page,

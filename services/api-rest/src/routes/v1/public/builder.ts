@@ -73,6 +73,21 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
     return ok(page);
   });
 
+  app.get('/v1/public/builder/home', async (request) => {
+    const q = TenantQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const ctx = { tenantId, propertyId };
+    // A valid site-preview token serves the DRAFT home (the editor's Preview tab);
+    // otherwise the published home. Per-property: each site has its own home.
+    const preview = tryVerifySitePreview(app, request, tenantId);
+    const page = preview
+      ? await pageService.getDraftHome(ctx)
+      : await pageService.getPublishedHome(ctx);
+    if (!page) throw notFound('Builder home', q.tenant);
+    return ok(page);
+  });
+
   app.get('/v1/public/builder/collection', async (request) => {
     const q = CollectionQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);

@@ -115,6 +115,7 @@ function publicProduct(row: {
   seoTitle: string | null;
   seoDescription: string | null;
   updatedAt: Date;
+  images?: { mediaAssetId: string }[];
 }) {
   return {
     id: row.id,
@@ -131,6 +132,9 @@ function publicProduct(row: {
     reviewCount: row.reviewCount,
     seoTitle: row.seoTitle,
     seoDescription: row.seoDescription,
+    // Hero thumbnail asset id (primary, else first product-level by position —
+    // see productSelect). The storefront resolves it via /v1/public/media/<id>.
+    primaryImageId: row.images?.[0]?.mediaAssetId ?? null,
     updatedAt: row.updatedAt.toISOString(),
   };
 }
@@ -697,6 +701,14 @@ function productSelect() {
     seoTitle: true,
     seoDescription: true,
     updatedAt: true,
+    // Hero thumbnail: explicit primary first, else first product-level image by
+    // position (mirrors productService.list). Resolved to a URL storefront-side.
+    images: {
+      where: { variantId: null },
+      orderBy: [{ isPrimary: 'desc' as const }, { position: 'asc' as const }],
+      take: 1,
+      select: { mediaAssetId: true },
+    },
   };
 }
 

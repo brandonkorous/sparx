@@ -7,6 +7,7 @@
 
 export * from './services';
 export * from './events';
+export { mediaPublicUrl } from './media-url';
 export * from './search-projection';
 export * from './universal-projection';
 export * from './collection-rules';

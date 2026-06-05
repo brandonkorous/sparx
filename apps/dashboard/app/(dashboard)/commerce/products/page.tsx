@@ -19,6 +19,7 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
@@ -92,15 +93,45 @@ export default async function ProductsPage({ searchParams }: PageProps) {
   const sortBy = stringParam(params.sort_by) ?? 'updatedAt';
   // Selecting the Archived status implies surfacing archived rows at all.
   const includeArchived = status === 'archived' || stringParam(params.archived) === '1';
+  // Model B (docs/49 §3): the back-office Site filter — which site's catalog to
+  // show (products VISIBLE on it: global + scoped-there). Only offered to
+  // multi-site tenants. Switching the global site switcher shifts this list:
+  // absent `?site=` → the ACTIVE site; `?site=all` → the whole catalog; a
+  // specific id → that site (a per-list override of the global switch).
+  const siteParam = stringParam(params.site);
+
+  // Resolve the active site BEFORE the fetch so the list defaults to it (the
+  // switch drives the catalog). prefs is needed later for the view toggle.
+  const [prefs, sites, activeCookieId] = await Promise.all([
+    getUserPreferences(),
+    listProperties().catch(() => [] as Property[]),
+    getActivePropertyId(),
+  ]);
+  const multiSite = sites.length > 1;
+  const activePropertyId = multiSite
+    ? (sites.find((s) => s.id === activeCookieId)?.id ??
+      sites.find((s) => s.isPrimary)?.id ??
+      sites[0]?.id)
+    : undefined;
+  // Single-site tenants never filter (no behavior change). Multi-site: explicit
+  // param wins, `all` clears, absent follows the active site.
+  const propertyFilter = !multiSite
+    ? undefined
+    : siteParam === 'all'
+      ? undefined
+      : (siteParam ?? activePropertyId);
 
   // With a query, search via Typesense (typo-tolerant across title / handle /
   // vendor / SKU); without one, list straight from Postgres with the status
   // facet + sort. variantCount isn't indexed, so search rows render it as —.
-  const prefsPromise = getUserPreferences();
   let products: ProductListItem[];
   let total: number;
   if (q) {
-    const sq = new URLSearchParams({ q, per_page: '100' });
+    const sq = new URLSearchParams({
+      q,
+      per_page: '100',
+      ...(propertyFilter ? { property: propertyFilter } : {}),
+    });
     const { data, meta } = await api.getPaged<ProductSearchDoc[]>(
       `/v1/search/products?${sq.toString()}`
     );
@@ -127,14 +158,30 @@ export default async function ProductsPage({ searchParams }: PageProps) {
         ...(vendor ? { vendor } : {}),
         ...(tag ? { tag } : {}),
         ...(productType ? { product_type: productType } : {}),
+        ...(propertyFilter ? { property: propertyFilter } : {}),
       }).toString()}`
     );
     products = data;
     total = (meta?.total as number | undefined) ?? products.length;
   }
-  const prefs = await prefsPromise;
   // `?view=` overrides; absent → the user's saved default (§7.2).
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
+  // The Site filter only makes sense once a tenant runs more than one site. It
+  // defaults to the active site (so the chip mirrors the global switcher) with
+  // an explicit "All sites" escape.
+  const siteFilter = multiSite
+    ? [
+        {
+          key: 'site',
+          label: 'Site',
+          defaultValue: activePropertyId,
+          options: [
+            { value: 'all', label: 'All sites' },
+            ...sites.map((s) => ({ value: s.id, label: s.name })),
+          ],
+        },
+      ]
+    : [];
 
   return (
     <Container size="full">
@@ -162,7 +209,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
 
         <ListToolbar
           searchPlaceholder="Search title, handle, or vendor…"
-          filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
+          filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }, ...siteFilter]}
           sortOptions={SORT_OPTIONS}
           enableViewToggle
         />

@@ -17,6 +17,8 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { prisma, withTenant } from '@sparx/db';
+import { mediaPublicUrl } from '@sparx/commerce';
 import { getStorage, variantKey } from '../../../lib/storage.js';
 import { notFound } from '@sparx/api-core/errors';
 
@@ -42,7 +44,34 @@ const CONTENT_TYPES: Record<string, string> = {
   png: 'image/png',
 };
 
+// Resolve a media asset id → its public URL and 302 there. This is the resolver
+// the storefront <img>/<Image> and email templates point at
+// (GET /v1/public/media/<id>?tenant=<slug>, see apps/site/lib/media.ts +
+// services/api-rest/src/lib/email-data.ts). mediaPublicUrl() returns the CDN/
+// bucket URL for stored objects and passes HOT-LINKED external keys through
+// verbatim (blueprint installs, docs/54 §6) — so this is the one path that makes
+// both kinds of media render. Tenant resolved by slug (tenants is non-RLS), then
+// an RLS-scoped asset lookup so an id can't leak another tenant's media.
+const RedirectQuery = z.object({ tenant: z.string().min(1).max(63) });
+const RedirectParams = z.object({ id: z.string().uuid() });
+
 const publicMediaRoutes: FastifyPluginAsync = (app) => {
+  app.get('/v1/public/media/:id', async (request, reply) => {
+    const { id } = RedirectParams.parse(request.params);
+    const { tenant: slug } = RedirectQuery.parse(request.query);
+    const tenant = await prisma.tenant.findUnique({ where: { slug }, select: { id: true } });
+    if (!tenant) throw notFound('Tenant', slug);
+    const asset = await withTenant({ tenantId: tenant.id }, (tx) =>
+      tx.mediaAsset.findFirst({ where: { id }, select: { key: true } })
+    );
+    if (!asset?.key) throw notFound('MediaAsset', id);
+    // The redirect is stable per asset id (a re-upload mints a new id), so let
+    // the edge cache it.
+    return reply
+      .header('cache-control', 'public, max-age=86400')
+      .redirect(mediaPublicUrl(asset.key), 302);
+  });
+
   app.get<{ Params: z.infer<typeof PathParams> }>(
     '/v1/public/media/variants/:tenantId/:assetId/:filename',
     async (request, reply) => {

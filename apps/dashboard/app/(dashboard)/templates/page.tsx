@@ -30,6 +30,7 @@ interface BlueprintCard {
   name: string;
   summary: string;
   vertical: string;
+  preview?: string;
   requiresModules: string[];
   contents: {
     products: number;
@@ -70,7 +71,17 @@ export default async function TemplatesPage() {
         ) : (
           <Grid minItemWidth="20rem" gap={4}>
             {blueprints.map((bp) => (
-              <Card key={bp.key} variant="module">
+              <Card key={bp.key} variant="module" className="overflow-hidden">
+                {bp.preview ? (
+                  // Marketplace preview screenshot of the installed site. Plain
+                  // <img> (a static dashboard public/ asset), object-cover in a
+                  // fixed-ratio frame so every card aligns.
+                  <img
+                    src={bp.preview}
+                    alt={`${bp.name} preview`}
+                    className="aspect-[16/10] w-full border-b border-[var(--color-border)] object-cover object-top"
+                  />
+                ) : null}
                 <CardHeader>
                   <Stack direction="row" align="center" gap={2} className="justify-between">
                     <CardTitle>{bp.name}</CardTitle>
