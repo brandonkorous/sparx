@@ -24,7 +24,9 @@ import type {
   ComponentDto,
 } from '@sparx/builder-schemas';
 
+import type { Property } from '@/lib/sites';
 import { makeId, type Device, type PageTemplate, type PageSeo } from './model';
+import { SiteSwitcher } from './site-switcher';
 import { getDef } from './registry';
 import { MODULES } from './sample';
 import { PageSettings } from './inspector';
@@ -109,6 +111,11 @@ export interface BuilderAppProps {
   /** The tenant's custom components with their latest trees (docs/53 P-B) — feeds
    *  the Add palette ("Your components") and the canvas's live expansion. */
   components?: ComponentDto[];
+  /** The tenant's web properties (sites) + which one is active, for the in-editor
+   *  site switcher (docs/49 Phase 3). The switcher hides itself for single-site
+   *  tenants, so passing an empty / one-element list is a no-op. */
+  properties?: Property[];
+  activePropertyId?: string | null;
 }
 
 export function BuilderApp({
@@ -119,6 +126,8 @@ export function BuilderApp({
   siteOrigin,
   initialPageId,
   components = [],
+  properties = [],
+  activePropertyId = null,
 }: BuilderAppProps) {
   const confirm = useConfirm();
   const router = useRouter();
@@ -486,6 +495,8 @@ export function BuilderApp({
         {/* Editor toolbar — page-specific actions. The global header, main
             sidebar, and module sidebar come from the dashboard shell. */}
         <div className="bx-toolbar">
+          {/* Which site you're editing — hidden for single-site tenants. */}
+          <SiteSwitcher properties={properties} activePropertyId={activePropertyId} />
           <div className="bx-toolbar__templates">
             {renaming ? (
               <Input

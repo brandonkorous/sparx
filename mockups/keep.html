@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx — Build it to keep it</title>
+    <!--
+      Landing page "Keep" — the permanence / ownership hook.
+      A full hook page: grab (AI builds fast, who keeps it?) → the escape ladder
+      (you never hit a wall) → you own the spine → the things that disappear vs
+      Sparx → one CTA. Distinct structure: an ascending control ladder, not
+      stacked feature bands. Accent = brand indigo. No eyebrows.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1;
+        --indigo-hover: #4f46e5;
+        --indigo-text: #4338ca;
+        --indigo-tint: #eef2ff;
+        --ink: #0a0a0a;
+        --muted: #52525b;
+        --soft: #3f3f46;
+        --faint: #a1a1aa;
+        --border: #ececec;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      body {
+        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 32px;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbar .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+      }
+      .wordmark {
+        font-weight: 500;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+      }
+      .wordmark .x {
+        color: var(--indigo);
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+      }
+      .nav a {
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: inherit;
+        font-weight: 500;
+        font-size: 14px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: var(--indigo);
+        color: #fff;
+        padding: 10px 18px;
+      }
+      .btn-primary:hover {
+        background: var(--indigo-hover);
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--indigo-text);
+        padding: 10px 14px;
+      }
+      .btn-lg {
+        font-size: 16px;
+        padding: 15px 26px;
+        border-radius: 10px;
+      }
+
+      /* ── hero ────────────────────────────────────────────────── */
+      .hero {
+        padding: 96px 0 88px;
+      }
+      .hero h1 {
+        margin: 0;
+        max-width: 900px;
+        font-weight: 500;
+        font-size: 76px;
+        line-height: 72px;
+        letter-spacing: -0.035em;
+      }
+      .hero h1 .fade {
+        color: var(--faint);
+      }
+      .hero h1 .keep {
+        color: var(--indigo);
+      }
+      .hero .sub {
+        margin: 30px 0 0;
+        max-width: 600px;
+        font-size: 18px;
+        line-height: 28px;
+        color: var(--muted);
+      }
+      .hero .actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 34px;
+        flex-wrap: wrap;
+      }
+      .owned {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-top: 40px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+      }
+      .owned .word {
+        font-weight: 500;
+        font-size: 15px;
+      }
+      .owned .sep {
+        color: var(--faint);
+      }
+      .owned .tail {
+        font-size: 15px;
+        color: var(--muted);
+      }
+
+      /* ── escape ladder ───────────────────────────────────────── */
+      .ladder-sec {
+        padding: 24px 0 96px;
+      }
+      .ladder-sec h2 {
+        margin: 0;
+        max-width: 640px;
+        font-weight: 500;
+        font-size: 44px;
+        line-height: 46px;
+        letter-spacing: -0.03em;
+      }
+      .ladder-sec .lede {
+        margin: 18px 0 0;
+        max-width: 560px;
+        font-size: 17px;
+        line-height: 26px;
+        color: var(--muted);
+      }
+      .ceiling {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 52px 0 4px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: var(--faint);
+      }
+      .ceiling .line {
+        flex: 1;
+        height: 1px;
+        background: repeating-linear-gradient(90deg, #d4d4d8 0 6px, transparent 6px 12px);
+      }
+      .ladder {
+        position: relative;
+        padding-left: 30px;
+      }
+      .ladder::before {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 14px;
+        bottom: 14px;
+        width: 2px;
+        background: linear-gradient(#c7d2fe, var(--indigo));
+      }
+      .rung {
+        position: relative;
+        display: flex;
+        gap: 28px;
+        align-items: flex-start;
+        padding: 22px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .rung:last-child {
+        border-bottom: none;
+      }
+      .rung .node {
+        position: absolute;
+        left: -30px;
+        top: 28px;
+        width: 14px;
+        height: 14px;
+        border-radius: 9999px;
+        background: var(--indigo);
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.3);
+      }
+      .rung .tier {
+        flex-shrink: 0;
+        width: 132px;
+      }
+      .rung .tier .t-n {
+        font-family: 'Geist Mono', monospace;
+        font-size: 13px;
+        color: var(--indigo-text);
+      }
+      .rung .tier .t-l {
+        margin-top: 4px;
+        font-weight: 500;
+        font-size: 19px;
+        letter-spacing: -0.01em;
+      }
+      .rung .body {
+        flex: 1;
+        min-width: 0;
+      }
+      .rung .body p {
+        margin: 0;
+        max-width: 560px;
+        font-size: 16px;
+        line-height: 25px;
+        color: var(--soft);
+      }
+      .rung .body .who {
+        margin-top: 8px;
+        font-size: 14px;
+        color: var(--faint);
+      }
+      .floor {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 6px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: var(--faint);
+      }
+      .floor .line {
+        flex: 1;
+        height: 1px;
+        background: repeating-linear-gradient(90deg, #d4d4d8 0 6px, transparent 6px 12px);
+      }
+
+      /* ── own the spine ───────────────────────────────────────── */
+      .own {
+        padding: 96px 0;
+      }
+      .own h2 {
+        margin: 0;
+        max-width: 680px;
+        font-weight: 500;
+        font-size: 44px;
+        line-height: 46px;
+        letter-spacing: -0.03em;
+      }
+      .own-grid {
+        display: flex;
+        gap: 56px;
+        margin-top: 52px;
+        flex-wrap: wrap;
+      }
+      .own-col {
+        flex: 1;
+        min-width: 280px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      .own-item .h {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        font-weight: 500;
+        font-size: 19px;
+        letter-spacing: -0.01em;
+      }
+      .own-item .h .d {
+        width: 9px;
+        height: 9px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+      }
+      .own-item p {
+        margin: 9px 0 0 20px;
+        font-size: 15px;
+        line-height: 24px;
+        color: var(--muted);
+      }
+
+      /* ── manifesto (dark) ────────────────────────────────────── */
+      .manifesto {
+        background: #0a0a0a;
+        color: #fff;
+        border-radius: 28px;
+        padding: 72px 56px;
+      }
+      .manifesto .gone {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 720px;
+      }
+      .manifesto .gone .g {
+        font-weight: 500;
+        font-size: 30px;
+        line-height: 40px;
+        letter-spacing: -0.02em;
+        color: rgba(255, 255, 255, 0.42);
+      }
+      .manifesto .stay {
+        margin-top: 20px;
+        font-weight: 500;
+        font-size: 30px;
+        line-height: 40px;
+        letter-spacing: -0.02em;
+        color: #fff;
+      }
+      .manifesto .stay .hl {
+        color: #a5b4fc;
+      }
+
+      /* ── cta ─────────────────────────────────────────────────── */
+      .cta {
+        text-align: center;
+        padding: 104px 0;
+      }
+      .cta h2 {
+        margin: 0 auto;
+        max-width: 680px;
+        font-weight: 500;
+        font-size: 52px;
+        line-height: 54px;
+        letter-spacing: -0.03em;
+      }
+      .cta .sub {
+        margin: 20px auto 32px;
+        font-size: 17px;
+        color: var(--muted);
+      }
+
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 32px 0;
+      }
+      footer .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      footer .dots {
+        display: flex;
+        gap: 7px;
+      }
+      footer .dots span {
+        width: 8px;
+        height: 8px;
+        border-radius: 9999px;
+      }
+      footer .legal {
+        font-size: 13px;
+        color: var(--faint);
+      }
+
+      /* ── responsive ──────────────────────────────────────────── */
+      @media (max-width: 760px) {
+        .wrap {
+          padding: 0 22px;
+        }
+        .hero {
+          padding: 56px 0;
+        }
+        .hero h1 {
+          font-size: 44px;
+          line-height: 44px;
+        }
+        .hero .sub {
+          font-size: 16px;
+        }
+        .ladder-sec h2,
+        .own h2 {
+          font-size: 32px;
+          line-height: 34px;
+        }
+        .rung {
+          flex-direction: column;
+          gap: 6px;
+        }
+        .rung .tier {
+          width: auto;
+        }
+        .manifesto {
+          padding: 44px 26px;
+          border-radius: 20px;
+        }
+        .manifesto .gone .g,
+        .manifesto .stay {
+          font-size: 22px;
+          line-height: 30px;
+        }
+        .cta h2 {
+          font-size: 36px;
+          line-height: 38px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap">
+        <span class="wordmark">Spar<span class="x">x</span></span>
+        <nav class="nav">
+          <a href="#">Platform</a>
+          <a href="#">Pricing</a>
+          <button class="btn btn-primary">Start building</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap">
+        <h1>
+          <span class="fade">AI built it in an afternoon.</span><br />Who keeps it running for the
+          <span class="keep">decade?</span>
+        </h1>
+        <p class="sub">
+          AI builds fast — then the tool that built it sunsets, the agency moves on, and you're
+          locked out of your own business. Sparx is the platform underneath that's still here, and
+          still yours.
+        </p>
+        <div class="actions">
+          <button class="btn btn-primary btn-lg">
+            Start building
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </button>
+          <button class="btn btn-ghost btn-lg">How ownership works</button>
+        </div>
+        <div class="owned">
+          <span class="word">Your domain</span><span class="sep">·</span>
+          <span class="word">your data</span><span class="sep">·</span>
+          <span class="word">your code</span>
+          <span class="tail">— yours to export, forever.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ESCAPE LADDER -->
+    <section class="ladder-sec">
+      <div class="wrap">
+        <h2>However far you grow, you never hit a wall.</h2>
+        <p class="lede">
+          Most builders trap you: outgrow the theme and you re-platform. Sparx is a ladder — climb a
+          rung whenever you want, keep everything you already built. You and your AI can work at any
+          level.
+        </p>
+
+        <div class="ceiling"><span>no ceiling</span><span class="line"></span></div>
+        <div class="ladder">
+          <div class="rung">
+            <span class="node"></span>
+            <div class="tier"><div class="t-n">Tier 04</div><div class="t-l">Full export</div></div>
+            <div class="body">
+              <p>
+                Your data, your schema, your domain — exported on demand, no hostage clause. Leave
+                whenever; the door is unlocked the day you sign up.
+              </p>
+              <div class="who">For: anyone who refuses to be locked in.</div>
+            </div>
+          </div>
+          <div class="rung">
+            <span class="node"></span>
+            <div class="tier"><div class="t-n">Tier 03</div><div class="t-l">Headless</div></div>
+            <div class="body">
+              <p>
+                Bring your own frontend on the same API — Next, Remix, Astro — with TypeScript types
+                generated from your schema. Same data, a head you control.
+              </p>
+              <div class="who">For: engineering teams who want the reins.</div>
+            </div>
+          </div>
+          <div class="rung">
+            <span class="node"></span>
+            <div class="tier"><div class="t-n">Tier 02</div><div class="t-l">Tokens &amp; CSS</div></div>
+            <div class="body">
+              <p>
+                Tune the design system, override tokens, add custom CSS — without leaving the
+                guardrails that keep every page consistent and accessible.
+              </p>
+              <div class="who">For: designers and power users.</div>
+            </div>
+          </div>
+          <div class="rung">
+            <span class="node"></span>
+            <div class="tier"><div class="t-n">Tier 01</div><div class="t-l">Themes &amp; blocks</div></div>
+            <div class="body">
+              <p>
+                No code. Pick a theme, edit blocks, point your domain, publish — or let your AI do it
+                for you. Live in five minutes.
+              </p>
+              <div class="who">For: everyone, on day one.</div>
+            </div>
+          </div>
+        </div>
+        <div class="floor"><span>start here — no code required</span><span class="line"></span></div>
+      </div>
+    </section>
+
+    <!-- OWN THE SPINE -->
+    <section class="own">
+      <div class="wrap">
+        <h2>You own the spine, not just the surface.</h2>
+        <div class="own-grid">
+          <div class="own-col">
+            <div class="own-item">
+              <div class="h"><span class="d" style="background: #6366f1"></span>Your domain</div>
+              <p>
+                Point your DNS, we provision a Let's Encrypt cert automatically. No third-party DNS
+                service, no upcharge, no borrowed subdomain.
+              </p>
+            </div>
+            <div class="own-item">
+              <div class="h"><span class="d" style="background: #06b6d4"></span>Your customers</div>
+              <p>
+                One customer record on a database you can export — orders, email, support, RFQs. Not
+                rented rows inside someone else's CRM.
+              </p>
+            </div>
+          </div>
+          <div class="own-col">
+            <div class="own-item">
+              <div class="h"><span class="d" style="background: #14b8a6"></span>Your data, isolated</div>
+              <p>
+                Every tenant is fenced at the database level with row-level security — then handed
+                back to you as a clean export whenever you ask.
+              </p>
+            </div>
+            <div class="own-item">
+              <div class="h"><span class="d" style="background: #10b981"></span>No lock-in tax</div>
+              <p>
+                One bill for what you use, cancel anytime. Leaving costs you nothing but a download —
+                because a platform you can't leave isn't yours.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANIFESTO -->
+    <section class="wrap">
+      <div class="manifesto">
+        <div class="gone">
+          <span class="g">The agency that built it moves on.</span>
+          <span class="g">The freelancer goes quiet.</span>
+          <span class="g">The no-code tool sunsets.</span>
+        </div>
+        <div class="stay">
+          Sparx is still here — and it's <span class="hl">still yours.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+      <div class="wrap">
+        <h2>Build it to keep it.</h2>
+        <p class="sub">Five minutes to live. A decade to grow. Zero days locked in.</p>
+        <button class="btn btn-primary btn-lg">
+          Start building
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+        </button>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <span class="wordmark">Spar<span class="x">x</span></span>
+        <div class="dots">
+          <span style="background: #6366f1"></span><span style="background: #f97316"></span
+          ><span style="background: #14b8a6"></span><span style="background: #06b6d4"></span
+          ><span style="background: #0ea5e9"></span><span style="background: #475569"></span
+          ><span style="background: #ec4899"></span><span style="background: #10b981"></span>
+        </div>
+        <span class="legal">© 2026 WizeWorks · sparx.works</span>
+      </div>
+    </footer>
+  </body>
+</html>

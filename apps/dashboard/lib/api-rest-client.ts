@@ -10,11 +10,29 @@
 // ApiRestError carrying the envelope's `code` + `message` so the calling
 // server action can surface the friendly message in the dashboard UI.
 
+import { cookies } from 'next/headers';
 import { SignJWT } from 'jose';
 import { requireSession, type SparxSession } from '@sparx/auth';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 const encoder = new TextEncoder();
+
+// The cookie the site switcher sets to choose which web PROPERTY (site) the
+// dashboard authors (docs/49 Phase 3). Read on every call and forwarded as
+// `x-sparx-property-id`; api-rest's per-property builder routes resolve it (and
+// fail-closed to the tenant's primary site for unknown / absent ids), while
+// tenant-wide routes simply ignore it. Kept in sync with lib/active-property.ts.
+export const ACTIVE_PROPERTY_COOKIE = 'sparx_active_property';
+
+async function activePropertyHeader(): Promise<Record<string, string>> {
+  try {
+    const value = (await cookies()).get(ACTIVE_PROPERTY_COOKIE)?.value;
+    return value ? { 'x-sparx-property-id': value } : {};
+  } catch {
+    // Outside a request scope (shouldn't happen for these server-only calls).
+    return {};
+  }
+}
 
 function getSecret(): Uint8Array {
   const secret = process.env.SPARX_INTERNAL_JWT_SECRET;
@@ -100,6 +118,9 @@ async function call<T>(
   const token = await signToken(session);
   const headers: Record<string, string> = {
     authorization: `Bearer ${token}`,
+    // Forward the active-site selection so per-property builder routes scope to
+    // the chosen web property (harmless to every other route).
+    ...(await activePropertyHeader()),
   };
   if (body !== undefined) headers['content-type'] = 'application/json';
   if (options.ifMatch) headers['if-match'] = options.ifMatch;

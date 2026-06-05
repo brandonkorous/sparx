@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx — Built to scale</title>
+    <!--
+      Landing page "Scale" — the enterprise / trust play.
+      Hook: the same platform runs your first order and your 50,000th SKU, no
+      replatform. Premium dark hero + authoritative numbers + a security spine
+      (RLS, self-hosted auth, audit, export) + phased-infra story + multi-store.
+      CTA = talk to sales. Accent indigo. No fabricated compliance badges, no
+      competitor names, no eyebrows.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1; --indigo-hover: #4f46e5; --indigo-light: #a5b4fc; --indigo-text: #4338ca;
+        --ink: #0a0a0a; --muted: #52525b; --soft: #3f3f46; --faint: #a1a1aa; --border: #ececec;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body { font-family: 'Geist', system-ui, -apple-system, sans-serif; color: var(--ink); background: #fff; -webkit-font-smoothing: antialiased; }
+      .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+      a { color: inherit; text-decoration: none; }
+      .btn { display: inline-flex; align-items: center; gap: 8px; font-family: inherit; font-weight: 500; font-size: 14px; border: none; border-radius: 8px; cursor: pointer; }
+      .btn-primary { background: var(--indigo); color: #fff; padding: 10px 18px; }
+      .btn-primary:hover { background: var(--indigo-hover); }
+      .btn-ghost-d { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 10px 16px; }
+      .btn-ghost { background: #fff; color: var(--indigo-text); border: 1px solid #e5e5e5; padding: 10px 16px; }
+      .btn-lg { font-size: 16px; padding: 15px 26px; border-radius: 10px; }
+
+      /* dark hero */
+      .hero { background: #0a0a0a; color: #fff; background-image: radial-gradient(80% 80% at 85% -10%, rgba(99,102,241,0.32), rgba(99,102,241,0) 60%); }
+      .hero .toprow { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+      .hero .wordmark { font-weight: 500; font-size: 20px; letter-spacing: -0.03em; color: #fff; }
+      .hero .wordmark .x { color: var(--indigo-light); }
+      .hero .nav { display: flex; align-items: center; gap: 22px; }
+      .hero .nav a { font-size: 14px; color: rgba(255,255,255,0.66); }
+      .hero .h-inner { padding: 80px 0 72px; }
+      .hero h1 { margin: 0; max-width: 840px; font-weight: 500; font-size: 76px; line-height: 72px; letter-spacing: -0.04em; }
+      .hero h1 .g { color: var(--indigo-light); }
+      .hero .sub { margin: 28px 0 0; max-width: 580px; font-size: 18px; line-height: 28px; color: rgba(255,255,255,0.72); }
+      .hero .actions { display: flex; align-items: center; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
+      .hero .stats { display: flex; gap: 0; margin-top: 64px; border-top: 1px solid rgba(255,255,255,0.14); padding-top: 30px; flex-wrap: wrap; }
+      .hero .stats .s { flex: 1; min-width: 160px; padding-right: 28px; }
+      .hero .stats .s .n { font-weight: 500; font-size: 38px; letter-spacing: -0.03em; }
+      .hero .stats .s .l { margin-top: 6px; font-size: 13.5px; line-height: 20px; color: rgba(255,255,255,0.6); }
+
+      /* security spine */
+      .sec { padding: 96px 0; }
+      .sec h2 { margin: 0; max-width: 640px; font-weight: 500; font-size: 44px; line-height: 46px; letter-spacing: -0.03em; }
+      .sec .lede { margin: 18px 0 0; max-width: 560px; font-size: 17px; line-height: 26px; color: var(--muted); }
+      .sec-grid { display: flex; flex-wrap: wrap; gap: 36px 56px; margin-top: 52px; }
+      .sec-item { flex: 1 1 calc(50% - 56px); min-width: 290px; display: flex; gap: 16px; }
+      .sec-item .ic { flex-shrink: 0; width: 42px; height: 42px; border-radius: 11px; background: var(--indigo-tint, #eef2ff); display: flex; align-items: center; justify-content: center; }
+      .sec-item .h { font-weight: 500; font-size: 19px; letter-spacing: -0.01em; }
+      .sec-item p { margin: 9px 0 0; font-size: 15px; line-height: 24px; color: var(--muted); }
+
+      /* phases */
+      .phases { padding: 96px 0; background: #fafafa; }
+      .phases h2 { margin: 0; max-width: 640px; font-weight: 500; font-size: 44px; line-height: 46px; letter-spacing: -0.03em; }
+      .phases .lede { margin: 18px 0 0; max-width: 560px; font-size: 17px; line-height: 26px; color: var(--muted); }
+      .ptrack { display: flex; align-items: stretch; gap: 0; margin-top: 56px; flex-wrap: wrap; }
+      .phase { flex: 1; min-width: 220px; padding: 0 28px; position: relative; }
+      .phase:first-child { padding-left: 0; }
+      .phase::before { content: ''; position: absolute; left: 0; top: 9px; bottom: 0; width: 1px; background: #e3e3e6; }
+      .phase:first-child::before { display: none; }
+      .phase .pn { font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--indigo-text); }
+      .phase .pt { margin-top: 8px; font-weight: 500; font-size: 20px; letter-spacing: -0.01em; }
+      .phase .pd { margin-top: 8px; font-size: 14.5px; line-height: 22px; color: var(--muted); }
+      .phase .trig { display: inline-flex; align-items: center; gap: 7px; margin-top: 16px; font-size: 12.5px; color: var(--soft); background: #fff; border: 1px solid #e5e5e5; padding: 6px 11px; border-radius: 9999px; }
+      .phase .trig .d { width: 6px; height: 6px; border-radius: 9999px; background: #10b981; }
+
+      /* multi-store */
+      .multi { padding: 96px 0; }
+      .multi .box { background: #0a0a0a; color: #fff; border-radius: 28px; padding: 60px 56px; display: flex; gap: 48px; align-items: center; flex-wrap: wrap; }
+      .multi .c { flex: 1; min-width: 300px; }
+      .multi h2 { margin: 0; font-weight: 500; font-size: 38px; line-height: 42px; letter-spacing: -0.03em; max-width: 460px; }
+      .multi p { margin: 16px 0 0; max-width: 440px; font-size: 16px; line-height: 25px; color: rgba(255,255,255,0.68); }
+      .multi .brands { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 12px; }
+      .multi .brand { display: flex; align-items: center; gap: 13px; padding: 14px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }
+      .multi .brand .d { width: 10px; height: 10px; border-radius: 9999px; flex-shrink: 0; }
+      .multi .brand .nm { font-weight: 500; font-size: 15px; }
+      .multi .brand .dom { font-family: 'Geist Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.5); margin-left: auto; }
+
+      /* cta */
+      .cta { text-align: center; padding: 104px 0; }
+      .cta h2 { margin: 0 auto; max-width: 700px; font-weight: 500; font-size: 52px; line-height: 54px; letter-spacing: -0.03em; }
+      .cta .sub { margin: 20px auto 32px; font-size: 17px; color: var(--muted); }
+      .cta .note { margin-top: 18px; font-size: 13px; color: var(--faint); }
+
+      footer { border-top: 1px solid var(--border); padding: 32px 0; }
+      footer .wrap { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+      footer .wordmark { font-weight: 500; font-size: 20px; letter-spacing: -0.03em; }
+      footer .wordmark .x { color: var(--indigo); }
+      footer .dots { display: flex; gap: 7px; }
+      footer .dots span { width: 8px; height: 8px; border-radius: 9999px; }
+      footer .legal { font-size: 13px; color: var(--faint); }
+
+      @media (max-width: 820px) {
+        .wrap { padding: 0 22px; }
+        .hero h1 { font-size: 46px; line-height: 46px; }
+        .hero .h-inner { padding: 48px 0 56px; }
+        .hero .nav { display: none; }
+        .hero .stats { gap: 24px; }
+        .hero .stats .s { min-width: 130px; }
+        .sec h2, .phases h2, .cta h2 { font-size: 34px; line-height: 36px; }
+        .sec-item { flex-basis: 100%; }
+        .ptrack { flex-direction: column; gap: 28px; }
+        .phase { padding: 0; }
+        .phase::before { display: none; }
+        .multi .box { padding: 40px 26px; }
+        .multi h2 { font-size: 28px; line-height: 32px; }
+        .cta h2 { font-size: 36px; }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="wrap">
+        <div class="toprow">
+          <span class="wordmark">Spar<span class="x">x</span></span>
+          <nav class="nav">
+            <a href="#">Platform</a>
+            <a href="#">Security</a>
+            <a href="#">Pricing</a>
+            <button class="btn btn-primary">Talk to sales</button>
+          </nav>
+        </div>
+        <div class="h-inner">
+          <h1>From day one to <span class="g">fifty-thousand SKUs.</span></h1>
+          <p class="sub">
+            The same engine runs a five-product test store and a 50,000-SKU catalog. You phase up
+            your infrastructure on revenue triggers — never a migration, never a rebuild.
+          </p>
+          <div class="actions">
+            <button class="btn btn-primary btn-lg">
+              Talk to sales
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+            </button>
+            <button class="btn btn-ghost-d btn-lg">Read the architecture</button>
+          </div>
+          <div class="stats">
+            <div class="s"><div class="n">50,000</div><div class="l">SKUs on a single theme system</div></div>
+            <div class="s"><div class="n">99.9%</div><div class="l">uptime target, multi-region</div></div>
+            <div class="s"><div class="n">&lt;50ms</div><div class="l">edge TTFB, cached worldwide</div></div>
+            <div class="s"><div class="n">1</div><div class="l">migration you'll ever do — this one</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="wrap">
+        <h2>Isolation isn't a setting. It's the foundation.</h2>
+        <p class="lede">The controls a serious business needs aren't bolted on at the Enterprise tier — they're how every Sparx tenant works from the first day.</p>
+        <div class="sec-grid">
+          <div class="sec-item">
+            <span class="ic" style="background:#eef2ff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <div><div class="h">Row-level security</div><p>Every tenant is fenced at the database level with PostgreSQL RLS — the backstop against application bugs, not a filter you can forget.</p></div>
+          </div>
+          <div class="sec-item">
+            <span class="ic" style="background:#eef2ff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+            <div><div class="h">Self-hosted auth &amp; MFA</div><p>Organizations, memberships, API keys, and MFA on infrastructure you control — not rented from a third-party identity SaaS.</p></div>
+          </div>
+          <div class="sec-item">
+            <span class="ic" style="background:#eef2ff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg></span>
+            <div><div class="h">Audited, revocable access</div><p>Per-agent keys, per-tool scopes, every call written to the audit log. Grant an integration, watch what it did, revoke it in one click.</p></div>
+          </div>
+          <div class="sec-item">
+            <span class="ic" style="background:#eef2ff"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+            <div><div class="h">Your data, exportable</div><p>Full export on demand, your schema intact. Enterprise isn't a cage — it's the version of us that holds up under audit.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="phases">
+      <div class="wrap">
+        <h2>Start cheap. Scale on triggers, not faith.</h2>
+        <p class="lede">You don't pay for enterprise infrastructure before you have enterprise traffic. Each tier upgrades when a real number says so — and the upgrade is a config change, not a rebuild.</p>
+        <div class="ptrack">
+          <div class="phase">
+            <div class="pn">Phase 1</div>
+            <div class="pt">Launch</div>
+            <div class="pd">A lean footprint that gets you live in five minutes and costs almost nothing while you find product-market fit.</div>
+            <span class="trig"><span class="d"></span>Default — every new store</span>
+          </div>
+          <div class="phase">
+            <div class="pn">Phase 2</div>
+            <div class="pt">Traction</div>
+            <div class="pd">Dedicated search, managed caching, and higher throughput switch on as orders climb — same data, more headroom.</div>
+            <span class="trig"><span class="d"></span>Trigger: sustained order volume</span>
+          </div>
+          <div class="phase">
+            <div class="pn">Phase 3</div>
+            <div class="pt">Scale</div>
+            <div class="pd">Multi-region, isolated workers, and enterprise SLAs. The same store you launched, now built for the catalog you grew into.</div>
+            <span class="trig"><span class="d"></span>Trigger: revenue &amp; SLA needs</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="multi">
+      <div class="wrap">
+        <div class="box">
+          <div class="c">
+            <h2>Many brands. One login. One bill.</h2>
+            <p>Run several stores or sites from a single Sparx account — each with its own domain, theme, and module mix. Spin up the next brand without spinning up the next vendor relationship.</p>
+          </div>
+          <div class="brands">
+            <div class="brand"><span class="d" style="background:#f97316"></span><span class="nm">Diesel Parts Co.</span><span class="dom">parts.example.com</span></div>
+            <div class="brand"><span class="d" style="background:#14b8a6"></span><span class="nm">The Service Journal</span><span class="dom">journal.example.com</span></div>
+            <div class="brand"><span class="d" style="background:#475569"></span><span class="nm">Fleet Wholesale</span><span class="dom">b2b.example.com</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="wrap">
+        <h2>Let's talk about scale.</h2>
+        <p class="sub">Bring your catalog, your traffic, and your security questions. We'll map the migration and the SLA.</p>
+        <button class="btn btn-primary btn-lg">
+          Talk to sales
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+        </button>
+        <div class="note">Enterprise SLAs · DPA available · single-tenant options on request</div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <span class="wordmark">Spar<span class="x">x</span></span>
+        <div class="dots">
+          <span style="background:#6366f1"></span><span style="background:#f97316"></span><span style="background:#14b8a6"></span><span style="background:#06b6d4"></span><span style="background:#0ea5e9"></span><span style="background:#475569"></span><span style="background:#ec4899"></span><span style="background:#10b981"></span>
+        </div>
+        <span class="legal">© 2026 WizeWorks · sparx.works</span>
+      </div>
+    </footer>
+  </body>
+</html>

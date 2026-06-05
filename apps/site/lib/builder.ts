@@ -7,7 +7,18 @@
 
 import type { PublishedLayoutDto, PublishedPageDto } from '@sparx/builder-schemas';
 
+import { resolveActivePropertySlug } from './tenant';
+
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
+
+// The `&property=<slug>` query that scopes a public Builder read to the active
+// web property (docs/49). Resolved once per request from the host; '' for the
+// tenant's primary site (api-rest defaults to it), so single-site reads are
+// byte-for-byte unchanged.
+async function propertyParam(): Promise<string> {
+  const slug = await resolveActivePropertySlug();
+  return slug ? `&property=${encodeURIComponent(slug)}` : '';
+}
 
 interface SuccessEnvelope<T> {
   success: true;
@@ -37,7 +48,7 @@ export async function getPublishedBuilderPage(
 ): Promise<PublishedPageDto | null> {
   try {
     const res = await fetch(
-      `${BASE_URL}/v1/public/builder/page?tenant=${encodeURIComponent(tenantSlug)}&slug=${encodeURIComponent(slug)}`,
+      `${BASE_URL}/v1/public/builder/page?tenant=${encodeURIComponent(tenantSlug)}&slug=${encodeURIComponent(slug)}${await propertyParam()}`,
       {
         // INTERIM: uncached so a publish reflects immediately. Builder content
         // changes on publish, and no tag-purge is wired yet (that's the deferred
@@ -70,7 +81,7 @@ export async function getPublishedBuilderCollection(
   try {
     const recordParam = recordId ? `&recordId=${encodeURIComponent(recordId)}` : '';
     const res = await fetch(
-      `${BASE_URL}/v1/public/builder/collection?tenant=${encodeURIComponent(tenantSlug)}&recordType=${encodeURIComponent(recordType)}${recordParam}`,
+      `${BASE_URL}/v1/public/builder/collection?tenant=${encodeURIComponent(tenantSlug)}&recordType=${encodeURIComponent(recordType)}${recordParam}${await propertyParam()}`,
       // INTERIM: uncached so a publish reflects immediately (see getPublishedBuilderPage).
       { cache: 'no-store' }
     );
@@ -90,7 +101,7 @@ export async function getPublishedBuilderLayout(
 ): Promise<PublishedLayoutDto | null> {
   try {
     const res = await fetch(
-      `${BASE_URL}/v1/public/builder/layout?tenant=${encodeURIComponent(tenantSlug)}`,
+      `${BASE_URL}/v1/public/builder/layout?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
       {
         // INTERIM: uncached so a layout publish reflects immediately (see the
         // page reader above) — no tag-purge is wired yet. Restore revalidate+tags
@@ -116,7 +127,7 @@ export async function getPublishedBuilderStyles(
 ): Promise<string> {
   try {
     const res = await fetch(
-      `${BASE_URL}/v1/public/builder/styles?tenant=${encodeURIComponent(tenantSlug)}`,
+      `${BASE_URL}/v1/public/builder/styles?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
       // INTERIM: uncached so a publish reflects immediately (see the reads above).
       // With a preview token the DRAFT sheet (a superset) comes back instead.
       { cache: 'no-store', headers: previewHeaders(opts.previewToken) }

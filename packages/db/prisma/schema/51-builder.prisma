@@ -13,8 +13,12 @@
 // nothing rather than leaking cross-tenant pages.
 
 model BuilderPage {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) this page belongs to (docs/49). Pages are per-property:
+  // each of a tenant's sites has its own page tree. NOT a security boundary —
+  // tenant_id (the RLS GUC) is; property_id is application-tier scoping.
+  propertyId String @map("property_id") @db.Uuid
 
   name       String  @db.VarChar(255)
   // singleton | collection (docs/40 page types)
@@ -58,10 +62,14 @@ model BuilderPage {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant      Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property    Property                @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   assignments BuilderPageAssignment[]
 
-  @@unique([tenantId, slug])
-  @@index([tenantId, position])
+  // Slug is unique per (tenant, property) — two sibling sites can each have an
+  // `/about`. The per-(tenant, property, recordType) default-template partial
+  // unique lives in the migration (Prisma can't express the predicate).
+  @@unique([tenantId, propertyId, slug])
+  @@index([tenantId, propertyId, position])
   @@map("builder_pages")
 }
 
@@ -81,6 +89,9 @@ model BuilderPage {
 model BuilderPageAssignment {
   id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String @map("tenant_id") @db.Uuid
+  // Per-property (docs/49): a record can map to different templates on different
+  // sites. The owning BuilderPage is itself per-property, so this rides along.
+  propertyId    String @map("property_id") @db.Uuid
   recordType    String @map("record_type") @db.VarChar(63)
   itemRef       String @map("item_ref") @db.VarChar(255)
   builderPageId String @map("builder_page_id") @db.Uuid
@@ -89,10 +100,13 @@ model BuilderPageAssignment {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property    Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   builderPage BuilderPage @relation(fields: [builderPageId], references: [id], onDelete: Cascade)
 
-  @@unique([tenantId, recordType, itemRef])
-  @@index([tenantId, recordType])
+  // Explicit name — the default (tenant_id+property_id+record_type+item_ref) would
+  // exceed Postgres's 63-char identifier limit and truncate (drift risk).
+  @@unique([tenantId, propertyId, recordType, itemRef], map: "builder_page_assignments_property_record_item_key")
+  @@index([tenantId, propertyId, recordType])
   @@index([builderPageId])
   @@map("builder_page_assignments")
 }
@@ -109,8 +123,12 @@ model BuilderPageAssignment {
 //
 // Tenant-scoped + FORCE RLS, like BuilderPage.
 model BuilderLayout {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) this chrome belongs to (docs/49). Each site keeps its
+  // own layout catalog with its own ACTIVE layout. Per-property, not a security
+  // boundary (tenant_id is the RLS boundary).
+  propertyId String @map("property_id") @db.Uuid
 
   name String @db.VarChar(255)
 
@@ -120,10 +138,10 @@ model BuilderLayout {
   // the ACTIVE published layout as the chrome around every page (docs/45 §2.6).
   publishedTree Json?     @map("published_tree")
   publishedAt   DateTime? @map("published_at") @db.Timestamptz
-  // The live layout — exactly one per tenant. "At most one active" is enforced in
-  // the DB by a partial unique index on (tenant_id) WHERE is_active (hand-added in
-  // the migration; Prisma can't express the predicate). Activation requires a
-  // prior publish (the storefront reads the active layout's published tree).
+  // The live layout — exactly one per PROPERTY. "At most one active" is enforced
+  // in the DB by a partial unique index on (tenant_id, property_id) WHERE is_active
+  // (hand-added in the migration; Prisma can't express the predicate). Activation
+  // requires a prior publish (the storefront reads the active layout's published tree).
   isActive      Boolean   @default(false) @map("is_active")
   // Catalog ordering (cf. BuilderPage.position).
   position      Int       @default(0)
@@ -131,9 +149,10 @@ model BuilderLayout {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  @@index([tenantId, position])
+  @@index([tenantId, propertyId, position])
   @@map("builder_layouts")
 }
 

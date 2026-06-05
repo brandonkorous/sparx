@@ -22,7 +22,7 @@ import { withTenant } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
-import type { ServiceContext } from '../errors';
+import type { PropertyContext } from '../errors';
 import { BuilderConflictError, BuilderNotFoundError, BuilderValidationError } from '../errors';
 import { expandTreeForPublish } from './component-service';
 
@@ -47,9 +47,10 @@ const asJson = (tree: BuilderNode): Prisma.InputJsonValue =>
 /** List the tenant's layouts. On first use (zero rows) seed the starter shell as
  *  the ACTIVE layout — the lazy-materialization idiom (cf. pageService.listOrSeed).
  *  Idempotent: only seeds when empty. */
-export function listOrSeed(ctx: ServiceContext): Promise<BuilderLayoutDto[]> {
+export function listOrSeed(ctx: PropertyContext): Promise<BuilderLayoutDto[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.builderLayout.findMany({
+      where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
     if (rows.length > 0) return rows.map(toDto);
@@ -57,9 +58,10 @@ export function listOrSeed(ctx: ServiceContext): Promise<BuilderLayoutDto[]> {
     const created = await tx.builderLayout.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: ctx.propertyId,
         name: STARTER_LAYOUT.name,
         draftTree: asJson(STARTER_LAYOUT.tree),
-        // The tenant's first layout is the live one.
+        // The property's first layout is the live one.
         isActive: true,
         position: 0,
       },
@@ -78,9 +80,9 @@ export function listOrSeed(ctx: ServiceContext): Promise<BuilderLayoutDto[]> {
   });
 }
 
-export function get(ctx: ServiceContext, id: string): Promise<BuilderLayoutDto> {
+export function get(ctx: PropertyContext, id: string): Promise<BuilderLayoutDto> {
   return withTenant(ctx, async (tx) => {
-    const row = await tx.builderLayout.findUnique({ where: { id } });
+    const row = await tx.builderLayout.findFirst({ where: { id, propertyId: ctx.propertyId } });
     if (!row) throw new BuilderNotFoundError('BuilderLayout', id);
     return toDto(row);
   });
@@ -89,11 +91,12 @@ export function get(ctx: ServiceContext, id: string): Promise<BuilderLayoutDto> 
 /** Create a layout. Starts from the supplied tree or the starter shell. New
  *  layouts are NOT live until activated — UNLESS this is the tenant's first one
  *  (then it's active, so the storefront always has chrome). */
-export async function create(ctx: ServiceContext, rawInput: unknown): Promise<BuilderLayoutDto> {
+export async function create(ctx: PropertyContext, rawInput: unknown): Promise<BuilderLayoutDto> {
   const input = CreateLayoutInput.parse(rawInput);
   return withTenant(ctx, async (tx) => {
-    const count = await tx.builderLayout.count();
+    const count = await tx.builderLayout.count({ where: { propertyId: ctx.propertyId } });
     const last = await tx.builderLayout.findFirst({
+      where: { propertyId: ctx.propertyId },
       orderBy: { position: 'desc' },
       select: { position: true },
     });
@@ -101,8 +104,10 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Bu
     const created = await tx.builderLayout.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: ctx.propertyId,
         name: input.name,
         draftTree: asJson(input.tree ?? STARTER_LAYOUT.tree),
+        // The property's first layout is the live one (so the site always has chrome).
         isActive: count === 0,
         position,
       },
@@ -124,13 +129,16 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Bu
 /** Save the draft tree and/or rename. Draft-tree saves are the high-frequency
  *  autosave path — deliberately NOT audited (cf. pageService.update). */
 export async function update(
-  ctx: ServiceContext,
+  ctx: PropertyContext,
   id: string,
   rawInput: unknown
 ): Promise<BuilderLayoutDto> {
   const input = UpdateLayoutInput.parse(rawInput);
   return withTenant(ctx, async (tx) => {
-    const existing = await tx.builderLayout.findUnique({ where: { id }, select: { id: true } });
+    const existing = await tx.builderLayout.findFirst({
+      where: { id, propertyId: ctx.propertyId },
+      select: { id: true },
+    });
     if (!existing) throw new BuilderNotFoundError('BuilderLayout', id);
 
     const data: Prisma.BuilderLayoutUpdateInput = {};
@@ -144,9 +152,11 @@ export async function update(
 
 /** Delete a layout. Refuses to delete the LIVE one — make another active first
  *  (the storefront would otherwise lose its chrome). */
-export async function remove(ctx: ServiceContext, id: string): Promise<void> {
+export async function remove(ctx: PropertyContext, id: string): Promise<void> {
   await withTenant(ctx, async (tx) => {
-    const existing = await tx.builderLayout.findUnique({ where: { id } });
+    const existing = await tx.builderLayout.findFirst({
+      where: { id, propertyId: ctx.propertyId },
+    });
     if (!existing) throw new BuilderNotFoundError('BuilderLayout', id);
     if (existing.isActive) {
       throw new BuilderConflictError(
@@ -171,9 +181,11 @@ export async function remove(ctx: ServiceContext, id: string): Promise<void> {
 /** Snapshot the draft tree into the published tree. Does NOT change which layout
  *  is live — publishing a non-active layout leaves it published-but-idle until
  *  setActive flips it. Emits builder.layout.published. */
-export async function publish(ctx: ServiceContext, id: string): Promise<BuilderLayoutDto> {
+export async function publish(ctx: PropertyContext, id: string): Promise<BuilderLayoutDto> {
   const dto = await withTenant(ctx, async (tx) => {
-    const existing = await tx.builderLayout.findUnique({ where: { id } });
+    const existing = await tx.builderLayout.findFirst({
+      where: { id, propertyId: ctx.propertyId },
+    });
     if (!existing) throw new BuilderNotFoundError('BuilderLayout', id);
     // Expand tenant components into concrete primitives (docs/53 §3) so the
     // storefront chrome renderer never sees a `custom:*` type.
@@ -210,9 +222,11 @@ export async function publish(ctx: ServiceContext, id: string): Promise<BuilderL
  *  unpublished draft would render nothing. Clears the prior active then sets this
  *  one inside one tx, so the partial unique index never sees two active rows.
  *  Emits builder.layout.activated for the storefront render path. */
-export async function setActive(ctx: ServiceContext, id: string): Promise<BuilderLayoutDto> {
+export async function setActive(ctx: PropertyContext, id: string): Promise<BuilderLayoutDto> {
   const dto = await withTenant(ctx, async (tx) => {
-    const existing = await tx.builderLayout.findUnique({ where: { id } });
+    const existing = await tx.builderLayout.findFirst({
+      where: { id, propertyId: ctx.propertyId },
+    });
     if (!existing) throw new BuilderNotFoundError('BuilderLayout', id);
     if (existing.publishedTree == null) {
       throw new BuilderValidationError('Publish this layout before making it active.', [
@@ -221,7 +235,12 @@ export async function setActive(ctx: ServiceContext, id: string): Promise<Builde
     }
     if (existing.isActive) return toDto(existing); // already live — no-op
 
-    await tx.builderLayout.updateMany({ where: { isActive: true }, data: { isActive: false } });
+    // Clear the prior active layout for THIS property only (a sibling site's
+    // active chrome is untouched), then set this one — one tx, partial unique safe.
+    await tx.builderLayout.updateMany({
+      where: { isActive: true, propertyId: ctx.propertyId },
+      data: { isActive: false },
+    });
     const updated = await tx.builderLayout.update({ where: { id }, data: { isActive: true } });
     await writeAuditLog({
       tx,
@@ -247,9 +266,11 @@ export async function setActive(ctx: ServiceContext, id: string): Promise<Builde
  *  or null when no active layout has been published (the storefront then falls
  *  back to the legacy chrome). Tenant-scoped via withTenant (the public route
  *  resolves the tenant by slug first). */
-export function getPublished(ctx: ServiceContext): Promise<PublishedLayoutDto | null> {
+export function getPublished(ctx: PropertyContext): Promise<PublishedLayoutDto | null> {
   return withTenant(ctx, async (tx) => {
-    const row = await tx.builderLayout.findFirst({ where: { isActive: true } });
+    const row = await tx.builderLayout.findFirst({
+      where: { isActive: true, propertyId: ctx.propertyId },
+    });
     if (row?.publishedTree == null) return null;
     return {
       name: row.name,

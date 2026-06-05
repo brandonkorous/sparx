@@ -1,21 +1,31 @@
 # Sparx Platform — Multi-Site per Tenant
 
-**Version:** 0.1 (design notes — not yet scheduled)
+**Version:** 1.0 (Phases 1–4 built)
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-03
+**Last Updated:** 2026-06-04
 
-> **Status: backlog / thinking doc.** This captures the feature so it isn't forgotten — nothing
-> here is built yet, and it is expected to land in the future. It proposes letting **one tenant
-> run more than one website** (e.g. a main brand site + a campaign microsite, a wholesale site
-> and a retail site over the same catalog, a publisher with several publications, or an agency
-> running several client-facing sites under one account). This **directly revisits a committed
-> decision** — [32-workspace-switching-breadcrumb.md](32-workspace-switching-breadcrumb.md) §2
-> states "there is **no** separate `Store`/`Site` model and we are not introducing one." That
-> decision was made about a _different axis_ (multiple workspaces a user belongs to); this doc
-> introduces a `Site` entity _inside_ a tenant and explains why the two don't conflict (§2). It
-> touches the entire sitebuilder/storefront layer, which is today keyed one-per-tenant
-> ([49-sitebuilder.prisma](../packages/db/prisma/schema/49-sitebuilder.prisma):
-> `SiteConfig.tenantId @id`), so it is a real structural change, not a doc edit.
+> **Status: BUILT — Phases 1–4 shipped (2026-06-04); Phase 5 foundation-laid, enforcement deferred.**
+> One tenant can run **more than one website** (e.g. a main brand site + a campaign microsite, a
+> wholesale site and a retail site over the same catalog, a publisher with several publications).
+>
+> **Implementation naming:** the entity ships as **`Property`** (table `properties`), NOT `Site` —
+> `Site*` collides with the legacy sitebuilder `SiteConfig`/`SiteVersion`/`SiteTheme` tables, and
+> "Property" reads as broader than a store (content-or-commerce). User-facing copy says **"Site"**;
+> the code identifier is `Property`/`property_id`. Read `Site` ≙ `Property` throughout this doc.
+>
+> **Scope note vs. doc 32.** This re-key was applied **Builder-only** (go-forward render path:
+> `builder_pages`/`builder_layouts`/`builder_page_assignments` gained `property_id`). The legacy
+> `sitebuilder_*` layer (`SiteConfig.tenantId @id`, …) was **left single-site** since it is
+> retiring — it is NOT re-keyed. This still directly revisits doc 32 §2's "no `Site` model" — that
+> decision was about a _different axis_ (multiple workspaces a user belongs to); the `Property`
+> entity lives _inside_ a tenant and the two don't conflict (§2).
+>
+> **What's built:** `properties` + `domains` tables (+ RLS/partial-unique/host-resolution);
+> per-property Builder render path; host→property routing + Caddy authorization; create-site /
+> make-primary APIs; the dashboard **Sites** settings hub + in-builder site switcher; BYO custom
+> domain connect + DNS-TXT verify; per-site **brand override** (`Property.brand_override`, Phase 4).
+> **Deferred (Phase 5):** Model B catalog/content `property_id` scoping (additive, enforcement
+> deferred per §3), per-site module scope, the site-scoped search facet. See §10.
 
 ---
 
@@ -204,9 +214,15 @@ adds a **site** scope _within_ a workspace. Proposed shape:
 
 Per [17-billing-subscriptions.md](17-billing-subscriptions.md), billing is per tenant + per
 enabled module. A second site is a natural **add-on line item** (a per-additional-site fee), the
-same coordination concern doc 32 flagged for creating a second workspace (R5). Decide: flat
-per-site add-on, or bundled into a higher plan tier. Out of scope to price here; flagged so the
-billing model is updated when this lands.
+same coordination concern doc 32 flagged for creating a second workspace (R5).
+
+**Decision (2026-06-04): flat per-additional-site add-on**, NOT a higher plan tier. The tenant's
+**primary** site is included in the base plan; each **additional** site (`properties` rows where
+`is_primary = false`) is one recurring add-on line item. Rationale: keeps the mental model honest
+(you pay per extra site, regardless of plan), mirrors the per-module add-on shape already in doc
+17, and makes the "create a second site" CTA a clear, predictable upsell. Enforcement (metering
+the add-on, gating create-site behind the subscription) lands with the billing build — until then
+create-site is open. The Sites settings page is where the count surfaces.
 
 ---
 
@@ -251,13 +267,13 @@ multi-site is purely additive from there.
 
 ## 10. Phasing
 
-| Phase | Scope                                                                                                                                                                                | Depends on                                                                        |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
-| 1     | `Site` entity + migration (one primary site per tenant); re-key the sitebuilder/builder/storefront presentation layer to `site_id`; **no UX change** (still single-site everywhere). | DB Migrate pipeline; hand-authored RLS/keys SQL                                   |
-| 2     | Host→site routing; create-additional-site flow; per-site domain mapping; storefront renders the resolved site.                                                                       | Phase 1; [04](04-domain-ssl-automation.md)/[24](24-domain-purchase-management.md) |
-| 3     | Dashboard **site switcher** for site-scoped modules; breadcrumb `Workspace › Site › …`; single-site tenants see nothing new.                                                         | Phase 2; doc 32 breadcrumb; [24](24-dashboard-shell.md)                           |
-| 4     | Per-site **brand override** (`SiteBrand`); reconcile [34](34-platform-glossary.md)/[33](33-token-model-v2.md).                                                                       | Phase 3                                                                           |
-| 5     | **Model B** opt-in data scoping (`site_id` on catalog/content), per-site module scope, billing add-on, site-scoped search facet.                                                     | [17](17-billing-subscriptions.md), [39](39-universal-search.md)                   |
+| Phase | Scope                                                                                                                                                                                                                                                                                                                                                                                                    | Depends on                                                                        |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| 1 ✅  | `Property` entity + migration (one primary site per tenant); re-key the **Builder** presentation layer (`builder_pages`/`builder_layouts`/`builder_page_assignments`) to `property_id`; **no UX change**. Legacy `sitebuilder_*` left single-site (retiring).                                                                                                                                            | DB Migrate pipeline; hand-authored RLS/keys SQL                                   |
+| 2 ✅  | Host→property routing (`domains` dispatch table + resolver + Caddy authorization); create-additional-site flow; per-site `*.sparx.zone` subdomain + BYO custom-domain connect/verify; storefront renders the resolved site (`apps/site` host→property threading).                                                                                                                                        | Phase 1; [04](04-domain-ssl-automation.md)/[24](24-domain-purchase-management.md) |
+| 3 ✅  | Dashboard **Sites** settings hub + in-builder **site switcher** (cookie → `x-sparx-property-id`); single-site tenants see nothing new.                                                                                                                                                                                                                                                                   | Phase 2; doc 32 breadcrumb; [24](24-dashboard-shell.md)                           |
+| 4 ✅  | Per-site **brand override** (`Property.brand_override` JSON; presentation-only identity — display name + theme colours + logo; merged over the tenant brand in the public payload). Amends [34](34-platform-glossary.md)/[33](33-token-model-v2.md).                                                                                                                                                     | Phase 3                                                                           |
+| 5 ◐   | **Foundation laid, enforcement deferred** (per §3 — Model B is "opt-in, later"). Additive `property_id` scoping on catalog/content, per-site `module_scope`, billing add-on metering, site-scoped search facet are NOT yet built — the schema is forward-compatible (nullable `property_id` = "all sites") and the billing decision is recorded (§7). Build when a tenant actually needs split catalogs. | [17](17-billing-subscriptions.md), [39](39-universal-search.md)                   |
 
 ---
 

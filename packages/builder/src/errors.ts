@@ -7,6 +7,17 @@ import type { TenantContext } from '@sparx/db';
 
 export type ServiceContext = TenantContext;
 
+/**
+ * A ServiceContext scoped to a specific web PROPERTY (site). Required by the
+ * per-property Builder services — pages, layouts, per-record assignments, and
+ * the Surface stylesheet (docs/49). `propertyId` is application-tier scoping,
+ * NOT a security boundary (tenant_id + RLS is). Tenant-wide services (emails,
+ * components, the binding catalog) keep the base ServiceContext.
+ */
+export interface PropertyContext extends TenantContext {
+  propertyId: string;
+}
+
 export class BuilderNotFoundError extends Error {
   readonly code = 'NOT_FOUND' as const;
   readonly entityType: string;

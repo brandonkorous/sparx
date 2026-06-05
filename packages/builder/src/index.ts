@@ -7,5 +7,5 @@
 
 export * from './services/index';
 export * from './events';
-export type { ServiceContext, NotFoundError, ValidationError } from './errors';
+export type { ServiceContext, PropertyContext, NotFoundError, ValidationError } from './errors';
 export { BuilderNotFoundError, BuilderValidationError, BuilderConflictError } from './errors';

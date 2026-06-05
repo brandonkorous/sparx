@@ -12,20 +12,20 @@ import type { FastifyPluginAsync } from 'fastify';
 import { bindingService } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
+import { requireBuilderModule, toBuilderTenantContext } from '../../../lib/builder-context.js';
 
 const builderBindingRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/binding-schema', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
-    const schema = await bindingService.getSchema(toBuilderContext(request));
+    const schema = await bindingService.getSchema(toBuilderTenantContext(request));
     return ok(schema);
   });
 
   app.get('/v1/builder/email-binding-schema', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
-    const schema = await bindingService.getEmailSchema(toBuilderContext(request));
+    const schema = await bindingService.getEmailSchema(toBuilderTenantContext(request));
     return ok(schema);
   });
 

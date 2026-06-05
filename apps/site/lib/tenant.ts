@@ -120,28 +120,82 @@ export function slugFromHost(host: string | null | undefined): string | null {
   return sub;
 }
 
-// Resolves the active slug: Host subdomain first, then a `?tenant=` / header
-// dev fallback so `localhost:3004/?tenant=acme` works without DNS.
-async function resolveSlug(): Promise<string | null> {
+/** The site a request routes to: which TENANT and which of its web PROPERTIES
+ *  (sites). `propertySlug` is null for the tenant's primary site (api-rest then
+ *  defaults to it), so single-site tenants need no property at all. */
+export interface SiteRoute {
+  tenantSlug: string;
+  propertySlug: string | null;
+}
+
+// Ask api-rest to map a Host header → { tenantSlug, propertySlug } via the
+// non-RLS domains table (docs/49 §5). Covers connected custom domains AND
+// additional-site `<tenant>-<prop>.sparx.zone` subdomains, which a bare slug
+// extraction can't. Null on miss → the caller falls back to subdomain parsing.
+async function fetchSiteByHost(host: string): Promise<SiteRoute | null> {
+  try {
+    const res = await fetch(`${BASE_URL}/v1/public/site-by-host?host=${encodeURIComponent(host)}`, {
+      next: { revalidate: 300, tags: [`site-host:${host}`] },
+    });
+    const json = (await res.json()) as
+      | { success: true; data: { tenantSlug: string; propertySlug: string } }
+      | { success: false };
+    if (!res.ok || !json.success) return null;
+    return { tenantSlug: json.data.tenantSlug, propertySlug: json.data.propertySlug };
+  } catch {
+    return null;
+  }
+}
+
+// Resolves the active site (tenant + property). Order: dev-fallback headers
+// (set by the proxy from `?tenant=` / `?property=`), then the host→property
+// lookup, then bare `<tenant>.sparx.zone` subdomain parsing (primary site).
+export const resolveSiteRoute = cache(async (): Promise<SiteRoute | null> => {
   const hdrs = await headers();
-  // The proxy stashes the dev-fallback slug here so Server Components can
-  // read it without re-parsing searchParams on every page.
-  const fromHeader = hdrs.get('x-tenant-slug');
-  if (fromHeader) return fromHeader;
+  // The proxy stashes the dev-fallback slugs here so Server Components can read
+  // them without re-parsing searchParams on every page.
+  const devTenant = hdrs.get('x-tenant-slug');
+  if (devTenant) {
+    return { tenantSlug: devTenant, propertySlug: hdrs.get('x-property-slug') };
+  }
   const host = hdrs.get('x-forwarded-host') ?? hdrs.get('host');
-  return slugFromHost(host);
+  if (host) {
+    const byHost = await fetchSiteByHost(host);
+    if (byHost) return byHost;
+    const slug = slugFromHost(host);
+    if (slug) return { tenantSlug: slug, propertySlug: null };
+  }
+  return null;
+});
+
+/** The active web property slug for this request (null = the tenant's primary
+ *  site). Threaded into the per-property Builder reads as `?property=`. */
+export async function resolveActivePropertySlug(): Promise<string | null> {
+  return (await resolveSiteRoute())?.propertySlug ?? null;
 }
 
 // Cached per-request so layout + page can both resolve the tenant without a
 // double fetch. React.cache() dedupes within a single server render.
 export const resolveTenant = cache(async (): Promise<ResolvedTenant | null> => {
-  const slug = await resolveSlug();
-  if (!slug) return null;
+  const route = await resolveSiteRoute();
+  if (!route) return null;
+  const { tenantSlug: slug, propertySlug } = route;
 
   try {
-    const res = await fetch(`${BASE_URL}/v1/public/tenants/${encodeURIComponent(slug)}`, {
-      next: { revalidate: 300, tags: [`tenant:${slug}`] },
-    });
+    // `?property=` makes the payload reflect the active site's brand override
+    // (docs/49 §3) — absent for the primary site, so its payload is unchanged.
+    const propertyParam = propertySlug ? `?property=${encodeURIComponent(propertySlug)}` : '';
+    const res = await fetch(
+      `${BASE_URL}/v1/public/tenants/${encodeURIComponent(slug)}${propertyParam}`,
+      {
+        next: {
+          revalidate: 300,
+          tags: propertySlug
+            ? [`tenant:${slug}`, `tenant:${slug}:${propertySlug}`]
+            : [`tenant:${slug}`],
+        },
+      }
+    );
     const json = (await res.json()) as TenantApiResponse;
     if (!res.ok || !json.success || !json.data) return null;
     const { businessName, ...data } = json.data;

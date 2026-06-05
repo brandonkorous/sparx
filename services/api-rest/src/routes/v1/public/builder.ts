@@ -26,14 +26,20 @@ import { pageService, layoutService, surfaceCssService } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 import { tryVerifySitePreview } from '../../../lib/preview.js';
+import { resolvePublicPropertyId } from '../../../lib/property.js';
 
+// `property` (a stable property slug) scopes the read to one of the tenant's web
+// PROPERTIES/sites (docs/49). Omitted → the tenant's primary site, so single-site
+// storefronts are unaffected; Phase 2's host→property mapping passes it.
 const PageQuery = z.object({
   tenant: z.string().min(1).max(63),
+  property: z.string().min(1).max(63).optional(),
   slug: z.string().min(1).max(160),
 });
 
 const CollectionQuery = z.object({
   tenant: z.string().min(1).max(63),
+  property: z.string().min(1).max(63).optional(),
   recordType: z.string().min(1).max(63),
   // The specific record being rendered — lets a per-record template override win
   // over the type default (docs/51 §6). Omitted on list/index renders.
@@ -42,6 +48,7 @@ const CollectionQuery = z.object({
 
 const TenantQuery = z.object({
   tenant: z.string().min(1).max(63),
+  property: z.string().min(1).max(63).optional(),
 });
 
 async function resolveTenantBySlug(slug: string): Promise<string> {
@@ -54,12 +61,14 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/builder/page', async (request) => {
     const q = PageQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const ctx = { tenantId, propertyId };
     // A valid site-preview token serves the DRAFT page (the editor's Preview tab);
     // otherwise the published snapshot.
     const preview = tryVerifySitePreview(app, request, tenantId);
     const page = preview
-      ? await pageService.getDraftBySlug({ tenantId }, q.slug)
-      : await pageService.getPublishedBySlug({ tenantId }, q.slug);
+      ? await pageService.getDraftBySlug(ctx, q.slug)
+      : await pageService.getPublishedBySlug(ctx, q.slug);
     if (!page) throw notFound('Builder page', q.slug);
     return ok(page);
   });
@@ -67,7 +76,12 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/builder/collection', async (request) => {
     const q = CollectionQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
-    const page = await pageService.getPublishedByRecordType({ tenantId }, q.recordType, q.recordId);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const page = await pageService.getPublishedByRecordType(
+      { tenantId, propertyId },
+      q.recordType,
+      q.recordId
+    );
     if (!page) throw notFound('Builder collection template', q.recordType);
     return ok(page);
   });
@@ -75,7 +89,8 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/builder/layout', async (request) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
-    const layout = await layoutService.getPublished({ tenantId });
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const layout = await layoutService.getPublished({ tenantId, propertyId });
     if (!layout) throw notFound('Builder layout', q.tenant);
     return ok(layout);
   });
@@ -87,13 +102,14 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/builder/styles', async (request) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     // Under a site-preview token, serve the DRAFT sheet (a superset) so classes
     // added since the last publish resolve in the preview tab.
     const preview = tryVerifySitePreview(app, request, tenantId);
     return ok(
       preview
-        ? await surfaceCssService.getDraftStylesheet({ tenantId })
-        : await surfaceCssService.getPublishedStylesheet({ tenantId })
+        ? await surfaceCssService.getDraftStylesheet({ tenantId, propertyId })
+        : await surfaceCssService.getPublishedStylesheet({ tenantId, propertyId })
     );
   });
 

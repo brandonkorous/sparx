@@ -30,7 +30,7 @@ const builderAssignmentRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     const { recordType } = OptionsQuery.parse(request.query);
     const options = await assignmentService.listTemplateOptions(
-      toBuilderContext(request),
+      await toBuilderContext(request),
       recordType
     );
     return ok({ options });
@@ -41,7 +41,7 @@ const builderAssignmentRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     const { recordType, itemRef } = AssignmentQuery.parse(request.query);
     const assignment = await assignmentService.getAssignment(
-      toBuilderContext(request),
+      await toBuilderContext(request),
       recordType,
       itemRef
     );
@@ -52,7 +52,7 @@ const builderAssignmentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const assignment = await assignmentService.setAssignment(
-      toBuilderContext(request),
+      await toBuilderContext(request),
       request.body
     );
     return ok({ assignment });

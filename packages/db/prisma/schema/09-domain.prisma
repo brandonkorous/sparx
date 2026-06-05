@@ -1,0 +1,59 @@
+// Domain — the host→site dispatch table. Every routable hostname for a tenant's
+// web PROPERTIES/sites lives here (docs/49 §5, docs/24-domain-purchase-management.md):
+//   · type='subdomain' — the always-on `<label>.sparx.zone` host, created with
+//                        the property, status='active' immediately (we own the zone).
+//   · type='custom'    — a domain the tenant already owns, connected via DNS
+//                        (CNAME → customers.sparx.zone) + a TXT verification.
+//   · type='purchased' — a domain registered through Sparx (GoDaddy reseller).
+//                        The registrar columns stay null until that slice lands.
+//
+// LIFECYCLE (status): pending → verifying → verified → active. The Caddy
+// on-demand-TLS ask endpoint (services/.../internal/domain-check.ts) authorizes a
+// host once status is 'verified'/'active'; the cert issues on first HTTPS hit.
+//
+// THIS TABLE IS A NON-RLS DISPATCH TABLE — deliberately, exactly like `tenants`.
+// The host→property resolver and the Caddy ask endpoint look up `host` BEFORE any
+// tenant is known, so the row must be readable without a tenant GUC. `host` is
+// GLOBALLY unique (a hostname maps to exactly one site), which is the cross-tenant
+// guard (you can't claim a host another tenant already holds). The sensitive
+// content a host points at (pages, orders, customers) stays FORCE-RLS on its own
+// tables. Management routes (list/add/remove my domains) filter by tenant_id in
+// the app, as they do for the tenants table.
+
+model Domain {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // The full hostname, lowercased (`acme.com`, `www.acme.com`, `shop.sparx.zone`).
+  host   String @unique @db.VarChar(255)
+  // subdomain | custom | purchased
+  type   String @default("custom") @db.VarChar(20)
+  // pending | verifying | verified | active | failed
+  status String @default("pending") @db.VarChar(20)
+
+  // The TXT value the tenant adds (at `_sparx-verify.<host>`) to prove control;
+  // the verify worker polls DNS for it. Null once verified.
+  verificationToken String?   @map("verification_token") @db.VarChar(120)
+  verifiedAt        DateTime? @map("verified_at") @db.Timestamptz
+  // The canonical host for its property (the apex; `www` redirects to it).
+  isCanonical       Boolean   @default(false) @map("is_canonical")
+
+  // Registrar columns — populated only for type='purchased' (docs/24 §7). Inert
+  // until the GoDaddy reseller slice; kept here so that lands without a migration.
+  registrar        String?   @db.VarChar(50)
+  registrarOrderId String?   @map("registrar_order_id") @db.VarChar(255)
+  registeredAt     DateTime? @map("registered_at") @db.Timestamptz
+  expiresAt        DateTime? @map("expires_at") @db.Timestamptz
+  autoRenew        Boolean   @default(true) @map("auto_renew")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([propertyId])
+  @@map("domains")
+}

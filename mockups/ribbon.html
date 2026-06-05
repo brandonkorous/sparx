@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx — Ribbon (Direction B mockup)</title>
+    <!--
+      Landing-page direction "B — Ribbon".
+      A fixed indigo identity panel anchors the left; the platform unrolls
+      sideways as a horizontal track of full-height module panels. Drag / scroll
+      the track to move through all eight. Locked Sparx tokens, no eyebrows.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1;
+        --indigo-hover: #4f46e5;
+        --ink: #0a0a0a;
+        --muted: #52525b;
+        --soft: #3f3f46;
+        --faint: #a1a1aa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      body {
+        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: #fafafa;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .shell {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* ── identity panel ──────────────────────────────────────── */
+      .identity {
+        width: 412px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 46px 40px;
+        color: #fff;
+        background: var(--indigo);
+        background-image: radial-gradient(
+          120% 100% at 0% 0%,
+          rgba(255, 255, 255, 0.18),
+          rgba(255, 255, 255, 0) 55%
+        );
+      }
+      .id-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .wordmark {
+        font-weight: 500;
+        font-size: 22px;
+        letter-spacing: -0.03em;
+      }
+      .wordmark .x {
+        color: #c7d2fe;
+      }
+      .ver {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .pitch {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+      }
+      .headline {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .headline span {
+        font-weight: 500;
+        font-size: 46px;
+        line-height: 48px;
+        letter-spacing: -0.03em;
+      }
+      .headline .ignite {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .sub {
+        margin: 0;
+        max-width: 300px;
+        font-size: 15px;
+        line-height: 23px;
+        color: rgba(255, 255, 255, 0.82);
+      }
+      .btns {
+        display: flex;
+        gap: 12px;
+        padding-top: 4px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: inherit;
+        font-weight: 500;
+        font-size: 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .btn-white {
+        background: #fff;
+        color: #4338ca;
+        padding: 12px 20px;
+      }
+      .btn-ghost {
+        background: transparent;
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.45);
+        padding: 12px 18px;
+      }
+      .cue {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .cue-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 13px;
+      }
+      .cue-row .now {
+        color: #fff;
+      }
+      .cue-row .tot {
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .cue-row .spacer {
+        flex: 1;
+      }
+      .cue-row .drag {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-family: 'Geist', sans-serif;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .dots {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .dots span {
+        width: 11px;
+        height: 11px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+      }
+      .dots span.active {
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+      }
+
+      /* ── horizontal track ────────────────────────────────────── */
+      .track {
+        flex: 1;
+        display: flex;
+        align-items: stretch;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+      }
+      .track::-webkit-scrollbar {
+        height: 10px;
+      }
+      .track::-webkit-scrollbar-track {
+        background: #f0f0f0;
+      }
+      .track::-webkit-scrollbar-thumb {
+        background: #d4d4d8;
+        border-radius: 9999px;
+        border: 3px solid #f0f0f0;
+      }
+      .panel {
+        width: 320px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        border-right: 1px solid #ececec;
+      }
+      .ribbon {
+        height: 6px;
+        flex-shrink: 0;
+      }
+      .inner {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 34px 30px;
+      }
+      .top-group {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+      .num {
+        font-weight: 500;
+        font-size: 58px;
+        line-height: 54px;
+        letter-spacing: -0.03em;
+      }
+      .pdot {
+        width: 12px;
+        height: 12px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+      }
+      .name-desc {
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+      }
+      .pname {
+        margin: 0;
+        font-weight: 500;
+        font-size: 30px;
+        letter-spacing: -0.02em;
+      }
+      .pdesc {
+        margin: 0;
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--muted);
+      }
+      .feats {
+        list-style: none;
+        margin: 0;
+        padding: 4px 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+      }
+      .feats li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: var(--soft);
+      }
+      .fdot {
+        width: 5px;
+        height: 5px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+      }
+      .pbottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 24px;
+        border-top: 1px solid #f0f0f0;
+      }
+      .pprice {
+        font-weight: 500;
+        font-size: 28px;
+        letter-spacing: -0.02em;
+      }
+      .pprice small {
+        font-weight: 400;
+        font-size: 15px;
+        color: var(--faint);
+      }
+      .ppill {
+        font-weight: 500;
+        font-size: 13px;
+        padding: 8px 14px;
+        border-radius: 9999px;
+      }
+
+      /* ── responsive ──────────────────────────────────────────── */
+      @media (max-width: 880px) {
+        .shell {
+          flex-direction: column;
+          height: auto;
+          overflow: visible;
+        }
+        .identity {
+          width: auto;
+          gap: 40px;
+          padding: 32px 24px 36px;
+        }
+        .headline span {
+          font-size: 38px;
+          line-height: 40px;
+        }
+        .track {
+          height: auto;
+        }
+        .panel {
+          min-height: 540px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="identity">
+        <div class="id-top">
+          <span class="wordmark">Spar<span class="x">x</span></span>
+          <span class="ver">v1.0</span>
+        </div>
+
+        <div class="pitch">
+          <div class="headline">
+            <span>Everything you</span>
+            <span>sell or publish —</span>
+            <span class="ignite"
+              >ignited.<svg width="26" height="26" viewBox="0 0 24 24" fill="#fff">
+                <path d="M12 2l2.4 6.3L21 11l-6.6 2.7L12 20l-2.4-6.3L3 11l6.6-2.7z" /></svg
+            ></span>
+          </div>
+          <p class="sub">
+            Eight modules on one data layer. Switch on what you need, ignore the rest — the bill
+            follows what you actually use.
+          </p>
+          <div class="btns">
+            <button class="btn btn-white">
+              Launch your store
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#4338ca"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+            <button class="btn btn-ghost">See pricing</button>
+          </div>
+        </div>
+
+        <div class="cue">
+          <div class="cue-row">
+            <span class="now">01</span>
+            <span class="tot">/ 08</span>
+            <span class="spacer"></span>
+            <span class="drag"
+              >Drag to explore
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="rgba(255,255,255,0.85)"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </span>
+          </div>
+          <div class="dots" id="dots"></div>
+        </div>
+      </aside>
+
+      <div class="track" id="track"></div>
+    </div>
+
+    <script>
+      const MODULES = [
+        {
+          num: '01',
+          name: 'Builder',
+          base: '#6366F1',
+          tint: '#eef2ff',
+          text: '#4338ca',
+          price: 49,
+          status: 'Included',
+          desc: 'Themes, pages, live URLs. Point your domain, publish. No code, no staging dance.',
+          feats: ['Custom domain + SSL, automatic', 'Drag-drop block editor', 'Headless if you want it'],
+        },
+        {
+          num: '02',
+          name: 'Commerce',
+          base: '#F97316',
+          tint: '#fff7ed',
+          text: '#c2410c',
+          price: 49,
+          status: '+ Add',
+          desc: 'Cart, checkout, orders. Stripe, PayPal, Klarna — tax and shipping wired in.',
+          feats: ['Single-page checkout that converts', 'Stripe, PayPal, Klarna, Affirm', 'Inventory that actually tracks'],
+        },
+        {
+          num: '03',
+          name: 'CMS',
+          base: '#14B8A6',
+          tint: '#f0fdfa',
+          text: '#0f766e',
+          price: 49,
+          status: '+ Add',
+          desc: 'Words, media, SEO. A real editor, structured content, JSON-LD. Standalone or paired.',
+          feats: ['Block editor with revisions', 'Structured content types', 'SEO scored on every publish'],
+        },
+        {
+          num: '04',
+          name: 'CRM',
+          base: '#06B6D4',
+          tint: '#ecfeff',
+          text: '#0e7490',
+          price: 49,
+          status: '+ Add',
+          desc: 'Customers, pipeline, signal. One record across orders, email, support — no syncing.',
+          feats: ['One customer record', 'Dynamic segments', 'Pipeline tied to order status'],
+        },
+        {
+          num: '05',
+          name: 'Email',
+          base: '#0EA5E9',
+          tint: '#f0f9ff',
+          text: '#0369a1',
+          price: 29,
+          status: '+ Add',
+          desc: 'Transactional and marketing on your own domain. SPF, DKIM, DMARC auto-configured.',
+          feats: ['Transactional out of the box', 'Campaigns + A/B testing', 'No per-email pricing'],
+        },
+        {
+          num: '06',
+          name: 'B2B · Fleet',
+          base: '#475569',
+          tint: '#f1f5f9',
+          text: '#334155',
+          price: 99,
+          status: '+ Add',
+          desc: 'Wholesale pricing, net terms, RFQ, purchase orders, fleet accounts, service scheduling.',
+          feats: ['Account-tier pricing', 'Net 15 / 30 / 60 / 90 + POs', 'Fleet + service scheduling'],
+        },
+        {
+          num: '07',
+          name: 'AI · MCP',
+          base: '#EC4899',
+          tint: '#fdf2f8',
+          text: '#9d174d',
+          price: 49,
+          status: '+ Add',
+          desc: 'Native MCP server. Connect Claude, ChatGPT, Copilot. Read live data in plain English.',
+          feats: ['First-class MCP server', 'Read & write your data', 'Scoped, audited keys'],
+        },
+        {
+          num: '08',
+          name: 'Dropship',
+          base: '#10B981',
+          tint: '#ecfdf5',
+          text: '#065f46',
+          price: 29,
+          status: '+ Add',
+          desc: 'Supplier sync, margin math, automated order routing. Sell without holding inventory.',
+          feats: ['Supplier connectors', 'Per-supplier margin rules', 'Automated order routing'],
+        },
+      ];
+
+      const track = document.getElementById('track');
+      MODULES.forEach((m) => {
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        panel.innerHTML =
+          '<div class="ribbon" style="background:' +
+          m.base +
+          '"></div>' +
+          '<div class="inner">' +
+          '<div class="top-group">' +
+          '<div class="top"><span class="num" style="color:' +
+          m.base +
+          '">' +
+          m.num +
+          '</span><span class="pdot" style="background:' +
+          m.base +
+          '"></span></div>' +
+          '<div class="name-desc"><h3 class="pname">' +
+          m.name +
+          '</h3><p class="pdesc">' +
+          m.desc +
+          '</p></div>' +
+          '<ul class="feats">' +
+          m.feats
+            .map(
+              (f) =>
+                '<li><span class="fdot" style="background:' + m.base + '"></span>' + f + '</li>'
+            )
+            .join('') +
+          '</ul>' +
+          '</div>' +
+          '<div class="pbottom"><div class="pprice">$' +
+          m.price +
+          '<small>/mo</small></div><span class="ppill" style="background:' +
+          m.tint +
+          ';color:' +
+          m.text +
+          '">' +
+          m.status +
+          '</span></div>' +
+          '</div>';
+        track.appendChild(panel);
+      });
+
+      const dots = document.getElementById('dots');
+      MODULES.forEach((m, i) => {
+        const d = document.createElement('span');
+        d.style.background = m.base;
+        if (i === 0) d.classList.add('active');
+        dots.appendChild(d);
+      });
+    </script>
+  </body>
+</html>

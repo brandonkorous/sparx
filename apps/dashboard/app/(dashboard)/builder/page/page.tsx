@@ -5,6 +5,7 @@ import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 import { getBrand, getConfig, getTenant } from '../_brand/lib/api';
 import { propertyOrigin } from '../_brand/lib/property';
 import { getActiveLayout, getBindingCatalog, listComponentsFull, listPages } from '../_lib/api';
+import { listProperties, getActivePropertyId, type Property } from '@/lib/sites';
 import { BuilderApp } from '../_builder/builder-app';
 import '../builder.css';
 // The Surface RECIPE — @sparx/site-ui's `sf-*` component/color/variant classes,
@@ -101,15 +102,20 @@ interface BuilderPageRouteProps {
 }
 
 export default async function BuilderPageRoute({ searchParams }: BuilderPageRouteProps) {
-  const [sp, themeCss, pages, catalog, layout, site, components] = await Promise.all([
-    searchParams,
-    canvasThemeCss(),
-    loadPages(),
-    loadCatalog(),
-    loadLayout(),
-    loadSiteContext(),
-    listComponentsFull(),
-  ]);
+  const [sp, themeCss, pages, catalog, layout, site, components, properties, activePropertyId] =
+    await Promise.all([
+      searchParams,
+      canvasThemeCss(),
+      loadPages(),
+      loadCatalog(),
+      loadLayout(),
+      loadSiteContext(),
+      listComponentsFull(),
+      // Multi-site switcher data (docs/49 Phase 3). Defensive: a failed read just
+      // hides the switcher (single-site behavior).
+      listProperties().catch(() => [] as Property[]),
+      getActivePropertyId(),
+    ]);
   // Deep-link target: `?page=<id>` opens that page active on mount (the SEO
   // overview's "Open in builder" link points here). The editor falls back to
   // the first page when it's absent or not found.
@@ -125,6 +131,8 @@ export default async function BuilderPageRoute({ searchParams }: BuilderPageRout
         siteOrigin={site?.origin}
         initialPageId={initialPageId}
         components={components}
+        properties={properties}
+        activePropertyId={activePropertyId}
       />
     </>
   );

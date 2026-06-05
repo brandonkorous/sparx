@@ -7,14 +7,32 @@
 // lib/sitebuilder-context.ts.
 
 import type { FastifyRequest } from 'fastify';
-import type { ServiceContext } from '@sparx/builder';
+import type { PropertyContext, ServiceContext } from '@sparx/builder';
 import { isModuleEnabled } from '@sparx/auth';
 import { requireAuth } from '@sparx/api-core/auth';
 import { moduleDisabled } from '@sparx/api-core/errors';
+import { resolvePropertyId } from './property.js';
 
-export function toBuilderContext(request: FastifyRequest): ServiceContext {
+// Tenant-wide builder ctx (NO property scope) — for the builder services that are
+// NOT per-property: emails, the tenant component library, and the binding catalog
+// (docs/49: those are shared across a tenant's sites). Sync — no property lookup.
+export function toBuilderTenantContext(request: FastifyRequest): ServiceContext {
   const auth = requireAuth(request);
   return { tenantId: auth.tenantId, userId: auth.actorId };
+}
+
+// Async because Builder content is now per-PROPERTY (docs/49): the ctx carries
+// the web property (site) being authored. The dashboard site switcher (Phase 3)
+// sets `x-sparx-property-id` to choose which site; absent → the tenant's primary
+// site, so single-site tenants are unaffected.
+export async function toBuilderContext(request: FastifyRequest): Promise<PropertyContext> {
+  const auth = requireAuth(request);
+  const requested = request.headers['x-sparx-property-id'];
+  const propertyId = await resolvePropertyId(
+    auth.tenantId,
+    typeof requested === 'string' ? requested : null
+  );
+  return { tenantId: auth.tenantId, userId: auth.actorId, propertyId };
 }
 
 /** Throws MODULE_DISABLED (→ 404 envelope) if the caller's tenant doesn't have

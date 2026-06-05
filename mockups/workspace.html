@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx — One workspace for everything you sell and publish</title>
+    <!--
+      Landing page "Workspace" — the monday.com idiom rendered in Sparx.
+      The work-OS playbook: bright + colorful + rounded, a get-started email
+      inline in the hero, and a "pick what you want to run" selector that drives
+      a big floating product board. The Sparx twist: that selector is a REAL
+      capability — choosing a module live-recolors the recreated dashboard shell
+      (rail + contextual panel + module-striped cards + stat tiles + status
+      badges), exactly the way <ModuleProvider> shifts --module-active in the app.
+      Colors are the 8 locked module tokens. No eyebrows.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1;
+        --indigo-hover: #4f46e5;
+        --indigo-text: #4338ca;
+        --indigo-tint: #eef2ff;
+        --ink: #0a0a0a;
+        --muted: #52525b;
+        --soft: #3f3f46;
+        --faint: #a1a1aa;
+        --line: #ececec;
+        --bg-subtle: #f4f4f5;
+        /* live module accent — set by the hero selector */
+        --m: #f97316;
+        --m-tint: #fff7ed;
+        --m-text: #c2410c;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+      .wrap-wide { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+      a { color: inherit; text-decoration: none; }
+
+      /* ── topbar ─────────────────────────────────────────── */
+      .topbar {
+        position: sticky; top: 0; z-index: 50;
+        background: rgba(255,255,255,0.85); backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--line);
+      }
+      .topbar .wrap-wide { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+      .wordmark { font-weight: 600; font-size: 20px; letter-spacing: -0.03em; }
+      .wordmark .x { color: var(--indigo); }
+      .nav { display: flex; align-items: center; gap: 24px; }
+      .nav a { font-size: 14px; color: var(--muted); }
+      .nav a:hover { color: var(--ink); }
+      .btn { display: inline-flex; align-items: center; gap: 8px; font-family: inherit; font-weight: 500; font-size: 14px; border: none; border-radius: 9px; cursor: pointer; line-height: 1; }
+      .btn-primary { background: var(--indigo); color: #fff; padding: 11px 18px; }
+      .btn-primary:hover { background: var(--indigo-hover); }
+      .btn-ghost { background: #fff; color: var(--indigo-text); border: 1px solid #e5e5e5; padding: 11px 16px; }
+      .btn-lg { font-size: 16px; padding: 15px 24px; border-radius: 11px; }
+      .btn-white { background: #fff; color: var(--indigo-text); padding: 13px 22px; }
+      .btn-white:hover { background: #f4f4ff; }
+
+      /* ── hero ───────────────────────────────────────────── */
+      .hero { padding: 84px 0 0; text-align: center; }
+      .hero h1 {
+        margin: 0 auto; max-width: 880px; font-weight: 600; font-size: 76px;
+        line-height: 74px; letter-spacing: -0.04em;
+      }
+      .hero h1 .sell { color: #f97316; }
+      .hero h1 .pub { color: #14b8a6; }
+      .hero .sub { margin: 26px auto 0; max-width: 600px; font-size: 19px; line-height: 29px; color: var(--muted); }
+
+      /* inline get-started */
+      .getstarted { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 34px auto 0; max-width: 480px; flex-wrap: wrap; }
+      .getstarted input {
+        flex: 1; min-width: 220px; height: 52px; padding: 0 18px;
+        font-family: inherit; font-size: 15px; color: var(--ink);
+        border: 1px solid #e0e0e3; border-radius: 11px; background: #fff; outline: none;
+      }
+      .getstarted input:focus { border-color: var(--indigo); box-shadow: 0 0 0 3px var(--indigo-tint); }
+      .getstarted .btn-lg { height: 52px; }
+      .reassure { margin: 14px auto 0; font-size: 13px; color: var(--faint); }
+
+      /* module selector */
+      .selector { margin: 40px auto 0; max-width: 860px; }
+      .selector .lbl { font-size: 14px; color: var(--faint); margin-bottom: 14px; }
+      .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
+      .chip {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-family: inherit; font-weight: 500; font-size: 14px; color: var(--soft);
+        background: #fff; border: 1px solid #e5e5e5; border-radius: 9999px;
+        padding: 9px 15px 9px 12px; cursor: pointer; transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease;
+      }
+      .chip:hover { transform: translateY(-1px); }
+      .chip .ico { width: 17px; height: 17px; display: inline-flex; }
+      .chip .ico svg { width: 17px; height: 17px; }
+      .chip[aria-pressed="true"] { color: #fff; border-color: transparent; }
+
+      /* ── product board ──────────────────────────────────── */
+      .stage { padding: 52px 0 96px; }
+      .board {
+        position: relative; display: grid; grid-template-columns: 60px 168px 1fr;
+        background: #fff; border: 1px solid #e7e7ea; border-radius: 18px;
+        box-shadow: 0 30px 80px -28px rgba(20,20,40,0.28), 0 2px 8px rgba(20,20,40,0.04);
+        overflow: hidden; min-height: 520px;
+        text-align: left;
+      }
+      .board::before {
+        content: ""; position: absolute; inset-inline: 0; top: 0; height: 4px;
+        background: var(--m); transition: background .35s ease; z-index: 3;
+      }
+
+      /* rail */
+      .rail { border-right: 1px solid #f0f0f2; padding: 16px 0; display: flex; flex-direction: column; align-items: center; gap: 6px; background: #fcfcfd; }
+      .rail .mark { width: 30px; height: 30px; border-radius: 9px; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px; letter-spacing: -0.04em; margin-bottom: 10px; }
+      .rail .mark span { color: #818cf8; }
+      .railbtn {
+        width: 40px; height: 40px; border-radius: 11px; border: none; background: transparent;
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+        transition: background .12s ease; position: relative;
+      }
+      .railbtn svg { width: 19px; height: 19px; }
+      .railbtn:hover { background: #f2f2f4; }
+      .railbtn.on { background: var(--rc); }
+      .railbtn.on svg { stroke: #fff; }
+      .railbtn .ind { position: absolute; left: -10px; top: 50%; transform: translateY(-50%); width: 3px; height: 0; border-radius: 3px; background: var(--rc); transition: height .15s ease; }
+      .railbtn.on .ind { height: 22px; }
+      .rail .spacer { flex: 1; }
+
+      /* contextual panel */
+      .panel { border-right: 1px solid #f0f0f2; padding: 18px 12px; background: #fff; }
+      .panel .ph { display: flex; align-items: center; gap: 8px; padding: 0 8px 12px; }
+      .panel .ph .dot { width: 9px; height: 9px; border-radius: 9999px; background: var(--m); transition: background .3s ease; }
+      .panel .ph .nm { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+      .panel .srow {
+        display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 8px;
+        font-size: 13px; color: var(--muted); cursor: default; transition: background .2s ease, color .2s ease;
+      }
+      .panel .srow .sd { width: 5px; height: 5px; border-radius: 9999px; background: #d4d4d8; flex-shrink: 0; }
+      .panel .srow.act { background: var(--m-tint); color: var(--m-text); font-weight: 500; }
+      .panel .srow.act .sd { background: var(--m); }
+      .panel .pfoot { margin-top: 12px; padding: 0 9px; }
+      .panel .pfoot .add { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--faint); }
+
+      /* main */
+      .main { padding: 22px 26px 28px; background: #fcfcfd; min-width: 0; }
+      .mhead { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+      .mhead .ttl { display: flex; align-items: center; gap: 12px; min-width: 0; }
+      .mhead .tile { width: 38px; height: 38px; border-radius: 10px; background: var(--m-tint); color: var(--m); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .3s ease, color .3s ease; }
+      .mhead .tile svg { width: 20px; height: 20px; }
+      .mhead h3 { margin: 0; font-weight: 600; font-size: 22px; letter-spacing: -0.02em; }
+      .mhead .sub { margin: 2px 0 0; font-size: 12.5px; color: var(--faint); }
+      .pbtn {
+        display: inline-flex; align-items: center; gap: 7px; font-family: inherit; font-weight: 500;
+        font-size: 13px; color: #fff; background: var(--m); border: none; border-radius: 9px;
+        padding: 9px 14px; cursor: pointer; flex-shrink: 0; transition: background .3s ease; white-space: nowrap;
+      }
+      .pbtn svg { width: 14px; height: 14px; }
+
+      .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+      .stat { background: #fff; border: 1px solid #eeeef0; border-radius: 12px; padding: 14px 15px; }
+      .stat .sl { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); font-weight: 500; }
+      .stat .sv { margin-top: 6px; font-weight: 600; font-size: 26px; letter-spacing: -0.02em; }
+      .stat .ss { margin-top: 3px; font-size: 12px; color: var(--muted); }
+
+      .listcard { background: #fff; border: 1px solid #eeeef0; border-radius: 13px; overflow: hidden; }
+      .listcard .lh { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid #f3f3f5; }
+      .listcard .lh .lt { font-weight: 500; font-size: 13.5px; }
+      .listcard .lh .lv { font-size: 12px; color: var(--m-text); transition: color .3s ease; }
+      .lrow { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #f6f6f7; }
+      .lrow:last-child { border-bottom: none; }
+      .lrow .thumb { width: 30px; height: 30px; border-radius: 8px; background: var(--m-tint); flex-shrink: 0; transition: background .3s ease; }
+      .lrow .lc { min-width: 0; flex: 1; }
+      .lrow .lc .lcn { font-weight: 500; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .lrow .lc .lcm { font-size: 12px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .badge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 9999px; white-space: nowrap; flex-shrink: 0; }
+
+      /* ── module grid ────────────────────────────────────── */
+      .section { padding: 92px 0; }
+      .section.tint { background: #fafafa; }
+      .sec-head { text-align: center; max-width: 680px; margin: 0 auto 52px; }
+      .sec-head h2 { margin: 0; font-weight: 600; font-size: 46px; line-height: 48px; letter-spacing: -0.03em; }
+      .sec-head p { margin: 18px auto 0; max-width: 540px; font-size: 17px; line-height: 27px; color: var(--muted); }
+
+      .mgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+      .mcard { background: #fff; border: 1px solid #ececef; border-radius: 14px; padding: 0; overflow: hidden; transition: transform .1s ease, box-shadow .15s ease; cursor: default; }
+      .mcard:hover { transform: translateY(-3px); box-shadow: 0 16px 40px -18px rgba(20,20,40,0.22); }
+      .mcard .stripe { height: 3px; }
+      .mcard .mc-in { padding: 18px 18px 20px; }
+      .mcard .mc-top { display: flex; align-items: center; gap: 10px; }
+      .mcard .mc-ico { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+      .mcard .mc-ico svg { width: 18px; height: 18px; }
+      .mcard h4 { margin: 0; font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
+      .mcard .mc-price { margin-left: auto; font-size: 12px; color: var(--faint); }
+      .mcard .mc-desc { margin: 13px 0 0; font-size: 13.5px; line-height: 20px; color: var(--muted); }
+
+      /* ── surfaces ───────────────────────────────────────── */
+      .sgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+      .scard { background: #fff; border: 1px solid #ececef; border-radius: 16px; overflow: hidden; }
+      .scard .win { height: 168px; padding: 16px; border-bottom: 1px solid #f1f1f3; position: relative; overflow: hidden; }
+      .scard .scopy { padding: 18px 20px 22px; }
+      .scard .scopy h4 { margin: 0; font-weight: 600; font-size: 17px; letter-spacing: -0.01em; }
+      .scard .scopy p { margin: 8px 0 0; font-size: 13.5px; line-height: 20px; color: var(--muted); }
+      /* surface mini-mocks */
+      .win-dash { background: #fcfcfd; display: flex; flex-direction: column; gap: 8px; }
+      .win-dash .r { display: flex; gap: 8px; }
+      .win-dash .b { height: 30px; border-radius: 7px; background: #fff; border: 1px solid #eee; flex: 1; }
+      .win-dash .b.t { border-top: 3px solid; }
+      .win-dash .wide { height: 56px; border-radius: 8px; background: #fff; border: 1px solid #eee; }
+      .win-build { background: #fcfcfd; display: flex; flex-direction: column; gap: 7px; }
+      .win-build .blk { border-radius: 7px; }
+      .win-site { background: #fff; display: flex; flex-direction: column; gap: 8px; }
+      .win-site .sh { height: 52px; border-radius: 8px; background: linear-gradient(120deg, #eef2ff, #fff7ed); border: 1px solid #eee; }
+      .win-site .sg { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+      .win-site .sg div { height: 40px; border-radius: 7px; background: #f4f4f5; }
+
+      /* ── spine band ─────────────────────────────────────── */
+      .spine { display: flex; gap: 60px; align-items: center; flex-wrap: wrap; }
+      .spine .copy { flex: 1; min-width: 300px; }
+      .spine .copy h2 { margin: 0; font-weight: 600; font-size: 42px; line-height: 45px; letter-spacing: -0.03em; }
+      .spine .copy p { margin: 18px 0 0; max-width: 440px; font-size: 16.5px; line-height: 26px; color: var(--muted); }
+      .record { flex: 1; min-width: 300px; background: #fff; border: 1px solid #e9e9ec; border-radius: 16px; box-shadow: 0 16px 44px -22px rgba(20,20,40,0.18); overflow: hidden; }
+      .record .rh { display: flex; align-items: center; gap: 11px; padding: 16px 20px; border-bottom: 1px solid #f1f1f3; }
+      .record .rh .av { width: 36px; height: 36px; border-radius: 9999px; background: linear-gradient(135deg, #eef2ff, #fdf2f8); flex-shrink: 0; }
+      .record .rh .nm { font-weight: 600; font-size: 15px; }
+      .record .rh .mt { font-size: 12.5px; color: var(--faint); }
+      .record .rr { display: flex; align-items: center; gap: 11px; padding: 12px 20px; border-bottom: 1px solid #f7f7f8; font-size: 13.5px; color: var(--soft); }
+      .record .rr:last-child { border-bottom: none; }
+      .record .rr .d { width: 8px; height: 8px; border-radius: 9999px; flex-shrink: 0; }
+      .record .rr .src { margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint); }
+
+      /* ── stats band ─────────────────────────────────────── */
+      .nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+      .num { text-align: center; }
+      .num .n { font-weight: 600; font-size: 48px; letter-spacing: -0.03em; }
+      .num .l { margin-top: 8px; font-size: 14px; line-height: 21px; color: var(--muted); }
+
+      /* ── final cta ──────────────────────────────────────── */
+      .cta-wrap { padding: 40px 0 104px; }
+      .cta {
+        background: var(--indigo); border-radius: 26px; padding: 72px 40px; text-align: center;
+        background-image: radial-gradient(120% 120% at 0% 0%, rgba(255,255,255,0.16), rgba(255,255,255,0) 55%);
+      }
+      .cta h2 { margin: 0 auto; max-width: 640px; color: #fff; font-weight: 600; font-size: 50px; line-height: 52px; letter-spacing: -0.03em; }
+      .cta p { margin: 18px auto 0; max-width: 460px; color: rgba(255,255,255,0.82); font-size: 17px; line-height: 26px; }
+      .cta .form { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 30px auto 0; max-width: 460px; flex-wrap: wrap; }
+      .cta .form input { flex: 1; min-width: 220px; height: 52px; padding: 0 18px; font-family: inherit; font-size: 15px; border: none; border-radius: 11px; background: rgba(255,255,255,0.95); outline: none; }
+      .cta .dots { display: flex; gap: 7px; justify-content: center; margin-top: 28px; }
+      .cta .dots span { width: 8px; height: 8px; border-radius: 9999px; }
+
+      /* ── footer ─────────────────────────────────────────── */
+      footer { border-top: 1px solid var(--line); padding: 34px 0; }
+      footer .wrap-wide { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+      footer .dots { display: flex; gap: 7px; }
+      footer .dots span { width: 8px; height: 8px; border-radius: 9999px; }
+      footer .legal { font-size: 13px; color: var(--faint); }
+
+      @media (max-width: 980px) {
+        .mgrid { grid-template-columns: repeat(2, 1fr); }
+        .sgrid { grid-template-columns: 1fr; }
+        .nums { grid-template-columns: repeat(2, 1fr); }
+      }
+      @media (max-width: 760px) {
+        .wrap, .wrap-wide { padding: 0 20px; }
+        .hero { padding: 52px 0 0; }
+        .hero h1 { font-size: 44px; line-height: 44px; }
+        .hero .sub { font-size: 17px; }
+        .board { grid-template-columns: 1fr; min-height: 0; }
+        .rail, .panel { display: none; }
+        .stats { grid-template-columns: 1fr; }
+        .sec-head h2 { font-size: 32px; line-height: 34px; }
+        .mgrid { grid-template-columns: 1fr; }
+        .nums { grid-template-columns: 1fr; gap: 32px; }
+        .spine .copy h2 { font-size: 32px; line-height: 34px; }
+        .cta { padding: 52px 24px; border-radius: 20px; }
+        .cta h2 { font-size: 34px; line-height: 36px; }
+        .section { padding: 64px 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap-wide">
+        <span class="wordmark">Spar<span class="x">x</span></span>
+        <nav class="nav">
+          <a href="#">Platform</a>
+          <a href="#">Modules</a>
+          <a href="#">Pricing</a>
+          <a href="#">Log in</a>
+          <button class="btn btn-primary">Start free</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap">
+        <h1>One workspace for everything you <span class="sell">sell</span> and <span class="pub">publish</span>.</h1>
+        <p class="sub">
+          Sites, commerce, content, CRM, email, B2B, and AI — eight modules sharing one login,
+          one bill, and one set of records. Switch on what you need; the workspace colors itself to match.
+        </p>
+        <form class="getstarted" onsubmit="return false">
+          <input type="email" placeholder="Enter your work email" aria-label="Work email" />
+          <button class="btn btn-primary btn-lg">Get started</button>
+        </form>
+        <p class="reassure">Free to start · no credit card · a live site in five minutes</p>
+
+        <div class="selector">
+          <div class="lbl">What do you want to run?</div>
+          <div class="chips" id="chips"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCT BOARD -->
+    <section class="stage">
+      <div class="wrap-wide">
+        <div class="board" id="board">
+          <div class="rail" id="rail">
+            <div class="mark">S<span>x</span></div>
+            <!-- rail buttons injected -->
+          </div>
+          <div class="panel" id="panel"></div>
+          <div class="main" id="main"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE GRID -->
+    <section class="section">
+      <div class="wrap-wide">
+        <div class="sec-head">
+          <h2>Run one part of your business. Or all of it.</h2>
+          <p>Every module is first-class and priced on its own. Start with a single one and add the rest the day you need them — no migration, no re-platform.</p>
+        </div>
+        <div class="mgrid" id="mgrid"></div>
+      </div>
+    </section>
+
+    <!-- SURFACES -->
+    <section class="section tint">
+      <div class="wrap-wide">
+        <div class="sec-head">
+          <h2>One workspace, three ways to see it.</h2>
+          <p>The same records, the same modules — managed, designed, and published from surfaces that always agree.</p>
+        </div>
+        <div class="sgrid">
+          <div class="scard">
+            <div class="win win-dash">
+              <div class="r">
+                <div class="b t" style="border-top-color:#f97316"></div>
+                <div class="b t" style="border-top-color:#06b6d4"></div>
+                <div class="b t" style="border-top-color:#14b8a6"></div>
+              </div>
+              <div class="wide"></div>
+              <div class="r">
+                <div class="b"></div><div class="b"></div>
+              </div>
+            </div>
+            <div class="scopy">
+              <h4>Dashboard</h4>
+              <p>The back office. Products, customers, orders, posts, broadcasts — every module's data, one shell, color-coded.</p>
+            </div>
+          </div>
+          <div class="scard">
+            <div class="win win-build">
+              <div class="blk" style="height:46px;background:linear-gradient(120deg,#eef2ff,#e0e7ff);border:1px solid #e0e0ef"></div>
+              <div class="blk" style="height:30px;background:#fff7ed;border:1px solid #fde7cf"></div>
+              <div class="blk" style="height:30px;background:#f0fdfa;border:1px solid #cdeee8"></div>
+              <div class="blk" style="height:18px;background:#fff;border:1px dashed #d4d4d8"></div>
+            </div>
+            <div class="scopy">
+              <h4>Builder</h4>
+              <p>Drag-and-drop every page, layout, and email. Brand-governed blocks, your content bound live — no developer required to ship a change.</p>
+            </div>
+          </div>
+          <div class="scard">
+            <div class="win win-site">
+              <div class="sh"></div>
+              <div class="sg"><div></div><div></div><div></div></div>
+              <div class="sg"><div></div><div></div><div></div></div>
+            </div>
+            <div class="scopy">
+              <h4>Live site</h4>
+              <p>The public property your customers see — your theme, your domain, fast at the edge. Content and commerce on one front door.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SPINE -->
+    <section class="section">
+      <div class="wrap-wide">
+        <div class="spine">
+          <div class="copy">
+            <h2>Eight modules. One customer record.</h2>
+            <p>
+              Because it's one platform on one database, an order, a support reply, an RFQ, an
+              email open, and an AI conversation all hang off the same customer — no webhooks at
+              3am, no deduping, no "which system is right?" Switch on a module and it's already
+              connected to everything else.
+            </p>
+          </div>
+          <div class="record">
+            <div class="rh">
+              <span class="av"></span>
+              <div><div class="nm">Dana Ruiz</div><div class="mt">one record · 6 signals across modules</div></div>
+            </div>
+            <div class="rr"><span class="d" style="background:#f97316"></span>Order #1042 — $576.00<span class="src">commerce</span></div>
+            <div class="rr"><span class="d" style="background:#475569"></span>Net-30 invoice, due in 11 days<span class="src">b2b</span></div>
+            <div class="rr"><span class="d" style="background:#0ea5e9"></span>Opened "Winter restock"<span class="src">email</span></div>
+            <div class="rr"><span class="d" style="background:#06b6d4"></span>Segment: high-value, at-risk<span class="src">crm</span></div>
+            <div class="rr"><span class="d" style="background:#ec4899"></span>Asked the AI for a reorder quote<span class="src">mcp</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="section tint">
+      <div class="wrap-wide">
+        <div class="nums">
+          <div class="num"><div class="n" style="color:#6366f1">8</div><div class="l">modules, one platform — pay only for what you switch on</div></div>
+          <div class="num"><div class="n" style="color:#f97316">1</div><div class="l">login and one invoice for the whole business</div></div>
+          <div class="num"><div class="n" style="color:#14b8a6">5 min</div><div class="l">from sign-up to a live site on your domain</div></div>
+          <div class="num"><div class="n" style="color:#06b6d4">~60%</div><div class="l">lower software spend once the stack is one platform</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-wrap">
+      <div class="wrap-wide">
+        <div class="cta">
+          <h2>Start running it today.</h2>
+          <p>Switch on one module or all eight. Free to start, a live site in five minutes, and one bill when you grow.</p>
+          <form class="form" onsubmit="return false">
+            <input type="email" placeholder="Enter your work email" aria-label="Work email" />
+            <button class="btn btn-white btn-lg">Get started</button>
+          </form>
+          <div class="dots">
+            <span style="background:#a5b4fc"></span><span style="background:#fdba74"></span><span style="background:#5eead4"></span><span style="background:#67e8f9"></span><span style="background:#7dd3fc"></span><span style="background:#cbd5e1"></span><span style="background:#6ee7b7"></span><span style="background:#f9a8d4"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap-wide">
+        <span class="wordmark">Spar<span class="x">x</span></span>
+        <div class="dots">
+          <span style="background:#6366f1"></span><span style="background:#f97316"></span><span style="background:#14b8a6"></span><span style="background:#06b6d4"></span><span style="background:#0ea5e9"></span><span style="background:#475569"></span><span style="background:#ec4899"></span><span style="background:#10b981"></span>
+        </div>
+        <span class="legal">© 2026 WizeWorks · sparx.works</span>
+      </div>
+    </footer>
+
+    <script>
+      // ── icon set (inline, stroke=currentColor) ──────────────
+      const I = {
+        builder: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>',
+        commerce: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+        cms: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/>',
+        crm: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+        email: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/>',
+        b2b: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+        dropship: '<path d="M1 3h13v13H1z"/><path d="M14 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+        ai: '<path d="M12 2.5 14 9l6.5 2-6.5 2-2 6.5-2-6.5L4 11l6.5-2z"/>'
+      };
+      function svg(key, cls) {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + I[key] + '</svg>';
+      }
+
+      // status badge palette
+      const ST = {
+        green: { bg: '#ecfdf5', fg: '#047857' },
+        amber: { bg: '#fffbeb', fg: '#b45309' },
+        gray:  { bg: '#f4f4f5', fg: '#52525b' },
+        cyan:  { bg: '#ecfeff', fg: '#0e7490' },
+        sky:   { bg: '#f0f9ff', fg: '#0369a1' },
+      };
+
+      // ── module data (order = rail order) ────────────────────
+      const MODULES = [
+        { key: 'builder', name: 'Sites', tag: 'Site builder', color: '#6366f1', tint: '#eef2ff', text: '#4338ca', price: '$49',
+          desc: 'Pages, layouts, and brand — drag-and-drop, multi-property.',
+          sections: ['Pages','Layouts','Components','Brand','Theme'], active: 0,
+          title: 'Pages', sub: '2 properties · one tenant', primary: 'New page',
+          stats: [{l:'Published',v:'24',s:'3 in draft'},{l:'Avg load',v:'<50ms',s:'edge cached'},{l:'Properties',v:'2',s:'one back office'}],
+          list: 'Pages',
+          rows: [{t:'Home', m:'/ · live', st:'Live', sc:'green'},{t:'Winter Lookbook', m:'/lookbook · draft', st:'Draft', sc:'gray'},{t:'About', m:'/about · live', st:'Live', sc:'green'}] },
+        { key: 'commerce', name: 'Commerce', tag: 'Commerce', color: '#f97316', tint: '#fff7ed', text: '#c2410c', price: '$49',
+          desc: 'Products, variants, orders, pricing, and discounts.',
+          sections: ['Overview','Products','Orders','Pricing','Discounts'], active: 1,
+          title: 'Products', sub: 'Last 30 days', primary: 'New product',
+          stats: [{l:'Net revenue',v:'$48,291',s:'284 orders'},{l:'Conversion',v:'3.2%',s:'1,200 sessions'},{l:'Avg order',v:'$170',s:'+8% MoM'}],
+          list: 'Products',
+          rows: [{t:'Trail Hoodie', m:'Apparel · 3 variants', st:'Active', sc:'green'},{t:'Wool Beanie', m:'Apparel · 1 variant', st:'Draft', sc:'gray'},{t:'Canvas Tote', m:'Bags · 2 variants', st:'Active', sc:'green'}] },
+        { key: 'cms', name: 'Content', tag: 'CMS', color: '#14b8a6', tint: '#f0fdfa', text: '#0f766e', price: '$49',
+          desc: 'Posts, pages, content types, media, and SEO.',
+          sections: ['Posts','Pages','Types','Media','SEO'], active: 0,
+          title: 'Posts', sub: 'Field notes · 12 published', primary: 'New post',
+          stats: [{l:'Readers 30d',v:'2,480',s:'+38%'},{l:'Avg SEO',v:'94',s:'12 posts'},{l:'Subscribers',v:'+38',s:'this week'}],
+          list: 'Posts',
+          rows: [{t:'The winter teardown', m:'Field notes · published', st:'Published', sc:'green'},{t:'Sourcing diesel parts', m:'Guides · in review', st:'In review', sc:'amber'},{t:'Shop update', m:'News · draft', st:'Draft', sc:'gray'}] },
+        { key: 'crm', name: 'CRM', tag: 'CRM', color: '#06b6d4', tint: '#ecfeff', text: '#0e7490', price: '$49',
+          desc: 'Customers, segments, deals, and the unified inbox.',
+          sections: ['Customers','Segments','Deals','Activities','Inbox'], active: 0,
+          title: 'Customers', sub: '1,204 records', primary: 'New customer',
+          stats: [{l:'Customers',v:'1,204',s:'+46 this wk'},{l:'Segments',v:'8',s:'materialized'},{l:'Open deals',v:'12',s:'$84k pipeline'}],
+          list: 'Customers',
+          rows: [{t:'Dana Ruiz', m:'High-value · at-risk', st:'VIP', sc:'cyan'},{t:'Gillett Diesel', m:'B2B · Net-30', st:'Account', sc:'gray'},{t:'Marco Vidal', m:'New · 1 order', st:'New', sc:'green'}] },
+        { key: 'email', name: 'Email', tag: 'Email', color: '#0ea5e9', tint: '#f0f9ff', text: '#0369a1', price: '$29',
+          desc: 'Broadcasts, automations, audiences, and templates.',
+          sections: ['Broadcasts','Automations','Audiences','Templates','Domains'], active: 0,
+          title: 'Broadcasts', sub: 'Last 30 days', primary: 'New broadcast',
+          stats: [{l:'Sent 30d',v:'18,420',s:'4 broadcasts'},{l:'Open rate',v:'41%',s:'+3 pts'},{l:'Click rate',v:'6.2%',s:'2.6% avg'}],
+          list: 'Broadcasts',
+          rows: [{t:'Winter restock', m:'Sent · 4,210 recipients', st:'Sent', sc:'green'},{t:'Weekly digest', m:'Scheduled · Fri 9am', st:'Scheduled', sc:'sky'},{t:'Welcome series', m:'Automation · live', st:'Live', sc:'green'}] },
+        { key: 'b2b', name: 'B2B', tag: 'B2B / Wholesale', color: '#475569', tint: '#f1f5f9', text: '#334155', price: '$99',
+          desc: 'Accounts, price lists, quotes, and net terms.',
+          sections: ['Accounts','Price lists','Quotes','Net terms','Approvals'], active: 2,
+          title: 'Quotes', sub: '9 open · $42k', primary: 'New quote',
+          stats: [{l:'Open quotes',v:'9',s:'$42k'},{l:'Accounts',v:'37',s:'on Net-30'},{l:'Avg PO',v:'$576',s:'12 line items'}],
+          list: 'Quotes & POs',
+          rows: [{t:'PO GD-2026-0488', m:'Gillett Diesel · Net-30', st:'Approved', sc:'green'},{t:'Quote #2231', m:'Valley Fleet · pending', st:'Pending', sc:'amber'},{t:'PO #2229', m:'Harbor Co · approved', st:'Approved', sc:'green'}] },
+        { key: 'dropship', name: 'Dropship', tag: 'Dropship', color: '#10b981', tint: '#ecfdf5', text: '#047857', price: '$29',
+          desc: 'Suppliers, catalog sync, order routing.',
+          sections: ['Suppliers','Catalog','Routing','Orders','Sync'], active: 0,
+          title: 'Suppliers', sub: '6 connected · 3 regions', primary: 'Add supplier',
+          stats: [{l:'Suppliers',v:'6',s:'3 regions'},{l:'SKUs synced',v:'12,840',s:'hourly'},{l:'Auto-routed',v:'98%',s:'of orders'}],
+          list: 'Suppliers',
+          rows: [{t:'Northstar Parts', m:'Auto-sync · hourly', st:'Connected', sc:'green'},{t:'Pacific Supply', m:'Manual · daily', st:'Connected', sc:'green'},{t:'Inland Goods', m:'Setup · pending', st:'Pending', sc:'amber'}] },
+        { key: 'ai', name: 'AI', tag: 'AI / MCP', color: '#ec4899', tint: '#fdf2f8', text: '#9d174d', price: '$49',
+          desc: 'An MCP server over every module — ask in plain language.',
+          sections: ['Assistant','MCP tools','Workflows','Knowledge','Logs'], active: 1,
+          title: 'MCP tools', sub: '24 live · 4 clients', primary: 'New tool',
+          stats: [{l:'Calls 30d',v:'3,120',s:'via MCP'},{l:'Tools live',v:'24',s:'all modules'},{l:'Clients',v:'4',s:'Claude, GPT…'}],
+          list: 'MCP tools',
+          rows: [{t:'create_quote', m:'B2B · enabled', st:'Live', sc:'green'},{t:'search_products', m:'Commerce · enabled', st:'Live', sc:'green'},{t:'draft_email', m:'Email · enabled', st:'Live', sc:'green'}] },
+      ];
+      const byKey = Object.fromEntries(MODULES.map(m => [m.key, m]));
+      let current = 'commerce';
+
+      // ── render: hero chips ──────────────────────────────────
+      const chips = document.getElementById('chips');
+      chips.innerHTML = MODULES.map(m =>
+        '<button class="chip" data-key="' + m.key + '" aria-pressed="false">' +
+          '<span class="ico" style="color:' + m.color + '">' + svg(m.key) + '</span>' + m.name +
+        '</button>'
+      ).join('');
+      chips.querySelectorAll('.chip').forEach(c =>
+        c.addEventListener('click', () => select(c.dataset.key)));
+
+      // ── render: rail ────────────────────────────────────────
+      const rail = document.getElementById('rail');
+      rail.insertAdjacentHTML('beforeend', MODULES.map(m =>
+        '<button class="railbtn" data-key="' + m.key + '" title="' + m.tag + '" style="--rc:' + m.color + '">' +
+          '<span class="ind"></span>' +
+          '<span style="color:' + m.color + ';display:flex">' + svg(m.key) + '</span>' +
+        '</button>'
+      ).join(''));
+      rail.querySelectorAll('.railbtn').forEach(b =>
+        b.addEventListener('click', () => select(b.dataset.key)));
+
+      // ── render: module grid ─────────────────────────────────
+      document.getElementById('mgrid').innerHTML = MODULES.map(m =>
+        '<div class="mcard">' +
+          '<div class="stripe" style="background:' + m.color + '"></div>' +
+          '<div class="mc-in">' +
+            '<div class="mc-top">' +
+              '<span class="mc-ico" style="background:' + m.tint + ';color:' + m.color + '">' + svg(m.key) + '</span>' +
+              '<h4>' + m.tag + '</h4>' +
+              '<span class="mc-price">' + m.price + '/mo</span>' +
+            '</div>' +
+            '<p class="mc-desc">' + m.desc + '</p>' +
+          '</div>' +
+        '</div>'
+      ).join('');
+
+      // ── the live recolor + preview ──────────────────────────
+      const panel = document.getElementById('panel');
+      const main = document.getElementById('main');
+
+      function select(key) {
+        current = key;
+        const m = byKey[key];
+        const root = document.documentElement;
+        root.style.setProperty('--m', m.color);
+        root.style.setProperty('--m-tint', m.tint);
+        root.style.setProperty('--m-text', m.text);
+
+        // chips
+        chips.querySelectorAll('.chip').forEach(c => {
+          const on = c.dataset.key === key;
+          c.setAttribute('aria-pressed', on ? 'true' : 'false');
+          c.style.background = on ? m.color : '#fff';
+          c.querySelector('.ico').style.color = on ? '#fff' : byKey[c.dataset.key].color;
+        });
+        // rail
+        rail.querySelectorAll('.railbtn').forEach(b =>
+          b.classList.toggle('on', b.dataset.key === key));
+
+        // panel
+        panel.innerHTML =
+          '<div class="ph"><span class="dot"></span><span class="nm">' + m.tag + '</span></div>' +
+          m.sections.map((s, i) =>
+            '<div class="srow' + (i === m.active ? ' act' : '') + '"><span class="sd"></span>' + s + '</div>'
+          ).join('') +
+          '<div class="pfoot"><span class="add">+ New ' + m.title.toLowerCase().replace(/s$/, '') + '</span></div>';
+
+        // main
+        main.innerHTML =
+          '<div class="mhead">' +
+            '<div class="ttl">' +
+              '<span class="tile">' + svg(m.key) + '</span>' +
+              '<div><h3>' + m.title + '</h3><p class="sub">' + m.sub + '</p></div>' +
+            '</div>' +
+            '<button class="pbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' + m.primary + '</button>' +
+          '</div>' +
+          '<div class="stats">' + m.stats.map(s =>
+            '<div class="stat"><div class="sl">' + s.l + '</div><div class="sv">' + s.v + '</div><div class="ss">' + s.s + '</div></div>'
+          ).join('') + '</div>' +
+          '<div class="listcard">' +
+            '<div class="lh"><span class="lt">' + m.list + '</span><span class="lv">View all →</span></div>' +
+            m.rows.map(r => {
+              const st = ST[r.sc];
+              return '<div class="lrow"><span class="thumb"></span>' +
+                '<div class="lc"><div class="lcn">' + r.t + '</div><div class="lcm">' + r.m + '</div></div>' +
+                '<span class="badge" style="background:' + st.bg + ';color:' + st.fg + '">' + r.st + '</span>' +
+              '</div>';
+            }).join('') +
+          '</div>';
+      }
+
+      select(current);
+    </script>
+  </body>
+</html>

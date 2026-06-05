@@ -63,10 +63,11 @@ const GROUPS: SettingsGroup[] = [
   },
   {
     icon: <Globe className="h-4 w-4" />,
-    title: 'Domains',
-    description: 'Custom domains, DNS, SSL status.',
-    href: '/settings',
-    ready: false,
+    title: 'Sites & domains',
+    description:
+      'Manage your sites (web properties), switch which one you’re editing, and connect custom domains.',
+    href: '/settings/sites',
+    ready: true,
   },
   {
     icon: <KeyRound className="h-4 w-4" />,

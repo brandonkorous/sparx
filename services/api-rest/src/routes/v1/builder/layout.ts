@@ -28,14 +28,14 @@ const builderLayoutRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/layouts', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
-    const layouts = await layoutService.listOrSeed(toBuilderContext(request));
+    const layouts = await layoutService.listOrSeed(await toBuilderContext(request));
     return ok({ layouts });
   });
 
   app.post('/v1/builder/layouts', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
-    const layout = await layoutService.create(toBuilderContext(request), request.body);
+    const layout = await layoutService.create(await toBuilderContext(request), request.body);
     return ok(layout);
   });
 
@@ -45,7 +45,7 @@ const builderLayoutRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     // Seed-on-first-use (listOrSeed) then pick the live layout — the page editor
     // renders it as the locked backdrop, so it must never open unframed.
-    const layouts = await layoutService.listOrSeed(toBuilderContext(request));
+    const layouts = await layoutService.listOrSeed(await toBuilderContext(request));
     const active = layouts.find((l) => l.isActive) ?? layouts[0] ?? null;
     return ok(active);
   });
@@ -54,7 +54,7 @@ const builderLayoutRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const layout = await layoutService.get(toBuilderContext(request), id);
+    const layout = await layoutService.get(await toBuilderContext(request), id);
     return ok(layout);
   });
 
@@ -62,7 +62,7 @@ const builderLayoutRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const layout = await layoutService.update(toBuilderContext(request), id, request.body);
+    const layout = await layoutService.update(await toBuilderContext(request), id, request.body);
     return ok(layout);
   });
 
@@ -70,7 +70,7 @@ const builderLayoutRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    await layoutService.remove(toBuilderContext(request), id);
+    await layoutService.remove(await toBuilderContext(request), id);
     return ok({ id });
   });
 
@@ -78,7 +78,7 @@ const builderLayoutRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const layout = await layoutService.publish(toBuilderContext(request), id);
+    const layout = await layoutService.publish(await toBuilderContext(request), id);
     return ok(layout);
   });
 
@@ -86,7 +86,7 @@ const builderLayoutRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const layout = await layoutService.setActive(toBuilderContext(request), id);
+    const layout = await layoutService.setActive(await toBuilderContext(request), id);
     return ok(layout);
   });
 

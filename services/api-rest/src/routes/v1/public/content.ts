@@ -23,6 +23,7 @@ import { notFound, badRequest } from '@sparx/api-core/errors';
 import { serializeEntry } from '@sparx/api-core/entries';
 import { tryVerifyPreviewToken } from '../../../lib/preview.js';
 import { readPublicConsentConfig } from '../../../lib/consent.js';
+import { parseBrandOverride, mergeBrandIdentity } from '../../../lib/property-brand.js';
 
 const ListQuery = z.object({
   tenant: z.string().min(1).max(63),
@@ -301,6 +302,10 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
   // the tenant exists. Cheap and CDN-friendly.
   app.get('/v1/public/tenants/:slug', async (request) => {
     const params = z.object({ slug: z.string().min(1).max(63) }).parse(request.params);
+    // `?property=<slug>` selects which of the tenant's web PROPERTIES (sites) the
+    // payload reflects (docs/49). Its optional brand override (Phase 4) merges
+    // over the tenant brand below; absent → the tenant's brand as-is.
+    const query = z.object({ property: z.string().min(1).max(63).optional() }).parse(request.query);
     const tenant = await prisma.tenant.findUnique({
       where: { slug: params.slug },
       select: { id: true, slug: true, name: true, settings: true, socials: true },
@@ -315,51 +320,76 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     // Both rows are one-per-tenant (tenantId PK); a missing row means the
     // tenant hasn't customized, so we fall back to nulls/defaults that the
     // storefront's token layer interprets as "use the default theme".
-    const [theme, storefront, brand, consent] = await withTenant({ tenantId: tenant.id }, (tx) =>
-      Promise.all([
-        // PRESENTATION tokens only. Identity (colours, type, logo, favicon) comes
-        // from the tenant brand below — those StorefrontTheme columns were removed
-        // in migration 20260610000200 (docs/30 §6).
-        tx.storefrontTheme.findUnique({
-          where: { tenantId: tenant.id },
-          select: {
-            colorBackground: true,
-            colorMuted: true,
-            radiusBase: true,
-          },
-        }),
-        tx.storefrontSettings.findUnique({
-          where: { tenantId: tenant.id },
-          select: {
-            defaultCurrency: true,
-            defaultLocale: true,
-            showStockBelow: true,
-            hidePricesWhenSignedOut: true,
-            requireAuthForCheckout: true,
-          },
-        }),
-        // Tenant-level brand is the source of truth for IDENTITY (docs/30 §6):
-        // logo/favicon + brand colours + brand type. It WINS over StorefrontTheme
-        // here; the theme keeps only presentation tokens (background/muted/radius).
-        tx.tenantBrand.findUnique({
-          where: { tenantId: tenant.id },
-          select: {
-            businessName: true,
-            colorPrimary: true,
-            colorPrimaryForeground: true,
-            colorAccent: true,
-            fontHeading: true,
-            fontBody: true,
-            logoLightMediaId: true,
-            logoDarkMediaId: true,
-            faviconMediaId: true,
-          },
-        }),
-        // Cookie-consent config travels with the tenant payload so the
-        // storefront layout decides off/quiet-notice/banner server-side in
-        // the same fetch — no second round-trip, no client flash (docs/42 §4).
-        readPublicConsentConfig(tx, tenant.id),
-      ])
+    const [theme, storefront, brand, consent, propertyRow] = await withTenant(
+      { tenantId: tenant.id },
+      (tx) =>
+        Promise.all([
+          // PRESENTATION tokens only. Identity (colours, type, logo, favicon) comes
+          // from the tenant brand below — those StorefrontTheme columns were removed
+          // in migration 20260610000200 (docs/30 §6).
+          tx.storefrontTheme.findUnique({
+            where: { tenantId: tenant.id },
+            select: {
+              colorBackground: true,
+              colorMuted: true,
+              radiusBase: true,
+            },
+          }),
+          tx.storefrontSettings.findUnique({
+            where: { tenantId: tenant.id },
+            select: {
+              defaultCurrency: true,
+              defaultLocale: true,
+              showStockBelow: true,
+              hidePricesWhenSignedOut: true,
+              requireAuthForCheckout: true,
+            },
+          }),
+          // Tenant-level brand is the source of truth for IDENTITY (docs/30 §6):
+          // logo/favicon + brand colours + brand type. It WINS over StorefrontTheme
+          // here; the theme keeps only presentation tokens (background/muted/radius).
+          tx.tenantBrand.findUnique({
+            where: { tenantId: tenant.id },
+            select: {
+              businessName: true,
+              colorPrimary: true,
+              colorPrimaryForeground: true,
+              colorAccent: true,
+              fontHeading: true,
+              fontBody: true,
+              logoLightMediaId: true,
+              logoDarkMediaId: true,
+              faviconMediaId: true,
+            },
+          }),
+          // Cookie-consent config travels with the tenant payload so the
+          // storefront layout decides off/quiet-notice/banner server-side in
+          // the same fetch — no second round-trip, no client flash (docs/42 §4).
+          readPublicConsentConfig(tx, tenant.id),
+          // The active site's optional brand override (docs/49 §3, Phase 4). Read
+          // by slug within the tenant; null when no `?property=` or no override.
+          query.property
+            ? tx.property.findFirst({
+                where: { slug: query.property },
+                select: { brandOverride: true },
+              })
+            : Promise.resolve(null),
+        ])
+    );
+
+    // Merge the per-site override over the tenant brand identity (Phase 4). A
+    // null override leaves the tenant brand untouched, so single-site / no-override
+    // payloads are byte-for-byte unchanged.
+    const override = parseBrandOverride(propertyRow?.brandOverride);
+    const identity = mergeBrandIdentity(
+      {
+        businessName: brand?.businessName ?? null,
+        colorPrimary: brand?.colorPrimary ?? null,
+        colorPrimaryForeground: brand?.colorPrimaryForeground ?? null,
+        colorAccent: brand?.colorAccent ?? null,
+        logoMediaId: brand?.logoLightMediaId ?? null,
+      },
+      override
     );
 
     // Brand identity overrides theme identity; theme supplies presentation +
@@ -367,15 +397,15 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     // "use the default theme". `businessName` (when set) is the display name the
     // storefront shows in the header/title/footer.
     const mergedTheme =
-      theme || brand
+      theme || brand || override
         ? {
-            // Identity — brand only (StorefrontTheme no longer stores these).
-            colorPrimary: brand?.colorPrimary ?? null,
-            colorPrimaryForeground: brand?.colorPrimaryForeground ?? null,
-            colorAccent: brand?.colorAccent ?? null,
+            // Identity — tenant brand, with the per-site override applied (Phase 4).
+            colorPrimary: identity.colorPrimary,
+            colorPrimaryForeground: identity.colorPrimaryForeground,
+            colorAccent: identity.colorAccent,
             fontHeading: brand?.fontHeading ?? null,
             fontBody: brand?.fontBody ?? null,
-            logoMediaId: brand?.logoLightMediaId ?? null,
+            logoMediaId: identity.logoMediaId,
             logoDarkMediaId: brand?.logoDarkMediaId ?? null,
             faviconMediaId: brand?.faviconMediaId ?? null,
             // Presentation — theme-owned.
@@ -389,7 +419,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       id: tenant.id,
       slug: tenant.slug,
       name: tenant.name,
-      businessName: brand?.businessName ?? null,
+      businessName: identity.businessName,
       settings: tenant.settings,
       // Site-wide social links (a SITE setting on the tenant, not brand/theme —
       // docs/45 §3): an ordered { platform, url }[] the storefront chrome renders.

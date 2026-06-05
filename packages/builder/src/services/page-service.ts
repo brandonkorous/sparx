@@ -24,7 +24,7 @@ import { withTenant } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
-import type { ServiceContext } from '../errors';
+import type { PropertyContext, ServiceContext } from '../errors';
 import { BuilderNotFoundError, BuilderValidationError } from '../errors';
 import { getSchema } from './binding-service';
 import { expandTreeForPublish } from './component-service';
@@ -90,9 +90,10 @@ async function assertValidRecordType(ctx: ServiceContext, recordType: string): P
 /** List the tenant's pages. On first use (zero rows) seed the curated starter
  *  set — the lazy-materialization idiom (cf. getOrCreateConfig). Idempotent:
  *  only seeds when empty. */
-export function listOrSeed(ctx: ServiceContext): Promise<BuilderPageDto[]> {
+export function listOrSeed(ctx: PropertyContext): Promise<BuilderPageDto[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.builderPage.findMany({
+      where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
     if (rows.length > 0) return rows.map(toDto);
@@ -100,6 +101,7 @@ export function listOrSeed(ctx: ServiceContext): Promise<BuilderPageDto[]> {
     await tx.builderPage.createMany({
       data: STARTER_PAGES.map((s, i) => ({
         tenantId: ctx.tenantId,
+        propertyId: ctx.propertyId,
         name: s.name,
         kind: s.kind,
         recordType: s.recordType ?? null,
@@ -118,25 +120,27 @@ export function listOrSeed(ctx: ServiceContext): Promise<BuilderPageDto[]> {
       diff: { after: { count: STARTER_PAGES.length } },
     });
     const seeded = await tx.builderPage.findMany({
+      where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
     return seeded.map(toDto);
   });
 }
 
-export function get(ctx: ServiceContext, id: string): Promise<BuilderPageDto> {
+export function get(ctx: PropertyContext, id: string): Promise<BuilderPageDto> {
   return withTenant(ctx, async (tx) => {
-    const row = await tx.builderPage.findUnique({ where: { id } });
+    const row = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
     if (!row) throw new BuilderNotFoundError('BuilderPage', id);
     return toDto(row);
   });
 }
 
-export async function create(ctx: ServiceContext, rawInput: unknown): Promise<BuilderPageDto> {
+export async function create(ctx: PropertyContext, rawInput: unknown): Promise<BuilderPageDto> {
   const input = CreatePageInput.parse(rawInput);
   if (input.recordType) await assertValidRecordType(ctx, input.recordType);
   return withTenant(ctx, async (tx) => {
     const last = await tx.builderPage.findFirst({
+      where: { propertyId: ctx.propertyId },
       orderBy: { position: 'desc' },
       select: { position: true },
     });
@@ -144,6 +148,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Bu
     const created = await tx.builderPage.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: ctx.propertyId,
         name: input.name,
         kind: input.kind,
         recordType: input.recordType ?? null,
@@ -174,7 +179,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Bu
 /** Rename and/or save the draft tree and/or retarget. Draft-tree saves are the
  *  high-frequency autosave path — deliberately NOT audited. */
 export async function update(
-  ctx: ServiceContext,
+  ctx: PropertyContext,
   id: string,
   rawInput: unknown
 ): Promise<BuilderPageDto> {
@@ -182,7 +187,10 @@ export async function update(
   // Retargeting at a real source keeps the template↔content link from drifting.
   if (input.recordType) await assertValidRecordType(ctx, input.recordType);
   return withTenant(ctx, async (tx) => {
-    const existing = await tx.builderPage.findUnique({ where: { id }, select: { id: true } });
+    const existing = await tx.builderPage.findFirst({
+      where: { id, propertyId: ctx.propertyId },
+      select: { id: true },
+    });
     if (!existing) throw new BuilderNotFoundError('BuilderPage', id);
 
     const data: Prisma.BuilderPageUpdateInput = {};
@@ -203,9 +211,9 @@ export async function update(
   });
 }
 
-export async function remove(ctx: ServiceContext, id: string): Promise<void> {
+export async function remove(ctx: PropertyContext, id: string): Promise<void> {
   await withTenant(ctx, async (tx) => {
-    const existing = await tx.builderPage.findUnique({ where: { id } });
+    const existing = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
     if (!existing) throw new BuilderNotFoundError('BuilderPage', id);
     await tx.builderPage.delete({ where: { id } });
     await writeAuditLog({
@@ -222,11 +230,11 @@ export async function remove(ctx: ServiceContext, id: string): Promise<void> {
 }
 
 /** Reorder the catalog. `orderedIds` must be exactly the tenant's page ids. */
-export async function reorder(ctx: ServiceContext, rawInput: unknown): Promise<BuilderPageDto[]> {
+export async function reorder(ctx: PropertyContext, rawInput: unknown): Promise<BuilderPageDto[]> {
   const input = ReorderPagesInput.parse(rawInput);
   return withTenant(ctx, async (tx) => {
     const owned = await tx.builderPage.findMany({
-      where: { id: { in: input.orderedIds } },
+      where: { id: { in: input.orderedIds }, propertyId: ctx.propertyId },
       select: { id: true },
     });
     if (owned.length !== input.orderedIds.length) {
@@ -247,6 +255,7 @@ export async function reorder(ctx: ServiceContext, rawInput: unknown): Promise<B
       diff: { after: { order: input.orderedIds } },
     });
     const rows = await tx.builderPage.findMany({
+      where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
     return rows.map(toDto);
@@ -256,9 +265,9 @@ export async function reorder(ctx: ServiceContext, rawInput: unknown): Promise<B
 /** Snapshot the draft tree into the published tree, expanding any tenant
  *  components into concrete primitives first (docs/53 §3). The publish event is
  *  emitted for the storefront render path. */
-export async function publish(ctx: ServiceContext, id: string): Promise<BuilderPageDto> {
+export async function publish(ctx: PropertyContext, id: string): Promise<BuilderPageDto> {
   const dto = await withTenant(ctx, async (tx) => {
-    const existing = await tx.builderPage.findUnique({ where: { id } });
+    const existing = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
     if (!existing) throw new BuilderNotFoundError('BuilderPage', id);
     const published = await expandTreeForPublish(tx, existing.draftTree as unknown as BuilderNode);
     const updated = await tx.builderPage.update({
@@ -293,18 +302,24 @@ export async function publish(ctx: ServiceContext, id: string): Promise<BuilderP
  *  override. Clears any prior default for the same recordType first, in the same
  *  transaction, so the partial unique index never trips. The page must be a
  *  collection WITH a recordType. */
-export async function setDefault(ctx: ServiceContext, id: string): Promise<BuilderPageDto> {
+export async function setDefault(ctx: PropertyContext, id: string): Promise<BuilderPageDto> {
   return withTenant(ctx, async (tx) => {
-    const row = await tx.builderPage.findUnique({ where: { id } });
+    const row = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
     if (!row) throw new BuilderNotFoundError('BuilderPage', id);
     if (row.kind !== 'collection' || !row.recordType) {
       throw new BuilderValidationError(
         'Only a collection template that targets a record type can be made the default.'
       );
     }
-    // Clear the prior default for this recordType, then set this one (one tx).
+    // Clear the prior default for this recordType on THIS property, then set this
+    // one (one tx). Per-property: a sibling site's default is untouched.
     await tx.builderPage.updateMany({
-      where: { recordType: row.recordType, isDefault: true, NOT: { id } },
+      where: {
+        propertyId: ctx.propertyId,
+        recordType: row.recordType,
+        isDefault: true,
+        NOT: { id },
+      },
       data: { isDefault: false },
     });
     const updated = await tx.builderPage.update({ where: { id }, data: { isDefault: true } });
@@ -327,14 +342,14 @@ export async function setDefault(ctx: ServiceContext, id: string): Promise<Build
  *  snapshot — never the draft. Tenant-scoped via withTenant (the public route
  *  resolves the tenant by slug first). */
 export function getPublishedBySlug(
-  ctx: ServiceContext,
+  ctx: PropertyContext,
   slug: string
 ): Promise<PublishedPageDto | null> {
   return withTenant(ctx, async (tx) => {
-    // slug is unique per tenant; RLS scopes to this tenant. Filter "published"
-    // in JS — the JSON column's NULL check needs a Prisma runtime value, but
-    // Prisma here is imported as a type only.
-    const row = await tx.builderPage.findFirst({ where: { slug } });
+    // slug is unique per (tenant, property); RLS scopes to the tenant, propertyId
+    // to the site. Filter "published" in JS — the JSON column's NULL check needs a
+    // Prisma runtime value, but Prisma here is imported as a type only.
+    const row = await tx.builderPage.findFirst({ where: { slug, propertyId: ctx.propertyId } });
     if (row?.publishedTree == null) return null;
     return {
       name: row.name,
@@ -354,11 +369,11 @@ export function getPublishedBySlug(
  *  editor's "Preview" tab shows work that hasn't been published. The public route
  *  only calls this behind a valid site-preview token (the tenant's own draft). */
 export function getDraftBySlug(
-  ctx: ServiceContext,
+  ctx: PropertyContext,
   slug: string
 ): Promise<PublishedPageDto | null> {
   return withTenant(ctx, async (tx) => {
-    const row = await tx.builderPage.findFirst({ where: { slug } });
+    const row = await tx.builderPage.findFirst({ where: { slug, propertyId: ctx.propertyId } });
     if (!row) return null;
     return {
       name: row.name,
@@ -386,13 +401,13 @@ export function getDraftBySlug(
  *  the in-scope record into the tree (`product.*`, `post.*`). publishedTree's
  *  NULL check is in JS (Prisma is a type-only import here — cf. getPublishedBySlug). */
 export function getPublishedByRecordType(
-  ctx: ServiceContext,
+  ctx: PropertyContext,
   recordType: string,
   recordId?: string
 ): Promise<PublishedPageDto | null> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.builderPage.findMany({
-      where: { recordType, kind: 'collection' },
+      where: { recordType, kind: 'collection', propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
     if (rows.length === 0) return null;
@@ -401,7 +416,7 @@ export function getPublishedByRecordType(
     let overrideId: string | null = null;
     if (recordId) {
       const assignment = await tx.builderPageAssignment.findFirst({
-        where: { recordType, itemRef: recordId },
+        where: { recordType, itemRef: recordId, propertyId: ctx.propertyId },
         select: { builderPageId: true },
       });
       overrideId = assignment?.builderPageId ?? null;

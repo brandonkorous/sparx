@@ -88,6 +88,37 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
         },
       });
 
+      // Set the tenant GUC for the rest of this tx so the FORCE-RLS `properties`
+      // insert below passes its WITH CHECK. authPrisma connects as sparx_owner,
+      // which IS subject to FORCE RLS — without this the property write fails in
+      // prod (it's transaction-local, so it never leaks past this commit).
+      await tx.$executeRaw`SELECT set_config('app.tenant_id', ${tenant.id}::text, true)`;
+
+      // Every tenant is born with exactly one PRIMARY web property (docs/49) +
+      // its always-on `<slug>.sparx.zone` subdomain, so the Builder render path
+      // and host→property resolution have a site to resolve to from day one.
+      // (Existing tenants were backfilled by 20260626000000_properties /
+      // 20260629000000_domains.) `domains` is non-RLS; the GUC is harmless to it.
+      const property = await tx.property.create({
+        data: {
+          tenantId: tenant.id,
+          slug: 'primary',
+          name: input.storeName,
+          isPrimary: true,
+        },
+      });
+      const zone = process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone';
+      await tx.domain.create({
+        data: {
+          tenantId: tenant.id,
+          propertyId: property.id,
+          host: `${slug}.${zone}`,
+          type: 'subdomain',
+          status: 'active',
+          isCanonical: true,
+        },
+      });
+
       const user = await tx.user.create({
         data: {
           email,

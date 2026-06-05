@@ -28,21 +28,21 @@ const builderPageRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/pages', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
-    const pages = await pageService.listOrSeed(toBuilderContext(request));
+    const pages = await pageService.listOrSeed(await toBuilderContext(request));
     return ok({ pages });
   });
 
   app.post('/v1/builder/pages', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
-    const page = await pageService.create(toBuilderContext(request), request.body);
+    const page = await pageService.create(await toBuilderContext(request), request.body);
     return ok(page);
   });
 
   app.post('/v1/builder/pages/reorder', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
-    const pages = await pageService.reorder(toBuilderContext(request), request.body);
+    const pages = await pageService.reorder(await toBuilderContext(request), request.body);
     return ok({ pages });
   });
 
@@ -50,7 +50,7 @@ const builderPageRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const page = await pageService.get(toBuilderContext(request), id);
+    const page = await pageService.get(await toBuilderContext(request), id);
     return ok(page);
   });
 
@@ -58,7 +58,7 @@ const builderPageRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const page = await pageService.update(toBuilderContext(request), id, request.body);
+    const page = await pageService.update(await toBuilderContext(request), id, request.body);
     return ok(page);
   });
 
@@ -66,7 +66,7 @@ const builderPageRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    await pageService.remove(toBuilderContext(request), id);
+    await pageService.remove(await toBuilderContext(request), id);
     return ok({ id });
   });
 
@@ -74,7 +74,7 @@ const builderPageRoutes: FastifyPluginAsync = (app) => {
     const auth = requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const page = await pageService.publish(toBuilderContext(request), id);
+    const page = await pageService.publish(await toBuilderContext(request), id);
     // Refresh the stored SEO snapshot against the just-published tree so the
     // overview stays current (docs/50 §7). Best-effort — a snapshot write must
     // never fail the publish itself.
@@ -88,7 +88,7 @@ const builderPageRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const page = await pageService.setDefault(toBuilderContext(request), id);
+    const page = await pageService.setDefault(await toBuilderContext(request), id);
     return ok(page);
   });
 

@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx — Sentence (Direction G mockup)</title>
+    <!--
+      Landing-page direction "G — Sentence".
+      The whole hero is one composed sentence. Each coloured slot is a live
+      picker: clicking it cycles the word, and the plan + price below follow.
+      Colours/type are the locked Sparx tokens (docs/sparx-design-tokens.css).
+      Standalone mockup — no build step, just open in a browser.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1;
+        --indigo-hover: #4f46e5;
+        --ink: #0a0a0a;
+        --muted: #52525b;
+        --faint: #a1a1aa;
+        --border: #ececec;
+        --bg: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+      }
+
+      body {
+        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        min-height: 100vh;
+      }
+
+      /* ── top bar ─────────────────────────────────────────────── */
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+        padding: 0 56px;
+      }
+      .wordmark {
+        font-weight: 500;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+      }
+      .wordmark .x {
+        color: var(--indigo);
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+      .nav span {
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .nav .signin {
+        font-weight: 500;
+        color: var(--ink);
+      }
+
+      /* ── hero ────────────────────────────────────────────────── */
+      .hero {
+        padding: 84px 88px 0;
+      }
+      .lead {
+        margin: 0 0 40px;
+        font-size: 17px;
+        color: var(--faint);
+      }
+
+      .sentence {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+        max-width: 1160px;
+      }
+      .word {
+        font-weight: 400;
+        font-size: 46px;
+        line-height: 1.18;
+        letter-spacing: -0.02em;
+      }
+
+      .slot {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        padding: 4px 16px 7px;
+        border: none;
+        border-radius: 12px;
+        font-family: inherit;
+        font-weight: 500;
+        font-size: 46px;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          color 0.15s ease,
+          box-shadow 0.15s ease,
+          transform 0.08s ease;
+      }
+      .slot:hover {
+        box-shadow: inset 0 0 0 999px rgba(0, 0, 0, 0.035);
+      }
+      .slot:active {
+        transform: translateY(1px);
+      }
+      .slot:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 3px;
+      }
+      .slot .chev {
+        opacity: 0.75;
+        flex-shrink: 0;
+      }
+
+      /* ── result ──────────────────────────────────────────────── */
+      .result {
+        margin-top: 44px;
+        padding-top: 26px;
+        border-top: 1px solid var(--border);
+        max-width: 1000px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .switches {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 16px;
+        color: var(--muted);
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 13px;
+        border-radius: 9999px;
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .chip .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+      }
+      .tail {
+        color: var(--faint);
+      }
+
+      .price-row {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+      .price {
+        font-weight: 500;
+        font-size: 40px;
+        letter-spacing: -0.03em;
+      }
+      .price small {
+        font-weight: 400;
+        font-size: 18px;
+        color: var(--faint);
+        letter-spacing: 0;
+      }
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 13px 24px;
+        border: none;
+        border-radius: 8px;
+        background: var(--indigo);
+        color: #fff;
+        font-family: inherit;
+        font-weight: 500;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+      .cta:hover {
+        background: var(--indigo-hover);
+      }
+      .hint {
+        font-size: 14px;
+        color: var(--faint);
+      }
+
+      /* ── responsive ──────────────────────────────────────────── */
+      @media (max-width: 900px) {
+        .topbar {
+          padding: 0 24px;
+        }
+        .hero {
+          padding: 48px 24px 0;
+        }
+        .word,
+        .slot {
+          font-size: 32px;
+        }
+        .slot .chev {
+          width: 18px;
+          height: 18px;
+        }
+        .price {
+          font-size: 32px;
+        }
+      }
+      @media (max-width: 560px) {
+        .nav span:not(.signin) {
+          display: none;
+        }
+        .word,
+        .slot {
+          font-size: 25px;
+        }
+        .sentence {
+          gap: 10px;
+        }
+      }
+
+      .noscript {
+        padding: 84px 88px;
+        font-size: 18px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <span class="wordmark">Spar<span class="x">x</span></span>
+      <nav class="nav">
+        <span>Platform</span>
+        <span>Pricing</span>
+        <span class="signin">Sign in</span>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <p class="lead">Tell us in one sentence&nbsp;&mdash;</p>
+      <div class="sentence" id="sentence"></div>
+      <div class="result" id="result"></div>
+      <noscript>
+        <div class="noscript">Enable JavaScript to compose the sentence.</div>
+      </noscript>
+    </main>
+
+    <script>
+      // ── Sparx tokens (per-module colour families) ──────────────
+      const COLORS = {
+        indigo: { base: '#6366F1', tint: '#eef2ff', text: '#4338ca' },
+        commerce: { base: '#F97316', tint: '#fff7ed', text: '#c2410c' },
+        cms: { base: '#14B8A6', tint: '#f0fdfa', text: '#0f766e' },
+        crm: { base: '#06B6D4', tint: '#ecfeff', text: '#0e7490' },
+        email: { base: '#0EA5E9', tint: '#f0f9ff', text: '#0369a1' },
+        b2b: { base: '#475569', tint: '#f1f5f9', text: '#334155' },
+        ai: { base: '#EC4899', tint: '#fdf2f8', text: '#9d174d' },
+        dropship: { base: '#10B981', tint: '#ecfdf5', text: '#065f46' },
+      };
+
+      // ── modules: display name, monthly price, colour family ────
+      const MODS = {
+        builder: { name: 'Builder', price: 49, color: 'indigo' },
+        commerce: { name: 'Commerce', price: 49, color: 'commerce' },
+        cms: { name: 'CMS', price: 49, color: 'cms' },
+        crm: { name: 'CRM', price: 49, color: 'crm' },
+        email: { name: 'Email', price: 29, color: 'email' },
+        b2b: { name: 'B2B', price: 99, color: 'b2b' },
+        ai: { name: 'AI · MCP', price: 49, color: 'ai' },
+        dropship: { name: 'Dropship', price: 29, color: 'dropship' },
+      };
+      const ORDER = ['builder', 'commerce', 'cms', 'crm', 'email', 'b2b', 'ai', 'dropship'];
+
+      // ── the sentence: fixed words + cyclable slots ─────────────
+      // Builder is always the base, so it's added in compute().
+      const SLOTS = {
+        act1: {
+          color: 'commerce',
+          i: 0,
+          options: [
+            { label: 'sell', mods: ['commerce'] },
+            { label: 'wholesale', mods: ['commerce', 'b2b'] },
+            { label: 'dropship', mods: ['commerce', 'dropship'] },
+          ],
+        },
+        obj1: {
+          color: 'commerce',
+          i: 0,
+          options: [
+            { label: 'products', mods: [] },
+            { label: 'subscriptions', mods: [] },
+            { label: 'digital goods', mods: [] },
+          ],
+        },
+        act2: {
+          color: 'cms',
+          i: 0,
+          options: [
+            { label: 'publish', mods: ['cms'] },
+            { label: 'write', mods: ['cms'] },
+          ],
+        },
+        obj2: {
+          color: 'cms',
+          i: 0,
+          options: [
+            { label: 'stories', mods: [] },
+            { label: 'a blog', mods: [] },
+            { label: 'docs', mods: [] },
+            { label: 'recipes', mods: [] },
+          ],
+        },
+        aud: {
+          color: 'b2b',
+          i: 0,
+          options: [
+            { label: 'businesses', mods: ['b2b'], color: 'b2b' },
+            { label: 'shoppers', mods: ['crm'], color: 'crm' },
+            { label: 'wholesale buyers', mods: ['b2b'], color: 'b2b' },
+            { label: 'fans', mods: ['crm'], color: 'crm' },
+          ],
+        },
+        platform: {
+          color: 'indigo',
+          i: 0,
+          options: [
+            { label: 'one Sparx login', mods: [] },
+            { label: 'one bill', mods: [] },
+            { label: 'one data layer', mods: [] },
+          ],
+        },
+      };
+
+      const TEMPLATE = [
+        { t: 'text', text: 'I want to' },
+        { t: 'slot', id: 'act1' },
+        { t: 'slot', id: 'obj1' },
+        { t: 'text', text: 'and' },
+        { t: 'slot', id: 'act2' },
+        { t: 'slot', id: 'obj2' },
+        { t: 'text', text: 'for' },
+        { t: 'slot', id: 'aud' },
+        { t: 'text', text: '— all on' },
+        { t: 'slot', id: 'platform' },
+        { t: 'text', text: '.' },
+      ];
+
+      const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'];
+      const CHEVRON =
+        '<svg class="chev" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+      const ARROW =
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+
+      // ── render ─────────────────────────────────────────────────
+      function currentOption(id) {
+        const s = SLOTS[id];
+        return s.options[s.i];
+      }
+
+      function paintSlot(id, btn) {
+        const s = SLOTS[id];
+        const opt = currentOption(id);
+        const c = COLORS[opt.color || s.color];
+        btn.style.background = c.tint;
+        btn.style.color = c.text;
+        btn.innerHTML = '<span>' + opt.label + '</span>' + CHEVRON;
+        btn.setAttribute('aria-label', opt.label + ' (click to change)');
+      }
+
+      function buildSentence() {
+        const root = document.getElementById('sentence');
+        TEMPLATE.forEach((tok) => {
+          if (tok.t === 'text') {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.textContent = tok.text;
+            root.appendChild(span);
+          } else {
+            const btn = document.createElement('button');
+            btn.className = 'slot';
+            btn.type = 'button';
+            btn.title = 'Click to change';
+            btn.addEventListener('click', () => {
+              const s = SLOTS[tok.id];
+              s.i = (s.i + 1) % s.options.length;
+              paintSlot(tok.id, btn);
+              renderResult();
+            });
+            paintSlot(tok.id, btn);
+            root.appendChild(btn);
+          }
+        });
+      }
+
+      function activeModules() {
+        const set = new Set(['builder']);
+        Object.keys(SLOTS).forEach((id) => {
+          currentOption(id).mods.forEach((m) => set.add(m));
+        });
+        return ORDER.filter((m) => set.has(m));
+      }
+
+      function renderResult() {
+        const active = activeModules();
+        const total = active.reduce((sum, m) => sum + MODS[m].price, 0);
+        const off = ORDER.length - active.length;
+        const root = document.getElementById('result');
+        root.innerHTML = '';
+
+        // line 1 — what the sentence switches on
+        const line = document.createElement('div');
+        line.className = 'switches';
+        const lead = document.createElement('span');
+        lead.textContent = 'That switches on';
+        line.appendChild(lead);
+
+        active.forEach((m) => {
+          const c = COLORS[MODS[m].color];
+          const chip = document.createElement('span');
+          chip.className = 'chip';
+          chip.style.background = c.tint;
+          chip.style.color = c.text;
+          chip.innerHTML =
+            '<span class="dot" style="background:' + c.base + '"></span>' + MODS[m].name;
+          line.appendChild(chip);
+        });
+
+        const tail = document.createElement('span');
+        tail.className = 'tail';
+        if (off === 0) {
+          tail.textContent = '— every module on.';
+        } else {
+          const verb = off === 1 ? 'stays' : 'stay';
+          tail.textContent = '— the other ' + (WORDS[off] || off) + ' ' + verb + ' off.';
+        }
+        line.appendChild(tail);
+        root.appendChild(line);
+
+        // line 2 — price + CTA + hint
+        const row = document.createElement('div');
+        row.className = 'price-row';
+
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.innerHTML = '$' + total + '<small>/mo · one bill</small>';
+        row.appendChild(price);
+
+        const cta = document.createElement('button');
+        cta.className = 'cta';
+        cta.type = 'button';
+        cta.innerHTML = 'Build this store' + ARROW;
+        row.appendChild(cta);
+
+        const hint = document.createElement('span');
+        hint.className = 'hint';
+        hint.textContent = 'Swap any word — the plan and price follow.';
+        row.appendChild(hint);
+
+        root.appendChild(row);
+      }
+
+      buildSentence();
+      renderResult();
+    </script>
+  </body>
+</html>

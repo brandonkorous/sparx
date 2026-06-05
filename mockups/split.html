@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx — Split (Direction C mockup)</title>
+    <!--
+      Landing-page direction "C — Split".
+      A vertical diptych on Sparx's thesis: content and/or commerce. Left world
+      = Publish, right world = Sell, with an "or both" pivot on the seam.
+      Locked Sparx tokens, no eyebrows.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1;
+        --ink: #0a0a0a;
+        --muted: #52525b;
+        --faint: #a1a1aa;
+        --teal-text: #0f766e;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      body {
+        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .split {
+        position: relative;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .half {
+        width: 50%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 76px 64px;
+        overflow: hidden;
+      }
+
+      /* ── left: publish ───────────────────────────────────────── */
+      .left {
+        background: #fff;
+        background-image: radial-gradient(
+          90% 70% at 100% 0%,
+          rgba(20, 184, 166, 0.07),
+          rgba(20, 184, 166, 0) 60%
+        );
+      }
+      .display {
+        margin: 0;
+        display: flex;
+        align-items: flex-end;
+        font-weight: 500;
+        font-size: 96px;
+        line-height: 88px;
+        letter-spacing: -0.04em;
+      }
+      .display .dot-teal {
+        color: #14b8a6;
+      }
+      .display .dot-orange {
+        color: #fdba74;
+      }
+      .lede {
+        margin: 22px 0 0;
+        max-width: 430px;
+        font-size: 17px;
+        line-height: 26px;
+        color: var(--muted);
+      }
+      .col-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 26px;
+      }
+      .col-list .row {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .col-list .bullet {
+        width: 8px;
+        height: 8px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+        position: relative;
+        top: -1px;
+      }
+      .col-list .mod {
+        font-weight: 500;
+        font-size: 16px;
+        width: 96px;
+        flex-shrink: 0;
+      }
+      .col-list .what {
+        font-size: 15px;
+        color: var(--muted);
+      }
+
+      .card {
+        display: flex;
+        flex-direction: column;
+        width: 440px;
+        max-width: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .post-card {
+        border: 1px solid #e5e5e5;
+        box-shadow: 0 10px 30px rgba(20, 184, 166, 0.08);
+      }
+      .stripe {
+        height: 4px;
+        flex-shrink: 0;
+      }
+      .urlbar {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 11px 16px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .urlbar .d {
+        width: 8px;
+        height: 8px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+      }
+      .urlbar .u {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: var(--faint);
+      }
+      .card-body {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        padding: 16px;
+      }
+      .post-title {
+        font-weight: 500;
+        font-size: 18px;
+        letter-spacing: -0.01em;
+      }
+      .post-excerpt {
+        font-size: 14px;
+        line-height: 21px;
+        color: #71717a;
+      }
+      .byline {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding-top: 6px;
+      }
+      .avatar {
+        width: 22px;
+        height: 22px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+      }
+      .byline span {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .bottom-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 18px;
+        font-weight: 500;
+        font-size: 16px;
+        color: var(--teal-text);
+        cursor: pointer;
+      }
+
+      /* ── right: sell ─────────────────────────────────────────── */
+      .right {
+        align-items: flex-end;
+        text-align: right;
+        color: #fff;
+        background: var(--indigo);
+        background-image: radial-gradient(
+          90% 70% at 0% 0%,
+          rgba(255, 255, 255, 0.16),
+          rgba(255, 255, 255, 0) 58%
+        );
+      }
+      .right .right-top {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      .right .lede {
+        color: rgba(255, 255, 255, 0.82);
+      }
+      .right .col-list {
+        align-items: flex-end;
+      }
+      .right .col-list .row {
+        justify-content: flex-end;
+      }
+      .right .col-list .what {
+        color: rgba(255, 255, 255, 0.72);
+        order: 0;
+      }
+      .right .col-list .mod {
+        color: #fff;
+        text-align: right;
+        order: 1;
+      }
+      .right .col-list .bullet {
+        order: 2;
+      }
+      .right-bottom {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+      .order-card {
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+        text-align: left;
+      }
+      .order-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .order-row .lbl {
+        font-size: 14px;
+        color: #3f3f46;
+      }
+      .order-row .amt {
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--ink);
+      }
+      .order-total {
+        padding-top: 11px;
+        border-top: 1px solid #f0f0f0;
+      }
+      .order-total .lbl {
+        color: #71717a;
+      }
+      .order-total .amt {
+        font-size: 18px;
+        letter-spacing: -0.01em;
+      }
+      .paid {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        color: #065f46;
+        background: #ecfdf5;
+        padding: 2px 8px;
+        border-radius: 9999px;
+      }
+      .btn-open {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 18px;
+        font-family: inherit;
+        font-weight: 500;
+        font-size: 16px;
+        color: #4338ca;
+        background: #fff;
+        border: none;
+        padding: 13px 22px;
+        border-radius: 9999px;
+        cursor: pointer;
+      }
+
+      /* ── seam ornaments ──────────────────────────────────────── */
+      .seam-wordmark {
+        position: absolute;
+        top: 38px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 120px;
+        height: 38px;
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        border-radius: 9999px;
+        box-shadow: 0 4px 14px rgba(15, 15, 20, 0.1);
+        z-index: 10;
+      }
+      .seam-wordmark .wm {
+        font-weight: 500;
+        font-size: 18px;
+        letter-spacing: -0.03em;
+      }
+      .seam-wordmark .x {
+        color: var(--indigo);
+      }
+      .medallion {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 128px;
+        height: 128px;
+        border-radius: 9999px;
+        background: #fff;
+        border: 1px solid #e5e5e5;
+        box-shadow: 0 12px 36px rgba(15, 15, 20, 0.16);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        z-index: 10;
+      }
+      .medallion .or {
+        font-size: 13px;
+        color: var(--faint);
+      }
+      .medallion .both {
+        font-weight: 500;
+        font-size: 21px;
+        letter-spacing: -0.02em;
+      }
+
+      .mobile-head {
+        display: none;
+      }
+
+      /* ── responsive ──────────────────────────────────────────── */
+      @media (max-width: 880px) {
+        .split {
+          flex-direction: column;
+        }
+        .half {
+          width: 100%;
+          min-height: 0;
+          padding: 40px 24px 48px;
+          gap: 32px;
+        }
+        .display {
+          font-size: 64px;
+          line-height: 60px;
+        }
+        .right {
+          align-items: flex-start;
+          text-align: left;
+        }
+        .right .right-top {
+          align-items: flex-start;
+        }
+        .right .lede {
+          text-align: left;
+        }
+        .right .col-list {
+          align-items: flex-start;
+        }
+        .right .col-list .row {
+          justify-content: flex-start;
+        }
+        .right .col-list .mod {
+          order: 0;
+          text-align: left;
+        }
+        .right .col-list .what {
+          order: 1;
+        }
+        .right .col-list .bullet {
+          order: -1;
+        }
+        .right-bottom {
+          align-items: flex-start;
+        }
+        .seam-wordmark,
+        .medallion {
+          display: none;
+        }
+        .mobile-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 18px 24px;
+          border-bottom: 1px solid #ececec;
+        }
+        .mobile-head .wm {
+          font-weight: 500;
+          font-size: 20px;
+          letter-spacing: -0.03em;
+        }
+        .mobile-head .x {
+          color: var(--indigo);
+        }
+        .mobile-head .tag {
+          font-size: 13px;
+          color: var(--faint);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mobile-head">
+      <span class="wm">Spar<span class="x">x</span></span>
+      <span class="tag">content, commerce, or both</span>
+    </div>
+
+    <div class="split">
+      <!-- LEFT — Publish -->
+      <section class="half left">
+        <div class="left-top">
+          <h1 class="display">Publish<span class="dot-teal">.</span></h1>
+          <p class="lede">
+            Words, pages, media, audiences. Run a pure content business on Sparx — CMS, Builder, CRM,
+            Email. No cart required, ever.
+          </p>
+          <div class="col-list">
+            <div class="row">
+              <span class="bullet" style="background: #14b8a6"></span
+              ><span class="mod">CMS</span><span class="what">Editor, media library, SEO</span>
+            </div>
+            <div class="row">
+              <span class="bullet" style="background: #6366f1"></span
+              ><span class="mod">Builder</span><span class="what">Themes, pages, live URLs</span>
+            </div>
+            <div class="row">
+              <span class="bullet" style="background: #06b6d4"></span
+              ><span class="mod">CRM</span><span class="what">Audiences &amp; pipeline</span>
+            </div>
+            <div class="row">
+              <span class="bullet" style="background: #0ea5e9"></span
+              ><span class="mod">Email</span><span class="what">Campaigns &amp; broadcasts</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="left-bottom">
+          <div class="card post-card">
+            <div class="stripe" style="background: #14b8a6"></div>
+            <div class="urlbar">
+              <span class="d" style="background: #14b8a6"></span
+              ><span class="u">yourbrand.com/journal</span>
+            </div>
+            <div class="card-body">
+              <span class="post-title">Field notes: the winter teardown</span>
+              <span class="post-excerpt"
+                >We pulled the injectors on a '06 LBZ and documented every torque spec, gasket, and
+                gotcha so you don't have to guess.</span
+              >
+              <div class="byline">
+                <span class="avatar" style="background: #ccfbf1"></span
+                ><span>Dana Ruiz · 4 min read</span>
+              </div>
+            </div>
+          </div>
+          <span class="bottom-link"
+            >Start publishing
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#0f766e"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" /></svg
+          ></span>
+        </div>
+      </section>
+
+      <!-- RIGHT — Sell -->
+      <section class="half right">
+        <div class="right-top">
+          <h1 class="display">Sell<span class="dot-orange">.</span></h1>
+          <p class="lede">
+            Cart, checkout, orders, wholesale, fleet. Or bolt commerce onto the content you already
+            publish — Commerce, B2B, Dropship, AI.
+          </p>
+          <div class="col-list">
+            <div class="row">
+              <span class="what">Cart, checkout, payments</span><span class="mod">Commerce</span
+              ><span class="bullet" style="background: #f97316"></span>
+            </div>
+            <div class="row">
+              <span class="what">Wholesale, net terms, fleet</span><span class="mod">B2B</span
+              ><span class="bullet" style="background: #cbd5e1"></span>
+            </div>
+            <div class="row">
+              <span class="what">Suppliers, sync, routing</span><span class="mod">Dropship</span
+              ><span class="bullet" style="background: #34d399"></span>
+            </div>
+            <div class="row">
+              <span class="what">Native MCP server</span><span class="mod">AI</span
+              ><span class="bullet" style="background: #f9a8d4"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-bottom">
+          <div class="card order-card">
+            <div class="stripe" style="background: #f97316"></div>
+            <div class="urlbar">
+              <span class="d" style="background: #f97316"></span
+              ><span class="u" style="flex: 1">checkout · order #1042</span
+              ><span class="paid">paid</span>
+            </div>
+            <div class="card-body">
+              <div class="order-row">
+                <span class="lbl">12 × Injector seal kit</span><span class="amt">$480.00</span>
+              </div>
+              <div class="order-row">
+                <span class="lbl">Freight · LTL, net 30</span><span class="amt">$96.00</span>
+              </div>
+              <div class="order-row order-total">
+                <span class="lbl">Total</span><span class="amt">$576.00</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn-open">
+            Open a store
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#4338ca"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <div class="seam-wordmark"><span class="wm">Spar<span class="x">x</span></span></div>
+    <div class="medallion">
+      <span class="or">or</span>
+      <svg width="38" height="20" viewBox="0 0 38 20" fill="none">
+        <circle cx="11" cy="10" r="9" fill="#14B8A6" fill-opacity="0.85" />
+        <circle cx="27" cy="10" r="9" fill="#F97316" fill-opacity="0.85" />
+      </svg>
+      <span class="both">both</span>
+    </div>
+  </body>
+</html>

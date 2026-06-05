@@ -24,7 +24,7 @@ import { emailService } from '@sparx/builder';
 import { builderEmailService } from '@sparx/email-platform';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
+import { requireBuilderModule, toBuilderTenantContext } from '../../../lib/builder-context.js';
 import { emailDataResolver } from '../../../lib/email-data.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
@@ -33,21 +33,21 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/emails', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
-    const emails = await emailService.listOrSeed(toBuilderContext(request));
+    const emails = await emailService.listOrSeed(toBuilderTenantContext(request));
     return ok({ emails });
   });
 
   app.post('/v1/builder/emails', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
-    const email = await emailService.create(toBuilderContext(request), request.body);
+    const email = await emailService.create(toBuilderTenantContext(request), request.body);
     return ok(email);
   });
 
   app.post('/v1/builder/emails/reorder', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
-    const emails = await emailService.reorder(toBuilderContext(request), request.body);
+    const emails = await emailService.reorder(toBuilderTenantContext(request), request.body);
     return ok({ emails });
   });
 
@@ -55,7 +55,7 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const email = await emailService.get(toBuilderContext(request), id);
+    const email = await emailService.get(toBuilderTenantContext(request), id);
     return ok(email);
   });
 
@@ -63,7 +63,7 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const email = await emailService.update(toBuilderContext(request), id, request.body);
+    const email = await emailService.update(toBuilderTenantContext(request), id, request.body);
     return ok(email);
   });
 
@@ -71,7 +71,7 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    await emailService.remove(toBuilderContext(request), id);
+    await emailService.remove(toBuilderTenantContext(request), id);
     return ok({ id });
   });
 
@@ -79,7 +79,7 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const email = await emailService.publish(toBuilderContext(request), id);
+    const email = await emailService.publish(toBuilderTenantContext(request), id);
     return ok(email);
   });
 
@@ -89,7 +89,7 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/emails/:id/preview', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
-    const ctx = toBuilderContext(request);
+    const ctx = toBuilderTenantContext(request);
     const { id } = IdParam.parse(request.params);
     const email = await emailService.get(ctx, id);
     const preview = await builderEmailService.renderPreview(
@@ -104,7 +104,7 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/builder/emails/:id/test-send', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
-    const ctx = toBuilderContext(request);
+    const ctx = toBuilderTenantContext(request);
     const { id } = IdParam.parse(request.params);
     const email = await emailService.get(ctx, id);
     const result = await builderEmailService.testSend(

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx — Cancel the stack</title>
+    <!--
+      Landing page "Consolidate" — the switch / consolidation play.
+      Hook: cancel the 6-tool stack. Structural device: six tools (generic
+      categories, never competitor names) collapse into one Sparx line — one
+      login, one bill, one source of truth. Accent indigo; the 6 module colors
+      stand in for the tools being replaced. No eyebrows.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1;
+        --indigo-hover: #4f46e5;
+        --indigo-text: #4338ca;
+        --indigo-tint: #eef2ff;
+        --ink: #0a0a0a;
+        --muted: #52525b;
+        --soft: #3f3f46;
+        --faint: #a1a1aa;
+        --border: #ececec;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: #fff;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+      a { color: inherit; text-decoration: none; }
+
+      .topbar {
+        position: sticky; top: 0; z-index: 50;
+        background: rgba(255,255,255,0.85); backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+      .wordmark { font-weight: 500; font-size: 20px; letter-spacing: -0.03em; }
+      .wordmark .x { color: var(--indigo); }
+      .nav { display: flex; align-items: center; gap: 22px; }
+      .nav a { font-size: 14px; color: var(--muted); }
+      .btn { display: inline-flex; align-items: center; gap: 8px; font-family: inherit; font-weight: 500; font-size: 14px; border: none; border-radius: 8px; cursor: pointer; }
+      .btn-primary { background: var(--indigo); color: #fff; padding: 10px 18px; }
+      .btn-primary:hover { background: var(--indigo-hover); }
+      .btn-ghost { background: #fff; color: var(--indigo-text); border: 1px solid #e5e5e5; padding: 10px 16px; }
+      .btn-lg { font-size: 16px; padding: 15px 26px; border-radius: 10px; }
+
+      /* hero */
+      .hero { text-align: center; padding: 96px 0 84px; }
+      .hero h1 { margin: 0 auto; max-width: 820px; font-weight: 500; font-size: 88px; line-height: 84px; letter-spacing: -0.04em; }
+      .hero .sub { margin: 30px auto 0; max-width: 600px; font-size: 18px; line-height: 28px; color: var(--muted); }
+      .hero .actions { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 36px; flex-wrap: wrap; }
+      .replaces { display: flex; align-items: center; justify-content: center; gap: 10px 14px; flex-wrap: wrap; margin-top: 44px; }
+      .replaces .r-lbl { font-size: 14px; color: var(--faint); }
+      .replaces .pill { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; color: var(--soft); border: 1px solid #e5e5e5; padding: 7px 13px; border-radius: 9999px; }
+      .replaces .pill .d { width: 7px; height: 7px; border-radius: 9999px; }
+
+      /* collapse: before / after */
+      .collapse { padding: 16px 0 96px; }
+      .collapse-grid { display: flex; align-items: center; gap: 0; }
+      .col-before, .col-after { flex: 1; }
+      .panel { border: 1px solid #e5e5e5; border-radius: 18px; padding: 28px; }
+      .panel .cap { font-weight: 500; font-size: 14px; color: var(--faint); margin-bottom: 18px; }
+      .tool { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid #f4f4f5; }
+      .tool:last-of-type { border-bottom: none; }
+      .tool .nm { display: flex; align-items: center; gap: 11px; font-size: 15px; color: var(--soft); }
+      .tool .nm .d { width: 9px; height: 9px; border-radius: 9999px; flex-shrink: 0; }
+      .tool .amt { font-size: 15px; color: var(--faint); text-decoration: line-through; }
+      .before-total { display: flex; align-items: baseline; justify-content: space-between; margin-top: 18px; padding-top: 18px; border-top: 1px solid #ececec; }
+      .before-total .t { font-size: 14px; color: var(--muted); }
+      .before-total .v { font-weight: 500; font-size: 26px; letter-spacing: -0.02em; color: var(--faint); text-decoration: line-through; }
+      .before-meta { margin-top: 12px; font-family: 'Geist Mono', monospace; font-size: 12px; color: #c4544a; }
+
+      .arrow { width: 96px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #cbcbd1; }
+
+      .panel-after { background: var(--indigo); color: #fff; border-color: var(--indigo); background-image: radial-gradient(120% 100% at 0% 0%, rgba(255,255,255,0.16), rgba(255,255,255,0) 60%); }
+      .panel-after .cap { color: rgba(255,255,255,0.7); }
+      .panel-after .one { font-weight: 500; font-size: 22px; letter-spacing: -0.01em; }
+      .panel-after .price { display: flex; align-items: baseline; gap: 5px; margin: 14px 0 18px; }
+      .panel-after .price .big { font-weight: 500; font-size: 56px; line-height: 1; letter-spacing: -0.03em; }
+      .panel-after .price .per { font-size: 17px; color: rgba(255,255,255,0.7); }
+      .panel-after .meta { display: flex; flex-direction: column; gap: 9px; }
+      .panel-after .meta div { display: flex; align-items: center; gap: 9px; font-size: 14px; color: rgba(255,255,255,0.88); }
+      .panel-after .meta svg { flex-shrink: 0; }
+
+      /* one source of truth */
+      .truth { padding: 96px 0; background: #fafafa; }
+      .truth .inner { display: flex; gap: 64px; align-items: center; flex-wrap: wrap; }
+      .truth .copy { flex: 1; min-width: 300px; }
+      .truth h2 { margin: 0; font-weight: 500; font-size: 44px; line-height: 46px; letter-spacing: -0.03em; }
+      .truth p { margin: 20px 0 0; max-width: 460px; font-size: 17px; line-height: 27px; color: var(--muted); }
+      .truth .record { flex: 1; min-width: 300px; background: #fff; border: 1px solid #e5e5e5; border-radius: 16px; box-shadow: 0 14px 40px rgba(15,15,20,0.06); overflow: hidden; }
+      .truth .rhead { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid #f0f0f0; }
+      .truth .rhead .av { width: 34px; height: 34px; border-radius: 9999px; background: #eef2ff; flex-shrink: 0; }
+      .truth .rhead .nm { font-weight: 500; font-size: 15px; }
+      .truth .rhead .mt { font-size: 13px; color: var(--faint); }
+      .truth .rrow { display: flex; align-items: center; gap: 11px; padding: 12px 20px; border-bottom: 1px solid #f6f6f7; font-size: 14px; color: var(--soft); }
+      .truth .rrow:last-child { border-bottom: none; }
+      .truth .rrow .d { width: 8px; height: 8px; border-radius: 9999px; flex-shrink: 0; }
+      .truth .rrow .src { margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint); }
+
+      /* proof numbers */
+      .proof { padding: 92px 0; }
+      .proof-row { display: flex; gap: 0; flex-wrap: wrap; }
+      .proof-row .stat { flex: 1; min-width: 200px; padding: 0 36px; border-left: 1px solid var(--border); }
+      .proof-row .stat:first-child { padding-left: 0; border-left: none; }
+      .proof-row .stat .n { font-weight: 500; font-size: 52px; letter-spacing: -0.03em; }
+      .proof-row .stat .l { margin-top: 8px; font-size: 15px; line-height: 22px; color: var(--muted); }
+
+      /* cta */
+      .cta { text-align: center; padding: 104px 0; }
+      .cta h2 { margin: 0 auto; max-width: 680px; font-weight: 500; font-size: 52px; line-height: 54px; letter-spacing: -0.03em; }
+      .cta .sub { margin: 20px auto 32px; font-size: 17px; color: var(--muted); }
+
+      footer { border-top: 1px solid var(--border); padding: 32px 0; }
+      footer .wrap { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+      footer .dots { display: flex; gap: 7px; }
+      footer .dots span { width: 8px; height: 8px; border-radius: 9999px; }
+      footer .legal { font-size: 13px; color: var(--faint); }
+
+      @media (max-width: 800px) {
+        .wrap { padding: 0 22px; }
+        .hero { padding: 56px 0; }
+        .hero h1 { font-size: 52px; line-height: 50px; }
+        .collapse-grid { flex-direction: column; gap: 20px; }
+        .arrow { width: 100%; height: 44px; transform: rotate(90deg); }
+        .truth h2, .cta h2 { font-size: 34px; line-height: 36px; }
+        .proof-row { flex-direction: column; gap: 28px; }
+        .proof-row .stat { padding: 0; border-left: none; }
+        .cta h2 { font-size: 36px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap">
+        <span class="wordmark">Spar<span class="x">x</span></span>
+        <nav class="nav">
+          <a href="#">Platform</a>
+          <a href="#">Pricing</a>
+          <button class="btn btn-primary">Start free</button>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="wrap">
+        <h1>Cancel the stack.</h1>
+        <p class="sub">
+          Storefront, CMS, CRM, email, B2B, and AI used to mean six logins, six invoices, and six
+          databases that quietly disagree. Sparx is one of each — sharing one spine.
+        </p>
+        <div class="actions">
+          <button class="btn btn-primary btn-lg">
+            Start free
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </button>
+          <button class="btn btn-ghost btn-lg">Add up your bill</button>
+        </div>
+        <div class="replaces">
+          <span class="r-lbl">Replaces</span>
+          <span class="pill"><span class="d" style="background:#f97316"></span>store platform</span>
+          <span class="pill"><span class="d" style="background:#14b8a6"></span>CMS</span>
+          <span class="pill"><span class="d" style="background:#06b6d4"></span>CRM</span>
+          <span class="pill"><span class="d" style="background:#0ea5e9"></span>email tool</span>
+          <span class="pill"><span class="d" style="background:#475569"></span>B2B add-on</span>
+          <span class="pill"><span class="d" style="background:#ec4899"></span>automation glue</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="collapse">
+      <div class="wrap">
+        <div class="collapse-grid">
+          <div class="col-before">
+            <div class="panel">
+              <div class="cap">What you run now</div>
+              <div class="tool"><span class="nm"><span class="d" style="background:#f97316"></span>Store platform</span><span class="amt">$99/mo</span></div>
+              <div class="tool"><span class="nm"><span class="d" style="background:#14b8a6"></span>CMS / blog</span><span class="amt">$79/mo</span></div>
+              <div class="tool"><span class="nm"><span class="d" style="background:#06b6d4"></span>CRM</span><span class="amt">$90/mo</span></div>
+              <div class="tool"><span class="nm"><span class="d" style="background:#0ea5e9"></span>Email marketing</span><span class="amt">$99/mo</span></div>
+              <div class="tool"><span class="nm"><span class="d" style="background:#475569"></span>B2B add-on</span><span class="amt">$400/mo</span></div>
+              <div class="tool"><span class="nm"><span class="d" style="background:#ec4899"></span>Automation glue</span><span class="amt">$49/mo</span></div>
+              <div class="before-total"><span class="t">Six tools, six bills</span><span class="v">$816/mo</span></div>
+              <div class="before-meta">6 logins · 6 invoices · records that disagree</div>
+            </div>
+          </div>
+
+          <div class="arrow">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </div>
+
+          <div class="col-after">
+            <div class="panel panel-after">
+              <div class="cap">What you run on Sparx</div>
+              <div class="one">One platform. Every module.</div>
+              <div class="price"><span class="big">$373</span><span class="per">/mo, all-in</span></div>
+              <div class="meta">
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>One login for the whole business</div>
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>One invoice, every month</div>
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>One data layer — nothing to sync</div>
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Or start at $49 and add as you grow</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="truth">
+      <div class="wrap">
+        <div class="inner">
+          <div class="copy">
+            <h2>The records never disagree, because there's only one.</h2>
+            <p>
+              Your store and your CRM aren't two apps trading webhooks at 3am — they're the same
+              database. An order, a support reply, an RFQ, an email open, an AI conversation: all
+              attached to one customer, no deduping, no "which system is right?"
+            </p>
+          </div>
+          <div class="record">
+            <div class="rhead">
+              <span class="av"></span>
+              <div><div class="nm">Dana Ruiz</div><div class="mt">one record · 7 signals</div></div>
+            </div>
+            <div class="rrow"><span class="d" style="background:#f97316"></span>Order #1042 — $576.00<span class="src">commerce</span></div>
+            <div class="rrow"><span class="d" style="background:#475569"></span>Net-30 invoice, due in 11 days<span class="src">b2b</span></div>
+            <div class="rrow"><span class="d" style="background:#0ea5e9"></span>Opened "Winter restock" email<span class="src">email</span></div>
+            <div class="rrow"><span class="d" style="background:#06b6d4"></span>In segment: high-value, at-risk<span class="src">crm</span></div>
+            <div class="rrow"><span class="d" style="background:#ec4899"></span>Asked the AI for a reorder quote<span class="src">mcp</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="proof">
+      <div class="wrap">
+        <div class="proof-row">
+          <div class="stat"><div class="n">4–6</div><div class="l">tools a typical team retires when they move to Sparx</div></div>
+          <div class="stat"><div class="n">~60%</div><div class="l">lower software bill once the stack is one platform</div></div>
+          <div class="stat"><div class="n">0</div><div class="l">integrations to babysit — there's nothing to sync</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="wrap">
+        <h2>See your number.</h2>
+        <p class="sub">Switch on what you use, watch the bill — and the five logins you'll never open again.</p>
+        <button class="btn btn-primary btn-lg">
+          Build your plan
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+        </button>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <span class="wordmark">Spar<span class="x">x</span></span>
+        <div class="dots">
+          <span style="background:#6366f1"></span><span style="background:#f97316"></span><span style="background:#14b8a6"></span><span style="background:#06b6d4"></span><span style="background:#0ea5e9"></span><span style="background:#475569"></span><span style="background:#ec4899"></span><span style="background:#10b981"></span>
+        </div>
+        <span class="legal">© 2026 WizeWorks · sparx.works</span>
+      </div>
+    </footer>
+  </body>
+</html>

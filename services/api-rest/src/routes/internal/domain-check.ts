@@ -13,23 +13,20 @@
 //     there's no way to authorize them. They'll fail to issue a cert,
 //     which is the safe default.
 //
-// Phase 2 policy (when tenants land, per docs/04 §4): look up the host in
-// `domains` where `status = 'verified'` AND the tenant is active. Replace
-// the static list (or supplement it).
-//
-// Tenant subdomain authorization (Phase 1.5): `*.sparx.zone` subdomains are
-// authorized by looking up the slug in the `tenants` table. This is what
-// powers preview URLs from the dashboard (<tenant>.sparx.zone) and any
-// tenant landing on their own storefront before custom domains exist.
+// Phase 2 policy (docs/49 §5): every non-platform host is authorized by
+// `resolveSiteByHost` (lib/domain.ts) — one source of truth shared with the
+// storefront. It covers BOTH a connected custom domain (a verified/active row
+// in the `domains` table) AND a `*.sparx.zone` subdomain (an exact domains row,
+// or the bare `<tenant>.sparx.zone` fallback resolved via the tenants table).
+// This is what powers preview URLs from the dashboard and tenants on their own
+// custom domains alike.
 //
 // Not in OpenAPI, no auth, no rate-limit interference — this is an internal
 // ClusterIP-only endpoint. Caddy hits it at most every 2 minutes per host
 // (the Caddyfile `interval`), so there's nothing to throttle here.
 
 import type { FastifyPluginAsync } from 'fastify';
-import { prisma } from '@sparx/db';
-
-const TENANT_ZONE_SUFFIX = '.sparx.zone';
+import { isHostAuthorized } from '../../lib/domain.js';
 
 const PLATFORM_HOSTNAMES = new Set<string>([
   // sparx.works
@@ -93,27 +90,15 @@ const domainCheckRoutes: FastifyPluginAsync = (app) => {
         return reply.code(200).send({ allowed: true, source: 'platform' });
       }
 
-      // *.sparx.zone tenant subdomains: extract slug, look up the tenant.
-      // Single-level only — foo.bar.sparx.zone is rejected.
-      if (host.endsWith(TENANT_ZONE_SUFFIX)) {
-        const slug = host.slice(0, -TENANT_ZONE_SUFFIX.length);
-        if (slug.length > 0 && !slug.includes('.')) {
-          const tenant = await prisma.tenant.findUnique({
-            where: { slug },
-            select: { id: true, status: true },
-          });
-          if (tenant?.status === 'active') {
-            return reply
-              .code(200)
-              .send({ allowed: true, source: 'tenant_subdomain', tenantId: tenant.id });
-          }
-        }
+      // Tenant sites: custom domains + `*.sparx.zone` subdomains, both resolved
+      // by the shared host→property resolver. A routable host (active tenant +
+      // non-archived property) is authorized to mint a cert.
+      const route = await isHostAuthorized(host);
+      if (route) {
+        return reply
+          .code(200)
+          .send({ allowed: true, source: 'tenant_site', tenantId: route.tenantId });
       }
-
-      // Phase 2 hook: when the `domains` table exists, look up `host`
-      // here and authorize custom domains.
-      //   const row = await db.domain.findFirst({ where: { domain: host, status: 'verified' } });
-      //   if (row) return reply.code(200).send({ allowed: true, source: 'custom_domain', domainId: row.id });
 
       return reply.code(403).send({ allowed: false, reason: 'unknown_host' });
     }

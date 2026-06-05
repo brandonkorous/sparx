@@ -34,10 +34,28 @@ model Property {
   // Per-property settings bag (shape validated in the service, not the DB).
   settings Json @default("{}")
 
+  // OPTIONAL per-site brand override (docs/49 §3 — the deliberate amendment to
+  // doc-34's "brand overridable by none"). Null = inherit the tenant brand
+  // (TenantBrand stays the default/source of truth). A partial override:
+  // { businessName?, colorPrimary?, colorPrimaryForeground?, colorAccent?,
+  //   logoMediaId? } — any absent/null field falls back to the tenant brand.
+  // Presentation-only identity (display name + theme colours + logo), NOT a full
+  // brand fork; merged over the tenant brand in the public tenant payload.
+  brandOverride Json? @map("brand_override")
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Builder presentation layer, re-keyed per-property (docs/49 Phase 1B). Emails
+  // + tenant-authored components stay tenant-wide and do NOT relate here.
+  builderPages       BuilderPage[]
+  builderLayouts     BuilderLayout[]
+  builderAssignments BuilderPageAssignment[]
+
+  // Custom + purchased hostnames pointing at this site (docs/49 §5, docs/24).
+  domains Domain[]
 
   @@unique([tenantId, slug])
   @@index([tenantId])

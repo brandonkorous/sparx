@@ -23,7 +23,7 @@ import { withTenant } from '@sparx/db';
 import { collectClasses, compileClasses, contentHash } from '@sparx/surface-compile';
 import type { BuilderNode } from '@sparx/builder-schemas';
 
-import type { ServiceContext } from '../errors';
+import type { PropertyContext } from '../errors';
 
 export interface PublishedStylesheet {
   /** The compiled, minified CSS for every authored class — '' when none. */
@@ -47,15 +47,18 @@ const draftCache = new Map<string, { classHash: string; sheet: PublishedStyleshe
  *  `publishedTree != null` filter is done in JS — the JSON column's NULL check
  *  needs a Prisma runtime value, but Prisma is a type-only import here (cf.
  *  pageService.getPublishedBySlug). */
-function readPublishedTrees(ctx: ServiceContext): Promise<BuilderNode[]> {
+function readPublishedTrees(ctx: PropertyContext): Promise<BuilderNode[]> {
   return withTenant(ctx, async (tx) => {
     const trees: BuilderNode[] = [];
-    const pages = await tx.builderPage.findMany({ select: { publishedTree: true } });
+    const pages = await tx.builderPage.findMany({
+      where: { propertyId: ctx.propertyId },
+      select: { publishedTree: true },
+    });
     for (const page of pages) {
       if (page.publishedTree != null) trees.push(page.publishedTree as unknown as BuilderNode);
     }
     const layout = await tx.builderLayout.findFirst({
-      where: { isActive: true },
+      where: { isActive: true, propertyId: ctx.propertyId },
       select: { publishedTree: true },
     });
     if (layout?.publishedTree != null) {
@@ -71,32 +74,37 @@ function readPublishedTrees(ctx: ServiceContext): Promise<BuilderNode[]> {
  * classes are authored yet (the common case until class-first authoring is in
  * wide use). Cached per class-set so repeat reads don't recompile.
  */
-export async function getPublishedStylesheet(ctx: ServiceContext): Promise<PublishedStylesheet> {
+export async function getPublishedStylesheet(ctx: PropertyContext): Promise<PublishedStylesheet> {
   const trees = await readPublishedTrees(ctx);
   const classes = collectClasses(trees);
   const classHash = contentHash(classes.join(' '));
 
-  const cached = cache.get(ctx.tenantId);
+  // Cache per (tenant, property) — sibling sites author different class sets.
+  const key = `${ctx.tenantId}:${ctx.propertyId}`;
+  const cached = cache.get(key);
   if (cached?.classHash === classHash) return cached.sheet;
 
   const css = await compileClasses(classes, { minify: true });
   const sheet: PublishedStylesheet = { css, hash: contentHash(css) };
-  cache.set(ctx.tenantId, { classHash, sheet });
+  cache.set(key, { classHash, sheet });
   return sheet;
 }
 
 /** Collect every tenant DRAFT tree (all page drafts + the active layout's draft
  *  chrome) — the preview counterpart of readPublishedTrees. `draftTree` is
  *  non-nullable, but the guard mirrors the published reader for symmetry. */
-function readDraftTrees(ctx: ServiceContext): Promise<BuilderNode[]> {
+function readDraftTrees(ctx: PropertyContext): Promise<BuilderNode[]> {
   return withTenant(ctx, async (tx) => {
     const trees: BuilderNode[] = [];
-    const pages = await tx.builderPage.findMany({ select: { draftTree: true } });
+    const pages = await tx.builderPage.findMany({
+      where: { propertyId: ctx.propertyId },
+      select: { draftTree: true },
+    });
     for (const page of pages) {
       if (page.draftTree != null) trees.push(page.draftTree as unknown as BuilderNode);
     }
     const layout = await tx.builderLayout.findFirst({
-      where: { isActive: true },
+      where: { isActive: true, propertyId: ctx.propertyId },
       select: { draftTree: true },
     });
     if (layout?.draftTree != null) {
@@ -113,17 +121,18 @@ function readDraftTrees(ctx: ServiceContext): Promise<BuilderNode[]> {
  * draft preview, so classes added since the last publish still resolve. Cached
  * per draft class-set in `draftCache`.
  */
-export async function getDraftStylesheet(ctx: ServiceContext): Promise<PublishedStylesheet> {
+export async function getDraftStylesheet(ctx: PropertyContext): Promise<PublishedStylesheet> {
   const trees = await readDraftTrees(ctx);
   const classes = collectClasses(trees);
   const classHash = contentHash(classes.join(' '));
 
-  const cached = draftCache.get(ctx.tenantId);
+  const key = `${ctx.tenantId}:${ctx.propertyId}`;
+  const cached = draftCache.get(key);
   if (cached?.classHash === classHash) return cached.sheet;
 
   const css = await compileClasses(classes, { minify: true });
   const sheet: PublishedStylesheet = { css, hash: contentHash(css) };
-  draftCache.set(ctx.tenantId, { classHash, sheet });
+  draftCache.set(key, { classHash, sheet });
   return sheet;
 }
 

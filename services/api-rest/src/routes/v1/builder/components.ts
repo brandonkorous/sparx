@@ -19,7 +19,7 @@ import { z } from 'zod';
 import { componentService } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
+import { requireBuilderModule, toBuilderTenantContext } from '../../../lib/builder-context.js';
 
 const KeyParam = z.object({ key: z.string().min(1).max(56) });
 const VersionParam = z.object({
@@ -37,7 +37,7 @@ const builderComponentRoutes: FastifyPluginAsync = (app) => {
     // `?include=tree` returns each component WITH its latest version tree — what
     // the Builder editor needs to expand placements live (docs/53 P-B). The
     // catalog list omits trees (summaries only).
-    const ctx = toBuilderContext(request);
+    const ctx = toBuilderTenantContext(request);
     const components =
       include === 'tree' ? await componentService.listFull(ctx) : await componentService.list(ctx);
     return ok({ components });
@@ -46,7 +46,7 @@ const builderComponentRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/builder/components', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
-    const component = await componentService.create(toBuilderContext(request), request.body);
+    const component = await componentService.create(toBuilderTenantContext(request), request.body);
     return ok(component);
   });
 
@@ -54,7 +54,7 @@ const builderComponentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
     const { key } = KeyParam.parse(request.params);
-    const component = await componentService.get(toBuilderContext(request), key);
+    const component = await componentService.get(toBuilderTenantContext(request), key);
     return ok(component);
   });
 
@@ -62,7 +62,11 @@ const builderComponentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { key } = KeyParam.parse(request.params);
-    const component = await componentService.update(toBuilderContext(request), key, request.body);
+    const component = await componentService.update(
+      toBuilderTenantContext(request),
+      key,
+      request.body
+    );
     return ok(component);
   });
 
@@ -70,7 +74,7 @@ const builderComponentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { key } = KeyParam.parse(request.params);
-    await componentService.remove(toBuilderContext(request), key);
+    await componentService.remove(toBuilderTenantContext(request), key);
     return ok({ key });
   });
 
@@ -78,7 +82,7 @@ const builderComponentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
     const { key } = KeyParam.parse(request.params);
-    const usages = await componentService.usages(toBuilderContext(request), key);
+    const usages = await componentService.usages(toBuilderTenantContext(request), key);
     return ok(usages);
   });
 
@@ -88,7 +92,7 @@ const builderComponentRoutes: FastifyPluginAsync = (app) => {
     const { key } = KeyParam.parse(request.params);
     const { version } = UpgradeBody.parse(request.body ?? {});
     const result = await componentService.upgradeAllPlacements(
-      toBuilderContext(request),
+      toBuilderTenantContext(request),
       key,
       version
     );
@@ -99,7 +103,7 @@ const builderComponentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
     const { key } = KeyParam.parse(request.params);
-    const versions = await componentService.listVersions(toBuilderContext(request), key);
+    const versions = await componentService.listVersions(toBuilderTenantContext(request), key);
     return ok({ versions });
   });
 
@@ -107,7 +111,7 @@ const builderComponentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
     const { key, version } = VersionParam.parse(request.params);
-    const result = await componentService.getVersion(toBuilderContext(request), key, version);
+    const result = await componentService.getVersion(toBuilderTenantContext(request), key, version);
     return ok(result);
   });
 
