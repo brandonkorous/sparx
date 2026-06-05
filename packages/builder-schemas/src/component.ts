@@ -64,6 +64,60 @@ export type PropSpec = z.infer<typeof PropSpecSchema>;
 
 export const PropSpecListSchema = z.array(PropSpecSchema).max(50);
 
+// ── propSpec → zod (docs/53 §5) ───────────────────────────────────────────────
+// The instance-config validator a component's propSpec derives (mirrors the
+// legacy fieldSpecToZod): each declared slot maps to a Zod type by kind, so an
+// instance's filled values can be validated + coerced into the shape the
+// component expects. Enforced at expand (publish bakes coerced values into the
+// published tree), so a published placement can never carry a slot value in a
+// shape the component rejects.
+
+/** The Zod type one slot kind validates/coerces to. */
+function zodForKind(kind: PropKind): z.ZodType {
+  switch (kind) {
+    case 'number':
+      return z.coerce.number();
+    case 'boolean':
+      // Real booleans (the Switch control) pass; a stringified "true"/"false"
+      // coerces. Avoids z.coerce.boolean's footgun (any non-empty string → true).
+      return z.preprocess((v) => (typeof v === 'string' ? v === 'true' : v), z.boolean());
+    case 'text':
+    case 'richtext':
+    case 'url':
+    case 'image':
+    default:
+      return z.string();
+  }
+}
+
+/** The object validator for a component's filled instance props (every slot
+ *  optional — an empty slot falls back to the component's default). */
+export function propSpecToZod(propSpec: PropSpec[]): z.ZodObject {
+  const shape: Record<string, z.ZodType> = {};
+  for (const p of propSpec) shape[p.key] = zodForKind(p.kind).optional();
+  return z.object(shape);
+}
+
+/** Coerce an instance's filled props to their declared kinds, dropping any value
+ *  that can't validate (so a single bad value falls back to the component default
+ *  rather than blanking the whole component). Empty / absent slots are left as-is
+ *  for the expander to resolve from the default. Undeclared keys pass through. */
+export function coerceInstanceProps(
+  propSpec: PropSpec[],
+  props: Record<string, unknown>
+): Record<string, unknown> {
+  if (propSpec.length === 0) return props;
+  const out: Record<string, unknown> = { ...props };
+  for (const p of propSpec) {
+    const raw = props[p.key];
+    if (raw === undefined || raw === null || raw === '') continue;
+    const parsed = zodForKind(p.kind).safeParse(raw);
+    if (parsed.success && parsed.data !== undefined) out[p.key] = parsed.data;
+    else delete out[p.key];
+  }
+  return out;
+}
+
 // ── The `{ $prop: key }` slot sentinel ────────────────────────────────────────
 // A node prop value inside a component tree may be a slot reference instead of a
 // literal; the expander replaces it with the instance's value for that prop.
@@ -78,6 +132,28 @@ export function isPropSlot(v: unknown): v is PropSlot {
   );
 }
 
+// ── The `$bind:<key>` binding slot (docs/53 §5, 4b) ───────────────────────────
+// The binding analog of a `{ $prop }` slot: a node's `binding.path` may be a
+// `$bind:<key>` sentinel instead of a real data path. The author declares it in
+// the component editor; each placement maps the slot to a real path under
+// `props.$ref.bindings`, and the expander substitutes it. Encoding the slot in
+// the path string (vs. a new binding shape) keeps the BuilderNode schema — and
+// therefore the storefront renderer — untouched: published trees only ever carry
+// concrete `{ path }` bindings (or none), never a `$bind:*` sentinel.
+
+export const BIND_SLOT_PREFIX = '$bind:';
+/** The binding path that marks a node's data binding as instance-fillable. */
+export function makeBindSlotPath(key: string): string {
+  return `${BIND_SLOT_PREFIX}${key}`;
+}
+export function isBindSlotPath(path: string | undefined | null): boolean {
+  return typeof path === 'string' && path.startsWith(BIND_SLOT_PREFIX);
+}
+/** The slot key behind a `$bind:<key>` binding path, or null. */
+export function bindSlotKey(path: string | undefined | null): string | null {
+  return isBindSlotPath(path) ? path!.slice(BIND_SLOT_PREFIX.length) : null;
+}
+
 // ── The instance `$ref` (carried on a placement node's props) ─────────────────
 // A `custom:<key>` placement stores its pinned version + instance prop values
 // under `props.$ref`; the rest of `props` are the instance's slot values.
@@ -86,6 +162,11 @@ export const REF_KEY = '$ref';
 export const ComponentRefSchema = z.object({
   /** The pinned component version this placement renders. */
   version: z.number().int().min(1),
+  /** Per-instance binding overrides (docs/53 §5, 4b): a map of the component's
+   *  binding-slot keys (the `$bind:<key>` sentinels authored on its nodes) → the
+   *  data path each resolves to for THIS placement. Omitted ⇒ every slot falls
+   *  back to static. Optional so existing placements (version-only) stay valid. */
+  bindings: z.record(z.string(), z.string()).optional(),
 });
 export type ComponentRef = z.infer<typeof ComponentRefSchema>;
 
@@ -129,6 +210,10 @@ export interface ComponentUsageDto {
   pages: { id: string; name: string }[];
   layouts: { id: string; name: string }[];
   total: number;
+  /** The distinct versions this component is pinned to across all placements
+   *  (docs/53 P-E). Lets the detail page tell whether a bulk "update all
+   *  placements" would actually move anything (any value below `latestVersion`). */
+  pinnedVersions: number[];
 }
 
 /** A component without its tree — the list/catalog row. */
@@ -240,6 +325,60 @@ export function validateComponentTree(
   return issues;
 }
 
+// ── Nesting safety (docs/53 4a + §7) ──────────────────────────────────────────
+// v1 forbade custom-in-custom entirely to sidestep cycles. Nesting is now
+// allowed, bounded by two rules the SERVICE enforces (it owns the dependency
+// graph; this module is DB-free): no reference cycle, and a maximum nesting
+// depth. Both are checked here against a graph the service builds from every
+// component's latest tree.
+
+/** The deepest a tenant component may nest other components. Bounds expansion
+ *  (and is the canvas/publish safety net even if a cycle ever slipped through). */
+export const MAX_COMPONENT_NESTING = 5;
+
+/** Validate that saving component `key` with direct references `candidateRefs`
+ *  introduces neither a reference cycle nor a chain deeper than `maxDepth`.
+ *  `graph` maps every OTHER component's key → its own direct references (from its
+ *  latest version). Returns [] when the nesting is safe. Pure — the service loads
+ *  the graph and calls this. */
+export function checkNestingGraph(
+  key: string,
+  candidateRefs: string[],
+  graph: ReadonlyMap<string, string[]>,
+  maxDepth: number = MAX_COMPONENT_NESTING
+): ComponentValidationIssue[] {
+  const issues: ComponentValidationIssue[] = [];
+  const seen = new Set<string>();
+  const add = (message: string): void => {
+    if (seen.has(message)) return;
+    seen.add(message);
+    issues.push({ path: 'root', message });
+  };
+  // The candidate's edges replace `key`'s in the live graph.
+  const edgesOf = (k: string): string[] => (k === key ? candidateRefs : (graph.get(k) ?? []));
+  const stack = new Set<string>();
+  let deepest = 0;
+  const dfs = (k: string, depth: number): void => {
+    deepest = Math.max(deepest, depth);
+    // Hard stop so a stray pre-existing cycle (shouldn't exist) can't run away.
+    if (depth > maxDepth + 1) return;
+    stack.add(k);
+    for (const next of edgesOf(k)) {
+      if (next === key || stack.has(next)) {
+        add(`Components can’t reference each other in a loop ("${next}").`);
+        continue;
+      }
+      dfs(next, depth + 1);
+    }
+    stack.delete(k);
+  };
+  dfs(key, 0);
+  if (deepest > maxDepth) {
+    add(`Components can be nested at most ${maxDepth} levels deep.`);
+  }
+  return issues;
+}
+
 /** Every `custom:<key>` placement found in a tree (with its pinned version) —
  *  powers where-used analysis (delete impact) and publish-time expansion. */
 export function collectComponentRefs(
@@ -255,6 +394,51 @@ export function collectComponentRefs(
   };
   walk(tree);
   return out;
+}
+
+/** The distinct binding slots a component declares — every `$bind:<key>` found on
+ *  a node's binding, deduped by key (the first node's name labels it). Drives the
+ *  placement inspector's per-instance binding-override form (docs/53 4b). Derived
+ *  from the tree, so there's no separate spec to keep in sync (a new column would
+ *  mean a migration; the sentinel + this scan stay migration-free). */
+export function collectBindingSlots(tree: BuilderNode): { key: string; label: string }[] {
+  const labels = new Map<string, string>();
+  const walk = (node: BuilderNode): void => {
+    const k = bindSlotKey(node.binding?.path);
+    if (k && !labels.has(k)) labels.set(k, node.box.name ?? k);
+    (node.children ?? []).forEach(walk);
+  };
+  walk(tree);
+  return [...labels.entries()].map(([key, label]) => ({ key, label }));
+}
+
+/** Re-pin every `custom:<key>` placement in `tree` to `version` (the bulk-upgrade
+ *  primitive, docs/53 §6 / P-E), preserving each placement's instance props +
+ *  binding overrides. Returns the rewritten tree and whether anything changed, so
+ *  the caller can skip a no-op write. Pure. */
+export function repinComponentRefs(
+  tree: BuilderNode,
+  key: string,
+  version: number
+): { tree: BuilderNode; changed: boolean } {
+  let changed = false;
+  const walk = (node: BuilderNode): BuilderNode => {
+    let next = node;
+    if (customKeyOf(node.type) === key) {
+      const ref = readComponentRef(node.props);
+      if (ref?.version !== version) {
+        next = { ...node, props: { ...node.props, [REF_KEY]: { ...(ref ?? {}), version } } };
+        changed = true;
+      }
+    }
+    const kids = next.children;
+    if (kids) {
+      const mapped = kids.map(walk);
+      if (mapped.some((c, i) => c !== kids[i])) next = { ...next, children: mapped };
+    }
+    return next;
+  };
+  return { tree: walk(tree), changed };
 }
 
 // ── Placement + expansion (docs/53 §3, P-B) ───────────────────────────────────
@@ -278,19 +462,24 @@ export function makeCustomNode(key: string, version: number, id: string): Builde
 }
 
 /** Fill `{ $prop: key }` slots in a component's version tree with an instance's
- *  values (falling back to the propSpec default), and rewrite every node id to a
- *  page-unique id derived from `idPrefix` so multiple placements of the same
- *  component never collide. Pure. A slot whose value resolves to nothing drops
- *  the prop key, so the underlying component default rendering shows through. */
+ *  values (coerced to the slot's kind, falling back to the propSpec default),
+ *  substitute `$bind:<key>` binding slots with the instance's binding overrides
+ *  (docs/53 4b), and rewrite every node id to a page-unique id derived from
+ *  `idPrefix` so multiple placements of the same component never collide. Pure. A
+ *  prop slot whose value resolves to nothing drops the prop key (the component's
+ *  default rendering shows through); a binding slot with no override drops the
+ *  binding (the node falls back to static). */
 export function expandComponentTree(
   versionTree: BuilderNode,
   instanceProps: Record<string, unknown>,
   propSpec: PropSpec[],
-  idPrefix: string
+  idPrefix: string,
+  instanceBindings: Record<string, string> = {}
 ): BuilderNode {
+  const coerced = coerceInstanceProps(propSpec, instanceProps);
   const defaults = new Map(propSpec.map((p) => [p.key, p.default]));
   const resolveSlot = (slot: PropSlot): unknown => {
-    const v = instanceProps[slot.$prop];
+    const v = coerced[slot.$prop];
     if (v !== undefined && v !== null && v !== '') return v;
     return defaults.get(slot.$prop);
   };
@@ -305,6 +494,12 @@ export function expandComponentTree(
       }
     }
     const next: BuilderNode = { ...node, id: `${idPrefix}~${node.id}`, props };
+    const slotKey = bindSlotKey(node.binding?.path);
+    if (slotKey !== null) {
+      const override = instanceBindings[slotKey];
+      if (override) next.binding = { path: override };
+      else delete next.binding;
+    }
     if (node.children) next.children = node.children.map(walk);
     return next;
   };
@@ -318,31 +513,47 @@ export interface ResolvedComponentVersion {
 }
 
 /** Replace every `custom:<key>` placement in `tree` with the expanded component
- *  subtree (the pinned version's tree, slots filled from the placement's props).
- *  Pure — the DB lookup is the injected `resolve` (publish reads the pinned
- *  version; the editor previews the latest). A placement that can't resolve
- *  (component deleted / version missing) is DROPPED: the publish path guards
- *  deletes, so this only bites a corrupted tree, where omitting the node beats
- *  shipping a broken `custom:*` the storefront can't render. */
+ *  subtree (the pinned version's tree, prop slots filled + binding slots resolved
+ *  from the placement's props). RECURSIVE: a component may itself reference other
+ *  components (nesting, docs/53 4a), so the expansion of one placement is walked
+ *  again to expand any nested placements, bounded by `maxDepth` (a backstop —
+ *  cycles are rejected at save). Pure — the DB lookup is the injected `resolve`
+ *  (publish reads the pinned version; the editor previews the latest). A placement
+ *  that can't resolve (component deleted / version missing / too deep) is DROPPED:
+ *  the publish path guards deletes, so this only bites a corrupted tree, where
+ *  omitting the node beats shipping a broken `custom:*` the storefront can't render. */
 export function expandCustomNodes(
   tree: BuilderNode,
-  resolve: (key: string, version: number | null) => ResolvedComponentVersion | null
+  resolve: (key: string, version: number | null) => ResolvedComponentVersion | null,
+  maxDepth: number = MAX_COMPONENT_NESTING
 ): BuilderNode {
-  const walk = (node: BuilderNode): BuilderNode | null => {
+  const walk = (node: BuilderNode, depth: number): BuilderNode | null => {
     const key = customKeyOf(node.type);
     if (key) {
-      const resolved = resolve(key, readComponentRef(node.props)?.version ?? null);
+      if (depth >= maxDepth) return null;
+      const ref = readComponentRef(node.props);
+      const resolved = resolve(key, ref?.version ?? null);
       if (!resolved) return null;
       const instanceProps = { ...node.props };
       delete instanceProps[REF_KEY];
-      return expandComponentTree(resolved.tree, instanceProps, resolved.propSpec, node.id);
+      const expanded = expandComponentTree(
+        resolved.tree,
+        instanceProps,
+        resolved.propSpec,
+        node.id,
+        ref?.bindings ?? {}
+      );
+      // Walk the expansion so a component nested inside this one also expands.
+      return walk(expanded, depth + 1);
     }
     if (!node.children) return node;
-    const children = node.children.map(walk).filter((c): c is BuilderNode => c !== null);
+    const children = node.children
+      .map((c) => walk(c, depth))
+      .filter((c): c is BuilderNode => c !== null);
     return { ...node, children };
   };
   // A page root is never a custom placement (insertion always nests inside a
   // container), so the root walk only returns null on a corrupted tree — fall
   // back to the original so publish always has a tree to snapshot.
-  return walk(tree) ?? tree;
+  return walk(tree, 0) ?? tree;
 }

@@ -26,6 +26,7 @@ import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
+import { mediaPublicUrl } from '../media-url';
 
 // ─── Reads ────────────────────────────────────────────────────────────
 
@@ -109,26 +110,54 @@ export async function list(
           priceMaxCents: true,
           updatedAt: true,
           _count: { select: { variants: true } },
+          // The hero image's asset id: explicit primary first, else the first
+          // product-level image by position. URL resolved in one batched lookup
+          // below to avoid an N+1 over the page.
+          images: {
+            where: { variantId: null },
+            orderBy: [{ isPrimary: 'desc' }, { position: 'asc' }],
+            take: 1,
+            select: { mediaAssetId: true },
+          },
         },
       }),
       tx.product.count({ where }),
     ]);
 
-    const items: ProductListItem[] = rows.map((row) => ({
-      id: row.id,
-      title: row.title,
-      handle: row.handle,
-      status: row.status as ProductStatus,
-      vendor: row.vendor,
-      productType: row.productType,
-      variantCount: row._count.variants,
-      priceMinCents: row.priceMinCents,
-      priceMaxCents: row.priceMaxCents,
-      // Phase 1.2 surfaces the primary image; for now no image join.
-      imageUrl: null,
-      tags: row.tags,
-      updatedAt: row.updatedAt.toISOString(),
-    }));
+    // Batch-resolve the chosen images' public URLs (one query, not one per row).
+    // A soft-deleted asset is absent from the map → that product shows no thumbnail.
+    const assetIds = [
+      ...new Set(
+        rows.map((r) => r.images[0]?.mediaAssetId).filter((id): id is string => Boolean(id))
+      ),
+    ];
+    const keyByAsset = new Map<string, string>();
+    if (assetIds.length > 0) {
+      const assets = await tx.mediaAsset.findMany({
+        where: { id: { in: assetIds }, deletedAt: null },
+        select: { id: true, key: true },
+      });
+      for (const a of assets) keyByAsset.set(a.id, a.key);
+    }
+
+    const items: ProductListItem[] = rows.map((row) => {
+      const assetId = row.images[0]?.mediaAssetId;
+      const key = assetId ? keyByAsset.get(assetId) : undefined;
+      return {
+        id: row.id,
+        title: row.title,
+        handle: row.handle,
+        status: row.status as ProductStatus,
+        vendor: row.vendor,
+        productType: row.productType,
+        variantCount: row._count.variants,
+        priceMinCents: row.priceMinCents,
+        priceMaxCents: row.priceMaxCents,
+        imageUrl: key ? mediaPublicUrl(key) : null,
+        tags: row.tags,
+        updatedAt: row.updatedAt.toISOString(),
+      };
+    });
 
     return { items, total };
   });

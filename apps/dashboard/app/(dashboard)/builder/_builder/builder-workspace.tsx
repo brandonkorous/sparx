@@ -22,6 +22,7 @@ import { Canvas } from './canvas';
 import { Inspector, type SlotEditor } from './inspector';
 import { LayersPanel } from './layers-panel';
 import { AddPalette } from './add-palette';
+import { useComponentVersions } from './use-component-versions';
 
 export interface BuilderWorkspaceProps {
   tree: BuilderNode;
@@ -74,6 +75,10 @@ export function BuilderWorkspace({
   // parked on 'fields' and the panel goes away (e.g. you switch to a singleton
   // page), fall back to Layers so the rail never shows an empty body.
   const railTab = editor.railTab === 'fields' && !fields ? 'layers' : editor.railTab;
+
+  // Resolves each placement's EXACT pinned version for the canvas preview (docs/53
+  // Gap 1) — fetches older versions lazily; falls back to latest meanwhile.
+  const resolveVersion = useComponentVersions(components, tree);
   return (
     <>
       {/* Mobile pane switch */}
@@ -171,6 +176,7 @@ export function BuilderWorkspace({
             data={editor.previewData}
             catalog={catalog}
             components={components}
+            resolveVersion={resolveVersion}
             device={editor.device}
             selectedId={editor.selectedId}
             onSelect={editor.setSelectedId}

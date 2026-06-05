@@ -20,6 +20,8 @@ import { Boxes, Check, ChevronDown, ChevronLeft, ExternalLink, Plus, X } from 'l
 import { Input, NativeSelect, Switch, Textarea, cn } from '@sparx/ui';
 import {
   REF_KEY,
+  bindSlotKey,
+  collectBindingSlots,
   customKeyOf,
   isCustomType,
   isPropSlot,
@@ -363,6 +365,7 @@ function BindingBox({
   contentTypeKey,
   onAddField,
   onBind,
+  slotEditor,
 }: {
   node: BuilderNode;
   catalog: BindingCatalog;
@@ -370,6 +373,9 @@ function BindingBox({
   contentTypeKey?: string | null;
   onAddField?: (label: string, kind: CreatableType) => Promise<string | null>;
   onBind: (path: string | null) => void;
+  /** Present only in the component editor — lets a node's data binding become an
+   *  instance field (docs/53 4b). */
+  slotEditor?: SlotEditor;
 }) {
   const def = getDef(node.type)!;
   if (!def.bindable) {
@@ -386,6 +392,33 @@ function BindingBox({
   }
 
   const path = node.binding?.path ?? '';
+  // In the component editor a node's data can be turned into a per-placement field
+  // (a `$bind:<key>` slot). When it is, show the slot state instead of the picker.
+  const slotKey = bindSlotKey(path);
+  if (slotKey !== null && slotEditor) {
+    return (
+      <Group label="Data">
+        <div className="bx-bind bx-bind--slot">
+          <div className="bx-bind__top">
+            <span className="bx-bind__path">
+              <span className="bx-bind__dot" />
+              field · {slotKey}
+            </span>
+          </div>
+          <p className="bx-bind__hint">
+            Filled per placement — each page that uses this component chooses the data shown here.
+          </p>
+          <button
+            type="button"
+            className="bx-fieldrow__btn"
+            onClick={() => slotEditor.onUnbindData()}
+          >
+            <X aria-hidden /> Use direct data
+          </button>
+        </div>
+      </Group>
+    );
+  }
   const color = path ? moduleColor(moduleForPath(catalog, path)) : undefined;
   const groups = bindGroups(catalog);
   const itemPaths = itemBindPaths(scope);
@@ -440,6 +473,15 @@ function BindingBox({
             onBind={onBind}
           />
         ) : null}
+        {slotEditor ? (
+          <button
+            type="button"
+            className="bx-makefield"
+            onClick={() => slotEditor.onBindData(node.binding?.path ?? null)}
+          >
+            <Boxes aria-hidden /> Make instance field
+          </button>
+        ) : null}
       </div>
     </Group>
   );
@@ -459,6 +501,12 @@ export interface SlotEditor {
   ) => void;
   /** Unbind: drop the slot reference back to a plain (empty) literal. */
   onUnbind: (propKey: string) => void;
+  /** Turn the selected node's DATA BINDING into an instance field (docs/53 4b): a
+   *  `$bind:<key>` slot each placement maps to its own data path. `currentPath` is
+   *  the node's existing binding (used to seed the slot key). */
+  onBindData: (currentPath: string | null) => void;
+  /** Clear the binding slot back to a normal (unbound) data binding. */
+  onUnbindData: () => void;
 }
 
 function PropsPanel({
@@ -1152,6 +1200,8 @@ function CustomNodeInspector({
   node,
   component,
   surface,
+  catalog,
+  scope,
   onBack,
   onName,
   onProp,
@@ -1159,13 +1209,31 @@ function CustomNodeInspector({
   node: BuilderNode;
   component?: ComponentDto;
   surface: EditorSurface;
+  catalog: BindingCatalog;
+  scope: ScopeInfo;
   onBack: () => void;
   onName: (name: string) => void;
   onProp: (key: string, value: unknown) => void;
 }) {
   const key = customKeyOf(node.type) ?? '';
-  const pinned = readComponentRef(node.props)?.version ?? null;
+  const ref = readComponentRef(node.props);
+  const pinned = ref?.version ?? null;
   const latest = component?.latestVersion ?? null;
+  // The component's per-placement binding slots (docs/53 4b), derived from its
+  // latest tree. Each maps to a real data path under props.$ref.bindings.
+  const bindingSlots = component ? collectBindingSlots(component.tree) : [];
+  const instanceBindings = ref?.bindings ?? {};
+  const setBinding = (slotKey: string, path: string | null) => {
+    const next = { ...instanceBindings };
+    if (path) next[slotKey] = path;
+    else delete next[slotKey];
+    onProp(REF_KEY, {
+      ...(ref ?? { version: latest ?? 1 }),
+      bindings: Object.keys(next).length > 0 ? next : undefined,
+    });
+  };
+  const bindGroupsForCatalog = bindGroups(catalog);
+  const inScopePaths = itemBindPaths(scope);
   // The component has moved on since this placement was pinned (docs/53 P-E) —
   // offer a one-click re-pin. Publish always expands the PINNED version, so a page
   // never changes under the author until they choose to update.
@@ -1223,6 +1291,50 @@ function CustomNodeInspector({
               </p>
             </Group>
           )}
+
+          {bindingSlots.length > 0 ? (
+            <Group label="Data">
+              <p className="bx-grp__caption">
+                Point this component’s data fields at your content for this placement.
+              </p>
+              {bindingSlots.map((slot) => {
+                const current = instanceBindings[slot.key] ?? '';
+                return (
+                  <Field key={slot.key} label={slot.label}>
+                    <NativeSelect
+                      size="sm"
+                      value={current || UNBOUND}
+                      onChange={(e) =>
+                        setBinding(slot.key, e.target.value === UNBOUND ? null : e.target.value)
+                      }
+                    >
+                      <option value={UNBOUND}>— Not set —</option>
+                      {bindGroupsForCatalog.map((grp) => (
+                        <optgroup key={grp.module} label={grp.module.toUpperCase()}>
+                          {grp.paths.map((p) => (
+                            <option key={p.path} value={p.path}>
+                              {p.label}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                      {scope.inScope ? (
+                        <optgroup
+                          label={scope.label ? `IN SCOPE · ${scope.label}` : 'IN SCOPE (per item)'}
+                        >
+                          {inScopePaths.map((p) => (
+                            <option key={p.path} value={p.path}>
+                              {p.label}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ) : null}
+                    </NativeSelect>
+                  </Field>
+                );
+              })}
+            </Group>
+          ) : null}
 
           <Group label="Component">
             <Field label="Source">
@@ -1325,6 +1437,8 @@ export function Inspector({
         node={node}
         component={components?.get(customKeyOf(node.type) ?? '')}
         surface={surface}
+        catalog={catalog}
+        scope={scope}
         onBack={onBack}
         onName={onName}
         onProp={onProp}
@@ -1394,6 +1508,7 @@ export function Inspector({
         contentTypeKey={contentTypeKey}
         onAddField={onAddField}
         onBind={onBind}
+        slotEditor={slotEditor}
       />
       <PropsPanel node={node} onProp={onProp} slotEditor={slotEditor} />
       {def.kind === 'container' && node.layout ? (

@@ -22,7 +22,15 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Monitor, Save, Smartphone, Tablet } from 'lucide-react';
 import { Button, Input, ModuleProvider } from '@sparx/ui';
-import type { BindingCatalog, BuilderNode, ComponentDto, PropSpec } from '@sparx/builder-schemas';
+import {
+  collectBindingSlots,
+  isBindSlotPath,
+  makeBindSlotPath,
+  type BindingCatalog,
+  type BuilderNode,
+  type ComponentDto,
+  type PropSpec,
+} from '@sparx/builder-schemas';
 
 import { type Device } from './model';
 import { BuilderWorkspace } from './builder-workspace';
@@ -49,13 +57,29 @@ export interface ComponentBuilderAppProps {
   component: ComponentDto;
   /** What the component can bind to (the page binding catalog — docs/43). */
   bindingCatalog: BindingCatalog;
+  /** The tenant's OTHER components (docs/53 4a) — offered in the Add palette so a
+   *  component can nest others, and expanded live on the canvas. Self is excluded
+   *  by this shell to keep the obvious cycle out of the palette (deeper cycles are
+   *  rejected on save). */
+  components?: ComponentDto[];
 }
 
-export function ComponentBuilderApp({ component, bindingCatalog }: ComponentBuilderAppProps) {
+export function ComponentBuilderApp({
+  component,
+  bindingCatalog,
+  components = [],
+}: ComponentBuilderAppProps) {
   const router = useRouter();
   // The component's surface drives the palette (a site component gets the site
   // chrome; everything else is a page component).
   const surface = component.surfaces.includes('page') ? 'page' : 'site';
+
+  // Other components keyed by key, self excluded — drives nesting in the palette +
+  // the canvas's live expansion of nested placements (docs/53 4a).
+  const componentsByKey = React.useMemo(
+    () => new Map(components.filter((c) => c.key !== component.key).map((c) => [c.key, c])),
+    [components, component.key]
+  );
 
   const [tree, setTree] = React.useState<BuilderNode>(component.tree);
   const [propSpec, setPropSpec] = React.useState<PropSpec[]>(component.propSpec);
@@ -69,6 +93,7 @@ export function ComponentBuilderApp({ component, bindingCatalog }: ComponentBuil
   const editor = useBuilderEditor({
     tree,
     catalog: bindingCatalog,
+    components: componentsByKey,
     autosave: false,
     // Autosave is off, so this never runs — the component editor commits versions
     // explicitly via "Save version". A resolved promise satisfies the contract.
@@ -101,6 +126,19 @@ export function ComponentBuilderApp({ component, bindingCatalog }: ComponentBuil
       editor.onProp(propKey, { $prop: key });
     },
     onUnbind: (propKey) => editor.onProp(propKey, ''),
+    // Turn the selected node's data binding into an instance field (docs/53 4b):
+    // a `$bind:<key>` slot each placement maps to its own path. Seeds the key from
+    // the node's current binding (its last segment) and dedupes against the binding
+    // slots already in the tree. Persisted in the tree, so no propSpec entry.
+    onBindData: (currentPath) => {
+      const seed =
+        currentPath && !isBindSlotPath(currentPath)
+          ? (currentPath.split('.').pop() ?? 'data')
+          : 'data';
+      const slotKey = deriveFieldKey(seed, collectBindingSlots(tree));
+      editor.onBind(makeBindSlotPath(slotKey));
+    },
+    onUnbindData: () => editor.onBind(null),
   };
 
   // Commit a new version: persist tree + propSpec (the service snapshots a new
@@ -205,6 +243,7 @@ export function ComponentBuilderApp({ component, bindingCatalog }: ComponentBuil
           editor={editor}
           catalog={bindingCatalog}
           surface={surface}
+          components={componentsByKey}
           slotEditor={slotEditor}
           fields={<PropSpecPanel propSpec={propSpec} tree={tree} onChange={onPropSpecChange} />}
           settings={<ComponentSettings name={name} version={version} />}

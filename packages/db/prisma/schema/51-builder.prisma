@@ -195,17 +195,17 @@ model BuilderComponent {
 
   // Stable key, unique per tenant (^[a-z][a-z0-9_]*$); the placement type is
   // `custom:<key>`, so key ≤ 56 keeps the namespaced type ≤ VarChar(63).
-  key         String  @db.VarChar(56)
-  name        String  @db.VarChar(120)
+  key           String  @db.VarChar(56)
+  name          String  @db.VarChar(120)
   // Palette group: layout | content | data (mirrors the registry PaletteGroup).
-  group       String  @default("content") @db.VarChar(20)
+  group         String  @default("content") @db.VarChar(20)
   // Lucide icon name shown in the catalog + palette.
-  icon        String  @default("box") @db.VarChar(64)
-  description String? @db.VarChar(500)
+  icon          String  @default("box") @db.VarChar(64)
+  description   String? @db.VarChar(500)
   // Editor surfaces this component appears in (e.g. ["page","site"]).
-  surfaces    Json    @default("[\"page\"]")
+  surfaces      Json    @default("[\"page\"]")
   // Points at the newest BuilderComponentVersion.version. Bumped on every edit.
-  latestVersion Int   @default(1) @map("latest_version")
+  latestVersion Int     @default(1) @map("latest_version")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

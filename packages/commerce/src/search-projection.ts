@@ -17,6 +17,7 @@ import type {
 import { withTenant } from '@sparx/db';
 
 import type { ServiceContext } from './errors';
+import { mediaPublicUrl } from './media-url';
 
 export interface ProjectionResult {
   /** Null when the product no longer exists (caller should delete from index). */
@@ -64,8 +65,10 @@ export async function projectProduct(
         categoryLinks: { select: { categoryId: true } },
         collectionLinks: { select: { collectionId: true } },
         images: {
+          // The product hero: the explicit primary wins, else the first
+          // product-level image by position (parity with productService.list).
           where: { variantId: null },
-          orderBy: { position: 'asc' },
+          orderBy: [{ isPrimary: 'desc' }, { position: 'asc' }],
           take: 1,
           select: { mediaAssetId: true },
         },
@@ -404,15 +407,4 @@ export async function listOrderIdsForTenant(ctx: ServiceContext): Promise<string
     const rows = await tx.order.findMany({ select: { id: true } });
     return rows.map((r) => r.id);
   });
-}
-
-// Public CDN URL builder. The media-worker writes variants into the
-// public bucket fronted by cdn.sparx.works. The indexer can stamp the
-// URL directly since image keys are stable.
-function mediaPublicUrl(key: string): string {
-  const cdn = process.env.SPARX_MEDIA_CDN_URL;
-  if (cdn) return `${cdn.replace(/\/$/, '')}/${key.replace(/^\//, '')}`;
-  const bucket = process.env.GCS_MEDIA_PUBLIC_BUCKET ?? process.env.GCS_MEDIA_BUCKET;
-  if (bucket) return `https://storage.googleapis.com/${bucket}/${key.replace(/^\//, '')}`;
-  return key;
 }

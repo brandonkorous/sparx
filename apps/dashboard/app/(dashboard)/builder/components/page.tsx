@@ -31,6 +31,7 @@ import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
 import { catalogCount, loadCatalog, type CatalogEntry } from './_lib/catalog';
 import { LucideByName } from './_lib/lucide-by-name';
+import { NewComponentButton } from './_components/new-component-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -93,7 +94,8 @@ export default async function BuilderComponentsPage({ searchParams }: PageProps)
               {total} component{total === 1 ? '' : 's'}
             </Badge>
           }
-          description="The catalog of building blocks you compose pages and layouts from — system primitives and data-aware components, plus the custom components you build. Open a system component to copy it as a starting point."
+          description="The catalog of building blocks you compose pages and layouts from — system primitives and data-aware components, plus the custom components you build. Start a new one, copy a system component, or save a block from the builder."
+          actions={<NewComponentButton />}
         />
 
         <ListToolbar

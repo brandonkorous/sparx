@@ -17,6 +17,7 @@ import type {
   ComponentSummaryDto,
   ComponentSurface,
   ComponentUsageDto,
+  ComponentVersionDto,
   PropSpec,
 } from '@sparx/builder-schemas';
 import type { ActionResult } from '../../_lib/actions';
@@ -74,6 +75,41 @@ export async function getComponentUsages(key: string): Promise<ActionResult<Comp
     const e = err as ApiRestError;
     return { ok: false, error: e.message ?? 'Something went wrong.' };
   }
+}
+
+// One specific version of a component (docs/53 P-E / Gap 1) — what a placement
+// pinned to an OLDER version renders. The editor fetches these lazily to preview
+// the exact pinned version on the canvas (not just the latest). A read, so no
+// revalidate.
+export async function getComponentVersion(
+  key: string,
+  version: number
+): Promise<ActionResult<ComponentVersionDto>> {
+  try {
+    const data = await api.get<ComponentVersionDto>(
+      `/v1/builder/components/${encodeURIComponent(key)}/versions/${version}`
+    );
+    return { ok: true, data };
+  } catch (err) {
+    const e = err as ApiRestError;
+    return { ok: false, error: e.message ?? 'Something went wrong.' };
+  }
+}
+
+// Re-pin every placement of this component to a version (default: latest) — the
+// bulk "update all placements" upgrade (docs/53 §6 / P-E). Re-pins draft trees;
+// each surface goes live on its next publish. Revalidates the builder so the
+// catalog + any open detail reflect the change.
+export async function upgradeAllPlacements(
+  key: string,
+  version?: number
+): Promise<ActionResult<{ version: number; pages: number; layouts: number; total: number }>> {
+  return run(() =>
+    api.post<{ version: number; pages: number; layouts: number; total: number }>(
+      `/v1/builder/components/${encodeURIComponent(key)}/upgrade-placements`,
+      version ? { version } : {}
+    )
+  );
 }
 
 // camelCase/underscore a name into a valid component key (^[a-z][a-z0-9_]*$),

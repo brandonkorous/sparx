@@ -29,12 +29,7 @@ import {
   Upload,
 } from 'lucide-react';
 import { Badge, Button, Input, ModuleProvider, NativeSelect } from '@sparx/ui';
-import {
-  collectComponentRefs,
-  makeCustomNode,
-  parseLayoutImport,
-  toLayoutDocument,
-} from '@sparx/builder-schemas';
+import { makeCustomNode, parseLayoutImport, toLayoutDocument } from '@sparx/builder-schemas';
 import type { BindingCatalog, BuilderLayoutDto, ComponentDto } from '@sparx/builder-schemas';
 
 import { makeId, type BuilderNode, type Device } from './model';
@@ -258,13 +253,10 @@ export function SiteBuilderApp({
   };
 
   // "Save as component" (docs/53 P-C): turn the selected layout subtree into a
-  // reusable site-surface component, then swap it for a pinned placement. Rejects a
-  // subtree that already nests a component (v1 has no nesting).
+  // reusable site-surface component, then swap it for a pinned placement. The
+  // subtree may nest components (docs/53 4a) — a cycle/over-deep nesting is
+  // rejected server-side on create.
   const onSaveAsComponent = async (node: BuilderNode) => {
-    if (collectComponentRefs(node).length > 0) {
-      editor.setSaveStatus('error');
-      return;
-    }
     const def = getDef(node.type);
     setBusy(true);
     const res = await copyComponent({

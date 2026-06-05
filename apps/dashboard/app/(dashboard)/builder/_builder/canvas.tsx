@@ -13,13 +13,18 @@
 import * as React from 'react';
 import { cn } from '@sparx/ui';
 import {
+  MAX_COMPONENT_NESTING,
   REF_KEY,
+  bindSlotKey,
   customKeyOf,
   expandComponentTree,
   isCustomType,
+  readComponentRef,
   type BindingCatalog,
   type ComponentDto,
 } from '@sparx/builder-schemas';
+
+import type { VersionResolver } from './use-component-versions';
 
 import {
   cardinalityOf,
@@ -321,11 +326,22 @@ function CanvasCarousel({ slides }: { slides: React.ReactNode[] }) {
   );
 }
 
+// Resolves a placement's EXACT pinned version (docs/53 Gap 1). Null ⇒ no resolver
+// on this surface, so CustomCanvasNode falls back to the component's latest from
+// the `components` map. Provided by the workspace via useComponentVersions.
+const VersionResolverContext = React.createContext<VersionResolver | null>(null);
+
+// How deeply we are inside expanded `custom:*` placements (docs/53 4a). The canvas
+// auto-recurses (CanvasNode → CustomCanvasNode → CanvasNode …); this bounds that
+// recursion as a backstop even though the service rejects cycles at save.
+const CustomDepthContext = React.createContext(0);
+
 // A `custom:<key>` placement (docs/53 P-B): resolve the tenant component, expand
-// its latest version (instance slots filled), and render the result LOCKED inside
-// a selectable wrapper — so the whole component reads as one unit (you select /
-// delete it as a block; you edit its internals in the component editor). A
-// reference that no longer resolves shows a small removable marker.
+// its PINNED version (instance slots + binding overrides filled), and render the
+// result LOCKED inside a selectable wrapper — so the whole component reads as one
+// unit (you select / delete it as a block; you edit its internals in the
+// component editor). A reference that no longer resolves shows a small removable
+// marker; a component nested too deep stops with a notice.
 function CustomCanvasNode({
   node,
   scope,
@@ -339,8 +355,33 @@ function CustomCanvasNode({
 }: NodeProps) {
   const key = customKeyOf(node.type) ?? '';
   const comp = components?.get(key);
+  const resolveVersion = React.useContext(VersionResolverContext);
+  const depth = React.useContext(CustomDepthContext);
   const hidden = node.box.hiddenOn.includes(device);
   const selected = node.id === selectedId;
+
+  // Nesting backstop (docs/53 4a): the service rejects cycles + over-deep nesting
+  // at save, but a stale tree shouldn't be able to recurse the renderer to death.
+  if (comp && depth >= MAX_COMPONENT_NESTING) {
+    if (locked) return null;
+    return (
+      <div
+        className={cn(
+          'bx-node',
+          'bx-node--custom',
+          'bx-node--missing',
+          hidden && 'bx-node--hidden'
+        )}
+        style={{ position: 'relative' }}
+        data-node-id={node.id}
+      >
+        <span className="bx-tag">
+          <span className="bx-tag__name">{comp.name}</span>
+        </span>
+        <div className="bx-custom-missing">Components are nested too deep to preview here.</div>
+      </div>
+    );
+  }
 
   if (!comp) {
     if (locked) return null;
@@ -377,21 +418,38 @@ function CustomCanvasNode({
     );
   }
 
+  const ref = readComponentRef(node.props);
+  // The EXACT pinned version (docs/53 Gap 1); falls back to the component's latest
+  // when no resolver is present (e.g. the resolver hasn't fetched it yet).
+  const resolved = resolveVersion?.(key, ref?.version ?? null) ?? {
+    tree: comp.tree,
+    propSpec: comp.propSpec,
+  };
   const instanceProps = { ...node.props };
   delete instanceProps[REF_KEY];
-  const expanded = expandComponentTree(comp.tree, instanceProps, comp.propSpec, node.id);
+  const expanded = expandComponentTree(
+    resolved.tree,
+    instanceProps,
+    resolved.propSpec,
+    node.id,
+    ref?.bindings ?? {}
+  );
+  // Bump the nesting depth for everything inside this expansion, so a component
+  // nested inside it is bounded too.
   const body = (
-    <CanvasNode
-      node={expanded}
-      scope={scope}
-      catalog={catalog}
-      components={components}
-      device={device}
-      selectedId={selectedId}
-      onSelect={onSelect}
-      locked
-      outletSlot={outletSlot}
-    />
+    <CustomDepthContext.Provider value={depth + 1}>
+      <CanvasNode
+        node={expanded}
+        scope={scope}
+        catalog={catalog}
+        components={components}
+        device={device}
+        selectedId={selectedId}
+        onSelect={onSelect}
+        locked
+        outletSlot={outletSlot}
+      />
+    </CustomDepthContext.Provider>
   );
 
   // Already inside locked chrome (the page framed in its layout): just the body.
@@ -462,7 +520,11 @@ function CanvasNode({
   const def = getDef(node.type);
   if (!def) return null;
 
-  const bound = Boolean(node.binding);
+  // A `$bind:<key>` binding is an instance SLOT (docs/53 4b), only seen while
+  // editing the component itself — it has no data here (each placement supplies
+  // it), so it previews as static, flagged by a "field" chip.
+  const bindSlot = node.binding ? bindSlotKey(node.binding.path) : null;
+  const bound = Boolean(node.binding) && bindSlot === null;
   const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
   const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
 
@@ -662,6 +724,12 @@ function CanvasNode({
             {node.binding!.path}
           </span>
         ) : null}
+        {bindSlot !== null ? (
+          <span className="bx-tag__bind" style={{ color: 'var(--module-active)' }}>
+            <span className="bx-tag__dot" style={{ background: 'var(--module-active)' }} />
+            field · {bindSlot}
+          </span>
+        ) : null}
         {iterating ? <span className="bx-tag__repeat">↻ {count}</span> : null}
         {hidden ? <span className="bx-tag__hidden">hidden · {device}</span> : null}
       </span>
@@ -681,6 +749,9 @@ export interface CanvasProps {
   /** Tenant components keyed by key (docs/53 P-B) — expands `custom:*` placements
    *  for a live preview. */
   components?: ReadonlyMap<string, ComponentDto>;
+  /** Resolves a placement's EXACT pinned version (docs/53 Gap 1). Omitted ⇒ the
+   *  canvas previews each component's latest. */
+  resolveVersion?: VersionResolver;
   device: Device;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
@@ -698,6 +769,7 @@ export function Canvas({
   data,
   catalog,
   components,
+  resolveVersion,
   device,
   selectedId,
   onSelect,
@@ -728,40 +800,42 @@ export function Canvas({
     />
   );
   return (
-    <div
-      className="bx-canvas-scroll"
-      ref={scrollRef}
-      role="button"
-      tabIndex={-1}
-      aria-label="Clear selection"
-      onClick={() => onSelect(null)}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') onSelect(null);
-      }}
-    >
+    <VersionResolverContext.Provider value={resolveVersion ?? null}>
       <div
-        className="bx-canvas"
-        data-theme="light"
-        style={width ? { width, maxWidth: '100%' } : undefined}
-        data-device={device}
-        data-framed={chrome ? '' : undefined}
+        className="bx-canvas-scroll"
+        ref={scrollRef}
+        role="button"
+        tabIndex={-1}
+        aria-label="Clear selection"
+        onClick={() => onSelect(null)}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') onSelect(null);
+        }}
       >
-        {chrome ? (
-          <CanvasNode
-            node={chrome}
-            scope={{ root: data }}
-            catalog={catalog}
-            components={components}
-            device={device}
-            selectedId={selectedId}
-            onSelect={onSelect}
-            locked
-            outletSlot={page}
-          />
-        ) : (
-          page
-        )}
+        <div
+          className="bx-canvas"
+          data-theme="light"
+          style={width ? { width, maxWidth: '100%' } : undefined}
+          data-device={device}
+          data-framed={chrome ? '' : undefined}
+        >
+          {chrome ? (
+            <CanvasNode
+              node={chrome}
+              scope={{ root: data }}
+              catalog={catalog}
+              components={components}
+              device={device}
+              selectedId={selectedId}
+              onSelect={onSelect}
+              locked
+              outletSlot={page}
+            />
+          ) : (
+            page
+          )}
+        </div>
       </div>
-    </div>
+    </VersionResolverContext.Provider>
   );
 }

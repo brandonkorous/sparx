@@ -14,8 +14,10 @@
 import {
   CreateComponentInput,
   UpdateComponentInput,
+  checkNestingGraph,
   collectComponentRefs,
   expandCustomNodes,
+  repinComponentRefs,
   validateComponentTree,
   type BuilderNode,
   type ComponentDto,
@@ -72,12 +74,60 @@ function toVersionDto(v: BuilderComponentVersion): ComponentVersionDto {
   };
 }
 
-/** Validate a tree + propSpec, raising a BuilderValidationError on any issue.
- *  v1 forbids nested custom components (sidesteps cycles); type-resolution is
- *  enforced by the caller's predicates once a server-safe registry mirror lands
- *  (docs/53 §7 / P-B). */
-function assertValidTree(tree: BuilderNode, propSpec: PropSpec[]): void {
-  const issues = validateComponentTree(tree, propSpec, { forbidNestedCustom: true });
+/** The dependency graph (key → its direct component references, from each
+ *  component's latest version) for every component EXCEPT `excludeKey` — what the
+ *  nesting cycle/depth check walks. Built from the DB; the schema-level check is
+ *  pure and DB-free, so the graph is assembled here. */
+async function buildRefGraph(
+  tx: Prisma.TransactionClient,
+  excludeKey: string
+): Promise<Map<string, string[]>> {
+  const comps = await tx.builderComponent.findMany({ where: { key: { not: excludeKey } } });
+  const graph = new Map<string, string[]>();
+  if (comps.length === 0) return graph;
+  const versions = await tx.builderComponentVersion.findMany({
+    where: { componentId: { in: comps.map((c) => c.id) } },
+  });
+  const latest = new Map<string, BuilderComponentVersion>();
+  for (const v of versions) {
+    const cur = latest.get(v.componentId);
+    if (!cur || v.version > cur.version) latest.set(v.componentId, v);
+  }
+  for (const c of comps) {
+    const v = latest.get(c.id);
+    const refs = v
+      ? [...new Set(collectComponentRefs(v.tree as unknown as BuilderNode).map((r) => r.key))]
+      : [];
+    graph.set(c.key, refs);
+  }
+  return graph;
+}
+
+/** Validate a component's tree + propSpec, raising a BuilderValidationError on any
+ *  issue. Nesting (custom-in-custom, docs/53 4a) is allowed but bounded: every
+ *  referenced component must exist, and the reference graph must stay acyclic and
+ *  within the depth limit (`checkNestingGraph`). Runs inside the caller's tx so it
+ *  reads a consistent component set. */
+async function assertValidComponent(
+  tx: Prisma.TransactionClient,
+  key: string,
+  tree: BuilderNode,
+  propSpec: PropSpec[]
+): Promise<void> {
+  const issues = validateComponentTree(tree, propSpec, { forbidNestedCustom: false });
+  const refKeys = [...new Set(collectComponentRefs(tree).map((r) => r.key))];
+  if (refKeys.length > 0) {
+    const graph = await buildRefGraph(tx, key);
+    for (const r of refKeys) {
+      if (r !== key && !graph.has(r)) {
+        issues.push({
+          path: 'root',
+          message: `References a component that doesn’t exist ("custom:${r}").`,
+        });
+      }
+    }
+    issues.push(...checkNestingGraph(key, refKeys, graph));
+  }
   if (issues.length > 0) {
     throw new BuilderValidationError(
       'This component has validation problems.',
@@ -170,7 +220,6 @@ export function getVersion(
 /** Create a component + its version 1. The key is unique per tenant. */
 export async function create(ctx: ServiceContext, rawInput: unknown): Promise<ComponentDto> {
   const input = CreateComponentInput.parse(rawInput);
-  assertValidTree(input.tree, input.propSpec);
   return withTenant(ctx, async (tx) => {
     const collision = await tx.builderComponent.findFirst({
       where: { key: input.key },
@@ -181,6 +230,8 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Co
         { field: 'key', message: 'Choose a different key.' },
       ]);
     }
+    // Nesting/cycle/depth check needs the tenant's component graph (tx-scoped).
+    await assertValidComponent(tx, input.key, input.tree, input.propSpec);
     const component = await tx.builderComponent.create({
       data: {
         tenantId: ctx.tenantId,
@@ -249,7 +300,7 @@ export async function update(
     if (contentChanged) {
       const nextTree = input.tree ?? (current.tree as unknown as BuilderNode);
       const nextPropSpec = input.propSpec ?? (current.propSpec as unknown as PropSpec[]) ?? [];
-      assertValidTree(nextTree, nextPropSpec);
+      await assertValidComponent(tx, key, nextTree, nextPropSpec);
       const nextVersion = existing.latestVersion + 1;
       versionRow = await tx.builderComponentVersion.create({
         data: {
@@ -293,10 +344,14 @@ export async function expandTreeForPublish(
   tx: Prisma.TransactionClient,
   draft: BuilderNode
 ): Promise<BuilderNode> {
-  const refs = collectComponentRefs(draft);
-  if (refs.length === 0) return draft;
-  const keys = [...new Set(refs.map((r) => r.key))];
-  const comps = await tx.builderComponent.findMany({ where: { key: { in: keys } } });
+  if (collectComponentRefs(draft).length === 0) return draft;
+  // Load ALL components + versions, not just the draft's top-level refs: a
+  // component's own tree may reference OTHER components (nesting, docs/53 4a), and
+  // those nested keys never appear in the page draft. Tenant component sets are
+  // small, so one pair of queries covers the whole graph the recursive expander
+  // may reach.
+  const comps = await tx.builderComponent.findMany();
+  if (comps.length === 0) return draft;
   const byKey = new Map(comps.map((c) => [c.key, c]));
   const versionRows = await tx.builderComponentVersion.findMany({
     where: { componentId: { in: comps.map((c) => c.id) } },
@@ -323,8 +378,9 @@ export async function expandTreeForPublish(
  *  the detail page's "Used on" panel. Scans within the caller's transaction so it
  *  shares the publish/delete consistency snapshot. */
 async function scanUsages(tx: Prisma.TransactionClient, key: string): Promise<ComponentUsageDto> {
-  const usesKey = (tree: unknown): boolean =>
-    collectComponentRefs(tree as BuilderNode).some((r) => r.key === key);
+  const refsFor = (tree: unknown): { key: string; version: number | null }[] =>
+    collectComponentRefs(tree as BuilderNode).filter((r) => r.key === key);
+  const usesKey = (tree: unknown): boolean => refsFor(tree).length > 0;
   const [pages, layouts] = [
     await tx.builderPage.findMany({
       select: { id: true, name: true, draftTree: true, publishedTree: true },
@@ -339,7 +395,19 @@ async function scanUsages(tx: Prisma.TransactionClient, key: string): Promise<Co
   const layoutHits = layouts
     .filter((l) => usesKey(l.draftTree) || (l.publishedTree != null && usesKey(l.publishedTree)))
     .map((l) => ({ id: l.id, name: l.name }));
-  return { pages: pageHits, layouts: layoutHits, total: pageHits.length + layoutHits.length };
+  // Pinned versions across every DRAFT placement (what an upgrade would re-pin) —
+  // lets the detail page tell whether a bulk upgrade would actually move anything.
+  const pinned = new Set<number>();
+  for (const p of pages)
+    for (const r of refsFor(p.draftTree)) if (r.version != null) pinned.add(r.version);
+  for (const l of layouts)
+    for (const r of refsFor(l.draftTree)) if (r.version != null) pinned.add(r.version);
+  return {
+    pages: pageHits,
+    layouts: layoutHits,
+    total: pageHits.length + layoutHits.length,
+    pinnedVersions: [...pinned].sort((a, b) => a - b),
+  };
 }
 
 /** Where-used for one component (its own transaction). 404 if the key is unknown. */
@@ -348,6 +416,75 @@ export function usages(ctx: ServiceContext, key: string): Promise<ComponentUsage
     const row = await tx.builderComponent.findFirst({ where: { key }, select: { id: true } });
     if (!row) throw new BuilderNotFoundError('BuilderComponent', key);
     return scanUsages(tx, key);
+  });
+}
+
+/** Re-pin EVERY draft placement of `key` to `toVersion` (default: the latest) —
+ *  the bulk "update all placements" upgrade (docs/53 §6 / P-E). Mirrors the
+ *  per-placement re-pin the inspector does, applied across all draft pages +
+ *  layouts in one transaction; the change goes live on each surface's next
+ *  publish (parity with single-placement upgrade). Returns how many pages/layouts
+ *  changed (a re-pin that matches the current pin is skipped). */
+export async function upgradeAllPlacements(
+  ctx: ServiceContext,
+  key: string,
+  toVersion?: number
+): Promise<{ version: number; pages: number; layouts: number; total: number }> {
+  return withTenant(ctx, async (tx) => {
+    const comp = await tx.builderComponent.findFirst({ where: { key } });
+    if (!comp) throw new BuilderNotFoundError('BuilderComponent', key);
+    const version = toVersion ?? comp.latestVersion;
+    const exists = await tx.builderComponentVersion.findFirst({
+      where: { componentId: comp.id, version },
+      select: { id: true },
+    });
+    if (!exists) {
+      throw new BuilderValidationError(`Version ${version} doesn’t exist for this component.`, [
+        { field: 'version', message: 'Choose an existing version.' },
+      ]);
+    }
+
+    let pages = 0;
+    const pageRows = await tx.builderPage.findMany({ select: { id: true, draftTree: true } });
+    for (const p of pageRows) {
+      const { tree, changed } = repinComponentRefs(
+        p.draftTree as unknown as BuilderNode,
+        key,
+        version
+      );
+      if (changed) {
+        await tx.builderPage.update({ where: { id: p.id }, data: { draftTree: asJson(tree) } });
+        pages += 1;
+      }
+    }
+
+    let layouts = 0;
+    const layoutRows = await tx.builderLayout.findMany({ select: { id: true, draftTree: true } });
+    for (const l of layoutRows) {
+      const { tree, changed } = repinComponentRefs(
+        l.draftTree as unknown as BuilderNode,
+        key,
+        version
+      );
+      if (changed) {
+        await tx.builderLayout.update({ where: { id: l.id }, data: { draftTree: asJson(tree) } });
+        layouts += 1;
+      }
+    }
+
+    if (pages + layouts > 0) {
+      await writeAuditLog({
+        tx,
+        tenantId: ctx.tenantId,
+        actorId: ctx.userId ?? null,
+        actorType: 'user',
+        action: 'builder.component.placements_upgraded',
+        entityType: 'BuilderComponent',
+        entityId: comp.id,
+        diff: { after: { version, pages, layouts } },
+      });
+    }
+    return { version, pages, layouts, total: pages + layouts };
   });
 }
 

@@ -63,6 +63,9 @@ export interface VariantImageRow {
   variantId: string | null;
   mediaAssetId: string;
   position: number;
+  /** The product's hero image — the thumbnail surfaced in lists, cards, email
+   *  product blocks, and search. At most one per product. */
+  isPrimary: boolean;
   alt: string | null;
   optionValueIds: string[];
 }
@@ -164,7 +167,7 @@ export async function listImagesForProduct(
   return withTenant(ctx, async (tx) => {
     const images = await tx.variantImage.findMany({
       where: { productId },
-      orderBy: { position: 'asc' },
+      orderBy: [{ isPrimary: 'desc' }, { position: 'asc' }],
       include: { optionValueLinks: { select: { optionValueId: true } } },
     });
     return images.map(toImageRow);
@@ -766,6 +769,50 @@ export async function removeImage(ctx: ServiceContext, variantImageId: string): 
   });
 }
 
+// Designate one image as the product's PRIMARY (hero). Clears the product's
+// current primary and sets this one within a single transaction so the partial
+// unique index (one primary per product) never sees two at once. A no-op if the
+// image is already primary. Emits product.updated so the search projection
+// re-stamps image_url to match.
+export async function setPrimaryImage(ctx: ServiceContext, variantImageId: string): Promise<void> {
+  const result = await withTenant(ctx, async (tx) => {
+    const image = await tx.variantImage.findFirst({
+      where: { id: variantImageId },
+      select: { id: true, productId: true, isPrimary: true },
+    });
+    if (!image) throw new CommerceNotFoundError('VariantImage', variantImageId);
+    if (image.isPrimary) return image; // already the hero — nothing to do
+
+    await tx.variantImage.updateMany({
+      where: { productId: image.productId, isPrimary: true },
+      data: { isPrimary: false },
+    });
+    await tx.variantImage.update({
+      where: { id: variantImageId },
+      data: { isPrimary: true },
+    });
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.variant.image_primary_set',
+      entityType: 'VariantImage',
+      entityId: variantImageId,
+      diff: { after: { productId: image.productId, isPrimary: true } },
+    });
+    return image;
+  });
+
+  await publishCommerceEvent({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    topic: 'product.updated',
+    data: { productId: result.productId, change: 'primary_image' },
+  });
+}
+
 // ─── Internal helpers ─────────────────────────────────────────────────
 
 type VariantWithIncludes = ProductVariant & {
@@ -831,6 +878,7 @@ function toImageRow(i: ImageWithIncludes): VariantImageRow {
     variantId: i.variantId,
     mediaAssetId: i.mediaAssetId,
     position: i.position,
+    isPrimary: i.isPrimary,
     alt: i.alt,
     optionValueIds: i.optionValueLinks.map((l) => l.optionValueId),
   };

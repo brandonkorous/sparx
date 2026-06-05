@@ -41,6 +41,7 @@ import {
 import { LucideByName } from '../_lib/lucide-by-name';
 import { CopyComponentButton } from '../_components/copy-component-button';
 import { DeleteComponentButton } from '../_components/delete-component-button';
+import { UpgradePlacementsButton } from '../_components/upgrade-placements-button';
 
 // Detail for one catalog component (docs/34 §3, Record Detail). A SYSTEM
 // component (the in-code registry) renders a read-only reference + a "Copy"
@@ -479,17 +480,24 @@ function CustomComponentDetail({
         </CardHeader>
         <CardContent>
           {usage && usage.total > 0 ? (
-            <Stack direction="row" align="center" gap={2} wrap>
-              {usage.pages.map((p) => (
-                <Badge key={`p:${p.id}`} variant="outline">
-                  {p.name}
-                </Badge>
-              ))}
-              {usage.layouts.map((l) => (
-                <Badge key={`l:${l.id}`} color="module" variant="soft">
-                  {l.name} (layout)
-                </Badge>
-              ))}
+            <Stack gap={4}>
+              <Stack direction="row" align="center" gap={2} wrap>
+                {usage.pages.map((p) => (
+                  <Badge key={`p:${p.id}`} variant="outline">
+                    {p.name}
+                  </Badge>
+                ))}
+                {usage.layouts.map((l) => (
+                  <Badge key={`l:${l.id}`} color="module" variant="soft">
+                    {l.name} (layout)
+                  </Badge>
+                ))}
+              </Stack>
+              <UpgradePlacementsButton
+                componentKey={component.key}
+                latestVersion={component.latestVersion}
+                outdated={usage.pinnedVersions.some((v) => v < component.latestVersion)}
+              />
             </Stack>
           ) : (
             <Text size="sm" variant="muted">

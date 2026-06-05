@@ -26,6 +26,7 @@
 //   POST   /v1/commerce/variants/:id/images                   → add image
 //   PUT    /v1/commerce/variants/:id/image-bindings           → set bindings
 //   DELETE /v1/commerce/variant-images/:imageId               → remove image
+//   POST   /v1/commerce/variant-images/:imageId/primary       → set product hero
 //   POST   /v1/commerce/variants/:id/assign-options           → assign values
 //
 // Routes are intentionally thin — services own Zod validation, audit logs,
@@ -279,6 +280,14 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     const { imageId } = VariantImageParam.parse(request.params);
     await variantService.removeImage(toCommerceContext(request), imageId);
     reply.code(204);
+  });
+
+  app.post('/v1/commerce/variant-images/:imageId/primary', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { imageId } = VariantImageParam.parse(request.params);
+    await variantService.setPrimaryImage(toCommerceContext(request), imageId);
+    return ok({ id: imageId, isPrimary: true });
   });
 
   app.post('/v1/commerce/variants/assign-options', async (request) => {

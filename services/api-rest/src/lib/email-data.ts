@@ -125,19 +125,38 @@ async function resolveCart(
         items: {
           select: {
             unitPriceCents: true,
-            variant: { select: { product: { select: { title: true } } } },
+            variant: {
+              select: {
+                product: {
+                  select: {
+                    title: true,
+                    // The product hero: explicit primary first, else first
+                    // product-level image by position (parity with the product list).
+                    images: {
+                      where: { variantId: null },
+                      orderBy: [{ isPrimary: 'desc' }, { position: 'asc' }],
+                      take: 1,
+                      select: { mediaAssetId: true },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },
     })
   );
-  // Cart lines carry no image yet — the product image is a VariantImage join the
-  // section abandoned-cart model also omits. Wire it once a product has a PRIMARY
-  // image to join cheaply (see [[project_product_primary_image]]).
-  return (cart?.items ?? []).map((it) => ({
+  const items = cart?.items ?? [];
+  if (items.length === 0) return [];
+  // Abandoned-cart line thumbnails now resolve from the product's primary image
+  // (see [[project_product_primary_image]]). Resolved via the public-media endpoint
+  // (mediaUrl), the same way CMS featured images resolve in this file.
+  const slug = await tenantSlug(ctx);
+  return items.map((it) => ({
     title: it.variant.product.title,
     priceLabel: money(it.unitPriceCents),
-    imageUrl: '',
+    imageUrl: mediaUrl(it.variant.product.images[0]?.mediaAssetId, slug),
   }));
 }
 
@@ -167,10 +186,9 @@ async function resolveProducts(
     take: 6,
     sortBy: 'createdAt',
   });
-  // TODO(commerce primary image): productService.list returns imageUrl=null today
-  // (no image join). Once a product carries a PRIMARY VariantImage (an explicit
-  // flag, not just position 0), surface its media URL here and product emails get
-  // images for free — see [[project_product_primary_image]].
+  // productService.list now resolves imageUrl from the product's primary image
+  // (explicit flag, else first product-level image by position), so product emails
+  // get thumbnails for free — see [[project_product_primary_image]].
   return items.map((p) => ({
     title: p.title,
     priceLabel: money(p.priceMinCents),

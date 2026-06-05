@@ -16,12 +16,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, Monitor, Pencil, Plus, Save, Smartphone, Tablet, Trash2, Upload } from 'lucide-react';
 import { Button, Input, ModuleProvider, NativeSelect, useConfirm } from '@sparx/ui';
-import {
-  collectComponentRefs,
-  makeCustomNode,
-  parsePageImport,
-  toPageDocument,
-} from '@sparx/builder-schemas';
+import { makeCustomNode, parsePageImport, toPageDocument } from '@sparx/builder-schemas';
 import type {
   BindingCatalog,
   BuilderNode,
@@ -387,15 +382,12 @@ export function BuilderApp({
   };
 
   // "Save as component" (docs/53 P-C): turn the selected subtree into a reusable
-  // tenant component, then replace it in-place with a pinned placement. A subtree
-  // that already contains a component is rejected (v1 forbids nesting). The new
-  // component seeds with a sensible name (rename + parameterize in the component
-  // editor); router.refresh reloads the component map so the placement previews.
+  // tenant component, then replace it in-place with a pinned placement. The subtree
+  // may itself contain components (nesting, docs/53 4a) — the create call rejects a
+  // cycle/over-deep nesting server-side. The new component seeds with a sensible
+  // name (rename + parameterize in the component editor); router.refresh reloads
+  // the component map so the placement previews.
   const onSaveAsComponent = async (node: BuilderNode) => {
-    if (collectComponentRefs(node).length > 0) {
-      editor.setSaveStatus('error');
-      return;
-    }
     const def = getDef(node.type);
     setBusy(true);
     const res = await copyComponent({

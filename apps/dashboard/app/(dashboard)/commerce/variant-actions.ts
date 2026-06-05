@@ -139,3 +139,18 @@ export async function removeVariantImageAction(
     return { ok: true as const };
   });
 }
+
+export async function setPrimaryVariantImageAction(
+  productId: string,
+  variantImageId: string
+): Promise<ActionResult<{ id: string }>> {
+  return restAction(async () => {
+    const result = await api.post<{ id: string; isPrimary: boolean }>(
+      `/v1/commerce/variant-images/${variantImageId}/primary`,
+      {}
+    );
+    revalidatePath(`/commerce/products/${productId}`);
+    revalidatePath(`/commerce/products/${productId}/variants`);
+    return { id: result.id };
+  });
+}

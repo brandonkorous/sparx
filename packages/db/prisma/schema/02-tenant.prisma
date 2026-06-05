@@ -205,13 +205,13 @@ model Tenant {
   sectionDefinitions   TenantSectionDefinition[]
 
   // Builder module — composition-model page editor (docs/41)
-  builderPages           BuilderPage[]
+  builderPages             BuilderPage[]
   // Builder module — the site layout / chrome shell (docs/45)
-  builderLayouts         BuilderLayout[]
+  builderLayouts           BuilderLayout[]
   // Builder module — per-record template overrides (docs/51 §6)
-  builderPageAssignments BuilderPageAssignment[]
+  builderPageAssignments   BuilderPageAssignment[]
   // Builder module — the Email Builder's emails (docs/52)
-  builderEmails          BuilderEmail[]
+  builderEmails            BuilderEmail[]
   // Builder module — tenant-authored components + their versions (docs/53)
   builderComponents        BuilderComponent[]
   builderComponentVersions BuilderComponentVersion[]

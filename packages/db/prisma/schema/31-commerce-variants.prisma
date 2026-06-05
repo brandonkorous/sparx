@@ -131,6 +131,13 @@ model VariantImage {
   variantId    String? @map("variant_id") @db.Uuid // null = product-level
   mediaAssetId String  @map("media_asset_id") @db.Uuid
   position     Int     @default(0)
+  // The product's HERO image — the thumbnail surfaced in admin/storefront lists,
+  // product cards, Builder email product blocks, and the search index. At most one
+  // per product, enforced by a PARTIAL UNIQUE index on (tenant_id, product_id)
+  // WHERE is_primary (in the migration SQL — Prisma can't express the predicate).
+  // When no image is primary, readers fall back to the first product-level image by
+  // position, so products keep a sensible thumbnail without an explicit pick.
+  isPrimary    Boolean @default(false) @map("is_primary")
   alt          String? @db.VarChar(512)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz

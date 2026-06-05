@@ -5,7 +5,7 @@ import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { getBrand, getConfig } from '../../../_brand/lib/api';
-import { getBindingCatalog } from '../../../_lib/api';
+import { getBindingCatalog, listComponentsFull } from '../../../_lib/api';
 import { ComponentBuilderApp } from '../../../_builder/component-builder-app';
 import '../../../builder.css';
 // The Surface recipe, pre-scoped to `.bx-canvas` — so a component authored with
@@ -64,15 +64,18 @@ interface PageProps {
 export default async function BuilderComponentEditRoute({ params }: PageProps) {
   const { type } = await params;
   const key = decodeURIComponent(type);
-  const [themeCss, component, catalog] = await Promise.all([
+  const [themeCss, component, catalog, components] = await Promise.all([
     canvasThemeCss(),
     loadComponent(key),
     loadCatalog(),
+    // Other tenant components, for nesting inside this one (docs/53 4a). Degrades
+    // to system-only on a failed read.
+    listComponentsFull(),
   ]);
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-      <ComponentBuilderApp component={component} bindingCatalog={catalog} />
+      <ComponentBuilderApp component={component} bindingCatalog={catalog} components={components} />
     </>
   );
 }

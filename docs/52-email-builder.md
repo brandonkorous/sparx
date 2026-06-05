@@ -214,9 +214,11 @@ Transactional code builtins are untouched throughout.
   resolves THIS recipient's data, and renders per recipient. A per-send tree
   (products/promotion/posts) resolves once and fans out as `raw`. Preview +
   test-send resolve the tree's per-send data so the editor shows real content.
-  **Still open after P4:** product/cart images are empty until a product carries an
-  explicit PRIMARY image (`productService.list` returns `imageUrl: null` today). Bind
-  a `Text` to `item.excerpt` for post teasers meanwhile.
+  **Product/cart images: resolved.** `productService.list` now resolves `imageUrl`
+  from the product's primary image (explicit `VariantImage.is_primary`, else the
+  first product-level image by position), and the abandoned-cart resolver resolves
+  the line's product hero the same way — so product blocks + cart blocks get
+  thumbnails for any product that has images.
 - **Phase 5 — Migrate & retire. _(Built 2026-06-04.)_** The section model is gone
   (§8): no authored-template path, `@sparx/email-sections` deleted, broadcasts +
   MCP repointed to the Builder email. Marketing email = Builder; transactional =

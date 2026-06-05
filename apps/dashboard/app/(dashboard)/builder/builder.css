@@ -1151,6 +1151,11 @@
 .bx-bind--static {
   --bind: var(--color-text-muted);
 }
+/* A node whose data is a per-placement instance field (docs/53 4b) — the binding
+ * slot state, shown in the component editor. */
+.bx-bind--slot {
+  --bind: var(--module-active);
+}
 .bx-bind__top {
   display: flex;
 }

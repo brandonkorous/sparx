@@ -7,6 +7,7 @@
 //   PATCH  /v1/builder/components/:key                  → update identity; tree/propSpec → new version
 //   DELETE /v1/builder/components/:key                  → remove (and all versions)
 //   GET    /v1/builder/components/:key/usages           → where-used (pages + layouts)
+//   POST   /v1/builder/components/:key/upgrade-placements → re-pin all placements to a version
 //   GET    /v1/builder/components/:key/versions         → version history (newest first)
 //   GET    /v1/builder/components/:key/versions/:version → one pinned version
 //
@@ -26,6 +27,7 @@ const VersionParam = z.object({
   version: z.coerce.number().int().min(1),
 });
 const ListQuery = z.object({ include: z.enum(['tree']).optional() });
+const UpgradeBody = z.object({ version: z.coerce.number().int().min(1).optional() });
 
 const builderComponentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/components', async (request) => {
@@ -78,6 +80,19 @@ const builderComponentRoutes: FastifyPluginAsync = (app) => {
     const { key } = KeyParam.parse(request.params);
     const usages = await componentService.usages(toBuilderContext(request), key);
     return ok(usages);
+  });
+
+  app.post('/v1/builder/components/:key/upgrade-placements', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { key } = KeyParam.parse(request.params);
+    const { version } = UpgradeBody.parse(request.body ?? {});
+    const result = await componentService.upgradeAllPlacements(
+      toBuilderContext(request),
+      key,
+      version
+    );
+    return ok(result);
   });
 
   app.get('/v1/builder/components/:key/versions', async (request) => {

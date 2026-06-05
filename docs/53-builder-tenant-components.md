@@ -1,6 +1,6 @@
 # Builder Tenant Components — user-authored components without a deploy
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-04
 
@@ -133,12 +133,23 @@ PropSpec = { key, label, kind: 'text'|'richtext'|'url'|'image'|'number'|'boolean
 Inside the version `tree`, a slot is a sentinel **prop value** `{ $prop: '<key>' }` placed on
 any node prop (e.g. a Heading’s `text`, an Image’s `src`, a Button’s `href`). At expand time
 the walker replaces each `{ $prop: k }` with the instance’s `props[k]` (falling back to the
-propSpec `default`, then to empty). v1 parameterizes **props only**; per-instance **binding**
-overrides are a follow-up (a component’s internal bindings are authored in the definition and
-resolve against the placement’s data scope).
+propSpec `default`, then to empty).
 
-`propSpec → zod` derives the instance-config validator (mirrors the legacy
-`fieldSpecToZod`), so an instance’s props can never persist in a shape the component rejects.
+`propSpec → zod` (`propSpecToZod`) derives the instance-config validator (mirrors the legacy
+`fieldSpecToZod`); the expander runs `coerceInstanceProps` from it so each filled value is
+coerced to its declared kind and an invalid one is dropped (the slot’s default shows through)
+— **publish bakes the coerced values into the published tree**, so a published placement can
+never carry a slot value in a shape the component rejects.
+
+**Per-instance binding overrides (4b).** A data-aware component’s internal bindings are
+authored against a `$bind:<key>` sentinel on a node’s `binding.path` (the binding analog of a
+`$prop` slot). Each placement maps the slot to a real data path under `props.$ref.bindings`,
+and the expander substitutes it (no override ⇒ the binding is dropped and the node falls back
+to static). Encoding the slot in the path string keeps the `BuilderNode` schema — and the
+storefront renderer — untouched: published trees only ever carry concrete `{ path }` bindings.
+The slot list is **derived from the tree** (`collectBindingSlots`), so there’s no second spec
+to persist (and no migration). A component placed inside an iterating scope still resolves its
+remaining (non-slot) bindings against that scope, since the expansion is inlined in place.
 
 ---
 
@@ -147,9 +158,11 @@ resolve against the placement’s data scope).
 - Editing a component’s tree/propSpec creates a **new `ComponentVersion`** and bumps
   `latest_version`. Old versions persist (pages pinned to them keep rendering).
 - A placement pins `props.$ref.version`. New placements default to `latest_version`.
-- The component-detail + the inspector surface **“Upgrade to vN”** per placement (and a
-  bulk “update all placements” from the component). Upgrading re-pins; the change goes live on
-  the next publish. A version diff/summary is a later nicety.
+- The inspector surfaces **“Update to vN”** per placement, and the component detail page
+  surfaces a bulk **“Update all placements to vN”** (`upgradeAllPlacements` re-pins every draft
+  page/layout in one transaction; the detail page enables it only when some placement is behind,
+  using `ComponentUsageDto.pinnedVersions`). Upgrading re-pins; the change goes live on each
+  surface’s next publish. A version diff/summary is a later nicety.
 - **Delete** is gated by where-used impact analysis (scan tenant draft pages/layouts for
   refs) behind a `useConfirm` ([[destructive-actions-confirm]]) — never a silent break.
 
@@ -164,9 +177,11 @@ A component (and each version) must pass, before persistence:
 - **Known types** — every node `type` in the tree resolves to a system component **or** an
   existing tenant component.
 - **Nesting** — container/leaf + `acceptsChildren` respected.
-- **No cycles** — a tenant component may not reference itself transitively. **v1: no
-  custom-in-custom at all** (a component tree contains only system primitives) — this removes
-  the cycle problem entirely and is revisited when nesting is needed.
+- **No cycles, bounded depth (4a)** — a tenant component MAY reference other tenant components,
+  but the reference graph must stay **acyclic** (no transitive self-reference) and within
+  `MAX_COMPONENT_NESTING` (5) levels. The service builds the dependency graph from every other
+  component’s latest tree and runs `checkNestingGraph` on save; the expander + canvas carry a
+  matching depth backstop. Every referenced component must also exist.
 - **Prop refs resolve** — every `{ $prop: k }` names a `propSpec` entry.
 - **Classes bounded** — `class` strings stay within the Surface vocabulary (enforced when the
   docs/47 versioned class contract lands; today bounded by length, as elsewhere).
@@ -222,22 +237,50 @@ migration-free after P-A).
 - **P-D — Parameterization ✅:** the propSpec editor ("Fields" rail tab = `PropSpecPanel`);
   `{ $prop }` slots created from a node's text prop via the inspector's **Make a field**
   (`slotEditor`); per-instance config form in the custom-node inspector; merge at expand
-  (`expandComponentTree` fills slots from instance props, default fallback). _`propSpec → zod`
-  deferred (slots are plain strings/numbers/bools today)._
+  (`expandComponentTree` fills slots from instance props, default fallback).
 - **P-E — Versioning UI ✅:** per-placement pin shown + **Update to vN** (re-pins `props.$ref`)
-  when latest > pinned; version history table on the detail page. _Bulk update deferred. Editor
-  preview shows the LATEST version even for an older-pinned placement (publish is always faithful
-  to the pin); exact-pinned-version preview deferred — needs per-(key,version) fetch._
+  when latest > pinned; version history table on the detail page.
 
 The data model (version table + `prop_spec` column) is built in **P-A** so later phases add
-**no migrations**.
+**no migrations** — and the gap work below stayed migration-free too (binding slots ride the
+existing `props.$ref` jsonb; binding-slot specs are derived from the tree, not stored).
+
+### Gaps filled (2026-06-04, after P-E) — also migration-free, gate-green
+
+- **Exact-pinned-version preview (Gap 1):** the canvas now expands each placement’s **pinned**
+  version, not just the latest. `useComponentVersions` scans the tree for placements pinned
+  below latest, lazily fetches those exact versions (`getComponentVersion` →
+  `/versions/:version`), and provides a `VersionResolver` (React context) the canvas reads;
+  it falls back to latest until the fetch lands. _Remaining edge: a placement of an OUTER
+  component whose own tree pins an OLDER version of an inner component previews the inner at
+  latest (only top-level pins are prefetched). Publish is always faithful — it loads every
+  version._
+- **propSpec → zod (Gap 2):** `propSpecToZod` + `coerceInstanceProps`; the expander coerces +
+  drops invalid instance values, so published placements are always well-shaped (see §5).
+- **Bulk upgrade (Gap 3):** `upgradeAllPlacements` + `POST …/upgrade-placements` + the detail
+  page’s **Update all placements to vN** (see §6).
+- **Nesting (Gap 4a):** custom-in-custom allowed with a cycle + depth guard (see §7); the
+  expander recurses (`expandCustomNodes`), publish loads ALL components (not just top-level
+  refs) so nested placements resolve, the component editor offers other components in its
+  palette (self excluded), and "Save as component" no longer rejects subtrees that nest a
+  component.
+- **Binding overrides (Gap 4b):** `$bind:<key>` sentinel + per-placement `props.$ref.bindings`
+  (see §5). Authored from the component-editor binding box (**Make instance field**); filled
+  from the placement inspector’s **Data** group.
 
 ---
 
 ## 11. Open questions
 
-- **Per-instance binding overrides** (parameterized data-aware components) — deferred past
-  P-D; needs a binding-slot sentinel + scope-aware resolution.
-- **Custom-in-custom nesting** — allowed once a cycle check + depth bound land (P-B forbids it).
+- **Per-instance binding overrides** — ✅ shipped (Gap 4b, §5). Still open: overriding a node’s
+  `box.backgroundImageBinding` (only `node.binding` is slot-able today), and labelling/ordering
+  binding slots from a dedicated rail (they’re derived from the tree + node names for now).
+- **Custom-in-custom nesting** — ✅ shipped (Gap 4a, §7), bounded by a cycle check + depth limit.
+  Still open: the editor palette only excludes SELF, so a deeper cycle is caught by the
+  server reject rather than pre-filtered; and a deeply-nested OLDER pin previews at latest
+  (Gap 1 edge).
 - **Marketplace components** (`sparx.market`, vetted platform code) — docs/38 Phase D; out of
   scope here (per-tenant arbitrary React in SSR stays banned).
+- **Server-side type-resolution validation** — the validator predicates (`isKnownType` /
+  `acceptsChildren`) still aren’t wired (needs a server-safe registry mirror); low ROI while
+  the only writer is the trusted dashboard composing from its own registry.
