@@ -35,7 +35,7 @@ import { loadSiteData } from '@/lib/builder-data';
 import { ConsentManager } from '@/components/consent/consent-manager';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
-import { resolveTenant, type TenantTheme } from '@/lib/tenant';
+import { resolveActivePropertySlug, resolveTenant, type TenantTheme } from '@/lib/tenant';
 import { buildStorefrontThemeCss } from '@/lib/theme';
 import {
   getPublishedSite,
@@ -194,6 +194,10 @@ function navNodesToFooterColumns(nodes: NavNode[]): FooterColumn[] {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const tenant = await resolveTenant();
+  // Active site slug (docs/58 D1) — handed to CartProvider so storefront carts
+  // (and the orders they become) are tagged with their origin site. Cheap: the
+  // underlying resolveSiteRoute() is request-cached alongside resolveTenant.
+  const activePropertySlug = await resolveActivePropertySlug();
   // Mirror of the `?sparxSitePreview=` token, set by the proxy so this layout
   // (which the App Router never hands searchParams) can render the DRAFT chrome
   // — header/footer/announcement — in the editor preview, not just published.
@@ -392,7 +396,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {tenant ? (
           <CustomerProvider tenantSlug={tenant.slug}>
             <WishlistProvider>
-              <CartProvider tenantSlug={tenant.slug} currency={tenant.storefront.defaultCurrency}>
+              <CartProvider
+                tenantSlug={tenant.slug}
+                propertySlug={activePropertySlug ?? undefined}
+                currency={tenant.storefront.defaultCurrency}
+              >
                 <div className="sf-frame">
                   <a href="#sf-main" className="sf-skip-link">
                     Skip to content

@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create an order — Sparx API Reference (mockup)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --sparx-primary: #6366f1;
+        --sparx-primary-hover: #4f46e5;
+        --sparx-primary-tint: #eef2ff;
+        --module-commerce: #f97316;
+        --module-ai: #ec4899;
+
+        --color-bg-page: #fafafa;
+        --color-bg-surface: #ffffff;
+        --color-bg-subtle: #f4f4f5;
+        --color-bg-muted: #e4e4e7;
+        --color-border-default: #e5e5e5;
+        --color-border-strong: #d4d4d8;
+        --color-text-primary: #0a0a0a;
+        --color-text-secondary: #52525b;
+        --color-text-tertiary: #a1a1aa;
+        --color-text-muted: #71717a;
+        --color-success: #10b981;
+        --color-success-tint: #ecfdf5;
+        --color-success-text: #065f46;
+        --color-danger-tint: #fef2f2;
+        --color-danger-text: #991b1b;
+
+        --radius-sm: 4px;
+        --radius-md: 6px;
+        --radius-lg: 8px;
+        --radius-xl: 12px;
+        --radius-full: 9999px;
+        --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+        --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+        --gutter-page: clamp(20px, 5vw, 80px);
+        --doc-sidebar-w: 264px;
+        --doc-nav-h: 65px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--color-bg-page);
+        color: var(--color-text-primary);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      /* nav */
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        height: var(--doc-nav-h);
+        padding: 0 var(--gutter-page);
+        border-bottom: 1px solid var(--color-border-default);
+        background: color-mix(in srgb, var(--color-bg-page) 82%, transparent);
+        backdrop-filter: saturate(150%) blur(8px);
+      }
+      .wordmark {
+        font-weight: 700;
+        font-size: 22px;
+        letter-spacing: -0.03em;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .wordmark .x {
+        color: var(--sparx-primary);
+      }
+      .wordmark .tag {
+        font-weight: 500;
+        font-size: 12px;
+        color: var(--color-text-tertiary);
+        border-left: 1px solid var(--color-border-strong);
+        padding-left: 10px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 32px;
+      }
+      .nav-links a {
+        font-size: 14px;
+        color: var(--color-text-secondary);
+      }
+      .nav-links a.active {
+        color: var(--color-text-primary);
+        font-weight: 500;
+      }
+      .nav-actions {
+        display: flex;
+        gap: 12px;
+      }
+      .btn {
+        font-size: 13px;
+        font-weight: 500;
+        border-radius: var(--radius-md);
+        padding: 8px 14px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        font-family: var(--font-sans);
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--color-text-secondary);
+      }
+      .btn-solid {
+        background: #0a0a0a;
+        color: #fff;
+      }
+
+      /* shell: sidebar | content */
+      .api-shell {
+        max-width: 1440px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: var(--doc-sidebar-w) minmax(0, 1fr);
+        gap: 48px;
+        padding: 0 var(--gutter-page);
+        align-items: start;
+      }
+      .doc-sidebar {
+        position: sticky;
+        top: var(--doc-nav-h);
+        height: calc(100vh - var(--doc-nav-h));
+        overflow-y: auto;
+        padding: 28px 0 64px;
+      }
+      .doc-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        margin-bottom: 26px;
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-md);
+        background: var(--color-bg-surface);
+        color: var(--color-text-tertiary);
+        font-size: 13px;
+      }
+      .doc-search .kbd {
+        margin-left: auto;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-sm);
+        padding: 1px 5px;
+      }
+      .doc-nav-group {
+        margin-bottom: 22px;
+      }
+      .doc-nav-group > .label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--color-text-tertiary);
+        padding: 0 0 8px 10px;
+      }
+      .doc-nav-group a {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13.5px;
+        color: var(--color-text-secondary);
+        padding: 6px 10px;
+        border-radius: var(--radius-md);
+        border-left: 2px solid transparent;
+        margin-left: -2px;
+      }
+      .doc-nav-group a.active {
+        color: var(--sparx-primary-hover);
+        font-weight: 500;
+        background: var(--sparx-primary-tint);
+        border-left-color: var(--sparx-primary);
+      }
+      .doc-nav-group a .m {
+        margin-left: auto;
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        font-weight: 500;
+        padding: 1px 5px;
+        border-radius: var(--radius-sm);
+      }
+      .m.get {
+        color: #1d4ed8;
+        background: #eff6ff;
+      }
+      .m.post {
+        color: var(--color-success-text);
+        background: var(--color-success-tint);
+      }
+      .m.del {
+        color: var(--color-danger-text);
+        background: var(--color-danger-tint);
+      }
+
+      /* content: two columns (params | code) */
+      .api-main {
+        min-width: 0;
+        padding: 36px 0 96px;
+      }
+      .api-head {
+        max-width: 920px;
+        margin-bottom: 36px;
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--color-border-default);
+      }
+      .breadcrumb {
+        display: flex;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--color-text-tertiary);
+        margin-bottom: 16px;
+      }
+      .breadcrumb .sep {
+        color: var(--color-border-strong);
+      }
+      .api-title {
+        font-weight: 500;
+        font-size: 34px;
+        letter-spacing: -0.025em;
+        margin: 0 0 12px;
+      }
+      .api-title .spark {
+        color: var(--sparx-primary);
+      }
+      .api-route {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--font-mono);
+        font-size: 13.5px;
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border-default);
+        border-radius: var(--radius-md);
+        padding: 9px 14px;
+        margin-bottom: 16px;
+      }
+      .api-route .verb {
+        font-weight: 500;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: var(--radius-sm);
+        color: var(--color-success-text);
+        background: var(--color-success-tint);
+      }
+      .api-route .copy {
+        margin-left: 6px;
+        color: var(--color-text-tertiary);
+        cursor: pointer;
+      }
+      .api-desc {
+        font-size: 16px;
+        line-height: 27px;
+        color: var(--color-text-secondary);
+        max-width: 720px;
+        margin: 0;
+      }
+
+      .api-cols {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 440px);
+        gap: 48px;
+        align-items: start;
+      }
+      .api-left {
+        min-width: 0;
+      }
+      .api-right {
+        position: sticky;
+        top: calc(var(--doc-nav-h) + 24px);
+      }
+
+      h2.sec {
+        font-weight: 500;
+        font-size: 14px;
+        letter-spacing: 0.01em;
+        color: var(--color-text-primary);
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        color: var(--color-text-tertiary);
+        margin: 36px 0 4px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--color-border-default);
+      }
+      h2.sec:first-child {
+        margin-top: 0;
+      }
+
+      /* parameter rows */
+      .param {
+        padding: 16px 0;
+        border-bottom: 1px solid var(--color-border-default);
+      }
+      .param-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+      .param-name {
+        font-family: var(--font-mono);
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--color-text-primary);
+      }
+      .param-type {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--module-ai);
+      }
+      .param-req {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--color-danger-text);
+      }
+      .param-opt {
+        font-size: 11px;
+        color: var(--color-text-tertiary);
+      }
+      .param-desc {
+        font-size: 14px;
+        line-height: 23px;
+        color: var(--color-text-secondary);
+        margin: 0;
+      }
+      .param-desc code {
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        background: var(--color-bg-muted);
+        padding: 1px 5px;
+        border-radius: var(--radius-sm);
+        color: var(--color-text-primary);
+      }
+      .param-children {
+        margin-top: 14px;
+        margin-left: 16px;
+        padding-left: 16px;
+        border-left: 2px solid var(--color-border-default);
+      }
+      .param-children .param:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .expand {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12.5px;
+        color: var(--sparx-primary-hover);
+        cursor: pointer;
+        margin-top: 8px;
+        font-family: var(--font-sans);
+        background: none;
+        border: none;
+        padding: 0;
+      }
+
+      .attr-note {
+        font-size: 14px;
+        line-height: 23px;
+        color: var(--color-text-secondary);
+        margin: 14px 0 4px;
+      }
+
+      /* code cards (right column) */
+      .code-card {
+        background: #0a0a0a;
+        border: 1px solid #2a2a2a;
+        border-top: 3px solid var(--sparx-primary);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        margin-bottom: 18px;
+      }
+      .code-card.resp {
+        border-top-color: var(--color-success);
+      }
+      .code-head {
+        display: flex;
+        align-items: center;
+        padding: 0 6px 0 4px;
+        background: #0f0f0f;
+        border-bottom: 1px solid #2a2a2a;
+      }
+      .code-cap {
+        padding: 10px 12px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: #a1a1aa;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .code-tabs {
+        display: flex;
+        overflow-x: auto;
+      }
+      .code-tab {
+        padding: 10px 12px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: #71717a;
+        border: none;
+        border-bottom: 2px solid transparent;
+        background: none;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .code-tab.active {
+        color: #fff;
+        border-bottom-color: var(--sparx-primary);
+      }
+      .resp .code-tab.active {
+        border-bottom-color: var(--color-success);
+      }
+      .code-status {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 12px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: #a1a1aa;
+      }
+      .code-status .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+        background: var(--color-success);
+      }
+      .code-status .dot.err {
+        background: #f59e0b;
+      }
+      .code-copy {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: #a1a1aa;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px 10px;
+      }
+      .code-copy:hover {
+        color: #fff;
+      }
+      .code-panel {
+        display: none;
+      }
+      .code-panel.active {
+        display: block;
+        padding: 16px 0;
+        overflow-x: auto;
+      }
+      .code-lines {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        line-height: 20px;
+        color: #f0f0f0;
+        white-space: pre;
+        padding: 0 16px;
+        margin: 0;
+      }
+      .t-com {
+        color: #52525b;
+      }
+      .t-kw {
+        color: #ec4899;
+      }
+      .t-str {
+        color: #10b981;
+      }
+      .t-var {
+        color: #06b6d4;
+      }
+      .t-num {
+        color: #f97316;
+      }
+      .t-fn {
+        color: #818cf8;
+      }
+      .t-mod {
+        color: #f97316;
+      }
+      .t-key {
+        color: #818cf8;
+      }
+      .t-dim {
+        color: #a1a1aa;
+      }
+      .t-bool {
+        color: #f97316;
+      }
+
+      @media (max-width: 1180px) {
+        .api-cols {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+        .api-right {
+          position: static;
+        }
+      }
+      @media (max-width: 820px) {
+        .api-shell {
+          grid-template-columns: 1fr;
+        }
+        .doc-sidebar,
+        .nav-links {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <span class="wordmark">Spar<span class="x">x</span><span class="tag">Docs</span></span>
+      <div class="nav-links">
+        <a href="#">Guides</a>
+        <a href="#" class="active">API reference</a>
+        <a href="#">SDKs</a>
+        <a href="#">MCP</a>
+        <a href="#">Changelog</a>
+      </div>
+      <div class="nav-actions">
+        <button class="btn btn-ghost">Sign in</button>
+        <button class="btn btn-solid">Dashboard</button>
+      </div>
+    </nav>
+
+    <div class="api-shell">
+      <!-- sidebar -->
+      <aside class="doc-sidebar">
+        <div class="doc-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+            <path d="M21 21L16.5 16.5" stroke="currentColor" stroke-width="2" />
+          </svg>
+          <span>Search docs</span>
+          <span class="kbd">⌘K</span>
+        </div>
+        <div class="doc-nav-group">
+          <div class="label">Core</div>
+          <a href="#">Authentication</a>
+          <a href="#">Pagination</a>
+          <a href="#">Errors</a>
+          <a href="#">Rate limits</a>
+        </div>
+        <div class="doc-nav-group">
+          <div class="label">Commerce · Orders</div>
+          <a href="#" class="active">Create an order <span class="m post">POST</span></a>
+          <a href="#">Retrieve an order <span class="m get">GET</span></a>
+          <a href="#">List orders <span class="m get">GET</span></a>
+          <a href="#">Cancel an order <span class="m del">DEL</span></a>
+        </div>
+        <div class="doc-nav-group">
+          <div class="label">CRM · Customers</div>
+          <a href="#">Create a customer <span class="m post">POST</span></a>
+          <a href="#">Retrieve a customer <span class="m get">GET</span></a>
+          <a href="#">List customers <span class="m get">GET</span></a>
+        </div>
+        <div class="doc-nav-group">
+          <div class="label">CMS · Content</div>
+          <a href="#">Create an entry <span class="m post">POST</span></a>
+          <a href="#">Publish an entry <span class="m post">POST</span></a>
+        </div>
+      </aside>
+
+      <!-- main -->
+      <main class="api-main">
+        <div class="api-head">
+          <div class="breadcrumb">
+            <span>API reference</span>
+            <span class="sep">/</span>
+            <span>Commerce</span>
+            <span class="sep">/</span>
+            <span style="color: var(--color-text-secondary)">Orders</span>
+          </div>
+          <h1 class="api-title">Create an order<span class="spark">.</span></h1>
+          <div class="api-route">
+            <span class="verb">POST</span>
+            <span>https://api.sparx.works/v1/commerce/orders</span>
+            <span class="copy">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2" />
+                <path d="M5 15V5a2 2 0 012-2h10" stroke="currentColor" stroke-width="2" />
+              </svg>
+            </span>
+          </div>
+          <p class="api-desc">
+            Creates a new order in the commerce module. Orders may be retail or B2B; B2B orders
+            accept payment terms and a PO number, and are routed through approval when the customer's
+            credit policy requires it. The created order is returned, and an
+            <code style="font-family: var(--font-mono); font-size: 13px">order.created</code> event
+            is emitted on Pub/Sub.
+          </p>
+        </div>
+
+        <div class="api-cols">
+          <!-- LEFT: parameters -->
+          <div class="api-left">
+            <h2 class="sec">Body parameters</h2>
+
+            <div class="param">
+              <div class="param-head">
+                <span class="param-name">customerId</span>
+                <span class="param-type">string</span>
+                <span class="param-req">Required</span>
+              </div>
+              <p class="param-desc">
+                The <code>id</code> of the customer placing the order, from the CRM module. Must
+                belong to the same tenant as the API key.
+              </p>
+            </div>
+
+            <div class="param">
+              <div class="param-head">
+                <span class="param-name">lines</span>
+                <span class="param-type">array of objects</span>
+                <span class="param-req">Required</span>
+              </div>
+              <p class="param-desc">
+                The line items to order. At least one is required. Each line references a variant by
+                <code>sku</code> and a quantity.
+              </p>
+              <button class="expand" data-expand>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-width="2" />
+                </svg>
+                Show child attributes
+              </button>
+              <div class="param-children" hidden>
+                <div class="param">
+                  <div class="param-head">
+                    <span class="param-name">sku</span>
+                    <span class="param-type">string</span>
+                    <span class="param-req">Required</span>
+                  </div>
+                  <p class="param-desc">The variant SKU. Resolved within the tenant's catalog.</p>
+                </div>
+                <div class="param">
+                  <div class="param-head">
+                    <span class="param-name">qty</span>
+                    <span class="param-type">integer</span>
+                    <span class="param-req">Required</span>
+                  </div>
+                  <p class="param-desc">Quantity to order. Must be ≥ 1.</p>
+                </div>
+                <div class="param">
+                  <div class="param-head">
+                    <span class="param-name">priceOverride</span>
+                    <span class="param-type">Money</span>
+                    <span class="param-opt">Optional</span>
+                  </div>
+                  <p class="param-desc">
+                    Override the catalog price for this line. Requires the
+                    <code>orders:price_override</code> scope.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="param">
+              <div class="param-head">
+                <span class="param-name">terms</span>
+                <span class="param-type">object</span>
+                <span class="param-opt">Optional</span>
+              </div>
+              <p class="param-desc">
+                Payment terms for B2B orders, e.g. <code>{ "type": "net", "days": 30 }</code>. Omit
+                for retail orders paid at checkout.
+              </p>
+            </div>
+
+            <div class="param">
+              <div class="param-head">
+                <span class="param-name">poNumber</span>
+                <span class="param-type">string</span>
+                <span class="param-opt">Optional</span>
+              </div>
+              <p class="param-desc">The customer's purchase-order reference. Shown on the invoice.</p>
+            </div>
+
+            <div class="param">
+              <div class="param-head">
+                <span class="param-name">metadata</span>
+                <span class="param-type">object</span>
+                <span class="param-opt">Optional</span>
+              </div>
+              <p class="param-desc">
+                Up to 50 key/value pairs you can attach for your own bookkeeping. Returned verbatim;
+                never used by Sparx.
+              </p>
+            </div>
+
+            <h2 class="sec">Returns</h2>
+            <p class="attr-note">
+              Returns an <code style="font-family: var(--font-mono)">Order</code> object on success.
+              The order's <code style="font-family: var(--font-mono)">status</code> is
+              <code style="font-family: var(--font-mono)">approved</code> for retail and
+              auto-approved B2B, or
+              <code style="font-family: var(--font-mono)">pending_review</code> when credit policy
+              requires approval. Returns an error object if the customer or a SKU can't be resolved.
+            </p>
+
+            <h2 class="sec">Errors</h2>
+            <div class="param">
+              <div class="param-head">
+                <span class="param-name">402 · payment_required</span>
+              </div>
+              <p class="param-desc">
+                The B2B customer has exceeded their credit limit. The order is not created.
+              </p>
+            </div>
+            <div class="param">
+              <div class="param-head">
+                <span class="param-name">404 · sku_not_found</span>
+              </div>
+              <p class="param-desc">One or more <code>lines[].sku</code> values don't exist in the catalog.</p>
+            </div>
+            <div class="param">
+              <div class="param-head">
+                <span class="param-name">403 · module_disabled</span>
+              </div>
+              <p class="param-desc">The tenant hasn't activated the commerce module.</p>
+            </div>
+          </div>
+
+          <!-- RIGHT: request + response -->
+          <div class="api-right">
+            <div class="code-card" data-code>
+              <div class="code-head">
+                <span class="code-cap">Request</span>
+                <div class="code-tabs">
+                  <button class="code-tab active" data-tab="0">cURL</button>
+                  <button class="code-tab" data-tab="1">Node</button>
+                  <button class="code-tab" data-tab="2">Python</button>
+                </div>
+                <button class="code-copy" data-copy>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                    <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2" />
+                    <path d="M5 15V5a2 2 0 012-2h10" stroke="currentColor" stroke-width="2" />
+                  </svg>
+                </button>
+              </div>
+              <div class="code-panel active">
+                <pre class="code-lines"><span class="t-dim">curl</span> https://api.sparx.works/v1/commerce/orders \
+  -H <span class="t-str">"Authorization: Bearer $SPARX_KEY"</span> \
+  -H <span class="t-str">"Content-Type: application/json"</span> \
+  -d <span class="t-str">'{</span>
+<span class="t-str">    "customerId": "cus_8R4Xz1QkM",</span>
+<span class="t-str">    "terms": { "type": "net", "days": 30 },</span>
+<span class="t-str">    "poNumber": "PO-8841",</span>
+<span class="t-str">    "lines": [{ "sku": "INJ-6.7-CR", "qty": 8 }]</span>
+<span class="t-str">  }'</span></pre>
+              </div>
+              <div class="code-panel">
+                <pre class="code-lines"><span class="t-kw">const</span> <span class="t-var">order</span> = <span class="t-kw">await</span> client.<span class="t-mod">commerce</span>.orders.<span class="t-fn">create</span>({
+  <span class="t-key">customerId</span>: <span class="t-str">"cus_8R4Xz1QkM"</span>,
+  <span class="t-key">terms</span>: { <span class="t-key">type</span>: <span class="t-str">"net"</span>, <span class="t-key">days</span>: <span class="t-num">30</span> },
+  <span class="t-key">poNumber</span>: <span class="t-str">"PO-8841"</span>,
+  <span class="t-key">lines</span>: [{ <span class="t-key">sku</span>: <span class="t-str">"INJ-6.7-CR"</span>, <span class="t-key">qty</span>: <span class="t-num">8</span> }],
+});</pre>
+              </div>
+              <div class="code-panel">
+                <pre class="code-lines">order = client.commerce.orders.<span class="t-fn">create</span>(
+  customer_id=<span class="t-str">"cus_8R4Xz1QkM"</span>,
+  terms={<span class="t-str">"type"</span>: <span class="t-str">"net"</span>, <span class="t-str">"days"</span>: <span class="t-num">30</span>},
+  po_number=<span class="t-str">"PO-8841"</span>,
+  lines=[{<span class="t-str">"sku"</span>: <span class="t-str">"INJ-6.7-CR"</span>, <span class="t-str">"qty"</span>: <span class="t-num">8</span>}],
+)</pre>
+              </div>
+            </div>
+
+            <div class="code-card resp" data-code>
+              <div class="code-head">
+                <span class="code-cap">Response</span>
+                <div class="code-tabs">
+                  <button class="code-tab active" data-tab="0">200</button>
+                  <button class="code-tab" data-tab="1">402</button>
+                </div>
+                <span class="code-status"><span class="dot"></span>41 ms</span>
+              </div>
+              <div class="code-panel active">
+                <pre class="code-lines">{
+  <span class="t-key">"id"</span>: <span class="t-str">"ord_KdQ19wPmFf"</span>,
+  <span class="t-key">"object"</span>: <span class="t-str">"order"</span>,
+  <span class="t-key">"status"</span>: <span class="t-str">"approved"</span>,
+  <span class="t-key">"customerId"</span>: <span class="t-str">"cus_8R4Xz1QkM"</span>,
+  <span class="t-key">"total"</span>: { <span class="t-key">"amount"</span>: <span class="t-num">189600</span>, <span class="t-key">"currency"</span>: <span class="t-str">"USD"</span> },
+  <span class="t-key">"terms"</span>: { <span class="t-key">"type"</span>: <span class="t-str">"net"</span>, <span class="t-key">"days"</span>: <span class="t-num">30</span> },
+  <span class="t-key">"poNumber"</span>: <span class="t-str">"PO-8841"</span>,
+  <span class="t-key">"lines"</span>: [
+    { <span class="t-key">"sku"</span>: <span class="t-str">"INJ-6.7-CR"</span>, <span class="t-key">"qty"</span>: <span class="t-num">8</span> }
+  ],
+  <span class="t-key">"createdAt"</span>: <span class="t-str">"2026-06-05T17:41:09Z"</span>
+}</pre>
+              </div>
+              <div class="code-panel">
+                <pre class="code-lines">{
+  <span class="t-key">"error"</span>: {
+    <span class="t-key">"code"</span>: <span class="t-str">"payment_required"</span>,
+    <span class="t-key">"message"</span>: <span class="t-str">"Customer over credit limit",</span>
+    <span class="t-key">"creditLimit"</span>: { <span class="t-key">"amount"</span>: <span class="t-num">500000</span>, <span class="t-key">"currency"</span>: <span class="t-str">"USD"</span> },
+    <span class="t-key">"outstanding"</span>: { <span class="t-key">"amount"</span>: <span class="t-num">472300</span>, <span class="t-key">"currency"</span>: <span class="t-str">"USD"</span> }
+  }
+}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.querySelectorAll('[data-code]').forEach((card) => {
+        const tabs = card.querySelectorAll('.code-tab');
+        const panels = card.querySelectorAll('.code-panel');
+        tabs.forEach((tab, i) =>
+          tab.addEventListener('click', () => {
+            tabs.forEach((t) => t.classList.remove('active'));
+            panels.forEach((p) => p.classList.remove('active'));
+            tab.classList.add('active');
+            panels[i].classList.add('active');
+          })
+        );
+      });
+      document.querySelectorAll('[data-expand]').forEach((btn) => {
+        const kids = btn.nextElementSibling;
+        btn.addEventListener('click', () => {
+          const open = !kids.hidden;
+          kids.hidden = open;
+          btn.querySelector('svg').style.transform = open ? '' : 'rotate(90deg)';
+          btn.childNodes[btn.childNodes.length - 1].textContent = open
+            ? ' Show child attributes'
+            : ' Hide child attributes';
+        });
+      });
+    </script>
+  </body>
+</html>

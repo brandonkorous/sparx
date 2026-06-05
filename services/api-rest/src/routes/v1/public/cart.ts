@@ -32,6 +32,9 @@ import {
 const CartParam = z.object({ cartId: z.string().uuid() });
 const ItemParam = z.object({ cartId: z.string().uuid(), itemId: z.string().uuid() });
 const CodeParam = z.object({ cartId: z.string().uuid(), code: z.string().min(1).max(64) });
+// Origin site (docs/58 D1): the storefront passes its active property SLUG on
+// cart creation so the order placed from it inherits the site.
+const CreateCartQuery = z.object({ property: z.string().optional() });
 
 const AddItemBody = z.object({
   variantId: z.string().uuid(),
@@ -153,12 +156,24 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
   // echo via x-cart-token on every later call.
   app.post('/v1/public/commerce/cart', async (request) => {
     const { tenantId, ctx } = await publicCommerceContext(request);
+    // Resolve the origin site (docs/58 D1). Absent / unknown slug → null (no
+    // specific site); we never default to primary so a multi-site cart is never
+    // mis-tagged. The order copies this at checkout.
+    const { property } = CreateCartQuery.parse(request.query);
+    const propertyId = property
+      ? ((
+          await withTenant({ tenantId }, (tx) =>
+            tx.property.findFirst({ where: { slug: property }, select: { id: true } })
+          )
+        )?.id ?? null)
+      : null;
     const token = randomUUID();
     const currency = await defaultCurrency(tenantId);
     const { cartId } = await cartService.create(ctx, {
       channel: 'storefront',
       currency,
       guestToken: token,
+      ...(propertyId ? { propertyId } : {}),
     });
     const cart = await serializePublicCart(ctx, tenantId, cartId);
     return ok({ ...cart, token });

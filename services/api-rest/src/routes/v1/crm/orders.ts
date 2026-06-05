@@ -41,6 +41,10 @@ const ListQuery = z.object({
   customer_id: z.string().uuid().optional(),
   b2b_account_id: z.string().uuid().optional(),
   status: z.string().optional(),
+  // Origin-site filter (docs/58 D1) — the dashboard Orders Site filter. Omitted
+  // → the whole tenant; an id → orders placed on that site (null-origin orders
+  // are excluded, so they only appear under "All sites").
+  property: z.string().uuid().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
   sort_by: z.enum(['placedAt', 'updatedAt', 'createdAt']).optional(),
@@ -55,6 +59,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
       customerId: q.customer_id,
       b2bAccountId: q.b2b_account_id,
       status: q.status,
+      propertyId: q.property,
       take: q.take,
       skip: q.skip,
       sortBy: q.sort_by,

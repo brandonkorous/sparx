@@ -18,6 +18,7 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { EntityRowLink } from '../../_components/entity-row-link';
@@ -85,6 +86,25 @@ export default async function OrdersPage({ searchParams }: PageProps) {
   const status = stringParam(params.status);
   const paymentStatus = stringParam(params.paymentStatus);
   const q = stringParam(params.q);
+  // Origin-site filter (docs/58 D1) — follows the global site switcher: absent →
+  // the active site; `all` → the whole tenant; an id → that site.
+  const siteParam = stringParam(params.site);
+
+  const [sites, activeCookieId] = await Promise.all([
+    listProperties().catch(() => [] as Property[]),
+    getActivePropertyId(),
+  ]);
+  const multiSite = sites.length > 1;
+  const activePropertyId = multiSite
+    ? (sites.find((s) => s.id === activeCookieId)?.id ??
+      sites.find((s) => s.isPrimary)?.id ??
+      sites[0]?.id)
+    : undefined;
+  const propertyFilter = !multiSite
+    ? undefined
+    : siteParam === 'all'
+      ? undefined
+      : (siteParam ?? activePropertyId);
 
   // With a query, search via Typesense (typo-tolerant, matches order number +
   // customer name/email + item titles); without one, list straight from
@@ -93,6 +113,8 @@ export default async function OrdersPage({ searchParams }: PageProps) {
   let orders: OrderRow[];
   let total: number;
   if (q) {
+    // NOTE: order SEARCH is not yet site-scoped (the orders Typesense property
+    // facet is a follow-on, docs/58 §5); the browse list below IS site-scoped.
     const sq = new URLSearchParams({ q, per_page: '100' });
     const { data, meta } = await api.getPaged<OrderSearchDoc[]>(
       `/v1/search/orders?${sq.toString()}`
@@ -113,10 +135,27 @@ export default async function OrdersPage({ searchParams }: PageProps) {
     const query = new URLSearchParams({ take: '100', sort_by: 'placedAt' });
     if (status) query.set('status', status);
     if (paymentStatus) query.set('payment_status', paymentStatus);
+    if (propertyFilter) query.set('property', propertyFilter);
     const res = await api.getPaged<OrderRow[]>(`/v1/crm/orders?${query.toString()}`);
     orders = res.data;
     total = (res.meta?.total as number | undefined) ?? orders.length;
   }
+
+  // The Site filter only appears for multi-site tenants; it defaults to the
+  // active site (mirroring the global switcher) with an "All sites" escape.
+  const siteFilter = multiSite
+    ? [
+        {
+          key: 'site',
+          label: 'Site',
+          defaultValue: activePropertyId,
+          options: [
+            { value: 'all', label: 'All sites' },
+            ...sites.map((s) => ({ value: s.id, label: s.name })),
+          ],
+        },
+      ]
+    : [];
 
   return (
     <Container size="full">
@@ -147,6 +186,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
           filters={[
             { key: 'status', label: 'Statuses', options: STATUS_OPTIONS },
             { key: 'paymentStatus', label: 'Payment', options: PAYMENT_STATUS_OPTIONS },
+            ...siteFilter,
           ]}
         />
 

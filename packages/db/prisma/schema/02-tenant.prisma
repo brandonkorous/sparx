@@ -34,12 +34,12 @@ model Tenant {
   // Multi-property (multi-site) — a tenant's web properties (docs/49). Phase 1
   // seeds exactly one is_primary property per tenant; the Builder presentation
   // layer re-keys onto property_id in a later slice.
-  properties Property[]
+  properties        Property[]
   // Tenant blueprint installs (docs/54) — one row per marketplace template
   // installed into one of this tenant's properties.
   blueprintInstalls TenantBlueprintInstall[]
   // Custom + purchased hostnames across this tenant's sites (docs/49 §5, docs/24).
-  domains    Domain[]
+  domains           Domain[]
 
   // Auth + audit
   users     User[]

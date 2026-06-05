@@ -87,11 +87,14 @@ export function useCart(): CartContextValue {
 
 interface CartProviderProps {
   tenantSlug: string;
+  /** Active site slug (docs/58 D1). Sent on cart creation so the order placed
+   *  from this cart is tagged with its origin site. Omitted → no specific site. */
+  propertySlug?: string;
   currency: string;
   children: React.ReactNode;
 }
 
-export function CartProvider({ tenantSlug, currency, children }: CartProviderProps) {
+export function CartProvider({ tenantSlug, propertySlug, currency, children }: CartProviderProps) {
   const [state, setState] = useState<CartState>({
     cartId: null,
     lines: [],
@@ -167,15 +170,18 @@ export function CartProvider({ tenantSlug, currency, children }: CartProviderPro
   // Create a cart on first write, capturing the issued ownership token.
   const ensureCart = useCallback(async (): Promise<string> => {
     if (cartIdRef.current) return cartIdRef.current;
-    const res = await fetch(
-      `${API_BASE}/v1/public/commerce/cart?tenant=${encodeURIComponent(tenantSlug)}`,
-      { method: 'POST' }
-    );
+    // Tag the cart with the active site (docs/58 D1) so the resulting order
+    // inherits its origin property.
+    const qs = new URLSearchParams({ tenant: tenantSlug });
+    if (propertySlug) qs.set('property', propertySlug);
+    const res = await fetch(`${API_BASE}/v1/public/commerce/cart?${qs.toString()}`, {
+      method: 'POST',
+    });
     const json = (await res.json()) as { data: CartApiShape & { token: string } };
     persist(json.data.cartId, json.data.token);
     applyApi(json.data);
     return json.data.cartId;
-  }, [applyApi, persist, tenantSlug]);
+  }, [applyApi, persist, tenantSlug, propertySlug]);
 
   const addItem = useCallback(
     async (variantId: string, quantity = 1) => {
