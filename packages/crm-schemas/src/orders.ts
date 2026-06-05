@@ -26,6 +26,9 @@ export const CreateOrderInput = z.object({
   orderNumber: z.string().min(1).max(63).optional(), // auto-generated if absent
   channel: OrderChannel.optional(),
   source: z.string().max(63).optional(),
+  // Origin site (docs/58 D1) — which property the order was placed on. Checkout
+  // passes the cart's; admin / import / MCP may set it explicitly or leave null.
+  propertyId: Uuid.optional(),
 
   currency: Currency.default('USD'),
   shippingTotal: Money.default(0),
@@ -64,6 +67,7 @@ export const ListOrdersInput = z.object({
   status: OrderStatus.optional(),
   paymentStatus: OrderPaymentStatus.optional(),
   channel: OrderChannel.optional(),
+  propertyId: Uuid.optional(), // origin-site filter (docs/58 — the dashboard Site filter)
   placedSince: z.string().datetime().optional(),
   placedUntil: z.string().datetime().optional(),
   q: z.string().max(255).optional(), // matches order_number prefix

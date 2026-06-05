@@ -21,10 +21,14 @@
 // denormalized customer stats.
 
 model Order {
-  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId    String @map("tenant_id") @db.Uuid
-  customerId  String @map("customer_id") @db.Uuid
-  orderNumber String @map("order_number") @db.VarChar(63)
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String  @map("tenant_id") @db.Uuid
+  customerId  String  @map("customer_id") @db.Uuid
+  // Origin site (docs/58 D1) — which property the order was placed on. Nullable:
+  // legacy / admin / import / MCP orders may have no site (null = no specific
+  // site, shows under "All sites"). App-tier scoping only, never an RLS boundary.
+  propertyId  String? @map("property_id") @db.Uuid
+  orderNumber String  @map("order_number") @db.VarChar(63)
 
   status        String  @default("placed") @db.VarChar(20) // placed | fulfilled | delivered | cancelled | refunded
   paymentStatus String  @default("unpaid") @map("payment_status") @db.VarChar(20) // unpaid | partially_paid | paid | refunded
@@ -59,8 +63,10 @@ model Order {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer Customer  @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  // Deleting a site must NOT delete its orders (finance / tax history) → SetNull.
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
 
   items               OrderItem[]
   payments            OrderPayment[]
@@ -71,6 +77,7 @@ model Order {
 
   @@unique([tenantId, orderNumber], map: "orders_tenant_number_unique")
   @@index([tenantId, customerId, placedAt(sort: Desc)])
+  @@index([tenantId, propertyId, placedAt(sort: Desc)])
   @@index([tenantId, status, placedAt(sort: Desc)])
   @@index([tenantId, paymentStatus])
   @@index([tenantId, placedAt(sort: Desc)])

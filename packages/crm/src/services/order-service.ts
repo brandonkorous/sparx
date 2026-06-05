@@ -50,6 +50,7 @@ export async function list(
       ...(filter.status ? { status: filter.status } : {}),
       ...(filter.paymentStatus ? { paymentStatus: filter.paymentStatus } : {}),
       ...(filter.channel ? { channel: filter.channel } : {}),
+      ...(filter.propertyId ? { propertyId: filter.propertyId } : {}),
       ...(filter.placedSince || filter.placedUntil
         ? {
             placedAt: {
@@ -105,6 +106,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Or
         tenantId: ctx.tenantId,
         customerId: input.customerId,
         orderNumber,
+        propertyId: input.propertyId ?? null,
         channel: input.channel ?? null,
         source: input.source ?? null,
         currency: input.currency,

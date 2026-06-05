@@ -422,6 +422,9 @@ export async function complete(
 
     const order = await orderService.create(ctx, {
       customerId: session.customerId,
+      // Origin site (docs/58 D1) — inherit the cart's property so the order is
+      // tagged with the storefront it was placed on.
+      propertyId: cart.propertyId ?? undefined,
       channel:
         session.channel === 'storefront' || session.channel === 'b2b_portal'
           ? session.channel

@@ -67,6 +67,8 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<{ 
         guestToken: input.guestToken ?? null,
         channel: input.channel,
         currency: input.currency,
+        // Origin site (docs/58 D1) — carried onto the order at checkout.
+        propertyId: input.propertyId ?? null,
         fromQuoteId: input.fromQuoteId ?? null,
         fromSubscriptionId: input.fromSubscriptionId ?? null,
         expiresAt,

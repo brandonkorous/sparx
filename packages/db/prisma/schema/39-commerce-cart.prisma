@@ -6,6 +6,9 @@ model Cart {
   id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId   String  @map("tenant_id") @db.Uuid
   customerId String? @map("customer_id") @db.Uuid
+  // Origin site (docs/58 D1) — set from the storefront's active property so the
+  // order placed from this cart inherits it. Nullable for admin / MCP carts.
+  propertyId String? @map("property_id") @db.Uuid
   guestToken String? @map("guest_token") @db.VarChar(127)
   channel    String  @db.VarChar(20) // storefront | b2b_portal | admin | mcp
   currency   String  @db.VarChar(3)
@@ -39,6 +42,7 @@ model Cart {
 
   tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer         Customer?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  property         Property?         @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   items            CartItem[]
   discounts        CartDiscount[]
   checkoutSessions CheckoutSession[]
