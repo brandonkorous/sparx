@@ -56,9 +56,19 @@ const ENABLE_ONLY_TABLES = new Set<string>([
   'commerce_fitment_variants',
 ]);
 
-// Tables that are tenant-shared reference data — no RLS required.
+// Tables intentionally WITHOUT RLS — tenant-shared reference data, OR non-RLS
+// DISPATCH tables that must be readable before a tenant is known. Each entry
+// needs a one-line reason; reviewers should push back on additions.
 const SHARED_REFERENCE_TABLES = new Set<string>([
-  // (empty — vehicle tables generalized into fitment_* with ENABLE+policy)
+  // `domains` is the host→property (site) dispatch table (docs/49 §5). The
+  // host→site resolver and the Caddy on-demand-TLS ask endpoint look up `host`
+  // BEFORE any tenant is known, so the row must be readable without an
+  // app.tenant_id GUC — exactly like the `tenants` table. `host` is GLOBALLY
+  // unique (the cross-tenant guard: a host can't be claimed by two tenants);
+  // the sensitive content a host points at (pages/orders/customers) stays
+  // FORCE-RLS on its own tables, and management routes filter by tenant_id in
+  // the app. Deliberately non-RLS (user-approved 2026-06-04).
+  'domains',
 ]);
 
 interface TableDef {
