@@ -1,0 +1,1731 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx — The Platform</title>
+    <!--
+      Nav page "Platform" — the definitive "what is Sparx as a system" page,
+      reached from the header's first nav item. Deliberately DISTINCT from the
+      home page: the home page sells the marketing beats (cost comparison, the
+      MCP chat demo, the permanence promise); this page explains how the system
+      actually works. No section is lifted from apps/web's marketing components.
+
+      Throughline (docs/01 + docs/02 + brand guide §7):
+        one shared data layer · modular · API-first + MCP-native · permanent
+
+      Unique-to-this-page proof points:
+        • the data-layer diagram (modules → one store → one surface)
+        • a single unified customer record written by four modules
+        • the grow-without-replatforming lifecycle
+        • the API surface where the dashboard/site/AI are all just clients
+
+      Voice: editorial, flat register, no eyebrows-as-kickers, no competitor
+      names in the body, no fabricated customer quotes. Geist + Geist Mono,
+      brand indigo (#6366F1), the eight module colors used identically to the
+      app. Self-contained so it's quick to iterate before it becomes a real
+      Next.js page under apps/web/app/platform/.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* brand */
+        --indigo: #6366f1;
+        --indigo-hover: #4f46e5;
+        --indigo-deep: #4338ca;
+        /* module palette — identical to packages/ui tokens */
+        --m-builder: #6366f1;
+        --m-commerce: #f97316;
+        --m-cms: #14b8a6;
+        --m-crm: #06b6d4;
+        --m-email: #0ea5e9;
+        --m-b2b: #475569;
+        --m-ai: #ec4899;
+        --m-dropship: #10b981;
+        /* neutrals */
+        --ink: #0a0a0a;
+        --secondary: #52525b;
+        --tertiary: #a1a1aa;
+        --faint: #d4d4d8;
+        --border: #e5e5e5;
+        --hairline: #f1f1f3;
+        --page: #fafafa;
+        --surface: #ffffff;
+        --dark: #0a0a0a;
+        --dark-2: #1a1a1a;
+        --dark-3: #2a2a2a;
+        --success: #10b981;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      body {
+        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: var(--surface);
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .wrap {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 clamp(20px, 5vw, 80px);
+        width: 100%;
+      }
+      .mono {
+        font-family: 'Geist Mono', monospace;
+      }
+      .x {
+        color: var(--indigo);
+      }
+      .spark {
+        color: var(--indigo);
+      }
+
+      /* ---- buttons ---- */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: inherit;
+        font-weight: 500;
+        font-size: 14px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 10px 18px;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          border-color 0.15s ease,
+          color 0.15s ease;
+        white-space: nowrap;
+      }
+      .btn-dark {
+        background: var(--ink);
+        color: #fff;
+      }
+      .btn-dark:hover {
+        background: #262626;
+      }
+      .btn-indigo {
+        background: var(--indigo);
+        color: #fff;
+      }
+      .btn-indigo:hover {
+        background: var(--indigo-hover);
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--border);
+      }
+      .btn-ghost:hover {
+        background: var(--page);
+      }
+      .btn-lg {
+        font-size: 16px;
+        padding: 14px 24px;
+        border-radius: 10px;
+      }
+
+      /* ---- topbar ---- */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: saturate(150%) blur(8px);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbar .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        height: 66px;
+      }
+      .wordmark {
+        font-weight: 600;
+        font-size: 21px;
+        letter-spacing: -0.03em;
+      }
+      .topnav {
+        display: flex;
+        align-items: center;
+        gap: 34px;
+      }
+      .topnav a {
+        font-size: 14px;
+        color: var(--secondary);
+        transition: color 0.15s ease;
+      }
+      .topnav a:hover {
+        color: var(--ink);
+      }
+      .topnav a.active {
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .topactions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .signin {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--secondary);
+        padding: 8px 12px;
+      }
+      .signin:hover {
+        color: var(--ink);
+      }
+
+      /* ---- generic section ---- */
+      section {
+        padding: clamp(64px, 9vw, 116px) 0;
+      }
+      .band {
+        background: var(--page);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+      .eyebrow {
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: var(--tertiary);
+        margin: 0 0 18px;
+        font-family: 'Geist Mono', monospace;
+      }
+      h2.display {
+        margin: 0;
+        font-weight: 500;
+        font-size: clamp(34px, 5vw, 56px);
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+        max-width: 17ch;
+      }
+      .lede {
+        margin: 22px 0 0;
+        max-width: 600px;
+        font-size: 18px;
+        line-height: 30px;
+        color: var(--secondary);
+      }
+
+      /* ---- hero ---- */
+      .hero {
+        padding: clamp(64px, 10vw, 120px) 0 clamp(56px, 8vw, 100px);
+        border-bottom: 1px solid var(--border);
+      }
+      .hero h1 {
+        margin: 0;
+        font-weight: 500;
+        font-size: clamp(44px, 7vw, 84px);
+        line-height: 0.98;
+        letter-spacing: -0.035em;
+        max-width: 15ch;
+      }
+      .hero h1 .muted {
+        color: var(--tertiary);
+      }
+      .hero .row {
+        display: flex;
+        gap: 48px;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-top: 38px;
+      }
+      .hero .sub {
+        margin: 0;
+        max-width: 540px;
+        font-size: 19px;
+        line-height: 30px;
+        color: var(--secondary);
+      }
+      .hero .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .hero .actions .cluster {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .hero .fine {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: var(--tertiary);
+      }
+      .metrics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px 56px;
+        margin-top: 56px;
+        padding-top: 32px;
+        border-top: 1px solid var(--border);
+      }
+      .metric .v {
+        font-weight: 500;
+        font-size: 26px;
+        letter-spacing: -0.02em;
+      }
+      .metric .v small {
+        color: var(--tertiary);
+        font-weight: 400;
+        font-size: 16px;
+      }
+      .metric .s {
+        margin-top: 4px;
+        font-size: 13px;
+        color: var(--secondary);
+      }
+
+      /* ---- data layer diagram ---- */
+      .arch-head {
+        max-width: 720px;
+      }
+      .diagram {
+        margin-top: 56px;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        align-items: center;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 15px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 9999px;
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .chip .d {
+        width: 8px;
+        height: 8px;
+        border-radius: 9999px;
+        flex-shrink: 0;
+      }
+      .converge {
+        height: 44px;
+        width: 100%;
+        max-width: 760px;
+        position: relative;
+      }
+      .converge svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .bar {
+        width: 100%;
+        max-width: 880px;
+        border-radius: 14px;
+        padding: 22px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .bar.data {
+        background: var(--ink);
+        color: #fff;
+        border-top: 3px solid var(--indigo);
+      }
+      .bar.surface-bar {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        margin-top: 14px;
+      }
+      .bar .label {
+        font-weight: 500;
+        font-size: 18px;
+        letter-spacing: -0.01em;
+      }
+      .bar .sub {
+        font-size: 13.5px;
+        line-height: 20px;
+        color: rgba(255, 255, 255, 0.6);
+        max-width: 380px;
+      }
+      .bar.surface-bar .sub {
+        color: var(--secondary);
+      }
+      .bar .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.78);
+      }
+      .bar.surface-bar .tag {
+        background: var(--page);
+        color: var(--secondary);
+        border: 1px solid var(--border);
+      }
+      .arch-note {
+        margin-top: 36px;
+        text-align: center;
+        font-size: 15px;
+        color: var(--secondary);
+        max-width: 620px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .arch-note b {
+        color: var(--ink);
+        font-weight: 500;
+      }
+
+      /* ---- unified record card ---- */
+      .record {
+        margin-top: 56px;
+        max-width: 760px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.06);
+      }
+      .record .rhead {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 22px 26px;
+        border-bottom: 1px solid var(--hairline);
+      }
+      .record .avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 9999px;
+        background: var(--indigo);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        font-size: 16px;
+        letter-spacing: -0.01em;
+        flex-shrink: 0;
+      }
+      .record .rname {
+        font-weight: 500;
+        font-size: 17px;
+        letter-spacing: -0.01em;
+      }
+      .record .remail {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12.5px;
+        color: var(--tertiary);
+        margin-top: 2px;
+      }
+      .record .rid {
+        margin-left: auto;
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        color: var(--secondary);
+        background: var(--page);
+        border: 1px solid var(--border);
+        padding: 5px 11px;
+        border-radius: 9999px;
+        white-space: nowrap;
+      }
+      .facets {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .facet {
+        padding: 18px 26px;
+        border-bottom: 1px solid var(--hairline);
+      }
+      .facet:nth-child(odd) {
+        border-right: 1px solid var(--hairline);
+      }
+      .facet .ftop {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 9px;
+      }
+      .facet .ftop .d {
+        width: 8px;
+        height: 8px;
+        border-radius: 9999px;
+      }
+      .facet .ftop .fm {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--secondary);
+      }
+      .facet .fval {
+        font-size: 15px;
+        color: var(--ink);
+      }
+      .facet .fval b {
+        font-weight: 500;
+      }
+      .facet .fsub {
+        font-size: 13px;
+        color: var(--tertiary);
+        margin-top: 3px;
+      }
+      .record .rfoot {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 26px;
+        font-size: 13.5px;
+        color: var(--secondary);
+      }
+
+      /* ---- principles (4-up) ---- */
+      .principles-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        margin-top: 56px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .principle {
+        background: var(--surface);
+        padding: 30px 26px 34px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 240px;
+      }
+      .principle .n {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: var(--tertiary);
+      }
+      .principle h3 {
+        margin: 6px 0 0;
+        font-weight: 500;
+        font-size: 20px;
+        letter-spacing: -0.02em;
+      }
+      .principle p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 22px;
+        color: var(--secondary);
+      }
+      .principle .bar-accent {
+        width: 28px;
+        height: 3px;
+        border-radius: 9999px;
+      }
+
+      /* ---- lifecycle path ---- */
+      .path {
+        margin-top: 56px;
+        display: flex;
+        gap: 0;
+        flex-wrap: wrap;
+      }
+      .stage {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+        padding: 0 24px;
+      }
+      .stage:first-child {
+        padding-left: 0;
+      }
+      .stage .conn {
+        position: absolute;
+        top: 12px;
+        left: -2px;
+        width: 28px;
+        height: 2px;
+        background: var(--faint);
+      }
+      .stage:first-child .conn {
+        display: none;
+      }
+      .stage .node {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .stage .node .dot {
+        width: 26px;
+        height: 26px;
+        border-radius: 9999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+      .stage .when {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--tertiary);
+      }
+      .stage h4 {
+        margin: 18px 0 0;
+        font-weight: 500;
+        font-size: 16px;
+        letter-spacing: -0.01em;
+      }
+      .stage p {
+        margin: 7px 0 0;
+        font-size: 13.5px;
+        line-height: 21px;
+        color: var(--secondary);
+      }
+      .stage .mods {
+        margin-top: 14px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .stage .mtag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+      }
+      .stage .mtag .d {
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+      }
+
+      /* ---- modules strip ---- */
+      .modules-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-top: 52px;
+      }
+      .mod {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-top-width: 3px;
+        border-radius: 10px;
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-height: 142px;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      .mod:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+      }
+      .mod .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .mod .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .mod .pill .d {
+        width: 7px;
+        height: 7px;
+        border-radius: 9999px;
+      }
+      .mod .price {
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: var(--tertiary);
+      }
+      .mod h4 {
+        margin: 14px 0 0;
+        font-weight: 500;
+        font-size: 16px;
+        letter-spacing: -0.01em;
+      }
+      .mod p {
+        margin: 0;
+        font-size: 13.5px;
+        line-height: 20px;
+        color: var(--secondary);
+      }
+      .modules-foot {
+        margin-top: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .modules-foot .note {
+        font-size: 14px;
+        color: var(--secondary);
+        max-width: 520px;
+      }
+
+      /* ---- dark section base (api surface) ---- */
+      .dark-sec {
+        background: var(--dark);
+        color: #fff;
+      }
+      .dark-sec h2.display {
+        color: #fff;
+      }
+      .dark-sec .lede {
+        color: #a1a1aa;
+      }
+      .api-grid {
+        display: flex;
+        gap: 32px;
+        align-items: stretch;
+        margin-top: 56px;
+        flex-wrap: wrap;
+      }
+      .api-clients {
+        width: 420px;
+        max-width: 100%;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding-top: 2px;
+      }
+      .client {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        background: var(--dark-2);
+        border: 1px solid var(--dark-3);
+        border-radius: 10px;
+      }
+      .client .ci {
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: #fff;
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .client .cname {
+        font-weight: 500;
+        font-size: 14px;
+        color: #fff;
+      }
+      .client .cdesc {
+        font-size: 12.5px;
+        color: #a1a1aa;
+        margin-top: 1px;
+      }
+      .api-card {
+        flex: 1;
+        min-width: 320px;
+        background: #0f0f0f;
+        border: 1px solid var(--dark-3);
+        border-top: 3px solid var(--indigo);
+        border-radius: 12px;
+        overflow: hidden;
+        align-self: flex-start;
+      }
+      .api-card .ahead {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--dark-3);
+        font-family: 'Geist Mono', monospace;
+        font-size: 12.5px;
+        color: #a1a1aa;
+      }
+      .api-card .method {
+        font-weight: 500;
+        color: var(--success);
+      }
+      .api-card .code {
+        padding: 18px 20px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 12.5px;
+        line-height: 22px;
+        color: #d4d4d8;
+        white-space: pre;
+        overflow-x: auto;
+        margin: 0;
+      }
+      .tok-key {
+        color: #818cf8;
+      }
+      .tok-str {
+        color: var(--success);
+      }
+      .tok-num {
+        color: var(--m-commerce);
+      }
+      .tok-com {
+        color: #52525b;
+      }
+      .api-foot {
+        margin-top: 34px;
+        font-size: 16px;
+        color: #a1a1aa;
+        max-width: 640px;
+      }
+      .api-foot a {
+        color: #818cf8;
+        font-weight: 500;
+      }
+      .api-foot a:hover {
+        color: #a5b4fc;
+      }
+
+      /* ---- trust spec ---- */
+      .spec-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px 56px;
+        margin-top: 52px;
+      }
+      .spec-item h4 {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin: 0;
+        font-weight: 500;
+        font-size: 18px;
+        letter-spacing: -0.01em;
+      }
+      .spec-item h4 .d {
+        width: 9px;
+        height: 9px;
+        border-radius: 9999px;
+        background: var(--indigo);
+        flex-shrink: 0;
+      }
+      .spec-item p {
+        margin: 9px 0 0 20px;
+        font-size: 15px;
+        line-height: 24px;
+        color: var(--secondary);
+      }
+
+      /* ---- pricing teaser ---- */
+      .price-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+      .price-box .lead h2 {
+        margin: 0;
+        font-weight: 500;
+        font-size: clamp(30px, 4vw, 44px);
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        max-width: 14ch;
+      }
+      .price-box .lead p {
+        margin: 16px 0 0;
+        max-width: 460px;
+        font-size: 16px;
+        line-height: 25px;
+        color: var(--secondary);
+      }
+      .price-tiers {
+        display: flex;
+        gap: 14px;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+      }
+      .ptier {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 22px 26px;
+        min-width: 150px;
+      }
+      .ptier .pt-name {
+        font-size: 13px;
+        color: var(--secondary);
+      }
+      .ptier .pt-price {
+        margin-top: 8px;
+        font-weight: 500;
+        font-size: 34px;
+        letter-spacing: -0.03em;
+      }
+      .ptier .pt-price small {
+        font-size: 15px;
+        color: var(--tertiary);
+        font-weight: 400;
+      }
+      .ptier .pt-note {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--tertiary);
+      }
+
+      /* ---- final cta ---- */
+      .final {
+        text-align: center;
+      }
+      .final h2 {
+        margin: 0 auto;
+        font-weight: 500;
+        font-size: clamp(36px, 5.5vw, 60px);
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+        max-width: 16ch;
+      }
+      .final .sub {
+        margin: 22px auto 34px;
+        font-size: 18px;
+        color: var(--secondary);
+        max-width: 560px;
+      }
+      .final .actions {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .final .fine {
+        margin-top: 22px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: var(--tertiary);
+      }
+
+      /* ---- footer ---- */
+      footer.site {
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        padding: 64px 0 32px;
+      }
+      .foot-top {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px 32px;
+        align-items: flex-start;
+      }
+      .foot-brand {
+        flex: 1 1 280px;
+        min-width: 240px;
+        max-width: 340px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .foot-brand p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 22px;
+        color: var(--secondary);
+      }
+      .foot-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 12px;
+        background: #ecfdf5;
+        border-radius: 9999px;
+        width: fit-content;
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #065f46;
+      }
+      .ok-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 9999px;
+        background: var(--success);
+        flex-shrink: 0;
+      }
+      .foot-col {
+        flex: 1 1 140px;
+        min-width: 140px;
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+      }
+      .foot-col .ct {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .foot-col a {
+        font-size: 13px;
+        color: var(--secondary);
+      }
+      .foot-col a:hover {
+        color: var(--ink);
+      }
+      .foot-domains {
+        margin-top: 48px;
+        padding-top: 32px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .foot-domains .dt {
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--tertiary);
+      }
+      .domain-row {
+        display: flex;
+        gap: 22px;
+        flex-wrap: wrap;
+      }
+      .domain {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: var(--secondary);
+      }
+      .domain .d {
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+      }
+      .foot-legal {
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        font-size: 12px;
+        color: var(--tertiary);
+      }
+      .foot-legal .mono {
+        font-size: 11px;
+      }
+
+      .mobile-toggle {
+        display: none;
+      }
+
+      /* ---- responsive ---- */
+      @media (max-width: 1000px) {
+        .principles-grid,
+        .modules-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .spec-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 820px) {
+        .topnav,
+        .signin {
+          display: none;
+        }
+        .mobile-toggle {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 38px;
+          height: 38px;
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          background: var(--surface);
+          cursor: pointer;
+        }
+        .api-clients {
+          width: 100%;
+        }
+        .path {
+          flex-direction: column;
+          gap: 26px;
+        }
+        .stage {
+          padding: 0;
+        }
+        .stage .conn {
+          display: none;
+        }
+      }
+      @media (max-width: 560px) {
+        .principles-grid,
+        .modules-grid {
+          grid-template-columns: 1fr;
+        }
+        .facets {
+          grid-template-columns: 1fr;
+        }
+        .facet:nth-child(odd) {
+          border-right: none;
+        }
+        .metrics {
+          gap: 24px 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ NAV ============ -->
+    <header class="topbar">
+      <div class="wrap">
+        <span class="wordmark">Spar<span class="x">x</span></span>
+        <nav class="topnav">
+          <a href="#" class="active">Platform</a>
+          <a href="#modules">Modules</a>
+          <a href="#pricing">Pricing</a>
+          <a href="/docs">Docs</a>
+          <a href="#">Customers</a>
+        </nav>
+        <div class="topactions">
+          <a href="#" class="signin">Sign in</a>
+          <button class="btn btn-dark">Start free</button>
+          <button class="mobile-toggle" aria-label="Open menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M3 7H21M3 12H21M3 17H21" stroke="currentColor" stroke-width="1.6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div class="wrap">
+        <h1>
+          One platform for <span class="muted">content and commerce<span class="spark">.</span></span>
+        </h1>
+        <div class="row">
+          <p class="sub">
+            Sparx is a modular operating system for the web. Builder, Commerce, CMS, CRM, Email,
+            B2B, Dropship, and AI — running on one shared data layer, behind one dashboard, on one
+            bill. A publisher, a storefront, a wholesale distributor, and a CRM-only team are all
+            equally first-class. Selling is one capability, never the assumption.
+          </p>
+          <div class="actions">
+            <div class="cluster">
+              <button class="btn btn-indigo btn-lg">
+                Start free
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+              </button>
+              <button class="btn btn-ghost btn-lg">Talk to sales</button>
+            </div>
+            <span class="fine">No credit card · Live in five minutes</span>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="v">8</div>
+            <div class="s">modules, one platform</div>
+          </div>
+          <div class="metric">
+            <div class="v">1</div>
+            <div class="s">shared data layer</div>
+          </div>
+          <div class="metric">
+            <div class="v">$49<small>/mo</small></div>
+            <div class="s">starting price</div>
+          </div>
+          <div class="metric">
+            <div class="v">MCP<span class="spark">.</span></div>
+            <div class="s">native AI access</div>
+          </div>
+          <div class="metric">
+            <div class="v">100%</div>
+            <div class="s">API-first, your data</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ONE SYSTEM · DATA LAYER DIAGRAM ============ -->
+    <section class="band">
+      <div class="wrap">
+        <div class="arch-head">
+          <p class="eyebrow">// the difference</p>
+          <h2 class="display">Not integrations. One system<span class="spark">.</span></h2>
+          <p class="lede">
+            Every other "all-in-one" is a bundle of separate products stitched together with syncs
+            that drift and break. Sparx modules read and write the same records. Your CRM is built
+            <em>on</em> your commerce data — not connected to a copy of it.
+          </p>
+        </div>
+
+        <div class="diagram">
+          <div class="chips">
+            <span class="chip"><span class="d" style="background: var(--m-builder)"></span>Builder</span>
+            <span class="chip"><span class="d" style="background: var(--m-commerce)"></span>Commerce</span>
+            <span class="chip"><span class="d" style="background: var(--m-cms)"></span>CMS</span>
+            <span class="chip"><span class="d" style="background: var(--m-crm)"></span>CRM</span>
+            <span class="chip"><span class="d" style="background: var(--m-email)"></span>Email</span>
+            <span class="chip"><span class="d" style="background: var(--m-b2b)"></span>B2B</span>
+            <span class="chip"><span class="d" style="background: var(--m-ai)"></span>AI / MCP</span>
+            <span class="chip"><span class="d" style="background: var(--m-dropship)"></span>Dropship</span>
+          </div>
+
+          <div class="converge">
+            <svg viewBox="0 0 760 44" fill="none" preserveAspectRatio="none">
+              <path d="M60 0 V14 Q60 22 110 22 H370" stroke="#d4d4d8" stroke-width="1.5" />
+              <path d="M180 0 V14 Q180 22 230 22 H380" stroke="#d4d4d8" stroke-width="1.5" />
+              <path d="M300 0 V22 H380" stroke="#d4d4d8" stroke-width="1.5" />
+              <path d="M420 0 V22 H380" stroke="#d4d4d8" stroke-width="1.5" />
+              <path d="M540 0 V14 Q540 22 490 22 H380" stroke="#d4d4d8" stroke-width="1.5" />
+              <path d="M700 0 V14 Q700 22 650 22 H380" stroke="#d4d4d8" stroke-width="1.5" />
+              <path d="M380 22 V44" stroke="var(--indigo)" stroke-width="2" />
+              <circle cx="380" cy="22" r="3.5" fill="var(--indigo)" />
+            </svg>
+          </div>
+
+          <div class="bar data">
+            <div>
+              <div class="label">One data layer</div>
+              <div class="sub">
+                Postgres with row-level security per tenant. Customers, orders, content, and
+                contacts are the same records everywhere.
+              </div>
+            </div>
+            <div class="tags">
+              <span class="tag">tenant-isolated</span>
+              <span class="tag">RLS-enforced</span>
+              <span class="tag">event-driven</span>
+            </div>
+          </div>
+
+          <div class="bar surface-bar">
+            <div>
+              <div class="label">One surface — API-first &amp; MCP-native</div>
+              <div class="sub">
+                Every feature is an API endpoint first. The dashboard, your site, and your AI are
+                all just clients of the same API.
+              </div>
+            </div>
+            <div class="tags">
+              <span class="tag">REST + GraphQL</span>
+              <span class="tag">MCP server</span>
+              <span class="tag">webhooks</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="arch-note">
+          <b>Turn a module off and it stops billing</b> — no migration, no exports, no goodbyes. The
+          data stays where it was; it just goes quiet.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ ONE RECORD (proof of the data layer) ============ -->
+    <section>
+      <div class="wrap">
+        <p class="eyebrow">// one data model</p>
+        <h2 class="display">A customer is one customer<span class="spark">.</span></h2>
+        <p class="lede">
+          Because every module writes to the same tables, there are no duplicate records and nothing
+          to keep in sync. The buyer who placed an order, opened your email, and called your sales
+          line is a single profile — with each module's view of them attached.
+        </p>
+
+        <div class="record">
+          <div class="rhead">
+            <span class="avatar">RT</span>
+            <div>
+              <div class="rname">Ranchero Trucking Co.</div>
+              <div class="remail">orders@rancherotrucking.com</div>
+            </div>
+            <span class="rid">customer · one record</span>
+          </div>
+          <div class="facets">
+            <div class="facet">
+              <div class="ftop"><span class="d" style="background: var(--m-commerce)"></span><span class="fm">Commerce</span></div>
+              <div class="fval"><b>14 orders</b> · $48,200 lifetime</div>
+              <div class="fsub">Last order 6 days ago</div>
+            </div>
+            <div class="facet">
+              <div class="ftop"><span class="d" style="background: var(--m-crm)"></span><span class="fm">CRM</span></div>
+              <div class="fval">Segment <b>Fleet</b> · owner Dana K.</div>
+              <div class="fsub">Activity logged across every module</div>
+            </div>
+            <div class="facet">
+              <div class="ftop"><span class="d" style="background: var(--m-email)"></span><span class="fm">Email</span></div>
+              <div class="fval">Subscribed · <b>41% open rate</b></div>
+              <div class="fsub">Order + marketing flows</div>
+            </div>
+            <div class="facet">
+              <div class="ftop"><span class="d" style="background: var(--m-b2b)"></span><span class="fm">B2B</span></div>
+              <div class="fval">Account <b>#4471</b> · Net 30</div>
+              <div class="fsub">Contract pricing, PO checkout</div>
+            </div>
+          </div>
+          <div class="rfoot">
+            <span class="ok-dot"></span>
+            One profile, written by four modules — no integration, no copy, no drift.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FOUR PRINCIPLES ============ -->
+    <section class="band">
+      <div class="wrap">
+        <p class="eyebrow">// how it's built</p>
+        <h2 class="display">Four commitments that hold across every module<span class="spark">.</span></h2>
+
+        <div class="principles-grid">
+          <div class="principle">
+            <span class="bar-accent" style="background: var(--m-builder)"></span>
+            <span class="n">01</span>
+            <h3>Modular</h3>
+            <p>
+              Activate only what you need. A disabled module runs no workers, stores no rows, and
+              costs nothing. Add the next one when you're ready — no replatform.
+            </p>
+          </div>
+          <div class="principle">
+            <span class="bar-accent" style="background: var(--m-crm)"></span>
+            <span class="n">02</span>
+            <h3>One data layer</h3>
+            <p>
+              Modules share records, not syncs. A customer is one customer across Commerce, CRM, and
+              Email. Reporting is unified because the data was never split.
+            </p>
+          </div>
+          <div class="principle">
+            <span class="bar-accent" style="background: var(--m-ai)"></span>
+            <span class="n">03</span>
+            <h3>API-first &amp; MCP-native</h3>
+            <p>
+              Every feature ships as an API endpoint before it gets a screen. A first-class MCP
+              server lets your AI read and write live business data — natively, not via export.
+            </p>
+          </div>
+          <div class="principle">
+            <span class="bar-accent" style="background: var(--success)"></span>
+            <span class="n">04</span>
+            <h3>Permanent</h3>
+            <p>
+              You own the data and the site. Export anytime, edit anything no-code, drop to full
+              code when you want. AI can build it — Sparx is what keeps it.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GROWS WITH YOU (lifecycle) ============ -->
+    <section>
+      <div class="wrap">
+        <p class="eyebrow">// grows with you</p>
+        <h2 class="display">Start with one. Add the rest, no replatform<span class="spark">.</span></h2>
+        <p class="lede">
+          Most platforms make you migrate to grow. Sparx doesn't. Switch on a module and it reads
+          the catalog, customers, and content already there. Switch it off and it goes quiet — the
+          data stays exactly where it was.
+        </p>
+
+        <div class="path">
+          <div class="stage">
+            <span class="conn"></span>
+            <div class="node"><span class="dot" style="background: var(--m-builder)">1</span><span class="when">Day one</span></div>
+            <h4>A live site</h4>
+            <p>Pick a theme, edit blocks, point your domain. Published in minutes.</p>
+            <div class="mods"><span class="mtag"><span class="d" style="background: var(--m-builder)"></span>Builder</span></div>
+          </div>
+          <div class="stage">
+            <span class="conn"></span>
+            <div class="node"><span class="dot" style="background: var(--m-commerce)">2</span><span class="when">When you sell</span></div>
+            <h4>The same site sells</h4>
+            <p>Turn on Commerce. Your existing pages gain cart and checkout — no rebuild.</p>
+            <div class="mods"><span class="mtag"><span class="d" style="background: var(--m-commerce)"></span>+ Commerce</span></div>
+          </div>
+          <div class="stage">
+            <span class="conn"></span>
+            <div class="node"><span class="dot" style="background: var(--m-crm)">3</span><span class="when">As you grow</span></div>
+            <h4>Customers, nurtured</h4>
+            <p>Add CRM and Email. They already know every buyer from day one — no import.</p>
+            <div class="mods"><span class="mtag"><span class="d" style="background: var(--m-crm)"></span>+ CRM</span><span class="mtag"><span class="d" style="background: var(--m-email)"></span>+ Email</span></div>
+          </div>
+          <div class="stage">
+            <span class="conn"></span>
+            <div class="node"><span class="dot" style="background: var(--m-b2b)">4</span><span class="when">For wholesale</span></div>
+            <h4>Net terms &amp; accounts</h4>
+            <p>Switch on B2B. The same accounts gain pricing tiers, POs, and net terms.</p>
+            <div class="mods"><span class="mtag"><span class="d" style="background: var(--m-b2b)"></span>+ B2B</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MODULES STRIP ============ -->
+    <section class="band" id="modules">
+      <div class="wrap">
+        <p class="eyebrow">// the eight pieces</p>
+        <h2 class="display">
+          Eight modules. <span style="color: var(--tertiary)">Mix any combination</span>
+        </h2>
+
+        <div class="modules-grid">
+          <a class="mod" href="/builder" style="border-top-color: var(--m-builder)">
+            <div class="top">
+              <span class="pill" style="background: #eef2ff; color: #4338ca"><span class="d" style="background: var(--m-builder)"></span>Builder</span>
+              <span class="price">$49/mo</span>
+            </div>
+            <h4>Site builder</h4>
+            <p>Themes, pages, and live URLs — no code.</p>
+          </a>
+          <a class="mod" href="/commerce" style="border-top-color: var(--m-commerce)">
+            <div class="top">
+              <span class="pill" style="background: #fff7ed; color: #c2410c"><span class="d" style="background: var(--m-commerce)"></span>Commerce</span>
+              <span class="price">+$49/mo</span>
+            </div>
+            <h4>Sell anything</h4>
+            <p>Cart, checkout, orders, inventory, payments.</p>
+          </a>
+          <a class="mod" href="/cms" style="border-top-color: var(--m-cms)">
+            <div class="top">
+              <span class="pill" style="background: #f0fdfa; color: #0f766e"><span class="d" style="background: var(--m-cms)"></span>CMS</span>
+              <span class="price">$49/mo</span>
+            </div>
+            <h4>Publish content</h4>
+            <p>Editor, blog, media, structured content, SEO.</p>
+          </a>
+          <a class="mod" href="/crm" style="border-top-color: var(--m-crm)">
+            <div class="top">
+              <span class="pill" style="background: #ecfeff; color: #0e7490"><span class="d" style="background: var(--m-crm)"></span>CRM</span>
+              <span class="price">+$49/mo</span>
+            </div>
+            <h4>Know your customers</h4>
+            <p>Contacts, pipeline, segments, automations.</p>
+          </a>
+          <a class="mod" href="/email" style="border-top-color: var(--m-email)">
+            <div class="top">
+              <span class="pill" style="background: #f0f9ff; color: #0369a1"><span class="d" style="background: var(--m-email)"></span>Email</span>
+              <span class="price">+$29/mo</span>
+            </div>
+            <h4>Reach inboxes</h4>
+            <p>Transactional + marketing, self-hosted on your domain.</p>
+          </a>
+          <a class="mod" href="/b2b" style="border-top-color: var(--m-b2b)">
+            <div class="top">
+              <span class="pill" style="background: #f1f5f9; color: #334155"><span class="d" style="background: var(--m-b2b)"></span>B2B</span>
+              <span class="price">+$99/mo</span>
+            </div>
+            <h4>Wholesale &amp; fleet</h4>
+            <p>Accounts, net terms, RFQ, purchase orders.</p>
+          </a>
+          <a class="mod" href="/ai" style="border-top-color: var(--m-ai)">
+            <div class="top">
+              <span class="pill" style="background: #fdf2f8; color: #9d174d"><span class="d" style="background: var(--m-ai)"></span>AI / MCP</span>
+              <span class="price">+$49/mo</span>
+            </div>
+            <h4>AI that knows your data</h4>
+            <p>A first-class MCP server for every record.</p>
+          </a>
+          <a class="mod" href="/dropship" style="border-top-color: var(--m-dropship)">
+            <div class="top">
+              <span class="pill" style="background: #ecfdf5; color: #065f46"><span class="d" style="background: var(--m-dropship)"></span>Dropship</span>
+              <span class="price">+$29/mo</span>
+            </div>
+            <h4>Sell without stock</h4>
+            <p>Supplier sync, margin math, order routing.</p>
+          </a>
+        </div>
+
+        <div class="modules-foot">
+          <p class="note">
+            Content-only, commerce-only, or the whole platform — every combination shares the same
+            dashboard, the same data, and the same bill.
+          </p>
+          <a href="/modules"><button class="btn btn-ghost">Explore all modules →</button></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ API SURFACE (dark) ============ -->
+    <section class="dark-sec">
+      <div class="wrap">
+        <p class="eyebrow" style="color: #52525b">// one surface</p>
+        <h2 class="display">Everything is an API. Even the AI<span style="color: var(--m-ai)">.</span></h2>
+        <p class="lede">
+          Every feature ships as an endpoint before it ships a screen. The dashboard, your site,
+          your integrations, and your AI assistant are all clients of the same API — nothing is
+          trapped inside the UI.
+        </p>
+
+        <div class="api-grid">
+          <div class="api-clients">
+            <div class="client">
+              <span class="ci" style="background: var(--m-builder)">D</span>
+              <div><div class="cname">Dashboard</div><div class="cdesc">The admin UI is just a client</div></div>
+            </div>
+            <div class="client">
+              <span class="ci" style="background: var(--m-commerce)">S</span>
+              <div><div class="cname">Your site</div><div class="cdesc">Storefront and pages read the same API</div></div>
+            </div>
+            <div class="client">
+              <span class="ci" style="background: var(--m-ai)">AI</span>
+              <div><div class="cname">MCP / AI</div><div class="cdesc">Claude, ChatGPT, Copilot — natively</div></div>
+            </div>
+            <div class="client">
+              <span class="ci" style="background: var(--m-cms)">↯</span>
+              <div><div class="cname">Webhooks</div><div class="cdesc">Events push to your own systems</div></div>
+            </div>
+            <div class="client">
+              <span class="ci" style="background: var(--m-b2b)">&lt;/&gt;</span>
+              <div><div class="cname">Your code</div><div class="cdesc">Build anything on the headless API + SDK</div></div>
+            </div>
+          </div>
+
+          <div class="api-card">
+            <div class="ahead"><span class="method">GET</span> /v1/customers/cus_4471</div>
+<pre class="code"><span class="tok-com">// the same record the four modules wrote</span>
+{
+  <span class="tok-key">"id"</span>: <span class="tok-str">"cus_4471"</span>,
+  <span class="tok-key">"name"</span>: <span class="tok-str">"Ranchero Trucking Co."</span>,
+  <span class="tok-key">"commerce"</span>: { <span class="tok-key">"orders"</span>: <span class="tok-num">14</span>, <span class="tok-key">"ltv"</span>: <span class="tok-num">48200</span> },
+  <span class="tok-key">"crm"</span>:      { <span class="tok-key">"segment"</span>: <span class="tok-str">"fleet"</span>, <span class="tok-key">"owner"</span>: <span class="tok-str">"dana"</span> },
+  <span class="tok-key">"email"</span>:    { <span class="tok-key">"subscribed"</span>: <span class="tok-num">true</span>, <span class="tok-key">"open_rate"</span>: <span class="tok-num">0.41</span> },
+  <span class="tok-key">"b2b"</span>:      { <span class="tok-key">"account"</span>: <span class="tok-str">"#4471"</span>, <span class="tok-key">"terms"</span>: <span class="tok-str">"net_30"</span> }
+}</pre>
+          </div>
+        </div>
+
+        <p class="api-foot">
+          Connect Claude, ChatGPT, or Copilot through the first-class MCP server.
+          <a href="/ai">See it answer questions about your business →</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ TRUST / FOUNDATIONS ============ -->
+    <section>
+      <div class="wrap">
+        <p class="eyebrow">// built right</p>
+        <h2 class="display">Enterprise foundations, on by default<span class="spark">.</span></h2>
+
+        <div class="spec-grid">
+          <div class="spec-item">
+            <h4><span class="d"></span>Tenant isolation at the database</h4>
+            <p>Every tenant-scoped table carries a tenant ID, with PostgreSQL row-level security as the backstop against application bugs — not application-tier filtering alone.</p>
+          </div>
+          <div class="spec-item">
+            <h4><span class="d"></span>Self-hosted email</h4>
+            <p>Transactional and marketing email send from your own domain and reputation on sparx.email — no third-party markup, no shared-IP deliverability roulette.</p>
+          </div>
+          <div class="spec-item">
+            <h4><span class="d"></span>Event-driven by design</h4>
+            <p>Business events publish to a queue and are consumed by workers. Side effects never block a request — and new automations subscribe without touching the core.</p>
+          </div>
+          <div class="spec-item">
+            <h4><span class="d"></span>One dashboard, module-aware</h4>
+            <p>Each module shifts the dashboard to its own color and surfaces only its tools. Disabled modules return a clear upgrade path, not a dead end.</p>
+          </div>
+          <div class="spec-item">
+            <h4><span class="d"></span>Multi-property, multi-brand</h4>
+            <p>Run many sites under one tenant — separate domains, themes, and catalogs — sharing the same customers, content, and bill where you want them to.</p>
+          </div>
+          <div class="spec-item">
+            <h4><span class="d"></span>Own it, export it, leave anytime</h4>
+            <p>Your data is yours. Full export, headless API access, and no lock-in. Turn a module off and it simply stops — your records stay intact.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRICING TEASER ============ -->
+    <section class="band" id="pricing">
+      <div class="wrap">
+        <div class="price-box">
+          <div class="lead">
+            <p class="eyebrow">// one bill</p>
+            <h2>Pay only for what you use<span class="spark">.</span></h2>
+            <p>
+              Start with one module from $49/mo. Add the next when you need it. No bundles, no seat
+              tax, no "contact us for content." Turn anything off and it stops billing the same day.
+            </p>
+          </div>
+          <div class="price-tiers">
+            <div class="ptier">
+              <div class="pt-name">Start</div>
+              <div class="pt-price">$49<small>/mo</small></div>
+              <div class="pt-note">one module</div>
+            </div>
+            <div class="ptier" style="border-color: var(--indigo)">
+              <div class="pt-name">Grow</div>
+              <div class="pt-price">$149<small>/mo</small></div>
+              <div class="pt-note">typical 3-module mix</div>
+            </div>
+            <div class="ptier">
+              <div class="pt-name">Everything</div>
+              <div class="pt-price">$449<small>/mo</small></div>
+              <div class="pt-note">the full platform</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 32px">
+          <a href="/pricing"><button class="btn btn-indigo">See full pricing →</button></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FINAL CTA ============ -->
+    <section class="final">
+      <div class="wrap">
+        <h2>Put your whole business on one platform<span class="spark">.</span></h2>
+        <p class="sub">
+          Content, commerce, or both. Start with one module and a live site in five minutes — add
+          the rest whenever you're ready.
+        </p>
+        <div class="actions">
+          <button class="btn btn-indigo btn-lg">Start free</button>
+          <button class="btn btn-ghost btn-lg">Talk to sales</button>
+        </div>
+        <div class="fine">No credit card · Cancel anytime · Your data, always exportable</div>
+      </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="site">
+      <div class="wrap">
+        <div class="foot-top">
+          <div class="foot-brand">
+            <span class="wordmark" style="font-size: 24px">Spar<span class="x">x</span></span>
+            <p>Modular content and commerce OS by WizeWorks. Built in Visalia, California. Operating worldwide.</p>
+            <span class="foot-status"><span class="ok-dot"></span>All systems operational</span>
+            <span class="mono" style="font-size: 11px; color: var(--tertiary)">status.sparx.works</span>
+          </div>
+
+          <div class="foot-col">
+            <span class="ct">Modules</span>
+            <a href="/builder">Builder</a>
+            <a href="/commerce">Commerce</a>
+            <a href="/cms">CMS</a>
+            <a href="/crm">CRM</a>
+            <a href="/email">Email</a>
+            <a href="/b2b">B2B / Wholesale</a>
+            <a href="/ai">AI / MCP</a>
+            <a href="/dropship">Dropship</a>
+          </div>
+          <div class="foot-col">
+            <span class="ct">Platform</span>
+            <a href="/platform">Platform</a>
+            <a href="/pricing">Pricing</a>
+            <a href="/themes">Themes</a>
+            <a href="/marketplace">Marketplace</a>
+            <a href="/hosting">Managed hosting</a>
+            <a href="/enterprise">Enterprise</a>
+            <a href="/migrate">Migration tools</a>
+          </div>
+          <div class="foot-col">
+            <span class="ct">Developers</span>
+            <a href="/docs">Documentation</a>
+            <a href="/docs/quickstart">Quickstart</a>
+            <a href="/docs/api/orders/create">API reference</a>
+            <a href="/changelog">Changelog</a>
+            <a href="/open-source">Open source</a>
+          </div>
+          <div class="foot-col">
+            <span class="ct">Company</span>
+            <a href="/about">About WizeWorks</a>
+            <a href="#">Customers</a>
+            <a href="/brand">Brand</a>
+            <a href="/press">Press</a>
+            <a href="/careers">Careers</a>
+            <a href="/contact">Contact</a>
+          </div>
+        </div>
+
+        <div class="foot-domains">
+          <span class="dt">The Sparx domain network</span>
+          <div class="domain-row">
+            <span class="domain"><span class="d" style="background: #6366f1"></span><span style="color: var(--ink)">sparx.works</span></span>
+            <span class="domain"><span class="d" style="background: #6366f1"></span>sparx.zone</span>
+            <span class="domain"><span class="d" style="background: #14b8a6"></span>sparxcms.com</span>
+            <span class="domain"><span class="d" style="background: #06b6d4"></span>sparxcrm.com</span>
+            <span class="domain"><span class="d" style="background: #0ea5e9"></span>sparxemail.com</span>
+            <span class="domain"><span class="d" style="background: #475569"></span>sparxb2b.com</span>
+            <span class="domain"><span class="d" style="background: #a1a1aa"></span>sparx.email</span>
+            <span class="domain"><span class="d" style="background: #a1a1aa"></span>sparx.host</span>
+            <span class="domain"><span class="d" style="background: #a1a1aa"></span>sparx.software</span>
+          </div>
+        </div>
+
+        <div class="foot-legal">
+          <span>© 2026 WizeWorks, Inc. · Visalia, California · Sparx is a registered trademark of WizeWorks.</span>
+          <span class="mono">EN · USD</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

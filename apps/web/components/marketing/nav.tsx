@@ -5,7 +5,7 @@ import { Button } from '@sparx/ui';
 import { Wordmark } from './primitives';
 
 const LINKS = [
-  { label: 'Platform', href: '#platform' },
+  { label: 'Platform', href: '/platform' },
   { label: 'Modules', href: '#modules' },
   { label: 'Pricing', href: '#pricing' },
   { label: 'Docs', href: '/docs' },

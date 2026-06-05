@@ -107,6 +107,10 @@ export async function searchProducts(
 export interface CustomerSearchInput {
   tenantId: string;
   q: string;
+  /** Active site (docs/58 D2). When set, scopes results to that site's
+   *  memberships (`property_id:=<id>`); omit for the whole-tenant "All sites"
+   *  view. Single-valued — a customer belongs to exactly one site. */
+  propertyId?: string;
   page?: number;
   perPage?: number;
 }
@@ -118,7 +122,10 @@ export async function searchCustomers(
     q: input.q,
     query_by: 'full_name,email,company,phone',
     query_by_weights: '4,3,3,2',
-    filter_by: `tenant_id:=${input.tenantId}`,
+    filter_by: joinFilter([
+      `tenant_id:=${input.tenantId}`,
+      input.propertyId ? `property_id:=${input.propertyId}` : null,
+    ]),
     page: input.page ?? 1,
     per_page: input.perPage ?? 20,
   };
@@ -129,6 +136,10 @@ export async function searchCustomers(
 export interface OrderSearchInput {
   tenantId: string;
   q: string;
+  /** Origin site (docs/58 D1). When set, scopes results to orders placed on
+   *  that site (`property_id:=<id>`); omit for the whole-tenant "All sites"
+   *  view. Single-valued — an order has one origin site. */
+  propertyId?: string;
   page?: number;
   perPage?: number;
 }
@@ -140,7 +151,10 @@ export async function searchOrders(
     q: input.q,
     query_by: 'order_number,customer_name,customer_email,item_titles,item_skus',
     query_by_weights: '5,3,3,2,2',
-    filter_by: `tenant_id:=${input.tenantId}`,
+    filter_by: joinFilter([
+      `tenant_id:=${input.tenantId}`,
+      input.propertyId ? `property_id:=${input.propertyId}` : null,
+    ]),
     page: input.page ?? 1,
     per_page: input.perPage ?? 20,
   };

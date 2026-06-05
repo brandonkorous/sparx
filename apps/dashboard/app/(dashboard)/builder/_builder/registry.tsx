@@ -51,7 +51,7 @@ import {
 // searchable list) lives with the picker; here we only need the renderer.
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 
-import { readClassGroup, setClassGroup } from '@sparx/builder-schemas';
+import { coerceNavLinks, readClassGroup, setClassGroup } from '@sparx/builder-schemas';
 // The React-free JSON→HTML serializer (the audited CMS path). Lets the canvas
 // preview an authored Prose doc as real HTML without pulling the TipTap editor
 // into this widely-imported registry chunk (docs/52 §9).
@@ -98,7 +98,15 @@ export type BoxAxis =
 export interface PropSpec {
   key: string;
   label: string;
-  control: 'text' | 'textarea' | 'select' | 'buttongroup' | 'switch' | 'icon' | 'richtext';
+  control:
+    | 'text'
+    | 'textarea'
+    | 'select'
+    | 'buttongroup'
+    | 'switch'
+    | 'icon'
+    | 'richtext'
+    | 'navlinks';
   options?: { value: string; label: string }[];
   placeholder?: string;
 }
@@ -209,20 +217,6 @@ export function mapEmbed(query: string, embedUrl: string): string | null {
   if (embedUrl?.trim()) return embedUrl.trim();
   const q = (query ?? '').trim();
   return q ? `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed` : null;
-}
-
-// Hand-typed nav links — one per line, `Label` or `Label|/url`. The fallback for
-// a NavMenu that isn't bound to a CMS menu. Mirrored in the storefront renderer.
-export function parseNavLinks(raw: string): { label: string; url: string }[] {
-  return (raw ?? '')
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [label, url] = line.split('|');
-      return { label: (label ?? '').trim(), url: (url ?? '#').trim() || '#' };
-    })
-    .filter((l) => l.label !== '');
 }
 
 // Authored-inline Q&A pairs for the FAQ component (the fallback when it isn't
@@ -1160,22 +1154,17 @@ const DEFS: ComponentDef[] = [
       },
       {
         key: 'links',
-        label: 'Links (one per line, “Label|/url”)',
-        control: 'textarea',
-        placeholder: 'Vehicles\nEnergy\nCharging',
+        label: 'Links',
+        control: 'navlinks',
       },
     ],
     defaults: { props: { orientation: 'row' } },
-    renderLeaf: ({ node, value, cardinality }) => {
+    renderLeaf: ({ node, value }) => {
       const orientation = (node.props.orientation as string) ?? 'row';
-      const items = cardinality === 'array' ? (value as unknown[]) : [];
-      const typed = parseNavLinks((node.props.links as string) ?? '');
-      const labels =
-        items.length > 0
-          ? items.map((it) => firstString((it as { label?: unknown }).label, 'Link'))
-          : typed.length > 0
-            ? typed.map((l) => l.label)
-            : ['Home', 'Shop', 'About'];
+      // Node-owned links win; a legacy CMS binding (value) is the fallback during
+      // the transition (docs/57). Empty everywhere → the placeholder labels.
+      const links = coerceNavLinks(node.props.links, value);
+      const labels = links.length > 0 ? links.map((l) => l.label) : ['Home', 'Shop', 'About'];
       return (
         <nav className={`bx-nav bx-nav--${orientation}`}>
           {labels.map((label, i) => (

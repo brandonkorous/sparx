@@ -10,6 +10,8 @@ import { cx } from '../utils/cx';
 export interface NavItem {
   label: string;
   url: string;
+  /** Open the link in a new tab (docs/57). Adds target + safe rel. */
+  openInNewTab?: boolean;
 }
 
 export type NavOrientation = 'row' | 'stack';
@@ -27,7 +29,12 @@ export function NavMenu({ items, orientation = 'row', className, style }: NavMen
     <nav className={cx('sf-nav', modifier, className)} style={style}>
       {items.map((item, i) =>
         item.label ? (
-          <a key={`${i}-${item.label}`} href={item.url || '#'} className="sf-nav__item">
+          <a
+            key={`${i}-${item.label}`}
+            href={item.url || '#'}
+            className="sf-nav__item"
+            {...(item.openInNewTab ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
+          >
             {item.label}
           </a>
         ) : null

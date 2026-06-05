@@ -10,6 +10,12 @@ export function ordersSchema(collectionName: string = ORDERS_COLLECTION): Collec
     name: collectionName,
     fields: [
       { name: 'tenant_id', type: 'string', facet: false, index: true },
+      // Origin web property (docs/58 D1). Single-valued — an order is placed on
+      // exactly one site (null/absent = unknown origin, e.g. legacy or no
+      // `?property=`). Optional so `ensureSchemas` can add it to a populated
+      // collection on the next indexer boot. The dashboard Orders Site filter
+      // matches `property_id:=<id>`; "All sites" omits it.
+      { name: 'property_id', type: 'string', facet: true, optional: true },
       { name: 'order_id', type: 'string', facet: false, index: true },
       { name: 'order_number', type: 'string', facet: false, sort: true, infix: true },
       { name: 'customer_id', type: 'string', facet: true, optional: true },
@@ -34,6 +40,8 @@ export function ordersSchema(collectionName: string = ORDERS_COLLECTION): Collec
 export interface OrderSearchDocument {
   id: string; // `${tenantId}:${orderId}`
   tenant_id: string;
+  /** Origin web property (docs/58 D1); absent when the origin is unknown. */
+  property_id?: string;
   order_id: string;
   order_number: string;
   customer_id?: string;

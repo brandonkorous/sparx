@@ -265,6 +265,9 @@ export async function projectCustomer(
     const doc: CustomerSearchDocument = {
       id: `${ctx.tenantId}:${customer.id}`,
       tenant_id: ctx.tenantId,
+      // Membership site (docs/58 D2) — drives the dashboard Customers Site
+      // filter. Absent for legacy rows with no property.
+      property_id: customer.propertyId ?? undefined,
       customer_id: customer.id,
       full_name: fullName,
       email: customer.email ?? '',
@@ -349,6 +352,9 @@ export async function projectOrder(
     const doc: OrderSearchDocument = {
       id: `${ctx.tenantId}:${order.id}`,
       tenant_id: ctx.tenantId,
+      // Origin site (docs/58 D1) — drives the dashboard Orders Site filter.
+      // Absent when the order's origin is unknown.
+      property_id: order.propertyId ?? undefined,
       order_id: order.id,
       order_number: order.orderNumber,
       customer_id: order.customerId,

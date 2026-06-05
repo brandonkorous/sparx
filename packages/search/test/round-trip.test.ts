@@ -232,6 +232,37 @@ describe.skipIf(!AVAILABLE)('@sparx/search round-trip', () => {
     expect(orders.hits[0]?.document.order_number).toBe('WW-1001');
   });
 
+  it('scopes customers and orders to the active site via property_id', async () => {
+    // A separate tenant so this doesn't perturb TENANT_A's count assertions.
+    const TENANT_S = 'tenant-ssssssss';
+    const SITE_A = 'prop-site-aaaa';
+    const SITE_B = 'prop-site-bbbb';
+    await bulkUpsertCustomers([
+      customer(TENANT_S, 'sca', { full_name: 'Cars Buyer', property_id: SITE_A }),
+      customer(TENANT_S, 'scb', { full_name: 'Dogs Buyer', property_id: SITE_B }),
+      // Legacy membership with no site — only visible in the whole-tenant view.
+      customer(TENANT_S, 'scn', { full_name: 'Legacy Buyer' }),
+    ]);
+    await bulkUpsertOrders([
+      order(TENANT_S, 'soa', { order_number: 'CARS-1', property_id: SITE_A }),
+      order(TENANT_S, 'sob', { order_number: 'DOGS-1', property_id: SITE_B }),
+      order(TENANT_S, 'son', { order_number: 'LEGACY-1' }),
+    ]);
+
+    // Site A → only A's membership/order; never B's, never the legacy row.
+    const custA = await searchCustomers({ tenantId: TENANT_S, q: '*', propertyId: SITE_A });
+    expect(custA.hits.map((h) => h.document.customer_id).sort()).toEqual(['sca']);
+    const ordA = await searchOrders({ tenantId: TENANT_S, q: '*', propertyId: SITE_A });
+    expect(ordA.hits.map((h) => h.document.order_id).sort()).toEqual(['soa']);
+
+    // No property filter (All sites) → all three of each, including the legacy
+    // row that has no property_id.
+    const custAll = await searchCustomers({ tenantId: TENANT_S, q: '*' });
+    expect(custAll.found).toBe(3);
+    const ordAll = await searchOrders({ tenantId: TENANT_S, q: '*' });
+    expect(ordAll.found).toBe(3);
+  });
+
   it('palette spans collections for one tenant only', async () => {
     const res = await palette({ tenantId: TENANT_A, q: 'acme' });
     expect(res.customers.length).toBeGreaterThanOrEqual(1);

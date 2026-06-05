@@ -50,6 +50,9 @@ const SearchQuery = z.object({
   q: z.string().optional(),
   page: z.coerce.number().int().min(1).optional(),
   per_page: z.coerce.number().int().min(1).max(250).optional(),
+  // Active site (docs/58) — scope customer/order search to one web property
+  // (the dashboard list Site filter). Omitted → the whole tenant ("All sites").
+  property: z.string().uuid().optional(),
 });
 
 const PaletteQuery = z.object({
@@ -119,6 +122,7 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     const result = await searchCustomers({
       tenantId: auth.tenantId,
       q: q.q ?? '*',
+      propertyId: q.property,
       page: q.page,
       perPage: q.per_page,
     });
@@ -137,6 +141,7 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     const result = await searchOrders({
       tenantId: auth.tenantId,
       q: q.q ?? '*',
+      propertyId: q.property,
       page: q.page,
       perPage: q.per_page,
     });

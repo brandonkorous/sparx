@@ -56,30 +56,40 @@ async function parse<T>(res: Response): Promise<T> {
   return json.data as T;
 }
 
+/** Auth result: the profile plus `recognized` — true when the account already
+ *  existed on a SISTER site and a separate membership was just created here
+ *  (docs/58 D6), which the UI surfaces as a one-time notice. */
+export interface AuthResult {
+  customer: Customer;
+  recognized: boolean;
+}
+
 export async function register(
   tenantSlug: string,
   input: { email: string; password: string; firstName?: string; lastName?: string },
   propertySlug?: string
-): Promise<Customer> {
+): Promise<AuthResult> {
   const res = await fetch(url('/v1/public/commerce/account/register', tenantSlug, propertySlug), {
     method: 'POST',
     headers: { 'content-type': 'application/json', ...cartTokenHeader() },
     body: JSON.stringify(input),
   });
-  return (await parse<{ customer: Customer }>(res)).customer;
+  const data = await parse<{ customer: Customer; recognized?: boolean }>(res);
+  return { customer: data.customer, recognized: data.recognized ?? false };
 }
 
 export async function login(
   tenantSlug: string,
   input: { email: string; password: string },
   propertySlug?: string
-): Promise<Customer> {
+): Promise<AuthResult> {
   const res = await fetch(url('/v1/public/commerce/account/login', tenantSlug, propertySlug), {
     method: 'POST',
     headers: { 'content-type': 'application/json', ...cartTokenHeader() },
     body: JSON.stringify(input),
   });
-  return (await parse<{ customer: Customer }>(res)).customer;
+  const data = await parse<{ customer: Customer; recognized?: boolean }>(res);
+  return { customer: data.customer, recognized: data.recognized ?? false };
 }
 
 export async function logout(tenantSlug: string): Promise<void> {

@@ -13,6 +13,12 @@ export function customersSchema(
     name: collectionName,
     fields: [
       { name: 'tenant_id', type: 'string', facet: false, index: true },
+      // Membership web property (docs/58 D2). A customer is a per-site
+      // membership, so each doc belongs to exactly one site (null/absent for
+      // legacy rows). Optional so `ensureSchemas` adds it to the live
+      // collection on the next indexer boot. The dashboard Customers Site
+      // filter matches `property_id:=<id>`; "All sites" omits it.
+      { name: 'property_id', type: 'string', facet: true, optional: true },
       { name: 'customer_id', type: 'string', facet: false, index: true },
       { name: 'full_name', type: 'string', facet: false, sort: true, infix: true },
       { name: 'email', type: 'string', facet: false, infix: true },
@@ -33,6 +39,8 @@ export function customersSchema(
 export interface CustomerSearchDocument {
   id: string; // `${tenantId}:${customerId}`
   tenant_id: string;
+  /** Membership web property (docs/58 D2); absent for legacy rows. */
+  property_id?: string;
   customer_id: string;
   full_name: string;
   email: string;

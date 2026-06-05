@@ -49,6 +49,10 @@ export function CustomerProvider({
 }) {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [status, setStatus] = useState<CustomerStatus>('loading');
+  // Sister-site recognition (docs/58 D6): set when a login/register here created
+  // a fresh, separate membership because the email already had an account on
+  // another of the tenant's sites. Drives the one-time notice below.
+  const [recognized, setRecognized] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -67,18 +71,28 @@ export function CustomerProvider({
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const me = await accountApi.login(tenantSlug, { email, password }, propertySlug);
+      const { customer: me, recognized: r } = await accountApi.login(
+        tenantSlug,
+        { email, password },
+        propertySlug
+      );
       setCustomer(me);
       setStatus('authenticated');
+      if (r) setRecognized(true);
     },
     [tenantSlug, propertySlug]
   );
 
   const register = useCallback(
     async (input: { email: string; password: string; firstName?: string; lastName?: string }) => {
-      const me = await accountApi.register(tenantSlug, input, propertySlug);
+      const { customer: me, recognized: r } = await accountApi.register(
+        tenantSlug,
+        input,
+        propertySlug
+      );
       setCustomer(me);
       setStatus('authenticated');
+      if (r) setRecognized(true);
     },
     [tenantSlug, propertySlug]
   );
@@ -87,6 +101,7 @@ export function CustomerProvider({
     await accountApi.logout(tenantSlug);
     setCustomer(null);
     setStatus('anonymous');
+    setRecognized(false);
   }, [tenantSlug]);
 
   const value = useMemo<CustomerContextValue>(
@@ -94,5 +109,25 @@ export function CustomerProvider({
     [tenantSlug, customer, status, login, register, logout, refresh]
   );
 
-  return <CustomerContext.Provider value={value}>{children}</CustomerContext.Provider>;
+  return (
+    <CustomerContext.Provider value={value}>
+      {recognized ? (
+        <div className="sf-recognition" role="status">
+          <span>
+            Welcome back! We recognized your email from another of our sites and created a separate
+            account for you here — your orders and preferences on this site stay private to it.
+          </span>
+          <button
+            type="button"
+            className="sf-recognition__close"
+            aria-label="Dismiss"
+            onClick={() => setRecognized(false)}
+          >
+            ×
+          </button>
+        </div>
+      ) : null}
+      {children}
+    </CustomerContext.Provider>
+  );
 }

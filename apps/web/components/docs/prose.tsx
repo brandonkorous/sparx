@@ -367,6 +367,16 @@ export function DocFigure({ caption, children }: { caption?: ReactNode; children
   );
 }
 
+/** A screenshot/figure with a real image and optional caption. */
+export function DocImage({ src, alt, caption }: { src: string; alt: string; caption?: ReactNode }) {
+  return (
+    <figure className="docs-img">
+      <img src={src} alt={alt} />
+      {caption ? <figcaption>{caption}</figcaption> : null}
+    </figure>
+  );
+}
+
 /* ──────────────────────────── CARD GRID ──────────────────────────── */
 
 export function NextSteps({ children }: { children: ReactNode }) {

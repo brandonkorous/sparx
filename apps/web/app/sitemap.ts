@@ -52,6 +52,12 @@ function staticPages(now: Date): MetadataRoute.Sitemap {
   }));
   return [
     {
+      url: `${BASE}/platform`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.9,
+    },
+    {
       url: `${BASE}/security`,
       lastModified: now,
       changeFrequency: 'monthly' as const,

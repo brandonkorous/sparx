@@ -5,11 +5,19 @@
 
 import type { Blueprint, BlueprintSummary } from './manifest';
 import { toSummary } from './manifest';
+import { antiqueShop } from './blueprints/antique-shop';
+import { autoParts } from './blueprints/auto-parts';
+import { beautySalonSpa } from './blueprints/beauty-salon-spa';
 import { retailStoreBlog } from './blueprints/retail-store-blog';
+import { tattooStudio } from './blueprints/tattoo-studio';
 
 /** Every shipped blueprint, keyed by its stable `key`. */
 export const BLUEPRINTS: Readonly<Record<string, Blueprint>> = {
   [retailStoreBlog.key]: retailStoreBlog,
+  [tattooStudio.key]: tattooStudio,
+  [beautySalonSpa.key]: beautySalonSpa,
+  [antiqueShop.key]: antiqueShop,
+  [autoParts.key]: autoParts,
 };
 
 /** One blueprint by key, or null. */

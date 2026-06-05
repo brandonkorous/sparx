@@ -391,17 +391,28 @@ export async function complete(
       );
     }
 
-    // CRM owns the customer spine. Storefront orders against a guest
-    // session must first have an associated customerId — the storefront
-    // creates a customer (or links to an existing one by email) before
-    // calling complete().
-    if (!session.customerId) {
-      throw new CommerceValidationError(
-        'Checkout session must have a customerId before complete() (link or create the customer first)'
+    const cart = session.cart;
+
+    // CRM owns the customer spine. A storefront/guest checkout reaches here with
+    // no customerId — link-or-create a customer membership keyed on the contact
+    // email and scoped to the order's origin SITE (docs/58 D2), so the order
+    // attaches to a real, site-scoped customer and a later registration on this
+    // site adopts the same membership instead of duplicating it. An
+    // authenticated checkout that already carries a customerId keeps it.
+    let customerId = session.customerId;
+    if (!customerId) {
+      if (!session.customerEmail) {
+        throw new CommerceValidationError(
+          'Checkout session must have a customer or contact email before complete()'
+        );
+      }
+      customerId = await ensureCheckoutCustomer(
+        tx,
+        ctx.tenantId,
+        cart.propertyId ?? null,
+        session.customerEmail
       );
     }
-
-    const cart = session.cart;
 
     // Translate cart lines into CRM LineItemInputs. The crm-schema uses
     // decimal dollars (Money), not integer cents — convert at the
@@ -421,7 +432,7 @@ export async function complete(
     const taxDollars = session.taxTotalCents / 100;
 
     const order = await orderService.create(ctx, {
-      customerId: session.customerId,
+      customerId,
       // Origin site (docs/58 D1) — inherit the cart's property so the order is
       // tagged with the storefront it was placed on.
       propertyId: cart.propertyId ?? undefined,
@@ -486,7 +497,7 @@ export async function complete(
     for (const cd of cart.discounts) {
       await discountService.recordDiscountUsage(ctx, {
         discountId: cd.discountId,
-        customerId: session.customerId,
+        customerId,
         orderId: order.id,
         cartId: cart.id,
         appliedCents: cd.appliedCents,
@@ -582,6 +593,49 @@ export async function findExpiredSessions(ctx: ServiceContext): Promise<string[]
 }
 
 // ─── helpers ─────────────────────────────────────────────────────────
+
+/**
+ * Link-or-create the customer membership a guest/storefront checkout converts
+ * into. Keyed on (origin site, email) to match the per-site membership model
+ * (docs/58 D2): an existing membership on this site is reused (a prospect is
+ * promoted to retail); otherwise a new retail membership is created on this
+ * site. When the cart carries no property (e.g. the primary site sends no
+ * `?property=`), we default to the tenant's primary property so this resolves
+ * to the SAME membership a later account registration would (which also
+ * defaults to primary) — avoiding a duplicate. Email is normalized to match how
+ * the account-registration path stores it.
+ */
+async function ensureCheckoutCustomer(
+  tx: TxClient,
+  tenantId: string,
+  cartPropertyId: string | null,
+  email: string
+): Promise<string> {
+  const normalizedEmail = email.trim().toLowerCase();
+  let propertyId = cartPropertyId;
+  if (!propertyId) {
+    const primary = await tx.property.findFirst({
+      where: { isPrimary: true },
+      select: { id: true },
+    });
+    propertyId = primary?.id ?? null;
+  }
+  const existing = await tx.customer.findFirst({
+    where: { propertyId, email: normalizedEmail, deletedAt: null },
+    select: { id: true, type: true },
+  });
+  if (existing) {
+    if (existing.type === 'prospect') {
+      await tx.customer.update({ where: { id: existing.id }, data: { type: 'retail' } });
+    }
+    return existing.id;
+  }
+  const created = await tx.customer.create({
+    data: { tenantId, propertyId, email: normalizedEmail, type: 'retail' },
+    select: { id: true },
+  });
+  return created.id;
+}
 
 async function assertSessionWritable(tx: TxClient, sessionId: string): Promise<CheckoutSession> {
   const session = await tx.checkoutSession.findFirst({ where: { id: sessionId } });

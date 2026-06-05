@@ -244,7 +244,13 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     }
     setSessionCookie(reply, session.sessionToken);
     await claimGuestCart(ctx, request, session.customerId);
-    return ok({ customer: await loadProfile(ctx, session.customerId) });
+    // `recognized` (docs/58 D6): true when this created a membership for the
+    // active site because the email already had a login on a SISTER site — the
+    // storefront surfaces a "separate account on this site" notice.
+    return ok({
+      customer: await loadProfile(ctx, session.customerId),
+      recognized: session.recognized ?? false,
+    });
   });
 
   app.post('/v1/public/commerce/account/login', AUTH_RATE_LIMIT, async (request, reply) => {
@@ -261,7 +267,12 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     if (!session) throw unauthorized('Invalid email or password.');
     setSessionCookie(reply, session.sessionToken);
     await claimGuestCart(ctx, request, session.customerId);
-    return ok({ customer: await loadProfile(ctx, session.customerId) });
+    // `recognized` (docs/58 D6): true when signing in here created a fresh
+    // membership because the account lived on a SISTER site until now.
+    return ok({
+      customer: await loadProfile(ctx, session.customerId),
+      recognized: session.recognized ?? false,
+    });
   });
 
   app.post('/v1/public/commerce/account/logout', async (request, reply) => {

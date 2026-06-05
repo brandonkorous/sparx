@@ -38,12 +38,12 @@ export const DOC_NAV: DocGroup[] = [
     links: [
       { title: 'Introduction', href: '/docs' },
       { title: 'Quickstart', href: '/docs/quickstart' },
-      { title: 'Authentication', href: '/docs/authentication', soon: true },
-      { title: 'Core concepts', href: '/docs/concepts', soon: true },
+      { title: 'Authentication', href: '/docs/authentication' },
+      { title: 'Core concepts', href: '/docs/concepts' },
       { title: 'Modules & billing', href: '/docs/modules', soon: true },
       { title: 'Building a site', href: '/docs/guides/building-a-site', soon: true },
-      { title: 'Templates & blueprints', href: '/docs/guides/blueprints', soon: true },
-      { title: 'Webhooks & events', href: '/docs/guides/webhooks', soon: true },
+      { title: 'Building a template', href: '/docs/guides/building-a-template' },
+      { title: 'Webhooks & events', href: '/docs/guides/webhooks' },
       {
         title: 'Multi-property sites',
         href: '/docs/guides/multi-property',

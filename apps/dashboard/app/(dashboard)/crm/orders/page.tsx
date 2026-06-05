@@ -113,9 +113,10 @@ export default async function OrdersPage({ searchParams }: PageProps) {
   let orders: OrderRow[];
   let total: number;
   if (q) {
-    // NOTE: order SEARCH is not yet site-scoped (the orders Typesense property
-    // facet is a follow-on, docs/58 §5); the browse list below IS site-scoped.
+    // Search via Typesense, scoped to the active site (docs/58 D1) via the
+    // orders `property_id` facet — same selection as the browse list below.
     const sq = new URLSearchParams({ q, per_page: '100' });
+    if (propertyFilter) sq.set('property', propertyFilter);
     const { data, meta } = await api.getPaged<OrderSearchDoc[]>(
       `/v1/search/orders?${sq.toString()}`
     );

@@ -13,6 +13,7 @@
 import * as React from 'react';
 import {
   cardinalityOf,
+  coerceNavLinks,
   resolvePath,
   type AlignX,
   type BoxBase,
@@ -271,19 +272,6 @@ function mapEmbed(query: string, embedUrl: string): string | null {
   if (embedUrl?.trim()) return embedUrl.trim();
   const q = (query ?? '').trim();
   return q ? `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed` : null;
-}
-// Hand-typed nav links (the fallback when a NavMenu isn't bound to a CMS menu).
-// One per line: `Label` or `Label|/url`. Mirrors the editor registry.
-function parseNavLinks(raw: string): { label: string; url: string }[] {
-  return (raw ?? '')
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [label, url] = line.split('|');
-      return { label: (label ?? '').trim(), url: (url ?? '#').trim() || '#' };
-    })
-    .filter((l) => l.label !== '');
 }
 // Authored-inline FAQ pairs / feature cards (the fallback when the FAQ /
 // FeatureGrid leaf isn't bound to a content list). Mirror the editor registry.
@@ -593,18 +581,14 @@ function renderLeaf(
     }
     case 'NavMenu': {
       const orientation = (str('orientation') || 'row') as 'row' | 'stack';
-      const boundItems = Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
-      // Bound CMS menu wins; otherwise fall back to hand-typed links (the
-      // unbound nav case — e.g. a static header). Empty → render nothing.
-      const list =
-        boundItems.length > 0
-          ? boundItems
-              .map((it) => ({
-                label: typeof it.label === 'string' ? it.label : '',
-                url: typeof it.url === 'string' ? it.url : '#',
-              }))
-              .filter((l) => l.label !== '')
-          : parseNavLinks(str('links'));
+      // Navigation is owned by the node (docs/57): structured `props.links` wins;
+      // a legacy CMS binding (value) and the legacy hand-typed string are kept as
+      // fallbacks through the transition. P1 renders flat (children ignored).
+      const list = coerceNavLinks(node.props.links, value).map((l) => ({
+        label: l.label,
+        url: l.href,
+        ...(l.openInNewTab ? { openInNewTab: true } : {}),
+      }));
       if (list.length === 0) return null;
       return <NavMenu items={list} orientation={orientation} className={leafClass} />;
     }
