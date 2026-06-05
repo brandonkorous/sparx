@@ -1,6 +1,6 @@
 # Tenant Blueprints — one-click templates that provision a whole tenant
 
-**Version:** 0.1.0
+**Version:** 0.2.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-04
 
@@ -84,12 +84,13 @@ Three existing properties of the platform carry the feature:
 
 ## 3. Locked decisions
 
-| #   | Decision                 | Choice                                                       | Rationale                                                                                                                                                   |
-| --- | ------------------------ | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D1  | First flagship vertical  | **General retail store + blog**                              | Exercises every module (catalog + variants + CMS content + marketing & transactional email) and is the most reusable marketplace flagship.                  |
-| D2  | Blueprint representation | **Declarative manifest** (versioned data, no code execution) | Marketplace-distributable and safe on multi-tenant SSR; mirrors how tenant components already store declarative trees (docs/53).                            |
-| D3  | Image strategy           | **Hot-link external URLs**                                   | Fastest path to an end-to-end install. See §6 for the implications and the upgrade seam to tenant-owned media later.                                        |
-| D4  | Post-install state       | **Draft — review then go live**                              | Matches starter pages + the legal seeder (everything seeds as draft). Nothing off-brand is public until the tenant publishes. Fits "activate or customize". |
+| #   | Decision                 | Choice                                                       | Rationale                                                                                                                                                                                                                                |
+| --- | ------------------------ | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | First flagship vertical  | **General retail store + blog**                              | Exercises every module (catalog + variants + CMS content + marketing & transactional email) and is the most reusable marketplace flagship.                                                                                               |
+| D2  | Blueprint representation | **Declarative manifest** (versioned data, no code execution) | Marketplace-distributable and safe on multi-tenant SSR; mirrors how tenant components already store declarative trees (docs/53).                                                                                                         |
+| D3  | Image strategy           | **Hot-link external URLs**                                   | Fastest path to an end-to-end install. See §6 for the implications and the upgrade seam to tenant-owned media later.                                                                                                                     |
+| D4  | Post-install state       | **Draft — review then go live**                              | Matches starter pages + the legal seeder (everything seeds as draft). Nothing off-brand is public until the tenant publishes. Fits "activate or customize".                                                                              |
+| D5  | Theme                    | **Ship a NEW named theme** (a tenant `SiteTheme`)            | A blueprint includes its own theme, not just a pick of an existing preset: a named `SiteTheme` = base preset + presentation overlay + brand "look", created and applied on install. It's data (no code deploy) and stays fully editable. |
 
 > D3 note: hot-linking is deliberately the weak link for a permanence-positioned product
 > (see [docs/01](01-platform-vision.md) §7). The manifest's asset section is designed so a
@@ -120,8 +121,13 @@ interface Blueprint {
     logo?: AssetRef; // resolves via §6
   };
   theme: {
-    themeKey: string; // code-first preset, e.g. 'apex'
-    presentation?: object; // Token Model v2 overlay (draftSettings)
+    // The NEW theme the blueprint ships (D5) — created as a tenant SiteTheme and
+    // applied on install. Reuses CreateSavedThemeInput + an `apply` flag.
+    name: string; // e.g. 'Driftwood'
+    basePresetKey: ThemeKey; // 'market' | 'apex' | 'drift' | 'industrial' | 'fleet' | 'drop'
+    presentation?: object; // Token Model v2 overlay
+    brand?: SavedThemeBrand; // the captured "look": colors, fonts, shape tokens
+    apply?: boolean; // default true
   };
 
   assets: AssetDecl[]; // id -> external URL (+ alt, dimensions) — §6
@@ -167,7 +173,8 @@ A `template-installer` Cloud Run worker (mirroring `legal-seed-worker`) subscrib
 ```
 1. Enable requiresModules            (§7)
 2. Resolve assets                    -> MediaAsset rows for product images; URLs inline for tree images (§6)
-3. Brand + theme                     TenantBrand upsert; selectTheme + updateSettings (draft)
+3. Brand + theme                     TenantBrand upsert; savedThemeService.create (new SiteTheme)
+                                      + apply (draft); apply its brand "look"
 4. Content types                     create custom types (skip built-ins); then
    Content entries                   create entries (DRAFT), recordRevision, syncReferences
 5. Commerce  categories (parent-first) -> collections -> products -> options -> variants -> images
@@ -310,8 +317,9 @@ Add to [packages/events/src/types.ts](../packages/events/src/types.ts):
 ## 11. What to reuse vs. what is net-new
 
 **Reuse as-is (no changes):** all the service create paths in §2 table 1; the draft→publish
-lifecycle; `TenantBrand` + theme overlay; tenant-component storage + publish-expansion; the
-Pub/Sub worker pattern; module-enable + bootstrap endpoints; per-property scoping.
+lifecycle; `TenantBrand` + theme overlay; `savedThemeService.create`/`apply` (the new theme,
+D5); tenant-component storage + publish-expansion; the Pub/Sub worker pattern; module-enable +
+bootstrap endpoints; per-property scoping.
 
 **Net-new:**
 
@@ -329,8 +337,8 @@ Pub/Sub worker pattern; module-enable + bootstrap endpoints; per-property scopin
 
 Concrete contents that prove every slice end-to-end:
 
-- **Brand/theme:** a neutral retail palette + heading/body font pair + `themeKey`, logo
-  hot-linked.
+- **Brand/theme:** the **Driftwood** brand (olive/amber palette, Fraunces/Inter) plus its own
+  shipped **Driftwood** theme (a `SiteTheme` over the `market` preset, D5), logo hot-linked.
 - **Content (built-in types):** an **About** page, a **Contact** page, and ~3 **blog posts**
   (`blog_post`) with rich bodies + SEO. No custom content types in v1 (lean on built-ins).
 - **Commerce:** ~3 categories (parent + 2 children), ~8 products spanning simple and
@@ -357,8 +365,9 @@ renders the themed home/PDP/blog and the product add-to-cart works.
 
 **Build order (each shippable):**
 
-1. `@sparx/blueprints` manifest type + validator; author `retail-store-blog` (no installer yet
-   — just a typed, validated document).
+1. ✅ **BUILT (2026-06-04)** — `@sparx/blueprints` manifest type + integrity validator + the
+   `retail-store-blog` flagship (ships the Driftwood theme), no installer yet. Typecheck +
+   lint + 15 tests green. (`packages/blueprints/`).
 2. `template-installer` worker + `template.install` event; install **commerce + content +
    brand/theme** slices first (the data-heavy ones), draft. Verify in a scratch tenant.
 3. Add **pages + layout + emails + components** slices; verify themed previews.

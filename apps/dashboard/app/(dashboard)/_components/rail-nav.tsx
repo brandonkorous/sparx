@@ -51,6 +51,14 @@ function tileIconClass(active: boolean) {
   }`;
 }
 
+// Module tiles always carry their own module color on the glyph, active or not,
+// so the rail reads as a color-coded module switcher (Commerce orange, CMS teal,
+// …). Each module tile is wrapped in its own ModuleProvider, so --module-active
+// resolves per-module here. The cross-module shortcuts (Home/Search/Settings/…)
+// keep the neutral tileIconClass since they have no module color.
+const MODULE_TILE_ICON =
+  'inline-flex h-4 w-4 shrink-0 items-center justify-center text-[var(--module-active)]';
+
 function isActivePath(pathname: string | null, href: string) {
   return pathname === href || (pathname?.startsWith(`${href}/`) ?? false);
 }
@@ -159,7 +167,7 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
                 aria-current={active ? 'page' : undefined}
                 className={tileClass(active, expanded)}
               >
-                <span className={tileIconClass(active)}>
+                <span className={MODULE_TILE_ICON}>
                   <Icon className="h-4 w-4" />
                 </span>
                 {expanded && <span className="flex-1 truncate text-left">{manifest.label}</span>}

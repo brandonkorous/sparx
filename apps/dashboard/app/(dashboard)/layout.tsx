@@ -1,5 +1,6 @@
 import { listEnabledModules, requireSession } from '@sparx/auth';
 import { api } from '@/lib/api-rest-client';
+import { listProperties, getActivePropertyId, type Property } from '@/lib/sites';
 import { DashboardShell } from './_components/dashboard-shell';
 import { getUserPreferences } from './_shell/preferences';
 import { listFavorites, listRecents } from './_shell/service';
@@ -25,13 +26,18 @@ export default async function DashboardLayout({
 
   const ctx = { userId: user.id, tenantId: user.tenantId };
 
-  const [tenant, favorites, recents, preferences, enabledModules] = await Promise.all([
-    api.get<{ name: string }>('/v1/tenant'),
-    listFavorites(ctx),
-    listRecents(ctx),
-    getUserPreferences(user.id),
-    listEnabledModules(user.tenantId),
-  ]);
+  const [tenant, favorites, recents, preferences, enabledModules, sites, activePropertyId] =
+    await Promise.all([
+      api.get<{ name: string }>('/v1/tenant'),
+      listFavorites(ctx),
+      listRecents(ctx),
+      getUserPreferences(user.id),
+      listEnabledModules(user.tenantId),
+      // Multi-site switcher data (docs/49 §6). Defensive: a failed read just
+      // hides the Site segment (single-site behavior).
+      listProperties().catch(() => [] as Property[]),
+      getActivePropertyId(),
+    ]);
 
   const navModules: string[] = [...enabledModules];
 
@@ -40,6 +46,8 @@ export default async function DashboardLayout({
       user={user}
       tenantName={tenant?.name ?? 'Workspace'}
       enabledModules={navModules}
+      sites={sites}
+      activePropertyId={activePropertyId}
       favorites={favorites}
       recents={recents}
       preferences={preferences}

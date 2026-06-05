@@ -5,19 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sparx — One workspace for everything you sell and publish</title>
     <!--
-      Landing page "Workspace" — the monday.com idiom rendered in Sparx.
-      The work-OS playbook: bright + colorful + rounded, a get-started email
-      inline in the hero, and a "pick what you want to run" selector that drives
-      a big floating product board. The Sparx twist: that selector is a REAL
-      capability — choosing a module live-recolors the recreated dashboard shell
-      (rail + contextual panel + module-striped cards + stat tiles + status
-      badges), exactly the way <ModuleProvider> shifts --module-active in the app.
-      Colors are the 8 locked module tokens. No eyebrows.
+      Landing page "Workspace" — the monday.com idiom rendered in Sparx, with the
+      hero product board rebuilt to faithfully mirror the REAL dashboard app
+      (apps/dashboard). Ground truth pulled from the shell components + manifests
+      + a screenshot of the running home page:
+        • gray monochrome icon rail (Sx mark · search · home · 8 module tiles ·
+          SEO · settings); only the ACTIVE tile gets a module-tinted pill
+        • contextual panel: "MODULE" head + dot + name, then Overview + the
+          module's real sections (active = module-tint pill)
+        • top bar: breadcrumb (tenant ▾ / Module ▾) + clock · ⋯ · moon · avatar
+        • PageHeader (module icon tile + title + module-colored primary button)
+        • Stat cards (gray --bg-subtle fill, icon tile, big value, green delta)
+        • module-striped "Open" section cards (3px top stripe + module button)
+      The "What do you want to run?" selector live-recolors the whole board —
+      exactly how <ModuleProvider> shifts --module-active in the app. Real module
+      icons (Boxes/Cart/FileText/Users/Send/Building2/Truck/Sparkles) and the
+      app's own module descriptors. No eyebrows in the marketing copy.
     -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -31,7 +39,14 @@
         --soft: #3f3f46;
         --faint: #a1a1aa;
         --line: #ececec;
-        --bg-subtle: #f4f4f5;
+        /* app neutrals (tokens.css) */
+        --page: #fafafa;
+        --surface: #ffffff;
+        --subtle: #f4f4f5;
+        --border: #e5e5e5;
+        --t2: #52525b; /* text secondary */
+        --t3: #a1a1aa; /* text tertiary */
+        --success: #047857;
         /* live module accent — set by the hero selector */
         --m: #f97316;
         --m-tint: #fff7ed;
@@ -46,7 +61,7 @@
         -webkit-font-smoothing: antialiased;
       }
       .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
-      .wrap-wide { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+      .wrap-wide { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
       a { color: inherit; text-decoration: none; }
 
       /* ── topbar ─────────────────────────────────────────── */
@@ -56,7 +71,7 @@
         border-bottom: 1px solid var(--line);
       }
       .topbar .wrap-wide { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-      .wordmark { font-weight: 600; font-size: 20px; letter-spacing: -0.03em; }
+      .wordmark { font-weight: 500; font-size: 20px; letter-spacing: -0.03em; }
       .wordmark .x { color: var(--indigo); }
       .nav { display: flex; align-items: center; gap: 24px; }
       .nav a { font-size: 14px; color: var(--muted); }
@@ -64,22 +79,20 @@
       .btn { display: inline-flex; align-items: center; gap: 8px; font-family: inherit; font-weight: 500; font-size: 14px; border: none; border-radius: 9px; cursor: pointer; line-height: 1; }
       .btn-primary { background: var(--indigo); color: #fff; padding: 11px 18px; }
       .btn-primary:hover { background: var(--indigo-hover); }
-      .btn-ghost { background: #fff; color: var(--indigo-text); border: 1px solid #e5e5e5; padding: 11px 16px; }
-      .btn-lg { font-size: 16px; padding: 15px 24px; border-radius: 11px; }
       .btn-white { background: #fff; color: var(--indigo-text); padding: 13px 22px; }
       .btn-white:hover { background: #f4f4ff; }
+      .btn-lg { font-size: 16px; padding: 15px 24px; border-radius: 11px; }
 
       /* ── hero ───────────────────────────────────────────── */
       .hero { padding: 84px 0 0; text-align: center; }
       .hero h1 {
-        margin: 0 auto; max-width: 880px; font-weight: 600; font-size: 76px;
-        line-height: 74px; letter-spacing: -0.04em;
+        margin: 0 auto; max-width: 880px; font-weight: 500; font-size: 74px;
+        line-height: 72px; letter-spacing: -0.04em;
       }
       .hero h1 .sell { color: #f97316; }
       .hero h1 .pub { color: #14b8a6; }
       .hero .sub { margin: 26px auto 0; max-width: 600px; font-size: 19px; line-height: 29px; color: var(--muted); }
 
-      /* inline get-started */
       .getstarted { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 34px auto 0; max-width: 480px; flex-wrap: wrap; }
       .getstarted input {
         flex: 1; min-width: 220px; height: 52px; padding: 0 18px;
@@ -90,8 +103,7 @@
       .getstarted .btn-lg { height: 52px; }
       .reassure { margin: 14px auto 0; font-size: 13px; color: var(--faint); }
 
-      /* module selector */
-      .selector { margin: 40px auto 0; max-width: 860px; }
+      .selector { margin: 40px auto 0; max-width: 880px; }
       .selector .lbl { font-size: 14px; color: var(--faint); margin-bottom: 14px; }
       .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
       .chip {
@@ -101,64 +113,71 @@
         padding: 9px 15px 9px 12px; cursor: pointer; transition: transform .08s ease, box-shadow .12s ease, border-color .12s ease;
       }
       .chip:hover { transform: translateY(-1px); }
-      .chip .ico { width: 17px; height: 17px; display: inline-flex; }
-      .chip .ico svg { width: 17px; height: 17px; }
+      .chip .ci { width: 16px; height: 16px; display: inline-flex; }
+      .chip .ci svg { width: 16px; height: 16px; }
       .chip[aria-pressed="true"] { color: #fff; border-color: transparent; }
 
-      /* ── product board ──────────────────────────────────── */
+      /* ── product board (mirrors the real shell) ─────────── */
       .stage { padding: 52px 0 96px; }
       .board {
-        position: relative; display: grid; grid-template-columns: 60px 168px 1fr;
-        background: #fff; border: 1px solid #e7e7ea; border-radius: 18px;
-        box-shadow: 0 30px 80px -28px rgba(20,20,40,0.28), 0 2px 8px rgba(20,20,40,0.04);
-        overflow: hidden; min-height: 520px;
-        text-align: left;
-      }
-      .board::before {
-        content: ""; position: absolute; inset-inline: 0; top: 0; height: 4px;
-        background: var(--m); transition: background .35s ease; z-index: 3;
+        display: grid; grid-template-columns: 56px 212px 1fr;
+        background: var(--page); border: 1px solid #e7e7ea; border-radius: 16px;
+        box-shadow: 0 30px 80px -30px rgba(20,20,40,0.30), 0 2px 8px rgba(20,20,40,0.04);
+        overflow: hidden; min-height: 560px; text-align: left;
       }
 
-      /* rail */
-      .rail { border-right: 1px solid #f0f0f2; padding: 16px 0; display: flex; flex-direction: column; align-items: center; gap: 6px; background: #fcfcfd; }
-      .rail .mark { width: 30px; height: 30px; border-radius: 9px; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px; letter-spacing: -0.04em; margin-bottom: 10px; }
-      .rail .mark span { color: #818cf8; }
-      .railbtn {
-        width: 40px; height: 40px; border-radius: 11px; border: none; background: transparent;
+      /* rail — gray icons, active = module tint pill */
+      .rail { border-right: 1px solid #eeeef1; background: var(--surface); display: flex; flex-direction: column; align-items: center; padding: 12px 0 10px; gap: 4px; }
+      .rail .mark { height: 40px; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 15px; letter-spacing: -0.04em; color: var(--ink); }
+      .rail .mark .x { color: var(--indigo); }
+      .rtile {
+        width: 32px; height: 32px; border-radius: 8px; border: none; background: transparent;
         display: flex; align-items: center; justify-content: center; cursor: pointer;
-        transition: background .12s ease; position: relative;
+        color: var(--t3); transition: background .12s ease, color .15s ease;
       }
-      .railbtn svg { width: 19px; height: 19px; }
-      .railbtn:hover { background: #f2f2f4; }
-      .railbtn.on { background: var(--rc); }
-      .railbtn.on svg { stroke: #fff; }
-      .railbtn .ind { position: absolute; left: -10px; top: 50%; transform: translateY(-50%); width: 3px; height: 0; border-radius: 3px; background: var(--rc); transition: height .15s ease; }
-      .railbtn.on .ind { height: 22px; }
-      .rail .spacer { flex: 1; }
+      .rtile svg { width: 17px; height: 17px; }
+      .rtile:hover { background: var(--subtle); color: var(--t2); }
+      .rtile.on { background: var(--m-tint); color: var(--m); }
+      .rail .rdiv { width: 26px; height: 1px; background: var(--border); margin: 5px 0; }
+      .rail .rspace { flex: 1; }
 
       /* contextual panel */
-      .panel { border-right: 1px solid #f0f0f2; padding: 18px 12px; background: #fff; }
-      .panel .ph { display: flex; align-items: center; gap: 8px; padding: 0 8px 12px; }
-      .panel .ph .dot { width: 9px; height: 9px; border-radius: 9999px; background: var(--m); transition: background .3s ease; }
-      .panel .ph .nm { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
-      .panel .srow {
-        display: flex; align-items: center; gap: 9px; padding: 8px 9px; border-radius: 8px;
-        font-size: 13px; color: var(--muted); cursor: default; transition: background .2s ease, color .2s ease;
+      .panel { border-right: 1px solid #eeeef1; background: var(--surface); display: flex; flex-direction: column; min-height: 0; }
+      .panel .phead { padding: 13px 16px 10px; }
+      .panel .phead .ey { font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--t3); font-weight: 500; }
+      .panel .phead .nm { display: flex; align-items: center; gap: 7px; margin-top: 3px; }
+      .panel .phead .nm .dot { width: 8px; height: 8px; border-radius: 9999px; background: var(--m); transition: background .3s ease; }
+      .panel .phead .nm span { font-size: 14px; font-weight: 500; }
+      .panel .plist { padding: 2px 8px 12px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+      .srow {
+        display: flex; align-items: center; gap: 9px; height: 32px; padding: 0 9px; border-radius: 7px;
+        font-size: 13px; color: var(--t2); cursor: default; transition: background .2s ease, color .2s ease;
       }
-      .panel .srow .sd { width: 5px; height: 5px; border-radius: 9999px; background: #d4d4d8; flex-shrink: 0; }
-      .panel .srow.act { background: var(--m-tint); color: var(--m-text); font-weight: 500; }
-      .panel .srow.act .sd { background: var(--m); }
-      .panel .pfoot { margin-top: 12px; padding: 0 9px; }
-      .panel .pfoot .add { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--faint); }
+      .srow svg { width: 15px; height: 15px; color: var(--t3); flex-shrink: 0; transition: color .2s ease; }
+      .srow.act { background: var(--m-tint); color: var(--m-text); font-weight: 500; }
+      .srow.act svg { color: var(--m); }
 
       /* main */
-      .main { padding: 22px 26px 28px; background: #fcfcfd; min-width: 0; }
-      .mhead { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
-      .mhead .ttl { display: flex; align-items: center; gap: 12px; min-width: 0; }
-      .mhead .tile { width: 38px; height: 38px; border-radius: 10px; background: var(--m-tint); color: var(--m); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .3s ease, color .3s ease; }
-      .mhead .tile svg { width: 20px; height: 20px; }
-      .mhead h3 { margin: 0; font-weight: 600; font-size: 22px; letter-spacing: -0.02em; }
-      .mhead .sub { margin: 2px 0 0; font-size: 12.5px; color: var(--faint); }
+      .main { background: var(--page); min-width: 0; display: flex; flex-direction: column; }
+      .mbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 22px; }
+      .crumb { display: flex; align-items: center; gap: 7px; font-size: 13px; min-width: 0; }
+      .crumb .seg { display: inline-flex; align-items: center; gap: 4px; color: var(--ink); white-space: nowrap; }
+      .crumb .seg.mod { color: var(--m-text); transition: color .3s ease; }
+      .crumb .seg svg { width: 13px; height: 13px; opacity: .8; }
+      .crumb .sl { color: #d4d4d8; }
+      .mbar .acts { display: flex; align-items: center; gap: 4px; }
+      .ibtn { width: 30px; height: 30px; border-radius: 8px; border: none; background: transparent; color: var(--t3); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+      .ibtn:hover { background: var(--subtle); color: var(--t2); }
+      .ibtn svg { width: 16px; height: 16px; }
+      .avatar { width: 28px; height: 28px; border-radius: 9999px; background: var(--indigo-tint); color: var(--indigo-text); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; margin-left: 4px; }
+
+      .mbody { padding: 8px 26px 28px; }
+      .phdr { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+      .phdr .ttl { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+      .phdr .tile { width: 38px; height: 38px; border-radius: 10px; background: var(--m-tint); color: var(--m); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; transition: background .3s ease, color .3s ease; }
+      .phdr .tile svg { width: 20px; height: 20px; }
+      .phdr h3 { margin: 0; font-weight: 500; font-size: 24px; letter-spacing: -0.02em; }
+      .phdr .pd { margin: 3px 0 0; font-size: 13px; color: var(--t2); }
       .pbtn {
         display: inline-flex; align-items: center; gap: 7px; font-family: inherit; font-weight: 500;
         font-size: 13px; color: #fff; background: var(--m); border: none; border-radius: 9px;
@@ -166,51 +185,63 @@
       }
       .pbtn svg { width: 14px; height: 14px; }
 
-      .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-      .stat { background: #fff; border: 1px solid #eeeef0; border-radius: 12px; padding: 14px 15px; }
-      .stat .sl { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); font-weight: 500; }
-      .stat .sv { margin-top: 6px; font-weight: 600; font-size: 26px; letter-spacing: -0.02em; }
-      .stat .ss { margin-top: 3px; font-size: 12px; color: var(--muted); }
+      .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+      .stat { background: var(--subtle); border-radius: 10px; padding: 14px 15px; }
+      .stat .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+      .stat .sl { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--t3); font-weight: 500; }
+      .stat .si { width: 26px; height: 26px; border-radius: 7px; background: var(--m-tint); color: var(--m); display: flex; align-items: center; justify-content: center; transition: background .3s ease, color .3s ease; }
+      .stat .si svg { width: 14px; height: 14px; }
+      .stat .sv { font-weight: 500; font-size: 25px; letter-spacing: -0.02em; }
+      .stat .sd { margin-top: 3px; font-size: 12px; }
+      .stat .sd.up { color: var(--success); }
+      .stat .sd.flat { color: var(--t3); }
 
-      .listcard { background: #fff; border: 1px solid #eeeef0; border-radius: 13px; overflow: hidden; }
-      .listcard .lh { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid #f3f3f5; }
-      .listcard .lh .lt { font-weight: 500; font-size: 13.5px; }
-      .listcard .lh .lv { font-size: 12px; color: var(--m-text); transition: color .3s ease; }
-      .lrow { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #f6f6f7; }
-      .lrow:last-child { border-bottom: none; }
-      .lrow .thumb { width: 30px; height: 30px; border-radius: 8px; background: var(--m-tint); flex-shrink: 0; transition: background .3s ease; }
-      .lrow .lc { min-width: 0; flex: 1; }
-      .lrow .lc .lcn { font-weight: 500; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .lrow .lc .lcm { font-size: 12px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .badge { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 9999px; white-space: nowrap; flex-shrink: 0; }
+      .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+      .chart { background: var(--surface); border: 1px solid #ededf0; border-radius: 11px; padding: 14px 16px 10px; }
+      .chart .ch-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+      .chart .ch-t { font-size: 13.5px; font-weight: 500; }
+      .chart .ch-s { font-size: 11.5px; color: var(--t3); margin-top: 1px; }
+      .smp { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 9999px; background: #fef3c7; color: #b45309; white-space: nowrap; }
+      .chart .ch-plot { height: 92px; }
+      .chart .ch-plot svg { width: 100%; height: 92px; display: block; }
 
-      /* ── module grid ────────────────────────────────────── */
+      .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .scard { background: var(--surface); border: 1px solid #ededf0; border-top: none; border-radius: 11px; overflow: hidden; display: flex; flex-direction: column; }
+      .scard .stripe { height: 3px; background: var(--m); transition: background .3s ease; }
+      .scard .sc-in { padding: 13px 15px 14px; display: flex; flex-direction: column; flex: 1; }
+      .scard .sc-d { font-size: 11.5px; color: var(--t3); }
+      .scard .sc-n { margin-top: 2px; font-weight: 500; font-size: 15px; letter-spacing: -0.01em; }
+      .scard .sc-foot { margin-top: 14px; display: flex; align-items: center; justify-content: space-between; }
+      .scard .badge { font-size: 10.5px; font-weight: 500; padding: 2px 8px; border-radius: 9999px; background: var(--m-tint); color: var(--m-text); transition: background .3s ease, color .3s ease; }
+      .scard .open { font-size: 12px; font-weight: 500; color: #fff; background: var(--m); border-radius: 7px; padding: 5px 12px; transition: background .3s ease; }
+
+      /* ── section scaffolding ────────────────────────────── */
       .section { padding: 92px 0; }
       .section.tint { background: #fafafa; }
       .sec-head { text-align: center; max-width: 680px; margin: 0 auto 52px; }
-      .sec-head h2 { margin: 0; font-weight: 600; font-size: 46px; line-height: 48px; letter-spacing: -0.03em; }
+      .sec-head h2 { margin: 0; font-weight: 500; font-size: 46px; line-height: 48px; letter-spacing: -0.03em; }
       .sec-head p { margin: 18px auto 0; max-width: 540px; font-size: 17px; line-height: 27px; color: var(--muted); }
 
+      /* module grid */
       .mgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-      .mcard { background: #fff; border: 1px solid #ececef; border-radius: 14px; padding: 0; overflow: hidden; transition: transform .1s ease, box-shadow .15s ease; cursor: default; }
+      .mcard { background: #fff; border: 1px solid #ececef; border-radius: 14px; overflow: hidden; transition: transform .1s ease, box-shadow .15s ease; }
       .mcard:hover { transform: translateY(-3px); box-shadow: 0 16px 40px -18px rgba(20,20,40,0.22); }
-      .mcard .stripe { height: 3px; }
+      .mcard .mstripe { height: 3px; }
       .mcard .mc-in { padding: 18px 18px 20px; }
       .mcard .mc-top { display: flex; align-items: center; gap: 10px; }
       .mcard .mc-ico { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
       .mcard .mc-ico svg { width: 18px; height: 18px; }
-      .mcard h4 { margin: 0; font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
+      .mcard h4 { margin: 0; font-weight: 500; font-size: 16px; letter-spacing: -0.01em; }
       .mcard .mc-price { margin-left: auto; font-size: 12px; color: var(--faint); }
       .mcard .mc-desc { margin: 13px 0 0; font-size: 13.5px; line-height: 20px; color: var(--muted); }
 
-      /* ── surfaces ───────────────────────────────────────── */
+      /* surfaces */
       .sgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-      .scard { background: #fff; border: 1px solid #ececef; border-radius: 16px; overflow: hidden; }
-      .scard .win { height: 168px; padding: 16px; border-bottom: 1px solid #f1f1f3; position: relative; overflow: hidden; }
-      .scard .scopy { padding: 18px 20px 22px; }
-      .scard .scopy h4 { margin: 0; font-weight: 600; font-size: 17px; letter-spacing: -0.01em; }
-      .scard .scopy p { margin: 8px 0 0; font-size: 13.5px; line-height: 20px; color: var(--muted); }
-      /* surface mini-mocks */
+      .surf { background: #fff; border: 1px solid #ececef; border-radius: 16px; overflow: hidden; }
+      .surf .win { height: 168px; padding: 16px; border-bottom: 1px solid #f1f1f3; overflow: hidden; }
+      .surf .scopy { padding: 18px 20px 22px; }
+      .surf .scopy h4 { margin: 0; font-weight: 500; font-size: 17px; letter-spacing: -0.01em; }
+      .surf .scopy p { margin: 8px 0 0; font-size: 13.5px; line-height: 20px; color: var(--muted); }
       .win-dash { background: #fcfcfd; display: flex; flex-direction: column; gap: 8px; }
       .win-dash .r { display: flex; gap: 8px; }
       .win-dash .b { height: 30px; border-radius: 7px; background: #fff; border: 1px solid #eee; flex: 1; }
@@ -223,41 +254,37 @@
       .win-site .sg { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
       .win-site .sg div { height: 40px; border-radius: 7px; background: #f4f4f5; }
 
-      /* ── spine band ─────────────────────────────────────── */
+      /* spine */
       .spine { display: flex; gap: 60px; align-items: center; flex-wrap: wrap; }
       .spine .copy { flex: 1; min-width: 300px; }
-      .spine .copy h2 { margin: 0; font-weight: 600; font-size: 42px; line-height: 45px; letter-spacing: -0.03em; }
+      .spine .copy h2 { margin: 0; font-weight: 500; font-size: 42px; line-height: 45px; letter-spacing: -0.03em; }
       .spine .copy p { margin: 18px 0 0; max-width: 440px; font-size: 16.5px; line-height: 26px; color: var(--muted); }
       .record { flex: 1; min-width: 300px; background: #fff; border: 1px solid #e9e9ec; border-radius: 16px; box-shadow: 0 16px 44px -22px rgba(20,20,40,0.18); overflow: hidden; }
       .record .rh { display: flex; align-items: center; gap: 11px; padding: 16px 20px; border-bottom: 1px solid #f1f1f3; }
       .record .rh .av { width: 36px; height: 36px; border-radius: 9999px; background: linear-gradient(135deg, #eef2ff, #fdf2f8); flex-shrink: 0; }
-      .record .rh .nm { font-weight: 600; font-size: 15px; }
+      .record .rh .nm { font-weight: 500; font-size: 15px; }
       .record .rh .mt { font-size: 12.5px; color: var(--faint); }
       .record .rr { display: flex; align-items: center; gap: 11px; padding: 12px 20px; border-bottom: 1px solid #f7f7f8; font-size: 13.5px; color: var(--soft); }
       .record .rr:last-child { border-bottom: none; }
       .record .rr .d { width: 8px; height: 8px; border-radius: 9999px; flex-shrink: 0; }
       .record .rr .src { margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint); }
 
-      /* ── stats band ─────────────────────────────────────── */
+      /* stats band */
       .nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
       .num { text-align: center; }
-      .num .n { font-weight: 600; font-size: 48px; letter-spacing: -0.03em; }
+      .num .n { font-weight: 500; font-size: 48px; letter-spacing: -0.03em; }
       .num .l { margin-top: 8px; font-size: 14px; line-height: 21px; color: var(--muted); }
 
-      /* ── final cta ──────────────────────────────────────── */
+      /* cta */
       .cta-wrap { padding: 40px 0 104px; }
-      .cta {
-        background: var(--indigo); border-radius: 26px; padding: 72px 40px; text-align: center;
-        background-image: radial-gradient(120% 120% at 0% 0%, rgba(255,255,255,0.16), rgba(255,255,255,0) 55%);
-      }
-      .cta h2 { margin: 0 auto; max-width: 640px; color: #fff; font-weight: 600; font-size: 50px; line-height: 52px; letter-spacing: -0.03em; }
+      .cta { background: var(--indigo); border-radius: 26px; padding: 72px 40px; text-align: center; background-image: radial-gradient(120% 120% at 0% 0%, rgba(255,255,255,0.16), rgba(255,255,255,0) 55%); }
+      .cta h2 { margin: 0 auto; max-width: 640px; color: #fff; font-weight: 500; font-size: 50px; line-height: 52px; letter-spacing: -0.03em; }
       .cta p { margin: 18px auto 0; max-width: 460px; color: rgba(255,255,255,0.82); font-size: 17px; line-height: 26px; }
       .cta .form { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 30px auto 0; max-width: 460px; flex-wrap: wrap; }
       .cta .form input { flex: 1; min-width: 220px; height: 52px; padding: 0 18px; font-family: inherit; font-size: 15px; border: none; border-radius: 11px; background: rgba(255,255,255,0.95); outline: none; }
       .cta .dots { display: flex; gap: 7px; justify-content: center; margin-top: 28px; }
       .cta .dots span { width: 8px; height: 8px; border-radius: 9999px; }
 
-      /* ── footer ─────────────────────────────────────────── */
       footer { border-top: 1px solid var(--line); padding: 34px 0; }
       footer .wrap-wide { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
       footer .dots { display: flex; gap: 7px; }
@@ -276,7 +303,7 @@
         .hero .sub { font-size: 17px; }
         .board { grid-template-columns: 1fr; min-height: 0; }
         .rail, .panel { display: none; }
-        .stats { grid-template-columns: 1fr; }
+        .stats, .cards { grid-template-columns: 1fr; }
         .sec-head h2 { font-size: 32px; line-height: 34px; }
         .mgrid { grid-template-columns: 1fr; }
         .nums { grid-template-columns: 1fr; gap: 32px; }
@@ -326,12 +353,15 @@
     <section class="stage">
       <div class="wrap-wide">
         <div class="board" id="board">
-          <div class="rail" id="rail">
-            <div class="mark">S<span>x</span></div>
-            <!-- rail buttons injected -->
-          </div>
+          <div class="rail" id="rail"></div>
           <div class="panel" id="panel"></div>
-          <div class="main" id="main"></div>
+          <div class="main">
+            <div class="mbar">
+              <div class="crumb" id="crumb"></div>
+              <div class="acts" id="acts"></div>
+            </div>
+            <div class="mbody" id="mbody"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -355,7 +385,7 @@
           <p>The same records, the same modules — managed, designed, and published from surfaces that always agree.</p>
         </div>
         <div class="sgrid">
-          <div class="scard">
+          <div class="surf">
             <div class="win win-dash">
               <div class="r">
                 <div class="b t" style="border-top-color:#f97316"></div>
@@ -363,16 +393,14 @@
                 <div class="b t" style="border-top-color:#14b8a6"></div>
               </div>
               <div class="wide"></div>
-              <div class="r">
-                <div class="b"></div><div class="b"></div>
-              </div>
+              <div class="r"><div class="b"></div><div class="b"></div></div>
             </div>
             <div class="scopy">
               <h4>Dashboard</h4>
               <p>The back office. Products, customers, orders, posts, broadcasts — every module's data, one shell, color-coded.</p>
             </div>
           </div>
-          <div class="scard">
+          <div class="surf">
             <div class="win win-build">
               <div class="blk" style="height:46px;background:linear-gradient(120deg,#eef2ff,#e0e7ff);border:1px solid #e0e0ef"></div>
               <div class="blk" style="height:30px;background:#fff7ed;border:1px solid #fde7cf"></div>
@@ -384,7 +412,7 @@
               <p>Drag-and-drop every page, layout, and email. Brand-governed blocks, your content bound live — no developer required to ship a change.</p>
             </div>
           </div>
-          <div class="scard">
+          <div class="surf">
             <div class="win win-site">
               <div class="sh"></div>
               <div class="sg"><div></div><div></div><div></div></div>
@@ -467,182 +495,231 @@
     </footer>
 
     <script>
-      // ── icon set (inline, stroke=currentColor) ──────────────
-      const I = {
-        builder: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>',
-        commerce: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>',
-        cms: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/>',
-        crm: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-        email: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/>',
-        b2b: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
-        dropship: '<path d="M1 3h13v13H1z"/><path d="M14 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
-        ai: '<path d="M12 2.5 14 9l6.5 2-6.5 2-2 6.5-2-6.5L4 11l6.5-2z"/>'
+      // ── icon library (lucide-style, stroke=currentColor) ────
+      const P = {
+        boxes: '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="8" y="13" width="8" height="8" rx="1.5"/>',
+        cart: '<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h2l2.6 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H5.1"/>',
+        filetext: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>',
+        users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+        send: '<path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4Z"/>',
+        building2: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4M10 10h4M10 14h4M10 18h4"/>',
+        truck: '<path d="M14 18V6a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h1"/><path d="M14 9h4l3 3v5a1 1 0 0 1-1 1h-1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+        sparkles: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>',
+        file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+        tag: '<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8 8a2 2 0 0 0 2.8 0l7.2-7.2a2 2 0 0 0 0-2.8z"/><circle cx="7" cy="7" r="1.3"/>',
+        percent: '<line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+        package: '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+        globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+        layers: '<path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/>',
+        receipt: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/>',
+        filter: '<polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"/>',
+        barchart: '<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>',
+        gauge: '<path d="m12 14 4-4"/><path d="M3.3 19a10 10 0 1 1 17.3 0"/>',
+        eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+        settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+        component: '<path d="M5.5 8.5 9 12l-3.5 3.5L2 12z"/><path d="M12 2l3.5 3.5L12 9 8.5 5.5z"/><path d="M18.5 8.5 22 12l-3.5 3.5L15 12z"/><path d="M12 15l3.5 3.5L12 22l-3.5-3.5z"/>',
+        home: '<path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+        search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+        plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+        chev: '<polyline points="6 9 12 15 18 9"/>',
+        clock: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>',
+        moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>',
+        more: '<circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/>',
       };
-      function svg(key, cls) {
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + I[key] + '</svg>';
+      const sw = (k, w) =>
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 1.8) + '" stroke-linecap="round" stroke-linejoin="round">' + P[k] + '</svg>';
+
+      // ── overview charts (recolor via color:var(--m)) ────────
+      const AREA =
+        '<svg viewBox="0 0 320 100" preserveAspectRatio="none" fill="none" style="color:var(--m)">' +
+        '<path d="M0,78 C25,70 40,58 60,62 C82,66 92,82 112,72 C140,58 150,40 178,46 C205,52 215,66 242,42 C272,16 296,28 320,24 L320,100 L0,100 Z" fill="currentColor" fill-opacity="0.12" stroke="none"/>' +
+        '<path d="M0,78 C25,70 40,58 60,62 C82,66 92,82 112,72 C140,58 150,40 178,46 C205,52 215,66 242,42 C272,16 296,28 320,24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>';
+      const BARH = [42, 55, 36, 62, 74, 58, 48, 68, 80, 64, 86, 72];
+      function barsSVG() {
+        const w = 320, h = 100, n = BARH.length, gap = 9, bw = (w - gap * (n - 1)) / n;
+        const rects = BARH.map((v, i) => {
+          const bh = (v / 90) * h, x = i * (bw + gap), y = h - bh;
+          return '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="1.5" fill="currentColor"/>';
+        }).join('');
+        return '<svg viewBox="0 0 320 100" preserveAspectRatio="none" style="color:var(--m)">' + rects + '</svg>';
       }
-
-      // status badge palette
-      const ST = {
-        green: { bg: '#ecfdf5', fg: '#047857' },
-        amber: { bg: '#fffbeb', fg: '#b45309' },
-        gray:  { bg: '#f4f4f5', fg: '#52525b' },
-        cyan:  { bg: '#ecfeff', fg: '#0e7490' },
-        sky:   { bg: '#f0f9ff', fg: '#0369a1' },
+      // per-module chart captions (first = area, second = bars)
+      const CHARTS = {
+        builder: [['Page views', 'Across properties, 14d'], ['Publishes', 'Changes shipped, 14d']],
+        commerce: [['Revenue', 'Net revenue, last 14 days'], ['Orders', 'Orders placed, last 14 days']],
+        cms: [['Readers', 'Unique readers, last 14 days'], ['Posts', 'Published, last 14 days']],
+        crm: [['New customers', 'Added, last 14 days'], ['Deals', 'Won, last 14 days']],
+        email: [['Opens', 'Across sends, last 14 days'], ['Sends', 'Emails sent, last 14 days']],
+        b2b: [['Quote value', 'Issued, last 14 days'], ['Purchase orders', 'Received, last 14 days']],
+        dropship: [['Routed orders', 'Auto-routed, last 14 days'], ['SKU syncs', 'Updates, last 14 days']],
+        ai: [['MCP calls', 'Tool calls, last 14 days'], ['Actions', 'Completed, last 14 days']],
       };
 
-      // ── module data (order = rail order) ────────────────────
+      // ── module data (rail order; real icons, labels, sections) ──
       const MODULES = [
-        { key: 'builder', name: 'Sites', tag: 'Site builder', color: '#6366f1', tint: '#eef2ff', text: '#4338ca', price: '$49',
-          desc: 'Pages, layouts, and brand — drag-and-drop, multi-property.',
-          sections: ['Pages','Layouts','Components','Brand','Theme'], active: 0,
-          title: 'Pages', sub: '2 properties · one tenant', primary: 'New page',
-          stats: [{l:'Published',v:'24',s:'3 in draft'},{l:'Avg load',v:'<50ms',s:'edge cached'},{l:'Properties',v:'2',s:'one back office'}],
-          list: 'Pages',
-          rows: [{t:'Home', m:'/ · live', st:'Live', sc:'green'},{t:'Winter Lookbook', m:'/lookbook · draft', st:'Draft', sc:'gray'},{t:'About', m:'/about · live', st:'Live', sc:'green'}] },
-        { key: 'commerce', name: 'Commerce', tag: 'Commerce', color: '#f97316', tint: '#fff7ed', text: '#c2410c', price: '$49',
-          desc: 'Products, variants, orders, pricing, and discounts.',
-          sections: ['Overview','Products','Orders','Pricing','Discounts'], active: 1,
-          title: 'Products', sub: 'Last 30 days', primary: 'New product',
-          stats: [{l:'Net revenue',v:'$48,291',s:'284 orders'},{l:'Conversion',v:'3.2%',s:'1,200 sessions'},{l:'Avg order',v:'$170',s:'+8% MoM'}],
-          list: 'Products',
-          rows: [{t:'Trail Hoodie', m:'Apparel · 3 variants', st:'Active', sc:'green'},{t:'Wool Beanie', m:'Apparel · 1 variant', st:'Draft', sc:'gray'},{t:'Canvas Tote', m:'Bags · 2 variants', st:'Active', sc:'green'}] },
-        { key: 'cms', name: 'Content', tag: 'CMS', color: '#14b8a6', tint: '#f0fdfa', text: '#0f766e', price: '$49',
-          desc: 'Posts, pages, content types, media, and SEO.',
-          sections: ['Posts','Pages','Types','Media','SEO'], active: 0,
-          title: 'Posts', sub: 'Field notes · 12 published', primary: 'New post',
-          stats: [{l:'Readers 30d',v:'2,480',s:'+38%'},{l:'Avg SEO',v:'94',s:'12 posts'},{l:'Subscribers',v:'+38',s:'this week'}],
-          list: 'Posts',
-          rows: [{t:'The winter teardown', m:'Field notes · published', st:'Published', sc:'green'},{t:'Sourcing diesel parts', m:'Guides · in review', st:'In review', sc:'amber'},{t:'Shop update', m:'News · draft', st:'Draft', sc:'gray'}] },
-        { key: 'crm', name: 'CRM', tag: 'CRM', color: '#06b6d4', tint: '#ecfeff', text: '#0e7490', price: '$49',
-          desc: 'Customers, segments, deals, and the unified inbox.',
-          sections: ['Customers','Segments','Deals','Activities','Inbox'], active: 0,
-          title: 'Customers', sub: '1,204 records', primary: 'New customer',
-          stats: [{l:'Customers',v:'1,204',s:'+46 this wk'},{l:'Segments',v:'8',s:'materialized'},{l:'Open deals',v:'12',s:'$84k pipeline'}],
-          list: 'Customers',
-          rows: [{t:'Dana Ruiz', m:'High-value · at-risk', st:'VIP', sc:'cyan'},{t:'Gillett Diesel', m:'B2B · Net-30', st:'Account', sc:'gray'},{t:'Marco Vidal', m:'New · 1 order', st:'New', sc:'green'}] },
-        { key: 'email', name: 'Email', tag: 'Email', color: '#0ea5e9', tint: '#f0f9ff', text: '#0369a1', price: '$29',
-          desc: 'Broadcasts, automations, audiences, and templates.',
-          sections: ['Broadcasts','Automations','Audiences','Templates','Domains'], active: 0,
-          title: 'Broadcasts', sub: 'Last 30 days', primary: 'New broadcast',
-          stats: [{l:'Sent 30d',v:'18,420',s:'4 broadcasts'},{l:'Open rate',v:'41%',s:'+3 pts'},{l:'Click rate',v:'6.2%',s:'2.6% avg'}],
-          list: 'Broadcasts',
-          rows: [{t:'Winter restock', m:'Sent · 4,210 recipients', st:'Sent', sc:'green'},{t:'Weekly digest', m:'Scheduled · Fri 9am', st:'Scheduled', sc:'sky'},{t:'Welcome series', m:'Automation · live', st:'Live', sc:'green'}] },
-        { key: 'b2b', name: 'B2B', tag: 'B2B / Wholesale', color: '#475569', tint: '#f1f5f9', text: '#334155', price: '$99',
-          desc: 'Accounts, price lists, quotes, and net terms.',
-          sections: ['Accounts','Price lists','Quotes','Net terms','Approvals'], active: 2,
-          title: 'Quotes', sub: '9 open · $42k', primary: 'New quote',
-          stats: [{l:'Open quotes',v:'9',s:'$42k'},{l:'Accounts',v:'37',s:'on Net-30'},{l:'Avg PO',v:'$576',s:'12 line items'}],
-          list: 'Quotes & POs',
-          rows: [{t:'PO GD-2026-0488', m:'Gillett Diesel · Net-30', st:'Approved', sc:'green'},{t:'Quote #2231', m:'Valley Fleet · pending', st:'Pending', sc:'amber'},{t:'PO #2229', m:'Harbor Co · approved', st:'Approved', sc:'green'}] },
-        { key: 'dropship', name: 'Dropship', tag: 'Dropship', color: '#10b981', tint: '#ecfdf5', text: '#047857', price: '$29',
-          desc: 'Suppliers, catalog sync, order routing.',
-          sections: ['Suppliers','Catalog','Routing','Orders','Sync'], active: 0,
-          title: 'Suppliers', sub: '6 connected · 3 regions', primary: 'Add supplier',
-          stats: [{l:'Suppliers',v:'6',s:'3 regions'},{l:'SKUs synced',v:'12,840',s:'hourly'},{l:'Auto-routed',v:'98%',s:'of orders'}],
-          list: 'Suppliers',
-          rows: [{t:'Northstar Parts', m:'Auto-sync · hourly', st:'Connected', sc:'green'},{t:'Pacific Supply', m:'Manual · daily', st:'Connected', sc:'green'},{t:'Inland Goods', m:'Setup · pending', st:'Pending', sc:'amber'}] },
-        { key: 'ai', name: 'AI', tag: 'AI / MCP', color: '#ec4899', tint: '#fdf2f8', text: '#9d174d', price: '$49',
-          desc: 'An MCP server over every module — ask in plain language.',
-          sections: ['Assistant','MCP tools','Workflows','Knowledge','Logs'], active: 1,
-          title: 'MCP tools', sub: '24 live · 4 clients', primary: 'New tool',
-          stats: [{l:'Calls 30d',v:'3,120',s:'via MCP'},{l:'Tools live',v:'24',s:'all modules'},{l:'Clients',v:'4',s:'Claude, GPT…'}],
-          list: 'MCP tools',
-          rows: [{t:'create_quote', m:'B2B · enabled', st:'Live', sc:'green'},{t:'search_products', m:'Commerce · enabled', st:'Live', sc:'green'},{t:'draft_email', m:'Email · enabled', st:'Live', sc:'green'}] },
+        { key: 'builder', name: 'Builder', icon: 'boxes', color: '#6366f1', tint: '#eef2ff', text: '#4338ca', price: '$49',
+          gridDesc: 'Themes, layouts, pages, visual editor',
+          title: 'Builder', desc: '2 properties · last 14 days', primary: 'New page',
+          sections: [['Overview','boxes'],['Brand','eye'],['Site','globe'],['Page','file'],['Email','send'],['Components','component']],
+          stats: [['Published','24','+3 this week','up','file'],['Avg load','<50ms','edge cached','flat','gauge'],['Properties','2','one back office','flat','boxes']],
+          cards: [['Drafts & live, per property','Pages'],['Header, footer, layouts','Site'],['Logo, colors, type','Brand']] },
+        { key: 'commerce', name: 'Commerce', icon: 'cart', color: '#f97316', tint: '#fff7ed', text: '#c2410c', price: '$49',
+          gridDesc: 'Products, orders, checkout',
+          title: 'Commerce', desc: 'Last 30 days', primary: 'New product',
+          sections: [['Overview','cart'],['Products','package'],['Categories','layers'],['Pricing','tag'],['Discounts','percent'],['Inventory','boxes']],
+          stats: [['Net revenue','$48,291','+8% MoM','up','receipt'],['Orders','284','+12 today','up','package'],['Conversion','3.2%','+0.4 pt','up','percent']],
+          cards: [['Variants, images, SEO','Products'],['Fulfilment & returns','Orders'],['Price lists, B2B tiers','Pricing']] },
+        { key: 'cms', name: 'CMS', icon: 'filetext', color: '#14b8a6', tint: '#f0fdfa', text: '#0f766e', price: '$49',
+          gridDesc: 'Pages, blog posts, media library',
+          title: 'CMS', desc: 'Last 30 days', primary: 'New post',
+          sections: [['Overview','filetext'],['Content','filetext'],['Content types','layers'],['Media','file'],['Authors','users'],['Taxonomy','tag']],
+          stats: [['Readers','2,480','+38%','up','eye'],['Avg SEO','94','12 posts','flat','gauge'],['Subscribers','+38','this week','up','users']],
+          cards: [['Posts, pages, entries','Content'],['Images & files','Media'],['Model your fields','Content types']] },
+        { key: 'crm', name: 'CRM', icon: 'users', color: '#06b6d4', tint: '#ecfeff', text: '#0e7490', price: '$49',
+          gridDesc: 'Customers, pipeline, automation',
+          title: 'CRM', desc: '1,204 customers', primary: 'New customer',
+          sections: [['Overview','users'],['Customers','users'],['B2B accounts','building2'],['Deals','receipt'],['Quotes','file'],['Segments','filter']],
+          stats: [['Customers','1,204','+46 this week','up','users'],['Open deals','12','$84k pipeline','flat','receipt'],['Segments','8','materialized','flat','filter']],
+          cards: [['People & companies','Customers'],['Pipeline & quotes','Deals'],['Materialized lists','Segments']] },
+        { key: 'email', name: 'Email', icon: 'send', color: '#0ea5e9', tint: '#f0f9ff', text: '#0369a1', price: '$29',
+          gridDesc: 'Templates, broadcasts, flows',
+          title: 'Email', desc: 'Last 30 days', primary: 'New broadcast',
+          sections: [['Overview','gauge'],['Broadcasts','send'],['Automations','filter'],['Templates','layers'],['Sending domains','globe'],['Settings','settings']],
+          stats: [['Sent','18,420','4 broadcasts','flat','send'],['Open rate','41%','+3 pts','up','eye'],['Click rate','6.2%','2.6% avg','flat','percent']],
+          cards: [['One-off sends','Broadcasts'],['Triggered flows','Automations'],['Reusable designs','Templates']] },
+        { key: 'b2b', name: 'B2B', icon: 'building2', color: '#475569', tint: '#f1f5f9', text: '#334155', price: '$99',
+          gridDesc: 'Wholesale, fleet, net terms',
+          title: 'B2B', desc: '37 accounts · Net-30', primary: 'New quote',
+          sections: [['Overview','building2'],['Accounts','building2'],['Price lists','tag'],['Quotes','file'],['Net terms','receipt'],['Approvals','eye']],
+          stats: [['Open quotes','9','$42k','flat','receipt'],['Accounts','37','on terms','flat','building2'],['Avg PO','$576','+12 items','up','package']],
+          cards: [['Companies & contacts','Accounts'],['Per-account pricing','Price lists'],['Invoices & approvals','Net terms']] },
+        { key: 'dropship', name: 'Dropship', icon: 'truck', color: '#10b981', tint: '#ecfdf5', text: '#047857', price: '$29',
+          gridDesc: 'Suppliers, routing, reconciliation',
+          title: 'Dropship', desc: '6 suppliers · 3 regions', primary: 'Add supplier',
+          sections: [['Overview','truck'],['Suppliers','truck'],['Catalog','package'],['Routing','filter'],['Orders','receipt'],['Sync','globe']],
+          stats: [['Suppliers','6','3 regions','flat','truck'],['SKUs synced','12,840','hourly','flat','package'],['Auto-routed','98%','of orders','up','percent']],
+          cards: [['Connections & sync','Suppliers'],['Imported SKUs','Catalog'],['Order assignment','Routing']] },
+        { key: 'ai', name: 'AI', icon: 'sparkles', color: '#ec4899', tint: '#fdf2f8', text: '#9d174d', price: '$49',
+          gridDesc: 'MCP server, copilots, agents',
+          title: 'AI', desc: '24 tools · 4 clients', primary: 'New tool',
+          sections: [['Overview','sparkles'],['Assistant','sparkles'],['MCP tools','component'],['Workflows','filter'],['Knowledge','filetext'],['Logs','barchart']],
+          stats: [['Calls','3,120','via MCP','flat','sparkles'],['Tools live','24','all modules','flat','component'],['Clients','4','Claude, GPT…','flat','users']],
+          cards: [['Ask in plain language','Assistant'],['Every module, exposed','MCP tools'],['Multi-step actions','Workflows']] },
       ];
-      const byKey = Object.fromEntries(MODULES.map(m => [m.key, m]));
+      const byKey = Object.fromEntries(MODULES.map((m) => [m.key, m]));
+      const TENANT = 'Korous Store';
       let current = 'commerce';
 
-      // ── render: hero chips ──────────────────────────────────
+      // ── hero chips ──────────────────────────────────────────
       const chips = document.getElementById('chips');
-      chips.innerHTML = MODULES.map(m =>
+      chips.innerHTML = MODULES.map((m) =>
         '<button class="chip" data-key="' + m.key + '" aria-pressed="false">' +
-          '<span class="ico" style="color:' + m.color + '">' + svg(m.key) + '</span>' + m.name +
+          '<span class="ci" style="color:' + m.color + '">' + sw(m.icon) + '</span>' + m.name +
         '</button>'
       ).join('');
-      chips.querySelectorAll('.chip').forEach(c =>
-        c.addEventListener('click', () => select(c.dataset.key)));
+      chips.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => select(c.dataset.key)));
 
-      // ── render: rail ────────────────────────────────────────
+      // ── rail (gray; active = module-tint pill) ──────────────
       const rail = document.getElementById('rail');
-      rail.insertAdjacentHTML('beforeend', MODULES.map(m =>
-        '<button class="railbtn" data-key="' + m.key + '" title="' + m.tag + '" style="--rc:' + m.color + '">' +
-          '<span class="ind"></span>' +
-          '<span style="color:' + m.color + ';display:flex">' + svg(m.key) + '</span>' +
-        '</button>'
-      ).join(''));
-      rail.querySelectorAll('.railbtn').forEach(b =>
-        b.addEventListener('click', () => select(b.dataset.key)));
+      function renderRail() {
+        rail.innerHTML =
+          '<div class="mark">S<span class="x">x</span></div>' +
+          '<button class="rtile" title="Search  ⌘K">' + sw('search') + '</button>' +
+          '<button class="rtile" title="Home">' + sw('home') + '</button>' +
+          '<div class="rdiv"></div>' +
+          MODULES.map((m) =>
+            '<button class="rtile' + (m.key === current ? ' on' : '') + '" data-key="' + m.key + '" title="' + m.name + '">' + sw(m.icon) + '</button>'
+          ).join('') +
+          '<div class="rdiv"></div>' +
+          '<div class="rspace"></div>' +
+          '<button class="rtile" title="SEO">' + sw('gauge') + '</button>' +
+          '<button class="rtile" title="Settings">' + sw('settings') + '</button>';
+        rail.querySelectorAll('.rtile[data-key]').forEach((b) => b.addEventListener('click', () => select(b.dataset.key)));
+      }
 
-      // ── render: module grid ─────────────────────────────────
-      document.getElementById('mgrid').innerHTML = MODULES.map(m =>
-        '<div class="mcard">' +
-          '<div class="stripe" style="background:' + m.color + '"></div>' +
-          '<div class="mc-in">' +
-            '<div class="mc-top">' +
-              '<span class="mc-ico" style="background:' + m.tint + ';color:' + m.color + '">' + svg(m.key) + '</span>' +
-              '<h4>' + m.tag + '</h4>' +
-              '<span class="mc-price">' + m.price + '/mo</span>' +
-            '</div>' +
-            '<p class="mc-desc">' + m.desc + '</p>' +
-          '</div>' +
-        '</div>'
-      ).join('');
-
-      // ── the live recolor + preview ──────────────────────────
       const panel = document.getElementById('panel');
-      const main = document.getElementById('main');
+      const crumb = document.getElementById('crumb');
+      const acts = document.getElementById('acts');
+      const mbody = document.getElementById('mbody');
 
       function select(key) {
         current = key;
         const m = byKey[key];
-        const root = document.documentElement;
-        root.style.setProperty('--m', m.color);
-        root.style.setProperty('--m-tint', m.tint);
-        root.style.setProperty('--m-text', m.text);
+        const root = document.documentElement.style;
+        root.setProperty('--m', m.color);
+        root.setProperty('--m-tint', m.tint);
+        root.setProperty('--m-text', m.text);
 
         // chips
-        chips.querySelectorAll('.chip').forEach(c => {
+        chips.querySelectorAll('.chip').forEach((c) => {
           const on = c.dataset.key === key;
           c.setAttribute('aria-pressed', on ? 'true' : 'false');
           c.style.background = on ? m.color : '#fff';
-          c.querySelector('.ico').style.color = on ? '#fff' : byKey[c.dataset.key].color;
+          c.querySelector('.ci').style.color = on ? '#fff' : byKey[c.dataset.key].color;
         });
-        // rail
-        rail.querySelectorAll('.railbtn').forEach(b =>
-          b.classList.toggle('on', b.dataset.key === key));
 
-        // panel
+        renderRail();
+
+        // panel: MODULE head + Overview + sections (active = Overview)
         panel.innerHTML =
-          '<div class="ph"><span class="dot"></span><span class="nm">' + m.tag + '</span></div>' +
+          '<div class="phead"><div class="ey">Module</div><div class="nm"><span class="dot"></span><span>' + m.title + '</span></div></div>' +
+          '<div class="plist">' +
           m.sections.map((s, i) =>
-            '<div class="srow' + (i === m.active ? ' act' : '') + '"><span class="sd"></span>' + s + '</div>'
+            '<div class="srow' + (i === 0 ? ' act' : '') + '">' + sw(s[1]) + '<span>' + s[0] + '</span></div>'
           ).join('') +
-          '<div class="pfoot"><span class="add">+ New ' + m.title.toLowerCase().replace(/s$/, '') + '</span></div>';
-
-        // main
-        main.innerHTML =
-          '<div class="mhead">' +
-            '<div class="ttl">' +
-              '<span class="tile">' + svg(m.key) + '</span>' +
-              '<div><h3>' + m.title + '</h3><p class="sub">' + m.sub + '</p></div>' +
-            '</div>' +
-            '<button class="pbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' + m.primary + '</button>' +
-          '</div>' +
-          '<div class="stats">' + m.stats.map(s =>
-            '<div class="stat"><div class="sl">' + s.l + '</div><div class="sv">' + s.v + '</div><div class="ss">' + s.s + '</div></div>'
-          ).join('') + '</div>' +
-          '<div class="listcard">' +
-            '<div class="lh"><span class="lt">' + m.list + '</span><span class="lv">View all →</span></div>' +
-            m.rows.map(r => {
-              const st = ST[r.sc];
-              return '<div class="lrow"><span class="thumb"></span>' +
-                '<div class="lc"><div class="lcn">' + r.t + '</div><div class="lcm">' + r.m + '</div></div>' +
-                '<span class="badge" style="background:' + st.bg + ';color:' + st.fg + '">' + r.st + '</span>' +
-              '</div>';
-            }).join('') +
           '</div>';
+
+        // breadcrumb + header actions
+        crumb.innerHTML =
+          '<span class="seg">' + TENANT + ' ' + sw('chev') + '</span>' +
+          '<span class="sl">/</span>' +
+          '<span class="seg mod">' + m.title + ' ' + sw('chev') + '</span>';
+        acts.innerHTML =
+          '<button class="ibtn" title="Last activity">' + sw('clock') + '</button>' +
+          '<button class="ibtn" title="More">' + sw('more') + '</button>' +
+          '<button class="ibtn" title="Theme">' + sw('moon') + '</button>' +
+          '<span class="avatar">BK</span>';
+
+        // body: PageHeader + stats + striped section cards
+        mbody.innerHTML =
+          '<div class="phdr">' +
+            '<div class="ttl">' +
+              '<span class="tile">' + sw(m.icon) + '</span>' +
+              '<div><h3>' + m.title + '</h3><p class="pd">' + m.desc + '</p></div>' +
+            '</div>' +
+            '<button class="pbtn">' + sw('plus', 2.2) + m.primary + '</button>' +
+          '</div>' +
+          '<div class="stats">' + m.stats.map((s) =>
+            '<div class="stat"><div class="top"><span class="sl">' + s[0] + '</span><span class="si">' + sw(s[4]) + '</span></div>' +
+            '<div class="sv">' + s[1] + '</div><div class="sd ' + s[3] + '">' + s[2] + '</div></div>'
+          ).join('') + '</div>' +
+          '<div class="charts">' +
+            '<div class="chart"><div class="ch-head"><div><div class="ch-t">' + CHARTS[key][0][0] + '</div><div class="ch-s">' + CHARTS[key][0][1] + '</div></div><span class="smp">Sample data</span></div><div class="ch-plot">' + AREA + '</div></div>' +
+            '<div class="chart"><div class="ch-head"><div><div class="ch-t">' + CHARTS[key][1][0] + '</div><div class="ch-s">' + CHARTS[key][1][1] + '</div></div><span class="smp">Sample data</span></div><div class="ch-plot">' + barsSVG() + '</div></div>' +
+          '</div>' +
+          '<div class="cards">' + m.cards.map((c) =>
+            '<div class="scard"><div class="stripe"></div><div class="sc-in">' +
+              '<div class="sc-d">' + c[0] + '</div><div class="sc-n">' + c[1] + '</div>' +
+              '<div class="sc-foot"><span class="badge">Active</span><span class="open">Open</span></div>' +
+            '</div></div>'
+          ).join('') + '</div>';
       }
+
+      // ── module grid ─────────────────────────────────────────
+      document.getElementById('mgrid').innerHTML = MODULES.map((m) =>
+        '<div class="mcard">' +
+          '<div class="mstripe" style="background:' + m.color + '"></div>' +
+          '<div class="mc-in">' +
+            '<div class="mc-top">' +
+              '<span class="mc-ico" style="background:' + m.tint + ';color:' + m.color + '">' + sw(m.icon) + '</span>' +
+              '<h4>' + m.name + '</h4>' +
+              '<span class="mc-price">' + m.price + '/mo</span>' +
+            '</div>' +
+            '<p class="mc-desc">' + m.gridDesc + '</p>' +
+          '</div>' +
+        '</div>'
+      ).join('');
 
       select(current);
     </script>

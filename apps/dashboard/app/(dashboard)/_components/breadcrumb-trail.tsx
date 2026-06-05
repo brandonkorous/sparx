@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -26,15 +26,21 @@ import {
   Text,
   type SparxModule,
 } from '@sparx/ui';
-import { Check, ChevronDown, LogOut, Settings as SettingsIcon } from 'lucide-react';
+import { Check, ChevronDown, Globe, LogOut, Settings as SettingsIcon } from 'lucide-react';
 import { findSectionByPath, getManifestForPath, moduleManifests } from '../_shell/registry';
+import type { Property } from '@/lib/sites';
+import { setActiveSite } from '../settings/sites/actions';
 
-// Workspace > Module > Section > Page
+// Workspace > Site > Module > Section > Page
 //
-// The trail has two interactive controls plus navigate-only links:
+// The trail has three interactive controls plus navigate-only links:
 //   - Workspace (segment 1): the tenant. Menu → settings + sign out. Switch /
 //     create land in Phase 2 (docs/32) once the org plugin is enabled.
-//   - Module (segment 2): a SPLIT control. The label links to the module home;
+//   - Site (segment 2, multi-site only): the active web PROPERTY (docs/49 §6).
+//     A switcher dropdown — pick which site you're editing (sets the
+//     active-site cookie via setActiveSite). Hidden entirely for single-site
+//     tenants, so the common case is unchanged.
+//   - Module (segment 3): a SPLIT control. The label links to the module home;
 //     an adjacent ▾ opens a switcher listing the OTHER modules the tenant has
 //     enabled (active one checked, accent-colored). This deviates from the
 //     original §4.2 (which listed the module's sections) — sections now live in
@@ -52,6 +58,7 @@ type Manifest = (typeof moduleManifests)[number];
 
 type TrailSegment =
   | { kind: 'tenant'; label: string; href: string }
+  | { kind: 'site'; label: string; href: string }
   | { kind: 'module'; label: string; href: string; moduleId: Exclude<SparxModule, 'platform'> }
   | { kind: 'section'; label: string; href: string };
 
@@ -60,14 +67,43 @@ export interface BreadcrumbTrailProps {
   /** Module manifest ids the tenant has activated. Filters the switcher so a
    *  tenant never sees a module it hasn't enabled. */
   enabledModules: readonly string[];
+  /** The tenant's web properties (sites) + which is active (docs/49). Drives the
+   *  Site segment; the switcher hides itself when the tenant has ≤1 site. */
+  sites?: Property[];
+  activePropertyId?: string | null;
 }
 
-export function BreadcrumbTrail({ tenantName, enabledModules }: BreadcrumbTrailProps) {
+/** The active site for the switcher: the cookie's id if it still names one of
+ *  the tenant's sites, else the primary (mirrors lib/sites.getActiveProperty). */
+function resolveActiveSite(
+  sites: Property[],
+  activePropertyId: string | null | undefined
+): Property | undefined {
+  const byCookie =
+    activePropertyId && sites.some((s) => s.id === activePropertyId)
+      ? sites.find((s) => s.id === activePropertyId)
+      : undefined;
+  return byCookie ?? sites.find((s) => s.isPrimary) ?? sites[0];
+}
+
+export function BreadcrumbTrail({
+  tenantName,
+  enabledModules,
+  sites = [],
+  activePropertyId = null,
+}: BreadcrumbTrailProps) {
   const pathname = usePathname() ?? '/';
   const manifest = getManifestForPath(pathname);
   const section = findSectionByPath(pathname);
 
+  // Only a multi-site tenant gets the Site segment (docs/49 §6 — single-site
+  // tenants see nothing new).
+  const activeSite = sites.length > 1 ? resolveActiveSite(sites, activePropertyId) : undefined;
+
   const segments: TrailSegment[] = [{ kind: 'tenant', label: tenantName, href: '/' }];
+  if (activeSite) {
+    segments.push({ kind: 'site', label: activeSite.name, href: '/settings/sites' });
+  }
   if (manifest) {
     segments.push({
       kind: 'module',
@@ -96,6 +132,8 @@ export function BreadcrumbTrail({ tenantName, enabledModules }: BreadcrumbTrailP
           segments={segments}
           manifest={manifest}
           switchableModules={switchableModules}
+          sites={sites}
+          activeSiteId={activeSite?.id ?? null}
         />
       </div>
       <div className="min-w-0 md:hidden">
@@ -104,6 +142,8 @@ export function BreadcrumbTrail({ tenantName, enabledModules }: BreadcrumbTrailP
           manifest={manifest}
           activeSectionHref={section?.href ?? null}
           switchableModules={switchableModules}
+          sites={sites}
+          activeSiteId={activeSite?.id ?? null}
         />
       </div>
     </>
@@ -116,10 +156,14 @@ function DesktopTrail({
   segments,
   manifest,
   switchableModules,
+  sites,
+  activeSiteId,
 }: {
   segments: TrailSegment[];
   manifest: Manifest | undefined;
   switchableModules: Manifest[];
+  sites: Property[];
+  activeSiteId: string | null;
 }) {
   const collapseState = useResponsiveCollapse(segments.length);
 
@@ -171,6 +215,8 @@ function DesktopTrail({
                   isLast={isLast}
                   manifest={manifest}
                   switchableModules={switchableModules}
+                  sites={sites}
+                  activeSiteId={activeSiteId}
                 />
               </BreadcrumbItem>
               {!isVisuallyLast && <BreadcrumbSeparator />}
@@ -187,14 +233,21 @@ function SegmentContent({
   isLast,
   manifest,
   switchableModules,
+  sites,
+  activeSiteId,
 }: {
   seg: TrailSegment;
   isLast: boolean;
   manifest: Manifest | undefined;
   switchableModules: Manifest[];
+  sites: Property[];
+  activeSiteId: string | null;
 }) {
   if (seg.kind === 'tenant') {
     return <WorkspaceSegment tenantName={seg.label} />;
+  }
+  if (seg.kind === 'site') {
+    return <SiteSegment sites={sites} activeSiteId={activeSiteId} />;
   }
   if (seg.kind === 'module' && manifest) {
     // Module stays interactive even when it is the current page — switching is
@@ -235,6 +288,56 @@ function WorkspaceSegment({ tenantName }: { tenantName: string }) {
           <Link href="/sign-out">
             <LogOut className="h-4 w-4" />
             Sign out
+          </Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+// Site control (docs/49 §6): the active web property + a switcher to change
+// which site you're editing. Selecting one sets the active-site cookie via the
+// shared server action, then refreshes so every site-scoped surface (the
+// Builder) reloads for the chosen site.
+function SiteSegment({ sites, activeSiteId }: { sites: Property[]; activeSiteId: string | null }) {
+  const router = useRouter();
+  const [pending, startTransition] = React.useTransition();
+  const active = sites.find((s) => s.id === activeSiteId) ?? sites[0];
+
+  const switchTo = (id: string) => {
+    if (id === active?.id) return;
+    startTransition(async () => {
+      await setActiveSite(id);
+      router.refresh();
+    });
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="sm" className="min-w-0" disabled={pending}>
+          <Globe className="h-3.5 w-3.5 shrink-0 opacity-70" />
+          <span className="min-w-0 truncate">{active?.name ?? 'Site'}</span>
+          <ChevronDown className="h-3.5 w-3.5 shrink-0" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-64">
+        <DropdownMenuLabel>Switch site</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {sites.map((s) => (
+          <DropdownMenuItem key={s.id} onSelect={() => switchTo(s.id)}>
+            <span className="min-w-0 flex-1 truncate">
+              {s.name}
+              {s.isPrimary ? ' · primary' : ''}
+            </span>
+            {s.id === active?.id ? <Check className="h-4 w-4 shrink-0" /> : null}
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/settings/sites">
+            <SettingsIcon className="h-4 w-4" />
+            Manage sites
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -324,19 +427,35 @@ function MobileSwitcher({
   manifest,
   activeSectionHref,
   switchableModules,
+  sites,
+  activeSiteId,
 }: {
   tenantName: string;
   manifest: Manifest | undefined;
   activeSectionHref: string | null;
   switchableModules: Manifest[];
+  sites: Property[];
+  activeSiteId: string | null;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
+  const [, startTransition] = React.useTransition();
 
   // Close the sheet after a navigation completes.
   React.useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  const activeSite = sites.find((s) => s.id === activeSiteId) ?? sites[0];
+  const switchSite = (id: string) => {
+    setOpen(false);
+    if (id === activeSite?.id) return;
+    startTransition(async () => {
+      await setActiveSite(id);
+      router.refresh();
+    });
+  };
 
   const chipLabel = manifest?.label ?? tenantName;
 
@@ -377,6 +496,26 @@ function MobileSwitcher({
               <SheetRow href="/sign-out" icon={<LogOut className="h-4 w-4" />}>
                 Sign out
               </SheetRow>
+
+              {sites.length > 1 ? (
+                <>
+                  <SheetGroupLabel>Site</SheetGroupLabel>
+                  {sites.map((s) => (
+                    <SheetRow
+                      key={s.id}
+                      onClick={() => switchSite(s.id)}
+                      active={s.id === activeSite?.id}
+                      icon={<Globe className="h-4 w-4" />}
+                    >
+                      {s.name}
+                      {s.isPrimary ? ' · primary' : ''}
+                    </SheetRow>
+                  ))}
+                  <SheetRow href="/settings/sites" icon={<SettingsIcon className="h-4 w-4" />}>
+                    Manage sites
+                  </SheetRow>
+                </>
+              ) : null}
 
               {switchableModules.length > 0 ? (
                 <>
@@ -438,15 +577,18 @@ function SheetGroupLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-// A full-width touch row. With `href` it navigates; without, it's a static
-// (current-context) row. `active` shows a trailing check.
+// A full-width touch row. With `href` it navigates; with `onClick` it runs an
+// action (e.g. switch site); with neither it's a static (current-context) row.
+// `active` shows a trailing check.
 function SheetRow({
   href,
+  onClick,
   icon,
   active = false,
   children,
 }: {
   href?: string;
+  onClick?: () => void;
   icon?: React.ReactNode;
   active?: boolean;
   children: React.ReactNode;
@@ -460,6 +602,14 @@ function SheetRow({
       {active ? <Check className="h-4 w-4 shrink-0" /> : null}
     </>
   );
+
+  if (onClick) {
+    return (
+      <Button variant="ghost" className="h-10 w-full justify-start gap-3 px-3" onClick={onClick}>
+        {body}
+      </Button>
+    );
+  }
 
   if (!href) {
     // Static current-context row (no nav). `flex-1` on the label pushes the

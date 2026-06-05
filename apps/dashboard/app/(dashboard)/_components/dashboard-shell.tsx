@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SidebarAppShell } from '@sparx/ui';
+import type { Property } from '@/lib/sites';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
 import type { UserPreferences } from '../_shell/preferences-types';
 import { BreadcrumbTrail } from './breadcrumb-trail';
@@ -22,6 +23,10 @@ export interface DashboardShellProps {
    *  contextual panel, mobile nav, and breadcrumb module switcher so a tenant
    *  never sees a module it hasn't activated. */
   enabledModules: readonly string[];
+  /** The tenant's web properties (sites) + the active one (docs/49) — feeds the
+   *  breadcrumb Site switcher. Empty / single-site → no Site segment. */
+  sites?: Property[];
+  activePropertyId?: string | null;
   favorites: FavoriteRow[];
   recents: RecentRow[];
   preferences: UserPreferences;
@@ -34,6 +39,8 @@ export function DashboardShell({
   user,
   tenantName,
   enabledModules,
+  sites = [],
+  activePropertyId = null,
   favorites,
   recents,
   preferences,
@@ -92,7 +99,14 @@ export function DashboardShell({
             recents={recents}
           />
         }
-        headerStart={<BreadcrumbTrail tenantName={tenantName} enabledModules={enabledModules} />}
+        headerStart={
+          <BreadcrumbTrail
+            tenantName={tenantName}
+            enabledModules={enabledModules}
+            sites={sites}
+            activePropertyId={activePropertyId}
+          />
+        }
         headerActions={
           <>
             <DashboardHeader favorites={favorites} preferences={preferences} />
