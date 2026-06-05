@@ -248,7 +248,12 @@ export async function installBlueprint(
             status: entry.status,
             body: body as Prisma.InputJsonValue,
             seoJson: seo as Prisma.InputJsonValue,
-            authorId: userId ?? null,
+            // `author_id` FKs to the CMS `authors` table, NOT `users` — the
+            // installing staff user is not a content author, so a template's
+            // entries have no author (the manifest doesn't model one yet).
+            // (recordRevision's authorId is a plain audit field, not FK-bound,
+            // so the installing user is fine to record there.)
+            authorId: null,
           },
         });
         await syncReferences(tx, tenantId, row.id, schema, body);
