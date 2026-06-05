@@ -170,8 +170,8 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
               </div>
             </form>
             <Text size="sm" variant="muted" className="mt-2">
-              A new site gets its own <Code>handle.sparx.zone</Code> address instantly. Connect your
-              own domain below once it’s created.
+              A new site gets its own <Code>handle.yourstore.sparx.zone</Code> address instantly.
+              Connect your own domain below once it’s created.
             </Text>
           </CardContent>
         )}

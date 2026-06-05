@@ -55,11 +55,23 @@ export function isZoneHost(host: string): boolean {
 
 /** The always-on subdomain for a property: the primary keeps the bare
  *  `<tenant>.sparx.zone` (backward-compatible with the pre-multi-site host the
- *  Caddy endpoint already authorized); additional sites get
- *  `<tenant>-<property>.sparx.zone`. Both are globally unique because tenant
- *  slugs are unique and property slugs are unique within a tenant. */
+ *  Caddy endpoint already authorized); additional sites get the HIERARCHICAL
+ *  `<property>.<tenant>.sparx.zone`. Both are globally unique because tenant
+ *  slugs are unique and property slugs are unique within a tenant.
+ *
+ *  Why hierarchical (not the old flat `<tenant>-<property>` join): the flat form
+ *  is AMBIGUOUS — `korous-store-brandonkorous` can't be split back into tenant +
+ *  property without a DB lookup (both slugs may contain hyphens), so a resolver
+ *  that loses the `domains`-table answer mis-reads the whole label as one tenant
+ *  and 404s a live site. `<property>.<tenant>` splits cleanly on the first dot.
+ *
+ *  DNS: needs no per-tenant record. `<tenant>.sparx.zone` is itself only a
+ *  `*.sparx.zone` wildcard match (not a real zone node), so by wildcard
+ *  closest-encloser synthesis the same wildcard also covers
+ *  `<property>.<tenant>.sparx.zone`. Per-host TLS is on-demand. The one rule that
+ *  keeps this working: never add an explicit `<tenant>.sparx.zone` DNS node. */
 export function mintZoneHost(tenantSlug: string, propertySlug: string, isPrimary: boolean): string {
-  return isPrimary ? `${tenantSlug}${ZONE_SUFFIX}` : `${tenantSlug}-${propertySlug}${ZONE_SUFFIX}`;
+  return isPrimary ? `${tenantSlug}${ZONE_SUFFIX}` : `${propertySlug}.${tenantSlug}${ZONE_SUFFIX}`;
 }
 
 /** A fresh DNS-control-proof token (the tenant adds it as a TXT record). */
@@ -175,6 +187,38 @@ export async function resolveSiteByHost(rawHost: string): Promise<SiteRoute | nu
             tenantSlug: tenant.slug,
             propertyId: primary.id,
             propertySlug: primary.slug,
+          };
+        }
+      }
+    }
+  }
+
+  // 3. Hierarchical `<property>.<tenant>.sparx.zone` fallback → that tenant's
+  //    named property. The additional-site analogue of path 2: survives a missing
+  //    subdomain row (pre-backfill, or the window while the host-scheme migration
+  //    rolls). Splits on the SINGLE remaining dot — exactly two labels — so it
+  //    never collides with the bare-tenant path (one label) or deeper hosts.
+  if (host.endsWith(ZONE_SUFFIX)) {
+    const labels = host.slice(0, -ZONE_SUFFIX.length).split('.');
+    if (labels.length === 2 && labels[0] && labels[1]) {
+      const [propertyLabel, tenantLabel] = labels;
+      const tenant = await prisma.tenant.findUnique({
+        where: { slug: tenantLabel },
+        select: { id: true, slug: true, status: true },
+      });
+      if (tenant?.status === 'active') {
+        const property = await withTenant({ tenantId: tenant.id }, (tx) =>
+          tx.property.findFirst({
+            where: { slug: propertyLabel, status: { not: 'archived' } },
+            select: { id: true, slug: true },
+          })
+        );
+        if (property) {
+          return {
+            tenantId: tenant.id,
+            tenantSlug: tenant.slug,
+            propertyId: property.id,
+            propertySlug: property.slug,
           };
         }
       }

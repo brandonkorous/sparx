@@ -128,28 +128,51 @@ export interface SiteRoute {
   propertySlug: string | null;
 }
 
+// The outcome of a host→site lookup. We distinguish a DEFINITIVE miss (the
+// domains table doesn't know this host → honour the 404) from a TRANSIENT error
+// (api unreachable / 5xx → safe to degrade to bare-subdomain parsing). Collapsing
+// the two — the old `null`-on-everything — is what silently 404'd live additional
+// sites: a `<prop>.<tenant>.sparx.zone` host that the resolver couldn't reach fell
+// through to naive label parsing, which can't split a multi-label host and
+// mis-read the whole label as one tenant slug.
+type HostLookup = { kind: 'route'; route: SiteRoute } | { kind: 'not_found' } | { kind: 'error' };
+
 // Ask api-rest to map a Host header → { tenantSlug, propertySlug } via the
 // non-RLS domains table (docs/49 §5). Covers connected custom domains AND
-// additional-site `<tenant>-<prop>.sparx.zone` subdomains, which a bare slug
-// extraction can't. Null on miss → the caller falls back to subdomain parsing.
-async function fetchSiteByHost(host: string): Promise<SiteRoute | null> {
+// additional-site `<prop>.<tenant>.sparx.zone` subdomains, which a bare slug
+// extraction can't.
+//
+// `cache: 'no-store'` on purpose: this is the multi-site routing keystone, and a
+// stale negative here silently 404s a live site (the `<prop>.<tenant>` host can't
+// be re-derived from the label, so there's no safe fallback). It's one cheap
+// indexed unique lookup per request — read it live rather than trust the data
+// cache, which a missing/stale `.next/cache` can otherwise poison.
+async function fetchSiteByHost(host: string): Promise<HostLookup> {
   try {
     const res = await fetch(`${BASE_URL}/v1/public/site-by-host?host=${encodeURIComponent(host)}`, {
-      next: { revalidate: 300, tags: [`site-host:${host}`] },
+      cache: 'no-store',
     });
+    // An unknown host is a definitive miss (api-rest 404s via notFound()).
+    if (res.status === 404) return { kind: 'not_found' };
+    if (!res.ok) return { kind: 'error' };
     const json = (await res.json()) as
       | { success: true; data: { tenantSlug: string; propertySlug: string } }
       | { success: false };
-    if (!res.ok || !json.success) return null;
-    return { tenantSlug: json.data.tenantSlug, propertySlug: json.data.propertySlug };
+    if (!json.success) return { kind: 'not_found' };
+    return {
+      kind: 'route',
+      route: { tenantSlug: json.data.tenantSlug, propertySlug: json.data.propertySlug },
+    };
   } catch {
-    return null;
+    // Network failure / JSON parse blow-up — transient, not a real miss.
+    return { kind: 'error' };
   }
 }
 
 // Resolves the active site (tenant + property). Order: dev-fallback headers
-// (set by the proxy from `?tenant=` / `?property=`), then the host→property
-// lookup, then bare `<tenant>.sparx.zone` subdomain parsing (primary site).
+// (set by the proxy from `?tenant=` / `?property=`), then the authoritative
+// host→property lookup. Bare `<tenant>.sparx.zone` parsing is ONLY a degraded
+// fallback for when that lookup errors — never used to override a definitive miss.
 export const resolveSiteRoute = cache(async (): Promise<SiteRoute | null> => {
   const hdrs = await headers();
   // The proxy stashes the dev-fallback slugs here so Server Components can read
@@ -159,12 +182,20 @@ export const resolveSiteRoute = cache(async (): Promise<SiteRoute | null> => {
     return { tenantSlug: devTenant, propertySlug: hdrs.get('x-property-slug') };
   }
   const host = hdrs.get('x-forwarded-host') ?? hdrs.get('host');
-  if (host) {
-    const byHost = await fetchSiteByHost(host);
-    if (byHost) return byHost;
-    const slug = slugFromHost(host);
-    if (slug) return { tenantSlug: slug, propertySlug: null };
-  }
+  if (!host) return null;
+
+  const byHost = await fetchSiteByHost(host);
+  if (byHost.kind === 'route') return byHost.route;
+  // A DEFINITIVE miss must NOT fall through to label parsing: `<prop>.<tenant>`
+  // (and the legacy `<tenant>-<prop>`) hosts would be mis-read as a single tenant
+  // slug and 404 a live site. Honour the not-found.
+  if (byHost.kind === 'not_found') return null;
+  // Transient error only: degrade to bare `<tenant>.sparx.zone` parsing, which is
+  // unambiguous for a single-label host. `slugFromHost` returns null for anything
+  // deeper, so multi-site hosts simply stay unresolved until api-rest is back —
+  // never resolved to a wrong tenant.
+  const slug = slugFromHost(host);
+  if (slug) return { tenantSlug: slug, propertySlug: null };
   return null;
 });
 

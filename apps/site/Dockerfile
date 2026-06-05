@@ -69,6 +69,13 @@ COPY --from=builder --chown=nextjs:nodejs /repo/apps/site/.next/static ./apps/si
 # default favicon fallback (favicon.ico, sparx-icon.svg) serves.
 COPY --from=builder --chown=nextjs:nodejs /repo/apps/site/public ./apps/site/public
 
+# Next's incremental data cache lives at <distDir>/cache (apps/site/.next/cache).
+# The standalone output ships .next/{standalone,static} but NOT a cache dir, so
+# at runtime the dir is absent — Next can't read/write the fetch Data Cache, which
+# silently degrades `next: { revalidate }` fetches. Create it writable up front.
+RUN mkdir -p ./apps/site/.next/cache \
+ && chown -R nextjs:nodejs ./apps/site/.next
+
 USER nextjs
 
 EXPOSE 3000

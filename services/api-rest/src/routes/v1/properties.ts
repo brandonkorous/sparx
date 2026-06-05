@@ -16,7 +16,7 @@
 // (docs/49 §2).
 //
 // HOST MODEL (docs/49 §5): every property has a STABLE per-site
-// `<tenant>-<slug>.sparx.zone` subdomain, minted at create time and never moved —
+// `<slug>.<tenant>.sparx.zone` subdomain, minted at create time and never moved —
 // a site's permanent address, so links to it never break. The bare
 // `<tenant>.sparx.zone` is a separate primary ALIAS that FOLLOWS the primary:
 // make-primary re-points it at the new primary and guarantees the demoted site
@@ -120,7 +120,7 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // Create an additional web property (site). Mints its always-on
-  // `<tenant>-<slug>.sparx.zone` subdomain so it's reachable immediately; the
+  // `<slug>.<tenant>.sparx.zone` subdomain so it's reachable immediately; the
   // Builder page tree + chrome are seeded lazily on first edit (listOrSeed).
   app.post('/v1/properties', async (request) => {
     const auth = requireRole(request, 'editor');
@@ -218,7 +218,7 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
   // Make this property the tenant's primary. Flips `is_primary` (dashboard
   // default + billing anchor) AND makes the bare `<tenant>.sparx.zone` host
   // follow the primary (docs/49 §5): it re-points to the new primary, and the
-  // demoted site is guaranteed its own stable `<tenant>-<slug>.sparx.zone`
+  // demoted site is guaranteed its own stable `<slug>.<tenant>.sparx.zone`
   // subdomain so it stays reachable. Per-site subdomains never move; only the
   // bare alias does. Custom/purchased domains are untouched. All in ONE tx so the
   // partial-unique `properties_one_primary_per_tenant` never sees two primaries.
