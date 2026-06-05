@@ -67,27 +67,43 @@ A manifest is one big object. Here's the skeleton with every top-level field; we
 
 ```ts
 const manifest = {
-  key: 'retail-store-blog',          // stable id, lowercase-with-hyphens
-  version: '0.1.0',                  // semver
-  name: 'Retail Store + Blog',       // shown on the card
+  key: 'retail-store-blog', // stable id, lowercase-with-hyphens
+  version: '0.1.0', // semver
+  name: 'Retail Store + Blog', // shown on the card
   summary: 'A clean DTC storefront with a small catalog and a journal…',
-  vertical: 'retail',                // retail | b2b | content | services
+  vertical: 'retail', // retail | b2b | content | services
   preview: '/blueprint-previews/retail-store-blog.png', // marketplace screenshot
   requiresModules: ['builder', 'commerce', 'cms', 'email'],
 
-  brand:    { /* identity: name, colors, fonts, logo */ },
-  theme:    { /* the named theme this template ships */ },
-  assets:   [ /* every image, declared once and referenced by id */ ],
+  brand: {
+    /* identity: name, colors, fonts, logo */
+  },
+  theme: {
+    /* the named theme this template ships */
+  },
+  assets: [
+    /* every image, declared once and referenced by id */
+  ],
 
-  contentTypes: [],                  // custom content types (usually none)
-  content:  [ /* blog posts, pages */ ],
+  contentTypes: [], // custom content types (usually none)
+  content: [
+    /* blog posts, pages */
+  ],
 
   commerce: { categories, collections, products },
 
-  components: [ /* reusable tenant components (optional) */ ],
-  layout:   { /* site chrome: header · Outlet · footer */ },
-  pages:    [ /* home, blog index, and templates for each record type */ ],
-  emails:   [ /* welcome, newsletter, … */ ],
+  components: [
+    /* reusable tenant components (optional) */
+  ],
+  layout: {
+    /* site chrome: header · Outlet · footer */
+  },
+  pages: [
+    /* home, blog index, and templates for each record type */
+  ],
+  emails: [
+    /* welcome, newsletter, … */
+  ],
 };
 
 export const retailStoreBlog: Blueprint = parseBlueprint(manifest);
@@ -97,14 +113,14 @@ export const retailStoreBlog: Blueprint = parseBlueprint(manifest);
 
 ### Identity fields
 
-| Field | What it is |
-| --- | --- |
-| `key` | Stable, unique id. Lowercase, hyphens. Never change it after release. |
-| `version` | Semver. Bump it when you change the template. |
-| `name` / `summary` | The title and one-paragraph pitch on the marketplace card. |
-| `vertical` | One of `retail`, `b2b`, `content`, `services`. Drives grouping/filtering. |
-| `preview` | A screenshot of the installed site (see [Preview image](#preview-image)). |
-| `requiresModules` | The modules the template needs. A tenant missing one is prompted to enable it. Options: `builder`, `commerce`, `cms`, `crm`, `email`, `b2b`, `dropship`, `ai`. |
+| Field              | What it is                                                                                                                                                     |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`              | Stable, unique id. Lowercase, hyphens. Never change it after release.                                                                                          |
+| `version`          | Semver. Bump it when you change the template.                                                                                                                  |
+| `name` / `summary` | The title and one-paragraph pitch on the marketplace card.                                                                                                     |
+| `vertical`         | One of `retail`, `b2b`, `content`, `services`. Drives grouping/filtering.                                                                                      |
+| `preview`          | A screenshot of the installed site (see [Preview image](#preview-image)).                                                                                      |
+| `requiresModules`  | The modules the template needs. A tenant missing one is prompted to enable it. Options: `builder`, `commerce`, `cms`, `crm`, `email`, `b2b`, `dropship`, `ai`. |
 
 ### Brand
 
@@ -127,7 +143,7 @@ brand: {
 
 ### Theme
 
-A template **ships its own named theme**. It layers a brand "look" over one of the built-in presets, so a single setting themes the entire stack — site *and* emails. Pick a `basePresetKey` whose personality fits, then override the brand tokens.
+A template **ships its own named theme**. It layers a brand "look" over one of the built-in presets, so a single setting themes the entire stack — site _and_ emails. Pick a `basePresetKey` whose personality fits, then override the brand tokens.
 
 ```ts
 theme: {
@@ -163,6 +179,7 @@ assets: [
 For placeholders while you design, `https://picsum.photos/seed/<your-seed>/<w>/<h>` gives stable, deterministic images. Swap them for the real photos before release.
 
 You reference an asset two ways:
+
 - From structured fields (logo, product image, category hero, OG image): a `*AssetId` field, e.g. `logoLightAssetId: 'logo'`, `heroAssetId: 'cat-tops-hero'`.
 - From inside a content body (a rich field that holds an image): the `assetRef()` helper, which produces a `{ $asset: 'id' }` marker (see [Content](#content)).
 
@@ -294,29 +311,31 @@ Every node — whether it's a section that arranges children or a leaf that rend
 Rather than write that by hand, every manifest uses a tiny `node()` helper (copy it from `retail-store-blog.ts`). It fills in defaults so you only state what differs:
 
 ```ts
-node('Heading', { props: { level: 'h1', text: 'Everyday goods, built to last' } })
+node('Heading', { props: { level: 'h1', text: 'Everyday goods, built to last' } });
 
 node('Section', {
   box: { surface: 'subtle', padding: 'lg', contentWidth: 'contained' },
   layout: { direction: 'stack', gap: 'md' },
-  children: [ /* … */ ],
-})
+  children: [
+    /* … */
+  ],
+});
 ```
 
 ### The box (every node has one)
 
-| Axis | Values | Notes |
-| --- | --- | --- |
-| `height` | `auto` `sm` `md` `lg` `full` | Section height. |
-| `backgroundWidth` | `full` `contained` | Does the background span edge-to-edge or sit in the container? |
-| `contentWidth` | `full` `contained` | Does the content stretch or stay in the readable column? |
-| `surface` | `none` `subtle` `muted` `inverse` `brand` | A token-paired background+foreground. |
-| `padding` | `none` `sm` `md` `lg` `xl` | |
-| `align` | `start` `center` `end` | Horizontal alignment of content. |
-| `backgroundImage` | URL | Full-bleed photo behind the node. |
-| `overlay` | `none` `dark` `light` `gradient` | A scrim over `backgroundImage` so text stays legible. |
-| `textTone` | `default` `light` `dark` | Text color over a photo, independent of surface. |
-| `pin` | `none` `top` | `top` floats a header over the hero beneath it. |
+| Axis              | Values                                    | Notes                                                          |
+| ----------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| `height`          | `auto` `sm` `md` `lg` `full`              | Section height.                                                |
+| `backgroundWidth` | `full` `contained`                        | Does the background span edge-to-edge or sit in the container? |
+| `contentWidth`    | `full` `contained`                        | Does the content stretch or stay in the readable column?       |
+| `surface`         | `none` `subtle` `muted` `inverse` `brand` | A token-paired background+foreground.                          |
+| `padding`         | `none` `sm` `md` `lg` `xl`                |                                                                |
+| `align`           | `start` `center` `end`                    | Horizontal alignment of content.                               |
+| `backgroundImage` | URL                                       | Full-bleed photo behind the node.                              |
+| `overlay`         | `none` `dark` `light` `gradient`          | A scrim over `backgroundImage` so text stays legible.          |
+| `textTone`        | `default` `light` `dark`                  | Text color over a photo, independent of surface.               |
+| `pin`             | `none` `top`                              | `top` floats a header over the hero beneath it.                |
 
 A full-bleed photo hero is just a section with a background image, a dark overlay, and light text:
 
@@ -338,13 +357,13 @@ node('Section', {
 
 ### The layout (containers only)
 
-| Axis | Values |
-| --- | --- |
-| `direction` | `stack` (vertical) · `row` (horizontal) · `grid` |
-| `columns` | `1`–`12` (grid only) |
-| `gap` | `none` `sm` `md` `lg` |
-| `justify` | `start` `center` `end` `between` |
-| `alignItems` | `start` `center` `end` `stretch` |
+| Axis         | Values                                           |
+| ------------ | ------------------------------------------------ |
+| `direction`  | `stack` (vertical) · `row` (horizontal) · `grid` |
+| `columns`    | `1`–`12` (grid only)                             |
+| `gap`        | `none` `sm` `md` `lg`                            |
+| `justify`    | `start` `center` `end` `between`                 |
+| `alignItems` | `start` `center` `end` `stretch`                 |
 
 ### Node types you'll use
 
@@ -385,18 +404,21 @@ Because text and styling come from **tokens and the theme**, the same tree re-th
 The layout is the chrome around every page: a header, the `Outlet` (where the page slots in), and a footer.
 
 ```ts
-node('Section', {                                  // root
+node('Section', {
+  // root
   layout: { direction: 'stack', gap: 'none' },
   children: [
-    node('Section', {                              // header
+    node('Section', {
+      // header
       layout: { direction: 'row', justify: 'between', alignItems: 'center' },
       children: [
         node('Logo', { bind: 'site.identity' }),
         node('NavMenu', { props: { orientation: 'row' }, bind: 'site.primaryNav' }),
       ],
     }),
-    node('Outlet'),                                // ← the page renders here
-    node('Section', {                              // footer
+    node('Outlet'), // ← the page renders here
+    node('Section', {
+      // footer
       children: [
         node('NavMenu', { props: { orientation: 'row' }, bind: 'site.footerNav' }),
         node('SocialLinks', { bind: 'site.social' }),
@@ -404,7 +426,7 @@ node('Section', {                                  // root
       ],
     }),
   ],
-})
+});
 ```
 
 ### Pages: singletons vs. collections, and the home page
@@ -498,11 +520,11 @@ Add your template to the catalog so the `/templates` page picks it up:
 ```ts
 // packages/blueprints/src/registry.ts
 import { retailStoreBlog } from './blueprints/retail-store-blog';
-import { yourTemplate }    from './blueprints/your-template';   // ← add
+import { yourTemplate } from './blueprints/your-template'; // ← add
 
 export const BLUEPRINTS = {
   [retailStoreBlog.key]: retailStoreBlog,
-  [yourTemplate.key]:    yourTemplate,                          // ← add
+  [yourTemplate.key]: yourTemplate, // ← add
 };
 ```
 
@@ -530,7 +552,7 @@ A few rules that aren't obvious but will bite you:
 - **Reference by handle/id, never by UUID.** The manifest can't know runtime ids; the installer resolves handles as it goes.
 - **The home page is a slugless singleton.** Don't give it a slug.
 - **Images hot-link for now.** Declare them in `assets`; reference by id. (A future release copies them into tenant media.)
-- **Installs land on the *active* property.** On a secondary (non-primary) site, the brand applies as that site's override — it won't repaint the primary site.
+- **Installs land on the _active_ property.** On a secondary (non-primary) site, the brand applies as that site's override — it won't repaint the primary site.
 - **Everything installs as a draft.** Go-live is a deliberate, separate step.
 
 ---
