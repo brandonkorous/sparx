@@ -190,6 +190,42 @@
 
 /* ── NAV ─────────────────────────────────────────────────────── */
 
+/* Header nav links + the Modules megamenu. These restyle the @sparx/ui
+   NavigationMenu primitive into the marketing register (lighter weight,
+   no button chrome). Unlayered rules beat Tailwind's @layer utilities, so
+   they override the primitive's defaults without !important. */
+.mkt-navlink {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.mkt-navlink:hover {
+  color: var(--color-text-primary);
+}
+.mkt-navlink-trigger {
+  height: auto;
+  padding: 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+/* A single module row inside the megamenu panel. */
+.mkt-mm-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.12s ease;
+}
+.mkt-mm-item:hover {
+  background-color: var(--color-bg-page);
+}
+
 /* The mobile drawer pops out from the top, full-width, when open. */
 .mkt-mobile-drawer {
   position: fixed;

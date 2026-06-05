@@ -272,6 +272,17 @@ export {
 } from './components/navigation/breadcrumb';
 export { Pagination, type PaginationProps } from './components/navigation/pagination';
 export { Stepper, type StepperProps, type StepperStep } from './components/navigation/stepper';
+export {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuLink,
+  NavigationMenuViewport,
+  NavigationMenuIndicator,
+  navigationMenuTriggerStyle,
+} from './components/navigation/navigation-menu';
 
 // ── Data display ──────────────────────────────────────────
 export { Code, codeVariants, type CodeProps } from './components/data/code';
