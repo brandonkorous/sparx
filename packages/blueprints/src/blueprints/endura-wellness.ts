@@ -18,8 +18,10 @@
 //     minimalist-icon aesthetic) — no incoherent stock photos. Real photography
 //     is reserved for where it belongs: the hero, the botanical concerns band,
 //     the team portraits, and the founder story.
-//   · Static imagery hot-links a deterministic, TOPICAL loremflickr URL (docs/54
-//     §6 D3) — `?lock=N` pins the photo so the installed site looks designed.
+//   · Static imagery hot-links CURATED, specific Unsplash photo ids (docs/54
+//     §6 D3) — hand-picked per slot (serene treatment hero, warm team portraits,
+//     a calming botanical, clinical journal art) so the site looks art-directed,
+//     not stock-randomised.
 //   · Layouts/grids/rows lean on the responsive renderer (docs/59): grids
 //     collapse 1→2→N and rows-of-containers stack on mobile automatically.
 
@@ -65,11 +67,13 @@ const doc = (...paragraphs: string[]): Record<string, unknown> => ({
   content: paragraphs.map((t) => ({ type: 'paragraph', content: [{ type: 'text', text: t }] })),
 });
 
-/** A deterministic, TOPICAL placeholder photo (hot-linked; docs/54 §6 D3).
- *  loremflickr serves a CC photo matching `kw`; `lock` pins it so it never
- *  changes between loads — the installed site looks intentionally designed. */
-const photo = (kw: string, lock: number, w = 1200, h = 900): string =>
-  `https://loremflickr.com/${w}/${h}/${kw}?lock=${lock}`;
+/** A curated, hot-linked photo (docs/54 §6 D3). We pin a SPECIFIC Unsplash
+ *  photo id rather than a keyword feed (loremflickr's tag matching is too loose
+ *  — it served a street-cat statue for "spa,wellness,calm"), so the installed
+ *  site looks intentionally art-directed. `auto=format` serves WebP/AVIF and
+ *  `fit=crop` honours the requested aspect ratio. */
+const unsplash = (id: string, w = 1200, h = 900): string =>
+  `https://images.unsplash.com/${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
 
 // ── Reusable pieces ──────────────────────────────────────────────────────────
 
@@ -116,7 +120,7 @@ function statItem(value: string, label: string): BuilderNode {
 }
 
 /** A static team card — a tall portrait via box.backgroundImage, name + role. */
-function teamCard(kw: string, lock: number, name: string, role: string): BuilderNode {
+function teamCard(img: string, name: string, role: string): BuilderNode {
   return node('Card', {
     box: { name, surface: 'none', padding: 'none' },
     layout: { direction: 'stack', gap: 'sm', alignItems: 'start' },
@@ -128,7 +132,7 @@ function teamCard(kw: string, lock: number, name: string, role: string): Builder
           backgroundWidth: 'full',
           contentWidth: 'full',
           padding: 'none',
-          backgroundImage: photo(kw, lock, 600, 800),
+          backgroundImage: img,
         },
       }),
       node('Heading', { props: { level: 'h3', text: name } }),
@@ -166,7 +170,7 @@ function homeTree(): BuilderNode {
           contentWidth: 'contained',
           align: 'center',
           padding: 'xl',
-          backgroundImage: photo('spa,wellness,calm', 44, 2000, 1200),
+          backgroundImage: unsplash('photo-1512290923902-8a9f81dc236c', 2000, 1200),
           overlay: 'gradient',
           textTone: 'light',
         },
@@ -272,7 +276,7 @@ function homeTree(): BuilderNode {
               backgroundWidth: 'full',
               contentWidth: 'full',
               padding: 'none',
-              backgroundImage: photo('botanical,leaves,green', 27, 800, 1000),
+              backgroundImage: unsplash('photo-1502082553048-f009c37129b9', 800, 1000),
             },
           }),
           node('Stack', {
@@ -414,13 +418,20 @@ function homeTree(): BuilderNode {
             layout: { direction: 'grid', columns: 3, gap: 'lg' },
             children: [
               teamCard(
-                'portrait,woman,professional',
-                61,
+                unsplash('photo-1559839734-2b71ea197ec2', 600, 800),
                 'Brittany Brown, NP',
                 'Founder · Nurse Practitioner'
               ),
-              teamCard('portrait,nurse,smile', 62, 'Megan Ringi, RN', 'Registered Nurse'),
-              teamCard('portrait,woman,office', 63, 'Daria Ray', 'Patient Coordinator'),
+              teamCard(
+                unsplash('photo-1594824476967-48c8b964273f', 600, 800),
+                'Megan Ringi, RN',
+                'Registered Nurse'
+              ),
+              teamCard(
+                unsplash('photo-1573496359142-b8d87734a5a2', 600, 800),
+                'Daria Ray',
+                'Patient Coordinator'
+              ),
             ],
           }),
         ],
@@ -469,7 +480,7 @@ function homeTree(): BuilderNode {
               backgroundWidth: 'full',
               contentWidth: 'full',
               padding: 'none',
-              backgroundImage: photo('doctor,woman,portrait', 71, 800, 1000),
+              backgroundImage: unsplash('photo-1559839734-2b71ea197ec2', 800, 1000),
             },
           }),
           node('Stack', {
@@ -603,7 +614,7 @@ function servicesTree(): BuilderNode {
           contentWidth: 'contained',
           align: 'center',
           padding: 'xl',
-          backgroundImage: photo('spa,treatment,calm', 51, 2000, 900),
+          backgroundImage: unsplash('photo-1600334089648-b0d9d3028eb2', 2000, 900),
           overlay: 'dark',
           textTone: 'light',
         },
@@ -918,7 +929,7 @@ function newsletterEmailTree(): BuilderNode {
 
 const manifest = {
   key: 'endura-wellness',
-  version: '0.2.0',
+  version: '0.3.0',
   name: 'Wellness Clinic',
   summary:
     'A boutique wellness-clinic site with a tailored service menu (hormone therapy, weight loss, IV & ozone), a concierge membership band, a care team, a small nutraceutical shop, a journal, and book-now calls to action — warm, photography-led, and ready to review.',
@@ -974,38 +985,46 @@ const manifest = {
       url: 'https://ui-avatars.com/api/?name=Endura+Wellness&background=0F766E&color=FBF8F1&bold=true&size=128&format=svg',
       alt: 'Endura Wellness',
     },
-    // Nutraceutical product imagery (topical, deterministic loremflickr).
+    // Nutraceutical product imagery (curated Unsplash, colour-hinted per SKU).
     {
       id: 'prod-multi',
-      url: photo('supplement,vitamins', 81, 1000, 1000),
+      url: unsplash('photo-1607619056574-7b8d3ee536b2', 1000, 1000),
       alt: 'Daily Foundations Multivitamin',
     },
-    { id: 'prod-d3k2', url: photo('vitamins,bottle', 82, 1000, 1000), alt: 'Vitamin D3 + K2' },
-    { id: 'prod-mag', url: photo('supplement,pills', 83, 1000, 1000), alt: 'Magnesium Glycinate' },
+    {
+      id: 'prod-d3k2',
+      url: unsplash('photo-1577563908411-5077b6dc7624', 1000, 1000),
+      alt: 'Vitamin D3 + K2',
+    },
+    {
+      id: 'prod-mag',
+      url: unsplash('photo-1471864190281-a93a3070b6de', 1000, 1000),
+      alt: 'Magnesium Glycinate',
+    },
     {
       id: 'prod-omega',
-      url: photo('fish,oil,supplement', 84, 1000, 1000),
+      url: unsplash('photo-1626716493137-b67fe9501e76', 1000, 1000),
       alt: 'Omega-3 Fish Oil',
     },
     {
       id: 'prod-bcomplex',
-      url: photo('vitamins,supplement', 85, 1000, 1000),
+      url: unsplash('photo-1585435557343-3b092031a831', 1000, 1000),
       alt: 'Methylated B-Complex',
     },
     // Journal featured images.
     {
       id: 'journal-1-img',
-      url: photo('hormones,health,woman', 91, 800, 600),
+      url: unsplash('photo-1499209974431-9dddcece7f88', 800, 600),
       alt: 'Hormone balance',
     },
     {
       id: 'journal-2-img',
-      url: photo('iv,therapy,clinic', 92, 800, 600),
+      url: unsplash('photo-1612277795421-9bc7706a4a34', 800, 600),
       alt: 'IV therapy session',
     },
     {
       id: 'journal-3-img',
-      url: photo('healthy,food,meal', 93, 800, 600),
+      url: unsplash('photo-1512621776951-a57141f2eefd', 800, 600),
       alt: 'Healthy meal prep',
     },
   ],
