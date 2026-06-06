@@ -5,15 +5,21 @@
 // action. It exercises builder + cms + commerce + email. Everything installs to
 // DRAFT (docs/54 D4); the tenant reviews, customizes, and goes live.
 //
-// Authoring notes:
-//   · Trees are real @sparx/builder-schemas nodes (same JSON the editor emits)
-//     and bind via tokens, so they re-theme to whatever tenant installs them.
-//   · Services are NOT sold online — the service menu is STATIC content in the
-//     home/services trees (cards of name + description).
-//   · Static imagery in trees hot-links a raw URL (box.backgroundImage); imagery
-//     bound to records (products, posts) comes from the seeded assets.
-//   · Placeholder images hot-link picsum.photos with stable seeds so the
-//     installed site looks designed out of the box (docs/54 §6 deferred).
+// Design notes — this template is deliberately RICH (the anti-bland test):
+//   · It drives the THEME's v2 presentation overlay (docs/33 §3) to a warm
+//     cream / sand / forest palette, so the whole site reads boutique-organic
+//     rather than stark-white. The brand layers teal (primary) + mustard (accent)
+//     over it. base-content = deep forest, so `surface:'inverse'` bands are forest.
+//   · It works a COLOUR RHYTHM through the page: photo hero → teal stat band →
+//     cream services → sand concerns → forest "what's different" → teal concierge
+//     → cream team → sand process → cream story. No two flat-white sections in a
+//     row (the thing that made v1 bland).
+//   · Service / differentiator cards lead with a crisp LINE ICON (the source's
+//     minimalist-icon aesthetic) — no incoherent stock photos. Real photography
+//     is reserved for where it belongs: the hero, the botanical concerns band,
+//     the team portraits, and the founder story.
+//   · Static imagery hot-links a deterministic, TOPICAL loremflickr URL (docs/54
+//     §6 D3) — `?lock=N` pins the photo so the installed site looks designed.
 //   · Layouts/grids/rows lean on the responsive renderer (docs/59): grids
 //     collapse 1→2→N and rows-of-containers stack on mobile automatically.
 
@@ -59,39 +65,44 @@ const doc = (...paragraphs: string[]): Record<string, unknown> => ({
   content: paragraphs.map((t) => ({ type: 'paragraph', content: [{ type: 'text', text: t }] })),
 });
 
-/** A deterministic placeholder image URL (hot-linked; docs/54 §6 D3). */
-const pic = (seed: string, w = 1200, h = 900): string =>
-  `https://picsum.photos/seed/${seed}/${w}/${h}`;
+/** A deterministic, TOPICAL placeholder photo (hot-linked; docs/54 §6 D3).
+ *  loremflickr serves a CC photo matching `kw`; `lock` pins it so it never
+ *  changes between loads — the installed site looks intentionally designed. */
+const photo = (kw: string, lock: number, w = 1200, h = 900): string =>
+  `https://loremflickr.com/${w}/${h}/${kw}?lock=${lock}`;
 
-// ── Reusable cards ─────────────────────────────────────────────────────────────
+// ── Reusable pieces ──────────────────────────────────────────────────────────
 
-/** A core-service card — title + short description (services aren't sold online). */
-function serviceCard(title: string, body: string): BuilderNode {
+/** A core-service card — line icon + title + short description, on a card. */
+function serviceCard(icon: string, title: string, body: string): BuilderNode {
   return node('Card', {
     box: { name: title, surface: 'subtle', padding: 'lg' },
     layout: { direction: 'stack', gap: 'sm', alignItems: 'start' },
     children: [
+      node('Icon', { props: { name: icon } }),
       node('Heading', { props: { level: 'h3', text: title } }),
       node('Text', { props: { variant: 'body', text: body } }),
     ],
   });
 }
 
-/** A "what makes us different" point — title + body. */
-function differenceCard(title: string, body: string): BuilderNode {
-  return node('Card', {
-    box: { name: title, surface: 'none', padding: 'md' },
+/** A "what makes us different" point — line icon + title + body, on the forest
+ *  band (no card surface; the band itself carries the colour). */
+function differenceCard(icon: string, title: string, body: string): BuilderNode {
+  return node('Stack', {
+    box: { name: title, surface: 'none', padding: 'none' },
     layout: { direction: 'stack', gap: 'sm', alignItems: 'start' },
     children: [
+      node('Icon', { props: { name: icon } }),
       node('Heading', { props: { level: 'h3', text: title } }),
       node('Text', { props: { variant: 'body', text: body } }),
     ],
   });
 }
 
-/** A condition we treat — a single scannable line. */
+/** A condition we treat — a single scannable line with a leading accent mark. */
 function concernLine(text: string): BuilderNode {
-  return node('Text', { box: { padding: 'sm' }, props: { variant: 'body', text: `— ${text}` } });
+  return node('Text', { box: { padding: 'sm' }, props: { variant: 'body', text: `›  ${text}` } });
 }
 
 /** A membership benefit line. */
@@ -99,8 +110,13 @@ function benefitLine(text: string): BuilderNode {
   return node('Text', { props: { variant: 'body', text: `✓  ${text}` } });
 }
 
-/** A static team card — portrait via box.backgroundImage, name + role beneath. */
-function teamCard(seed: string, name: string, role: string): BuilderNode {
+/** A KPI for the trust band. */
+function statItem(value: string, label: string): BuilderNode {
+  return node('Stat', { props: { value, label } });
+}
+
+/** A static team card — a tall portrait via box.backgroundImage, name + role. */
+function teamCard(kw: string, lock: number, name: string, role: string): BuilderNode {
   return node('Card', {
     box: { name, surface: 'none', padding: 'none' },
     layout: { direction: 'stack', gap: 'sm', alignItems: 'start' },
@@ -108,11 +124,11 @@ function teamCard(seed: string, name: string, role: string): BuilderNode {
       node('Section', {
         box: {
           name: 'Portrait',
-          height: 'md',
+          height: 'lg',
           backgroundWidth: 'full',
           contentWidth: 'full',
           padding: 'none',
-          backgroundImage: pic(seed, 600, 800),
+          backgroundImage: photo(kw, lock, 600, 800),
         },
       }),
       node('Heading', { props: { level: 'h3', text: name } }),
@@ -124,10 +140,10 @@ function teamCard(seed: string, name: string, role: string): BuilderNode {
 /** A numbered "get started" step card. */
 function stepCard(num: string, title: string, body: string): BuilderNode {
   return node('Card', {
-    box: { name: title, surface: 'subtle', padding: 'lg' },
+    box: { name: title, surface: 'none', padding: 'lg' },
     layout: { direction: 'stack', gap: 'sm', alignItems: 'start' },
     children: [
-      node('Text', { props: { variant: 'meta', text: num } }),
+      node('Heading', { props: { level: 'h2', text: num } }),
       node('Heading', { props: { level: 'h3', text: title } }),
       node('Text', { props: { variant: 'body', text: body } }),
     ],
@@ -141,40 +157,70 @@ function homeTree(): BuilderNode {
     box: { name: 'Home', padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
     layout: { direction: 'stack', gap: 'none' },
     children: [
-      // HERO — calm full-bleed clinic photo with a scrim + light text.
+      // HERO — full-bleed warm photo, top+bottom gradient scrim, light text.
       node('Section', {
         box: {
           name: 'Hero',
-          height: 'lg',
+          height: 'xl',
           backgroundWidth: 'full',
           contentWidth: 'contained',
           align: 'center',
           padding: 'xl',
-          backgroundImage: pic('endura-hero-clinic', 2000, 1100),
-          overlay: 'dark',
+          backgroundImage: photo('spa,wellness,calm', 44, 2000, 1200),
+          overlay: 'gradient',
           textTone: 'light',
         },
-        layout: { direction: 'stack', gap: 'sm', justify: 'center', alignItems: 'center' },
+        layout: { direction: 'stack', gap: 'md', justify: 'center', alignItems: 'center' },
         children: [
-          node('Text', { props: { variant: 'meta', text: 'Boutique wellness · Lynchburg, VA' } }),
+          node('Text', {
+            props: { variant: 'eyebrow', text: 'Boutique wellness · Lynchburg, VA' },
+          }),
           node('Heading', { props: { level: 'h1', text: 'Feel like you again.' } }),
           node('Text', {
             props: {
               variant: 'body',
-              text: 'A boutique wellness clinic offering personalized, science-backed care for your hormones, weight, energy — and everything that makes you, you.',
+              text: 'Personalized, science-backed care for your hormones, weight, energy — and everything that makes you, you.',
             },
           }),
-          node('Button', {
-            props: { label: 'Book an appointment', style: 'primary', href: '/contact' },
+          node('Stack', {
+            box: { padding: 'none' },
+            layout: { direction: 'row', gap: 'sm', justify: 'center', alignItems: 'center' },
+            children: [
+              node('Button', {
+                props: { label: 'Book an appointment', style: 'glass', href: '/contact' },
+              }),
+              node('Button', {
+                props: { label: 'Our services', style: 'dark', href: '/services' },
+              }),
+            ],
           }),
         ],
       }),
 
-      // SERVICES — the four core programs, static cards.
+      // TRUST — a teal band of KPIs, the first hit of brand colour.
       node('Section', {
-        box: { name: 'Services', surface: 'subtle', padding: 'xl', contentWidth: 'contained' },
+        box: { name: 'Trust', surface: 'brand', padding: 'lg', contentWidth: 'contained' },
+        layout: { direction: 'stack', gap: 'none' },
+        children: [
+          node('Grid', {
+            box: { name: 'Stats grid', padding: 'none' },
+            layout: { direction: 'grid', columns: 4, gap: 'lg' },
+            children: [
+              statItem('1,200+', 'patients cared for'),
+              statItem('15+ yrs', 'clinical experience'),
+              statItem('4', 'core therapies'),
+              statItem('98%', 'would refer a friend'),
+            ],
+          }),
+        ],
+      }),
+
+      // SERVICES — the four core programs, icon-led cards on cream.
+      node('Section', {
+        box: { name: 'Services', surface: 'none', padding: 'xl', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md' },
         children: [
+          node('Text', { props: { variant: 'eyebrow', text: 'What we do' } }),
           node('Heading', { props: { level: 'h2', text: 'Care, tailored to you' } }),
           node('Text', {
             props: {
@@ -187,20 +233,24 @@ function homeTree(): BuilderNode {
             layout: { direction: 'grid', columns: 4, gap: 'lg' },
             children: [
               serviceCard(
+                'activity',
                 'Bio-Identical Hormone Therapy',
-                'Restore balance, energy, mood and sleep with bio-identical hormone therapy designed around your labs and your life.'
+                'Restore balance, energy, mood and sleep with hormones matched to your labs and your life.'
               ),
               serviceCard(
+                'scale',
                 'Weight Loss Program',
-                'A guided, 12-week medical weight-loss program built to help you reach your goals — and actually keep them.'
+                'A guided, 12-week medical program built to help you reach your goals — and actually keep them.'
               ),
               serviceCard(
+                'droplet',
                 'IV Therapy',
-                'Targeted IV infusions that rehydrate, replenish and restore from the inside out — hydration, immunity and recovery.'
+                'Targeted infusions that rehydrate, replenish and restore from the inside out.'
               ),
               serviceCard(
+                'wind',
                 'Ozone Therapy',
-                'Advanced ozone therapy to support immunity, energy and whole-body wellness using treatments trusted worldwide.'
+                'Advanced ozone therapy to support immunity, energy and whole-body wellness.'
               ),
             ],
           }),
@@ -210,44 +260,62 @@ function homeTree(): BuilderNode {
         ],
       }),
 
-      // CONCERNS — the conditions we help navigate.
+      // CONCERNS — botanical photo beside the conditions list, on a sand band.
       node('Section', {
-        box: { name: 'Concerns', padding: 'xl', contentWidth: 'contained' },
-        layout: { direction: 'stack', gap: 'md' },
+        box: { name: 'Concerns', surface: 'subtle', padding: 'xl', contentWidth: 'contained' },
+        layout: { direction: 'row', gap: 'lg', alignItems: 'center' },
         children: [
-          node('Heading', {
-            props: { level: 'h2', text: "We'll help you navigate these challenges" },
-          }),
-          node('Text', {
-            props: {
-              variant: 'body',
-              text: 'We use deeper diagnostics and tailored plans to uncover and address the root cause — not just quiet the symptoms.',
+          node('Section', {
+            box: {
+              name: 'Botanical',
+              height: 'lg',
+              backgroundWidth: 'full',
+              contentWidth: 'full',
+              padding: 'none',
+              backgroundImage: photo('botanical,leaves,green', 27, 800, 1000),
             },
           }),
-          node('Grid', {
-            box: { name: 'Concerns grid', padding: 'none' },
-            layout: { direction: 'grid', columns: 2, gap: 'sm' },
+          node('Stack', {
+            box: { name: 'Concerns copy', padding: 'none' },
+            layout: { direction: 'stack', gap: 'md', alignItems: 'start' },
             children: [
-              concernLine('Hormonal imbalances'),
-              concernLine('Thyroid disorders'),
-              concernLine('Weight management'),
-              concernLine('Chronic fatigue'),
-              concernLine('Immune support'),
-              concernLine('Migraines'),
-              concernLine('Anxiety & depression'),
-              concernLine('Autoimmune conditions'),
-              concernLine('Mold toxicity & inflammation'),
-              concernLine('Nutrient deficiencies'),
+              node('Text', { props: { variant: 'eyebrow', text: 'Root-cause medicine' } }),
+              node('Heading', {
+                props: { level: 'h2', text: "We'll help you navigate these challenges" },
+              }),
+              node('Text', {
+                props: {
+                  variant: 'body',
+                  text: 'Deeper diagnostics and tailored plans to uncover and address the root cause — not just quiet the symptoms.',
+                },
+              }),
+              node('Grid', {
+                box: { name: 'Concerns grid', padding: 'none' },
+                layout: { direction: 'grid', columns: 2, gap: 'sm' },
+                children: [
+                  concernLine('Hormonal imbalances'),
+                  concernLine('Thyroid disorders'),
+                  concernLine('Weight management'),
+                  concernLine('Chronic fatigue'),
+                  concernLine('Immune support'),
+                  concernLine('Migraines'),
+                  concernLine('Anxiety & depression'),
+                  concernLine('Autoimmune conditions'),
+                  concernLine('Mold toxicity'),
+                  concernLine('Nutrient deficiencies'),
+                ],
+              }),
             ],
           }),
         ],
       }),
 
-      // DIFFERENTIATORS — what makes us different.
+      // DIFFERENTIATORS — the dramatic forest band, icon-led, light text.
       node('Section', {
-        box: { name: 'Difference', surface: 'subtle', padding: 'xl', contentWidth: 'contained' },
+        box: { name: 'Difference', surface: 'inverse', padding: 'xl', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md' },
         children: [
+          node('Text', { props: { variant: 'eyebrow', text: 'Why Endura' } }),
           node('Heading', { props: { level: 'h2', text: 'What makes us different' } }),
           node('Text', {
             props: {
@@ -260,18 +328,22 @@ function homeTree(): BuilderNode {
             layout: { direction: 'grid', columns: 4, gap: 'lg' },
             children: [
               differenceCard(
+                'target',
                 'Root-cause approach',
                 "We don't just treat symptoms — we identify and address the underlying cause."
               ),
               differenceCard(
-                'Personalized concierge care',
+                'heart-handshake',
+                'Concierge care',
                 "You're never just a number. Every visit is unhurried, one-on-one support."
               ),
               differenceCard(
+                'microscope',
                 'Cutting-edge treatments',
                 'Progressive, science-backed therapies used in clinics worldwide.'
               ),
               differenceCard(
+                'home',
                 'A boutique experience',
                 'A warm, inviting, stress-free space designed entirely around your comfort.'
               ),
@@ -280,22 +352,16 @@ function homeTree(): BuilderNode {
         ],
       }),
 
-      // CONCIERGE MEMBERSHIP — highlighted dark band with the $99/mo plan.
+      // CONCIERGE MEMBERSHIP — a teal band: the plan beside its benefits.
       node('Section', {
-        box: {
-          name: 'Concierge',
-          surface: 'inverse',
-          backgroundWidth: 'full',
-          contentWidth: 'contained',
-          padding: 'xl',
-        },
-        layout: { direction: 'row', gap: 'lg', alignItems: 'start' },
+        box: { name: 'Concierge', surface: 'brand', padding: 'xl', contentWidth: 'contained' },
+        layout: { direction: 'row', gap: 'lg', alignItems: 'center' },
         children: [
           node('Stack', {
             box: { name: 'Plan intro', padding: 'none' },
             layout: { direction: 'stack', gap: 'sm', alignItems: 'start' },
             children: [
-              node('Text', { props: { variant: 'meta', text: 'Concierge Wellness Plan' } }),
+              node('Text', { props: { variant: 'eyebrow', text: 'Concierge Wellness Plan' } }),
               node('Heading', { props: { level: 'h2', text: 'Elite care, extraordinary access' } }),
               node('Text', {
                 props: {
@@ -303,7 +369,7 @@ function homeTree(): BuilderNode {
                   text: 'Exclusive benefits for ongoing hormone-therapy patients — designed to save you money and give you VIP access to your care team.',
                 },
               }),
-              node('Heading', { props: { level: 'h2', text: '$99 / month' } }),
+              node('Heading', { props: { level: 'h1', text: '$99 / month' } }),
               node('Text', {
                 props: {
                   variant: 'meta',
@@ -311,7 +377,7 @@ function homeTree(): BuilderNode {
                 },
               }),
               node('Button', {
-                props: { label: 'Join the plan', style: 'primary', href: '/contact' },
+                props: { label: 'Join the plan', style: 'glass', href: '/contact' },
               }),
             ],
           }),
@@ -330,11 +396,12 @@ function homeTree(): BuilderNode {
         ],
       }),
 
-      // TEAM — static care-team cards.
+      // TEAM — tall portrait cards on cream.
       node('Section', {
-        box: { name: 'Team', padding: 'xl', contentWidth: 'contained' },
+        box: { name: 'Team', surface: 'none', padding: 'xl', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md' },
         children: [
+          node('Text', { props: { variant: 'eyebrow', text: 'Your care team' } }),
           node('Heading', { props: { level: 'h2', text: 'Meet the team' } }),
           node('Text', {
             props: {
@@ -347,47 +414,41 @@ function homeTree(): BuilderNode {
             layout: { direction: 'grid', columns: 3, gap: 'lg' },
             children: [
               teamCard(
-                'endura-team-brittany',
+                'portrait,woman,professional',
+                61,
                 'Brittany Brown, NP',
                 'Founder · Nurse Practitioner'
               ),
-              teamCard('endura-team-megan', 'Megan Ringi, RN', 'Registered Nurse'),
-              teamCard('endura-team-daria', 'Daria Ray', 'Patient Coordinator'),
+              teamCard('portrait,nurse,smile', 62, 'Megan Ringi, RN', 'Registered Nurse'),
+              teamCard('portrait,woman,office', 63, 'Daria Ray', 'Patient Coordinator'),
             ],
           }),
         ],
       }),
 
-      // PROCESS — the three-step "get started" path.
+      // PROCESS — three big-numbered steps on a sand band.
       node('Section', {
         box: { name: 'Process', surface: 'subtle', padding: 'xl', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md' },
         children: [
-          node('Heading', {
-            props: { level: 'h2', text: 'Get started with your wellness journey' },
-          }),
-          node('Text', {
-            props: {
-              variant: 'body',
-              text: 'We keep the start simple. A clear, step-by-step path means you always know what comes next.',
-            },
-          }),
+          node('Text', { props: { variant: 'eyebrow', text: 'Getting started' } }),
+          node('Heading', { props: { level: 'h2', text: 'Your wellness journey, step by step' } }),
           node('Grid', {
             box: { name: 'Steps grid', padding: 'none' },
             layout: { direction: 'grid', columns: 3, gap: 'lg' },
             children: [
               stepCard(
-                'Step 1',
+                '01',
                 'Schedule your consultation',
                 'Book an initial visit and tell us your story. Your service fee is included.'
               ),
               stepCard(
-                'Step 2',
+                '02',
                 'Build your plan',
                 'Together we design a tailored, science-backed treatment plan around your goals.'
               ),
               stepCard(
-                'Step 3',
+                '03',
                 'Begin your journey',
                 'Start treatment with concierge support and check-ins every step of the way.'
               ),
@@ -396,11 +457,53 @@ function homeTree(): BuilderNode {
         ],
       }),
 
+      // STORY — founder photo beside the origin story, on cream.
+      node('Section', {
+        box: { name: 'Story', surface: 'none', padding: 'xl', contentWidth: 'contained' },
+        layout: { direction: 'row', gap: 'lg', alignItems: 'center' },
+        children: [
+          node('Section', {
+            box: {
+              name: 'Founder photo',
+              height: 'lg',
+              backgroundWidth: 'full',
+              contentWidth: 'full',
+              padding: 'none',
+              backgroundImage: photo('doctor,woman,portrait', 71, 800, 1000),
+            },
+          }),
+          node('Stack', {
+            box: { name: 'Story copy', padding: 'none' },
+            layout: { direction: 'stack', gap: 'sm', alignItems: 'start' },
+            children: [
+              node('Text', { props: { variant: 'eyebrow', text: 'Our story' } }),
+              node('Heading', {
+                props: { level: 'h2', text: 'Personalized care meets real science.' },
+              }),
+              node('Text', {
+                props: {
+                  variant: 'body',
+                  text: 'Endura Wellness was founded by Brittany Brown, NP, inspired by her own wellness journey and how rare it is to feel truly heard. We built a boutique clinic where deeper diagnostics and one-on-one attention come standard.',
+                },
+              }),
+              node('Text', {
+                props: {
+                  variant: 'body',
+                  text: 'Hormone therapy, weight-loss support, IV and ozone treatments — all customized to you, in a space designed to feel warm, welcoming and calm.',
+                },
+              }),
+              node('Text', { props: { variant: 'meta', text: '— Brittany Brown, NP' } }),
+            ],
+          }),
+        ],
+      }),
+
       // SHOP — the nutraceutical shelf; iterates products from Commerce.
       node('Section', {
-        box: { name: 'Shop', padding: 'xl', contentWidth: 'contained' },
+        box: { name: 'Shop', surface: 'subtle', padding: 'xl', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md' },
         children: [
+          node('Text', { props: { variant: 'eyebrow', text: 'The shelf' } }),
           node('Heading', { props: { level: 'h2', text: 'The nutraceutical shop' } }),
           node('Text', {
             props: {
@@ -430,23 +533,18 @@ function homeTree(): BuilderNode {
 
       // JOURNAL — CMS teaser; iterates posts.
       node('Section', {
-        box: { name: 'Journal', surface: 'subtle', padding: 'xl', contentWidth: 'contained' },
+        box: { name: 'Journal', surface: 'none', padding: 'xl', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md' },
         children: [
-          node('Heading', { props: { level: 'h2', text: 'From the journal' } }),
-          node('Text', {
-            props: {
-              variant: 'body',
-              text: 'Science-backed wellness notes, treatment guides and tips for feeling your best.',
-            },
-          }),
+          node('Text', { props: { variant: 'eyebrow', text: 'The journal' } }),
+          node('Heading', { props: { level: 'h2', text: 'Notes on feeling your best' } }),
           node('Grid', {
             box: { name: 'Posts grid', padding: 'none' },
             layout: { direction: 'grid', columns: 3, gap: 'lg' },
             bind: 'cms.blog_post',
             children: [
               node('Card', {
-                box: { name: 'Article card', surface: 'none', padding: 'sm' },
+                box: { name: 'Article card', surface: 'subtle', padding: 'sm' },
                 layout: { direction: 'stack', gap: 'sm' },
                 children: [
                   node('ImageDisplay', { props: { ratio: 'wide' }, bind: 'item.featuredImage' }),
@@ -459,70 +557,31 @@ function homeTree(): BuilderNode {
         ],
       }),
 
-      // STORY — warm band: founder photo beside the origin story.
-      node('Section', {
-        box: { name: 'Story', padding: 'xl', contentWidth: 'contained' },
-        layout: { direction: 'row', gap: 'lg', alignItems: 'center' },
-        children: [
-          node('Section', {
-            box: {
-              name: 'Founder photo',
-              height: 'lg',
-              backgroundWidth: 'full',
-              contentWidth: 'full',
-              padding: 'none',
-              backgroundImage: pic('endura-story-founder', 700, 880),
-            },
-          }),
-          node('Stack', {
-            box: { name: 'Story copy', padding: 'none' },
-            layout: { direction: 'stack', gap: 'sm', alignItems: 'start' },
-            children: [
-              node('Heading', {
-                props: { level: 'h2', text: 'Personalized care meets real science.' },
-              }),
-              node('Text', {
-                props: {
-                  variant: 'body',
-                  text: 'Endura Wellness was founded by Brittany Brown, NP, inspired by her own wellness journey and how rare it is to feel truly heard. We built a boutique clinic where deeper diagnostics and one-on-one attention come standard.',
-                },
-              }),
-              node('Text', {
-                props: {
-                  variant: 'body',
-                  text: 'Hormone therapy, weight-loss support, IV and ozone treatments — all customized to you, in a space designed to feel warm, welcoming and calm.',
-                },
-              }),
-              node('Text', { props: { variant: 'meta', text: '— Brittany Brown, NP' } }),
-            ],
-          }),
-        ],
-      }),
-
-      // CONVERSION — centered band: book CTA + join the list (Signup).
+      // CONVERSION — closing forest band: book CTA + join the list (Signup).
       node('Section', {
         box: {
           name: 'Conversion',
-          surface: 'muted',
+          surface: 'inverse',
           backgroundWidth: 'full',
           contentWidth: 'contained',
           align: 'center',
           padding: 'xl',
         },
-        layout: { direction: 'stack', gap: 'sm', alignItems: 'center', justify: 'center' },
+        layout: { direction: 'stack', gap: 'md', alignItems: 'center', justify: 'center' },
         bind: 'crm.list',
         children: [
+          node('Text', { props: { variant: 'eyebrow', text: 'Ready when you are' } }),
           node('Heading', {
             props: { level: 'h2', text: 'Now is the time to transform your health' },
           }),
           node('Text', {
             props: {
               variant: 'body',
-              text: 'Book a consultation in under a minute — or join the list for wellness tips, exclusive offers and science-backed health insights.',
+              text: 'Book a consultation in under a minute — or join the list for wellness tips, exclusive offers and science-backed insights.',
             },
           }),
           node('Button', {
-            props: { label: 'Book an appointment', style: 'primary', href: '/contact' },
+            props: { label: 'Book an appointment', style: 'glass', href: '/contact' },
           }),
           node('Signup', { props: { cta: 'Join' }, bind: 'crm.list' }),
         ],
@@ -539,15 +598,18 @@ function servicesTree(): BuilderNode {
       node('Section', {
         box: {
           name: 'Header',
-          height: 'sm',
-          surface: 'subtle',
+          height: 'md',
           backgroundWidth: 'full',
           contentWidth: 'contained',
           align: 'center',
           padding: 'xl',
+          backgroundImage: photo('spa,treatment,calm', 51, 2000, 900),
+          overlay: 'dark',
+          textTone: 'light',
         },
         layout: { direction: 'stack', gap: 'sm', alignItems: 'center', justify: 'center' },
         children: [
+          node('Text', { props: { variant: 'eyebrow', text: 'What we do' } }),
           node('Heading', { props: { level: 'h1', text: 'Our services' } }),
           node('Text', {
             props: {
@@ -558,7 +620,7 @@ function servicesTree(): BuilderNode {
         ],
       }),
       node('Section', {
-        box: { name: 'Service detail', padding: 'xl', contentWidth: 'contained' },
+        box: { name: 'Service detail', surface: 'none', padding: 'xl', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'lg' },
         children: [
           node('Grid', {
@@ -566,18 +628,22 @@ function servicesTree(): BuilderNode {
             layout: { direction: 'grid', columns: 2, gap: 'lg' },
             children: [
               serviceCard(
+                'activity',
                 'Bio-Identical Hormone Therapy',
                 'Bio-identical hormones matched to your body restore energy, mood, sleep and libido. We dose from comprehensive labs and adjust as you feel better — pellets, injections or creams.'
               ),
               serviceCard(
+                'scale',
                 'Weight Loss Program',
                 'A medically guided, 12-week program combining modern medications, nutrition coaching and accountability so the weight comes off and stays off.'
               ),
               serviceCard(
+                'droplet',
                 'IV Therapy',
                 'Custom IV infusions deliver vitamins, minerals and antioxidants straight to your bloodstream for hydration, immune support, recovery and an energy reset.'
               ),
               serviceCard(
+                'wind',
                 'Ozone Therapy',
                 'Medical ozone supports immune function, circulation and cellular energy — a progressive, well-tolerated therapy used in clinics around the world.'
               ),
@@ -597,7 +663,8 @@ function journalIndexTree(): BuilderNode {
     box: { name: 'Journal', padding: 'lg', backgroundWidth: 'full', contentWidth: 'contained' },
     layout: { direction: 'stack', gap: 'md' },
     children: [
-      node('Heading', { props: { level: 'h1', text: 'The journal' } }),
+      node('Text', { props: { variant: 'eyebrow', text: 'The journal' } }),
+      node('Heading', { props: { level: 'h1', text: 'Notes on feeling your best' } }),
       node('Text', {
         props: {
           variant: 'body',
@@ -633,7 +700,7 @@ function blogPostTree(): BuilderNode {
         box: {
           name: 'Header',
           height: 'md',
-          surface: 'muted',
+          surface: 'inverse',
           backgroundWidth: 'full',
           contentWidth: 'contained',
           align: 'center',
@@ -646,7 +713,7 @@ function blogPostTree(): BuilderNode {
         ],
       }),
       node('Section', {
-        box: { name: 'Body', padding: 'lg', contentWidth: 'contained' },
+        box: { name: 'Body', surface: 'none', padding: 'lg', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md' },
         children: [
           node('ImageDisplay', { props: { ratio: 'wide' }, bind: 'blog_post.featuredImage' }),
@@ -698,7 +765,7 @@ function pageTemplateTree(): BuilderNode {
         box: {
           name: 'Header',
           height: 'sm',
-          surface: 'subtle',
+          surface: 'inverse',
           backgroundWidth: 'full',
           contentWidth: 'contained',
           align: 'center',
@@ -708,7 +775,7 @@ function pageTemplateTree(): BuilderNode {
         children: [node('Heading', { props: { level: 'h1' }, bind: 'page.title' })],
       }),
       node('Section', {
-        box: { name: 'Body', padding: 'lg', contentWidth: 'contained' },
+        box: { name: 'Body', surface: 'none', padding: 'lg', contentWidth: 'contained' },
         layout: { direction: 'stack', gap: 'md' },
         children: [node('Text', { props: { variant: 'body' }, bind: 'page.body' })],
       }),
@@ -851,10 +918,10 @@ function newsletterEmailTree(): BuilderNode {
 
 const manifest = {
   key: 'endura-wellness',
-  version: '0.1.0',
+  version: '0.2.0',
   name: 'Wellness Clinic',
   summary:
-    'A boutique wellness-clinic site with a tailored service menu (hormone therapy, weight loss, IV & ozone), a concierge membership band, a care team, a small nutraceutical shop, a journal, and book-now calls to action — themed and ready to review.',
+    'A boutique wellness-clinic site with a tailored service menu (hormone therapy, weight loss, IV & ozone), a concierge membership band, a care team, a small nutraceutical shop, a journal, and book-now calls to action — warm, photography-led, and ready to review.',
   vertical: 'services',
   requiresModules: ['builder', 'cms', 'commerce', 'email'],
 
@@ -863,28 +930,40 @@ const manifest = {
     tagline: 'Feel like you again.',
     colors: {
       primary: '#0F766E',
-      primaryForeground: '#FFFFFF',
+      primaryForeground: '#FBF8F1',
       accent: '#C2954A',
-      secondary: '#1C3A34',
+      secondary: '#1C3A33',
     },
     fonts: { heading: 'Fraunces', body: 'Jost' },
     logoLightAssetId: 'logo',
   },
 
   // The NEW theme this blueprint ships (docs/54 D5): a named SiteTheme over the
-  // `drift` preset — soft/warm/light, matching the calm teal wellness identity.
+  // `drift` preset. The KEY to not-bland is the v2 presentation overlay — it
+  // repaints the neutral palette warm (cream page, sand sections, deep-forest
+  // text + inverse bands), so the teal/mustard brand reads boutique-organic.
   theme: {
     name: 'Endura',
     basePresetKey: 'drift',
-    presentation: { v: 2, containerWidth: '1200px' },
+    presentation: {
+      v: 2,
+      containerWidth: '1200px',
+      light: {
+        base100: '#FBF8F1', // warm cream — the page background
+        base200: '#F2E9D8', // sand — `surface:'subtle'` sections
+        base300: '#E7D9C0', // deeper sand — `surface:'muted'`
+        baseContent: '#1C3A33', // deep forest — text + `surface:'inverse'` band fill
+        border: '#E2D5BE',
+      },
+    },
     brand: {
       colorPrimary: '#0F766E',
-      colorPrimaryForeground: '#FFFFFF',
+      colorPrimaryForeground: '#FBF8F1',
       colorAccent: '#C2954A',
-      colorSecondary: '#1C3A34',
+      colorSecondary: '#1C3A33',
       fontHeading: 'Fraunces',
       fontBody: 'Jost',
-      tokens: { radiusBase: '14px' },
+      tokens: { radiusBase: '16px' },
     },
     apply: true,
   },
@@ -892,27 +971,43 @@ const manifest = {
   assets: [
     {
       id: 'logo',
-      url: 'https://ui-avatars.com/api/?name=Endura+Wellness&background=0F766E&color=FFFFFF&bold=true&size=128&format=svg',
+      url: 'https://ui-avatars.com/api/?name=Endura+Wellness&background=0F766E&color=FBF8F1&bold=true&size=128&format=svg',
       alt: 'Endura Wellness',
     },
-    // Nutraceutical product imagery (stable seeds).
+    // Nutraceutical product imagery (topical, deterministic loremflickr).
     {
       id: 'prod-multi',
-      url: pic('endura-prod-multi', 1000, 1000),
+      url: photo('supplement,vitamins', 81, 1000, 1000),
       alt: 'Daily Foundations Multivitamin',
     },
-    { id: 'prod-d3k2', url: pic('endura-prod-d3k2', 1000, 1000), alt: 'Vitamin D3 + K2' },
-    { id: 'prod-mag', url: pic('endura-prod-mag', 1000, 1000), alt: 'Magnesium Glycinate' },
-    { id: 'prod-omega', url: pic('endura-prod-omega', 1000, 1000), alt: 'Omega-3 Fish Oil' },
+    { id: 'prod-d3k2', url: photo('vitamins,bottle', 82, 1000, 1000), alt: 'Vitamin D3 + K2' },
+    { id: 'prod-mag', url: photo('supplement,pills', 83, 1000, 1000), alt: 'Magnesium Glycinate' },
+    {
+      id: 'prod-omega',
+      url: photo('fish,oil,supplement', 84, 1000, 1000),
+      alt: 'Omega-3 Fish Oil',
+    },
     {
       id: 'prod-bcomplex',
-      url: pic('endura-prod-bcomplex', 1000, 1000),
+      url: photo('vitamins,supplement', 85, 1000, 1000),
       alt: 'Methylated B-Complex',
     },
-    // Journal featured images (stable seeds).
-    { id: 'journal-1-img', url: pic('endura-journal-1', 800, 600), alt: 'Hormone balance' },
-    { id: 'journal-2-img', url: pic('endura-journal-2', 800, 600), alt: 'IV therapy session' },
-    { id: 'journal-3-img', url: pic('endura-journal-3', 800, 600), alt: 'Healthy meal prep' },
+    // Journal featured images.
+    {
+      id: 'journal-1-img',
+      url: photo('hormones,health,woman', 91, 800, 600),
+      alt: 'Hormone balance',
+    },
+    {
+      id: 'journal-2-img',
+      url: photo('iv,therapy,clinic', 92, 800, 600),
+      alt: 'IV therapy session',
+    },
+    {
+      id: 'journal-3-img',
+      url: photo('healthy,food,meal', 93, 800, 600),
+      alt: 'Healthy meal prep',
+    },
   ],
 
   // Lean on built-in content types (page, blog_post) — no custom types in v1.
