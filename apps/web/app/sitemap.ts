@@ -58,6 +58,12 @@ function staticPages(now: Date): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${BASE}/pricing`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.9,
+    },
+    {
       url: `${BASE}/security`,
       lastModified: now,
       changeFrequency: 'monthly' as const,

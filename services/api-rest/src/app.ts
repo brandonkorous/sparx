@@ -80,6 +80,7 @@ import tenantRoutes from './routes/v1/tenant.js';
 import brandRoutes from './routes/v1/brand.js';
 import propertiesRoutes from './routes/v1/properties.js';
 import blueprintRoutes from './routes/v1/blueprints/index.js';
+import marketplaceRoutes from './routes/v1/marketplace/index.js';
 import domainsRoutes from './routes/v1/domains.js';
 import legalRoutes from './routes/v1/legal.js';
 import meRoutes from './routes/v1/me.js';
@@ -525,6 +526,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(brandRoutes);
   await app.register(propertiesRoutes);
   await app.register(blueprintRoutes);
+  await app.register(marketplaceRoutes);
   await app.register(domainsRoutes);
   await app.register(legalRoutes);
   await app.register(meRoutes);

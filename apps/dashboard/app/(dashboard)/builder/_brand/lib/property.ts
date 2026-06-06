@@ -17,9 +17,20 @@ import 'server-only';
 const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
 const DEV_PROPERTY_URL = 'http://localhost:3004'; // apps/site: next dev --port 3004
 
-export function propertyOrigin(slug: string): string {
+export function propertyOrigin(
+  tenantSlug: string,
+  property?: { slug: string; isPrimary: boolean } | null
+): string {
   const devOverride = process.env.SPARX_STOREFRONT_URL;
   if (devOverride) return devOverride;
   if (process.env.NODE_ENV !== 'production') return DEV_PROPERTY_URL;
-  return `https://${slug}.${ZONE_DOMAIN}`;
+  // Multi-site (docs/49): a SECONDARY site lives at <property>.<tenant>.sparx.zone;
+  // the primary (or a single-site tenant) at <tenant>.sparx.zone. zoneSiteRoute in
+  // apps/site decodes both shapes straight from the host, so the preview tab lands
+  // on the right site without per-site DNS.
+  const host =
+    property && !property.isPrimary
+      ? `${property.slug}.${tenantSlug}.${ZONE_DOMAIN}`
+      : `${tenantSlug}.${ZONE_DOMAIN}`;
+  return `https://${host}`;
 }

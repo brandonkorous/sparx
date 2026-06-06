@@ -116,6 +116,9 @@ export interface BuilderAppProps {
    *  tenants, so passing an empty / one-element list is a no-op. */
   properties?: Property[];
   activePropertyId?: string | null;
+  /** The active web property's slug (docs/49). Scopes the Preview tab to the site
+   *  being authored via `&property=<slug>`; absent ⇒ the tenant's primary site. */
+  previewPropertySlug?: string;
 }
 
 export function BuilderApp({
@@ -128,6 +131,7 @@ export function BuilderApp({
   components = [],
   properties = [],
   activePropertyId = null,
+  previewPropertySlug,
 }: BuilderAppProps) {
   const confirm = useConfirm();
   const router = useRouter();
@@ -152,6 +156,12 @@ export function BuilderApp({
 
   const active = templates.find((t) => t.id === activeId) ?? templates[0] ?? null;
   const tree = active?.tree ?? null;
+
+  // The home singleton serves at "/" — it's the FIRST slugless singleton (mirrors
+  // the storefront's getPublishedHome, docs/49). Identifying it lets Preview open
+  // the home page — and freshly-seeded slugless pages — instead of staying
+  // disabled (a slugless page has no `/{slug}` to open).
+  const homeId = templates.find((t) => t.kind === 'singleton' && !t.slug)?.id ?? null;
 
   // Custom components keyed by component key — drives insertion (version pin),
   // the canvas's live expansion, and the layers/inspector labels (docs/53 P-B).
@@ -252,13 +262,29 @@ export function BuilderApp({
     }
   };
 
-  // Open the live site at this page's slug, showing its DRAFT (docs/45 §2.6):
-  // flush the autosave so the draft on disk is current, mint a short-lived
-  // site-preview token, then open `<origin>/<slug>?…&sparxSitePreview=<token>` in
-  // a new tab. Requires a saved slug + a resolved site origin (else disabled).
-  const canPreview = Boolean(active?.slug && siteOrigin && tenantSlug);
+  // The public path this page previews at: a slugged singleton → `/{slug}`; the
+  // home singleton → `/` (docs/49); a collection template renders per-record (no
+  // single URL) and an unrouted slugless singleton has none → null = not
+  // previewable. Without the home branch, every slugless page (incl. the home, and
+  // every freshly-seeded one) left Preview permanently disabled.
+  const previewPath: string | null =
+    active?.kind === 'singleton'
+      ? active.slug
+        ? active.slug.replace(/^\/+/, '')
+        : active.id === homeId
+          ? ''
+          : null
+      : null;
+
+  // Open the live site at this page on its DRAFT (docs/45 §2.6): flush the autosave
+  // so the draft on disk is current, mint a short-lived site-preview token, then
+  // open `<origin>/<path>?tenant=…&property=…&sparxSitePreview=…` in a new tab.
+  // `&property=` scopes it to the site being authored (docs/49) — without it the
+  // storefront falls back to the primary site. Needs a previewable path + a
+  // resolved site origin (else disabled).
+  const canPreview = previewPath !== null && Boolean(siteOrigin && tenantSlug);
   const onPreview = async () => {
-    if (!active?.slug || !siteOrigin || !tenantSlug) return;
+    if (previewPath === null || !siteOrigin || !tenantSlug) return;
     setBusy(true);
     await editor.flushSave();
     const res = await mintBuilderPreviewToken();
@@ -267,9 +293,12 @@ export function BuilderApp({
       editor.setSaveStatus('error');
       return;
     }
-    const path = active.slug.replace(/^\/+/, '');
+    const propertyQuery = previewPropertySlug
+      ? `&property=${encodeURIComponent(previewPropertySlug)}`
+      : '';
     const url =
-      `${siteOrigin}/${path}?tenant=${encodeURIComponent(tenantSlug)}` +
+      `${siteOrigin}/${previewPath}?tenant=${encodeURIComponent(tenantSlug)}` +
+      propertyQuery +
       `&sparxSitePreview=${encodeURIComponent(res.data.token)}`;
     window.open(url, '_blank', 'noopener');
   };
@@ -591,7 +620,11 @@ export function BuilderApp({
               leftIcon={<Eye className="h-3.5 w-3.5" />}
               disabled={busy || !canPreview}
               title={
-                canPreview ? 'Open this page’s draft on the live site' : 'Set a page URL to preview'
+                canPreview
+                  ? 'Open this page’s draft on the live site'
+                  : active?.kind === 'collection'
+                    ? 'Collection templates preview per record, not as one page'
+                    : 'This page has no public URL yet'
               }
               onClick={() => void onPreview()}
             >

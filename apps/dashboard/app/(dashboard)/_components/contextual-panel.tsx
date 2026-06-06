@@ -1,16 +1,20 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
-import { ModuleProvider, SidebarItem, SidebarNav, Text } from '@sparx/ui';
-import { Home } from 'lucide-react';
-import { getManifestForPath, moduleManifests } from '../_shell/registry';
+import { ModuleProvider, SidebarNav, Text } from '@sparx/ui';
+import type { ModuleManifest } from '@sparx/ui/shell';
+import { getManifestForPath } from '../_shell/registry';
 import { ModuleSectionItems } from './module-section-nav';
+import { SettingsSectionItems } from './settings-section-nav';
 
 // The contextual panel — the second column of the shell nav (docs/24 §5). It is
 // purely about the current context:
 //   • inside a module  → that module's sections (the intra-module nav)
-//   • at platform level → a labeled directory of the enabled modules
+//   • inside settings  → the settings sub-pages (settings has no module color,
+//     so it borrows the same section slot under a neutral "platform" provider)
+//   • anywhere else    → nothing; the shell hides the column entirely. The rail
+//     already lists every module + Home/Marketplace/SEO/Settings, so a
+//     platform-level panel would only echo the rail.
 // Cross-module shortcuts (Favorites, Recents) live in the primary rail, not
 // here, so the panel never competes with the rail for the same job.
 
@@ -18,6 +22,33 @@ interface ContextualPanelProps {
   pathname: string | null;
   enabledModules: readonly string[];
   tenantName: string;
+}
+
+export type PanelContext =
+  | { kind: 'module'; manifest: ModuleManifest }
+  | { kind: 'settings' }
+  | { kind: 'none' };
+
+function isSettingsPath(pathname: string | null): boolean {
+  return pathname === '/settings' || (pathname?.startsWith('/settings/') ?? false);
+}
+
+// What the contextual panel should render for a given route. Shared with the
+// shell so it can hide the panel column outright when the answer is `none`
+// (a React element always renders to *something*, so the shell can't infer
+// emptiness from the node alone).
+export function resolvePanelContext(
+  pathname: string | null,
+  enabledModules: readonly string[]
+): PanelContext {
+  const manifest = pathname ? getManifestForPath(pathname) : undefined;
+  if (manifest && enabledModules.includes(manifest.id)) {
+    return { kind: 'module', manifest };
+  }
+  if (isSettingsPath(pathname)) {
+    return { kind: 'settings' };
+  }
+  return { kind: 'none' };
 }
 
 function PanelHead({ eyebrow, title, dot }: { eyebrow: string; title: string; dot?: boolean }) {
@@ -39,44 +70,37 @@ function PanelHead({ eyebrow, title, dot }: { eyebrow: string; title: string; do
 }
 
 export function ContextualPanel({ pathname, enabledModules, tenantName }: ContextualPanelProps) {
-  const manifest = pathname ? getManifestForPath(pathname) : undefined;
-  const activeModule = manifest && enabledModules.includes(manifest.id) ? manifest : undefined;
+  const ctx = resolvePanelContext(pathname, enabledModules);
 
-  if (activeModule) {
+  if (ctx.kind === 'module') {
     return (
-      <ModuleProvider module={activeModule.id} className="flex h-full flex-col">
-        <PanelHead eyebrow="Module" title={activeModule.label} dot />
+      <ModuleProvider module={ctx.manifest.id} className="flex h-full flex-col">
+        <PanelHead eyebrow="Module" title={ctx.manifest.label} dot />
         <div className="min-h-0 flex-1 overflow-y-auto">
           <SidebarNav label="Sections" className="gap-0.5 px-2 pb-3">
-            <ModuleSectionItems manifest={activeModule} pathname={pathname} />
+            <ModuleSectionItems manifest={ctx.manifest} pathname={pathname} />
           </SidebarNav>
         </div>
       </ModuleProvider>
     );
   }
 
-  // Platform level — a labeled directory of the modules this tenant can open.
-  const modules = moduleManifests.filter((m) => enabledModules.includes(m.id));
-  return (
-    <div className="flex h-full flex-col">
-      <PanelHead eyebrow="Workspace" title={tenantName} />
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <SidebarNav label="Modules" className="px-2 pb-3">
-          <SidebarItem asChild active={pathname === '/'} icon={<Home className="h-4 w-4" />}>
-            <Link href="/">Home</Link>
-          </SidebarItem>
-          {modules.map((m) => {
-            const Icon = m.icon;
-            const active =
-              pathname === m.routePrefix || (pathname?.startsWith(`${m.routePrefix}/`) ?? false);
-            return (
-              <SidebarItem key={m.id} asChild active={active} icon={<Icon className="h-4 w-4" />}>
-                <Link href={m.routePrefix}>{m.label}</Link>
-              </SidebarItem>
-            );
-          })}
-        </SidebarNav>
-      </div>
-    </div>
-  );
+  if (ctx.kind === 'settings') {
+    // Settings isn't a module (no color of its own) — wrap in the neutral
+    // "platform" provider so the active row picks up a sensible highlight.
+    return (
+      <ModuleProvider module="platform" className="flex h-full flex-col">
+        <PanelHead eyebrow="Settings" title={tenantName} />
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <SidebarNav label="Settings" className="gap-0.5 px-2 pb-3">
+            <SettingsSectionItems pathname={pathname} />
+          </SidebarNav>
+        </div>
+      </ModuleProvider>
+    );
+  }
+
+  // No contextual nav here — the shell drops the panel column (see
+  // resolvePanelContext usage in dashboard-shell.tsx).
+  return null;
 }

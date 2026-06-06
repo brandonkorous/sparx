@@ -1126,10 +1126,39 @@ const DEFS: ComponentDef[] = [
     // Edge-to-edge: the routed page manages its own width (its sections do
     // contained/full themselves), so the outlet never constrains it.
     defaults: { box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' } },
+    // No real page is framed in the layout editor, so render a ghosted SAMPLE
+    // page (hero + feature grid, in the tenant brand) at a realistic height. It
+    // anchors the header/footer chrome against representative content instead of a
+    // thin empty slot. Purely decorative + aria-hidden — clicking still selects the
+    // single Outlet node; on the live site the routed page mounts here.
     renderLeaf: () => (
       <div className="bx-outlet">
-        <SquareDashed className="bx-outlet__icon" aria-hidden />
-        <span className="bx-outlet__label">Page content renders here</span>
+        <span className="bx-outlet__tag">
+          <SquareDashed className="bx-outlet__tag-icon" aria-hidden />
+          Page content renders here
+        </span>
+        <div className="bx-outlet__sample" aria-hidden>
+          <div className="bx-outlet__hero">
+            <span className="bx-outlet__bar bx-outlet__bar--eyebrow" />
+            <span className="bx-outlet__bar bx-outlet__bar--title" />
+            <span className="bx-outlet__bar bx-outlet__bar--title bx-outlet__bar--title-2" />
+            <span className="bx-outlet__bar bx-outlet__bar--lede" />
+            <span className="bx-outlet__cta" />
+          </div>
+          <div className="bx-outlet__section">
+            <span className="bx-outlet__bar bx-outlet__bar--heading" />
+            <div className="bx-outlet__grid">
+              {['a', 'b', 'c'].map((k) => (
+                <div key={k} className="bx-outlet__card">
+                  <span className="bx-outlet__thumb" />
+                  <span className="bx-outlet__bar bx-outlet__bar--card-title" />
+                  <span className="bx-outlet__bar bx-outlet__bar--line" />
+                  <span className="bx-outlet__bar bx-outlet__bar--line bx-outlet__bar--short" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     ),
   },

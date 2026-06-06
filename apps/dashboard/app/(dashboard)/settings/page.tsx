@@ -13,84 +13,7 @@ import {
   PageHeader,
   Stack,
 } from '@sparx/ui';
-import {
-  CreditCard,
-  Globe,
-  KeyRound,
-  Layers,
-  Plug,
-  Settings as SettingsIcon,
-  Shield,
-  Users,
-} from 'lucide-react';
-
-interface SettingsGroup {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  href: string;
-  ready: boolean;
-}
-
-const GROUPS: SettingsGroup[] = [
-  {
-    icon: <SettingsIcon className="h-4 w-4" />,
-    title: 'General',
-    description: 'Store name, locale, currency, time zone.',
-    href: '/settings/general',
-    ready: true,
-  },
-  {
-    icon: <Users className="h-4 w-4" />,
-    title: 'Team',
-    description: 'Invite staff, assign roles, audit access.',
-    href: '/settings',
-    ready: false,
-  },
-  {
-    icon: <Layers className="h-4 w-4" />,
-    title: 'Modules',
-    description: 'Activate or deactivate platform modules for this tenant.',
-    href: '/settings/modules',
-    ready: true,
-  },
-  {
-    icon: <CreditCard className="h-4 w-4" />,
-    title: 'Billing',
-    description: 'Subscription, invoices, payment method.',
-    href: '/settings',
-    ready: false,
-  },
-  {
-    icon: <Globe className="h-4 w-4" />,
-    title: 'Sites & domains',
-    description:
-      'Manage your sites (web properties), switch which one you’re editing, and connect custom domains.',
-    href: '/settings/sites',
-    ready: true,
-  },
-  {
-    icon: <KeyRound className="h-4 w-4" />,
-    title: 'AI Integrations',
-    description: 'Issue scoped API keys for Claude, ChatGPT, and Copilot.',
-    href: '/settings/ai-integrations',
-    ready: true,
-  },
-  {
-    icon: <Plug className="h-4 w-4" />,
-    title: 'Integrations',
-    description: 'Stripe, shipping carriers, accounting, ERPs.',
-    href: '/settings',
-    ready: false,
-  },
-  {
-    icon: <Shield className="h-4 w-4" />,
-    title: 'Security',
-    description: 'MFA, session policy, IP allowlist, audit log.',
-    href: '/settings',
-    ready: false,
-  },
-];
+import { SETTINGS_NAV } from './nav';
 
 export default function SettingsPage() {
   return (
@@ -102,32 +25,35 @@ export default function SettingsPage() {
         />
 
         <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
-          {GROUPS.map((g) => (
-            <Card key={g.title}>
-              <CardHeader>
-                <Stack direction="row" align="center" gap={2}>
-                  <span aria-hidden className="text-[var(--color-text-secondary)]">
-                    {g.icon}
-                  </span>
-                  <CardTitle>{g.title}</CardTitle>
-                  {!g.ready && <Badge variant="outline">Soon</Badge>}
-                </Stack>
-                <CardDescription>{g.description}</CardDescription>
-              </CardHeader>
-              <CardContent />
-              <CardFooter>
-                {g.ready ? (
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href={g.href}>Open</Link>
-                  </Button>
-                ) : (
-                  <Button variant="ghost" size="sm" disabled>
-                    Open
-                  </Button>
-                )}
-              </CardFooter>
-            </Card>
-          ))}
+          {SETTINGS_NAV.map((g) => {
+            const Icon = g.icon;
+            return (
+              <Card key={g.id}>
+                <CardHeader>
+                  <Stack direction="row" align="center" gap={2}>
+                    <span aria-hidden className="text-[var(--color-text-secondary)]">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <CardTitle>{g.label}</CardTitle>
+                    {!g.ready && <Badge variant="outline">Soon</Badge>}
+                  </Stack>
+                  <CardDescription>{g.description}</CardDescription>
+                </CardHeader>
+                <CardContent />
+                <CardFooter>
+                  {g.ready ? (
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link href={g.href}>Open</Link>
+                    </Button>
+                  ) : (
+                    <Button variant="ghost" size="sm" disabled>
+                      Open
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            );
+          })}
         </Grid>
       </Stack>
     </Container>

@@ -1,9 +1,11 @@
 # Sparx Platform — Dashboard Shell
 
-**Version:** 1.4
+**Version:** 1.5
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-06
 
+> **1.5 (2026-06-06):** §5 refinement. The contextual panel no longer mirrors the rail at the platform level — outside a module it shows **nothing and the column collapses** (the rail already lists every module + Home/Templates/SEO/Settings). The one exception is **Settings**, which is not a module but has sub-pages: the panel borrows the section slot to navigate them (Overview + groups, under a neutral "platform" provider; not-yet-built groups render disabled). The settings list has a single source of truth shared with the settings landing page.
+>
 > **1.3 (2026-05-31):** Implementation refinements to §5. The rail is **collapsible** (persisted icon-only ↔ icon+label toggle), and **Favorites + Recents live in the rail** (inline groups), not the panel — so the contextual panel is purely the current module's sections, and at platform level shows a labeled directory of the enabled modules.
 >
 > **1.2 (2026-05-31):** Sidebar moves to a **rail + contextual panel** model (§5) — a thin icon rail (modules, Home, Settings, search, Favorites/Recents) plus a contextual panel whose contents follow context: a module's sections when inside one. This makes intra-module navigation a shell concern, so the working area drops its in-content section tabs and card-grid-as-nav (see [doc 34](34-dashboard-working-area-standard.md) §11).
@@ -112,7 +114,7 @@ export const moduleManifests = [
 
 Manifests for inactive modules are still imported (tree-shaking-friendly because they're plain objects) but are filtered against the tenant's active-module set before render. A disabled module's sections and actions never appear in the sidebar, ⌘K, or favorites — even if a user previously favorited one.
 
-A special, non-manifest **Home** item lives on the rail (above the module icons) and heads the contextual panel's module directory at the platform level. It is not a module, has no color, and is hardcoded in the shell.
+A special, non-manifest **Home** item lives on the rail (above the module icons). It is not a module, has no color, and is hardcoded in the shell. There is no platform-level panel for it to head — outside a module (and outside Settings) the contextual panel collapses (§5.1).
 
 ### 3.3 Action ID Stability
 
@@ -238,7 +240,7 @@ Supported affordances:
 
 ### 5.1 Layout — rail + contextual panel
 
-The sidebar is two columns: a constant **icon rail** and a **contextual panel** whose contents follow where you are. The rail answers "which module"; the panel answers "which section" (inside a module) or surfaces cross-module shortcuts (at the platform level). One mechanism, always present, scaling to modules with 10+ sections where a horizontal tab strip cannot.
+The sidebar is two columns: a constant **icon rail** and a **contextual panel** whose contents follow where you are. The rail answers "which module"; the panel answers "which section" (inside a module, or in Settings). When there's no section context the panel **collapses** and the rail stands alone — one mechanism, present when it has something to say, scaling to modules with 10+ sections where a horizontal tab strip cannot.
 
 ```
 ┌────┬───────────────────────┐
@@ -265,10 +267,11 @@ The rail is **collapsible**: a persisted toggle at its foot (`sparx:rail-expande
 
 **The contextual panel** changes contents by context — it is _not_ a mode flip, just different data:
 
-| Context                                      | Panel shows                                                                                                                |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Inside a module (`/commerce/*`, `/crm/*`, …) | That module's `sections` from its manifest, active section highlighted. Header = module name in module color.              |
-| Platform level (`/`, `/settings`)            | A **labeled directory** of the tenant's enabled modules (Home + module names), since there's no module context to fill it. |
+| Context                                      | Panel shows                                                                                                                                                               |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inside a module (`/commerce/*`, `/crm/*`, …) | That module's `sections` from its manifest, active section highlighted. Header = module name in module color.                                                             |
+| Settings (`/settings/*`)                     | The settings sub-pages (Overview + groups), under a neutral "platform" provider. Settings is not a module but has sub-pages worth a panel; not-yet-built groups disabled. |
+| Anywhere else (`/`, `/templates`, `/seo`, …) | **Nothing — the column collapses.** A platform-level panel would only echo the rail, which already carries the module switcher + Home/Templates/SEO/Settings.             |
 
 Favorites and Recents stay reachable everywhere because they live in the rail (and via ⌘K), while the panel gives focused, vertical section navigation the moment you enter a module. The **tenant/workspace switcher** moves entirely to the breadcrumb's Workspace segment (§4.2) and the rail's account control — it is no longer a sidebar header.
 

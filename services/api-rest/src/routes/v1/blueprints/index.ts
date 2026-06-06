@@ -74,6 +74,26 @@ function serializeInstall(row: InstallRow) {
   };
 }
 
+/** Detail view — adds the id-map (what was created) so the dashboard "Review &
+ *  go live" surface can list each artifact and deep-link into its editor. */
+function serializeInstallDetail(row: InstallRow) {
+  const result = (row.result ?? {}) as Partial<InstallResult>;
+  return {
+    ...serializeInstall(row),
+    artifacts: {
+      pages: result.pages ?? [],
+      products: result.products ?? [],
+      content: result.content ?? [],
+      emails: result.emails ?? [],
+      components: result.components ?? [],
+      categories: result.categories ?? {},
+      collections: result.collections ?? {},
+      theme: result.theme ?? null,
+      layoutId: result.layoutId ?? null,
+    },
+  };
+}
+
 const blueprintRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/blueprints', async (request) => {
     const auth = requireRole(request, 'viewer');
@@ -153,7 +173,7 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       tx.tenantBlueprintInstall.findFirst({ where: { id } })
     );
     if (!row) throw notFound('Install', id);
-    return ok(serializeInstall(row));
+    return ok(serializeInstallDetail(row));
   });
 
   app.post('/v1/blueprints/installs/:id/go-live', async (request) => {

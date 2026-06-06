@@ -5,15 +5,16 @@
 // @sparx/ui/shell, icons from lucide-react, nothing else.
 
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Gauge, Globe, LayoutTemplate, Send, Settings, ShieldOff, Workflow } from 'lucide-react';
+import { Globe, LayoutTemplate, Send, Settings, ShieldOff, Workflow } from 'lucide-react';
 
 export const emailManifest: ModuleManifest = {
   id: 'email',
   label: 'Email',
   icon: Send,
   routePrefix: '/email',
+  // The contextual panel auto-injects an "Overview" row → `routePrefix`
+  // (module-section-nav.tsx); sections list only the sub-surfaces.
   sections: [
-    { id: 'overview', label: 'Overview', icon: Gauge, href: '/email' },
     { id: 'broadcasts', label: 'Broadcasts', icon: Send, href: '/email/broadcasts' },
     { id: 'automations', label: 'Automations', icon: Workflow, href: '/email/automations' },
     { id: 'templates', label: 'Templates', icon: LayoutTemplate, href: '/email/templates' },

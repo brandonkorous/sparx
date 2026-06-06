@@ -144,7 +144,7 @@ export default function QuickstartPage() {
       <Callout type="info" title="Prerequisites">
         You need a Sparx tenant with the <strong>CRM</strong> module active, and an existing
         customer to attach the order to. No tenant yet?{' '}
-        <DocLink href="/#pricing">Create one free</DocLink> — live in under five minutes, no card
+        <DocLink href="/pricing">Create one free</DocLink> — live in under five minutes, no card
         required.
       </Callout>
 

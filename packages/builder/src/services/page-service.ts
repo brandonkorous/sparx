@@ -20,7 +20,7 @@ import {
   type PublishedPageDto,
 } from '@sparx/builder-schemas';
 import type { BuilderPage, Prisma } from '@sparx/db';
-import { withTenant } from '@sparx/db';
+import { withTenant, type TxClient } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
@@ -87,16 +87,87 @@ async function assertValidRecordType(ctx: ServiceContext, recordType: string): P
   }
 }
 
+// The HOME starter — the slugless landing singleton, pulled from STARTER_PAGES so
+// an injected default is identical to a freshly-seeded site's home.
+const HOME_STARTER = STARTER_PAGES.find((s) => s.key === 'home');
+
+// Inject the slugless landing singleton (the site's `/`, getPublishedHome) when the
+// property has none. STARTER_PAGES seeds it on an EMPTY property, but any path that
+// creates pages FIRST — a blueprint shipping only collection templates, a fixture,
+// or deleting the home — would otherwise leave the property permanently home-less
+// (listOrSeed only seeds when the table is empty). A site with no `/` has no front
+// door and the Builder can't author one. Idempotent: a no-op once a slugless
+// singleton exists. Returns the row it created, or null if a home already existed.
+async function ensureHomeTx(tx: TxClient, ctx: PropertyContext): Promise<BuilderPage | null> {
+  const existing = await tx.builderPage.findFirst({
+    where: { kind: 'singleton', slug: null, propertyId: ctx.propertyId },
+    select: { id: true },
+  });
+  if (existing || !HOME_STARTER) return null;
+  // Land the home FIRST in the catalog — shift any existing pages down one.
+  await tx.builderPage.updateMany({
+    where: { propertyId: ctx.propertyId },
+    data: { position: { increment: 1 } },
+  });
+  const home = await tx.builderPage.create({
+    data: {
+      tenantId: ctx.tenantId,
+      propertyId: ctx.propertyId,
+      name: HOME_STARTER.name,
+      kind: HOME_STARTER.kind,
+      recordType: null,
+      draftTree: asJson(HOME_STARTER.tree),
+      position: 0,
+    },
+  });
+  await writeAuditLog({
+    tx,
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    actorType: 'user',
+    action: 'builder.pages.home_ensured',
+    entityType: 'BuilderPage',
+    entityId: home.id,
+    diff: { after: { name: home.name } },
+  });
+  return home;
+}
+
+/** Ensure the property has a home page (the slugless landing singleton), injecting
+ *  the default starter when absent — so no provisioning path (a blueprint that
+ *  ships only collection templates, a fixture, a deleted home) can leave a site
+ *  without a front door. Idempotent. Returns the created page, or null if a home
+ *  already existed. */
+export function ensureHome(ctx: PropertyContext): Promise<BuilderPageDto | null> {
+  return withTenant(ctx, async (tx) => {
+    const home = await ensureHomeTx(tx, ctx);
+    return home ? toDto(home) : null;
+  });
+}
+
 /** List the tenant's pages. On first use (zero rows) seed the curated starter
- *  set — the lazy-materialization idiom (cf. getOrCreateConfig). Idempotent:
- *  only seeds when empty. */
+ *  set — the lazy-materialization idiom (cf. getOrCreateConfig). Also heals a
+ *  home-less property (pages but no slugless singleton) by injecting the default
+ *  home, so every site that's ever opened has a `/`. Idempotent. */
 export function listOrSeed(ctx: PropertyContext): Promise<BuilderPageDto[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.builderPage.findMany({
       where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
-    if (rows.length > 0) return rows.map(toDto);
+    if (rows.length > 0) {
+      // Pages exist but none is a home (e.g. a blueprint shipped only collection
+      // templates) — inject the default landing page, then re-read in order.
+      const hasHome = rows.some((r) => r.kind === 'singleton' && r.slug === null);
+      if (!hasHome && (await ensureHomeTx(tx, ctx))) {
+        const healed = await tx.builderPage.findMany({
+          where: { propertyId: ctx.propertyId },
+          orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+        });
+        return healed.map(toDto);
+      }
+      return rows.map(toDto);
+    }
 
     await tx.builderPage.createMany({
       data: STARTER_PAGES.map((s, i) => ({

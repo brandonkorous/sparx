@@ -238,3 +238,165 @@
   gap: 8px;
   z-index: 49;
 }
+
+/* ── PRICING: switchboard, ledger, feature accordion ─────────── */
+
+/* Hero two-column: module rail + sticky plan panel → stacks on tablet. */
+.mkt-switchboard {
+  display: flex;
+  align-items: flex-start;
+  gap: 56px;
+}
+@media (max-width: 1024px) {
+  .mkt-switchboard {
+    flex-direction: column;
+    gap: 36px;
+  }
+}
+.mkt-pricing-plan {
+  width: 412px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 88px;
+}
+@media (max-width: 1024px) {
+  .mkt-pricing-plan {
+    width: 100%;
+    position: static;
+  }
+}
+
+/* The big switchboard CTA — a bespoke pricing control, not a re-skinned Button. */
+.mkt-launch {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 15px;
+  background-color: var(--sparx-primary);
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 16px;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.mkt-launch:hover {
+  background-color: #4f46e5;
+}
+
+/* Native <details> disclosure — hide default marker, pointer cursor. */
+.mkt-summary {
+  list-style: none;
+  cursor: pointer;
+}
+.mkt-summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Cost-savings ledger row: module → what you'd buy → their price. */
+.mkt-ledger-head,
+.mkt-ledger-row {
+  display: grid;
+  grid-template-columns: 1.1fr 24px 1.4fr 96px;
+  align-items: center;
+  gap: 20px;
+  padding: 17px 26px;
+}
+@media (max-width: 560px) {
+  .mkt-ledger-head {
+    display: none;
+  }
+  .mkt-ledger-row {
+    grid-template-columns: 1fr auto;
+    gap: 6px 12px;
+    padding: 16px 20px;
+  }
+  .mkt-ledger-vs {
+    display: none;
+  }
+  .mkt-ledger-mod {
+    grid-column: 1 / -1;
+  }
+  .mkt-ledger-amt {
+    text-align: right;
+  }
+}
+
+/* Feature accordion (one <details> per module). */
+.mkt-ft-summary {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 26px;
+}
+.mkt-ft-summary:hover {
+  background-color: #fcfcfd;
+}
+.mkt-ft-chev {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: #c4c4cc;
+  transition: transform 0.2s ease;
+}
+.mkt-ft-module[open] .mkt-ft-chev {
+  transform: rotate(180deg);
+}
+.mkt-ft-feats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px 24px;
+}
+.mkt-ft-feats > span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: calc(50% - 12px);
+  min-width: 230px;
+  font-size: 13.5px;
+  line-height: 18px;
+  color: var(--color-text-secondary);
+}
+@media (max-width: 680px) {
+  .mkt-ft-summary {
+    flex-wrap: wrap;
+    gap: 5px 14px;
+    padding: 18px 20px;
+  }
+  .mkt-ft-name {
+    width: auto !important;
+    flex: 1 1 auto;
+    order: 1;
+  }
+  .mkt-ft-price {
+    width: auto !important;
+    order: 2;
+  }
+  .mkt-ft-chev {
+    order: 3;
+    margin-left: auto;
+  }
+  .mkt-ft-repl {
+    flex: 1 1 100% !important;
+    order: 4;
+  }
+  .mkt-ft-count {
+    display: none;
+  }
+  .mkt-ft-body {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+/* FAQ disclosure — the plus icon rotates to an x when open. */
+.mkt-faq-icon {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.mkt-faq-item[open] .mkt-faq-icon {
+  transform: rotate(45deg);
+}

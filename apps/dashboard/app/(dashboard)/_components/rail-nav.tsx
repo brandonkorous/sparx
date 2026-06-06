@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ModuleProvider, useRailExpanded, Wordmark } from '@sparx/ui';
-import { Clock, Gauge, Home, LayoutTemplate, Plus, Search, Settings, Star } from 'lucide-react';
+import { Clock, Gauge, Home, Plus, Search, Settings, Star, Store } from 'lucide-react';
 import {
   moduleManifests,
   findFavoritableById,
@@ -54,8 +54,11 @@ function tileIconClass(active: boolean) {
 // Module tiles always carry their own module color on the glyph, active or not,
 // so the rail reads as a color-coded module switcher (Commerce orange, CMS teal,
 // …). Each module tile is wrapped in its own ModuleProvider, so --module-active
-// resolves per-module here. The cross-module shortcuts (Home/Search/Settings/…)
-// keep the neutral tileIconClass since they have no module color.
+// resolves per-module here. Favorites/Recents items reuse this too — each is a
+// module-owned section/action, so it rides under its module's ModuleProvider and
+// the glyph adopts that module's color (a CRM favorite reads cyan, a Commerce
+// one orange). Only the true platform shortcuts (Home/Search/Settings/Marketplace/
+// SEO) keep the neutral tileIconClass since they have no module color.
 const MODULE_TILE_ICON =
   'inline-flex h-4 w-4 shrink-0 items-center justify-center text-[var(--module-active)]';
 
@@ -212,19 +215,20 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
         </Link>
       )}
 
-      {/* Templates — the blueprint marketplace (docs/54): one-click install of a
-          whole themed site onto the active property. Platform-level, not a module,
-          so it pins to the bottom cluster beside SEO + Settings. */}
+      {/* Marketplace — blueprints now, integrations soon (docs/54): one-click
+          install of a whole themed site, with more categories to come. Platform-
+          level, not a module, so it pins to the bottom cluster beside SEO +
+          Settings. */}
       <Link
-        href="/templates"
-        title="Templates"
-        aria-label="Templates"
-        className={tileClass(isActivePath(pathname, '/templates'), expanded)}
+        href="/marketplace"
+        title="Marketplace"
+        aria-label="Marketplace"
+        className={tileClass(isActivePath(pathname, '/marketplace'), expanded)}
       >
-        <span className={tileIconClass(isActivePath(pathname, '/templates'))}>
-          <LayoutTemplate className="h-4 w-4" />
+        <span className={tileIconClass(isActivePath(pathname, '/marketplace'))}>
+          <Store className="h-4 w-4" />
         </span>
-        {expanded && <span className="flex-1 truncate text-left">Templates</span>}
+        {expanded && <span className="flex-1 truncate text-left">Marketplace</span>}
       </Link>
 
       {/* SEO is a cross-cutting platform tool (audits every module's pages), not
@@ -295,20 +299,23 @@ function RailGroup({ label, groupIcon: GroupIcon, items, pathname, expanded }: R
       {items.map((item) => {
         const Icon = item.icon;
         const active = isActivePath(pathname, item.href);
+        // Wrap each item in its module's provider so the glyph (and the active
+        // tint) resolve to that module's color — mirrors the module tiles above.
         return (
-          <Link
-            key={item.id}
-            href={item.href}
-            title={item.label}
-            aria-label={item.label}
-            aria-current={active ? 'page' : undefined}
-            className={tileClass(active, expanded)}
-          >
-            <span className={tileIconClass(active)}>
-              <Icon className="h-4 w-4" />
-            </span>
-            {expanded && <span className="flex-1 truncate text-left">{item.label}</span>}
-          </Link>
+          <ModuleProvider key={item.id} module={item.moduleId}>
+            <Link
+              href={item.href}
+              title={item.label}
+              aria-label={item.label}
+              aria-current={active ? 'page' : undefined}
+              className={tileClass(active, expanded)}
+            >
+              <span className={MODULE_TILE_ICON}>
+                <Icon className="h-4 w-4" />
+              </span>
+              {expanded && <span className="flex-1 truncate text-left">{item.label}</span>}
+            </Link>
+          </ModuleProvider>
         );
       })}
     </div>

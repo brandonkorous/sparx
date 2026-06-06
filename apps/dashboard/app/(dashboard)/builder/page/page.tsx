@@ -85,13 +85,12 @@ async function loadLayout(): Promise<BuilderLayoutDto | null> {
   }
 }
 
-// The tenant slug + live-site origin, so the editor's "Preview" tab can open the
-// page's draft on the real site (docs/45 §2.6). Defensive: a failed read yields
-// null → the Preview button stays disabled, the rest of the editor is unaffected.
-async function loadSiteContext(): Promise<{ slug: string; origin: string } | null> {
+// The tenant slug for the editor's "Preview" tab (docs/45 §2.6) — combined with
+// the ACTIVE web property below to open the right site's draft. Defensive: a
+// failed read yields null → Preview disabled, the rest of the editor unaffected.
+async function loadTenantSlug(): Promise<string | null> {
   try {
-    const tenant = await getTenant();
-    return { slug: tenant.slug, origin: propertyOrigin(tenant.slug) };
+    return (await getTenant()).slug;
   } catch {
     return null;
   }
@@ -102,24 +101,46 @@ interface BuilderPageRouteProps {
 }
 
 export default async function BuilderPageRoute({ searchParams }: BuilderPageRouteProps) {
-  const [sp, themeCss, pages, catalog, layout, site, components, properties, activePropertyId] =
-    await Promise.all([
-      searchParams,
-      canvasThemeCss(),
-      loadPages(),
-      loadCatalog(),
-      loadLayout(),
-      loadSiteContext(),
-      listComponentsFull(),
-      // Multi-site switcher data (docs/49 Phase 3). Defensive: a failed read just
-      // hides the switcher (single-site behavior).
-      listProperties().catch(() => [] as Property[]),
-      getActivePropertyId(),
-    ]);
+  const [
+    sp,
+    themeCss,
+    pages,
+    catalog,
+    layout,
+    tenantSlug,
+    components,
+    properties,
+    activePropertyId,
+  ] = await Promise.all([
+    searchParams,
+    canvasThemeCss(),
+    loadPages(),
+    loadCatalog(),
+    loadLayout(),
+    loadTenantSlug(),
+    listComponentsFull(),
+    // Multi-site switcher data (docs/49 Phase 3). Defensive: a failed read just
+    // hides the switcher (single-site behavior).
+    listProperties().catch(() => [] as Property[]),
+    getActivePropertyId(),
+  ]);
   // Deep-link target: `?page=<id>` opens that page active on mount (the SEO
   // overview's "Open in builder" link points here). The editor falls back to
   // the first page when it's absent or not found.
   const initialPageId = typeof sp.page === 'string' ? sp.page : undefined;
+  // The web property the dashboard is currently authoring (the site switcher's
+  // active site, else the primary). Preview opens THIS site's draft: multi-site
+  // made the storefront read-path property-scoped (docs/49), so the preview link
+  // must name the property — without it the site falls back to the primary (or a
+  // stale dev cookie) and the page you're editing won't resolve. Mirrors
+  // getActiveProperty() in lib/sites.ts (cookie id → primary → first).
+  const activeProperty =
+    (activePropertyId ? properties.find((p) => p.id === activePropertyId) : undefined) ??
+    properties.find((p) => p.isPrimary) ??
+    properties[0] ??
+    null;
+  const siteOrigin = tenantSlug ? propertyOrigin(tenantSlug, activeProperty) : undefined;
+  const previewPropertySlug = activeProperty?.slug;
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
@@ -127,8 +148,9 @@ export default async function BuilderPageRoute({ searchParams }: BuilderPageRout
         initialPages={pages}
         bindingCatalog={catalog}
         layoutTree={layout?.tree ?? null}
-        tenantSlug={site?.slug}
-        siteOrigin={site?.origin}
+        tenantSlug={tenantSlug ?? undefined}
+        siteOrigin={siteOrigin}
+        previewPropertySlug={previewPropertySlug}
         initialPageId={initialPageId}
         components={components}
         properties={properties}

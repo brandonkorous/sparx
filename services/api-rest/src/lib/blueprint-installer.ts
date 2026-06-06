@@ -587,6 +587,19 @@ export async function installBlueprint(
       });
     }
 
+    // A blueprint may ship only collection templates (or omit a home). Guarantee a
+    // landing page so the property has a `/` — and register it for the go-live
+    // publish so the storefront root renders immediately, not the fallback.
+    const injectedHome = await pageService.ensureHome(propCtx);
+    if (injectedHome) {
+      result.pages.push({
+        name: injectedHome.name,
+        id: injectedHome.id,
+        recordType: null,
+        slug: null,
+      });
+    }
+
     // 10. Emails (draft unless publish flagged).
     for (const e of blueprint.emails) {
       const email = await emailService.create(ctx, {
@@ -743,11 +756,12 @@ export async function goLiveInstall(ctxIn: InstallContext, installId: string): P
  *  reverse dependency order so "has descendants" / "is placed" / FK guards don't
  *  block teardown. Destructive — gated behind a confirm in the dashboard.
  *
- *  1a limitation: commerce rows (products/categories/collections) soft-delete via
- *  the service, so their handles stay reserved — a later reinstall may suffix them
- *  (`widget` → `widget-2`). Pages/layout/emails/components/theme hard delete; content
- *  hard deletes and cascades its revisions + references. Cleaned up when
- *  find-or-create / hard-delete lands with the worker (§13 step 1b). */
+ *  Commerce rows (products/categories/collections) soft-delete via the service, so
+ *  their handles/SKUs stay reserved after a reset — but install step 6·0 purges
+ *  those exact tombstones before recreating, so a reinstall reuses the handles
+ *  cleanly (no `widget` → `widget-2` suffixing). Pages/emails/components/theme hard
+ *  delete; content hard deletes and cascades its revisions + references; the layout
+ *  is deactivated then removed so a LIVE install tears down fully. */
 export async function resetInstall(ctxIn: InstallContext, installId: string): Promise<void> {
   const { tenantId, userId, propertyId, logger } = ctxIn;
   const ctx = { tenantId, userId: userId ?? undefined };

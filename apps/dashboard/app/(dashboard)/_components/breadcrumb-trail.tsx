@@ -99,9 +99,15 @@ export function BreadcrumbTrail({
   // Only a multi-site tenant gets the Site segment (docs/49 §6 — single-site
   // tenants see nothing new).
   const activeSite = sites.length > 1 ? resolveActiveSite(sites, activePropertyId) : undefined;
+  // Suppress the Site crumb when it merely echoes the workspace name — the primary
+  // property is commonly named after the tenant, which otherwise renders a
+  // duplicate "Acme / Acme". The crumb (and its switcher) returns as soon as the
+  // active site has a distinct name.
+  const showSite =
+    activeSite != null && activeSite.name.trim().toLowerCase() !== tenantName.trim().toLowerCase();
 
   const segments: TrailSegment[] = [{ kind: 'tenant', label: tenantName, href: '/' }];
-  if (activeSite) {
+  if (showSite && activeSite) {
     segments.push({ kind: 'site', label: activeSite.name, href: '/settings/sites' });
   }
   if (manifest) {

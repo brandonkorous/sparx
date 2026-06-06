@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx — Marketplace (scale mockup)</title>
+    <!--
+      Marketplace IA mockup, designed as if the catalog holds 10,000 blueprints,
+      312 themes, 98 integrations, 1,240 components (+ room for Apps/Workflows).
+      Three views (tab toggle at top):
+        1. Home      — curated landing: global search, category entry, featured strips
+        2. Browse    — the scale workhorse: facet rail + search + sort + paged grid
+        3. Detail    — a single blueprint's page
+      Locked Sparx tokens (Geist, indigo, neutral surfaces), no eyebrows.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1;
+        --indigo-hover: #4f46e5;
+        --indigo-soft: #eef2ff;
+        --ink: #0a0a0a;
+        --muted: #52525b;
+        --soft: #3f3f46;
+        --faint: #a1a1aa;
+        --border: #ececec;
+        --border-strong: #e0e0e0;
+        --bg: #fafafa;
+        --card: #ffffff;
+        --rail: #0e0e11;
+        /* per-category accents */
+        --c-blueprints: #6366f1;
+        --c-themes: #8b5cf6;
+        --c-integrations: #f97316;
+        --c-components: #14b8a6;
+        --c-apps: #0ea5e9;
+        --c-workflows: #ec4899;
+        --radius: 12px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      body {
+        font-family: 'Geist', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+        font-size: 14px;
+      }
+      .mono {
+        font-family: 'Geist Mono', ui-monospace, monospace;
+      }
+
+      /* ─── App frame: slim rail + main ─────────────────────────────── */
+      .app {
+        display: flex;
+        min-height: 100vh;
+      }
+      .rail {
+        width: 64px;
+        background: var(--rail);
+        flex: 0 0 64px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 14px 0;
+        gap: 6px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
+      .rail .mark {
+        color: #fff;
+        font-weight: 600;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+        margin-bottom: 14px;
+      }
+      .rail .mark .x {
+        color: var(--indigo);
+      }
+      .rail .tile {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        color: #9b9ba6;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .rail .tile.on {
+        background: rgba(99, 102, 241, 0.18);
+        color: #c7c9ff;
+      }
+      .rail .sp {
+        flex: 1;
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* ─── Top bar ─────────────────────────────────────────────────── */
+      .topbar {
+        height: 56px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        padding: 0 28px;
+        gap: 10px;
+        background: var(--card);
+        position: sticky;
+        top: 0;
+        z-index: 5;
+      }
+      .crumb {
+        font-size: 13px;
+        color: var(--faint);
+      }
+      .crumb b {
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .crumb .sep {
+        margin: 0 8px;
+        color: #d4d4d8;
+      }
+      .topbar .right {
+        margin-left: auto;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--indigo-soft);
+        color: var(--indigo);
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      /* ─── View tabs (mockup control) ──────────────────────────────── */
+      .tabs {
+        display: flex;
+        gap: 4px;
+        padding: 10px 28px;
+        border-bottom: 1px dashed var(--border-strong);
+        background: #fff;
+        position: sticky;
+        top: 56px;
+        z-index: 4;
+      }
+      .tabs button {
+        font: inherit;
+        font-size: 13px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--muted);
+        padding: 6px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .tabs button.active {
+        background: var(--ink);
+        color: #fff;
+        border-color: var(--ink);
+      }
+      .tabs .note {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--faint);
+        align-self: center;
+      }
+
+      .view {
+        display: none;
+        padding: 28px;
+        max-width: 1280px;
+      }
+      .view.active {
+        display: block;
+      }
+
+      h1 {
+        font-size: 26px;
+        letter-spacing: -0.02em;
+        margin: 0 0 4px;
+      }
+      h2 {
+        font-size: 18px;
+        letter-spacing: -0.01em;
+        margin: 0;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 0;
+      }
+      .pageicon {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        display: inline-grid;
+        place-items: center;
+        background: var(--indigo-soft);
+        color: var(--indigo);
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+
+      /* ─── Search ──────────────────────────────────────────────────── */
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #fff;
+        border: 1px solid var(--border-strong);
+        border-radius: 10px;
+        padding: 0 14px;
+        height: 46px;
+      }
+      .search svg {
+        color: var(--faint);
+      }
+      .search input {
+        border: 0;
+        outline: 0;
+        font: inherit;
+        flex: 1;
+        background: transparent;
+        color: var(--ink);
+      }
+      .search .k {
+        font-size: 11px;
+        color: var(--faint);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 2px 6px;
+      }
+      .search.lg {
+        height: 54px;
+        font-size: 15px;
+      }
+
+      /* ─── Category tiles (home) ───────────────────────────────────── */
+      .cats {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+        margin: 22px 0 8px;
+      }
+      .cat {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--card);
+        padding: 16px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition:
+          box-shadow 0.15s,
+          transform 0.1s;
+      }
+      .cat:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        transform: translateY(-1px);
+      }
+      .cat::before {
+        content: '';
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 3px;
+        background: var(--accent, var(--indigo));
+      }
+      .cat .ico {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-weight: 600;
+        color: #fff;
+        background: var(--accent);
+        margin-bottom: 12px;
+      }
+      .cat h3 {
+        margin: 0;
+        font-size: 15px;
+      }
+      .cat .count {
+        font-size: 13px;
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .cat .desc {
+        color: var(--muted);
+        font-size: 12.5px;
+        margin: 6px 0 0;
+        line-height: 1.45;
+      }
+      .cat .soon {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        font-size: 11px;
+        color: var(--muted);
+        background: #f4f4f5;
+        border-radius: 999px;
+        padding: 2px 8px;
+      }
+
+      /* ─── Featured strips (home) ──────────────────────────────────── */
+      .strip {
+        margin-top: 30px;
+      }
+      .strip .head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .strip .head a {
+        font-size: 13px;
+        color: var(--indigo);
+        text-decoration: none;
+      }
+      .row {
+        display: flex;
+        gap: 14px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        scroll-snap-type: x mandatory;
+      }
+      .row .card {
+        flex: 0 0 248px;
+        scroll-snap-align: start;
+      }
+
+      /* ─── Cards ───────────────────────────────────────────────────── */
+      .card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--card);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .card .thumb {
+        aspect-ratio: 16 / 10;
+        background: linear-gradient(135deg, #e9e9ef, #f5f5f7);
+        position: relative;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: -0.01em;
+        text-align: center;
+        padding: 10px;
+      }
+      .card .thumb .badge {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        font-size: 11px;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-weight: 500;
+      }
+      .card .thumb .installed {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: 11px;
+        background: #16a34a;
+        color: #fff;
+        border-radius: 999px;
+        padding: 2px 8px;
+      }
+      .card .body {
+        padding: 12px 13px 13px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        flex: 1;
+      }
+      .card .name {
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .card .meta {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.4;
+        flex: 1;
+      }
+      .card .foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 2px;
+      }
+      .price {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .price.free {
+        color: #16a34a;
+      }
+      .btn {
+        font: inherit;
+        font-size: 13px;
+        border: 1px solid var(--indigo);
+        background: var(--indigo);
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .btn.ghost {
+        background: #fff;
+        color: var(--ink);
+        border-color: var(--border-strong);
+      }
+      .btn.sm {
+        padding: 5px 11px;
+        font-size: 12px;
+      }
+      .rating {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .rating b {
+        color: var(--ink);
+      }
+
+      /* ─── Browse layout ───────────────────────────────────────────── */
+      .browsebar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 18px 0 16px;
+      }
+      .browsebar .search {
+        flex: 1;
+        max-width: 420px;
+      }
+      select.sort {
+        font: inherit;
+        font-size: 13px;
+        border: 1px solid var(--border-strong);
+        border-radius: 8px;
+        padding: 9px 12px;
+        background: #fff;
+        color: var(--ink);
+      }
+      .count {
+        font-size: 13px;
+        color: var(--muted);
+        margin-left: auto;
+      }
+      .browse {
+        display: grid;
+        grid-template-columns: 232px 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+      .facets {
+        position: sticky;
+        top: 124px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .facet h4 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--faint);
+      }
+      .facet label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--soft);
+        padding: 3px 0;
+        cursor: pointer;
+      }
+      .facet label .n {
+        margin-left: auto;
+        color: var(--faint);
+        font-size: 12px;
+      }
+      .facet input[type='checkbox'],
+      .facet input[type='radio'] {
+        accent-color: var(--indigo);
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .chip {
+        font-size: 12px;
+        background: var(--indigo-soft);
+        color: var(--indigo-hover);
+        border-radius: 999px;
+        padding: 4px 10px 4px 11px;
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .chip b {
+        font-weight: 500;
+      }
+      .chip .x {
+        cursor: pointer;
+        opacity: 0.6;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(212px, 1fr));
+        gap: 16px;
+      }
+      .loadmore {
+        text-align: center;
+        margin-top: 26px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .loadmore .btn {
+        margin-bottom: 10px;
+      }
+      .filterbtn {
+        display: none;
+      }
+
+      /* ─── Detail ──────────────────────────────────────────────────── */
+      .detail {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 30px;
+        align-items: start;
+      }
+      .gallery .big {
+        aspect-ratio: 16 / 10;
+        border-radius: var(--radius);
+        background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
+        border: 1px solid var(--border);
+      }
+      .gallery .thumbs {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .gallery .thumbs div {
+        aspect-ratio: 16 / 10;
+        border-radius: 8px;
+        background: #eef0f6;
+        border: 1px solid var(--border);
+      }
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        background: #fff;
+        position: sticky;
+        top: 124px;
+      }
+      .panel .vbadge {
+        font-size: 12px;
+        color: var(--indigo-hover);
+        background: var(--indigo-soft);
+        border-radius: 999px;
+        padding: 3px 10px;
+        display: inline-block;
+      }
+      .panel h1 {
+        font-size: 22px;
+        margin: 12px 0 6px;
+      }
+      .panel .stat {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+      .panel .cta {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      .panel .cta .btn {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+      }
+      .incl {
+        border-top: 1px solid var(--border);
+        padding-top: 14px;
+        margin-top: 4px;
+      }
+      .incl h4 {
+        margin: 0 0 10px;
+        font-size: 13px;
+      }
+      .incl ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 7px;
+      }
+      .incl li {
+        font-size: 13px;
+        color: var(--soft);
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .incl li .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--indigo);
+      }
+      .modchips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 12px;
+      }
+      .modchips span {
+        font-size: 12px;
+        border: 1px solid var(--border-strong);
+        border-radius: 999px;
+        padding: 3px 9px;
+        color: var(--soft);
+      }
+      .prose {
+        margin-top: 26px;
+        max-width: 680px;
+      }
+      .prose h3 {
+        font-size: 16px;
+        margin: 22px 0 8px;
+      }
+      .prose p {
+        color: var(--soft);
+        line-height: 1.6;
+        font-size: 14px;
+      }
+
+      @media (max-width: 880px) {
+        .browse {
+          grid-template-columns: 1fr;
+        }
+        .facets {
+          display: none;
+        }
+        .filterbtn {
+          display: inline-flex;
+        }
+        .detail {
+          grid-template-columns: 1fr;
+        }
+        .panel {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- slim rail to situate it in the dashboard -->
+      <nav class="rail">
+        <div class="mark">s<span class="x">x</span></div>
+        <div class="tile">⌂</div>
+        <div class="tile">B</div>
+        <div class="tile">C</div>
+        <div class="tile">M</div>
+        <div class="tile">R</div>
+        <div class="sp"></div>
+        <div class="tile on" title="Marketplace">▦</div>
+        <div class="tile">◷</div>
+        <div class="tile">⚙</div>
+      </nav>
+
+      <div class="main">
+        <div class="topbar">
+          <div class="crumb" id="crumb"><b>E2E Store</b><span class="sep">/</span>Marketplace</div>
+          <div class="right">
+            <div class="avatar">ES</div>
+          </div>
+        </div>
+
+        <!-- mockup-only view switch -->
+        <div class="tabs">
+          <button class="active" data-view="home">Marketplace home</button>
+          <button data-view="browse">Browse · Blueprints</button>
+          <button data-view="detail">Blueprint detail</button>
+          <span class="note">mockup · scaled to 10,000 blueprints · 312 themes · 98 integrations · 1,240 components</span>
+        </div>
+
+        <!-- ═══════════════ VIEW 1 · HOME ═══════════════ -->
+        <section class="view active" id="home">
+          <div style="margin-bottom: 18px">
+            <h1><span class="pageicon">▦</span>Marketplace</h1>
+            <p class="sub" style="margin-left: 44px">
+              Everything you can add to your tenant — blueprints, themes, integrations, and more.
+            </p>
+          </div>
+
+          <div class="search lg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+            <input placeholder="Search 11,650 items across the marketplace…" />
+            <span class="k">⌘K</span>
+          </div>
+
+          <div class="cats" id="catTiles"></div>
+
+          <div class="strip">
+            <div class="head"><h2>Featured blueprints</h2><a href="#">See all 10,000 →</a></div>
+            <div class="row" id="featBlueprints"></div>
+          </div>
+          <div class="strip">
+            <div class="head"><h2>Popular integrations</h2><a href="#">See all 98 →</a></div>
+            <div class="row" id="featIntegrations"></div>
+          </div>
+          <div class="strip">
+            <div class="head"><h2>New themes</h2><a href="#">See all 312 →</a></div>
+            <div class="row" id="featThemes"></div>
+          </div>
+        </section>
+
+        <!-- ═══════════════ VIEW 2 · BROWSE ═══════════════ -->
+        <section class="view" id="browse">
+          <div>
+            <h1>Blueprints</h1>
+            <p class="sub">Fully themed starting points — install onto your site as drafts, then go live.</p>
+          </div>
+
+          <div class="browsebar">
+            <div class="search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+              <input placeholder="Search blueprints…" />
+            </div>
+            <button class="btn ghost filterbtn">Filters</button>
+            <select class="sort">
+              <option>Sort: Most popular</option>
+              <option>Newest</option>
+              <option>Name (A–Z)</option>
+              <option>Price: Low → High</option>
+            </select>
+            <span class="count" id="bcount">Showing 1–24 of 9,842</span>
+          </div>
+
+          <div class="browse">
+            <aside class="facets">
+              <div class="facet">
+                <h4>Vertical</h4>
+                <label><input type="checkbox" checked /> Retail <span class="n">2,104</span></label>
+                <label><input type="checkbox" /> Services <span class="n">3,560</span></label>
+                <label><input type="checkbox" /> B2B / Wholesale <span class="n">1,330</span></label>
+                <label><input type="checkbox" /> Content / Media <span class="n">1,890</span></label>
+                <label><input type="checkbox" /> Hospitality <span class="n">958</span></label>
+              </div>
+              <div class="facet">
+                <h4>Requires module</h4>
+                <label><input type="checkbox" /> Commerce <span class="n">6,210</span></label>
+                <label><input type="checkbox" /> CMS <span class="n">7,740</span></label>
+                <label><input type="checkbox" /> Email <span class="n">5,980</span></label>
+                <label><input type="checkbox" /> B2B <span class="n">1,330</span></label>
+                <label><input type="checkbox" /> CRM <span class="n">2,410</span></label>
+              </div>
+              <div class="facet">
+                <h4>Price</h4>
+                <label><input type="radio" name="price" checked /> Any</label>
+                <label><input type="radio" name="price" /> Free <span class="n">4,120</span></label>
+                <label><input type="radio" name="price" /> Paid <span class="n">5,722</span></label>
+              </div>
+              <div class="facet">
+                <h4>Status</h4>
+                <label><input type="checkbox" /> Not installed</label>
+                <label><input type="checkbox" /> Installed <span class="n">3</span></label>
+              </div>
+            </aside>
+
+            <div>
+              <div class="chips">
+                <span class="chip"><b>Retail</b><span class="x">✕</span></span>
+                <span class="chip">Clear all</span>
+              </div>
+              <div class="grid" id="bpGrid"></div>
+              <div class="loadmore">
+                <button class="btn ghost">Load more</button>
+                <div>Showing 24 of 9,842</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════════ VIEW 3 · DETAIL ═══════════════ -->
+        <section class="view" id="detail">
+          <div class="crumb" style="margin-bottom: 18px">
+            Marketplace <span class="sep">/</span> Blueprints <span class="sep">/</span>
+            <b>Retail Store + Blog</b>
+          </div>
+          <div class="detail">
+            <div class="gallery">
+              <div class="big"></div>
+              <div class="thumbs"><div></div><div></div><div></div><div></div></div>
+              <div class="prose">
+                <h3>About this blueprint</h3>
+                <p>
+                  A clean direct-to-consumer storefront with a small curated catalog, an editorial
+                  journal, marketing emails, and the Driftwood theme. Everything installs as drafts
+                  onto your site, so you can review and customize before anything goes live.
+                </p>
+                <h3>What you get</h3>
+                <p>
+                  A themed home, shop, product, blog index and post layouts, plus an About and
+                  Contact page — wired to a starter catalog and three sample posts. Two transactional
+                  emails (welcome + order) come pre-branded.
+                </p>
+              </div>
+            </div>
+            <div class="panel">
+              <span class="vbadge">Retail</span>
+              <h1>Retail Store + Blog</h1>
+              <div class="stat">★ 4.8 (212) · Installed by 1,204 sites · v0.4.2</div>
+              <div class="cta">
+                <button class="btn">Install</button>
+                <button class="btn ghost">Preview</button>
+              </div>
+              <div class="incl">
+                <h4>What's included</h4>
+                <ul>
+                  <li><span class="dot"></span> 5 products</li>
+                  <li><span class="dot"></span> 5 pages</li>
+                  <li><span class="dot"></span> 5 content entries</li>
+                  <li><span class="dot"></span> 2 emails</li>
+                  <li><span class="dot"></span> 1 component</li>
+                  <li><span class="dot"></span> Driftwood theme</li>
+                </ul>
+                <div class="modchips">
+                  <span>Builder</span><span>Commerce</span><span>CMS</span><span>Email</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="strip">
+            <div class="head"><h2>Related blueprints</h2><a href="#">See all →</a></div>
+            <div class="row" id="related"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      // ── category registry (drives the home tiles; mirrors the real plan) ──
+      const CATS = [
+        { id: 'blueprints', label: 'Blueprints', count: '10,000', accent: 'var(--c-blueprints)', ico: '▦', desc: 'Whole themed sites — pages, products, content, emails.' },
+        { id: 'themes', label: 'Themes', count: '312', accent: 'var(--c-themes)', ico: '◑', desc: 'Brand looks — color, type, shape — applied site-wide.' },
+        { id: 'integrations', label: 'Integrations', count: '98', accent: 'var(--c-integrations)', ico: '🔌', desc: 'Payments, shipping, tax, and the rest of your stack.' },
+        { id: 'components', label: 'Components', count: '1,240', accent: 'var(--c-components)', ico: '◧', desc: 'Reusable building blocks for the Builder canvas.' },
+        { id: 'apps', label: 'Apps', count: '', soon: true, accent: 'var(--c-apps)', ico: '◰', desc: 'Full add-on experiences. Coming soon.' },
+        { id: 'workflows', label: 'Workflows', count: '', soon: true, accent: 'var(--c-workflows)', ico: '⤳', desc: 'Automations across modules. Coming soon.' },
+      ];
+      const VERTS = ['Retail', 'Services', 'B2B', 'Content', 'Hospitality', 'Health', 'Fitness', 'Food'];
+      const GRAD = [
+        ['#6366f1', '#8b5cf6'], ['#0ea5e9', '#22d3ee'], ['#f97316', '#fb923c'],
+        ['#14b8a6', '#34d399'], ['#ec4899', '#f472b6'], ['#64748b', '#94a3b8'],
+        ['#a16207', '#ca8a04'], ['#dc2626', '#f87171'],
+      ];
+      const NAMES = [
+        'Driftwood Supply', 'Ironleaf Studio', 'Maren & Wilde', 'Marrow & Hale', 'Ironhaul Fleet',
+        'Endura Clinic', 'Northwind Coffee', 'Atlas Apparel', 'Verdant Plants', 'Stonecut Tools',
+        'Harbor Books', 'Lumen Studio', 'Cedar & Pine', 'Wren Bakery', 'Foundry Auto',
+        'Tide & Stone', 'Belmont Spa', 'Copperline', 'Field Notes', 'Halcyon Home',
+        'Riverside Gym', 'Saffron Table', 'Bivouac Outfitters', 'Paper Lantern',
+      ];
+      const INTEG = ['Stripe', 'Shopify Sync', 'Avalara Tax', 'ShipStation', 'QuickBooks', 'Klaviyo', 'EasyPost', 'PayPal'];
+      const THEMES = ['Driftwood', 'Ironleaf', 'Maren', 'Marrow', 'Ironhaul', 'Endura', 'Aurora', 'Slate'];
+
+      const money = (i) => (i % 3 === 0 ? '<span class="price free">Free</span>' : '<span class="price">$' + (9 + (i % 5) * 10) + '</span>');
+
+      function bpCard(i, compact) {
+        const g = GRAD[i % GRAD.length];
+        const v = VERTS[i % VERTS.length];
+        const installed = i === 0 || i === 6 || i === 14;
+        return `<div class="card">
+          <div class="thumb" style="background:linear-gradient(135deg,${g[0]},${g[1]})">
+            <span class="badge">${v}</span>${installed ? '<span class="installed">Installed</span>' : ''}
+            ${NAMES[i % NAMES.length]}
+          </div>
+          <div class="body">
+            <div class="name">${NAMES[i % NAMES.length]}</div>
+            <div class="meta">${5 + (i % 4)} products · ${5} pages · ${2} emails</div>
+            <div class="foot">
+              ${installed ? '<span class="rating">★ <b>4.' + (5 + (i % 4)) + '</b></span>' : money(i)}
+              <button class="btn sm ${installed ? 'ghost' : ''}">${installed ? 'Review' : 'Install'}</button>
+            </div>
+          </div>
+        </div>`;
+      }
+      function miniCard(title, sub, g, cta) {
+        return `<div class="card">
+          <div class="thumb" style="background:linear-gradient(135deg,${g[0]},${g[1]})">${title}</div>
+          <div class="body">
+            <div class="name">${title}</div>
+            <div class="meta">${sub}</div>
+            <div class="foot"><span class="rating">★ <b>4.7</b></span><button class="btn sm ghost">${cta}</button></div>
+          </div>
+        </div>`;
+      }
+
+      // render category tiles
+      document.getElementById('catTiles').innerHTML = CATS.map(
+        (c) => `<div class="cat" style="--accent:${c.accent}" ${c.id === 'blueprints' ? 'data-go="browse"' : ''}>
+          ${c.soon ? '<span class="soon">Coming soon</span>' : ''}
+          <div class="ico">${c.ico}</div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline">
+            <h3>${c.label}</h3><span class="count">${c.count}</span>
+          </div>
+          <p class="desc">${c.desc}</p>
+        </div>`
+      ).join('');
+
+      // featured strips
+      document.getElementById('featBlueprints').innerHTML = Array.from({ length: 8 }, (_, i) => bpCard(i)).join('');
+      document.getElementById('featIntegrations').innerHTML = INTEG.map((n, i) =>
+        miniCard(n, ['Payments', 'Catalog sync', 'Tax', 'Shipping', 'Accounting', 'Email', 'Shipping', 'Payments'][i], GRAD[(i + 2) % GRAD.length], 'Connect')
+      ).join('');
+      document.getElementById('featThemes').innerHTML = THEMES.map((n, i) =>
+        miniCard(n, 'Theme · ' + VERTS[i % VERTS.length], GRAD[(i + 4) % GRAD.length], 'Apply')
+      ).join('');
+
+      // browse grid (24)
+      document.getElementById('bpGrid').innerHTML = Array.from({ length: 24 }, (_, i) => bpCard(i)).join('');
+      // related
+      document.getElementById('related').innerHTML = Array.from({ length: 8 }, (_, i) => bpCard(i + 3)).join('');
+
+      // view switching
+      const crumbs = {
+        home: '<b>E2E Store</b><span class="sep">/</span>Marketplace',
+        browse: '<b>E2E Store</b><span class="sep">/</span>Marketplace<span class="sep">/</span>Blueprints',
+        detail: '<b>E2E Store</b><span class="sep">/</span>Marketplace<span class="sep">/</span>Blueprints<span class="sep">/</span>Retail Store + Blog',
+      };
+      function show(v) {
+        document.querySelectorAll('.view').forEach((s) => s.classList.toggle('active', s.id === v));
+        document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('active', b.dataset.view === v));
+        document.getElementById('crumb').innerHTML = crumbs[v];
+        window.scrollTo(0, 0);
+      }
+      document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => show(b.dataset.view)));
+      document.addEventListener('click', (e) => {
+        const go = e.target.closest('[data-go]');
+        if (go) show(go.dataset.go);
+      });
+    </script>
+  </body>
+</html>

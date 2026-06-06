@@ -57,8 +57,13 @@ const DETAIL_WIDTH_MAX = 65;
 export interface SidebarAppShellProps {
   /** Desktop icon rail (md+) — module switcher + Home/Search/Settings. */
   rail: React.ReactNode;
-  /** Desktop contextual panel (md+) — sections, or Favorites/Recents. */
-  panel: React.ReactNode;
+  /**
+   * Desktop contextual panel (md+) — a module's sections, settings sub-pages,
+   * etc. Pass `null` when the current context has no secondary nav: the shell
+   * drops the panel column entirely (the rail stands alone) rather than leaving
+   * an empty 240px gutter.
+   */
+  panel?: React.ReactNode;
   /** Vertical nav tree rendered in the mobile drawer (below md). */
   mobileNav: React.ReactNode;
   /** Left-aligned header content (e.g. breadcrumbs). */
@@ -150,9 +155,11 @@ export function SidebarAppShell({
               onToggle={() => railExpanded.setValue(!railExpanded.value)}
             />
           </nav>
-          <div className="flex h-full w-60 shrink-0 flex-col border-r border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
-            {panel}
-          </div>
+          {panel != null && (
+            <div className="flex h-full w-60 shrink-0 flex-col border-r border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
+              {panel}
+            </div>
+          )}
         </div>
       </RailExpandedContext.Provider>
 

@@ -3,7 +3,14 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SidebarItem, SidebarSection, SidebarSectionLabel, Stack, Text } from '@sparx/ui';
+import {
+  ModuleProvider,
+  SidebarItem,
+  SidebarSection,
+  SidebarSectionLabel,
+  Stack,
+  Text,
+} from '@sparx/ui';
 import { Clock } from 'lucide-react';
 import { recordVisitAction } from '../_shell/actions';
 import { findFavoritableByPath, findFavoritableById } from '../_shell/registry';
@@ -72,12 +79,16 @@ export function RecentsSection({ recents, favorites }: RecentsSectionProps) {
         const Icon = item.icon;
         const isActive = pathname === item.href || (pathname?.startsWith(`${item.href}/`) ?? false);
         const isFavorited = favorites.some((f) => f.actionId === item.id);
+        // Per-item ModuleProvider + moduleIcon so the glyph (and active tint)
+        // adopt the item's module color — mirrors the desktop rail's groups.
         return (
-          <SidebarItemContextMenu key={item.id} item={item} isFavorited={isFavorited}>
-            <SidebarItem asChild active={isActive} icon={<Icon className="h-4 w-4" />}>
-              <Link href={item.href}>{item.label}</Link>
-            </SidebarItem>
-          </SidebarItemContextMenu>
+          <ModuleProvider key={item.id} module={item.moduleId}>
+            <SidebarItemContextMenu item={item} isFavorited={isFavorited}>
+              <SidebarItem moduleIcon asChild active={isActive} icon={<Icon className="h-4 w-4" />}>
+                <Link href={item.href}>{item.label}</Link>
+              </SidebarItem>
+            </SidebarItemContextMenu>
+          </ModuleProvider>
         );
       })}
     </SidebarSection>

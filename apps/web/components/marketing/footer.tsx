@@ -22,7 +22,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
     title: 'Platform',
     links: [
-      { label: 'Pricing', href: '/#pricing' },
+      { label: 'Pricing', href: '/pricing' },
       { label: 'Themes', href: '/themes' },
       { label: 'Marketplace', href: '/marketplace' },
       { label: 'Managed hosting', href: '/hosting' },

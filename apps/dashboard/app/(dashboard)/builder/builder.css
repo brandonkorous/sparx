@@ -1539,34 +1539,139 @@
   text-align: left;
 }
 /* Site chrome (Tier 2 — docs/45) */
+/* The Outlet marks where each routed page mounts. The layout editor has no real
+ * page, so it renders a ghosted SAMPLE page — a hero + a feature-card grid in the
+ * tenant brand (--bxc-*) — at a realistic height, so the header/footer chrome
+ * previews against representative content instead of a thin empty slot. The whole
+ * sample is decorative + aria-hidden. */
 .bx-outlet {
+  position: relative;
   width: 100%;
-  min-height: 180px;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--bxc-fg);
+  outline: 1px dashed color-mix(in srgb, var(--bxc-border) 75%, transparent);
+  outline-offset: -1px;
+}
+/* The "this is a placeholder" pill — floats over the sample so it stays legible. */
+.bx-outlet__tag {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--bxc-fg) 55%, transparent);
+  background: color-mix(in srgb, var(--bxc-bg) 85%, transparent);
+  border: 1px solid var(--bxc-border);
+  border-radius: 999px;
+  backdrop-filter: blur(2px);
+}
+.bx-outlet__tag-icon {
+  width: 13px;
+  height: 13px;
+  opacity: 0.7;
+}
+.bx-outlet__sample {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+/* Hero band — neutral/dark, the most common landing-hero treatment. */
+.bx-outlet__hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: var(--color-text-tertiary);
-  border: 1px dashed var(--bxc-border);
-  border-radius: var(--bxc-radius-sm);
-  background: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 10px,
-    color-mix(in srgb, var(--bxc-border) 30%, transparent) 10px,
-    color-mix(in srgb, var(--bxc-border) 30%, transparent) 11px
-  );
+  gap: 14px;
+  padding: 72px 24px;
+  background: var(--bxc-inverse-bg);
+  color: var(--bxc-inverse-fg);
 }
-.bx-outlet__icon {
-  width: 22px;
+/* A bar is a token-tinted skeleton block; it adopts the band's text color. */
+.bx-outlet__bar {
+  display: block;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 20%, transparent);
+}
+.bx-outlet__bar--eyebrow {
+  width: 96px;
+  height: 8px;
+  opacity: 0.8;
+}
+.bx-outlet__bar--title {
+  width: min(440px, 60%);
   height: 22px;
-  opacity: 0.6;
+  background: color-mix(in srgb, currentColor 32%, transparent);
 }
-.bx-outlet__label {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+.bx-outlet__bar--title-2 {
+  width: min(320px, 44%);
+}
+.bx-outlet__bar--lede {
+  width: min(360px, 52%);
+  height: 11px;
+  margin-top: 4px;
+}
+.bx-outlet__cta {
+  margin-top: 10px;
+  width: 132px;
+  height: 40px;
+  border-radius: var(--bxc-radius-sm);
+  background: var(--bxc-primary);
+}
+/* Feature section — contained, a card grid that collapses with the canvas width
+ * (auto-fit tracks the canvas, so tablet/mobile previews stay sane). */
+.bx-outlet__section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 56px 32px;
+}
+.bx-outlet__bar--heading {
+  width: min(280px, 50%);
+  height: 16px;
+  background: color-mix(in srgb, currentColor 30%, transparent);
+}
+.bx-outlet__grid {
+  width: 100%;
+  max-width: 960px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+}
+.bx-outlet__card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: var(--bxc-subtle);
+  border: 1px solid var(--bxc-border);
+  border-radius: var(--bxc-radius);
+}
+.bx-outlet__thumb {
+  display: block;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--bxc-radius-sm);
+  background: var(--bxc-muted);
+}
+.bx-outlet__bar--card-title {
+  width: 70%;
+  height: 13px;
+  margin-top: 2px;
+}
+.bx-outlet__bar--line {
+  width: 100%;
+  height: 8px;
+}
+.bx-outlet__bar--short {
+  width: 55%;
 }
 .bx-nav {
   display: flex;

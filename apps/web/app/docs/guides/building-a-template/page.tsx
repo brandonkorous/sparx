@@ -410,7 +410,8 @@ export default function BuildingATemplatePage() {
           </Step>
           <Step n={4} title="Register it">
             <p>
-              Add one line so it shows up on the <InlineCode>/templates</InlineCode> page.
+              Add one line so it shows up in the <InlineCode>/marketplace</InlineCode> Blueprints
+              category.
             </p>
           </Step>
           <Step n={5} title="Test it">
@@ -873,13 +874,13 @@ export default function BuildingATemplatePage() {
 
       <DocSection id="register" title="Register it">
         <p>
-          Add your template to the catalog so the <InlineCode>/templates</InlineCode> page picks it
-          up:
+          Add your template to the catalog so the <InlineCode>/marketplace</InlineCode> Blueprints
+          category picks it up:
         </p>
         <CodeBlock tabs={[{ label: 'registry.ts', code: REGISTER_CODE }]} />
         <p>
-          That’s it — the <InlineCode>/templates</InlineCode> page, the install API, and the
-          marketplace all read from this registry.
+          That’s it — the <InlineCode>/marketplace</InlineCode> Blueprints category, the install
+          API, and the marketplace all read from this registry.
         </p>
         <DocImage
           src="/docs/dash-templates.png"

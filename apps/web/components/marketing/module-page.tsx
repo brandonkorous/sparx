@@ -273,7 +273,7 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
           </p>
         </div>
         <div className="mkt-cluster" style={{ gap: '12px' }}>
-          <a href="/#pricing">
+          <a href="/pricing">
             <Button size="lg" variant="outline">
               See all plans →
             </Button>

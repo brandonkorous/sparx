@@ -1,8 +1,8 @@
 # Tenant Blueprints — one-click templates that provision a whole tenant
 
-**Version:** 0.4.0
+**Version:** 0.4.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-05
+**Last Updated:** 2026-06-06
 
 ---
 
@@ -421,25 +421,35 @@ renders the themed home/PDP/blog and the product add-to-cart works.
 **Phase 2 — agreed next work (2026-06-05).** In sequence:
 
 1. **Idempotency + install-state/version-drift (#1, #2)** — the load-bearing slice, in two parts:
-   - **1a (synchronous, no new infra):** re-point the catalog + install + reset at the **primary**
-     (D6); write the install row **first** as `running` and finalize to `installed` / `failed`
-     (persist partial `result` + `error` on failure — `status` is a free column, no migration); add
-     **Reset & reinstall** (delete the id-mapped artifacts + row, behind a confirm) so a failed or
-     unwanted install is recoverable; add the version-drift badge (§9). Recovery here is
-     reset-then-reinstall, which is sufficient while the installer runs synchronously.
-   - **1b (async worker):** lift the synchronous installer into the `template-installer` Cloud Run
-     worker on `template.install` (the worker the doc always targeted, §5/§10), and make every slice
-     **find-or-create by handle** — _mandatory_ here because Pub/Sub is at-least-once, so the worker
-     can legitimately run twice and must not duplicate. (Pages use `getDraftBySlug`; layouts/emails
-     have no non-seeding lookup, so those find-or-create by direct query — `listOrSeed` must never run
-     during install.)
+   - ✅ **1a BUILT + VERIFIED (2026-06-06, synchronous, no migration):** catalog + install + reset
+     resolve the **primary** (D6); the install row is written **first** as `running` and finalized to
+     `installed` / `failed` (partial `result` + `error` persisted on failure — `status` is a free
+     column); **Reset & reinstall** deletes the id-mapped artifacts + row behind a confirm; the
+     version-drift badge ships (§9). Commerce reinstall-after-reset is **clean, not suffixed** —
+     install step 6·0 purges the exact soft-deleted handle/SKU tombstones before recreating — and
+     reset **deactivates a live layout** before removing it so a live install tears down fully (both
+     pulled forward from the original 1b plan). Browser-verified end-to-end: install → installed·draft
+     → go-live/reset, failed → reset & retry, drift badge, and `resetInstall` deletes only blueprint
+     artifacts (the tenant's own themes/content are untouched).
+   - **1b (async worker) — remaining:** lift the synchronous installer into the `template-installer`
+     Cloud Run worker on `template.install` (the worker the doc always targeted, §5/§10). The install
+     row's `(tenant, property, blueprint)` unique constraint is the idempotency key, so an at-least-once
+     redelivery can't double-install (the second row create fails fast); the worker just acks an
+     already-present row and leaves a stuck `running`/`failed` one for reset. Optional polish:
+     find-or-create _resume_ for the non-commerce slices (pages via `getDraftBySlug`; layouts/emails by
+     direct query — `listOrSeed` must never run during install). Primarily a prerequisite for the
+     public funnel (§15), where a signup-then-install must not block the request.
 2. **`/builder` overview + "Start from a template" (#3).** `/builder` redirects to `/builder/page`
    today; build the overview/empty-state and surface the template catalog there **in-context**,
    rather than relocating the platform surface into the module sub-nav — Templates is cross-module
    and must survive the `builder` module being disabled, so it stays platform-pinned (the rail
    entry) and gains an in-builder entry point, not a move.
-3. **"Review & go live" checklist surface (§8).** Replace the bare go-live button with the
-   id-map-driven checklist of everything created.
+3. ✅ **BUILT + VERIFIED (2026-06-06) — "Review & go live" checklist surface (§8).** The marketplace
+   card now leads to `/templates/installs/[id]` (installed → "Review & go live", live → "View"); that
+   page lists everything the install created, grouped by type from the id-map (new `artifacts` on
+   `GET /v1/blueprints/installs/:id`), each deep-linking into its editor (products → product detail,
+   content → entry editor, pages → `/builder/page?page=`, collections → collection detail, etc.), and
+   owns the **Go live** + **Reset** actions. Browser-verified: review → go-live → live → reset.
 4. **Public marketplace + onboarding thread (§15, #4)** — including the **real billing gate** (D7)
    and **tenant-owned media** (D3 seam, §6), both of which become load-bearing once installs run
    for self-serve public signups.
@@ -450,8 +460,8 @@ renders the themed home/PDP/blog and the product add-to-cart works.
 
 - Blueprint **update/upgrade** for already-installed tenants — Phase-2 step 5 above (echo docs/53
   "Update to vN").
-- Multiple verticals — 5 manifests ship today (retail, tattoo, salon/spa, antiques, auto-parts);
-  more (B2B/fleet, content publisher, services) as needed.
+- Multiple verticals — 6 manifests ship today (retail, tattoo, salon/spa, antiques, auto-parts,
+  wellness clinic); more (B2B/fleet, content publisher, services) as needed.
 - Per-property installs beyond primary — **explicitly a non-goal under D6** (always primary); revisit
   only if a real multi-site install need surfaces (docs/49 Phase 2).
 - Third-party / tenant-_authored_ blueprints (`sparx.market`, docs/00) — a separate seller-platform

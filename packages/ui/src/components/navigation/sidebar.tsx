@@ -94,26 +94,39 @@ export interface SidebarItemProps
   icon?: React.ReactNode;
   /** When true, the item is rendered into the polymorphic child (e.g. a Next.js Link). */
   asChild?: boolean;
+  /**
+   * Always tint the glyph with the active module color (`--module-active`),
+   * regardless of `active` — for module-owned rows that read as a color-coded
+   * module marker (the module switcher, a module's favorite/recent). The caller
+   * must supply the matching `<ModuleProvider>`. Default false: the glyph is
+   * module-colored only when active, quiet tertiary otherwise.
+   */
+  moduleIcon?: boolean;
 }
 
 export const SidebarItem = React.forwardRef<HTMLButtonElement, SidebarItemProps>(
-  ({ className, active, icon, asChild = false, children, ...props }, ref) => {
+  ({ className, active, icon, asChild = false, moduleIcon = false, children, ...props }, ref) => {
     const dataActive = active ? true : undefined;
     const ariaCurrent = active ? 'page' : undefined;
+    // The glyph is tinted independently of the label. `moduleIcon` forces the
+    // module color always; otherwise it's the module color only when active and
+    // a quiet tertiary→secondary on hover when not. --module-active resolves
+    // from the nearest ModuleProvider either way.
+    const iconSpan = icon ? (
+      <span
+        className={cn(
+          'inline-flex h-4 w-4 shrink-0 items-center justify-center',
+          moduleIcon || active
+            ? 'text-[var(--module-active)]'
+            : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]'
+        )}
+      >
+        {icon}
+      </span>
+    ) : null;
     const inner = (
       <>
-        {icon && (
-          <span
-            className={cn(
-              'inline-flex h-4 w-4 shrink-0 items-center justify-center',
-              active
-                ? 'text-[var(--module-active)]'
-                : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]'
-            )}
-          >
-            {icon}
-          </span>
-        )}
+        {iconSpan}
         <span className="flex-1 truncate text-left">{children}</span>
       </>
     );
@@ -125,18 +138,7 @@ export const SidebarItem = React.forwardRef<HTMLButtonElement, SidebarItemProps>
         child,
         undefined,
         <>
-          {icon && (
-            <span
-              className={cn(
-                'inline-flex h-4 w-4 shrink-0 items-center justify-center',
-                active
-                  ? 'text-[var(--module-active)]'
-                  : 'text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]'
-              )}
-            >
-              {icon}
-            </span>
-          )}
+          {iconSpan}
           <span className="flex-1 truncate text-left">{child.props.children}</span>
         </>
       );

@@ -19,6 +19,7 @@ import type { FavoriteRow, RecentRow } from '../_shell/service';
 import { FavoritesSection } from './favorites-section';
 import { ModuleSectionItems } from './module-section-nav';
 import { RecentsSection } from './recents-section';
+import { SettingsSectionItems } from './settings-section-nav';
 
 // Mobile nav — the rail + contextual panel translated to a single vertical
 // drawer (below md). One coherent model: switch modules, see the current
@@ -40,6 +41,7 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
   const visible = moduleManifests.filter((m) => enabledModules.includes(m.id));
   const manifest = pathname ? getManifestForPath(pathname) : undefined;
   const activeModule = manifest && enabledModules.includes(manifest.id) ? manifest : undefined;
+  const inSettings = pathname === '/settings' || (pathname?.startsWith('/settings/') ?? false);
 
   // One ambient "Add a module" pointer (Option A), shown only when a billable
   // module is inactive. `storefront` is the `builder` alias, not a separate
@@ -86,7 +88,7 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
               pathname === m.routePrefix || (pathname?.startsWith(`${m.routePrefix}/`) ?? false);
             return (
               <ModuleProvider key={m.id} module={m.id}>
-                <SidebarItem asChild active={active} icon={<Icon className="h-4 w-4" />}>
+                <SidebarItem moduleIcon asChild active={active} icon={<Icon className="h-4 w-4" />}>
                   <Link href={m.routePrefix}>{m.label}</Link>
                 </SidebarItem>
               </ModuleProvider>
@@ -102,15 +104,20 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
         <FavoritesSection favorites={favorites} />
         <RecentsSection recents={recents} favorites={favorites} />
 
-        <SidebarSection>
-          <SidebarItem
-            asChild
-            active={pathname === '/settings' || (pathname?.startsWith('/settings/') ?? false)}
-            icon={<Settings className="h-4 w-4" />}
-          >
-            <Link href="/settings">Settings</Link>
-          </SidebarItem>
-        </SidebarSection>
+        {inSettings ? (
+          <ModuleProvider module="platform">
+            <SidebarSection>
+              <SidebarSectionLabel>Settings</SidebarSectionLabel>
+              <SettingsSectionItems pathname={pathname} />
+            </SidebarSection>
+          </ModuleProvider>
+        ) : (
+          <SidebarSection>
+            <SidebarItem asChild icon={<Settings className="h-4 w-4" />}>
+              <Link href="/settings">Settings</Link>
+            </SidebarItem>
+          </SidebarSection>
+        )}
       </SidebarNav>
     </>
   );

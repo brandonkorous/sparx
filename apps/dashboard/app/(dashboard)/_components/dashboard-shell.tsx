@@ -8,7 +8,7 @@ import type { FavoriteRow, RecentRow } from '../_shell/service';
 import type { UserPreferences } from '../_shell/preferences-types';
 import { BreadcrumbTrail } from './breadcrumb-trail';
 import { CommandPalette } from './command-palette';
-import { ContextualPanel } from './contextual-panel';
+import { ContextualPanel, resolvePanelContext } from './contextual-panel';
 import { DashboardHeader } from './dashboard-header';
 import { InlineDetailContent, ModalDetailContent, useDetailTarget } from './detail-panel';
 import { MobileNav } from './mobile-nav';
@@ -72,6 +72,12 @@ export function DashboardShell({
       <InlineDetailContent target={detailTarget}>{detail}</InlineDetailContent>
     ) : null;
 
+  // The contextual panel only exists inside a module or in settings. Everywhere
+  // else (Home, Marketplace, SEO, …) there's nothing context-specific to show, so
+  // we omit the panel entirely and the shell collapses the column — the rail
+  // already carries the module switcher + platform links.
+  const hasPanel = resolvePanelContext(pathname, enabledModules).kind !== 'none';
+
   return (
     <PreferencesProvider value={preferences}>
       <SidebarAppShell
@@ -85,11 +91,13 @@ export function DashboardShell({
           />
         }
         panel={
-          <ContextualPanel
-            pathname={pathname}
-            enabledModules={enabledModules}
-            tenantName={tenantName}
-          />
+          hasPanel ? (
+            <ContextualPanel
+              pathname={pathname}
+              enabledModules={enabledModules}
+              tenantName={tenantName}
+            />
+          ) : null
         }
         mobileNav={
           <MobileNav

@@ -1,8 +1,8 @@
 # Sparx Platform — Billing & Subscriptions
 
-**Version:** 2.2
+**Version:** 2.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-05
+**Last Updated:** 2026-06-06
 
 ---
 
@@ -20,75 +20,44 @@ Each module is independently activatable:
 
 | Module            | Monthly | Annual (20% off) | What It Includes                                                                  |
 | ----------------- | ------- | ---------------- | --------------------------------------------------------------------------------- |
-| **Storefront**    | $49     | $470             | Site builder, themes, visual customizer, pages, basic content, custom domain, SSL |
+| **Builder**       | $10     | $96              | Site builder, themes, visual customizer, pages, custom domain, SSL, hosting + CDN |
 | **Commerce**      | $49     | $470             | Products, variants, inventory, cart, checkout, Stripe payments, discounts         |
 | **CMS**           | $49     | $470             | Full content editor, blog, media library, SEO tools, navigation, landing pages    |
 | **CRM**           | $49     | $470             | Customer profiles, pipeline, activity log, tasks, segmentation                    |
-| **Email**         | $29     | $278             | Transactional + marketing email via Postal, automations, templates, broadcasts    |
+| **Email**         | $29     | $278             | Transactional + marketing email via Mailgun, automations, templates, broadcasts   |
 | **B2B/Wholesale** | $99     | $950             | Account pricing, RFQ/quotes, net terms, credit limits, fleet management           |
 | **AI/MCP**        | $49     | $470             | MCP server for Claude, ChatGPT, Copilot — all tools included                      |
 | **Dropship**      | $29     | $278             | Supplier connectors (DSers, Spocket, Faire), catalog sync, order routing          |
 
 ### Module Rules
 
-- Storefront is required as the base for any merchant-facing store
-- Commerce requires Storefront
-- CMS can be purchased standalone (no Storefront required for headless CMS use)
-- All other modules require at least Storefront
-- B2B requires Commerce
-- Modules can be added or removed at any time (prorated)
+- Every module is independent and optional — a tenant activates only the ones it uses (minimum one).
+- Builder is optional, not a required base. It hosts and serves a website (pages, themes, domains, SSL, CDN); a tenant that wants a hosted Sparx site turns it on.
+- Headless consumers don't need Builder — a content-only publisher (CMS), a CRM-only team, or anyone driving their own frontend off the API/MCP can run without it.
+- B2B requires Commerce.
+- Modules can be added or removed at any time (prorated).
 
 ### Transaction Fees
 
-- Storefront + Commerce only: 0.5% per transaction
+- Commerce only: 0.5% per transaction
 - When CRM is added: 0.3% per transaction
-- When any plan hits $299+/mo equivalent: 0% transaction fee
+- When active modules total $299+/mo: 0% transaction fee
 
 ---
 
-## 3. Bundles
+## 3. Usage & Fair Use
 
-Pre-configured bundles for common use cases:
+Sparx does not meter the things a business grows into. Consistent with the per-module model:
 
-| Bundle         | Modules Included                                              | Monthly | Saves |
-| -------------- | ------------------------------------------------------------- | ------- | ----- |
-| **Starter**    | Storefront + Commerce                                         | $79     | $19   |
-| **Content**    | Storefront + CMS                                              | $79     | $19   |
-| **Growth**     | Storefront + Commerce + CRM + Email                           | $149    | $27   |
-| **Pro**        | Storefront + Commerce + CMS + CRM + Email + AI/MCP + Dropship | $299    | $54   |
-| **Business**   | All modules                                                   | $449    | $74   |
-| **Enterprise** | All modules + custom frontend + managed hosting + SLA         | Custom  | —     |
+- **Unlimited team members** — no per-seat pricing on any plan.
+- **No per-record metering** — products, customers, and content are unlimited; you're never billed per row or per contact.
+- **Flat email** — included with the Email module; no per-email fees and no contact-tier surcharges.
 
-Bundles are presented during onboarding and in billing settings. Tenants can always switch to module-by-module pricing if their needs are unusual.
+Infrastructure-cost resources (media storage, API and MCP request volume) carry generous fair-use allowances rather than hard caps or automatic overage billing. Sustained, abnormal usage that drives real infrastructure cost is handled case-by-case, and Enterprise plans can set explicit custom limits.
 
 ---
 
-## 4. Usage Limits
-
-| Resource           | Starter | Growth | Pro       | Business  | Enterprise |
-| ------------------ | ------- | ------ | --------- | --------- | ---------- |
-| Staff accounts     | 1       | 5      | 15        | Unlimited | Unlimited  |
-| Products           | 500     | 5,000  | Unlimited | Unlimited | Unlimited  |
-| Customers          | 1,000   | 10,000 | Unlimited | Unlimited | Unlimited  |
-| Monthly emails     | 1,000   | 10,000 | 50,000    | 100,000   | Custom     |
-| Media storage      | 5GB     | 25GB   | 100GB     | 250GB     | Custom     |
-| Dropship suppliers | 1       | 3      | 10        | Unlimited | Unlimited  |
-| API requests/mo    | 10K     | 100K   | 1M        | Unlimited | Unlimited  |
-| MCP requests/day   | —       | —      | 5,000     | 10,000    | Custom     |
-
-### Overage Pricing
-
-| Resource                 | Overage Rate                                        |
-| ------------------------ | --------------------------------------------------- |
-| Email above limit        | $0.0008/email (Postal infrastructure cost + margin) |
-| Storage above limit      | $0.02/GB/month                                      |
-| API requests above limit | $0.01/1K requests                                   |
-
-Tenants notified at 80% and 100% of plan limits. Overages billed on next invoice.
-
----
-
-## 5. Enterprise & Managed Hosting
+## 4. Enterprise & Managed Hosting
 
 ### Enterprise Plan
 
@@ -97,7 +66,7 @@ For clients requiring custom frontends, dedicated infrastructure, or contractual
 - All modules included
 - Custom frontend development (scoped separately)
 - Dedicated Cloud SQL instance
-- Dedicated Postal IP pool
+- Dedicated Mailgun IP pool
 - 99.99% uptime SLA
 - Dedicated support contact
 - Pricing: custom, starting ~$2,000/mo
@@ -121,7 +90,7 @@ Gillett Diesel Service Inc. is the first managed hosting client at $750/month, o
 
 ---
 
-## 6. Stripe Integration
+## 5. Stripe Integration
 
 All billing handled via Stripe:
 
@@ -153,19 +122,19 @@ No custom billing UI — the Stripe Customer Portal is embedded into Sparx dashb
 
 ---
 
-## 7. Trial
+## 6. Trial
 
-- 14-day free trial on Business plan (all modules)
+- 14-day free trial with full access to all modules
 - No credit card required to start
 - Full access during trial
-- Day 12: in-app prompt to choose plan
-- Day 14: plan selection required to continue
+- Day 12: in-app prompt to choose your modules
+- Day 14: choose the modules to keep, and add a payment method to continue
 - Trial data preserved 30 days after expiry
 
 Trial-to-paid conversion is tracked as a primary business metric. Target: >30%.
 
 ---
 
-## 8. Billing for the WizeWorks Portfolio
+## 7. Billing for the WizeWorks Portfolio
 
 Each WizeWorks product (kanNINJA, HelpNinja, Sparx, etc.) has independent billing. Sparx billing is not shared with other WizeWorks products. Future consideration: a WizeWorks portfolio bundle that gives clients across multiple products a combined discount — but that's a future-state decision after each product has its own customer base.
