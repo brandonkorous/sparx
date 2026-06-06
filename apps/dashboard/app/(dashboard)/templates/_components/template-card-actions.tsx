@@ -1,24 +1,36 @@
 'use client';
 
-// The per-template action area: Install (when not yet installed), then the
-// draft → go-live state once installed. Confirm-gated + toasts, mirroring the
-// module-toggle pattern. router.refresh() re-reads the server page so the card
-// reflects the new install state.
+// The per-template action area. State machine off the install row (docs/54):
+//   none           → Install
+//   running/failed → Reset & retry (the prior run crashed or partially failed;
+//                    reset tears down what it made, then reinstalls)
+//   installed      → Installed · draft + Go live (+ quiet Reset to undo) + an
+//                    "Update available" hint when the installed version drifts
+//   live           → Live (+ update hint)
+// Confirm-gated + toasts, mirroring the module-toggle pattern. router.refresh()
+// re-reads the server page so the card reflects the new state.
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Badge, Button, Stack, Text, toast, useConfirm } from '@sparx/ui';
 
-import { goLiveAction, installBlueprintAction } from '../actions';
+import { goLiveAction, installBlueprintAction, resetBlueprintAction } from '../actions';
 
 interface Props {
   blueprintKey: string;
   blueprintName: string;
-  install: { id: string; status: string } | null;
+  latestVersion: string;
+  install: { id: string; status: string; version: string; update_available: boolean } | null;
   canInstall: boolean;
 }
 
-export function TemplateCardActions({ blueprintKey, blueprintName, install, canInstall }: Props) {
+export function TemplateCardActions({
+  blueprintKey,
+  blueprintName,
+  latestVersion,
+  install,
+  canInstall,
+}: Props) {
   const router = useRouter();
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
@@ -31,11 +43,12 @@ export function TemplateCardActions({ blueprintKey, blueprintName, install, canI
     );
   }
 
+  // confirm() opens a dialog via React state — it MUST run outside startTransition,
+  // or the transition holds the dialog-open update and the dialog never appears
+  // (the await then never resolves → button spins forever). Only the mutation
+  // belongs in the transition.
+
   function onInstall(): void {
-    // confirm() opens a dialog via React state — it MUST run outside
-    // startTransition, or the transition holds the dialog-open update and the
-    // dialog never appears (the await then never resolves → button spins
-    // forever). Only the mutation belongs in the transition.
     void (async () => {
       const ok = await confirm({
         title: `Install “${blueprintName}”?`,
@@ -94,6 +107,51 @@ export function TemplateCardActions({ blueprintKey, blueprintName, install, canI
     })();
   }
 
+  // Reset = uninstall: tear down everything the install created. Destructive, so
+  // the confirm names the target and what's lost. `retry` chains a fresh install
+  // afterward (the recovery path for a failed run).
+  function onReset(retry: boolean): void {
+    if (!install) return;
+    void (async () => {
+      const ok = await confirm({
+        title: retry ? `Reset & retry “${blueprintName}”?` : `Reset “${blueprintName}”?`,
+        description:
+          'This deletes the pages, products, content, components, and emails this template created on your site. This cannot be undone.' +
+          (retry ? ' Then it installs the template again, fresh.' : ''),
+        confirmLabel: retry ? 'Reset & retry' : 'Reset',
+        tone: 'danger',
+      });
+      if (!ok) return;
+      startTransition(async () => {
+        try {
+          const reset = await resetBlueprintAction(install.id);
+          if (!reset.ok) {
+            toast.error("Couldn't reset", { description: reset.error.message });
+            return;
+          }
+          if (!retry) {
+            toast.success(`${blueprintName} reset`);
+            router.refresh();
+            return;
+          }
+          const res = await installBlueprintAction(blueprintKey);
+          if (res.ok) {
+            toast.success(`${blueprintName} reinstalled`, {
+              description: 'Created as drafts. Review, customize, then go live.',
+            });
+          } else {
+            toast.error('Reset, but reinstall failed', { description: res.error.message });
+          }
+          router.refresh();
+        } catch (err) {
+          toast.error("Couldn't reset", {
+            description: err instanceof Error ? err.message : String(err),
+          });
+        }
+      });
+    })();
+  }
+
   if (!install) {
     return (
       <Button color="primary" onClick={onInstall} loading={pending} disabled={pending}>
@@ -102,20 +160,59 @@ export function TemplateCardActions({ blueprintKey, blueprintName, install, canI
     );
   }
 
-  if (install.status === 'live') {
+  // A prior run crashed (`running`, never finalized) or errored (`failed`): offer
+  // a clean reset-and-retry rather than a blocked re-install.
+  if (install.status === 'failed' || install.status === 'running') {
     return (
-      <Badge color="success" variant="soft">
-        Live
-      </Badge>
+      <Stack direction="row" gap={2} align="center">
+        <Badge color="danger" variant="soft">
+          {install.status === 'failed' ? 'Install failed' : 'Interrupted'}
+        </Badge>
+        <Button color="primary" onClick={() => onReset(true)} loading={pending} disabled={pending}>
+          Reset &amp; retry
+        </Button>
+      </Stack>
     );
   }
 
-  // installed (draft) — offer go-live.
+  const driftBadge = install.update_available ? (
+    <Badge
+      color="warning"
+      variant="soft"
+      title={`Installed v${install.version} · v${latestVersion} available`}
+    >
+      Update available
+    </Badge>
+  ) : null;
+
+  if (install.status === 'live') {
+    return (
+      <Stack direction="row" gap={2} align="center">
+        <Badge color="success" variant="soft">
+          Live
+        </Badge>
+        {driftBadge}
+      </Stack>
+    );
+  }
+
+  // installed (draft) — offer go-live, a quiet uninstall, and the drift hint.
   return (
-    <Stack direction="row" gap={2} align="center">
+    <Stack direction="row" gap={2} align="center" className="flex-wrap">
       <Badge variant="soft">Installed · draft</Badge>
+      {driftBadge}
       <Button color="primary" onClick={onGoLive} loading={pending} disabled={pending}>
         Go live
+      </Button>
+      <Button
+        color="danger"
+        variant="ghost"
+        size="sm"
+        onClick={() => onReset(false)}
+        loading={pending}
+        disabled={pending}
+      >
+        Reset
       </Button>
     </Stack>
   );

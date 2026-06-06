@@ -12,7 +12,7 @@
 // `x-sparx-property-id`, else the tenant's primary) — same resolution the Builder
 // uses (docs/54 §5).
 
-import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
+import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
 import { withTenant } from '@sparx/db';
@@ -21,21 +21,17 @@ import { requireRole } from '@sparx/api-core/auth';
 import { conflict, notFound } from '@sparx/api-core/errors';
 import { getBlueprint, listBlueprints, toSummary, type Blueprint } from '@sparx/blueprints';
 
-import { resolvePropertyId } from '../../../lib/property.js';
+import { resolvePrimaryPropertyId } from '../../../lib/property.js';
 import {
   findInstall,
   goLiveInstall,
   installBlueprint,
+  resetInstall,
   type InstallResult,
 } from '../../../lib/blueprint-installer.js';
 
 const KeyParam = z.object({ key: z.string().min(1).max(63) });
 const IdParam = z.object({ id: z.string().uuid() });
-
-function propHeader(request: FastifyRequest): string | null {
-  const h = request.headers['x-sparx-property-id'];
-  return typeof h === 'string' ? h : null;
-}
 
 /** A small "what this creates" breakdown for the browse/detail card. */
 function summarizeContents(bp: Blueprint) {
@@ -81,11 +77,13 @@ function serializeInstall(row: InstallRow) {
 const blueprintRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/blueprints', async (request) => {
     const auth = requireRole(request, 'viewer');
-    const propertyId = await resolvePropertyId(auth.tenantId, propHeader(request));
+    // Install state is tenant-level: blueprints always install into the PRIMARY
+    // property (docs/54 D6), so the catalog reads its rows, not the active site's.
+    const propertyId = await resolvePrimaryPropertyId(auth.tenantId);
     const installs = await withTenant({ tenantId: auth.tenantId }, (tx) =>
       tx.tenantBlueprintInstall.findMany({
         where: { propertyId },
-        select: { id: true, blueprintKey: true, status: true },
+        select: { id: true, blueprintKey: true, blueprintVersion: true, status: true },
       })
     );
     const byKey = new Map(installs.map((i) => [i.blueprintKey, i]));
@@ -94,7 +92,16 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       return {
         ...toSummary(bp),
         contents: summarizeContents(bp),
-        install: inst ? { id: inst.id, status: inst.status } : null,
+        // Version-drift (§9): when the installed version trails the catalog's, the
+        // card offers an upgrade hint (the apply itself is deferred, §13 step 5).
+        install: inst
+          ? {
+              id: inst.id,
+              status: inst.status,
+              version: inst.blueprintVersion,
+              update_available: inst.blueprintVersion !== bp.version,
+            }
+          : null,
       };
     });
     return ok({ blueprints, property_id: propertyId });
@@ -113,11 +120,15 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     const { key } = KeyParam.parse(request.params);
     const bp = getBlueprint(key);
     if (!bp) throw notFound('Blueprint', key);
-    const propertyId = await resolvePropertyId(auth.tenantId, propHeader(request));
+    const propertyId = await resolvePrimaryPropertyId(auth.tenantId);
     const existing = await findInstall(auth.tenantId, propertyId, key);
     if (existing) {
+      // One install row per (tenant, property, blueprint). A clean re-install is an
+      // explicit reset first (D8) — guide the caller there rather than duplicating.
       throw conflict(
-        `This template is already installed on this site (status: ${existing.status}).`
+        existing.status === 'installed' || existing.status === 'live'
+          ? `This template is already installed (status: ${existing.status}). Reset it to reinstall.`
+          : `A previous install is ${existing.status}. Reset it, then install again.`
       );
     }
     const { installId, result } = await installBlueprint(
@@ -162,6 +173,28 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       id
     );
     return ok({ id, status: 'live' });
+  });
+
+  // Reset & reinstall (D8): tear down everything the install created (id-map on the
+  // row) + delete the row, so the blueprint can be installed fresh. Admin-only and
+  // destructive — the dashboard gates it behind a confirm.
+  app.post('/v1/blueprints/installs/:id/reset', async (request) => {
+    const auth = requireRole(request, 'admin');
+    const { id } = IdParam.parse(request.params);
+    const row = await withTenant({ tenantId: auth.tenantId }, (tx) =>
+      tx.tenantBlueprintInstall.findFirst({ where: { id }, select: { id: true, propertyId: true } })
+    );
+    if (!row) throw notFound('Install', id);
+    await resetInstall(
+      {
+        tenantId: auth.tenantId,
+        userId: auth.actorId,
+        propertyId: row.propertyId,
+        logger: request.log,
+      },
+      id
+    );
+    return ok({ id, status: 'reset' });
   });
 
   return Promise.resolve();

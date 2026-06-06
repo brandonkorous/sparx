@@ -1,6 +1,6 @@
 # Tenant Blueprints — one-click templates that provision a whole tenant
 
-**Version:** 0.3.0
+**Version:** 0.4.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-05
 
@@ -84,13 +84,16 @@ Three existing properties of the platform carry the feature:
 
 ## 3. Locked decisions
 
-| #   | Decision                 | Choice                                                       | Rationale                                                                                                                                                                                                                                |
-| --- | ------------------------ | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D1  | First flagship vertical  | **General retail store + blog**                              | Exercises every module (catalog + variants + CMS content + marketing & transactional email) and is the most reusable marketplace flagship.                                                                                               |
-| D2  | Blueprint representation | **Declarative manifest** (versioned data, no code execution) | Marketplace-distributable and safe on multi-tenant SSR; mirrors how tenant components already store declarative trees (docs/53).                                                                                                         |
-| D3  | Image strategy           | **Hot-link external URLs**                                   | Fastest path to an end-to-end install. See §6 for the implications and the upgrade seam to tenant-owned media later.                                                                                                                     |
-| D4  | Post-install state       | **Draft — review then go live**                              | Matches starter pages + the legal seeder (everything seeds as draft). Nothing off-brand is public until the tenant publishes. Fits "activate or customize".                                                                              |
-| D5  | Theme                    | **Ship a NEW named theme** (a tenant `SiteTheme`)            | A blueprint includes its own theme, not just a pick of an existing preset: a named `SiteTheme` = base preset + presentation overlay + brand "look", created and applied on install. It's data (no code deploy) and stays fully editable. |
+| #   | Decision                  | Choice                                                                              | Rationale                                                                                                                                                                                                                                                                                                                                             |
+| --- | ------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | First flagship vertical   | **General retail store + blog**                                                     | Exercises every module (catalog + variants + CMS content + marketing & transactional email) and is the most reusable marketplace flagship.                                                                                                                                                                                                            |
+| D2  | Blueprint representation  | **Declarative manifest** (versioned data, no code execution)                        | Marketplace-distributable and safe on multi-tenant SSR; mirrors how tenant components already store declarative trees (docs/53).                                                                                                                                                                                                                      |
+| D3  | Image strategy            | **Hot-link external URLs**                                                          | Fastest path to an end-to-end install. See §6 for the implications and the upgrade seam to tenant-owned media later.                                                                                                                                                                                                                                  |
+| D4  | Post-install state        | **Draft — review then go live**                                                     | Matches starter pages + the legal seeder (everything seeds as draft). Nothing off-brand is public until the tenant publishes. Fits "activate or customize".                                                                                                                                                                                           |
+| D5  | Theme                     | **Ship a NEW named theme** (a tenant `SiteTheme`)                                   | A blueprint includes its own theme, not just a pick of an existing preset: a named `SiteTheme` = base preset + presentation overlay + brand "look", created and applied on install. It's data (no code deploy) and stays fully editable.                                                                                                              |
+| D6  | Install target            | **Always the tenant's _primary_ property**                                          | Templates provision a whole themed site; installing into a secondary is an edge case, and a public-marketplace signup only has a primary anyway. Supersedes the active-property resolution currently in the install route — `GET /v1/blueprints` and install both resolve the primary (§5). Install state is therefore effectively tenant-level (§9). |
+| D7  | Module enabling & billing | **Non-blocking placeholder now; real entitlement gate with the public marketplace** | The installer enables required modules so installs work end-to-end (fine while admin-only); the install-what-you're-entitled-to + upsell gate is wired when billing (docs/17) and the public funnel (§15) land. A `TODO(billing)` seam marks the insertion point in `enableModules` now.                                                              |
+| D8  | Idempotency               | **Install row written first as `running`; find-or-create per slice; resumable**     | Corrects the Phase-1 create-only + 409 approach (§5). Matches the async worker's `running \| installed \| failed` lifecycle and the `legal-seed-worker` pattern; enables Reset & reinstall and resume-after-failure.                                                                                                                                  |
 
 > D3 note: hot-linking is deliberately the weak link for a permanence-positioned product
 > (see [docs/01](01-platform-vision.md) §7). The manifest's asset section is designed so a
@@ -194,13 +197,23 @@ A `template-installer` Cloud Run worker (mirroring `legal-seed-worker`) subscrib
   and `setDefault` needs the type/source to validate via `assertValidRecordType`.
 - Brand/theme can run anytime (no fk deps) — done early so any preview during install is themed.
 
-**Idempotency & re-install.** Every create path keys on a per-tenant unique handle
-(`Product.handle`, `Category.handle`, `ContentEntry.slug`, `BuilderComponent.key`, …), so a
-re-run is find-or-create, never duplicate. The installer must therefore _create at least one
-page before any page list happens_, because `pageService.listOrSeed` only seeds `STARTER_*`
-when the catalog is empty — installing pages first naturally suppresses the starter seed so a
-tenant doesn't end up with both. (Verify this empty-catalog guard during build; if absent,
-add an explicit "already provisioned" sentinel.)
+**Idempotency & re-install (D8 — corrected).** The Phase-1 installer is **not** artifact-idempotent:
+it makes straight `create` calls and relies solely on a route-level 409 (the install row, written
+**last**) to block a double-install. A partial failure therefore orphans artifacts with _no_ install
+row, and a retry collides on the unique handles. The target model:
+
+1. Write the `tenant_blueprint_installs` row **first** as `status: 'running'`.
+2. Make every slice **find-or-create by handle** (`Product.handle`, `Category.handle`,
+   `ContentEntry.slug`, `BuilderComponent.key`, the `SiteTheme` name, …) so a re-run is never a
+   duplicate (today only the home page is find-or-replace, and `savedThemeService.create` would
+   mint a second theme on re-run).
+3. Flip to `installed` on success; on failure persist `failed` + the completed slices so a retry
+   **resumes** rather than restarts.
+4. Offer an explicit **Reset & reinstall** (delete the row + its mapped artifacts, behind a
+   confirm) — also the foundation for version upgrades (§9).
+
+The installer already calls `pageService.create` directly (never `listOrSeed`), so the `STARTER_*`
+empty-catalog seed never leaks — a tenant doesn't end up with both starter and template pages.
 
 **Draft everywhere (D4).** Pages/layouts/emails are created but **not published**; content
 entries and products are created with `status: 'draft'`. The active layout is set only if the
@@ -246,12 +259,14 @@ A full Blueprint needs `builder`, `commerce`, `cms`, and `email`. Modules are fl
 The installer enables each module in `requiresModules` and invokes that module's existing
 idempotent bootstrap where one exists (`POST /v1/crm/bootstrap`, `POST /v1/email/bootstrap`).
 
-**Billing gate (decision for build):** enabling paid modules has subscription implications.
-Default stance — the installer enables only modules the tenant is **entitled** to; for
-un-entitled modules it either (a) skips that slice and flags it in the install result
-("upgrade to add the shop"), or (b) is blocked at the marketplace "Install" button by an
-entitlement check. Recommend (a): install what they can use, surface the rest as upsell. Lock
-this against [docs/17 — Billing](17-billing-subscriptions.md) before building §7.
+**Billing gate (D7 — placeholder now, real gate later):** enabling paid modules has subscription
+implications. For now the installer enables the required modules **non-blocking** (no entitlement
+check) so installs work end-to-end — acceptable while installs are admin-only. A
+`// TODO(billing): entitlement gate` seam goes in `enableModules` now so the insertion point is
+explicit. The real gate — install only what the tenant is **entitled** to and surface the rest as
+upsell ("upgrade to add the shop") — is wired when billing ([docs/17](17-billing-subscriptions.md))
+and the **public marketplace** (§15) land, since a public signup-then-install is exactly where
+silent paid-module activation would bite.
 
 ---
 
@@ -270,6 +285,11 @@ Browse marketplace ─▶ Install (fires template.install) ─▶ [worker provis
   adds no new publish path.
 - **Customize** is just normal editing. Once installed, the artifacts are ordinary tenant
   rows with no special status.
+
+> **Build state:** the "Review & go live" **checklist surface** (a list of everything created, each
+> deep-linking into its editor, built from the install `result` id-map) is **specified but not yet
+> built** — today the dashboard shows only a per-card "Go live" button. This surface is the home for
+> the install-state / version-drift indicators (§9) and is Phase-2 work (§13).
 
 ---
 
@@ -294,6 +314,14 @@ tenant_blueprint_installs   (tenant-scoped, RLS)
 into the same property), an audit trail, the id map for support/debugging, and the seam for
 future **update/upgrade** ("blueprint v2 available") echoing the component "Update to vN"
 pattern (docs/53 §6).
+
+**Install-state indication (#1).** Because installs always target the primary (D6), install state
+is effectively tenant-level: `GET /v1/blueprints` resolves the **primary** property (not the
+switcher's active site) and stamps each catalog card `not installed | installed (draft) | live`,
+plus a **version-drift** badge when the installed `blueprint_version` trails the registry's
+`latest_version` ("v1.0 installed · v1.2 available"). That drift signal is what later drives the
+"Update to vN" apply (deferred, §13). The card state already exists for the active property today;
+Phase 2 re-points it at the primary and adds the drift badge.
 
 Authoring blueprints in-repo first, then promoting the JSON into `blueprint_versions`, means
 **no deploy is needed to publish a new template** once the format is stable — same principle
@@ -390,26 +418,98 @@ renders the themed home/PDP/blog and the product add-to-cart works.
 > The async `template-installer` Cloud Run worker (+ `template.install` topic in TF) remains the
 > production target — the synchronous installer is structured to lift into it unchanged.
 
-**Deferred (build on it later, per the user's framing):**
+**Phase 2 — agreed next work (2026-06-05).** In sequence:
 
-- Tenant-owned media (copy-into-bucket) replacing hot-link (D3 upgrade seam, §6).
-- Blueprint **update/upgrade** for already-installed tenants (echo docs/53 "Update to vN").
-- Multiple verticals (B2B/fleet, content publisher, services) as additional manifests.
-- Per-property installs beyond primary (docs/49 Phase 2).
-- Third-party / tenant-authored blueprints in the marketplace (`sparx.market`, docs/00).
-- Entitlement/billing enforcement detail (§7) once docs/17 specifics are locked.
-- AI-generated blueprints (manifest is a clean generation target for the MCP layer, docs/07).
+1. **Idempotency + install-state/version-drift (#1, #2)** — the load-bearing slice, in two parts:
+   - **1a (synchronous, no new infra):** re-point the catalog + install + reset at the **primary**
+     (D6); write the install row **first** as `running` and finalize to `installed` / `failed`
+     (persist partial `result` + `error` on failure — `status` is a free column, no migration); add
+     **Reset & reinstall** (delete the id-mapped artifacts + row, behind a confirm) so a failed or
+     unwanted install is recoverable; add the version-drift badge (§9). Recovery here is
+     reset-then-reinstall, which is sufficient while the installer runs synchronously.
+   - **1b (async worker):** lift the synchronous installer into the `template-installer` Cloud Run
+     worker on `template.install` (the worker the doc always targeted, §5/§10), and make every slice
+     **find-or-create by handle** — _mandatory_ here because Pub/Sub is at-least-once, so the worker
+     can legitimately run twice and must not duplicate. (Pages use `getDraftBySlug`; layouts/emails
+     have no non-seeding lookup, so those find-or-create by direct query — `listOrSeed` must never run
+     during install.)
+2. **`/builder` overview + "Start from a template" (#3).** `/builder` redirects to `/builder/page`
+   today; build the overview/empty-state and surface the template catalog there **in-context**,
+   rather than relocating the platform surface into the module sub-nav — Templates is cross-module
+   and must survive the `builder` module being disabled, so it stays platform-pinned (the rail
+   entry) and gains an in-builder entry point, not a move.
+3. **"Review & go live" checklist surface (§8).** Replace the bare go-live button with the
+   id-map-driven checklist of everything created.
+4. **Public marketplace + onboarding thread (§15, #4)** — including the **real billing gate** (D7)
+   and **tenant-owned media** (D3 seam, §6), both of which become load-bearing once installs run
+   for self-serve public signups.
+5. **Version _upgrades_ ("Update to vN")** — deferred; the genuinely hard part (a 3-way merge
+   against a tenant's customizations, per docs/53), built on the drift signal from step 1.
+
+**Deferred (build on it later):**
+
+- Blueprint **update/upgrade** for already-installed tenants — Phase-2 step 5 above (echo docs/53
+  "Update to vN").
+- Multiple verticals — 5 manifests ship today (retail, tattoo, salon/spa, antiques, auto-parts);
+  more (B2B/fleet, content publisher, services) as needed.
+- Per-property installs beyond primary — **explicitly a non-goal under D6** (always primary); revisit
+  only if a real multi-site install need surfaces (docs/49 Phase 2).
+- Third-party / tenant-_authored_ blueprints (`sparx.market`, docs/00) — a separate seller-platform
+  direction, distinct from the public browse-our-blueprints marketplace in §15.
+- AI-generated blueprints (the manifest is a clean generation target for the MCP layer, docs/07) —
+  natural follow-on once the public funnel (§15) exists.
 
 ---
 
 ## 14. Open questions
 
-1. **Billing gate (§7):** install-what-you-can + upsell, or block at the button? (Recommend
-   the former; needs a docs/17 cross-check.)
+1. ✅ **Resolved (D7) — Billing gate (§7):** non-blocking placeholder now (a `TODO(billing)` seam
+   in `enableModules`); the real install-what-you're-entitled-to + upsell gate lands with the public
+   marketplace (§15) and billing (docs/17).
 2. ✅ **Resolved — Starter-seed coexistence (§5):** the installer calls `pageService.create`
    directly (never `listOrSeed`), so no starters leak — the verify run created exactly 5 pages.
-3. ✅ **Resolved — Re-install semantics:** blocked by default. A second install for the same
-   (tenant, property, blueprint) returns 409 (`findInstall` guard + the unique index). An
-   explicit "reset & reinstall" (delete the row + artifacts) is not built yet.
-4. **Default property:** always install into primary, or let the marketplace choose a property
-   when multi-site is on?
+3. ✅ **Resolved — Re-install semantics**, _superseded by D8_: Phase-1 blocks a second install for
+   the same (tenant, property, blueprint) with a 409 (`findInstall` guard + unique index). Phase 2
+   adds **Reset & reinstall** + resume-after-failure, so "blocked" is no longer the final word — a
+   deliberate reset/reinstall and a clean resume are both supported.
+4. ✅ **Resolved (D6) — Default property:** always the tenant's **primary**. The install route +
+   `GET /v1/blueprints` resolve the primary (not the switcher's active site), making install state
+   tenant-level (§9). The current active-property resolution is re-pointed to primary in Phase 2.
+
+---
+
+## 15. Public marketplace & top-of-funnel (#4)
+
+Phase-1's marketplace is dashboard-only (post-auth, admin-gated). The high-leverage next step is a
+**public** template gallery on the marketing site (`apps/web`, pre-auth) that turns "browse a
+template" into "start a tenant" — aligned with the onboarding "live in under 5 minutes" goal
+([docs/15](15-merchant-onboarding-prd.md)) and the "AI builds it, Sparx keeps it" permanence
+positioning ([docs/01](01-platform-vision.md) §7).
+
+Funnel:
+
+```
+public gallery (apps/web) ─▶ "Start with this template" ─▶ sign up
+  ─▶ tenant created ─▶ blueprint auto-installed (async, draft) ─▶ Review & go live (§8)
+```
+
+Net-new for this slice:
+
+- **A public, unauthenticated catalog read.** `GET /v1/blueprints` requires `viewer` today; the
+  gallery needs a no-auth catalog endpoint (metadata + preview images only — no per-tenant install
+  state).
+- **Thread `blueprintKey` through onboarding** (docs/15) into provisioning, so signup → install is
+  one continuous motion. A new tenant has only a primary (D6), so the target is unambiguous.
+- **Async install (§5/§10).** A public signup-then-install must fire `template.install` and let the
+  worker provision in the background so the signup request stays snappy — the same worker Phase-2
+  step 1 builds.
+- **The real billing gate becomes load-bearing here (D7).** This is exactly where silent paid-module
+  activation would bite, so the entitlement gate + upsell lands with this slice.
+- **Tenant-owned media (D3 upgrade seam, §6).** Before installs scale publicly, switch hero/product
+  images from hot-link to copy-into-tenant-bucket so a public install isn't a permanence liability
+  (the manifest shape doesn't change — only §5 step 2).
+- **Per-blueprint marketing/OG pages** for shareable links (we already capture preview screenshots).
+
+**Out of scope here:** third-party / tenant-_authored_ blueprints (`sparx.market`, §13) — that's a
+separate, later seller-platform direction. This slice is "publicly browse **our** curated
+blueprints." AI-generated blueprints (§13) are a natural follow-on once this funnel exists.

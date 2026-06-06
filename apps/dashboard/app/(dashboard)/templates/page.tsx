@@ -43,7 +43,12 @@ interface BlueprintCard {
     theme: string;
     hasLayout: boolean;
   };
-  install: { id: string; status: string } | null;
+  install: {
+    id: string;
+    status: string;
+    version: string;
+    update_available: boolean;
+  } | null;
 }
 
 export default async function TemplatesPage() {
@@ -104,6 +109,7 @@ export default async function TemplatesPage() {
                     <TemplateCardActions
                       blueprintKey={bp.key}
                       blueprintName={bp.name}
+                      latestVersion={bp.version}
                       install={bp.install}
                       canInstall={canInstall}
                     />

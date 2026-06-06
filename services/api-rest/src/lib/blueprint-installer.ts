@@ -37,8 +37,8 @@ import { isAssetRef, type Blueprint } from '@sparx/blueprints';
 export interface InstallContext {
   tenantId: string;
   userId: string | null;
-  /** The ACTIVE property to install into (resolved by the caller from the site
-   *  switcher header, else the tenant's primary). Docs/54 §5. */
+  /** The property to install into — always the tenant's PRIMARY (docs/54 D6); the
+   *  route resolves it via resolvePrimaryPropertyId. */
   propertyId: string;
   logger: FastifyBaseLogger;
 }
@@ -100,6 +100,10 @@ function mimeFromUrl(url: string): string {
  *  install). `tenants.settings.modules.<slug>.enabled` — the tenants table is
  *  RLS-exempt (the dispatch table), so a direct prisma write is correct. */
 async function enableModules(tenantId: string, modules: string[]): Promise<void> {
+  // TODO(billing): entitlement gate (docs/54 D7). For now this enables every module
+  // the blueprint needs, non-blocking — acceptable while installs are admin-only.
+  // When billing (docs/17) + the public marketplace (§15) land, gate this to the
+  // tenant's entitled modules and surface the rest as upsell instead of enabling.
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     select: { settings: true },
@@ -153,7 +157,29 @@ export async function installBlueprint(
   };
   const assetMap = new Map<string, string>();
 
+  // Declared outside the try so the catch can flip the row to `failed`.
+  let installId: string | null = null;
+
   try {
+    // Install row FIRST, as `running` — a partial failure is then recorded (with its
+    // partial id-map) for Reset & reinstall, never silently orphaned. The route
+    // guarantees no prior row for (tenant, property, blueprint): an installed/live one
+    // returns 409, a failed/running one must be reset first (docs/54 §5, D8).
+    const installRow = await withTenant(ctx, (tx) =>
+      tx.tenantBlueprintInstall.create({
+        data: {
+          tenantId,
+          propertyId,
+          blueprintKey: blueprint.key,
+          blueprintVersion: blueprint.version,
+          status: 'running',
+          result: {},
+        },
+        select: { id: true },
+      })
+    );
+    installId = installRow.id;
+
     // 1. Modules
     await enableModules(tenantId, blueprint.requiresModules);
 
@@ -552,23 +578,17 @@ export async function installBlueprint(
       emails: result.emails.length,
     };
 
-    // 11. Record the install (idempotency + review + go-live).
-    const row = await withTenant(ctx, (tx) =>
-      tx.tenantBlueprintInstall.create({
-        data: {
-          tenantId,
-          propertyId,
-          blueprintKey: blueprint.key,
-          blueprintVersion: blueprint.version,
-          status: 'installed',
-          result: result as unknown as Prisma.InputJsonValue,
-        },
-        select: { id: true },
+    // 11. Finalize the install row → `installed`, with the full id-map. Use
+    //     installRow.id (definitely set here) so the closure sees a non-null id.
+    await withTenant(ctx, (tx) =>
+      tx.tenantBlueprintInstall.update({
+        where: { id: installRow.id },
+        data: { status: 'installed', result: result as unknown as Prisma.InputJsonValue },
       })
     );
 
     await publish(logger, 'template.installed', tenantId, userId, {
-      installId: row.id,
+      installId: installRow.id,
       blueprintKey: blueprint.key,
       propertyId,
       counts: result.counts,
@@ -578,13 +598,30 @@ export async function installBlueprint(
       { tenantId, propertyId, blueprint: blueprint.key, counts: result.counts },
       'blueprint installed'
     );
-    return { installId: row.id, result };
+    return { installId: installRow.id, result };
   } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
     logger.error({ err, tenantId, blueprint: blueprint.key }, 'blueprint install failed');
+    // Persist `failed` + the partial id-map so the dashboard offers Reset & retry and
+    // the reset deletes exactly what was created before the failure (D8).
+    if (installId) {
+      const failedId = installId;
+      await withTenant(ctx, (tx) =>
+        tx.tenantBlueprintInstall.update({
+          where: { id: failedId },
+          data: {
+            status: 'failed',
+            error: message,
+            result: result as unknown as Prisma.InputJsonValue,
+          },
+        })
+      ).catch(() => undefined);
+    }
     await publish(logger, 'template.install_failed', tenantId, userId, {
+      installId,
       blueprintKey: blueprint.key,
       propertyId,
-      error: err instanceof Error ? err.message : String(err),
+      error: message,
     }).catch(() => undefined);
     throw err;
   }
@@ -664,4 +701,60 @@ export async function goLiveInstall(ctxIn: InstallContext, installId: string): P
     })
   );
   logger.info({ tenantId, propertyId, installId }, 'blueprint install went live');
+}
+
+// ── reset & reinstall ─────────────────────────────────────────────────────────────
+
+/** Reset & reinstall (D8): delete everything an install created — read from the
+ *  id-map on the row — then delete the row, so the blueprint can be installed
+ *  fresh. Best-effort per artifact (an already-removed one is skipped) and in
+ *  reverse dependency order so "has descendants" / "is placed" / FK guards don't
+ *  block teardown. Destructive — gated behind a confirm in the dashboard.
+ *
+ *  1a limitation: commerce rows (products/categories/collections) soft-delete via
+ *  the service, so their handles stay reserved — a later reinstall may suffix them
+ *  (`widget` → `widget-2`). Pages/layout/emails/components/theme hard delete; content
+ *  hard deletes and cascades its revisions + references. Cleaned up when
+ *  find-or-create / hard-delete lands with the worker (§13 step 1b). */
+export async function resetInstall(ctxIn: InstallContext, installId: string): Promise<void> {
+  const { tenantId, userId, propertyId, logger } = ctxIn;
+  const ctx = { tenantId, userId: userId ?? undefined };
+  const propCtx = { tenantId, userId: userId ?? undefined, propertyId };
+
+  const row = await withTenant({ tenantId }, (tx) =>
+    tx.tenantBlueprintInstall.findFirst({
+      where: { id: installId },
+      select: { result: true },
+    })
+  );
+  if (!row) throw new Error(`Install ${installId} not found`);
+  const r = (row.result ?? {}) as unknown as InstallResult;
+
+  const warn = (label: string, id: string) => (err: unknown) =>
+    logger.warn({ err, id }, `reset: ${label} delete failed (left in place)`);
+
+  // Reverse dependency order, so each delete's "is placed" / "has descendants" /
+  // FK guard is already satisfied by the time we reach the parent.
+  for (const e of r.emails ?? []) await emailService.remove(ctx, e.id).catch(warn('email', e.id));
+  for (const p of r.pages ?? []) await pageService.remove(propCtx, p.id).catch(warn('page', p.id));
+  if (r.layoutId) await layoutService.remove(propCtx, r.layoutId).catch(warn('layout', r.layoutId));
+  for (const c of r.components ?? [])
+    await componentService.remove(ctx, c.key).catch(warn('component', c.key));
+  for (const p of r.products ?? [])
+    await productService.softDelete(ctx, p.id).catch(warn('product', p.id));
+  for (const id of Object.values(r.collections ?? {}))
+    await collectionService.remove(ctx, id).catch(warn('collection', id));
+  // Categories leaf-first: the id-map is parent-first (insertion order), so reverse.
+  for (const id of Object.values(r.categories ?? {}).reverse())
+    await categoryService.remove(ctx, id).catch(warn('category', id));
+  for (const c of r.content ?? [])
+    await withTenant(ctx, (tx) => tx.contentEntry.delete({ where: { id: c.id } })).catch(
+      warn('content', c.id)
+    );
+  if (r.theme) await savedThemeService.remove(ctx, r.theme.id).catch(warn('theme', r.theme.id));
+  for (const id of Object.values(r.assets ?? {}))
+    await withTenant(ctx, (tx) => tx.mediaAsset.delete({ where: { id } })).catch(warn('asset', id));
+
+  await withTenant(ctx, (tx) => tx.tenantBlueprintInstall.delete({ where: { id: installId } }));
+  logger.info({ tenantId, propertyId, installId }, 'blueprint install reset');
 }
