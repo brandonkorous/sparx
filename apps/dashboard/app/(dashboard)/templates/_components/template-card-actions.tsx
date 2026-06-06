@@ -186,12 +186,26 @@ export function TemplateCardActions({
   ) : null;
 
   if (install.status === 'live') {
+    // A live install can still be reset — the lifecycle has to be completable
+    // (start over, or reinstall a newer catalog version when one is available).
+    // It's destructive (tears down the live pages/products/content), so it stays
+    // a quiet ghost button behind the same name-the-target danger confirm.
     return (
-      <Stack direction="row" gap={2} align="center">
+      <Stack direction="row" gap={2} align="center" className="flex-wrap">
         <Badge color="success" variant="soft">
           Live
         </Badge>
         {driftBadge}
+        <Button
+          color="danger"
+          variant="ghost"
+          size="sm"
+          onClick={() => onReset(false)}
+          loading={pending}
+          disabled={pending}
+        >
+          Reset
+        </Button>
       </Stack>
     );
   }
