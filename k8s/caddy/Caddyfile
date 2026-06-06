@@ -95,6 +95,38 @@ sparx.works, www.sparx.works {
   reverse_proxy web.sparx-prod.svc.cluster.local:3000
 }
 
+# ----- kanNINJA (co-tenant in the `kanninja` namespace) -----
+# Added 2026-06-06 during the kanNINJA AKS→GKE migration. kanNINJA's workloads
+# live in their own `kanninja` namespace; Caddy reaches them cross-namespace via
+# ClusterIP Services (port 80 → app's http port).
+#
+# IMPORTANT: these blocks deliberately OMIT `tls { on_demand }`. On-demand would
+# call the global ask endpoint (api-rest /internal/domain-check), which only
+# knows sparx tenants/custom domains and would REJECT kanninja.com — no cert.
+# Explicit host blocks get a normal Caddy-managed Let's Encrypt cert (HTTP-01 /
+# TLS-ALPN), which is what we want. Requires kanninja.com / api / mcp DNS to
+# resolve to this LB (35.254.145.54) first; keep them DNS-only (no Cloudflare
+# proxy) until the certs issue, then optionally proxy with Full(strict).
+kanninja.com {
+  import security_headers
+  reverse_proxy frontend.kanninja.svc.cluster.local:80
+}
+
+www.kanninja.com {
+  import security_headers
+  redir https://kanninja.com{uri} permanent
+}
+
+api.kanninja.com {
+  import security_headers
+  reverse_proxy backend.kanninja.svc.cluster.local:80
+}
+
+mcp.kanninja.com {
+  import security_headers
+  reverse_proxy mcp.kanninja.svc.cluster.local:80
+}
+
 # ----- Module marketing sites -----
 # Each domain serves its own marketing/landing site (single Next.js app
 # reads the Host header and renders the right module page).
