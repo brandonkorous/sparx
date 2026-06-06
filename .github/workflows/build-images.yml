@@ -19,7 +19,7 @@ env:
   REGION: us-central1
   AR_REPO: sparx
   # OIDC federation — same values used by db-migrate.yml. These are public
-  # identifiers (no credential value); WIF binds the wize-works/sparx repo
+  # identifiers (no credential value); WIF binds the brandonkorous/sparx repo
   # to the sparx-deployer SA via the github-pool provider.
   WIF_PROVIDER: projects/631794111842/locations/global/workloadIdentityPools/github-pool/providers/github-provider
   DEPLOYER_SA: sparx-deployer@sparxworks.iam.gserviceaccount.com

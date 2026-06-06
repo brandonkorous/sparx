@@ -5,7 +5,7 @@
 #
 # Flow:
 #   1. Authenticate to GCP via Workload Identity Federation (no service
-#      account key — the wize-works/sparx repo is bound to sparx-deployer).
+#      account key — the brandonkorous/sparx repo is bound to sparx-deployer).
 #   2. Build the @sparx/db migration runner image, push to Artifact Registry.
 #   3. Fetch fleet credentials via Connect Gateway and apply the K8s Job
 #      manifest (envsubst injects the image tag + RUN_SEED flag).

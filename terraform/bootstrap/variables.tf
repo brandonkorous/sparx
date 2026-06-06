@@ -9,8 +9,8 @@ variable "region" {
   description = "Default GCP region."
 }
 
-variable "github_repo" {
-  type        = string
-  default     = "wize-works/sparx"
-  description = "GitHub repo (owner/name) allowed to impersonate the deployer SA via OIDC."
+variable "github_repos" {
+  type        = set(string)
+  default     = ["brandonkorous/sparx"]
+  description = "GitHub repos (owner/name) allowed to impersonate the deployer SA via OIDC. A set so additional paths can be accepted transiently during an org/owner transfer."
 }

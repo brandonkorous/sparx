@@ -4,7 +4,7 @@ One-time setup. Run once per project. Manages:
 
 - Required GCP API enablement
 - `sparx-deployer` service account (used by GitHub Actions for app CD)
-- Workload Identity Federation pool + provider scoped to the `wize-works/sparx` repo
+- Workload Identity Federation pool + provider scoped to the `brandonkorous/sparx` repo
 
 The Terraform state bucket itself (`gs://sparx-terraform-state`) is created **manually before this runs** — see the parent [README](../README.md).
 

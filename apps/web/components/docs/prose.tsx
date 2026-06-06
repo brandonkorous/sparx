@@ -76,7 +76,7 @@ export function DocArticle({
               <div className="docs-editlink">
                 {editPath ? (
                   <a
-                    href={`https://github.com/wize-works/sparx/edit/main/${editPath}`}
+                    href={`https://github.com/brandonkorous/sparx/edit/main/${editPath}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
