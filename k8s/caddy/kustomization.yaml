@@ -2,7 +2,22 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: sparx-prod
 resources:
-  - configmap.yaml
   - pvc.yaml
   - deployment.yaml
   - service.yaml
+
+# Content-hashed Caddy config. The generator appends a hash suffix derived from
+# Caddyfile's contents (e.g. caddy-config-abc123) and rewrites the Deployment's
+# volume reference to match. So ANY Caddyfile edit renames the ConfigMap, which
+# changes the pod template, which forces a rollout on plain `kubectl apply -k` —
+# even when applied outside bootstrap.yml.
+#
+# Why this exists: Caddy runs with `admin off` and reads its Caddyfile only at
+# startup (no hot reload). A statically-named ConfigMap let an edit land in the
+# cluster while the running pod kept serving the OLD config — which routed every
+# tenant site to the pre-rename `storefront` app and caused a 2026-06-06 outage.
+# The hash suffix makes "config changed" and "pod must roll" the same event.
+configMapGenerator:
+  - name: caddy-config
+    files:
+      - Caddyfile

@@ -34,6 +34,7 @@ on:
           - apps
           - workers
           - workers-prune
+          - storefront-teardown
           - cronjobs
           # Postal was deprecated 2026-05-29 (Postal's smtp_relays can't
           # auth to Mailgun by design — config_schema.rb:79 drops
@@ -106,9 +107,15 @@ jobs:
           kubectl patch service caddy -n "$NAMESPACE" \
             -p "{\"spec\":{\"loadBalancerIP\":\"$INGRESS_IP\"}}"
           # Caddy reads its Caddyfile only at startup and runs with `admin off`,
-          # so there is no hot-reload path — applying the ConfigMap alone leaves
-          # the running pod on the OLD config. Force a rollout so Caddyfile
-          # changes (e.g. the security-header snippet) actually take effect.
+          # so there is no hot-reload path. The Caddyfile now ships via a
+          # content-hashed configMapGenerator (k8s/caddy/kustomization.yaml), so
+          # `kubectl apply -k` above already rolls the pod whenever the Caddyfile
+          # changes (the hash renames the ConfigMap → pod template changes). The
+          # explicit restart below is belt-and-suspenders: it forces a roll even
+          # when the config is unchanged (e.g. to reload on-demand certs from the
+          # PVC, or recover a wedged pod). Before the generator, a ConfigMap edit
+          # without a rollout silently stranded the pod on the OLD routing and
+          # caused the 2026-06-06 tenant-site outage.
           # NOTE: single-replica + Recreate strategy ⇒ a brief (~10-30s) ingress
           # blip while the pod recreates; on-demand certs reload from the PVC so
           # there's no re-issuance.
@@ -278,6 +285,22 @@ jobs:
           for w in email-worker media-worker; do
             kubectl delete deployment "$w" -n "$NAMESPACE" --ignore-not-found
             kubectl delete pdb "$w" -n "$NAMESPACE" --ignore-not-found
+          done
+
+      # One-shot teardown of the orphaned pre-rename `storefront` app. The
+      # tenant-sites app was renamed `storefront` → `site` (k8s/apps/site.yaml);
+      # the old Deployment + Service linger in-cluster because `kubectl apply`
+      # does not prune resources dropped from the manifests. They served zero
+      # traffic once Caddy was rolled onto `site` (2026-06-06) — but the idle
+      # pod wastes quota AND served stale tenant-site responses while Caddy's
+      # config was stale, which made the outage hard to diagnose. Delete it.
+      # Idempotent via --ignore-not-found. NOT in all-platform — human-gated.
+      - name: Tear down orphaned storefront app
+        if: ${{ inputs.components == 'storefront-teardown' }}
+        run: |
+          set -euo pipefail
+          for kind in deployment service hpa pdb; do
+            kubectl delete "$kind" storefront -n "$NAMESPACE" --ignore-not-found
           done
 
       # Postal — self-hosted email server in its own namespace. Lives
