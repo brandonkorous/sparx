@@ -186,6 +186,18 @@ export const resolveSiteRoute = cache(async (): Promise<SiteRoute | null> => {
   // tenant/property structure, so trying both is unambiguous and immune to whichever
   // header the ingress populates. (A two-level `<prop>.<tenant>` host was 404ing
   // because the ingress put a non-matching value in the header we preferred.)
+  // TEMP diagnostic (remove after): what the ROUTE actually sees, vs what the
+  // middleware received — pins down whether the host survives the middleware hop.
+  console.log(
+    '[resolveSiteRoute]',
+    JSON.stringify({
+      xfh: hdrs.get('x-forwarded-host'),
+      host: hdrs.get('host'),
+      xTenant: hdrs.get('x-tenant-slug'),
+      keys: [...hdrs.keys()].join(','),
+    })
+  );
+
   const candidates = [hdrs.get('x-forwarded-host'), hdrs.get('host')].filter(
     (h): h is string => !!h
   );
