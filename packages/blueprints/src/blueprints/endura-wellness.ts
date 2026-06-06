@@ -267,7 +267,10 @@ function homeTree(): BuilderNode {
       // CONCERNS — botanical photo beside the conditions list, on a sand band.
       node('Section', {
         box: { name: 'Concerns', surface: 'subtle', padding: 'xl', contentWidth: 'contained' },
-        layout: { direction: 'row', gap: 'lg', alignItems: 'center' },
+        // Two-column image|text: a GRID (not a row) so the image-only column claims
+        // half the width. A flex row collapses a child that has only a background
+        // image (no content) to 0 width. Collapses to 1 column on mobile (docs/59).
+        layout: { direction: 'grid', columns: 2, gap: 'lg', alignItems: 'center' },
         children: [
           node('Section', {
             box: {
@@ -471,7 +474,9 @@ function homeTree(): BuilderNode {
       // STORY — founder photo beside the origin story, on cream.
       node('Section', {
         box: { name: 'Story', surface: 'none', padding: 'xl', contentWidth: 'contained' },
-        layout: { direction: 'row', gap: 'lg', alignItems: 'center' },
+        // GRID, not a row — see the Concerns note: an image-only column needs a
+        // grid track to claim width (a flex row collapses it to 0).
+        layout: { direction: 'grid', columns: 2, gap: 'lg', alignItems: 'center' },
         children: [
           node('Section', {
             box: {
@@ -929,11 +934,12 @@ function newsletterEmailTree(): BuilderNode {
 
 const manifest = {
   key: 'endura-wellness',
-  version: '0.3.0',
+  version: '0.3.1',
   name: 'Wellness Clinic',
   summary:
     'A boutique wellness-clinic site with a tailored service menu (hormone therapy, weight loss, IV & ozone), a concierge membership band, a care team, a small nutraceutical shop, a journal, and book-now calls to action — warm, photography-led, and ready to review.',
   vertical: 'services',
+  preview: '/blueprint-previews/endura-wellness.png',
   requiresModules: ['builder', 'cms', 'commerce', 'email'],
 
   brand: {
