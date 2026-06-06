@@ -31,7 +31,7 @@ import { z } from 'zod';
 
 // ── Box base: the universal spine ───────────────────────────────────────────
 
-export const HeightScale = z.enum(['auto', 'sm', 'md', 'lg', 'full']);
+export const HeightScale = z.enum(['auto', 'sm', 'md', 'lg', 'xl', 'full']);
 export const WidthMode = z.enum(['full', 'contained']);
 export const Surface = z.enum(['none', 'subtle', 'muted', 'inverse', 'brand']);
 export const SpaceScale = z.enum(['none', 'sm', 'md', 'lg', 'xl']);

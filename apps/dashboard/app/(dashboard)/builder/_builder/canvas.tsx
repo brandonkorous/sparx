@@ -50,6 +50,7 @@ const HEIGHT_VH: Record<HeightScale, string | undefined> = {
   sm: '25vh',
   md: '50vh',
   lg: '75vh',
+  xl: '90vh',
   full: '100vh',
 };
 // Fixed heights ease on the mobile device preview so heroes aren't overlong —
@@ -59,6 +60,7 @@ const HEIGHT_VH_MOBILE: Record<HeightScale, string | undefined> = {
   sm: '25vh',
   md: '40vh',
   lg: '55vh',
+  xl: '70vh',
   full: '85vh',
 };
 

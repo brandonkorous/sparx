@@ -3209,6 +3209,10 @@ html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child
   min-height: 75vh;
   max-height: 75vh;
 }
+.bx-h-xl {
+  min-height: 90vh;
+  max-height: 90vh;
+}
 .bx-h-full {
   min-height: 100vh;
   max-height: 100vh;
@@ -3221,6 +3225,10 @@ html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child
   .bx-h-lg {
     min-height: 55vh;
     max-height: 55vh;
+  }
+  .bx-h-xl {
+    min-height: 70vh;
+    max-height: 70vh;
   }
   .bx-h-full {
     min-height: 85vh;

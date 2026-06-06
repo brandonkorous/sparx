@@ -190,6 +190,7 @@ export const HEIGHT_OPTIONS: { value: HeightScale; label: string }[] = [
   { value: 'sm', label: '¼' },
   { value: 'md', label: '½' },
   { value: 'lg', label: '¾' },
+  { value: 'xl', label: 'Tall' },
   { value: 'full', label: 'Full' },
 ];
 
