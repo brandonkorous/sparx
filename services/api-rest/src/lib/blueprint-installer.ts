@@ -334,6 +334,38 @@ export async function installBlueprint(
     // 6. Commerce
     const commerce = blueprint.commerce;
     if (commerce) {
+      // 6·0. Clear tombstones (fixes the §13 1a limitation). Reset soft-deletes
+      //   commerce rows, so their handle/SKU stays reserved — a reinstall would
+      //   then suffix handles (`widget` → `widget-2`) and HARD-fail on the variant
+      //   SKU unique. Before creating, purge only the SOFT-DELETED rows whose exact
+      //   handle/SKU we're about to reuse: products cascade to their variants
+      //   (freeing the SKU), categories/collections cascade their joins. Live rows
+      //   are never touched (deletedAt must be set), so this only undoes prior
+      //   teardown. Best-effort — a tombstone pinned by a cart item (variant
+      //   onDelete: Restrict) just falls back to the old suffix behavior.
+      const productHandles = commerce.products.map((p) => p.handle);
+      const variantSkus = commerce.products.flatMap((p) => p.variants.map((v) => v.sku));
+      const categoryHandles = commerce.categories.map((c) => c.handle);
+      const collectionHandles = commerce.collections.map((c) => c.handle);
+      await withTenant(ctx, async (tx) => {
+        if (productHandles.length > 0)
+          await tx.product.deleteMany({
+            where: { tenantId, handle: { in: productHandles }, deletedAt: { not: null } },
+          });
+        if (variantSkus.length > 0)
+          await tx.productVariant.deleteMany({
+            where: { tenantId, sku: { in: variantSkus }, deletedAt: { not: null } },
+          });
+        if (collectionHandles.length > 0)
+          await tx.productCollection.deleteMany({
+            where: { tenantId, handle: { in: collectionHandles }, deletedAt: { not: null } },
+          });
+        if (categoryHandles.length > 0)
+          await tx.productCategory.deleteMany({
+            where: { tenantId, handle: { in: categoryHandles }, deletedAt: { not: null } },
+          });
+      }).catch((err) => logger.warn({ err }, 'commerce tombstone purge skipped'));
+
       // 6a. Categories — parent-first (resolve parentHandle as we go).
       const catMap = new Map<string, string>();
       const pending = [...commerce.categories];
@@ -737,7 +769,20 @@ export async function resetInstall(ctxIn: InstallContext, installId: string): Pr
   // FK guard is already satisfied by the time we reach the parent.
   for (const e of r.emails ?? []) await emailService.remove(ctx, e.id).catch(warn('email', e.id));
   for (const p of r.pages ?? []) await pageService.remove(propCtx, p.id).catch(warn('page', p.id));
-  if (r.layoutId) await layoutService.remove(propCtx, r.layoutId).catch(warn('layout', r.layoutId));
+  if (r.layoutId) {
+    // Reset uninstalls the whole template, so its layout must go even if it's the
+    // live one. remove() refuses to delete an active layout (a guard that protects
+    // the merchant-facing delete) — deactivate it first so uninstall completes
+    // instead of orphaning the layout (which then blocks a clean reinstall+go-live).
+    const layoutId = r.layoutId;
+    await withTenant(ctx, (tx) =>
+      tx.builderLayout.updateMany({
+        where: { id: layoutId, propertyId },
+        data: { isActive: false },
+      })
+    ).catch(warn('layout deactivate', layoutId));
+    await layoutService.remove(propCtx, layoutId).catch(warn('layout', layoutId));
+  }
   for (const c of r.components ?? [])
     await componentService.remove(ctx, c.key).catch(warn('component', c.key));
   for (const p of r.products ?? [])
