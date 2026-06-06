@@ -1,18 +1,16 @@
-// Tenant resolution from the incoming Host header.
+// Tenant + site resolution from the incoming Host header.
 //
-// Three lookup orders, in priority:
-//   1. Exact match on `tenants.primary_domain`           (e.g. acme.com)
-//   2. Subdomain of sparx.zone                           (e.g. acme.sparx.zone → slug=acme)
-//   3. Query-param fallback for local dev                (?tenant=foo)
+// Resolution order (resolveSiteRoute):
+//   1. Dev-fallback headers (`x-tenant-slug` / `x-property-slug`, set by the proxy
+//      from `?tenant=` / `?property=` in local dev — no per-tenant DNS needed).
+//   2. Our own `*.sparx.zone` subdomains, decoded STRUCTURALLY from the host
+//      (zoneSiteRoute): `<tenant>.sparx.zone` → primary, `<property>.<tenant>.
+//      sparx.zone` → that site. Self-describing, so no API round-trip.
+//   3. Arbitrary CUSTOM domains → the domains table via api-rest (fetchSiteByHost).
 //
-// The api-rest endpoint /v1/public/tenants/:slug accepts a slug, so case 1
-// would technically need a second endpoint that resolves by primary_domain.
-// That's deferred — for now we only handle case 2 (subdomain) and case 3
-// (dev fallback). Custom domains land when tenants need them.
-//
-// The tenant payload now also carries the tenant's storefront THEME and
-// commerce DEFAULTS so the root layout resolves colors/fonts/currency in a
-// single fetch (see app/layout.tsx + lib/theme.ts).
+// The tenant payload also carries the tenant's storefront THEME and commerce
+// DEFAULTS so the root layout resolves colors/fonts/currency in a single fetch
+// (see app/layout.tsx + lib/theme.ts).
 
 import { headers } from 'next/headers';
 import { cache } from 'react';
@@ -105,21 +103,6 @@ const DEFAULT_CONSENT: TenantConsent = {
   policyVersion: '1',
 };
 
-// Extracts the tenant slug from a host like `acme.sparx.zone` → `acme`.
-// Returns null when the host isn't a sparx.zone subdomain. Strips port.
-export function slugFromHost(host: string | null | undefined): string | null {
-  if (!host) return null;
-  const noPort = host.split(':')[0]?.toLowerCase();
-  if (!noPort) return null;
-  const suffix = `.${ZONE_DOMAIN}`;
-  if (noPort === ZONE_DOMAIN) return null;
-  if (!noPort.endsWith(suffix)) return null;
-  const sub = noPort.slice(0, -suffix.length);
-  // Reject deeper subdomains (foo.bar.sparx.zone) — only single-level for now.
-  if (sub.includes('.') || sub.length === 0) return null;
-  return sub;
-}
-
 /** The site a request routes to: which TENANT and which of its web PROPERTIES
  *  (sites). `propertySlug` is null for the tenant's primary site (api-rest then
  *  defaults to it), so single-site tenants need no property at all. */
@@ -128,51 +111,66 @@ export interface SiteRoute {
   propertySlug: string | null;
 }
 
-// The outcome of a host→site lookup. We distinguish a DEFINITIVE miss (the
-// domains table doesn't know this host → honour the 404) from a TRANSIENT error
-// (api unreachable / 5xx → safe to degrade to bare-subdomain parsing). Collapsing
-// the two — the old `null`-on-everything — is what silently 404'd live additional
-// sites: a `<prop>.<tenant>.sparx.zone` host that the resolver couldn't reach fell
-// through to naive label parsing, which can't split a multi-label host and
-// mis-read the whole label as one tenant slug.
-type HostLookup = { kind: 'route'; route: SiteRoute } | { kind: 'not_found' } | { kind: 'error' };
+/** Decode one of OUR `*.sparx.zone` subdomains into its tenant + property.
+ *
+ *  These hosts are SELF-DESCRIBING — api-rest's `mintZoneHost` encodes the tenant
+ *  (and property) directly in the hostname — so we resolve them from the host
+ *  alone, with no API round-trip. That makes zone hosts immune to a stale or
+ *  unreachable `site-by-host` lookup (the domains table is just a mirror of this
+ *  deterministic minting). Custom domains, whose mapping is arbitrary, return null
+ *  here and fall through to the domains table.
+ *
+ *    `<tenant>.sparx.zone`            → primary site            (propertySlug null)
+ *    `<property>.<tenant>.sparx.zone` → that tenant's named site
+ *
+ *  A legacy flat `<tenant>-<property>` host is a single label here, so it decodes
+ *  as a (usually non-existent) tenant slug and 404s — deprecated in favour of the
+ *  dotted form (migration 20260707000000); the dotted host is now canonical. */
+export function zoneSiteRoute(host: string | null | undefined): SiteRoute | null {
+  if (!host) return null;
+  const noPort = host.split(':')[0]?.toLowerCase();
+  if (!noPort) return null;
+  const suffix = `.${ZONE_DOMAIN}`;
+  if (noPort === ZONE_DOMAIN || !noPort.endsWith(suffix)) return null;
+  const labels = noPort.slice(0, -suffix.length).split('.');
+  if (labels.length === 1 && labels[0]) {
+    return { tenantSlug: labels[0], propertySlug: null };
+  }
+  if (labels.length === 2 && labels[0] && labels[1]) {
+    return { tenantSlug: labels[1], propertySlug: labels[0] };
+  }
+  // Three+ labels aren't a shape we mint.
+  return null;
+}
 
-// Ask api-rest to map a Host header → { tenantSlug, propertySlug } via the
-// non-RLS domains table (docs/49 §5). Covers connected custom domains AND
-// additional-site `<prop>.<tenant>.sparx.zone` subdomains, which a bare slug
-// extraction can't.
+// Ask api-rest to map a CUSTOM-domain Host header → { tenantSlug, propertySlug }
+// via the non-RLS domains table (docs/49 §5). Only reached for hosts that are NOT
+// our own `*.sparx.zone` subdomains (those are decoded structurally by
+// zoneSiteRoute, with no API round-trip) — a custom domain's mapping is arbitrary,
+// so the domains table is its only source of truth. Null on miss/unreachable.
 //
-// `cache: 'no-store'` on purpose: this is the multi-site routing keystone, and a
-// stale negative here silently 404s a live site (the `<prop>.<tenant>` host can't
-// be re-derived from the label, so there's no safe fallback). It's one cheap
-// indexed unique lookup per request — read it live rather than trust the data
-// cache, which a missing/stale `.next/cache` can otherwise poison.
-async function fetchSiteByHost(host: string): Promise<HostLookup> {
+// `cache: 'no-store'`: host→site routing is correctness-critical and cheap (one
+// indexed unique lookup), so read it live rather than risk the data cache serving
+// a stale negative that would 404 a live custom domain.
+async function fetchSiteByHost(host: string): Promise<SiteRoute | null> {
   try {
     const res = await fetch(`${BASE_URL}/v1/public/site-by-host?host=${encodeURIComponent(host)}`, {
       cache: 'no-store',
     });
-    // An unknown host is a definitive miss (api-rest 404s via notFound()).
-    if (res.status === 404) return { kind: 'not_found' };
-    if (!res.ok) return { kind: 'error' };
     const json = (await res.json()) as
       | { success: true; data: { tenantSlug: string; propertySlug: string } }
       | { success: false };
-    if (!json.success) return { kind: 'not_found' };
-    return {
-      kind: 'route',
-      route: { tenantSlug: json.data.tenantSlug, propertySlug: json.data.propertySlug },
-    };
+    if (!res.ok || !json.success) return null;
+    return { tenantSlug: json.data.tenantSlug, propertySlug: json.data.propertySlug };
   } catch {
-    // Network failure / JSON parse blow-up — transient, not a real miss.
-    return { kind: 'error' };
+    return null;
   }
 }
 
-// Resolves the active site (tenant + property). Order: dev-fallback headers
-// (set by the proxy from `?tenant=` / `?property=`), then the authoritative
-// host→property lookup. Bare `<tenant>.sparx.zone` parsing is ONLY a degraded
-// fallback for when that lookup errors — never used to override a definitive miss.
+// Resolves the active site (tenant + property). Order: dev-fallback headers (set
+// by the proxy from `?tenant=` / `?property=`), then our self-describing
+// `*.sparx.zone` subdomains decoded straight from the host, then the domains-table
+// lookup for arbitrary custom domains.
 export const resolveSiteRoute = cache(async (): Promise<SiteRoute | null> => {
   const hdrs = await headers();
   // The proxy stashes the dev-fallback slugs here so Server Components can read
@@ -184,19 +182,14 @@ export const resolveSiteRoute = cache(async (): Promise<SiteRoute | null> => {
   const host = hdrs.get('x-forwarded-host') ?? hdrs.get('host');
   if (!host) return null;
 
-  const byHost = await fetchSiteByHost(host);
-  if (byHost.kind === 'route') return byHost.route;
-  // A DEFINITIVE miss must NOT fall through to label parsing: `<prop>.<tenant>`
-  // (and the legacy `<tenant>-<prop>`) hosts would be mis-read as a single tenant
-  // slug and 404 a live site. Honour the not-found.
-  if (byHost.kind === 'not_found') return null;
-  // Transient error only: degrade to bare `<tenant>.sparx.zone` parsing, which is
-  // unambiguous for a single-label host. `slugFromHost` returns null for anything
-  // deeper, so multi-site hosts simply stay unresolved until api-rest is back —
-  // never resolved to a wrong tenant.
-  const slug = slugFromHost(host);
-  if (slug) return { tenantSlug: slug, propertySlug: null };
-  return null;
+  // Our own subdomains are self-describing — decode tenant + property straight
+  // from the host. No API round-trip, so a stale/unreachable site-by-host can
+  // never 404 a live tenant site.
+  const zoneRoute = zoneSiteRoute(host);
+  if (zoneRoute) return zoneRoute;
+
+  // Custom domain: the domains table is the only source of truth.
+  return fetchSiteByHost(host);
 });
 
 /** The active web property slug for this request (null = the tenant's primary
