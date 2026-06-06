@@ -179,17 +179,29 @@ export const resolveSiteRoute = cache(async (): Promise<SiteRoute | null> => {
   if (devTenant) {
     return { tenantSlug: devTenant, propertySlug: hdrs.get('x-property-slug') };
   }
-  const host = hdrs.get('x-forwarded-host') ?? hdrs.get('host');
-  if (!host) return null;
+  // The real public host can arrive on EITHER header: behind Caddy (GKE) the
+  // original `Host` is preserved, while a proxy that rewrites Host (e.g. Cloud Run)
+  // carries the public host on `x-forwarded-host`. Consider both — for OUR
+  // self-describing `*.sparx.zone` subdomains only the real host parses to a valid
+  // tenant/property structure, so trying both is unambiguous and immune to whichever
+  // header the ingress populates. (A two-level `<prop>.<tenant>` host was 404ing
+  // because the ingress put a non-matching value in the header we preferred.)
+  const candidates = [hdrs.get('x-forwarded-host'), hdrs.get('host')].filter(
+    (h): h is string => !!h
+  );
+  const primaryHost = candidates[0];
+  if (!primaryHost) return null;
 
   // Our own subdomains are self-describing — decode tenant + property straight
   // from the host. No API round-trip, so a stale/unreachable site-by-host can
   // never 404 a live tenant site.
-  const zoneRoute = zoneSiteRoute(host);
-  if (zoneRoute) return zoneRoute;
+  for (const cand of candidates) {
+    const zoneRoute = zoneSiteRoute(cand);
+    if (zoneRoute) return zoneRoute;
+  }
 
   // Custom domain: the domains table is the only source of truth.
-  return fetchSiteByHost(host);
+  return fetchSiteByHost(primaryHost);
 });
 
 /** The active web property slug for this request (null = the tenant's primary

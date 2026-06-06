@@ -39,6 +39,13 @@ export function proxy(req: NextRequest) {
   if (previewToken) requestHeaders.set('x-sparx-site-preview', previewToken);
 
   const res = NextResponse.next({ request: { headers: requestHeaders } });
+  // TEMP diagnostic (remove after): echo what the ingress actually forwards so we
+  // can read it straight off the response, since cross-node Caddy→pod traffic isn't
+  // capturable from the pod under Autopilot. Confirms why a `<prop>.<tenant>` host
+  // resolves to no tenant while the primary `<tenant>` host works.
+  res.headers.set('x-debug-host', req.headers.get('host') ?? '∅');
+  res.headers.set('x-debug-xfh', req.headers.get('x-forwarded-host') ?? '∅');
+  res.headers.set('x-debug-url', req.nextUrl.pathname + req.nextUrl.search);
   if (fromQuery && fromQuery !== fromCookie) {
     res.cookies.set(COOKIE, fromQuery, { httpOnly: false, sameSite: 'lax', path: '/' });
   }
