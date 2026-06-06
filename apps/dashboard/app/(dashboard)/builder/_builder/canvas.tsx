@@ -121,20 +121,37 @@ function firstBoundImageUrl(value: unknown): string | undefined {
   return undefined;
 }
 
+/** Nine-point focal point → CSS `background-position` (mirrors the storefront). */
+const BG_POSITION_CSS: Record<string, string> = {
+  center: 'center',
+  top: 'center top',
+  bottom: 'center bottom',
+  left: 'left center',
+  right: 'right center',
+  'top-left': 'left top',
+  'top-right': 'right top',
+  'bottom-left': 'left bottom',
+  'bottom-right': 'right bottom',
+};
+
 /** Background CSS for the element that owns the box's background width: a photo
- *  (scrim layered above it) when set, else the surface token color. */
+ *  (scrim layered above it) when set, else the surface token color. `fit` and
+ *  `position` mirror the storefront renderer so the editor preview matches. */
 function bgProps(
   image: string | undefined,
   overlay: string,
-  colorBase: string
+  colorBase: string,
+  fit: 'cover' | 'contain' = 'cover',
+  position = 'center'
 ): React.CSSProperties {
   if (!image) return { background: colorBase };
   const url = `url("${image.replace(/["\\]/g, '')}")`;
   const scrim = SCRIM[overlay];
   return {
+    backgroundColor: colorBase,
     backgroundImage: scrim ? `${scrim}, ${url}` : url,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundSize: fit,
+    backgroundPosition: BG_POSITION_CSS[position] ?? 'center',
     backgroundRepeat: 'no-repeat',
   };
 }
@@ -233,6 +250,8 @@ function boxStyles(
   const boundUnresolved = Boolean(b.backgroundImageBinding) && !image;
   const overlay = b.overlay ?? 'none';
   const tone = b.textTone ?? 'default';
+  const fit = b.backgroundFit ?? 'cover';
+  const position = b.backgroundPosition ?? 'center';
   // `pin: top` lifts the block out of flow so the next block slides under it
   // (overlay header). It anchors to the nearest positioned ancestor — every
   // node's outer is `relative`, so it pins to the top of its parent.
@@ -257,7 +276,7 @@ function boxStyles(
       : bgFull
         ? boundUnresolved
           ? BOUND_MEDIA_PLACEHOLDER
-          : bgProps(image, overlay, surface.bg)
+          : bgProps(image, overlay, surface.bg, fit, position)
         : { background: 'transparent' }),
     display: 'flex',
     justifyContent: contentContained ? 'center' : 'flex-start',
@@ -276,7 +295,7 @@ function boxStyles(
       : !bgFull
         ? boundUnresolved
           ? BOUND_MEDIA_PLACEHOLDER
-          : bgProps(image, overlay, surface.bg)
+          : bgProps(image, overlay, surface.bg, fit, position)
         : { background: 'transparent' }),
     ...(def.kind === 'container' ? layoutStyle(node, device) : {}),
   };

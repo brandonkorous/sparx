@@ -50,10 +50,12 @@ import {
   ALIGN_OPTIONS,
   DEVICE_OPTIONS,
   DIRECTION_OPTIONS,
+  FIT_OPTIONS,
   GAP_OPTIONS,
   HEIGHT_OPTIONS,
   OVERLAY_OPTIONS,
   PIN_OPTIONS,
+  POSITION_OPTIONS,
   SPACE_OPTIONS,
   SURFACE_OPTIONS,
   TONE_OPTIONS,
@@ -926,13 +928,48 @@ function BoxBasePanel({
             />
           </Field>
           {box.backgroundImage || box.backgroundImageBinding ? (
-            <Field label="Overlay" hint="Darken or lighten the photo so text stays readable.">
-              <Segmented
-                value={box.overlay ?? 'none'}
-                options={OVERLAY_OPTIONS}
-                onChange={(v) => onBox({ overlay: v })}
-              />
-            </Field>
+            <>
+              <Field label="Overlay" hint="Darken or lighten the photo so text stays readable.">
+                <Segmented
+                  value={box.overlay ?? 'none'}
+                  options={OVERLAY_OPTIONS}
+                  onChange={(v) => onBox({ overlay: v })}
+                />
+              </Field>
+              <Field
+                label="Fit"
+                hint="Cover fills the box and crops the overflow; Contain shows the whole image, letterboxed against the surface color."
+              >
+                <Segmented
+                  value={box.backgroundFit ?? 'cover'}
+                  options={FIT_OPTIONS}
+                  onChange={(v) => onBox({ backgroundFit: v })}
+                />
+              </Field>
+              <Field
+                label="Focal point"
+                hint="Which part of the image stays in view when it's cropped (or where a contained image sits)."
+              >
+                <NativeSelect
+                  size="sm"
+                  value={box.backgroundPosition ?? 'center'}
+                  aria-label="Background focal point"
+                  onChange={(e) =>
+                    onBox({
+                      backgroundPosition: e.target.value as NonNullable<
+                        BoxBase['backgroundPosition']
+                      >,
+                    })
+                  }
+                >
+                  {POSITION_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </Field>
+            </>
           ) : null}
           <Field label="Text tone">
             <Segmented

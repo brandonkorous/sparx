@@ -96,20 +96,39 @@ const TONE: Record<string, string | undefined> = {
   dark: '#0b0b0c',
 };
 
+/** Nine-point focal point → CSS `background-position`. */
+const BG_POSITION_CSS: Record<string, string> = {
+  center: 'center',
+  top: 'center top',
+  bottom: 'center bottom',
+  left: 'left center',
+  right: 'right center',
+  'top-left': 'left top',
+  'top-right': 'right top',
+  'bottom-left': 'left bottom',
+  'bottom-right': 'right bottom',
+};
+
 /** Background CSS for the element owning the box's background width: a photo
- *  (scrim layered above) when set, else the surface token color. */
+ *  (scrim layered above) when set, else the surface token color. `fit` picks
+ *  cover (fill + crop) vs contain (whole image, letterboxed against the surface
+ *  color); `position` is the focal point that survives a cover crop. */
 function bgProps(
   image: string | undefined,
   overlay: string,
-  colorBase: string
+  colorBase: string,
+  fit: 'cover' | 'contain' = 'cover',
+  position = 'center'
 ): React.CSSProperties {
   if (!image) return { background: colorBase };
   const url = `url("${image.replace(/["\\]/g, '')}")`;
   const scrim = SCRIM[overlay];
   return {
+    // Behind the image so a `contain` letterbox shows the surface, not bare page.
+    backgroundColor: colorBase,
     backgroundImage: scrim ? `${scrim}, ${url}` : url,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundSize: fit,
+    backgroundPosition: BG_POSITION_CSS[position] ?? 'center',
     backgroundRepeat: 'no-repeat',
   };
 }
@@ -235,11 +254,15 @@ function boxStyles(
   const image = boundImage ?? box.backgroundImage;
   const overlay = box.overlay ?? 'none';
   const tone = box.textTone ?? 'default';
+  const fit = box.backgroundFit ?? 'cover';
+  const position = box.backgroundPosition ?? 'center';
 
   const outer: React.CSSProperties = {
     position: pinned ? 'absolute' : 'relative',
     ...(pinned ? { top: 0, left: 0, right: 0, zIndex: 40, width: '100%' } : {}),
-    ...(bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
+    ...(bgFull
+      ? bgProps(image, overlay, surface.bg, fit, position)
+      : { background: 'transparent' }),
     display: 'flex',
     justifyContent: contentContained ? 'center' : 'flex-start',
     alignItems: hasHeight ? 'center' : 'stretch',
@@ -250,7 +273,9 @@ function boxStyles(
     maxWidth: contentContained ? 'var(--sf-max)' : undefined,
     textAlign: TEXT_ALIGN[box.align],
     color: TONE[tone] ?? surface.fg,
-    ...(!bgFull ? bgProps(image, overlay, surface.bg) : { background: 'transparent' }),
+    ...(!bgFull
+      ? bgProps(image, overlay, surface.bg, fit, position)
+      : { background: 'transparent' }),
   };
   return { outer, inner };
 }

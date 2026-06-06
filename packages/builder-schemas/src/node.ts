@@ -47,6 +47,23 @@ export const TextTone = z.enum(['default', 'light', 'dark']);
 // (docs/45): `top` floats it transparently across the top — the overlay-header
 // case (a header sitting over a full-bleed hero). `none` = normal flow.
 export const Pin = z.enum(['none', 'top']);
+// How a background image fills its box (docs/45). `cover` fills + crops (the
+// default), `contain` shows the whole image letterboxed against the surface
+// color — the diagram/logo/portrait-must-be-whole case.
+export const BackgroundFit = z.enum(['cover', 'contain']);
+// Focal point for the background image: which part survives a `cover` crop, or
+// where a `contain` image sits. A nine-point grid mapped to CSS background-position.
+export const BackgroundPosition = z.enum([
+  'center',
+  'top',
+  'bottom',
+  'left',
+  'right',
+  'top-left',
+  'top-right',
+  'bottom-left',
+  'bottom-right',
+]);
 
 export type HeightScale = z.infer<typeof HeightScale>;
 export type WidthMode = z.infer<typeof WidthMode>;
@@ -57,6 +74,8 @@ export type Device = z.infer<typeof Device>;
 export type Overlay = z.infer<typeof Overlay>;
 export type TextTone = z.infer<typeof TextTone>;
 export type Pin = z.infer<typeof Pin>;
+export type BackgroundFit = z.infer<typeof BackgroundFit>;
+export type BackgroundPosition = z.infer<typeof BackgroundPosition>;
 
 export const BoxBaseSchema = z.object({
   /** Optional author-facing label, shown in the Layers tree. */
@@ -82,6 +101,13 @@ export const BoxBaseSchema = z.object({
    *  authoring. Falls back to `backgroundImage` when it resolves to nothing.
    *  Optional so existing stored trees stay valid. */
   backgroundImageBinding: z.string().max(255).optional(),
+  /** How the background image fills the box — `cover` (fill + crop) or `contain`
+   *  (whole image, letterboxed). Optional so existing trees stay valid; consumers
+   *  default to 'cover' (the historical hardcoded behavior). */
+  backgroundFit: BackgroundFit.optional(),
+  /** Focal point of the background image (nine-point). Optional; consumers default
+   *  to 'center' (the historical hardcoded behavior). */
+  backgroundPosition: BackgroundPosition.optional(),
   /** Scrim over the background image for text legibility. Optional so existing
    *  stored trees (which lack the key) stay valid; consumers default to 'none'. */
   overlay: Overlay.optional(),

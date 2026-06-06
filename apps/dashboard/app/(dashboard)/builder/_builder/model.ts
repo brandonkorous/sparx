@@ -39,6 +39,8 @@ export type { Cardinality, DataSources, Scope } from '@sparx/builder-schemas';
 // The subset this file references in scope (option tables + tree ops below).
 import type {
   AlignX,
+  BackgroundFit,
+  BackgroundPosition,
   BuilderNode,
   Device,
   Direction,
@@ -218,6 +220,24 @@ export const TONE_OPTIONS: { value: TextTone; label: string }[] = [
   { value: 'default', label: 'Default' },
   { value: 'light', label: 'Light' },
   { value: 'dark', label: 'Dark' },
+];
+
+export const FIT_OPTIONS: { value: BackgroundFit; label: string }[] = [
+  { value: 'cover', label: 'Cover' },
+  { value: 'contain', label: 'Contain' },
+];
+
+// Nine-point focal point for the background image.
+export const POSITION_OPTIONS: { value: BackgroundPosition; label: string }[] = [
+  { value: 'center', label: 'Center' },
+  { value: 'top', label: 'Top' },
+  { value: 'bottom', label: 'Bottom' },
+  { value: 'left', label: 'Left' },
+  { value: 'right', label: 'Right' },
+  { value: 'top-left', label: 'Top left' },
+  { value: 'top-right', label: 'Top right' },
+  { value: 'bottom-left', label: 'Bottom left' },
+  { value: 'bottom-right', label: 'Bottom right' },
 ];
 
 export const PIN_OPTIONS: { value: Pin; label: string }[] = [
