@@ -1,0 +1,1268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mosaic — One workspace for docs, projects, and knowledge</title>
+    <!--
+      TENANT TEMPLATE MOCKUP — "Mosaic"
+      A fictional all-in-one team workspace (docs + wikis + projects + AI). This is
+      the TENANT's own site (its own brand identity), NOT the Sparx marketing brand.
+      To become a Sparx blueprint: site layout (sticky header + multi-column footer)
+      + home page sections + a small blog/resources + about/contact pages. NO commerce
+      (pricing is a STATIC teaser section, not a catalog) — requiresModules:
+      builder + cms + email. Vertical: content.
+
+      Real site researched for direction (synthesized, NOT copied — fictional brand,
+      original copy):
+        - Notion — https://www.notion.com/
+            (note: notion.com has since pivoted to a DARK, AI-agent-forward hero —
+             "Meet the night shift." We deliberately recreate the ICONIC LIGHT
+             workspace look: whitespace-heavy, near-black text, alternating tinted
+             feature splits, simple illustrative app-window mocks, logo cloud, big
+             multi-column footer. It's the most recognizable "Notion" and the most
+             reusable as a template. A dark AI-forward variant is a later option.)
+      Aggregators consulted: pageflows.com, saaslandingpage.com, lapa.ninja
+      (SaaS landing conventions: hero + product shot, logo cloud, alternating
+       feature panels, feature grid, social proof/stats, pricing teaser, CTA band).
+
+      Palette (hex):
+        --bg #ffffff            --bg-soft #f7f6f3 (warm off-white, the Notion panel)
+        --ink #2b2926 (warm near-black text)   --muted #6b6862   --faint #9a958c
+        --line rgba(20,18,15,.10)
+        --primary #1a1a18 (near-black CTA, Notion's signature black button)
+        --primary-ink #ffffff
+        --accent #2e7cf6 (a clean blue for links + small pops)
+        tile tints (feature panels / blocks): coral #fff1ec / amber #fff7e6 /
+        mint #ecf8f1 / violet #f1eefe / sky #eaf3ff
+      Fonts: Inter (everything) — clean geometric sans, big tight headings.
+      Rationale: maximal whitespace, a single near-black CTA, warm-white tinted
+      panels, and simple app-window mocks treat the product as calm and inevitable —
+      no eyebrows; hierarchy carried by scale/weight/color. Base theme preset: apex.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --bg-soft: #f7f6f3;
+        --ink: #2b2926;
+        --muted: #6b6862;
+        --faint: #9a958c;
+        --line: rgba(20, 18, 15, 0.1);
+        --line-2: rgba(20, 18, 15, 0.06);
+        --primary: #1a1a18;
+        --primary-ink: #ffffff;
+        --accent: #2e7cf6;
+        --coral: #fff1ec;
+        --amber: #fff7e6;
+        --mint: #ecf8f1;
+        --violet: #f1eefe;
+        --sky: #eaf3ff;
+        --sans: 'Inter', system-ui, -apple-system, sans-serif;
+        --radius: 12px;
+        --radius-sm: 8px;
+        --shadow: 0 1px 2px rgba(20, 18, 15, 0.04), 0 12px 32px rgba(20, 18, 15, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: var(--sans);
+        color: var(--ink);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.6;
+      }
+      .wrap {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 0 28px;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        letter-spacing: -0.02em;
+        line-height: 1.08;
+        font-weight: 800;
+      }
+      h1 {
+        font-size: clamp(2.6rem, 5.5vw, 4.1rem);
+      }
+      h2 {
+        font-size: clamp(1.9rem, 3.6vw, 2.9rem);
+      }
+      h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      p {
+        margin: 0;
+      }
+      .lead {
+        font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      /* ── Buttons ─────────────────────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: inherit;
+        font-size: 0.98rem;
+        font-weight: 600;
+        padding: 12px 20px;
+        border-radius: var(--radius-sm);
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition:
+          transform 0.12s ease,
+          background 0.15s ease,
+          box-shadow 0.15s ease;
+        white-space: nowrap;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: var(--primary-ink);
+      }
+      .btn-primary:hover {
+        box-shadow: 0 8px 20px rgba(20, 18, 15, 0.22);
+      }
+      .btn-ghost {
+        background: #fff;
+        color: var(--ink);
+        border-color: var(--line);
+      }
+      .btn-ghost:hover {
+        border-color: var(--ink);
+      }
+      .btn-sm {
+        padding: 8px 14px;
+        font-size: 0.9rem;
+      }
+      .btn-lg {
+        padding: 14px 26px;
+        font-size: 1.05rem;
+      }
+
+      /* ── Header ──────────────────────────────────────────────── */
+      header.site {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.86);
+        backdrop-filter: saturate(180%) blur(12px);
+        border-bottom: 1px solid var(--line-2);
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        font-size: 1.22rem;
+        letter-spacing: -0.02em;
+      }
+      .brand .glyph {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 2px;
+        overflow: hidden;
+        transform: rotate(0deg);
+      }
+      .brand .glyph i {
+        display: block;
+      }
+      .brand .glyph i:nth-child(1) {
+        background: var(--ink);
+      }
+      .brand .glyph i:nth-child(2) {
+        background: #ff7a59;
+      }
+      .brand .glyph i:nth-child(3) {
+        background: #58b6f0;
+      }
+      .brand .glyph i:nth-child(4) {
+        background: #ffcf5c;
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 26px;
+        font-size: 0.96rem;
+        font-weight: 500;
+        color: var(--muted);
+      }
+      .nav-links a:hover {
+        color: var(--ink);
+      }
+      .nav-cta {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .nav-cta .login {
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      /* ── Hero ────────────────────────────────────────────────── */
+      .hero {
+        text-align: center;
+        padding: 84px 0 56px;
+      }
+      .hero h1 {
+        max-width: 16ch;
+        margin: 0 auto;
+      }
+      .hero .lead {
+        max-width: 56ch;
+        margin: 22px auto 0;
+      }
+      .hero .cta-row {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 30px;
+        flex-wrap: wrap;
+      }
+      .hero .micro {
+        margin-top: 14px;
+        font-size: 0.85rem;
+        color: var(--faint);
+      }
+
+      /* App-window mock (the "product screenshot") */
+      .appshot {
+        margin: 52px auto 0;
+        max-width: 1000px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: #fff;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .appshot .bar {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line-2);
+        background: var(--bg-soft);
+      }
+      .appshot .bar i {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #d9d5cd;
+        display: block;
+      }
+      .appshot .body {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        min-height: 360px;
+        text-align: left;
+      }
+      .appshot .side {
+        border-right: 1px solid var(--line-2);
+        padding: 18px 14px;
+        background: var(--bg-soft);
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      .side .row {
+        height: 11px;
+        border-radius: 4px;
+        background: #e7e3da;
+      }
+      .side .row.w1 {
+        width: 70%;
+      }
+      .side .row.w2 {
+        width: 90%;
+      }
+      .side .row.w3 {
+        width: 55%;
+      }
+      .side .row.lead {
+        background: #d8d3c8;
+        width: 80%;
+        margin-bottom: 6px;
+      }
+      .side .pill {
+        height: 26px;
+        border-radius: 6px;
+        background: #ece8df;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        gap: 8px;
+      }
+      .side .pill b {
+        width: 12px;
+        height: 12px;
+        border-radius: 4px;
+        display: block;
+      }
+      .appshot .doc {
+        padding: 30px 34px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .doc .title {
+        height: 26px;
+        width: 52%;
+        border-radius: 6px;
+        background: #2b2926;
+      }
+      .doc .line {
+        height: 12px;
+        border-radius: 4px;
+        background: #ece8df;
+      }
+      .doc .line.s {
+        width: 88%;
+      }
+      .doc .line.m {
+        width: 96%;
+      }
+      .doc .callout {
+        margin: 6px 0;
+        border-radius: 8px;
+        padding: 14px 16px;
+        background: var(--sky);
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      .doc .callout .line {
+        background: #cfe1fb;
+      }
+      .doc .cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 4px;
+      }
+      .doc .cards .c {
+        height: 78px;
+        border-radius: 8px;
+        border: 1px solid var(--line-2);
+      }
+      .doc .cards .c:nth-child(1) {
+        background: var(--coral);
+      }
+      .doc .cards .c:nth-child(2) {
+        background: var(--mint);
+      }
+      .doc .cards .c:nth-child(3) {
+        background: var(--violet);
+      }
+
+      /* ── Logo cloud ──────────────────────────────────────────── */
+      .cloud {
+        padding: 40px 0 8px;
+      }
+      .cloud p {
+        text-align: center;
+        color: var(--faint);
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+      }
+      .logos {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 44px;
+        margin-top: 22px;
+        opacity: 0.62;
+      }
+      .logos span {
+        font-weight: 800;
+        font-size: 1.15rem;
+        letter-spacing: -0.02em;
+        color: #8b877e;
+      }
+
+      /* ── Feature splits ──────────────────────────────────────── */
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 56px;
+        align-items: center;
+        padding: 64px 0;
+      }
+      .split.flip .copy {
+        order: 2;
+      }
+      .split .copy h2 {
+        max-width: 14ch;
+      }
+      .split .copy .lead {
+        margin-top: 16px;
+      }
+      .feat-list {
+        margin: 22px 0 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .feat-list li {
+        display: flex;
+        gap: 11px;
+        align-items: flex-start;
+        font-size: 1.02rem;
+        color: var(--ink);
+      }
+      .feat-list li svg {
+        flex: none;
+        margin-top: 3px;
+        color: var(--accent);
+      }
+      .split .more {
+        margin-top: 24px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+        color: var(--accent);
+      }
+      .panel {
+        border-radius: var(--radius);
+        padding: 30px;
+        min-height: 320px;
+        border: 1px solid var(--line-2);
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        justify-content: center;
+      }
+      .panel.coral {
+        background: var(--coral);
+      }
+      .panel.mint {
+        background: var(--mint);
+      }
+      .panel.violet {
+        background: var(--violet);
+      }
+      .panel .pcard {
+        background: #fff;
+        border-radius: 9px;
+        border: 1px solid var(--line-2);
+        padding: 14px 16px;
+        box-shadow: 0 6px 18px rgba(20, 18, 15, 0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      .panel .pcard .h {
+        height: 12px;
+        width: 60%;
+        border-radius: 4px;
+        background: #2b2926;
+      }
+      .panel .pcard .l {
+        height: 9px;
+        border-radius: 3px;
+        background: #ece8df;
+      }
+      .panel .pcard .l.s {
+        width: 80%;
+      }
+      .panel .tasks {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .panel .task {
+        background: #fff;
+        border: 1px solid var(--line-2);
+        border-radius: 8px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .panel .task .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid #c9c4ba;
+        flex: none;
+      }
+      .panel .task.done .dot {
+        background: #4caf7d;
+        border-color: #4caf7d;
+      }
+
+      /* ── Feature grid ────────────────────────────────────────── */
+      .section {
+        padding: 72px 0;
+      }
+      .section.soft {
+        background: var(--bg-soft);
+      }
+      .section-head {
+        text-align: center;
+        max-width: 60ch;
+        margin: 0 auto 44px;
+      }
+      .section-head .lead {
+        margin-top: 14px;
+      }
+      .grid3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      .fcard {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 26px;
+        transition:
+          transform 0.14s ease,
+          box-shadow 0.14s ease;
+      }
+      .fcard:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+      }
+      .fcard .ico {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 16px;
+      }
+      .fcard h3 {
+        margin-bottom: 7px;
+      }
+      .fcard p {
+        color: var(--muted);
+        font-size: 0.97rem;
+      }
+      .ico.c1 {
+        background: var(--coral);
+      }
+      .ico.c2 {
+        background: var(--mint);
+      }
+      .ico.c3 {
+        background: var(--violet);
+      }
+      .ico.c4 {
+        background: var(--sky);
+      }
+      .ico.c5 {
+        background: var(--amber);
+      }
+      .ico.c6 {
+        background: #f0eee9;
+      }
+
+      /* ── Stats ───────────────────────────────────────────────── */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        text-align: center;
+      }
+      .stat .n {
+        font-size: clamp(2.1rem, 4vw, 3rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .stat .l {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin-top: 4px;
+      }
+
+      /* ── Testimonial ─────────────────────────────────────────── */
+      .quote {
+        max-width: 50ch;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .quote .q {
+        font-size: clamp(1.5rem, 3vw, 2.1rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.3;
+      }
+      .quote .who {
+        margin-top: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        color: var(--muted);
+      }
+      .quote .who .av {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ff7a59, #8b7cf6);
+      }
+
+      /* ── Pricing teaser ──────────────────────────────────────── */
+      .plans {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        align-items: stretch;
+      }
+      .plan {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .plan.featured {
+        border-color: var(--ink);
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+      .plan.featured .tag {
+        position: absolute;
+        top: -11px;
+        left: 28px;
+        background: var(--ink);
+        color: #fff;
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 999px;
+        letter-spacing: 0.02em;
+      }
+      .plan .pname {
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
+      .plan .price {
+        font-size: 2.4rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .plan .price span {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--muted);
+      }
+      .plan ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 0.96rem;
+        flex: 1;
+      }
+      .plan ul li {
+        display: flex;
+        gap: 9px;
+        align-items: flex-start;
+      }
+      .plan ul li svg {
+        flex: none;
+        margin-top: 3px;
+        color: #4caf7d;
+      }
+
+      /* ── CTA band ────────────────────────────────────────────── */
+      .cta-band {
+        background: var(--ink);
+        color: #fff;
+        border-radius: 0;
+        text-align: center;
+        padding: 84px 0;
+      }
+      .cta-band h2 {
+        color: #fff;
+        max-width: 18ch;
+        margin: 0 auto;
+      }
+      .cta-band p {
+        color: rgba(255, 255, 255, 0.72);
+        margin-top: 16px;
+      }
+      .cta-band .cta-row {
+        margin-top: 28px;
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .cta-band .btn-ghost {
+        background: transparent;
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      .cta-band .btn-ghost:hover {
+        border-color: #fff;
+      }
+      .cta-band .btn-primary {
+        background: #fff;
+        color: var(--ink);
+      }
+
+      /* ── Footer ──────────────────────────────────────────────── */
+      footer.site {
+        background: var(--bg-soft);
+        border-top: 1px solid var(--line-2);
+        padding: 60px 0 36px;
+      }
+      .foot-grid {
+        display: grid;
+        grid-template-columns: 1.6fr repeat(4, 1fr);
+        gap: 32px;
+      }
+      .foot-brand .brand {
+        margin-bottom: 14px;
+      }
+      .foot-brand p {
+        color: var(--muted);
+        font-size: 0.95rem;
+        max-width: 30ch;
+      }
+      .foot-col h4 {
+        margin: 0 0 14px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--faint);
+      }
+      .foot-col a {
+        display: block;
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin-bottom: 9px;
+      }
+      .foot-col a:hover {
+        color: var(--ink);
+      }
+      .foot-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 44px;
+        padding-top: 22px;
+        border-top: 1px solid var(--line-2);
+        color: var(--faint);
+        font-size: 0.88rem;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      .social {
+        display: flex;
+        gap: 14px;
+      }
+      .social a {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+      }
+      .social a:hover {
+        color: var(--ink);
+        border-color: var(--ink);
+      }
+
+      /* ── Responsive ──────────────────────────────────────────── */
+      @media (max-width: 880px) {
+        .nav-links,
+        .nav-cta .login {
+          display: none;
+        }
+        .split {
+          grid-template-columns: 1fr;
+          gap: 30px;
+          padding: 44px 0;
+        }
+        .split.flip .copy {
+          order: 0;
+        }
+        .grid3,
+        .plans {
+          grid-template-columns: 1fr;
+        }
+        .stats {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 32px 20px;
+        }
+        .appshot .body {
+          grid-template-columns: 1fr;
+        }
+        .appshot .side {
+          display: none;
+        }
+        .foot-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 28px;
+        }
+        .foot-brand {
+          grid-column: 1 / -1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ HEADER ============ -->
+    <header class="site">
+      <div class="wrap nav">
+        <a class="brand" href="#">
+          <span class="glyph"><i></i><i></i><i></i><i></i></span>
+          Mosaic
+        </a>
+        <nav class="nav-links">
+          <a href="#features">Product</a>
+          <a href="#solutions">Solutions</a>
+          <a href="#resources">Resources</a>
+          <a href="#pricing">Pricing</a>
+        </nav>
+        <div class="nav-cta">
+          <a class="login" href="#">Log in</a>
+          <a class="btn btn-primary btn-sm" href="#">Get Mosaic free</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div class="wrap">
+        <h1>One workspace for your docs, projects, and knowledge</h1>
+        <p class="lead">
+          Mosaic brings your notes, wikis, and projects together — with an AI assistant that
+          drafts, finds, and connects everything your team needs. Replace a dozen tools with one
+          calm place to work.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary btn-lg" href="#">Get Mosaic free</a>
+          <a class="btn btn-ghost btn-lg" href="#">Request a demo</a>
+        </div>
+        <p class="micro">Free for individuals · No credit card required</p>
+
+        <!-- product screenshot mock -->
+        <div class="appshot" aria-hidden="true">
+          <div class="bar"><i></i><i></i><i></i></div>
+          <div class="body">
+            <div class="side">
+              <div class="row lead"></div>
+              <div class="pill"><b style="background: #ff7a59"></b><span class="row w2"></span></div>
+              <div class="pill"><b style="background: #58b6f0"></b><span class="row w1"></span></div>
+              <div class="pill"><b style="background: #4caf7d"></b><span class="row w2"></span></div>
+              <div class="pill"><b style="background: #8b7cf6"></b><span class="row w3"></span></div>
+              <div class="row w2" style="margin-top: 10px"></div>
+              <div class="row w1"></div>
+              <div class="row w3"></div>
+            </div>
+            <div class="doc">
+              <div class="title"></div>
+              <div class="line m"></div>
+              <div class="line s"></div>
+              <div class="callout">
+                <div class="line m"></div>
+                <div class="line s"></div>
+              </div>
+              <div class="line m"></div>
+              <div class="cards">
+                <div class="c"></div>
+                <div class="c"></div>
+                <div class="c"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LOGO CLOUD ============ -->
+    <section class="cloud">
+      <div class="wrap">
+        <p>Powering focused teams at companies of every size</p>
+        <div class="logos">
+          <span>Northwind</span>
+          <span>Brightline</span>
+          <span>Meridian</span>
+          <span>Atlas&nbsp;Labs</span>
+          <span>Foundry</span>
+          <span>Lumen</span>
+          <span>Cedarwood</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FEATURE SPLIT 1 — DOCS ============ -->
+    <section class="section" id="features">
+      <div class="wrap split">
+        <div class="copy">
+          <h2>Docs that practically write themselves</h2>
+          <p class="lead">
+            Start with a blank page or ask Mosaic AI to draft it. Rich blocks, real-time editing,
+            and version history mean every doc stays current — and beautiful.
+          </p>
+          <ul class="feat-list">
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              50+ content blocks, from tables to embeds
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              AI drafts, summarizes, and translates in a click
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Comments, mentions, and full version history
+            </li>
+          </ul>
+          <a class="more" href="#"
+            >Explore docs
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </a>
+        </div>
+        <div class="panel coral">
+          <div class="pcard">
+            <div class="h"></div>
+            <div class="l m"></div>
+            <div class="l s"></div>
+          </div>
+          <div class="pcard">
+            <div class="l m"></div>
+            <div class="l s"></div>
+            <div class="l m"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FEATURE SPLIT 2 — PROJECTS ============ -->
+    <section class="section soft" id="solutions">
+      <div class="wrap split flip">
+        <div class="copy">
+          <h2>Projects, finally in sync</h2>
+          <p class="lead">
+            Plan sprints, track tasks, and see the whole roadmap in one view. Switch between board,
+            timeline, and calendar without leaving the page.
+          </p>
+          <ul class="feat-list">
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Boards, timelines, and calendars on the same data
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Automations that route work and send updates
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Dashboards that roll up across every team
+            </li>
+          </ul>
+          <a class="more" href="#"
+            >Explore projects
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </a>
+        </div>
+        <div class="panel mint">
+          <div class="tasks">
+            <div class="task done"><span class="dot"></span> Ship onboarding revamp</div>
+            <div class="task done"><span class="dot"></span> Draft Q3 planning doc</div>
+            <div class="task"><span class="dot"></span> Review design handoff</div>
+            <div class="task"><span class="dot"></span> Sync with partnerships</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FEATURE SPLIT 3 — KNOWLEDGE ============ -->
+    <section class="section">
+      <div class="wrap split">
+        <div class="copy">
+          <h2>One source of truth for the whole team</h2>
+          <p class="lead">
+            Wikis, policies, and onboarding live in a single connected workspace. Ask a question in
+            plain language and Mosaic AI answers from everything you've written.
+          </p>
+          <ul class="feat-list">
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Connected pages and a searchable knowledge base
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Permissions and approvals built in
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              Ask AI — get answers with sources, instantly
+            </li>
+          </ul>
+          <a class="more" href="#"
+            >Explore the knowledge base
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+          </a>
+        </div>
+        <div class="panel violet">
+          <div class="pcard">
+            <div class="h" style="width: 40%; background: #8b7cf6"></div>
+            <div class="l m"></div>
+            <div class="l s"></div>
+            <div class="l m"></div>
+          </div>
+          <div class="pcard">
+            <div class="h" style="width: 32%"></div>
+            <div class="l s"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FEATURE GRID ============ -->
+    <section class="section soft" id="resources">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Everything your team needs, in one place</h2>
+          <p class="lead">Replace scattered tools with a single workspace that adapts to how you work.</p>
+        </div>
+        <div class="grid3">
+          <div class="fcard">
+            <div class="ico c1">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff7a59" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+            </div>
+            <h3>Docs &amp; notes</h3>
+            <p>Beautiful, block-based pages for everything from meeting notes to specs.</p>
+          </div>
+          <div class="fcard">
+            <div class="ico c2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4caf7d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+            </div>
+            <h3>Projects</h3>
+            <p>Boards, timelines, and calendars that stay in sync across your team.</p>
+          </div>
+          <div class="fcard">
+            <div class="ico c3">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b7cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>
+            </div>
+            <h3>Wikis</h3>
+            <p>A connected knowledge base your whole company can actually find.</p>
+          </div>
+          <div class="fcard">
+            <div class="ico c4">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e7cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+            </div>
+            <h3>Calendar</h3>
+            <p>Plans, deadlines, and meetings tied directly to your work.</p>
+          </div>
+          <div class="fcard">
+            <div class="ico c5">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d99b1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8" /></svg>
+            </div>
+            <h3>Mosaic AI</h3>
+            <p>An assistant that drafts, answers, and automates across your workspace.</p>
+          </div>
+          <div class="fcard">
+            <div class="ico c6">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b6862" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+            </div>
+            <h3>Integrations</h3>
+            <p>Connect the tools you already use — and bring their data into Mosaic.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STATS ============ -->
+    <section class="section">
+      <div class="wrap">
+        <div class="stats">
+          <div class="stat"><div class="n">100k+</div><div class="l">Teams onboard</div></div>
+          <div class="stat"><div class="n">12→1</div><div class="l">Tools consolidated</div></div>
+          <div class="stat"><div class="n">4.8/5</div><div class="l">Average rating</div></div>
+          <div class="stat"><div class="n">99.9%</div><div class="l">Uptime, every month</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TESTIMONIAL ============ -->
+    <section class="section soft">
+      <div class="wrap">
+        <div class="quote">
+          <p class="q">
+            "We replaced four tools with Mosaic in a week. Our docs, projects, and wiki finally live
+            in one place — and the team actually uses it."
+          </p>
+          <div class="who">
+            <span class="av"></span>
+            <div style="text-align: left">
+              <div style="color: var(--ink); font-weight: 600">Dana Okafor</div>
+              <div>Head of Operations, Brightline</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRICING TEASER ============ -->
+    <section class="section" id="pricing">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Simple pricing that scales with you</h2>
+          <p class="lead">Start free. Upgrade when your team grows. Cancel anytime.</p>
+        </div>
+        <div class="plans">
+          <div class="plan">
+            <div class="pname">Free</div>
+            <div class="price">$0<span> / month</span></div>
+            <ul>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Unlimited pages &amp; blocks</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Up to 10 guests</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg> 7-day page history</li>
+            </ul>
+            <a class="btn btn-ghost" href="#">Get started</a>
+          </div>
+          <div class="plan featured">
+            <span class="tag">Most popular</span>
+            <div class="pname">Plus</div>
+            <div class="price">$10<span> / user / mo</span></div>
+            <ul>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Everything in Free</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Unlimited guests &amp; history</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Mosaic AI included</li>
+            </ul>
+            <a class="btn btn-primary" href="#">Start free trial</a>
+          </div>
+          <div class="plan">
+            <div class="pname">Business</div>
+            <div class="price">$18<span> / user / mo</span></div>
+            <ul>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Everything in Plus</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg> SAML SSO &amp; advanced security</li>
+              <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Dedicated support</li>
+            </ul>
+            <a class="btn btn-ghost" href="#">Contact sales</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CTA BAND ============ -->
+    <section class="cta-band">
+      <div class="wrap">
+        <h2>Your team's next workspace starts here</h2>
+        <p>Get started free — bring your team in minutes, not months.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary btn-lg" href="#">Get Mosaic free</a>
+          <a class="btn btn-ghost btn-lg" href="#">Request a demo</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="site">
+      <div class="wrap">
+        <div class="foot-grid">
+          <div class="foot-brand">
+            <a class="brand" href="#">
+              <span class="glyph"><i></i><i></i><i></i><i></i></span>
+              Mosaic
+            </a>
+            <p>One workspace for your docs, projects, and knowledge — with AI built in.</p>
+          </div>
+          <div class="foot-col">
+            <h4>Product</h4>
+            <a href="#">Docs</a>
+            <a href="#">Projects</a>
+            <a href="#">Wikis</a>
+            <a href="#">Mosaic AI</a>
+            <a href="#">Integrations</a>
+          </div>
+          <div class="foot-col">
+            <h4>Solutions</h4>
+            <a href="#">For startups</a>
+            <a href="#">For enterprise</a>
+            <a href="#">For personal use</a>
+            <a href="#">For education</a>
+          </div>
+          <div class="foot-col">
+            <h4>Resources</h4>
+            <a href="#">Blog</a>
+            <a href="#">Help center</a>
+            <a href="#">Templates</a>
+            <a href="#">Community</a>
+          </div>
+          <div class="foot-col">
+            <h4>Company</h4>
+            <a href="#">About</a>
+            <a href="#">Careers</a>
+            <a href="#">Contact</a>
+            <a href="#">Security</a>
+          </div>
+        </div>
+        <div class="foot-bottom">
+          <span>© 2026 Mosaic. All rights reserved.</span>
+          <div class="social">
+            <a href="#" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg></a>
+            <a href="#" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM0 8h5v16H0zM7.5 8h4.78v2.2h.07c.67-1.2 2.3-2.46 4.73-2.46 5.06 0 6 3.33 6 7.66V24h-5v-7.4c0-1.77-.03-4.05-2.47-4.05-2.47 0-2.85 1.93-2.85 3.92V24h-5z" /></svg></a>
+            <a href="#" aria-label="GitHub"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.2 3.44 9.6 8.21 11.16.6.11.82-.25.82-.58v-2.03c-3.34.71-4.04-1.6-4.04-1.6-.55-1.36-1.34-1.72-1.34-1.72-1.09-.73.08-.72.08-.72 1.2.08 1.84 1.22 1.84 1.22 1.07 1.8 2.81 1.28 3.5.98.11-.76.42-1.28.76-1.58-2.67-.3-5.47-1.31-5.47-5.84 0-1.29.47-2.35 1.23-3.18-.12-.3-.53-1.51.12-3.15 0 0 1-.32 3.3 1.21a11.5 11.5 0 0 1 6 0c2.3-1.53 3.3-1.21 3.3-1.21.65 1.64.24 2.85.12 3.15.77.83 1.23 1.89 1.23 3.18 0 4.54-2.81 5.54-5.49 5.83.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57C20.56 21.88 24 17.49 24 12.29 24 5.78 18.63.5 12 .5z" /></svg></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

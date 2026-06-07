@@ -9,6 +9,7 @@ import { antiqueShop } from './blueprints/antique-shop';
 import { autoParts } from './blueprints/auto-parts';
 import { beautySalonSpa } from './blueprints/beauty-salon-spa';
 import { enduraWellness } from './blueprints/endura-wellness';
+import { notionWorkspace } from './blueprints/notion-workspace';
 import { retailStoreBlog } from './blueprints/retail-store-blog';
 import { tattooStudio } from './blueprints/tattoo-studio';
 
@@ -20,6 +21,7 @@ export const BLUEPRINTS: Readonly<Record<string, Blueprint>> = {
   [antiqueShop.key]: antiqueShop,
   [autoParts.key]: autoParts,
   [enduraWellness.key]: enduraWellness,
+  [notionWorkspace.key]: notionWorkspace,
 };
 
 /** One blueprint by key, or null. */

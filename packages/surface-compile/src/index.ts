@@ -12,32 +12,39 @@
 import type { BuilderNode } from '@sparx/builder-schemas';
 import { collectClasses } from './extract';
 import { compileClasses, type CompileOptions } from './compile';
+import { validateClasses } from './allowlist';
 import { contentHash } from './hash';
 
 export { collectClasses } from './extract';
 export { compileClasses, type CompileOptions } from './compile';
+export { isClassAllowed, validateClasses, baseUtility, type ClassValidation } from './allowlist';
 export { contentHash } from './hash';
 export { SURFACE_THEME_CSS } from './theme';
+export { REDUCED_MOTION_CSS } from './motion';
 
 export interface TenantStylesheet {
   /** The compiled CSS (minified when `minify` was set). */
   css: string;
   /** Content hash of `css` — the cache-bustable filename stem. */
   hash: string;
-  /** The unique, sorted class set the CSS was built from. */
+  /** The allowed, sorted class set the CSS was built from. */
   classes: string[];
+  /** Author classes dropped by the safety allowlist (docs/61 §8), if any. */
+  blocked: string[];
 }
 
 /**
  * Tree-shake + compile a tenant's authored classes into a stylesheet. Accepts a
- * single tree or several (page tree + site-layout chrome). An empty class set
- * yields an empty sheet (still hashed, so callers get a stable identity).
+ * single tree or several (page tree + site-layout chrome). Author classes are
+ * filtered through the safety allowlist (docs/61 §8) before compiling; dropped
+ * tokens are reported in `blocked`. An empty class set yields an empty sheet
+ * (still hashed, so callers get a stable identity).
  */
 export async function buildTenantStylesheet(
   roots: BuilderNode | BuilderNode[],
   opts: CompileOptions = {}
 ): Promise<TenantStylesheet> {
-  const classes = collectClasses(roots);
-  const css = await compileClasses(classes, opts);
-  return { css, hash: contentHash(css), classes };
+  const { allowed, blocked } = validateClasses(collectClasses(roots));
+  const css = await compileClasses(allowed, opts);
+  return { css, hash: contentHash(css), classes: allowed, blocked };
 }

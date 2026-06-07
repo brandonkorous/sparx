@@ -81,20 +81,30 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const classes = cn(colorClass(color), buttonVariants({ variant, size, shape }), className);
 
     // With asChild, Slot merges the button's styling onto the provided child
-    // (e.g. a `<Link>`). `Slottable` lets us keep the icon/spinner slots as
-    // siblings of that child's own content — without it, `leftIcon`/`rightIcon`
-    // passed to an asChild button would be silently dropped. The merged child
-    // carries the flex+gap classes, so the icon spaces correctly.
+    // (e.g. a `<Link>`).
     if (asChild) {
+      // Icon/spinner slots need `Slottable` so they sit as siblings of the child's
+      // own content. But that composition (Slottable + falsy icon siblings) trips a
+      // hydration mismatch against a Next `<Link>` child, so only take it when a
+      // slot is actually present. The common case — an asChild link with no
+      // leftIcon/rightIcon/loading — uses the plain single-child Slot, which
+      // hydrates cleanly (icons there are composed inside the child).
+      if (loading || leftIcon || rightIcon) {
+        return (
+          <Slot ref={ref} className={classes} {...props}>
+            {loading ? (
+              <Spinner size="sm" />
+            ) : (
+              leftIcon && <span className="shrink-0">{leftIcon}</span>
+            )}
+            <Slottable>{children}</Slottable>
+            {rightIcon && !loading && <span className="shrink-0">{rightIcon}</span>}
+          </Slot>
+        );
+      }
       return (
         <Slot ref={ref} className={classes} {...props}>
-          {loading ? (
-            <Spinner size="sm" />
-          ) : (
-            leftIcon && <span className="shrink-0">{leftIcon}</span>
-          )}
-          <Slottable>{children}</Slottable>
-          {rightIcon && !loading && <span className="shrink-0">{rightIcon}</span>}
+          {children}
         </Slot>
       );
     }

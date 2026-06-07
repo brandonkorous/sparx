@@ -3260,3 +3260,19 @@ html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child
     padding: 2rem;
   }
 }
+
+/* Card-polish utilities (docs/47 class-first authoring) — opt-in chrome a node
+ * carries via its `class`: a floating card (radius + soft shadow + hairline
+ * border) or a plain rounded panel. Additive — nodes without the class are
+ * unaffected. `overflow: hidden` clips a node's background-image (and children)
+ * to the rounded corners. */
+.bx-card {
+  border-radius: var(--sf-radius-box, 16px);
+  box-shadow: var(--sf-shadow-md, 0 10px 30px rgba(20, 18, 15, 0.08));
+  border: 1px solid var(--sf-border, rgba(20, 18, 15, 0.08));
+  overflow: hidden;
+}
+.bx-panel {
+  border-radius: var(--sf-radius-box, 16px);
+  overflow: hidden;
+}

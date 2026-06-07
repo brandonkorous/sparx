@@ -13,6 +13,7 @@
 import { fileURLToPath } from 'node:url';
 import { compile, optimize } from '@tailwindcss/node';
 import { SURFACE_THEME_CSS } from './theme';
+import { isClassAllowed } from './allowlist';
 
 // Resolve `@import 'tailwindcss/...'` relative to this package (tailwindcss is a
 // direct dependency). `import.meta.url` works in both tsx runtime and vitest.
@@ -42,8 +43,12 @@ export async function compileClasses(
   classes: string[],
   opts: CompileOptions = {}
 ): Promise<string> {
-  if (classes.length === 0) return '';
+  // Defense in depth: the safety allowlist (docs/61 §8) drops weaponizable
+  // tokens at the compile choke point, so no render path can emit them even if a
+  // caller skipped validateClasses(). Unknown classes Tailwind ignores anyway.
+  const safe = classes.filter(isClassAllowed);
+  if (safe.length === 0) return '';
   const compiler = await getCompiler();
-  const css = compiler.build(classes);
+  const css = compiler.build(safe);
   return opts.minify ? optimize(css, { minify: true }).code : css;
 }

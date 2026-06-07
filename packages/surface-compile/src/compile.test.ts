@@ -38,6 +38,18 @@ describe('compileClasses', () => {
     expect(min.length).toBeLessThan(plain.length);
     expect(min).toMatch(/\.flex\b/);
   });
+
+  it('emits a custom Surface entrance animation + its keyframes', async () => {
+    const css = await compileClasses(['animate-fade-up']);
+    expect(css).toMatch(/\.animate-fade-up\b/);
+    expect(css).toContain('@keyframes fade-up');
+  });
+
+  it('drops a weaponizable class (position: fixed) at the compile choke point', async () => {
+    const css = await compileClasses(['fixed', 'relative']);
+    expect(css).toMatch(/\.relative\b/);
+    expect(css).not.toMatch(/\.fixed\b/);
+  });
 });
 
 describe('buildTenantStylesheet', () => {

@@ -402,8 +402,11 @@ function renderLeaf(
   switch (node.type) {
     case 'Heading': {
       const level = (str('level') || 'h2') as 'h1' | 'h2' | 'h3';
+      // Opt-in display/hero scale (docs/46) — a node can render an h1 at the
+      // larger, heavier display size without changing its semantic level.
+      const size = str('size') === 'display' ? 'display' : undefined;
       return (
-        <Heading level={level} className={leafClass}>
+        <Heading level={level} size={size} className={leafClass}>
           {bound ? asText(value) : str('text')}
         </Heading>
       );

@@ -65,7 +65,28 @@ export const SURFACE_THEME_CSS = `
         tracks the tenant base unit, so it reflows with --sf-space-base. ── */
   --spacing: var(--sf-space-base, 0.25rem);
 
-  /* ── Layout — max-w-site off the tenant container width. ── */
+  /* ── Layout — max-w-site off the tenant container width. The container-query
+        breakpoint scale (@sm … @7xl) ships from the default theme; container
+        queries key off the node's OWN width, not the viewport (docs/61 §7). ── */
   --container-site: var(--sf-container);
+
+  /* ── Motion — animate-spin/ping/pulse/bounce ship from the default theme;
+        these are Surface's custom entrance animations (docs/61 §9): animate-fade-in,
+        animate-fade-up, animate-scale-in, … . The reduced-motion baseline
+        (REDUCED_MOTION_CSS, motion.ts) neutralizes them under the OS "reduce
+        motion" setting, so motion is accessible by default. ── */
+  --animate-fade-in: fade-in 0.5s ease-out both;
+  --animate-fade-up: fade-up 0.6s ease-out both;
+  --animate-fade-down: fade-down 0.6s ease-out both;
+  --animate-scale-in: scale-in 0.4s ease-out both;
+  --animate-slide-in-left: slide-in-left 0.5s ease-out both;
+  --animate-slide-in-right: slide-in-right 0.5s ease-out both;
 }
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fade-down { from { opacity: 0; transform: translateY(-1rem); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scale-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes slide-in-left { from { opacity: 0; transform: translateX(-1.5rem); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slide-in-right { from { opacity: 0; transform: translateX(1.5rem); } to { opacity: 1; transform: translateX(0); } }
 `;

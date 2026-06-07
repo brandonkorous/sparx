@@ -10,6 +10,9 @@ export type HeadingLevel = 'h1' | 'h2' | 'h3';
 
 export interface HeadingProps {
   level?: HeadingLevel;
+  /** Opt into the fluid display/hero scale (docs/46), independent of the semantic
+   *  level — e.g. an `h1` rendered at display size. Omit for the level's size. */
+  size?: 'display';
   className?: string;
   style?: React.CSSProperties;
   id?: string;
@@ -22,10 +25,14 @@ const LEVEL_CLASS: Record<HeadingLevel, string> = {
   h3: 'sf-h--3',
 };
 
-export function Heading({ level = 'h2', className, style, id, children }: HeadingProps) {
+export function Heading({ level = 'h2', size, className, style, id, children }: HeadingProps) {
   const Tag = level;
   return (
-    <Tag className={cx('sf-h', LEVEL_CLASS[level], className)} style={style} id={id}>
+    <Tag
+      className={cx('sf-h', size === 'display' ? 'sf-h--display' : LEVEL_CLASS[level], className)}
+      style={style}
+      id={id}
+    >
       {children}
     </Tag>
   );
