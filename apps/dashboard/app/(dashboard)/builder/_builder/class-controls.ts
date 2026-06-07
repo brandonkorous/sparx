@@ -174,8 +174,10 @@ export const BACKGROUND_CONTROL: ClassControl = {
 export const TEXT_COLOR_CONTROL: ClassControl = {
   id: 'textColor',
   label: 'Text color',
+  // No explicit base-content option — the control's empty "Default" already
+  // inherits the base text color (an explicit `text-base-content` would just
+  // duplicate it as a second "Default" entry). These are the overrides.
   options: [
-    { value: 'default', label: 'Default', token: 'text-base-content' },
     { value: 'primary', label: 'Primary', token: 'text-primary' },
     { value: 'on-primary', label: 'On primary', token: 'text-primary-content' },
     { value: 'on-neutral', label: 'On dark', token: 'text-neutral-content' },
