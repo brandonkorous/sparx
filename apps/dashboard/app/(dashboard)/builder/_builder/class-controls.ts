@@ -99,18 +99,21 @@ export function sizeControlFor(archetype: string | undefined): ClassControl | nu
   };
 }
 
-// Universal box utilities (util-box.css) — token-backed steps every node can take.
-// Unlike Size (element-scoped to whatever has a `--sz-` archetype), these write the
-// same class on any node, so they're shared across all archetypes.
+// Universal utilities — Tailwind-NATIVE class names (docs/61 §11), the same a power
+// user or AI would type, compiled to the tenant `--sf-*` tokens by @sparx/surface-compile
+// and rendered live in the canvas (useSurfacePreview). Corners/spacing/shadow therefore
+// track the brand scale (`--sf-radius-*` / `--sf-space-base` / `--sf-shadow-*`), not
+// hardcoded values. These write the same class on any node, shared across all archetypes.
+// (The bespoke `sf-radius-*` / `sf-m-*` / … util-box dialect is retired — docs/61 §11.)
 export const RADIUS_CONTROL: ClassControl = {
   id: 'radius',
   label: 'Corners',
   options: [
-    { value: 'none', label: 'Square', token: 'sf-radius-none' },
-    { value: 'sm', label: 'Small', token: 'sf-radius-sm' },
-    { value: 'md', label: 'Medium', token: 'sf-radius-md' },
-    { value: 'lg', label: 'Large', token: 'sf-radius-lg' },
-    { value: 'pill', label: 'Pill', token: 'sf-radius-pill' },
+    { value: 'none', label: 'Square', token: 'rounded-none' },
+    { value: 'sm', label: 'Small', token: 'rounded-field' },
+    { value: 'md', label: 'Medium', token: 'rounded-box' },
+    { value: 'lg', label: 'Large', token: 'rounded-2xl' },
+    { value: 'pill', label: 'Pill', token: 'rounded-full' },
   ],
 };
 
@@ -118,11 +121,11 @@ export const MARGIN_CONTROL: ClassControl = {
   id: 'margin',
   label: 'Margin',
   options: [
-    { value: 'none', label: 'None', token: 'sf-m-none' },
-    { value: 'sm', label: 'S', token: 'sf-m-sm' },
-    { value: 'md', label: 'M', token: 'sf-m-md' },
-    { value: 'lg', label: 'L', token: 'sf-m-lg' },
-    { value: 'xl', label: 'XL', token: 'sf-m-xl' },
+    { value: 'none', label: 'None', token: 'm-0' },
+    { value: 'sm', label: 'S', token: 'm-2' },
+    { value: 'md', label: 'M', token: 'm-4' },
+    { value: 'lg', label: 'L', token: 'm-8' },
+    { value: 'xl', label: 'XL', token: 'm-16' },
   ],
 };
 
@@ -130,9 +133,9 @@ export const BORDER_CONTROL: ClassControl = {
   id: 'border',
   label: 'Border',
   options: [
-    { value: 'none', label: 'None', token: 'sf-border-none' },
-    { value: 'thin', label: 'Hairline', token: 'sf-border-thin' },
-    { value: 'strong', label: 'Strong', token: 'sf-border-strong' },
+    { value: 'none', label: 'None', token: 'border-0' },
+    { value: 'thin', label: 'Hairline', token: 'border' },
+    { value: 'strong', label: 'Strong', token: 'border-2' },
   ],
 };
 
@@ -140,10 +143,10 @@ export const SHADOW_CONTROL: ClassControl = {
   id: 'shadow',
   label: 'Shadow',
   options: [
-    { value: 'none', label: 'None', token: 'sf-shadow-none' },
-    { value: 'sm', label: 'Small', token: 'sf-shadow-sm' },
-    { value: 'md', label: 'Medium', token: 'sf-shadow-md' },
-    { value: 'lg', label: 'Large', token: 'sf-shadow-lg' },
+    { value: 'none', label: 'None', token: 'shadow-none' },
+    { value: 'sm', label: 'Small', token: 'shadow-sm' },
+    { value: 'md', label: 'Medium', token: 'shadow-md' },
+    { value: 'lg', label: 'Large', token: 'shadow-lg' },
   ],
 };
 

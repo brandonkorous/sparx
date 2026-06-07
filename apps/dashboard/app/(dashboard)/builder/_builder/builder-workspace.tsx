@@ -23,6 +23,7 @@ import { Inspector, type SlotEditor } from './inspector';
 import { LayersPanel } from './layers-panel';
 import { AddPalette } from './add-palette';
 import { useComponentVersions } from './use-component-versions';
+import { useSurfacePreview } from './use-surface-preview';
 
 export interface BuilderWorkspaceProps {
   tree: BuilderNode;
@@ -79,8 +80,15 @@ export function BuilderWorkspace({
   // Resolves each placement's EXACT pinned version for the canvas preview (docs/53
   // Gap 1) — fetches older versions lazily; falls back to latest meanwhile.
   const resolveVersion = useComponentVersions(components, tree);
+
+  // Live-compiled Surface utility CSS for the working tree, @scope-d to the canvas
+  // so authored Tailwind-native utilities render in the preview exactly as they
+  // will ship — without repainting the dashboard's own Tailwind chrome (docs/61
+  // §10; the temp.css live-preview path, docs/47 §5.2).
+  const previewCss = useSurfacePreview(tree);
   return (
     <>
+      {previewCss ? <style dangerouslySetInnerHTML={{ __html: previewCss }} /> : null}
       {/* Mobile pane switch */}
       <div className="bx-paneswitch">
         {(['edit', 'preview'] as const).map((p) => (
