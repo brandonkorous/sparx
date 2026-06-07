@@ -308,3 +308,86 @@ export function seedNode(id: string, type: string, opts: SeedNodeOpts = {}): Bui
   if (opts.children) node.children = opts.children;
   return node;
 }
+
+// ── Public: legacy tree migration (box/layout → class, docs/61) ────────────────
+//
+// Pre-cutover, a persisted node carried its arrangement in `box`/`layout` OBJECTS
+// instead of a `class` string. The class-only renderer + editor canvas read only
+// `node.class`, and the node zod schema strips unknown keys — so a stored tree in
+// the old shape loses ALL layout, spacing, surface, and grid styling (only the
+// site-ui component base + inline button styles survive). `migrateNode` rewrites
+// such a tree to the class-only shape by replaying the SAME compile a fresh seed
+// would run (`seedNode`), so a migrated node is byte-for-byte what re-authoring the
+// identical box/layout would produce — same split, same bg props, same ids. It is
+// deterministic and idempotent: a node already in class-only shape is passed
+// through untouched (its children still recursed, in case the tree is mixed).
+
+/** A persisted node in the PRE-cutover shape. `box`/`layout` are the legacy
+ *  arrangement objects; `class` may already be present on partially-migrated
+ *  trees. Everything else mirrors the runtime {@link BuilderNode}. */
+export interface LegacyNode {
+  id: string;
+  type: string;
+  name?: string;
+  class?: string;
+  /** Legacy arrangement object. `hiddenOn` (a dead responsive-hide field with no
+   *  class-model equivalent — always `[]` in practice) is tolerated and dropped. */
+  box?: BoxStyle & { hiddenOn?: unknown };
+  layout?: LayoutStyle;
+  props?: Record<string, unknown>;
+  binding?: { path: string };
+  children?: LegacyNode[];
+}
+
+export interface MigrateStats {
+  /** Nodes that carried a box/layout object and were converted to a class string. */
+  converted: number;
+  /** Nodes already in class-only shape (recursed, otherwise untouched). */
+  passthrough: number;
+  /** Non-empty legacy `hiddenOn` arrays encountered + dropped (the class model has
+   *  no equivalent). Surfaced so a backfill can report any real loss; normally 0. */
+  droppedHiddenOn: number;
+}
+
+/** Rewrite a single legacy node (and its subtree) to the class-only model. Reuses
+ *  {@link seedNode}, so the output matches a fresh seed of the same box/layout. */
+export function migrateNode(node: LegacyNode, stats?: MigrateStats): BuilderNode {
+  const children = node.children?.map((child) => migrateNode(child, stats));
+  const hasLegacy = node.box != null || node.layout != null;
+
+  if (!hasLegacy) {
+    // Already class-only — keep verbatim, just carry the (recursed) children.
+    if (stats) stats.passthrough += 1;
+    const out: BuilderNode = { id: node.id, type: node.type, props: node.props ?? {} };
+    if (node.class) out.class = node.class;
+    if (node.name) out.name = node.name;
+    if (node.binding) out.binding = node.binding;
+    if (children) out.children = children;
+    return out;
+  }
+
+  if (stats) {
+    stats.converted += 1;
+    const hidden = node.box?.hiddenOn;
+    if (Array.isArray(hidden) && hidden.length > 0) stats.droppedHiddenOn += 1;
+  }
+
+  return seedNode(node.id, node.type, {
+    box: node.box,
+    layout: node.layout,
+    props: node.props,
+    bind: node.binding?.path,
+    name: node.name,
+    // Preserve any verbatim class already on a partially-migrated node.
+    cls: node.class,
+    children,
+  });
+}
+
+/** Migrate a whole tree root, returning the new class-only root + conversion stats.
+ *  `migrateTree(root).tree` is stable under re-application (idempotent). */
+export function migrateTree(root: LegacyNode): { tree: BuilderNode; stats: MigrateStats } {
+  const stats: MigrateStats = { converted: 0, passthrough: 0, droppedHiddenOn: 0 };
+  const tree = migrateNode(root, stats);
+  return { tree, stats };
+}

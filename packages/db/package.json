@@ -29,6 +29,7 @@
     "db:up": "docker compose -f docker-compose.yml up -d",
     "db:down": "docker compose -f docker-compose.yml down",
     "db:rls-audit": "tsx scripts/rls-audit.ts",
+    "db:backfill:builder-class": "tsx scripts/backfill-builder-class.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
@@ -40,6 +41,7 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@sparx/builder-schemas": "workspace:*",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.11.10",
     "prisma": "^6.2.0",

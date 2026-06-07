@@ -723,6 +723,9 @@ importers:
         specifier: ^8.13.1
         version: 8.21.0
     devDependencies:
+      '@sparx/builder-schemas':
+        specifier: workspace:*
+        version: link:../builder-schemas
       '@types/node':
         specifier: ^25.9.1
         version: 25.9.1

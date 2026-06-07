@@ -21,6 +21,7 @@ on:
       - 'packages/db/prisma/migrations/**'
       - 'packages/db/sql/**'
       - 'packages/db/scripts/run-migrations.ts'
+      - 'packages/db/scripts/backfill-builder-class.ts'
       - 'packages/db/Dockerfile'
       - 'k8s/sparx-prod/db-migrate-job.yaml'
       - '.github/workflows/db-migrate.yml'
@@ -28,6 +29,12 @@ on:
     inputs:
       run_seed:
         description: 'Run the dev seed after migrations complete'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+      run_backfill:
+        description: 'Run the Builder box→class backfill (docs/61) — rewrites persisted page/layout/component trees to the class-only model. Idempotent.'
         required: false
         default: 'false'
         type: choice
@@ -128,9 +135,10 @@ jobs:
         env:
           RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
           RUN_SEED: ${{ github.event.inputs.run_seed || 'false' }}
+          RUN_BACKFILL: ${{ github.event.inputs.run_backfill || 'false' }}
         run: |
           set -euo pipefail
-          export IMAGE RUN_ID RUN_SEED
+          export IMAGE RUN_ID RUN_SEED RUN_BACKFILL
           envsubst < k8s/sparx-prod/db-migrate-job.yaml > /tmp/job.yaml
           echo "--- Rendered manifest ---"
           cat /tmp/job.yaml

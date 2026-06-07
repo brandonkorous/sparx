@@ -1,6 +1,6 @@
 # Migration Job — applied by .github/workflows/db-migrate.yml after the
-# runner image has been built and pushed. The workflow substitutes ${IMAGE}
-# and ${RUN_SEED} via `envsubst` before kubectl apply.
+# runner image has been built and pushed. The workflow substitutes ${IMAGE},
+# ${RUN_SEED}, and ${RUN_BACKFILL} via `envsubst` before kubectl apply.
 #
 # The Job name includes ${RUN_ID} so each workflow run creates a fresh Job
 # (k8s Jobs are immutable). TTL of 1h cleans up completed Jobs automatically.
@@ -84,6 +84,8 @@ spec:
               value: 'sparx'
             - name: RUN_SEED
               value: '${RUN_SEED}'
+            - name: RUN_BACKFILL
+              value: '${RUN_BACKFILL}'
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000

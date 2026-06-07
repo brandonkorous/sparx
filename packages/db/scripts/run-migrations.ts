@@ -10,6 +10,9 @@
 //      so `prisma migrate deploy` sees a consistent on-disk + DB state.
 //   5. Run `prisma migrate deploy`.
 //   6. If env RUN_SEED=true, run the seed.
+//   7. If env RUN_BACKFILL=true, run the Builder box→class backfill (docs/61) —
+//      rewrites persisted page/layout/component trees from the pre-cutover
+//      box/layout shape to the class-only model. Idempotent + dry-run-safe.
 //
 // Any step that fails causes a non-zero exit so the K8s Job goes to Failed.
 
@@ -34,6 +37,7 @@ const PROXY_HOST = process.env.PROXY_HOST ?? '127.0.0.1';
 const PROXY_PORT = process.env.PROXY_PORT ?? '5432';
 const DB_NAME = process.env.DB_NAME ?? 'sparx';
 const RUN_SEED = process.env.RUN_SEED === 'true';
+const RUN_BACKFILL = process.env.RUN_BACKFILL === 'true';
 
 const sm = new SecretManagerServiceClient();
 
@@ -210,6 +214,20 @@ async function main(): Promise<void> {
     await run('pnpm', ['exec', 'tsx', 'prisma/seed.ts'], baseEnv);
   } else {
     console.log('[migrate] RUN_SEED!=true, skipping seed.');
+  }
+
+  if (RUN_BACKFILL) {
+    // Run as sparx_owner (migration connection): the backfill UPDATEs FORCE-RLS
+    // builder tables per-tenant (it sets app.tenant_id itself), and the owner
+    // role is guaranteed DML grants on the tables it owns. `--apply` writes;
+    // without it the script only dry-runs.
+    console.log('[migrate] running Builder box→class backfill…');
+    await run('pnpm', ['exec', 'tsx', 'scripts/backfill-builder-class.ts', '--apply'], {
+      ...baseEnv,
+      DATABASE_URL: migrationUrl,
+    });
+  } else {
+    console.log('[migrate] RUN_BACKFILL!=true, skipping Builder class backfill.');
   }
 
   console.log('[migrate] done.');
