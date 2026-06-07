@@ -150,16 +150,114 @@ export const SHADOW_CONTROL: ClassControl = {
   ],
 };
 
+// ── Arrangement controls (docs/61 §5.2) ──────────────────────────────────────
+// How a CONTAINER lays out its children. Tailwind-native, single-token groups —
+// the same utilities a power user / AI writes. Per the arrange-vs-re-skin line
+// these are the page-builder's structural surface (per-instance, no uniformity to
+// protect); the SKIN families (corners / border / shadow / free type) stay gated
+// to the component builder. `display` toggles flex↔grid; `direction` shows for
+// flex, `columns` for grid (the inspector picks by the node's current `display`).
+
+export const DISPLAY_CONTROL: ClassControl = {
+  id: 'display',
+  label: 'Layout',
+  options: [
+    { value: 'flex', label: 'Flex', token: 'flex' },
+    { value: 'grid', label: 'Grid', token: 'grid' },
+  ],
+};
+
+export const DIRECTION_CONTROL: ClassControl = {
+  id: 'direction',
+  label: 'Direction',
+  options: [
+    { value: 'col', label: 'Stack', token: 'flex-col' },
+    { value: 'row', label: 'Row', token: 'flex-row' },
+  ],
+};
+
+export const COLUMNS_CONTROL: ClassControl = {
+  id: 'columns',
+  label: 'Columns',
+  options: [1, 2, 3, 4, 5, 6].map((n) => ({
+    value: String(n),
+    label: String(n),
+    token: `grid-cols-${n}`,
+  })),
+};
+
+export const GAP_CONTROL: ClassControl = {
+  id: 'gap',
+  label: 'Gap',
+  options: [
+    { value: 'none', label: 'None', token: 'gap-0' },
+    { value: 'sm', label: 'S', token: 'gap-2' },
+    { value: 'md', label: 'M', token: 'gap-4' },
+    { value: 'lg', label: 'L', token: 'gap-6' },
+    { value: 'xl', label: 'XL', token: 'gap-8' },
+  ],
+};
+
+export const JUSTIFY_CONTROL: ClassControl = {
+  id: 'justify',
+  label: 'Justify',
+  options: [
+    { value: 'start', label: 'Start', token: 'justify-start' },
+    { value: 'center', label: 'Center', token: 'justify-center' },
+    { value: 'end', label: 'End', token: 'justify-end' },
+    { value: 'between', label: 'Between', token: 'justify-between' },
+  ],
+};
+
+export const ALIGN_ITEMS_CONTROL: ClassControl = {
+  id: 'items',
+  label: 'Align',
+  options: [
+    { value: 'start', label: 'Start', token: 'items-start' },
+    { value: 'center', label: 'Center', token: 'items-center' },
+    { value: 'end', label: 'End', token: 'items-end' },
+    { value: 'stretch', label: 'Stretch', token: 'items-stretch' },
+  ],
+};
+
+export const PADDING_CONTROL: ClassControl = {
+  id: 'padding',
+  label: 'Padding',
+  options: [
+    { value: 'none', label: 'None', token: 'p-0' },
+    { value: 'sm', label: 'S', token: 'p-3' },
+    { value: 'md', label: 'M', token: 'p-6' },
+    { value: 'lg', label: 'L', token: 'p-10' },
+    { value: 'xl', label: 'XL', token: 'p-16' },
+  ],
+};
+
+/** The arrangement controls for a CONTAINER, in order. `direction` shows for a
+ *  flex container, `columns` for a grid — chosen by the node's current `display`
+ *  (default = flex, so a node with no display token still gets Direction). */
+export function arrangementControlsFor(classStr: string | undefined): ClassControl[] {
+  const display = activeValue(classStr, DISPLAY_CONTROL);
+  const out: ClassControl[] = [DISPLAY_CONTROL];
+  out.push(display === 'grid' ? COLUMNS_CONTROL : DIRECTION_CONTROL);
+  out.push(GAP_CONTROL, JUSTIFY_CONTROL, ALIGN_ITEMS_CONTROL, PADDING_CONTROL);
+  return out;
+}
+
 /** The advanced (collapsed) style controls applicable to a node, in order: the
- *  element-scoped Size (when the archetype has one) then the universal box
- *  utilities (corners / border / shadow). Spacing + position land here as the
- *  recipe gains their token classes (docs/47). The raw `class` textarea — the
- *  final escape hatch — is rendered alongside these by the inspector. */
-export function advancedControlsFor(archetype: string | undefined): ClassControl[] {
+ *  element-scoped Size (when the archetype has one), Margin (always), then the
+ *  SKIN families (corners / border / shadow). The skin families are gated to the
+ *  component builder (`allowSkin`) — on the page builder a component's skin comes
+ *  from its recipe, not per-instance re-skinning (docs/61 §5.2). The raw `class`
+ *  textarea — the final escape hatch — is rendered alongside these by the inspector. */
+export function advancedControlsFor(
+  archetype: string | undefined,
+  allowSkin: boolean
+): ClassControl[] {
   const out: ClassControl[] = [];
   const size = sizeControlFor(archetype);
   if (size) out.push(size);
-  out.push(MARGIN_CONTROL, RADIUS_CONTROL, BORDER_CONTROL, SHADOW_CONTROL);
+  out.push(MARGIN_CONTROL);
+  if (allowSkin) out.push(RADIUS_CONTROL, BORDER_CONTROL, SHADOW_CONTROL);
   return out;
 }
 

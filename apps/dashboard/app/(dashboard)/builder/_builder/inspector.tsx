@@ -63,6 +63,7 @@ import {
   activeValue,
   advancedControlsFor,
   applyValue,
+  arrangementControlsFor,
   ensureArchetypeDefaults,
   type ClassControl,
 } from './class-controls';
@@ -329,11 +330,11 @@ function StyleControlField({
   );
 }
 
-// The collapsed "Advanced" disclosure — the less-common style axes (Size today;
-// radius / shadow / border / spacing / position as the recipe gains them) plus
-// the raw `class` textarea, the final escape hatch (docs/47 §4). Collapsed by
-// default so the everyday Color / Variant stay uncluttered.
-function AdvancedPanel({
+// How a CONTAINER arranges its children (docs/61 §5.2): the page-builder's
+// structural surface — display / direction|columns / gap / justify / align /
+// padding, written as Tailwind-native classes. Shown for containers only; leaves
+// arrange nothing.
+function ArrangementPanel({
   node,
   def,
   onClass,
@@ -342,10 +343,44 @@ function AdvancedPanel({
   def: ComponentDef;
   onClass: (value: string) => void;
 }) {
+  const controls = arrangementControlsFor(node.class);
+  return (
+    <Group label="Arrangement">
+      <p className="bx-grp__caption">How this section lays out its children.</p>
+      {controls.map((control) => (
+        <StyleControlField
+          key={control.id}
+          node={node}
+          def={def}
+          control={control}
+          onClass={onClass}
+        />
+      ))}
+    </Group>
+  );
+}
+
+// The collapsed "Advanced" disclosure — the less-common style axes (Size, Margin)
+// plus the SKIN families (corners / border / shadow) when authoring a component,
+// and the raw `class` textarea, the final escape hatch (docs/47 §4, docs/61 §5.2).
+// Collapsed by default so the everyday Color / Variant stay uncluttered.
+function AdvancedPanel({
+  node,
+  def,
+  allowSkin,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  /** Whether the SKIN families (corners/border/shadow) show — true in the
+   *  component builder, false on the page builder (where skin is the recipe's). */
+  allowSkin: boolean;
+  onClass: (value: string) => void;
+}) {
   // Controls are built from the archetype (which AXES the element has) — distinct
   // from defaults.class (what a fresh node gets). Icon declares a size axis on its
   // archetype but ships sizeless, so the Size control shows reading "Default".
-  const controls = advancedControlsFor(def.archetype ?? def.defaults.class);
+  const controls = advancedControlsFor(def.archetype ?? def.defaults.class, allowSkin);
   return (
     <details className="bx-adv">
       <summary className="bx-adv__summary">
@@ -1415,7 +1450,10 @@ export function Inspector({
         ))}
       </Group>
 
-      <AdvancedPanel node={node} def={def} onClass={onClass} />
+      {/* Skin families (corners/border/shadow) author only in the component
+          builder (slotEditor present); on the page builder skin comes from the
+          recipe, not per-instance re-skinning (docs/61 §5.2). */}
+      <AdvancedPanel node={node} def={def} allowSkin={Boolean(slotEditor)} onClass={onClass} />
 
       <BindingBox
         node={node}
@@ -1427,6 +1465,11 @@ export function Inspector({
         slotEditor={slotEditor}
       />
       <PropsPanel node={node} onProp={onProp} slotEditor={slotEditor} />
+      {/* Containers arrange their children (docs/61 §5.2) — the page-builder's
+          structural surface. Leaves arrange nothing, so the panel is hidden. */}
+      {def.kind === 'container' ? (
+        <ArrangementPanel node={node} def={def} onClass={onClass} />
+      ) : null}
     </div>
   );
 }
