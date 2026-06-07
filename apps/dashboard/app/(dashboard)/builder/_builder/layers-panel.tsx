@@ -267,6 +267,12 @@ export function LayersPanel({
   const [overId, setOverId] = React.useState<string | null>(null);
   const [offsetX, setOffsetX] = React.useState(0);
 
+  // Stable, SSR-safe id for the DndContext. Without it, dnd-kit falls back to a
+  // module-level counter for its a11y description nodes (`DndDescribedBy-N`),
+  // which numbers differently on the server vs the client and trips a hydration
+  // mismatch warning. `useId()` is deterministic across both renders.
+  const dndId = React.useId();
+
   const sensors = useSensors(
     // A small activation distance lets a plain click still select (no drag) while
     // a deliberate drag picks the row up.
@@ -391,6 +397,7 @@ export function LayersPanel({
         <span className="bx-layer__name">{homeLabel} settings</span>
       </button>
       <DndContext
+        id={dndId}
         sensors={sensors}
         collisionDetection={closestCenter}
         measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
