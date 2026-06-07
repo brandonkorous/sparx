@@ -1,6 +1,6 @@
 # 61 — Utility Authoring: The Property-Panel Style System
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-06
 
@@ -277,6 +277,49 @@ is code-only.
 
 Phases **0–2** are the foundation and land together (the destructive schema change + render cutover
 must ship as one release). **3–5** are the product. **6** is polish + docs.
+
+### 12.1 Build log — Phases 0–2 landed (2026-06-06)
+
+The destructive cutover shipped (gate-green: typecheck 48/48, lint 48/48, the changed packages' tests
+all pass — only a pre-existing `api-mcp` vite-transform issue on `packages/email/src/send.tsx` remains,
+unrelated). Decisions made during execution:
+
+- **Node shape** is `{ id, type, name?, class?, props, binding?, children? }`. `name?` was added as
+  top-level metadata (sibling to `id`, for the Layers label) — a deliberate one-field addition to the
+  §4 shape; it is not styling. `box`/`layout` and every box/layout enum + `DEFAULT_BOX`/`DEFAULT_LAYOUT`
+  are deleted from `@sparx/builder-schemas`.
+- **The box vocabulary survives only as a build-time DTO.** `packages/builder-schemas/src/box-to-class.ts`
+  exports `BoxStyle`/`LayoutStyle` (ergonomic, all-optional authoring inputs) + `boxLayoutClass()`
+  (single-element compile, used by `makeNode` + the registry drop-defaults) + `seedNode()` (the seed
+  factory). Seed data (starters + the 7 blueprints) keeps its readable `box: {...}, layout: {...}`
+  call-sites — they now type against `BoxStyle`/`LayoutStyle` and compile to a `class` string — so the
+  ~657 blueprint literals never had to be hand-rewritten. Phase 6 re-authors them onto archetypes.
+- **Full-bleed band + contained content** is the one structural case a single element can't express, so
+  `seedNode` emits a 2-node wrap (outer `w-full {surface}{height}` band → inner `mx-auto max-w-site`
+  Stack carrying the layout) only when `backgroundWidth:'full' && contentWidth:'contained'` and there's
+  a visible band; a height makes the band `flex items-center justify-center`. Everything else is one
+  element.
+- **Background image/overlay are props, not classes** (a URL can't be a static utility; the allowlist
+  blocks `url()`). The converter routes `backgroundImage`/`backgroundImageBinding`/`overlay`/`fit`/
+  `position` to `props.bgImage`/`bgImageBinding`/`bgOverlay`/`bgFit`/`bgPosition`; both renderers paint
+  them as the single remaining inline style.
+- **Render unification.** Both renderers (`apps/site/.../builder-renderer.tsx`, `_builder/canvas.tsx`)
+  deleted their box→CSS engines (`boxStyles`/`resolveLayout`/`layoutStyle`/device-JS) and now apply
+  `node.class` verbatim on one element. The email renderer can't use classes (mail clients strip them),
+  so it **parses** direction/columns/gap/padding/surface/align back out of `node.class`
+  (`readEmailLayout`). The canvas's device switcher just fixes the canvas width; **container queries**
+  (`container-type: inline-size` on `.bx-canvas` + `.bx-render`) do the responsive reflow — the converter
+  seeds `grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-N` for grids and `flex-col @3xl:flex-row` for rows,
+  so seeds are responsive-by-default.
+- **Inspector** lost the box + arrangement panels (they read the deleted objects); Style + Advanced
+  (color/variant + the raw `class` textarea) remain. The friendly arrange/utility controls are Phases
+  3–4. `@sparx/site-ui` re-homed its own `Overlay`/`TextTone` types (they were importing the deleted box
+  enums).
+- **MCP gap (not yet closed):** the new `/builder` node-tree authoring still has **no MCP tool** — today's
+  `write:builder` MCP tools drive the older section/theme sitebuilder (`@sparx/sitebuilder`). The
+  agent-first import layer (`parsePageImport`, now class-validated) is the ready substrate; wiring an MCP
+  Builder-authoring tool (that teaches the Tailwind class vocabulary + allowlist) is the natural next
+  slice so agents can build pages directly.
 
 ## 13. Open questions / deferred
 

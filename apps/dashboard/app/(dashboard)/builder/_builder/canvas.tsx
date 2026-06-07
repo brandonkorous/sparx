@@ -1,10 +1,11 @@
 'use client';
 
 // The canvas — renders the node tree into a live preview and owns the
-// universal concerns the registry deliberately doesn't: the box base
-// (height / width modes / surface / padding / align / visibility), the layout
-// arrangement, binding resolution, ITERATION (an array-bound container repeats
-// its children once per item, with `item` scope), and click-to-select.
+// universal concerns the registry deliberately doesn't: applying each node's
+// Tailwind-native `class` (docs/61), binding resolution, ITERATION (an array-
+// bound container repeats its children once per item, with `item` scope), and
+// click-to-select. Styling is the live-compiled tenant utilities (useSurfacePreview,
+// @scope-d to .bx-canvas), so the preview paints exactly as production does.
 //
 // A node definition only describes what's specific to itself; everything that
 // is true of EVERY node lives here. That separation is what keeps the model

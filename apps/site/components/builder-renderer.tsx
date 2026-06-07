@@ -1,7 +1,8 @@
 // Renders a published Builder node tree to production storefront markup
-// (docs/44 §2.3). Distinct from the dashboard editor canvas: no selection
-// chrome, semantic output, mapped to the live `--sf-*` tenant theme tokens
-// (the editor maps the same box/layout semantics to `--bxc-*`).
+// (docs/44 §2.3, docs/61). Distinct from the dashboard editor canvas: no
+// selection chrome, semantic output. Each node's Tailwind-native `class` string
+// is applied verbatim and resolves against the compiled per-tenant stylesheet
+// (the same classes the editor canvas previews, so preview == production).
 //
 // SLICE A.2 — BINDING-AWARE: bound nodes resolve against REAL records (passed in
 // as `data`) through the shared resolver. An array-bound container iterates its
