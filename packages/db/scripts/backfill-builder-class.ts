@@ -14,9 +14,16 @@
 //
 // TABLES (all tenant-scoped, FORCE RLS):
 //   builder_pages               draft_tree, published_tree
-//   builder_layouts             draft_tree, published_tree
+//   builder_layouts             draft_tree, published_tree   (site chrome / header+footer)
+//   builder_emails              draft_tree, published_tree   (Email Builder, docs/52)
 //   builder_component_versions  tree
-// builder_emails is a DIFFERENT node model (docs/52) with no box/layout — skipped.
+// The Email Builder uses the SAME BuilderNode model (email.ts imports
+// BuilderNodeSchema), and its renderer reads node.class via readEmailLayout()
+// — whose token vocabulary IS box-to-class's output (p-N, gap-N, grid, bg-*) —
+// so the identical converter applies. A DB-wide scan of every json column for
+// the box/backgroundWidth signature confirms these four are the only affected
+// tables (brand = design tokens, CMS = TipTap docs, sitebuilder = a separate
+// legacy model — none carry builder box/layout).
 //
 // RLS: in prod `sparx_owner` is a NON-superuser, so FORCE-RLS reads/writes need
 // the tenant GUC set (cf. [memory] sparx_db_rls_pattern). We loop tenants and run
@@ -44,6 +51,7 @@ interface TableSpec {
 const TABLES: readonly TableSpec[] = [
   { table: 'builder_pages', cols: ['draft_tree', 'published_tree'] },
   { table: 'builder_layouts', cols: ['draft_tree', 'published_tree'] },
+  { table: 'builder_emails', cols: ['draft_tree', 'published_tree'] },
   { table: 'builder_component_versions', cols: ['tree'] },
 ];
 
