@@ -2,10 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { bindingRoot, bindingSourceKey, collectBindingPaths } from './runtime';
 import { EMAIL_PERSONALIZED_ROOTS, treeIsEmailPersonalized } from './binding';
 import type { BuilderNode } from './node';
-import { DEFAULT_BOX } from './node';
 
 function node(type: string, over: Partial<BuilderNode> = {}): BuilderNode {
-  return { id: `${type}-1`, type, box: { ...DEFAULT_BOX }, props: {}, ...over };
+  return { id: `${type}-1`, type, props: {}, ...over };
 }
 
 describe('bindingRoot / bindingSourceKey', () => {

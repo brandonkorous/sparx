@@ -4,9 +4,8 @@
 // tone). Structural (the surface color comes from `photoPanelStyle`/children).
 
 import * as React from 'react';
-import type { Overlay, TextTone } from '@sparx/builder-schemas';
 import { cx } from '../utils/cx';
-import { photoPanelStyle } from '../utils/photo-panel';
+import { photoPanelStyle, type Overlay, type TextTone } from '../utils/photo-panel';
 
 export type HeroAlign = 'start' | 'center' | 'end';
 

@@ -21,11 +21,10 @@
 //     muted(base-300) · inverse(base-content bg / base-100 fg) · brand(primary).
 
 import {
-  DEFAULT_BOX,
-  DEFAULT_LAYOUT,
-  type BoxBase,
+  seedNode,
+  type BoxStyle,
   type BuilderNode,
-  type LayoutBase,
+  type LayoutStyle,
 } from '@sparx/builder-schemas';
 
 import type { Blueprint } from '../manifest';
@@ -36,27 +35,20 @@ import { parseBlueprint } from '../validate';
 
 let nid = 0;
 const rid = (t: string): string => `mw-${t}-${(nid += 1)}`;
-const box = (o: Partial<BoxBase> = {}): BoxBase => ({ ...DEFAULT_BOX, ...o });
-const lay = (o: Partial<LayoutBase> = {}): LayoutBase => ({ ...DEFAULT_LAYOUT, ...o });
 
 function node(
   type: string,
   opts: {
-    box?: Partial<BoxBase>;
-    layout?: Partial<LayoutBase>;
+    box?: BoxStyle;
+    layout?: LayoutStyle;
     props?: Record<string, unknown>;
     bind?: string;
-    /** docs/47 class-first chrome (e.g. 'bx-card' / 'bx-panel') applied verbatim. */
+    /** Extra verbatim classes (e.g. an archetype/recipe seed). */
     cls?: string;
     children?: BuilderNode[];
   } = {}
 ): BuilderNode {
-  const out: BuilderNode = { id: rid(type), type, box: box(opts.box), props: opts.props ?? {} };
-  if (opts.layout) out.layout = lay(opts.layout);
-  if (opts.bind) out.binding = { path: opts.bind };
-  if (opts.cls) out.class = opts.cls;
-  if (opts.children) out.children = opts.children;
-  return out;
+  return seedNode(rid(type), type, opts);
 }
 
 /** A minimal TipTap rich-text doc from plain paragraphs (content_entries.body). */
@@ -163,7 +155,7 @@ function featureSplit(opts: {
   tintHex: string;
   mock: BuilderNode;
   flip?: boolean;
-  surface?: BoxBase['surface'];
+  surface?: BoxStyle['surface'];
 }): BuilderNode {
   const copy = node('Stack', {
     box: { padding: 'lg', align: 'start' },

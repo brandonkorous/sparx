@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_BOX, type BuilderNode } from '@sparx/builder-schemas';
+import { type BuilderNode } from '@sparx/builder-schemas';
 import { collectClasses } from './extract';
 
 function node(partial: Partial<BuilderNode> & { id: string; type: string }): BuilderNode {
-  return { box: DEFAULT_BOX, props: {}, ...partial };
+  return { props: {}, ...partial };
 }
 
 describe('collectClasses', () => {

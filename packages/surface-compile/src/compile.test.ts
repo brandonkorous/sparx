@@ -2,7 +2,7 @@
 // structural utilities still work, and unknown classes are dropped (not fatal).
 
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_BOX, type BuilderNode } from '@sparx/builder-schemas';
+import { type BuilderNode } from '@sparx/builder-schemas';
 import { compileClasses } from './compile';
 import { buildTenantStylesheet } from './index';
 
@@ -54,7 +54,7 @@ describe('compileClasses', () => {
 
 describe('buildTenantStylesheet', () => {
   function node(p: Partial<BuilderNode> & { id: string; type: string }): BuilderNode {
-    return { box: DEFAULT_BOX, props: {}, ...p };
+    return { props: {}, ...p };
   }
 
   it('tree-shakes a tree, compiles, and content-hashes', async () => {

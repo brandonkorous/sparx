@@ -10,10 +10,10 @@
 //   3. Data     — the binding box (what this node reads, and what its cardinality
 //                 means). Static when the component isn't bindable.
 //   4. <Component> — the node's own props (heading level, button label, …).
-//   5. Arrangement — containers only (how children flow: direction / columns / gap).
-//   6. Layout   — the node's own box, RELEVANCE-GATED per component (width,
-//                 height, spacing, surface, background, align, position,
-//                 visibility) — see BoxBasePanel / visibleBoxAxes.
+//
+// The freeform box/layout panels retired with the box model (docs/61): arrangement
+// + skin are authored as `class` utilities (Style + Advanced), and the friendlier
+// arrange/utility controls land in the component builder (docs/61 Phases 3–4).
 
 import * as React from 'react';
 import {
@@ -46,26 +46,7 @@ import { CREATABLE_KINDS, type CreatableType } from './field-kinds';
 
 import { SeoScoreChip } from '@/components/seo/seo-score';
 
-import {
-  ALIGN_OPTIONS,
-  DEVICE_OPTIONS,
-  DIRECTION_OPTIONS,
-  FIT_OPTIONS,
-  GAP_OPTIONS,
-  HEIGHT_OPTIONS,
-  OVERLAY_OPTIONS,
-  PIN_OPTIONS,
-  POSITION_OPTIONS,
-  SPACE_OPTIONS,
-  SURFACE_OPTIONS,
-  TONE_OPTIONS,
-  WIDTH_OPTIONS,
-  type BoxBase,
-  type BuilderNode,
-  type Device,
-  type LayoutBase,
-  type PageSeo,
-} from './model';
+import { type BuilderNode, type PageSeo } from './model';
 import {
   bindGroups,
   bindHint,
@@ -74,14 +55,7 @@ import {
   moduleForPath,
   type ScopeInfo,
 } from './binding-catalog';
-import {
-  compatibleRetypeTargets,
-  getDef,
-  visibleBoxAxes,
-  type BoxAxis,
-  type ComponentDef,
-  type EditorSurface,
-} from './registry';
+import { compatibleRetypeTargets, getDef, type ComponentDef, type EditorSurface } from './registry';
 import { IconPicker } from './icon-picker';
 import { ProseControl } from './prose-control';
 import {
@@ -788,242 +762,6 @@ function PropsPanel({
   );
 }
 
-// ── Arrangement (containers) ─────────────────────────────────────────────────
-// How a container arranges its CHILDREN (direction / columns / gap). Named
-// "Arrangement" to stay distinct from the per-node "Layout" panel (the block's
-// own box: width / spacing / surface / …), which every node shows.
-
-function LayoutPanel({
-  layout,
-  onLayout,
-}: {
-  layout: LayoutBase;
-  onLayout: (patch: Partial<LayoutBase>) => void;
-}) {
-  return (
-    <Group label="Arrangement">
-      <Field label="Direction">
-        <Segmented
-          value={layout.direction}
-          options={DIRECTION_OPTIONS}
-          onChange={(v) => onLayout({ direction: v })}
-        />
-      </Field>
-      {layout.direction === 'grid' ? (
-        <Field label={`Columns · ${layout.columns}`}>
-          <input
-            type="range"
-            min={1}
-            max={6}
-            value={layout.columns}
-            onChange={(e) => onLayout({ columns: Number(e.target.value) })}
-            className="bx-range"
-          />
-        </Field>
-      ) : null}
-      <Field label="Gap">
-        <Segmented
-          value={layout.gap}
-          options={GAP_OPTIONS}
-          onChange={(v) => onLayout({ gap: v })}
-        />
-      </Field>
-    </Group>
-  );
-}
-
-// ── Layout panel (box base, relevance-gated per component) ────────────────────
-// Renders only the box-axis clusters relevant to the node (docs/47): containers
-// get the full set, leaves get align + visibility, and any axis the node already
-// uses is shown regardless — see `visibleBoxAxes`. Background image/binding are
-// DATA the box keeps; overlay/tone are presentation that migrates to classes.
-
-function BoxBasePanel({
-  box,
-  axes,
-  onBox,
-}: {
-  box: BoxBase;
-  axes: Set<BoxAxis>;
-  onBox: (patch: Partial<BoxBase>) => void;
-}) {
-  const toggleDevice = (d: Device, visible: boolean) => {
-    const next = visible ? box.hiddenOn.filter((x) => x !== d) : [...new Set([...box.hiddenOn, d])];
-    onBox({ hiddenOn: next });
-  };
-
-  return (
-    <Group label="Layout">
-      <p className="bx-grp__caption">Structure, spacing &amp; backdrop for this block.</p>
-      {axes.has('width') ? (
-        <>
-          <Field
-            label="Background width"
-            hint="Does the surface span edge-to-edge, or hug the content?"
-          >
-            <Segmented
-              value={box.backgroundWidth}
-              options={WIDTH_OPTIONS}
-              onChange={(v) => onBox({ backgroundWidth: v })}
-            />
-          </Field>
-          <Field label="Content width">
-            <Segmented
-              value={box.contentWidth}
-              options={WIDTH_OPTIONS}
-              onChange={(v) => onBox({ contentWidth: v })}
-            />
-          </Field>
-        </>
-      ) : null}
-      {axes.has('height') ? (
-        <Field label="Height">
-          <Segmented
-            value={box.height}
-            options={HEIGHT_OPTIONS}
-            onChange={(v) => onBox({ height: v })}
-          />
-        </Field>
-      ) : null}
-      {axes.has('padding') ? (
-        <Field label="Spacing">
-          <Segmented
-            value={box.padding}
-            options={SPACE_OPTIONS}
-            onChange={(v) => onBox({ padding: v })}
-          />
-        </Field>
-      ) : null}
-      {axes.has('surface') ? (
-        <Field label="Surface">
-          <Segmented
-            value={box.surface}
-            options={SURFACE_OPTIONS}
-            onChange={(v) => onBox({ surface: v })}
-          />
-        </Field>
-      ) : null}
-      {axes.has('background') ? (
-        <>
-          <Field
-            label="Background image"
-            hint="Paste an image URL for a full-bleed photo panel — content renders over it."
-          >
-            <Input
-              value={box.backgroundImage ?? ''}
-              placeholder="https://…"
-              aria-label="Background image URL"
-              onChange={(e) => onBox({ backgroundImage: e.target.value || undefined })}
-            />
-          </Field>
-          <Field
-            label="Background from data"
-            hint="Bind the background to a record image (e.g. product.images, item.cover). The record's own photo fills the hero; the URL above is the fallback."
-          >
-            <Input
-              value={box.backgroundImageBinding ?? ''}
-              placeholder="product.images"
-              aria-label="Background image binding path"
-              onChange={(e) => onBox({ backgroundImageBinding: e.target.value || undefined })}
-            />
-          </Field>
-          {box.backgroundImage || box.backgroundImageBinding ? (
-            <>
-              <Field label="Overlay" hint="Darken or lighten the photo so text stays readable.">
-                <Segmented
-                  value={box.overlay ?? 'none'}
-                  options={OVERLAY_OPTIONS}
-                  onChange={(v) => onBox({ overlay: v })}
-                />
-              </Field>
-              <Field
-                label="Fit"
-                hint="Cover fills the box and crops the overflow; Contain shows the whole image, letterboxed against the surface color."
-              >
-                <Segmented
-                  value={box.backgroundFit ?? 'cover'}
-                  options={FIT_OPTIONS}
-                  onChange={(v) => onBox({ backgroundFit: v })}
-                />
-              </Field>
-              <Field
-                label="Focal point"
-                hint="Which part of the image stays in view when it's cropped (or where a contained image sits)."
-              >
-                <NativeSelect
-                  size="sm"
-                  value={box.backgroundPosition ?? 'center'}
-                  aria-label="Background focal point"
-                  onChange={(e) =>
-                    onBox({
-                      backgroundPosition: e.target.value as NonNullable<
-                        BoxBase['backgroundPosition']
-                      >,
-                    })
-                  }
-                >
-                  {POSITION_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </NativeSelect>
-              </Field>
-            </>
-          ) : null}
-          <Field label="Text tone">
-            <Segmented
-              value={box.textTone ?? 'default'}
-              options={TONE_OPTIONS}
-              onChange={(v) => onBox({ textTone: v })}
-            />
-          </Field>
-        </>
-      ) : null}
-      {axes.has('align') ? (
-        <Field label="Align">
-          <Segmented
-            value={box.align}
-            options={ALIGN_OPTIONS}
-            onChange={(v) => onBox({ align: v })}
-          />
-        </Field>
-      ) : null}
-      {axes.has('position') ? (
-        <Field label="Position" hint="“Overlay top” floats this block over the one below it.">
-          <Segmented
-            value={box.pin ?? 'none'}
-            options={PIN_OPTIONS}
-            onChange={(v) => onBox({ pin: v })}
-          />
-        </Field>
-      ) : null}
-      {axes.has('visibility') ? (
-        <div className="bx-field">
-          <span className="bx-field__label">Visible on</span>
-          <div className="bx-vis">
-            {DEVICE_OPTIONS.map((d) => {
-              const visible = !box.hiddenOn.includes(d.value);
-              return (
-                <div key={d.value} className="bx-vis__row">
-                  <span className={cn('bx-vis__name', !visible && 'bx-vis__name--off')}>
-                    {d.label}
-                  </span>
-                  <Switch
-                    size="sm"
-                    checked={visible}
-                    onCheckedChange={(v) => toggleDevice(d.value, v)}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
-    </Group>
-  );
-}
-
 // ── Settings panels (shown when no node is selected) ─────────────────────────
 // Each surface supplies its own (page settings vs. layout settings) via the
 // Inspector's `settings` slot; both reuse the inspector's Group/Field controls.
@@ -1435,7 +1173,7 @@ function CustomNodeInspector({
           <span className="bx-ins-kind">component</span>
         </div>
         <Input
-          value={node.box.name ?? ''}
+          value={node.name ?? ''}
           placeholder={`${component?.name ?? 'Component'} name`}
           onChange={(e) => onName(e.target.value)}
         />
@@ -1583,8 +1321,6 @@ export interface InspectorProps {
   onClass: (value: string) => void;
   onBind: (path: string | null) => void;
   onProp: (key: string, value: unknown) => void;
-  onLayout: (patch: Partial<LayoutBase>) => void;
-  onBox: (patch: Partial<BoxBase>) => void;
   onRetype: (targetType: string) => void;
 }
 
@@ -1604,8 +1340,6 @@ export function Inspector({
   onClass,
   onBind,
   onProp,
-  onLayout,
-  onBox,
   onRetype,
 }: InspectorProps) {
   if (!node) {
@@ -1649,7 +1383,7 @@ export function Inspector({
           <span className={cn('bx-ins-kind', `bx-ins-kind--${def.kind}`)}>{def.kind}</span>
         </div>
         <Input
-          value={node.box.name ?? ''}
+          value={node.name ?? ''}
           placeholder={`${def.label} name`}
           onChange={(e) => onName(e.target.value)}
         />
@@ -1693,13 +1427,6 @@ export function Inspector({
         slotEditor={slotEditor}
       />
       <PropsPanel node={node} onProp={onProp} slotEditor={slotEditor} />
-      {def.kind === 'container' && node.layout ? (
-        <LayoutPanel layout={node.layout} onLayout={onLayout} />
-      ) : null}
-      {/* Relevance-gated per component (docs/47): only the box axes this node
-          exposes — plus any it already uses — so the panel fits the node instead
-          of showing all ~12 controls for everything. */}
-      <BoxBasePanel box={node.box} axes={visibleBoxAxes(def, node.box)} onBox={onBox} />
     </div>
   );
 }

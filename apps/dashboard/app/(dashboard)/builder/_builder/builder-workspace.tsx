@@ -216,8 +216,6 @@ export function BuilderWorkspace({
               onClass={editor.onClass}
               onBind={editor.onBind}
               onProp={editor.onProp}
-              onLayout={editor.onLayout}
-              onBox={editor.onBox}
               onRetype={editor.onRetype}
             />
           </ScrollArea>

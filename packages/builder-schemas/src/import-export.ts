@@ -11,7 +11,7 @@
 // renderer simply skips a leaf it doesn't know).
 
 import { z } from 'zod';
-import { BuilderNodeSchema, DEFAULT_BOX, DEFAULT_LAYOUT, type BuilderNode } from './node';
+import { BuilderNodeSchema, type BuilderNode } from './node';
 import { BuilderPageKind, PageSlug } from './page';
 
 /** The document format tag. Bump the version when the envelope shape changes
@@ -99,12 +99,11 @@ function isPlainObject(v: unknown): v is Record<string, unknown> {
 }
 
 /** Make a RAW (pre-validation) node tree forgiving for hand/agent-authored JSON:
- *  fill a missing/blank `id`, default `props` to `{}`, MERGE a partial `box` over
- *  DEFAULT_BOX (so an author specifies only deviations), and give any node with
- *  `children` a `layout` merged over DEFAULT_LAYOUT. Operates structurally on
- *  unknown input; a non-node value passes through for zod to reject precisely.
- *  Invalid field VALUES are preserved (not silently fixed) so zod still flags
- *  them with a clear message. */
+ *  fill a missing/blank `id` and default `props` to `{}`, so a terse author can
+ *  emit just `{ type, class?, children? }`. Operates structurally on unknown
+ *  input; a non-node value passes through for zod to reject precisely. Invalid
+ *  field VALUES are preserved (not silently fixed) so zod still flags them with a
+ *  clear message. */
 function normalizeRaw(raw: unknown, counter: { n: number }): unknown {
   if (!isPlainObject(raw)) return raw;
   const node = raw;
@@ -115,14 +114,9 @@ function normalizeRaw(raw: unknown, counter: { n: number }): unknown {
     counter.n += 1;
     out.id = `${node.type.toLowerCase()}-${counter.n}`;
   }
-  out.box = { ...DEFAULT_BOX, ...(isPlainObject(node.box) ? node.box : {}) };
   if (!isPlainObject(node.props)) out.props = {};
-
   if (Array.isArray(node.children)) {
     out.children = node.children.map((c) => normalizeRaw(c, counter));
-    out.layout = { ...DEFAULT_LAYOUT, ...(isPlainObject(node.layout) ? node.layout : {}) };
-  } else if (isPlainObject(node.layout)) {
-    out.layout = { ...DEFAULT_LAYOUT, ...node.layout };
   }
   return out;
 }

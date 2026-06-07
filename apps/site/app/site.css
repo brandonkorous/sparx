@@ -3111,6 +3111,13 @@ html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child
    editor's fixed-width canvas).
    ────────────────────────────────────────────────────────────── */
 
+/* The published Builder render root is the container-query context (docs/61 §7):
+   authored `@md:`-style utilities respond to the page width, matching the editor
+   canvas exactly (preview == production). */
+.bx-render {
+  container-type: inline-size;
+}
+
 /* Grid — 1 col (mobile) → 2 col (≥640) → N col (≥1024). N via --cN modifier. */
 .bx-grid {
   display: grid;

@@ -8,7 +8,7 @@
 // import from the editor's client components AND the server service layer.
 
 import { z } from 'zod';
-import { BuilderNodeSchema, DEFAULT_BOX, type BuilderNode } from './node';
+import { BuilderNodeSchema, type BuilderNode } from './node';
 
 // ── Group + surfaces (mirror the dashboard registry's PaletteGroup / EditorSurface) ──
 
@@ -405,7 +405,7 @@ export function collectBindingSlots(tree: BuilderNode): { key: string; label: st
   const labels = new Map<string, string>();
   const walk = (node: BuilderNode): void => {
     const k = bindSlotKey(node.binding?.path);
-    if (k && !labels.has(k)) labels.set(k, node.box.name ?? k);
+    if (k && !labels.has(k)) labels.set(k, node.name ?? k);
     (node.children ?? []).forEach(walk);
   };
   walk(tree);
@@ -456,7 +456,6 @@ export function makeCustomNode(key: string, version: number, id: string): Builde
   return {
     id,
     type: customType(key),
-    box: { ...DEFAULT_BOX },
     props: { [REF_KEY]: { version } },
   };
 }

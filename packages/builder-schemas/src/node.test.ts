@@ -5,11 +5,11 @@
 // strip an unknown key and silently drop authored classes on round-trip.
 
 import { describe, expect, it } from 'vitest';
-import { BuilderNodeSchema, DEFAULT_BOX } from './node';
+import { BuilderNodeSchema } from './node';
 import { parsePageImport } from './import-export';
 
 function leaf(extra: Record<string, unknown> = {}) {
-  return { id: 'n1', type: 'Heading', box: DEFAULT_BOX, props: {}, ...extra };
+  return { id: 'n1', type: 'Heading', props: {}, ...extra };
 }
 
 describe('BuilderNode.class', () => {

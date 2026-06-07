@@ -7,13 +7,9 @@ import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 import {
   cardinalityOf,
   resolvePath,
-  type AlignX,
   type BuilderNode,
   type DataSources,
-  type GapScale,
   type Scope,
-  type SpaceScale,
-  type Surface,
 } from '@sparx/builder-schemas';
 import {
   BrandProvider,
@@ -38,10 +34,11 @@ import type { SendableEmail } from '../types';
 // <style> blocks and don't honour CSS custom properties.
 //
 // Email is fixed-width (the ~560px EmailLayout container) and non-interactive, so
-// most of the box model collapses: height / backgroundWidth / contentWidth /
-// overlay / textTone / pin / hiddenOn have no email analogue and are ignored. The
-// honoured axes are `padding`, `surface` (bg + fg), `align` (text-align), and the
-// container `layout` (stack = block flow; row/grid = <Row>/<Column>).
+// most of the class layer collapses: heights / full-bleed widths / overlays / text
+// tones / pins / visibility have no email analogue and are ignored. The honoured
+// concerns — direction, columns, gap, padding, surface, text-align — are PARSED
+// back out of the node's Tailwind-native `class` string (docs/61), since the
+// renderer emits inline styles rather than the classes themselves.
 
 const FALLBACK_FROM = 'Sparx <noreply@sparx.email>';
 function defaultFrom(): string {
@@ -50,30 +47,78 @@ function defaultFrom(): string {
 
 const CONTAINERS = new Set(['Section', 'Stack', 'Grid', 'Card']);
 
-const PADDING_PX: Record<SpaceScale, number> = {
-  none: 0,
-  sm: spacing.sm,
-  md: spacing.md,
-  lg: spacing.lg,
-  xl: spacing.xl,
+type EmailDirection = 'stack' | 'row' | 'grid';
+type EmailSurface = 'none' | 'muted' | 'inverse' | 'brand';
+interface EmailLayout {
+  direction: EmailDirection;
+  columns: number;
+  gap: number;
+  padding: number;
+  surface: EmailSurface;
+  textAlign: 'left' | 'center' | 'right';
+}
+
+// Padding / gap utilities (docs/61 box-to-class) → the email pixel scale. `p-3/6/
+// 10/16` and `gap-2/4/6` are the values the converter emits.
+const PADDING_BY_TOKEN: Record<string, number> = {
+  'p-3': spacing.sm,
+  'p-6': spacing.md,
+  'p-10': spacing.lg,
+  'p-16': spacing.xl,
 };
-const GAP_PX: Record<GapScale, number> = {
-  none: 0,
-  sm: spacing.xs,
-  md: spacing.md,
-  lg: spacing.lg,
+const GAP_BY_TOKEN: Record<string, number> = {
+  'gap-2': spacing.xs,
+  'gap-4': spacing.md,
+  'gap-6': spacing.lg,
 };
-const TEXT_ALIGN: Record<AlignX, 'left' | 'center' | 'right'> = {
-  start: 'left',
-  center: 'center',
-  end: 'right',
-};
+
+/** Parse the email-relevant layout out of a node's `class` string. The token
+ *  vocabulary is exactly what `box-to-class` emits (docs/61) — direction from
+ *  `grid` / `flex-row` (any breakpoint), columns from `grid-cols-N`, gap from
+ *  `gap-N`, padding from `p-N`, surface from `bg-*`, alignment from `text-*`. */
+function readEmailLayout(cls: string | undefined): EmailLayout {
+  const tokens = (cls ?? '').split(/\s+/).filter(Boolean);
+  const set = new Set(tokens);
+  const has = (t: string) => set.has(t);
+  // base name without a responsive/state prefix (e.g. `@3xl:flex-row` → `flex-row`).
+  const bare = (t: string) => t.slice(t.lastIndexOf(':') + 1);
+  const bareSet = new Set(tokens.map(bare));
+
+  const direction: EmailDirection = bareSet.has('grid')
+    ? 'grid'
+    : bareSet.has('flex-row')
+      ? 'row'
+      : 'stack';
+
+  let columns = 1;
+  for (const t of tokens) {
+    const m = /grid-cols-(\d+)/.exec(t);
+    if (m) columns = Math.max(columns, Number(m[1]));
+  }
+
+  let gap: number = spacing.md;
+  for (const [token, px] of Object.entries(GAP_BY_TOKEN)) if (has(token)) gap = px;
+
+  let padding = 0;
+  for (const [token, px] of Object.entries(PADDING_BY_TOKEN)) if (has(token)) padding = px;
+
+  const surface: EmailSurface = has('bg-primary')
+    ? 'brand'
+    : has('bg-neutral')
+      ? 'inverse'
+      : has('bg-base-200') || has('bg-base-300')
+        ? 'muted'
+        : 'none';
+
+  const textAlign = has('text-center') ? 'center' : has('text-right') ? 'right' : 'left';
+
+  return { direction, columns: Math.max(1, columns), gap, padding, surface, textAlign };
+}
 
 /** Surface → background/foreground from the resolved brand. Email has no token
  *  CSS vars, so these are concrete colors inlined on the Section. */
-function surfaceStyle(surface: Surface, brand: BrandTokens): React.CSSProperties {
+function surfaceStyle(surface: EmailSurface, brand: BrandTokens): React.CSSProperties {
   switch (surface) {
-    case 'subtle':
     case 'muted':
       return { backgroundColor: brand.muted };
     case 'inverse':
@@ -217,10 +262,10 @@ function EmailNode({
   }
 
   const kids = node.children ?? [];
-  const layout = node.layout;
-  const direction = layout?.direction ?? 'stack';
-  const gap = GAP_PX[layout?.gap ?? 'md'];
-  const padding = PADDING_PX[node.box.padding];
+  const box = readEmailLayout(node.class);
+  const direction = box.direction;
+  const gap = box.gap;
+  const padding = box.padding;
 
   // Resolve the effective (node, scope) pairs this container renders: an array
   // binding ITERATES the children once per item; an object binding sets scope and
@@ -256,7 +301,7 @@ function EmailNode({
       </Row>
     );
   } else if (direction === 'grid') {
-    const cols = Math.max(1, Math.min(12, layout?.columns ?? 3));
+    const cols = Math.max(1, Math.min(12, box.columns));
     const rows: { node: BuilderNode; scope: Scope }[][] = [];
     for (let i = 0; i < units.length; i += cols) rows.push(units.slice(i, i + cols));
     body = rows.map((r, ri) => (
@@ -285,9 +330,9 @@ function EmailNode({
   // the surface bg/fg, padding, text-align, and (Card) a hairline border.
   const isCard = node.type === 'Card';
   const sectionStyle: React.CSSProperties = {
-    ...surfaceStyle(node.box.surface, brand),
+    ...surfaceStyle(box.surface, brand),
     padding: padding || (isCard ? spacing.md : 0),
-    textAlign: TEXT_ALIGN[node.box.align],
+    textAlign: box.textAlign,
     ...(isCard ? { border: `1px solid ${brand.border}`, borderRadius: 8 } : {}),
   };
 

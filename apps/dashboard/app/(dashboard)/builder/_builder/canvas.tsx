@@ -29,65 +29,25 @@ import type { VersionResolver } from './use-component-versions';
 import {
   cardinalityOf,
   resolvePath,
-  type AlignX,
   type BuilderNode,
   type Cardinality,
   type Device,
-  type GapScale,
-  type HeightScale,
-  type Justify,
   type Scope,
-  type SpaceScale,
-  type Surface,
 } from './model';
 import { moduleColor, moduleForPath } from './binding-catalog';
-import { getDef, type ComponentDef } from './registry';
+import { getDef } from './registry';
 
-// ── Box-base → CSS ───────────────────────────────────────────────────────────
-
-const HEIGHT_VH: Record<HeightScale, string | undefined> = {
-  auto: undefined,
-  sm: '25vh',
-  md: '50vh',
-  lg: '75vh',
-  xl: '90vh',
-  full: '100vh',
-};
-// Fixed heights ease on the mobile device preview so heroes aren't overlong —
-// kept in lockstep with site.css's `.bx-h-*` @media (docs/59 §2).
-const HEIGHT_VH_MOBILE: Record<HeightScale, string | undefined> = {
-  auto: undefined,
-  sm: '25vh',
-  md: '40vh',
-  lg: '55vh',
-  xl: '70vh',
-  full: '85vh',
-};
-
-const PADDING_PX: Record<SpaceScale, number> = { none: 0, sm: 12, md: 24, lg: 40, xl: 72 };
-// Large padding steps relax on the mobile device preview — matches site.css's
-// `.bx-p-*` @media (docs/59 §2).
-const PADDING_PX_MOBILE: Record<SpaceScale, number> = { none: 0, sm: 12, md: 24, lg: 24, xl: 32 };
-const GAP_PX: Record<GapScale, number> = { none: 0, sm: 8, md: 16, lg: 24 };
-const CONTAINED_MAX = 1120;
-
-interface SurfaceCss {
-  bg: string;
-  fg?: string;
-}
-// Surfaces resolve to the TENANT theme variables (see builder.css `.bx-canvas`),
-// not hardcoded colors — so the canvas renders in the merchant's brand.
-const SURFACE: Record<Surface, SurfaceCss> = {
-  none: { bg: 'transparent' },
-  subtle: { bg: 'var(--bxc-subtle)' },
-  muted: { bg: 'var(--bxc-muted)' },
-  inverse: { bg: 'var(--bxc-inverse-bg)', fg: 'var(--bxc-inverse-fg)' },
-  brand: { bg: 'var(--bxc-primary)', fg: 'var(--bxc-primary-fg)' },
-};
+// ── Class-only rendering (docs/61) ────────────────────────────────────────────
+//
+// The canvas applies each node's `class` string verbatim and lets the live-
+// compiled tenant utilities (useSurfacePreview, @scope-d to .bx-canvas) paint it
+// — exactly as the published site does, so preview == production. The editor adds
+// only its own chrome (selection outline + tag) around that. The single inline
+// style that remains is a dynamic background image (a URL can't be a class),
+// painted from the node's bg-* props.
 
 // Background-media scrims (docs/45) — a translucent veil layered OVER the photo
-// (below content) so overlaid text stays legible. `gradient` darkens top+bottom
-// (header + CTA zones) while leaving the photo's center clean — the hero case.
+// (below content) so overlaid text stays legible.
 const SCRIM: Record<string, string | null> = {
   none: null,
   dark: 'linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45))',
@@ -95,23 +55,16 @@ const SCRIM: Record<string, string | null> = {
   gradient:
     'linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.04) 28%, rgba(0,0,0,0.04) 62%, rgba(0,0,0,0.6))',
 };
-// Text color over a photo, decoupled from the surface tokens.
-const TONE: Record<string, string | undefined> = {
-  default: undefined,
-  light: '#ffffff',
-  dark: '#0b0b0c',
-};
 
-// A diagonal-hatch stand-in shown when a node has a `backgroundImageBinding` but
-// no record data resolves it in the editor (the storefront fills it from the real
-// record). Signals "a bound image lands here" without faking a specific photo.
+// A diagonal-hatch stand-in shown when a node has a `bgImageBinding` but no record
+// data resolves it in the editor (the storefront fills it from the real record).
 const BOUND_MEDIA_PLACEHOLDER: React.CSSProperties = {
   backgroundImage:
     'repeating-linear-gradient(45deg, var(--bxc-subtle) 0 14px, var(--bxc-muted) 14px 28px)',
 };
 
-/** First image of a bound image/images value (the box-background case), or
- *  undefined. Mirrors the storefront renderer's `firstImage`. */
+/** First image of a bound image/images value, or undefined. Mirrors the
+ *  storefront renderer's `firstImage`. */
 function firstBoundImageUrl(value: unknown): string | undefined {
   const candidate = Array.isArray(value) ? (value as unknown[])[0] : value;
   if (candidate && typeof candidate === 'object') {
@@ -134,173 +87,29 @@ const BG_POSITION_CSS: Record<string, string> = {
   'bottom-right': 'right bottom',
 };
 
-/** Background CSS for the element that owns the box's background width: a photo
- *  (scrim layered above it) when set, else the surface token color. `fit` and
- *  `position` mirror the storefront renderer so the editor preview matches. */
-function bgProps(
-  image: string | undefined,
-  overlay: string,
-  colorBase: string,
-  fit: 'cover' | 'contain' = 'cover',
-  position = 'center'
-): React.CSSProperties {
-  if (!image) return { background: colorBase };
+/** The inline background-image style for a node, from its `bg-*` props (docs/61) —
+ *  a static `bgImage` URL or a record image resolved from `bgImageBinding` against
+ *  the editor scope (the bound image wins). A set-but-unresolved binding shows the
+ *  hatch placeholder so the author sees the media slot. Undefined when there's no
+ *  background — the surface COLOR then comes from node.class. */
+function backgroundStyleFor(node: BuilderNode, scope: Scope): React.CSSProperties | undefined {
+  const p = node.props;
+  const staticUrl = typeof p.bgImage === 'string' ? p.bgImage : undefined;
+  const bindingPath = typeof p.bgImageBinding === 'string' ? p.bgImageBinding : undefined;
+  const boundUrl = bindingPath ? firstBoundImageUrl(resolvePath(scope, bindingPath)) : undefined;
+  const image = boundUrl ?? staticUrl;
+  if (!image) return bindingPath ? BOUND_MEDIA_PLACEHOLDER : undefined;
+  const overlay = typeof p.bgOverlay === 'string' ? p.bgOverlay : 'none';
+  const fit = p.bgFit === 'contain' ? 'contain' : 'cover';
+  const position = typeof p.bgPosition === 'string' ? p.bgPosition : 'center';
   const url = `url("${image.replace(/["\\]/g, '')}")`;
   const scrim = SCRIM[overlay];
   return {
-    backgroundColor: colorBase,
     backgroundImage: scrim ? `${scrim}, ${url}` : url,
     backgroundSize: fit,
     backgroundPosition: BG_POSITION_CSS[position] ?? 'center',
     backgroundRepeat: 'no-repeat',
   };
-}
-
-const FLEX_ALIGN: Record<AlignX | 'stretch', string> = {
-  start: 'flex-start',
-  center: 'center',
-  end: 'flex-end',
-  stretch: 'stretch',
-};
-const FLEX_JUSTIFY: Record<Justify, string> = {
-  start: 'flex-start',
-  center: 'center',
-  end: 'flex-end',
-  between: 'space-between',
-};
-
-// The editor simulates a device by fixing the canvas WIDTH (not the viewport),
-// so site.css @media can't reach it — instead we derive the same responsive
-// rules (docs/59 §3) from the `device` prop in JS. Grid columns step
-// 1 (mobile) → min(N, 2) (tablet) → N (desktop).
-function responsiveCols(n: number, device: Device): number {
-  if (device === 'mobile') return 1;
-  if (device === 'tablet') return Math.min(n, 2);
-  return n;
-}
-
-/** A row of CONTAINERS is a layout band that stacks on mobile; a row of LEAVES
- *  is an inline lockup that stays inline (docs/59 §2). `custom:*` placements
- *  expand to sections, so they count as containers. */
-function hasContainerChild(node: BuilderNode): boolean {
-  return (node.children ?? []).some(
-    (c) => isCustomType(c.type) || getDef(c.type)?.kind === 'container'
-  );
-}
-
-function layoutStyle(node: BuilderNode, device: Device): React.CSSProperties {
-  const l = node.layout;
-  if (!l) return {};
-  const gap = GAP_PX[l.gap];
-  if (l.direction === 'grid') {
-    const cols = responsiveCols(Math.max(1, l.columns), device);
-    return {
-      display: 'grid',
-      gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-      gap,
-    };
-  }
-  // A container row stacks on the mobile preview (< 768px storefront parity).
-  const stack = l.direction === 'row' && device === 'mobile' && hasContainerChild(node);
-  const asRow = l.direction === 'row' && !stack;
-  return {
-    display: 'flex',
-    flexDirection: asRow ? 'row' : 'column',
-    flexWrap: asRow && l.wrap ? 'wrap' : 'nowrap',
-    gap,
-    alignItems: stack ? 'stretch' : FLEX_ALIGN[l.alignItems],
-    justifyContent: stack ? 'flex-start' : FLEX_JUSTIFY[l.justify],
-  };
-}
-
-/** The outer (full-bleed) and inner (content) styles that realize the box base,
- *  including the independent background-width / content-width axes. */
-function boxStyles(
-  node: BuilderNode,
-  def: ComponentDef,
-  /** The active device preview — heights, padding, and layout collapse for it,
-   *  mirroring the storefront's viewport breakpoints (docs/59 §3). */
-  device: Device,
-  /** Image resolved from `box.backgroundImageBinding` against the editor scope.
-   *  When present it WINS over the static `backgroundImage`. Undefined when the
-   *  binding is absent or resolves to nothing (no record data in the editor). */
-  boundImage?: string
-): { outer: React.CSSProperties; inner: React.CSSProperties } {
-  const b = node.box;
-  const surface = SURFACE[b.surface];
-  // An Outlet is a width passthrough — the routed page owns its width, so never
-  // cap it (parity with the storefront renderer; a `contained` Outlet would
-  // silently constrain every page rendered into it).
-  const isOutlet = node.type === 'Outlet';
-  const bgFull = isOutlet || b.backgroundWidth === 'full';
-  const contentContained = !isOutlet && b.contentWidth === 'contained';
-  // An explicit height is a FIXED height (min AND max) so a tall child can't blow
-  // past it. Grid-direction containers instead push the height onto their CELLS
-  // (the container branch), so the grid box itself stays auto and sizes to rows.
-  const isGrid = node.layout?.direction === 'grid';
-  const heights = device === 'mobile' ? HEIGHT_VH_MOBILE : HEIGHT_VH;
-  const fixedHeight = def.kind === 'container' && !isGrid ? heights[b.height] : undefined;
-  const hasHeight = Boolean(fixedHeight);
-  // Background media lives on whichever element owns the background WIDTH: the
-  // full-bleed outer when edge-to-edge, else the contained inner. A resolved
-  // bound image wins; the static URL is the fallback. When a binding is set but
-  // unresolved (no record data in the editor), show a hatch placeholder so the
-  // author sees the media slot — "what you see is what you ship".
-  const image = boundImage ?? b.backgroundImage;
-  const boundUnresolved = Boolean(b.backgroundImageBinding) && !image;
-  const overlay = b.overlay ?? 'none';
-  const tone = b.textTone ?? 'default';
-  const fit = b.backgroundFit ?? 'cover';
-  const position = b.backgroundPosition ?? 'center';
-  // `pin: top` lifts the block out of flow so the next block slides under it
-  // (overlay header). It anchors to the nearest positioned ancestor — every
-  // node's outer is `relative`, so it pins to the top of its parent.
-  const pinned = b.pin === 'top';
-  // docs/47 — when a node is authored with Surface recipe classes (`sf-*`), the
-  // CLASS owns its look: the box base must NOT paint an inline background or text
-  // color, which (being inline) would override the @scope-injected recipe sheet.
-  // A background IMAGE still wins (a photo panel is box-level, not a recipe
-  // concern); structural box props (width / align / height / position / layout)
-  // still apply. This is what lets the inspector's Color / Variant render live.
-  const recipeOwned = !image && /(^|\s)sf-/.test(node.class ?? '');
-
-  const outer: React.CSSProperties = {
-    position: pinned ? 'absolute' : 'relative',
-    ...(pinned
-      ? { top: 0, left: 0, right: 0, zIndex: 40, width: '100%' }
-      : fixedHeight
-        ? { minHeight: fixedHeight, maxHeight: fixedHeight }
-        : {}),
-    ...(recipeOwned
-      ? {}
-      : bgFull
-        ? boundUnresolved
-          ? BOUND_MEDIA_PLACEHOLDER
-          : bgProps(image, overlay, surface.bg, fit, position)
-        : { background: 'transparent' }),
-    display: 'flex',
-    justifyContent: contentContained ? 'center' : 'flex-start',
-    alignItems: hasHeight ? 'center' : 'stretch',
-  };
-
-  const padScale = device === 'mobile' ? PADDING_PX_MOBILE : PADDING_PX;
-  const inner: React.CSSProperties = {
-    width: '100%',
-    maxWidth: contentContained ? CONTAINED_MAX : undefined,
-    padding: padScale[b.padding],
-    textAlign: b.align,
-    ...(recipeOwned ? {} : { color: TONE[tone] ?? surface.fg }),
-    ...(recipeOwned
-      ? {}
-      : !bgFull
-        ? boundUnresolved
-          ? BOUND_MEDIA_PLACEHOLDER
-          : bgProps(image, overlay, surface.bg, fit, position)
-        : { background: 'transparent' }),
-    ...(def.kind === 'container' ? layoutStyle(node, device) : {}),
-  };
-
-  return { outer, inner };
 }
 
 // ── The recursive node ───────────────────────────────────────────────────────
@@ -312,7 +121,6 @@ interface NodeProps {
   /** Tenant components keyed by key (docs/53 P-B) — expands `custom:*` placements
    *  for a live preview. */
   components?: ReadonlyMap<string, ComponentDto>;
-  device: Device;
   selectedId: string | null;
   onSelect: (id: string) => void;
   /** Locked = render as a non-interactive backdrop (no selection chrome, not
@@ -408,7 +216,6 @@ function CustomCanvasNode({
   scope,
   catalog,
   components,
-  device,
   selectedId,
   onSelect,
   locked,
@@ -418,7 +225,6 @@ function CustomCanvasNode({
   const comp = components?.get(key);
   const resolveVersion = React.useContext(VersionResolverContext);
   const depth = React.useContext(CustomDepthContext);
-  const hidden = node.box.hiddenOn.includes(device);
   const selected = node.id === selectedId;
 
   // Nesting backstop (docs/53 4a): the service rejects cycles + over-deep nesting
@@ -427,12 +233,7 @@ function CustomCanvasNode({
     if (locked) return null;
     return (
       <div
-        className={cn(
-          'bx-node',
-          'bx-node--custom',
-          'bx-node--missing',
-          hidden && 'bx-node--hidden'
-        )}
+        className={cn('bx-node', 'bx-node--custom', 'bx-node--missing')}
         style={{ position: 'relative' }}
         data-node-id={node.id}
       >
@@ -452,8 +253,7 @@ function CustomCanvasNode({
           'bx-node',
           'bx-node--custom',
           'bx-node--missing',
-          selected && 'bx-node--selected',
-          hidden && 'bx-node--hidden'
+          selected && 'bx-node--selected'
         )}
         style={{ position: 'relative' }}
         data-node-id={node.id}
@@ -504,7 +304,6 @@ function CustomCanvasNode({
         scope={scope}
         catalog={catalog}
         components={components}
-        device={device}
         selectedId={selectedId}
         onSelect={onSelect}
         locked
@@ -518,17 +317,12 @@ function CustomCanvasNode({
 
   return (
     <div
-      className={cn(
-        'bx-node',
-        'bx-node--custom',
-        selected && 'bx-node--selected',
-        hidden && 'bx-node--hidden'
-      )}
+      className={cn('bx-node', 'bx-node--custom', selected && 'bx-node--selected')}
       style={{ position: 'relative' }}
       data-node-id={node.id}
       role="button"
       tabIndex={-1}
-      aria-label={node.box.name ?? comp.name}
+      aria-label={node.name ?? comp.name}
       onClick={(e) => {
         e.stopPropagation();
         onSelect(node.id);
@@ -541,9 +335,8 @@ function CustomCanvasNode({
       }}
     >
       <span className="bx-tag">
-        <span className="bx-tag__name">{node.box.name ?? comp.name}</span>
+        <span className="bx-tag__name">{node.name ?? comp.name}</span>
         <span className="bx-tag__component">component</span>
-        {hidden ? <span className="bx-tag__hidden">hidden · {device}</span> : null}
       </span>
       {body}
     </div>
@@ -555,7 +348,6 @@ function CanvasNode({
   scope,
   catalog,
   components,
-  device,
   selectedId,
   onSelect,
   locked,
@@ -570,7 +362,6 @@ function CanvasNode({
         scope={scope}
         catalog={catalog}
         components={components}
-        device={device}
         selectedId={selectedId}
         onSelect={onSelect}
         locked={locked}
@@ -590,13 +381,15 @@ function CanvasNode({
   const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
 
   const selected = node.id === selectedId;
-  const hidden = node.box.hiddenOn.includes(device);
-  // Data-aware background: resolve the bound image against this node's scope so
-  // the editor preview matches the storefront when a record is in scope.
-  const boundBg = node.box.backgroundImageBinding
-    ? firstBoundImageUrl(resolvePath(scope, node.box.backgroundImageBinding))
-    : undefined;
-  const { outer, inner } = boxStyles(node, def, device, boundBg);
+  // The only inline style: a dynamic background image (a URL can't be a class).
+  // The surface COLOR comes from node.class (live-compiled into the canvas).
+  const bgStyle = backgroundStyleFor(node, scope);
+  // docs/61 — a presentational leaf wears node.class on its OWN element (renderLeaf
+  // → the Button `<span>`), so the content wrapper omits it to avoid double-paint.
+  // Every other node carries node.class on its content wrapper, where the live-
+  // compiled utilities (flex/grid/padding/surface) lay out + paint it.
+  const leafByClass = def.leafStylesByClass === true && /(^|\s)sf-/.test(node.class ?? '');
+  const innerClass = cn('bx-inner', leafByClass ? undefined : node.class);
 
   let body: React.ReactNode;
   if (node.type === 'Outlet' && outletSlot !== undefined) {
@@ -607,25 +400,16 @@ function CanvasNode({
     // A Carousel renders as a real carousel (each child = a slide). Mirrors the
     // storefront's iterate-or-static behaviour so the preview is faithful.
     const kids = node.children ?? [];
-    // A carousel with an explicit height GOVERNS its slides: each slide adopts the
-    // carousel's height so the hero is exactly that tall. Without this a `full`
-    // slide dominates a `3/4` carousel (min-height can't shrink a taller child).
-    // `auto` leaves each slide its own height (carousel sizes to the tallest).
-    const slideOf = (child: BuilderNode): BuilderNode =>
-      node.box.height !== 'auto'
-        ? { ...child, box: { ...child.box, height: node.box.height } }
-        : child;
     let slideNodes: React.ReactNode[];
     if (bound && card === 'array') {
       slideNodes = (value as unknown[]).flatMap((item, i) =>
         kids.map((child) => (
           <CanvasNode
             key={`${i}:${child.id}`}
-            node={slideOf(child)}
+            node={child}
             scope={{ ...scope, item, index: i }}
             catalog={catalog}
             components={components}
-            device={device}
             selectedId={selectedId}
             onSelect={onSelect}
             locked={locked}
@@ -638,11 +422,10 @@ function CanvasNode({
       slideNodes = kids.map((child) => (
         <CanvasNode
           key={child.id}
-          node={slideOf(child)}
+          node={child}
           scope={s}
           catalog={catalog}
           components={components}
-          device={device}
           selectedId={selectedId}
           onSelect={onSelect}
           locked={locked}
@@ -653,13 +436,6 @@ function CanvasNode({
     body = <CanvasCarousel slides={slideNodes} />;
   } else if (def.kind === 'container') {
     const kids = node.children ?? [];
-    // A grid-direction container's height governs its CELLS: each child adopts the
-    // grid's height (fixed) so cells are uniform and a tall child can't dominate;
-    // the grid box itself sizes to its rows. `auto` leaves children untouched.
-    const cellOf = (child: BuilderNode): BuilderNode =>
-      node.layout?.direction === 'grid' && node.box.height !== 'auto'
-        ? { ...child, box: { ...child.box, height: node.box.height } }
-        : child;
     let scopes: { s: Scope; key: string }[];
     if (bound && card === 'array') {
       scopes = (value as unknown[]).map((item, i) => ({
@@ -679,11 +455,10 @@ function CanvasNode({
         kids.map((child) => (
           <CanvasNode
             key={`${key}:${child.id}`}
-            node={cellOf(child)}
+            node={child}
             scope={s}
             catalog={catalog}
             components={components}
-            device={device}
             selectedId={selectedId}
             onSelect={onSelect}
             locked={locked}
@@ -703,7 +478,6 @@ function CanvasNode({
         scope={scope}
         catalog={catalog}
         components={components}
-        device={device}
         selectedId={selectedId}
         onSelect={onSelect}
         locked={locked}
@@ -720,24 +494,12 @@ function CanvasNode({
       }) ?? null;
   }
 
-  // docs/47 §7 — a leaf whose authored class styles the ELEMENT (Button → the
-  // `<span>`, via renderLeaf) must NOT also carry that class on the `.bx-node`
-  // wrapper, or the recipe paints twice (a styled box around a styled button).
-  // Parity with the site renderer's `leafStylesByClass`.
-  const leafByClass = def.leafStylesByClass === true && /(^|\s)sf-/.test(node.class ?? '');
-  const wrapperClass = leafByClass ? undefined : node.class;
-
   if (locked) {
-    // Locked chrome backdrop (page editor framing): faithful box + body, but no
-    // selection tag, no outline, not clickable. Device-hidden nodes still hide.
+    // Locked chrome backdrop (page editor framing): faithful render + body, but no
+    // selection tag, no outline, not clickable.
     return (
-      <div
-        className={cn('bx-node', 'bx-chrome', hidden && 'bx-node--hidden', wrapperClass)}
-        style={outer}
-        data-node-id={node.id}
-        data-bx-type={node.type}
-      >
-        <div className={cn('bx-inner', def.kind === 'container' && def.chromeClass)} style={inner}>
+      <div className={cn('bx-node', 'bx-chrome')} data-node-id={node.id} data-bx-type={node.type}>
+        <div className={innerClass} style={bgStyle}>
           {body}
         </div>
       </div>
@@ -749,17 +511,12 @@ function CanvasNode({
 
   return (
     <div
-      className={cn(
-        'bx-node',
-        selected && 'bx-node--selected',
-        hidden && 'bx-node--hidden',
-        wrapperClass
-      )}
-      style={outer}
+      className={cn('bx-node', selected && 'bx-node--selected')}
       data-node-id={node.id}
+      data-bx-type={node.type}
       role="button"
       tabIndex={-1}
-      aria-label={node.box.name ?? def.label}
+      aria-label={node.name ?? def.label}
       onClick={(e) => {
         e.stopPropagation();
         onSelect(node.id);
@@ -772,7 +529,7 @@ function CanvasNode({
       }}
     >
       <span className="bx-tag">
-        <span className="bx-tag__name">{node.box.name ?? def.label}</span>
+        <span className="bx-tag__name">{node.name ?? def.label}</span>
         {bound ? (
           <span
             className="bx-tag__bind"
@@ -792,9 +549,8 @@ function CanvasNode({
           </span>
         ) : null}
         {iterating ? <span className="bx-tag__repeat">↻ {count}</span> : null}
-        {hidden ? <span className="bx-tag__hidden">hidden · {device}</span> : null}
       </span>
-      <div className={cn('bx-inner', def.kind === 'container' && def.chromeClass)} style={inner}>
+      <div className={innerClass} style={bgStyle}>
         {body}
       </div>
     </div>
@@ -855,7 +611,6 @@ export function Canvas({
       scope={{ root: data }}
       catalog={catalog}
       components={components}
-      device={device}
       selectedId={selectedId}
       onSelect={onSelect}
     />
@@ -886,7 +641,6 @@ export function Canvas({
               scope={{ root: data }}
               catalog={catalog}
               components={components}
-              device={device}
               selectedId={selectedId}
               onSelect={onSelect}
               locked

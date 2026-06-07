@@ -10,9 +10,8 @@
 // exactly. `padding` is the section's own vertical-rhythm scale.
 
 import * as React from 'react';
-import type { Overlay, TextTone } from '@sparx/builder-schemas';
 import { cx } from '../utils/cx';
-import { photoPanelStyle } from '../utils/photo-panel';
+import { photoPanelStyle, type Overlay, type TextTone } from '../utils/photo-panel';
 import { colorClass, type ColorKey, type SizeKey } from './_recipes/variants';
 
 export type SectionContentWidth = 'full' | 'contained';

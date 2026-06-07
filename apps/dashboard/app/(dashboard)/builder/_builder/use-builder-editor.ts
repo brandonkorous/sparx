@@ -28,11 +28,9 @@ import {
   moveNode,
   removeNode,
   updateNode,
-  type BoxBase,
   type BuilderNode,
   type DataSources,
   type Device,
-  type LayoutBase,
 } from './model';
 import { buildPreviewData, scopeAt, type ScopeInfo } from './binding-catalog';
 import { acceptsChildren, getDef, makeNode, retypeDropsChildren, retypeNode } from './registry';
@@ -99,8 +97,6 @@ export interface BuilderEditor {
   /** Force-persist any pending edit now (await before switching trees). */
   flushSave: () => Promise<void>;
   // Mutations (each updates the tree optimistically + schedules an autosave).
-  onBox: (patch: Partial<BoxBase>) => void;
-  onLayout: (patch: Partial<LayoutBase>) => void;
   onProp: (key: string, value: unknown) => void;
   onName: (name: string) => void;
   /** Set (or clear, with '') the node's class-first styling string (docs/47). */
@@ -213,14 +209,15 @@ export function useBuilderEditor({
     [selectedId, updateTree]
   );
 
-  const onBox = (patch: Partial<BoxBase>) =>
-    mutateSelected((n) => ({ ...n, box: { ...n.box, ...patch } }));
-  const onLayout = (patch: Partial<LayoutBase>) =>
-    mutateSelected((n) => (n.layout ? { ...n, layout: { ...n.layout, ...patch } } : n));
   const onProp = (key: string, value: unknown) =>
     mutateSelected((n) => ({ ...n, props: { ...n.props, [key]: value } }));
   const onName = (name: string) =>
-    mutateSelected((n) => ({ ...n, box: { ...n.box, name: name || undefined } }));
+    mutateSelected((n) => {
+      const next = { ...n };
+      if (name) next.name = name;
+      else delete next.name;
+      return next;
+    });
   // The class-first styling surface (docs/47): a brand-governed class string on
   // the node. Empty → undefined so a blank field stores no class (cf. onName).
   const onClass = (value: string) => mutateSelected((n) => ({ ...n, class: value || undefined }));
@@ -270,7 +267,7 @@ export function useBuilderEditor({
     if (!node) return;
     const ckey = customKeyOf(node.type);
     const label =
-      node.box.name ??
+      node.name ??
       getDef(node.type)?.label ??
       (ckey ? components?.get(ckey)?.name : undefined) ??
       node.type;
@@ -321,7 +318,7 @@ export function useBuilderEditor({
   };
 
   const targetDef = target ? getDef(target.type) : undefined;
-  const targetName = target?.box.name ?? targetDef?.label ?? 'page';
+  const targetName = target?.name ?? targetDef?.label ?? 'page';
 
   return {
     device,
@@ -340,8 +337,6 @@ export function useBuilderEditor({
     saveStatus,
     setSaveStatus,
     flushSave,
-    onBox,
-    onLayout,
     onProp,
     onName,
     onClass,

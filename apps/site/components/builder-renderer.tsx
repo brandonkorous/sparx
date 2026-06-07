@@ -15,16 +15,10 @@ import {
   cardinalityOf,
   coerceNavLinks,
   resolvePath,
-  type AlignX,
-  type BoxBase,
   type BuilderNode,
   type Cardinality,
   type DataSources,
-  type GapScale,
-  type Justify,
-  type LayoutBase,
   type Scope,
-  type Surface,
 } from '@sparx/builder-schemas';
 
 import {
@@ -59,12 +53,13 @@ import {
   type BuilderProduct,
 } from './builder-commerce';
 
-// ── Box-base → CSS (mirrors the editor canvas scales, --sf-* tokens) ──────────
-
-// Section height + padding scales no longer live here as inline values — they
-// ride the `.bx-h-*` / `.bx-p-*` classes in site.css, which ease on small
-// screens (docs/59). The gap scale stays inline (it doesn't swap responsively).
-const GAP: Record<GapScale, string> = { none: '0', sm: '0.5rem', md: '1rem', lg: '1.5rem' };
+// ── Class-only rendering (docs/61) ────────────────────────────────────────────
+//
+// A node's entire styling is its `class` string, compiled per tenant to the
+// `--sf-*` tokens by @sparx/surface-compile. The renderer applies it verbatim —
+// no box→CSS engine, no `.bx-*` layout classes, no inline geometry. The ONE inline
+// style that remains is a dynamic background image (a per-node / per-record URL
+// can't be a static utility class), painted from the node's bg-* props.
 
 /** Join class fragments, dropping falsy ones; undefined when empty. */
 function cls(...parts: (string | false | null | undefined)[]): string | undefined {
@@ -72,28 +67,14 @@ function cls(...parts: (string | false | null | undefined)[]): string | undefine
   return joined || undefined;
 }
 
-const SURFACE: Record<Surface, { bg: string; fg?: string }> = {
-  none: { bg: 'transparent' },
-  subtle: { bg: 'var(--sf-base-200)' },
-  muted: { bg: 'var(--sf-base-300)' },
-  inverse: { bg: 'var(--sf-base-content)', fg: 'var(--sf-base-100)' },
-  brand: { bg: 'var(--sf-primary)', fg: 'var(--sf-primary-content)' },
-};
-
-// Background-media scrims (docs/45) — mirror the editor canvas. A translucent
-// veil over the photo (below content) for text legibility; `gradient` darkens
-// top+bottom (the full-bleed hero case).
+// Background-media scrims (docs/45) — a translucent veil layered OVER the photo
+// (below content) for text legibility; `gradient` darkens top+bottom.
 const SCRIM: Record<string, string | null> = {
   none: null,
   dark: 'linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45))',
   light: 'linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.55))',
   gradient:
     'linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.04) 28%, rgba(0,0,0,0.04) 62%, rgba(0,0,0,0.6))',
-};
-const TONE: Record<string, string | undefined> = {
-  default: undefined,
-  light: '#ffffff',
-  dark: '#0b0b0c',
 };
 
 /** Nine-point focal point → CSS `background-position`. */
@@ -109,55 +90,13 @@ const BG_POSITION_CSS: Record<string, string> = {
   'bottom-right': 'right bottom',
 };
 
-/** Background CSS for the element owning the box's background width: a photo
- *  (scrim layered above) when set, else the surface token color. `fit` picks
- *  cover (fill + crop) vs contain (whole image, letterboxed against the surface
- *  color); `position` is the focal point that survives a cover crop. */
-function bgProps(
-  image: string | undefined,
-  overlay: string,
-  colorBase: string,
-  fit: 'cover' | 'contain' = 'cover',
-  position = 'center'
-): React.CSSProperties {
-  if (!image) return { background: colorBase };
-  const url = `url("${image.replace(/["\\]/g, '')}")`;
-  const scrim = SCRIM[overlay];
-  return {
-    // Behind the image so a `contain` letterbox shows the surface, not bare page.
-    backgroundColor: colorBase,
-    backgroundImage: scrim ? `${scrim}, ${url}` : url,
-    backgroundSize: fit,
-    backgroundPosition: BG_POSITION_CSS[position] ?? 'center',
-    backgroundRepeat: 'no-repeat',
-  };
-}
-
-const FLEX_ALIGN: Record<string, string> = {
-  start: 'flex-start',
-  center: 'center',
-  end: 'flex-end',
-  stretch: 'stretch',
-};
-const FLEX_JUSTIFY: Record<Justify, string> = {
-  start: 'flex-start',
-  center: 'center',
-  end: 'flex-end',
-  between: 'space-between',
-};
-const TEXT_ALIGN: Record<AlignX, 'left' | 'center' | 'right'> = {
-  start: 'left',
-  center: 'center',
-  end: 'right',
-};
-
 const CONTAINERS = new Set(['Section', 'Grid', 'Stack', 'Card', 'Carousel', 'ProductForm']);
 
 // Presentational leaves whose Surface component (or, for Button, the recipe class)
-// owns the node's brand class ON ITS OWN ELEMENT (docs/47 §7). For these the box
-// wrapper omits node.class, so the class lands on exactly one element and never
-// double-paints. Leaves NOT listed (the interactive commerce atoms, Outlet) keep
-// the additive class on the box wrapper.
+// owns the node's brand class ON ITS OWN ELEMENT (docs/47 §7, docs/61). For these
+// renderLeaf applies node.class to the element itself, so the renderer returns it
+// directly (no wrapper). Leaves NOT listed (the interactive commerce atoms,
+// Outlet, the page-content widgets) get a wrapper div carrying node.class.
 const CLASS_ON_LEAF = new Set([
   'Heading',
   'Text',
@@ -177,107 +116,28 @@ const CLASS_ON_LEAF = new Set([
   'SocialLinks',
 ]);
 
-/** A row of CONTAINERS is a layout band (image+text, multi-column) that must
- *  stack on mobile; a row of LEAVES is an inline lockup (logo+name, button+icon)
- *  that must stay inline. This signal decides which (docs/59 §2). `custom:*`
- *  placements are containers (they expand to sections) — though the storefront
- *  only ever sees them already expanded. */
-function hasContainerChild(children?: BuilderNode[]): boolean {
-  return (children ?? []).some((c) => c.type.startsWith('custom:') || CONTAINERS.has(c.type));
-}
-
-/** A container's layout → the responsive class (grid columns / row / stack) plus
- *  the residual inline style for properties that DON'T swap (gap) or that the
- *  stacked state must be able to override (desktop align/justify, passed as the
- *  --bx-ai / --bx-jc custom props). The breakpoints live in site.css (docs/59). */
-function resolveLayout(
-  layout: LayoutBase,
-  children?: BuilderNode[]
-): { className: string; style: React.CSSProperties } {
-  const gap = GAP[layout.gap];
-  if (layout.direction === 'grid') {
-    const n = Math.min(12, Math.max(1, layout.columns));
-    return { className: `bx-grid bx-grid--c${n}`, style: { gap } };
-  }
-  if (layout.direction === 'row') {
-    if (hasContainerChild(children)) {
-      // Stacks < 768px; the desktop axes ride custom props so the stacked rule
-      // (align stretch / justify start) can win without inline styles blocking it.
-      return {
-        className: 'bx-row--resp',
-        style: {
-          gap,
-          ['--bx-ai']: FLEX_ALIGN[layout.alignItems] ?? 'stretch',
-          ['--bx-jc']: FLEX_JUSTIFY[layout.justify] ?? 'flex-start',
-        } as React.CSSProperties,
-      };
-    }
-    return {
-      className: 'bx-row',
-      style: {
-        gap,
-        alignItems: FLEX_ALIGN[layout.alignItems] ?? 'stretch',
-        justifyContent: FLEX_JUSTIFY[layout.justify] ?? 'flex-start',
-        flexWrap: layout.wrap ? 'wrap' : 'nowrap',
-      },
-    };
-  }
+/** The inline background-image style for a node, from its `bg-*` props (docs/61):
+ *  a static `bgImage` URL or a record image resolved from `bgImageBinding` against
+ *  the node's scope (the bound image wins). Undefined when there's no image — the
+ *  surface color then comes from the node's `class` (`bg-base-200`, …). */
+function backgroundStyleFor(node: BuilderNode, scope: Scope): React.CSSProperties | undefined {
+  const p = node.props;
+  const staticUrl = typeof p.bgImage === 'string' ? p.bgImage : undefined;
+  const bindingPath = typeof p.bgImageBinding === 'string' ? p.bgImageBinding : undefined;
+  const boundUrl = bindingPath ? firstImage(resolvePath(scope, bindingPath))?.url : undefined;
+  const image = boundUrl ?? staticUrl;
+  if (!image) return undefined;
+  const overlay = typeof p.bgOverlay === 'string' ? p.bgOverlay : 'none';
+  const fit = p.bgFit === 'contain' ? 'contain' : 'cover';
+  const position = typeof p.bgPosition === 'string' ? p.bgPosition : 'center';
+  const url = `url("${image.replace(/["\\]/g, '')}")`;
+  const scrim = SCRIM[overlay];
   return {
-    className: 'bx-stack',
-    style: {
-      gap,
-      alignItems: FLEX_ALIGN[layout.alignItems] ?? 'stretch',
-      justifyContent: FLEX_JUSTIFY[layout.justify] ?? 'flex-start',
-    },
+    backgroundImage: scrim ? `${scrim}, ${url}` : url,
+    backgroundSize: fit,
+    backgroundPosition: BG_POSITION_CSS[position] ?? 'center',
+    backgroundRepeat: 'no-repeat',
   };
-}
-
-function boxStyles(
-  box: BoxBase,
-  isContainer: boolean,
-  isGrid: boolean,
-  /** A background image resolved from `box.backgroundImageBinding` against the
-   *  node's data scope. When present it WINS; `box.backgroundImage` is fallback. */
-  boundImage?: string
-): { outer: React.CSSProperties; inner: React.CSSProperties } {
-  const surface = SURFACE[box.surface];
-  const bgFull = box.backgroundWidth === 'full';
-  const contentContained = box.contentWidth === 'contained';
-  // `pin: top` floats the block over the one that follows (overlay header),
-  // anchored to its parent (every node's outer is positioned).
-  const pinned = box.pin === 'top';
-  // An explicit height is a FIXED height (min AND max), realized by the `.bx-h-*`
-  // class on the outer (which eases on mobile). Here we only need the BOOLEAN to
-  // center content vertically. Grids push height onto their CELLS instead, and a
-  // pinned block opts out, so neither carries a height.
-  const hasHeight = isContainer && !isGrid && !pinned && box.height !== 'auto';
-  const image = boundImage ?? box.backgroundImage;
-  const overlay = box.overlay ?? 'none';
-  const tone = box.textTone ?? 'default';
-  const fit = box.backgroundFit ?? 'cover';
-  const position = box.backgroundPosition ?? 'center';
-
-  const outer: React.CSSProperties = {
-    position: pinned ? 'absolute' : 'relative',
-    ...(pinned ? { top: 0, left: 0, right: 0, zIndex: 40, width: '100%' } : {}),
-    ...(bgFull
-      ? bgProps(image, overlay, surface.bg, fit, position)
-      : { background: 'transparent' }),
-    display: 'flex',
-    justifyContent: contentContained ? 'center' : 'flex-start',
-    alignItems: hasHeight ? 'center' : 'stretch',
-  };
-  // Padding rides the `.bx-p-*` class on this inner element (eases on mobile).
-  const inner: React.CSSProperties = {
-    width: '100%',
-    maxWidth: contentContained ? 'var(--sf-max)' : undefined,
-    textAlign: TEXT_ALIGN[box.align],
-    color: TONE[tone] ?? surface.fg,
-    ...(!bgFull
-      ? bgProps(image, overlay, surface.bg, fit, position)
-      : { background: 'transparent' }),
-  };
-  return { outer, inner };
 }
 
 // ── Bound-value coercion ─────────────────────────────────────────────────────
@@ -525,12 +385,7 @@ function renderLeaf(
       const ratio = (str('ratio') || 'wide') as 'wide' | 'square' | 'portrait';
       if (!src) return null;
       return (
-        <EmbedFrame
-          src={src}
-          title={node.box.name ?? 'Video'}
-          ratio={ratio}
-          className={leafClass}
-        />
+        <EmbedFrame src={src} title={node.name ?? 'Video'} ratio={ratio} className={leafClass} />
       );
     }
     case 'Map': {
@@ -538,7 +393,7 @@ function renderLeaf(
       const ratio = (str('ratio') || 'pano') as 'wide' | 'square' | 'portrait' | 'pano';
       if (!src) return null;
       return (
-        <EmbedFrame src={src} title={node.box.name ?? 'Map'} ratio={ratio} className={leafClass} />
+        <EmbedFrame src={src} title={node.name ?? 'Map'} ratio={ratio} className={leafClass} />
       );
     }
     case 'Stat': {
@@ -675,64 +530,28 @@ function RenderNode({
   outlet?: React.ReactNode;
 }): React.ReactNode {
   const isContainer = CONTAINERS.has(node.type);
-  // Class-first (docs/47 §7): a presentational leaf carries node.class on its OWN
-  // element (its Surface component / the Button recipe), via renderLeaf; every
-  // other node carries it on the box wrapper. Exactly one element per node → no
-  // double-paint with the box engine (which never styled the leaf element itself).
+  // docs/61: a presentational leaf carries node.class on its OWN element (its
+  // Surface component / the Button recipe) via renderLeaf, so the renderer returns
+  // it directly — no wrapper, no double-paint. Every other node gets ONE wrapper
+  // div carrying node.class. Exactly one styled element per node.
   const leafStylesByClass = !isContainer && CLASS_ON_LEAF.has(node.type);
   const bound = Boolean(node.binding);
   const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
   const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
-
-  // An Outlet is a width PASSTHROUGH — the routed page owns its own width. Never
-  // let it impose the contained max-width: a `contained` Outlet (e.g. from an
-  // import that didn't set the width axes — DEFAULT_BOX is `contained`) would
-  // silently cap header + page + footer at --sf-max and centre them. Force full.
-  const effBox: BoxBase =
-    node.type === 'Outlet'
-      ? { ...node.box, backgroundWidth: 'full', contentWidth: 'full' }
-      : node.box;
-  const isGrid = node.layout?.direction === 'grid';
-  // Data-aware background: resolve the bound image against THIS node's scope (the
-  // same scope its own binding/leaves see), take the first image, use its URL as
-  // the box background. Empty/unresolved → undefined, so the static fallback wins.
-  const boundBg = node.box.backgroundImageBinding
-    ? (firstImage(resolvePath(scope, node.box.backgroundImageBinding))?.url ?? undefined)
-    : undefined;
-  const { outer, inner } = boxStyles(effBox, isContainer, isGrid, boundBg);
-  // Responsive layout → a class on the inner (display/columns/direction) plus the
-  // residual inline style; the @media breakpoints live in site.css (docs/59).
-  const layout = isContainer ? node.layout : undefined;
-  const resolvedLayout = layout ? resolveLayout(layout, node.children) : undefined;
-  const innerStyle = resolvedLayout ? { ...inner, ...resolvedLayout.style } : inner;
-  // Fixed-height containers carry `.bx-h-*` on the OUTER (grids push height onto
-  // cells; pinned blocks opt out). Padding + layout ride classes on the INNER.
-  // All three ease on small screens. The class-first `node.class` stays on the
-  // outer unless a leaf styles itself by class (then renderLeaf owns it).
-  const heightClass =
-    isContainer && !isGrid && effBox.pin !== 'top' && effBox.height !== 'auto'
-      ? `bx-h-${effBox.height}`
-      : undefined;
-  const outerClass = cls(leafStylesByClass ? undefined : node.class, heightClass);
-  const innerClass = cls(`bx-p-${effBox.padding}`, resolvedLayout?.className);
+  // The only inline style left: a dynamic background image (a per-node / per-record
+  // URL can't be a static class). The surface COLOR comes from node.class.
+  const bgStyle = backgroundStyleFor(node, scope);
 
   let body: React.ReactNode;
   if (node.type === 'Outlet') {
-    // The content outlet: render the routed page here (docs/45 §2.6).
+    // The content outlet: render the routed page here (docs/45 §2.6). The routed
+    // page owns its own width, so the Outlet's own class is just a full-width slot.
     body = outlet ?? null;
   } else if (node.type === 'Carousel') {
-    // Each direct child is a slide. When bound to an array, each record is a
-    // slide (its subtree rendered once per item). The client component owns the
-    // index state, autoplay, arrows + dots.
+    // Each direct child is a slide. When bound to an array, each record is a slide
+    // (its subtree rendered once per item). The client component owns the index
+    // state, autoplay, arrows + dots.
     const kids = node.children ?? [];
-    // A carousel with an explicit height GOVERNS its slides: each slide adopts the
-    // carousel's height so the hero is exactly that tall. Without this a `full`
-    // slide dominates a `3/4` carousel (min-height can't shrink a taller child).
-    // `auto` leaves each slide its own height (carousel sizes to the tallest).
-    const slideOf = (child: BuilderNode): BuilderNode =>
-      node.box.height !== 'auto'
-        ? { ...child, box: { ...child.box, height: node.box.height } }
-        : child;
     let slides: React.ReactNode[];
     if (bound && card === 'array') {
       slides = (value as unknown[]).map((item, i) => (
@@ -740,7 +559,7 @@ function RenderNode({
           {kids.map((child) => (
             <RenderNode
               key={child.id}
-              node={slideOf(child)}
+              node={child}
               scope={{ ...scope, item, index: i }}
               outlet={outlet}
             />
@@ -750,7 +569,7 @@ function RenderNode({
     } else {
       const s: Scope = bound && card === 'object' ? { ...scope, item: value } : scope;
       slides = kids.map((child) => (
-        <RenderNode key={child.id} node={slideOf(child)} scope={s} outlet={outlet} />
+        <RenderNode key={child.id} node={child} scope={s} outlet={outlet} />
       ));
     }
     body = (
@@ -764,20 +583,13 @@ function RenderNode({
     );
   } else if (isContainer) {
     const kids = node.children ?? [];
-    // A grid-direction container's height governs its CELLS: each child adopts the
-    // grid's height (fixed) so cells are uniform and a tall child can't dominate;
-    // the grid box itself sizes to its rows. `auto` leaves children untouched.
-    const cellOf = (child: BuilderNode): BuilderNode =>
-      node.layout?.direction === 'grid' && node.box.height !== 'auto'
-        ? { ...child, box: { ...child.box, height: node.box.height } }
-        : child;
     if (bound && card === 'array') {
       // Iterate: each record scopes its subtree to `item`.
       body = (value as unknown[]).flatMap((item, i) =>
         kids.map((child) => (
           <RenderNode
             key={`${i}:${child.id}`}
-            node={cellOf(child)}
+            node={child}
             scope={{ ...scope, item, index: i }}
             outlet={outlet}
           />
@@ -786,16 +598,11 @@ function RenderNode({
     } else if (bound && card === 'object') {
       // Set scope: render once, descendants resolve item.*
       body = kids.map((child) => (
-        <RenderNode
-          key={child.id}
-          node={cellOf(child)}
-          scope={{ ...scope, item: value }}
-          outlet={outlet}
-        />
+        <RenderNode key={child.id} node={child} scope={{ ...scope, item: value }} outlet={outlet} />
       ));
     } else {
       body = kids.map((child) => (
-        <RenderNode key={child.id} node={cellOf(child)} scope={scope} outlet={outlet} />
+        <RenderNode key={child.id} node={child} scope={scope} outlet={outlet} />
       ));
     }
   } else {
@@ -822,18 +629,14 @@ function RenderNode({
     );
   }
 
-  // The class-first authoring surface (docs/47): the node's brand-governed class
-  // string rides on the box wrapper (folded into `outerClass`) alongside the
-  // engine's inline box styles, so the published page and the editor canvas emit
-  // the same class. The exception is a leaf that styles itself by class (Button) —
-  // there the class lives on the element via renderLeaf, so the wrapper omits it
-  // (no double-paint). The inner carries the responsive layout + padding classes
-  // (docs/59); the box→CSS engine still owns the non-responsive structure inline.
+  // A class-styled leaf already wears node.class on its own element → return it as
+  // is. Everything else gets one wrapper div carrying node.class (+ the dynamic
+  // background image, the only inline style left). The published page and the
+  // editor canvas emit the same class, so preview == production.
+  if (leafStylesByClass) return body;
   return (
-    <div className={outerClass} style={outer} data-bx-type={node.type}>
-      <div className={innerClass} style={innerStyle}>
-        {body}
-      </div>
+    <div className={cls(node.class)} style={bgStyle} data-bx-type={node.type}>
+      {body}
     </div>
   );
 }

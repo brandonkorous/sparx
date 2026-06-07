@@ -12,7 +12,13 @@
 // theme tokens in a later pass; for now these match the renderer verbatim.
 
 import type * as React from 'react';
-import type { Overlay, TextTone } from '@sparx/builder-schemas';
+
+/** Scrim laid over a photo panel for text legibility (a veil over an ARBITRARY
+ *  photo, not a tenant-brand color). Owned by the Surface library — independent of
+ *  the Builder's authoring vocabulary. */
+export type Overlay = 'none' | 'dark' | 'light' | 'gradient';
+/** Text color over a photo panel, independent of the surface tokens. */
+export type TextTone = 'default' | 'light' | 'dark';
 
 const SCRIM: Record<Overlay, string | null> = {
   none: null,

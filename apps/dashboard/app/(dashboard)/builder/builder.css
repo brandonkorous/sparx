@@ -1353,9 +1353,16 @@
   overflow: hidden;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
   font-family: var(--bxc-font-body);
+  /* The canvas is the container-query context (docs/61 §7): authored `@md:`-style
+     utilities respond to the canvas WIDTH — which the device switcher fixes — so
+     the preview reflows exactly as production does, no iframe + no JS. */
+  container-type: inline-size;
 }
 
 .bx-node {
+  /* Anchors the absolutely-positioned selection `.bx-tag` (the old box engine set
+     position:relative inline; class-only rendering needs it here). */
+  position: relative;
   outline-offset: -2px;
 }
 .bx-node:hover {

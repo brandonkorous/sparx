@@ -11,44 +11,28 @@
 // the editor's runtime `makeId` scheme). They only need to be unique within
 // their own tree; the persisted row's PK is a fresh uuid.
 
-import {
-  DEFAULT_BOX,
-  DEFAULT_LAYOUT,
-  type BoxBase,
-  type BuilderNode,
-  type LayoutBase,
-} from './node';
+import { seedNode, type BoxStyle, type LayoutStyle } from './box-to-class';
+import type { BuilderNode } from './node';
 import type { BuilderPageKind } from './page';
 
 let n = 0;
 const sid = (t: string): string => `seed-${t}-${(n += 1)}`;
 
-function box(over: Partial<BoxBase> = {}): BoxBase {
-  return { ...DEFAULT_BOX, ...over };
-}
-function layout(over: Partial<LayoutBase> = {}): LayoutBase {
-  return { ...DEFAULT_LAYOUT, ...over };
-}
+// The authoring vocabulary (docs/61): each starter describes its nodes with the
+// ergonomic box/layout DTO, compiled to a Tailwind-native `class` string by
+// `seedNode` — the persisted node carries only `{ id, type, name?, class?, props,
+// binding?, children? }`.
 function node(
   type: string,
   opts: {
-    box?: Partial<BoxBase>;
-    layout?: Partial<LayoutBase>;
+    box?: BoxStyle;
+    layout?: LayoutStyle;
     props?: Record<string, unknown>;
     bind?: string;
     children?: BuilderNode[];
   } = {}
 ): BuilderNode {
-  const out: BuilderNode = {
-    id: sid(type),
-    type,
-    box: box(opts.box),
-    props: opts.props ?? {},
-  };
-  if (opts.layout) out.layout = layout(opts.layout);
-  if (opts.bind) out.binding = { path: opts.bind };
-  if (opts.children) out.children = opts.children;
-  return out;
+  return seedNode(sid(type), type, opts);
 }
 
 // ── Tree builders ──────────────────────────────────────────────────────────
@@ -379,20 +363,11 @@ export const STARTER_LAYOUT: StarterLayout = { name: 'Site layout', tree: siteLa
 /** A blank single-section page — the default when "New page" doesn't pick a
  *  starter. The root id is fixed; it's unique within its own (empty) tree. */
 export function blankPageTree(): BuilderNode {
-  return {
-    id: 'root',
-    type: 'Section',
-    box: {
-      ...DEFAULT_BOX,
-      name: 'Page',
-      padding: 'lg',
-      backgroundWidth: 'full',
-      contentWidth: 'contained',
-    },
-    layout: { ...DEFAULT_LAYOUT, direction: 'stack', gap: 'md' },
-    props: {},
+  return seedNode('root', 'Section', {
+    box: { name: 'Page', padding: 'lg', backgroundWidth: 'full', contentWidth: 'contained' },
+    layout: { direction: 'stack', gap: 'md' },
     children: [],
-  };
+  });
 }
 
 // ── Email starters (docs/52) ──────────────────────────────────────────────────
@@ -429,14 +404,11 @@ function welcomeEmailTree(): BuilderNode {
 /** A blank single-section email body — the default when "New email" doesn't pick
  *  a starter. The root id is fixed; it's unique within its own (empty) tree. */
 export function blankEmailTree(): BuilderNode {
-  return {
-    id: 'root',
-    type: 'Section',
-    box: { ...DEFAULT_BOX, name: 'Email body', padding: 'none', contentWidth: 'full' },
-    layout: { ...DEFAULT_LAYOUT, direction: 'stack', gap: 'md' },
-    props: {},
+  return seedNode('root', 'Section', {
+    box: { name: 'Email body', padding: 'none', contentWidth: 'full' },
+    layout: { direction: 'stack', gap: 'md' },
     children: [],
-  };
+  });
 }
 
 export interface StarterEmail {

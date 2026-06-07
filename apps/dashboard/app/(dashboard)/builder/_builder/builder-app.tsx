@@ -429,7 +429,7 @@ export function BuilderApp({
     const def = getDef(node.type);
     setBusy(true);
     const res = await copyComponent({
-      name: node.box.name ?? def?.label ?? 'Component',
+      name: node.name ?? def?.label ?? 'Component',
       group: def?.group ?? 'content',
       icon: 'box',
       surfaces: ['page'],

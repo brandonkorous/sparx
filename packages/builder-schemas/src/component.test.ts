@@ -5,7 +5,7 @@
 // on, so a bug here would either mis-render the preview or ship a broken tree.
 
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_BOX, type BuilderNode } from './node';
+import { type BuilderNode } from './node';
 import {
   checkNestingGraph,
   coerceInstanceProps,
@@ -23,7 +23,7 @@ import {
 } from './component';
 
 function node(extra: Partial<BuilderNode> & Pick<BuilderNode, 'id' | 'type'>): BuilderNode {
-  return { box: { ...DEFAULT_BOX }, props: {}, ...extra };
+  return { props: {}, ...extra };
 }
 
 describe('propSpecToZod / coerceInstanceProps', () => {
@@ -220,7 +220,7 @@ describe('collectBindingSlots', () => {
         node({
           id: 'a',
           type: 'Section',
-          box: { ...DEFAULT_BOX, name: 'Product list' },
+          name: 'Product list',
           binding: { path: makeBindSlotPath('items') },
         }),
         node({ id: 'b', type: 'Section', binding: { path: makeBindSlotPath('items') } }),

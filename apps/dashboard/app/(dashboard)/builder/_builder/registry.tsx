@@ -58,13 +58,12 @@ import { coerceNavLinks, readClassGroup, setClassGroup } from '@sparx/builder-sc
 import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 
 import {
-  DEFAULT_BOX,
-  DEFAULT_LAYOUT,
+  boxLayoutClass,
   makeId,
-  type BoxBase,
+  type BoxStyle,
   type BuilderNode,
   type Cardinality,
-  type LayoutBase,
+  type LayoutStyle,
 } from './model';
 import { COLOR_CONTROL, VARIANT_CONTROL } from './class-controls';
 
@@ -146,10 +145,12 @@ export interface ComponentDef {
    *  the page editor and the site (layout) editor. */
   surfaces?: EditorSurface[];
   props: PropSpec[];
-  /** Defaults applied when the component is dropped from the palette. */
+  /** Defaults applied when the component is dropped from the palette. The
+   *  ergonomic box/layout vocabulary (docs/61) is compiled to the fresh node's
+   *  `class` by makeNode — it never reaches the persisted node as an object. */
   defaults: {
-    box?: Partial<BoxBase>;
-    layout?: Partial<LayoutBase>;
+    box?: BoxStyle;
+    layout?: LayoutStyle;
     props?: Record<string, unknown>;
     /** Archetype seed (docs/47 §11): the brand-governed class bundle a freshly
      *  dropped node carries (e.g. a Button → `sf-btn sf-c-primary sf-v-solid
@@ -658,7 +659,7 @@ const DEFS: ComponentDef[] = [
         <div className={`bx-video bx-ratio-${ratio}`}>
           <iframe
             src={src}
-            title={firstString(node.box.name, 'Video')}
+            title={firstString(node.name, 'Video')}
             allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             loading="lazy"
@@ -706,7 +707,7 @@ const DEFS: ComponentDef[] = [
         <div className={`bx-map bx-ratio-${ratio}`}>
           <iframe
             src={src}
-            title={firstString(node.box.name, 'Map')}
+            title={firstString(node.name, 'Map')}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
@@ -1281,46 +1282,11 @@ const CONTAINER_AXES: BoxAxis[] = [
 // via `boxAxes`.
 const LEAF_AXES: BoxAxis[] = ['align', 'visibility'];
 
-/** The box axes a component exposes by declaration, else by kind. */
+/** The box axes a component exposes by declaration, else by kind. Informational
+ *  for the component editor (docs/53); the page inspector authors these as `class`
+ *  utilities now (docs/61), so there's no longer a per-node box panel to gate. */
 export function boxAxesFor(def: ComponentDef): BoxAxis[] {
   return def.boxAxes ?? (def.kind === 'container' ? CONTAINER_AXES : LEAF_AXES);
-}
-
-/** Whether a node's box carries a non-default value on an axis — used so a hidden
- *  axis still surfaces when it's actually in use (no stranded values). */
-export function boxAxisInUse(box: BoxBase, axis: BoxAxis): boolean {
-  switch (axis) {
-    case 'width':
-      return box.backgroundWidth !== 'contained' || box.contentWidth !== 'contained';
-    case 'height':
-      return box.height !== 'auto';
-    case 'padding':
-      return box.padding !== 'none';
-    case 'surface':
-      return box.surface !== 'none';
-    case 'background':
-      return (
-        Boolean(box.backgroundImage) ||
-        Boolean(box.backgroundImageBinding) ||
-        (box.overlay != null && box.overlay !== 'none') ||
-        (box.textTone != null && box.textTone !== 'default')
-      );
-    case 'position':
-      return Boolean(box.pin && box.pin !== 'none');
-    case 'align':
-    case 'visibility':
-      return true; // always shown
-  }
-}
-
-/** The box axes to render for a node: the component's declared set, plus any axis
- *  the node already uses (so gating is non-destructive). */
-export function visibleBoxAxes(def: ComponentDef, box: BoxBase): Set<BoxAxis> {
-  const out = new Set(boxAxesFor(def));
-  for (const axis of CONTAINER_AXES) {
-    if (boxAxisInUse(box, axis)) out.add(axis);
-  }
-  return out;
 }
 
 export function isContainer(type: string): boolean {
@@ -1369,18 +1335,22 @@ export function paletteForSurface(surface: EditorSurface): ComponentDef[] {
   return DEFS.filter((d) => !d.surfaces || d.surfaces.includes(surface));
 }
 
-/** Build a fresh node from a palette entry. */
+/** Build a fresh node from a palette entry. The entry's ergonomic box/layout
+ *  defaults compile to the node's `class` string (docs/61), joined after the
+ *  archetype/recipe seed (`defaults.class`, e.g. a Button's `sf-btn …`). */
 export function makeNode(type: string): BuilderNode {
   const def = getDef(type);
   if (!def) throw new Error(`Unknown component type: ${type}`);
+  const cls = [boxLayoutClass(def.defaults.box, def.defaults.layout, type), def.defaults.class]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
   const out: BuilderNode = {
     id: makeId(type),
     type,
-    box: { ...DEFAULT_BOX, ...def.defaults.box },
     props: { ...def.defaults.props },
   };
-  if (def.defaults.class) out.class = def.defaults.class;
-  if (def.kind === 'container') out.layout = { ...DEFAULT_LAYOUT, ...def.defaults.layout };
+  if (cls) out.class = cls;
   // Containers and children-accepting leaves (Button) start with an empty child
   // list so a drop has somewhere to land.
   if (def.kind === 'container' || def.acceptsChildren) out.children = [];
@@ -1439,9 +1409,9 @@ export function retypeNode(node: BuilderNode, targetType: string): BuilderNode {
   const next: BuilderNode = {
     id: node.id, // identity preserved — selection + any saved refs stay valid
     type: targetType,
-    box: { ...node.box }, // the universal box (and its name) carries over verbatim
     props: { ...to.defaults.props },
   };
+  if (node.name) next.name = node.name; // the author label carries over
 
   // Best-effort text carry (Heading text → Button label → Stat value, …).
   const text = carriedText(node.props);
@@ -1451,25 +1421,26 @@ export function retypeNode(node: BuilderNode, targetType: string): BuilderNode {
   // Binding survives only into a bindable target.
   if (node.binding && to.bindable) next.binding = { ...node.binding };
 
-  // Class: start from the target's archetype/defaults, then preserve the author's
-  // recipe color × variant where the target also exposes that axis (so a primary
-  // soft Button stays primary soft as a Badge).
-  let cls = to.defaults.class;
-  if (cls) {
+  // Class (docs/61): a RECIPE target (Button/Badge — ships an archetype) starts
+  // from its own archetype and preserves the author's color × variant (so a
+  // primary-soft Button stays primary-soft as a Badge). A STRUCTURAL target
+  // (Section/Card/Stack/Grid — no recipe) carries the source's class verbatim, so
+  // its arrangement + skin survive the retype (the old "box carries over" behavior).
+  if (to.defaults.class) {
+    let cls = to.defaults.class;
     for (const control of [COLOR_CONTROL, VARIANT_CONTROL]) {
       const tokens = control.options.map((o) => o.token);
       const prev = readClassGroup(node.class, tokens);
       if (prev && readClassGroup(cls, tokens)) cls = setClassGroup(cls, tokens, prev);
     }
     next.class = cls;
+  } else if (node.class) {
+    next.class = node.class;
   }
 
-  // Layout + children by kind. A container adopts the target's natural arrangement
-  // and keeps its children; a leaf keeps children only if it can nest them.
-  if (to.kind === 'container') {
-    next.layout = { ...DEFAULT_LAYOUT, ...to.defaults.layout };
-    next.children = node.children ?? [];
-  } else if (acceptsChildren(targetType)) {
+  // Children by kind: a container keeps its children; a leaf keeps them only if it
+  // can still nest them.
+  if (to.kind === 'container' || acceptsChildren(targetType)) {
     next.children = node.children ?? [];
   }
   return next;

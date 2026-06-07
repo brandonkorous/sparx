@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_BOX, DEFAULT_LAYOUT, type BuilderNode } from '@sparx/builder-schemas';
+import { type BuilderNode } from '@sparx/builder-schemas';
 import { renderEmailTree } from '../render-email-tree';
 
 const brand = { primary: '#0EA5E9', storeName: 'Acme Diesel' };
 
 function node(type: string, over: Partial<BuilderNode> = {}): BuilderNode {
-  return { id: `${type}-1`, type, box: { ...DEFAULT_BOX }, props: {}, ...over };
+  return { id: `${type}-1`, type, props: {}, ...over };
 }
 
 describe('renderEmailTree', () => {
@@ -13,8 +13,7 @@ describe('renderEmailTree', () => {
     const tree: BuilderNode = {
       id: 'root',
       type: 'Section',
-      box: { ...DEFAULT_BOX },
-      layout: { ...DEFAULT_LAYOUT, direction: 'stack' },
+      class: 'flex flex-col',
       props: {},
       children: [
         node('Heading', { props: { level: 'h1', text: 'Welcome aboard' } }),
@@ -39,8 +38,7 @@ describe('renderEmailTree', () => {
     const tree: BuilderNode = {
       id: 'root',
       type: 'Section',
-      box: { ...DEFAULT_BOX },
-      layout: { ...DEFAULT_LAYOUT, direction: 'stack' },
+      class: 'flex flex-col',
       props: {},
       binding: { path: 'commerce.product' },
       children: [node('Heading', { props: { level: 'h2' }, binding: { path: 'item.title' } })],
@@ -64,8 +62,7 @@ describe('renderEmailTree', () => {
     const tree: BuilderNode = {
       id: 'root',
       type: 'Section',
-      box: { ...DEFAULT_BOX },
-      layout: { ...DEFAULT_LAYOUT, direction: 'stack' },
+      class: 'flex flex-col',
       props: {},
       children: [
         // A per-recipient greeting bound to recipient.firstName.
@@ -73,7 +70,7 @@ describe('renderEmailTree', () => {
         // A bound product image (ImageDisplay) iterated by the grid below.
         node('Grid', {
           props: {},
-          layout: { ...DEFAULT_LAYOUT, direction: 'grid', columns: 2 },
+          class: 'grid grid-cols-2',
           binding: { path: 'commerce.product' },
           children: [node('ImageDisplay', { props: {}, binding: { path: 'item.imageUrl' } })],
         }),
@@ -135,8 +132,7 @@ describe('renderEmailTree', () => {
     const tree: BuilderNode = {
       id: 'root',
       type: 'Section',
-      box: { ...DEFAULT_BOX },
-      layout: { ...DEFAULT_LAYOUT, direction: 'stack' },
+      class: 'flex flex-col',
       props: {},
       children: [node('Prose', { props: { doc } })],
     };
@@ -157,8 +153,7 @@ describe('renderEmailTree', () => {
     const tree: BuilderNode = {
       id: 'root',
       type: 'Section',
-      box: { ...DEFAULT_BOX },
-      layout: { ...DEFAULT_LAYOUT, direction: 'stack' },
+      class: 'flex flex-col',
       props: {},
       children: [
         node('Prose', { props: { doc: { type: 'doc', content: [] } } }),

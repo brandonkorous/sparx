@@ -136,8 +136,7 @@ function Row({
   // resolved component (or its key) and use a generic component glyph.
   const customComp = custom ? components?.get(customKeyOf(node.type) ?? '') : undefined;
   const Icon = def?.icon ?? Boxes;
-  const label =
-    node.box.name ?? def?.label ?? customComp?.name ?? customKeyOf(node.type) ?? node.type;
+  const label = node.name ?? def?.label ?? customComp?.name ?? customKeyOf(node.type) ?? node.type;
   const bind = def ? bindMeta(node, catalog) : null;
   const hasCaret =
     draggable && !!def && acceptsChildren(node.type) && (node.children?.length ?? 0) > 0;
