@@ -19,6 +19,12 @@ COPY packages/auth ./packages/auth
 COPY packages/legal ./packages/legal
 COPY packages/events ./packages/events
 COPY packages/builder-schemas ./packages/builder-schemas
+# @sparx/builder (page-service behind the Builder MCP tools) + its transitive
+# surface-compile dep. The MCP tools import @sparx/builder/mcp, a subpath that
+# never loads surface-css-service, so the Tailwind compiler is installed but never
+# evaluated at runtime — surface-compile is here only so pnpm can resolve the dep.
+COPY packages/surface-compile ./packages/surface-compile
+COPY packages/builder ./packages/builder
 COPY packages/email ./packages/email
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/crm ./packages/crm

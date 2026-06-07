@@ -1422,6 +1422,9 @@ importers:
       '@sparx/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@sparx/builder':
+        specifier: workspace:*
+        version: link:../../packages/builder
       '@sparx/crm':
         specifier: workspace:*
         version: link:../../packages/crm

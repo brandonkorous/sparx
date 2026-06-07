@@ -19,6 +19,7 @@
     "@modelcontextprotocol/sdk": "^1.0.4",
     "@prisma/client": "^6.19.3",
     "@sparx/auth": "workspace:*",
+    "@sparx/builder": "workspace:*",
     "@sparx/crm": "workspace:*",
     "@sparx/db": "workspace:*",
     "@sparx/email-platform": "workspace:*",

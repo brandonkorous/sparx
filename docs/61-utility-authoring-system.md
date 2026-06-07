@@ -1,8 +1,8 @@
 # 61 — Utility Authoring: The Property-Panel Style System
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-06
+**Last Updated:** 2026-06-07
 
 > This doc **executes** the class-first model ([47](47-class-first-authoring-model.md)) and
 > **finishes** the unification [46](46-site-ui-component-library.md) and [59](59-responsive-rendering.md)
@@ -315,11 +315,37 @@ unrelated). Decisions made during execution:
   (color/variant + the raw `class` textarea) remain. The friendly arrange/utility controls are Phases
   3–4. `@sparx/site-ui` re-homed its own `Overlay`/`TextTone` types (they were importing the deleted box
   enums).
-- **MCP gap (not yet closed):** the new `/builder` node-tree authoring still has **no MCP tool** — today's
-  `write:builder` MCP tools drive the older section/theme sitebuilder (`@sparx/sitebuilder`). The
-  agent-first import layer (`parsePageImport`, now class-validated) is the ready substrate; wiring an MCP
-  Builder-authoring tool (that teaches the Tailwind class vocabulary + allowlist) is the natural next
-  slice so agents can build pages directly.
+- **MCP gap (closed 2026-06-07 — see §12.2):** the new `/builder` node-tree authoring had **no MCP tool**;
+  today's `write:builder` MCP tools drive the older section/theme sitebuilder (`@sparx/sitebuilder`). That
+  gap is now closed by a dedicated Builder MCP tool bundle.
+
+### 12.2 Build log — Builder MCP authoring tools (2026-06-07, gate-green, v1.2.0)
+
+The class-only node model is the real AI-legibility unlock — an agent now writes the same Tailwind a
+person does — so the Builder gets first-class MCP authoring. New module
+`packages/builder/src/mcp/` (mirrors `@sparx/crm`/`@sparx/sitebuilder`), exposed as **`builderMcpTools`**
+via a `@sparx/builder/mcp` **subpath** and registered in `services/api-mcp`'s `ALL_MCP_TOOLS`.
+
+- **The teach-then-author surface.** Reads (`read:builder`): `describe_builder_styling` (the strategic
+  one — returns `BUILDER_STYLE_GUIDE`: node model, node-type catalog, the tokenized Tailwind class
+  vocabulary, container-query responsive rules, the binding model, the safety allowlist, + worked
+  recipes), `list_builder_pages`, `get_builder_page`. Writes (`write:builder`): `create_builder_page`,
+  `update_builder_page` (both DRAFT saves, un-gated), `publish_builder_page` + `delete_builder_page`
+  (confirmation-gated). Distinct tool names from the sitebuilder set — both share the existing scopes.
+- **One parser, every transport.** The write tools take a "document" (page envelope **or** a bare node
+  tree, JSON string or object) and run the same `parsePageImport` the editor's Import and the REST
+  transport use — auto-fills ids, dedupes, validates against `BuilderNodeSchema`, pulls page meta. So an
+  agent emits `{ type, class?, props?, children? }` and gets a valid page.
+- **Property resolution.** MCP auth carries tenant+user but no site; `mcp/context.ts` `toPropertyContext`
+  mirrors api-rest's `lib/property.ts` (explicit `propertyId` arg wins when it's the tenant's own, else
+  the primary site) so MCP and REST scope a site identically.
+- **No Tailwind at MCP boot.** The `@sparx/builder/mcp` subpath imports `page-service` **directly**, never
+  the services barrel — so `surface-css-service` (and its `@tailwindcss/node` compiler) is never evaluated
+  in the api-mcp process. `surface-compile` is still installed (pnpm transitive dep; Dockerfile COPYs it +
+  `packages/builder`) but inert at runtime.
+- **The guide can't drift.** `vocabulary.test.ts` (7 tests, pass) asserts every example/recipe tree the
+  guide teaches validates through `parsePageImport`, plus tool names/scopes/confirmation gating — if the
+  node schema changes, the guide fails CI instead of teaching agents an invalid tree.
 
 ## 13. Open questions / deferred
 

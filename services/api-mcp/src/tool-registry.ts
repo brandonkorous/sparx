@@ -5,6 +5,7 @@
 import type { z } from 'zod';
 import { crmMcpTools } from '@sparx/crm';
 import { sitebuilderMcpTools } from '@sparx/sitebuilder';
+import { builderMcpTools } from '@sparx/builder/mcp';
 import { emailMcpTools } from '@sparx/email-platform';
 import { searchMcpTools } from '@sparx/search';
 
@@ -24,6 +25,7 @@ export interface AnyMcpTool {
 export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   ...(crmMcpTools as unknown as AnyMcpTool[]),
   ...(sitebuilderMcpTools as unknown as AnyMcpTool[]),
+  ...(builderMcpTools as unknown as AnyMcpTool[]),
   ...(emailMcpTools as unknown as AnyMcpTool[]),
   ...(searchMcpTools as unknown as AnyMcpTool[]),
 ];
