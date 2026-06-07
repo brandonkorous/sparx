@@ -22,9 +22,10 @@ async function createCrmTenant(): Promise<TestTenant> {
       slug,
       name: `MCP ${slug}`,
       email,
-      plan: 'pro',
       status: 'active',
-      settings: { modules: { crm: { enabled: true } } },
+      // `ai` gates MCP access (module-based, not a plan); `crm` enables the
+      // crm tools the smoke test dispatches.
+      settings: { modules: { ai: { enabled: true }, crm: { enabled: true } } },
     },
   });
   await prisma.$transaction(async (tx) => {

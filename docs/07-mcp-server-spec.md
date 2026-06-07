@@ -1,8 +1,8 @@
 # WizeWorks Platform — MCP Server Specification
 
-**Version:** 1.1  
+**Version:** 1.2  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-07
 
 ---
 
@@ -10,7 +10,7 @@
 
 The WizeWorks MCP (Model Context Protocol) Server is a first-class platform service that exposes tenant business data to AI assistants — Claude, ChatGPT, and Microsoft Copilot. It enables natural language interaction with live business data without any custom integration work by the tenant.
 
-The MCP server runs as a dedicated Kubernetes deployment and is available on all Pro and Enterprise plans.
+The MCP server runs as a dedicated Kubernetes deployment. Access is gated by the **`ai` module** (the AI-Integrations capability), consistent with Sparx's module-based model — a tenant activates the `ai` module to use MCP, exactly as it activates any other module. There are **no plan tiers** (no Starter/Pro/Enterprise); "a tenant pays only for what it uses." A request from a tenant without the `ai` module active is rejected at the transport. Per-tool scopes then decide which module's tools each call can run.
 
 ---
 
@@ -187,12 +187,15 @@ server.tool(
 
 ## 7. Rate Limiting
 
-| Plan       | Requests/minute | Requests/day |
-| ---------- | --------------- | ------------ |
-| Pro        | 60              | 5,000        |
-| Enterprise | 300             | 50,000       |
+Rate limits are an **abuse cap, not a billing tier** — eligibility is the `ai` module (§1), so every MCP-eligible tenant gets the same flat per-tenant quota:
 
-Write operations are additionally limited to 10/minute to prevent accidental bulk actions.
+| Scope                     | Limit |
+| ------------------------- | ----- |
+| Requests/minute           | 60    |
+| Requests/day              | 5,000 |
+| Write `tools/call`/minute | 10    |
+
+The write sub-cap is independent of the overall per-minute cap, to blunt accidental bulk actions. The numbers are a single tunable constant (`MCP_QUOTA` in `services/api-mcp/src/rate-limit.ts`) — there are no per-tenant tiers to thread through.
 
 ---
 

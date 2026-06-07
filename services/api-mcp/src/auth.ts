@@ -8,8 +8,10 @@
 //      Integrations dashboard, verified via @sparx/auth/api-keys. Scopes
 //      come from the key row; role is fixed as 'api'.
 //
-// In both cases the tenant must have the CRM module active or the request
-// is rejected with the documented MODULE_DISABLED-shaped envelope.
+// In both cases the tenant must have the `ai` MODULE active. Sparx is
+// module-based (a tenant pays per module, not per plan tier) — MCP / the AI
+// Integrations surface IS the `ai` module, so that flag is the eligibility
+// gate. Per-tool scopes still decide which tools run.
 
 import fastifyJwt from '@fastify/jwt';
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
@@ -100,14 +102,14 @@ export async function authenticate(request: FastifyRequest): Promise<McpAuthCont
     ? await authenticateApiKey(token)
     : await authenticateJwt(request);
 
-  // The MCP server spans modules; allow access when ANY MCP-backed module is
-  // active for the tenant. Per-tool scopes still gate which tools can run.
-  const [crmEnabled, builderEnabled] = await Promise.all([
-    isModuleEnabled(auth.tenantId, 'crm'),
-    isModuleEnabled(auth.tenantId, 'builder'),
-  ]);
-  if (!crmEnabled && !builderEnabled) {
-    throw new AuthError('No MCP-enabled module is active for this tenant');
+  // MCP is the `ai` module's capability — gate on it (module-based, not a plan
+  // tier). A tenant without the AI module active can't reach the MCP server at
+  // all; the per-tool scopes then decide which module's tools each call can run.
+  const aiEnabled = await isModuleEnabled(auth.tenantId, 'ai');
+  if (!aiEnabled) {
+    throw new AuthError(
+      'The AI module is not active for this tenant. Enable it to use the MCP server.'
+    );
   }
 
   request.mcpAuth = auth;

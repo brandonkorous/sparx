@@ -96,7 +96,7 @@ export async function createApp(): Promise<FastifyInstance> {
       // SSE channel and DELETE terminates. Only count POST against the
       // tenant's quota; GET/DELETE are framing, not work.
       if (request.method === 'POST') {
-        await enforceRateLimit({
+        enforceRateLimit({
           auth,
           isWriteCall: isWriteToolCall(request.body),
         });

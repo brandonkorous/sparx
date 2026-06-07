@@ -1,34 +1,30 @@
-// Per-tenant rate limits for the MCP transport, per docs/07 §7.
+// Per-tenant rate limits for the MCP transport (abuse prevention).
 //
-//   • Pro:        60 req/min,   5,000 req/day
-//   • Enterprise: 300 req/min, 50,000 req/day
-//   • Writes:     additional 10 req/min cap on `tools/call` for write tools
-//                 (write:crm + write:crm_bulk scopes) — protects against
-//                 bulk-action mistakes per docs/07 §7.
-//
-// Starter is rejected outright — MCP is a Pro/Enterprise feature in docs/07.
+// Sparx is MODULE-based, not plan-tiered: a tenant pays per module, not for a
+// Starter/Pro/Enterprise plan. So MCP ELIGIBILITY is gated by the `ai` module
+// (see auth.ts), NOT by a plan. This limiter is purely a safety cap against
+// runaway loops / scrapers — one flat per-tenant quota for every MCP-eligible
+// tenant, plus a tighter cap on write `tools/call`s to blunt bulk-action
+// mistakes. (Earlier this read `tenant.plan` and rejected "starter" outright —
+// a vestige of docs/07 §7's pre-module plan model; removed.)
 //
 // Phase 1 implementation uses in-process token buckets. The api-mcp HPA is
-// capped at 2 replicas (api-rest already enforces this), so cross-pod drift
-// is small and acceptable. Redis-backed counters land when we exceed one
-// replica's throughput; the bucket API is shaped so the storage can swap
-// without touching the policy.
+// capped at 2 replicas, so cross-pod drift is small and acceptable. Redis-backed
+// counters land when we exceed one replica's throughput; the bucket API is
+// shaped so the storage can swap without touching the policy.
 
-import { prisma } from '@sparx/db';
 import type { McpAuthContext } from './auth.js';
 
-export interface PlanQuota {
+export interface Quota {
   perMinute: number;
   perDay: number;
 }
 
-const PLAN_QUOTAS: Record<string, PlanQuota | null> = {
-  starter: null, // MCP not available on starter
-  pro: { perMinute: 60, perDay: 5_000 },
-  enterprise: { perMinute: 300, perDay: 50_000 },
-};
-
+// One flat quota for every MCP-eligible (AI-module) tenant. Tune here — there
+// are no per-tenant tiers to thread through.
+const MCP_QUOTA: Quota = { perMinute: 60, perDay: 5_000 };
 const WRITE_PER_MINUTE = 10;
+
 const MS_PER_MINUTE = 60_000;
 const MS_PER_DAY = 86_400_000;
 
@@ -44,8 +40,6 @@ interface TenantBuckets {
 }
 
 const buckets = new Map<string, TenantBuckets>();
-const planCache = new Map<string, { plan: string; expiresAt: number }>();
-const PLAN_CACHE_TTL_MS = 60_000;
 
 function freshBucket(windowMs: number, now: number): Bucket {
   return { count: 0, resetAt: now + windowMs };
@@ -68,24 +62,12 @@ function getOrCreate(tenantId: string, now: number): TenantBuckets {
   return b;
 }
 
-async function resolvePlan(tenantId: string, now: number): Promise<string> {
-  const cached = planCache.get(tenantId);
-  if (cached && cached.expiresAt > now) return cached.plan;
-  const row = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { plan: true },
-  });
-  const plan = row?.plan ?? 'starter';
-  planCache.set(tenantId, { plan, expiresAt: now + PLAN_CACHE_TTL_MS });
-  return plan;
-}
-
 export class RateLimitError extends Error {
   readonly code = 'RATE_LIMITED' as const;
   readonly retryAfterSeconds: number;
   readonly limit: number;
   readonly window: 'minute' | 'day';
-  readonly scope: 'tenant' | 'tenant_writes' | 'plan_not_eligible';
+  readonly scope: 'tenant' | 'tenant_writes';
   constructor(
     message: string,
     opts: {
@@ -105,49 +87,34 @@ export class RateLimitError extends Error {
 
 interface EnforceArgs {
   auth: McpAuthContext;
-  /** True when this HTTP call is a tools/call dispatching a write-scope
-   *  tool (write:crm or write:crm_bulk). Determined by the route handler
-   *  using the request body + the tool registry. */
+  /** True when this HTTP call is a tools/call dispatching a write-scope tool.
+   *  Determined by the route handler using the request body + the tool
+   *  registry. */
   isWriteCall: boolean;
 }
 
-/** Consume one slot for the tenant — and additionally one write slot when
- *  the dispatched tool is a write — or throw RateLimitError. */
-export async function enforceRateLimit(args: EnforceArgs): Promise<void> {
+/** Consume one slot for the tenant — and additionally one write slot when the
+ *  dispatched tool is a write — or throw RateLimitError. Eligibility (the `ai`
+ *  module) is enforced upstream in auth.ts; this is only the abuse cap. */
+export function enforceRateLimit(args: EnforceArgs): void {
   const now = Date.now();
-  const plan = await resolvePlan(args.auth.tenantId, now);
-  const quota = PLAN_QUOTAS[plan];
-  if (!quota) {
-    throw new RateLimitError(`MCP is not available on the "${plan}" plan.`, {
-      retryAfterSeconds: 0,
-      limit: 0,
-      window: 'day',
-      scope: 'plan_not_eligible',
-    });
-  }
   const t = getOrCreate(args.auth.tenantId, now);
 
-  if (t.minute.count >= quota.perMinute) {
-    throw new RateLimitError(
-      `Rate limit exceeded: ${quota.perMinute} requests/minute on plan "${plan}".`,
-      {
-        retryAfterSeconds: Math.max(1, Math.ceil((t.minute.resetAt - now) / 1000)),
-        limit: quota.perMinute,
-        window: 'minute',
-        scope: 'tenant',
-      }
-    );
+  if (t.minute.count >= MCP_QUOTA.perMinute) {
+    throw new RateLimitError(`Rate limit exceeded: ${MCP_QUOTA.perMinute} requests/minute.`, {
+      retryAfterSeconds: Math.max(1, Math.ceil((t.minute.resetAt - now) / 1000)),
+      limit: MCP_QUOTA.perMinute,
+      window: 'minute',
+      scope: 'tenant',
+    });
   }
-  if (t.day.count >= quota.perDay) {
-    throw new RateLimitError(
-      `Daily quota exceeded: ${quota.perDay} requests/day on plan "${plan}".`,
-      {
-        retryAfterSeconds: Math.max(1, Math.ceil((t.day.resetAt - now) / 1000)),
-        limit: quota.perDay,
-        window: 'day',
-        scope: 'tenant',
-      }
-    );
+  if (t.day.count >= MCP_QUOTA.perDay) {
+    throw new RateLimitError(`Daily quota exceeded: ${MCP_QUOTA.perDay} requests/day.`, {
+      retryAfterSeconds: Math.max(1, Math.ceil((t.day.resetAt - now) / 1000)),
+      limit: MCP_QUOTA.perDay,
+      window: 'day',
+      scope: 'tenant',
+    });
   }
   if (args.isWriteCall && t.writeMinute.count >= WRITE_PER_MINUTE) {
     throw new RateLimitError(`Write rate limit exceeded: ${WRITE_PER_MINUTE} write calls/minute.`, {
@@ -163,8 +130,7 @@ export async function enforceRateLimit(args: EnforceArgs): Promise<void> {
   if (args.isWriteCall) t.writeMinute.count += 1;
 }
 
-/** Test-only — clears in-memory buckets + plan cache between cases. */
+/** Test-only — clears in-memory buckets between cases. */
 export function __resetRateLimitState(): void {
   buckets.clear();
-  planCache.clear();
 }

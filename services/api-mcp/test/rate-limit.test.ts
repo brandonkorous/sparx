@@ -1,6 +1,7 @@
-// MCP rate-limit policy — docs/07 §7. Three things to prove:
-//   1. Starter plan can't use MCP at all (429, scope=plan_not_eligible).
-//   2. Pro plan's per-minute cap fires (60/min) and includes retry_after.
+// MCP rate-limit policy — abuse cap (eligibility is the `ai` module, not a
+// plan; see auth.ts). Three things to prove:
+//   1. A tenant WITHOUT the `ai` module can't use MCP at all (401).
+//   2. The flat per-minute cap fires (60/min) and includes retry_after.
 //   3. The write-bucket fires independently (10 writes/min), even when the
 //      per-minute and per-day caps are nowhere near tripped.
 
@@ -18,7 +19,10 @@ interface RlTenant {
   token: string;
 }
 
-async function createTenant(app: FastifyInstance, plan: 'starter' | 'pro'): Promise<RlTenant> {
+// `ai: false` builds a tenant WITHOUT the AI module (to prove the eligibility
+// gate). The default enables `ai` (+ `crm` for the write-cap tool).
+async function createTenant(app: FastifyInstance, opts: { ai?: boolean } = {}): Promise<RlTenant> {
+  const ai = opts.ai ?? true;
   const slug = `rl-${crypto.randomBytes(4).toString('hex')}`;
   const email = `${slug}@sparx.test`;
   const tenant = await prisma.tenant.create({
@@ -26,9 +30,10 @@ async function createTenant(app: FastifyInstance, plan: 'starter' | 'pro'): Prom
       slug,
       name: `RL ${slug}`,
       email,
-      plan,
       status: 'active',
-      settings: { modules: { crm: { enabled: true } } },
+      settings: {
+        modules: { crm: { enabled: true }, ...(ai ? { ai: { enabled: true } } : {}) },
+      },
     },
   });
   await prisma.$transaction(async (tx) => {
@@ -89,8 +94,8 @@ describe('mcp rate limiting', () => {
     invalidateModuleCache();
   });
 
-  it('rejects starter plan with plan_not_eligible (429)', async () => {
-    const t = await createTenant(app, 'starter');
+  it('rejects a tenant without the AI module (401)', async () => {
+    const t = await createTenant(app, { ai: false });
     tenants.push(t.tenantId);
     const res = await postMcp(
       app,
@@ -105,14 +110,14 @@ describe('mcp rate limiting', () => {
         1
       )
     );
-    expect(res.statusCode).toBe(429);
+    expect(res.statusCode).toBe(401);
     const body = JSON.parse(res.body);
-    expect(body.error.code).toBe('RATE_LIMITED');
-    expect(body.error.details.scope).toBe('plan_not_eligible');
+    expect(body.error.code).toBe('UNAUTHORIZED');
+    expect(body.error.message).toMatch(/AI module/i);
   });
 
-  it('enforces the 60/min cap on pro and surfaces retry_after_seconds', async () => {
-    const t = await createTenant(app, 'pro');
+  it('enforces the 60/min flat cap and surfaces retry_after_seconds', async () => {
+    const t = await createTenant(app);
     tenants.push(t.tenantId);
 
     // Burn the 60 budget on cheap initialize calls.
@@ -158,7 +163,7 @@ describe('mcp rate limiting', () => {
   });
 
   it('enforces the 10/min write cap independently of the per-minute cap', async () => {
-    const t = await createTenant(app, 'pro');
+    const t = await createTenant(app);
     tenants.push(t.tenantId);
 
     // 10 write tool calls (well under the 60/min cap) should fit.

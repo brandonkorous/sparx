@@ -29,6 +29,10 @@ async function main(): Promise<void> {
       commerce: { enabled: true },
       cms: { enabled: true },
       crm: { enabled: true },
+      // The `ai` module gates MCP / AI-Integrations access (module-based, not a
+      // plan tier — see services/api-mcp/src/auth.ts). Enabled so local MCP
+      // tooling + the MCP e2e path work against the seeded tenant.
+      ai: { enabled: true },
     },
   };
 
