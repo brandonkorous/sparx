@@ -48,7 +48,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     title: 'Company',
     links: [
       { label: 'About WizeWorks', href: '/about' },
-      { label: 'Customers', href: '/#customers' },
+      { label: 'Customers', href: '/customers' },
       { label: 'Brand', href: '/brand' },
       { label: 'Press', href: '/press' },
       { label: 'Careers', href: '/careers' },

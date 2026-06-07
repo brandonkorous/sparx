@@ -13,14 +13,13 @@ import {
 import { Wordmark } from './primitives';
 import { ModulesMegaContent, MODULE_NAV } from './modules-menu';
 
-// Top-level links other than Modules (which is a megamenu). The #customers
-// anchor resolves on the home page and on /platform, which both expose that
-// section id; the rest are route links to their own pages.
+// Top-level links other than Modules (which is a megamenu). All are route links
+// to their own pages.
 const LINKS = [
   { label: 'Platform', href: '/platform' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'Docs', href: '/docs' },
-  { label: 'Customers', href: '#customers' },
+  { label: 'Customers', href: '/customers' },
 ] as const;
 
 export function Nav() {

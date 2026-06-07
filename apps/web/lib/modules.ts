@@ -82,11 +82,11 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       },
     ],
     pricing: {
-      price: '$49',
+      price: '$10',
       period: '/mo',
       modifier: '',
       bundleNote:
-        'Builder is the foundation module — required for shop modules. Free upgrade path to Pro ($299/mo all-in) when you add CRM, Email, and CMS.',
+        'Builder hosts and serves your site — pages, custom domains, SSL, and the global CDN. It’s an optional module, not a required base; switch it on when you want a hosted Sparx site, on one bill with everything else.',
     },
   },
   commerce: {

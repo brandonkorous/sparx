@@ -1,22 +1,13 @@
 import { Button } from '@sparx/ui';
-import {
-  Container,
-  Display,
-  Dot,
-  Eyebrow,
-  EyebrowBadge,
-  getModuleColor,
-  Section,
-  Spark,
-} from './primitives';
+import { Container, Display, Dot, getModuleColor, Section, Spark } from './primitives';
 import { type ModuleMeta } from '@/lib/modules';
 
 /**
  * Reusable per-module marketing page. Each module's route
  * (`app/builder/page.tsx`, etc.) renders this with its `ModuleMeta`.
  * The module color is pulled from tokens via `getModuleColor()` so the
- * hero accent, eyebrow badge, feature card stripes, and pricing chip
- * stay consistent with the rest of the brand.
+ * hero spark accent, feature card stripes, and pricing chip stay consistent
+ * with the rest of the brand.
  */
 export function ModulePage({ meta }: { meta: ModuleMeta }) {
   const color = getModuleColor(meta.module);
@@ -50,10 +41,6 @@ function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
       }}
     >
       <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <EyebrowBadge color={color.color} background={color.tint} text={color.text}>
-          {meta.label}
-        </EyebrowBadge>
-
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '1100px' }}>
           <Display as="h1" size={104} lineHeight={96}>
             {meta.headlinePrimary}
@@ -121,7 +108,6 @@ function ModuleFeatures({ meta, color }: { meta: ModuleMeta; color: ModuleColor 
     <Section surface="surface" padding="lg">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '720px' }}>
-          <Eyebrow color={color.color}>What it does</Eyebrow>
           <Display size={56} lineHeight={60}>
             Every part of {shortLabel(meta.label)}
             <Spark color={color.color} />
@@ -223,7 +209,6 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <Eyebrow color={color.color}>Pricing</Eyebrow>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
             {meta.pricing.modifier ? (
               <span
@@ -301,9 +286,6 @@ function ModuleCta({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
       <Container
         style={{ display: 'flex', flexDirection: 'column', gap: '48px', alignItems: 'flex-start' }}
       >
-        <EyebrowBadge color={color.color} background="#1A1A1A" text={color.color}>
-          {meta.label}
-        </EyebrowBadge>
         <Display size={88} lineHeight={84} color="#FFFFFF">
           Ready to go
           <Spark color={color.color} />
