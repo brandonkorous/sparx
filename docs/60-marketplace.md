@@ -54,11 +54,11 @@ product**, not a gallery:
 
 ## 3. Information architecture — three route tiers
 
-| Tier | Route | Job |
-| ---- | ----- | --- |
-| **Home** | `/marketplace` | Curated entry: global search, category tiles (with counts + coming-soon), a few featured strips per live category. Not a full listing. |
-| **Category browse** | `/marketplace/[category]` | The scale workhorse: search-within + facet rail + sort + paginated grid + result count. This is where thousands of items live, behind query. |
-| **Detail** | `/marketplace/[category]/[slug]` | One item: gallery/preview, full description, what's-included, requirements, version/author, install/enable CTA, related items. |
+| Tier                | Route                            | Job                                                                                                                                          |
+| ------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Home**            | `/marketplace`                   | Curated entry: global search, category tiles (with counts + coming-soon), a few featured strips per live category. Not a full listing.       |
+| **Category browse** | `/marketplace/[category]`        | The scale workhorse: search-within + facet rail + sort + paginated grid + result count. This is where thousands of items live, behind query. |
+| **Detail**          | `/marketplace/[category]/[slug]` | One item: gallery/preview, full description, what's-included, requirements, version/author, install/enable CTA, related items.               |
 
 `[category]` and `[slug]` are dynamic segments resolved through the **category registry** (§4); the
 same three page components serve every category, parameterized by registry config + a per-category
@@ -112,12 +112,12 @@ The browse route is the part that has to survive scale. Anatomy (see mockup, vie
 
 **Facets per category (initial):**
 
-| Category | Facets |
-| -------- | ------ |
-| Blueprints | Vertical (retail/services/b2b/content/…), Requires-module (commerce/cms/email/b2b/crm), Price (free/paid), Status (installed/not) |
-| Themes | Style/mood, Color family, Layout density, Industry |
-| Integrations | Type (payments/shipping/tax/accounting/marketing), Provider, Pricing |
-| Components | Kind (section/block/widget), Source (system/shared), Module affinity |
+| Category     | Facets                                                                                                                            |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| Blueprints   | Vertical (retail/services/b2b/content/…), Requires-module (commerce/cms/email/b2b/crm), Price (free/paid), Status (installed/not) |
+| Themes       | Style/mood, Color family, Layout density, Industry                                                                                |
+| Integrations | Type (payments/shipping/tax/accounting/marketing), Provider, Pricing                                                              |
+| Components   | Kind (section/block/widget), Source (system/shared), Module affinity                                                              |
 
 ---
 
@@ -184,15 +184,15 @@ horizontal-scroll on every width; the detail two-column stacks. No desktop-only 
 
 ## 10. Decisions (locked)
 
-| # | Decision | Choice | Why |
-| - | -------- | ------ | --- |
-| M1 | One surface vs. per-type pages | **One categorized Marketplace** | One discovery model; scales by adding categories, not pages; lets a blueprint reference an integration. |
-| M2 | Route shape | **Home → category → detail** (3 tiers) | Curated entry, scalable browse, decision-grade detail. |
-| M3 | Extensibility | **Category registry** (data-driven) | Adding a category is one entry + an adapter, no shell rewrite. |
-| M4 | Browse mechanics | **Search + facets + sort + cursor pagination** | The only thing that survives 10k items. |
-| M5 | Search backend | **Typesense** (existing infra) | Don't reinvent filtering; facet counts + full-text + paging come free. In-memory adapter until indexed. |
-| M6 | Catalog vs. tenant state | **Shared catalog index + per-tenant overlay** | The index is tenant-agnostic and cacheable; install/applied/connected is overlaid per request. |
-| M7 | Coming-soon categories | **First-class registry entries** | Integrations/Apps show as real categories (teaser) before data lands — no rewrite at launch. |
+| #   | Decision                       | Choice                                         | Why                                                                                                     |
+| --- | ------------------------------ | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| M1  | One surface vs. per-type pages | **One categorized Marketplace**                | One discovery model; scales by adding categories, not pages; lets a blueprint reference an integration. |
+| M2  | Route shape                    | **Home → category → detail** (3 tiers)         | Curated entry, scalable browse, decision-grade detail.                                                  |
+| M3  | Extensibility                  | **Category registry** (data-driven)            | Adding a category is one entry + an adapter, no shell rewrite.                                          |
+| M4  | Browse mechanics               | **Search + facets + sort + cursor pagination** | The only thing that survives 10k items.                                                                 |
+| M5  | Search backend                 | **Typesense** (existing infra)                 | Don't reinvent filtering; facet counts + full-text + paging come free. In-memory adapter until indexed. |
+| M6  | Catalog vs. tenant state       | **Shared catalog index + per-tenant overlay**  | The index is tenant-agnostic and cacheable; install/applied/connected is overlaid per request.          |
+| M7  | Coming-soon categories         | **First-class registry entries**               | Integrations/Apps show as real categories (teaser) before data lands — no rewrite at launch.            |
 
 ---
 
