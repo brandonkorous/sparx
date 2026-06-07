@@ -449,6 +449,7 @@ function homeTree(): BuilderNode {
         layout: { direction: 'stack', gap: 'md', alignItems: 'center', justify: 'center' },
         children: [
           node('Text', {
+            box: { align: 'center' },
             props: { variant: 'meta', text: 'Powering focused teams at companies of every size' },
           }),
           node('Stack', {
@@ -510,9 +511,11 @@ function homeTree(): BuilderNode {
         layout: { direction: 'stack', gap: 'md', alignItems: 'center', justify: 'center' },
         children: [
           node('Heading', {
+            box: { align: 'center' },
             props: { level: 'h2', text: 'Everything your team needs, in one place' },
           }),
           node('Text', {
+            box: { align: 'center' },
             props: {
               variant: 'body',
               text: 'Replace scattered tools with a single workspace that adapts to how you work.',
@@ -598,12 +601,14 @@ function homeTree(): BuilderNode {
         layout: { direction: 'stack', gap: 'md', alignItems: 'center', justify: 'center' },
         children: [
           node('Heading', {
+            box: { align: 'center' },
             props: {
               level: 'h2',
               text: '“We replaced four tools with Mosaic in a week. Our docs, projects, and wiki finally live in one place — and the team actually uses it.”',
             },
           }),
           node('Text', {
+            box: { align: 'center' },
             props: { variant: 'body', text: 'Dana Okafor · Head of Operations, Brightline' },
           }),
         ],
@@ -621,8 +626,12 @@ function homeTree(): BuilderNode {
         },
         layout: { direction: 'stack', gap: 'md', alignItems: 'center', justify: 'center' },
         children: [
-          node('Heading', { props: { level: 'h2', text: 'Simple pricing that scales with you' } }),
+          node('Heading', {
+            box: { align: 'center' },
+            props: { level: 'h2', text: 'Simple pricing that scales with you' },
+          }),
           node('Text', {
+            box: { align: 'center' },
             props: {
               variant: 'body',
               text: 'Start free. Upgrade when your team grows. Cancel anytime.',
@@ -648,9 +657,11 @@ function homeTree(): BuilderNode {
         layout: { direction: 'stack', gap: 'sm', alignItems: 'center', justify: 'center' },
         children: [
           node('Heading', {
+            box: { align: 'center' },
             props: { level: 'h2', text: "Your team's next workspace starts here" },
           }),
           node('Text', {
+            box: { align: 'center' },
             props: {
               variant: 'body',
               text: 'Get started free — bring your team in minutes, not months.',
@@ -674,8 +685,9 @@ function pricingPageTree(): BuilderNode {
     },
     layout: { direction: 'stack', gap: 'md', alignItems: 'center', justify: 'center' },
     children: [
-      node('Heading', { props: { level: 'h1', text: 'Pricing' } }),
+      node('Heading', { box: { align: 'center' }, props: { level: 'h1', text: 'Pricing' } }),
       node('Text', {
+        box: { align: 'center' },
         props: {
           variant: 'body',
           text: 'Start free. Upgrade when your team grows. Cancel anytime.',
