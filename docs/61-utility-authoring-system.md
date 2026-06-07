@@ -1,6 +1,6 @@
 # 61 — Utility Authoring: The Property-Panel Style System
 
-**Version:** 1.2.0
+**Version:** 1.3.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-07
 
@@ -347,13 +347,42 @@ via a `@sparx/builder/mcp` **subpath** and registered in `services/api-mcp`'s `A
   guide teaches validates through `parsePageImport`, plus tool names/scopes/confirmation gating — if the
   node schema changes, the guide fails CI instead of teaching agents an invalid tree.
 
+### 12.3 Build log — Phase 3 component-builder Appearance panel + context axis (2026-06-07, gate-green, v1.3.0)
+
+The component builder gets its full skin surface, and per-breakpoint/state/dark authoring lands across
+the inspector. Both files: `_builder/class-controls.ts` + `_builder/inspector.tsx`.
+
+- **The context axis is the keystone.** `activeValue`/`applyValue` gained an optional `prefix` (default
+  `''` = base, so every existing caller is unchanged). A control's group becomes the PREFIXED tokens
+  (`@lg:grid-cols-3`, `hover:bg-primary`, `dark:bg-base-300`), so base + each context are independent
+  mutually-exclusive groups that never clobber each other — `readClassGroup`/`setClassGroup` already match
+  exact tokens, so prefixing "just works". A single `ContextSelect` (grouped State / Theme / Screen size)
+  re-targets every control in its panel at that layer. This delivers docs/61's "per-breakpoint editing via
+  container queries, NOT iframe" + state/dark authoring with NO new read/write machinery.
+- **Appearance panel (`SkinPanel`) — component builder only** (`slotEditor` present ⇒ the same `allowSkin`
+  gate Phase 4 set). The full skin families: Background + Text color (free, beyond the recipe's
+  color×variant), Font family/size/weight/tracking/case, Corners/Border/Shadow (moved here out of
+  Advanced), Transition + Transform, and the Surface entrance Animations. All tokenized → resolve to
+  `--sf-*`. Entrance Animation is base-only (no variant), so it's dropped off-base. `skinControlsFor(prefix)`.
+- **Responsive arrangement.** `ArrangementPanel` (containers, both surfaces) got the context selector too —
+  breakpoints only (no hover/dark layout). The structural choice (direction vs columns) follows the BASE
+  display; you tune columns/gap/justify/align/padding per breakpoint.
+- **Advanced slimmed** to the universal Size + Margin + the raw-`class` escape hatch (`advancedControlsFor`
+  lost its `allowSkin` param — skin moved to the Appearance panel).
+- **Verified:** a throwaway compile test (deleted) confirmed all 25 representative tokens — including the
+  context-prefixed `hover:bg-primary` / `dark:bg-base-300` / `@lg:grid-cols-3` / `@4xl:text-6xl` — pass the
+  allowlist (`blocked: []`) and compile to real CSS through the Surface theme. Gates: typecheck 48/48, lint
+  48/48, format clean. The editor UI itself still wants a browser drive (dashboard needs auth — deferred).
+
 ## 13. Open questions / deferred
 
 - **Container-breakpoint scale values** — align `@md`/`@lg`/… to component-sensible widths; final
   numbers tuned in Phase 0.
-- **Group/peer state authoring** — `group-hover:`/`peer-*` are powerful but add a relational concept to
-  the panel; surface in Phase 3 or defer.
-- **Gradient & transform editing UX** — multi-stop gradients and transform composition need richer
+- **State authoring** — DONE (Phase 3, §12.3): simple `hover:`/`focus:`/`active:`/`dark:` + the breakpoint
+  scale ship via the context selector. RELATIONAL `group-hover:`/`peer-*` still deferred (they need a
+  relational concept — which ancestor/sibling — the flat context picker can't express).
+- **Gradient & transform editing UX** — basic transform (scale/translate) ships in the Phase 3 Appearance
+  panel; multi-stop gradients + transform COMPOSITION (several transforms at once) still need richer
   controls than a single dropdown; Phase 5 candidate.
 - **Tier 4 raw CSS** — scoping + sanitization subsystem; deferred (§8, Phase 7).
 - **Archetype taxonomy** — the brand-governed starting set of layout/section archetypes; Phase 6.

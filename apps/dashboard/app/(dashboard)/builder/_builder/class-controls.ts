@@ -69,8 +69,6 @@ export const VARIANT_CONTROL: ClassControl = {
 /** The controls rendered, in order, in the inspector's everyday Style panel. */
 export const STYLE_CONTROLS: ClassControl[] = [COLOR_CONTROL, VARIANT_CONTROL];
 
-const groupTokens = (control: ClassControl): string[] => control.options.map((o) => o.token);
-
 /** The element prefix of a node's size axis (e.g. `sf-btn` from `sf-btn--sz-md`),
  *  or null when the archetype has no size step. Lets one Size control target
  *  whatever element it's editing without a per-component control table. */
@@ -149,6 +147,205 @@ export const SHADOW_CONTROL: ClassControl = {
     { value: 'lg', label: 'Large', token: 'shadow-lg' },
   ],
 };
+
+// ── Skin families (docs/61 §5.2, Phase 3) — component-builder only ────────────
+// The FULL appearance surface for a reusable component: free background/text color
+// (beyond the recipe's color×variant), free type, and motion. Tokenized → every
+// option resolves to a tenant `--sf-*` value at compile time. Gated to the
+// component builder (the page builder gets a component's skin from its recipe, not
+// per-instance re-skinning) and driven through the same single-token group model
+// as every other control — so the context selector re-prefixes them for free.
+
+export const BACKGROUND_CONTROL: ClassControl = {
+  id: 'bg',
+  label: 'Background',
+  options: [
+    { value: 'none', label: 'None', token: 'bg-transparent' },
+    { value: 'page', label: 'Page', token: 'bg-base-100' },
+    { value: 'subtle', label: 'Subtle', token: 'bg-base-200' },
+    { value: 'muted', label: 'Muted', token: 'bg-base-300' },
+    { value: 'primary', label: 'Primary', token: 'bg-primary' },
+    { value: 'secondary', label: 'Secondary', token: 'bg-secondary' },
+    { value: 'accent', label: 'Accent', token: 'bg-accent' },
+    { value: 'neutral', label: 'Neutral', token: 'bg-neutral' },
+  ],
+};
+
+export const TEXT_COLOR_CONTROL: ClassControl = {
+  id: 'textColor',
+  label: 'Text color',
+  options: [
+    { value: 'default', label: 'Default', token: 'text-base-content' },
+    { value: 'primary', label: 'Primary', token: 'text-primary' },
+    { value: 'on-primary', label: 'On primary', token: 'text-primary-content' },
+    { value: 'on-neutral', label: 'On dark', token: 'text-neutral-content' },
+    { value: 'white', label: 'White', token: 'text-white' },
+    { value: 'black', label: 'Black', token: 'text-black' },
+  ],
+};
+
+export const FONT_FAMILY_CONTROL: ClassControl = {
+  id: 'fontFamily',
+  label: 'Font',
+  options: [
+    { value: 'heading', label: 'Heading', token: 'font-heading' },
+    { value: 'body', label: 'Body', token: 'font-body' },
+  ],
+};
+
+// Distinct token namespace from TEXT_COLOR_CONTROL (text-sm vs text-primary) — the
+// groups never overlap, so a node can carry both a size and a color independently.
+export const FONT_SIZE_CONTROL: ClassControl = {
+  id: 'fontSize',
+  label: 'Text size',
+  options: [
+    { value: 'sm', label: 'S', token: 'text-sm' },
+    { value: 'base', label: 'M', token: 'text-base' },
+    { value: 'lg', label: 'L', token: 'text-lg' },
+    { value: 'xl', label: 'XL', token: 'text-xl' },
+    { value: '2xl', label: '2XL', token: 'text-2xl' },
+    { value: '4xl', label: '4XL', token: 'text-4xl' },
+    { value: '6xl', label: '6XL', token: 'text-6xl' },
+  ],
+};
+
+export const FONT_WEIGHT_CONTROL: ClassControl = {
+  id: 'fontWeight',
+  label: 'Weight',
+  options: [
+    { value: 'normal', label: 'Normal', token: 'font-normal' },
+    { value: 'medium', label: 'Medium', token: 'font-medium' },
+    { value: 'semibold', label: 'Semibold', token: 'font-semibold' },
+    { value: 'bold', label: 'Bold', token: 'font-bold' },
+  ],
+};
+
+export const TRACKING_CONTROL: ClassControl = {
+  id: 'tracking',
+  label: 'Letter spacing',
+  options: [
+    { value: 'tight', label: 'Tight', token: 'tracking-tight' },
+    { value: 'normal', label: 'Normal', token: 'tracking-normal' },
+    { value: 'wide', label: 'Wide', token: 'tracking-wide' },
+  ],
+};
+
+export const TEXT_CASE_CONTROL: ClassControl = {
+  id: 'textCase',
+  label: 'Case',
+  options: [
+    { value: 'normal', label: 'Normal', token: 'normal-case' },
+    { value: 'upper', label: 'UPPER', token: 'uppercase' },
+    { value: 'caps', label: 'Caps', token: 'capitalize' },
+  ],
+};
+
+export const TRANSITION_CONTROL: ClassControl = {
+  id: 'transition',
+  label: 'Transition',
+  options: [
+    { value: 'none', label: 'None', token: 'transition-none' },
+    { value: 'all', label: 'Smooth', token: 'transition' },
+    { value: 'colors', label: 'Colors', token: 'transition-colors' },
+    { value: 'transform', label: 'Transform', token: 'transition-transform' },
+  ],
+};
+
+// Pairs with a state CONTEXT (Hover/Focus): set Transition (base) + Transform
+// (Hover) for a smooth interactive effect. Bare at base = a static transform.
+export const TRANSFORM_CONTROL: ClassControl = {
+  id: 'transform',
+  label: 'Transform',
+  options: [
+    { value: 'none', label: 'None', token: 'scale-100' },
+    { value: 'grow', label: 'Grow', token: 'scale-105' },
+    { value: 'shrink', label: 'Shrink', token: 'scale-95' },
+    { value: 'up', label: 'Nudge up', token: '-translate-y-1' },
+    { value: 'down', label: 'Nudge down', token: 'translate-y-1' },
+  ],
+};
+
+// The custom entrance animations from the Surface theme (docs/61 §9) — base layer
+// only (an entrance has no hover/breakpoint variant), so the panel hides it off-base.
+export const ANIMATION_CONTROL: ClassControl = {
+  id: 'animation',
+  label: 'Entrance',
+  options: [
+    { value: 'none', label: 'None', token: 'animate-none' },
+    { value: 'fade-in', label: 'Fade in', token: 'animate-fade-in' },
+    { value: 'fade-up', label: 'Fade up', token: 'animate-fade-up' },
+    { value: 'fade-down', label: 'Fade down', token: 'animate-fade-down' },
+    { value: 'scale-in', label: 'Scale in', token: 'animate-scale-in' },
+    { value: 'slide-left', label: 'Slide in left', token: 'animate-slide-in-left' },
+    { value: 'slide-right', label: 'Slide in right', token: 'animate-slide-in-right' },
+  ],
+};
+
+// ── Context (the responsive / state / theme layer a control writes into) ──────
+// docs/61's "per-breakpoint editing via container queries, NOT iframe" + state/dark
+// authoring. A context is just a Tailwind variant prefix; selecting one re-targets
+// every control in its panel at that layer (`@lg:`, `hover:`, `dark:`).
+
+export interface StyleContext {
+  value: string;
+  label: string;
+  /** The Tailwind variant prefix (`hover:`, `@lg:`, `dark:`); '' for the base layer. */
+  prefix: string;
+}
+
+export const BASE_CONTEXT: StyleContext = { value: 'base', label: 'Base', prefix: '' };
+
+// Container-query breakpoints (key off the node's OWN width, docs/61 §7) — the
+// same scale the box→class converter seeds (@2xl / @3xl / @4xl …).
+const BREAKPOINT_CONTEXTS: StyleContext[] = ['sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl'].map(
+  (b) => ({ value: b, label: `@${b}`, prefix: `@${b}:` })
+);
+
+const STATE_CONTEXTS: StyleContext[] = [
+  { value: 'hover', label: 'Hover', prefix: 'hover:' },
+  { value: 'focus', label: 'Focus', prefix: 'focus:' },
+  { value: 'active', label: 'Active', prefix: 'active:' },
+];
+
+const DARK_CONTEXT: StyleContext = { value: 'dark', label: 'Dark', prefix: 'dark:' };
+
+/** Arrangement is responsive only (no hover/dark layout) — base + breakpoints. */
+export const ARRANGEMENT_CONTEXTS: StyleContext[] = [BASE_CONTEXT, ...BREAKPOINT_CONTEXTS];
+
+/** The full skin context set — base, interaction states, dark, and breakpoints. */
+export const SKIN_CONTEXTS: StyleContext[] = [
+  BASE_CONTEXT,
+  ...STATE_CONTEXTS,
+  DARK_CONTEXT,
+  ...BREAKPOINT_CONTEXTS,
+];
+
+/** Look up a context by value (falls back to base). */
+export function contextPrefix(contexts: StyleContext[], value: string): string {
+  return contexts.find((c) => c.value === value)?.prefix ?? '';
+}
+
+/** The full appearance/skin controls for the component builder, in order. The
+ *  entrance Animation is base-only (no variant), so it's dropped once a non-base
+ *  context (a breakpoint / state / dark) is active. */
+export function skinControlsFor(prefix: string): ClassControl[] {
+  const out: ClassControl[] = [
+    BACKGROUND_CONTROL,
+    TEXT_COLOR_CONTROL,
+    FONT_FAMILY_CONTROL,
+    FONT_SIZE_CONTROL,
+    FONT_WEIGHT_CONTROL,
+    TRACKING_CONTROL,
+    TEXT_CASE_CONTROL,
+    RADIUS_CONTROL,
+    BORDER_CONTROL,
+    SHADOW_CONTROL,
+    TRANSITION_CONTROL,
+    TRANSFORM_CONTROL,
+  ];
+  if (prefix === '') out.push(ANIMATION_CONTROL);
+  return out;
+}
 
 // ── Arrangement controls (docs/61 §5.2) ──────────────────────────────────────
 // How a CONTAINER lays out its children. Tailwind-native, single-token groups —
@@ -244,37 +441,52 @@ export function arrangementControlsFor(classStr: string | undefined): ClassContr
 }
 
 /** The advanced (collapsed) style controls applicable to a node, in order: the
- *  element-scoped Size (when the archetype has one), Margin (always), then the
- *  SKIN families (corners / border / shadow). The skin families are gated to the
- *  component builder (`allowSkin`) — on the page builder a component's skin comes
- *  from its recipe, not per-instance re-skinning (docs/61 §5.2). The raw `class`
- *  textarea — the final escape hatch — is rendered alongside these by the inspector. */
-export function advancedControlsFor(
-  archetype: string | undefined,
-  allowSkin: boolean
-): ClassControl[] {
+ *  element-scoped Size (when the archetype has one) and Margin. These are universal
+ *  (both surfaces). The SKIN families (corners / border / shadow / color / type /
+ *  motion) live in the component-builder-only Appearance panel (`skinControlsFor`),
+ *  not here — on the page builder a component's skin comes from its recipe, not
+ *  per-instance re-skinning (docs/61 §5.2). The raw `class` textarea — the final
+ *  escape hatch — is rendered alongside these by the inspector. */
+export function advancedControlsFor(archetype: string | undefined): ClassControl[] {
   const out: ClassControl[] = [];
   const size = sizeControlFor(archetype);
   if (size) out.push(size);
   out.push(MARGIN_CONTROL);
-  if (allowSkin) out.push(RADIUS_CONTROL, BORDER_CONTROL, SHADOW_CONTROL);
   return out;
 }
 
-/** The active option VALUE for a control given a node's class string, or null. */
-export function activeValue(classStr: string | undefined, control: ClassControl): string | null {
-  const token = readClassGroup(classStr, groupTokens(control));
-  return token ? (control.options.find((o) => o.token === token)?.value ?? null) : null;
+// Every control reads/writes a single token from a mutually-exclusive GROUP. A
+// `prefix` (a Tailwind variant like `hover:`, `@lg:`, `dark:`) makes the SAME
+// control target a different responsive/state/theme LAYER: the group becomes the
+// prefixed tokens (`@lg:grid-cols-3`, `hover:bg-primary`), so base + each context
+// are independent groups that never clobber each other (docs/61 §5.2 / §7). The
+// default `''` prefix is the base layer — every existing caller is unchanged.
+const prefixedGroup = (control: ClassControl, prefix: string): string[] =>
+  control.options.map((o) => prefix + o.token);
+
+/** The active option VALUE for a control given a node's class string, or null.
+ *  `prefix` selects the context layer (base when ''). */
+export function activeValue(
+  classStr: string | undefined,
+  control: ClassControl,
+  prefix = ''
+): string | null {
+  const token = readClassGroup(classStr, prefixedGroup(control, prefix));
+  if (!token) return null;
+  const bare = token.slice(prefix.length);
+  return control.options.find((o) => o.token === bare)?.value ?? null;
 }
 
-/** Apply an option value (or clear with null) → the new class string. */
+/** Apply an option value (or clear with null) → the new class string. `prefix`
+ *  writes into the context layer (base when ''). */
 export function applyValue(
   classStr: string | undefined,
   control: ClassControl,
-  value: string | null
+  value: string | null,
+  prefix = ''
 ): string {
-  const token = value ? (control.options.find((o) => o.value === value)?.token ?? null) : null;
-  return setClassGroup(classStr, groupTokens(control), token);
+  const bare = value ? (control.options.find((o) => o.value === value)?.token ?? null) : null;
+  return setClassGroup(classStr, prefixedGroup(control, prefix), bare ? prefix + bare : null);
 }
 
 /** The styling axis a recipe token belongs to (mutually-exclusive groups), or

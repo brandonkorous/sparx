@@ -59,13 +59,18 @@ import { compatibleRetypeTargets, getDef, type ComponentDef, type EditorSurface 
 import { IconPicker } from './icon-picker';
 import { ProseControl } from './prose-control';
 import {
+  ARRANGEMENT_CONTEXTS,
+  SKIN_CONTEXTS,
   STYLE_CONTROLS,
   activeValue,
   advancedControlsFor,
   applyValue,
   arrangementControlsFor,
+  contextPrefix,
   ensureArchetypeDefaults,
+  skinControlsFor,
   type ClassControl,
+  type StyleContext,
 } from './class-controls';
 
 // ── Shared controls ──────────────────────────────────────────────────────────
@@ -295,22 +300,25 @@ function StyleControlField({
   node,
   def,
   control,
+  prefix = '',
   onClass,
 }: {
   node: BuilderNode;
   def: ComponentDef;
   control: ClassControl;
+  /** The context layer this control writes into (`hover:`, `@lg:`, …); '' = base. */
+  prefix?: string;
   onClass: (value: string) => void;
 }) {
   return (
     <Field label={control.label}>
       <NativeSelect
         size="sm"
-        value={activeValue(node.class, control) ?? ''}
+        value={activeValue(node.class, control, prefix) ?? ''}
         onChange={(e) =>
           onClass(
             ensureArchetypeDefaults(
-              applyValue(node.class, control, e.target.value || null),
+              applyValue(node.class, control, e.target.value || null, prefix),
               def.defaults.class
             )
           )
@@ -330,10 +338,66 @@ function StyleControlField({
   );
 }
 
+// The context selector (docs/61 §5.2 / §7) — which responsive / state / theme
+// LAYER the panel's controls write into. Picking `@lg` or `Hover` re-targets every
+// control below it at that variant; "Base" is the default appearance. Grouped into
+// State / Theme / Screen size so the (up to 11) options stay scannable.
+function ContextSelect({
+  contexts,
+  value,
+  onChange,
+}: {
+  contexts: StyleContext[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const states = contexts.filter((c) => ['hover', 'focus', 'active'].includes(c.value));
+  const dark = contexts.find((c) => c.value === 'dark');
+  const breakpoints = contexts.filter((c) => c.prefix.startsWith('@'));
+  const active = contexts.find((c) => c.value === value);
+  return (
+    <Field
+      label="Editing"
+      hint={
+        value === 'base'
+          ? 'The default appearance — applies everywhere.'
+          : `Only at ${active?.label}. Base values still apply otherwise.`
+      }
+    >
+      <NativeSelect size="sm" value={value} onChange={(e) => onChange(e.target.value)}>
+        <option value="base">Base</option>
+        {states.length ? (
+          <optgroup label="State">
+            {states.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
+            ))}
+          </optgroup>
+        ) : null}
+        {dark ? (
+          <optgroup label="Theme">
+            <option value={dark.value}>{dark.label}</option>
+          </optgroup>
+        ) : null}
+        {breakpoints.length ? (
+          <optgroup label="Screen size">
+            {breakpoints.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
+            ))}
+          </optgroup>
+        ) : null}
+      </NativeSelect>
+    </Field>
+  );
+}
+
 // How a CONTAINER arranges its children (docs/61 §5.2): the page-builder's
 // structural surface — display / direction|columns / gap / justify / align /
-// padding, written as Tailwind-native classes. Shown for containers only; leaves
-// arrange nothing.
+// padding, as Tailwind-native classes. Responsive via the context selector —
+// pick a breakpoint to set that layer (`@lg:grid-cols-3`). Containers only.
 function ArrangementPanel({
   node,
   def,
@@ -343,16 +407,24 @@ function ArrangementPanel({
   def: ComponentDef;
   onClass: (value: string) => void;
 }) {
+  const [ctx, setCtx] = React.useState('base');
+  const prefix = contextPrefix(ARRANGEMENT_CONTEXTS, ctx);
+  // The structural choice (direction vs columns) follows the BASE display — you
+  // don't flip flex↔grid per breakpoint; you tune columns/gap/justify per layer.
   const controls = arrangementControlsFor(node.class);
   return (
     <Group label="Arrangement">
-      <p className="bx-grp__caption">How this section lays out its children.</p>
+      <p className="bx-grp__caption">
+        How this section lays out its children. Pick a screen size to make it responsive.
+      </p>
+      <ContextSelect contexts={ARRANGEMENT_CONTEXTS} value={ctx} onChange={setCtx} />
       {controls.map((control) => (
         <StyleControlField
           key={control.id}
           node={node}
           def={def}
           control={control}
+          prefix={prefix}
           onClass={onClass}
         />
       ))}
@@ -360,27 +432,61 @@ function ArrangementPanel({
   );
 }
 
-// The collapsed "Advanced" disclosure — the less-common style axes (Size, Margin)
-// plus the SKIN families (corners / border / shadow) when authoring a component,
-// and the raw `class` textarea, the final escape hatch (docs/47 §4, docs/61 §5.2).
-// Collapsed by default so the everyday Color / Variant stay uncluttered.
-function AdvancedPanel({
+// The component builder's full Appearance surface (docs/61 §5.2, Phase 3): free
+// background / text color, type, corners / border / shadow, and motion — each
+// writable at a chosen context (a screen size, an interaction state, or Dark).
+// Gated to the component builder; on the page builder a component skins via its
+// recipe (the Style panel), never per-instance here.
+function SkinPanel({
   node,
   def,
-  allowSkin,
   onClass,
 }: {
   node: BuilderNode;
   def: ComponentDef;
-  /** Whether the SKIN families (corners/border/shadow) show — true in the
-   *  component builder, false on the page builder (where skin is the recipe's). */
-  allowSkin: boolean;
+  onClass: (value: string) => void;
+}) {
+  const [ctx, setCtx] = React.useState('base');
+  const prefix = contextPrefix(SKIN_CONTEXTS, ctx);
+  const controls = skinControlsFor(prefix);
+  return (
+    <Group label="Appearance">
+      <p className="bx-grp__caption">
+        Colors, type, edges, and motion. Pick a context to style that layer — a screen size
+        (responsive), a state like Hover, or Dark.
+      </p>
+      <ContextSelect contexts={SKIN_CONTEXTS} value={ctx} onChange={setCtx} />
+      {controls.map((control) => (
+        <StyleControlField
+          key={control.id}
+          node={node}
+          def={def}
+          control={control}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      ))}
+    </Group>
+  );
+}
+
+// The collapsed "Advanced" disclosure — the universal less-common axes (Size,
+// Margin) plus the raw `class` textarea, the final escape hatch (docs/47 §4,
+// docs/61 §5.2). Skin families live in the component-builder Appearance panel.
+// Collapsed by default so the everyday Color / Variant stay uncluttered.
+function AdvancedPanel({
+  node,
+  def,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
   onClass: (value: string) => void;
 }) {
   // Controls are built from the archetype (which AXES the element has) — distinct
   // from defaults.class (what a fresh node gets). Icon declares a size axis on its
   // archetype but ships sizeless, so the Size control shows reading "Default".
-  const controls = advancedControlsFor(def.archetype ?? def.defaults.class, allowSkin);
+  const controls = advancedControlsFor(def.archetype ?? def.defaults.class);
   return (
     <details className="bx-adv">
       <summary className="bx-adv__summary">
@@ -1450,10 +1556,13 @@ export function Inspector({
         ))}
       </Group>
 
-      {/* Skin families (corners/border/shadow) author only in the component
-          builder (slotEditor present); on the page builder skin comes from the
-          recipe, not per-instance re-skinning (docs/61 §5.2). */}
-      <AdvancedPanel node={node} def={def} allowSkin={Boolean(slotEditor)} onClass={onClass} />
+      {/* The full Appearance/skin surface (free color/type/edges/motion + per
+          breakpoint/state/dark context) authors only in the component builder
+          (slotEditor present); on the page builder skin comes from the recipe,
+          not per-instance re-skinning (docs/61 §5.2). */}
+      {slotEditor ? <SkinPanel node={node} def={def} onClass={onClass} /> : null}
+
+      <AdvancedPanel node={node} def={def} onClass={onClass} />
 
       <BindingBox
         node={node}
