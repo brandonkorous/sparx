@@ -98,7 +98,9 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'upsert_layout',
     description:
-      'Configure a header / footer / announcement slot (optionally linking a navigation menu).',
+      'Configure a header / footer / announcement slot (optionally linking a navigation menu). The header & footer MUST be ' +
+      'responsive — keep the header link set short so it collapses cleanly on phones (avoid fixed-width CTAs), and lay footer ' +
+      'links out in columns that stack on narrow screens. A header/footer that overflows a phone is a defect.',
     scope: 'write:builder',
     input: UpsertLayoutInput,
     confirmation: false,

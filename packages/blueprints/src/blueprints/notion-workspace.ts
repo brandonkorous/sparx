@@ -809,7 +809,12 @@ function siteLayoutTree(): BuilderNode {
     box: { name: 'Site layout', padding: 'none', backgroundWidth: 'full', contentWidth: 'full' },
     layout: { direction: 'stack', gap: 'none' },
     children: [
-      // HEADER — logo, primary nav, and a CTA button.
+      // HEADER — a true app-bar: logo left, an actions group (nav + CTA) right.
+      // Authored as an explicit `flex flex-row` (no layout.direction) so the
+      // compiler does NOT inject the default row→column stack — the bar stays
+      // horizontal at every width (docs/62 D3). The row NavMenu folds its links
+      // into a hamburger drawer on phones; logo + CTA stay inline, so a phone
+      // reads `logo · [hamburger + CTA]`.
       node('Section', {
         box: {
           name: 'Header',
@@ -818,11 +823,20 @@ function siteLayoutTree(): BuilderNode {
           contentWidth: 'contained',
           padding: 'md',
         },
-        layout: { direction: 'row', justify: 'between', alignItems: 'center' },
+        cls: 'flex flex-row items-center justify-between gap-4',
         children: [
           node('Logo', { bind: 'site.identity' }),
-          node('NavMenu', { props: { orientation: 'row', links: navLinks } }),
-          node('Button', { props: { label: 'Get Mosaic free', style: 'primary', href: '/' } }),
+          // contentWidth:'full' suppresses the default contained `mx-auto w-full
+          // max-w-site` column so this group sizes to its content — letting the
+          // header's justify-between pin it to the right (docs/62 D3).
+          node('Stack', {
+            box: { padding: 'none', contentWidth: 'full' },
+            cls: 'flex flex-row items-center gap-4',
+            children: [
+              node('NavMenu', { props: { orientation: 'row', links: navLinks } }),
+              node('Button', { props: { label: 'Get Mosaic free', style: 'primary', href: '/' } }),
+            ],
+          }),
         ],
       }),
       node('Outlet', { box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' } }),

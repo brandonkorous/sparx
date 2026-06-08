@@ -19,7 +19,10 @@ export const BUILDER_STYLE_GUIDE = {
     'Author a Sparx site page as a tree of nodes. Every node is { id?, type, name?, class?, props, binding?, children? }. ' +
     '`type` picks a component from the catalog below; `class` is a Tailwind-native string that compiles to the tenant theme; ' +
     '`props` is component data; `binding` pulls live data; `children` nest. There is ONE styling surface — the class string. ' +
-    'Containers arrange children (flex/grid); leaves render content. Pages are DRAFTs until published.',
+    'Containers arrange children (flex/grid); leaves render content. Pages are DRAFTs until published. ' +
+    'NON-NEGOTIABLE: every page — and especially the site-layout header & footer — MUST be responsive. Author mobile-first ' +
+    '(the bare utility is the phone layout) and let the layout adapt to width per `responsive` below. A site that breaks, ' +
+    'overflows, or crams on a phone is unshippable — treat it as a defect, not polish.',
 
   documentFormat: {
     description:
@@ -213,6 +216,10 @@ export const BUILDER_STYLE_GUIDE = {
   },
 
   responsive: {
+    mandate:
+      'REQUIRED on every page. Responsiveness is a top-priority platform rule — a fixed desktop-only arrangement is a release ' +
+      'blocker, not a refinement. Author the base (no-prefix) utility as the MOBILE layout, then widen with `@`-prefixed steps. ' +
+      'Never assume a single width.',
     strategy:
       'CONTAINER QUERIES, not viewport. A node responds to its OWN width with `@`-prefixed variants, so a component is responsive ' +
       'wherever it is placed. Author mobile-first (the base utility) then step up at container breakpoints.',
@@ -222,6 +229,11 @@ export const BUILDER_STYLE_GUIDE = {
       'flex-col @3xl:flex-row  — stacked on narrow, side-by-side once wide',
       'p-6 @3xl:p-16  — tighter padding on small containers',
     ],
+    headerFooter:
+      'The site-layout header & footer are the #1 failure points — give them extra care. HEADER: a row of items (logo · nav · ' +
+      'CTA) stacks to a centered column on narrow widths (author `flex flex-col @3xl:flex-row`); keep the link set short and ' +
+      'avoid fixed-width children (no `min-w-[…]` / `w-[200px]` on the CTA) so nothing overflows. FOOTER: put link groups in a ' +
+      'Grid (it collapses N→2→1 by container width), never a single fixed row that runs off a phone. Verify both at a ~375px width.',
   },
 
   binding: {

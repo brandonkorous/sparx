@@ -45,6 +45,7 @@ import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 
 import { BuilderCarousel } from './builder-carousel';
 import { BuilderIcon } from './builder-icon';
+import { BuilderNavMenu } from './builder-nav-menu';
 import {
   BuilderAddToCart,
   BuilderBuyBox,
@@ -500,6 +501,9 @@ function renderLeaf(
         ...(l.openInNewTab ? { openInNewTab: true } : {}),
       }));
       if (list.length === 0) return null;
+      // A row (primary/header) nav collapses to a hamburger + drawer on phones
+      // via a client island (docs/62 D2). Stacked (footer/secondary) stays static.
+      if (orientation === 'row') return <BuilderNavMenu items={list} className={leafClass} />;
       return <NavMenu items={list} orientation={orientation} className={leafClass} />;
     }
     case 'SocialLinks': {

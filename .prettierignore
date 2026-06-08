@@ -18,3 +18,6 @@ packages/db/prisma/migrations/**
 
 # Playwright auth state (regenerated per test run)
 **/playwright/.auth/**
+
+# Locally-installed Claude Code skills (untracked, regenerated on install)
+.claude/skills/**

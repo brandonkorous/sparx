@@ -1131,11 +1131,14 @@
   }
 }
 @media (max-width: 760px) {
-  .sf-nav,
+  /* Scoped to .sf-header (the LEGACY chrome) — docs/62 D1. The Builder chrome
+     renders the same `.sf-nav` class under .bx-render; an unscoped hide here used
+     to blank the Builder header nav + every footer column on phones. */
+  .sf-header .sf-nav,
   .sf-search--desktop {
     display: none;
   }
-  .sf-nav__toggle,
+  .sf-header .sf-nav__toggle,
   .sf-search--mobile {
     display: inline-flex;
   }
@@ -1249,6 +1252,28 @@
 @keyframes sf-slide-right {
   from {
     transform: translateX(100%);
+  }
+}
+
+/* ── Builder header nav (docs/62 D2/D5) ─────────────────────────────────────
+   A row-oriented Builder NavMenu renders the BuilderNavMenu island: inline links
+   on desktop, a hamburger + drawer on phones. The swap is the one deliberate
+   VIEWPORT breakpoint in the otherwise container-query render path (docs/62 D4) —
+   the bar width ≈ viewport and the drawer is position:fixed. Reuses the
+   .sf-nav__toggle + .sf-drawer-* CSS above. */
+.sf-builder-nav {
+  display: flex;
+  align-items: center;
+}
+.sf-builder-nav__toggle {
+  display: none;
+}
+@media (max-width: 767px) {
+  .sf-builder-nav__inline {
+    display: none;
+  }
+  .sf-builder-nav__toggle {
+    display: inline-flex;
   }
 }
 

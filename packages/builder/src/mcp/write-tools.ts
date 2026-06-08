@@ -21,7 +21,8 @@ const documentArg = z
   .union([z.string(), z.record(z.string(), z.unknown())])
   .describe(
     'A Builder page document — { format:"sparx.builder/v1", type:"page", name, kind, slug?, recordType?, tree } — ' +
-      'OR a bare node tree. JSON string or inline object. Missing node ids are auto-filled. See describe_builder_styling.'
+      'OR a bare node tree. JSON string or inline object. Missing node ids are auto-filled. See describe_builder_styling. ' +
+      'The tree MUST be responsive (mobile-first; layout adapts to width) — see the guide’s `responsive` section.'
   );
 
 const propertyIdArg = z
