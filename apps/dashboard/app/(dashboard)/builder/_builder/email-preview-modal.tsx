@@ -11,7 +11,16 @@
 
 import * as React from 'react';
 import { Monitor, Send, Smartphone } from 'lucide-react';
-import { Button, Input, Modal, ModalContent, ModalHeader, ModalTitle, toast } from '@sparx/ui';
+import {
+  Button,
+  Input,
+  Modal,
+  ModalContent,
+  ModalDescription,
+  ModalHeader,
+  ModalTitle,
+  toast,
+} from '@sparx/ui';
 
 import { previewEmail, testSendEmail } from '../_lib/actions';
 
@@ -66,6 +75,10 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
       <ModalContent className="max-w-3xl">
         <ModalHeader>
           <ModalTitle>Email preview</ModalTitle>
+          <ModalDescription>
+            The real, table-based HTML this email ships as — preview it desktop or mobile, and send
+            a test copy to any address.
+          </ModalDescription>
         </ModalHeader>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
