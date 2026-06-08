@@ -25,6 +25,7 @@ import { MiniCart } from '@/components/mini-cart';
 import { ModeToggle } from '@/components/mode-toggle';
 import { PreviewBridge } from '@/components/preview-bridge';
 import { RevealController } from '@/components/reveal-controller';
+import { MotionController } from '@/components/motion-controller';
 import { SiteHeader, type NavItem } from '@/components/site-header';
 import { SiteFooter, type FooterColumn } from '@/components/site-footer';
 import { BuilderSiteChrome } from '@/components/builder-renderer';
@@ -144,11 +145,13 @@ function noFlashScript(policy: 'auto' | 'toggle'): string {
   return `(function(){try{var d=document.documentElement;var p=${JSON.stringify(policy)};var dark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(p==='toggle'){var m=document.cookie.match(/(?:^|;\\s*)sparx_theme=(light|dark)/);d.setAttribute('data-theme',m?m[1]:(dark?'dark':'light'));}else{d.setAttribute('data-theme',dark?'dark':'light');}}catch(e){}})();`;
 }
 
-// Before-paint flag that enables the section scroll-reveal entrance. Gating the
-// hidden initial state on `html.sf-reveal-ready` means content is fully visible
-// when JS is off (this script never runs) or reduced motion is requested (the
-// class is not added), avoiding any flash of invisible content.
-const REVEAL_INIT_SCRIPT = `(function(){try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.documentElement.classList.add('sf-reveal-ready');}catch(e){}})();`;
+// Before-paint flag that enables scroll-reveal entrances. Gating the hidden
+// initial state on these classes means content is fully visible when JS is off
+// (this script never runs) or reduced motion is requested (the classes are not
+// added), avoiding any flash of invisible content. `sf-reveal-ready` gates the
+// legacy section path; `sf-anim-ready` gates the docs/61 Builder motion
+// (`.sf-reveal` + SCROLL_MOTION_CSS, driven by MotionController).
+const REVEAL_INIT_SCRIPT = `(function(){try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.documentElement.classList.add('sf-reveal-ready','sf-anim-ready');}catch(e){}})();`;
 
 // Before-paint: reflect the recorded cookie-consent decision onto <html> as a
 // `data-consent` attribute (space-separated granted categories) so any deferred
@@ -393,6 +396,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="sf-body">
         <PreviewBridge />
         <RevealController />
+        <MotionController />
         {tenant ? (
           <CustomerProvider tenantSlug={tenant.slug} propertySlug={activePropertySlug ?? undefined}>
             <WishlistProvider>

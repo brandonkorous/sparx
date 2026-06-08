@@ -65,7 +65,7 @@ export function EmailPreviewModal({ emailId, open, onOpenChange }: EmailPreviewM
     setSending(true);
     void testSendEmail(emailId, addr).then((res) => {
       setSending(false);
-      if (res.ok) toast.success(`Test sent to ${addr}.`);
+      if (res.ok) toast.success(`Test sent to ${addr} — it should arrive shortly.`);
       else toast.error(res.error ?? 'Test send failed.');
     });
   };

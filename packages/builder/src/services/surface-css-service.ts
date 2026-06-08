@@ -20,13 +20,29 @@
 
 import { z } from 'zod';
 import { withTenant } from '@sparx/db';
-import { collectClasses, compileClasses, contentHash } from '@sparx/surface-compile';
+import {
+  collectClasses,
+  compileClasses,
+  contentHash,
+  REDUCED_MOTION_CSS,
+  SCROLL_MOTION_CSS,
+} from '@sparx/surface-compile';
 import type { BuilderNode } from '@sparx/builder-schemas';
 
 import type { PropertyContext } from '../errors';
 
+// Render-surface CSS shipped ONCE with every tenant sheet (docs/61 §9): the
+// reduced-motion baseline + the scroll-reveal entrance rules. It is identical for
+// every tenant (not compiled from their classes) and rides this same stylesheet
+// so the live site receives it through the existing HTTP path with no extra
+// dependency, and so does the editor canvas. Prepended (not passed through the
+// Tailwind compiler) so its custom `sf-reveal`/`@keyframes` rules are never
+// tree-shaken or mangled.
+const RENDER_LAYER_CSS = REDUCED_MOTION_CSS + SCROLL_MOTION_CSS;
+
 export interface PublishedStylesheet {
-  /** The compiled, minified CSS for every authored class — '' when none. */
+  /** The compiled, minified CSS for every authored class, prefixed with the
+   *  render-layer motion baseline (so it is never empty). */
   css: string;
   /** Content hash of `css` (cache-bustable identity). */
   hash: string;
@@ -84,7 +100,7 @@ export async function getPublishedStylesheet(ctx: PropertyContext): Promise<Publ
   const cached = cache.get(key);
   if (cached?.classHash === classHash) return cached.sheet;
 
-  const css = await compileClasses(classes, { minify: true });
+  const css = RENDER_LAYER_CSS + (await compileClasses(classes, { minify: true }));
   const sheet: PublishedStylesheet = { css, hash: contentHash(css) };
   cache.set(key, { classHash, sheet });
   return sheet;
@@ -130,7 +146,7 @@ export async function getDraftStylesheet(ctx: PropertyContext): Promise<Publishe
   const cached = draftCache.get(key);
   if (cached?.classHash === classHash) return cached.sheet;
 
-  const css = await compileClasses(classes, { minify: true });
+  const css = RENDER_LAYER_CSS + (await compileClasses(classes, { minify: true }));
   const sheet: PublishedStylesheet = { css, hash: contentHash(css) };
   draftCache.set(key, { classHash, sheet });
   return sheet;
@@ -155,6 +171,8 @@ export const CompilePreviewInput = z.object({
 export async function compilePreview(rawInput: unknown): Promise<{ css: string }> {
   const { classes } = CompilePreviewInput.parse(rawInput);
   // Dedupe + sort for compiler determinism (the editor sends a raw list).
-  const css = await compileClasses([...new Set(classes)].sort());
+  // Prefix the render-layer motion CSS so the canvas's "Play motion" replay
+  // (docs/61 §9.4) has the reveal rules available, identical to the live site.
+  const css = RENDER_LAYER_CSS + (await compileClasses([...new Set(classes)].sort()));
   return { css };
 }

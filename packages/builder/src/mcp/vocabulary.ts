@@ -192,15 +192,18 @@ export const BUILDER_STYLE_GUIDE = {
         'mx-auto w-full max-w-site — the centered content column inside a full-bleed (w-full) band. This pairing is the core page rhythm.',
     },
     motion: {
-      note: 'Entrance animations ship with the theme; reduced-motion is the default posture (neutralized under the OS setting).',
-      animations: [
-        'animate-fade-in',
-        'animate-fade-up',
-        'animate-fade-down',
-        'animate-scale-in',
-        'animate-slide-in-left',
-        'animate-slide-in-right',
-      ],
+      note:
+        'Entrance animations ship with the theme; reduced-motion is the default posture (neutralized under the OS setting, so never add a reduced-motion guard). ' +
+        'An entrance has THREE triggers — choose the class shape by WHEN it should play:',
+      triggers: {
+        scroll:
+          'Plays as the element scrolls into view (the alive-feeling default). Emit `sf-reveal sf-reveal--<token>` (e.g. `sf-reveal sf-reveal--fade-up`). A tiny IntersectionObserver island flips it on; nothing is hidden when JS is off or reduced motion is set.',
+        load: 'Plays once on first paint. Emit the bare `animate-<token>` (e.g. `animate-fade-up`).',
+        hover: 'Plays on hover. Emit `hover:animate-<token>` (e.g. `hover:animate-scale-in`).',
+      },
+      tokens: ['fade-in', 'fade-up', 'fade-down', 'scale-in', 'slide-in-left', 'slide-in-right'],
+      stagger:
+        'On a CONTAINER, `sf-reveal-stagger` (or `sf-reveal-stagger--bold`) fades its direct children in sequence as it scrolls into view — do NOT also put a reveal on each child.',
       transitions: ['transition', 'duration-300', 'ease-out', 'hover:scale-105'],
     },
     states: {
@@ -299,6 +302,39 @@ export const BUILDER_STYLE_GUIDE = {
                   { type: 'Heading', props: { level: 'h3' }, binding: { path: 'item.title' } },
                   { type: 'PriceTag', props: {}, binding: { path: 'item.price' } },
                   { type: 'Button', props: { label: 'Add to cart', style: 'soft' } },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      name: 'Scroll-reveal feature row (entrance motion)',
+      tree: {
+        type: 'Section',
+        class: 'mx-auto w-full max-w-site flex flex-col gap-8 p-16',
+        props: {},
+        children: [
+          {
+            type: 'Heading',
+            // scroll trigger: the heading fades up as it enters the viewport
+            class: 'sf-reveal sf-reveal--fade-up text-center',
+            props: { level: 'h2', text: 'Why teams choose us' },
+          },
+          {
+            type: 'Grid',
+            // container stagger: the cards fade up in sequence on reveal (no per-card reveal)
+            class: 'grid grid-cols-1 @2xl:grid-cols-3 gap-6 sf-reveal-stagger',
+            props: {},
+            children: [
+              {
+                type: 'Card',
+                class: 'flex flex-col gap-2 rounded-box border border-border p-6',
+                props: {},
+                children: [
+                  { type: 'Heading', props: { level: 'h3', text: 'Fast' } },
+                  { type: 'Text', props: { variant: 'body', text: 'Sub-second pages.' } },
                 ],
               },
             ],

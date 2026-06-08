@@ -267,19 +267,96 @@ export const TRANSFORM_CONTROL: ClassControl = {
   ],
 };
 
-// The custom entrance animations from the Surface theme (docs/61 §9) — base layer
-// only (an entrance has no hover/breakpoint variant), so the panel hides it off-base.
-export const ANIMATION_CONTROL: ClassControl = {
-  id: 'animation',
-  label: 'Entrance',
+// ── Motion (docs/61 §9) — entrance × trigger, BOTH surfaces ───────────────────
+// Entrance and trigger interact: the SAME entrance plays through a different class
+// shape per trigger — load `animate-<token>` (pure CSS, on paint), hover
+// `hover:animate-<token>` (pure CSS), scroll `sf-reveal sf-reveal--<token>` (the
+// MotionController island flips `.sf-in` in view, against SCROLL_MOTION_CSS). So
+// Motion is a small COMPOSITE over `node.class` rather than one flat group: the
+// reader detects the shape, the writer clears the whole motion vocabulary and
+// re-emits. Reduced motion is neutralized globally (REDUCED_MOTION_CSS) — no
+// per-class opt-in. Available on both surfaces: an entrance is safe-because-visible
+// like arrangement, not silent re-skin (docs/61 §5.2).
+
+export interface MotionOption {
+  value: string;
+  label: string;
+}
+
+/** Entrance tokens — the canonical names shared by the compile-theme `--animate-*`
+ *  set (surface-compile/theme.ts) and the `.sf-reveal--*` scroll rules
+ *  (surface-compile/motion.ts, SCROLL_MOTION_CSS). */
+export const MOTION_ENTRANCES: MotionOption[] = [
+  { value: 'fade-in', label: 'Fade in' },
+  { value: 'fade-up', label: 'Fade up' },
+  { value: 'fade-down', label: 'Fade down' },
+  { value: 'scale-in', label: 'Scale in' },
+  { value: 'slide-in-left', label: 'Slide in left' },
+  { value: 'slide-in-right', label: 'Slide in right' },
+];
+
+export const MOTION_TRIGGERS: MotionOption[] = [
+  { value: 'scroll', label: 'On scroll' },
+  { value: 'load', label: 'On load' },
+  { value: 'hover', label: 'On hover' },
+];
+
+export interface MotionState {
+  /** null = no entrance motion. */
+  entrance: string | null;
+  /** 'scroll' | 'load' | 'hover'; defaults to 'scroll' when an entrance is set. */
+  trigger: string;
+}
+
+/** The class(es) a given entrance + trigger emits. */
+function entranceClasses(entrance: string, trigger: string): string[] {
+  if (trigger === 'scroll') return ['sf-reveal', `sf-reveal--${entrance}`];
+  if (trigger === 'hover') return [`hover:animate-${entrance}`];
+  return [`animate-${entrance}`];
+}
+
+/** Every class token the Motion control may own — cleared before re-emit. */
+function allMotionTokens(): Set<string> {
+  const out = new Set<string>(['sf-reveal', 'animate-none']);
+  for (const e of MOTION_ENTRANCES) {
+    out.add(`animate-${e.value}`);
+    out.add(`hover:animate-${e.value}`);
+    out.add(`sf-reveal--${e.value}`);
+  }
+  return out;
+}
+
+/** Detect the current entrance + trigger from a node's class string. */
+export function readMotion(classStr: string | undefined): MotionState {
+  const tokens = new Set((classStr ?? '').split(/\s+/).filter(Boolean));
+  for (const e of MOTION_ENTRANCES) {
+    if (tokens.has(`sf-reveal--${e.value}`)) return { entrance: e.value, trigger: 'scroll' };
+    if (tokens.has(`hover:animate-${e.value}`)) return { entrance: e.value, trigger: 'hover' };
+    if (tokens.has(`animate-${e.value}`)) return { entrance: e.value, trigger: 'load' };
+  }
+  return { entrance: null, trigger: 'scroll' };
+}
+
+/** Clear the whole motion vocabulary and re-emit the chosen shape (or none). */
+export function applyMotion(classStr: string | undefined, next: MotionState): string {
+  const remove = allMotionTokens();
+  const tokens = (classStr ?? '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((t) => !remove.has(t));
+  if (next.entrance) tokens.push(...entranceClasses(next.entrance, next.trigger));
+  return tokens.join(' ');
+}
+
+/** Container stagger (docs/61 §9): direct children fade-up in sequence as the
+ *  container scrolls into view. Single-token group → drives through the standard
+ *  activeValue/applyValue like any other control. Containers only. */
+export const STAGGER_CONTROL: ClassControl = {
+  id: 'stagger',
+  label: 'Stagger children',
   options: [
-    { value: 'none', label: 'None', token: 'animate-none' },
-    { value: 'fade-in', label: 'Fade in', token: 'animate-fade-in' },
-    { value: 'fade-up', label: 'Fade up', token: 'animate-fade-up' },
-    { value: 'fade-down', label: 'Fade down', token: 'animate-fade-down' },
-    { value: 'scale-in', label: 'Scale in', token: 'animate-scale-in' },
-    { value: 'slide-left', label: 'Slide in left', token: 'animate-slide-in-left' },
-    { value: 'slide-right', label: 'Slide in right', token: 'animate-slide-in-right' },
+    { value: 'subtle', label: 'Subtle', token: 'sf-reveal-stagger' },
+    { value: 'bold', label: 'Bold', token: 'sf-reveal-stagger--bold' },
   ],
 };
 
@@ -327,11 +404,13 @@ export function contextPrefix(contexts: StyleContext[], value: string): string {
   return contexts.find((c) => c.value === value)?.prefix ?? '';
 }
 
-/** The full appearance/skin controls for the component builder, in order. The
- *  entrance Animation is base-only (no variant), so it's dropped once a non-base
- *  context (a breakpoint / state / dark) is active. */
-export function skinControlsFor(prefix: string): ClassControl[] {
-  const out: ClassControl[] = [
+/** The full appearance/skin controls for the component builder, in order. These
+ *  are the per-instance INTERACTIVE skin: free color/type/edges + transition &
+ *  transform (which pair with a hover/focus context). The ENTRANCE animation moved
+ *  to the cross-surface Motion panel (docs/61 §9) — it's authored on both surfaces,
+ *  not just here. */
+export function skinControlsFor(): ClassControl[] {
+  return [
     BACKGROUND_CONTROL,
     TEXT_COLOR_CONTROL,
     FONT_FAMILY_CONTROL,
@@ -345,8 +424,6 @@ export function skinControlsFor(prefix: string): ClassControl[] {
     TRANSITION_CONTROL,
     TRANSFORM_CONTROL,
   ];
-  if (prefix === '') out.push(ANIMATION_CONTROL);
-  return out;
 }
 
 // ── Arrangement controls (docs/61 §5.2) ──────────────────────────────────────

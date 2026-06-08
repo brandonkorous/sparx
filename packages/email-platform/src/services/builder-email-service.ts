@@ -11,7 +11,7 @@
 // Phase 2 (docs/52 §9): preview + test-send. The broadcast send path (Phase 3)
 // reuses renderEmailTree the same way.
 
-import { renderEmailTree, sendEmail, type DeliveryResult } from '@sparx/email';
+import { renderEmailTree } from '@sparx/email';
 import type { BuilderNode, DataSources } from '@sparx/builder-schemas';
 
 import { TestSendInput } from '../schemas/templates';
@@ -78,17 +78,29 @@ export async function renderPreview(
   return { subject: rendered.subject, html: rendered.html, text: rendered.text };
 }
 
-/** Render + immediately deliver a Builder email to one address — the staff smoke
- *  test (the synchronous escape hatch, like templateService.testSend). Stamps
- *  tenant_id so any resulting webhook events attribute correctly. The recipient's
- *  own data is resolved (the test address as the recipient), so a personalized
- *  email smoke-tests the per-recipient render too. */
-export async function testSend(
+/** The deliverable a staff test-send produces: a fully-rendered email ready to
+ *  hand to the email-worker as a `raw` `email.send` event. */
+export interface PreparedTestSend {
+  from: string;
+  to: string;
+  replyTo?: string;
+  subject: string;
+  html: string;
+  text: string;
+}
+
+/** Render a Builder email's DRAFT for a one-off staff test-send and return the
+ *  deliverable — but do NOT deliver it here. The caller publishes an `email.send`
+ *  event so the email-worker delivers it through the configured provider; the
+ *  worker is the single email egress path, and direct sends are an OTP-only escape
+ *  hatch (CLAUDE.md). The recipient's own data is resolved (the test address as the
+ *  recipient) so a personalized email smoke-tests the per-recipient render too. */
+export async function prepareTestSend(
   ctx: ServiceContext,
   doc: BuilderEmailDoc,
   rawInput: unknown,
   resolveData: ResolveEmailData = noEmailDataResolver
-): Promise<DeliveryResult> {
+): Promise<PreparedTestSend> {
   const { to } = TestSendInput.parse(rawInput);
   const [brand, settings, data] = await Promise.all([
     resolveEmailBrand(ctx),
@@ -99,13 +111,12 @@ export async function testSend(
     { tree: doc.tree, subject: doc.subject, preheader: doc.preheader ?? undefined, to, data },
     { brand: brand ?? undefined }
   );
-  return sendEmail({
+  return {
     from: buildFrom(settings.fromName, settings.fromAddress),
     to,
     replyTo: settings.replyTo ?? undefined,
     subject: rendered.subject,
     html: rendered.html,
     text: rendered.text,
-    variables: { tenant_id: ctx.tenantId },
-  });
+  };
 }

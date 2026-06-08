@@ -20,7 +20,7 @@ export { compileClasses, type CompileOptions } from './compile';
 export { isClassAllowed, validateClasses, baseUtility, type ClassValidation } from './allowlist';
 export { contentHash } from './hash';
 export { SURFACE_THEME_CSS } from './theme';
-export { REDUCED_MOTION_CSS } from './motion';
+export { REDUCED_MOTION_CSS, SCROLL_MOTION_CSS } from './motion';
 
 export interface TenantStylesheet {
   /** The compiled CSS (minified when `minify` was set). */

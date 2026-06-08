@@ -10,7 +10,8 @@
 //   DELETE /v1/builder/emails/:id          → remove
 //   POST   /v1/builder/emails/:id/publish  → snapshot draft → published
 //   GET    /v1/builder/emails/:id/preview  → render the DRAFT body to inlined HTML
-//   POST   /v1/builder/emails/:id/test-send→ render + deliver the draft to one address
+//   POST   /v1/builder/emails/:id/test-send→ render the draft + queue delivery via
+//                                            email-worker (the single egress path)
 //
 // Bodies are validated by the service-layer Zod schemas (the established route ↔
 // service boundary), so api-rest keeps no @sparx/builder-schemas dependency. The
@@ -24,6 +25,7 @@ import { emailService } from '@sparx/builder';
 import { builderEmailService } from '@sparx/email-platform';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
+import { publish } from '@sparx/api-core/pubsub';
 import { requireBuilderModule, toBuilderTenantContext } from '../../../lib/builder-context.js';
 import { emailDataResolver } from '../../../lib/email-data.js';
 
@@ -100,20 +102,33 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     return ok(preview);
   });
 
-  // Render + immediately deliver the draft to one address — the staff smoke test.
+  // Staff smoke test: render the DRAFT here, then hand delivery to the
+  // email-worker via an `email.send` event. Email egress goes through the worker
+  // (Mailgun in prod) — direct provider sends are an OTP-only escape hatch
+  // (CLAUDE.md). The worker delivers the pre-rendered `raw` body as-is.
   app.post('/v1/builder/emails/:id/test-send', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const ctx = toBuilderTenantContext(request);
     const { id } = IdParam.parse(request.params);
     const email = await emailService.get(ctx, id);
-    const result = await builderEmailService.testSend(
+    const prepared = await builderEmailService.prepareTestSend(
       ctx,
       { tree: email.tree, subject: email.subject, preheader: email.preheader },
       request.body,
       emailDataResolver(ctx)
     );
-    return ok(result);
+    await publish(request.log, 'email.send', ctx.tenantId, null, {
+      kind: 'raw',
+      to: prepared.to,
+      from: prepared.from,
+      ...(prepared.replyTo ? { replyTo: prepared.replyTo } : {}),
+      subject: prepared.subject,
+      html: prepared.html,
+      text: prepared.text,
+      variables: { test_send: 'true' },
+    });
+    return ok({ queued: true, to: prepared.to });
   });
 
   return Promise.resolve();

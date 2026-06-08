@@ -266,17 +266,15 @@ export async function previewEmail(
   );
 }
 
-/** Render + deliver the draft to one address — the staff smoke test. */
+/** Render the draft + queue delivery via the email-worker — the staff smoke test.
+ *  Delivery is async (the worker sends through the configured provider), so this
+ *  resolves once the send is queued, not once it's accepted by the provider. */
 export async function testSendEmail(
   id: string,
   to: string
-): Promise<ActionResult<{ id: string; provider: string; acceptedAt: string }>> {
+): Promise<ActionResult<{ queued: boolean; to: string }>> {
   return run(
-    () =>
-      api.post<{ id: string; provider: string; acceptedAt: string }>(
-        `/v1/builder/emails/${id}/test-send`,
-        { to }
-      ),
+    () => api.post<{ queued: boolean; to: string }>(`/v1/builder/emails/${id}/test-send`, { to }),
     false
   );
 }

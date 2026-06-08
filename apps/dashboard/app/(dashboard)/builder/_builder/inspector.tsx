@@ -62,14 +62,20 @@ import {
   ARRANGEMENT_CONTEXTS,
   SKIN_CONTEXTS,
   STYLE_CONTROLS,
+  STAGGER_CONTROL,
+  MOTION_ENTRANCES,
+  MOTION_TRIGGERS,
   activeValue,
   advancedControlsFor,
   applyValue,
+  applyMotion,
   arrangementControlsFor,
   contextPrefix,
   ensureArchetypeDefaults,
+  readMotion,
   skinControlsFor,
   type ClassControl,
+  type MotionState,
   type StyleContext,
 } from './class-controls';
 
@@ -448,7 +454,7 @@ function SkinPanel({
 }) {
   const [ctx, setCtx] = React.useState('base');
   const prefix = contextPrefix(SKIN_CONTEXTS, ctx);
-  const controls = skinControlsFor(prefix);
+  const controls = skinControlsFor();
   return (
     <Group label="Appearance">
       <p className="bx-grp__caption">
@@ -466,6 +472,65 @@ function SkinPanel({
           onClass={onClass}
         />
       ))}
+    </Group>
+  );
+}
+
+// Motion (docs/61 §9): how an element ENTERS — what plays, and when. Available on
+// BOTH surfaces (an entrance is safe-because-visible like arrangement, not silent
+// re-skin — §5.2). Scroll plays it as the reader reaches it (the MotionController
+// island); load/hover are pure CSS. Containers also get a child Stagger. Reduced
+// motion is always respected (REDUCED_MOTION_CSS), so there's no a11y opt-in.
+function MotionPanel({
+  node,
+  def,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  onClass: (value: string) => void;
+}) {
+  const motion = readMotion(node.class);
+  const setMotion = (next: MotionState) =>
+    onClass(ensureArchetypeDefaults(applyMotion(node.class, next), def.defaults.class));
+  return (
+    <Group label="Motion">
+      <p className="bx-grp__caption">
+        How this element enters. “On scroll” plays it as the reader reaches it. Reduced motion is
+        always respected.
+      </p>
+      <Field label="Entrance">
+        <NativeSelect
+          size="sm"
+          value={motion.entrance ?? ''}
+          onChange={(e) => setMotion({ entrance: e.target.value || null, trigger: motion.trigger })}
+        >
+          <option value="">None</option>
+          {MOTION_ENTRANCES.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </NativeSelect>
+      </Field>
+      {motion.entrance ? (
+        <Field label="Trigger">
+          <NativeSelect
+            size="sm"
+            value={motion.trigger}
+            onChange={(e) => setMotion({ entrance: motion.entrance, trigger: e.target.value })}
+          >
+            {MOTION_TRIGGERS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </NativeSelect>
+        </Field>
+      ) : null}
+      {def.kind === 'container' ? (
+        <StyleControlField node={node} def={def} control={STAGGER_CONTROL} onClass={onClass} />
+      ) : null}
     </Group>
   );
 }
@@ -1579,6 +1644,9 @@ export function Inspector({
       {def.kind === 'container' ? (
         <ArrangementPanel node={node} def={def} onClass={onClass} />
       ) : null}
+      {/* Motion (docs/61 §9) — entrance on every node. Hidden on the email surface
+          (mail clients strip classes, so an entrance is inert there). */}
+      {surface !== 'email' ? <MotionPanel node={node} def={def} onClass={onClass} /> : null}
     </div>
   );
 }
