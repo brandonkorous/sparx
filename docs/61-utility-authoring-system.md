@@ -1,6 +1,6 @@
 # 61 — Utility Authoring: The Property-Panel Style System
 
-**Version:** 1.3.0
+**Version:** 1.4.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-07
 
@@ -122,9 +122,16 @@ uniformity to protect there. What must stay governed is _treatment/skin_.
   **visibility** (`hidden @md:block`). These are _structural_ and **vital** — you cannot build a real
   page (two-column hero, logo strip, full-bleed band) without them.
 - **Component builder → the skin families:** raw color, backgrounds, borders, shadows, radius, free
-  typography, filters, transforms, motion, and arbitrary one-off values. A page author sets a
+  typography, filters, transforms, and arbitrary one-off values. A page author sets a
   component's color × variant × size through the **recipe** (governed, brand-safe), never raw fill +
   foreground.
+
+**Motion is the exception among the skin families — it lives on _both_ surfaces ([§9](#9--motion--transitions--animations)).**
+Its only failure mode is a janky-_looking_ page: visible and self-correcting, exactly the risk class
+the page builder already accepts for arrangement — never the silent, compounding brand drift that gates
+the rest of skin. So motion carries arrangement's risk profile, not skin's, and an author or AI agent
+reaches it on the page builder too. We don't gate against jank; we engineer against it (curated
+vocabulary + compositor-only entrances + reduced-motion default — §9.6).
 
 This is the **same line the platform already draws** (CLAUDE.md brand rule, [23](23-frontend-component-architecture.md)
 §1/§15): _"Layout/positioning/spacing/sizing utilities … are fine; the banned pattern is **re-skinning
@@ -165,9 +172,11 @@ properties and compile through the existing pipeline; they are blocked only wher
 
 **Surface split (§5.2).** The **arrangement** families — Layout, Flexbox, Grid, Spacing, Sizing, and
 responsive visibility — are available on the **page builder** (on containers; Sizing + visibility also
-on leaves). The **skin** families — Typography, Backgrounds/color, Borders, Effects, Transforms,
-Motion — plus arbitrary values are **component-builder only**. Color × variant × size of a placed
-component is reachable on the page through the **recipe** (governed), not as raw skin utilities.
+on leaves). The **skin** families — Typography, Backgrounds/color, Borders, Effects, Transforms — plus
+arbitrary values are **component-builder only**. **Motion ([§9](#9--motion--transitions--animations))
+is available on _both_ surfaces** — safe-because-visible like arrangement, not silent like skin. Color ×
+variant × size of a placed component is reachable on the page through the **recipe** (governed), not as
+raw skin utilities.
 
 ## 7. Breakpoints & responsive — container queries
 
@@ -212,19 +221,131 @@ and abuse, and keeps the contract honest.
 
 ## 9. Motion — transitions & animations
 
-A first-class **Motion** family, nearly free because it compiles through the existing pipeline:
+> **Phase 5 execution spec.** Motion is a first-class family **available on both surfaces** (§5.2/§6
+> amendment): its only failure mode is a janky-_looking_ page — visible and self-correcting, the risk
+> class the page builder already accepts — never silent brand drift, so it isn't gated. The compile
+> pipeline already makes it nearly free; what's left (this phase) is the **friendly control**, the
+> **scroll trigger**, and the **render wiring**. _Already shipped:_ the tokenized entrance keyframes in
+> the compile theme (`--animate-fade-in/-up/-down`, `--animate-scale-in`, `--animate-slide-in-left/-right`,
+> `theme.ts`), the reduced-motion baseline (`motion.ts`), the allowlist passing all motion utilities, and
+> a raw entrance/transition control in the component-builder Appearance panel (§12.3).
 
-- **Transitions:** `transition`/`transition-{colors,transform,opacity,all}`, `duration-*`, `ease-*`,
-  `delay-*` — meaningful in combination with `hover:`/`focus:` states.
-- **Animations:** built-ins `animate-{spin,ping,pulse,bounce}` + **custom keyframes** defined once in
-  the compile theme (`--animate-fade-in`, `--animate-slide-up`, …) so they're tokenized and shared.
-- **Reduced motion is the default posture.** The shipped sheet wraps animation/transition so
-  `prefers-reduced-motion` neutralizes it (`motion-reduce:*`); authors opt _out_ of the guard, never in
-  to accessibility.
-- **Triggers:** `hover`/`focus`/`load` are pure CSS. **In-view** (scroll) needs a tiny client island —
-  an `IntersectionObserver` keyed on a `data-animate` attribute — the only new runtime this doc adds.
-- **Panel:** a Motion section — transition toggle + duration + easing + delay; animation picker; trigger
-  (hover / in-view / load).
+### 9.1 The model — three independent dimensions
+
+A motion composes from:
+
+- **Entrance** — _what_ plays: the tokenized keyframes in the compile theme (`fade-in`, `fade-up`,
+  `fade-down`, `scale-in`, `slide-in-left`, `slide-in-right`) plus Tailwind built-ins
+  (`spin`/`ping`/`pulse`/`bounce`, for loaders/accents). The curated set; arbitrary keyframes are the
+  raw escape hatch only.
+- **Trigger** — _when_ it plays: **on scroll into view** (default — the alive-feeling one), **on load**,
+  or **on hover**.
+- **Tempo** — _how_ it plays: **speed** (fast/normal/slow → `animation-duration`) and **delay**, plus a
+  container **stagger** (a per-child delay increment).
+
+Plus the always-available **interactive transitions** for hover/focus affordances (`transition`,
+`duration-*`, `ease-*`) — these stay raw classes on the component-builder Appearance panel (§12.3); the
+Motion control below is specifically the **entrance** surface.
+
+### 9.2 Where it lives — `props.motion`, not the class string
+
+A scroll trigger **cannot be a static utility** — it needs a runtime hook to know when the element
+enters view — exactly like a background-image URL, which is why the cutover already routes
+presentation-that-can't-be-a-class to `props` (§12.1: `props.bgImage`/`bgOverlay`). Motion follows that
+established precedent rather than fighting it:
+
+```
+props.motion = {
+  entrance: 'fade-up',                       // token name (sans `animate-` prefix); absent / 'none' = no motion
+  trigger:  'scroll' | 'load' | 'hover',     // default 'scroll'
+  speed?:   'fast' | 'normal' | 'slow',      // default 'normal'
+  delay?:   number,                          // ms, clamped 0–2000
+  stagger?: number,                          // containers only: ms added per direct child (0/absent = off)
+}
+```
+
+The **renderer is the single translator** (§9.4) — `props.motion` is the one source of truth, and it is
+the surface an AI agent sets too (a structured object beats a class incantation for legibility). The raw
+`animate-*` / `transition*` / `duration-*` classes still compile for power users; and the standalone
+entrance-Animation picker shipped in Phase 3 (§12.3) **folds into** this control rather than running in
+parallel.
+
+### 9.3 The `data-animate` contract — the one new runtime
+
+The render layer ships **one stylesheet block** (`SCROLL_MOTION_CSS`, beside `REDUCED_MOTION_CSS` in
+`@sparx/surface-compile`'s `motion.ts`) and **one client island** (`MotionController`). That island is
+the _entire_ runtime this whole doc adds.
+
+- An on-scroll element renders with `data-animate="<entrance>"` plus optional `data-anim-delay`,
+  `data-anim-duration`, `data-anim-once`. No `animate-*` class (that would fire on load).
+- The hidden initial state is **gated on `html.sf-anim-ready`**, set by a tiny before-paint script
+  **only when motion is allowed**, so JS-off _or_ reduced-motion never hides content (the proven
+  [reveal](59-responsive-rendering.md) gate, generalized off the deprecated section path):
+
+  ```css
+  html.sf-anim-ready [data-animate]:not(.sf-in) {
+    opacity: 0;
+  }
+  html.sf-anim-ready [data-animate='fade-up'].sf-in {
+    animation: var(--animate-fade-up);
+  }
+  /* …one binding rule per token; ALL reference the same --animate-* tokens the compile theme defines… */
+  ```
+
+- `MotionController` (one shared `IntersectionObserver`, `rootMargin` tuned to fire just before entry,
+  `threshold` low) adds `.sf-in` on intersect, sets `data-anim-delay`/`data-anim-duration` as inline
+  `animation-delay`/`animation-duration`, then unobserves (one-shot unless `data-anim-once="false"`).
+  Re-scans on route change (`usePathname`). Early-returns under `prefers-reduced-motion`.
+- **on load** → renderer emits the bare `animate-<token>` class (fires on paint), tempo via inline
+  style. **on hover** → `hover:animate-<token>`. Both are pure CSS, no island involvement. The global
+  `REDUCED_MOTION_CSS` neutralizes all three triggers under the OS setting — no per-class `motion-safe:`
+  needed.
+
+### 9.4 Render translation (both renderers, identical)
+
+| `props.motion`           | Site + canvas output                                                               |
+| ------------------------ | ---------------------------------------------------------------------------------- |
+| `trigger: 'scroll'`      | `data-animate="<entrance>"` + `data-anim-delay`/`-duration`/`-once` attributes     |
+| `trigger: 'load'`        | class `animate-<entrance>`; speed/delay as inline `animation-duration`/`-delay`    |
+| `trigger: 'hover'`       | class `hover:animate-<entrance>`                                                   |
+| `stagger: N` (container) | each direct child's effective delay += `childIndex * N` (attr for scroll / inline) |
+| `speed`                  | fast = 300ms · normal = 500ms · slow = 800ms → `animation-duration`                |
+
+Both `apps/site/components/builder-renderer.tsx` and `_builder/canvas.tsx` translate identically — one
+shared helper (`motionAttrs(props.motion)`) keeps them honest.
+
+**Canvas behavior.** The editor shows motion elements in their **resting (visible) state** — an author
+never loses sight of content mid-edit — with a canvas toolbar **"Play motion"** that flips
+`sf-anim-ready` on for a single replay. This preserves preview==production for the _result_ without the
+hostile UX of content vanishing while you arrange it.
+
+### 9.5 The panel
+
+A **Motion** group in the inspector, on **every node**, on **both surfaces** (containers additionally
+get **Stagger**):
+
+- **Entrance** — picker of the curated tokens (with "None").
+- **Trigger** — segmented: Scroll / Load / Hover.
+- **Speed** — Fast / Normal / Slow. **Delay** — a small stepper (ms).
+- **Stagger** (containers) — off / subtle / bold (→ ms-per-child).
+
+It writes `props.motion` through a small dedicated control (not the `class`-group bridge — it targets
+`props`, like the existing image/binding controls). Reduced motion needs no control; it's the default
+posture, not an opt-in.
+
+### 9.6 Anti-jank guarantees — the "don't make it slow" contract
+
+Restraint is **engineered, not gated**:
+
+- **Compositor-only** entrances — every shipped keyframe animates `opacity`/`transform` only; no
+  layout/paint thrash, no reflow.
+- **Curated vocabulary** — the picker offers six tasteful entrances + the built-ins; an arbitrary or
+  aggressive keyframe requires the deliberate raw-class escape hatch.
+- **Reduced-motion by default** — already shipped (`motion.ts`); the OS setting wins globally.
+- **One shared observer**, one-shot, ~40 lines — the entire added client runtime; no per-element
+  listeners, no polling.
+- **No JS animation library** — everything compiles through the existing per-tenant Tailwind pipeline;
+  zero new bundle weight on the tenant site beyond the island.
 
 ## 10. Render unification — the keystone
 
@@ -264,16 +385,16 @@ is code-only.
 
 ## 12. Build phases
 
-| Phase                                   | Scope                                                                                                                                                                                                                                                                         | Ships                                |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| **0 — Vocabulary & safety**             | Lock the family list + allowlist; extend the compile theme for missing families (flex/grid/position/inset/z/transform/transition + **custom keyframes** + container-breakpoint scale); add `validateClasses()` to `surface-compile`; ship the reduced-motion baseline. No UI. | Compile coverage + allowlist + tests |
-| **1 — Node cutover** _(destructive)_    | `BuilderNode` → `{ class, props }`; delete `box`/`layout`; update validators + types; **re-seed** starters/default-templates/blueprints onto classes.                                                                                                                         | New schema, green seeds              |
-| **2 — Render unification** _(keystone)_ | Load `tenant.css`/draft into site + canvas; renderers apply `class` + `props` via Surface components inside `@container`; **delete both box engines + `bx-*` + device-JS**.                                                                                                   | Preview == production, one sheet     |
-| **3 — Utility panel**                   | Full property panel in the component builder — all families as class-group controls, with breakpoint/state/`dark:` context. Allowlist-enforced.                                                                                                                               | Power authoring                      |
-| **4 — Page presets + escalation**       | Replace the page box panel with the layout-archetype prop controls (write classes, seed responsive defaults); polish "Edit as component."                                                                                                                                     | Safe human surface                   |
-| **5 — Motion & breakpoint UX**          | Motion panel + reduced-motion + in-view island; breakpoint switcher ↔ device-preview linkage; responsive-by-default seeding.                                                                                                                                                  | Animation + responsive authoring     |
-| **6 — Governance & demos**              | Brand designer governs the archetype set + the utility allowlist; re-author blueprints/Tesla/PDP onto archetypes; supersede the box sections in 40/44/45/46/59.                                                                                                               | Polished + documented                |
-| **7 — Tier 4 raw CSS** _(deferred)_     | Scoped + sanitized raw CSS, Enterprise-gated.                                                                                                                                                                                                                                 | Later                                |
+| Phase                                   | Scope                                                                                                                                                                                                                                                                                                                                                          | Ships                                |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| **0 — Vocabulary & safety**             | Lock the family list + allowlist; extend the compile theme for missing families (flex/grid/position/inset/z/transform/transition + **custom keyframes** + container-breakpoint scale); add `validateClasses()` to `surface-compile`; ship the reduced-motion baseline. No UI.                                                                                  | Compile coverage + allowlist + tests |
+| **1 — Node cutover** _(destructive)_    | `BuilderNode` → `{ class, props }`; delete `box`/`layout`; update validators + types; **re-seed** starters/default-templates/blueprints onto classes.                                                                                                                                                                                                          | New schema, green seeds              |
+| **2 — Render unification** _(keystone)_ | Load `tenant.css`/draft into site + canvas; renderers apply `class` + `props` via Surface components inside `@container`; **delete both box engines + `bx-*` + device-JS**.                                                                                                                                                                                    | Preview == production, one sheet     |
+| **3 — Utility panel**                   | Full property panel in the component builder — all families as class-group controls, with breakpoint/state/`dark:` context. Allowlist-enforced.                                                                                                                                                                                                                | Power authoring                      |
+| **4 — Page presets + escalation**       | Replace the page box panel with the layout-archetype prop controls (write classes, seed responsive defaults); polish "Edit as component."                                                                                                                                                                                                                      | Safe human surface                   |
+| **5 — Motion (both surfaces)**          | `props.motion` (entrance × trigger × tempo) on every node, **both** surfaces; the `data-animate` in-view island + `SCROLL_MOTION_CSS` (the one new runtime); canvas "Play motion"; container stagger; consolidate the Phase 3 entrance picker; teach motion in the Builder MCP guide. (Breakpoint switcher ↔ device-preview linkage landed in Phase 3, §12.3.) | Animation authoring, all surfaces    |
+| **6 — Governance & demos**              | Brand designer governs the archetype set + the utility allowlist; re-author blueprints/Tesla/PDP onto archetypes; supersede the box sections in 40/44/45/46/59.                                                                                                                                                                                                | Polished + documented                |
+| **7 — Tier 4 raw CSS** _(deferred)_     | Scoped + sanitized raw CSS, Enterprise-gated.                                                                                                                                                                                                                                                                                                                  | Later                                |
 
 Phases **0–2** are the foundation and land together (the destructive schema change + render cutover
 must ship as one release). **3–5** are the product. **6** is polish + docs.

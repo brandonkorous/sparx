@@ -39,6 +39,9 @@ export function PipelineEditor({ pipeline }: PipelineEditorProps) {
   const [pending, startTransition] = React.useTransition();
   const [stages, setStages] = React.useState<StageRow[]>(pipeline.stages);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+  // Stable DndContext id so dnd-kit's a11y description ids match across SSR +
+  // client (its counter fallback otherwise trips a hydration warning).
+  const dndId = React.useId();
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -114,7 +117,7 @@ export function PipelineEditor({ pipeline }: PipelineEditorProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <DndContext id={dndId} sensors={sensors} onDragEnd={handleDragEnd}>
             <SortableContext items={stages.map((s) => s.id)} strategy={verticalListSortingStrategy}>
               <Stack gap={2}>
                 {stages.map((s) => (

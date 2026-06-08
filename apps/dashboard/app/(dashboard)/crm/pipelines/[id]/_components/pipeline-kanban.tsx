@@ -7,7 +7,7 @@
 // only sanctioned stage-change path so the deal.stage_changed event fires
 // (locked decision #6 — the email automation engine subscribes to it).
 
-import { useMemo, useState, useTransition } from 'react';
+import { useId, useMemo, useState, useTransition } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -41,6 +41,9 @@ export function PipelineKanban({
   const [, startTransition] = useTransition();
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+  // Stable DndContext id so dnd-kit's a11y description ids don't differ between
+  // SSR and client (its counter fallback trips a hydration warning).
+  const dndId = useId();
   const dealsByStage = useMemo(() => groupByStage(stages, deals), [stages, deals]);
   const activeDeal = activeId ? (deals.find((d) => d.id === activeId) ?? null) : null;
 
@@ -78,7 +81,12 @@ export function PipelineKanban({
   }
 
   return (
-    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext
+      id={dndId}
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <div className="flex gap-4 overflow-x-auto pb-4">
         {stages.map((stage) => (
           <KanbanColumn key={stage.id} stage={stage} deals={dealsByStage[stage.id] ?? []} />
