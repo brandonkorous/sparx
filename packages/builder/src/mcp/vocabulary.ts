@@ -230,10 +230,11 @@ export const BUILDER_STYLE_GUIDE = {
       'p-6 @3xl:p-16  — tighter padding on small containers',
     ],
     headerFooter:
-      'The site-layout header & footer are the #1 failure points — give them extra care. HEADER: a row of items (logo · nav · ' +
-      'CTA) stacks to a centered column on narrow widths (author `flex flex-col @3xl:flex-row`); keep the link set short and ' +
-      'avoid fixed-width children (no `min-w-[…]` / `w-[200px]` on the CTA) so nothing overflows. FOOTER: put link groups in a ' +
-      'Grid (it collapses N→2→1 by container width), never a single fixed row that runs off a phone. Verify both at a ~375px width.',
+      'The site-layout header & footer are the #1 failure points — give them extra care. HEADER: author it as an inline app-bar ' +
+      '(`flex flex-row items-center justify-between`, NOT a stacking row) — a `row` NavMenu automatically collapses its links ' +
+      'into a hamburger + drawer on phones (docs/62), so the bar stays a clean logo · nav · CTA at every width. Keep the link ' +
+      'set short and avoid fixed-width children (no `min-w-[…]` / `w-[200px]` on the CTA) so nothing overflows. FOOTER: put link ' +
+      'groups in a Grid (it collapses N→2→1 by container width), never a single fixed row that runs off a phone. Verify both at ~375px.',
   },
 
   binding: {

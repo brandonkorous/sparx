@@ -485,11 +485,11 @@ function siteLayoutTree(): BuilderNode {
           contentWidth: 'contained',
           padding: 'md',
         },
-        layout: { direction: 'row', justify: 'between', alignItems: 'center' },
+        layout: { direction: 'row', collapse: false, justify: 'between', alignItems: 'center' },
         children: [
           node('Stack', {
             box: { padding: 'none' },
-            layout: { direction: 'row', gap: 'sm', alignItems: 'center' },
+            layout: { direction: 'row', collapse: false, gap: 'sm', alignItems: 'center' },
             children: [
               node('Logo', { bind: 'site.identity' }),
               node('Heading', { props: { level: 'h3', text: 'Ironhaul Diesel & Fleet' } }),

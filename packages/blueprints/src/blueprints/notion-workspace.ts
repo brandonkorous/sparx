@@ -810,11 +810,10 @@ function siteLayoutTree(): BuilderNode {
     layout: { direction: 'stack', gap: 'none' },
     children: [
       // HEADER — a true app-bar: logo left, an actions group (nav + CTA) right.
-      // Authored as an explicit `flex flex-row` (no layout.direction) so the
-      // compiler does NOT inject the default row→column stack — the bar stays
-      // horizontal at every width (docs/62 D3). The row NavMenu folds its links
-      // into a hamburger drawer on phones; logo + CTA stay inline, so a phone
-      // reads `logo · [hamburger + CTA]`.
+      // `collapse: false` keeps the row inline at EVERY width (docs/62 D3) instead
+      // of the default stack-on-mobile, so the bar reads correctly on a phone. The
+      // row NavMenu folds its links into a hamburger drawer on phones; logo + CTA
+      // stay inline, so a phone reads `logo · [hamburger + CTA]`.
       node('Section', {
         box: {
           name: 'Header',
@@ -823,15 +822,21 @@ function siteLayoutTree(): BuilderNode {
           contentWidth: 'contained',
           padding: 'md',
         },
-        cls: 'flex flex-row items-center justify-between gap-4',
+        layout: {
+          direction: 'row',
+          collapse: false,
+          justify: 'between',
+          alignItems: 'center',
+          gap: 'md',
+        },
         children: [
           node('Logo', { bind: 'site.identity' }),
-          // contentWidth:'full' suppresses the default contained `mx-auto w-full
+          // contentWidth:'full' drops the default contained `mx-auto w-full
           // max-w-site` column so this group sizes to its content — letting the
           // header's justify-between pin it to the right (docs/62 D3).
           node('Stack', {
             box: { padding: 'none', contentWidth: 'full' },
-            cls: 'flex flex-row items-center gap-4',
+            layout: { direction: 'row', collapse: false, alignItems: 'center', gap: 'md' },
             children: [
               node('NavMenu', { props: { orientation: 'row', links: navLinks } }),
               node('Button', { props: { label: 'Get Mosaic free', style: 'primary', href: '/' } }),

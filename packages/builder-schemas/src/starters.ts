@@ -290,7 +290,7 @@ function siteLayoutTree(): BuilderNode {
           contentWidth: 'contained',
           padding: 'md',
         },
-        layout: { direction: 'row', justify: 'between', alignItems: 'center' },
+        layout: { direction: 'row', collapse: false, justify: 'between', alignItems: 'center' },
         children: [
           node('Logo', { bind: 'site.identity' }),
           node('NavMenu', { props: { orientation: 'row', links: STARTER_NAV_LINKS } }),

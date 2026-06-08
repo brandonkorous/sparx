@@ -69,6 +69,11 @@ export interface LayoutStyle {
   justify?: 'start' | 'center' | 'end' | 'between';
   alignItems?: 'start' | 'center' | 'end' | 'stretch';
   wrap?: boolean;
+  /** Row only. By default a row stacks to a column on a narrow container and
+   *  flows inline at @3xl. `collapse: false` keeps it inline at EVERY width — the
+   *  app-bar / inline-lockup case (a header bar: logo · nav · CTA that must not
+   *  stack). Pair with `wrap` if the inline row should wrap when cramped. */
+  collapse?: boolean;
 }
 
 // The container primitives — mirrors the renderer's CONTAINERS set. Used to decide
@@ -116,12 +121,17 @@ const HEIGHT_CLASS: Record<NonNullable<BoxStyle['height']>, string> = {
   full: 'min-h-screen',
 };
 
+// The large steps EASE on small containers (docs/62): a phone gets tighter
+// padding, stepping up to the full value at the @3xl container width — the same
+// breakpoint a row uncollapses at, so a band reads "desktop" consistently.
+// Container queries key off the node's own width, so this works in the storefront
+// render AND the editor canvas device preview.
 const PADDING_CLASS: Record<NonNullable<BoxStyle['padding']>, string> = {
   none: '',
   sm: 'p-3',
   md: 'p-6',
-  lg: 'p-10',
-  xl: 'p-16',
+  lg: 'p-6 @3xl:p-10',
+  xl: 'p-8 @3xl:p-16',
 };
 
 const ALIGN_CLASS: Record<NonNullable<BoxStyle['align']>, string> = {
@@ -198,8 +208,11 @@ function contentClasses(
       flow = cx('grid', gridColumnsClass(layout.columns));
     } else if (layout.direction === 'row') {
       // Rows stack on a narrow container and flow inline once it's wide enough
-      // (responsive by default, docs/61). `wrap` lets a wide inline row wrap.
-      flow = cx('flex flex-col @3xl:flex-row', layout.wrap ? 'flex-wrap' : '');
+      // (responsive by default, docs/61). `collapse: false` opts out — the row
+      // stays inline at every width (the app-bar / inline-lockup case, docs/62).
+      // `wrap` lets a wide inline row wrap.
+      const rowFlow = layout.collapse === false ? 'flex flex-row' : 'flex flex-col @3xl:flex-row';
+      flow = cx(rowFlow, layout.wrap ? 'flex-wrap' : '');
     } else {
       flow = 'flex flex-col';
     }

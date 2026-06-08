@@ -236,7 +236,10 @@ function buttonStyle(style: string): React.CSSProperties {
     fontWeight: 600,
     fontSize: '0.95rem',
     textAlign: 'center',
-    minWidth: '160px',
+    // Keep the comfortable button weight, but never overflow a container narrower
+    // than 160px (a phone, a tight column) — min() drops the floor to 100% there
+    // (docs/62). Inline style can't carry @media; min() is the responsive lever.
+    minWidth: 'min(160px, 100%)',
   };
   // Translucent CTAs (the photo-panel pairing): a frosted dark "primary" and a
   // frosted light "secondary" that stay legible over any background photo.
