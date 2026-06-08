@@ -166,10 +166,12 @@ function featureSplit(opts: {
       node('Button', { props: { label: opts.linkLabel, style: 'link', href: '/' } }),
     ],
   });
+  // No fixed height — the panel sizes to its cards. (In docs/61, height:'lg'
+  // compiled to min-h-[75vh], which left a huge empty color box.) The grid row
+  // still stretches it to match the copy column, so the two sides stay balanced.
   const visual = node('Section', {
     box: {
       name: 'Panel',
-      height: 'lg',
       backgroundWidth: 'full',
       contentWidth: 'full',
       padding: 'lg',
