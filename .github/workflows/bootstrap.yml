@@ -168,13 +168,30 @@ jobs:
           kubectl rollout status deployment/pgbouncer -n "$NAMESPACE" --timeout=5m
 
       # Non-secret app env shared by api-rest, dashboard, and future services.
-      # Pulls from k8s/sparx-prod/app-env-configmap.yaml. Pod restarts pick up
-      # changes on the next rollout (no automatic refresh — explicit by design).
+      # Pulls from k8s/sparx-prod/app-env-configmap.yaml.
+      #
+      # envFrom injects ConfigMap keys at POD START ONLY — k8s never restarts
+      # pods when the referenced ConfigMap changes. Applying without rolling the
+      # consumers silently strands running pods on the OLD env. That bit us on
+      # 2026-06-06: SPARX_PUBLIC_API_URL was added here, the ConfigMap updated,
+      # but the live api-rest pod kept falling back to the in-cluster address —
+      # so every rendered email minted a logo URL no browser/mail-client could
+      # reach (broken logos in preview + test-send). Same class as the Caddy
+      # stale-config outage. So we force-roll the consuming Deployments after the
+      # apply, exactly like the app-secrets step. `rollout restart` always cycles
+      # the pods (rolling, zero-downtime with >1 replica) — that is the only way
+      # envFrom re-reads a changed ConfigMap.
       - name: Apply sparx-app-env ConfigMap
         if: ${{ inputs.components == 'all-platform' || inputs.components == 'app-env' }}
         run: |
           set -euo pipefail
           kubectl apply -f k8s/sparx-prod/app-env-configmap.yaml
+          # Selector tier=api|web matches the app manifests (api-rest, dashboard).
+          for tier in api web; do
+            if kubectl get deployment -n "$NAMESPACE" -l "tier=$tier" -o name | grep -q .; then
+              kubectl rollout restart deployment -n "$NAMESPACE" -l "tier=$tier"
+            fi
+          done
 
       # Pull every entry of the canonical secret list out of GCP Secret Manager
       # and recreate `sparx-app-secrets` from them. This mirrors what

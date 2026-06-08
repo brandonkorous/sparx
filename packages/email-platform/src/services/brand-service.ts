@@ -26,8 +26,17 @@ import type { BrandTokens } from '@sparx/email';
 
 import type { ServiceContext } from '../errors';
 
+// Public origin of api-rest — where GET /v1/public/media/:id lives. NOT a
+// generic "the API" url: media bytes are a REST concern; GraphQL
+// (graphql.sparx.works) doesn't and shouldn't serve them. SPARX_PUBLIC_API_URL
+// is the deprecated old name, kept as a fallback through the expand-contract
+// rename so the email-worker — whose TF env apply is blocked on the
+// cloudflare-provider 504 — keeps resolving until it picks up the new key.
 const PUBLIC_API_BASE =
-  process.env.SPARX_PUBLIC_API_URL ?? process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
+  process.env.SPARX_PUBLIC_API_REST_URL ??
+  process.env.SPARX_PUBLIC_API_URL ??
+  process.env.SPARX_API_REST_URL ??
+  'http://localhost:3100';
 
 // Public, cacheable media redirect (mirrors apps/site/lib/media.ts) — an
 // absolute URL so an <img> renders in any mail client.

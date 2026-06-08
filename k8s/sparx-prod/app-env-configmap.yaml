@@ -20,10 +20,15 @@ data:
   NEXT_PUBLIC_MARKETING_URL: https://sparx.works
   # Dashboard → api-rest in-cluster URL. Avoids going out through Caddy.
   SPARX_API_REST_URL: http://api-rest.sparx-prod.svc.cluster.local:3000
-  # PUBLIC api origin baked into rendered email media URLs (logos, product
-  # images). Distinct from SPARX_API_REST_URL — that internal address is
-  # unreachable from a mail client / browser. Without this, email-platform's
-  # brand-service falls back to the internal URL and email images break.
+  # PUBLIC origin of api-rest — baked into rendered email media URLs (logos,
+  # product images), which resolve via GET /v1/public/media/:id (a REST-only
+  # route; GraphQL at graphql.sparx.works doesn't serve bytes). Distinct from the
+  # internal SPARX_API_REST_URL, which is unreachable from a mail client/browser.
+  #
+  # SPARX_PUBLIC_API_URL is the deprecated old key, kept here only through the
+  # contract pass of the rename (once every consumer image reads the new key and
+  # the email-worker's TF env is applied). Both carry the same value.
+  SPARX_PUBLIC_API_REST_URL: https://api.sparx.works
   SPARX_PUBLIC_API_URL: https://api.sparx.works
   # Media storage. Bucket names match terraform/modules/storage:
   #   GCS_MEDIA_BUCKET        → private bucket — originals
