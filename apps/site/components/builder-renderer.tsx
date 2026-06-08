@@ -23,13 +23,12 @@ import {
 } from '@sparx/builder-schemas';
 
 import {
-  Button,
-  Card,
-  CardBody,
-  CardTitle,
+  CollapsibleNav,
   Divider,
+  EditorialSection,
   EmbedFrame,
-  Grid,
+  FAQ,
+  FeatureGrid,
   Heading,
   Image,
   Logo,
@@ -45,7 +44,6 @@ import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 
 import { BuilderCarousel } from './builder-carousel';
 import { BuilderIcon } from './builder-icon';
-import { BuilderNavMenu } from './builder-nav-menu';
 import {
   BuilderAddToCart,
   BuilderBuyBox,
@@ -407,32 +405,23 @@ function renderLeaf(
     }
     // ── Page-content widgets (docs/51 §7 — reclassified from content types) ───
     case 'EditorialSection': {
-      // Authored inline, or bound to an object with the same field names.
+      // Authored inline, or bound to an object with the same field names. The
+      // shared site-ui composite renders it (docs/62) — both editor + site agree.
       const obj =
         bound && value && typeof value === 'object' && !Array.isArray(value)
           ? (value as Record<string, unknown>)
           : null;
       const pick = (k: string, prop: string) => (obj ? asText(obj[k]) : '') || str(prop);
-      const eyebrow = pick('eyebrow', 'eyebrow');
-      const headline = pick('headline', 'headline');
-      const body = pick('body', 'body');
-      const ctaLabel = pick('ctaLabel', 'ctaLabel');
       const ctaUrl = (obj && typeof obj.ctaUrl === 'string' ? obj.ctaUrl : '') || str('ctaUrl');
-      // Full-width children (default flex stretch) so the box's text-align governs
-      // horizontal alignment; the CTA is wrapped in a block so text-align reaches it.
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
-          {eyebrow ? <Text variant="eyebrow">{eyebrow}</Text> : null}
-          {headline ? <Heading level="h2">{headline}</Heading> : null}
-          {body ? <Text variant="body">{body}</Text> : null}
-          {ctaLabel ? (
-            <div>
-              <Button href={ctaUrl || undefined} variant="solid">
-                {ctaLabel}
-              </Button>
-            </div>
-          ) : null}
-        </div>
+        <EditorialSection
+          eyebrow={pick('eyebrow', 'eyebrow')}
+          headline={pick('headline', 'headline')}
+          body={pick('body', 'body')}
+          ctaLabel={pick('ctaLabel', 'ctaLabel')}
+          ctaUrl={ctaUrl}
+          className={leafClass}
+        />
       );
     }
     case 'FAQ': {
@@ -444,18 +433,7 @@ function renderLeaf(
               answer: asText(it.answer),
             }))
           : parseFaqItems(str('items'));
-      const list = items.filter((it) => it.question);
-      if (!list.length) return null;
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
-          {list.map((it, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <Heading level="h3">{it.question}</Heading>
-              {it.answer ? <Text variant="body">{it.answer}</Text> : null}
-            </div>
-          ))}
-        </div>
-      );
+      return <FAQ items={items.filter((it) => it.question)} className={leafClass} />;
     }
     case 'FeatureGrid': {
       // Bound to an array of `{number?, title, body}` records, else authored inline.
@@ -467,22 +445,8 @@ function renderLeaf(
               body: asText(it.body),
             }))
           : parseFeatureItems(str('items'));
-      const list = items.filter((f) => f.title);
-      if (!list.length) return null;
       const cols = Math.min(4, Math.max(2, Number(str('columns')) || 3)) as 2 | 3 | 4;
-      return (
-        <Grid cols={cols} gap="lg">
-          {list.map((f, i) => (
-            <Card key={i}>
-              <CardBody>
-                <Text variant="meta">{f.number}</Text>
-                <CardTitle as="h3">{f.title}</CardTitle>
-                {f.body ? <Text variant="body">{f.body}</Text> : null}
-              </CardBody>
-            </Card>
-          ))}
-        </Grid>
-      );
+      return <FeatureGrid cols={cols} items={items.filter((f) => f.title)} className={leafClass} />;
     }
     // ── Site chrome (docs/45) ────────────────────────────────────────────────
     case 'Logo': {
@@ -505,8 +469,9 @@ function renderLeaf(
       }));
       if (list.length === 0) return null;
       // A row (primary/header) nav collapses to a hamburger + drawer on phones
-      // via a client island (docs/62 D2). Stacked (footer/secondary) stays static.
-      if (orientation === 'row') return <BuilderNavMenu items={list} className={leafClass} />;
+      // via the CollapsibleNav prebuilt (docs/62). Stacked (footer/secondary)
+      // stays static.
+      if (orientation === 'row') return <CollapsibleNav items={list} className={leafClass} />;
       return <NavMenu items={list} orientation={orientation} className={leafClass} />;
     }
     case 'SocialLinks': {

@@ -99,11 +99,16 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
       // and host→property resolution have a site to resolve to from day one.
       // (Existing tenants were backfilled by 20260626000000_properties /
       // 20260629000000_domains.) `domains` is non-RLS; the GUC is harmless to it.
+      // The primary site's display NAME is "Default" — a tenant is a workspace
+      // that HAS sites, so the seeded site reads as the default one rather than
+      // echoing the workspace name in the breadcrumb. The host is unaffected:
+      // the primary keeps the bare `<slug>.sparx.zone` (slug 'primary' is
+      // reserved and never appears in the host — see mintZoneHost).
       const property = await tx.property.create({
         data: {
           tenantId: tenant.id,
           slug: 'primary',
-          name: input.storeName,
+          name: 'Default',
           isPrimary: true,
         },
       });

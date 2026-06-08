@@ -119,8 +119,9 @@ export default async function BuilderPageRoute({ searchParams }: BuilderPageRout
     loadLayout(),
     loadTenantSlug(),
     listComponentsFull(),
-    // Multi-site switcher data (docs/49 Phase 3). Defensive: a failed read just
-    // hides the switcher (single-site behavior).
+    // Multi-site data (docs/49): used to resolve the active property for the
+    // Preview origin/slug below. The site switcher itself lives in the header
+    // breadcrumb now. Defensive: a failed read falls back to the primary.
     listProperties().catch(() => [] as Property[]),
     getActivePropertyId(),
   ]);
@@ -153,8 +154,6 @@ export default async function BuilderPageRoute({ searchParams }: BuilderPageRout
         previewPropertySlug={previewPropertySlug}
         initialPageId={initialPageId}
         components={components}
-        properties={properties}
-        activePropertyId={activePropertyId}
       />
     </>
   );

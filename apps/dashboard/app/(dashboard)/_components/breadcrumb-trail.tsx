@@ -36,10 +36,11 @@ import { setActiveSite } from '../settings/sites/actions';
 // The trail has three interactive controls plus navigate-only links:
 //   - Workspace (segment 1): the tenant. Menu → settings + sign out. Switch /
 //     create land in Phase 2 (docs/32) once the org plugin is enabled.
-//   - Site (segment 2, multi-site only): the active web PROPERTY (docs/49 §6).
-//     A switcher dropdown — pick which site you're editing (sets the
-//     active-site cookie via setActiveSite). Hidden entirely for single-site
-//     tenants, so the common case is unchanged.
+//   - Site (segment 2): the active web PROPERTY (docs/49 §6). A switcher
+//     dropdown — pick which site you're editing (sets the active-site cookie via
+//     setActiveSite). Always shown: a tenant HAS sites, and this is the one
+//     canonical place to change which site the whole app is scoped to. Single-
+//     site tenants still see it (one entry + "Manage sites").
 //   - Module (segment 3): a SPLIT control. The label links to the module home;
 //     an adjacent ▾ opens a switcher listing the OTHER modules the tenant has
 //     enabled (active one checked, accent-colored). This deviates from the
@@ -96,18 +97,16 @@ export function BreadcrumbTrail({
   const manifest = getManifestForPath(pathname);
   const section = findSectionByPath(pathname);
 
-  // Only a multi-site tenant gets the Site segment (docs/49 §6 — single-site
-  // tenants see nothing new).
-  const activeSite = sites.length > 1 ? resolveActiveSite(sites, activePropertyId) : undefined;
-  // Suppress the Site crumb when it merely echoes the workspace name — the primary
-  // property is commonly named after the tenant, which otherwise renders a
-  // duplicate "Acme / Acme". The crumb (and its switcher) returns as soon as the
-  // active site has a distinct name.
-  const showSite =
-    activeSite != null && activeSite.name.trim().toLowerCase() !== tenantName.trim().toLowerCase();
+  // The Site segment is always present whenever the tenant has a site — a tenant
+  // is a workspace that HAS sites, and the active site is what grounds the user
+  // on what they're editing. Every tenant is born with a primary site
+  // (packages/auth sign-up), so this is effectively always shown. Even when the
+  // primary's name echoes the workspace name, we keep the crumb: the duplicate
+  // reads as "workspace → site", and it stays a live switcher.
+  const activeSite = sites.length > 0 ? resolveActiveSite(sites, activePropertyId) : undefined;
 
   const segments: TrailSegment[] = [{ kind: 'tenant', label: tenantName, href: '/' }];
-  if (showSite && activeSite) {
+  if (activeSite) {
     segments.push({ kind: 'site', label: activeSite.name, href: '/settings/sites' });
   }
   if (manifest) {
@@ -503,7 +502,7 @@ function MobileSwitcher({
                 Sign out
               </SheetRow>
 
-              {sites.length > 1 ? (
+              {sites.length > 0 ? (
                 <>
                   <SheetGroupLabel>Site</SheetGroupLabel>
                   {sites.map((s) => (

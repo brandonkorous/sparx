@@ -669,6 +669,15 @@ export function Canvas({
       style={frameKind === 'plain' && width ? { width, maxWidth: '100%' } : undefined}
       data-device={device}
       data-framed={chrome ? '' : undefined}
+      // The canvas renders the REAL site-ui components for a faithful preview, but
+      // it is a SELECTION surface, not a live page. Neutralize any link/button
+      // default action (capture phase) so a click selects the node instead of
+      // navigating or submitting; selection still fires on the node wrapper's
+      // bubble-phase onClick. This is what lets leaves render real <a>/<button>
+      // (Logo, NavMenu, Button, …) here without hijacking editor clicks.
+      onClickCapture={(e) => {
+        if ((e.target as HTMLElement).closest('a, button')) e.preventDefault();
+      }}
     >
       {frame?.kind === 'email' ? (
         <>

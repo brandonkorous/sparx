@@ -24,11 +24,8 @@ import type {
   ComponentDto,
 } from '@sparx/builder-schemas';
 
-import type { Property } from '@/lib/sites';
 import { makeId, type Device, type PageTemplate, type PageSeo } from './model';
-import { SiteSwitcher } from './site-switcher';
 import { getDef } from './registry';
-import { MODULES } from './sample';
 import { PageSettings } from './inspector';
 import { BuilderWorkspace } from './builder-workspace';
 import { FieldsPanel } from './fields-panel';
@@ -111,11 +108,6 @@ export interface BuilderAppProps {
   /** The tenant's custom components with their latest trees (docs/53 P-B) — feeds
    *  the Add palette ("Your components") and the canvas's live expansion. */
   components?: ComponentDto[];
-  /** The tenant's web properties (sites) + which one is active, for the in-editor
-   *  site switcher (docs/49 Phase 3). The switcher hides itself for single-site
-   *  tenants, so passing an empty / one-element list is a no-op. */
-  properties?: Property[];
-  activePropertyId?: string | null;
   /** The active web property's slug (docs/49). Scopes the Preview tab to the site
    *  being authored via `&property=<slug>`; absent ⇒ the tenant's primary site. */
   previewPropertySlug?: string;
@@ -129,8 +121,6 @@ export function BuilderApp({
   siteOrigin,
   initialPageId,
   components = [],
-  properties = [],
-  activePropertyId = null,
   previewPropertySlug,
 }: BuilderAppProps) {
   const confirm = useConfirm();
@@ -493,9 +483,6 @@ export function BuilderApp({
     return null;
   };
 
-  const activeModules = MODULES.filter((m) => m.on);
-  const offModules = MODULES.filter((m) => !m.on);
-
   // No pages (a failed load). Offer a way in rather than a blank editor.
   if (!active || !tree) {
     return (
@@ -524,8 +511,8 @@ export function BuilderApp({
         {/* Editor toolbar — page-specific actions. The global header, main
             sidebar, and module sidebar come from the dashboard shell. */}
         <div className="bx-toolbar">
-          {/* Which site you're editing — hidden for single-site tenants. */}
-          <SiteSwitcher properties={properties} activePropertyId={activePropertyId} />
+          {/* Which site you're editing lives in the header breadcrumb (the one
+                        canonical, app-wide site switcher), not here. */}
           <div className="bx-toolbar__templates">
             {renaming ? (
               <Input
@@ -664,30 +651,6 @@ export function BuilderApp({
               Publish
             </Button>
           </div>
-        </div>
-
-        {/* Context bar — what this page composes from */}
-        <div className="bx-ctx">
-          <span className="bx-ctx__lead">This page composes data from</span>
-          {activeModules.map((m) => (
-            <span
-              key={m.key}
-              className="bx-ctx__chip"
-              style={{ '--chip': m.color } as React.CSSProperties}
-            >
-              <span className="bx-ctx__dot" />
-              {m.label}
-            </span>
-          ))}
-          {offModules.map((m) => (
-            <span key={m.key} className="bx-ctx__chip bx-ctx__chip--off">
-              {m.label}
-              <span className="bx-ctx__enable">+ enable</span>
-            </span>
-          ))}
-          <span className="bx-ctx__note">
-            Commerce is one module among many — turn it off and its sections just hide.
-          </span>
         </div>
 
         <BuilderWorkspace

@@ -1,0 +1,92 @@
+/* CollapsibleNav — responsive navbar menu (docs/46 §5.2). Inline row links on
+ * wide screens; a hamburger + Drawer once narrow. The panel itself reuses
+ * `.sf-drawer*` (see drawer.css); these rules add the toggle button, the
+ * inline/hamburger visibility swap, and the in-drawer link list.
+ *
+ * The swap is driven by the nearest `sf-frame` container query — the Builder
+ * render frame (`.bx-render` live / `.bx-canvas` in the editor). Container-query
+ * based (not viewport @media) so it collapses at the SIMULATED device width in
+ * the canvas preview, not only at the real viewport (docs/61 §7). Mobile-first:
+ * collapsed by default, expanding inline once the frame is wide enough. */
+
+.sf-collapsenav {
+  display: flex;
+  align-items: center;
+}
+
+/* Icon button shared by the hamburger (in the bar) and the close (in the panel). */
+.sf-collapsenav__toggle {
+  display: inline-flex; /* hamburger shown by default (collapsed); hidden when wide */
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--sf-radius-sm, 0.375rem);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.sf-collapsenav__toggle:hover {
+  background: var(--sf-bg-subtle, color-mix(in srgb, currentColor 8%, transparent));
+}
+
+/* Inline row links — hidden by default (collapsed); shown when the frame is wide.
+ * Scoped under `.sf-collapsenav` so it wins over `.sf-nav`'s display regardless
+ * of stylesheet import order. */
+.sf-collapsenav .sf-collapsenav__inline {
+  display: none;
+}
+
+/* Drawer head: title left, close right. */
+.sf-collapsenav__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: -0.5rem -0.5rem 0.5rem; /* pull to the panel's padded edges */
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--sf-border, color-mix(in srgb, currentColor 12%, transparent));
+}
+.sf-collapsenav__head .sf-collapsenav__toggle {
+  display: inline-flex; /* the close button is always shown inside the panel */
+}
+.sf-collapsenav__title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--sf-text-secondary, currentColor);
+}
+
+/* In-drawer link list — larger tap targets than the inline row. */
+.sf-collapsenav__links a {
+  display: block;
+  padding: 0.85rem 0.75rem;
+  border-radius: var(--sf-radius-sm, 0.375rem);
+  color: var(--sf-text, inherit);
+  text-decoration: none;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+.sf-collapsenav__links a:hover {
+  background: var(--sf-bg-subtle, color-mix(in srgb, currentColor 8%, transparent));
+}
+
+.sf-collapsenav__foot {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sf-border, color-mix(in srgb, currentColor 12%, transparent));
+}
+
+/* Wide frame: reveal the inline row, hide the bar hamburger (the `>` keeps the
+ * panel's close button — which lives in the body-portaled drawer, not under
+ * `.sf-collapsenav` — unaffected). */
+@container sf-frame (min-width: 768px) {
+  .sf-collapsenav .sf-collapsenav__inline {
+    display: flex;
+  }
+  .sf-collapsenav > .sf-collapsenav__toggle {
+    display: none;
+  }
+}

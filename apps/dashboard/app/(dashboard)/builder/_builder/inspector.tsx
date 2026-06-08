@@ -11,28 +11,35 @@
 //   2. Style    — Color + Emphasis (the recipe axes), written to `node.class`.
 //   3. Layout   — containers only: Arrange as Row/Stack/Grid, spacing, alignment.
 //   4. Motion   — how the block enters (collapsed by default).
-//   5. Advanced — Size / outer spacing + the raw `class` escape hatch (collapsed).
+//   5. Advanced — power-user box controls (size, display, position, corners,
+//                 border, shadow, inner/outer spacing) + the raw `class` escape
+//                 hatch (collapsed).
 //
 // Color/Layout/etc. still write Tailwind-native `class` utilities (docs/61); only
 // the PRESENTATION changed here — the underlying control model is unchanged.
 
 import * as React from 'react';
 import {
+  Box,
   Boxes,
   Check,
   ChevronDown,
   ChevronLeft,
   ChevronUp,
+  Crosshair,
   Database,
   ExternalLink,
   FileText,
   LayoutGrid,
+  Link2,
   Mail,
+  Maximize2,
   Palette,
   Plus,
   Search,
   Sparkles,
   SlidersHorizontal,
+  Square,
   Type,
   X,
   type LucideIcon,
@@ -65,26 +72,46 @@ import { ProseControl } from './prose-control';
 import {
   ALIGN_ITEMS_CONTROL,
   ARRANGEMENT_CONTEXTS,
+  ASPECT_CONTROL,
+  BORDER_CONTROL,
+  BORDER_COLOR_CONTROL,
+  BORDER_STYLE_CONTROL,
+  BOX_DISPLAY_CONTROL,
   COLOR_CONTROL,
-  COLUMNS_CONTROL,
   DIRECTION_CONTROL,
   DISPLAY_CONTROL,
+  FONT_FAMILY_CONTROL,
+  FONT_SIZE_CONTROL,
+  FONT_WEIGHT_CONTROL,
   GAP_CONTROL,
   JUSTIFY_CONTROL,
-  PADDING_CONTROL,
+  LEADING_CONTROL,
+  OVERFLOW_CONTROL,
+  POSITION_CONTROL,
+  RADIUS_CONTROL,
+  SHADOW_CONTROL,
   SKIN_CONTEXTS,
   STYLE_CONTROLS,
   STAGGER_CONTROL,
+  TEXT_ALIGN_CONTROL,
+  TEXT_CASE_CONTROL,
+  TEXT_COLOR_CONTROL,
+  TRACKING_CONTROL,
+  TRANSITION_CONTROL,
   VARIANT_CONTROL,
+  Z_INDEX_CONTROL,
   MOTION_ENTRANCES,
   MOTION_TRIGGERS,
   activeValue,
-  advancedControlsFor,
   applyValue,
+  applyValueGroup,
   applyMotion,
   contextPrefix,
   ensureArchetypeDefaults,
+  lengthDisplay,
+  lengthSuffix,
   readMotion,
+  readValueGroup,
   skinControlsFor,
   type ClassControl,
   type MotionState,
@@ -571,8 +598,95 @@ function ContextSelect({
 // How a CONTAINER arranges its children (docs/61 §5.2): the page-builder's
 // structural surface. The friendly "Arrange as Row / Stack / Grid" merges the
 // underlying display + direction class groups; Grid then reveals Columns. Gap /
-// spacing / alignment / padding follow. Responsive via the "Editing for" pill —
-// pick a screen size to set that layer (`@lg:grid-cols-3`). Containers only.
+// alignment follow. Padding lives in the Spacing card (so it isn't offered twice).
+// Responsive via the "Editing for" pill — pick a screen size to set that layer
+// (`@lg:grid-cols-3`). Containers only.
+// Grid columns — fluid by default rather than a hardcoded breakpoint ramp.
+// "Auto-fit (fluid)" emits `grid-cols-[repeat(auto-fit,minmax(<min>,1fr))]`: the
+// grid fits as many columns of at least <min> as the row allows and wraps the rest
+// — no `@2xl:grid-cols-2 @4xl:grid-cols-4` to maintain. Fixed counts (1–6) are
+// still available; picking a fluid mode at the base layer clears any hardcoded
+// responsive ramp so it actually takes effect. Per-breakpoint counts are still
+// possible via the "Editing for" pill (writes that layer only).
+function ColumnsField({
+  node,
+  prefix,
+  commit,
+}: {
+  node: BuilderNode;
+  prefix: string;
+  commit: (cls: string) => void;
+}) {
+  const current = readValueGroup(node.class, 'grid-cols', prefix);
+  const kind = current?.startsWith('[repeat(auto-fit')
+    ? 'auto-fit'
+    : current?.startsWith('[repeat(auto-fill')
+      ? 'auto-fill'
+      : null;
+  const fluid = kind !== null;
+  const mode = kind ?? current ?? '';
+  const minMatch = current ? /minmax\(([^,]+),\s*1fr\)/.exec(current) : null;
+  const minSeed = minMatch ? minMatch[1]!.replace(/_/g, ' ') : '16rem';
+  const [minText, setMinText] = React.useState(minSeed);
+  React.useEffect(() => setMinText(minSeed), [minSeed]);
+
+  // The hardcoded responsive ramp (seeded at @2xl/@4xl) lives in these layers.
+  const bpPrefixes = ARRANGEMENT_CONTEXTS.filter((c) => c.prefix.startsWith('@')).map(
+    (c) => c.prefix
+  );
+  const fluidSuffix = (k: 'auto-fit' | 'auto-fill', min: string): string => {
+    const t = min.trim();
+    const m = /^\d+(\.\d+)?$/.test(t) ? `${t}px` : t.replace(/\s+/g, '');
+    return `[repeat(${k},minmax(${m || '16rem'},1fr))]`;
+  };
+  const write = (suffix: string | null, clearRamp: boolean) => {
+    let c = node.class ?? '';
+    if (clearRamp) bpPrefixes.forEach((bp) => (c = applyValueGroup(c, 'grid-cols', null, bp)));
+    commit(applyValueGroup(c, 'grid-cols', suffix, prefix));
+  };
+
+  return (
+    <div className="bx-field">
+      <span className="bx-field__label">Columns</span>
+      <NativeSelect
+        size="sm"
+        value={mode}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === 'auto-fit' || v === 'auto-fill') write(fluidSuffix(v, minText), prefix === '');
+          else write(v || null, false);
+        }}
+      >
+        <option value="">—</option>
+        <option value="auto-fit">Auto-fit (fluid)</option>
+        <option value="auto-fill">Auto-fill</option>
+        {[1, 2, 3, 4, 5, 6].map((n) => (
+          <option key={n} value={String(n)}>
+            {n}
+          </option>
+        ))}
+      </NativeSelect>
+      {fluid ? (
+        <>
+          <Input
+            size="sm"
+            value={minText}
+            placeholder="Min column width — e.g. 16rem or 240px"
+            onChange={(e) => setMinText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') e.currentTarget.blur();
+            }}
+            onBlur={() => write(fluidSuffix(kind ?? 'auto-fit', minText), false)}
+          />
+          <span className="bx-field__hint">
+            Columns fill the row and wrap as it narrows — no fixed breakpoints.
+          </span>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
 function LayoutCard({
   node,
   def,
@@ -585,16 +699,10 @@ function LayoutCard({
   const [ctx, setCtx] = React.useState('base');
   const prefix = contextPrefix(ARRANGEMENT_CONTEXTS, ctx);
   const arrange = readArrangeAs(node.class, prefix);
-  const setArrange = (v: 'row' | 'stack' | 'grid') =>
-    onClass(ensureArchetypeDefaults(applyArrangeAs(node.class, v, prefix), def.defaults.class));
-  // Columns only make sense for a grid; gap/spacing/alignment/padding always apply.
-  const detailControls = [
-    ...(arrange === 'grid' ? [COLUMNS_CONTROL] : []),
-    GAP_CONTROL,
-    JUSTIFY_CONTROL,
-    ALIGN_ITEMS_CONTROL,
-    PADDING_CONTROL,
-  ];
+  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
+  const setArrange = (v: 'row' | 'stack' | 'grid') => commit(applyArrangeAs(node.class, v, prefix));
+  // Columns get the richer fluid control (below); gap/alignment are simple enums.
+  const detailControls = [GAP_CONTROL, JUSTIFY_CONTROL, ALIGN_ITEMS_CONTROL];
   return (
     <Card
       icon={LayoutGrid}
@@ -606,6 +714,7 @@ function LayoutCard({
       <Field label="Arrange as">
         <Segmented value={arrange} options={ARRANGE_OPTIONS} onChange={setArrange} />
       </Field>
+      {arrange === 'grid' ? <ColumnsField node={node} prefix={prefix} commit={commit} /> : null}
       {detailControls.map((control) => (
         <StyleControlField
           key={control.id}
@@ -719,11 +828,355 @@ function MotionCard({
   );
 }
 
-// The collapsed "Advanced" disclosure — the universal less-common axes (Size,
-// Margin) plus the raw `class` textarea, the final escape hatch (docs/47 §4,
-// docs/61 §5.2). Skin families live in the component-builder Appearance panel.
-// Collapsed by default so the everyday Color / Variant stay uncluttered.
-function AdvancedPanel({
+// ── Power-user value controls ──────────────────────────────────────────────────
+// Beyond the enum selects, the style sections need OPEN-ENDED value inputs (a
+// scale step, a keyword, or an arbitrary `[20px]`). These primitives read/write
+// the Tailwind value GROUPS via readValueGroup/applyValueGroup, and commit through
+// `commit` (which the card wraps with ensureArchetypeDefaults, so styling a node
+// never collapses its recipe base).
+
+interface LengthPreset {
+  label: string;
+  suffix: string;
+}
+
+// A length value: a named preset + a "Custom…" escape to any CSS value. Bare
+// numbers stay Tailwind scale steps (4); units/percents become arbitrary
+// (20px → top-[20px]). The custom field commits on blur, like the app's other
+// text inputs, so typing doesn't round-trip per keystroke.
+function LengthField({
+  label,
+  node,
+  prefix,
+  presets,
+  hint,
+  commit,
+}: {
+  label: string;
+  node: BuilderNode;
+  prefix: string;
+  presets: LengthPreset[];
+  hint?: string;
+  commit: (cls: string) => void;
+}) {
+  const current = readValueGroup(node.class, prefix);
+  const isPreset = presets.some((p) => p.suffix === current);
+  const [forceCustom, setForceCustom] = React.useState(false);
+  const custom = forceCustom || (current !== null && !isPreset);
+  const [text, setText] = React.useState(lengthDisplay(current));
+  React.useEffect(() => setText(lengthDisplay(current)), [current, custom]);
+
+  return (
+    <div className="bx-field">
+      <span className="bx-field__label">{label}</span>
+      <NativeSelect
+        size="sm"
+        value={custom ? '__custom' : (current ?? '')}
+        onChange={(e) => {
+          const v = e.target.value;
+          if (v === '__custom') setForceCustom(true);
+          else {
+            setForceCustom(false);
+            commit(applyValueGroup(node.class, prefix, v || null));
+          }
+        }}
+      >
+        <option value="">—</option>
+        {presets.map((p) => (
+          <option key={p.suffix} value={p.suffix}>
+            {p.label}
+          </option>
+        ))}
+        <option value="__custom">Custom…</option>
+      </NativeSelect>
+      {custom ? (
+        <Input
+          size="sm"
+          value={text}
+          placeholder="e.g. 320px or 50%"
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') e.currentTarget.blur();
+          }}
+          onBlur={() => commit(applyValueGroup(node.class, prefix, lengthSuffix(text)))}
+        />
+      ) : null}
+      {hint ? <span className="bx-field__hint">{hint}</span> : null}
+    </div>
+  );
+}
+
+// One side of the box-model widget — a small value field committing on blur.
+function SideInput({
+  value,
+  placeholder,
+  onCommit,
+}: {
+  value: string | null;
+  placeholder: string;
+  onCommit: (suffix: string | null) => void;
+}) {
+  const [text, setText] = React.useState(lengthDisplay(value));
+  React.useEffect(() => setText(lengthDisplay(value)), [value]);
+  return (
+    <input
+      className="bx-box__side"
+      value={text}
+      placeholder={placeholder}
+      aria-label={placeholder}
+      onChange={(e) => setText(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') e.currentTarget.blur();
+      }}
+      onBlur={() => onCommit(lengthSuffix(text))}
+    />
+  );
+}
+
+// The 4-side box-model widget (padding / margin) with a link-all toggle. Linked
+// writes the shorthand (`p-4`) and clears the per-side tokens; unlinked writes the
+// per-side tokens (`pt-4` …) and clears the shorthand — so the two never fight.
+function BoxSidesField({
+  label,
+  node,
+  shorthand,
+  sides,
+  hint,
+  commit,
+}: {
+  label: string;
+  node: BuilderNode;
+  shorthand: string;
+  /** [top, right, bottom, left] prefixes, e.g. ['pt','pr','pb','pl']. */
+  sides: [string, string, string, string];
+  hint?: string;
+  commit: (cls: string) => void;
+}) {
+  const shVal = readValueGroup(node.class, shorthand);
+  const sideVals = sides.map((s) => readValueGroup(node.class, s)) as [
+    string | null,
+    string | null,
+    string | null,
+    string | null,
+  ];
+  const anySide = sideVals.some((v) => v !== null);
+  const [linked, setLinked] = React.useState(!anySide);
+  const display = linked ? ([shVal, shVal, shVal, shVal] as const) : sideVals;
+
+  const commitLinked = (suffix: string | null) => {
+    let c = node.class ?? '';
+    sides.forEach((s) => (c = applyValueGroup(c, s, null)));
+    commit(applyValueGroup(c, shorthand, suffix));
+  };
+  const commitSide = (i: number, suffix: string | null) => {
+    let c = applyValueGroup(node.class, shorthand, null);
+    c = applyValueGroup(c, sides[i]!, suffix);
+    commit(c);
+  };
+  const toggleLink = () => {
+    let c = node.class ?? '';
+    if (linked) {
+      const v = shVal;
+      c = applyValueGroup(c, shorthand, null);
+      sides.forEach((s) => (c = applyValueGroup(c, s, v)));
+      commit(c);
+      setLinked(false);
+    } else {
+      const v = sideVals[0];
+      sides.forEach((s) => (c = applyValueGroup(c, s, null)));
+      commit(applyValueGroup(c, shorthand, v));
+      setLinked(true);
+    }
+  };
+
+  return (
+    <div className="bx-field">
+      <span className="bx-field__label">{label}</span>
+      <div className="bx-box">
+        <div className="bx-box__t">
+          <SideInput
+            key={`t${linked}`}
+            value={display[0]}
+            placeholder="Top"
+            onCommit={(s) => (linked ? commitLinked(s) : commitSide(0, s))}
+          />
+        </div>
+        <div className="bx-box__l">
+          <SideInput
+            key={`l${linked}`}
+            value={display[3]}
+            placeholder="Left"
+            onCommit={(s) => (linked ? commitLinked(s) : commitSide(3, s))}
+          />
+        </div>
+        <button
+          type="button"
+          className="bx-box__link"
+          data-on={linked}
+          aria-pressed={linked}
+          title={linked ? 'Sides linked — edit one, all change' : 'Sides independent'}
+          onClick={toggleLink}
+        >
+          <Link2 aria-hidden />
+        </button>
+        <div className="bx-box__r">
+          <SideInput
+            key={`r${linked}`}
+            value={display[1]}
+            placeholder="Right"
+            onCommit={(s) => (linked ? commitLinked(s) : commitSide(1, s))}
+          />
+        </div>
+        <div className="bx-box__b">
+          <SideInput
+            key={`b${linked}`}
+            value={display[2]}
+            placeholder="Bottom"
+            onCommit={(s) => (linked ? commitLinked(s) : commitSide(2, s))}
+          />
+        </div>
+      </div>
+      {hint ? <span className="bx-field__hint">{hint}</span> : null}
+    </div>
+  );
+}
+
+// Opacity — a slider + live readout, on the Tailwind opacity scale (steps of 5).
+// 100 clears the class (fully opaque is the default).
+function OpacitySlider({ node, commit }: { node: BuilderNode; commit: (cls: string) => void }) {
+  const raw = readValueGroup(node.class, 'opacity');
+  const value = raw && /^\d+$/.test(raw) ? Number(raw) : 100;
+  return (
+    <div className="bx-field">
+      <span className="bx-field__label">Opacity</span>
+      <div className="bx-slider">
+        <input
+          className="bx-range"
+          type="range"
+          min={0}
+          max={100}
+          step={5}
+          value={value}
+          aria-label="Opacity"
+          onChange={(e) => {
+            const n = Number(e.target.value);
+            commit(applyValueGroup(node.class, 'opacity', n === 100 ? null : String(n)));
+          }}
+        />
+        <output className="bx-slider__out">{value}%</output>
+      </div>
+    </div>
+  );
+}
+
+// A nested disclosure inside a card (e.g. "Min & max" under Size) — keeps the
+// less-common controls tucked without spawning another top-level card.
+function Subgroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <details className="bx-subgroup">
+      <summary className="bx-subgroup__head">
+        <span>{title}</span>
+        <ChevronDown className="bx-subgroup__chev" aria-hidden />
+      </summary>
+      <div className="bx-subgroup__body">{children}</div>
+    </details>
+  );
+}
+
+// ── Length presets (curated common values; "Custom…" covers everything else) ────
+const WIDTH_PRESETS: LengthPreset[] = [
+  { label: 'Auto', suffix: 'auto' },
+  { label: 'Full (100%)', suffix: 'full' },
+  { label: 'Half', suffix: '1/2' },
+  { label: 'Third', suffix: '1/3' },
+  { label: 'Fit content', suffix: 'fit' },
+];
+const HEIGHT_PRESETS: LengthPreset[] = [
+  { label: 'Auto', suffix: 'auto' },
+  { label: 'Full (100%)', suffix: 'full' },
+  { label: 'Screen', suffix: 'screen' },
+];
+const MINW_PRESETS: LengthPreset[] = [
+  { label: 'None', suffix: '0' },
+  { label: 'Full', suffix: 'full' },
+];
+const MAXW_PRESETS: LengthPreset[] = [
+  { label: 'None (fill)', suffix: 'none' },
+  { label: 'Site width', suffix: 'site' },
+  { label: 'Prose (65ch)', suffix: 'prose' },
+  { label: 'Small', suffix: 'sm' },
+  { label: 'Medium', suffix: 'md' },
+  { label: 'Large', suffix: 'lg' },
+  { label: 'XL', suffix: 'xl' },
+  { label: 'Screen', suffix: 'screen' },
+];
+const MINH_PRESETS: LengthPreset[] = [
+  { label: 'None', suffix: '0' },
+  { label: 'Full', suffix: 'full' },
+  { label: 'Screen', suffix: 'screen' },
+];
+const MAXH_PRESETS: LengthPreset[] = [
+  { label: 'None', suffix: 'none' },
+  { label: 'Full', suffix: 'full' },
+  { label: 'Screen', suffix: 'screen' },
+];
+const OFFSET_PRESETS: LengthPreset[] = [{ label: 'Edge (0)', suffix: '0' }];
+const SCALE_PRESETS: LengthPreset[] = [
+  { label: '90%', suffix: '90' },
+  { label: '95%', suffix: '95' },
+  { label: '100%', suffix: '100' },
+  { label: '105%', suffix: '105' },
+  { label: '110%', suffix: '110' },
+];
+const ROTATE_PRESETS: LengthPreset[] = [
+  { label: '0°', suffix: '0' },
+  { label: '3°', suffix: '3' },
+  { label: '6°', suffix: '6' },
+  { label: '12°', suffix: '12' },
+  { label: '45°', suffix: '45' },
+  { label: '90°', suffix: '90' },
+];
+const MOVE_PRESETS: LengthPreset[] = [{ label: 'None', suffix: '0' }];
+
+// ── Section summaries (collapsed-card previews) ─────────────────────────────────
+function sizeSummary(node: BuilderNode): string {
+  const w = lengthDisplay(readValueGroup(node.class, 'w'));
+  const h = lengthDisplay(readValueGroup(node.class, 'h'));
+  return [w && `W ${w}`, h && `H ${h}`].filter(Boolean).join(' · ') || 'Auto';
+}
+function spacingSummary(node: BuilderNode): string {
+  const p =
+    readValueGroup(node.class, 'p') ??
+    ['pt', 'pr', 'pb', 'pl'].map((s) => readValueGroup(node.class, s)).find(Boolean);
+  const m =
+    readValueGroup(node.class, 'm') ??
+    ['mt', 'mr', 'mb', 'ml'].map((s) => readValueGroup(node.class, s)).find(Boolean);
+  return [p && 'padding', m && 'margin'].filter(Boolean).join(' + ') || 'None';
+}
+function positionSummary(node: BuilderNode): string {
+  return activeLabel(node, POSITION_CONTROL) ?? 'In flow';
+}
+function bordersSummary(node: BuilderNode): string {
+  return (
+    [activeLabel(node, BORDER_CONTROL), activeLabel(node, RADIUS_CONTROL)]
+      .filter(Boolean)
+      .join(' · ') || 'None'
+  );
+}
+function typographySummary(node: BuilderNode): string {
+  return (
+    [activeLabel(node, FONT_SIZE_CONTROL), activeLabel(node, TEXT_ALIGN_CONTROL)]
+      .filter(Boolean)
+      .join(' · ') || 'Inherited'
+  );
+}
+
+// ── Power-user style sections ───────────────────────────────────────────────────
+
+// Size — width / height (preset + Custom), a Min & max reveal, aspect, overflow.
+// Leaves also get Display (block/inline/hidden); a container's display is the
+// Layout card's "Arrange as".
+function SizeCard({
   node,
   def,
   onClass,
@@ -732,19 +1185,198 @@ function AdvancedPanel({
   def: ComponentDef;
   onClass: (value: string) => void;
 }) {
-  // Controls are built from the archetype (which AXES the element has) — distinct
-  // from defaults.class (what a fresh node gets). Icon declares a size axis on its
-  // archetype but ships sizeless, so the Size control shows reading "Default".
-  const controls = advancedControlsFor(def.archetype ?? def.defaults.class);
+  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
   return (
-    <Card
-      icon={SlidersHorizontal}
-      title="Advanced"
-      summary="Size, spacing, custom styling"
-      defaultOpen={false}
-      muted
-    >
-      {controls.map((control) => (
+    <Card icon={Maximize2} title="Size" summary={sizeSummary(node)} defaultOpen={false}>
+      {def.kind === 'leaf' ? (
+        <StyleControlField node={node} def={def} control={BOX_DISPLAY_CONTROL} onClass={onClass} />
+      ) : null}
+      <div className="bx-row2">
+        <LengthField label="Width" node={node} prefix="w" presets={WIDTH_PRESETS} commit={commit} />
+        <LengthField
+          label="Height"
+          node={node}
+          prefix="h"
+          presets={HEIGHT_PRESETS}
+          commit={commit}
+        />
+      </div>
+      <Subgroup title="Min & max">
+        <div className="bx-row2">
+          <LengthField
+            label="Min width"
+            node={node}
+            prefix="min-w"
+            presets={MINW_PRESETS}
+            commit={commit}
+          />
+          <LengthField
+            label="Max width"
+            node={node}
+            prefix="max-w"
+            presets={MAXW_PRESETS}
+            commit={commit}
+          />
+        </div>
+        <div className="bx-row2">
+          <LengthField
+            label="Min height"
+            node={node}
+            prefix="min-h"
+            presets={MINH_PRESETS}
+            commit={commit}
+          />
+          <LengthField
+            label="Max height"
+            node={node}
+            prefix="max-h"
+            presets={MAXH_PRESETS}
+            commit={commit}
+          />
+        </div>
+      </Subgroup>
+      <div className="bx-row2">
+        <StyleControlField node={node} def={def} control={ASPECT_CONTROL} onClass={onClass} />
+        <StyleControlField node={node} def={def} control={OVERFLOW_CONTROL} onClass={onClass} />
+      </div>
+    </Card>
+  );
+}
+
+// Spacing — padding (inner) + margin (outer) as 4-side box-model widgets.
+function SpacingCard({
+  node,
+  def,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  onClass: (value: string) => void;
+}) {
+  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
+  return (
+    <Card icon={Box} title="Spacing" summary={spacingSummary(node)} defaultOpen={false}>
+      <BoxSidesField
+        label="Inner spacing (padding)"
+        node={node}
+        shorthand="p"
+        sides={['pt', 'pr', 'pb', 'pl']}
+        hint="A step (4 = 1rem) or a value (16px). Link applies one value to all sides."
+        commit={commit}
+      />
+      <BoxSidesField
+        label="Outer spacing (margin)"
+        node={node}
+        shorthand="m"
+        sides={['mt', 'mr', 'mb', 'ml']}
+        commit={commit}
+      />
+    </Card>
+  );
+}
+
+// Position — static/relative/absolute/sticky, cascading to offsets + layer when
+// not in normal flow (the dependency the discipline expects).
+function PositionCard({
+  node,
+  def,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  onClass: (value: string) => void;
+}) {
+  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
+  const positioned = activeValue(node.class, POSITION_CONTROL) !== null;
+  return (
+    <Card icon={Crosshair} title="Position" summary={positionSummary(node)} defaultOpen={false}>
+      <StyleControlField node={node} def={def} control={POSITION_CONTROL} onClass={onClass} />
+      {positioned ? (
+        <div className="bx-reveal">
+          <span className="bx-field__label">Offsets</span>
+          <div className="bx-row2">
+            <LengthField
+              label="Top"
+              node={node}
+              prefix="top"
+              presets={OFFSET_PRESETS}
+              commit={commit}
+            />
+            <LengthField
+              label="Right"
+              node={node}
+              prefix="right"
+              presets={OFFSET_PRESETS}
+              commit={commit}
+            />
+          </div>
+          <div className="bx-row2">
+            <LengthField
+              label="Bottom"
+              node={node}
+              prefix="bottom"
+              presets={OFFSET_PRESETS}
+              commit={commit}
+            />
+            <LengthField
+              label="Left"
+              node={node}
+              prefix="left"
+              presets={OFFSET_PRESETS}
+              commit={commit}
+            />
+          </div>
+          <StyleControlField node={node} def={def} control={Z_INDEX_CONTROL} onClass={onClass} />
+        </div>
+      ) : null}
+    </Card>
+  );
+}
+
+// Borders — width / style / color / corners. Page builder only (the component
+// builder's Appearance card already owns the full skin set).
+function BordersCard({
+  node,
+  def,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  onClass: (value: string) => void;
+}) {
+  return (
+    <Card icon={Square} title="Borders" summary={bordersSummary(node)} defaultOpen={false}>
+      <div className="bx-row2">
+        <StyleControlField node={node} def={def} control={BORDER_CONTROL} onClass={onClass} />
+        <StyleControlField node={node} def={def} control={BORDER_STYLE_CONTROL} onClass={onClass} />
+      </div>
+      <StyleControlField node={node} def={def} control={BORDER_COLOR_CONTROL} onClass={onClass} />
+      <StyleControlField node={node} def={def} control={RADIUS_CONTROL} onClass={onClass} />
+    </Card>
+  );
+}
+
+// Effects — opacity, shadow, transform (scale / rotate / move), transition. Page
+// builder only (skin lives in the component builder's Appearance card).
+// Style — the everyday "how it looks" card: the recipe axes (Color + Emphasis),
+// then the effects (opacity / shadow / transform / transition). `showEffects` is
+// off in the component builder, whose Appearance card already owns the full skin
+// set (with responsive/state layers) — so they aren't offered twice.
+function StyleCard({
+  node,
+  def,
+  onClass,
+  showEffects,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  onClass: (value: string) => void;
+  showEffects: boolean;
+}) {
+  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
+  return (
+    <Card icon={Palette} title="Style" summary={styleSummary(node)}>
+      {STYLE_CONTROLS.map((control) => (
         <StyleControlField
           key={control.id}
           node={node}
@@ -753,14 +1385,102 @@ function AdvancedPanel({
           onClass={onClass}
         />
       ))}
+      {showEffects ? (
+        <>
+          <OpacitySlider node={node} commit={commit} />
+          <StyleControlField node={node} def={def} control={SHADOW_CONTROL} onClass={onClass} />
+          <StyleControlField node={node} def={def} control={TRANSITION_CONTROL} onClass={onClass} />
+          <Subgroup title="Transform">
+            <div className="bx-row2">
+              <LengthField
+                label="Scale"
+                node={node}
+                prefix="scale"
+                presets={SCALE_PRESETS}
+                commit={commit}
+              />
+              <LengthField
+                label="Rotate"
+                node={node}
+                prefix="rotate"
+                presets={ROTATE_PRESETS}
+                commit={commit}
+              />
+            </div>
+            <div className="bx-row2">
+              <LengthField
+                label="Move X"
+                node={node}
+                prefix="translate-x"
+                presets={MOVE_PRESETS}
+                commit={commit}
+              />
+              <LengthField
+                label="Move Y"
+                node={node}
+                prefix="translate-y"
+                presets={MOVE_PRESETS}
+                commit={commit}
+              />
+            </div>
+          </Subgroup>
+        </>
+      ) : null}
+    </Card>
+  );
+}
+
+// Typography — font / size / weight / line-height / spacing / alignment / case /
+// color. Page builder only; shown for text-bearing leaves.
+function TypographyCard({
+  node,
+  def,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  onClass: (value: string) => void;
+}) {
+  return (
+    <Card icon={Type} title="Typography" summary={typographySummary(node)} defaultOpen={false}>
+      <div className="bx-row2">
+        <StyleControlField node={node} def={def} control={FONT_FAMILY_CONTROL} onClass={onClass} />
+        <StyleControlField node={node} def={def} control={FONT_SIZE_CONTROL} onClass={onClass} />
+      </div>
+      <div className="bx-row2">
+        <StyleControlField node={node} def={def} control={FONT_WEIGHT_CONTROL} onClass={onClass} />
+        <StyleControlField node={node} def={def} control={LEADING_CONTROL} onClass={onClass} />
+      </div>
+      <div className="bx-row2">
+        <StyleControlField node={node} def={def} control={TEXT_ALIGN_CONTROL} onClass={onClass} />
+        <StyleControlField node={node} def={def} control={TRACKING_CONTROL} onClass={onClass} />
+      </div>
+      <div className="bx-row2">
+        <StyleControlField node={node} def={def} control={TEXT_CASE_CONTROL} onClass={onClass} />
+        <StyleControlField node={node} def={def} control={TEXT_COLOR_CONTROL} onClass={onClass} />
+      </div>
+    </Card>
+  );
+}
+
+// Custom CSS — the raw class escape hatch (the final power-user out).
+function CustomCssCard({ node, onClass }: { node: BuilderNode; onClass: (value: string) => void }) {
+  return (
+    <Card
+      icon={SlidersHorizontal}
+      title="Custom CSS"
+      summary="Raw classes"
+      defaultOpen={false}
+      muted
+    >
       <Field
-        label="Custom styling"
-        hint="Advanced styling hooks (the raw class string). Most people never need this."
+        label="Custom classes"
+        hint="Advanced escape hatch — any Tailwind utility. Compiles through the same engine. Most people never need this."
       >
         <Textarea
           rows={2}
           value={node.class ?? ''}
-          placeholder="e.g. hero bg-base-100 gap-6"
+          placeholder="e.g. backdrop-blur-sm mix-blend-multiply"
           aria-label="Custom classes"
           onChange={(e) => onClass(e.target.value)}
         />
@@ -1850,17 +2570,10 @@ export function Inspector({
           </Card>
         ) : null}
 
-        <Card icon={Palette} title="Style" summary={styleSummary(node)}>
-          {STYLE_CONTROLS.map((control) => (
-            <StyleControlField
-              key={control.id}
-              node={node}
-              def={def}
-              control={control}
-              onClass={onClass}
-            />
-          ))}
-        </Card>
+        {/* Style — Color + Emphasis, plus the effects (opacity/shadow/transform/
+            transition) on the page builder. In the component builder the Appearance
+            card owns the skin set, so Style stays Color + Emphasis (showEffects off). */}
+        <StyleCard node={node} def={def} onClass={onClass} showEffects={!slotEditor} />
 
         {/* The full Appearance/skin surface (free color/type/edges + per
             breakpoint/state/dark context) authors only in the component builder
@@ -1872,11 +2585,23 @@ export function Inspector({
             nothing, so the card is hidden. */}
         {def.kind === 'container' ? <LayoutCard node={node} def={def} onClass={onClass} /> : null}
 
+        {/* Power-user style sections — collapsed by default. Size / Spacing /
+            Position apply everywhere; Typography / Borders only on the page builder
+            (the component builder's Appearance card owns the full skin set, so they'd
+            duplicate it there). Effects now live in the Style card. */}
+        <SizeCard node={node} def={def} onClass={onClass} />
+        <SpacingCard node={node} def={def} onClass={onClass} />
+        <PositionCard node={node} def={def} onClass={onClass} />
+        {!slotEditor && def.kind === 'leaf' ? (
+          <TypographyCard node={node} def={def} onClass={onClass} />
+        ) : null}
+        {!slotEditor ? <BordersCard node={node} def={def} onClass={onClass} /> : null}
+
         {/* Motion (docs/61 §9) — entrance on every node. Hidden on the email
             surface (mail clients strip classes, so an entrance is inert there). */}
         {surface !== 'email' ? <MotionCard node={node} def={def} onClass={onClass} /> : null}
 
-        <AdvancedPanel node={node} def={def} onClass={onClass} />
+        <CustomCssCard node={node} onClass={onClass} />
       </div>
     </div>
   );

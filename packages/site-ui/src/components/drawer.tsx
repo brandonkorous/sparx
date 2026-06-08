@@ -5,6 +5,9 @@
 // the panel in from an edge; styling is `sf-*`. Its own root wrapper keeps it
 // independent of Dialog (no shared primitive mutation). Compound parts attach +
 // export.
+//
+// Composition: BASIC (docs/23 §17) — a single primitive wrapping Radix Dialog;
+// it composes no other site-ui component.
 
 import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';

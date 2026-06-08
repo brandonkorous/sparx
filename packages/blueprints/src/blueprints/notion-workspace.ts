@@ -857,7 +857,7 @@ function siteLayoutTree(): BuilderNode {
         layout: { direction: 'stack', gap: 'lg', alignItems: 'start' },
         children: [
           node('Grid', {
-            box: { padding: 'none', align: 'start' },
+            box: { padding: 'none', align: 'start', contentWidth: 'full' },
             layout: { direction: 'grid', columns: 4, gap: 'lg' },
             children: [
               footCol('Product', [

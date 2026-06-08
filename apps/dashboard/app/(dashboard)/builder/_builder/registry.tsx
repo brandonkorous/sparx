@@ -52,6 +52,18 @@ import {
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 
 import { coerceNavLinks, readClassGroup, setClassGroup } from '@sparx/builder-schemas';
+// Site-chrome leaves render the SAME prebuilt components the live site does
+// (docs/62), so the canvas previews them faithfully — the logo image, the
+// responsive nav collapse — instead of crude `bx-*` placeholders.
+import {
+  CollapsibleNav,
+  EditorialSection,
+  FAQ,
+  FeatureGrid,
+  Logo,
+  NavMenu,
+  SocialLinks,
+} from '@sparx/site-ui';
 // The React-free JSON→HTML serializer (the audited CMS path). Lets the canvas
 // preview an authored Prose doc as real HTML without pulling the TipTap editor
 // into this widely-imported registry chunk (docs/52 §9).
@@ -68,6 +80,13 @@ import {
 import { COLOR_CONTROL, VARIANT_CONTROL } from './class-controls';
 
 export type NodeKind = 'container' | 'leaf';
+/** Composition axis (docs/23 §17) — orthogonal to `kind`/`group`/bindable.
+ *  `basic` = self-contained, composes no other named component (Button, Heading,
+ *  NavMenu). `composite` = assembles two or more other components into a
+ *  higher-order pattern (EditorialSection = Heading+Text+Button; BuyBox =
+ *  PriceTag+VariantPicker+Quantity+AddToCart). Surfaced in the palette + read by
+ *  agents; composites are also where canvas↔live render drift concentrates. */
+export type Composition = 'basic' | 'composite';
 export type ModuleKey = 'cms' | 'commerce' | 'crm' | 'events' | 'site';
 export type PaletteGroup = 'layout' | 'content' | 'data';
 /** Which editor surface a component belongs to. `page` = the content outlet
@@ -133,6 +152,10 @@ export interface ComponentDef {
   label: string;
   kind: NodeKind;
   group: PaletteGroup;
+  /** Basic vs composite (docs/23 §17). Populated for every def from the
+   *  COMPOSITE_TYPES taxonomy below — read it via `getDef`, never hand-set on a
+   *  def literal (the source of truth is the one list). */
+  composition?: Composition;
   icon: LucideIcon;
   /** Data-aware components belong to a module (shown under "From your modules"
    *  and color-coded). Primitives have no module. */
@@ -782,30 +805,22 @@ const DEFS: ComponentDef[] = [
       },
     },
     renderLeaf: ({ node, value, bound }) => {
+      // Same site-ui composite the live site renders (docs/62) — faithful preview,
+      // including a real Button (not a dead span).
       const obj =
         bound && value && typeof value === 'object' && !Array.isArray(value)
           ? (value as Record<string, unknown>)
           : null;
       const pick = (k: string, prop: string, dflt = '') =>
         firstString(obj?.[k], node.props[prop], dflt);
-      const eyebrow = pick('eyebrow', 'eyebrow');
-      const headline = pick('headline', 'headline', 'Headline');
-      const body = pick('body', 'body');
-      const ctaLabel = pick('ctaLabel', 'ctaLabel');
       return (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.75rem',
-            alignItems: 'inherit',
-          }}
-        >
-          {eyebrow ? <span className="bx-text bx-text--eyebrow">{eyebrow}</span> : null}
-          <span className="bx-h bx-h2">{headline}</span>
-          {body ? <p className="bx-text bx-text--body">{body}</p> : null}
-          {ctaLabel ? <span className="bx-btn bx-btn--primary">{ctaLabel}</span> : null}
-        </div>
+        <EditorialSection
+          eyebrow={pick('eyebrow', 'eyebrow')}
+          headline={pick('headline', 'headline', 'Headline')}
+          body={pick('body', 'body')}
+          ctaLabel={pick('ctaLabel', 'ctaLabel')}
+          ctaUrl={firstString(obj?.ctaUrl, node.props.ctaUrl)}
+        />
       );
     },
   },
@@ -845,21 +860,11 @@ const DEFS: ComponentDef[] = [
             }))
           : parseFaqItems(firstString(node.props.items));
       const list = items.filter((it) => it.question);
+      // Placeholder while unauthored so the node stays visible + selectable.
       const show = list.length
         ? list
         : [{ question: 'Your question here?', answer: 'And the answer here.' }];
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
-          {show.map((it, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-              <p className="bx-text" style={{ fontWeight: 600 }}>
-                {it.question}
-              </p>
-              {it.answer ? <p className="bx-text bx-text--body">{it.answer}</p> : null}
-            </div>
-          ))}
-        </div>
-      );
+      return <FAQ items={show} />;
     },
   },
   {
@@ -900,6 +905,9 @@ const DEFS: ComponentDef[] = [
       },
     },
     renderLeaf: ({ node, value, cardinality }) => {
+      // Same site-ui composite the live site renders (docs/62): a responsive Grid
+      // of Cards that collapses to one column on a phone — the canvas now reflects
+      // that instead of a fixed, never-collapsing grid.
       const items =
         cardinality === 'array' && Array.isArray(value)
           ? (value as Record<string, unknown>[]).map((it, i) => ({
@@ -909,6 +917,7 @@ const DEFS: ComponentDef[] = [
             }))
           : parseFeatureItems(firstString(node.props.items));
       const list = items.filter((f) => f.title);
+      // Placeholder while unauthored so the node stays visible + selectable.
       const show = list.length
         ? list
         : [
@@ -916,29 +925,8 @@ const DEFS: ComponentDef[] = [
             { number: '02', title: 'Feature two', body: 'What it does.' },
             { number: '03', title: 'Feature three', body: 'What it does.' },
           ];
-      const cols = Math.min(4, Math.max(2, Number(node.props.columns) || 3));
-      return (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-            gap: '1.25rem',
-            width: '100%',
-          }}
-        >
-          {show.map((f, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-              <span className="bx-stat__value" style={{ fontSize: '20px', opacity: 0.5 }}>
-                {f.number}
-              </span>
-              <span className="bx-text" style={{ fontWeight: 600 }}>
-                {f.title}
-              </span>
-              {f.body ? <span className="bx-text bx-text--body">{f.body}</span> : null}
-            </div>
-          ))}
-        </div>
-      );
+      const cols = Math.min(4, Math.max(2, Number(node.props.columns) || 3)) as 2 | 3 | 4;
+      return <FeatureGrid cols={cols} items={show} />;
     },
   },
 
@@ -1207,18 +1195,27 @@ const DEFS: ComponentDef[] = [
     renderLeaf: ({ node, value }) => {
       const orientation = (node.props.orientation as string) ?? 'row';
       // Node-owned links win; a legacy CMS binding (value) is the fallback during
-      // the transition (docs/57). Empty everywhere → the placeholder labels.
+      // the transition (docs/57). Empty everywhere → placeholder links so the node
+      // stays visible + selectable while unauthored (the live site renders nothing).
       const links = coerceNavLinks(node.props.links, value);
-      const labels = links.length > 0 ? links.map((l) => l.label) : ['Home', 'Shop', 'About'];
-      return (
-        <nav className={`bx-nav bx-nav--${orientation}`}>
-          {labels.map((label, i) => (
-            <span key={`${i}-${label}`} className="bx-nav__item">
-              {label}
-            </span>
-          ))}
-        </nav>
-      );
+      const source =
+        links.length > 0
+          ? links
+          : ([
+              { label: 'Home', href: '/' },
+              { label: 'Shop', href: '/products' },
+              { label: 'About', href: '/about' },
+            ] as typeof links);
+      const items = source.map((l) => ({
+        label: l.label,
+        url: l.href,
+        ...(l.openInNewTab ? { openInNewTab: true } : {}),
+      }));
+      // Same components the live site renders (docs/62): row → the responsive
+      // CollapsibleNav (inline ↔ hamburger via the sf-frame container query, so
+      // the canvas device preview collapses too); stack → the static NavMenu.
+      if (orientation === 'row') return <CollapsibleNav items={items} />;
+      return <NavMenu items={items} orientation="stack" />;
     },
   },
   {
@@ -1234,8 +1231,16 @@ const DEFS: ComponentDef[] = [
     props: [],
     defaults: {},
     renderLeaf: ({ value }) => {
-      const identity = value && typeof value === 'object' ? (value as { name?: unknown }) : null;
-      return <span className="bx-logo">{firstString(identity?.name, 'Your brand')}</span>;
+      // Render the real Logo (docs/62): the image when the identity has one,
+      // the brand name otherwise — so the canvas matches the live site instead
+      // of always showing the name text.
+      const identity =
+        value && typeof value === 'object' ? (value as { name?: unknown; logo?: unknown }) : null;
+      const name = firstString(identity?.name);
+      const logoRaw = identity?.logo;
+      const logo = Array.isArray(logoRaw) ? (logoRaw as unknown[])[0] : logoRaw;
+      const img = asImage(logo);
+      return <Logo name={name} src={img?.url} alt={firstString(img?.alt, name)} />;
     },
   },
   {
@@ -1251,23 +1256,57 @@ const DEFS: ComponentDef[] = [
     props: [],
     defaults: {},
     renderLeaf: ({ value, cardinality }) => {
-      const items = cardinality === 'array' ? (value as unknown[]) : [];
-      const count = items.length > 0 ? items.length : 3;
-      return (
-        <div className="bx-social">
-          {Array.from({ length: count }).map((_, i) => (
-            <span key={`s${i}`} className="bx-social__dot" />
-          ))}
-        </div>
-      );
+      const raw =
+        cardinality === 'array' && Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
+      const items = raw.map((it) => ({
+        platform: typeof it.platform === 'string' ? it.platform : '',
+        url: typeof it.url === 'string' ? it.url : '#',
+      }));
+      // Real SocialLinks (docs/62). Placeholders while unbound so the node stays
+      // visible + selectable (the live site renders nothing when empty).
+      const source =
+        items.length > 0
+          ? items
+          : [
+              { platform: 'Twitter', url: '#' },
+              { platform: 'Instagram', url: '#' },
+              { platform: 'LinkedIn', url: '#' },
+            ];
+      return <SocialLinks items={source} />;
     },
   },
 ];
+
+// ── Composition taxonomy (docs/23 §17) ───────────────────────────────────────
+// The single source of truth for the basic/composite axis: a component is
+// `composite` iff it appears here, else `basic`. Kept as one readable list (not
+// scattered across 31 def literals) so the whole classification is legible at a
+// glance — to people and agents. A composite assembles two or more other
+// components into a higher-order pattern; these are also the canvas↔live render
+// drift hotspots (docs/62), so the list doubles as an audit target.
+const COMPOSITE_TYPES = new Set<string>([
+  'Carousel', // slides + arrows/dots/autoplay controls
+  'EditorialSection', // Heading + Text + Button
+  'FAQ', // repeated question/answer pairs
+  'FeatureGrid', // grid of feature cells (icon + heading + text)
+  'Signup', // Input + Button form
+  'ProductForm', // provider wrapping the buy-box assembly
+  'BuyBox', // PriceTag + VariantPicker + Quantity + AddToCart
+]);
+for (const d of DEFS) {
+  d.composition = COMPOSITE_TYPES.has(d.type) ? 'composite' : 'basic';
+}
 
 const BY_TYPE = new Map(DEFS.map((d) => [d.type, d]));
 
 export function getDef(type: string): ComponentDef | undefined {
   return BY_TYPE.get(type);
+}
+
+/** The composition class of a node type (docs/23 §17) — `basic` for unknown
+ *  types. Lets callers (palette, agents, audits) classify without a full def. */
+export function compositionOf(type: string): Composition {
+  return COMPOSITE_TYPES.has(type) ? 'composite' : 'basic';
 }
 
 // ── Box-axis relevance (docs/47 box→data-only convergence) ────────────────────

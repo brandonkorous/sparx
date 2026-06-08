@@ -1,8 +1,36 @@
 # 62 — Responsive Site Chrome (header & footer)
 
-Version: 1.0
+Version: 2.0
 Author: Brandon Korous
 Last Updated: 2026-06-08
+
+## v2.0 update — `CollapsibleNav` + canvas parity (supersedes D4/D5)
+
+The header nav is now a **prebuilt `@sparx/site-ui` component, `CollapsibleNav`**,
+rendered by BOTH the live site and the editor canvas — not an `apps/site`-only
+island. This fixed two things v1.0 left open:
+
+- **Canvas parity.** The dashboard canvas has its own renderer (`registry.tsx`)
+  that previously drew the site-chrome leaves (`NavMenu`, `Logo`, `SocialLinks`)
+  as crude `bx-*` placeholders, so the canvas disagreed with the live site: the
+  nav never collapsed, and `Logo` showed the brand name even when the identity
+  had a logo image. The canvas now renders the **same site-ui components** the
+  live site does, so the preview is faithful.
+- **The swap is a container query, not a viewport one (supersedes D4).** The old
+  `@media (max-width: 767px)` could never fire in the canvas, whose device
+  preview is a fixed-width element inside a desktop viewport, not a narrow
+  viewport. `CollapsibleNav` now swaps on a **named `sf-frame` container query**
+  (`@container sf-frame (min-width: 768px)`), and both frame roots declare
+  `container-name: sf-frame` (`.bx-render` live, `.bx-canvas` canvas). It collapses
+  identically at the simulated device width and the real viewport.
+- **Centralized in site-ui, not forked (supersedes D5).** `CollapsibleNav`
+  composes the existing `NavMenu` + `Drawer` primitives; its CSS lives in
+  `packages/site-ui/src/styles/collapsible-nav.css` (compiled into both
+  `styles.css` and `styles.canvas.css`). The `apps/site` island
+  (`builder-nav-menu.tsx`) and the `.sf-builder-nav*` viewport switch are deleted.
+
+D1, D2, and D3 below still stand (scoping the legacy CSS, a real mobile app-bar,
+the always-horizontal app-bar header). The text below is the original v1.0 record.
 
 ## Why this doc
 

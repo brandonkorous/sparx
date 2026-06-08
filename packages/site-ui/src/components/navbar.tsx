@@ -1,5 +1,9 @@
 // Navbar — a top navigation bar (docs/46 §5.2). Compound (Start / Center / End).
 // SERVER component, structural. The three slots distribute across the bar.
+//
+// Composition: BASIC (docs/23 §17) — a structural bar shell. It exposes slots but
+// composes no specific components itself; the author fills them (e.g. a Logo + a
+// CollapsibleNav).
 
 import * as React from 'react';
 import { cx } from '../utils/cx';

@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { ModuleProvider, SidebarNav, Text } from '@sparx/ui';
+import { ModuleProvider, SidebarNav, Text, usePanelCollapsed } from '@sparx/ui';
+import { Settings as SettingsIcon } from 'lucide-react';
 import type { ModuleManifest } from '@sparx/ui/shell';
 import { getManifestForPath } from '../_shell/registry';
 import { ModuleSectionItems } from './module-section-nav';
@@ -69,15 +70,39 @@ function PanelHead({ eyebrow, title, dot }: { eyebrow: string; title: string; do
   );
 }
 
+// Collapsed-strip header: the context's glyph centered (a quiet marker in place
+// of the eyebrow + title), tooltipped with the full name.
+function PanelHeadIcon({
+  icon: Icon,
+  label,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+}) {
+  return (
+    <div className="flex shrink-0 justify-center px-2 pt-4 pb-2" title={label}>
+      <Icon className="h-5 w-5 text-[var(--module-active)]" aria-hidden />
+    </div>
+  );
+}
+
 export function ContextualPanel({ pathname, enabledModules, tenantName }: ContextualPanelProps) {
   const ctx = resolvePanelContext(pathname, enabledModules);
+  const collapsed = usePanelCollapsed();
 
   if (ctx.kind === 'module') {
     return (
       <ModuleProvider module={ctx.manifest.id} className="flex h-full flex-col">
-        <PanelHead eyebrow="Module" title={ctx.manifest.label} dot />
+        {collapsed ? (
+          <PanelHeadIcon icon={ctx.manifest.icon} label={ctx.manifest.label} />
+        ) : (
+          <PanelHead eyebrow="Module" title={ctx.manifest.label} dot />
+        )}
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <SidebarNav label="Sections" className="gap-0.5 px-2 pb-3">
+          <SidebarNav
+            label="Sections"
+            className={collapsed ? 'items-center gap-0.5 px-1.5 pb-3' : 'gap-0.5 px-2 pb-3'}
+          >
             <ModuleSectionItems manifest={ctx.manifest} pathname={pathname} />
           </SidebarNav>
         </div>
@@ -90,9 +115,16 @@ export function ContextualPanel({ pathname, enabledModules, tenantName }: Contex
     // "platform" provider so the active row picks up a sensible highlight.
     return (
       <ModuleProvider module="platform" className="flex h-full flex-col">
-        <PanelHead eyebrow="Settings" title={tenantName} />
+        {collapsed ? (
+          <PanelHeadIcon icon={SettingsIcon} label={tenantName} />
+        ) : (
+          <PanelHead eyebrow="Settings" title={tenantName} />
+        )}
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <SidebarNav label="Settings" className="gap-0.5 px-2 pb-3">
+          <SidebarNav
+            label="Settings"
+            className={collapsed ? 'items-center gap-0.5 px-1.5 pb-3' : 'gap-0.5 px-2 pb-3'}
+          >
             <SettingsSectionItems pathname={pathname} />
           </SidebarNav>
         </div>

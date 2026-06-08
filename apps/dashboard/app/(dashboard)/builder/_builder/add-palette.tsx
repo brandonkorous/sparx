@@ -6,6 +6,7 @@
 // module is on. Clicking drops it inside the current target container.
 
 import * as React from 'react';
+import { Layers } from 'lucide-react';
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 import { cn } from '@sparx/ui';
 import { customType, type ComponentDto } from '@sparx/builder-schemas';
@@ -37,6 +38,15 @@ function Tile({ def, onAdd }: { def: ComponentDef; onAdd: (type: string) => void
       ) : null}
       <Icon className="bx-tile__icon" aria-hidden />
       <span className="bx-tile__name">{def.label}</span>
+      {def.composition === 'composite' ? (
+        <span
+          className="bx-tile__kind"
+          title="Composite — built from other components"
+          aria-label="Composite component"
+        >
+          <Layers aria-hidden />
+        </span>
+      ) : null}
     </button>
   );
 }

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { SidebarItem } from '@sparx/ui';
+import { SidebarItem, usePanelCollapsed } from '@sparx/ui';
 import type { ModuleManifest } from '@sparx/ui/shell';
 
 // A module's intra-module navigation items: an "Overview" entry (the module
@@ -26,11 +26,14 @@ export function ModuleSectionItems({
   pathname: string | null;
 }) {
   const Overview = manifest.icon;
+  // Inside a collapsed contextual panel the rows render icon-only (tooltipped).
+  const collapsed = usePanelCollapsed();
   return (
     <>
       <SidebarItem
         asChild
         active={pathname === manifest.routePrefix}
+        collapsed={collapsed}
         icon={<Overview className="h-4 w-4" />}
       >
         <Link href={manifest.routePrefix}>Overview</Link>
@@ -41,7 +44,13 @@ export function ModuleSectionItems({
         // is the section itself or a descendant — never the bare root.
         const active = pathname !== manifest.routePrefix && isWithin(pathname, section.href);
         return (
-          <SidebarItem key={section.id} asChild active={active} icon={<Icon className="h-4 w-4" />}>
+          <SidebarItem
+            key={section.id}
+            asChild
+            active={active}
+            collapsed={collapsed}
+            icon={<Icon className="h-4 w-4" />}
+          >
             <Link href={section.href}>{section.label}</Link>
           </SidebarItem>
         );

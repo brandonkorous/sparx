@@ -36,12 +36,15 @@
 @import './styles/checkbox.css' layer(components);
 @import './styles/code.css' layer(components);
 @import './styles/collapse.css' layer(components);
+@import './styles/collapsible-nav.css' layer(components);
 @import './styles/container.css' layer(components);
 @import './styles/countdown.css' layer(components);
 @import './styles/dialog.css' layer(components);
 @import './styles/diff.css' layer(components);
 @import './styles/divider.css' layer(components);
 @import './styles/dock.css' layer(components);
+@import './styles/editorial-section.css' layer(components);
+@import './styles/faq.css' layer(components);
 @import './styles/drawer.css' layer(components);
 @import './styles/dropdown-menu.css' layer(components);
 @import './styles/embed-frame.css' layer(components);

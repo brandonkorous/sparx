@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { ChevronsLeft, ChevronsRight, Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '../primitives/button';
 import { Drawer, DrawerContent, DrawerTitle } from '../overlay/drawer';
 import { useMediaQuery } from '../../hooks/use-media-query';
@@ -38,8 +38,13 @@ import { cn } from '../../utils/cn';
 // icon + label (so the module glyphs are legible) and the choice persists in
 // localStorage. The expanded state is published via `RailExpandedContext` —
 // the `rail` content reads it with `useRailExpanded()` to grow labels.
+//
+// The contextual `panel` is independently collapsible to a thin strip (its own
+// foot toggle, also persisted) — so dense, design-centric surfaces like the
+// Builder can hand the freed width to their canvas.
 
 const RAIL_EXPANDED_STORAGE_KEY = 'sparx:rail-expanded';
+const PANEL_COLLAPSED_STORAGE_KEY = 'sparx:panel-collapsed';
 const DETAIL_WIDTH_STORAGE_KEY = 'sparx:detail-width';
 
 // Published to the `rail` subtree so it can render labels alongside icons when
@@ -49,6 +54,15 @@ const RailExpandedContext = React.createContext(false);
 /** Read whether the icon rail is currently expanded to show labels. */
 export function useRailExpanded(): boolean {
   return React.useContext(RailExpandedContext);
+}
+
+// Published to the `panel` subtree so its nav can render icon-only (and surface
+// labels as tooltips) when the contextual panel is collapsed to a thin strip.
+const PanelCollapsedContext = React.createContext(false);
+
+/** Read whether the contextual panel is collapsed to its icon-only strip. */
+export function usePanelCollapsed(): boolean {
+  return React.useContext(PanelCollapsedContext);
 }
 const DETAIL_WIDTH_DEFAULT = 40; // percent of main area
 const DETAIL_WIDTH_MIN = 25;
@@ -118,6 +132,7 @@ export function SidebarAppShell({
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const detailWidth = useDetailWidth();
   const railExpanded = useRailExpandedState();
+  const panelCollapsed = usePanelCollapsedState();
 
   React.useEffect(() => {
     if (isFirstRender.current) {
@@ -156,9 +171,23 @@ export function SidebarAppShell({
             />
           </nav>
           {panel != null && (
-            <div className="flex h-full w-60 shrink-0 flex-col border-r border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
-              {panel}
-            </div>
+            <PanelCollapsedContext.Provider value={panelCollapsed.value}>
+              <div
+                className={cn(
+                  'flex h-full shrink-0 flex-col border-r border-[var(--color-border-default)] bg-[var(--color-bg-surface)] transition-[width] duration-150 ease-out',
+                  panelCollapsed.value ? 'w-14' : 'w-60'
+                )}
+              >
+                {/* Panel content stays mounted when collapsed so it can render
+                    icon-only (via usePanelCollapsed); the toggle below it stays
+                    pinned to the foot — no chasing it to the top. */}
+                <div className="min-h-0 flex-1 overflow-hidden">{panel}</div>
+                <PanelToggle
+                  collapsed={panelCollapsed.value}
+                  onToggle={() => panelCollapsed.setValue(!panelCollapsed.value)}
+                />
+              </div>
+            </PanelCollapsedContext.Provider>
           )}
         </div>
       </RailExpandedContext.Provider>
@@ -296,6 +325,66 @@ function RailToggle({ expanded, onToggle }: { expanded: boolean; onToggle: () =>
         <PanelLeftOpen className="h-4 w-4 shrink-0" />
       )}
       {expanded && <span className="flex-1 truncate text-left">Collapse</span>}
+    </button>
+  );
+}
+
+// ── Contextual panel collapse ──────────────────────────────
+// The second nav column (a module's sections, settings sub-pages) collapses to a
+// thin strip — useful on dense, design-centric surfaces (the Builder) where the
+// canvas wants the width back. The choice persists in localStorage, like the rail.
+
+interface PanelCollapsedState {
+  value: boolean;
+  setValue: (next: boolean) => void;
+}
+
+function usePanelCollapsedState(): PanelCollapsedState {
+  const [value, setValueState] = React.useState(false);
+
+  React.useEffect(() => {
+    try {
+      if (window.localStorage.getItem(PANEL_COLLAPSED_STORAGE_KEY) === 'true') {
+        setValueState(true);
+      }
+    } catch {
+      // storage disabled — stay expanded
+    }
+  }, []);
+
+  const setValue = React.useCallback((next: boolean) => {
+    setValueState(next);
+    try {
+      window.localStorage.setItem(PANEL_COLLAPSED_STORAGE_KEY, String(next));
+    } catch {
+      // ignore — in-memory state still updates
+    }
+  }, []);
+
+  return { value, setValue };
+}
+
+function PanelToggle({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      title={collapsed ? 'Show panel' : 'Hide panel'}
+      aria-label={collapsed ? 'Show panel' : 'Hide panel'}
+      aria-expanded={!collapsed}
+      className={cn(
+        'flex h-9 shrink-0 items-center border-t border-[var(--color-border-default)] text-sm font-medium text-[var(--color-text-tertiary)] transition-colors hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none',
+        collapsed ? 'justify-center' : 'w-full justify-start gap-2 px-3'
+      )}
+    >
+      {collapsed ? (
+        <ChevronsRight className="h-4 w-4 shrink-0" />
+      ) : (
+        <>
+          <ChevronsLeft className="h-4 w-4 shrink-0" />
+          <span className="flex-1 truncate text-left">Collapse</span>
+        </>
+      )}
     </button>
   );
 }

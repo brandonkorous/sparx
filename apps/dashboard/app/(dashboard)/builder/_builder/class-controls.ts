@@ -164,6 +164,119 @@ export const SHADOW_CONTROL: ClassControl = {
   ],
 };
 
+// Power-user box controls (the inspector's Advanced panel). General display + CSS
+// position — beyond the friendly Layout card's flex/grid arrangement. Tailwind-
+// native, compiled like every other utility. Display is offered on LEAVES only
+// (a container's display is driven by Layout's "Arrange as", same token group).
+export const BOX_DISPLAY_CONTROL: ClassControl = {
+  id: 'boxDisplay',
+  label: 'Display',
+  options: [
+    { value: 'block', label: 'Block', token: 'block' },
+    { value: 'inline-block', label: 'Inline block', token: 'inline-block' },
+    { value: 'inline', label: 'Inline', token: 'inline' },
+    { value: 'flex', label: 'Flex', token: 'flex' },
+    { value: 'grid', label: 'Grid', token: 'grid' },
+    { value: 'hidden', label: 'Hidden', token: 'hidden' },
+  ],
+};
+
+// `fixed` is intentionally absent — the surface compiler's allowlist blocks it
+// (a tenant element can't pin itself over the app chrome), so offering it would
+// silently no-op. Static is the empty/default; the others reveal offsets + z.
+export const POSITION_CONTROL: ClassControl = {
+  id: 'position',
+  label: 'Position',
+  options: [
+    { value: 'relative', label: 'Relative', token: 'relative' },
+    { value: 'absolute', label: 'Absolute', token: 'absolute' },
+    { value: 'sticky', label: 'Sticky', token: 'sticky' },
+  ],
+};
+
+// Layer / z-index — SCALE ONLY (the allowlist blocks arbitrary `z-[9999]`); empty
+// inherits auto. Capped at 50 so tenant content stays below the app chrome.
+export const Z_INDEX_CONTROL: ClassControl = {
+  id: 'z',
+  label: 'Layer (front ↔ back)',
+  options: [
+    { value: '0', label: '0', token: 'z-0' },
+    { value: '10', label: '10', token: 'z-10' },
+    { value: '20', label: '20', token: 'z-20' },
+    { value: '30', label: '30', token: 'z-30' },
+    { value: '40', label: '40', token: 'z-40' },
+    { value: '50', label: '50 (top)', token: 'z-50' },
+  ],
+};
+
+export const ASPECT_CONTROL: ClassControl = {
+  id: 'aspect',
+  label: 'Aspect ratio',
+  options: [
+    { value: 'square', label: 'Square (1:1)', token: 'aspect-square' },
+    { value: 'video', label: 'Wide (16:9)', token: 'aspect-video' },
+    { value: '4/3', label: '4:3', token: 'aspect-[4/3]' },
+    { value: '3/4', label: 'Tall (3:4)', token: 'aspect-[3/4]' },
+  ],
+};
+
+export const OVERFLOW_CONTROL: ClassControl = {
+  id: 'overflow',
+  label: 'Overflow',
+  options: [
+    { value: 'visible', label: 'Visible', token: 'overflow-visible' },
+    { value: 'hidden', label: 'Hidden (clip)', token: 'overflow-hidden' },
+    { value: 'scroll', label: 'Scroll', token: 'overflow-scroll' },
+    { value: 'auto', label: 'Auto', token: 'overflow-auto' },
+  ],
+};
+
+export const TEXT_ALIGN_CONTROL: ClassControl = {
+  id: 'textAlign',
+  label: 'Alignment',
+  options: [
+    { value: 'left', label: 'Left', token: 'text-left' },
+    { value: 'center', label: 'Center', token: 'text-center' },
+    { value: 'right', label: 'Right', token: 'text-right' },
+    { value: 'justify', label: 'Justified', token: 'text-justify' },
+  ],
+};
+
+export const LEADING_CONTROL: ClassControl = {
+  id: 'leading',
+  label: 'Line height',
+  options: [
+    { value: 'tight', label: 'Tight', token: 'leading-tight' },
+    { value: 'snug', label: 'Snug', token: 'leading-snug' },
+    { value: 'normal', label: 'Normal', token: 'leading-normal' },
+    { value: 'relaxed', label: 'Relaxed', token: 'leading-relaxed' },
+    { value: 'loose', label: 'Loose', token: 'leading-loose' },
+  ],
+};
+
+export const BORDER_STYLE_CONTROL: ClassControl = {
+  id: 'borderStyle',
+  label: 'Style',
+  options: [
+    { value: 'solid', label: 'Solid', token: 'border-solid' },
+    { value: 'dashed', label: 'Dashed', token: 'border-dashed' },
+    { value: 'dotted', label: 'Dotted', token: 'border-dotted' },
+  ],
+};
+
+// Border color — TOKEN colors only (arbitrary hex is blocked by the allowlist).
+export const BORDER_COLOR_CONTROL: ClassControl = {
+  id: 'borderColor',
+  label: 'Border color',
+  options: [
+    { value: 'subtle', label: 'Subtle', token: 'border-base-300' },
+    { value: 'primary', label: 'Primary', token: 'border-primary' },
+    { value: 'secondary', label: 'Secondary', token: 'border-secondary' },
+    { value: 'accent', label: 'Accent', token: 'border-accent' },
+    { value: 'neutral', label: 'Neutral', token: 'border-neutral' },
+  ],
+};
+
 // ── Skin families (docs/61 §5.2, Phase 3) — component-builder only ────────────
 // The FULL appearance surface for a reusable component: free background/text color
 // (beyond the recipe's color×variant), free type, and motion. Tokenized → every
@@ -582,6 +695,68 @@ export function applyValue(
 ): string {
   const bare = value ? (control.options.find((o) => o.value === value)?.token ?? null) : null;
   return setClassGroup(classStr, prefixedGroup(control, prefix), bare ? prefix + bare : null);
+}
+
+// ── Value (length / number) utilities ─────────────────────────────────────────
+// The enum controls above carry a fixed, mutually-exclusive token LIST. The power
+// panel also needs OPEN-ENDED value utilities — `top-4`, `w-1/2`, `top-[20px]`,
+// `opacity-75` — whose value isn't a fixed list. These read/write a Tailwind
+// utility GROUP keyed by an exact `prefix` (`top`, `w`, `p`, `opacity`, `rotate`,
+// …); a token is in the group iff it starts with `<prefix>-`, so `p` never
+// swallows `px-`/`pt-`. Arbitrary values (`[20px]`) and any scale step compile
+// through the same JIT as everything else (docs/47 §5). A `ctx` variant (`@lg:`)
+// targets a responsive/state layer, exactly like the enum path.
+
+/** The value SUFFIX of a prefix group on a node's class — e.g. `top` → `4` from
+ *  `top-4`, or `[20px]` from `top-[20px]`; null when unset. */
+export function readValueGroup(
+  classStr: string | undefined,
+  prefix: string,
+  ctx = ''
+): string | null {
+  const head = `${ctx}${prefix}-`;
+  for (const token of (classStr ?? '').split(/\s+/).filter(Boolean)) {
+    if (token.startsWith(head)) return token.slice(head.length);
+  }
+  return null;
+}
+
+/** Write a value group (or clear with null). `value` is the SUFFIX — a scale step
+ *  (`4`), a keyword (`full`), or an arbitrary value (`[20px]`). Any existing token
+ *  in the group is removed first. */
+export function applyValueGroup(
+  classStr: string | undefined,
+  prefix: string,
+  value: string | null,
+  ctx = ''
+): string {
+  const head = `${ctx}${prefix}-`;
+  const tokens = (classStr ?? '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((t) => !t.startsWith(head));
+  if (value) tokens.push(`${head}${value}`);
+  return tokens.join(' ');
+}
+
+/** Coerce a free-typed length into a Tailwind value SUFFIX: a bare number stays a
+ *  scale step (`4` → `top-4`); anything with a unit/percent (or a non-numeric
+ *  token) becomes an arbitrary value (`20px` → `[20px]`, `50%` → `[50%]`). Spaces
+ *  inside arbitrary values become underscores (Tailwind's escape). Empty → null. */
+export function lengthSuffix(raw: string): string | null {
+  const v = raw.trim();
+  if (!v) return null;
+  if (/^\d+(\.\d+)?$/.test(v)) return v; // bare number → scale step
+  if (/^\[.+\]$/.test(v)) return v.replace(/\s+/g, '_'); // already bracketed
+  return `[${v.replace(/\s+/g, '_')}]`; // wrap as arbitrary
+}
+
+/** The inverse of `lengthSuffix` for display in a text field: an arbitrary suffix
+ *  `[20px]` shows as `20px`; a scale step shows as-is. */
+export function lengthDisplay(suffix: string | null): string {
+  if (!suffix) return '';
+  const m = /^\[(.+)\]$/.exec(suffix);
+  return m ? m[1]!.replace(/_/g, ' ') : suffix;
 }
 
 /** The styling axis a recipe token belongs to (mutually-exclusive groups), or

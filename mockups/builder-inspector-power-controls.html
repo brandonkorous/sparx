@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Builder inspector — power-user style controls (proposal)</title>
+    <!--
+      MOCKUP · Power-user property controls for the Builder inspector — PROPOSAL
+      ──────────────────────────────────────────────────────────────────────────
+      Replaces the thin "Advanced" junk-drawer with proper, professional style
+      sections (Webflow/Figma lineage), Tailwind-mapped, with the interactions a
+      40-year-old discipline expects:
+
+        · CASCADING REVEALS — position: absolute → offsets (T/R/B/L) + z-index
+          appear right below it. Width "Custom" → a value field appears.
+        · BOX-MODEL WIDGETS — padding/margin as 4 linked sides, not one dropdown.
+        · LENGTH FIELDS — a semantic preset (None/S/M/L…) + a "Custom…" escape to
+          an arbitrary value (20px / 50% / 4rem). Both compile (real Tailwind JIT).
+        · SLIDERS + number — opacity etc.
+
+      Platform guardrails (verified against @sparx/surface-compile):
+        · `fixed` position is BLOCKED → not offered (Static/Relative/Absolute/Sticky).
+        · z-index is SCALE-ONLY z-0…z-50 → a stepped select, no arbitrary.
+        · colors are TOKEN-only → swatches, never a raw hex field.
+      Everything else (offsets, w/h/min/max, rotate, opacity, radius, spacing)
+      accepts arbitrary values and renders identically in canvas + live site.
+
+      This is a PROTOTYPE of the interactions, not the final styling.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;450;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0a0a0a;
+        --t2: #52525b;
+        --t3: #a1a1aa;
+        --surface: #ffffff;
+        --subtle: #f4f4f5;
+        --recess: #f1f1f3;
+        --border: #e7e7ea;
+        --border-strong: #d6d6da;
+        --module: #6366f1;
+        --module-12: color-mix(in srgb, var(--module) 12%, transparent);
+        --mono: 'Geist Mono', ui-monospace, monospace;
+        --sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+        --shadow-card: 0 1px 2px rgba(16, 18, 33, 0.04), 0 4px 14px rgba(16, 18, 33, 0.05);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--sans);
+        color: var(--ink);
+        background: #e9e9ee;
+        padding: 28px;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 384px 1fr;
+        gap: 28px;
+        align-items: start;
+      }
+      h1 {
+        font-size: 19px;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+        margin: 0 0 4px;
+      }
+      .lede {
+        margin: 0 0 18px;
+        color: var(--t2);
+        font-size: 13.5px;
+        line-height: 1.5;
+      }
+      .notes {
+        font-size: 12.5px;
+        color: var(--t2);
+        line-height: 1.6;
+      }
+      .notes h2 {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--t3);
+        margin: 0 0 8px;
+      }
+      .notes b {
+        color: var(--ink);
+      }
+      .notes ul {
+        margin: 0 0 16px;
+        padding-left: 18px;
+      }
+      .notes li {
+        margin-bottom: 5px;
+      }
+      .pill {
+        font-family: var(--mono);
+        font-size: 11px;
+        background: var(--subtle);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 1px 5px;
+      }
+
+      /* Panel + cards (mirrors the shipped redesign) */
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--recess);
+        overflow: hidden;
+        box-shadow: var(--shadow-card);
+      }
+      .head {
+        background: var(--surface);
+        padding: 13px 15px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .head__icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: var(--module-12);
+        color: var(--module);
+        display: grid;
+        place-items: center;
+      }
+      .head__icon svg {
+        width: 16px;
+        height: 16px;
+      }
+      .head h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .head span {
+        font-size: 11.5px;
+        color: var(--t3);
+      }
+      .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .card[open] {
+        box-shadow: var(--shadow-card);
+      }
+      .card__head {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 11px 12px;
+        cursor: pointer;
+        list-style: none;
+        user-select: none;
+      }
+      .card__head::-webkit-details-marker {
+        display: none;
+      }
+      .card__icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--subtle);
+        color: var(--t2);
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .card__icon svg {
+        width: 15px;
+        height: 15px;
+      }
+      .card__titles {
+        flex: 1;
+        min-width: 0;
+      }
+      .card__title {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 600;
+      }
+      .card__summary {
+        display: block;
+        font-size: 12px;
+        color: var(--t3);
+        margin-top: 1px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .card[open] .card__summary {
+        display: none;
+      }
+      .card__chev {
+        width: 16px;
+        height: 16px;
+        color: var(--t3);
+        flex: none;
+        transition: transform 0.18s;
+      }
+      .card[open] .card__chev {
+        transform: rotate(180deg);
+      }
+      .card__body {
+        padding: 4px 13px 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+      }
+
+      .f {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .f__label {
+        font-size: 12px;
+        font-weight: 550;
+      }
+      .f__hint {
+        font-size: 11px;
+        color: var(--t3);
+        line-height: 1.4;
+      }
+      .row2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .inp,
+      .sel {
+        width: 100%;
+        font: inherit;
+        font-size: 13px;
+        color: var(--ink);
+        border: 1px solid var(--border-strong);
+        border-radius: 8px;
+        padding: 7px 9px;
+        background: #fff;
+      }
+      .sel {
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+      }
+      .inp.mono {
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      /* Cascade reveal — a left rule ties dependent controls to their trigger. */
+      .reveal {
+        display: none;
+        flex-direction: column;
+        gap: 11px;
+        margin-left: 4px;
+        padding-left: 11px;
+        border-left: 2px solid var(--module-12);
+      }
+      .reveal.on {
+        display: flex;
+        animation: slidein 0.16s ease;
+      }
+      @keyframes slidein {
+        from {
+          opacity: 0;
+          transform: translateY(-3px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* Box-model widget — 4 sides + link toggle */
+      .box {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        grid-template-rows: auto auto auto;
+        gap: 6px;
+        align-items: center;
+        justify-items: center;
+        padding: 12px;
+        background: var(--recess);
+        border-radius: 10px;
+      }
+      .box__side {
+        width: 56px;
+        text-align: center;
+        font: inherit;
+        font-size: 12px;
+        font-family: var(--mono);
+        border: 1px solid var(--border-strong);
+        border-radius: 7px;
+        padding: 5px 4px;
+        background: #fff;
+      }
+      .box__side::placeholder {
+        color: var(--t3);
+      }
+      .box__t {
+        grid-column: 2;
+        grid-row: 1;
+      }
+      .box__l {
+        grid-column: 1;
+        grid-row: 2;
+      }
+      .box__link {
+        grid-column: 2;
+        grid-row: 2;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        border: 1px solid var(--border-strong);
+        background: #fff;
+        color: var(--t3);
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+      }
+      .box__link[data-on='true'] {
+        color: var(--module);
+        border-color: var(--module);
+        background: var(--module-12);
+      }
+      .box__link svg {
+        width: 15px;
+        height: 15px;
+      }
+      .box__r {
+        grid-column: 3;
+        grid-row: 2;
+      }
+      .box__b {
+        grid-column: 2;
+        grid-row: 3;
+      }
+
+      /* offsets crosspad — T/R/B/L for position */
+      .pad {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .seg {
+        display: flex;
+        gap: 3px;
+        background: var(--recess);
+        padding: 3px;
+        border-radius: 9px;
+      }
+      .seg button {
+        flex: 1;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 550;
+        color: var(--t2);
+        background: none;
+        border: 0;
+        border-radius: 6px;
+        padding: 6px 4px;
+        cursor: pointer;
+      }
+      .seg button[data-on='true'] {
+        background: #fff;
+        color: var(--module);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+      .slider {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .slider input[type='range'] {
+        flex: 1;
+        accent-color: var(--module);
+      }
+      .slider output {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--t2);
+        width: 38px;
+        text-align: right;
+      }
+      .swatches {
+        display: flex;
+        gap: 8px;
+      }
+      .sw {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+        border: 2px solid transparent;
+      }
+      .sw[data-on='true'] {
+        border-color: #fff;
+        box-shadow:
+          inset 0 0 0 1px rgba(0, 0, 0, 0.08),
+          0 0 0 2px var(--module);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div>
+        <h1>Power-user style controls</h1>
+        <p class="lede">
+          The expanded sections that replace the thin "Advanced" card. Try it: set
+          <b>Position</b> to Absolute (offsets + z-index cascade in), set <b>Width</b> to Custom (a
+          value field appears), toggle the link in the spacing box, drag opacity.
+        </p>
+        <div class="panel">
+          <div class="head">
+            <span class="head__icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+                />
+              </svg>
+            </span>
+            <div>
+              <h3>Card</h3>
+              <span>A group that holds other blocks</span>
+            </div>
+          </div>
+          <div class="stack" id="stack"></div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <h2>Full section plan</h2>
+        <ul>
+          <li>
+            <b>Size</b> — width / height (preset + Custom), min &amp; max reveal, aspect, overflow
+          </li>
+          <li><b>Spacing</b> — padding &amp; margin 4-side box widgets (link-all)</li>
+          <li><b>Position</b> — static/relative/absolute/sticky → offsets + z-index cascade</li>
+          <li><b>Borders</b> — width / style / color / radius (+ per-corner)</li>
+          <li><b>Effects</b> — opacity / shadow / transform (scale·rotate·move) / transition</li>
+          <li>
+            <b>Typography</b> <span class="pill">text blocks</span> — font / size / weight / leading
+            / tracking / align / case
+          </li>
+          <li><b>Custom CSS</b> — the raw class escape hatch</li>
+        </ul>
+        <h2>Platform guardrails</h2>
+        <ul>
+          <li><span class="pill">fixed</span> position is blocked → not offered</li>
+          <li>z-index is scale-only <span class="pill">z-0…z-50</span> → stepped select</li>
+          <li>colors are token-only → swatches, never raw hex</li>
+          <li>
+            everything else takes arbitrary values (<span class="pill">20px</span>,
+            <span class="pill">50%</span>) — real Tailwind JIT, renders in canvas + live site
+          </li>
+        </ul>
+        <h2>On modals</h2>
+        <p>
+          In a ~360px panel, cascading reveals + popovers beat modals. I'd only use a modal for a
+          genuinely large editor (e.g. a multi-stop gradient) — not needed yet.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const I = {
+        chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+        size: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>',
+        spacing:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>',
+        position:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="3"/></svg>',
+        effects:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>',
+        borders:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>',
+        css: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+        link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+      };
+
+      function card({ icon, title, summary, open, body }) {
+        return `<details class="card" ${open ? 'open' : ''}>
+          <summary class="card__head">
+            <span class="card__icon">${icon}</span>
+            <span class="card__titles"><span class="card__title">${title}</span><span class="card__summary">${summary}</span></span>
+            <span class="card__chev">${I.chev}</span>
+          </summary>
+          <div class="card__body">${body}</div>
+        </details>`;
+      }
+
+      // A length field: preset select + a "Custom…" escape to an arbitrary value.
+      function lengthField(label, presets, id) {
+        const opts = presets.map((p) => `<option value="${p}">${p}</option>`).join('');
+        return `<div class="f">
+          <span class="f__label">${label}</span>
+          <select class="sel" data-length="${id}">${opts}<option value="__custom">Custom…</option></select>
+          <input class="inp mono reveal-custom" data-customfor="${id}" placeholder="e.g. 320px or 50%" style="display:none" />
+        </div>`;
+      }
+
+      const sizeBody = `
+        ${lengthField('Width', ['Auto', 'Full (100%)', 'Half', 'Fit content'], 'w')}
+        ${lengthField('Height', ['Auto', 'Full (100%)', 'Screen'], 'h')}
+        <details class="card" style="border:0;box-shadow:none">
+          <summary class="card__head" style="padding:6px 0"><span class="card__titles"><span class="card__title" style="font-size:12.5px;color:var(--t2)">Min &amp; max</span></span><span class="card__chev">${I.chev}</span></summary>
+          <div class="card__body" style="padding:6px 0 0">
+            <div class="row2">
+              ${lengthField('Min width', ['None', 'Full'], 'minw')}
+              ${lengthField('Max width', ['None', 'Prose (65ch)', 'Screen'], 'maxw')}
+            </div>
+          </div>
+        </details>
+        <div class="row2">
+          <div class="f"><span class="f__label">Aspect ratio</span><select class="sel"><option>Auto</option><option>Square (1:1)</option><option>Video (16:9)</option><option>4:3</option><option>Custom…</option></select></div>
+          <div class="f"><span class="f__label">Overflow</span><select class="sel"><option>Visible</option><option>Hidden</option><option>Scroll</option><option>Auto</option></select></div>
+        </div>`;
+
+      function boxWidget(id) {
+        return `<div class="box" data-box="${id}">
+          <input class="box__side box__t" data-side="t" placeholder="–" />
+          <input class="box__side box__l" data-side="l" placeholder="–" />
+          <button class="box__link" data-on="true" title="Link all sides">${I.link}</button>
+          <input class="box__side box__r" data-side="r" placeholder="–" />
+          <input class="box__side box__b" data-side="b" placeholder="–" />
+        </div>`;
+      }
+
+      const spacingBody = `
+        <div class="f"><span class="f__label">Inner spacing (padding)</span>${boxWidget('pad')}<span class="f__hint">Type a step (4) or a value (16px). Link applies one value to all four sides.</span></div>
+        <div class="f"><span class="f__label">Outer spacing (margin)</span>${boxWidget('mar')}</div>`;
+
+      const positionBody = `
+        <div class="f">
+          <span class="f__label">Position</span>
+          <div class="seg" data-position>
+            <button data-pos="static" data-on="true">Static</button>
+            <button data-pos="relative">Relative</button>
+            <button data-pos="absolute">Absolute</button>
+            <button data-pos="sticky">Sticky</button>
+          </div>
+        </div>
+        <div class="reveal" id="pos-reveal">
+          <div class="f">
+            <span class="f__label">Offsets</span>
+            <div class="pad">
+              <input class="box__side" style="width:100%" placeholder="Top" />
+              <input class="box__side" style="width:100%" placeholder="Right" />
+              <input class="box__side" style="width:100%" placeholder="Bottom" />
+              <input class="box__side" style="width:100%" placeholder="Left" />
+            </div>
+          </div>
+          <div class="f">
+            <span class="f__label">Layer (z-index)</span>
+            <select class="sel"><option>Auto</option><option>0</option><option>10</option><option>20</option><option>30</option><option>40</option><option>50</option></select>
+            <span class="f__hint">Capped at 50 — keeps content below the app chrome.</span>
+          </div>
+        </div>`;
+
+      const effectsBody = `
+        <div class="f">
+          <span class="f__label">Opacity</span>
+          <div class="slider"><input type="range" min="0" max="100" value="100" id="op" oninput="document.getElementById('opv').value=this.value+'%'" /><output id="opv">100%</output></div>
+        </div>
+        <div class="f"><span class="f__label">Shadow</span><select class="sel"><option>None</option><option>Small</option><option>Medium</option><option>Large</option></select></div>
+        <div class="f">
+          <span class="f__label">Transform</span>
+          <div class="seg" data-toggle="tf"><button data-on="true">None</button><button>Custom</button></div>
+        </div>
+        <div class="reveal" id="tf-reveal">
+          <div class="row2">
+            <div class="f"><span class="f__label">Scale</span><input class="inp mono" placeholder="100%" /></div>
+            <div class="f"><span class="f__label">Rotate</span><input class="inp mono" placeholder="0deg" /></div>
+          </div>
+          <div class="row2">
+            <div class="f"><span class="f__label">Move X</span><input class="inp mono" placeholder="0" /></div>
+            <div class="f"><span class="f__label">Move Y</span><input class="inp mono" placeholder="0" /></div>
+          </div>
+        </div>`;
+
+      const bordersBody = `
+        <div class="row2">
+          <div class="f"><span class="f__label">Width</span><select class="sel"><option>None</option><option>Hairline</option><option>Strong</option></select></div>
+          <div class="f"><span class="f__label">Style</span><select class="sel"><option>Solid</option><option>Dashed</option></select></div>
+        </div>
+        <div class="f"><span class="f__label">Color</span><div class="swatches"><span class="sw" data-on="true" style="background:#e7e7ea"></span><span class="sw" style="background:#6366f1"></span><span class="sw" style="background:#3f6b52"></span><span class="sw" style="background:#0a0a0a"></span></div></div>
+        ${lengthField('Corners (radius)', ['None', 'Small', 'Medium', 'Large', 'Pill'], 'radius')}`;
+
+      const cssBody = `
+        <div class="f"><span class="f__label">Custom classes</span><input class="inp mono" placeholder="anything Tailwind — e.g. backdrop-blur-sm" /><span class="f__hint">Advanced escape hatch. Compiles through the same engine.</span></div>`;
+
+      document.getElementById('stack').innerHTML = [
+        card({ icon: I.size, title: 'Size', summary: 'Auto', open: true, body: sizeBody }),
+        card({ icon: I.spacing, title: 'Spacing', summary: 'None', open: true, body: spacingBody }),
+        card({
+          icon: I.position,
+          title: 'Position',
+          summary: 'Static',
+          open: true,
+          body: positionBody,
+        }),
+        card({
+          icon: I.effects,
+          title: 'Effects',
+          summary: '100% · no shadow',
+          open: false,
+          body: effectsBody,
+        }),
+        card({
+          icon: I.borders,
+          title: 'Borders',
+          summary: 'None',
+          open: false,
+          body: bordersBody,
+        }),
+        card({ icon: I.css, title: 'Custom CSS', summary: '—', open: false, body: cssBody }),
+      ].join('');
+
+      // ── interactions ──────────────────────────────────────────────
+      // Position cascade
+      document.querySelectorAll('[data-position] button').forEach((b) => {
+        b.addEventListener('click', () => {
+          document
+            .querySelectorAll('[data-position] button')
+            .forEach((x) => (x.dataset.on = x === b ? 'true' : 'false'));
+          document.getElementById('pos-reveal').classList.toggle('on', b.dataset.pos !== 'static');
+        });
+      });
+      // Transform reveal
+      document.querySelectorAll('[data-toggle="tf"] button').forEach((b, i) => {
+        b.addEventListener('click', () => {
+          document
+            .querySelectorAll('[data-toggle="tf"] button')
+            .forEach((x) => (x.dataset.on = x === b ? 'true' : 'false'));
+          document.getElementById('tf-reveal').classList.toggle('on', i === 1);
+        });
+      });
+      // Length "Custom…" reveal
+      document.querySelectorAll('[data-length]').forEach((sel) => {
+        sel.addEventListener('change', () => {
+          const inp = document.querySelector(`[data-customfor="${sel.dataset.length}"]`);
+          if (inp) inp.style.display = sel.value === '__custom' ? 'block' : 'none';
+        });
+      });
+      // Box-model link toggle + mirror
+      document.querySelectorAll('.box__link').forEach((btn) => {
+        const box = btn.closest('.box');
+        const sides = box.querySelectorAll('.box__side');
+        btn.addEventListener('click', () => {
+          btn.dataset.on = btn.dataset.on === 'true' ? 'false' : 'true';
+        });
+        sides.forEach((s) =>
+          s.addEventListener('input', () => {
+            if (btn.dataset.on === 'true') sides.forEach((o) => (o.value = s.value));
+          })
+        );
+      });
+      // Swatch select
+      document.querySelectorAll('.swatches').forEach((row) => {
+        row.querySelectorAll('.sw').forEach((sw) => {
+          sw.addEventListener('click', () => {
+            row
+              .querySelectorAll('.sw')
+              .forEach((x) => (x.dataset.on = x === sw ? 'true' : 'false'));
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -58,6 +58,21 @@ async function main(): Promise<void> {
     WHERE id = ${tenant.id}::uuid
   `;
 
+  // Every tenant HAS exactly one PRIMARY web property (docs/49). Seed it
+  // explicitly (idempotent on tenant_id+slug) so a fresh dev DB matches the
+  // prod sign-up path instead of leaning on the one-time backfill migration.
+  // The display name is "Default" (a tenant is a workspace that HAS sites);
+  // slug 'primary' is reserved and keeps the bare subdomain. properties is
+  // FORCE RLS, so set the tenant context for the WITH CHECK.
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenant.id}'`);
+    await tx.property.upsert({
+      where: { tenantId_slug: { tenantId: tenant.id, slug: 'primary' } },
+      update: { name: 'Default' },
+      create: { tenantId: tenant.id, slug: 'primary', name: 'Default', isPrimary: true },
+    });
+  });
+
   // Hash with Better Auth's own hasher — the exact function its sign-in
   // verifier uses (scrypt, via better-auth/crypto). Hashing by hand with a
   // different algorithm (e.g. argon2) yields "Invalid password hash" at

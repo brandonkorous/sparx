@@ -1,0 +1,13 @@
+/* EditorialSection — headline + body + CTA stack (docs/51 §7). Full-width
+ * children so the surrounding box's text-align governs horizontal alignment. */
+
+.sf-editorial {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+/* The CTA sits in its own block so the box's text-align reaches it. */
+.sf-editorial__cta {
+  display: block;
+}

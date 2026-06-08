@@ -102,10 +102,29 @@ export interface SidebarItemProps
    * module-colored only when active, quiet tertiary otherwise.
    */
   moduleIcon?: boolean;
+  /**
+   * Icon-only mode: the label is dropped and the glyph centers in a compact
+   * square, with the label surfaced as a hover tooltip (when `children` is a
+   * string). For a collapsed side panel — mirrors the icon rail.
+   */
+  collapsed?: boolean;
 }
 
 export const SidebarItem = React.forwardRef<HTMLButtonElement, SidebarItemProps>(
-  ({ className, active, icon, asChild = false, moduleIcon = false, children, ...props }, ref) => {
+  (
+    {
+      className,
+      active,
+      icon,
+      asChild = false,
+      moduleIcon = false,
+      collapsed = false,
+      title,
+      children,
+      ...props
+    },
+    ref
+  ) => {
     const dataActive = active ? true : undefined;
     const ariaCurrent = active ? 'page' : undefined;
     // The glyph is tinted independently of the label. `moduleIcon` forces the
@@ -124,46 +143,64 @@ export const SidebarItem = React.forwardRef<HTMLButtonElement, SidebarItemProps>
         {icon}
       </span>
     ) : null;
-    const inner = (
-      <>
-        {iconSpan}
-        <span className="flex-1 truncate text-left">{children}</span>
-      </>
+    // Collapsed → a compact centered square (matches the icon rail's w-8 tiles);
+    // the variant's px-2/py-1.5 are overridden by twMerge.
+    const itemClass = cn(
+      sidebarItemVariants({ active }),
+      collapsed && 'h-8 w-8 justify-center px-0 py-0',
+      className
     );
     if (asChild) {
       const child = React.Children.only(children) as React.ReactElement<{
         children?: React.ReactNode;
       }>;
+      const childLabel = child.props.children;
+      const tooltip =
+        title ?? (collapsed && typeof childLabel === 'string' ? childLabel : undefined);
       const wrapped = React.cloneElement(
         child,
         undefined,
-        <>
-          {iconSpan}
-          <span className="flex-1 truncate text-left">{child.props.children}</span>
-        </>
+        collapsed ? (
+          iconSpan
+        ) : (
+          <>
+            {iconSpan}
+            <span className="flex-1 truncate text-left">{childLabel}</span>
+          </>
+        )
       );
       return (
         <Slot
           ref={ref}
-          className={cn(sidebarItemVariants({ active }), className)}
+          className={itemClass}
           data-active={dataActive}
           aria-current={ariaCurrent}
+          title={tooltip}
           {...props}
         >
           {wrapped}
         </Slot>
       );
     }
+    const tooltip = title ?? (collapsed && typeof children === 'string' ? children : undefined);
     return (
       <button
         ref={ref}
         type="button"
-        className={cn(sidebarItemVariants({ active }), className)}
+        className={itemClass}
         data-active={dataActive}
         aria-current={ariaCurrent}
+        title={tooltip}
         {...props}
       >
-        {inner}
+        {collapsed ? (
+          iconSpan
+        ) : (
+          <>
+            {iconSpan}
+            <span className="flex-1 truncate text-left">{children}</span>
+          </>
+        )}
       </button>
     );
   }

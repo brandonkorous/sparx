@@ -456,17 +456,6 @@ export function SiteBuilderApp({
           </div>
         </div>
 
-        {/* Context bar — what the chrome binds to */}
-        <div className="bx-ctx">
-          <span className="bx-ctx__lead">This layout wraps every page</span>
-          <span className="bx-ctx__note">
-            The header and footer persist across navigation; the <strong>Page content</strong> block
-            is where each routed page renders. Only the <strong>Live</strong> layout is served on
-            your site — publish a layout, then make it active to switch. Navigation, brand, and
-            social bind to your existing site data — editing them lives in Navigation &amp; Brand.
-          </span>
-        </div>
-
         <BuilderWorkspace
           tree={tree}
           editor={editor}

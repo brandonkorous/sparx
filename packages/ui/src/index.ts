@@ -78,6 +78,7 @@ export { ScrollArea, ScrollBar } from './components/layout/scroll-area';
 export {
   SidebarAppShell,
   useRailExpanded,
+  usePanelCollapsed,
   type SidebarAppShellProps,
 } from './components/layout/sidebar-app-shell';
 

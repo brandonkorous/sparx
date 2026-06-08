@@ -60,16 +60,6 @@
   width: 230px;
   max-width: 46vw;
 }
-/* Active-site switcher (docs/49) — sits at the far left of the toolbar, set off
-   from the page controls by a divider. Hidden for single-site tenants. */
-.bx-siteselect {
-  width: 180px;
-  max-width: 38vw;
-  margin-right: 10px;
-  padding-right: 12px;
-  border-right: 1px solid var(--color-border-subtle, var(--color-border-default));
-  flex-shrink: 0;
-}
 .bx-toolbar__title {
   display: inline-flex;
   align-items: center;
@@ -394,6 +384,12 @@
   background: var(--color-bg-subtle);
 }
 
+/* The rail/canvas splitter only exists in the lg grid — hidden where the panes
+   stack (it has no track to live in). Re-enabled in the min-width:1024 block. */
+.bx-resize {
+  display: none;
+}
+
 /* Page-editor framing (docs/45): the site layout renders as a LOCKED backdrop
    around the page — full fidelity, but not selectable and not clickable, so it
    never reads as editable here. The page subtree (inside the Outlet) is normal
@@ -402,37 +398,6 @@
 .bx-chrome:hover {
   outline: none !important;
   cursor: default;
-}
-/* "Header & footer come from your Site layout" — the owned-elsewhere affordance,
-   floating top-right over the canvas, fixed while the canvas scrolls. */
-.bx-frame-jump {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  z-index: 6;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  max-width: calc(100% - 28px);
-  padding: 5px 11px;
-  border-radius: 999px;
-  font: 600 11px/1.4 var(--bx-mono);
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  color: var(--color-text-secondary, #4b5563);
-  background: color-mix(in srgb, var(--color-surface-raised, #fff) 86%, transparent);
-  border: 1px solid var(--color-border-default, #e5e7eb);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
-  backdrop-filter: blur(6px);
-  text-decoration: none;
-  transition:
-    color 0.15s,
-    border-color 0.15s;
-}
-.bx-frame-jump:hover,
-.bx-frame-jump:focus-visible {
-  color: var(--module-active, #6366f1);
-  border-color: color-mix(in srgb, var(--module-active, #6366f1) 60%, transparent);
 }
 
 @media (max-width: 1023px) {
@@ -454,7 +419,10 @@
   }
   .bx-body {
     display: grid;
-    grid-template-columns: 300px minmax(0, 1fr) 360px;
+    /* rail · splitter · canvas · inspector. The rail width + inspector width are
+       user-controlled (drag-resize / collapse), driven by `--bx-rail-w` and
+       `--bx-side-w` set inline on `.bx-body`; the 6px splitter is the drag track. */
+    grid-template-columns: var(--bx-rail-w, 300px) 6px minmax(0, 1fr) var(--bx-side-w, 360px);
     /* A single row pinned to the container height (NOT an auto row, which would
        grow to the canvas's content height and hand scrolling to the dashboard's
        outer scroller). This is what keeps the chrome fixed and lets the canvas
@@ -466,6 +434,25 @@
   .bx-pane--hide,
   .bx-pane--show {
     display: flex !important;
+  }
+  /* Rail/canvas splitter — a thin hit-target that tints on hover/focus. Lives in
+     the 6px grid track; ::after bleeds the clickable area a few px each side. */
+  .bx-resize {
+    display: block;
+    align-self: stretch;
+    position: relative;
+    cursor: col-resize;
+    background: transparent;
+  }
+  .bx-resize:hover,
+  .bx-resize:focus-visible {
+    background: var(--module-active);
+    outline: none;
+  }
+  .bx-resize::after {
+    content: '';
+    position: absolute;
+    inset: 0 -4px;
   }
 }
 
@@ -506,6 +493,79 @@
 .bx-side__scroll {
   flex: 1;
   min-height: 0;
+}
+
+/* Inspector header bar — title + the "hide" toggle (desktop only). Sits above the
+   scrolling property stack. */
+.bx-side__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  padding: 7px 8px 7px 14px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+.bx-side__bar-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-text-muted);
+}
+.bx-side__hide {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.bx-side__hide:hover {
+  color: var(--module-active);
+  background: var(--color-bg-subtle);
+}
+.bx-side__hide svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Collapsed inspector — a thin strip with a vertical "Properties" reopen button.
+   Width comes from `--bx-side-w` (set to ~44px inline when collapsed). */
+.bx-side--collapsed {
+  align-items: stretch;
+}
+.bx-side__reopen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 12px 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.bx-side__reopen:hover {
+  color: var(--module-active);
+  background: var(--color-bg-subtle);
+}
+.bx-side__reopen svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.bx-side__reopen-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
 
 /* ── Layers ────────────────────────────────────────────────────────────── */
@@ -764,6 +824,21 @@
   padding: 1px 5px;
   border-radius: 4px;
 }
+/* Composite marker (docs/23 §17): a muted bottom-right glyph flagging tiles that
+   assemble other components (vs basic/atomic). Bottom-right so it never collides
+   with the top-right module badge. */
+.bx-tile__kind {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: inline-flex;
+  color: var(--color-text-muted);
+  opacity: 0.65;
+}
+.bx-tile__kind svg {
+  width: 13px;
+  height: 13px;
+}
 .bx-tile--off {
   opacity: 0.55;
   cursor: default;
@@ -1010,6 +1085,149 @@
   margin: 0;
   font-size: 10.5px;
   line-height: 1.4;
+  color: var(--color-text-muted);
+}
+
+/* ── Power-user value controls (Size / Spacing / Position / Effects) ─────────── */
+
+/* Two controls side by side — keeps the dense power sections compact. */
+.bx-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Cascading reveal — dependent controls (offsets under Position, transform fields)
+   tied to their trigger by an accent rule, per the dependent-input UX rule. */
+.bx-reveal {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-left: 3px;
+  padding-left: 11px;
+  border-left: 2px solid color-mix(in srgb, var(--module-active) 22%, transparent);
+}
+
+/* Nested disclosure inside a card (e.g. "Min & max" under Size, "Transform" under
+   Effects) — tucks less-common controls without a second top-level card. */
+.bx-subgroup {
+  border: 1px solid var(--color-border-default);
+  border-radius: 8px;
+}
+.bx-subgroup__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+.bx-subgroup__head::-webkit-details-marker {
+  display: none;
+}
+.bx-subgroup__head:hover {
+  color: var(--color-text-primary);
+}
+.bx-subgroup__chev {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  color: var(--color-text-muted);
+  transition: transform 0.15s ease;
+}
+.bx-subgroup[open] .bx-subgroup__chev {
+  transform: rotate(180deg);
+}
+.bx-subgroup__body {
+  padding: 0 10px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+/* Box-model widget — Top/Left · link · Right/Bottom around a center toggle, the
+   four-sided spacing editor the discipline expects (padding / margin). */
+.bx-box {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 6px;
+  align-items: center;
+  justify-items: center;
+  padding: 12px;
+  background: var(--color-bg-subtle);
+  border-radius: 10px;
+}
+.bx-box__side {
+  width: 58px;
+  text-align: center;
+  font: 500 12px/1.2 var(--bx-mono);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-default);
+  border-radius: 7px;
+  padding: 5px 4px;
+  background: var(--color-bg-surface);
+}
+.bx-box__side::placeholder {
+  color: var(--color-text-muted);
+}
+.bx-box__t {
+  grid-column: 2;
+  grid-row: 1;
+}
+.bx-box__l {
+  grid-column: 1;
+  grid-row: 2;
+}
+.bx-box__link {
+  grid-column: 2;
+  grid-row: 2;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-border-default);
+  border-radius: 8px;
+  background: var(--color-bg-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.bx-box__link[data-on='true'] {
+  color: var(--module-active);
+  border-color: var(--module-active);
+  background: color-mix(in srgb, var(--module-active) 12%, transparent);
+}
+.bx-box__link svg {
+  width: 15px;
+  height: 15px;
+}
+.bx-box__r {
+  grid-column: 3;
+  grid-row: 2;
+}
+.bx-box__b {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+/* Slider + readout (opacity) */
+.bx-slider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bx-slider .bx-range {
+  flex: 1;
+}
+.bx-slider__out {
+  width: 40px;
+  text-align: right;
+  font: 500 12px/1 var(--bx-mono);
   color: var(--color-text-muted);
 }
 .bx-ins-retype {
@@ -1534,8 +1752,11 @@
   font-family: var(--bxc-font-body);
   /* The canvas is the container-query context (docs/61 §7): authored `@md:`-style
      utilities respond to the canvas WIDTH — which the device switcher fixes — so
-     the preview reflows exactly as production does, no iframe + no JS. */
+     the preview reflows exactly as production does, no iframe + no JS. Named
+     `sf-frame` so CollapsibleNav's inline↔hamburger swap binds to the frame
+     width (matching `.bx-render` on the live site), giving canvas parity. */
   container-type: inline-size;
+  container-name: sf-frame;
 }
 
 /* ── Canvas framing (browser window · device bezel · email envelope) ──────────

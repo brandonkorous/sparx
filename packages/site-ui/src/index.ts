@@ -52,7 +52,11 @@ export {
   type NavItem,
   type NavOrientation,
 } from './components/nav-menu';
+export { CollapsibleNav, type CollapsibleNavProps } from './components/collapsible-nav';
 export { SocialLinks, type SocialLinksProps, type SocialItem } from './components/social-links';
+export { EditorialSection, type EditorialSectionProps } from './components/editorial-section';
+export { FAQ, type FaqProps, type FaqEntry } from './components/faq';
+export { FeatureGrid, type FeatureGridProps, type FeatureItem } from './components/feature-grid';
 export { EmbedFrame, type EmbedFrameProps, type EmbedRatio } from './components/embed-frame';
 export { Video, type VideoProps } from './components/video';
 export { Map, type MapProps } from './components/map';

@@ -422,16 +422,6 @@ export function EmailBuilderApp({
           </div>
         </div>
 
-        {/* Context bar — what this email is made of */}
-        <div className="bx-ctx">
-          <span className="bx-ctx__lead">{active.subject || 'No subject yet'}</span>
-          <span className="bx-ctx__note">
-            One self-contained email. Your wordmark header and legal footer are added automatically
-            on send — you compose the body. Data-aware blocks (products, orders, loyalty) arrive
-            soon.
-          </span>
-        </div>
-
         <BuilderWorkspace
           tree={tree}
           editor={editor}

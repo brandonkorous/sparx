@@ -1,8 +1,8 @@
 # Sparx Platform — Frontend Component Architecture
 
-**Version:** 1.5
+**Version:** 1.6
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-08
 
 ---
 
@@ -983,3 +983,59 @@ When Claude Code scaffolds the `@sparx/ui` package, it should:
 14. Wrap each dashboard module layout in `<ModuleProvider module="{module}">`
 
 The goal: feature code in apps/ should never contain a Tailwind class. If it does, something went wrong.
+
+---
+
+## 17. Composition: basic vs composite
+
+Every component carries a **composition class** — `basic` or `composite` — alongside
+its other facets. It answers one question the existing axes don't: _is this thing
+built out of other named components?_ It applies across `@sparx/ui`,
+`@sparx/site-ui`, and the Builder component registry.
+
+- **basic** — self-contained; composes no other named component. Atoms of the
+  system: `Button`, `Heading`, `Text`, `Badge`, `Icon`, `Divider`, `NavMenu`,
+  `Logo`, `Drawer`, `Navbar` (a structural slot shell — it _exposes_ slots but
+  composes nothing itself).
+- **composite** — assembles two or more other components into a higher-order
+  pattern: `CollapsibleNav` (= `NavMenu` + `Drawer`), `EditorialSection`
+  (= `Heading` + `Text` + `Button`), `BuyBox` (= `PriceTag` + `VariantPicker` +
+  `Quantity` + `AddToCart`), `FeatureGrid`, `FAQ`, `Carousel`, `Signup`.
+
+### Why it's its own axis
+
+It is **orthogonal** to the facets we already track — it is not a synonym for any
+of them, which is exactly why it earns a place:
+
+| Axis                                 | Answers                                 |
+| ------------------------------------ | --------------------------------------- |
+| `kind`: container / leaf             | Does it nest arbitrary author children? |
+| `group`: layout / content / data     | What is it _for_ (purpose)?             |
+| `bindable` (Tier-1 / Tier-2)         | Is it data-aware?                       |
+| **`composition`: basic / composite** | **Is it built from other components?**  |
+
+`CollapsibleNav` proves the independence: it is a _leaf_ (no arbitrary children),
+its purpose is _navigation_, it is _not bindable_ — yet it is _composite_. None of
+the other axes capture that.
+
+### What it drives
+
+1. **Palette signal.** The Builder Add palette marks composite tiles with a small
+   corner glyph (`bx-tile__kind`), so an author sees at a glance that a tile drops
+   a higher-order pattern (which expands into sub-parts) rather than an atom.
+2. **Machine-readable metadata.** The Builder registry sets `composition` on every
+   `ComponentDef` from a single taxonomy list (`COMPOSITE_TYPES`) — read it via
+   `getDef(type)` or `compositionOf(type)`. One list, legible to people and agents;
+   never hand-set on a def literal.
+3. **Library catalog.** `@sparx/site-ui` components declare their class in a
+   `Composition: BASIC | COMPOSITE` header line (the convention seed lives on the
+   nav family — `NavMenu`, `Navbar`, `Drawer`, `CollapsibleNav`). Remaining
+   components adopt the line as they're touched (a full sweep is a follow-up).
+
+### Maintenance signal
+
+Composites are where **canvas↔live render drift concentrates** (docs/62): a
+component that assembles sub-elements with layout is exactly where the editor
+canvas's approximation diverges from the published render. So the `composite` flag
+doubles as a prioritized audit target — when reconciling the two renderers, fix
+composites first.

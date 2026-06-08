@@ -229,15 +229,6 @@ export function ComponentBuilderApp({
           </div>
         </div>
 
-        <div className="bx-ctx">
-          <span className="bx-ctx__lead">Editing a reusable component</span>
-          <span className="bx-ctx__note">
-            Saving creates a new version. Pages and layouts that use this component keep their
-            pinned version until you upgrade them — so an edit never changes a live page
-            unexpectedly.
-          </span>
-        </div>
-
         <BuilderWorkspace
           tree={tree}
           editor={editor}

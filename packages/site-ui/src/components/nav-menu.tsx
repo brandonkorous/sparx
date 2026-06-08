@@ -3,6 +3,8 @@
 // resolved `items: {label,url}[]`; the renderer maps EITHER source — a bound
 // array OR the hand-typed `links` fallback (one `Label|/url` per line) — onto
 // this contract, so this component never knows which.
+//
+// Composition: BASIC (docs/23 §17) — self-contained, composes no other component.
 
 import * as React from 'react';
 import { cx } from '../utils/cx';

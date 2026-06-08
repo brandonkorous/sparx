@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { SidebarItem } from '@sparx/ui';
+import { SidebarItem, usePanelCollapsed } from '@sparx/ui';
 import { Settings as SettingsIcon } from 'lucide-react';
 import { SETTINGS_NAV } from '../settings/nav';
 
@@ -23,11 +23,14 @@ function isWithin(pathname: string | null, href: string): boolean {
 }
 
 export function SettingsSectionItems({ pathname }: { pathname: string | null }) {
+  // Inside a collapsed contextual panel the rows render icon-only (tooltipped).
+  const collapsed = usePanelCollapsed();
   return (
     <>
       <SidebarItem
         asChild
         active={pathname === '/settings'}
+        collapsed={collapsed}
         icon={<SettingsIcon className="h-4 w-4" />}
       >
         <Link href="/settings">Overview</Link>
@@ -36,7 +39,13 @@ export function SettingsSectionItems({ pathname }: { pathname: string | null }) 
         const Icon = item.icon;
         if (!item.ready) {
           return (
-            <SidebarItem key={item.id} disabled icon={<Icon className="h-4 w-4" />}>
+            <SidebarItem
+              key={item.id}
+              disabled
+              collapsed={collapsed}
+              title={item.label}
+              icon={<Icon className="h-4 w-4" />}
+            >
               {item.label}
             </SidebarItem>
           );
@@ -45,7 +54,13 @@ export function SettingsSectionItems({ pathname }: { pathname: string | null }) 
         // is the group itself or a descendant — never the bare /settings root.
         const active = pathname !== '/settings' && isWithin(pathname, item.href);
         return (
-          <SidebarItem key={item.id} asChild active={active} icon={<Icon className="h-4 w-4" />}>
+          <SidebarItem
+            key={item.id}
+            asChild
+            active={active}
+            collapsed={collapsed}
+            icon={<Icon className="h-4 w-4" />}
+          >
             <Link href={item.href}>{item.label}</Link>
           </SidebarItem>
         );
