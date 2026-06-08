@@ -34,12 +34,11 @@ export interface EmailRecipientRef {
   customerId?: string | null;
 }
 
-// Public api-rest origin for media URLs (GET /v1/public/media/:id). See
-// brand-service.ts for the SPARX_PUBLIC_API_URL → SPARX_PUBLIC_API_REST_URL
-// rename (it's REST-specific; the old name is kept as a transitional fallback).
+// Public api-rest origin for media URLs (GET /v1/public/media/:id) — REST-specific
+// (GraphQL doesn't serve bytes); see brand-service.ts. Falls back to the internal
+// REST url only for local/dev.
 const API_BASE =
   process.env.SPARX_PUBLIC_API_REST_URL ??
-  process.env.SPARX_PUBLIC_API_URL ??
   process.env.SPARX_API_REST_URL ??
   'http://localhost:3100';
 // Storefront base for clickable links. `{slug}` is substituted per tenant; unset

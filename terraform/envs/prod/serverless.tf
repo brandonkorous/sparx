@@ -193,12 +193,8 @@ module "email_worker_cloudrun" {
     # PUBLIC origin of api-rest for media URLs rendered into broadcast emails (the
     # worker renders per-recipient `defer` sends). The internal cluster address is
     # unreachable from a mail client, so brand-service needs the public one.
-    # Renamed SPARX_PUBLIC_API_URL → SPARX_PUBLIC_API_REST_URL (REST-specific;
-    # GraphQL doesn't serve media). Old key kept until the contract pass; this
-    # apply is currently blocked on the cloudflare-provider 504, so the worker
-    # keeps reading the old key via the code fallback until TF can apply.
+    # REST-specific — GraphQL (graphql.sparx.works) doesn't serve media bytes.
     SPARX_PUBLIC_API_REST_URL = "https://api.sparx.works"
-    SPARX_PUBLIC_API_URL      = "https://api.sparx.works"
   }
 
   secrets = [
