@@ -1,19 +1,20 @@
 'use client';
 
-// The inspector — the right pane. For the selected node it shows, top to
-// bottom:
-//   1. Style    — the everyday recipe axes: Color + Variant (docs/47), written
-//                 to `node.class`.
-//   2. Advanced — the less-common recipe axes (Size / Margin / Corners / Border /
-//                 Shadow) + the raw `class` textarea (the final escape hatch).
-//                 Collapsed by default.
-//   3. Data     — the binding box (what this node reads, and what its cardinality
-//                 means). Static when the component isn't bindable.
-//   4. <Component> — the node's own props (heading level, button label, …).
+// The inspector — the right pane. Each editable group is a collapsible CARD
+// (icon + title + a one-line summary of its current values), presented for a
+// business owner rather than a developer: content-first, plain language, no
+// leaked internals (recipe / class / cardinality jargon). For a selected node,
+// top to bottom:
+//   1. Content  — what the block SAYS and where it goes: its own props (heading
+//                 text, button label/link, …) plus the data source — a friendly
+//                 "Type it in / Pull from your data" toggle (the binding picker).
+//   2. Style    — Color + Emphasis (the recipe axes), written to `node.class`.
+//   3. Layout   — containers only: Arrange as Row/Stack/Grid, spacing, alignment.
+//   4. Motion   — how the block enters (collapsed by default).
+//   5. Advanced — Size / outer spacing + the raw `class` escape hatch (collapsed).
 //
-// The freeform box/layout panels retired with the box model (docs/61): arrangement
-// + skin are authored as `class` utilities (Style + Advanced), and the friendlier
-// arrange/utility controls land in the component builder (docs/61 Phases 3–4).
+// Color/Layout/etc. still write Tailwind-native `class` utilities (docs/61); only
+// the PRESENTATION changed here — the underlying control model is unchanged.
 
 import * as React from 'react';
 import {
@@ -22,9 +23,19 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronUp,
+  Database,
   ExternalLink,
+  FileText,
+  LayoutGrid,
+  Mail,
+  Palette,
   Plus,
+  Search,
+  Sparkles,
+  SlidersHorizontal,
+  Type,
   X,
+  type LucideIcon,
 } from 'lucide-react';
 import { Input, NativeSelect, Switch, Textarea, cn, useConfirm } from '@sparx/ui';
 import {
@@ -47,29 +58,30 @@ import { CREATABLE_KINDS, type CreatableType } from './field-kinds';
 import { SeoScoreChip } from '@/components/seo/seo-score';
 
 import { type BuilderNode, type PageSeo } from './model';
-import {
-  bindGroups,
-  bindHint,
-  itemBindPaths,
-  moduleColor,
-  moduleForPath,
-  type ScopeInfo,
-} from './binding-catalog';
+import { bindGroups, bindHint, itemBindPaths, type ScopeInfo } from './binding-catalog';
 import { compatibleRetypeTargets, getDef, type ComponentDef, type EditorSurface } from './registry';
 import { IconPicker } from './icon-picker';
 import { ProseControl } from './prose-control';
 import {
+  ALIGN_ITEMS_CONTROL,
   ARRANGEMENT_CONTEXTS,
+  COLOR_CONTROL,
+  COLUMNS_CONTROL,
+  DIRECTION_CONTROL,
+  DISPLAY_CONTROL,
+  GAP_CONTROL,
+  JUSTIFY_CONTROL,
+  PADDING_CONTROL,
   SKIN_CONTEXTS,
   STYLE_CONTROLS,
   STAGGER_CONTROL,
+  VARIANT_CONTROL,
   MOTION_ENTRANCES,
   MOTION_TRIGGERS,
   activeValue,
   advancedControlsFor,
   applyValue,
   applyMotion,
-  arrangementControlsFor,
   contextPrefix,
   ensureArchetypeDefaults,
   readMotion,
@@ -126,12 +138,167 @@ function Segmented<T extends string>({
   );
 }
 
-function Group({ label, children }: { label: string; children: React.ReactNode }) {
+// A collapsible section card (docs UI redesign): an icon chip + title + a
+// one-line `summary` of the group's current values, shown only while collapsed
+// so you can see what's inside without opening it. Native <details> for free
+// keyboard + a11y; `open` is synced through onToggle so React doesn't fight the
+// browser's own toggling. The everyday cards default open; rarer ones (Motion,
+// Advanced) pass `defaultOpen={false}`.
+function Card({
+  icon: Icon,
+  title,
+  summary,
+  caption,
+  defaultOpen = true,
+  muted = false,
+  children,
+}: {
+  icon: LucideIcon;
+  title: string;
+  /** Current-value preview shown while collapsed (e.g. "Indigo · Soft"). */
+  summary?: string;
+  /** Optional lead text inside the open body. */
+  caption?: string;
+  defaultOpen?: boolean;
+  /** Quieter icon treatment for the Advanced card. */
+  muted?: boolean;
+  children?: React.ReactNode;
+}) {
+  const [open, setOpen] = React.useState(defaultOpen);
   return (
-    <section className="bx-grp">
-      <h4 className="bx-grp__label">{label}</h4>
-      <div className="bx-grp__body">{children}</div>
-    </section>
+    <details
+      className={cn('bx-card', muted && 'bx-card--muted')}
+      open={open}
+      onToggle={(e) => setOpen(e.currentTarget.open)}
+    >
+      <summary className="bx-card__head">
+        <span className="bx-card__icon">
+          <Icon aria-hidden />
+        </span>
+        <span className="bx-card__titles">
+          <span className="bx-card__title">{title}</span>
+          {summary ? <span className="bx-card__summary">{summary}</span> : null}
+        </span>
+        <ChevronDown className="bx-card__chev" aria-hidden />
+      </summary>
+      <div className="bx-card__body">
+        {caption ? <p className="bx-card__caption">{caption}</p> : null}
+        {children}
+      </div>
+    </details>
+  );
+}
+
+// The settings-panel header (no-selection view) — same identity treatment as a
+// selected node: a tinted icon + title + plain subtitle, in place of the old
+// monospace kind badge.
+function PanelHead({
+  icon: Icon,
+  title,
+  subtitle,
+}: {
+  icon: LucideIcon;
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <header className="bx-ins-head">
+      <div className="bx-ins-head__row">
+        <span className="bx-ins-head__icon">
+          <Icon aria-hidden />
+        </span>
+        <div className="bx-ins-head__titles">
+          <h3>{title}</h3>
+          <span className="bx-ins-head__sub">{subtitle}</span>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+// ── Summaries (the collapsed-card value preview) ───────────────────────────────
+// Plain-language one-liners derived from the node's current class / props, so a
+// closed card still tells you what it holds.
+
+/** The label for a control's active value on a node (e.g. Color → "Indigo"), or
+ *  null when unset. */
+function activeLabel(node: BuilderNode, control: ClassControl): string | null {
+  const v = activeValue(node.class, control);
+  return v ? (control.options.find((o) => o.value === v)?.label ?? null) : null;
+}
+
+function styleSummary(node: BuilderNode): string {
+  const parts = [activeLabel(node, COLOR_CONTROL), activeLabel(node, VARIANT_CONTROL)].filter(
+    Boolean
+  );
+  return parts.length ? parts.join(' · ') : 'Default';
+}
+
+function layoutSummary(node: BuilderNode): string {
+  const arrange = ARRANGE_OPTIONS.find((o) => o.value === readArrangeAs(node.class))?.label;
+  const spacing = activeLabel(node, JUSTIFY_CONTROL);
+  return [arrange, spacing].filter(Boolean).join(' · ') || 'Default';
+}
+
+function motionSummary(node: BuilderNode): string {
+  const m = readMotion(node.class);
+  if (!m.entrance) return 'None';
+  return MOTION_ENTRANCES.find((o) => o.value === m.entrance)?.label ?? 'On';
+}
+
+function contentSummary(node: BuilderNode, def: ComponentDef): string {
+  if (node.binding?.path) return 'From your data';
+  // The first text-ish prop makes the most recognizable preview.
+  for (const spec of def.props) {
+    if (spec.control === 'text' || spec.control === 'textarea') {
+      const v = node.props[spec.key];
+      if (typeof v === 'string' && v.trim()) {
+        return v.length > 32 ? `${v.slice(0, 32)}…` : v;
+      }
+    }
+  }
+  return def.bindable ? 'Typed in' : 'No content yet';
+}
+
+// ── Arrange-as (Row / Stack / Grid) ────────────────────────────────────────────
+// One friendly control over the two underlying class groups: display (flex|grid)
+// + flex direction. Row = flex-row, Stack = flex-col, Grid = grid. Reading picks
+// Grid when display is grid, else the flex direction (defaulting to Stack). This
+// is purely a presentation merge — it writes the same DISPLAY_CONTROL /
+// DIRECTION_CONTROL tokens the old two selects did.
+
+const ARRANGE_OPTIONS: { value: 'row' | 'stack' | 'grid'; label: string }[] = [
+  { value: 'row', label: 'Row' },
+  { value: 'stack', label: 'Stack' },
+  { value: 'grid', label: 'Grid' },
+];
+
+function readArrangeAs(classStr: string | undefined, prefix = ''): 'row' | 'stack' | 'grid' {
+  if (activeValue(classStr, DISPLAY_CONTROL, prefix) === 'grid') return 'grid';
+  return activeValue(classStr, DIRECTION_CONTROL, prefix) === 'row' ? 'row' : 'stack';
+}
+
+/** Apply an Arrange-as choice → the new class string (sets display + direction at
+ *  the given responsive `prefix`). */
+function applyArrangeAs(
+  classStr: string | undefined,
+  value: 'row' | 'stack' | 'grid',
+  prefix = ''
+): string {
+  if (value === 'grid') {
+    // Grid: set display:grid and clear the (now meaningless) flex direction.
+    return applyValue(
+      applyValue(classStr, DISPLAY_CONTROL, 'grid', prefix),
+      DIRECTION_CONTROL,
+      null,
+      prefix
+    );
+  }
+  return applyValue(
+    applyValue(classStr, DISPLAY_CONTROL, 'flex', prefix),
+    DIRECTION_CONTROL,
+    value === 'row' ? 'row' : 'col',
+    prefix
   );
 }
 
@@ -344,10 +511,11 @@ function StyleControlField({
   );
 }
 
-// The context selector (docs/61 §5.2 / §7) — which responsive / state / theme
-// LAYER the panel's controls write into. Picking `@lg` or `Hover` re-targets every
-// control below it at that variant; "Base" is the default appearance. Grouped into
-// State / Theme / Screen size so the (up to 11) options stay scannable.
+// Which responsive / state / theme LAYER the card's controls write into (docs/61
+// §5.2 / §7). Picking a screen size or "Hover" re-targets every control below it
+// at that variant; "Every screen" is the default look. Kept as a quiet pill so it
+// reads as a secondary control, not a primary one. Grouped so the (up to 11)
+// options stay scannable.
 function ContextSelect({
   contexts,
   value,
@@ -362,49 +530,50 @@ function ContextSelect({
   const breakpoints = contexts.filter((c) => c.prefix.startsWith('@'));
   const active = contexts.find((c) => c.value === value);
   return (
-    <Field
-      label="Editing"
-      hint={
-        value === 'base'
-          ? 'The default appearance — applies everywhere.'
-          : `Only at ${active?.label}. Base values still apply otherwise.`
-      }
-    >
-      <NativeSelect size="sm" value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="base">Base</option>
-        {states.length ? (
-          <optgroup label="State">
-            {states.map((c) => (
-              <option key={c.value} value={c.value}>
-                {c.label}
-              </option>
-            ))}
-          </optgroup>
-        ) : null}
-        {dark ? (
-          <optgroup label="Theme">
-            <option value={dark.value}>{dark.label}</option>
-          </optgroup>
-        ) : null}
-        {breakpoints.length ? (
-          <optgroup label="Screen size">
-            {breakpoints.map((c) => (
-              <option key={c.value} value={c.value}>
-                {c.label}
-              </option>
-            ))}
-          </optgroup>
-        ) : null}
-      </NativeSelect>
-    </Field>
+    <div className="bx-resp">
+      <Field label="Editing for">
+        <NativeSelect size="sm" value={value} onChange={(e) => onChange(e.target.value)}>
+          <option value="base">Every screen</option>
+          {states.length ? (
+            <optgroup label="When">
+              {states.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
+            </optgroup>
+          ) : null}
+          {dark ? (
+            <optgroup label="Theme">
+              <option value={dark.value}>Dark mode</option>
+            </optgroup>
+          ) : null}
+          {breakpoints.length ? (
+            <optgroup label="Screen size">
+              {breakpoints.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
+            </optgroup>
+          ) : null}
+        </NativeSelect>
+      </Field>
+      <p className="bx-resp__hint">
+        {value === 'base'
+          ? 'Applies everywhere by default.'
+          : `Only changes ${active?.label}. Everything else keeps its normal look.`}
+      </p>
+    </div>
   );
 }
 
 // How a CONTAINER arranges its children (docs/61 §5.2): the page-builder's
-// structural surface — display / direction|columns / gap / justify / align /
-// padding, as Tailwind-native classes. Responsive via the context selector —
-// pick a breakpoint to set that layer (`@lg:grid-cols-3`). Containers only.
-function ArrangementPanel({
+// structural surface. The friendly "Arrange as Row / Stack / Grid" merges the
+// underlying display + direction class groups; Grid then reveals Columns. Gap /
+// spacing / alignment / padding follow. Responsive via the "Editing for" pill —
+// pick a screen size to set that layer (`@lg:grid-cols-3`). Containers only.
+function LayoutCard({
   node,
   def,
   onClass,
@@ -415,16 +584,29 @@ function ArrangementPanel({
 }) {
   const [ctx, setCtx] = React.useState('base');
   const prefix = contextPrefix(ARRANGEMENT_CONTEXTS, ctx);
-  // The structural choice (direction vs columns) follows the BASE display — you
-  // don't flip flex↔grid per breakpoint; you tune columns/gap/justify per layer.
-  const controls = arrangementControlsFor(node.class);
+  const arrange = readArrangeAs(node.class, prefix);
+  const setArrange = (v: 'row' | 'stack' | 'grid') =>
+    onClass(ensureArchetypeDefaults(applyArrangeAs(node.class, v, prefix), def.defaults.class));
+  // Columns only make sense for a grid; gap/spacing/alignment/padding always apply.
+  const detailControls = [
+    ...(arrange === 'grid' ? [COLUMNS_CONTROL] : []),
+    GAP_CONTROL,
+    JUSTIFY_CONTROL,
+    ALIGN_ITEMS_CONTROL,
+    PADDING_CONTROL,
+  ];
   return (
-    <Group label="Arrangement">
-      <p className="bx-grp__caption">
-        How this section lays out its children. Pick a screen size to make it responsive.
-      </p>
+    <Card
+      icon={LayoutGrid}
+      title="Layout"
+      summary={layoutSummary(node)}
+      caption="How the blocks inside line up. Pick a screen size to make it responsive."
+    >
       <ContextSelect contexts={ARRANGEMENT_CONTEXTS} value={ctx} onChange={setCtx} />
-      {controls.map((control) => (
+      <Field label="Arrange as">
+        <Segmented value={arrange} options={ARRANGE_OPTIONS} onChange={setArrange} />
+      </Field>
+      {detailControls.map((control) => (
         <StyleControlField
           key={control.id}
           node={node}
@@ -434,7 +616,7 @@ function ArrangementPanel({
           onClass={onClass}
         />
       ))}
-    </Group>
+    </Card>
   );
 }
 
@@ -443,7 +625,7 @@ function ArrangementPanel({
 // writable at a chosen context (a screen size, an interaction state, or Dark).
 // Gated to the component builder; on the page builder a component skins via its
 // recipe (the Style panel), never per-instance here.
-function SkinPanel({
+function AppearanceCard({
   node,
   def,
   onClass,
@@ -456,11 +638,11 @@ function SkinPanel({
   const prefix = contextPrefix(SKIN_CONTEXTS, ctx);
   const controls = skinControlsFor();
   return (
-    <Group label="Appearance">
-      <p className="bx-grp__caption">
-        Colors, type, edges, and motion. Pick a context to style that layer — a screen size
-        (responsive), a state like Hover, or Dark.
-      </p>
+    <Card
+      icon={Palette}
+      title="Appearance"
+      caption="Colors, type, edges, and motion. Pick a context to style that layer — a screen size, a state like Hover, or Dark."
+    >
       <ContextSelect contexts={SKIN_CONTEXTS} value={ctx} onChange={setCtx} />
       {controls.map((control) => (
         <StyleControlField
@@ -472,7 +654,7 @@ function SkinPanel({
           onClass={onClass}
         />
       ))}
-    </Group>
+    </Card>
   );
 }
 
@@ -481,7 +663,7 @@ function SkinPanel({
 // re-skin — §5.2). Scroll plays it as the reader reaches it (the MotionController
 // island); load/hover are pure CSS. Containers also get a child Stagger. Reduced
 // motion is always respected (REDUCED_MOTION_CSS), so there's no a11y opt-in.
-function MotionPanel({
+function MotionCard({
   node,
   def,
   onClass,
@@ -494,18 +676,20 @@ function MotionPanel({
   const setMotion = (next: MotionState) =>
     onClass(ensureArchetypeDefaults(applyMotion(node.class, next), def.defaults.class));
   return (
-    <Group label="Motion">
-      <p className="bx-grp__caption">
-        How this element enters. “On scroll” plays it as the reader reaches it. Reduced motion is
-        always respected.
-      </p>
-      <Field label="Entrance">
+    <Card
+      icon={Sparkles}
+      title="Motion"
+      summary={motionSummary(node)}
+      defaultOpen={false}
+      caption="How this block appears. “On scroll” plays it as the reader reaches it. Reduced motion is always respected."
+    >
+      <Field label="When it appears">
         <NativeSelect
           size="sm"
           value={motion.entrance ?? ''}
           onChange={(e) => setMotion({ entrance: e.target.value || null, trigger: motion.trigger })}
         >
-          <option value="">None</option>
+          <option value="">Nothing — just show it</option>
           {MOTION_ENTRANCES.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}
@@ -514,7 +698,7 @@ function MotionPanel({
         </NativeSelect>
       </Field>
       {motion.entrance ? (
-        <Field label="Trigger">
+        <Field label="Play it">
           <NativeSelect
             size="sm"
             value={motion.trigger}
@@ -531,7 +715,7 @@ function MotionPanel({
       {def.kind === 'container' ? (
         <StyleControlField node={node} def={def} control={STAGGER_CONTROL} onClass={onClass} />
       ) : null}
-    </Group>
+    </Card>
   );
 }
 
@@ -553,35 +737,35 @@ function AdvancedPanel({
   // archetype but ships sizeless, so the Size control shows reading "Default".
   const controls = advancedControlsFor(def.archetype ?? def.defaults.class);
   return (
-    <details className="bx-adv">
-      <summary className="bx-adv__summary">
-        <span>Advanced</span>
-        <ChevronDown className="bx-adv__chev" aria-hidden />
-      </summary>
-      <div className="bx-adv__body">
-        {controls.map((control) => (
-          <StyleControlField
-            key={control.id}
-            node={node}
-            def={def}
-            control={control}
-            onClass={onClass}
-          />
-        ))}
-        <Field
-          label="Classes"
-          hint="Power-user escape hatch — the raw class string (archetype + safelisted utilities). Space-separated; compiled to the tenant stylesheet on publish."
-        >
-          <Textarea
-            rows={2}
-            value={node.class ?? ''}
-            placeholder="e.g. hero bg-base-100 gap-6"
-            aria-label="Node classes"
-            onChange={(e) => onClass(e.target.value)}
-          />
-        </Field>
-      </div>
-    </details>
+    <Card
+      icon={SlidersHorizontal}
+      title="Advanced"
+      summary="Size, spacing, custom styling"
+      defaultOpen={false}
+      muted
+    >
+      {controls.map((control) => (
+        <StyleControlField
+          key={control.id}
+          node={node}
+          def={def}
+          control={control}
+          onClass={onClass}
+        />
+      ))}
+      <Field
+        label="Custom styling"
+        hint="Advanced styling hooks (the raw class string). Most people never need this."
+      >
+        <Textarea
+          rows={2}
+          value={node.class ?? ''}
+          placeholder="e.g. hero bg-base-100 gap-6"
+          aria-label="Custom classes"
+          onChange={(e) => onClass(e.target.value)}
+        />
+      </Field>
+    </Card>
   );
 }
 
@@ -676,7 +860,13 @@ function InlineFieldAdd({
   );
 }
 
-function BindingBox({
+// The data source — folded INTO the Content card (no longer a cryptic "DATA"
+// group). A plain "Type it in" / "Pull from your data" toggle: static content is
+// typed in the fields above; "Pull from your data" reveals the picker so the block
+// shows live content (a product name, a price, a post title). Returns null for a
+// non-bindable block (its content is always typed). In the component editor a
+// binding can also become a per-placement field (the slot state).
+function DataSource({
   node,
   catalog,
   scope,
@@ -696,112 +886,129 @@ function BindingBox({
   slotEditor?: SlotEditor;
 }) {
   const def = getDef(node.type)!;
-  if (!def.bindable) {
-    return (
-      <Group label="Data">
-        <div className="bx-bind bx-bind--static">
-          <div className="bx-bind__path">Static content</div>
-          <p className="bx-bind__hint">
-            Not bound to a module — its content is typed right here. Edit it in the panel below.
-          </p>
-        </div>
-      </Group>
-    );
-  }
-
   const path = node.binding?.path ?? '';
+  // Local toggle so "Pull from your data" can reveal the picker before a path is
+  // chosen. Seeded from the node (which remounts per selection), so it's correct.
+  const [mode, setMode] = React.useState<'static' | 'data'>(path ? 'data' : 'static');
+
+  if (!def.bindable) return null;
+
   // In the component editor a node's data can be turned into a per-placement field
   // (a `$bind:<key>` slot). When it is, show the slot state instead of the picker.
   const slotKey = bindSlotKey(path);
   if (slotKey !== null && slotEditor) {
     return (
-      <Group label="Data">
-        <div className="bx-bind bx-bind--slot">
-          <div className="bx-bind__top">
-            <span className="bx-bind__path">
-              <span className="bx-bind__dot" />
-              field · {slotKey}
-            </span>
-          </div>
-          <p className="bx-bind__hint">
-            Filled per placement — each page that uses this component chooses the data shown here.
-          </p>
-          <button
-            type="button"
-            className="bx-fieldrow__btn"
-            onClick={() => slotEditor.onUnbindData()}
-          >
-            <X aria-hidden /> Use direct data
-          </button>
+      <div className="bx-bind bx-bind--slot">
+        <div className="bx-bind__top">
+          <span className="bx-bind__path">
+            <span className="bx-bind__dot" />
+            field · {slotKey}
+          </span>
         </div>
-      </Group>
+        <p className="bx-bind__hint">
+          Filled per placement — each page that uses this component chooses the data shown here.
+        </p>
+        <button
+          type="button"
+          className="bx-fieldrow__btn"
+          onClick={() => slotEditor.onUnbindData()}
+        >
+          <X aria-hidden /> Use direct data
+        </button>
+      </div>
     );
   }
-  const color = path ? moduleColor(moduleForPath(catalog, path)) : undefined;
+
   const groups = bindGroups(catalog);
   const itemPaths = itemBindPaths(scope);
+  const showPicker = mode === 'data';
+  // A container binds to REPEAT its subtree per record; a leaf binds to REPLACE
+  // its content with a value — so the framing differs.
+  const isContainer = def.kind === 'container';
 
   return (
-    <Group label="Data">
-      <div
-        className="bx-bind"
-        style={color ? ({ '--bind': color } as React.CSSProperties) : undefined}
-      >
-        <div className="bx-bind__top">
-          {path ? (
-            <span className="bx-bind__path">
-              <span className="bx-bind__dot" />
-              {path}
-            </span>
-          ) : (
-            <span className="bx-bind__path bx-bind__path--empty">Not bound</span>
-          )}
-        </div>
-        {path ? <p className="bx-bind__hint">{bindHint(catalog, scope, path)}</p> : null}
-        <NativeSelect
-          size="sm"
-          value={path || UNBOUND}
-          onChange={(e) => onBind(e.target.value === UNBOUND ? null : e.target.value)}
+    <div className="bx-source">
+      <span className="bx-field__label">{isContainer ? 'Repeat content' : 'Content'}</span>
+      <div className="bx-seg" role="group">
+        <button
+          type="button"
+          className="bx-seg__btn"
+          data-on={mode === 'static'}
+          aria-pressed={mode === 'static'}
+          onClick={() => {
+            setMode('static');
+            if (path) onBind(null);
+          }}
         >
-          <option value={UNBOUND}>— Not bound (static) —</option>
-          {groups.map((grp) => (
-            <optgroup key={grp.module} label={grp.module.toUpperCase()}>
-              {grp.paths.map((p) => (
-                <option key={p.path} value={p.path}>
-                  {p.label}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-          {scope.inScope ? (
-            <optgroup label={scope.label ? `IN SCOPE · ${scope.label}` : 'IN SCOPE (per item)'}>
-              {itemPaths.map((p) => (
-                <option key={p.path} value={p.path}>
-                  {p.label}
-                </option>
-              ))}
-            </optgroup>
-          ) : null}
-        </NativeSelect>
-        {contentTypeKey && onAddField ? (
-          <InlineFieldAdd
-            contentTypeKey={contentTypeKey}
-            scope={scope}
-            onAddField={onAddField}
-            onBind={onBind}
-          />
-        ) : null}
-        {slotEditor ? (
-          <button
-            type="button"
-            className="bx-makefield"
-            onClick={() => slotEditor.onBindData(node.binding?.path ?? null)}
-          >
-            <Boxes aria-hidden /> Make instance field
-          </button>
-        ) : null}
+          {isContainer ? 'Show once' : 'Type it in'}
+        </button>
+        <button
+          type="button"
+          className="bx-seg__btn"
+          data-on={mode === 'data'}
+          aria-pressed={mode === 'data'}
+          onClick={() => setMode('data')}
+        >
+          {isContainer ? 'Repeat for each…' : 'Pull from your data'}
+        </button>
       </div>
-    </Group>
+      {showPicker ? (
+        <div className="bx-source__picker">
+          <NativeSelect
+            size="sm"
+            aria-label={isContainer ? 'Choose what to repeat' : 'Choose what to show'}
+            value={path || UNBOUND}
+            onChange={(e) => onBind(e.target.value === UNBOUND ? null : e.target.value)}
+          >
+            <option value={UNBOUND}>
+              {isContainer ? '— Choose what to repeat —' : '— Choose what to show —'}
+            </option>
+            {groups.map((grp) => (
+              <optgroup key={grp.module} label={grp.module.toUpperCase()}>
+                {grp.paths.map((p) => (
+                  <option key={p.path} value={p.path}>
+                    {p.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+            {scope.inScope ? (
+              <optgroup label={scope.label ? `From each ${scope.label}` : 'From each item'}>
+                {itemPaths.map((p) => (
+                  <option key={p.path} value={p.path}>
+                    {p.label}
+                  </option>
+                ))}
+              </optgroup>
+            ) : null}
+          </NativeSelect>
+          {path ? <p className="bx-source__hint">{bindHint(catalog, scope, path)}</p> : null}
+          {contentTypeKey && onAddField ? (
+            <InlineFieldAdd
+              contentTypeKey={contentTypeKey}
+              scope={scope}
+              onAddField={onAddField}
+              onBind={onBind}
+            />
+          ) : null}
+          {slotEditor ? (
+            <button
+              type="button"
+              className="bx-makefield"
+              onClick={() => slotEditor.onBindData(node.binding?.path ?? null)}
+            >
+              <Boxes aria-hidden /> Make instance field
+            </button>
+          ) : null}
+        </div>
+      ) : (
+        <p className="bx-source__hint">
+          {isContainer
+            ? 'Shows the blocks inside once. Switch to “Repeat for each…” to repeat them for every product, post, or record.'
+            : 'Uses the content you type above. Switch to “Pull from your data” to show something live, like a product name or price.'}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -827,7 +1034,10 @@ export interface SlotEditor {
   onUnbindData: () => void;
 }
 
-function PropsPanel({
+// The node's own props (heading text, button label/link, …) — rendered inside the
+// Content card (no Group wrapper of its own). Returns null when the block has no
+// props (e.g. a Divider), so the Content card can fall back to just the data source.
+function PropsFields({
   node,
   onProp,
   slotEditor,
@@ -840,7 +1050,7 @@ function PropsPanel({
   const def = getDef(node.type)!;
   if (def.props.length === 0) return null;
   return (
-    <Group label={def.label}>
+    <>
       {def.props.map((spec) => {
         const value = node.props[spec.key];
         // A prop already wired to a field (component editor): show the link + an
@@ -964,13 +1174,13 @@ function PropsPanel({
           </Field>
         );
       })}
-    </Group>
+    </>
   );
 }
 
 // ── Settings panels (shown when no node is selected) ─────────────────────────
 // Each surface supplies its own (page settings vs. layout settings) via the
-// Inspector's `settings` slot; both reuse the inspector's Group/Field controls.
+// Inspector's `settings` slot; both reuse the inspector's Card/Field controls.
 
 export function PageSettings({
   pageId,
@@ -1009,83 +1219,84 @@ export function PageSettings({
 
   return (
     <div className="bx-inspector">
-      <header className="bx-ins-head">
-        <div className="bx-ins-head__row">
-          <h3>{name}</h3>
-          <span className="bx-ins-kind">{kind}</span>
-        </div>
-      </header>
-      {kind === 'collection' ? (
-        <Group label="Renders">
-          <Field
-            label="Content type"
-            hint="Every record of this type renders through this template (docs/51). Editing the type’s fields affects all of its templates and every API/MCP consumer."
+      <PanelHead
+        icon={kind === 'collection' ? Database : FileText}
+        title={name}
+        subtitle={kind === 'collection' ? 'Renders every record of a type' : 'A page on your site'}
+      />
+      <div className="bx-ins-stack">
+        {kind === 'collection' ? (
+          <Card
+            icon={Database}
+            title="Renders"
+            caption="A collection template renders once per record — its search details come from each record (the product or entry it shows), not the template."
           >
-            <NativeSelect
-              size="sm"
-              value={recordType ?? ''}
-              aria-label="Content type this template renders"
-              onChange={(e) => onRetarget(e.target.value || null)}
-            >
-              <option value="">— Choose a content type —</option>
-              {catalog.sources
-                .filter((s) => s.cardinality === 'array')
-                .map((s) => (
-                  <option key={s.key} value={s.key}>
-                    {`${s.module.toUpperCase()} · ${s.label}`}
-                  </option>
-                ))}
-            </NativeSelect>
-          </Field>
-          <p className="bx-grp__caption">
-            A collection template renders once per record — its SEO comes from each record (the
-            product or entry it binds), not the template.
-          </p>
-          {recordType ? (
-            <div className="bx-default">
-              {isDefault ? (
-                <span className="bx-default__on">✓ Default template for this type</span>
-              ) : (
-                <button type="button" className="bx-default__set" onClick={onMakeDefault}>
-                  Make default for this type
-                </button>
-              )}
-              <p className="bx-default__hint">
-                {isDefault
-                  ? 'Records of this type render through this template unless an individual record overrides it.'
-                  : 'Until this is the default (or pinned to a record), published records of this type keep rendering through the current default.'}
-              </p>
-            </div>
-          ) : null}
-        </Group>
-      ) : (
-        <>
-          <Group label="Page">
             <Field
-              label="Site URL"
-              hint={
-                draft.trim()
-                  ? `Published, this page serves at /${draft.trim()}`
-                  : 'Set a slug to serve this page on your site.'
-              }
+              label="Content type"
+              hint="Every record of this type renders through this template. Editing the type’s fields affects every page that uses it."
             >
-              <Input
-                value={draft}
-                placeholder="e.g. about"
-                aria-label="Page slug"
-                onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') e.currentTarget.blur();
-                }}
-                onBlur={() => {
-                  if ((draft.trim() || null) !== (slug ?? null)) onSlug(draft);
-                }}
-              />
+              <NativeSelect
+                size="sm"
+                value={recordType ?? ''}
+                aria-label="Content type this template renders"
+                onChange={(e) => onRetarget(e.target.value || null)}
+              >
+                <option value="">— Choose a content type —</option>
+                {catalog.sources
+                  .filter((s) => s.cardinality === 'array')
+                  .map((s) => (
+                    <option key={s.key} value={s.key}>
+                      {`${s.module.toUpperCase()} · ${s.label}`}
+                    </option>
+                  ))}
+              </NativeSelect>
             </Field>
-          </Group>
-          <PageSeoPanel pageId={pageId} seo={seo} onSeo={onSeo} />
-        </>
-      )}
+            {recordType ? (
+              <div className="bx-default">
+                {isDefault ? (
+                  <span className="bx-default__on">✓ Default template for this type</span>
+                ) : (
+                  <button type="button" className="bx-default__set" onClick={onMakeDefault}>
+                    Make default for this type
+                  </button>
+                )}
+                <p className="bx-default__hint">
+                  {isDefault
+                    ? 'Records of this type render through this template unless an individual record overrides it.'
+                    : 'Until this is the default (or pinned to a record), published records of this type keep rendering through the current default.'}
+                </p>
+              </div>
+            ) : null}
+          </Card>
+        ) : (
+          <>
+            <Card icon={FileText} title="Page">
+              <Field
+                label="Web address"
+                hint={
+                  draft.trim()
+                    ? `Published, this page is at /${draft.trim()}`
+                    : 'Set an address to publish this page on your site.'
+                }
+              >
+                <Input
+                  value={draft}
+                  placeholder="e.g. about"
+                  aria-label="Page slug"
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') e.currentTarget.blur();
+                  }}
+                  onBlur={() => {
+                    if ((draft.trim() || null) !== (slug ?? null)) onSlug(draft);
+                  }}
+                />
+              </Field>
+            </Card>
+            <PageSeoPanel pageId={pageId} seo={seo} onSeo={onSeo} />
+          </>
+        )}
+      </div>
       <p className="bx-inspector__tip">Select a layer to edit it.</p>
     </div>
   );
@@ -1118,15 +1329,15 @@ function PageSeoPanel({
   }, [seo.title, seo.description, seo.canonical, seo.ogImage]);
 
   return (
-    <Group label="SEO">
-      <div className="bx-row" style={{ marginBottom: 8 }}>
-        <span className="bx-field__label">SEO health — hover for the report</span>
+    <Card
+      icon={Search}
+      title="Search & sharing"
+      caption="How this page reads in search results and link previews. Leave a field blank to fall back to the page name."
+    >
+      <div className="bx-row">
+        <span className="bx-field__label">Search health — hover for the report</span>
         <SeoScoreChip type="builder_page" id={pageId} />
       </div>
-      <p className="bx-grp__caption">
-        How this page reads in search results and link previews. Leave a field blank to fall back to
-        the page name.
-      </p>
       <Field label="Title" hint={`${title.length}/60 recommended`}>
         <Input
           value={title}
@@ -1174,25 +1385,22 @@ function PageSeoPanel({
         <span className="bx-field__label">Allow search engines to index this page</span>
         <Switch checked={!seo.noindex} onCheckedChange={(v) => onSeo({ noindex: !v })} />
       </div>
-    </Group>
+    </Card>
   );
 }
 
 export function LayoutSettings({ name }: { name: string }) {
   return (
     <div className="bx-inspector">
-      <header className="bx-ins-head">
-        <div className="bx-ins-head__row">
-          <h3>{name}</h3>
-          <span className="bx-ins-kind">site</span>
-        </div>
-      </header>
-      <Group label="Site layout">
-        <p className="bx-grp__caption">
-          The chrome that wraps every page. The <strong>Page content</strong> block marks where each
-          routed page renders; everything around it (header, footer) persists across navigation.
-        </p>
-      </Group>
+      <PanelHead icon={LayoutGrid} title={name} subtitle="The chrome that wraps every page" />
+      <div className="bx-ins-stack">
+        <Card icon={LayoutGrid} title="Site layout">
+          <p className="bx-card__caption">
+            The header and footer that wrap every page. The <strong>Page content</strong> block
+            marks where each routed page renders; everything around it persists across navigation.
+          </p>
+        </Card>
+      </div>
       <p className="bx-inspector__tip">Select a layer to edit it.</p>
     </div>
   );
@@ -1222,43 +1430,40 @@ export function EmailSettings({
 
   return (
     <div className="bx-inspector">
-      <header className="bx-ins-head">
-        <div className="bx-ins-head__row">
-          <h3>{name}</h3>
-          <span className="bx-ins-kind">email</span>
-        </div>
-      </header>
-      <Group label="Message">
-        <Field label="Subject" hint="The subject line shown in the inbox.">
-          <Input
-            value={subjectDraft}
-            placeholder="e.g. Welcome to the shop"
-            aria-label="Email subject"
-            onChange={(e) => setSubjectDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') e.currentTarget.blur();
-            }}
-            onBlur={() => subjectDraft !== subject && onSubject(subjectDraft)}
-          />
-        </Field>
-        <Field
-          label="Preview text"
-          hint="The preheader shown after the subject in most inboxes. Optional."
+      <PanelHead icon={Mail} title={name} subtitle="The email you're composing" />
+      <div className="bx-ins-stack">
+        <Card
+          icon={Mail}
+          title="Message"
+          caption="Your wordmark header and the legal footer wrap this body automatically. You compose the content; the branded frame is added on send."
         >
-          <Textarea
-            rows={2}
-            value={preheaderDraft}
-            placeholder="A short teaser shown next to the subject"
-            aria-label="Email preheader"
-            onChange={(e) => setPreheaderDraft(e.target.value)}
-            onBlur={() => preheaderDraft !== (preheader ?? '') && onPreheader(preheaderDraft)}
-          />
-        </Field>
-        <p className="bx-grp__caption">
-          The branded frame — your wordmark header and the legal footer — wraps this body
-          automatically. You compose the content; the chrome is added on send.
-        </p>
-      </Group>
+          <Field label="Subject" hint="The subject line shown in the inbox.">
+            <Input
+              value={subjectDraft}
+              placeholder="e.g. Welcome to the shop"
+              aria-label="Email subject"
+              onChange={(e) => setSubjectDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') e.currentTarget.blur();
+              }}
+              onBlur={() => subjectDraft !== subject && onSubject(subjectDraft)}
+            />
+          </Field>
+          <Field
+            label="Preview text"
+            hint="The short teaser shown after the subject in most inboxes. Optional."
+          >
+            <Textarea
+              rows={2}
+              value={preheaderDraft}
+              placeholder="A short teaser shown next to the subject"
+              aria-label="Email preheader"
+              onChange={(e) => setPreheaderDraft(e.target.value)}
+              onBlur={() => preheaderDraft !== (preheader ?? '') && onPreheader(preheaderDraft)}
+            />
+          </Field>
+        </Card>
+      </div>
       <p className="bx-inspector__tip">Select a layer to edit it.</p>
     </div>
   );
@@ -1375,8 +1580,13 @@ function CustomNodeInspector({
       </button>
       <header className="bx-ins-head">
         <div className="bx-ins-head__row">
-          <h3>{component?.name ?? key}</h3>
-          <span className="bx-ins-kind">component</span>
+          <span className="bx-ins-head__icon">
+            <Boxes aria-hidden />
+          </span>
+          <div className="bx-ins-head__titles">
+            <h3>{component?.name ?? key}</h3>
+            <span className="bx-ins-head__sub">Reusable component</span>
+          </div>
         </div>
         <Input
           value={node.name ?? ''}
@@ -1385,111 +1595,116 @@ function CustomNodeInspector({
         />
       </header>
 
-      {!component ? (
-        <Group label="Unavailable">
-          <p className="bx-grp__caption">
-            This component (<span className="bx-mono">custom:{key}</span>) is no longer available.
-            Remove it from the Layers panel.
-          </p>
-        </Group>
-      ) : (
-        <>
-          {component.propSpec.length > 0 ? (
-            <Group label="Content">
-              <p className="bx-grp__caption">
-                Fill this placement’s fields. Leave one blank to use the component’s default.
-              </p>
-              {component.propSpec.map((spec) => (
-                <CustomPropField
-                  key={spec.key}
-                  spec={spec}
-                  value={node.props[spec.key]}
-                  onChange={(v) => onProp(spec.key, v)}
-                />
-              ))}
-            </Group>
-          ) : (
-            <Group label={component.name}>
-              <p className="bx-grp__caption">
-                {component.description ??
-                  'This component has no configurable fields — every placement renders the same.'}{' '}
-                Edit the component to change it everywhere it’s used.
-              </p>
-            </Group>
-          )}
+      <div className="bx-ins-stack">
+        {!component ? (
+          <Card icon={Boxes} title="Unavailable">
+            <p className="bx-card__caption">
+              This component (<span className="bx-mono">custom:{key}</span>) is no longer available.
+              Remove it from the Layers panel.
+            </p>
+          </Card>
+        ) : (
+          <>
+            {component.propSpec.length > 0 ? (
+              <Card
+                icon={Type}
+                title="Content"
+                caption="Fill this placement’s fields. Leave one blank to use the component’s default."
+              >
+                {component.propSpec.map((spec) => (
+                  <CustomPropField
+                    key={spec.key}
+                    spec={spec}
+                    value={node.props[spec.key]}
+                    onChange={(v) => onProp(spec.key, v)}
+                  />
+                ))}
+              </Card>
+            ) : (
+              <Card
+                icon={Type}
+                title={component.name}
+                caption={`${
+                  component.description ??
+                  'This component has no configurable fields — every placement renders the same.'
+                } Edit the component to change it everywhere it’s used.`}
+              />
+            )}
 
-          {bindingSlots.length > 0 ? (
-            <Group label="Data">
-              <p className="bx-grp__caption">
-                Point this component’s data fields at your content for this placement.
-              </p>
-              {bindingSlots.map((slot) => {
-                const current = instanceBindings[slot.key] ?? '';
-                return (
-                  <Field key={slot.key} label={slot.label}>
-                    <NativeSelect
-                      size="sm"
-                      value={current || UNBOUND}
-                      onChange={(e) =>
-                        setBinding(slot.key, e.target.value === UNBOUND ? null : e.target.value)
-                      }
-                    >
-                      <option value={UNBOUND}>— Not set —</option>
-                      {bindGroupsForCatalog.map((grp) => (
-                        <optgroup key={grp.module} label={grp.module.toUpperCase()}>
-                          {grp.paths.map((p) => (
-                            <option key={p.path} value={p.path}>
-                              {p.label}
-                            </option>
-                          ))}
-                        </optgroup>
-                      ))}
-                      {scope.inScope ? (
-                        <optgroup
-                          label={scope.label ? `IN SCOPE · ${scope.label}` : 'IN SCOPE (per item)'}
-                        >
-                          {inScopePaths.map((p) => (
-                            <option key={p.path} value={p.path}>
-                              {p.label}
-                            </option>
-                          ))}
-                        </optgroup>
-                      ) : null}
-                    </NativeSelect>
-                  </Field>
-                );
-              })}
-            </Group>
-          ) : null}
-
-          <Group label="Component">
-            <Field label="Source">
-              <span className="bx-mono">
-                custom:{key}
-                {pinned ? ` · v${pinned}` : ''}
-              </span>
-            </Field>
-            {canUpgrade ? (
-              <div className="bx-upgrade">
-                <p className="bx-upgrade__note">
-                  This component is now at v{latest}. This placement renders v{pinned} until you
-                  update it — the canvas shows the latest as a preview.
-                </p>
-                <button
-                  type="button"
-                  className="bx-upgrade__btn"
-                  onClick={() => onProp(REF_KEY, { version: latest })}
-                >
-                  Update to v{latest}
-                </button>
-              </div>
+            {bindingSlots.length > 0 ? (
+              <Card
+                icon={Database}
+                title="Data"
+                caption="Point this component’s data fields at your content for this placement."
+              >
+                {bindingSlots.map((slot) => {
+                  const current = instanceBindings[slot.key] ?? '';
+                  return (
+                    <Field key={slot.key} label={slot.label}>
+                      <NativeSelect
+                        size="sm"
+                        value={current || UNBOUND}
+                        onChange={(e) =>
+                          setBinding(slot.key, e.target.value === UNBOUND ? null : e.target.value)
+                        }
+                      >
+                        <option value={UNBOUND}>— Not set —</option>
+                        {bindGroupsForCatalog.map((grp) => (
+                          <optgroup key={grp.module} label={grp.module.toUpperCase()}>
+                            {grp.paths.map((p) => (
+                              <option key={p.path} value={p.path}>
+                                {p.label}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ))}
+                        {scope.inScope ? (
+                          <optgroup
+                            label={scope.label ? `From each ${scope.label}` : 'From each item'}
+                          >
+                            {inScopePaths.map((p) => (
+                              <option key={p.path} value={p.path}>
+                                {p.label}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ) : null}
+                      </NativeSelect>
+                    </Field>
+                  );
+                })}
+              </Card>
             ) : null}
-            <a className="bx-ins-editlink" href={`/builder/components/${key}`}>
-              <ExternalLink aria-hidden /> Edit component
-            </a>
-          </Group>
-        </>
-      )}
+
+            <Card icon={Boxes} title="Component">
+              <Field label="Source">
+                <span className="bx-mono">
+                  custom:{key}
+                  {pinned ? ` · v${pinned}` : ''}
+                </span>
+              </Field>
+              {canUpgrade ? (
+                <div className="bx-upgrade">
+                  <p className="bx-upgrade__note">
+                    This component is now at v{latest}. This placement renders v{pinned} until you
+                    update it — the canvas shows the latest as a preview.
+                  </p>
+                  <button
+                    type="button"
+                    className="bx-upgrade__btn"
+                    onClick={() => onProp(REF_KEY, { version: latest })}
+                  >
+                    Update to v{latest}
+                  </button>
+                </div>
+              ) : null}
+              <a className="bx-ins-editlink" href={`/builder/components/${key}`}>
+                <ExternalLink aria-hidden /> Edit component
+              </a>
+            </Card>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -1570,8 +1785,13 @@ export function Inspector({
   const def = getDef(node.type);
   if (!def) return null;
 
+  const TypeIcon = def.icon;
+  const hasContent = def.props.length > 0 || def.bindable;
+  // `key={node.id}` resets each card's open-state + the data-source toggle when a
+  // different node is selected (so defaults are consistent per selection), while
+  // edits to the SAME node preserve them.
   return (
-    <div className="bx-inspector">
+    <div className="bx-inspector" key={node.id}>
       {/* Selecting a node replaces the page/site settings panel; this returns to
           it without leaving the editor (the canvas's click-empty / Esc are easy
           to miss when the page fills the canvas). */}
@@ -1585,8 +1805,15 @@ export function Inspector({
       </button>
       <header className="bx-ins-head">
         <div className="bx-ins-head__row">
-          <h3>{def.label}</h3>
-          <span className={cn('bx-ins-kind', `bx-ins-kind--${def.kind}`)}>{def.kind}</span>
+          <span className="bx-ins-head__icon">
+            <TypeIcon aria-hidden />
+          </span>
+          <div className="bx-ins-head__titles">
+            <h3>{def.label}</h3>
+            <span className="bx-ins-head__sub">
+              {def.kind === 'container' ? 'Holds other blocks' : 'A single element'}
+            </span>
+          </div>
         </div>
         <Input
           value={node.name ?? ''}
@@ -1606,47 +1833,51 @@ export function Inspector({
         ) : null}
       </header>
 
-      <Group label="Style">
-        <p className="bx-grp__caption">
-          Color + variant from the Surface recipe (docs/47), written as classes.
-        </p>
-        {STYLE_CONTROLS.map((control) => (
-          <StyleControlField
-            key={control.id}
-            node={node}
-            def={def}
-            control={control}
-            onClass={onClass}
-          />
-        ))}
-      </Group>
+      <div className="bx-ins-stack">
+        {/* Content first — what the block SAYS and where it comes from. */}
+        {hasContent ? (
+          <Card icon={Type} title="Content" summary={contentSummary(node, def)}>
+            <PropsFields node={node} onProp={onProp} slotEditor={slotEditor} />
+            <DataSource
+              node={node}
+              catalog={catalog}
+              scope={scope}
+              contentTypeKey={contentTypeKey}
+              onAddField={onAddField}
+              onBind={onBind}
+              slotEditor={slotEditor}
+            />
+          </Card>
+        ) : null}
 
-      {/* The full Appearance/skin surface (free color/type/edges/motion + per
-          breakpoint/state/dark context) authors only in the component builder
-          (slotEditor present); on the page builder skin comes from the recipe,
-          not per-instance re-skinning (docs/61 §5.2). */}
-      {slotEditor ? <SkinPanel node={node} def={def} onClass={onClass} /> : null}
+        <Card icon={Palette} title="Style" summary={styleSummary(node)}>
+          {STYLE_CONTROLS.map((control) => (
+            <StyleControlField
+              key={control.id}
+              node={node}
+              def={def}
+              control={control}
+              onClass={onClass}
+            />
+          ))}
+        </Card>
 
-      <AdvancedPanel node={node} def={def} onClass={onClass} />
+        {/* The full Appearance/skin surface (free color/type/edges + per
+            breakpoint/state/dark context) authors only in the component builder
+            (slotEditor present); on the page builder skin comes from the recipe,
+            not per-instance re-skinning (docs/61 §5.2). */}
+        {slotEditor ? <AppearanceCard node={node} def={def} onClass={onClass} /> : null}
 
-      <BindingBox
-        node={node}
-        catalog={catalog}
-        scope={scope}
-        contentTypeKey={contentTypeKey}
-        onAddField={onAddField}
-        onBind={onBind}
-        slotEditor={slotEditor}
-      />
-      <PropsPanel node={node} onProp={onProp} slotEditor={slotEditor} />
-      {/* Containers arrange their children (docs/61 §5.2) — the page-builder's
-          structural surface. Leaves arrange nothing, so the panel is hidden. */}
-      {def.kind === 'container' ? (
-        <ArrangementPanel node={node} def={def} onClass={onClass} />
-      ) : null}
-      {/* Motion (docs/61 §9) — entrance on every node. Hidden on the email surface
-          (mail clients strip classes, so an entrance is inert there). */}
-      {surface !== 'email' ? <MotionPanel node={node} def={def} onClass={onClass} /> : null}
+        {/* Containers arrange their children (docs/61 §5.2). Leaves arrange
+            nothing, so the card is hidden. */}
+        {def.kind === 'container' ? <LayoutCard node={node} def={def} onClass={onClass} /> : null}
+
+        {/* Motion (docs/61 §9) — entrance on every node. Hidden on the email
+            surface (mail clients strip classes, so an entrance is inert there). */}
+        {surface !== 'email' ? <MotionCard node={node} def={def} onClass={onClass} /> : null}
+
+        <AdvancedPanel node={node} def={def} onClass={onClass} />
+      </div>
     </div>
   );
 }

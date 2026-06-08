@@ -375,15 +375,15 @@ const DEFS: ComponentDef[] = [
     props: [
       {
         key: 'level',
-        label: 'Level',
+        label: 'Size',
         control: 'buttongroup',
         options: [
-          { value: 'h1', label: 'H1' },
-          { value: 'h2', label: 'H2' },
-          { value: 'h3', label: 'H3' },
+          { value: 'h1', label: 'Title' },
+          { value: 'h2', label: 'Heading' },
+          { value: 'h3', label: 'Sub' },
         ],
       },
-      { key: 'text', label: 'Text', control: 'text', placeholder: 'Heading text' },
+      { key: 'text', label: 'Heading text', control: 'text', placeholder: 'Heading text' },
     ],
     defaults: { props: { level: 'h2', text: 'Heading' } },
     renderLeaf: ({ node, value, bound }) => {
@@ -491,8 +491,13 @@ const DEFS: ComponentDef[] = [
       // A static image URL — the email renderer's <Img src> (docs/52 §3). The page/
       // site canvas keeps showing the placeholder (it composes real images from the
       // box background / ImageDisplay binding); only email reads this prop today.
-      { key: 'src', label: 'Image URL', control: 'text', placeholder: 'https://…/banner.png' },
-      { key: 'alt', label: 'Alt text', control: 'text', placeholder: 'Describe the image' },
+      { key: 'src', label: 'Image', control: 'text', placeholder: 'https://…/banner.png' },
+      {
+        key: 'alt',
+        label: 'Describe the image',
+        control: 'text',
+        placeholder: 'Helps search engines and screen readers',
+      },
     ],
     defaults: { props: { ratio: 'wide', alt: '' } },
     renderLeaf: ({ node }) => (
@@ -511,10 +516,10 @@ const DEFS: ComponentDef[] = [
     bindable: true,
     accepts: ['scalar'],
     props: [
-      { key: 'label', label: 'Label', control: 'text', placeholder: 'Button label' },
+      { key: 'label', label: 'Button text', control: 'text', placeholder: 'Button label' },
       {
         key: 'href',
-        label: 'Link URL',
+        label: 'Goes to',
         control: 'text',
         placeholder: '/products/model-3 or https://…',
       },
@@ -635,7 +640,7 @@ const DEFS: ComponentDef[] = [
     props: [
       {
         key: 'url',
-        label: 'YouTube URL or ID',
+        label: 'YouTube link',
         control: 'text',
         placeholder: 'https://youtu.be/…',
       },
@@ -679,7 +684,7 @@ const DEFS: ComponentDef[] = [
     props: [
       {
         key: 'query',
-        label: 'Place / search',
+        label: 'Place or address',
         control: 'text',
         placeholder: 'e.g. Tesla Supercharger',
       },
@@ -759,8 +764,13 @@ const DEFS: ComponentDef[] = [
         placeholder: 'A headline that sells',
       },
       { key: 'body', label: 'Body', control: 'textarea', placeholder: 'Supporting copy…' },
-      { key: 'ctaLabel', label: 'CTA label', control: 'text', placeholder: 'Learn more' },
-      { key: 'ctaUrl', label: 'CTA URL', control: 'text', placeholder: '/contact or https://…' },
+      { key: 'ctaLabel', label: 'Button text', control: 'text', placeholder: 'Learn more' },
+      {
+        key: 'ctaUrl',
+        label: 'Button link',
+        control: 'text',
+        placeholder: '/contact or https://…',
+      },
     ],
     defaults: {
       props: {

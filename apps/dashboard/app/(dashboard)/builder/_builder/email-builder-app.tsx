@@ -68,9 +68,19 @@ export interface EmailBuilderAppProps {
   /** What the email can bind to (docs/52 §7). Phase 1 passes an EMPTY catalog —
    *  the static slice has no data-aware components, so nothing binds yet. */
   bindingCatalog: BindingCatalog;
+  /** The tenant's sending identity, shown in the canvas's inbox-envelope `From`
+   *  row so the preview reads as an email, not a page. `senderName` falls back to
+   *  a neutral label; `senderAddress` is omitted when no sending address is known. */
+  senderName?: string;
+  senderAddress?: string | null;
 }
 
-export function EmailBuilderApp({ initialEmails, bindingCatalog }: EmailBuilderAppProps) {
+export function EmailBuilderApp({
+  initialEmails,
+  bindingCatalog,
+  senderName,
+  senderAddress,
+}: EmailBuilderAppProps) {
   const confirm = useConfirm();
   // Emails load from the server (listOrSeed seeds the starter set on first use)
   // and seed this state ONCE; from here the client is authoritative and the
@@ -427,6 +437,12 @@ export function EmailBuilderApp({ initialEmails, bindingCatalog }: EmailBuilderA
           editor={editor}
           catalog={bindingCatalog}
           surface="email"
+          frame={{
+            kind: 'email',
+            subject: active.subject,
+            senderName: senderName ?? 'Your store',
+            senderAddress: senderAddress ?? null,
+          }}
           settings={
             <EmailSettings
               name={active.name}

@@ -696,6 +696,9 @@ export function BuilderApp({
           catalog={bindingCatalog}
           surface="page"
           chrome={layoutTree ?? null}
+          frame={
+            siteOrigin ? { kind: 'browser', origin: siteOrigin, path: active.slug } : undefined
+          }
           components={componentsByKey}
           contentTypeKey={contentTypeKey}
           onAddField={onAddField}

@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import { SITE_CATALOG, type BuilderLayoutDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
-import { getBrand, getConfig } from '../_brand/lib/api';
+import { getBrand, getConfig, getTenant } from '../_brand/lib/api';
+import { propertyOrigin } from '../_brand/lib/property';
 import { listComponentsFull, listLayouts } from '../_lib/api';
+import { listProperties, getActivePropertyId, type Property } from '@/lib/sites';
 import { SiteBuilderApp } from '../_builder/site-builder-app';
 import '../builder.css';
 
@@ -48,11 +50,34 @@ async function loadLayouts(): Promise<BuilderLayoutDto[]> {
   }
 }
 
+// The active web property's live origin (docs/49), for the canvas browser frame.
+// Mirrors the page route: cookie-active property → primary → first. Defensive at
+// every read so a failure just renders the canvas unframed.
+async function loadSiteOrigin(): Promise<string | undefined> {
+  try {
+    const [tenantSlug, properties, activePropertyId] = await Promise.all([
+      getTenant().then((t) => t.slug),
+      listProperties().catch(() => [] as Property[]),
+      getActivePropertyId(),
+    ]);
+    if (!tenantSlug) return undefined;
+    const active =
+      (activePropertyId ? properties.find((p) => p.id === activePropertyId) : undefined) ??
+      properties.find((p) => p.isPrimary) ??
+      properties[0] ??
+      null;
+    return propertyOrigin(tenantSlug, active);
+  } catch {
+    return undefined;
+  }
+}
+
 export default async function BuilderSiteRoute() {
-  const [themeCss, layouts, components] = await Promise.all([
+  const [themeCss, layouts, components, siteOrigin] = await Promise.all([
     canvasThemeCss(),
     loadLayouts(),
     listComponentsFull(),
+    loadSiteOrigin(),
   ]);
   if (layouts.length === 0) {
     return (
@@ -70,6 +95,7 @@ export default async function BuilderSiteRoute() {
         initialLayouts={layouts}
         bindingCatalog={SITE_CATALOG}
         components={components}
+        siteOrigin={siteOrigin}
       />
     </>
   );

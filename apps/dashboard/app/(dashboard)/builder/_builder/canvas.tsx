@@ -560,6 +560,19 @@ function CanvasNode({
 
 // ── Public canvas ────────────────────────────────────────────────────────────
 
+/** How the preview is FRAMED. The frame is chrome — `aria-hidden`, never a node
+ *  and never selectable — that reads the canvas as the thing it actually is:
+ *   · `browser` — a site/page. A browser window on desktop (property origin +
+ *     slug in the address bar); a device bezel on tablet/mobile (driven by
+ *     `device`). docs/45.
+ *   · `email`   — an inbox envelope (From · To · Subject) wrapping the send
+ *     artifact (wordmark header · body · legal footer). docs/52.
+ *  Omitted ⇒ the bare canvas card (legacy look). */
+export type CanvasFrame =
+  | { kind: 'browser'; origin: string; path: string | null }
+  | { kind: 'email'; subject: string; senderName: string; senderAddress: string | null }
+  | null;
+
 export interface CanvasProps {
   tree: BuilderNode;
   data: Scope['root'];
@@ -578,9 +591,25 @@ export interface CanvasProps {
    *  the layout's Outlet — the same composition the storefront ships, so the
    *  overlay header/footer preview correctly. */
   chrome?: BuilderNode | null;
+  /** Frames the preview as a site (browser/bezel) or an email (envelope). The
+   *  frame is chrome only — it never wraps the editable tree in a node. Omitted ⇒
+   *  the bare canvas card. */
+  frame?: CanvasFrame;
 }
 
 const DEVICE_WIDTH: Record<Device, number | null> = { desktop: null, tablet: 834, mobile: 390 };
+
+// Host shown in the browser frame's address bar — the origin minus its scheme +
+// trailing slash (e.g. "wildgrove.sparx.zone"), so the chrome reads like a real
+// URL bar instead of "https://…".
+function displayHost(origin: string): string {
+  return origin.replace(/^https?:\/\//, '').replace(/\/$/, '');
+}
+
+// First letter for the envelope's sender avatar (falls back to a dot).
+function initialOf(name: string): string {
+  return name.trim().charAt(0).toUpperCase() || '·';
+}
 
 export function Canvas({
   tree,
@@ -592,6 +621,7 @@ export function Canvas({
   selectedId,
   onSelect,
   chrome,
+  frame,
 }: CanvasProps) {
   const width = DEVICE_WIDTH[device];
   const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -616,10 +646,130 @@ export function Canvas({
       onSelect={onSelect}
     />
   );
+  // How to frame the preview (chrome — never a node). A site/page is a browser
+  // window on desktop and a device bezel on tablet/mobile; an email is an inbox
+  // envelope. No frame ⇒ the bare canvas card.
+  const frameKind: 'browser' | 'bezel' | 'email' | 'plain' =
+    frame?.kind === 'email'
+      ? 'email'
+      : frame?.kind === 'browser'
+        ? width === null
+          ? 'browser'
+          : 'bezel'
+        : 'plain';
+
+  // The themed canvas element — the tenant-brand scope + container-query host.
+  // Plain keeps its device width inline; framed variants are sized by the frame.
+  // On email it also carries the locked send chrome (wordmark + legal footer) the
+  // renderer adds on send, so the preview is the real artifact, not a bare body.
+  const canvasEl = (
+    <div
+      className="bx-canvas"
+      data-theme="light"
+      style={frameKind === 'plain' && width ? { width, maxWidth: '100%' } : undefined}
+      data-device={device}
+      data-framed={chrome ? '' : undefined}
+    >
+      {frame?.kind === 'email' ? (
+        <>
+          <div className="bx-sendmark" aria-hidden>
+            {frame.senderName}
+          </div>
+          {page}
+          <div className="bx-sendfoot" aria-hidden>
+            {frame.senderName} · sent with Sparx
+            <br />
+            <span className="bx-sendfoot__links">Unsubscribe</span> ·{' '}
+            <span className="bx-sendfoot__links">Manage preferences</span>
+          </div>
+        </>
+      ) : chrome ? (
+        <CanvasNode
+          node={chrome}
+          scope={{ root: data }}
+          catalog={catalog}
+          components={components}
+          selectedId={selectedId}
+          onSelect={onSelect}
+          locked
+          outletSlot={page}
+        />
+      ) : (
+        page
+      )}
+    </div>
+  );
+
+  let framed: React.ReactNode = canvasEl;
+  if (frameKind === 'browser' && frame?.kind === 'browser') {
+    framed = (
+      <div className="bx-browser">
+        <div className="bx-browser__bar" aria-hidden>
+          <span className="bx-browser__dots">
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className="bx-browser__url">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <rect x="5" y="11" width="14" height="10" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+            <span className="bx-browser__host">{displayHost(frame.origin)}</span>
+            {frame.path ? <span className="bx-browser__path">{frame.path}</span> : null}
+          </span>
+        </div>
+        {canvasEl}
+      </div>
+    );
+  } else if (frameKind === 'bezel') {
+    framed = (
+      <div className={cn('bx-bezel', device === 'tablet' && 'bx-bezel--tablet')}>
+        <div className="bx-bezel__status" aria-hidden>
+          <span>9:41</span>
+          <span className="bx-bezel__dots">
+            <i />
+            <i />
+            <i />
+          </span>
+        </div>
+        <div className="bx-bezel__screen" style={width ? { width } : undefined}>
+          {canvasEl}
+        </div>
+      </div>
+    );
+  } else if (frameKind === 'email' && frame?.kind === 'email') {
+    framed = (
+      <div className="bx-envelope">
+        <div className="bx-envelope__head">
+          <div className="bx-envelope__subject">{frame.subject || 'No subject yet'}</div>
+          <div className="bx-envelope__row">
+            <span className="bx-envelope__avatar" aria-hidden>
+              {initialOf(frame.senderName)}
+            </span>
+            <span className="bx-envelope__who">{frame.senderName}</span>
+            {frame.senderAddress ? (
+              <span className="bx-envelope__addr">{`<${frame.senderAddress}>`}</span>
+            ) : null}
+          </div>
+          <div className="bx-envelope__row">
+            <span className="bx-envelope__lbl">To</span>
+            <span className="bx-envelope__who">Sample recipient</span>
+            <span className="bx-envelope__addr">&lt;you@example.com&gt;</span>
+          </div>
+        </div>
+        <div className="bx-envelope__stage">
+          <div className="bx-envelope__artifact">{canvasEl}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <VersionResolverContext.Provider value={resolveVersion ?? null}>
       <div
         className="bx-canvas-scroll"
+        data-frame={frameKind}
         ref={scrollRef}
         role="button"
         tabIndex={-1}
@@ -629,28 +779,7 @@ export function Canvas({
           if (e.key === 'Escape') onSelect(null);
         }}
       >
-        <div
-          className="bx-canvas"
-          data-theme="light"
-          style={width ? { width, maxWidth: '100%' } : undefined}
-          data-device={device}
-          data-framed={chrome ? '' : undefined}
-        >
-          {chrome ? (
-            <CanvasNode
-              node={chrome}
-              scope={{ root: data }}
-              catalog={catalog}
-              components={components}
-              selectedId={selectedId}
-              onSelect={onSelect}
-              locked
-              outletSlot={page}
-            />
-          ) : (
-            page
-          )}
-        </div>
+        {framed}
       </div>
     </VersionResolverContext.Provider>
   );

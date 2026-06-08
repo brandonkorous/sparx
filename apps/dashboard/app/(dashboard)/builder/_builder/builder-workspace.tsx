@@ -18,7 +18,7 @@ import type { BindingCatalog, BuilderNode, ComponentDto } from '@sparx/builder-s
 import type { BuilderEditor } from './use-builder-editor';
 import type { EditorSurface } from './registry';
 import type { CreatableType } from './field-kinds';
-import { Canvas } from './canvas';
+import { Canvas, type CanvasFrame } from './canvas';
 import { Inspector, type SlotEditor } from './inspector';
 import { LayersPanel } from './layers-panel';
 import { AddPalette } from './add-palette';
@@ -36,6 +36,9 @@ export interface BuilderWorkspaceProps {
    *  locked backdrop with the page dropped at its Outlet. Omitted on the site
    *  editor (it IS the layout). */
   chrome?: BuilderNode | null;
+  /** How the canvas is framed (docs/45, docs/52): a browser window / device bezel
+   *  for site + page, an inbox envelope for email. Omitted ⇒ the bare canvas. */
+  frame?: CanvasFrame;
   /** The tenant's custom components keyed by key (docs/53 P-B) — the Add palette
    *  lists them, and the canvas/layers/inspector expand + label `custom:*` nodes.
    *  Omitted ⇒ no custom components on this surface. */
@@ -65,6 +68,7 @@ export function BuilderWorkspace({
   surface,
   settings,
   chrome,
+  frame,
   components,
   fields,
   contentTypeKey,
@@ -189,6 +193,7 @@ export function BuilderWorkspace({
             selectedId={editor.selectedId}
             onSelect={editor.setSelectedId}
             chrome={chrome}
+            frame={frame}
           />
         </main>
 

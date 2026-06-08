@@ -818,17 +818,45 @@
   border-bottom: 1px solid var(--color-border-default);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
+  background: var(--color-bg-surface);
 }
 .bx-ins-head__row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 11px;
+}
+/* The selected block's identity — a tinted type icon + plain-language subtitle,
+   in place of the old monospace LEAF/CONTAINER badge (which read as internals). */
+.bx-ins-head__icon {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--module-active) 12%, transparent);
+  color: var(--module-active);
+}
+.bx-ins-head__icon svg {
+  width: 17px;
+  height: 17px;
+}
+.bx-ins-head__titles {
+  min-width: 0;
+  flex: 1;
 }
 .bx-ins-head h3 {
   margin: 0;
-  font-size: 14px;
-  font-weight: 650;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.bx-ins-head__sub {
+  display: block;
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  margin-top: 1px;
 }
 .bx-ins-kind {
   font-size: 10px;
@@ -837,6 +865,151 @@
   padding: 2px 6px;
   border-radius: 4px;
   background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+}
+
+/* ── Inspector cards (the property panel's grouped sections) ────────────────
+   Each editable group is a collapsible CARD floating on a recessed tray: an
+   icon chip + title + a one-line summary of its current values (so you can see
+   what's inside without opening it). The everyday cards (Content, Style,
+   Layout) open by default; the rarer ones (Motion, Advanced) start collapsed.
+   Built on a native <details> so it's keyboard- + a11y-correct with no JS. */
+.bx-ins-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: var(--color-bg-subtle);
+}
+.bx-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  overflow: hidden;
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+.bx-card[open] {
+  box-shadow:
+    0 1px 2px rgba(16, 18, 33, 0.04),
+    0 4px 14px rgba(16, 18, 33, 0.05);
+}
+.bx-card__head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 11px 12px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.bx-card__head::-webkit-details-marker {
+  display: none;
+}
+.bx-card__head:hover .bx-card__title {
+  color: var(--module-active);
+}
+.bx-card__icon {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+}
+.bx-card__icon svg {
+  width: 15px;
+  height: 15px;
+}
+.bx-card--muted .bx-card__icon {
+  background: var(--color-bg-muted, var(--color-bg-subtle));
+  color: var(--color-text-muted);
+}
+.bx-card__titles {
+  flex: 1;
+  min-width: 0;
+}
+.bx-card__title {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: color 0.12s ease;
+}
+.bx-card__summary {
+  display: block;
+  margin-top: 1px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bx-card[open] .bx-card__summary {
+  display: none;
+}
+.bx-card__chev {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  color: var(--color-text-muted);
+  transition: transform 0.18s ease;
+}
+.bx-card[open] .bx-card__chev {
+  transform: rotate(180deg);
+}
+.bx-card__body {
+  padding: 3px 13px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.bx-card__caption {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+/* Data source — the de-jargoned binding control, folded into Content: a
+   "Type it in" / "Pull from your data" toggle (reuses .bx-seg), then the data
+   picker when "Pull" is active. Replaces the old standalone "DATA" group. */
+.bx-source {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bx-source__hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+.bx-source__picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 2px;
+}
+/* Responsive/state layer pill — the "Editing for" selector at the top of the
+   Layout / Appearance cards, kept quiet so it reads as a secondary control. */
+.bx-resp {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-subtle, var(--color-border-default));
+}
+.bx-resp__hint {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.4;
   color: var(--color-text-muted);
 }
 .bx-ins-retype {
@@ -1346,6 +1519,12 @@
   width: 100%;
   max-width: 1200px;
   align-self: flex-start;
+  /* Always fill the stage. `min-height` (not height) so a SHORT document — a
+     three-block email, a stub page — reads as a full sheet instead of a small
+     card adrift in the stage, while a TALL one still grows past the fold and
+     scrolls. 100% resolves against the scroll's content box (it has a definite
+     height up the grid chain), so the padding never forces a phantom scrollbar. */
+  min-height: 100%;
   background: var(--bxc-bg);
   color: var(--bxc-fg);
   border: 1px solid var(--color-border-default);
@@ -1357,6 +1536,274 @@
      utilities respond to the canvas WIDTH — which the device switcher fixes — so
      the preview reflows exactly as production does, no iframe + no JS. */
   container-type: inline-size;
+}
+
+/* ── Canvas framing (browser window · device bezel · email envelope) ──────────
+ * The preview is wrapped so it reads as the thing it IS — a live site (browser /
+ * device chrome) or an email (inbox envelope). The frame is CHROME: aria-hidden,
+ * never selectable, never a node. Each variant is a flex column pinned to the
+ * stage height (the same `min-height: 100%` fill the bare canvas uses), so a
+ * short document fills instead of floating and a tall one grows + scrolls.
+ * `bx-canvas-scroll` already centers its single child + handles the scroll. */
+
+/* Inside any frame the canvas sheds its standalone card chrome — the frame is the
+   container now. */
+.bx-browser .bx-canvas,
+.bx-bezel .bx-canvas,
+.bx-envelope .bx-canvas {
+  align-self: stretch;
+  width: 100%;
+  min-height: 0;
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+/* Site/page: the canvas fills the frame body. `flex: 1 0 auto` takes the slack on
+   a short page yet never shrinks (it would clip under `overflow: hidden`). */
+.bx-browser .bx-canvas,
+.bx-bezel .bx-canvas {
+  flex: 1 0 auto;
+}
+/* Email: the message is its natural height; the reading pane (the stage) fills. */
+.bx-envelope .bx-canvas {
+  flex: 0 0 auto;
+}
+
+/* Browser window — site/page · desktop. */
+.bx-browser {
+  align-self: flex-start;
+  min-height: 100%;
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bxc-bg, #fff);
+  border: 1px solid var(--color-border-strong, var(--color-border-default));
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+}
+.bx-browser__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 38px;
+  padding: 0 12px;
+  background: color-mix(in srgb, var(--color-bg-subtle) 65%, #fff);
+  border-bottom: 1px solid var(--color-border-default);
+}
+.bx-browser__dots {
+  display: inline-flex;
+  gap: 7px;
+  flex: none;
+}
+.bx-browser__dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--color-border-strong, var(--color-border-default));
+}
+.bx-browser__url {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 24px;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 12px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: 999px;
+  font: 400 12px/1 var(--bx-mono);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.bx-browser__url svg {
+  width: 11px;
+  height: 11px;
+  color: #15803d;
+  flex: none;
+}
+.bx-browser__host {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bx-browser__path {
+  color: var(--color-text-default);
+}
+
+/* Device bezel — site/page · tablet / mobile. The SCREEN is sized to the exact
+   device width (so `.bx-canvas`'s container query still reads 390 / 834); the
+   physical bezel adds around it. */
+.bx-bezel {
+  align-self: flex-start;
+  min-height: 100%;
+  /* Never exceed the stage. When the device width (834 tablet / 390 mobile) is
+     wider than the available stage — common with both sidebars open — the bezel +
+     screen cap to the stage instead of running off the right edge. `min-width: 0`
+     is essential: the screen's fixed pixel width would otherwise set the bezel's
+     auto min-content and defeat `max-width` (the flexbox min-width:auto trap). The
+     canvas's container query then reads the actual rendered width. */
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  background: #1c1b19;
+  border-radius: 40px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+.bx-bezel--tablet {
+  border-radius: 28px;
+}
+.bx-bezel__status {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 22px 6px;
+  font: 500 11px var(--bx-sans);
+  color: #f3f1e8;
+}
+.bx-bezel__dots {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.bx-bezel__dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #f3f1e8;
+}
+.bx-bezel__screen {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--bxc-bg, #fff);
+  border-radius: 28px;
+}
+.bx-bezel--tablet .bx-bezel__screen {
+  border-radius: 16px;
+}
+
+/* Email envelope — the email surface. The head is the inbox client (neutral app
+   tokens, NOT the tenant brand); the stage is the reading pane; the artifact is
+   the actual send (wordmark · body · legal footer, themed via `.bx-canvas`). */
+.bx-envelope {
+  align-self: flex-start;
+  min-height: 100%;
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-strong, var(--color-border-default));
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+}
+.bx-envelope__head {
+  flex: none;
+  padding: 15px 20px 14px;
+  border-bottom: 1px solid var(--color-border-default);
+  background: color-mix(in srgb, var(--color-bg-subtle) 45%, var(--color-bg-surface));
+}
+.bx-envelope__subject {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-text-default);
+  margin-bottom: 11px;
+}
+.bx-envelope__row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 2px 0;
+  font-size: 12.5px;
+  color: var(--color-text-secondary);
+}
+.bx-envelope__lbl {
+  width: 22px;
+  color: var(--color-text-muted);
+  font: 500 10.5px var(--bx-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.bx-envelope__avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--module-active);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex: none;
+}
+.bx-envelope__who {
+  color: var(--color-text-default);
+  font-weight: 550;
+}
+.bx-envelope__addr {
+  color: var(--color-text-muted);
+  font: 400 11.5px var(--bx-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bx-envelope__stage {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  background: var(--color-bg-subtle);
+}
+.bx-envelope__artifact {
+  flex: none;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--bxc-border, var(--color-border-default));
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* The locked send chrome — wordmark header + legal footer the renderer supplies
+   on send (docs/52). They live INSIDE `.bx-canvas` so they inherit the tenant
+   brand vars (--bxc-*); they are plain divs, so they're never selectable nodes. */
+.bx-sendmark {
+  text-align: center;
+  padding: 18px;
+  font-family: var(--bxc-font-head);
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  color: var(--bxc-fg);
+  border-bottom: 1px solid var(--bxc-border);
+}
+.bx-sendfoot {
+  text-align: center;
+  padding: 16px 22px 20px;
+  border-top: 1px solid var(--bxc-border);
+  font-size: 11px;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--bxc-fg) 50%, transparent);
+}
+.bx-sendfoot__links {
+  text-decoration: underline;
 }
 
 .bx-node {

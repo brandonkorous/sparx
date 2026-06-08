@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { BindingCatalog, BuilderEmailDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
-import { getBrand, getConfig } from '../_brand/lib/api';
+import { getBrand, getConfig, getTenant } from '../_brand/lib/api';
 import { getEmailBindingCatalog, listEmails } from '../_lib/api';
 import { EmailBuilderApp } from '../_builder/email-builder-app';
 import '../builder.css';
@@ -61,11 +61,28 @@ async function loadCatalog(): Promise<BindingCatalog> {
   }
 }
 
+// The tenant's sending identity for the canvas inbox-envelope `From` row. The
+// name is the brand's business name; the address is the tenant's default Sparx
+// sending subdomain (`<slug>.sparx.email` — docs/13). Defensive: a failed read
+// yields a neutral label so the envelope still renders.
+async function loadSender(): Promise<{ name: string; address: string | null }> {
+  try {
+    const [brand, tenant] = await Promise.all([getBrand(), getTenant()]);
+    const trimmed = brand.businessName?.trim() ?? '';
+    const name = trimmed.length > 0 ? trimmed : 'Your store';
+    const address = tenant.slug ? `hello@${tenant.slug}.sparx.email` : null;
+    return { name, address };
+  } catch {
+    return { name: 'Your store', address: null };
+  }
+}
+
 export default async function BuilderEmailRoute() {
-  const [themeCss, emails, catalog] = await Promise.all([
+  const [themeCss, emails, catalog, sender] = await Promise.all([
     canvasThemeCss(),
     loadEmails(),
     loadCatalog(),
+    loadSender(),
   ]);
   if (emails.length === 0) {
     return (
@@ -79,7 +96,12 @@ export default async function BuilderEmailRoute() {
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
-      <EmailBuilderApp initialEmails={emails} bindingCatalog={catalog} />
+      <EmailBuilderApp
+        initialEmails={emails}
+        bindingCatalog={catalog}
+        senderName={sender.name}
+        senderAddress={sender.address}
+      />
     </>
   );
 }

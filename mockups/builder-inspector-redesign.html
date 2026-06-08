@@ -1,0 +1,1005 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Builder inspector redesign — depth, separation, business-friendly groupings</title>
+    <!--
+      MOCKUP · Builder property panel (inspector) redesign — PROPOSAL
+      ──────────────────────────────────────────────────────────────────────────
+      The right pane of /builder/page · /builder/site · /builder/email. Today it
+      reads "developer-ish": inside-out order (Style/Data first, the actual
+      content last), leaked jargon (docs/47, "Surface recipe", "written as
+      classes", "Not bound", raw flexbox words), and zero depth — every group is
+      an identical flat stripe.
+
+      This locks a NEW look + grouping before wiring it into inspector.tsx:
+        · CONTENT-FIRST order — what it says / where it links comes first.
+        · Collapsible CARDS with an icon chip, a title, and a live summary of the
+          current values (so you know what's inside without opening it).
+        · Depth via recessed panel + raised cards + soft shadow on the open one;
+          separation via real gaps, not hairlines.
+        · De-jargoned copy throughout (humans, not CSS).
+
+      Toggle BEFORE/AFTER and BUTTON/SECTION to compare. Tokens mirror the real
+      dashboard chrome (platform neutrals + Builder indigo).
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;450;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0a0a0a;
+        --t2: #52525b;
+        --t3: #a1a1aa;
+        --surface: #ffffff;
+        --subtle: #f4f4f5;
+        --page: #fafafa;
+        --recess: #f1f1f3;
+        --border: #e7e7ea;
+        --border-strong: #d6d6da;
+        --module: #6366f1; /* Builder indigo */
+        --module-12: color-mix(in srgb, var(--module) 12%, transparent);
+        --module-soft: color-mix(in srgb, var(--module) 9%, transparent);
+        --danger: #dc2626;
+        --mono: 'Geist Mono', ui-monospace, monospace;
+        --sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+        --shadow-card: 0 1px 2px rgba(16, 18, 33, 0.04), 0 4px 14px rgba(16, 18, 33, 0.05);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--sans);
+        color: var(--ink);
+        background: #e9e9ee;
+        -webkit-font-smoothing: antialiased;
+        padding: 28px;
+      }
+
+      /* ── Page chrome ───────────────────────────────────────────────── */
+      .head {
+        max-width: 1080px;
+        margin: 0 auto 20px;
+      }
+      .head h1 {
+        font-size: 19px;
+        font-weight: 650;
+        letter-spacing: -0.02em;
+        margin: 0 0 4px;
+      }
+      .head p {
+        margin: 0;
+        color: var(--t2);
+        font-size: 13.5px;
+        line-height: 1.5;
+        max-width: 760px;
+      }
+      .controls {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        margin: 16px 0 0;
+        flex-wrap: wrap;
+      }
+      .switch {
+        display: inline-flex;
+        background: #fff;
+        border: 1px solid var(--border-strong);
+        border-radius: 9px;
+        padding: 3px;
+        gap: 3px;
+      }
+      .switch button {
+        border: 0;
+        background: none;
+        font: inherit;
+        font-size: 12.5px;
+        font-weight: 550;
+        color: var(--t2);
+        padding: 5px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .switch button[data-on='true'] {
+        background: var(--module);
+        color: #fff;
+      }
+      .switch-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--t3);
+        font-weight: 700;
+        margin-right: 8px;
+      }
+
+      .stage {
+        max-width: 1080px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+        align-items: start;
+      }
+      .col-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        color: var(--t3);
+        margin: 0 0 8px 4px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .col-title .tag {
+        font-size: 10px;
+        padding: 1px 7px;
+        border-radius: 999px;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        font-weight: 600;
+      }
+      .tag--bad {
+        background: #fdecec;
+        color: #b42318;
+      }
+      .tag--good {
+        background: #e7f6ec;
+        color: #1a7f37;
+      }
+
+      /* The panel — a real-height inspector column. */
+      .panel {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--surface);
+        overflow: hidden;
+        box-shadow: var(--shadow-card);
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+         BEFORE — faithful-enough replica of today's flat inspector
+         ════════════════════════════════════════════════════════════════ */
+      .b-head {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+      }
+      .b-head__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .b-head__row h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 650;
+      }
+      .b-kind {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: var(--subtle);
+        color: var(--t3);
+      }
+      .b-input,
+      .b-select,
+      .b-area {
+        width: 100%;
+        font: inherit;
+        font-size: 13px;
+        color: var(--ink);
+        border: 1px solid var(--border-strong);
+        border-radius: 8px;
+        padding: 7px 10px;
+        background: #fff;
+        margin-top: 8px;
+      }
+      .b-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 9px center;
+      }
+      .b-saveas {
+        width: 100%;
+        margin-top: 8px;
+        padding: 6px 10px;
+        border: 1px dashed var(--border-strong);
+        border-radius: 7px;
+        background: none;
+        color: var(--t2);
+        font: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .b-grp {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+      }
+      .b-grp__label {
+        margin: 0 0 10px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--t3);
+        font-weight: 700;
+      }
+      .b-grp__cap {
+        margin: -4px 0 12px;
+        font-size: 11px;
+        color: var(--t3);
+        font-style: italic;
+        line-height: 1.4;
+      }
+      .b-field {
+        margin-bottom: 12px;
+      }
+      .b-field:last-child {
+        margin-bottom: 0;
+      }
+      .b-field__label {
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .b-adv {
+        padding: 13px 16px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        font-weight: 700;
+        color: var(--t3);
+        cursor: pointer;
+      }
+      .b-bind {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px;
+      }
+      .b-bind__path {
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 650;
+        color: var(--t3);
+        font-style: normal;
+      }
+
+      /* ════════════════════════════════════════════════════════════════
+         AFTER — collapsible cards, depth, content-first, de-jargoned
+         ════════════════════════════════════════════════════════════════ */
+      .a-panel {
+        background: var(--recess); /* recessed tray → cards float above it */
+      }
+      .a-head {
+        background: var(--surface);
+        padding: 14px 16px 16px;
+        border-bottom: 1px solid var(--border);
+      }
+      .a-head__top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .a-head__icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: grid;
+        place-items: center;
+        background: var(--module-12);
+        color: var(--module);
+        flex: none;
+      }
+      .a-head__icon svg {
+        width: 17px;
+        height: 17px;
+      }
+      .a-head__name {
+        flex: 1;
+        min-width: 0;
+      }
+      .a-head__name h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .a-head__name span {
+        font-size: 11.5px;
+        color: var(--t3);
+      }
+      .a-head__menu {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--t2);
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+      }
+      .a-rename {
+        width: 100%;
+        font: inherit;
+        font-size: 13px;
+        border: 1px solid var(--border-strong);
+        border-radius: 8px;
+        padding: 7px 10px;
+        margin-top: 11px;
+        background: #fff;
+      }
+      .a-rename::placeholder {
+        color: var(--t3);
+      }
+      .a-quick {
+        display: flex;
+        gap: 7px;
+        margin-top: 9px;
+      }
+      .a-quick button {
+        flex: 1;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 550;
+        color: var(--t2);
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+      .a-quick button:hover {
+        border-color: var(--module);
+        color: var(--module);
+      }
+      .a-quick svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      /* The card stack */
+      .a-stack {
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        transition:
+          box-shadow 0.15s ease,
+          border-color 0.15s ease;
+      }
+      .card[data-open='true'] {
+        box-shadow: var(--shadow-card);
+      }
+      .card__head {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        width: 100%;
+        padding: 12px 13px;
+        background: none;
+        border: 0;
+        font: inherit;
+        cursor: pointer;
+        text-align: left;
+      }
+      .card__icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        flex: none;
+        background: var(--chip-bg, var(--subtle));
+        color: var(--chip-fg, var(--t2));
+      }
+      .card__icon svg {
+        width: 15px;
+        height: 15px;
+      }
+      .card__titles {
+        flex: 1;
+        min-width: 0;
+      }
+      .card__title {
+        font-size: 13.5px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        display: block;
+      }
+      .card__summary {
+        font-size: 12px;
+        color: var(--t3);
+        display: block;
+        margin-top: 1px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .card[data-open='true'] .card__summary {
+        display: none;
+      }
+      .card__chev {
+        width: 16px;
+        height: 16px;
+        color: var(--t3);
+        flex: none;
+        transition: transform 0.18s ease;
+      }
+      .card[data-open='true'] .card__chev {
+        transform: rotate(180deg);
+      }
+      .card__body {
+        padding: 2px 14px 16px;
+        display: none;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .card[data-open='true'] .card__body {
+        display: flex;
+      }
+      .card--advanced .card__icon {
+        --chip-bg: var(--subtle);
+        --chip-fg: var(--t3);
+      }
+
+      /* Fields inside the After cards */
+      .f {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .f__label {
+        font-size: 12px;
+        font-weight: 550;
+        color: var(--ink);
+      }
+      .f__hint {
+        font-size: 11px;
+        color: var(--t3);
+        line-height: 1.4;
+      }
+      .inp,
+      .sel {
+        width: 100%;
+        font: inherit;
+        font-size: 13px;
+        color: var(--ink);
+        border: 1px solid var(--border-strong);
+        border-radius: 8px;
+        padding: 8px 10px;
+        background: #fff;
+      }
+      .inp::placeholder {
+        color: var(--t3);
+      }
+      .sel {
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 9px center;
+      }
+      .inp-icon {
+        position: relative;
+      }
+      .inp-icon svg {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 14px;
+        height: 14px;
+        color: var(--t3);
+      }
+      .inp-icon .inp {
+        padding-left: 32px;
+      }
+
+      /* Segmented control (breaks the all-dropdown monotony) */
+      .seg {
+        display: flex;
+        gap: 3px;
+        background: var(--recess);
+        padding: 3px;
+        border-radius: 9px;
+      }
+      .seg button {
+        flex: 1;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 550;
+        color: var(--t2);
+        background: none;
+        border: 0;
+        border-radius: 6px;
+        padding: 6px 4px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+      .seg button[data-on='true'] {
+        background: #fff;
+        color: var(--module);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+      .seg svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      /* Color swatch row */
+      .swatches {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .sw {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+        position: relative;
+      }
+      .sw[data-on='true'] {
+        border-color: #fff;
+        box-shadow:
+          inset 0 0 0 1px rgba(0, 0, 0, 0.08),
+          0 0 0 2px var(--module);
+      }
+
+      /* "Where it comes from" — the de-jargoned data affordance */
+      .source {
+        border: 1px dashed var(--border-strong);
+        border-radius: 10px;
+        padding: 4px;
+      }
+      .source__toggle {
+        display: flex;
+        gap: 3px;
+        background: var(--recess);
+        border-radius: 8px;
+        padding: 3px;
+      }
+      .source__toggle button {
+        flex: 1;
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 550;
+        color: var(--t2);
+        background: none;
+        border: 0;
+        border-radius: 6px;
+        padding: 6px;
+        cursor: pointer;
+      }
+      .source__toggle button[data-on='true'] {
+        background: #fff;
+        color: var(--module);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+      .source__hint {
+        font-size: 11px;
+        color: var(--t3);
+        padding: 8px 8px 5px;
+        line-height: 1.4;
+      }
+
+      .resp-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        align-self: flex-start;
+        font-size: 11.5px;
+        color: var(--t2);
+        background: var(--recess);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 4px 5px 4px 11px;
+      }
+      .resp-pill select {
+        appearance: none;
+        border: 0;
+        background: #fff;
+        border-radius: 999px;
+        font: inherit;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--module);
+        padding: 3px 22px 3px 10px;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2.5'><polyline points='6 9 12 15 18 9'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 6px center;
+      }
+      .row2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .note {
+        max-width: 1080px;
+        margin: 22px auto 0;
+        font-size: 12px;
+        color: var(--t2);
+        line-height: 1.6;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--module);
+        border-radius: 10px;
+        padding: 14px 16px;
+      }
+      .note b {
+        color: var(--ink);
+      }
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <h1>Builder property panel — redesign proposal</h1>
+      <p>
+        Same controls, re-presented for a business owner: content-first order, collapsible cards
+        with depth &amp; separation, and plain-language labels. Toggle below to compare against
+        today and to switch the selected block.
+      </p>
+      <div class="controls">
+        <span class="switch-label">View</span>
+        <div class="switch" id="view-switch">
+          <button data-view="after" data-on="true">After (proposed)</button>
+          <button data-view="before">Before (today)</button>
+          <button data-view="both">Side by side</button>
+        </div>
+        <span class="switch-label">Selected block</span>
+        <div class="switch" id="node-switch">
+          <button data-node="button" data-on="true">Button (leaf)</button>
+          <button data-node="section">Section (container)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage" id="stage">
+      <!-- columns injected by render() -->
+    </div>
+
+    <div class="note" id="note"></div>
+
+    <script>
+      // ── tiny icon set (lucide-style) ─────────────────────────────────
+      const I = {
+        type: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',
+        button:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="4"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
+        box: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>',
+        paint:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>',
+        layout:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>',
+        motion:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>',
+        sliders:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>',
+        link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+        chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+        more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>',
+        swap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>',
+        save: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
+        row: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="5" height="12" rx="1"/><rect x="10" y="6" width="5" height="12" rx="1"/><rect x="17" y="6" width="4" height="12" rx="1"/></svg>',
+        stack:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="5" rx="1"/><rect x="6" y="10" width="12" height="5" rx="1"/><rect x="6" y="17" width="12" height="4" rx="1"/></svg>',
+        grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+      };
+
+      // ── BEFORE column (today, replicated) ────────────────────────────
+      function beforeButton() {
+        return `
+        <div class="panel">
+          <div class="b-head">
+            <div class="b-head__row"><h3>Button</h3><span class="b-kind">LEAF</span></div>
+            <input class="b-input" placeholder="Button name" />
+            <select class="b-select"><option>Button — change to…</option></select>
+            <button class="b-saveas">▱ Save as component</button>
+          </div>
+          <div class="b-grp">
+            <h4 class="b-grp__label">STYLE</h4>
+            <p class="b-grp__cap">Color + variant from the Surface recipe (docs/47), written as classes.</p>
+            <div class="b-field"><span class="b-field__label">Color</span><select class="b-select"><option>Default</option></select></div>
+            <div class="b-field"><span class="b-field__label">Variant</span><select class="b-select"><option>Default</option></select></div>
+          </div>
+          <div class="b-adv"><span>ADVANCED</span>${I.chev}</div>
+          <div class="b-grp">
+            <h4 class="b-grp__label">DATA</h4>
+            <div class="b-bind"><span class="b-bind__path">Not bound</span>
+              <select class="b-select"><option>— Not bound (static) —</option></select>
+            </div>
+          </div>
+          <div class="b-grp">
+            <h4 class="b-grp__label">BUTTON</h4>
+            <div class="b-field"><span class="b-field__label">Label</span><input class="b-input" value="Get Mosaic free" /></div>
+            <div class="b-field"><span class="b-field__label">Link URL</span><input class="b-input" value="/" /></div>
+          </div>
+          <div class="b-grp">
+            <h4 class="b-grp__label">MOTION</h4>
+            <p class="b-grp__cap">How this element enters. "On scroll" plays it as the reader reaches it. Reduced motion is always respected.</p>
+            <div class="b-field"><span class="b-field__label">Entrance</span><select class="b-select"><option>None</option></select></div>
+          </div>
+        </div>`;
+      }
+      function beforeSection() {
+        return `
+        <div class="panel">
+          <div class="b-head">
+            <div class="b-head__row"><h3>Section</h3><span class="b-kind">CONTAINER</span></div>
+            <input class="b-input" value="Header" />
+            <select class="b-select"><option>Section — change to…</option></select>
+            <button class="b-saveas">▱ Save as component</button>
+          </div>
+          <div class="b-grp">
+            <h4 class="b-grp__label">STYLE</h4>
+            <p class="b-grp__cap">Color + variant from the Surface recipe (docs/47), written as classes.</p>
+            <div class="b-field"><span class="b-field__label">Color</span><select class="b-select"><option>Default</option></select></div>
+            <div class="b-field"><span class="b-field__label">Variant</span><select class="b-select"><option>Default</option></select></div>
+          </div>
+          <div class="b-adv"><span>ADVANCED</span>${I.chev}</div>
+          <div class="b-grp">
+            <h4 class="b-grp__label">DATA</h4>
+            <div class="b-bind"><span class="b-bind__path">Not bound</span>
+              <select class="b-select"><option>— Not bound (static) —</option></select>
+            </div>
+          </div>
+          <div class="b-grp">
+            <h4 class="b-grp__label">ARRANGEMENT</h4>
+            <p class="b-grp__cap">How this section lays out its children. Pick a screen size to make it responsive.</p>
+            <div class="b-field"><span class="b-field__label">Editing</span><select class="b-select"><option>Base</option></select></div>
+            <div class="b-field"><span class="b-field__label">Layout</span><select class="b-select"><option>Flex</option></select></div>
+            <div class="b-field"><span class="b-field__label">Direction</span><select class="b-select"><option>Stack</option></select></div>
+            <div class="b-field"><span class="b-field__label">Gap</span><select class="b-select"><option>Default</option></select></div>
+            <div class="b-field"><span class="b-field__label">Justify</span><select class="b-select"><option>Between</option></select></div>
+            <div class="b-field"><span class="b-field__label">Align</span><select class="b-select"><option>Center</option></select></div>
+            <div class="b-field"><span class="b-field__label">Padding</span><select class="b-select"><option>M</option></select></div>
+          </div>
+          <div class="b-grp">
+            <h4 class="b-grp__label">MOTION</h4>
+            <div class="b-field"><span class="b-field__label">Entrance</span><select class="b-select"><option>None</option></select></div>
+            <div class="b-field"><span class="b-field__label">Stagger children</span><select class="b-select"><option>Default</option></select></div>
+          </div>
+        </div>`;
+      }
+
+      // ── AFTER column (proposed) ──────────────────────────────────────
+      function card({ key, icon, title, summary, open, body, mod }) {
+        return `
+        <section class="card ${mod || ''}" data-open="${open ? 'true' : 'false'}">
+          <button class="card__head" onclick="this.parentElement.dataset.open = this.parentElement.dataset.open==='true' ? 'false':'true'">
+            <span class="card__icon">${icon}</span>
+            <span class="card__titles">
+              <span class="card__title">${title}</span>
+              <span class="card__summary">${summary}</span>
+            </span>
+            <span class="card__chev">${I.chev}</span>
+          </button>
+          <div class="card__body">${body}</div>
+        </section>`;
+      }
+
+      const swatchRow = `
+        <div class="swatches">
+          <span class="sw" data-on="true" style="background:#e7e7ea" title="Default"></span>
+          <span class="sw" style="background:#6366f1" title="Brand"></span>
+          <span class="sw" style="background:#3f6b52" title="Accent"></span>
+          <span class="sw" style="background:#0a0a0a" title="Ink"></span>
+          <span class="sw" style="background:#dc2626" title="Alert"></span>
+        </div>`;
+
+      const emphasisSeg = `
+        <div class="seg">
+          <button data-on="true">Solid</button><button>Soft</button>
+          <button>Outline</button><button>Text</button>
+        </div>`;
+
+      function afterHead(node) {
+        const meta =
+          node === 'button'
+            ? { icon: I.button, name: 'Button', sub: 'A clickable button' }
+            : { icon: I.box, name: 'Section', sub: 'A group that holds other blocks' };
+        return `
+        <div class="a-head">
+          <div class="a-head__top">
+            <span class="a-head__icon">${meta.icon}</span>
+            <span class="a-head__name"><h3>${meta.name}</h3><span>${meta.sub}</span></span>
+            <button class="a-head__menu" title="More — change type, duplicate, delete">${I.more}</button>
+          </div>
+          <input class="a-rename" placeholder="Give it a name (optional)" value="${node === 'section' ? 'Header' : ''}" />
+          <div class="a-quick">
+            <button>${I.swap} Change type</button>
+            <button>${I.save} Save as component</button>
+          </div>
+        </div>`;
+      }
+
+      function afterButton() {
+        const content = `
+          <div class="f">
+            <span class="f__label">Button text</span>
+            <input class="inp" value="Get Mosaic free" />
+          </div>
+          <div class="f">
+            <span class="f__label">Goes to</span>
+            <div class="inp-icon">${I.link}<input class="inp" value="/" placeholder="A page on your site, or a full web address" /></div>
+            <span class="f__hint">Where people land when they click.</span>
+          </div>
+          <div class="source">
+            <div class="source__toggle">
+              <button data-on="true">Type it in</button>
+              <button>Pull from your data</button>
+            </div>
+            <p class="source__hint">Use live data — a product name, a price — instead of fixed text.</p>
+          </div>`;
+        const style = `
+          <div class="f"><span class="f__label">Color</span>${swatchRow}</div>
+          <div class="f"><span class="f__label">Emphasis</span>${emphasisSeg}</div>`;
+        const motion = `
+          <div class="f">
+            <span class="f__label">When it appears</span>
+            <select class="sel"><option>Nothing — just show it</option><option>Fade in</option><option>Slide up</option><option>Zoom in</option></select>
+            <span class="f__hint">A subtle entrance as the reader scrolls to it.</span>
+          </div>`;
+        const adv = `
+          <div class="row2">
+            <div class="f"><span class="f__label">Size</span><select class="sel"><option>Default</option><option>Small</option><option>Large</option></select></div>
+            <div class="f"><span class="f__label">Outer spacing</span><select class="sel"><option>None</option><option>Small</option></select></div>
+          </div>
+          <div class="f"><span class="f__label">Custom classes</span><input class="inp" placeholder="Power users only" /><span class="f__hint">Advanced styling hooks. Most people never touch this.</span></div>`;
+        return `
+          ${afterHead('button')}
+          <div class="a-stack">
+            ${card({ icon: I.type, title: 'Content', summary: '“Get Mosaic free” → /', open: true, body: content })}
+            ${card({ icon: I.paint, title: 'Style', summary: 'Default · Solid', open: true, body: style })}
+            ${card({ icon: I.motion, title: 'Motion', summary: 'None', open: false, body: motion })}
+            ${card({ icon: I.sliders, title: 'Advanced', summary: 'Size, spacing, custom classes', open: false, body: adv, mod: 'card--advanced' })}
+          </div>`;
+      }
+
+      function afterSection() {
+        const content = `
+          <div class="source">
+            <div class="source__toggle">
+              <button data-on="true">Just these blocks</button>
+              <button>Repeat for each…</button>
+            </div>
+            <p class="source__hint">Show the blocks inside once, or repeat them for every product, post, or record.</p>
+          </div>`;
+        const style = `
+          <div class="f"><span class="f__label">Background</span>${swatchRow}</div>
+          <div class="f"><span class="f__label">Emphasis</span>${emphasisSeg}</div>`;
+        const layout = `
+          <span class="resp-pill">Editing for <select><option>Every screen</option><option>Phones</option><option>Tablets</option><option>On hover</option></select></span>
+          <div class="f">
+            <span class="f__label">Arrange items</span>
+            <div class="seg">
+              <button>${I.row} Row</button><button data-on="true">${I.stack} Stack</button><button>${I.grid} Grid</button>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="f"><span class="f__label">Space between</span><select class="sel"><option>Spread apart</option><option>Together (start)</option><option>Centered</option></select></div>
+            <div class="f"><span class="f__label">Line up</span><select class="sel"><option>Center</option><option>Top</option><option>Bottom</option></select></div>
+          </div>
+          <div class="row2">
+            <div class="f"><span class="f__label">Gap</span><select class="sel"><option>Default</option><option>Tight</option><option>Roomy</option></select></div>
+            <div class="f"><span class="f__label">Inner padding</span><select class="sel"><option>Medium</option><option>None</option><option>Large</option></select></div>
+          </div>`;
+        const motion = `
+          <div class="f"><span class="f__label">When it appears</span><select class="sel"><option>Nothing — just show it</option><option>Fade in</option><option>Slide up</option></select></div>
+          <div class="f"><span class="f__label">Reveal children one by one</span><select class="sel"><option>Off</option><option>Gentle</option><option>Snappy</option></select></div>`;
+        const adv = `
+          <div class="f"><span class="f__label">Custom classes</span><input class="inp" placeholder="Power users only" /><span class="f__hint">Advanced styling hooks. Most people never touch this.</span></div>`;
+        return `
+          ${afterHead('section')}
+          <div class="a-stack">
+            ${card({ icon: I.type, title: 'Content', summary: 'Just these blocks', open: true, body: content })}
+            ${card({ icon: I.paint, title: 'Style', summary: 'Default background', open: true, body: style })}
+            ${card({ icon: I.layout, title: 'Layout', summary: 'Stack · Spread apart', open: true, body: layout })}
+            ${card({ icon: I.motion, title: 'Motion', summary: 'None', open: false, body: motion })}
+            ${card({ icon: I.sliders, title: 'Advanced', summary: 'Custom classes', open: false, body: adv, mod: 'card--advanced' })}
+          </div>`;
+      }
+
+      // ── render ───────────────────────────────────────────────────────
+      let view = 'after';
+      let node = 'button';
+      const stage = document.getElementById('stage');
+      const noteEl = document.getElementById('note');
+
+      function colAfter() {
+        return `<div><p class="col-title">After <span class="tag tag--good">proposed</span></p><div class="a-panel-wrap">${node === 'button' ? afterButton() : afterSection()}</div></div>`;
+      }
+      function colBefore() {
+        return `<div><p class="col-title">Before <span class="tag tag--bad">today</span></p>${node === 'button' ? beforeButton() : beforeSection()}</div>`;
+      }
+      function wrapAfter(html) {
+        return `<div class="panel a-panel">${html}</div>`;
+      }
+
+      function render() {
+        // After panels need their own .panel wrapper around head+stack.
+        const afterCol = `<div><p class="col-title">After <span class="tag tag--good">proposed</span></p><div class="panel a-panel">${node === 'button' ? afterButton() : afterSection()}</div></div>`;
+        const beforeCol = colBefore();
+        if (view === 'after') {
+          stage.style.gridTemplateColumns = 'minmax(320px, 380px)';
+          stage.style.justifyContent = 'center';
+          stage.innerHTML = afterCol;
+        } else if (view === 'before') {
+          stage.style.gridTemplateColumns = 'minmax(320px, 380px)';
+          stage.style.justifyContent = 'center';
+          stage.innerHTML = beforeCol;
+        } else {
+          stage.style.gridTemplateColumns = '1fr 1fr';
+          stage.style.justifyContent = 'stretch';
+          stage.innerHTML = beforeCol + afterCol;
+        }
+        noteEl.innerHTML = `
+          <b>What changed:</b> &nbsp;1) <b>Content comes first</b> — the button text &amp; link, or the section's
+          repeat-for-each, are what you reach for, so they lead. &nbsp;2) <b>Every group is a card</b> with an icon
+          and a one-line summary of its current values, so you can see what's inside without opening it (the rare
+          ones — Motion, Advanced — start closed). &nbsp;3) <b>Plain language</b> — "Color + variant from the
+          Surface recipe (docs/47), written as classes" → just <i>Color</i> &amp; <i>Emphasis</i>; "Not bound" →
+          <i>"Type it in" / "Pull from your data"</i>; "Justify: Between" → <i>"Space between: Spread apart."</i>
+          &nbsp;4) <b>Depth</b> — cards float on a recessed tray with a soft shadow on the open one; controls vary
+          (swatches, segmented, inputs) instead of a wall of identical dropdowns.`;
+      }
+
+      document.getElementById('view-switch').addEventListener('click', (e) => {
+        const b = e.target.closest('button');
+        if (!b) return;
+        view = b.dataset.view;
+        document
+          .querySelectorAll('#view-switch button')
+          .forEach((x) => (x.dataset.on = x === b ? 'true' : 'false'));
+        render();
+      });
+      document.getElementById('node-switch').addEventListener('click', (e) => {
+        const b = e.target.closest('button');
+        if (!b) return;
+        node = b.dataset.node;
+        document
+          .querySelectorAll('#node-switch button')
+          .forEach((x) => (x.dataset.on = x === b ? 'true' : 'false'));
+        render();
+      });
+      render();
+    </script>
+  </body>
+</html>

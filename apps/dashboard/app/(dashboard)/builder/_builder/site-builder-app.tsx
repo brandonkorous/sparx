@@ -81,12 +81,17 @@ export interface SiteBuilderAppProps {
   /** The tenant's custom components with their latest trees (docs/53 P-B) — feeds
    *  the Add palette and the canvas's live expansion in the layout editor. */
   components?: ComponentDto[];
+  /** The active web property's live origin (docs/49) — shown in the canvas's
+   *  browser-frame address bar so the layout previews as the real site. Absent ⇒
+   *  the canvas renders unframed. */
+  siteOrigin?: string;
 }
 
 export function SiteBuilderApp({
   initialLayouts,
   bindingCatalog,
   components = [],
+  siteOrigin,
 }: SiteBuilderAppProps) {
   const router = useRouter();
   // The catalog loads from the server (list-or-seed) and seeds this state ONCE;
@@ -467,6 +472,7 @@ export function SiteBuilderApp({
           editor={editor}
           catalog={bindingCatalog}
           surface="site"
+          frame={siteOrigin ? { kind: 'browser', origin: siteOrigin, path: null } : undefined}
           components={componentsByKey}
           onSaveAsComponent={onSaveAsComponent}
           settings={<LayoutSettings name={editing.name} />}

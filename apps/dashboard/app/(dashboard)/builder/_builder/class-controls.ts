@@ -39,6 +39,18 @@ const COLOR_KEYS = [
 
 const TREATMENT_KEYS = ['solid', 'soft', 'outline', 'dashed', 'ghost', 'link', 'glass'] as const;
 
+// Plain-language labels for the treatment axis (the values/tokens are the class
+// contract; only the display text is humanized — docs UI redesign).
+const TREATMENT_LABELS: Record<string, string> = {
+  solid: 'Solid',
+  soft: 'Soft',
+  outline: 'Outline',
+  dashed: 'Dashed',
+  ghost: 'Subtle',
+  link: 'Text link',
+  glass: 'Frosted',
+};
+
 // The shared xs…xl size steps (docs/46 §3.6, docs/47 §11). Element-namespaced in
 // the recipe (e.g. a Button's size class is `sf-btn--sz-md`); `archetypeSizeBase`
 // reads the prefix off a node's archetype so one control drives whatever element
@@ -62,8 +74,12 @@ export const COLOR_CONTROL: ClassControl = {
 
 export const VARIANT_CONTROL: ClassControl = {
   id: 'variant',
-  label: 'Variant',
-  options: TREATMENT_KEYS.map((k) => ({ value: k, label: cap(k), token: `sf-v-${k}` })),
+  label: 'Emphasis',
+  options: TREATMENT_KEYS.map((k) => ({
+    value: k,
+    label: TREATMENT_LABELS[k] ?? cap(k),
+    token: `sf-v-${k}`,
+  })),
 };
 
 /** The controls rendered, in order, in the inspector's everyday Style panel. */
@@ -117,7 +133,7 @@ export const RADIUS_CONTROL: ClassControl = {
 
 export const MARGIN_CONTROL: ClassControl = {
   id: 'margin',
-  label: 'Margin',
+  label: 'Outer spacing',
   options: [
     { value: 'none', label: 'None', token: 'm-0' },
     { value: 'sm', label: 'S', token: 'm-2' },
@@ -353,10 +369,10 @@ export function applyMotion(classStr: string | undefined, next: MotionState): st
  *  activeValue/applyValue like any other control. Containers only. */
 export const STAGGER_CONTROL: ClassControl = {
   id: 'stagger',
-  label: 'Stagger children',
+  label: 'Reveal one by one',
   options: [
-    { value: 'subtle', label: 'Subtle', token: 'sf-reveal-stagger' },
-    { value: 'bold', label: 'Bold', token: 'sf-reveal-stagger--bold' },
+    { value: 'subtle', label: 'Gentle', token: 'sf-reveal-stagger' },
+    { value: 'bold', label: 'Snappy', token: 'sf-reveal-stagger--bold' },
   ],
 };
 
@@ -464,7 +480,7 @@ export const COLUMNS_CONTROL: ClassControl = {
 
 export const GAP_CONTROL: ClassControl = {
   id: 'gap',
-  label: 'Gap',
+  label: 'Space between',
   options: [
     { value: 'none', label: 'None', token: 'gap-0' },
     { value: 'sm', label: 'S', token: 'gap-2' },
@@ -476,29 +492,29 @@ export const GAP_CONTROL: ClassControl = {
 
 export const JUSTIFY_CONTROL: ClassControl = {
   id: 'justify',
-  label: 'Justify',
+  label: 'Distribute',
   options: [
     { value: 'start', label: 'Start', token: 'justify-start' },
     { value: 'center', label: 'Center', token: 'justify-center' },
     { value: 'end', label: 'End', token: 'justify-end' },
-    { value: 'between', label: 'Between', token: 'justify-between' },
+    { value: 'between', label: 'Spread apart', token: 'justify-between' },
   ],
 };
 
 export const ALIGN_ITEMS_CONTROL: ClassControl = {
   id: 'items',
-  label: 'Align',
+  label: 'Line up',
   options: [
     { value: 'start', label: 'Start', token: 'items-start' },
     { value: 'center', label: 'Center', token: 'items-center' },
     { value: 'end', label: 'End', token: 'items-end' },
-    { value: 'stretch', label: 'Stretch', token: 'items-stretch' },
+    { value: 'stretch', label: 'Fill', token: 'items-stretch' },
   ],
 };
 
 export const PADDING_CONTROL: ClassControl = {
   id: 'padding',
-  label: 'Padding',
+  label: 'Inner spacing',
   options: [
     { value: 'none', label: 'None', token: 'p-0' },
     { value: 'sm', label: 'S', token: 'p-3' },

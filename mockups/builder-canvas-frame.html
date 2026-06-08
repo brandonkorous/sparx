@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Builder canvas framing — browser window · device bezel · email envelope</title>
+    <!--
+      MOCKUP · Builder canvas framing (proposal)
+      ──────────────────────────────────────────────────────────────────────────
+      Locks the LOOK before wiring it into BuilderWorkspace / Canvas. Three states,
+      one shared editor stage (rail · stage · inspector — the real .bx-* chrome):
+
+        1. SITE / PAGE · Desktop  → a browser window frame (traffic lights + an
+           address pill showing the property origin + page slug). Reads as the
+           real site.
+        2. SITE / PAGE · Mobile   → a device bezel instead of a desktop browser
+           bar (a desktop URL bar around a 390px canvas looks wrong). Tablet is
+           the same bezel, wider.
+        3. EMAIL                  → an inbox envelope (From · To · Subject) wrapping
+           the branded send artifact (wordmark header · body · legal footer), so it
+           stops reading as "another page preview".
+
+      Every frame FILLS the stage (the min-height:100% fix) — no short card adrift
+      in a void. The frame is CHROME, not a node: non-selectable, non-clickable.
+      Colors/spacing come from docs/sparx-design-tokens.css. The previewed content
+      uses the canvas's built-in studio brand (warm paper + fern green), same as
+      the real .bx-canvas fallback.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Iowan+Old+Style&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* platform neutrals (tokens.css) */
+        --ink: #0a0a0a;
+        --t2: #52525b;
+        --t3: #a1a1aa;
+        --surface: #ffffff;
+        --subtle: #f4f4f5;
+        --page: #fafafa;
+        --border: #e5e5e5;
+        --border-strong: #d4d4d8;
+        --module-active: #6366f1; /* Builder = indigo (editor chrome accent) */
+
+        /* the canvas's studio brand (builder.css .bx-canvas fallbacks) */
+        --bxc-bg: #fcfbf7;
+        --bxc-fg: #23211c;
+        --bxc-subtle: #f1efe6;
+        --bxc-muted: #e6e1d3;
+        --bxc-border: #e3dfd2;
+        --bxc-primary: #3f6b52;
+        --bxc-primary-fg: #ffffff;
+        --bxc-inverse-bg: #21342a;
+        --bxc-inverse-fg: #f3f1e8;
+        --bxc-head: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+
+        --mono: 'Geist Mono', ui-monospace, monospace;
+        --sans: 'Geist', system-ui, -apple-system, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      body {
+        font-family: var(--sans);
+        color: var(--ink);
+        background: var(--page);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Mockup scaffold (not part of the product) ────────────────────────── */
+      .scaffold {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 28px 24px 64px;
+      }
+      .scaffold__head {
+        margin-bottom: 18px;
+      }
+      .scaffold__kicker {
+        font: 500 11px/1 var(--mono);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--module-active);
+      }
+      .scaffold__title {
+        margin: 8px 0 4px;
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .scaffold__sub {
+        margin: 0;
+        font-size: 13.5px;
+        color: var(--t2);
+        max-width: 70ch;
+      }
+      .switch {
+        display: inline-flex;
+        gap: 4px;
+        margin: 18px 0 14px;
+        padding: 4px;
+        background: var(--subtle);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+      }
+      .switch button {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        font: 500 12.5px var(--sans);
+        color: var(--t2);
+        padding: 7px 14px;
+        border-radius: 7px;
+        cursor: pointer;
+      }
+      .switch button[aria-pressed='true'] {
+        background: var(--surface);
+        color: var(--module-active);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+
+      /* ── Editor shell (faithful slice of the real .bx-* chrome) ───────────── */
+      .ed {
+        height: 720px;
+        display: grid;
+        grid-template-rows: auto auto minmax(0, 1fr);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow-md, 0 2px 8px rgba(0, 0, 0, 0.08));
+      }
+      .ed__toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        height: 48px;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--border);
+      }
+      .ed__sel {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 30px;
+        padding: 0 12px;
+        border: 1px solid var(--border-strong);
+        border-radius: 8px;
+        font-size: 13px;
+        color: var(--ink);
+        background: var(--surface);
+      }
+      .ed__sel svg {
+        width: 13px;
+        height: 13px;
+        color: var(--t3);
+      }
+      .ed__devices {
+        display: inline-flex;
+        gap: 2px;
+        padding: 3px;
+        background: var(--subtle);
+        border-radius: 9px;
+      }
+      .ed__device {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        width: 30px;
+        height: 26px;
+        border-radius: 7px;
+        color: var(--t3);
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+      }
+      .ed__device[aria-pressed='true'] {
+        background: var(--surface);
+        color: var(--module-active);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+      .ed__device svg {
+        width: 15px;
+        height: 15px;
+      }
+      .ed__actions {
+        display: inline-flex;
+        gap: 8px;
+      }
+      .ed__btn {
+        height: 30px;
+        padding: 0 12px;
+        border-radius: 8px;
+        font: 500 12.5px var(--sans);
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .ed__btn--solid {
+        background: var(--module-active);
+        border-color: var(--module-active);
+        color: #fff;
+      }
+      .ed__ctx {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--subtle);
+        font-size: 12px;
+      }
+      .ed__ctx b {
+        font-weight: 600;
+        color: var(--t2);
+      }
+      .ed__ctx span {
+        margin-left: auto;
+        font-style: italic;
+        color: var(--t3);
+        font-size: 11px;
+      }
+      .ed__body {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr) 280px;
+        min-height: 0;
+      }
+      .ed__rail {
+        border-right: 1px solid var(--border);
+        padding: 10px;
+        font-size: 12.5px;
+        color: var(--t2);
+      }
+      .ed__side {
+        border-left: 1px solid var(--border);
+        padding: 14px;
+        font-size: 12.5px;
+        color: var(--t3);
+      }
+      .ed__railtab {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 7px;
+        background: color-mix(in srgb, var(--module-active) 10%, transparent);
+        color: var(--module-active);
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .ed__layer {
+        padding: 6px 8px;
+        border-radius: 6px;
+        color: var(--ink);
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .ed__layer small {
+        color: var(--t3);
+        font: 400 11px var(--mono);
+      }
+
+      /* THE STAGE — the gray working area the frame fills (.bx-stage). */
+      .stage {
+        position: relative;
+        background: var(--subtle);
+        overflow: auto;
+        padding: 24px;
+        display: flex;
+        justify-content: center;
+      }
+      /* every frame variant fills the stage height — the min-height:100% fix */
+      .frame {
+        align-self: flex-start;
+        min-height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── 1 · Browser window (site/page · desktop) ─────────────────────────── */
+      .browser {
+        max-width: 1100px;
+        margin: 0 auto;
+        border: 1px solid var(--border-strong);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--bxc-bg);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+      }
+      .browser__bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        height: 38px;
+        padding: 0 12px;
+        background: #f3f2ee;
+        border-bottom: 1px solid var(--bxc-border);
+      }
+      .browser__dots {
+        display: inline-flex;
+        gap: 7px;
+      }
+      .browser__dots i {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #d7d4cc;
+      }
+      .browser__url {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        height: 24px;
+        padding: 0 12px;
+        max-width: 460px;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid var(--bxc-border);
+        border-radius: 999px;
+        font: 400 12px var(--mono);
+        color: var(--t2);
+      }
+      .browser__url svg {
+        width: 11px;
+        height: 11px;
+        color: #15803d;
+      }
+      .browser__url .slug {
+        color: var(--ink);
+      }
+
+      /* ── 2 · Device bezel (site/page · mobile / tablet) ───────────────────── */
+      .bezel {
+        margin: 6px auto;
+        width: 392px;
+        background: #1c1b19;
+        border-radius: 40px;
+        padding: 12px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+        align-self: center;
+      }
+      .bezel--tablet {
+        width: 640px;
+        border-radius: 28px;
+      }
+      .bezel__screen {
+        background: var(--bxc-bg);
+        border-radius: 28px;
+        overflow: hidden;
+      }
+      .bezel--tablet .bezel__screen {
+        border-radius: 18px;
+      }
+      .bezel__status {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 22px 5px;
+        font: 500 11px var(--sans);
+        color: var(--bxc-fg);
+      }
+      .bezel__status .dots {
+        display: inline-flex;
+        gap: 4px;
+        align-items: center;
+      }
+      .bezel__status .dots b {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--bxc-fg);
+        display: inline-block;
+      }
+
+      /* ── 3 · Email envelope ───────────────────────────────────────────────── */
+      .envelope {
+        max-width: 720px;
+        margin: 0 auto;
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border-strong);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+      }
+      .envelope__head {
+        padding: 16px 20px 14px;
+        border-bottom: 1px solid var(--border);
+        background: #fbfbfc;
+      }
+      .envelope__subject {
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        margin: 0 0 12px;
+      }
+      .envelope__row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12.5px;
+        color: var(--t2);
+        padding: 3px 0;
+      }
+      .envelope__row .lbl {
+        width: 38px;
+        color: var(--t3);
+        font: 500 11px var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .envelope__row .who {
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .envelope__row .addr {
+        color: var(--t3);
+        font: 400 12px var(--mono);
+      }
+      .envelope__avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--bxc-primary);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 11px;
+        font-weight: 600;
+        margin-right: 2px;
+      }
+      .envelope__when {
+        margin-left: auto;
+        font: 400 11.5px var(--mono);
+        color: var(--t3);
+      }
+      /* the actual SENT artifact: wordmark header · body · legal footer */
+      .sent {
+        flex: 1;
+        background: var(--bxc-subtle);
+        padding: 24px;
+      }
+      .sent__inner {
+        max-width: 600px;
+        margin: 0 auto;
+        background: var(--bxc-bg);
+        border: 1px solid var(--bxc-border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .sent__chrome {
+        text-align: center;
+        padding: 18px;
+        font-size: 17px;
+        letter-spacing: -0.02em;
+        border-bottom: 1px solid var(--bxc-border);
+      }
+      .sent__chrome b {
+        font-weight: 600;
+      }
+      .sent__chrome .x {
+        color: var(--module-active);
+      }
+      .sent__footer {
+        text-align: center;
+        padding: 16px 22px 22px;
+        border-top: 1px solid var(--bxc-border);
+        font-size: 11px;
+        line-height: 1.7;
+        color: #9a9588;
+      }
+      .sent__footer a {
+        color: var(--bxc-primary);
+        text-decoration: underline;
+      }
+      .chrome-note {
+        text-align: center;
+        font: 400 10.5px var(--mono);
+        color: #b6b1a4;
+        letter-spacing: 0.02em;
+        padding: 7px;
+        background: var(--bxc-subtle);
+      }
+
+      /* ── Previewed content (shared studio brand) ──────────────────────────── */
+      .site {
+        font-family: var(--sans);
+        color: var(--bxc-fg);
+      }
+      .site__nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 28px;
+        border-bottom: 1px solid var(--bxc-border);
+      }
+      .site__brand {
+        font-family: var(--bxc-head);
+        font-size: 19px;
+      }
+      .site__links {
+        display: flex;
+        gap: 20px;
+        font-size: 13px;
+        color: #6f6a5d;
+      }
+      .site__hero {
+        padding: 64px 28px 56px;
+        text-align: center;
+      }
+      .site__hero h1 {
+        font-family: var(--bxc-head);
+        font-size: 44px;
+        line-height: 1.05;
+        margin: 0 0 16px;
+        letter-spacing: -0.01em;
+      }
+      .site__hero p {
+        font-size: 16px;
+        color: #6f6a5d;
+        max-width: 46ch;
+        margin: 0 auto 26px;
+        line-height: 1.6;
+      }
+      .site__cta {
+        display: inline-block;
+        background: var(--bxc-primary);
+        color: var(--bxc-primary-fg);
+        padding: 12px 26px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .site__band {
+        background: var(--bxc-inverse-bg);
+        color: var(--bxc-inverse-fg);
+        padding: 40px 28px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+      }
+      .site__band h3 {
+        font-family: var(--bxc-head);
+        font-size: 17px;
+        margin: 0 0 6px;
+      }
+      .site__band p {
+        margin: 0;
+        font-size: 12.5px;
+        color: #c8d3cb;
+        line-height: 1.55;
+      }
+      /* mobile reflow inside the bezel */
+      .site--narrow .site__nav {
+        padding: 14px 18px;
+      }
+      .site--narrow .site__links {
+        display: none;
+      }
+      .site--narrow .site__burger {
+        font-size: 18px;
+        color: #6f6a5d;
+      }
+      .site--narrow .site__hero {
+        padding: 40px 20px 36px;
+      }
+      .site--narrow .site__hero h1 {
+        font-size: 30px;
+      }
+      .site--narrow .site__hero p {
+        font-size: 14px;
+      }
+      .site--narrow .site__band {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 28px 20px;
+      }
+
+      /* email body blocks */
+      .ebody {
+        padding: 30px 30px 8px;
+      }
+      .ebody h2 {
+        font-size: 26px;
+        margin: 0 0 12px;
+        letter-spacing: -0.01em;
+      }
+      .ebody p {
+        font-size: 14.5px;
+        line-height: 1.6;
+        color: #4a4639;
+        margin: 0 0 18px;
+      }
+      .ebody .btn {
+        display: inline-block;
+        background: var(--bxc-inverse-bg);
+        color: var(--bxc-inverse-fg);
+        padding: 11px 22px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 22px;
+      }
+      .ebody hr {
+        border: 0;
+        border-top: 1px solid var(--bxc-border);
+        margin: 6px 0 18px;
+      }
+      .ebody .muted {
+        color: #9a9588;
+        font-size: 13px;
+      }
+
+      .legend {
+        margin-top: 16px;
+        font-size: 12px;
+        color: var(--t2);
+        line-height: 1.7;
+      }
+      .legend b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="scaffold">
+      <div class="scaffold__head">
+        <div class="scaffold__kicker">Mockup · Builder canvas framing</div>
+        <h1 class="scaffold__title">The content area, framed for what it actually is</h1>
+        <p class="scaffold__sub">
+          One shared editor stage, three frames. A site/page reads as a real browser window; on a
+          phone it gets a device bezel instead of a desktop URL bar; an email becomes an inbox
+          message — From · To · Subject — wrapping the branded send artifact. Every frame fills the
+          stage, so nothing floats in a void.
+        </p>
+      </div>
+
+      <div class="switch" role="group" aria-label="Preview state">
+        <button data-state="desktop" aria-pressed="true">Site · Desktop</button>
+        <button data-state="tablet" aria-pressed="false">Site · Tablet</button>
+        <button data-state="mobile" aria-pressed="false">Site · Mobile</button>
+        <button data-state="email" aria-pressed="false">Email</button>
+      </div>
+
+      <!-- The editor shell -->
+      <div class="ed">
+        <!-- toolbar -->
+        <div class="ed__toolbar">
+          <div class="ed__sel">
+            <span id="tb-name">About</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+          <div class="ed__devices" id="tb-devices">
+            <button class="ed__device" data-dev="desktop" aria-pressed="true" aria-label="Desktop">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <path d="M8 21h8M12 17v4" />
+              </svg>
+            </button>
+            <button class="ed__device" data-dev="tablet" aria-pressed="false" aria-label="Tablet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="2" width="16" height="20" rx="2" />
+                <path d="M12 18h.01" />
+              </svg>
+            </button>
+            <button class="ed__device" data-dev="mobile" aria-pressed="false" aria-label="Mobile">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="6" y="2" width="12" height="20" rx="2" />
+                <path d="M12 18h.01" />
+              </svg>
+            </button>
+          </div>
+          <div class="ed__actions">
+            <button class="ed__btn">Preview</button>
+            <button class="ed__btn ed__btn--solid">Publish</button>
+          </div>
+        </div>
+
+        <!-- context bar -->
+        <div class="ed__ctx">
+          <b id="tb-ctx-lead">/about</b>
+          <span id="tb-ctx-note"
+            >Framed in your Site layout · header &amp; footer come from there</span
+          >
+        </div>
+
+        <!-- body -->
+        <div class="ed__body">
+          <aside class="ed__rail">
+            <span class="ed__railtab">Layers</span>
+            <div class="ed__layer" id="rail-root">⬚ Page</div>
+            <div class="ed__layer" style="padding-left: 22px">▤ Section <small>hero</small></div>
+            <div class="ed__layer" style="padding-left: 22px">▤ Section <small>band</small></div>
+          </aside>
+
+          <main class="stage" id="stage"><!-- frame injected here --></main>
+
+          <aside class="ed__side">Select a layer to edit it.</aside>
+        </div>
+      </div>
+
+      <p class="legend">
+        <b>Browser frame</b> — desktop only; the address pill shows the property origin + page slug
+        (the real URL this page ships to). &nbsp;<b>Device bezel</b> — replaces the URL bar on
+        tablet/mobile, with the page reflowing inside it. &nbsp;<b>Email envelope</b> —
+        From/To/Subject inbox chrome around the send artifact (wordmark header + body + legal
+        footer), the part that's "added automatically on send". The frame is chrome — never
+        selectable, never a node.
+      </p>
+    </div>
+
+    <script>
+      const SITE = (narrow) => `
+        <div class="site ${narrow ? 'site--narrow' : ''}">
+          <div class="site__nav">
+            <div class="site__brand">Wildgrove&nbsp;&amp;&nbsp;Co.</div>
+            ${
+              narrow
+                ? '<div class="site__burger">≡</div>'
+                : '<div class="site__links"><span>Shop</span><span>Our story</span><span>Journal</span><span>Contact</span></div>'
+            }
+          </div>
+          <div class="site__hero">
+            <h1>Goods made to be kept.</h1>
+            <p>Small-batch homeware and tools, built from honest materials and meant to outlast the trend that sold them.</p>
+            <a class="site__cta" href="#">Shop the collection</a>
+          </div>
+          <div class="site__band">
+            <div><h3>Built once</h3><p>Every piece is overbuilt on purpose — repairable, refillable, re-soleable.</p></div>
+            <div><h3>Sourced near</h3><p>Materials from makers we can drive to, named on every tag.</p></div>
+            <div><h3>Kept long</h3><p>A lifetime guarantee that assumes you'll actually use the thing.</p></div>
+          </div>
+        </div>`;
+
+      const FRAMES = {
+        desktop: () => `
+          <div class="frame">
+            <div class="browser">
+              <div class="browser__bar">
+                <div class="browser__dots"><i></i><i></i><i></i></div>
+                <div class="browser__url">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                  wildgrove.sparx.site<span class="slug">/about</span>
+                </div>
+              </div>
+              ${SITE(false)}
+            </div>
+          </div>`,
+        tablet: () => `
+          <div class="frame" style="justify-content:center">
+            <div class="bezel bezel--tablet">
+              <div class="bezel__screen">
+                <div class="bezel__status"><span>9:41</span><span class="dots"><b></b><b></b><b></b></span></div>
+                ${SITE(false)}
+              </div>
+            </div>
+          </div>`,
+        mobile: () => `
+          <div class="frame" style="justify-content:center">
+            <div class="bezel">
+              <div class="bezel__screen">
+                <div class="bezel__status"><span>9:41</span><span class="dots"><b></b><b></b><b></b></span></div>
+                ${SITE(true)}
+              </div>
+            </div>
+          </div>`,
+        email: () => `
+          <div class="frame">
+            <div class="envelope">
+              <div class="envelope__head">
+                <h2 class="envelope__subject">Welcome to Wildgrove &amp; Co. 👋</h2>
+                <div class="envelope__row">
+                  <span class="lbl">From</span>
+                  <span class="envelope__avatar">W</span>
+                  <span class="who">Wildgrove &amp; Co.</span>
+                  <span class="addr">&lt;hello@wildgrove.sparx.email&gt;</span>
+                  <span class="envelope__when">9:41 AM</span>
+                </div>
+                <div class="envelope__row">
+                  <span class="lbl">To</span>
+                  <span class="who">Sample recipient</span>
+                  <span class="addr">&lt;you@example.com&gt;</span>
+                </div>
+              </div>
+              <div class="sent">
+                <div class="sent__inner">
+                  <div class="sent__chrome"><b>Wildgrove&nbsp;&amp;&nbsp;Co.</b></div>
+                  <div class="ebody">
+                    <h2>Welcome aboard 👋</h2>
+                    <p>Thanks for joining. We're glad you're here — here's what to do next.</p>
+                    <a class="btn" href="#">Get started</a>
+                    <hr />
+                    <p class="muted">Questions? Just reply to this email.</p>
+                  </div>
+                  <div class="sent__footer">
+                    Wildgrove &amp; Co. · 114 Mill Lane, Visalia, CA<br />
+                    <a href="#">Unsubscribe</a> · <a href="#">Manage preferences</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>`,
+      };
+
+      const stage = document.getElementById('stage');
+      const switchBtns = [...document.querySelectorAll('.switch button')];
+      const devBtns = [...document.querySelectorAll('#tb-devices .ed__device')];
+      const ctxLead = document.getElementById('tb-ctx-lead');
+      const ctxNote = document.getElementById('tb-ctx-note');
+      const tbName = document.getElementById('tb-name');
+      const railRoot = document.getElementById('rail-root');
+
+      function render(state) {
+        stage.innerHTML = FRAMES[state]();
+        switchBtns.forEach((b) =>
+          b.setAttribute('aria-pressed', String(b.dataset.state === state))
+        );
+        // mirror onto the toolbar's device switcher (email = no device)
+        const dev = state === 'email' ? null : state;
+        devBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.dev === dev)));
+        if (state === 'email') {
+          tbName.textContent = 'Welcome';
+          ctxLead.textContent = 'No subject yet';
+          ctxNote.textContent = 'Wordmark header & legal footer are added automatically on send';
+          railRoot.textContent = '✉ Email body';
+        } else {
+          tbName.textContent = 'About';
+          ctxLead.textContent = '/about';
+          ctxNote.textContent = 'Framed in your Site layout · header & footer come from there';
+          railRoot.textContent = '⬚ Page';
+        }
+      }
+
+      switchBtns.forEach((b) => b.addEventListener('click', () => render(b.dataset.state)));
+      devBtns.forEach((b) =>
+        b.addEventListener('click', () => b.dataset.dev && render(b.dataset.dev))
+      );
+      render('desktop');
+    </script>
+  </body>
+</html>
