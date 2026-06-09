@@ -102,6 +102,42 @@ export async function bulkTagProductsAction(
   });
 }
 
+// ─── Import / Export (B-2) ───────────────────────────────────────────────────
+
+export async function submitProductImportAction(
+  rows: Record<string, string>[],
+  options: { upsert: boolean; fileName: string }
+): Promise<ActionResult<{ jobId: string }>> {
+  return restAction(async () => {
+    const result = await api.post<{ jobId: string }>('/v1/commerce/products/import', {
+      rows,
+      options: { upsert: options.upsert },
+      fileName: options.fileName,
+    });
+    return result;
+  });
+}
+
+export async function getProductImportStatusAction(
+  jobId: string
+): Promise<ActionResult<{
+  status: string;
+  importedCount: number;
+  updatedCount: number;
+  errorCount: number;
+  rowCount: number;
+  rows: Array<{
+    rowIndex: number;
+    status: string;
+    naturalKey?: string | null;
+    errorMsg?: string | null;
+  }>;
+}>> {
+  return restAction(async () =>
+    api.get(`/v1/commerce/products/import/${jobId}`)
+  );
+}
+
 // ─── Product Wizard (B-1) ─────────────────────────────────────────────────
 // Multi-step creation: Basics → Pricing → Inventory (physical) → Review.
 // Creates the product row then the default variant in a single user action;

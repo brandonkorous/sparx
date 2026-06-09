@@ -320,6 +320,14 @@ export {
   type BulkAction,
 } from './components/data/bulk-action-bar';
 export {
+  ImportDialog,
+  type ImportDialogProps,
+  type ImportJobResult,
+  type ImportJobRow,
+  type ImportJobStatus,
+} from './components/data/import-dialog';
+export { ExportButton, type ExportButtonProps } from './components/data/export-button';
+export {
   Timeline,
   TimelineItem,
   TimelineTitle,

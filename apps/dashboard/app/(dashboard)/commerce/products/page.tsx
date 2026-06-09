@@ -7,6 +7,7 @@ import { getActivePropertyId, listProperties, type Property } from '@/lib/sites'
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ProductsSelectionTable } from './_components/products-selection-table';
+import { ProductsImportExport } from './_components/products-import-export';
 import { getUserPreferences } from '../../_shell/preferences';
 
 interface ProductListItem {
@@ -174,14 +175,17 @@ export default async function ProductsPage({ searchParams }: PageProps) {
           }
           description="Your catalog. Variants, options, fitment, and configurator templates hang off each product. Draft → Active publishes to the storefront; archived rows stay searchable but render as 410."
           actions={
-            <EntityCreateButton
-              entityType="product"
-              newHref="/commerce/products/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New
-            </EntityCreateButton>
+            <>
+              <ProductsImportExport />
+              <EntityCreateButton
+                entityType="product"
+                newHref="/commerce/products/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            </>
           }
         />
 

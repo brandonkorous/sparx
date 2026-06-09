@@ -1,0 +1,52 @@
+// Import jobs — background CSV import processing (docs/68 §8).
+//
+// Created by the REST API when a tenant submits a CSV file for bulk import.
+// The import-worker Cloud Run service receives the `import.job.created`
+// Pub/Sub event, processes rows from rawRows, and writes per-row results
+// back to import_job_rows.
+//
+// Jobs are retained 30 days then purged by a scheduled task.
+//
+// RLS: ENABLE + FORCE on both tables (see migration 20260713000000_import_jobs).
+
+model ImportJob {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String    @map("tenant_id") @db.Uuid
+  entityType    String    @map("entity_type") @db.VarChar(50)
+  status        String    @default("pending") @db.VarChar(20)
+  fileName      String?   @map("file_name") @db.VarChar(255)
+  rowCount      Int       @default(0) @map("row_count")
+  importedCount Int       @default(0) @map("imported_count")
+  updatedCount  Int       @default(0) @map("updated_count")
+  errorCount    Int       @default(0) @map("error_count")
+  options       Json      @default("{}")
+  rawRows       Json      @default("[]") @map("raw_rows")
+  actorId       String?   @map("actor_id") @db.Uuid
+  completedAt   DateTime? @map("completed_at") @db.Timestamptz
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  rows   ImportJobRow[]
+
+  @@index([tenantId], map: "import_jobs_tenant_idx")
+  @@index([tenantId, status], map: "import_jobs_tenant_status_idx")
+  @@map("import_jobs")
+}
+
+model ImportJobRow {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  jobId      String   @map("job_id") @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  rowIndex   Int      @map("row_index")
+  status     String   @db.VarChar(20)
+  naturalKey String?  @map("natural_key") @db.VarChar(255)
+  errorMsg   String?  @map("error_msg") @db.Text
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  job ImportJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId], map: "import_job_rows_job_idx")
+  @@index([tenantId], map: "import_job_rows_tenant_idx")
+  @@map("import_job_rows")
+}

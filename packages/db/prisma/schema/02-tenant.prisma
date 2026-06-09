@@ -247,6 +247,15 @@ model Tenant {
   // Onboarding (docs/65 Ph2) — per-tip progress rows shown for 7 days post-signup
   onboardingChecklist OnboardingChecklist[]
 
+  // Import jobs (docs/68 §8) — background CSV import processing
+  importJobs ImportJob[]
+
+  // B2B pricing (docs/10, docs/64) — pricing tiers and per-product overrides
+  b2bPricingTiers           B2bPricingTier[]
+  b2bTierProductOverrides   B2bTierProductOverride[]
+  b2bAccountProductOverrides B2bAccountProductOverride[]
+  b2bInvoices               B2bInvoice[]
+
   @@map("tenants")
 }
 

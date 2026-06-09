@@ -18,6 +18,7 @@ import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
 import { CustomersSelectionTable } from './_components/customers-selection-table';
+import { CustomersImportExport } from './_components/customers-import-export';
 import type { CustomerListRow } from './_components/customers-selection-table';
 
 // Typesense customer search document (the subset this list needs). Returned by
@@ -170,6 +171,7 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
               <Button asChild variant="outline">
                 <Link href="/crm/duplicates">Find duplicates</Link>
               </Button>
+              <CustomersImportExport />
               <EntityCreateButton
                 entityType="customer"
                 newHref="/crm/customers/new"

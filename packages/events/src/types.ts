@@ -102,11 +102,24 @@ export type EventType =
   // Emitted after a successful GoDaddy purchase + DNS configuration. The
   // domain-worker subscribes to poll DNS propagation and mark the domain active.
   | 'domain.purchased'
+  // ─── B2B (docs/10, docs/64 Ph2-Ph3) ────────────────────────────────────
+  // Quote lifecycle notifications.
+  | 'b2b.quote.submitted'
+  | 'b2b.quote.responded'
+  // Invoice / credit management notifications.
+  | 'b2b.invoice.created'
+  | 'b2b.invoice.overdue'
+  | 'b2b.account.credit_hold'
+  | 'b2b.account.suspended'
   // ─── Universal search (docs/39) ─────────────────────────────────────
   // Generic indexing signal: any module emits this post-commit so the
   // commerce-indexer (re)projects ONE entity into the universal `entities`
   // collection. One topic serves every entity type — no per-entity topic.
-  | 'search.entity.changed';
+  | 'search.entity.changed'
+  // ─── Import / Export (docs/68) ───────────────────────────────────────
+  // Emitted by api-rest when a tenant submits a CSV import job. Consumed by
+  // import-worker (Cloud Run) which processes rows and updates the job row.
+  | 'import.job.created';
 
 /** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
  *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */
@@ -206,4 +219,11 @@ export interface PaymentFailedPayload {
   failureCode: string | null;
   failureMessage: string | null;
   providerSlug: string;
+}
+
+/** Payload for `import.job.created`. Consumed by import-worker (Cloud Run) to
+ *  process CSV rows and write per-row results back to import_job_rows. */
+export interface ImportJobCreatedPayload {
+  jobId: string;
+  entityType: 'products' | 'customers' | 'b2b_accounts' | 'discounts';
 }
