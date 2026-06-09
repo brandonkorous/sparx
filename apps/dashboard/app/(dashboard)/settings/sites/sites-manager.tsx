@@ -333,7 +333,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
 
                     {/* Identity */}
                     <div>
-                      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+                      <p className="mb-2 text-xs font-medium tracking-wide text-[var(--color-text-muted)] uppercase">
                         Identity
                       </p>
                       <div className="grid gap-3 sm:grid-cols-3">
@@ -369,7 +369,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
 
                     {/* Typography */}
                     <div>
-                      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+                      <p className="mb-2 text-xs font-medium tracking-wide text-[var(--color-text-muted)] uppercase">
                         Typography
                       </p>
                       <div className="grid gap-3 sm:grid-cols-2">
@@ -396,7 +396,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
 
                     {/* Presentation */}
                     <div>
-                      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+                      <p className="mb-2 text-xs font-medium tracking-wide text-[var(--color-text-muted)] uppercase">
                         Surfaces
                       </p>
                       <div className="grid gap-3 sm:grid-cols-4">
