@@ -45,9 +45,9 @@ function decodeOidcEmail(authHeader: string | undefined): string | null {
   const [, payloadB64] = authHeader.slice(7).split('.');
   if (!payloadB64) return null;
   try {
-    const payload = JSON.parse(
-      Buffer.from(payloadB64, 'base64url').toString('utf8'),
-    ) as { email?: unknown };
+    const payload = JSON.parse(Buffer.from(payloadB64, 'base64url').toString('utf8')) as {
+      email?: unknown;
+    };
     return typeof payload.email === 'string' ? payload.email : null;
   } catch {
     return null;
@@ -132,7 +132,10 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise
 
   const event = parseDomainPurchasedEvent(parsed);
   if (!event) {
-    logger.warn({ messageId, raw: parsed }, 'message did not match domain.purchased schema; acking');
+    logger.warn(
+      { messageId, raw: parsed },
+      'message did not match domain.purchased schema; acking'
+    );
     res.statusCode = 204;
     res.end();
     return;
@@ -143,7 +146,10 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise
     res.statusCode = 204;
     res.end();
   } catch (err) {
-    logger.error({ err, messageId, domain: event.data.domain }, 'domain processing failed; returning 500 for Pub/Sub retry');
+    logger.error(
+      { err, messageId, domain: event.data.domain },
+      'domain processing failed; returning 500 for Pub/Sub retry'
+    );
     res.statusCode = 500;
     res.end();
   }

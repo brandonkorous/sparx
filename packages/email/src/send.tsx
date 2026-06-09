@@ -130,10 +130,7 @@ export async function renderTemplate(
         from: input.from ?? defaultFrom(),
         to: input.to,
         replyTo: input.replyTo,
-        subject: domainRenewalReminderSubject(
-          input.props.domainName,
-          input.props.daysUntilExpiry,
-        ),
+        subject: domainRenewalReminderSubject(input.props.domainName, input.props.daysUntilExpiry),
         html,
         text,
         templateId: 'domain-renewal-reminder',

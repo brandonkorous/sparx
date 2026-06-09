@@ -55,7 +55,10 @@ export async function runRenewalCheck(logger: Logger): Promise<{ processed: numb
         select: { email: true },
       });
       if (!tenant?.email) {
-        logger.warn({ domainId: domain.id, host: domain.host }, 'tenant email not found; skipping renewal reminder');
+        logger.warn(
+          { domainId: domain.id, host: domain.host },
+          'tenant email not found; skipping renewal reminder'
+        );
         continue;
       }
 
@@ -76,7 +79,7 @@ export async function runRenewalCheck(logger: Logger): Promise<{ processed: numb
               autoRenew: domain.autoRenew,
             },
           },
-          pubLogger,
+          pubLogger
         );
 
         await prisma.domain.update({

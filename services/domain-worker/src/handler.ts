@@ -41,7 +41,7 @@ export function parseDomainPurchasedEvent(raw: unknown): SparxEvent<DomainPurcha
 
 export async function handleDomainPurchased(
   event: SparxEvent<DomainPurchasedPayload>,
-  logger: Logger,
+  logger: Logger
 ): Promise<void> {
   const { domain, dnsConfigured } = event.data;
 
@@ -59,7 +59,10 @@ export async function handleDomainPurchased(
   // Only attempt when status is still pending_ssl (not yet tried by this worker).
   if (!dnsConfigured && row.status === 'pending_ssl') {
     if (!row.dkimPublicKey) {
-      logger.warn({ domain }, 'no DKIM public key on domain row; advancing to verifying without DNS retry');
+      logger.warn(
+        { domain },
+        'no DKIM public key on domain row; advancing to verifying without DNS retry'
+      );
       await prisma.domain.update({ where: { host: domain }, data: { status: 'verifying' } });
     } else {
       logger.info({ domain }, 'retrying GoDaddy DNS configuration');
@@ -69,7 +72,10 @@ export async function handleDomainPurchased(
         logger.info({ domain }, 'DNS configuration retry succeeded');
       } catch (err) {
         if (err instanceof GoDaddyError) {
-          logger.warn({ domain, httpStatus: err.status }, 'GoDaddy DNS config retry failed; triggering Pub/Sub retry');
+          logger.warn(
+            { domain, httpStatus: err.status },
+            'GoDaddy DNS config retry failed; triggering Pub/Sub retry'
+          );
         } else {
           logger.error({ domain, err }, 'unexpected error during DNS config retry');
         }

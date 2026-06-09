@@ -24,7 +24,7 @@ export interface DnsRecord {
 export class GoDaddyError extends Error {
   constructor(
     message: string,
-    public readonly status: number,
+    public readonly status: number
   ) {
     super(message);
     this.name = 'GoDaddyError';
