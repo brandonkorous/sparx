@@ -15,6 +15,7 @@ export * as inventoryService from './inventory-service';
 // Phase 3 — pricing + discounts
 export * as pricingService from './pricing-service';
 export * as discountService from './discount-service';
+export * as markupService from './markup-service';
 
 // Phase 4 — bundles + configurator
 export * as configuratorService from './configurator-service';
