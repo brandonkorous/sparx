@@ -60,6 +60,16 @@ function customerName(c: {
   return c.company ?? c.email ?? undefined;
 }
 
+/** Read a trimmed non-empty string out of an untyped JSON value, else undefined. */
+function pickString(v: unknown): string | undefined {
+  return typeof v === 'string' && v.trim().length > 0 ? v.trim() : undefined;
+}
+
+/** 'blog_post' → 'Blog Post' — a readable label for a content type key. */
+function humanizeTypeKey(k: string): string {
+  return k.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 // ─── commerce: warehouse ─────────────────────────────────────────────
 
 const warehouseProjector: EntityProjector = {
@@ -672,6 +682,121 @@ const cmsPageProjector: EntityProjector = {
     }),
 };
 
+// ─── sitebuilder: site (docs/39 Ph2 / docs/66 — multi-property) ──────
+// A tenant's web properties. Real-time via the site.* indexEntity calls in
+// the /v1/properties routes; reindex backfills regardless. Deep-links to the
+// sites management surface.
+
+const siteProjector: EntityProjector = {
+  entityType: 'site',
+  module: 'sitebuilder',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.property.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const p = await tx.property.findFirst({ where: { id } });
+      if (!p) return null;
+      return {
+        id: universalId(ctx.tenantId, 'site', p.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'site',
+        module: 'sitebuilder',
+        record_id: p.id,
+        title: p.name,
+        subtitle: p.isPrimary ? `${p.slug} · primary site` : p.slug,
+        keywords: keywords([p.slug]),
+        status: p.status, // active | paused | archived
+        url: '/settings/sites',
+        created_at: epoch(p.createdAt),
+        updated_at: epoch(p.updatedAt),
+      };
+    }),
+};
+
+// ─── cms: content entry (reindex-only, like cms_page) ─────────────────
+// Covers every ContentEntry typeKey EXCEPT `page` (the Page model is handled
+// by cmsPageProjector; ContentEntry `page` rows are legal-policy docs). Title
+// lives in the body JSON — there is no title column. Public search filters
+// status:='published'.
+
+const contentEntryProjector: EntityProjector = {
+  entityType: 'cms_entry',
+  module: 'cms',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.contentEntry.findMany({
+        where: { deletedAt: null, typeKey: { not: 'page' } },
+        select: { id: true },
+      });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const e = await tx.contentEntry.findFirst({ where: { id, deletedAt: null } });
+      if (!e || e.typeKey === 'page') return null;
+      const body = (e.body ?? {}) as Record<string, unknown>;
+      const title =
+        pickString(body.title) ??
+        pickString(body.name) ??
+        pickString(body.heading) ??
+        e.slug ??
+        `Untitled ${e.typeKey}`;
+      return {
+        id: universalId(ctx.tenantId, 'cms_entry', e.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'cms_entry',
+        module: 'cms',
+        record_id: e.id,
+        title,
+        subtitle: `${humanizeTypeKey(e.typeKey)} · ${e.status}`,
+        body: snippet(pickString(body.excerpt) ?? pickString(body.summary)),
+        keywords: keywords([e.slug, e.typeKey]),
+        status: e.status, // draft | published | scheduled | archived
+        url: `/cms/${e.id}`,
+        created_at: epoch(e.createdAt),
+        updated_at: epoch(e.updatedAt),
+      };
+    }),
+};
+
+// ─── cms: media asset (reindex-only) ──────────────────────────────────
+// Filename + alt-text + mime search for the ⌘K media-finder use case.
+
+const mediaProjector: EntityProjector = {
+  entityType: 'media',
+  module: 'cms',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.mediaAsset.findMany({
+        where: { deletedAt: null },
+        select: { id: true },
+      });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const m = await tx.mediaAsset.findFirst({ where: { id, deletedAt: null } });
+      if (!m) return null;
+      return {
+        id: universalId(ctx.tenantId, 'media', m.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'media',
+        module: 'cms',
+        record_id: m.id,
+        title: m.originalFilename,
+        subtitle: m.altText ?? m.mimeType,
+        keywords: keywords([m.mimeType, m.altText, m.caption]),
+        status: m.status, // uploading | ready | failed
+        url: `/cms/media/${m.id}`,
+        created_at: epoch(m.createdAt),
+        updated_at: epoch(m.updatedAt),
+      };
+    }),
+};
+
 /** Universal projectors contributed by Commerce + CRM. The commerce-indexer
  *  registers these into its projector registry (reindex + event dispatch). */
 export const commerceUniversalProjectors: EntityProjector[] = [
@@ -696,4 +821,8 @@ export const commerceUniversalProjectors: EntityProjector[] = [
   // Public storefront content (also powers global ⌘K)
   productProjector,
   cmsPageProjector,
+  // Site Builder + CMS breadth (docs/39 Ph2 / docs/66)
+  siteProjector,
+  contentEntryProjector,
+  mediaProjector,
 ];

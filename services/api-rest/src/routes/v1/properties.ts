@@ -35,6 +35,9 @@ import { ok } from '@sparx/api-core/envelope';
 import { notFound, conflict, validationError, paymentRequired } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
 import { isModuleEnabled } from '@sparx/auth';
+// Universal search (docs/39): a property IS a `site` entity. Re-index it after
+// each write so ⌘K stays live; indexEntity never throws into the handler.
+import { indexEntity } from '@sparx/events';
 import { mintZoneHost } from '../../lib/domain.js';
 import { PropertyBrandOverrideSchema, parseBrandOverride } from '../../lib/property-brand.js';
 
@@ -212,6 +215,12 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
         field: 'slug',
       });
     }
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'site',
+      recordId: row.property.id,
+    });
     return ok(toView(row.property));
   });
 
@@ -251,6 +260,12 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       return tx.property.update({ where: { id }, data });
     });
     if (!row) throw notFound('Property', id);
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'site',
+      recordId: id,
+    });
     return ok(toView(row));
   });
 
@@ -340,6 +355,14 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       return updated;
     });
     if (!row) throw notFound('Property', id);
+    // The promoted site's "primary" subtitle changed; the demoted one self-heals
+    // on its next write or a reindex.
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'site',
+      recordId: id,
+    });
     return ok(toView(row));
   });
 
@@ -369,6 +392,13 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
         field: 'isPrimary',
       });
     }
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'site',
+      recordId: id,
+      op: 'delete',
+    });
     return ok({ id });
   });
 };
