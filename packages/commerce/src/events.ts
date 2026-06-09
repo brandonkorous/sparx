@@ -73,6 +73,12 @@ export type CommerceTopic = Extract<
   | 'configuration.requested'
   | 'configuration.quoted'
   | 'configuration.accepted'
+  // B2B — emitted by checkout-service when a net-terms order auto-creates an invoice
+  | 'b2b.invoice.created'
+  // B2B — approval workflow (docs/64 Ph6)
+  | 'b2b.order.pending_approval'
+  | 'b2b.order.approved'
+  | 'b2b.order.rejected'
 >;
 
 export interface CommerceEventInput<T = Record<string, unknown>> {

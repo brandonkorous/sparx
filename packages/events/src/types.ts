@@ -111,6 +111,10 @@ export type EventType =
   | 'b2b.invoice.overdue'
   | 'b2b.account.credit_hold'
   | 'b2b.account.suspended'
+  // Approval workflow notifications (docs/64 B2B Ph6).
+  | 'b2b.order.pending_approval'
+  | 'b2b.order.approved'
+  | 'b2b.order.rejected'
   // ─── Universal search (docs/39) ─────────────────────────────────────
   // Generic indexing signal: any module emits this post-commit so the
   // commerce-indexer (re)projects ONE entity into the universal `entities`

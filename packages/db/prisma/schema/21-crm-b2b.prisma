@@ -12,7 +12,9 @@ model B2BAccount {
   companyName String  @map("company_name") @db.VarChar(255)
   taxId       String? @map("tax_id") @db.VarChar(64)
   website     String? @db.VarChar(2048)
-  pricingTier String? @map("pricing_tier") @db.VarChar(63)
+  // Legacy free-text tier name kept during the FK migration window.
+  pricingTier   String? @map("pricing_tier") @db.VarChar(63)
+  pricingTierId String? @map("pricing_tier_id") @db.Uuid
 
   creditLimit     Decimal @default(0) @map("credit_limit") @db.Decimal(12, 2)
   creditUsed      Decimal @default(0) @map("credit_used") @db.Decimal(12, 2)
@@ -32,8 +34,9 @@ model B2BAccount {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant      Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  assignedRep User?  @relation("B2BAccountAssignedRep", fields: [assignedRepId], references: [id], onDelete: SetNull)
+  tenant        Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  assignedRep   User?           @relation("B2BAccountAssignedRep", fields: [assignedRepId], references: [id], onDelete: SetNull)
+  pricingTierFk B2bPricingTier? @relation(fields: [pricingTierId], references: [id], onDelete: SetNull)
 
   customers  Customer[]
   deals      Deal[]
@@ -45,6 +48,12 @@ model B2BAccount {
   contractPrices   ContractPrice[]
   checkoutSessions CheckoutSession[]
   taxExemptions    TaxExemption[]
+
+  // B2B module inverse relations
+  productOverrides   B2bAccountProductOverride[]
+  invoices           B2bInvoice[]
+  contacts           B2bAccountContact[]
+  approvalRules      PurchaseApprovalRule[]
 
   @@index([tenantId, status])
   @@index([tenantId, assignedRepId])

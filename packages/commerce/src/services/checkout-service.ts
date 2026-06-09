@@ -21,6 +21,9 @@ import {
 } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
 import type { CheckoutSession, TxClient } from '@sparx/db';
+// purchaseApprovalRule not in generated types until migration 20260716000000 runs.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyTx = TxClient & Record<string, any>;
 
 import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
@@ -29,6 +32,17 @@ import { publishCommerceEvent } from '../events';
 
 import * as discountService from './discount-service';
 import * as providerService from './provider-service';
+
+function parseDueDays(paymentTerms: string | null | undefined): number {
+  if (!paymentTerms) return 30;
+  const m = paymentTerms.match(/^net(\d+)$/i);
+  return m?.[1] ? parseInt(m[1], 10) : 30;
+}
+
+async function nextInvoiceNumber(tx: TxClient, tenantId: string): Promise<string> {
+  const count = await tx.b2bInvoice.count({ where: { tenantId } });
+  return `INV-${(count + 1).toString().padStart(6, '0')}`;
+}
 
 const DEFAULT_SESSION_TTL_MIN = 60; // 1 hour
 
@@ -391,6 +405,32 @@ export async function complete(
       );
     }
 
+    // B2B credit enforcement: net-terms checkouts require available credit.
+    if (session.channel === 'b2b_portal' && session.b2bAccountId && session.paymentTermsRequested) {
+      const account = await tx.b2BAccount.findFirst({
+        where: { id: session.b2bAccountId, tenantId: ctx.tenantId },
+        select: { status: true, creditLimit: true, creditUsed: true, paymentTerms: true },
+      });
+      if (!account) {
+        throw new CommerceValidationError('B2B account not found');
+      }
+      if (account.status === 'credit_hold') {
+        throw new CommerceValidationError(
+          'Account is on credit hold — payment required before placing new orders'
+        );
+      }
+      if (account.status === 'suspended') {
+        throw new CommerceValidationError('Account is suspended — contact your account manager');
+      }
+      const available = Number(account.creditLimit) - Number(account.creditUsed);
+      const orderDollars = session.totalCents / 100;
+      if (orderDollars > available) {
+        throw new CommerceValidationError(
+          `Insufficient credit: $${available.toFixed(2)} available, $${orderDollars.toFixed(2)} required`
+        );
+      }
+    }
+
     const cart = session.cart;
 
     // CRM owns the customer spine. A storefront/guest checkout reaches here with
@@ -471,6 +511,61 @@ export async function complete(
       },
     });
 
+    // B2B approval gate: if an active rule covers this account + amount, hold the
+    // order for staff review instead of immediately placing it. The pending status
+    // blocks invoice creation and order.placed until approved (docs/64 B2B Ph6).
+    let pendingApproval = false;
+    if (session.channel === 'b2b_portal' && session.b2bAccountId) {
+      const rule = await (tx as AnyTx).purchaseApprovalRule.findFirst({
+        where: {
+          tenantId: ctx.tenantId,
+          isActive: true,
+          minAmountCents: { lte: session.totalCents },
+          OR: [{ accountId: session.b2bAccountId }, { accountId: null }],
+        },
+        select: { id: true },
+      });
+      if (rule) {
+        await tx.order.update({
+          where: { id: order.id },
+          data: { status: 'pending_approval' },
+        });
+        pendingApproval = true;
+      }
+    }
+
+    // B2B net-terms: auto-create invoice and sync credit_used.
+    // Skipped when the order is gated for approval — invoice creation runs
+    // inside the approval route once the order is approved.
+    let b2bInvoiceId: string | null = null;
+    if (
+      !pendingApproval &&
+      session.channel === 'b2b_portal' &&
+      session.b2bAccountId &&
+      session.paymentTermsRequested
+    ) {
+      const account = await tx.b2BAccount.findFirst({
+        where: { id: session.b2bAccountId, tenantId: ctx.tenantId },
+        select: { paymentTerms: true },
+      });
+      const dueDays = parseDueDays(account?.paymentTerms ?? session.paymentTermsRequested);
+      const dueAt = new Date();
+      dueAt.setDate(dueAt.getDate() + dueDays);
+      const invoiceNumber = await nextInvoiceNumber(tx, ctx.tenantId);
+      const invoice = await tx.b2bInvoice.create({
+        data: {
+          tenantId: ctx.tenantId,
+          accountId: session.b2bAccountId,
+          orderId: order.id,
+          invoiceNumber,
+          amountCents: session.totalCents,
+          dueAt,
+        },
+      });
+      await tx.$executeRaw`SELECT sync_b2b_credit_used(${session.b2bAccountId}::uuid)`;
+      b2bInvoiceId = invoice.id;
+    }
+
     // Mark the session completed + record the resulting order so the
     // idempotency-key short-circuit above can find it on retry.
     await tx.checkoutSession.update({
@@ -515,8 +610,28 @@ export async function complete(
       diff: { after: { orderId: order.id, orderNumber: order.orderNumber } },
     });
 
-    return { orderId: order.id, orderNumber: order.orderNumber };
+    return {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      b2bInvoiceId,
+      b2bAccountId: session.b2bAccountId ?? null,
+      pendingApproval,
+    };
   });
+
+  if (result.b2bInvoiceId) {
+    await publishCommerceEvent({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      topic: 'b2b.invoice.created',
+      data: {
+        invoiceId: result.b2bInvoiceId,
+        accountId: result.b2bAccountId,
+        orderId: result.orderId,
+        orderNumber: result.orderNumber,
+      },
+    });
+  }
 
   await publishCommerceEvent({
     tenantId: ctx.tenantId,
@@ -526,18 +641,34 @@ export async function complete(
       sessionId: input.sessionId,
       orderId: result.orderId,
       orderNumber: result.orderNumber,
+      pendingApproval: result.pendingApproval,
     },
   });
 
-  // Order placement is announced on the dedicated topic too so non-CRM
-  // consumers (inventory decrement, fulfillment dispatch, analytics)
-  // pick it up without subscribing to checkout.completed.
-  await publishCommerceEvent({
-    tenantId: ctx.tenantId,
-    actorId: ctx.userId ?? null,
-    topic: 'order.placed',
-    data: { orderId: result.orderId, orderNumber: result.orderNumber },
-  });
+  if (result.pendingApproval) {
+    // Order is held for staff review — emit the approval-queue signal instead of
+    // order.placed. Inventory and fulfillment listeners must NOT act until approved.
+    await publishCommerceEvent({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      topic: 'b2b.order.pending_approval',
+      data: {
+        orderId: result.orderId,
+        orderNumber: result.orderNumber,
+        b2bAccountId: result.b2bAccountId,
+      },
+    });
+  } else {
+    // Order placement is announced on the dedicated topic so non-CRM consumers
+    // (inventory decrement, fulfillment dispatch, analytics) pick it up without
+    // subscribing to checkout.completed.
+    await publishCommerceEvent({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      topic: 'order.placed',
+      data: { orderId: result.orderId, orderNumber: result.orderNumber },
+    });
+  }
 
   return result;
 }
