@@ -36,6 +36,7 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
       data-height={config.height}
       data-text={config.textColor}
       data-has-bg={bg ? 'true' : 'false'}
+      data-fullbleed={config.fullBleed ? 'true' : 'false'}
     >
       {isVideo ? (
         <video
@@ -54,7 +55,7 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
       {bg ? (
         <div className="sf-sb-hero__scrim" style={{ opacity: overlay }} aria-hidden="true" />
       ) : null}
-      <div className="sf-container sf-sb-hero__inner">
+      <div className={config.fullBleed ? 'sf-sb-hero__inner' : 'sf-container sf-sb-hero__inner'}>
         {config.eyebrow ? <p className="sf-sb-hero__eyebrow">{config.eyebrow}</p> : null}
         {config.heading ? <h1 className="sf-sb-hero__title">{config.heading}</h1> : null}
         {config.subheading ? <p className="sf-sb-hero__sub">{config.subheading}</p> : null}

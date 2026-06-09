@@ -1,6 +1,7 @@
 export type {
   EventType,
   SparxEvent,
+  DomainPurchasedPayload,
   EmailSendPayload,
   SearchEntityChangedPayload,
   TenantCreatedPayload,

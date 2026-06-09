@@ -65,6 +65,7 @@ import {
   FAQ,
   FeatureGrid,
   Heading,
+  Image,
   Logo,
   NavMenu,
   PriceTag,
@@ -591,9 +592,10 @@ const DEFS: ComponentDef[] = [
           </span>
         );
       }
-      const style = (node.props.style as string) ?? 'primary';
+      // Legacy tree (no recipe class): fall back to a neutral soft button so
+      // the canvas still looks like a button without needing bx-btn CSS.
       return (
-        <span className={`bx-btn bx-btn--${style}`}>
+        <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-md">
           {label}
           {children}
         </span>
@@ -957,19 +959,32 @@ const DEFS: ComponentDef[] = [
     ],
     defaults: { props: { ratio: 'wide' } },
     renderLeaf: ({ node, value, cardinality }) => {
-      const ratio = (node.props.ratio as string) ?? 'wide';
+      const ratio = ((node.props.ratio as string) ?? 'wide') as 'wide' | 'square' | 'portrait';
       if (cardinality === 'array') {
-        const arr = (value as unknown[]) ?? [];
+        const count = Array.isArray(value) ? (value as unknown[]).length : 0;
         return (
-          <div className="bx-gallery">
-            <Placeholder ratio={ratio} label="" />
-            <span className="bx-gallery__count">{arr.length} images · gallery</span>
+          <div style={{ position: 'relative', width: '100%' }}>
+            <Image ratio={ratio} />
+            <span
+              style={{
+                position: 'absolute',
+                bottom: 6,
+                right: 6,
+                background: 'rgba(0,0,0,0.55)',
+                color: '#fff',
+                fontSize: 10,
+                padding: '2px 6px',
+                borderRadius: 4,
+              }}
+            >
+              {count} images · gallery
+            </span>
           </div>
         );
       }
-      if (cardinality === 'empty') return <Placeholder ratio={ratio} label="No image" />;
+      if (cardinality === 'empty') return <Image ratio={ratio} />;
       const img = asImage(value);
-      return <Placeholder ratio={ratio} label={firstString(img?.alt)} />;
+      return <Image src={firstString(img?.url)} alt={firstString(img?.alt)} ratio={ratio} />;
     },
   },
   {
@@ -1038,16 +1053,13 @@ const DEFS: ComponentDef[] = [
     props: [],
     defaults: {},
     renderLeaf: () => (
-      <div
-        className="bx-buybox-preview"
-        style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
-      >
-        <span className="bx-price">$0.00</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <PriceTag amount={null} />
         <div style={{ display: 'flex', gap: '0.4rem' }}>
-          <span className="bx-btn bx-btn--soft">Small</span>
-          <span className="bx-btn bx-btn--soft">Large</span>
+          <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-sm">Small</span>
+          <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-sm">Large</span>
         </div>
-        <span className="bx-btn bx-btn--primary">Add to cart</span>
+        <span className="sf-btn sf-c-primary sf-v-solid sf-btn--sz-md">Add to cart</span>
       </div>
     ),
   },
@@ -1065,9 +1077,9 @@ const DEFS: ComponentDef[] = [
     defaults: {},
     renderLeaf: () => (
       <div style={{ display: 'flex', gap: '0.4rem' }}>
-        <span className="bx-btn bx-btn--soft">Small</span>
-        <span className="bx-btn bx-btn--soft">Medium</span>
-        <span className="bx-btn bx-btn--soft">Large</span>
+        <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-sm">Small</span>
+        <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-sm">Medium</span>
+        <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-sm">Large</span>
       </div>
     ),
   },
@@ -1100,7 +1112,9 @@ const DEFS: ComponentDef[] = [
     props: [{ key: 'label', label: 'Label', control: 'text', placeholder: 'Add to cart' }],
     defaults: { props: { label: 'Add to cart' } },
     renderLeaf: ({ node }) => (
-      <span className="bx-btn bx-btn--primary">{firstString(node.props.label, 'Add to cart')}</span>
+      <span className="sf-btn sf-c-primary sf-v-solid sf-btn--sz-md">
+        {firstString(node.props.label, 'Add to cart')}
+      </span>
     ),
   },
 

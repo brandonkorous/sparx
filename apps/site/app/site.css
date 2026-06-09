@@ -2300,6 +2300,26 @@
     order: 0;
   }
 }
+/* MediaText full-bleed: the grid runs edge-to-edge, the image column fills its
+   cell height (no border-radius), and the text column gets its own padding. */
+.sf-sb-mediatext[data-fullbleed='true'] .sf-sb-mediatext__grid {
+  gap: 0;
+  align-items: stretch;
+}
+.sf-sb-mediatext[data-fullbleed='true'] .sf-sb-mediatext__img {
+  border-radius: 0;
+  aspect-ratio: unset;
+  min-height: 340px;
+  height: 100%;
+}
+.sf-sb-mediatext[data-fullbleed='true'] .sf-sb-mediatext__text {
+  padding: clamp(2rem, 5vw, 4rem);
+}
+@media (max-width: 760px) {
+  .sf-sb-mediatext[data-fullbleed='true'] .sf-sb-mediatext__text {
+    padding: clamp(1.5rem, 5vw, 2.5rem);
+  }
+}
 
 /* ─── Stats band ────────────────────────────────────────────────────────── */
 .sf-sb-stats__media {
@@ -2753,6 +2773,13 @@ html.sf-reveal-ready [data-section-type='hero'] .sf-sb-hero__inner > *:nth-child
   .sf-sb-hero__scroll-hint {
     animation: none;
   }
+}
+
+/* Hero full-bleed: remove sf-container from the inner text block so content
+   spans edge-to-edge. Substitute viewport-safe horizontal padding in place of
+   the container's max-width centering. */
+.sf-sb-hero[data-fullbleed='true'] .sf-sb-hero__inner {
+  padding-inline: clamp(1.5rem, 6vw, 5rem);
 }
 
 /* ─── Stacked CTAs ──────────────────────────────────────────────────────────

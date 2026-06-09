@@ -93,11 +93,30 @@ export type EventType =
   | 'configuration.requested'
   | 'configuration.quoted'
   | 'configuration.accepted'
+  // ─── Domains (docs/24) ──────────────────────────────────────────────
+  // Emitted after a successful GoDaddy purchase + DNS configuration. The
+  // domain-worker subscribes to poll DNS propagation and mark the domain active.
+  | 'domain.purchased'
   // ─── Universal search (docs/39) ─────────────────────────────────────
   // Generic indexing signal: any module emits this post-commit so the
   // commerce-indexer (re)projects ONE entity into the universal `entities`
   // collection. One topic serves every entity type — no per-entity topic.
   | 'search.entity.changed';
+
+/** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
+ *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */
+export interface DomainPurchasedPayload {
+  /** The registered FQDN. */
+  domain: string;
+  /** GoDaddy order ID from the purchase API call. */
+  orderId: string;
+  /** The `domain_purchases.id` row inserted during the purchase flow. */
+  purchaseId: string;
+  /** The property this domain is attached to. */
+  propertyId: string;
+  /** True when configureDNS succeeded; false if DNS config failed (worker retries). */
+  dnsConfigured: boolean;
+}
 
 /** Payload for `search.entity.changed`. `entityType` keys the projector
  *  registry; `op` distinguishes a reprojection from a removal. */
