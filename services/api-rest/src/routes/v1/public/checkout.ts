@@ -18,7 +18,12 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
-import { checkoutService, shippingService, type ServiceContext } from '@sparx/commerce';
+import {
+  checkoutService,
+  discountService,
+  shippingService,
+  type ServiceContext,
+} from '@sparx/commerce';
 import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
@@ -69,6 +74,10 @@ const PaymentBody = z.object({
 
 const CompleteBody = z.object({
   idempotencyKey: z.string().min(8).max(127).optional(),
+});
+
+const DiscountBody = z.object({
+  code: z.string().min(1).max(64),
 });
 
 // Resolve the session → its cart, and assert the caller owns that cart.
@@ -247,6 +256,19 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
       paymentRef: body.paymentRef,
       ...(body.poNumber ? { poNumber: body.poNumber } : {}),
     });
+    return ok(await checkoutService.get(ctx, sessionId));
+  });
+
+  // Apply a discount code to the checkout session's underlying cart.
+  // Validates the code, enforces usage limits, and returns the updated session
+  // so the storefront can re-render totals. Idempotent — re-applying the same
+  // code for the same cart returns the existing saving without erroring.
+  app.post('/v1/public/commerce/checkout/:sessionId/discount', async (request) => {
+    const { sessionId } = SessionParam.parse(request.params);
+    const body = DiscountBody.parse(request.body);
+    const { tenantId, ctx } = await publicCommerceContext(request);
+    const { cartId } = await assertSessionOwner(request, ctx, tenantId, sessionId);
+    await discountService.redeemCode(ctx, { cartId, code: body.code });
     return ok(await checkoutService.get(ctx, sessionId));
   });
 
