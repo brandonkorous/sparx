@@ -116,7 +116,7 @@ interface DomainRowProps {
     title: string;
     description: string;
     confirmLabel: string;
-    tone: 'danger' | 'neutral';
+    tone?: 'danger' | 'warning';
     action: () => Promise<ActionResult>;
     success?: string;
   }) => Promise<void>;
@@ -424,7 +424,7 @@ function SearchResults({ suggestions, onSelect }: SearchResultsProps) {
           key={s.domain}
           className="flex items-center justify-between gap-2 rounded-lg border border-[var(--border)] px-4 py-3"
         >
-          <Stack gap={0.5}>
+          <Stack gap={1}>
             <Text weight="medium" size="sm">
               {s.domain}
             </Text>
@@ -500,7 +500,7 @@ export function DomainsManager({ properties, domains }: DomainsManagerProps) {
       title: string;
       description: string;
       confirmLabel: string;
-      tone: 'danger' | 'neutral';
+      tone?: 'danger' | 'warning';
       action: () => Promise<ActionResult>;
       success?: string;
     }) => {
@@ -567,7 +567,7 @@ export function DomainsManager({ properties, domains }: DomainsManagerProps) {
         description:
           'This will generate an auth code to transfer your domain to another registrar. The domain will be locked during transfer. This removes it from Sparx hosting.',
         confirmLabel: 'Generate auth code',
-        tone: 'neutral',
+        tone: 'warning',
       });
       if (!ok) return;
       startTransition(async () => {

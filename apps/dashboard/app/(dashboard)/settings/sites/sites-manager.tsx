@@ -283,10 +283,14 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
                             <Code>
                               {d.instructions.cname.name} → {d.instructions.cname.value}
                             </Code>
-                            <span className="text-[var(--muted-foreground)]">TXT</span>
-                            <Code>
-                              {d.instructions.txt.name} = {d.instructions.txt.value}
-                            </Code>
+                            {d.instructions.txt && (
+                              <>
+                                <span className="text-[var(--muted-foreground)]">TXT</span>
+                                <Code>
+                                  {d.instructions.txt.name} = {d.instructions.txt.value}
+                                </Code>
+                              </>
+                            )}
                           </div>
                         </div>
                       )}

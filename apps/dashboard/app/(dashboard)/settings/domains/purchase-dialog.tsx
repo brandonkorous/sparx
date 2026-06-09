@@ -148,7 +148,7 @@ export function PurchaseDialog({
                     </span>
                     <Text
                       size="sm"
-                      weight={current ? 'medium' : 'normal'}
+                      weight={current ? 'medium' : 'regular'}
                       variant={done ? 'muted' : 'default'}
                     >
                       {label}
@@ -168,7 +168,7 @@ export function PurchaseDialog({
               <Stack gap={6}>
                 {/* Pricing summary */}
                 <div className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--color-bg-subtle)] px-4 py-3">
-                  <Stack gap={0.5}>
+                  <Stack gap={1}>
                     <Text weight="medium">{suggestion.domain}</Text>
                     <Text size="sm" variant="muted">
                       {suggestion.available ? 'Available' : 'Taken'}
