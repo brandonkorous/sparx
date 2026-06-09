@@ -57,6 +57,20 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
       outro: z.string().optional(),
     }),
   }),
+  z.object({
+    template: z.literal('domain-renewal-reminder'),
+    to: z.string().email(),
+    from: z.string().optional(),
+    replyTo: z.string().optional(),
+    variables: Variables,
+    props: z.object({
+      domainName: z.string().min(1),
+      daysUntilExpiry: z.number().int().positive(),
+      expiresAt: z.string(),
+      renewUrl: z.string().url(),
+      autoRenew: z.boolean().optional(),
+    }),
+  }),
 ]);
 
 // Pre-rendered "raw" send — used by broadcasts (render once, send to many) and

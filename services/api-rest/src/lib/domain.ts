@@ -95,7 +95,7 @@ export function isSubdomainHost(host: string): boolean {
  *  verbatim. */
 export function connectInstructions(
   host: string,
-  token: string | null,
+  token: string | null
 ): {
   cname: { name: string; value: string };
   txt: { name: string; value: string } | null;

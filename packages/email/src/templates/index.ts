@@ -11,3 +11,9 @@ export {
 } from './welcome-merchant';
 
 export { EmailLayout } from './_layout';
+
+export {
+  DomainRenewalReminderEmail,
+  domainRenewalReminderSubject,
+  type DomainRenewalReminderEmailProps,
+} from './domain-renewal-reminder';

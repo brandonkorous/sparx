@@ -165,7 +165,7 @@ export interface EmailSendPayload {
   cc?: string;
   bcc?: string;
   /** Must match a registered template id in @sparx/email's TemplateSend. */
-  template: 'password-reset' | 'welcome-merchant';
+  template: 'password-reset' | 'welcome-merchant' | 'domain-renewal-reminder';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */
