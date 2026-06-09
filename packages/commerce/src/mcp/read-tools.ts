@@ -226,10 +226,7 @@ const getDropshipMarginReport: McpToolDefinition = {
   }),
   run: (ctx, input) => {
     const { from, to } = input as { from?: string; to?: string };
-    return reportingService.dropshipMarginReport(
-      ctx,
-      from && to ? { from, to } : undefined
-    );
+    return reportingService.dropshipMarginReport(ctx, from && to ? { from, to } : undefined);
   },
 };
 

@@ -370,9 +370,7 @@ export async function dropshipMarginReport(
 
   return withTenant(ctx, async (tx) => {
     const dateFilter =
-      from || to
-        ? { createdAt: { ...(from && { gte: from }), ...(to && { lte: to }) } }
-        : {};
+      from || to ? { createdAt: { ...(from && { gte: from }), ...(to && { lte: to }) } } : {};
 
     const [dsOrders, suppliers] = await Promise.all([
       tx.dropshipOrder.findMany({
@@ -440,7 +438,7 @@ export async function dropshipMarginReport(
         costCents: s.cost,
         revenueCents: s.revenue,
         profitCents: s.revenue - s.cost,
-        marginPct: s.revenue > 0 ? +((( s.revenue - s.cost) / s.revenue) * 100).toFixed(1) : 0,
+        marginPct: s.revenue > 0 ? +(((s.revenue - s.cost) / s.revenue) * 100).toFixed(1) : 0,
       }))
       .sort((a, b) => b.profitCents - a.profitCents);
 
