@@ -175,6 +175,21 @@ export async function goToStepAction(step: OnboardingStepKey): Promise<WizardRes
   }
 }
 
+// Stripe Connect OAuth — returns the Stripe OAuth URL so the client can
+// navigate the merchant there. The redirect_uri points back to this app's
+// /onboarding/stripe-callback route handler.
+export async function startStripeConnectAction(): Promise<WizardResult<{ url: string }>> {
+  try {
+    const callbackUrl = `${process.env.NEXT_PUBLIC_DASHBOARD_URL ?? ''}/onboarding/stripe-callback`;
+    const data = await api.get<{ url: string }>(
+      `/v1/tenant/onboarding/stripe/connect-url?redirect_uri=${encodeURIComponent(callbackUrl)}`
+    );
+    return { ok: true, data };
+  } catch (err) {
+    return fail(err);
+  }
+}
+
 // Step 5 / finish — marks the wizard finished and lands on the Done screen.
 // `finishedAt` flips the welcome checklist to its completed state; we leave
 // `dismissed` false so the day-0+ banner still nudges any remaining work.

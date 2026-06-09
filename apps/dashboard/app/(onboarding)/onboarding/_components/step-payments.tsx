@@ -1,22 +1,39 @@
 'use client';
 
 import * as React from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Badge, Button, Heading, Stack, Text } from '@sparx/ui';
-import { CreditCard } from 'lucide-react';
-import { finishOnboardingAction } from '../_lib/actions';
+import { CheckCircle, CreditCard } from 'lucide-react';
+import { finishOnboardingAction, startStripeConnectAction } from '../_lib/actions';
 import type { StepNav } from './onboarding-wizard';
 
-// Payments is intentionally skip-primary for now: the store goes live without
-// it (checkout stays disabled until a processor is connected). Stripe Connect
-// OAuth is a flagged follow-on, so the connect button is present but disabled.
 export function StepPayments({ nav }: { nav: StepNav }) {
-  const [error, setError] = React.useState<string | null>(null);
-  const [pending, startTransition] = React.useTransition();
+  const searchParams = useSearchParams();
+  const stripeConnected = searchParams.get('stripe_connected') === '1';
+  const stripeError = searchParams.get('stripe_error');
+
+  const [error, setError] = React.useState<string | null>(stripeError ?? null);
+  const [connectPending, startConnect] = React.useTransition();
+  const [finishPending, startFinish] = React.useTransition();
+
+  const pending = connectPending || finishPending;
+
+  function onConnectStripe() {
+    setError(null);
+    startConnect(async () => {
+      const res = await startStripeConnectAction();
+      if (res.ok) {
+        window.location.href = res.data.url;
+      } else {
+        setError(res.error);
+      }
+    });
+  }
 
   function onFinish() {
     setError(null);
-    startTransition(async () => {
-      const res = await finishOnboardingAction({});
+    startFinish(async () => {
+      const res = await finishOnboardingAction({ paymentsConnected: stripeConnected });
       if (res.ok) nav.onNext();
       else setError(res.error);
     });
@@ -36,21 +53,38 @@ export function StepPayments({ nav }: { nav: StepNav }) {
         <Stack direction="row" align="center" justify="between" gap={3}>
           <Stack direction="row" align="center" gap={3}>
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-bg-subtle)]">
-              <CreditCard className="h-5 w-5 text-[var(--color-text-secondary)]" />
+              {stripeConnected ? (
+                <CheckCircle className="h-5 w-5 text-[var(--color-success-text)]" />
+              ) : (
+                <CreditCard className="h-5 w-5 text-[var(--color-text-secondary)]" />
+              )}
             </span>
             <Stack gap={1}>
               <Stack direction="row" align="center" gap={2}>
                 <Text weight="medium">Stripe</Text>
-                <Badge variant="outline">Coming soon</Badge>
+                {stripeConnected && (
+                  <Badge color="success" variant="soft">
+                    Connected
+                  </Badge>
+                )}
               </Stack>
               <Text size="sm" variant="muted">
-                Cards, wallets, and bank debits via Stripe Connect.
+                {stripeConnected
+                  ? 'Your Stripe account is connected. Checkout is enabled.'
+                  : 'Cards, wallets, and bank debits via Stripe Connect.'}
               </Text>
             </Stack>
           </Stack>
-          <Button variant="outline" disabled>
-            Connect Stripe
-          </Button>
+          {!stripeConnected && (
+            <Button
+              variant="outline"
+              onClick={onConnectStripe}
+              disabled={pending}
+              loading={connectPending}
+            >
+              Connect Stripe
+            </Button>
+          )}
         </Stack>
       </div>
 
@@ -64,8 +98,8 @@ export function StepPayments({ nav }: { nav: StepNav }) {
         <Button variant="ghost" onClick={nav.onBack} disabled={pending || nav.navPending}>
           Back
         </Button>
-        <Button color="module" onClick={onFinish} disabled={pending} loading={pending}>
-          Finish setup
+        <Button color="module" onClick={onFinish} disabled={pending} loading={finishPending}>
+          {stripeConnected ? 'Finish setup' : 'Skip for now'}
         </Button>
       </Stack>
     </Stack>
