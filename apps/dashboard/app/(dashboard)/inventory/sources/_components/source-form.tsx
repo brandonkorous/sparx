@@ -2,193 +2,195 @@
 
 import { useState } from 'react';
 import {
-  Button,
-  Stack,
-  Text,
-  Input,
-  Textarea,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Button,
+    Stack,
+    Text,
+    Input,
+    Textarea,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@sparx/ui';
-import { api } from '@/lib/api-rest-client';
+import { createSource, updateSource } from '../_lib/actions';
 
 interface Source {
-  id: string;
-  name: string;
-  type: string;
-  config: Record<string, string>;
-  syncIntervalSec: number;
-  notes: string | null;
+    id: string;
+    name: string;
+    type: string;
+    config: Record<string, string>;
+    syncIntervalSec: number;
+    notes: string | null;
 }
 
 interface Props {
-  source?: Source;
-  onSuccess: () => void;
-  onCancel: () => void;
+    source?: Source;
+    onSuccess: () => void;
+    onCancel: () => void;
 }
 
 const TYPE_OPTIONS = [
-  { value: 'csv', label: 'CSV Feed' },
-  { value: 'api', label: 'API (generic HTTP)' },
+    { value: 'csv', label: 'CSV Feed' },
+    { value: 'api', label: 'API (generic HTTP)' },
 ];
 
 const INTERVAL_OPTIONS = [
-  { value: '0', label: 'Manual only' },
-  { value: '900', label: 'Every 15 minutes' },
-  { value: '1800', label: 'Every 30 minutes' },
-  { value: '3600', label: 'Every hour' },
-  { value: '21600', label: 'Every 6 hours' },
-  { value: '86400', label: 'Once a day' },
+    { value: '0', label: 'Manual only' },
+    { value: '900', label: 'Every 15 minutes' },
+    { value: '1800', label: 'Every 30 minutes' },
+    { value: '3600', label: 'Every hour' },
+    { value: '21600', label: 'Every 6 hours' },
+    { value: '86400', label: 'Once a day' },
 ];
 
 export function SourceForm({ source, onSuccess, onCancel }: Props) {
-  const [name, setName] = useState(source?.name ?? '');
-  const [type, setType] = useState(source?.type ?? 'csv');
-  const [csvUrl, setCsvUrl] = useState(source?.config?.csvUrl ?? '');
-  const [interval, setInterval] = useState(String(source?.syncIntervalSec ?? 0));
-  const [notes, setNotes] = useState(source?.notes ?? '');
+    const [name, setName] = useState(source?.name ?? '');
+    const [type, setType] = useState(source?.type ?? 'csv');
+    const [csvUrl, setCsvUrl] = useState(source?.config?.csvUrl ?? '');
+    const [interval, setInterval] = useState(String(source?.syncIntervalSec ?? 0));
+    const [notes, setNotes] = useState(source?.notes ?? '');
 
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) {
-      setError('Name is required.');
-      return;
+    async function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        if (!name.trim()) {
+            setError('Name is required.');
+            return;
+        }
+        if (type === 'csv' && !csvUrl.trim()) {
+            setError('CSV feed URL is required.');
+            return;
+        }
+
+        setSubmitting(true);
+        setError(null);
+        try {
+            const config: Record<string, string> = type === 'csv' ? { csvUrl: csvUrl.trim() } : {};
+
+            const body = {
+                name: name.trim(),
+                ...(source ? {} : { type }),
+                config,
+                syncIntervalSec: parseInt(interval, 10),
+                notes: notes.trim() || null,
+            };
+
+            if (source) {
+                const { error: err } = await updateSource(source.id, body);
+                if (err) throw new Error(err);
+            } else {
+                const { error: err } = await createSource(body);
+                if (err) throw new Error(err);
+            }
+            onSuccess();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Save failed');
+        } finally {
+            setSubmitting(false);
+        }
     }
-    if (type === 'csv' && !csvUrl.trim()) {
-      setError('CSV feed URL is required.');
-      return;
-    }
 
-    setSubmitting(true);
-    setError(null);
-    try {
-      const config: Record<string, string> = type === 'csv' ? { csvUrl: csvUrl.trim() } : {};
+    return (
+        <form onSubmit={(e) => void handleSubmit(e)}>
+            <Stack gap={5}>
+                <Stack gap={2}>
+                    <Text size="sm" className="font-medium">
+                        Name <span className="text-[var(--color-danger)]">*</span>
+                    </Text>
+                    <Input
+                        placeholder="e.g. Main Warehouse CSV"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                </Stack>
 
-      const body = {
-        name: name.trim(),
-        ...(source ? {} : { type }),
-        config,
-        syncIntervalSec: parseInt(interval, 10),
-        notes: notes.trim() || null,
-      };
+                {!source && (
+                    <Stack gap={2}>
+                        <Text size="sm" className="font-medium">
+                            Source type
+                        </Text>
+                        <Select value={type} onValueChange={setType}>
+                            <SelectTrigger>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {TYPE_OPTIONS.map((t) => (
+                                    <SelectItem key={t.value} value={t.value}>
+                                        {t.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </Stack>
+                )}
 
-      if (source) {
-        await api.patch(`/v1/inventory/sources/${source.id}`, body);
-      } else {
-        await api.post('/v1/inventory/sources', body);
-      }
-      onSuccess();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Save failed');
-    } finally {
-      setSubmitting(false);
-    }
-  }
+                {type === 'csv' && (
+                    <Stack gap={2}>
+                        <Text size="sm" className="font-medium">
+                            CSV feed URL <span className="text-[var(--color-danger)]">*</span>
+                        </Text>
+                        <Input
+                            type="url"
+                            placeholder="https://your-wms.example.com/inventory.csv"
+                            value={csvUrl}
+                            onChange={(e) => setCsvUrl(e.target.value)}
+                        />
+                        <Text size="xs" className="text-[var(--color-muted-foreground)]">
+                            Required columns: <span className="font-mono">sku</span>,{' '}
+                            <span className="font-mono">quantity</span>. Optional:{' '}
+                            <span className="font-mono">location</span>.
+                        </Text>
+                    </Stack>
+                )}
 
-  return (
-    <form onSubmit={(e) => void handleSubmit(e)}>
-      <Stack gap={5}>
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Name <span className="text-[var(--color-danger)]">*</span>
-          </Text>
-          <Input
-            placeholder="e.g. Main Warehouse CSV"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </Stack>
+                <Stack gap={2}>
+                    <Text size="sm" className="font-medium">
+                        Sync interval
+                    </Text>
+                    <Select value={interval} onValueChange={setInterval}>
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {INTERVAL_OPTIONS.map((o) => (
+                                <SelectItem key={o.value} value={o.value}>
+                                    {o.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </Stack>
 
-        {!source && (
-          <Stack gap={2}>
-            <Text size="sm" className="font-medium">
-              Source type
-            </Text>
-            <Select value={type} onValueChange={setType}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {TYPE_OPTIONS.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Stack>
-        )}
+                <Stack gap={2}>
+                    <Text size="sm" className="font-medium">
+                        Internal notes
+                    </Text>
+                    <Textarea
+                        placeholder="Optional notes about this source"
+                        rows={2}
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                    />
+                </Stack>
 
-        {type === 'csv' && (
-          <Stack gap={2}>
-            <Text size="sm" className="font-medium">
-              CSV feed URL <span className="text-[var(--color-danger)]">*</span>
-            </Text>
-            <Input
-              type="url"
-              placeholder="https://your-wms.example.com/inventory.csv"
-              value={csvUrl}
-              onChange={(e) => setCsvUrl(e.target.value)}
-            />
-            <Text size="xs" className="text-[var(--color-muted-foreground)]">
-              Required columns: <span className="font-mono">sku</span>,{' '}
-              <span className="font-mono">quantity</span>. Optional:{' '}
-              <span className="font-mono">location</span>.
-            </Text>
-          </Stack>
-        )}
+                {error && (
+                    <Text size="sm" className="text-[var(--color-danger)]">
+                        {error}
+                    </Text>
+                )}
 
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Sync interval
-          </Text>
-          <Select value={interval} onValueChange={setInterval}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {INTERVAL_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {o.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Stack>
-
-        <Stack gap={2}>
-          <Text size="sm" className="font-medium">
-            Internal notes
-          </Text>
-          <Textarea
-            placeholder="Optional notes about this source"
-            rows={2}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-        </Stack>
-
-        {error && (
-          <Text size="sm" className="text-[var(--color-danger)]">
-            {error}
-          </Text>
-        )}
-
-        <Stack direction="row" gap={2} className="justify-end">
-          <Button type="button" color="neutral" variant="ghost" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" color="primary" disabled={submitting}>
-            {submitting ? 'Saving…' : source ? 'Save changes' : 'Connect source'}
-          </Button>
-        </Stack>
-      </Stack>
-    </form>
-  );
+                <Stack direction="row" gap={2} className="justify-end">
+                    <Button type="button" color="neutral" variant="ghost" onClick={onCancel}>
+                        Cancel
+                    </Button>
+                    <Button type="submit" color="primary" disabled={submitting}>
+                        {submitting ? 'Saving…' : source ? 'Save changes' : 'Connect source'}
+                    </Button>
+                </Stack>
+            </Stack>
+        </form>
+    );
 }
