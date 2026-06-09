@@ -3,9 +3,9 @@
 // syncCatalog(), and upserts every yielded product into dropship_products.
 
 import type { Logger } from 'pino';
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { withTenant } from '@sparx/db';
-import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
+import { createPublisher, publishEvent } from '@sparx/events';
 import { createAdapter } from '@sparx/dropship';
 
 export interface SyncStartedPayload {
@@ -114,7 +114,10 @@ export async function handleSyncStarted(
       });
     });
 
-    const publisher = createPublisher(log as unknown as PublisherLogger);
+    const publisher = createPublisher({
+      projectId: process.env.GCP_PROJECT_ID ?? '',
+      logger: log,
+    });
     await publishEvent(
       publisher,
       'dropship.supplier.sync_completed',
@@ -134,7 +137,10 @@ export async function handleSyncStarted(
         data: { status: 'error' },
       });
     });
-    const publisher = createPublisher(log as unknown as PublisherLogger);
+    const publisher = createPublisher({
+      projectId: process.env.GCP_PROJECT_ID ?? '',
+      logger: log,
+    });
     await publishEvent(
       publisher,
       'dropship.supplier.error',

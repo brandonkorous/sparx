@@ -5,9 +5,8 @@
 // dropship_orders rows and the appropriate event is published.
 
 import type { Logger } from 'pino';
-import { Prisma } from '@prisma/client';
 import { withTenant } from '@sparx/db';
-import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
+import { createPublisher, publishEvent } from '@sparx/events';
 import { createAdapter } from '@sparx/dropship';
 import type { Order, OrderLineItem, ShippingAddress } from '@sparx/dropship';
 
@@ -74,7 +73,10 @@ export async function handleOrderRoute(
     phone: shippingAddr?.phone ?? undefined,
   };
 
-  const publisher = createPublisher(log as unknown as PublisherLogger);
+  const publisher = createPublisher({
+    projectId: process.env.GCP_PROJECT_ID ?? '',
+    logger: log,
+  });
 
   for (const [supplierId, lineItems] of bySupplier) {
     const supplier = await withTenant({ tenantId }, async (tx) => {
@@ -106,7 +108,7 @@ export async function handleOrderRoute(
           orderId,
           supplierId,
           status: 'pending',
-          lineItems: lineItems as unknown as Prisma.InputJsonValue,
+          lineItems: lineItems,
         },
       });
     });

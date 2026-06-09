@@ -20,8 +20,8 @@ export function parseEvent(message: PubSubMessage): SparxEvent<unknown> | null {
       string,
       unknown
     >;
-    if (typeof raw !== 'object' || !raw || !raw['type'] || !raw['tenantId']) return null;
-    return raw as SparxEvent<unknown>;
+    if (typeof raw !== 'object' || !raw?.type || !raw?.tenantId) return null;
+    return raw as unknown as SparxEvent<unknown>;
   } catch {
     return null;
   }
