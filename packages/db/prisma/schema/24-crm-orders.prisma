@@ -39,6 +39,11 @@ model Order {
   taxTotal      Decimal @default(0) @map("tax_total") @db.Decimal(12, 2)
   shippingTotal Decimal @default(0) @map("shipping_total") @db.Decimal(12, 2)
   discountTotal Decimal @default(0) @map("discount_total") @db.Decimal(12, 2)
+  // Document-level fee pass-through (docs/48 §6) — chiefly the card processing
+  // fee. Snapshotted in `appliedSurcharges` ([{name,type,value,basis,paymentMethod,
+  // amountCents,label}]) so it's reproducible and reversible proportionally on refund.
+  surchargeTotal    Decimal @default(0) @map("surcharge_total") @db.Decimal(12, 2)
+  appliedSurcharges Json    @default("[]") @map("applied_surcharges")
   total         Decimal @default(0) @db.Decimal(12, 2)
   amountPaid    Decimal @default(0) @map("amount_paid") @db.Decimal(12, 2)
   refundTotal   Decimal @default(0) @map("refund_total") @db.Decimal(12, 2)

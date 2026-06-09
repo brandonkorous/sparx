@@ -29,6 +29,9 @@ export * from './discounts';
 // Markup rules + the pure cost→price engine (docs/48).
 export * from './markup';
 
+// Surcharge rules + the pure document-fee engine (docs/48 §6).
+export * from './surcharge';
+
 // Phase 4 — bundles + configurator.
 export * from './bundles';
 

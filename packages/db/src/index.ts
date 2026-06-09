@@ -82,6 +82,7 @@ export type {
   BulkPriceTier,
   ContractPrice,
   MarkupRule,
+  SurchargeRule,
   Discount,
   DiscountUsage,
   GiftCard,

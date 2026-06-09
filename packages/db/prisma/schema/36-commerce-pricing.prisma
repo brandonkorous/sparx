@@ -162,3 +162,38 @@ model MarkupRule {
   @@index([tenantId, isActive])
   @@map("markup_rules")
 }
+
+// Surcharge rule (docs/48 §6) — a document-level fee that passes through a
+// transaction cost the merchant incurs (chiefly the credit-card processing
+// fee, default ~3%). NOT product markup: it applies to the order TOTAL, is
+// gated by payment method, shows as its own line, and is snapshotted onto the
+// order for refund proration. Platform default is OFF; surcharging is legally
+// constrained (docs/48 §6.2) — the tenant opts in and owns compliance.
+//
+// `value` is a percent (3.0 = 3%) when type='percentage', or dollars (5.00)
+// when type='flat'. `cap_cents` caps the computed amount.
+model SurchargeRule {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String   @map("tenant_id") @db.Uuid
+  name           String   @db.VarChar(255)
+  type           String   @default("percentage") @db.VarChar(10) // percentage | flat
+  value          Decimal  @db.Decimal(8, 4)
+  // What the % is computed on (docs/48 §6.1).
+  basis          String   @default("total") @db.VarChar(25) // subtotal | subtotal_plus_shipping | total
+  // Which checkout payment methods trigger it (e.g. ["card"]); excludes
+  // ACH/check/net-terms. Coarse classification at checkout: a session with a
+  // payment provider = 'card', net-terms = 'account'.
+  paymentMethods String[] @default(["card"]) @map("payment_methods") @db.VarChar(20)
+  appliesTo      String   @default("both") @map("applies_to") @db.VarChar(10) // checkout | invoice | both
+  label          String   @db.VarChar(120) // customer-facing line label
+  capCents       Int?     @map("cap_cents")
+  isActive       Boolean  @default(false) @map("is_active") // platform default OFF
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, isActive])
+  @@map("surcharge_rules")
+}

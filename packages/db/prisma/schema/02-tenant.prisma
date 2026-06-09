@@ -135,6 +135,7 @@ model Tenant {
   bulkPriceTiers          BulkPriceTier[]
   contractPrices          ContractPrice[]
   markupRules             MarkupRule[]
+  surchargeRules          SurchargeRule[]
   discounts               Discount[]
   discountUsages          DiscountUsage[]
   giftCards               GiftCard[]
@@ -250,6 +251,11 @@ model Tenant {
 
   // Import jobs (docs/68 §8) — background CSV import processing
   importJobs ImportJob[]
+
+  // Live Chat module (docs/56, docs/69 Track A)
+  chatConversations ChatConversation[]
+  chatMessages      ChatMessage[]
+  chatQuickReplies  ChatQuickReply[]
 
   // B2B pricing (docs/10, docs/64) — pricing tiers, per-product overrides, invoices, portal contacts, approval rules
   b2bPricingTiers            B2bPricingTier[]
