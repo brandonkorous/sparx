@@ -2122,54 +2122,9 @@
   color: var(--color-text-muted);
 }
 
-/* Leaf rendering — only Button (legacy/no-recipe fallback) + the Signup mock
-   remain. Heading, Text, Stat, PriceTag, Divider, Video and Map now render the
-   real @sparx/site-ui components in the canvas (docs/23 §17), so their bx-*
-   approximations are gone. */
-.bx-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 18px;
-  border-radius: var(--bxc-radius-sm);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: default;
-}
-.bx-btn--primary {
-  background: var(--bxc-primary);
-  color: var(--bxc-primary-fg);
-}
-.bx-btn--soft {
-  background: color-mix(in srgb, var(--bxc-primary) 16%, transparent);
-  color: var(--bxc-primary);
-}
-.bx-btn--link {
-  background: transparent;
-  color: var(--bxc-primary);
-  padding: 0;
-  text-decoration: underline;
-}
-/* Translucent CTA pair — match the storefront renderer (frosted over photos). */
-.bx-btn--dark {
-  background: rgba(23, 26, 35, 0.78);
-  color: #fff;
-  backdrop-filter: blur(6px);
-  min-width: 150px;
-}
-.bx-btn--glass {
-  background: rgba(255, 255, 255, 0.86);
-  color: #171a23;
-  backdrop-filter: blur(6px);
-  min-width: 150px;
-}
-/* Static commerce buy-box mock price (BuyBox preview is non-interactive in the
-   canvas; the PriceTag leaf itself renders the real site-ui PriceTag). */
-.bx-price {
-  font-weight: 700;
-  font-size: 16px;
-  color: inherit;
-}
+/* All content-leaf bx-* approximations are retired — every leaf now renders the
+   real @sparx/site-ui component (docs/23 §17). Editor chrome (selection, palette,
+   inspector, outlet) is the only remaining consumer of bx-* classes. */
 /* Site chrome (Tier 2 — docs/45) */
 /* The Outlet marks where each routed page mounts. The layout editor has no real
  * page, so it renders a ghosted SAMPLE page — a hero + a feature-card grid in the
@@ -2335,20 +2290,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.bx-gallery {
-  position: relative;
-  width: 100%;
-}
-.bx-gallery__count {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  background: rgba(0, 0, 0, 0.55);
-  color: #fff;
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 4px;
 }
 .bx-card {
   border-radius: var(--bxc-radius);
