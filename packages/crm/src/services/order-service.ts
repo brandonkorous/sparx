@@ -88,7 +88,12 @@ export async function get(ctx: ServiceContext, orderId: string): Promise<OrderWi
 
 export async function create(ctx: ServiceContext, rawInput: unknown): Promise<OrderWithItems> {
   const input = CreateOrderInput.parse(rawInput);
-  const totals = computeTotals(input.items, input.shippingTotal, input.taxTotal);
+  const totals = computeTotals(
+    input.items,
+    input.shippingTotal,
+    input.taxTotal,
+    input.surchargeTotal
+  );
   const placedAt = input.placedAt ? new Date(input.placedAt) : new Date();
 
   const order = await withTenant(ctx, async (tx) => {
@@ -114,6 +119,8 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Or
         taxTotal: totals.taxTotal,
         shippingTotal: totals.shippingTotal,
         discountTotal: totals.discountTotal,
+        surchargeTotal: totals.surchargeTotal,
+        appliedSurcharges: (input.appliedSurcharges ?? []) as Prisma.InputJsonValue,
         total: totals.total,
         shippingAddress: (input.shippingAddress ?? null) as Prisma.InputJsonValue,
         billingAddress: (input.billingAddress ?? null) as Prisma.InputJsonValue,

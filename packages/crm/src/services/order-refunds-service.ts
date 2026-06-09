@@ -10,7 +10,7 @@ import crypto from 'node:crypto';
 
 import { RecordRefundInput } from '@sparx/crm-schemas';
 import { withTenant } from '@sparx/db';
-import type { OrderRefund, Prisma } from '@sparx/db';
+import type { OrderRefund } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishPlatformEvent } from '../consumers/platform-bus';
@@ -40,6 +40,17 @@ export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Prom
     if (order.status === 'cancelled') {
       throw new CrmValidationError('Cannot refund a cancelled order');
     }
+
+    // Surcharge proration (docs/48 §6.3) — the card-fee pass-through reverses in
+    // proportion to the refunded share of the order total. Recorded on the refund
+    // for accounting (surcharges are pass-through income, netted against fees).
+    const surchargeTotalCents = Math.round(Number(order.surchargeTotal) * 100);
+    const orderTotalCents = Math.round(Number(order.total) * 100);
+    const refundCents = Math.round(Number(input.amount) * 100);
+    const surchargeReversedCents =
+      surchargeTotalCents > 0 && orderTotalCents > 0 && refundCents > 0
+        ? Math.round(surchargeTotalCents * Math.min(1, refundCents / orderTotalCents))
+        : 0;
 
     // If lines are given, validate each refund quantity against the
     // remaining refundable units on its parent line.
@@ -79,7 +90,10 @@ export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Prom
         processorRef: input.processorRef ?? null,
         status: 'completed',
         refundedAt: new Date(),
-        metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
+        metadata: {
+          ...(input.metadata ?? {}),
+          ...(surchargeReversedCents > 0 ? { surchargeReversedCents } : {}),
+        },
       },
     });
 

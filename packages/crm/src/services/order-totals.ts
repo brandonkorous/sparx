@@ -16,6 +16,7 @@ export interface ComputedTotals {
   taxTotal: number;
   discountTotal: number;
   shippingTotal: number;
+  surchargeTotal: number;
   total: number;
 }
 
@@ -43,7 +44,10 @@ export function computeLine(item: LineItemInput): ComputedLine {
 export function computeTotals(
   items: LineItemInput[],
   shippingTotal: number,
-  taxTotalOverride?: number
+  taxTotalOverride?: number,
+  // Document-level surcharge (docs/48 §6) — added last, after tax. Defaults to
+  // 0 so callers that don't surcharge (quotes, most orders) are unaffected.
+  surchargeTotal = 0
 ): ComputedTotals {
   let subtotal = 0;
   let lineTaxSum = 0;
@@ -58,13 +62,15 @@ export function computeTotals(
 
   const taxTotal = round2(taxTotalOverride ?? lineTaxSum);
   const shipping = round2(shippingTotal);
-  const total = round2(subtotal - discountSum + taxTotal + shipping);
+  const surcharge = round2(surchargeTotal);
+  const total = round2(subtotal - discountSum + taxTotal + shipping + surcharge);
 
   return {
     subtotal: round2(subtotal),
     taxTotal,
     discountTotal: round2(discountSum),
     shippingTotal: shipping,
+    surchargeTotal: surcharge,
     total,
   };
 }

@@ -36,6 +36,10 @@ export const CreateOrderInput = z.object({
   // Header-level tax override. If omitted (undefined), the service sums
   // line-level taxAmounts; if provided, this value wins.
   taxTotal: Money.optional(),
+  // Document-level surcharge (docs/48 §6) — card-fee pass-through computed at
+  // checkout. `appliedSurcharges` snapshots each fee for refund proration.
+  surchargeTotal: Money.default(0),
+  appliedSurcharges: z.array(z.record(z.string(), z.unknown())).optional(),
 
   shippingAddress: AddressSnapshot.optional(),
   billingAddress: AddressSnapshot.optional(),

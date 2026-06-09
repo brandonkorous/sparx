@@ -12,12 +12,14 @@
 
 import { orderService } from '@sparx/crm';
 import {
+  applySurcharges,
   type CheckoutSessionSnapshot,
   CompleteCheckoutInput,
   StartCheckoutInput,
   SubmitContactInput,
   SubmitPaymentInput,
   SubmitShippingInput,
+  type SurchargePaymentMethod,
 } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
 import type { CheckoutSession, TxClient } from '@sparx/db';
@@ -32,6 +34,7 @@ import { publishCommerceEvent } from '../events';
 
 import * as discountService from './discount-service';
 import * as providerService from './provider-service';
+import * as surchargeService from './surcharge-service';
 
 function parseDueDays(paymentTerms: string | null | undefined): number {
   if (!paymentTerms) return 30;
@@ -471,6 +474,23 @@ export async function complete(
     const shippingDollars = session.shippingTotalCents / 100;
     const taxDollars = session.taxTotalCents / 100;
 
+    // Document surcharge (docs/48 §6) — computed AFTER tax, gated by payment
+    // method. Card-processor checkouts classify as 'card'; B2B net-terms / no
+    // provider as 'account' (no card fee). Basis reads the post-discount amounts.
+    const surchargePaymentMethod: SurchargePaymentMethod = session.paymentTermsRequested
+      ? 'account'
+      : session.paymentProviderSlug
+        ? 'card'
+        : 'account';
+    const surchargeSpecs = await surchargeService.listActiveSpecs(ctx, 'checkout', tx);
+    const surcharge = applySurcharges(surchargeSpecs, {
+      subtotalCents: Math.max(0, session.subtotalCents - session.discountTotalCents),
+      shippingCents: session.shippingTotalCents,
+      taxCents: session.taxTotalCents,
+      paymentMethod: surchargePaymentMethod,
+    });
+    const surchargeDollars = surcharge.totalCents / 100;
+
     const order = await orderService.create(ctx, {
       customerId,
       // Origin site (docs/58 D1) — inherit the cart's property so the order is
@@ -485,6 +505,8 @@ export async function complete(
       shippingTotal: shippingDollars,
       taxTotal: taxDollars,
       discountTotal: discountDollars,
+      surchargeTotal: surchargeDollars,
+      appliedSurcharges: surcharge.applied,
       shippingAddress: session.shippingAddress as Parameters<
         typeof orderService.create
       >[1] extends infer A
@@ -576,6 +598,8 @@ export async function complete(
         resultOrderId: order.id,
         completedAt: new Date(),
         subtotalCents: Math.round(Number(subtotalDollars) * 100),
+        surchargeTotalCents: surcharge.totalCents,
+        totalCents: session.totalCents + surcharge.totalCents,
       },
     });
 
