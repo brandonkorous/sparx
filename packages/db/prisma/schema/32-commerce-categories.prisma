@@ -83,6 +83,8 @@ model ProductCollection {
   priceLists           PriceList[]
   discounts            Discount[]
   shippingProfileLinks ShippingProfileCollection[]
+  b2bTierOverrides     B2bTierProductOverride[]
+  b2bAccountOverrides  B2bAccountProductOverride[]
 
   @@unique([tenantId, handle], map: "product_collections_tenant_handle_unique")
   @@index([tenantId, type])

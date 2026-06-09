@@ -124,11 +124,7 @@ export function ContentEntryWizard({ types, preselectedType }: ContentEntryWizar
   React.useEffect(() => {
     if (slugTouched) return;
     const titleLike =
-      typeof body.title === 'string'
-        ? body.title
-        : typeof body.name === 'string'
-          ? body.name
-          : '';
+      typeof body.title === 'string' ? body.title : typeof body.name === 'string' ? body.name : '';
     if (titleLike) setSlug(slugify(titleLike));
   }, [body, slugTouched]);
 
@@ -185,11 +181,7 @@ export function ContentEntryWizard({ types, preselectedType }: ContentEntryWizar
       if (status === 'scheduled' && scheduledAt) {
         finalBody.__scheduled_at = scheduledAt;
       }
-      const result = await createEntry(
-        selectedTypeKey,
-        finalBody,
-        submitSlug
-      );
+      const result = await createEntry(selectedTypeKey, finalBody, submitSlug);
       if (result.ok && result.data?.id) {
         router.push(`/cms/types/${selectedTypeKey}/${result.data.id}`);
         router.refresh();
@@ -239,27 +231,29 @@ export function ContentEntryWizard({ types, preselectedType }: ContentEntryWizar
             </Text>
           )}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {types.filter((t) => !t.is_singleton).map((t) => (
-              <button
-                key={t.key}
-                type="button"
-                disabled={loadingSchema}
-                onClick={() => void selectType(t.key)}
-                className="group rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4 text-left transition-colors hover:border-[var(--color-module-active)] hover:bg-[var(--color-module-subtle)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-module-active)] disabled:opacity-50"
-              >
-                <Stack gap={2}>
-                  <Stack direction="row" align="center" gap={2}>
-                    <FileText className="h-4 w-4 text-[var(--color-module-active)]" />
-                    <Text className="font-medium">{t.name}</Text>
+            {types
+              .filter((t) => !t.is_singleton)
+              .map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  disabled={loadingSchema}
+                  onClick={() => void selectType(t.key)}
+                  className="group rounded-lg border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4 text-left transition-colors hover:border-[var(--color-module-active)] hover:bg-[var(--color-module-subtle)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-module-active)] disabled:opacity-50"
+                >
+                  <Stack gap={2}>
+                    <Stack direction="row" align="center" gap={2}>
+                      <FileText className="h-4 w-4 text-[var(--color-module-active)]" />
+                      <Text className="font-medium">{t.name}</Text>
+                    </Stack>
+                    {t.description && (
+                      <Text size="xs" variant="muted" className="line-clamp-2">
+                        {t.description}
+                      </Text>
+                    )}
                   </Stack>
-                  {t.description && (
-                    <Text size="xs" variant="muted" className="line-clamp-2">
-                      {t.description}
-                    </Text>
-                  )}
-                </Stack>
-              </button>
-            ))}
+                </button>
+              ))}
           </div>
           {error && (
             <Text size="sm" variant="danger" role="alert">
@@ -332,9 +326,7 @@ export function ContentEntryWizard({ types, preselectedType }: ContentEntryWizar
       {/* Step 3 — Publish settings */}
       {stepName === 'publish' && typeSchema && (
         <Stack gap={5}>
-          <Text variant="muted">
-            Choose when this {typeSchema.name.toLowerCase()} goes live.
-          </Text>
+          <Text variant="muted">Choose when this {typeSchema.name.toLowerCase()} goes live.</Text>
 
           <Card variant="module">
             <CardHeader>
@@ -418,7 +410,11 @@ export function ContentEntryWizard({ types, preselectedType }: ContentEntryWizar
               disabled={submitting}
               loading={submitting}
             >
-              {status === 'published' ? 'Publish' : status === 'scheduled' ? 'Schedule' : 'Create draft'}
+              {status === 'published'
+                ? 'Publish'
+                : status === 'scheduled'
+                  ? 'Schedule'
+                  : 'Create draft'}
             </Button>
           </Stack>
         </Stack>

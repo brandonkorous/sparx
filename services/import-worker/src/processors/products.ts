@@ -82,7 +82,10 @@ function normalizeFulfillment(val: string | undefined): 'physical' | 'digital' |
 }
 
 function autoSku(title: string, index: number): string {
-  return `${title.replace(/[^a-z0-9]/gi, '-').toUpperCase().slice(0, 20)}-${index + 1}`;
+  return `${title
+    .replace(/[^a-z0-9]/gi, '-')
+    .toUpperCase()
+    .slice(0, 20)}-${index + 1}`;
 }
 
 export async function processProductRows(
@@ -115,8 +118,17 @@ export async function processProductRows(
           ...(row.vendor !== undefined ? { vendor: row.vendor } : {}),
           ...(row.product_type !== undefined ? { productType: row.product_type } : {}),
           ...(row.status ? { status: normalizeStatus(row.status) } : {}),
-          ...(row.tags ? { tags: row.tags.split(',').map((t) => t.trim()).filter(Boolean) } : {}),
-          ...(row.fulfillment_type ? { fulfillmentType: normalizeFulfillment(row.fulfillment_type) } : {}),
+          ...(row.tags
+            ? {
+                tags: row.tags
+                  .split(',')
+                  .map((t) => t.trim())
+                  .filter(Boolean),
+              }
+            : {}),
+          ...(row.fulfillment_type
+            ? { fulfillmentType: normalizeFulfillment(row.fulfillment_type) }
+            : {}),
           weight: parseGrams(row),
           dimensions: {
             lengthMm: parseMm(row.length_cm, row.length_mm) ?? 0,
@@ -140,7 +152,12 @@ export async function processProductRows(
       } else {
         // Create product + variant.
         if (!row.title?.trim()) {
-          results.push({ rowIndex: i, status: 'error', naturalKey: sku, errorMsg: 'title is required for new products' });
+          results.push({
+            rowIndex: i,
+            status: 'error',
+            naturalKey: sku,
+            errorMsg: 'title is required for new products',
+          });
           continue;
         }
         const priceCents = parseCents(row.price) ?? 0;
@@ -150,7 +167,12 @@ export async function processProductRows(
           vendor: row.vendor ?? null,
           productType: row.product_type ?? null,
           fulfillmentType: normalizeFulfillment(row.fulfillment_type),
-          tags: row.tags ? row.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
+          tags: row.tags
+            ? row.tags
+                .split(',')
+                .map((t) => t.trim())
+                .filter(Boolean)
+            : [],
           weight: parseGrams(row),
           dimensions: {
             lengthMm: parseMm(row.length_cm, row.length_mm) ?? 0,

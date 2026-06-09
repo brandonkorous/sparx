@@ -118,24 +118,22 @@ export async function submitProductImportAction(
   });
 }
 
-export async function getProductImportStatusAction(
-  jobId: string
-): Promise<ActionResult<{
-  status: string;
-  importedCount: number;
-  updatedCount: number;
-  errorCount: number;
-  rowCount: number;
-  rows: Array<{
-    rowIndex: number;
+export async function getProductImportStatusAction(jobId: string): Promise<
+  ActionResult<{
     status: string;
-    naturalKey?: string | null;
-    errorMsg?: string | null;
-  }>;
-}>> {
-  return restAction(async () =>
-    api.get(`/v1/commerce/products/import/${jobId}`)
-  );
+    importedCount: number;
+    updatedCount: number;
+    errorCount: number;
+    rowCount: number;
+    rows: Array<{
+      rowIndex: number;
+      status: string;
+      naturalKey?: string | null;
+      errorMsg?: string | null;
+    }>;
+  }>
+> {
+  return restAction(async () => api.get(`/v1/commerce/products/import/${jobId}`));
 }
 
 // ─── Product Wizard (B-1) ─────────────────────────────────────────────────

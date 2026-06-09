@@ -10,16 +10,7 @@
 // single type. A content type links to its items as /cms/content?type=<key>.
 
 import Link from 'next/link';
-import {
-  Badge,
-  Button,
-  Card,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
 import { FileText } from 'lucide-react';
 
 import { api } from '@/lib/api-rest-client';

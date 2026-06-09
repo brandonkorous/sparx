@@ -71,7 +71,14 @@ export async function processCustomerRows(
           ...(row.phone !== undefined ? { phone: row.phone } : {}),
           ...(row.job_title !== undefined ? { jobTitle: row.job_title } : {}),
           ...(row.type ? { type: normalizeType(row.type) } : {}),
-          ...(row.tags ? { tags: row.tags.split(',').map((t) => t.trim()).filter(Boolean) } : {}),
+          ...(row.tags
+            ? {
+                tags: row.tags
+                  .split(',')
+                  .map((t) => t.trim())
+                  .filter(Boolean),
+              }
+            : {}),
         });
         results.push({ rowIndex: i, status: 'updated', naturalKey: email });
         log.debug('updated');
@@ -87,7 +94,12 @@ export async function processCustomerRows(
           company: row.company ?? null,
           phone: row.phone ?? null,
           jobTitle: row.job_title ?? null,
-          tags: row.tags ? row.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
+          tags: row.tags
+            ? row.tags
+                .split(',')
+                .map((t) => t.trim())
+                .filter(Boolean)
+            : [],
           doNotContact: false,
         });
         results.push({ rowIndex: i, status: 'imported', naturalKey: email });

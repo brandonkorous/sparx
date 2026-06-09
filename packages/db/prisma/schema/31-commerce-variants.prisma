@@ -89,6 +89,8 @@ model ProductVariant {
   priceListEntries      PriceListEntry[]
   bulkPriceTiers        BulkPriceTier[]
   contractPrices        ContractPrice[]
+  b2bTierOverrides      B2bTierProductOverride[]
+  b2bAccountOverrides   B2bAccountProductOverride[]
   bundleComponents      BundleComponent[]
   cartItems             CartItem[]
   subscriptionItems     SubscriptionItem[]

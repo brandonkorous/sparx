@@ -1,0 +1,42 @@
+// B2B invoices — net-terms accounts generate an invoice per order instead of
+// paying immediately. Credit utilization = sum of unpaid invoices; the
+// b2b-overdue-worker checks daily and escalates based on overdue thresholds.
+// (docs/10 §9, docs/64 Ph3)
+
+model B2bInvoice {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  accountId String @map("account_id") @db.Uuid
+
+  // Pointer to the originating Commerce order. NULL for manually-created
+  // invoices (e.g. service work billed outside an order flow).
+  orderId String? @map("order_id") @db.Uuid
+
+  invoiceNumber String @map("invoice_number") @db.VarChar(63)
+  amountCents   Int    @map("amount_cents")
+
+  // Status: unpaid → paid (or unpaid → overdue → paid/written_off)
+  status String @default("unpaid") @db.VarChar(20)
+  // overdue_days tracks how many days past due for escalation decisions.
+  overdueDays Int @default(0) @map("overdue_days")
+
+  dueAt DateTime @map("due_at") @db.Timestamptz
+  paidAt DateTime? @map("paid_at") @db.Timestamptz
+  paidByUserId String? @map("paid_by_user_id") @db.Uuid
+  paidMethod String? @map("paid_method") @db.VarChar(63) // check | ach | wire | credit_card | other
+
+  notes String? @db.Text
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  account   B2BAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  paidBy    User?      @relation("B2bInvoicePaidBy", fields: [paidByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, invoiceNumber], map: "b2b_invoices_tenant_number_unique")
+  @@index([tenantId, accountId])
+  @@index([tenantId, status, dueAt])
+  @@index([orderId])
+  @@map("b2b_invoices")
+}

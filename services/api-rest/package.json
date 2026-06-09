@@ -39,6 +39,7 @@
     "@sparx/email": "workspace:*",
     "@sparx/email-platform": "workspace:*",
     "@sparx/events": "workspace:*",
+    "@sparx/godaddy": "workspace:*",
     "@sparx/integration-framework": "workspace:*",
     "@sparx/legal": "workspace:*",
     "@sparx/legal-templates": "workspace:*",

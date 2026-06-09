@@ -1,15 +1,7 @@
 import Link from 'next/link';
 import { Users, Plus, UserPlus } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
@@ -222,4 +214,3 @@ function stringParam(v: string | string[] | undefined): string | undefined {
   if (Array.isArray(v)) return v[0];
   return v;
 }
-

@@ -1,13 +1,6 @@
 import { Building2, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
