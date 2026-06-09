@@ -13,15 +13,15 @@ const OTE_BASE = 'https://api.ote-godaddy.com';
 const PROD_BASE = 'https://api.godaddy.com';
 
 function baseUrl(): string {
-  return process.env['NODE_ENV'] === 'production' ? PROD_BASE : OTE_BASE;
+  return process.env.NODE_ENV === 'production' ? PROD_BASE : OTE_BASE;
 }
 
 function authHeader(): string {
-  const isProd = process.env['NODE_ENV'] === 'production';
-  const key = isProd ? process.env['GODADDY_API_KEY_PROD'] : process.env['GODADDY_API_KEY_OTE'];
+  const isProd = process.env.NODE_ENV === 'production';
+  const key = isProd ? process.env.GODADDY_API_KEY_PROD : process.env.GODADDY_API_KEY_OTE;
   const secret = isProd
-    ? process.env['GODADDY_API_SECRET_PROD']
-    : process.env['GODADDY_API_SECRET_OTE'];
+    ? process.env.GODADDY_API_SECRET_PROD
+    : process.env.GODADDY_API_SECRET_OTE;
   if (!key || !secret) {
     throw new GoDaddyError(
       `GoDaddy ${isProd ? 'production' : 'OTE'} API credentials not configured`,
