@@ -18,3 +18,5 @@ export type {
 } from './types.js';
 
 export { applyPricingRule } from './types.js';
+export { CsvAdapter, createAdapter } from './adapters/csv.js';
+export type { CsvCredentials, CsvColumnMapping } from './adapters/csv.js';

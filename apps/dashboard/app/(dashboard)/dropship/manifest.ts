@@ -1,16 +1,15 @@
-// Dropship module — stub manifest.
-//
-// TODO: migrate to packages/dropship/src/manifest.ts when that package exists.
-
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Truck } from 'lucide-react';
+import { Truck, Package, Link2 } from 'lucide-react';
 
 export const dropshipManifest: ModuleManifest = {
   id: 'dropship',
   label: 'Dropship',
   icon: Truck,
   routePrefix: '/dropship',
-  sections: [],
+  sections: [
+    { id: 'suppliers', label: 'Suppliers', icon: Link2, href: '/dropship/suppliers' },
+    { id: 'products', label: 'Products', icon: Package, href: '/dropship/products' },
+  ],
   actions: [],
   entityTypes: [],
 };
