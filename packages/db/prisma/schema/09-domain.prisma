@@ -39,21 +39,61 @@ model Domain {
   // The canonical host for its property (the apex; `www` redirects to it).
   isCanonical       Boolean   @default(false) @map("is_canonical")
 
-  // Registrar columns — populated only for type='purchased' (docs/24 §7). Inert
-  // until the GoDaddy reseller slice; kept here so that lands without a migration.
-  registrar        String?   @db.VarChar(50)
-  registrarOrderId String?   @map("registrar_order_id") @db.VarChar(255)
-  registeredAt     DateTime? @map("registered_at") @db.Timestamptz
-  expiresAt        DateTime? @map("expires_at") @db.Timestamptz
-  autoRenew        Boolean   @default(true) @map("auto_renew")
+  // Registrar columns — populated only for type='purchased' (docs/24 §7).
+  registrar          String?   @db.VarChar(50)
+  registrarOrderId   String?   @map("registrar_order_id") @db.VarChar(255)
+  registeredAt       DateTime? @map("registered_at") @db.Timestamptz
+  expiresAt          DateTime? @map("expires_at") @db.Timestamptz
+  autoRenew          Boolean   @default(true) @map("auto_renew")
+  whoisPrivacy       Boolean   @default(false) @map("whois_privacy")
+  renewalPriceCents  Int?      @map("renewal_price_cents")
+  // DKIM keypair generated at purchase time (docs/24 §3). Public key goes into
+  // the DKIM TXT record; private key is kept for signing outbound email.
+  dkimPublicKey      String?   @map("dkim_public_key") @db.Text
+  dkimPrivateKey     String?   @map("dkim_private_key") @db.Text
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property        Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  domainPurchases DomainPurchase[]
 
   @@index([tenantId])
   @@index([propertyId])
   @@map("domains")
+}
+
+// Append-only billing + audit ledger for every domain registration, renewal,
+// and transfer processed through Sparx's GoDaddy reseller account (docs/24 §7,
+// docs/64 Module 1 Ph1). Tenant-scoped with FORCE RLS.
+//
+// type:  registration | renewal | transfer
+// status: pending | completed | failed
+model DomainPurchase {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  // FQDN denormalised — survives the domain row being deleted after a transfer.
+  domain   String @db.VarChar(255)
+
+  registrar              String  @default("godaddy") @db.VarChar(50)
+  registrarOrderId       String? @map("registrar_order_id") @db.VarChar(255)
+  // Null until Stripe billing is wired; set to a mock value during the stub phase.
+  stripePaymentIntentId  String? @map("stripe_payment_intent_id") @db.VarChar(255)
+  amountCents            Int     @map("amount_cents")
+  years                  Int     @default(1) @db.SmallInt
+  type                   String  @default("registration") @db.VarChar(20)
+  status                 String  @default("pending") @db.VarChar(20)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Soft FK to domains — null if the domain row was removed post-transfer.
+  domainRow Domain? @relation(fields: [domain], references: [host])
+
+  @@index([tenantId])
+  @@index([domain])
+  @@index([tenantId, domain])
+  @@map("domain_purchases")
 }

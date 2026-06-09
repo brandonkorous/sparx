@@ -40,6 +40,8 @@ model Tenant {
   blueprintInstalls TenantBlueprintInstall[]
   // Custom + purchased hostnames across this tenant's sites (docs/49 §5, docs/24).
   domains           Domain[]
+  // Billing + audit ledger for every domain registration/renewal/transfer (docs/24 §7).
+  domainPurchases   DomainPurchase[]
 
   // Auth + audit
   users     User[]

@@ -33,6 +33,13 @@ const EnvSchema = z
     // resolves a topic per `EventType` (topic name == event type) — there is
     // no shared/fan-out topic to configure.
     GCP_PROJECT_ID: z.string().optional(),
+    // GoDaddy Reseller API credentials (docs/24 §3, docs/24 §10).
+    // OTE (staging) credentials — used when NODE_ENV !== 'production'.
+    GODADDY_API_KEY_OTE: z.string().optional(),
+    GODADDY_API_SECRET_OTE: z.string().optional(),
+    // Production credentials — used when NODE_ENV === 'production'.
+    GODADDY_API_KEY_PROD: z.string().optional(),
+    GODADDY_API_SECRET_PROD: z.string().optional(),
     // Media storage. When GCS_MEDIA_BUCKET is set we use Cloud Storage with
     // presigned PUT URLs; otherwise we fall back to a local-disk backend at
     // MEDIA_LOCAL_DIR (the dashboard PUTs through api-rest in that mode).
