@@ -79,19 +79,30 @@ export function newVerificationToken(): string {
   return `sparx-verify=${randomBytes(16).toString('hex')}`;
 }
 
+/** True when `host` is a subdomain (three or more dot-separated labels, e.g.
+ *  `shop.example.com`). Subdomains only require a CNAME for ownership proof —
+ *  the CNAME itself routes traffic AND proves the owner set it. Apex domains
+ *  (two labels, e.g. `example.com`) additionally need a TXT control-proof
+ *  because CNAME-at-apex is non-standard and many DNS providers don't allow it. */
+export function isSubdomainHost(host: string): boolean {
+  return host.split('.').length >= 3;
+}
+
 /** The DNS records the tenant must add to connect a custom `host` (docs/24 §4):
- *  a CNAME → the shared ingress, and a TXT control proof. The dashboard renders
- *  these verbatim. */
+ *  always a CNAME → the shared ingress; a TXT control proof ONLY for apex
+ *  domains (when `token` is non-null). For subdomains the CNAME is sufficient
+ *  proof of ownership and the `txt` field is null. The dashboard renders these
+ *  verbatim. */
 export function connectInstructions(
   host: string,
-  token: string
+  token: string | null,
 ): {
   cname: { name: string; value: string };
-  txt: { name: string; value: string };
+  txt: { name: string; value: string } | null;
 } {
   return {
     cname: { name: host, value: CNAME_TARGET },
-    txt: { name: `${TXT_PREFIX}${host}`, value: token },
+    txt: token ? { name: `${TXT_PREFIX}${host}`, value: token } : null,
   };
 }
 
@@ -103,6 +114,19 @@ export async function verifyTxtToken(host: string, token: string): Promise<boole
     const records = await dns.resolveTxt(`${TXT_PREFIX}${host}`);
     // Each record is an array of string chunks that must be concatenated.
     return records.some((chunks) => chunks.join('') === token);
+  } catch {
+    return false;
+  }
+}
+
+/** Verify that `host` has a CNAME record resolving to `target`. Never throws —
+ *  NXDOMAIN / timeout / non-CNAME answers resolve false. Used to confirm
+ *  subdomain ownership and to poll DNS propagation in the domain-worker. */
+export async function verifyCname(host: string, target: string): Promise<boolean> {
+  try {
+    const cnames = await dns.resolveCname(host);
+    const normalized = target.replace(/\.$/, '');
+    return cnames.some((c) => c.replace(/\.$/, '') === normalized);
   } catch {
     return false;
   }
