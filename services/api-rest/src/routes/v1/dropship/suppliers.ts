@@ -11,7 +11,8 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { withTenant, type TxClient } from '@sparx/db';
+import { Prisma } from '@prisma/client';
+import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound, badRequest, conflict } from '@sparx/api-core/errors';
@@ -21,8 +22,14 @@ import { createAdapter } from '@sparx/dropship';
 import type { PricingRule } from '@sparx/dropship';
 import { applyPricingRule } from '@sparx/dropship';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
+import { env } from '../../../env.js';
 
-type AnyTx = TxClient & Record<string, any>;
+const pubLogger: PublisherLogger = {
+  info: (obj, msg) => console.info(msg ?? '', obj),
+  warn: (obj, msg) => console.warn(msg ?? '', obj),
+  error: (obj, msg) => console.error(msg ?? '', obj),
+};
+const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathIdProduct = z.object({ id: z.string().uuid(), productId: z.string().uuid() });
@@ -49,14 +56,14 @@ const PricingRuleSchema = z.object({
 const SupplierBody = z.object({
   name: z.string().min(1).max(255),
   type: z.enum(['csv', 'dsers', 'spocket', 'faire', 'autods', 'custom']),
-  credentials: z.record(z.string()),
+  credentials: z.record(z.string(), z.string()),
   pricingRule: PricingRuleSchema.nullable().optional(),
   notes: z.string().max(5000).nullable().optional(),
 });
 
 const SupplierPatchBody = z.object({
   name: z.string().min(1).max(255).optional(),
-  credentials: z.record(z.string()).optional(),
+  credentials: z.record(z.string(), z.string()).optional(),
   pricingRule: PricingRuleSchema.nullable().optional(),
   notes: z.string().max(5000).nullable().optional(),
 });
@@ -118,28 +125,27 @@ function toDropshipProductView(dp: {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
-  const publisher = createPublisher(app.log as unknown as PublisherLogger);
-
   // ── List suppliers ───────────────────────────────────────────────────────────
 
   app.get('/v1/dropship/suppliers', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner');
+    requireRole(request, 'admin');
     const { tenantId } = toDropshipContext(request);
     const query = ListQuery.parse(request.query);
 
-    const [suppliers, total] = await withTenant({ tenantId } as any, async (tx) => {
-      const where: any = { tenantId, deletedAt: null };
-      if (query.status) where.status = query.status;
+    const [suppliers, total] = await withTenant({ tenantId }, async (tx) => {
+      const where: Prisma.DropshipSupplierWhereInput = { tenantId, deletedAt: null };
+      if (query.status) (where as Record<string, unknown>).status = query.status;
       return Promise.all([
-        (tx as AnyTx).dropshipSupplier.findMany({
+        tx.dropshipSupplier.findMany({
           where,
           orderBy: { createdAt: 'desc' },
           take: query.take,
           skip: query.skip,
         }),
-        (tx as AnyTx).dropshipSupplier.count({ where }),
+        tx.dropshipSupplier.count({ where }),
       ]);
     });
 
@@ -152,7 +158,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
 
   app.post('/v1/dropship/suppliers', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner');
+    requireRole(request, 'admin');
     const { tenantId, userId } = toDropshipContext(request);
     const body = SupplierBody.parse(request.body);
 
@@ -161,19 +167,20 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     try {
       const adapter = createAdapter(body.type, body.credentials);
       connectionOk = await adapter.authenticate(body.credentials);
-    } catch (err: any) {
-      throw badRequest(err?.message ?? 'Adapter authentication failed', 'CONNECTION_FAILED');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Adapter authentication failed';
+      throw badRequest(msg, 'CONNECTION_FAILED');
     }
 
-    const supplier = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipSupplier.create({
+    const supplier = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipSupplier.create({
         data: {
           tenantId,
           name: body.name,
           type: body.type,
-          credentials: body.credentials,
+          credentials: body.credentials as Prisma.InputJsonValue,
           status: connectionOk ? 'active' : 'error',
-          pricingRule: body.pricingRule ?? null,
+          pricingRule: body.pricingRule ? (body.pricingRule as Prisma.InputJsonValue) : Prisma.JsonNull,
           notes: body.notes ?? null,
         },
       });
@@ -185,7 +192,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       tenantId,
       userId,
       { supplierId: supplier.id, type: body.type, connectionOk },
-      app.log
+      pubLogger
     );
 
     return reply.status(201).send(ok(toSupplierView(supplier)));
@@ -195,12 +202,12 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/dropship/suppliers/:id', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner', 'staff');
+    requireRole(request, 'editor');
     const { tenantId } = toDropshipContext(request);
     const { id } = PathId.parse(request.params);
 
-    const supplier = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
+    const supplier = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
     });
     if (!supplier) throw notFound('Supplier not found');
 
@@ -211,13 +218,13 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
 
   app.patch('/v1/dropship/suppliers/:id', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner');
+    requireRole(request, 'admin');
     const { tenantId } = toDropshipContext(request);
     const { id } = PathId.parse(request.params);
     const body = SupplierPatchBody.parse(request.body);
 
-    const existing = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
+    const existing = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
     });
     if (!existing) throw notFound('Supplier not found');
 
@@ -233,13 +240,19 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
-    const updated = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipSupplier.update({
+    const updated = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipSupplier.update({
         where: { id },
         data: {
           ...(body.name !== undefined && { name: body.name }),
-          ...(body.credentials !== undefined && { credentials: body.credentials }),
-          ...(body.pricingRule !== undefined && { pricingRule: body.pricingRule }),
+          ...(body.credentials !== undefined && {
+            credentials: body.credentials as Prisma.InputJsonValue,
+          }),
+          ...(body.pricingRule !== undefined && {
+            pricingRule: body.pricingRule
+              ? (body.pricingRule as Prisma.InputJsonValue)
+              : Prisma.JsonNull,
+          }),
           ...(body.notes !== undefined && { notes: body.notes }),
           ...(newStatus !== undefined && { status: newStatus }),
         },
@@ -253,17 +266,17 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
 
   app.delete('/v1/dropship/suppliers/:id', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner');
+    requireRole(request, 'admin');
     const { tenantId } = toDropshipContext(request);
     const { id } = PathId.parse(request.params);
 
-    const existing = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
+    const existing = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
     });
     if (!existing) throw notFound('Supplier not found');
 
-    await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipSupplier.update({
+    await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipSupplier.update({
         where: { id },
         data: { deletedAt: new Date(), status: 'disconnected' },
       });
@@ -276,12 +289,12 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
 
   app.post('/v1/dropship/suppliers/:id/sync', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner');
+    requireRole(request, 'admin');
     const { tenantId, userId } = toDropshipContext(request);
     const { id } = PathId.parse(request.params);
 
-    const supplier = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
+    const supplier = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
     });
     if (!supplier) throw notFound('Supplier not found');
     if (supplier.status === 'error') {
@@ -294,7 +307,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       tenantId,
       userId,
       { supplierId: id, type: supplier.type },
-      app.log
+      pubLogger
     );
 
     return reply.send(ok({ supplierId: id, status: 'sync_queued' }));
@@ -304,21 +317,21 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/dropship/suppliers/:id/catalog', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner', 'staff');
+    requireRole(request, 'editor');
     const { tenantId } = toDropshipContext(request);
     const { id } = PathId.parse(request.params);
     const query = CatalogQuery.parse(request.query);
 
-    const supplier = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
+    const supplier = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
     });
     if (!supplier) throw notFound('Supplier not found');
 
-    const [products, total] = await withTenant({ tenantId } as any, async (tx) => {
-      const where: any = { tenantId, supplierId: id };
+    const [products, total] = await withTenant({ tenantId }, async (tx) => {
+      const where: Prisma.DropshipProductWhereInput = { tenantId, supplierId: id };
       if (query.q) where.title = { contains: query.q, mode: 'insensitive' };
       return Promise.all([
-        (tx as AnyTx).dropshipProduct.findMany({
+        tx.dropshipProduct.findMany({
           where,
           include: {
             links: {
@@ -329,7 +342,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
           take: query.take,
           skip: query.skip,
         }),
-        (tx as AnyTx).dropshipProduct.count({ where }),
+        tx.dropshipProduct.count({ where }),
       ]);
     });
 
@@ -348,15 +361,15 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
 
   app.post('/v1/dropship/suppliers/:id/catalog/:productId/import', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner');
+    requireRole(request, 'admin');
     const { tenantId, userId } = toDropshipContext(request);
     const { id, productId } = PathIdProduct.parse(request.params);
     const body = ImportBody.parse(request.body ?? {});
 
-    const [supplier, dropshipProduct] = await withTenant({ tenantId } as any, async (tx) => {
+    const [supplier, dropshipProduct] = await withTenant({ tenantId }, async (tx) => {
       return Promise.all([
-        (tx as AnyTx).dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } }),
-        (tx as AnyTx).dropshipProduct.findFirst({
+        tx.dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } }),
+        tx.dropshipProduct.findFirst({
           where: { id: productId, supplierId: id, tenantId },
           include: {
             links: {
@@ -370,7 +383,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
 
     if (!supplier) throw notFound('Supplier not found');
     if (!dropshipProduct) throw notFound('Dropship product not found');
-    if (dropshipProduct.links?.length > 0) {
+    if (dropshipProduct.links.length > 0) {
       throw conflict('This product is already imported into your catalog', 'ALREADY_IMPORTED');
     }
 
@@ -387,20 +400,18 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       weight: number | null;
     }>;
 
-    const result = await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-
+    const result = await withTenant({ tenantId }, async (tx) => {
       // Generate a unique handle
       const baseHandle = slugify(dropshipProduct.title || 'product');
       const handle = await uniqueSlug(baseHandle, async (candidate) => {
-        const existing = await anyTx.product.findFirst({
+        const existing = await tx.product.findFirst({
           where: { tenantId, handle: candidate, deletedAt: null },
         });
         return existing !== null;
       });
 
       // Create the commerce product
-      const product = await anyTx.product.create({
+      const product = await tx.product.create({
         data: {
           tenantId,
           title: dropshipProduct.title,
@@ -424,7 +435,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
 
           const compareAt = pricingRule ? (v.msrpCents ?? null) : null;
 
-          return anyTx.productVariant.create({
+          return tx.productVariant.create({
             data: {
               tenantId,
               productId: product.id,
@@ -444,7 +455,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       );
 
       // Link the dropship product
-      const link = await anyTx.dropshipProductLink.create({
+      const link = await tx.dropshipProductLink.create({
         data: {
           tenantId,
           productId: product.id,
@@ -463,7 +474,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       tenantId,
       userId,
       { entityType: 'product', recordId: result.product.id, op: 'upsert' },
-      app.log
+      pubLogger
     );
 
     return reply.status(201).send(

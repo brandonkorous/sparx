@@ -16,6 +16,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -337,7 +338,7 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
     // Find distinct productIds matching the fitment criteria.
     const fitmentRows = await withTenant(ctx, (tx) =>
       tx.productFitment.findMany({
-        where: fitmentWhere as Parameters<typeof tx.productFitment.findMany>[0]['where'],
+        where: fitmentWhere as Prisma.ProductFitmentWhereInput,
         select: { productId: true },
         distinct: ['productId'],
       })
@@ -350,7 +351,7 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
     }
 
     const [products, total] = await withTenant(ctx, (tx) =>
-      tx.$transaction([
+      Promise.all([
         tx.product.findMany({
           where: { id: { in: productIds }, tenantId: ctx.tenantId, deletedAt: null },
           include: {

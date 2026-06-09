@@ -75,10 +75,10 @@ function splitCsvRow(line: string, delimiter: string): string[] {
 function parseCsv(text: string, delimiter = ','): Record<string, string>[] {
   const lines = text.split(/\r?\n/).filter(Boolean);
   if (lines.length < 2) return [];
-  const headers = splitCsvRow(lines[0], delimiter);
+  const headers = splitCsvRow(lines[0]!, delimiter);
   const rows: Record<string, string>[] = [];
   for (let i = 1; i < lines.length; i++) {
-    const values = splitCsvRow(lines[i], delimiter);
+    const values = splitCsvRow(lines[i]!, delimiter);
     const row: Record<string, string> = {};
     headers.forEach((h, idx) => {
       row[h.trim()] = (values[idx] ?? '').trim();
@@ -96,8 +96,8 @@ function rowToVariant(
 ): NormalizedProductVariant {
   const options: Record<string, string> = {};
   if (mapping.variantColor && row[mapping.variantColor])
-    options['color'] = row[mapping.variantColor];
-  if (mapping.variantSize && row[mapping.variantSize]) options['size'] = row[mapping.variantSize];
+    options['color'] = row[mapping.variantColor]!;
+  if (mapping.variantSize && row[mapping.variantSize]) options['size'] = row[mapping.variantSize]!;
 
   const imageUrls = mapping.imageUrls
     ? (row[mapping.imageUrls] ?? '')

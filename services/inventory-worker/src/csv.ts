@@ -48,7 +48,7 @@ export function parseCsvInventory(
   const lines = csvText.split(/\r?\n/).filter((l) => l.trim().length > 0);
   if (lines.length < 2) return [];
 
-  const headers = splitCsvRow(lines[0]).map((h) => h.trim().toLowerCase());
+  const headers = splitCsvRow(lines[0]!).map((h) => h.trim().toLowerCase());
   const skuIdx = headers.indexOf('sku');
   const qtyIdx = headers.findIndex((h) => h === 'quantity' || h === 'qty' || h === 'on_hand');
   const locIdx = headers.findIndex(
@@ -62,7 +62,7 @@ export function parseCsvInventory(
 
   const rows: CsvInventoryRow[] = [];
   for (let i = 1; i < lines.length; i++) {
-    const cells = splitCsvRow(lines[i]);
+    const cells = splitCsvRow(lines[i]!);
     const rawSku = cells[skuIdx]?.trim();
     const rawQty = cells[qtyIdx]?.trim();
     if (!rawSku) continue;
@@ -71,7 +71,8 @@ export function parseCsvInventory(
       logger.warn(`inventory-worker: row ${i + 1} — invalid quantity "${rawQty}", skipping`);
       continue;
     }
-    const externalLocation = locIdx !== -1 ? cells[locIdx]?.trim() || null : null;
+    const rawLoc = locIdx !== -1 ? (cells[locIdx]?.trim() ?? '') : '';
+    const externalLocation = rawLoc.length > 0 ? rawLoc : null;
     rows.push({ externalSku: rawSku, externalLocation, quantity: Math.max(0, quantity) });
   }
   return rows;

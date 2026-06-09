@@ -7,14 +7,20 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { withTenant, type TxClient } from '@sparx/db';
+import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
+import { env } from '../../../env.js';
 
-type AnyTx = TxClient & Record<string, any>;
+const pubLogger: PublisherLogger = {
+  info: (obj, msg) => console.info(msg ?? '', obj),
+  warn: (obj, msg) => console.warn(msg ?? '', obj),
+  error: (obj, msg) => console.error(msg ?? '', obj),
+};
+const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathOrderId = z.object({ orderId: z.string().uuid() });
@@ -63,28 +69,32 @@ function toOrderView(o: {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const dropshipOrderRoutes: FastifyPluginAsync = async (app) => {
-  const publisher = createPublisher(app.log as unknown as PublisherLogger);
-
   app.get('/v1/dropship/orders', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner', 'staff');
+    requireRole(request, 'editor');
     const { tenantId } = toDropshipContext(request);
     const query = ListQuery.parse(request.query);
 
-    const [orders, total] = await withTenant({ tenantId } as any, async (tx) => {
-      const where: any = { tenantId };
+    const [orders, total] = await withTenant({ tenantId }, async (tx) => {
+      const where: {
+        tenantId: string;
+        orderId?: string;
+        supplierId?: string;
+        status?: string;
+      } = { tenantId };
       if (query.orderId) where.orderId = query.orderId;
       if (query.supplierId) where.supplierId = query.supplierId;
       if (query.status) where.status = query.status;
       return Promise.all([
-        (tx as AnyTx).dropshipOrder.findMany({
+        tx.dropshipOrder.findMany({
           where,
           orderBy: { createdAt: 'desc' },
           take: query.take,
           skip: query.skip,
         }),
-        (tx as AnyTx).dropshipOrder.count({ where }),
+        tx.dropshipOrder.count({ where }),
       ]);
     });
 
@@ -95,12 +105,12 @@ const dropshipOrderRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/dropship/orders/:id', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner', 'staff');
+    requireRole(request, 'editor');
     const { tenantId } = toDropshipContext(request);
     const { id } = PathId.parse(request.params);
 
-    const order = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipOrder.findFirst({ where: { id, tenantId } });
+    const order = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipOrder.findFirst({ where: { id, tenantId } });
     });
     if (!order) throw notFound('Dropship order not found');
 
@@ -112,16 +122,16 @@ const dropshipOrderRoutes: FastifyPluginAsync = async (app) => {
   // but exposed here for manual recovery or admin use.
   app.post('/v1/dropship/orders/route/:orderId', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner');
+    requireRole(request, 'admin');
     const { tenantId, userId } = toDropshipContext(request);
     const { orderId } = PathOrderId.parse(request.params);
 
-    const order = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).order.findFirst({ where: { id: orderId, tenantId } });
+    const order = await withTenant({ tenantId }, async (tx) => {
+      return tx.order.findFirst({ where: { id: orderId, tenantId } });
     });
     if (!order) throw notFound('Order not found');
 
-    await publishEvent(publisher, 'dropship.order.route', tenantId, userId, { orderId }, app.log);
+    await publishEvent(publisher, 'dropship.order.route', tenantId, userId, { orderId }, pubLogger);
 
     return reply.send(ok({ orderId, status: 'routing_queued' }));
   });

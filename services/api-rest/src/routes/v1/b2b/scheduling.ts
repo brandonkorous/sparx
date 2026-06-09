@@ -22,17 +22,14 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { withTenant, type TxClient } from '@sparx/db';
+import { Prisma } from '@prisma/client';
+import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound, badRequest } from '@sparx/api-core/errors';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
 import { env } from '../../../env.js';
-
-// ServiceType + ServiceAppointment are added by migration 20260717000000.
-// Cast through `any` until `prisma generate` runs against the migrated schema.
-type AnyTx = TxClient & Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
@@ -162,7 +159,7 @@ function toApptView(a: {
     id: string;
     firstName: string | null;
     lastName: string | null;
-    email: string;
+    email: string | null;
   } | null;
   confirmedBy?: { id: string; name: string | null } | null;
 }) {
@@ -174,7 +171,8 @@ function toApptView(a: {
     companyName: a.b2bAccount?.companyName ?? null,
     customerId: a.customerId,
     customerName: a.customer
-      ? [a.customer.firstName, a.customer.lastName].filter(Boolean).join(' ') || a.customer.email
+      ? [a.customer.firstName, a.customer.lastName].filter(Boolean).join(' ') ||
+        (a.customer.email ?? null)
       : null,
     customerEmail: a.customer?.email ?? null,
     scheduledAt: a.scheduledAt.toISOString(),
@@ -204,32 +202,33 @@ const APPT_INCLUDE = {
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
   // ══ Service types ══════════════════════════════════════════════════════════
 
   app.get('/v1/b2b/service-types', async (request) => {
     await requireB2bModule(request);
-    await requireRole(request, 'viewer');
+    requireRole(request, 'viewer');
     const ctx = toB2bContext(request);
 
-    const types = (await withTenant(ctx, (tx) =>
-      (tx as AnyTx).serviceType.findMany({
+    const types = await withTenant(ctx, (tx) =>
+      tx.serviceType.findMany({
         where: { tenantId: ctx.tenantId, deletedAt: null },
         orderBy: { name: 'asc' },
       })
-    )) as Parameters<typeof toTypeView>[0][];
+    );
 
     return ok({ types: types.map(toTypeView) });
   });
 
   app.post('/v1/b2b/service-types', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'admin');
+    requireRole(request, 'admin');
     const ctx = toB2bContext(request);
     const body = ServiceTypeBody.parse(request.body);
 
-    const type = (await withTenant(ctx, (tx) =>
-      (tx as AnyTx).serviceType.create({
+    const type = await withTenant(ctx, (tx) =>
+      tx.serviceType.create({
         data: {
           tenantId: ctx.tenantId,
           name: body.name,
@@ -241,26 +240,26 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
           notes: body.notes ?? null,
         },
       })
-    )) as Parameters<typeof toTypeView>[0];
+    );
 
     return reply.status(201).send(ok(toTypeView(type)));
   });
 
   app.patch('/v1/b2b/service-types/:id', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'admin');
+    requireRole(request, 'admin');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
     const body = ServiceTypePatchBody.parse(request.body);
 
     const type = await withTenant(ctx, async (tx) => {
-      const existing = await (tx as AnyTx).serviceType.findFirst({
+      const existing = await tx.serviceType.findFirst({
         where: { id, tenantId: ctx.tenantId, deletedAt: null },
         select: { id: true },
       });
       if (!existing) throw notFound('Service type not found');
 
-      return (tx as AnyTx).serviceType.update({
+      return tx.serviceType.update({
         where: { id },
         data: {
           ...(body.name !== undefined ? { name: body.name } : {}),
@@ -271,7 +270,7 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
           ...(body.requiresVehicle !== undefined ? { requiresVehicle: body.requiresVehicle } : {}),
           ...(body.notes !== undefined ? { notes: body.notes } : {}),
         },
-      }) as Promise<Parameters<typeof toTypeView>[0]>;
+      });
     });
 
     return reply.send(ok(toTypeView(type)));
@@ -279,17 +278,17 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
 
   app.delete('/v1/b2b/service-types/:id', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'admin');
+    requireRole(request, 'admin');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
 
     await withTenant(ctx, async (tx) => {
-      const existing = await (tx as AnyTx).serviceType.findFirst({
+      const existing = await tx.serviceType.findFirst({
         where: { id, tenantId: ctx.tenantId, deletedAt: null },
         select: { id: true },
       });
       if (!existing) throw notFound('Service type not found');
-      await (tx as AnyTx).serviceType.update({ where: { id }, data: { deletedAt: new Date() } });
+      await tx.serviceType.update({ where: { id }, data: { deletedAt: new Date() } });
     });
 
     return reply.status(204).send();
@@ -299,11 +298,11 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/b2b/appointments', async (request) => {
     await requireB2bModule(request);
-    await requireRole(request, 'viewer');
+    requireRole(request, 'viewer');
     const ctx = toB2bContext(request);
     const q = ListAppointmentsQuery.parse(request.query);
 
-    const where: Record<string, unknown> = { tenantId: ctx.tenantId };
+    const where: Prisma.ServiceAppointmentWhereInput = { tenantId: ctx.tenantId };
     if (q.status) where.status = q.status;
     if (q.account_id) where.b2bAccountId = q.account_id;
     if (q.from || q.to) {
@@ -315,37 +314,35 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
 
     const { items, total } = await withTenant(ctx, async (tx) => {
       const [items, total] = await Promise.all([
-        (tx as AnyTx).serviceAppointment.findMany({
+        tx.serviceAppointment.findMany({
           where,
           include: APPT_INCLUDE,
           orderBy: { scheduledAt: 'asc' },
           take: q.take,
           skip: q.skip,
         }),
-        (tx as AnyTx).serviceAppointment.count({ where }),
+        tx.serviceAppointment.count({ where }),
       ]);
       return { items, total };
     });
 
-    type ApptRow = Parameters<typeof toApptView>[0];
-
-    return ok(paged((items as ApptRow[]).map(toApptView), { total, skip: q.skip, take: q.take }));
+    return ok(paged(items.map(toApptView), { total, skip: q.skip, take: q.take }));
   });
 
   app.post('/v1/b2b/appointments', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const body = AppointmentBody.parse(request.body);
 
     const appt = await withTenant(ctx, async (tx) => {
-      const svcType = await (tx as AnyTx).serviceType.findFirst({
+      const svcType = await tx.serviceType.findFirst({
         where: { id: body.serviceTypeId, tenantId: ctx.tenantId, deletedAt: null, isActive: true },
         select: { id: true, durationMinutes: true },
       });
       if (!svcType) throw notFound('Service type not found or inactive');
 
-      return (tx as AnyTx).serviceAppointment.create({
+      return tx.serviceAppointment.create({
         data: {
           tenantId: ctx.tenantId,
           serviceTypeId: body.serviceTypeId,
@@ -353,13 +350,15 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
           customerId: body.customerId ?? null,
           scheduledAt: new Date(body.scheduledAt),
           durationMinutes: body.durationMinutes ?? svcType.durationMinutes,
-          vehicleRef: body.vehicleRef ?? null,
-          partsLinked: body.partsLinked ?? [],
+          vehicleRef: body.vehicleRef !== undefined
+            ? (body.vehicleRef as Prisma.InputJsonValue)
+            : Prisma.DbNull,
+          partsLinked: (body.partsLinked ?? []) as Prisma.InputJsonValue,
           notes: body.notes ?? null,
           staffNotes: body.staffNotes ?? null,
         },
         include: APPT_INCLUDE,
-      }) as Promise<Parameters<typeof toApptView>[0]>;
+      });
     });
 
     await publishEvent(
@@ -376,16 +375,16 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/b2b/appointments/:id', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'viewer');
+    requireRole(request, 'viewer');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
 
-    const appt = (await withTenant(ctx, (tx) =>
-      (tx as AnyTx).serviceAppointment.findFirst({
+    const appt = await withTenant(ctx, (tx) =>
+      tx.serviceAppointment.findFirst({
         where: { id, tenantId: ctx.tenantId },
         include: APPT_INCLUDE,
       })
-    )) as Parameters<typeof toApptView>[0] | null;
+    );
 
     if (!appt) throw notFound('Appointment not found');
     return reply.send(ok(toApptView(appt)));
@@ -393,13 +392,13 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
 
   app.patch('/v1/b2b/appointments/:id', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
     const body = AppointmentPatchBody.parse(request.body);
 
     const appt = await withTenant(ctx, async (tx) => {
-      const existing = await (tx as AnyTx).serviceAppointment.findFirst({
+      const existing = await tx.serviceAppointment.findFirst({
         where: { id, tenantId: ctx.tenantId },
         select: { id: true, status: true },
       });
@@ -408,18 +407,27 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
         throw badRequest(`Cannot edit a ${existing.status} appointment`);
       }
 
-      return (tx as AnyTx).serviceAppointment.update({
+      return tx.serviceAppointment.update({
         where: { id },
         data: {
           ...(body.scheduledAt !== undefined ? { scheduledAt: new Date(body.scheduledAt) } : {}),
           ...(body.durationMinutes !== undefined ? { durationMinutes: body.durationMinutes } : {}),
-          ...(body.vehicleRef !== undefined ? { vehicleRef: body.vehicleRef } : {}),
-          ...(body.partsLinked !== undefined ? { partsLinked: body.partsLinked } : {}),
+          ...(body.vehicleRef !== undefined
+            ? {
+                vehicleRef:
+                  body.vehicleRef !== null
+                    ? (body.vehicleRef as Prisma.InputJsonValue)
+                    : Prisma.DbNull,
+              }
+            : {}),
+          ...(body.partsLinked !== undefined
+            ? { partsLinked: body.partsLinked as Prisma.InputJsonValue }
+            : {}),
           ...(body.notes !== undefined ? { notes: body.notes } : {}),
           ...(body.staffNotes !== undefined ? { staffNotes: body.staffNotes } : {}),
         },
         include: APPT_INCLUDE,
-      }) as Promise<Parameters<typeof toApptView>[0]>;
+      });
     });
 
     return reply.send(ok(toApptView(appt)));
@@ -427,13 +435,13 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
 
   app.post('/v1/b2b/appointments/:id/confirm', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
     const body = ConfirmBody.parse(request.body);
 
-    const { appt, customerEmail, serviceTypeName } = await withTenant(ctx, async (tx) => {
-      const existing = await (tx as AnyTx).serviceAppointment.findFirst({
+    const { apptView, customerEmail, serviceTypeName } = await withTenant(ctx, async (tx) => {
+      const existing = await tx.serviceAppointment.findFirst({
         where: { id, tenantId: ctx.tenantId },
         select: { id: true, status: true },
       });
@@ -442,7 +450,7 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
         throw badRequest(`Appointment is already ${existing.status}`);
       }
 
-      const updated = (await (tx as AnyTx).serviceAppointment.update({
+      const updated = await tx.serviceAppointment.update({
         where: { id },
         data: {
           status: 'confirmed',
@@ -451,10 +459,10 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
           ...(body.notes !== undefined ? { staffNotes: body.notes } : {}),
         },
         include: APPT_INCLUDE,
-      })) as Parameters<typeof toApptView>[0];
+      });
 
       return {
-        appt: updated,
+        apptView: toApptView(updated),
         customerEmail: updated.customer?.email ?? null,
         serviceTypeName: updated.serviceType?.name ?? '',
       };
@@ -480,12 +488,12 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
           to: customerEmail,
           template: 'appointment-confirmation',
           props: {
-            customerName: appt.customerName ?? customerEmail,
+            customerName: apptView.customerName ?? customerEmail,
             serviceTypeName,
-            scheduledAt: appt.scheduledAt,
-            durationMinutes: appt.durationMinutes,
-            vehicleDescription: appt.vehicleRef
-              ? buildVehicleDescription(appt.vehicleRef as Record<string, unknown>)
+            scheduledAt: apptView.scheduledAt,
+            durationMinutes: apptView.durationMinutes,
+            vehicleDescription: apptView.vehicleRef
+              ? buildVehicleDescription(apptView.vehicleRef as Record<string, unknown>)
               : undefined,
           },
         },
@@ -493,17 +501,17 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
       );
     }
 
-    return reply.send(ok(toApptView(appt)));
+    return reply.send(ok(apptView));
   });
 
   app.post('/v1/b2b/appointments/:id/complete', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
 
     const appt = await withTenant(ctx, async (tx) => {
-      const existing = await (tx as AnyTx).serviceAppointment.findFirst({
+      const existing = await tx.serviceAppointment.findFirst({
         where: { id, tenantId: ctx.tenantId },
         select: { id: true, status: true },
       });
@@ -512,11 +520,11 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
       if (existing.status === 'cancelled')
         throw badRequest('Cannot complete a cancelled appointment');
 
-      return (tx as AnyTx).serviceAppointment.update({
+      return tx.serviceAppointment.update({
         where: { id },
         data: { status: 'completed', completedAt: new Date() },
         include: APPT_INCLUDE,
-      }) as Promise<Parameters<typeof toApptView>[0]>;
+      });
     });
 
     await publishEvent(
@@ -533,13 +541,13 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
 
   app.post('/v1/b2b/appointments/:id/cancel', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
     const body = CancelBody.parse(request.body);
 
-    const { appt, customerEmail, serviceTypeName } = await withTenant(ctx, async (tx) => {
-      const existing = await (tx as AnyTx).serviceAppointment.findFirst({
+    const { apptView, customerEmail, serviceTypeName } = await withTenant(ctx, async (tx) => {
+      const existing = await tx.serviceAppointment.findFirst({
         where: { id, tenantId: ctx.tenantId },
         select: { id: true, status: true },
       });
@@ -548,7 +556,7 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
         throw badRequest('Cannot cancel a completed appointment');
       if (existing.status === 'cancelled') throw badRequest('Appointment is already cancelled');
 
-      const updated = (await (tx as AnyTx).serviceAppointment.update({
+      const updated = await tx.serviceAppointment.update({
         where: { id },
         data: {
           status: 'cancelled',
@@ -556,10 +564,10 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
           cancellationReason: body.reason ?? null,
         },
         include: APPT_INCLUDE,
-      })) as Parameters<typeof toApptView>[0];
+      });
 
       return {
-        appt: updated,
+        apptView: toApptView(updated),
         customerEmail: updated.customer?.email ?? null,
         serviceTypeName: updated.serviceType?.name ?? '',
       };
@@ -584,9 +592,9 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
           to: customerEmail,
           template: 'appointment-cancelled',
           props: {
-            customerName: appt.customerName ?? customerEmail,
+            customerName: apptView.customerName ?? customerEmail,
             serviceTypeName,
-            scheduledAt: appt.scheduledAt,
+            scheduledAt: apptView.scheduledAt,
             cancellationReason: body.reason ?? undefined,
           },
         },
@@ -594,7 +602,7 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
       );
     }
 
-    return reply.send(ok(toApptView(appt)));
+    return reply.send(ok(apptView));
   });
 };
 

@@ -6,12 +6,11 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { withTenant, type TxClient } from '@sparx/db';
+import type { Prisma } from '@prisma/client';
+import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
-
-type AnyTx = TxClient & Record<string, any>;
 
 interface LineItem {
   sku: string;
@@ -41,6 +40,7 @@ function lineItemsCost(lineItems: unknown): number {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
   // ── Summary + per-supplier breakdown ─────────────────────────────────────────
 
@@ -50,10 +50,8 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId } = toDropshipContext(request);
     const query = AnalyticsQuery.parse(request.query);
 
-    const [dsOrders, orderItems, suppliers] = await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-
-      const dsWhere: any = { tenantId, status: { in: ['submitted', 'shipped', 'delivered'] } };
+    const [dsOrders, orderItems, suppliers] = await withTenant({ tenantId }, async (tx) => {
+      const dsWhere: Prisma.DropshipOrderWhereInput = { tenantId, status: { in: ['submitted', 'shipped', 'delivered'] } };
       if (query.supplierId) dsWhere.supplierId = query.supplierId;
       if (query.from || query.to) {
         dsWhere.createdAt = {
@@ -62,7 +60,7 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
         };
       }
 
-      const dsos = await anyTx.dropshipOrder.findMany({
+      const dsos = await tx.dropshipOrder.findMany({
         where: dsWhere,
         select: {
           id: true,
@@ -74,10 +72,10 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
       });
 
       // Fetch revenue for the linked order items
-      const orderIds = [...new Set(dsos.map((d: any) => d.orderId))];
+      const orderIds = [...new Set(dsos.map((d) => d.orderId))];
       const items =
         orderIds.length > 0
-          ? await anyTx.orderItem.findMany({
+          ? await tx.orderItem.findMany({
               where: {
                 tenantId,
                 orderId: { in: orderIds },
@@ -92,23 +90,18 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
             })
           : [];
 
-      const sups = await anyTx.dropshipSupplier.findMany({
+      const sups = await tx.dropshipSupplier.findMany({
         where: { tenantId, deletedAt: null },
         select: { id: true, name: true },
       });
 
-      return [dsos, items, sups];
+      return [dsos, items, sups] as const;
     });
 
     // Build a revenue map: orderId → supplierId → revenueCents
     const revenueMap = new Map<string, Map<string, number>>();
-    for (const item of orderItems as Array<{
-      orderId: string;
-      quantity: number;
-      unitPrice: any;
-      variant: { dropshipSourceId: string | null };
-    }>) {
-      const supplierId = item.variant.dropshipSourceId;
+    for (const item of orderItems) {
+      const supplierId = item.variant?.dropshipSourceId;
       if (!supplierId) continue;
       const orderMap = revenueMap.get(item.orderId) ?? new Map<string, number>();
       const existing = orderMap.get(supplierId) ?? 0;
@@ -121,7 +114,7 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
       string,
       { name: string; costCents: number; revenueCents: number; orders: number }
     >();
-    for (const sup of suppliers as Array<{ id: string; name: string }>) {
+    for (const sup of suppliers) {
       supplierMap.set(sup.id, { name: sup.name, costCents: 0, revenueCents: 0, orders: 0 });
     }
 
@@ -129,12 +122,7 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
     let totalRevenueCents = 0;
     let totalOrders = 0;
 
-    for (const dso of dsOrders as Array<{
-      id: string;
-      orderId: string;
-      supplierId: string;
-      lineItems: unknown;
-    }>) {
+    for (const dso of dsOrders) {
       const cost = lineItemsCost(dso.lineItems);
       const revenue = revenueMap.get(dso.orderId)?.get(dso.supplierId) ?? 0;
 
@@ -189,9 +177,11 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId } = toDropshipContext(request);
     const query = OrdersQuery.parse(request.query);
 
-    const [dsOrders, total] = await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-      const where: any = { tenantId, status: { in: ['submitted', 'shipped', 'delivered'] } };
+    const [dsOrders, total] = await withTenant({ tenantId }, async (tx) => {
+      const where: Prisma.DropshipOrderWhereInput = {
+        tenantId,
+        status: { in: ['submitted', 'shipped', 'delivered'] },
+      };
       if (query.supplierId) where.supplierId = query.supplierId;
       if (query.from || query.to) {
         where.createdAt = {
@@ -200,7 +190,7 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
         };
       }
       return Promise.all([
-        anyTx.dropshipOrder.findMany({
+        tx.dropshipOrder.findMany({
           where,
           include: {
             order: {
@@ -218,25 +208,11 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
           take: query.take,
           skip: query.skip,
         }),
-        anyTx.dropshipOrder.count({ where }),
+        tx.dropshipOrder.count({ where }),
       ]);
     });
 
-    const rows = (
-      dsOrders as Array<{
-        id: string;
-        orderId: string;
-        supplierId: string;
-        status: string;
-        lineItems: unknown;
-        createdAt: Date;
-        order: {
-          orderNumber: string;
-          items: Array<{ quantity: number; unitPrice: any }>;
-        };
-        supplier: { name: string };
-      }>
-    ).map((dso) => {
+    const rows = dsOrders.map((dso) => {
       const costCents = lineItemsCost(dso.lineItems);
       const revenueCents = dso.order.items.reduce(
         (sum, item) => sum + item.quantity * Math.round(Number(item.unitPrice) * 100),

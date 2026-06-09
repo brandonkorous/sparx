@@ -9,13 +9,11 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { withTenant, type TxClient } from '@sparx/db';
+import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
-
-type AnyTx = TxClient & Record<string, any>;
 
 const CreateLocationBody = z.object({
   name: z.string().min(1).max(255),
@@ -39,6 +37,7 @@ const LevelsQuery = z.object({
   skip: z.coerce.number().int().min(0).default(0),
 });
 
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
   // ── List ─────────────────────────────────────────────────────────────────────
 
@@ -47,9 +46,8 @@ const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'admin');
     const { tenantId } = toInventoryContext(request);
 
-    const locations = await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-      return anyTx.stockLocation.findMany({
+    const locations = await withTenant({ tenantId }, async (tx) => {
+      return tx.stockLocation.findMany({
         where: { tenantId, active: true },
         orderBy: [{ isDefault: 'desc' }, { name: 'asc' }],
       });
@@ -66,15 +64,14 @@ const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId } = toInventoryContext(request);
     const body = CreateLocationBody.parse(request.body);
 
-    const location = await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
+    const location = await withTenant({ tenantId }, async (tx) => {
       if (body.isDefault) {
-        await anyTx.stockLocation.updateMany({
+        await tx.stockLocation.updateMany({
           where: { tenantId, isDefault: true },
           data: { isDefault: false },
         });
       }
-      return anyTx.stockLocation.create({ data: { tenantId, ...body } });
+      return tx.stockLocation.create({ data: { tenantId, ...body } });
     });
 
     return reply.status(201).send(ok(location));
@@ -88,9 +85,8 @@ const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId } = toInventoryContext(request);
     const { id } = request.params as { id: string };
 
-    const location = await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-      return anyTx.stockLocation.findFirst({ where: { id, tenantId } });
+    const location = await withTenant({ tenantId }, async (tx) => {
+      return tx.stockLocation.findFirst({ where: { id, tenantId } });
     });
 
     if (!location) throw notFound('Stock location not found');
@@ -106,17 +102,16 @@ const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
     const { id } = request.params as { id: string };
     const body = UpdateLocationBody.parse(request.body);
 
-    const location = await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-      const existing = await anyTx.stockLocation.findFirst({ where: { id, tenantId } });
+    const location = await withTenant({ tenantId }, async (tx) => {
+      const existing = await tx.stockLocation.findFirst({ where: { id, tenantId } });
       if (!existing) throw notFound('Stock location not found');
       if (body.isDefault) {
-        await anyTx.stockLocation.updateMany({
+        await tx.stockLocation.updateMany({
           where: { tenantId, isDefault: true, id: { not: id } },
           data: { isDefault: false },
         });
       }
-      return anyTx.stockLocation.update({
+      return tx.stockLocation.update({
         where: { id },
         data: { ...body, updatedAt: new Date() },
       });
@@ -133,11 +128,10 @@ const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId } = toInventoryContext(request);
     const { id } = request.params as { id: string };
 
-    await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-      const existing = await anyTx.stockLocation.findFirst({ where: { id, tenantId } });
+    await withTenant({ tenantId }, async (tx) => {
+      const existing = await tx.stockLocation.findFirst({ where: { id, tenantId } });
       if (!existing) throw notFound('Stock location not found');
-      await anyTx.stockLocation.update({
+      await tx.stockLocation.update({
         where: { id },
         data: { active: false, isDefault: false, updatedAt: new Date() },
       });
@@ -155,12 +149,11 @@ const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
     const { id } = request.params as { id: string };
     const q = LevelsQuery.parse(request.query);
 
-    const [levels, total] = await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-      const loc = await anyTx.stockLocation.findFirst({ where: { id, tenantId } });
+    const [levels, total] = await withTenant({ tenantId }, async (tx) => {
+      const loc = await tx.stockLocation.findFirst({ where: { id, tenantId } });
       if (!loc) throw notFound('Stock location not found');
       return Promise.all([
-        anyTx.stockLevel.findMany({
+        tx.stockLevel.findMany({
           where: { tenantId, locationId: id },
           include: {
             variant: {
@@ -176,7 +169,7 @@ const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
           take: q.take,
           skip: q.skip,
         }),
-        anyTx.stockLevel.count({ where: { tenantId, locationId: id } }),
+        tx.stockLevel.count({ where: { tenantId, locationId: id } }),
       ]);
     });
 

@@ -45,7 +45,7 @@ function decodeOidcEmail(authHeader: string | undefined): string | null {
   }
 }
 
-const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
+async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
   if (req.method === 'GET' && req.url === '/healthz') {
     res.writeHead(200).end('ok');
     return;
@@ -56,7 +56,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   }
 
   if (env.PUBSUB_INVOKER_SA) {
-    const callerEmail = decodeOidcEmail(req.headers.authorization as string | undefined);
+    const callerEmail = decodeOidcEmail(req.headers.authorization);
     if (callerEmail !== env.PUBSUB_INVOKER_SA) {
       logger.warn({ callerEmail }, 'inventory-worker: OIDC SA mismatch — rejecting');
       res.writeHead(403).end('forbidden');
@@ -101,10 +101,19 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   try {
     await handle(event, eventLog);
     res.writeHead(204).end();
-  } catch (err: any) {
-    eventLog.error({ err: err?.message }, 'inventory-worker: handler threw — will retry');
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    eventLog.error({ err: errMsg }, 'inventory-worker: handler threw — will retry');
     res.writeHead(500).end('internal error');
   }
+}
+
+const server = createServer((req: IncomingMessage, res: ServerResponse) => {
+  handleRequest(req, res).catch((err: unknown) => {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    logger.error({ err: errMsg }, 'inventory-worker: unhandled request error');
+    if (!res.writableEnded) res.writeHead(500).end('internal error');
+  });
 });
 
 server.listen(env.PORT, () => {

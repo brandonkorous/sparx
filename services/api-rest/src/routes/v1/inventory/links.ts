@@ -6,13 +6,11 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { withTenant, type TxClient } from '@sparx/db';
+import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound, conflict } from '@sparx/api-core/errors';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
-
-type AnyTx = TxClient & Record<string, any>;
 
 const CreateLinkBody = z.object({
   variantId: z.string().uuid(),
@@ -26,6 +24,7 @@ const ListQuery = z.object({
   skip: z.coerce.number().int().min(0).default(0),
 });
 
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const inventoryLinkRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/inventory/sources/:sourceId/links', async (request, reply) => {
     await requireInventoryModule(request);
@@ -34,14 +33,13 @@ const inventoryLinkRoutes: FastifyPluginAsync = async (app) => {
     const { sourceId } = request.params as { sourceId: string };
     const q = ListQuery.parse(request.query);
 
-    const [links, total] = await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-      const source = await anyTx.inventorySource.findFirst({
+    const [links, total] = await withTenant({ tenantId }, async (tx) => {
+      const source = await tx.inventorySource.findFirst({
         where: { id: sourceId, tenantId, deletedAt: null },
       });
       if (!source) throw notFound('Inventory source not found');
       return Promise.all([
-        anyTx.inventorySourceLink.findMany({
+        tx.inventorySourceLink.findMany({
           where: { tenantId, sourceId },
           include: {
             variant: { select: { id: true, sku: true, title: true } },
@@ -51,7 +49,7 @@ const inventoryLinkRoutes: FastifyPluginAsync = async (app) => {
           take: q.take,
           skip: q.skip,
         }),
-        anyTx.inventorySourceLink.count({ where: { tenantId, sourceId } }),
+        tx.inventorySourceLink.count({ where: { tenantId, sourceId } }),
       ]);
     });
 
@@ -65,15 +63,14 @@ const inventoryLinkRoutes: FastifyPluginAsync = async (app) => {
     const { sourceId } = request.params as { sourceId: string };
     const body = CreateLinkBody.parse(request.body);
 
-    const link = await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-      const source = await anyTx.inventorySource.findFirst({
+    const link = await withTenant({ tenantId }, async (tx) => {
+      const source = await tx.inventorySource.findFirst({
         where: { id: sourceId, tenantId, deletedAt: null },
       });
       if (!source) throw notFound('Inventory source not found');
 
       // Check unique constraint before hitting DB error
-      const existing = await anyTx.inventorySourceLink.findFirst({
+      const existing = await tx.inventorySourceLink.findFirst({
         where: {
           tenantId,
           sourceId,
@@ -83,7 +80,7 @@ const inventoryLinkRoutes: FastifyPluginAsync = async (app) => {
       });
       if (existing) throw conflict('A link for this SKU/location already exists on this source');
 
-      return anyTx.inventorySourceLink.create({
+      return tx.inventorySourceLink.create({
         data: { tenantId, sourceId, ...body },
       });
     });
@@ -97,13 +94,12 @@ const inventoryLinkRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId } = toInventoryContext(request);
     const { sourceId, id } = request.params as { sourceId: string; id: string };
 
-    await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-      const link = await anyTx.inventorySourceLink.findFirst({
+    await withTenant({ tenantId }, async (tx) => {
+      const link = await tx.inventorySourceLink.findFirst({
         where: { id, tenantId, sourceId },
       });
       if (!link) throw notFound('Link not found');
-      await anyTx.inventorySourceLink.delete({ where: { id } });
+      await tx.inventorySourceLink.delete({ where: { id } });
     });
 
     return reply.status(204).send();

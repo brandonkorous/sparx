@@ -11,13 +11,17 @@
 // retries the message.
 
 import type { Logger } from 'pino';
-import { withTenant, type TxClient } from '@sparx/db';
-import { publishEvent } from '@sparx/events';
-import { PubSub } from '@google-cloud/pubsub';
+import { withTenant } from '@sparx/db';
+import { publishEvent, createPublisher, type PublisherLogger } from '@sparx/events';
 import { parseCsvInventory } from '../csv.js';
 import { env } from '../env.js';
 
-type AnyTx = TxClient & Record<string, any>;
+const pubLogger: PublisherLogger = {
+  info: (obj, msg) => console.info(msg ?? '', obj),
+  warn: (obj, msg) => console.warn(msg ?? '', obj),
+  error: (obj, msg) => console.error(msg ?? '', obj),
+};
+const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
 
 export interface SyncStartedPayload {
   tenantId: string;
@@ -30,12 +34,8 @@ export async function handleSyncStarted(payload: SyncStartedPayload, log: Logger
 
   log.info({ tenantId, sourceId }, 'inventory-worker: sync started');
 
-  let source: any;
-  await withTenant({ tenantId } as any, async (tx) => {
-    const anyTx = tx as AnyTx;
-    source = await anyTx.inventorySource.findUniqueOrThrow({
-      where: { id: sourceId },
-    });
+  const source = await withTenant({ tenantId }, async (tx) => {
+    return tx.inventorySource.findUniqueOrThrow({ where: { id: sourceId } });
   });
 
   if (source.status === 'paused' || source.deletedAt) {
@@ -43,18 +43,19 @@ export async function handleSyncStarted(payload: SyncStartedPayload, log: Logger
     return;
   }
 
-  const publisher = new PubSub({ projectId: env.GCP_PROJECT_ID });
-
   try {
     if (source.type === 'csv') {
-      await syncCsvSource(source, tenantId, log);
+      const cfg =
+        typeof source.config === 'object' && source.config !== null && !Array.isArray(source.config)
+          ? (source.config as Record<string, unknown>)
+          : {};
+      await syncCsvSource(source.id, cfg, tenantId, log);
     } else {
       log.warn({ type: source.type }, 'inventory-worker: unsupported source type — skipping');
     }
 
-    await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-      await anyTx.inventorySource.update({
+    await withTenant({ tenantId }, async (tx) => {
+      await tx.inventorySource.update({
         where: { id: sourceId },
         data: { lastSyncAt: new Date(), status: 'active', updatedAt: new Date() },
       });
@@ -66,16 +67,16 @@ export async function handleSyncStarted(payload: SyncStartedPayload, log: Logger
       tenantId,
       payload.userId ?? null,
       { sourceId, syncedAt: new Date().toISOString() },
-      log
+      pubLogger
     );
 
     log.info({ tenantId, sourceId }, 'inventory-worker: sync completed');
-  } catch (err: any) {
-    log.error({ tenantId, sourceId, err: err?.message }, 'inventory-worker: sync failed');
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    log.error({ tenantId, sourceId, err: errMsg }, 'inventory-worker: sync failed');
 
-    await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
-      await anyTx.inventorySource.update({
+    await withTenant({ tenantId }, async (tx) => {
+      await tx.inventorySource.update({
         where: { id: sourceId },
         data: { status: 'error', updatedAt: new Date() },
       });
@@ -86,21 +87,26 @@ export async function handleSyncStarted(payload: SyncStartedPayload, log: Logger
       'inventory.source.error',
       tenantId,
       payload.userId ?? null,
-      { sourceId, error: err?.message ?? 'Unknown error' },
-      log
+      { sourceId, error: errMsg },
+      pubLogger
     ).catch(() => undefined);
 
     throw err;
   }
 }
 
-async function syncCsvSource(source: any, tenantId: string, log: Logger): Promise<void> {
-  const csvUrl: string | undefined = source.config?.csvUrl;
+async function syncCsvSource(
+  sourceId: string,
+  config: Record<string, unknown>,
+  tenantId: string,
+  log: Logger
+): Promise<void> {
+  const csvUrl = typeof config.csvUrl === 'string' ? config.csvUrl : undefined;
   if (!csvUrl) {
-    throw new Error(`inventory-worker: CSV source ${source.id} has no csvUrl in config`);
+    throw new Error(`inventory-worker: CSV source ${sourceId} has no csvUrl in config`);
   }
 
-  log.info({ sourceId: source.id, csvUrl }, 'inventory-worker: fetching CSV');
+  log.info({ sourceId, csvUrl }, 'inventory-worker: fetching CSV');
 
   const res = await fetch(csvUrl, {
     signal: AbortSignal.timeout(30_000),
@@ -110,16 +116,22 @@ async function syncCsvSource(source: any, tenantId: string, log: Logger): Promis
   const csvText = await res.text();
 
   const rows = parseCsvInventory(csvText, log);
-  log.info({ sourceId: source.id, rowCount: rows.length }, 'inventory-worker: parsed rows');
+  log.info({ sourceId, rowCount: rows.length }, 'inventory-worker: parsed rows');
 
   if (rows.length === 0) return;
 
   // Load all active links for this source in one query.
-  let links: any[] = [];
-  await withTenant({ tenantId } as any, async (tx) => {
-    const anyTx = tx as AnyTx;
-    links = await anyTx.inventorySourceLink.findMany({
-      where: { tenantId, sourceId: source.id, status: 'active' },
+  type LinkRecord = {
+    id: string;
+    variantId: string;
+    locationId: string;
+    externalSku: string;
+    externalLocation: string | null;
+  };
+
+  const links = await withTenant({ tenantId }, async (tx) => {
+    return tx.inventorySourceLink.findMany({
+      where: { tenantId, sourceId, status: 'active' },
       select: {
         id: true,
         variantId: true,
@@ -131,15 +143,8 @@ async function syncCsvSource(source: any, tenantId: string, log: Logger): Promis
   });
 
   // Build lookup: "sku|location" → link (null location = wildcard match on sku only)
-  type LinkRecord = {
-    id: string;
-    variantId: string;
-    locationId: string;
-    externalSku: string;
-    externalLocation: string | null;
-  };
   const linkMap = new Map<string, LinkRecord>();
-  for (const link of links as LinkRecord[]) {
+  for (const link of links) {
     const key =
       link.externalLocation !== null
         ? `${link.externalSku}|${link.externalLocation}`
@@ -167,18 +172,17 @@ async function syncCsvSource(source: any, tenantId: string, log: Logger): Promis
     }
 
     const available = Math.max(0, row.quantity);
-    await withTenant({ tenantId } as any, async (tx) => {
-      const anyTx = tx as AnyTx;
+    await withTenant({ tenantId }, async (tx) => {
       // Upsert by (tenantId, variantId, locationId).
       // We set onHand and available; allocated is managed separately by order events.
-      const existing = await anyTx.stockLevel.findFirst({
+      const existing = await tx.stockLevel.findFirst({
         where: { tenantId, variantId: link.variantId, locationId: link.locationId },
         select: { id: true, allocated: true },
       });
 
       if (existing) {
-        const alloc = existing.allocated ?? 0;
-        await anyTx.stockLevel.update({
+        const alloc = Number(existing.allocated ?? 0);
+        await tx.stockLevel.update({
           where: { id: existing.id },
           data: {
             onHand: row.quantity,
@@ -187,7 +191,7 @@ async function syncCsvSource(source: any, tenantId: string, log: Logger): Promis
           },
         });
       } else {
-        await anyTx.stockLevel.create({
+        await tx.stockLevel.create({
           data: {
             tenantId,
             variantId: link.variantId,
@@ -203,5 +207,5 @@ async function syncCsvSource(source: any, tenantId: string, log: Logger): Promis
     upserted++;
   }
 
-  log.info({ sourceId: source.id, upserted, unmatched }, 'inventory-worker: stock levels updated');
+  log.info({ sourceId, upserted, unmatched }, 'inventory-worker: stock levels updated');
 }
