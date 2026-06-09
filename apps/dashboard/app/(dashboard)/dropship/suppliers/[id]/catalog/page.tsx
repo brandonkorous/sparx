@@ -1,10 +1,11 @@
 export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
-import { Stack, Text, Badge, Button } from '@sparx/ui';
-import { ChevronLeft, RefreshCw } from 'lucide-react';
+import { Stack, Text, Badge, Button, Input } from '@sparx/ui';
+import { ChevronLeft } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import { ImportButton } from './_components/import-button';
+import { SyncButton } from './_components/sync-button';
 import { notFound } from 'next/navigation';
 
 interface DropshipProduct {
@@ -65,6 +66,7 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
 
   const prevSkip = Math.max(0, skip - take);
   const nextSkip = skip + take;
+  const qParam = q ? `&q=${encodeURIComponent(q)}` : '';
 
   return (
     <Stack gap={6}>
@@ -83,21 +85,48 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
             {total} products · Browse and import into your catalog
           </Text>
         </Stack>
-        <Stack direction="row" gap={2}>
-          <Link href={`/dropship/suppliers/${id}/catalog?sync=1`}>
-            <Button color="neutral" variant="outline" size="sm">
-              <RefreshCw className="mr-1 h-4 w-4" /> Sync now
-            </Button>
-          </Link>
-        </Stack>
+        <SyncButton supplierId={id} />
       </Stack>
+
+      {/* Search */}
+      <form method="GET">
+        <Stack direction="row" gap={2}>
+          <Input
+            name="q"
+            defaultValue={q ?? ''}
+            placeholder="Search products…"
+            className="max-w-sm"
+          />
+          <Button type="submit" color="neutral" variant="outline" size="sm">
+            Search
+          </Button>
+          {q && (
+            <Link href={`/dropship/suppliers/${id}/catalog`}>
+              <Button type="button" color="neutral" variant="ghost" size="sm">
+                Clear
+              </Button>
+            </Link>
+          )}
+        </Stack>
+      </form>
 
       {products.length === 0 ? (
         <div className="rounded-lg border border-dashed border-[var(--color-border)] p-12 text-center">
-          <Text className="mb-1 font-medium">No catalog entries yet</Text>
-          <Text size="sm" className="text-[var(--color-muted-foreground)]">
-            Trigger a catalog sync to pull products from this supplier.
-          </Text>
+          {q ? (
+            <>
+              <Text className="mb-1 font-medium">No products match &ldquo;{q}&rdquo;</Text>
+              <Text size="sm" className="text-[var(--color-muted-foreground)]">
+                Try a different search term or clear the filter.
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text className="mb-1 font-medium">No catalog entries yet</Text>
+              <Text size="sm" className="text-[var(--color-muted-foreground)]">
+                Trigger a catalog sync to pull products from this supplier.
+              </Text>
+            </>
+          )}
         </div>
       ) : (
         <>
@@ -116,7 +145,7 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
               </thead>
               <tbody className="divide-y divide-[var(--color-border)]">
                 {products.map((p) => (
-                  <tr key={p.id} className="hover:bg-[var(--color-muted/50)]">
+                  <tr key={p.id} className="hover:bg-[var(--color-muted)]">
                     <td className="px-4 py-3">
                       <Stack direction="row" gap={3} className="items-center">
                         {p.images[0] ? (
@@ -169,14 +198,14 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
                 {skip + 1}–{Math.min(skip + take, total)} of {total}
               </Text>
               {skip > 0 && (
-                <Link href={`/dropship/suppliers/${id}/catalog?skip=${prevSkip}`}>
+                <Link href={`/dropship/suppliers/${id}/catalog?skip=${prevSkip}${qParam}`}>
                   <Button color="neutral" variant="outline" size="sm">
                     Previous
                   </Button>
                 </Link>
               )}
               {nextSkip < total && (
-                <Link href={`/dropship/suppliers/${id}/catalog?skip=${nextSkip}`}>
+                <Link href={`/dropship/suppliers/${id}/catalog?skip=${nextSkip}${qParam}`}>
                   <Button color="neutral" variant="outline" size="sm">
                     Next
                   </Button>

@@ -93,7 +93,7 @@ export default async function DropshipSuppliersPage() {
             </thead>
             <tbody className="divide-y divide-[var(--color-border)]">
               {suppliers.map((s) => (
-                <tr key={s.id} className="hover:bg-[var(--color-muted/50)]">
+                <tr key={s.id} className="hover:bg-[var(--color-muted)]">
                   <td className="px-4 py-3">
                     <Link
                       href={`/dropship/suppliers/${s.id}/catalog`}
