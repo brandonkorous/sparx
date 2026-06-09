@@ -240,7 +240,7 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       data.brandOverride = input.brandOverride ?? Prisma.DbNull;
     }
     if (input.moduleScope !== undefined) {
-      data.moduleScope = input.moduleScope as Prisma.InputJsonValue;
+      data.moduleScope = input.moduleScope;
     }
 
     const row = await withTenant({ tenantId: auth.tenantId, userId: auth.actorId }, async (tx) => {
