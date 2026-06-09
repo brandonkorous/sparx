@@ -24,7 +24,6 @@ import {
   AlertTriangle,
   ArrowRightLeft,
   CalendarClock,
-  CheckCircle2,
   ExternalLink,
   Globe,
   Lock,
@@ -178,7 +177,7 @@ function DomainRow({
       </div>
 
       {/* Expiry + registration info for purchased */}
-      {isPurchased && (d.expiresAt || d.registeredAt) && (
+      {isPurchased && (d.expiresAt != null || d.registeredAt != null) && (
         <div className="flex flex-wrap gap-x-6 gap-y-1">
           {d.registeredAt && (
             <Text size="sm" variant="muted">
@@ -526,15 +525,17 @@ export function DomainsManager({ properties, domains }: DomainsManagerProps) {
       setSuggestions(null);
       return;
     }
-    debounceRef.current = setTimeout(async () => {
-      setSearching(true);
-      const res = await searchDomains(value.trim());
-      setSearching(false);
-      if (res.ok) {
-        setSuggestions(res.data ?? []);
-      } else {
-        setSearchError(res.error ?? 'Search failed.');
-      }
+    debounceRef.current = setTimeout(() => {
+      void (async () => {
+        setSearching(true);
+        const res = await searchDomains(value.trim());
+        setSearching(false);
+        if (res.ok) {
+          setSuggestions(res.data ?? []);
+        } else {
+          setSearchError(res.error ?? 'Search failed.');
+        }
+      })();
     }, 300);
   }, []);
 

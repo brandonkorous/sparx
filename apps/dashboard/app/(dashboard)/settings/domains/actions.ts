@@ -107,7 +107,7 @@ export async function purchaseDomain(
       email: formData.get('email'),
       phone: formData.get('phone'),
       address1: formData.get('address1'),
-      address2: formData.get('address2') || undefined,
+      address2: formData.get('address2') ?? undefined,
       city: formData.get('city'),
       state: formData.get('state'),
       postalCode: formData.get('postalCode'),
