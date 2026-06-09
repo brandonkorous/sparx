@@ -97,6 +97,8 @@ model ProductVariant {
   reviews               ProductReview[]
   shippingProfileLinks  ShippingProfileVariant[]
   orderItems            OrderItem[]
+  stockLevels           StockLevel[]
+  inventorySourceLinks  InventorySourceLink[]
 
   @@unique([tenantId, sku], map: "product_variants_sku_unique")
   @@index([tenantId, productId])

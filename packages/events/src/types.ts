@@ -131,6 +131,14 @@ export type EventType =
   | 'dropship.order.shipped'
   | 'dropship.order.delivered'
   | 'dropship.order.failed'
+  // ─── Inventory Sync (docs/64 Inv Ph1) ──────────────────────────────────
+  // Source lifecycle
+  | 'inventory.source.created'
+  | 'inventory.source.sync_started'
+  | 'inventory.source.sync_completed'
+  | 'inventory.source.error'
+  // Stock level mutations
+  | 'inventory.levels.updated'
   // ─── Universal search (docs/39) ─────────────────────────────────────
   // Generic indexing signal: any module emits this post-commit so the
   // commerce-indexer (re)projects ONE entity into the universal `entities`
