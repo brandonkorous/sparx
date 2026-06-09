@@ -354,7 +354,7 @@ export interface DropshipMarginReport {
 
 function lineItemsCost(lineItems: unknown): number {
   if (!Array.isArray(lineItems)) return 0;
-  return (lineItems as Array<{ quantity?: number; unitPriceCents?: number }>).reduce(
+  return (lineItems as { quantity?: number; unitPriceCents?: number }[]).reduce(
     (sum, li) => sum + (li.quantity ?? 0) * (li.unitPriceCents ?? 0),
     0
   );
