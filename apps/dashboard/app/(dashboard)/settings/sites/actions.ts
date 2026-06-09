@@ -14,10 +14,17 @@ import type { Domain, Property } from '@/lib/sites';
 export interface ActionResult {
   ok: boolean;
   error?: string;
+  /** Present when the API returned 402 — the dashboard should show an upsell. */
+  paymentRequired?: { module: string };
 }
 
 function fail(err: unknown): ActionResult {
-  return { ok: false, error: (err as ApiRestError).message ?? 'Something went wrong.' };
+  const e = err as ApiRestError;
+  if (e.status === 402) {
+    const module = (e.details as { module?: string } | undefined)?.module ?? 'builder';
+    return { ok: false, error: e.message, paymentRequired: { module } };
+  }
+  return { ok: false, error: e.message ?? 'Something went wrong.' };
 }
 
 // A site switch invalidates everything property-scoped (the whole Builder), so

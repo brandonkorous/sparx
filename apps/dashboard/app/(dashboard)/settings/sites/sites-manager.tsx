@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Badge,
@@ -51,6 +52,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [creating, setCreating] = React.useState(false);
+  const [builderUpsell, setBuilderUpsell] = React.useState(false);
 
   // The site the Builder is currently authoring: the cookie's id if it still
   // names a property, else the primary (mirrors lib/sites.getActiveProperty).
@@ -93,9 +95,20 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
-    run(() => createSite(fd), "Site created — you're now editing it.");
-    form.reset();
-    setCreating(false);
+    startTransition(async () => {
+      const res = await createSite(fd);
+      if (res.ok) {
+        toast.success("Site created — you're now editing it.");
+        form.reset();
+        setCreating(false);
+        router.refresh();
+      } else if (res.paymentRequired) {
+        setCreating(false);
+        setBuilderUpsell(true);
+      } else {
+        toast.error(res.error ?? 'Something went wrong.');
+      }
+    });
   };
 
   const onConnect = (e: React.FormEvent<HTMLFormElement>, propertyId: string) => {
@@ -143,7 +156,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-4">
           <CardTitle>Your sites</CardTitle>
-          {!creating && (
+          {!creating && !builderUpsell && (
             <Button color="primary" variant="soft" onClick={() => setCreating(true)}>
               <Plus className="size-4" /> New site
             </Button>
@@ -173,6 +186,29 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
               A new site gets its own <Code>handle.yourstore.sparx.zone</Code> address instantly.
               Connect your own domain below once it&apos;s created.
             </Text>
+          </CardContent>
+        )}
+        {builderUpsell && (
+          <CardContent>
+            <Stack gap={3} className="rounded-md border border-[var(--border)] p-4">
+              <Stack gap={1}>
+                <Text size="sm" weight="medium">
+                  Builder module required
+                </Text>
+                <Text size="sm" variant="muted">
+                  Each plan includes one site. Additional sites are available with the Builder
+                  module — activate it to create as many properties as you need.
+                </Text>
+              </Stack>
+              <div className="flex flex-wrap gap-2">
+                <Button asChild color="primary" size="sm" variant="soft">
+                  <Link href="/settings/modules">Activate Builder</Link>
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setBuilderUpsell(false)}>
+                  Dismiss
+                </Button>
+              </div>
+            </Stack>
           </CardContent>
         )}
       </Card>
