@@ -139,6 +139,9 @@ export default function B2bAccountPage() {
         <Link href={`/account/b2b/${accountId}/quotes`} className="sf-btn sf-btn--outline">
           Quotes
         </Link>
+        <Link href={`/account/b2b/${accountId}/appointments`} className="sf-btn sf-btn--outline">
+          Appointments
+        </Link>
       </div>
 
       {/* Recent orders */}

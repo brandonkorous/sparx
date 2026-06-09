@@ -1,5 +1,5 @@
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Building2, CheckCircle, DollarSign, FileText, Receipt } from 'lucide-react';
+import { Building2, Calendar, CheckCircle, DollarSign, FileText, Receipt } from 'lucide-react';
 
 export const b2bManifest: ModuleManifest = {
   id: 'b2b',
@@ -36,6 +36,18 @@ export const b2bManifest: ModuleManifest = {
       label: 'Approval Queue',
       icon: CheckCircle,
       href: '/b2b/approval-queue',
+    },
+    {
+      id: 'appointments',
+      label: 'Appointments',
+      icon: Calendar,
+      href: '/b2b/appointments',
+    },
+    {
+      id: 'service-types',
+      label: 'Service Types',
+      icon: Calendar,
+      href: '/b2b/service-types',
     },
   ],
   actions: [],

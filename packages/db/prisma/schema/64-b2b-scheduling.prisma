@@ -1,0 +1,73 @@
+// B2B service scheduling — types + appointments (docs/64 B2B Ph7).
+//
+// ServiceType defines what kinds of service a tenant offers (oil change,
+// inspection, repair, etc.). ServiceAppointment is a booked slot, linked
+// to a B2B account and optionally a specific fleet vehicle (vehicleRef JSON
+// snapshot). Parts expected for the service are listed in partsLinked.
+
+model ServiceType {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  name            String   @db.VarChar(255)
+  description     String?  @db.Text
+  durationMinutes Int      @default(60) @map("duration_minutes")
+  color           String?  @db.VarChar(7) // hex color for calendar (#RRGGBB)
+  isActive        Boolean  @default(true) @map("is_active")
+  requiresVehicle Boolean  @default(false) @map("requires_vehicle")
+  notes           String?  @db.Text
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant       Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  appointments ServiceAppointment[]
+
+  @@index([tenantId, isActive])
+  @@map("service_types")
+}
+
+model ServiceAppointment {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  serviceTypeId   String   @map("service_type_id") @db.Uuid
+  b2bAccountId    String?  @map("b2b_account_id") @db.Uuid
+  customerId      String?  @map("customer_id") @db.Uuid
+
+  scheduledAt     DateTime @map("scheduled_at") @db.Timestamptz
+  durationMinutes Int      @default(60) @map("duration_minutes")
+
+  // requested | confirmed | in_progress | completed | cancelled
+  status          String   @default("requested") @db.VarChar(20)
+
+  // JSON snapshot of the vehicle at booking time:
+  //   { year, make, model, vin?, licensePlate?, engineProfile? }
+  vehicleRef      Json?    @map("vehicle_ref")
+
+  // Array of parts expected for this appointment:
+  //   [{ productId?, sku?, description, quantity }]
+  partsLinked     Json     @default("[]") @map("parts_linked")
+
+  notes           String?  @db.Text // customer-visible notes
+  staffNotes      String?  @map("staff_notes") @db.Text
+
+  confirmedByUserId  String?   @map("confirmed_by_user_id") @db.Uuid
+  confirmedAt        DateTime? @map("confirmed_at") @db.Timestamptz
+  completedAt        DateTime? @map("completed_at") @db.Timestamptz
+  cancelledAt        DateTime? @map("cancelled_at") @db.Timestamptz
+  cancellationReason String?   @map("cancellation_reason") @db.Text
+  reminderSentAt     DateTime? @map("reminder_sent_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  serviceType   ServiceType @relation(fields: [serviceTypeId], references: [id])
+  b2bAccount    B2BAccount? @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  customer      Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  confirmedBy   User?       @relation("AppointmentConfirmedBy", fields: [confirmedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, status])
+  @@index([tenantId, scheduledAt])
+  @@index([tenantId, b2bAccountId])
+  @@map("service_appointments")
+}

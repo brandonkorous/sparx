@@ -115,6 +115,12 @@ export type EventType =
   | 'b2b.order.pending_approval'
   | 'b2b.order.approved'
   | 'b2b.order.rejected'
+  // Service scheduling notifications (docs/64 B2B Ph7).
+  | 'b2b.appointment.requested'
+  | 'b2b.appointment.confirmed'
+  | 'b2b.appointment.cancelled'
+  | 'b2b.appointment.reminder'
+  | 'b2b.appointment.completed'
   // ─── Universal search (docs/39) ─────────────────────────────────────
   // Generic indexing signal: any module emits this post-commit so the
   // commerce-indexer (re)projects ONE entity into the universal `entities`
@@ -192,7 +198,10 @@ export interface EmailSendPayload {
     | 'welcome-merchant'
     | 'domain-renewal-reminder'
     | 'order-confirmation'
-    | 'shipping-confirmation';
+    | 'shipping-confirmation'
+    | 'appointment-confirmation'
+    | 'appointment-reminder'
+    | 'appointment-cancelled';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */

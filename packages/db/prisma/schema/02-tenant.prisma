@@ -258,6 +258,10 @@ model Tenant {
   b2bAccountContacts         B2bAccountContact[]
   purchaseApprovalRules      PurchaseApprovalRule[]
 
+  // B2B scheduling (docs/64 Ph7)
+  serviceTypes        ServiceType[]
+  serviceAppointments ServiceAppointment[]
+
   @@map("tenants")
 }
 

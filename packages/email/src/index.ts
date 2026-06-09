@@ -52,12 +52,18 @@ export {
   DomainRenewalReminderEmail,
   OrderConfirmationEmail,
   ShippingConfirmationEmail,
+  AppointmentConfirmationEmail,
+  AppointmentReminderEmail,
+  AppointmentCancelledEmail,
   EmailLayout,
   type PasswordResetEmailProps,
   type WelcomeMerchantEmailProps,
   type DomainRenewalReminderEmailProps,
   type OrderConfirmationEmailProps,
   type ShippingConfirmationEmailProps,
+  type AppointmentConfirmationEmailProps,
+  type AppointmentReminderEmailProps,
+  type AppointmentCancelledEmailProps,
 } from './templates';
 
 // Component primitives + tokens — consumed by templates inside this package;
