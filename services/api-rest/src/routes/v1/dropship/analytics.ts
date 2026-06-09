@@ -37,7 +37,7 @@ function lineItemsCost(lineItems: unknown): number {
   if (!Array.isArray(lineItems)) return 0;
   return (lineItems as LineItem[]).reduce(
     (sum, li) => sum + (li.quantity ?? 0) * (li.unitPriceCents ?? 0),
-    0,
+    0
   );
 }
 
@@ -46,62 +46,59 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/dropship/analytics', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner');
+    requireRole(request, 'admin');
     const { tenantId } = toDropshipContext(request);
     const query = AnalyticsQuery.parse(request.query);
 
-    const [dsOrders, orderItems, suppliers] = await withTenant(
-      { tenantId } as any,
-      async (tx) => {
-        const anyTx = tx as AnyTx;
+    const [dsOrders, orderItems, suppliers] = await withTenant({ tenantId } as any, async (tx) => {
+      const anyTx = tx as AnyTx;
 
-        const dsWhere: any = { tenantId, status: { in: ['submitted', 'shipped', 'delivered'] } };
-        if (query.supplierId) dsWhere.supplierId = query.supplierId;
-        if (query.from || query.to) {
-          dsWhere.createdAt = {
-            ...(query.from && { gte: new Date(query.from) }),
-            ...(query.to && { lte: new Date(query.to) }),
-          };
-        }
+      const dsWhere: any = { tenantId, status: { in: ['submitted', 'shipped', 'delivered'] } };
+      if (query.supplierId) dsWhere.supplierId = query.supplierId;
+      if (query.from || query.to) {
+        dsWhere.createdAt = {
+          ...(query.from && { gte: new Date(query.from) }),
+          ...(query.to && { lte: new Date(query.to) }),
+        };
+      }
 
-        const dsos = await anyTx.dropshipOrder.findMany({
-          where: dsWhere,
-          select: {
-            id: true,
-            orderId: true,
-            supplierId: true,
-            lineItems: true,
-            status: true,
-          },
-        });
+      const dsos = await anyTx.dropshipOrder.findMany({
+        where: dsWhere,
+        select: {
+          id: true,
+          orderId: true,
+          supplierId: true,
+          lineItems: true,
+          status: true,
+        },
+      });
 
-        // Fetch revenue for the linked order items
-        const orderIds = [...new Set(dsos.map((d: any) => d.orderId))];
-        const items =
-          orderIds.length > 0
-            ? await anyTx.orderItem.findMany({
-                where: {
-                  tenantId,
-                  orderId: { in: orderIds },
-                  variant: { dropshipSourceId: { not: null } },
-                },
-                select: {
-                  orderId: true,
-                  quantity: true,
-                  unitPrice: true,
-                  variant: { select: { dropshipSourceId: true } },
-                },
-              })
-            : [];
+      // Fetch revenue for the linked order items
+      const orderIds = [...new Set(dsos.map((d: any) => d.orderId))];
+      const items =
+        orderIds.length > 0
+          ? await anyTx.orderItem.findMany({
+              where: {
+                tenantId,
+                orderId: { in: orderIds },
+                variant: { dropshipSourceId: { not: null } },
+              },
+              select: {
+                orderId: true,
+                quantity: true,
+                unitPrice: true,
+                variant: { select: { dropshipSourceId: true } },
+              },
+            })
+          : [];
 
-        const sups = await anyTx.dropshipSupplier.findMany({
-          where: { tenantId, deletedAt: null },
-          select: { id: true, name: true },
-        });
+      const sups = await anyTx.dropshipSupplier.findMany({
+        where: { tenantId, deletedAt: null },
+        select: { id: true, name: true },
+      });
 
-        return [dsos, items, sups];
-      },
-    );
+      return [dsos, items, sups];
+    });
 
     // Build a revenue map: orderId → supplierId → revenueCents
     const revenueMap = new Map<string, Map<string, number>>();
@@ -115,15 +112,15 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
       if (!supplierId) continue;
       const orderMap = revenueMap.get(item.orderId) ?? new Map<string, number>();
       const existing = orderMap.get(supplierId) ?? 0;
-      orderMap.set(
-        supplierId,
-        existing + item.quantity * Math.round(Number(item.unitPrice) * 100),
-      );
+      orderMap.set(supplierId, existing + item.quantity * Math.round(Number(item.unitPrice) * 100));
       revenueMap.set(item.orderId, orderMap);
     }
 
     // Aggregate by supplier
-    const supplierMap = new Map<string, { name: string; costCents: number; revenueCents: number; orders: number }>();
+    const supplierMap = new Map<
+      string,
+      { name: string; costCents: number; revenueCents: number; orders: number }
+    >();
     for (const sup of suppliers as Array<{ id: string; name: string }>) {
       supplierMap.set(sup.id, { name: sup.name, costCents: 0, revenueCents: 0, orders: 0 });
     }
@@ -153,9 +150,8 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
       }
     }
 
-    const margin = totalRevenueCents > 0
-      ? ((totalRevenueCents - totalCostCents) / totalRevenueCents) * 100
-      : 0;
+    const margin =
+      totalRevenueCents > 0 ? ((totalRevenueCents - totalCostCents) / totalRevenueCents) * 100 : 0;
 
     const bySupplier = [...supplierMap.entries()]
       .filter(([, s]) => s.orders > 0)
@@ -168,7 +164,7 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
         profitCents: s.revenueCents - s.costCents,
         marginPct:
           s.revenueCents > 0
-            ? +((( s.revenueCents - s.costCents) / s.revenueCents) * 100).toFixed(1)
+            ? +(((s.revenueCents - s.costCents) / s.revenueCents) * 100).toFixed(1)
             : 0,
       }))
       .sort((a, b) => b.profitCents - a.profitCents);
@@ -181,7 +177,7 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
         profitCents: totalRevenueCents - totalCostCents,
         marginPct: +margin.toFixed(1),
         bySupplier,
-      }),
+      })
     );
   });
 
@@ -189,7 +185,7 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/dropship/analytics/orders', async (request, reply) => {
     await requireDropshipModule(request);
-    requireRole(request, 'admin', 'owner');
+    requireRole(request, 'admin');
     const { tenantId } = toDropshipContext(request);
     const query = OrdersQuery.parse(request.query);
 
@@ -244,11 +240,10 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
       const costCents = lineItemsCost(dso.lineItems);
       const revenueCents = dso.order.items.reduce(
         (sum, item) => sum + item.quantity * Math.round(Number(item.unitPrice) * 100),
-        0,
+        0
       );
       const profitCents = revenueCents - costCents;
-      const marginPct =
-        revenueCents > 0 ? +((profitCents / revenueCents) * 100).toFixed(1) : 0;
+      const marginPct = revenueCents > 0 ? +((profitCents / revenueCents) * 100).toFixed(1) : 0;
 
       return {
         id: dso.id,
