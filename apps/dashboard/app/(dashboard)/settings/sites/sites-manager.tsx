@@ -29,6 +29,7 @@ import {
   setActiveSite,
   setDomainCanonical,
   updateBrandOverride,
+  updateModuleScope,
   verifyDomain,
   type ActionResult,
 } from './actions';
@@ -510,6 +511,55 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
                       </Button>
                     </div>
                   </form>
+                </details>
+
+                {/* Per-site module scope (docs/49 Slice F) — disable specific modules
+                    for this site only. Tenant-level module.activated is the master
+                    gate; this can only narrow further. */}
+                <details className="rounded-md border border-[var(--border)] p-3">
+                  <summary className="cursor-pointer text-sm font-medium select-none">
+                    Module visibility
+                    {property.moduleScope.length > 0 &&
+                      ` · ${property.moduleScope.length} disabled`}
+                  </summary>
+                  <Stack gap={2} className="mt-3">
+                    <Text size="sm" variant="muted">
+                      Disable a module on this site only. Tenant-level activation is
+                      the master gate — you cannot enable a module that is off for the
+                      whole workspace.
+                    </Text>
+                    {(
+                      [
+                        'commerce',
+                        'cms',
+                        'b2b',
+                        'email',
+                        'dropship',
+                        'ai',
+                      ] as const
+                    ).map((slug) => {
+                      const disabled = property.moduleScope.includes(slug);
+                      return (
+                        <div key={slug} className="flex items-center justify-between gap-3">
+                          <Text size="sm">{slug}</Text>
+                          <Button
+                            size="sm"
+                            variant={disabled ? 'soft' : 'ghost'}
+                            color={disabled ? 'danger' : 'neutral'}
+                            disabled={pending}
+                            onClick={() => {
+                              const next = disabled
+                                ? property.moduleScope.filter((s) => s !== slug)
+                                : [...property.moduleScope, slug];
+                              run(() => updateModuleScope(property.id, next));
+                            }}
+                          >
+                            {disabled ? 'Disabled' : 'Enabled'}
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </Stack>
                 </details>
 
                 {/* Site-level actions */}

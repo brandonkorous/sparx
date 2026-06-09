@@ -35,6 +35,7 @@ export interface Property {
   status: string;
   settings: Record<string, unknown>;
   brandOverride: BrandOverride | null;
+  moduleScope: string[];
   createdAt: string;
   updatedAt: string;
 }

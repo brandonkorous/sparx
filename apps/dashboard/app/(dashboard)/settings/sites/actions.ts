@@ -212,6 +212,24 @@ export async function updateBrandOverride(formData: FormData): Promise<ActionRes
   return { ok: true };
 }
 
+/** Set the per-site disabled-modules list (docs/49 Slice F). Sends the full
+ *  array — PUT semantics on moduleScope. Pass [] to re-enable everything. */
+export async function updateModuleScope(
+  propertyId: string,
+  disabledModules: string[]
+): Promise<ActionResult> {
+  if (!propertyId) return { ok: false, error: 'Missing site.' };
+  try {
+    await api.patch<Property>(`/v1/properties/${propertyId}`, {
+      moduleScope: disabledModules,
+    });
+  } catch (err) {
+    return fail(err);
+  }
+  revalidatePath('/settings/sites');
+  return { ok: true };
+}
+
 /** Make a verified domain the canonical (apex) host for its site. */
 export async function setDomainCanonical(domainId: string): Promise<ActionResult> {
   try {
