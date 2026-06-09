@@ -121,6 +121,16 @@ export type EventType =
   | 'b2b.appointment.cancelled'
   | 'b2b.appointment.reminder'
   | 'b2b.appointment.completed'
+  // ─── Dropship (docs/14, docs/64 Ph1-Ph3) ───────────────────────────────
+  | 'dropship.supplier.connected'
+  | 'dropship.supplier.sync_started'
+  | 'dropship.supplier.sync_completed'
+  | 'dropship.supplier.error'
+  | 'dropship.order.route'
+  | 'dropship.order.submitted'
+  | 'dropship.order.shipped'
+  | 'dropship.order.delivered'
+  | 'dropship.order.failed'
   // ─── Universal search (docs/39) ─────────────────────────────────────
   // Generic indexing signal: any module emits this post-commit so the
   // commerce-indexer (re)projects ONE entity into the universal `entities`

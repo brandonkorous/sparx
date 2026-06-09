@@ -262,6 +262,12 @@ model Tenant {
   serviceTypes        ServiceType[]
   serviceAppointments ServiceAppointment[]
 
+  // Dropship (docs/14, docs/64 Ph1)
+  dropshipSuppliers    DropshipSupplier[]
+  dropshipProducts     DropshipProduct[]
+  dropshipProductLinks DropshipProductLink[]
+  dropshipOrders       DropshipOrder[]
+
   @@map("tenants")
 }
 
