@@ -40,6 +40,16 @@ const EnvSchema = z
     // Production credentials — used when NODE_ENV === 'production'.
     GODADDY_API_KEY_PROD: z.string().optional(),
     GODADDY_API_SECRET_PROD: z.string().optional(),
+    // Stripe platform-level keys. Used by the webhook handler and Stripe
+    // Connect OAuth. Per-tenant keys live in ProviderInstallation configs.
+    // STRIPE_SECRET_KEY       — platform/connect account secret key
+    // STRIPE_PUBLISHABLE_KEY  — returned to storefronts for Stripe.js init
+    // STRIPE_WEBHOOK_SECRET   — whsec_... from the Stripe dashboard or CLI
+    // STRIPE_CLIENT_ID        — Connect OAuth client_id (ca_...)
+    STRIPE_SECRET_KEY: z.string().optional(),
+    STRIPE_PUBLISHABLE_KEY: z.string().optional(),
+    STRIPE_WEBHOOK_SECRET: z.string().optional(),
+    STRIPE_CLIENT_ID: z.string().optional(),
     // Media storage. When GCS_MEDIA_BUCKET is set we use Cloud Storage with
     // presigned PUT URLs; otherwise we fall back to a local-disk backend at
     // MEDIA_LOCAL_DIR (the dashboard PUTs through api-rest in that mode).

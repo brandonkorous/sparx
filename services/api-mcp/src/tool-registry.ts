@@ -4,6 +4,7 @@
 
 import type { z } from 'zod';
 import { crmMcpTools } from '@sparx/crm';
+import { commerceMcpTools } from '@sparx/commerce';
 import { sitebuilderMcpTools } from '@sparx/sitebuilder';
 import { builderMcpTools } from '@sparx/builder/mcp';
 import { emailMcpTools } from '@sparx/email-platform';
@@ -24,6 +25,7 @@ export interface AnyMcpTool {
 // it. Same service layer the REST transport uses (one service, many transports).
 export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   ...(crmMcpTools as unknown as AnyMcpTool[]),
+  ...(commerceMcpTools as unknown as AnyMcpTool[]),
   ...(sitebuilderMcpTools as unknown as AnyMcpTool[]),
   ...(builderMcpTools as unknown as AnyMcpTool[]),
   ...(emailMcpTools as unknown as AnyMcpTool[]),
@@ -33,6 +35,8 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
 const WRITE_SCOPES: ReadonlySet<string> = new Set([
   'write:crm',
   'write:crm_bulk',
+  'write:commerce',
+  'write:commerce_bulk',
   'write:builder',
   'write:email',
   'write:email_bulk',

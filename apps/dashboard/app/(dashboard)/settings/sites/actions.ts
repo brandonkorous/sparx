@@ -1,4 +1,4 @@
-'use server';
+﻿'use server';
 
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
@@ -14,10 +14,17 @@ import type { Domain, Property } from '@/lib/sites';
 export interface ActionResult {
   ok: boolean;
   error?: string;
+  /** Present when the API returned 402 — the dashboard should show an upsell. */
+  paymentRequired?: { module: string };
 }
 
 function fail(err: unknown): ActionResult {
-  return { ok: false, error: (err as ApiRestError).message ?? 'Something went wrong.' };
+  const e = err as ApiRestError;
+  if (e.status === 402) {
+    const module = (e.details as { module?: string } | undefined)?.module ?? 'builder';
+    return { ok: false, error: e.message, paymentRequired: { module } };
+  }
+  return { ok: false, error: e.message ?? 'Something went wrong.' };
 }
 
 // A site switch invalidates everything property-scoped (the whole Builder), so
@@ -149,13 +156,10 @@ export async function deleteDomain(domainId: string): Promise<ActionResult> {
   return { ok: true };
 }
 
-// Per-site brand override (docs/49 §3, Phase 4). Blank fields → null (inherit
-// the tenant brand). If every field is blank we clear the override entirely.
+// Per-site brand + presentation override (docs/49 §3, Slice B). Blank fields →
+// null (inherit). If every field is blank we clear the override entirely.
 const BrandOverrideSchema = z.object({
   propertyId: z.string().uuid(),
-  businessName: z.string().max(255).optional(),
-  colorPrimary: z.string().max(64).optional(),
-  colorAccent: z.string().max(64).optional(),
 });
 
 function blankToNull(v: FormDataEntryValue | null): string | null {
@@ -163,26 +167,35 @@ function blankToNull(v: FormDataEntryValue | null): string | null {
   return s ? s : null;
 }
 
-/** Set (or clear) a site's brand override — display name + theme colours that
- *  win over the tenant brand for this site only. */
+/** Set (or clear) a site's brand + presentation override — wins over the tenant
+ *  brand and theme for this site only. All fields optional; blank = inherit. */
 export async function updateBrandOverride(formData: FormData): Promise<ActionResult> {
-  const parsed = BrandOverrideSchema.safeParse({
-    propertyId: formData.get('propertyId'),
-    businessName: formData.get('businessName') ?? undefined,
-    colorPrimary: formData.get('colorPrimary') ?? undefined,
-    colorAccent: formData.get('colorAccent') ?? undefined,
-  });
+  const parsed = BrandOverrideSchema.safeParse({ propertyId: formData.get('propertyId') });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid input.' };
   }
   const businessName = blankToNull(formData.get('businessName'));
   const colorPrimary = blankToNull(formData.get('colorPrimary'));
   const colorAccent = blankToNull(formData.get('colorAccent'));
-  // All blank → clear the override (inherit the tenant brand).
-  const override =
-    businessName || colorPrimary || colorAccent
-      ? { businessName, colorPrimary, colorAccent }
-      : null;
+  const fontHeading = blankToNull(formData.get('fontHeading'));
+  const fontBody = blankToNull(formData.get('fontBody'));
+  const colorBackground = blankToNull(formData.get('colorBackground'));
+  const colorMuted = blankToNull(formData.get('colorMuted'));
+  const colorBorder = blankToNull(formData.get('colorBorder'));
+  const radiusBase = blankToNull(formData.get('radiusBase'));
+
+  const fields = {
+    businessName,
+    colorPrimary,
+    colorAccent,
+    fontHeading,
+    fontBody,
+    colorBackground,
+    colorMuted,
+    colorBorder,
+    radiusBase,
+  };
+  const override = Object.values(fields).some((v) => v !== null) ? fields : null;
   try {
     await api.patch<Property>(`/v1/properties/${parsed.data.propertyId}`, {
       brandOverride: override,

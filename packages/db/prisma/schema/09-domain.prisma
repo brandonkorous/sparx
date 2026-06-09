@@ -51,6 +51,9 @@ model Domain {
   // the DKIM TXT record; private key is kept for signing outbound email.
   dkimPublicKey      String?   @map("dkim_public_key") @db.Text
   dkimPrivateKey     String?   @map("dkim_private_key") @db.Text
+  // Renewal reminder thresholds already notified: '30d', '14d', '7d'. The
+  // domain-worker's nightly cron checks this before sending to avoid duplicates.
+  renewalRemindersSent String[] @default([]) @map("renewal_reminders_sent")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

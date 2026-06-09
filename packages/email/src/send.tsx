@@ -14,6 +14,11 @@ import {
   welcomeMerchantSubject,
   type WelcomeMerchantEmailProps,
 } from './templates/welcome-merchant';
+import {
+  DomainRenewalReminderEmail,
+  domainRenewalReminderSubject,
+  type DomainRenewalReminderEmailProps,
+} from './templates/domain-renewal-reminder';
 
 // Template registry + dispatcher. Two surfaces:
 //
@@ -33,7 +38,7 @@ function defaultFrom(): string {
   return process.env[DEFAULT_FROM_ENV] ?? FALLBACK_FROM;
 }
 
-export type TemplateId = 'password-reset' | 'welcome-merchant';
+export type TemplateId = 'password-reset' | 'welcome-merchant' | 'domain-renewal-reminder';
 
 export type TemplateSend =
   | {
@@ -47,6 +52,13 @@ export type TemplateSend =
       template: 'welcome-merchant';
       to: string;
       props: WelcomeMerchantEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'domain-renewal-reminder';
+      to: string;
+      props: DomainRenewalReminderEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -106,6 +118,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'welcome-merchant',
+      };
+    }
+    case 'domain-renewal-reminder': {
+      const element = wrap(<DomainRenewalReminderEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: domainRenewalReminderSubject(input.props.domainName, input.props.daysUntilExpiry),
+        html,
+        text,
+        templateId: 'domain-renewal-reminder',
       };
     }
   }

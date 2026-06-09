@@ -1,4 +1,4 @@
-// Per-site brand override (docs/49 §3, Phase 4) — the shape + merge for a
+﻿// Per-site brand override (docs/49 §3, Phase 4) — the shape + merge for a
 // property's optional `brand_override` JSON. The override is presentation-only
 // identity: a partial that wins over the tenant brand field-by-field; any
 // absent/null field inherits the tenant brand (the default). Shared by the
@@ -6,15 +6,26 @@
 
 import { z } from 'zod';
 
-/** The overridable identity fields. All optional + nullable: present = override,
- *  null/absent = inherit the tenant brand. */
+/** The overridable identity + presentation fields. All optional + nullable:
+ *  present = override, null/absent = inherit the tenant brand or theme. */
 export const PropertyBrandOverrideSchema = z
   .object({
+    // Identity — the per-site display name and colour palette.
     businessName: z.string().max(255).nullable().optional(),
     colorPrimary: z.string().max(64).nullable().optional(),
     colorPrimaryForeground: z.string().max(64).nullable().optional(),
     colorAccent: z.string().max(64).nullable().optional(),
     logoMediaId: z.string().max(255).nullable().optional(),
+    // Typography — per-site font overrides (font name / Google Fonts slug).
+    fontHeading: z.string().max(120).nullable().optional(),
+    fontBody: z.string().max(120).nullable().optional(),
+    // Presentation — per-site surface colours and shape.
+    colorBackground: z.string().max(64).nullable().optional(),
+    colorMuted: z.string().max(64).nullable().optional(),
+    colorBorder: z.string().max(64).nullable().optional(),
+    radiusBase: z.string().max(32).nullable().optional(),
+    // Commerce gating — per-site pricing visibility.
+    hidePricesWhenSignedOut: z.boolean().nullable().optional(),
   })
   .strict();
 
@@ -38,6 +49,8 @@ export interface BrandIdentity {
   colorPrimary: string | null;
   colorPrimaryForeground: string | null;
   colorAccent: string | null;
+  fontHeading: string | null;
+  fontBody: string | null;
   logoMediaId: string | null;
 }
 
@@ -54,6 +67,8 @@ export function mergeBrandIdentity(
     colorPrimary: override.colorPrimary ?? tenant.colorPrimary,
     colorPrimaryForeground: override.colorPrimaryForeground ?? tenant.colorPrimaryForeground,
     colorAccent: override.colorAccent ?? tenant.colorAccent,
+    fontHeading: override.fontHeading ?? tenant.fontHeading,
+    fontBody: override.fontBody ?? tenant.fontBody,
     logoMediaId: override.logoMediaId ?? tenant.logoMediaId,
   };
 }

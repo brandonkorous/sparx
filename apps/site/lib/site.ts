@@ -255,12 +255,19 @@ export async function getNavigationMenu(tenantSlug: string, menuId: string): Pro
 
 /** Resolve a CMS NavigationMenu BY LOCATION ('header' / 'footer') into nav nodes.
  *  The Builder site layout (docs/45) binds its chrome nav to a location, not a
- *  menu id. Returns [] when the tenant has no menu at that location (or on
- *  failure) so the chrome nav renders empty. */
-export async function getNavByLocation(tenantSlug: string, location: string): Promise<NavNode[]> {
+ *  menu id. Passes `?property=<slug>` so the API tries the site-specific menu
+ *  first and falls back to the tenant-wide one. Returns [] when neither exists
+ *  (or on failure) so the chrome nav renders empty. */
+export async function getNavByLocation(
+  tenantSlug: string,
+  location: string,
+  propertySlug?: string
+): Promise<NavNode[]> {
   try {
+    const params = new URLSearchParams({ tenant: tenantSlug });
+    if (propertySlug) params.set('property', propertySlug);
     const res = await fetch(
-      `${BASE_URL}/v1/public/content/navigation/by-location/${encodeURIComponent(location)}?tenant=${encodeURIComponent(tenantSlug)}`,
+      `${BASE_URL}/v1/public/content/navigation/by-location/${encodeURIComponent(location)}?${params}`,
       {
         next: {
           revalidate: 300,

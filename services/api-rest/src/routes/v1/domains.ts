@@ -40,9 +40,12 @@ import {
   normalizeHost,
   isValidHost,
   isZoneHost,
+  isSubdomainHost,
   newVerificationToken,
   connectInstructions,
   verifyTxtToken,
+  verifyCname,
+  CNAME_TARGET,
 } from '../../lib/domain.js';
 import {
   checkAvailability,
@@ -470,6 +473,11 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     const existing = await prisma.domain.findUnique({ where: { host }, select: { id: true } });
     if (existing) throw conflict('That domain is already connected to a site.', { field: 'host' });
 
+    // Subdomains (3+ labels) prove ownership via CNAME — no separate TXT token
+    // needed. Apex domains (2 labels) require a TXT control-proof because
+    // CNAME-at-apex is non-standard and silently unsupported by many DNS providers.
+    const verificationToken = isSubdomainHost(host) ? null : newVerificationToken();
+
     const row = await prisma.domain.create({
       data: {
         tenantId: auth.tenantId,
@@ -477,30 +485,45 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
         host,
         type: 'custom',
         status: 'pending',
-        verificationToken: newVerificationToken(),
+        verificationToken,
       },
     });
     return ok(toView(row));
   });
 
-  // Poll DNS for the control-proof TXT. On success the domain becomes routable
+  // Poll DNS for ownership proof. On success the domain becomes routable
   // (status='active') and Caddy will issue its cert on the next HTTPS hit.
+  //
+  // Subdomains (3+ labels): ownership proof = CNAME points to customers.sparx.zone.
+  // Apex domains (2 labels): ownership proof = TXT control-proof token at
+  //   _sparx-verify.<host>. We still require the CNAME/ALIAS be in place for
+  //   routing, but we verify ownership via TXT because CNAME-at-apex is unreliable
+  //   across DNS providers.
   app.post('/v1/domains/:id/verify', async (request) => {
     const auth = requireRole(request, 'editor');
     const { id } = IdParam.parse(request.params);
     const row = await prisma.domain.findFirst({ where: { id, tenantId: auth.tenantId } });
     if (!row) throw notFound('Domain', id);
     if (row.type !== 'custom') {
-      // subdomain / purchased hosts are already live; nothing to verify.
+      // zone-subdomain / purchased hosts are already live; nothing to verify.
       return ok(toView(row));
     }
-    if (!row.verificationToken) {
-      throw validationError('This domain has no verification token.', [
-        { field: 'id', message: 'Missing token.' },
-      ]);
+
+    let passed: boolean;
+    if (isSubdomainHost(row.host)) {
+      // Subdomain: CNAME to our ingress is both routing and ownership proof.
+      passed = await verifyCname(row.host, CNAME_TARGET);
+    } else {
+      // Apex domain: TXT control-proof (the CNAME/ALIAS must also be in place
+      // for routing, but TXT is what proves unambiguous ownership here).
+      if (!row.verificationToken) {
+        throw validationError('This domain has no verification token.', [
+          { field: 'id', message: 'Missing token.' },
+        ]);
+      }
+      passed = await verifyTxtToken(row.host, row.verificationToken);
     }
 
-    const passed = await verifyTxtToken(row.host, row.verificationToken);
     const updated = await prisma.domain.update({
       where: { id },
       data: passed
@@ -508,10 +531,10 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
         : { status: 'failed' },
     });
     if (!passed) {
-      throw validationError(
-        'We could not find the verification TXT record yet. DNS can take a few minutes to propagate — add the record and try again.',
-        [{ field: 'host', message: 'TXT record not found.' }]
-      );
+      const hint = isSubdomainHost(row.host)
+        ? `We couldn't find a CNAME for ${row.host} pointing to ${CNAME_TARGET} yet. DNS propagation can take a few minutes — add the CNAME record and try again.`
+        : `We couldn't find the TXT record at _sparx-verify.${row.host} yet. DNS propagation can take a few minutes — add both the CNAME/ALIAS and the TXT record, then try again.`;
+      throw validationError(hint, [{ field: 'host', message: 'Verification failed.' }]);
     }
     return ok(toView(updated));
   });

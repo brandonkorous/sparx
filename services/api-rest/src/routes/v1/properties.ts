@@ -32,8 +32,9 @@ import { prisma, withTenant } from '@sparx/db';
 // value, plus the Update/JSON input shapes are used as types (cf. brand.ts).
 import { Prisma } from '@prisma/client';
 import { ok } from '@sparx/api-core/envelope';
-import { notFound, conflict, validationError } from '@sparx/api-core/errors';
+import { notFound, conflict, validationError, paymentRequired } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
+import { isModuleEnabled } from '@sparx/auth';
 import { mintZoneHost } from '../../lib/domain.js';
 import { PropertyBrandOverrideSchema, parseBrandOverride } from '../../lib/property-brand.js';
 
@@ -132,9 +133,21 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       ]);
     }
     if (slug === 'primary') {
-      throw validationError('“primary” is reserved for your main site.', [
+      throw validationError('”primary” is reserved for your main site.', [
         { field: 'slug', message: 'Choose a different handle.' },
       ]);
+    }
+
+    // Additional sites (beyond the one primary every tenant gets) require the
+    // builder module. Gate here so the dashboard can surface a clean upsell.
+    const existingCount = await prisma.property.count({ where: { tenantId: auth.tenantId } });
+    if (existingCount >= 1) {
+      const builderActive = await isModuleEnabled(auth.tenantId, 'builder');
+      if (!builderActive) {
+        throw paymentRequired('Additional sites require the Builder module.', {
+          module: 'builder',
+        });
+      }
     }
 
     // Tenant slug anchors the subdomain host (`tenants` is non-RLS).

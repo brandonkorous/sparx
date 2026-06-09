@@ -27,6 +27,7 @@ export interface TenantTheme {
   colorAccent: string | null;
   colorBackground: string | null;
   colorMuted: string | null;
+  colorBorder: string | null;
   fontHeading: string | null;
   fontBody: string | null;
   radiusBase: string | null;

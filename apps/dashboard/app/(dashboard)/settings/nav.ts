@@ -1,7 +1,8 @@
-import type { LucideIcon } from 'lucide-react';
+﻿import type { LucideIcon } from 'lucide-react';
 import {
   CreditCard,
   Globe,
+  GlobeLock,
   KeyRound,
   Layers,
   Plug,
@@ -64,11 +65,19 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
   },
   {
     id: 'sites',
-    label: 'Sites & domains',
+    label: 'Sites',
     description:
-      'Manage your sites (web properties), switch which one you’re editing, and connect custom domains.',
+      "Manage your sites (web properties), switch which one you're editing, and connect custom domains.",
     icon: Globe,
     href: '/settings/sites',
+    ready: true,
+  },
+  {
+    id: 'domains',
+    label: 'Domains',
+    description: 'Purchase new domains, track renewals, manage WHOIS privacy and DNS settings.',
+    icon: GlobeLock,
+    href: '/settings/domains',
     ready: true,
   },
   {

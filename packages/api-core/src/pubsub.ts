@@ -48,7 +48,16 @@ export type EventType =
   // Tenant blueprints (docs/54) — emitted after a one-click template install
   // succeeds or fails. No subscribers yet (best-effort observability).
   | 'template.installed'
-  | 'template.install_failed';
+  | 'template.install_failed'
+  // Payment lifecycle (emitted by the Stripe webhook handler after provider
+  // confirmation). Consumers get the authoritative post-Stripe signal.
+  | 'payment.captured'
+  | 'payment.failed'
+  // Order lifecycle (checkout-complete fan-out)
+  | 'order.placed'
+  | 'order.fulfilled'
+  | 'order.refunded'
+  | 'order.payment_failed';
 
 export interface SparxEvent<T = unknown> {
   type: EventType;

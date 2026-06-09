@@ -70,6 +70,10 @@ model Property {
   // Per-site customer MEMBERSHIPS (docs/58 D2) — shoppers who belong to this site.
   customerMemberships Customer[]
 
+  // Per-site navigation menus. null-property menus are tenant-wide fallbacks;
+  // these override for this specific site.
+  navigationMenus NavigationMenu[]
+
   @@unique([tenantId, slug])
   @@index([tenantId])
   @@map("properties")

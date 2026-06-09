@@ -64,6 +64,11 @@ export type EventType =
   | 'order.cancelled'
   | 'order.refunded'
   | 'order.payment_failed'
+  // Payment lifecycle (emitted by the Stripe webhook handler after provider
+  // confirmation, so consumers get the authoritative post-Stripe signal rather
+  // than the optimistic checkout-complete signal).
+  | 'payment.captured'
+  | 'payment.failed'
   // Subscriptions
   | 'subscription.created'
   | 'subscription.renewed'
@@ -165,7 +170,12 @@ export interface EmailSendPayload {
   cc?: string;
   bcc?: string;
   /** Must match a registered template id in @sparx/email's TemplateSend. */
-  template: 'password-reset' | 'welcome-merchant';
+  template:
+    | 'password-reset'
+    | 'welcome-merchant'
+    | 'domain-renewal-reminder'
+    | 'order-confirmation'
+    | 'shipping-confirmation';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */
@@ -173,4 +183,27 @@ export interface EmailSendPayload {
   replyTo?: string;
   /** Optional header bag (X-Tenant-Id, List-Unsubscribe, etc.). */
   headers?: Record<string, string>;
+}
+
+/** Payload for `payment.captured`. Emitted by the Stripe webhook handler
+ *  after `payment_intent.succeeded`; consumers can reliably treat this as
+ *  "money in hand." */
+export interface PaymentCapturedPayload {
+  orderId: string;
+  orderNumber: string;
+  paymentRef: string;
+  amountCents: number;
+  currency: string;
+  providerSlug: string;
+}
+
+/** Payload for `payment.failed`. Emitted by the Stripe webhook handler
+ *  after `payment_intent.payment_failed`; downstream can notify the
+ *  customer or restore an inventory reservation. */
+export interface PaymentFailedPayload {
+  orderId: string | null;
+  paymentRef: string;
+  failureCode: string | null;
+  failureMessage: string | null;
+  providerSlug: string;
 }

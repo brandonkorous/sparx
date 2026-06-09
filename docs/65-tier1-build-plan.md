@@ -142,11 +142,11 @@ For Phase 1, use **Stripe Connect Express** (fastest path to tenant-owns-payment
 
 1. "Connect Stripe" button in onboarding Step 5 → redirect to Stripe OAuth URL with `scope=read_write&client_id={STRIPE_CLIENT_ID}`
 2. Stripe redirects back to `/api/stripe/callback?code=...`
-3. Exchange code for `stripe_user_id` + `access_token` via `POST https://connect.stripe.com/oauth/token`
+3. Exchange code for `stripe_user_id` via `POST https://connect.stripe.com/oauth/token`
 4. Store `stripe_account_id` on the tenant record
 5. Redirect to Step 6 (done) with payments enabled indicator
 
-Add `stripe_account_id` + `stripe_access_token` (encrypted) to `tenants` table. Subsequent PaymentIntents for this tenant pass `stripeAccount: tenant.stripeAccountId` to Stripe client.
+Add `stripe_account_id` to `tenants` table. Subsequent PaymentIntents for this tenant pass `stripeAccount: tenant.stripeAccountId` to Stripe client. **Do not store `access_token`** — Express Connect does not require it after the initial OAuth exchange; the `stripe_account_id` is the only durable identifier needed.
 
 "Skip for now" path: store nothing, mark payments as not connected. Dashboard shows a banner prompting connection. Checkout surfaces a "payments not set up" message.
 
@@ -192,6 +192,8 @@ Setup:
 - Per-tool scope checking: read vs. write scopes per docs/07 §5
 
 API key generation: new `mcp_api_keys` table (tenant*id, key_hash, scopes TEXT[], label, last_used_at, created_at — RLS ENABLE + FORCE). Dashboard Settings → AI Integrations generates scoped keys. Keys are `sparx_mcp*{random}` format, hashed with Argon2id at rest.
+
+**Why a dedicated table instead of Better Auth API keys:** CLAUDE.md says to use Better Auth's own API key primitives rather than building parallel systems. MCP keys are justified as a separate system because: (1) they carry per-tool scopes (`orders:read`, `products:write`, etc.) that don't map to Better Auth's org-membership model; (2) they need per-key rate-limit counters and a `last_used_at` audit trail queryable by the tenant; (3) they are presented to external AI clients (Claude, ChatGPT, Copilot) on a different auth path than the dashboard session. If Better Auth ever ships a first-class API key primitive with arbitrary metadata and per-key rate limits, migrate to it then.
 
 Rate limiting: 60 req/min, 5000 req/day, 10 write tool-calls/min per tenant (configurable via `MCP_QUOTA` constant — docs/07 §7).
 
