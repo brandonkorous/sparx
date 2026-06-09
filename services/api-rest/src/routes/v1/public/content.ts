@@ -458,8 +458,9 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       socials: Array.isArray(tenant.socials) ? tenant.socials : [],
       theme: mergedTheme,
       storefront: {
-        defaultCurrency: storefront?.defaultCurrency ?? 'USD',
-        defaultLocale: storefront?.defaultLocale ?? 'en-US',
+        // Per-site override wins; falls back to tenant StorefrontSettings then hardcoded default.
+        defaultCurrency: override?.defaultCurrency ?? storefront?.defaultCurrency ?? 'USD',
+        defaultLocale: override?.defaultLocale ?? storefront?.defaultLocale ?? 'en-US',
         showStockBelow: storefront?.showStockBelow ?? 10,
         // Per-site commerce gating: the brand_override wins over the tenant setting.
         hidePricesWhenSignedOut:

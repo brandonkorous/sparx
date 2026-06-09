@@ -475,6 +475,35 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
                       </div>
                     </div>
 
+                    {/* Commerce locale */}
+                    <div>
+                      <p className="mb-2 text-xs font-medium tracking-wide text-[var(--color-text-muted)] uppercase">
+                        Commerce
+                      </p>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <Label htmlFor={`cur-${property.id}`}>Currency (3-letter ISO)</Label>
+                          <Input
+                            id={`cur-${property.id}`}
+                            name="defaultCurrency"
+                            defaultValue={property.brandOverride?.defaultCurrency ?? ''}
+                            placeholder="USD"
+                            maxLength={3}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`loc-${property.id}`}>Locale</Label>
+                          <Input
+                            id={`loc-${property.id}`}
+                            name="defaultLocale"
+                            defaultValue={property.brandOverride?.defaultLocale ?? ''}
+                            placeholder="en-US"
+                            maxLength={10}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="flex items-center gap-3 border-t border-[var(--border)] pt-3">
                       <Button type="submit" variant="soft" size="sm" disabled={pending}>
                         Save site presentation

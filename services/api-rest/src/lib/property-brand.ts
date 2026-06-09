@@ -26,6 +26,9 @@ export const PropertyBrandOverrideSchema = z
     radiusBase: z.string().max(32).nullable().optional(),
     // Commerce gating — per-site pricing visibility.
     hidePricesWhenSignedOut: z.boolean().nullable().optional(),
+    // Commerce locale — per-site currency and locale (wins over tenant settings).
+    defaultCurrency: z.string().max(3).nullable().optional(),
+    defaultLocale: z.string().max(10).nullable().optional(),
   })
   .strict();
 

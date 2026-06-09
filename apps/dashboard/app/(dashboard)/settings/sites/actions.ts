@@ -183,6 +183,8 @@ export async function updateBrandOverride(formData: FormData): Promise<ActionRes
   const colorMuted = blankToNull(formData.get('colorMuted'));
   const colorBorder = blankToNull(formData.get('colorBorder'));
   const radiusBase = blankToNull(formData.get('radiusBase'));
+  const defaultCurrency = blankToNull(formData.get('defaultCurrency'));
+  const defaultLocale = blankToNull(formData.get('defaultLocale'));
 
   const fields = {
     businessName,
@@ -194,6 +196,8 @@ export async function updateBrandOverride(formData: FormData): Promise<ActionRes
     colorMuted,
     colorBorder,
     radiusBase,
+    defaultCurrency,
+    defaultLocale,
   };
   const override = Object.values(fields).some((v) => v !== null) ? fields : null;
   try {
