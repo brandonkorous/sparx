@@ -171,7 +171,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
             </form>
             <Text size="sm" variant="muted" className="mt-2">
               A new site gets its own <Code>handle.yourstore.sparx.zone</Code> address instantly.
-              Connect your own domain below once it's created.
+              Connect your own domain below once it&apos;s created.
             </Text>
           </CardContent>
         )}
@@ -327,7 +327,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
                     className="mt-3 flex flex-col gap-4"
                   >
                     <Text size="sm" variant="muted">
-                      Override this site's identity, typography, and surface colours. Leave any
+                      Override this site&apos;s identity, typography, and surface colours. Leave any
                       field blank to inherit from your tenant brand or theme.
                     </Text>
 
