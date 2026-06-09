@@ -2027,19 +2027,24 @@
   text-decoration: underline;
 }
 
-.bx-node {
-  /* Anchors the absolutely-positioned selection `.bx-tag` (the old box engine set
-     position:relative inline; class-only rendering needs it here). */
-  position: relative;
+/* The editor wraps every node in a `.bx-node` chrome div purely to carry
+   selection state + the floating label. It is `display:contents` — adding NO box
+   of its own — so the live renderer's wrapperless DOM is reproduced: `node.class`
+   sizing (w-full, flex-1, mx-auto) resolves against the real flex/grid parent
+   instead of a shrink-wrapped wrapper. Selection chrome therefore rides
+   `.bx-inner` (the styled element). Component placements (`.bx-node--custom`)
+   keep a real box — they wrap a whole node subtree, not a `.bx-inner`, and mark
+   themselves as one reusable unit. */
+.bx-node:not(.bx-node--custom) {
+  display: contents;
+}
+.bx-node:not(.bx-node--custom):hover > .bx-inner {
+  outline: 1px dashed color-mix(in srgb, var(--module-active) 55%, transparent);
   outline-offset: -2px;
 }
-.bx-node:hover {
-  outline: 1px dashed color-mix(in srgb, var(--module-active) 55%, transparent);
-}
-.bx-node--selected {
+.bx-node--selected:not(.bx-node--custom) > .bx-inner {
   outline: 2px solid var(--module-active);
-}
-.bx-node--selected {
+  outline-offset: -2px;
   z-index: 1;
 }
 .bx-node--hidden > .bx-inner {
@@ -2064,7 +2069,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.bx-node--selected > .bx-tag {
+.bx-node--selected:not(.bx-node--custom) > .bx-inner > .bx-tag,
+.bx-node--custom.bx-node--selected > .bx-tag {
   display: inline-flex;
 }
 .bx-tag__name {
@@ -2097,8 +2103,13 @@
   text-transform: lowercase;
 }
 .bx-node--custom {
+  position: relative;
   outline: 1px dashed color-mix(in srgb, var(--module-active) 50%, transparent);
   outline-offset: -1px;
+}
+.bx-node--custom.bx-node--selected {
+  outline: 2px solid var(--module-active);
+  z-index: 1;
 }
 .bx-node--missing {
   outline: 1px dashed var(--color-warning, #b45309);
@@ -2111,44 +2122,10 @@
   color: var(--color-text-muted);
 }
 
-/* Leaf rendering */
-.bx-h {
-  margin: 0;
-  line-height: 1.12;
-  font-family: var(--bxc-font-head);
-  font-weight: 600;
-  color: inherit;
-  letter-spacing: -0.01em;
-}
-.bx-h1 {
-  font-size: clamp(28px, 4vw, 44px);
-}
-.bx-h2 {
-  font-size: clamp(22px, 3vw, 30px);
-}
-.bx-h3 {
-  font-size: 18px;
-}
-.bx-text {
-  margin: 0;
-  line-height: 1.5;
-  color: inherit;
-}
-.bx-text--body {
-  font-size: 15px;
-  opacity: 0.82;
-}
-.bx-text--eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 700;
-  opacity: 0.7;
-}
-.bx-text--meta {
-  font-size: 12px;
-  opacity: 0.6;
-}
+/* Leaf rendering — only Button (legacy/no-recipe fallback) + the Signup mock
+   remain. Heading, Text, Stat, PriceTag, Divider, Video and Map now render the
+   real @sparx/site-ui components in the canvas (docs/23 §17), so their bx-*
+   approximations are gone. */
 .bx-btn {
   display: inline-flex;
   align-items: center;
@@ -2186,16 +2163,12 @@
   backdrop-filter: blur(6px);
   min-width: 150px;
 }
+/* Static commerce buy-box mock price (BuyBox preview is non-interactive in the
+   canvas; the PriceTag leaf itself renders the real site-ui PriceTag). */
 .bx-price {
   font-weight: 700;
   font-size: 16px;
   color: inherit;
-}
-.bx-divider {
-  border: none;
-  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
-  margin: 0;
-  width: 100%;
 }
 .bx-signup {
   display: flex;
@@ -2348,40 +2321,6 @@
 .bx-outlet__bar--short {
   width: 55%;
 }
-.bx-nav {
-  display: flex;
-  gap: 18px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.bx-nav--stack {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-}
-.bx-nav__item {
-  font-size: 14px;
-  font-weight: 500;
-  color: inherit;
-}
-.bx-logo {
-  font-family: var(--bxc-font-heading, inherit);
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: -0.02em;
-  color: inherit;
-}
-.bx-social {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.bx-social__dot {
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: color-mix(in srgb, currentColor 18%, transparent);
-}
 .bx-ph {
   width: 100%;
   background: linear-gradient(135deg, var(--bxc-subtle), var(--bxc-muted));
@@ -2441,42 +2380,6 @@
   width: 100%;
 }
 
-/* ── Video / Map embeds + Stat + Carousel (Tesla-recreation primitives) ──── */
-.bx-ratio-pano {
-  aspect-ratio: 21 / 9;
-}
-.bx-video,
-.bx-map {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  border-radius: var(--bxc-radius-sm);
-  background: var(--bxc-muted);
-}
-.bx-video iframe,
-.bx-map iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-.bx-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  color: inherit;
-}
-.bx-stat__value {
-  font-family: var(--bxc-font-head);
-  font-weight: 700;
-  font-size: 32px;
-  line-height: 1;
-}
-.bx-stat__label {
-  font-size: 13px;
-  opacity: 0.6;
-}
 /* Carousel in the editor — a real carousel (active slide + arrows + dots) so the
  * preview matches the storefront. Slides stay mounted (translated), still
  * selectable from Layers. */

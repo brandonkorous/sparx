@@ -20,10 +20,12 @@ export {
   colorClass,
   treatmentVariants,
   chipTreatmentVariants,
+  fieldTreatmentVariants,
   SIZE_KEYS,
   type ColorKey,
   type TreatmentKey,
   type ChipTreatmentKey,
+  type FieldTreatmentKey,
   type SizeKey,
 } from './components/_recipes/variants';
 
@@ -46,6 +48,7 @@ export { Divider, type DividerProps } from './components/divider';
 export { PriceTag, type PriceTagProps } from './components/price-tag';
 export { Image, type ImageProps, type ImageRatio } from './components/image';
 export { Logo, type LogoProps } from './components/logo';
+export { Wordmark, type WordmarkProps, type WordmarkCollapse } from './components/wordmark';
 export {
   NavMenu,
   type NavMenuProps,

@@ -88,6 +88,21 @@ export const chipTreatmentVariants = {
 
 export type ChipTreatmentKey = keyof typeof chipTreatmentVariants;
 
+/** Field treatment set — the field-appropriate `variant` axis shared by Input,
+ *  Textarea, NativeSelect and FileInput. `outline` (the bordered default),
+ *  `filled` (a subtle surface fill) and `ghost` (chromeless until focus) are the
+ *  treatments that make sense for a control you type into; `solid`/`link`/`dashed`
+ *  do not. Authored once in input.css as `.sf-fv-*` against the role vars, so the
+ *  fill/border is the SOLE source on the field element (the `.sf-input`/`.sf-file`
+ *  base is structure only) and color × treatment composes like the buttons do. */
+export const fieldTreatmentVariants = {
+  outline: 'sf-fv-outline',
+  filled: 'sf-fv-filled',
+  ghost: 'sf-fv-ghost',
+} as const;
+
+export type FieldTreatmentKey = keyof typeof fieldTreatmentVariants;
+
 // ── Size scale ──────────────────────────────────────────────────────────────
 // The shared size vocabulary, xs…xl. What each step MEANS dimensionally is
 // component-specific (a button's padding ≠ a card's), defined in the component's

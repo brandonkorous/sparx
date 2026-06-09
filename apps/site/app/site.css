@@ -318,7 +318,14 @@
   width: auto;
   display: block;
 }
-.sf-nav {
+/* Scoped to .sf-header (the LEGACY chrome) — docs/62 D1. The Builder chrome
+   renders the same `.sf-nav` class under .bx-render (site-ui's NavMenu); an
+   unscoped rule here leaked `margin-inline:auto` + `align-items:center` into
+   every Builder header/footer NavMenu, so the live footer columns rendered
+   centered while the editor canvas (which never loads site.css) left them
+   left-aligned — the canvas↔live drift. site-ui's `.sf-nav--row/--stack` own
+   the Builder nav's layout. */
+.sf-header .sf-nav {
   display: flex;
   align-items: center;
   gap: 1.5rem;

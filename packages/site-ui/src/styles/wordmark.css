@@ -1,0 +1,46 @@
+/* Wordmark — the brand lockup (mark + name) as one linked unit (docs/46 §5.2).
+ * The inline↔collapsed swap is driven by the nearest `sf-frame` container query —
+ * the Builder render frame (`.bx-render` live / `.bx-canvas` in the editor). Container-
+ * query based (not viewport @media) so it collapses at the SIMULATED device width in
+ * the canvas preview, not only the real viewport (docs/62). Mobile-first: the
+ * `collapse` target is hidden by default and revealed once the frame is wide. */
+
+.sf-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.sf-wordmark__mark {
+  display: block;
+  height: 2rem;
+  width: auto;
+}
+
+.sf-wordmark__name {
+  font-weight: 600;
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--sf-text, inherit);
+}
+
+/* Narrow frame (mobile-first default): hide the collapse target. */
+.sf-wordmark[data-collapse='mark'] .sf-wordmark__name {
+  display: none;
+}
+.sf-wordmark[data-collapse='name'] .sf-wordmark__mark {
+  display: none;
+}
+
+/* Wide frame: reveal both parts. */
+@container sf-frame (min-width: 768px) {
+  .sf-wordmark[data-collapse='mark'] .sf-wordmark__name {
+    display: inline;
+  }
+  .sf-wordmark[data-collapse='name'] .sf-wordmark__mark {
+    display: block;
+  }
+}

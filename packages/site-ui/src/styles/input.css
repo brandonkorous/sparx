@@ -1,18 +1,21 @@
 /* Surface field controls — the shared `.sf-input` base used by Input, Textarea,
- * and NativeSelect (docs/46 §3.6). The chrome is tokenized; the recipe shows up in
- * the focus ring (reads `--c-bg`) and the invalid state (danger role). Structural
- * bits are @apply'd; token/role-var values are raw declarations. */
+ * and NativeSelect (docs/46 §3.6). The base is STRUCTURE only (a transparent 1px
+ * border-box, so switching treatment never shifts layout); the field `variant`
+ * axis — `.sf-fv-outline` | `.sf-fv-filled` | `.sf-fv-ghost` (docs/35,
+ * _recipes/variants.ts) — owns the fill + border and is shared with FileInput.
+ * The recipe shows up in the focus ring (reads `--c-bg`) and the invalid state
+ * (danger role). Structural bits are @apply'd; token/role-var values are raw. */
 
 .sf-input {
   @apply block w-full;
-  border: 1px solid var(--sf-border, #e3dfd2);
+  border: 1px solid transparent;
   border-radius: var(--sf-radius-field, 0.5rem);
-  background: var(--sf-base-100, #fff);
   color: var(--sf-base-content, #23211c);
   font-family: var(--sf-font-body, inherit);
   transition:
     border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
 }
 .sf-input::placeholder {
   color: var(
@@ -20,25 +23,40 @@
     color-mix(in oklab, var(--sf-base-content, #23211c) 50%, transparent)
   );
 }
+.sf-input:disabled {
+  @apply cursor-not-allowed opacity-60;
+}
+
+/* Field treatments — the field-appropriate `variant` axis. The fill + border live
+ * here (the base is a transparent border-box), so `color × treatment` composes and
+ * there's no layout shift between treatments. Shared by Input/Textarea/
+ * NativeSelect/FileInput (all get one `.sf-fv-*` class from the recipe). */
+.sf-fv-outline {
+  background: var(--sf-base-100, #fff);
+  border-color: var(--sf-border, #e3dfd2);
+}
+.sf-fv-filled {
+  background: color-mix(in srgb, var(--sf-base-content, #23211c) 5%, var(--sf-base-100, #fff));
+  border-color: transparent;
+}
+.sf-fv-ghost {
+  background: transparent;
+  border-color: transparent;
+}
+.sf-fv-ghost:focus-visible {
+  background: var(--sf-base-100, #fff);
+}
+
+/* Focus ring reads the `color` axis (`--c-bg`); the class+pseudo wins over the
+ * treatment's border-color. */
 .sf-input:focus-visible {
   @apply outline-none;
   border-color: var(--c-bg, var(--sf-primary, #3f6b52));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--sf-primary, #3f6b52)) 25%, transparent);
 }
-.sf-input:disabled {
-  @apply cursor-not-allowed opacity-60;
-}
 
-/* Ghost — chromeless until focus. */
-.sf-input--ghost {
-  background: transparent;
-  border-color: transparent;
-}
-.sf-input--ghost:focus-visible {
-  background: var(--sf-base-100, #fff);
-}
-
-/* Invalid — danger border + ring (the danger role, not the color axis). */
+/* Invalid — danger border + ring (the danger role, not the color axis). Authored
+ * AFTER the treatments + base focus so it overrides them at equal specificity. */
 .sf-input--invalid {
   border-color: var(--sf-danger, #dc2626);
 }

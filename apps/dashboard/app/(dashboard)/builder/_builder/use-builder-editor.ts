@@ -32,7 +32,7 @@ import {
   type DataSources,
   type Device,
 } from './model';
-import { buildPreviewData, scopeAt, type ScopeInfo } from './binding-catalog';
+import { buildPreviewData, scopeAt, type ScopeInfo, type SitePreviewData } from './binding-catalog';
 import { acceptsChildren, getDef, makeNode, retypeDropsChildren, retypeNode } from './registry';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -69,6 +69,11 @@ export interface UseBuilderEditorArgs {
    *  this false: editing a component COMMITS a new version (docs/53), so it saves
    *  explicitly, not per-keystroke. Mutations still flow through `onTreeChange`. */
   autosave?: boolean;
+  /** The tenant's real site-chrome data (brand identity + social links). Overlaid
+   *  onto the canvas preview data so the header (Logo/Wordmark) AND footer
+   *  (SocialLinks) preview the actual brand — parity with the live site (apps/site
+   *  loadSiteData). Omitted ⇒ generic placeholders. */
+  sitePreview?: SitePreviewData | null;
   /** Persist a changed tree. Debounced for edits, immediate on flush. ok=true. */
   save: (tree: BuilderNode) => Promise<boolean>;
   /** Apply a new tree to the owner's state (synchronous / optimistic). */
@@ -120,6 +125,7 @@ export function useBuilderEditor({
   catalog,
   components,
   autosave = true,
+  sitePreview,
   save,
   onTreeChange,
 }: UseBuilderEditorArgs): BuilderEditor {
@@ -172,7 +178,10 @@ export function useBuilderEditor({
   );
 
   // ── Derived ───────────────────────────────────────────────────────────────
-  const previewData = React.useMemo(() => buildPreviewData(catalog.sources), [catalog]);
+  const previewData = React.useMemo(
+    () => buildPreviewData(catalog.sources, sitePreview),
+    [catalog, sitePreview]
+  );
 
   const selectedNode = tree && selectedId ? findNode(tree, selectedId) : null;
   const chain = React.useMemo(

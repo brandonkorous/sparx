@@ -6,9 +6,17 @@
 
 import * as React from 'react';
 import { cx } from '../utils/cx';
-import { colorClass, type ColorKey, type SizeKey } from './_recipes/variants';
+import {
+  colorClass,
+  fieldTreatmentVariants,
+  type ColorKey,
+  type FieldTreatmentKey,
+  type SizeKey,
+} from './_recipes/variants';
 
-export type FieldVariant = 'default' | 'ghost';
+/** The field `variant` axis (docs/35) — outline | filled | ghost. Re-exported as
+ *  `FieldVariant` for the controls that share it (Textarea/NativeSelect/FileInput). */
+export type FieldVariant = FieldTreatmentKey;
 
 export interface InputProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -18,7 +26,7 @@ export interface InputProps extends Omit<
   color?: ColorKey | (string & {});
   /** Size. Defaults to `md`. */
   size?: SizeKey;
-  /** Chrome treatment. Defaults to `default`. */
+  /** Chrome treatment. Defaults to `outline`. */
   variant?: FieldVariant;
   /** Marks the control invalid (danger border + ring, `aria-invalid`). */
   invalid?: boolean;
@@ -35,7 +43,7 @@ export const FIELD_SIZE_CLASS: Record<SizeKey, string> = {
 export function Input({
   color = 'primary',
   size = 'md',
-  variant = 'default',
+  variant = 'outline',
   invalid = false,
   className,
   ...rest
@@ -47,7 +55,7 @@ export function Input({
         'sf-input',
         colorClass(color),
         FIELD_SIZE_CLASS[size],
-        variant === 'ghost' && 'sf-input--ghost',
+        fieldTreatmentVariants[variant],
         invalid && 'sf-input--invalid',
         className
       )}

@@ -292,7 +292,7 @@ function siteLayoutTree(): BuilderNode {
         },
         layout: { direction: 'row', collapse: false, justify: 'between', alignItems: 'center' },
         children: [
-          node('Logo', { bind: 'site.identity' }),
+          node('Wordmark', { bind: 'site.identity' }),
           node('NavMenu', { props: { orientation: 'row', links: STARTER_NAV_LINKS } }),
         ],
       }),

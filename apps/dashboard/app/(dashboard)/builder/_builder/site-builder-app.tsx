@@ -38,6 +38,7 @@ import { LayoutSettings } from './inspector';
 import { BuilderWorkspace } from './builder-workspace';
 import { ImportExportControls } from './import-export-controls';
 import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
+import type { SitePreviewData } from './binding-catalog';
 import {
   activateLayout,
   createLayout,
@@ -85,6 +86,10 @@ export interface SiteBuilderAppProps {
    *  browser-frame address bar so the layout previews as the real site. Absent ⇒
    *  the canvas renders unframed. */
   siteOrigin?: string;
+  /** The tenant's real site-chrome data (brand identity + social links) — overlaid
+   *  onto the canvas preview data so the header (Logo/Wordmark) + footer (SocialLinks)
+   *  preview the actual brand, matching the live site. Absent ⇒ generic placeholders. */
+  sitePreview?: SitePreviewData | null;
 }
 
 export function SiteBuilderApp({
@@ -92,6 +97,7 @@ export function SiteBuilderApp({
   bindingCatalog,
   components = [],
   siteOrigin,
+  sitePreview,
 }: SiteBuilderAppProps) {
   const router = useRouter();
   // The catalog loads from the server (list-or-seed) and seeds this state ONCE;
@@ -126,6 +132,7 @@ export function SiteBuilderApp({
     tree,
     catalog: bindingCatalog,
     components: componentsByKey,
+    sitePreview,
     save: async (next) => {
       if (!editing) return false;
       const res = await saveLayoutTree(editing.id, next);

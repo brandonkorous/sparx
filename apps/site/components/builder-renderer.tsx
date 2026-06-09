@@ -37,6 +37,7 @@ import {
   SocialLinks,
   Stat,
   Text,
+  Wordmark,
 } from '@sparx/site-ui';
 // Server-safe JSON→HTML serializer (no React/jsdom) — the same path CMS pages
 // render through. Used by the Prose leaf to render a bound rich-text body.
@@ -455,6 +456,24 @@ function renderLeaf(
       const name = typeof identity?.name === 'string' ? identity.name : '';
       const img = firstImage(identity?.logo);
       return <Logo name={name} src={img?.url} alt={img?.alt ?? name} className={leafClass} />;
+    }
+    case 'Wordmark': {
+      // The brand lockup (docs/62): mark + name from site.identity, collapsing to
+      // the chosen target on narrow frames. Mirrors the editor's Wordmark leaf.
+      const identity =
+        value && typeof value === 'object' ? (value as { name?: unknown; logo?: unknown }) : null;
+      const name = typeof identity?.name === 'string' ? identity.name : '';
+      const img = firstImage(identity?.logo);
+      const collapse = (str('collapse') || 'mark') as 'mark' | 'name' | 'none';
+      return (
+        <Wordmark
+          name={name}
+          src={img?.url}
+          alt={img?.alt ?? name}
+          collapse={collapse}
+          className={leafClass}
+        />
+      );
     }
     case 'NavMenu': {
       const orientation = (str('orientation') || 'row') as 'row' | 'stack';

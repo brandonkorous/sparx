@@ -17,11 +17,16 @@ describe('Input', () => {
     expect(el).toHaveAttribute('name', 'email');
   });
 
-  it('maps the ghost variant and the invalid (danger) state', () => {
+  it('maps the ghost treatment and the invalid (danger) state', () => {
     render(<Input variant="ghost" invalid aria-label="x" />);
     const el = screen.getByLabelText('x');
-    expect(el).toHaveClass('sf-input--ghost', 'sf-input--invalid');
+    expect(el).toHaveClass('sf-fv-ghost', 'sf-input--invalid');
     expect(el).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('defaults to the outline treatment', () => {
+    render(<Input aria-label="y" />);
+    expect(screen.getByLabelText('y')).toHaveClass('sf-fv-outline');
   });
 });
 
