@@ -43,6 +43,12 @@ export async function buildSegmentRuleProjection(
       ? Math.floor((now - customer.lastOrderAt.getTime()) / 86_400_000)
       : null;
 
+    // Marketing-subscribed = holds marketing consent AND isn't do-not-contact.
+    // Reads the gdpr_consent JSON the signup/checkout opt-in writes (docs/51 §7).
+    const consent = (customer.gdprConsent ?? {}) as { scope?: unknown };
+    const hasMarketingConsent = Array.isArray(consent.scope) && consent.scope.includes('marketing');
+    const subscribed = hasMarketingConsent && !customer.doNotContact;
+
     const b2bUtilization = customer.b2bAccount
       ? Number(customer.b2bAccount.creditLimit) > 0
         ? Number(customer.b2bAccount.creditUsed) / Number(customer.b2bAccount.creditLimit)
@@ -79,6 +85,7 @@ export async function buildSegmentRuleProjection(
         openedLast30d: opened,
         clickedLast30d: clicked,
         unsubscribed: customer.doNotContact,
+        subscribed,
       },
     };
   });

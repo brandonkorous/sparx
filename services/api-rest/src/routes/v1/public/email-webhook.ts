@@ -12,9 +12,12 @@
 // Always 200 on a valid signature — even for events we can't attribute or don't
 // track — so Mailgun doesn't retry. 406 on a bad signature.
 
+import crypto from 'node:crypto';
+
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { webhookService } from '@sparx/email-platform';
+import { publishPlatformEvent } from '@sparx/crm';
 import { ok } from '@sparx/api-core/envelope';
 import { ApiError } from '@sparx/api-core/errors';
 
@@ -46,6 +49,27 @@ const emailWebhookRoutes: FastifyPluginAsync = (app) => {
     }
 
     const result = await webhookService.ingest(body['event-data']);
+
+    // Surface the engagement/unsubscribe signal to the in-process CRM consumers
+    // (this service runs them). They append the activity row and, on unsubscribe,
+    // flip do-not-contact + re-evaluate segments. Published post-ingest so the
+    // EmailEvent/EmailSuppression rows are already committed.
+    if (result.platformEvent && result.tenantId) {
+      const pe = result.platformEvent;
+      await publishPlatformEvent({
+        id: crypto.randomUUID(),
+        topic: pe.topic,
+        tenantId: result.tenantId,
+        occurredAt: new Date(pe.occurredAt),
+        payload: {
+          ...(pe.customerId ? { customerId: pe.customerId } : {}),
+          email: pe.email,
+          messageId: pe.messageId,
+          ...(pe.broadcastId ? { campaignId: pe.broadcastId } : {}),
+        },
+      });
+    }
+
     request.log.info({ result }, 'mailgun webhook ingested');
     return ok(result);
   });

@@ -9,7 +9,8 @@
 // children once per record (item scope); an object-bound container sets scope
 // and renders once; leaves resolve their bound value (text / richtext / price /
 // image). Unbound leaves render their own props (the A.1 static path). The CRM
-// Signup + per-record collection templates land in Slice B.
+// Signup leaf is interactive (a client island posts to the capture endpoint);
+// per-record collection templates land in Slice B.
 
 import * as React from 'react';
 import {
@@ -37,6 +38,7 @@ import {
   SocialLinks,
   Stat,
   Text,
+  ThemeToggle,
   Wordmark,
 } from '@sparx/site-ui';
 // Server-safe JSON→HTML serializer (no React/jsdom) — the same path CMS pages
@@ -53,6 +55,7 @@ import {
   ProductFormProvider,
   type BuilderProduct,
 } from './builder-commerce';
+import { SignupForm } from './signup-form';
 
 // ── Class-only rendering (docs/61) ────────────────────────────────────────────
 //
@@ -501,8 +504,14 @@ function renderLeaf(
       }));
       return <SocialLinks items={items} className={leafClass} />;
     }
+    // The email-capture block (docs/51 §7). Interactive: a client island owns
+    // submit + the thank-you state and POSTs to the public capture endpoint,
+    // which upserts a consenting CRM contact. Mirrors the editor canvas's inert
+    // <Signup> preview. Tenant + active site come from the customer context.
+    case 'Signup':
+      return <SignupForm cta={str('cta') || undefined} />;
     // Outlet is handled in RenderNode (it renders the routed page, not a leaf
-    // value); Signup (interactive) lands later.
+    // value).
     default:
       return null;
   }
@@ -597,6 +606,17 @@ function RenderNode({
         <RenderNode key={child.id} node={child} scope={scope} outlet={outlet} />
       ));
     }
+  } else if (node.type === 'ThemeToggle') {
+    // Light/dark switch — interactive, so it can't go through the static renderLeaf
+    // (which has no scope). It auto-hides unless the site offers BOTH themes:
+    // appearance policy `toggle` (set in /builder/brand). Any single-theme policy
+    // (`light-only`/`dark-only`) — and `auto`, which follows the device with no
+    // manual control — renders nothing. `site.appearance` is threaded by loadSiteData.
+    const appearance = resolvePath(scope, 'site.appearance') as
+      | { policy?: string; initial?: 'light' | 'dark' }
+      | undefined;
+    if (appearance?.policy !== 'toggle') return null;
+    body = <ThemeToggle initial={appearance.initial === 'dark' ? 'dark' : 'light'} />;
   } else {
     // A leaf may nest children (Button → an inline Icon, docs/47): render them in
     // the current scope and hand them to renderLeaf, which places them itself.

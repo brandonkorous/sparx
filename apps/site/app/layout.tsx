@@ -214,7 +214,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // binds to the `site` sources resolved here. The snapshot is still read above
   // for THEME (the Builder layout carries chrome, not tokens).
   const builderLayout = tenant ? await getPublishedBuilderLayout(tenant.slug) : null;
-  const siteData = tenant && builderLayout ? loadSiteData(tenant) : null;
 
   // The compiled Surface stylesheet (docs/47 §5): the utilities authored as
   // node `class` strings across the tenant's published trees. Injected after the
@@ -237,6 +236,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     initialTheme = cookieTheme === 'dark' ? 'dark' : 'light';
   }
   const dynamicPolicy = policy === 'auto' || policy === 'toggle' ? policy : null;
+
+  // Site-layout render data — built after the appearance policy resolves so the
+  // Builder `ThemeToggle` node can auto-hide unless both themes are offered.
+  const siteData =
+    tenant && builderLayout ? loadSiteData(tenant, { policy, initial: initialTheme }) : null;
 
   // Resolve header/footer/announcement from the snapshot's layout blocks.
   const blocks: PublishedSnapshot['layout'] = snapshot?.layout ?? [];

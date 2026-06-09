@@ -41,6 +41,27 @@ export type CreateCustomerInput = z.infer<typeof CreateCustomerInput>;
 export const UpdateCustomerInput = CreateCustomerInput.partial();
 export type UpdateCustomerInput = z.infer<typeof UpdateCustomerInput>;
 
+// Newsletter / email-capture subscribe — the public storefront "Email signup"
+// block (docs/51 §7). Deliberately minimal: a visitor hands over an email (and
+// maybe a name) and opts into marketing. The service upserts on the
+// (tenant, property, email) identity and folds `marketing` into gdpr_consent, so
+// a repeat submit is idempotent rather than a unique-constraint error. No `type`
+// here — a fresh capture is always a `prospect`; an existing customer keeps theirs.
+export const SubscribeCustomerInput = z.object({
+  email: z.string().email().max(255),
+  // The site (web property) the form was on (docs/58 D2). Null → a tenant-level
+  // contact not tied to a site. Resolved from the `?property=` slug at the edge.
+  propertyId: Uuid.nullable().optional(),
+  firstName: z.string().max(255).nullable().optional(),
+  lastName: z.string().max(255).nullable().optional(),
+  // Where the opt-in came from — stamped into gdpr_consent.source. Defaults to
+  // 'signup' (the newsletter block); 'checkout' for the marketing opt-in at checkout.
+  source: z.enum(['signup', 'checkout', 'api']).default('signup'),
+  // Captured server-side as proof of the opt-in (mirrors the consent record).
+  ipAddress: z.string().optional(),
+});
+export type SubscribeCustomerInput = z.infer<typeof SubscribeCustomerInput>;
+
 // Merge — picks a primary and a list of duplicates to fold into it.
 // Service-layer enforces tenant-id match on every id; database-layer RLS is
 // the backstop.

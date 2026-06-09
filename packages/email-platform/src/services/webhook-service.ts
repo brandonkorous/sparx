@@ -61,6 +61,28 @@ function mapEventType(event: string, severity?: string): string | null {
   }
 }
 
+// EmailEvent.type → the in-process platform-bus topic the CRM email-event
+// consumer reacts to (engagement activity rows + unsubscribe → do-not-contact),
+// or null when no consumer acts on it. The api-rest webhook route publishes this
+// post-ingest — kept as a pure mapping here so @sparx/email-platform doesn't take
+// a dependency on the CRM platform bus. `accepted`/`delivered`/`complained`/
+// `failed` have no in-process consumer topic today (complaint/bounce still
+// suppress at send time via the EmailSuppression list).
+function platformTopicFor(type: string): string | null {
+  switch (type) {
+    case 'opened':
+      return 'email.opened';
+    case 'clicked':
+      return 'email.clicked';
+    case 'bounced':
+      return 'email.bounced';
+    case 'unsubscribed':
+      return 'email.unsubscribed';
+    default:
+      return null;
+  }
+}
+
 // type → suppression (scope, reason), or null if it doesn't suppress.
 function suppressionFor(type: string): { scope: string; reason: string } | null {
   switch (type) {
@@ -91,6 +113,19 @@ export interface IngestResult {
   reason?: 'no_tenant' | 'unknown_event';
   tenantId?: string;
   type?: string;
+  // Present when this event maps to an in-process platform topic the CRM
+  // consumers act on. The webhook route publishes it onto the platform bus after
+  // ingest commits — making the (otherwise-starved) email-event consumer fire in
+  // production: engagement → CrmActivity, and unsubscribe → do-not-contact → exit
+  // the marketing segment.
+  platformEvent?: {
+    topic: string;
+    customerId: string | null;
+    email: string;
+    messageId: string | null;
+    broadcastId: string | null;
+    occurredAt: string;
+  };
 }
 
 /** Ingest one verified Mailgun webhook envelope. Returns handled=false (still a
@@ -142,5 +177,22 @@ export async function ingest(eventData: MailgunEventData): Promise<IngestResult>
     }
   });
 
-  return { handled: true, tenantId, type };
+  const platformTopic = platformTopicFor(type);
+  return {
+    handled: true,
+    tenantId,
+    type,
+    ...(platformTopic
+      ? {
+          platformEvent: {
+            topic: platformTopic,
+            customerId,
+            email: recipient,
+            messageId,
+            broadcastId,
+            occurredAt: occurredAt.toISOString(),
+          },
+        }
+      : {}),
+  };
 }

@@ -16,6 +16,7 @@ import type { FastifyInstance } from 'fastify';
 
 import { prisma } from '@sparx/db';
 import { invalidateModuleCache } from '@sparx/auth';
+import { BUILT_IN_SEGMENT_TEMPLATES } from '@sparx/crm-schemas/builtins';
 import {
   registerCrmConsumers,
   resetDedupeForTesting,
@@ -157,7 +158,7 @@ describe('CRM REST coverage — read paths', () => {
     expect(res.json().data).toEqual([]);
   });
 
-  it('GET /v1/crm/segments returns the four built-in segments', async () => {
+  it('GET /v1/crm/segments returns the built-in segments', async () => {
     const res = await app.inject({
       method: 'GET',
       url: '/v1/crm/segments',
@@ -166,9 +167,11 @@ describe('CRM REST coverage — read paths', () => {
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.success).toBe(true);
-    expect(body.data.length).toBe(4);
+    // Assert against the template list so adding a built-in (e.g. the marketing
+    // "newsletter-subscribers" segment) doesn't silently drift this expectation.
+    expect(body.data.length).toBe(BUILT_IN_SEGMENT_TEMPLATES.length);
     const slugs = body.data.map((s: { slug: string }) => s.slug).sort();
-    expect(slugs).toEqual(['at-risk', 'b2b-fleet', 'high-value', 'new-customers']);
+    expect(slugs).toEqual([...BUILT_IN_SEGMENT_TEMPLATES.map((t) => t.slug)].sort());
   });
 
   it('GET /v1/crm/reports/snapshot returns the empty-tenant snapshot', async () => {

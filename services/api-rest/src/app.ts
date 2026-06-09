@@ -69,6 +69,7 @@ import publicSiteRoutes from './routes/v1/public/site.js';
 import publicBuilderRoutes from './routes/v1/public/builder.js';
 import publicMediaRoutes from './routes/v1/public/media.js';
 import publicConsentRoutes from './routes/v1/public/consent.js';
+import publicSignupRoutes from './routes/v1/public/signup.js';
 import publicRedirectRoutes from './routes/v1/public/redirects.js';
 import uploadRoutes from './routes/v1/media/uploads.js';
 import mediaAssetRoutes from './routes/v1/media/assets.js';
@@ -514,6 +515,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicBuilderRoutes);
   await app.register(publicMediaRoutes);
   await app.register(publicConsentRoutes);
+  await app.register(publicSignupRoutes);
   await app.register(publicRedirectRoutes);
   await app.register(emailWebhookRoutes);
   await app.register(uploadRoutes);

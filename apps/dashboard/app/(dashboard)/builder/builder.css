@@ -2170,22 +2170,6 @@
   font-size: 16px;
   color: inherit;
 }
-.bx-signup {
-  display: flex;
-  gap: 8px;
-  width: 100%;
-  max-width: 420px;
-}
-.bx-signup__field {
-  flex: 1;
-  padding: 10px 12px;
-  border-radius: var(--bxc-radius-sm);
-  background: var(--bxc-bg);
-  color: var(--color-text-muted);
-  font-size: 13px;
-  border: 1px solid var(--bxc-border);
-  text-align: left;
-}
 /* Site chrome (Tier 2 — docs/45) */
 /* The Outlet marks where each routed page mounts. The layout editor has no real
  * page, so it renders a ghosted SAMPLE page — a hero + a feature-card grid in the

@@ -11,6 +11,7 @@
 //   • order.created / order.cancelled / order.refunded
 //   • crm.activity.recorded (covers email opens/clicks via consumers)
 //   • crm.customer.updated
+//   • crm.customer.subscribed (storefront newsletter opt-in → marketing segment)
 //   • crm.b2b.account_updated
 //
 // Each addition emits crm.segment.entered + writes a CrmActivity row;
@@ -37,6 +38,7 @@ export function registerSegmentEvaluatorConsumers(ctx: ConsumerContext): (() => 
     'order.refunded',
     'crm.activity.recorded',
     'crm.customer.updated',
+    'crm.customer.subscribed',
     'crm.b2b.account_updated',
   ];
 

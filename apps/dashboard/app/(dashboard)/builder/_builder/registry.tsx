@@ -42,6 +42,7 @@ import {
   Sparkles,
   Square,
   SquareDashed,
+  SunMoon,
   Tag,
   Type,
   type LucideIcon,
@@ -67,9 +68,11 @@ import {
   Logo,
   NavMenu,
   PriceTag,
+  Signup,
   SocialLinks,
   Stat,
   Text,
+  ThemeToggle,
   Wordmark,
   type WordmarkCollapse,
 } from '@sparx/site-ui';
@@ -999,12 +1002,9 @@ const DEFS: ComponentDef[] = [
     surfaces: ['page'],
     props: [{ key: 'cta', label: 'Button', control: 'text', placeholder: 'Subscribe' }],
     defaults: { props: { cta: 'Subscribe' } },
-    renderLeaf: ({ node }) => (
-      <div className="bx-signup">
-        <span className="bx-signup__field">you@example.com</span>
-        <span className="bx-btn bx-btn--primary">{firstString(node.props.cta, 'Subscribe')}</span>
-      </div>
-    ),
+    // The same site-ui form the live site renders (inert here — the canvas is a
+    // faithful preview, the storefront island owns submit). Was a bespoke mock.
+    renderLeaf: ({ node }) => <Signup cta={firstString(node.props.cta, 'Subscribe')} />,
   },
 
   // ---- Commerce buy-box (Tier 2 — interactive, docs/40 §7) ----
@@ -1317,6 +1317,25 @@ const DEFS: ComponentDef[] = [
             ];
       return <SocialLinks items={source} />;
     },
+  },
+  {
+    type: 'ThemeToggle',
+    label: 'Theme toggle',
+    kind: 'leaf',
+    group: 'data',
+    icon: SunMoon,
+    module: 'site',
+    bindable: false,
+    accepts: [],
+    surfaces: ['site'],
+    props: [],
+    defaults: {},
+    // The light/dark switch for the header. On the live site it auto-hides unless
+    // the site's appearance policy is `toggle` — both themes offered, set in
+    // /builder/brand (apps/site builder-renderer). The canvas always shows an inert
+    // preview (no document/cookie writes) so it stays placeable + selectable while
+    // composing, and never flips the dashboard's own theme.
+    renderLeaf: () => <ThemeToggle inert />,
   },
 ];
 

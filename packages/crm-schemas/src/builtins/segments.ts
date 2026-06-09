@@ -78,9 +78,29 @@ const NEW_CUSTOMERS: SegmentTemplate = {
   },
 };
 
+// The slug of the marketing-subscribers segment — shared so the storefront
+// signup path (customerService.subscribe) can ensure it exists for a tenant
+// that activated CRM before this template landed, and the email module can
+// target it for newsletter broadcasts.
+export const NEWSLETTER_SEGMENT_SLUG = 'newsletter-subscribers';
+
+const NEWSLETTER_SUBSCRIBERS: SegmentTemplate = {
+  name: 'Newsletter Subscribers',
+  slug: NEWSLETTER_SEGMENT_SLUG,
+  description: 'Everyone who opted into marketing email (storefront signup, checkout opt-in).',
+  color: '#8B5CF6',
+  rules: {
+    kind: 'predicate',
+    field: 'email.subscribed',
+    op: 'eq',
+    value: true,
+  },
+};
+
 export const BUILT_IN_SEGMENT_TEMPLATES: readonly SegmentTemplate[] = [
   HIGH_VALUE,
   AT_RISK,
   B2B_FLEET,
   NEW_CUSTOMERS,
+  NEWSLETTER_SUBSCRIBERS,
 ];

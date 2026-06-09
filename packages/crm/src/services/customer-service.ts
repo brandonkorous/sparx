@@ -13,8 +13,10 @@ import {
   BulkAssignCustomersInput,
   BulkTagCustomersInput,
   CreateCustomerInput,
+  SubscribeCustomerInput,
   UpdateCustomerInput,
 } from '@sparx/crm-schemas';
+import { NEWSLETTER_SEGMENT_SLUG } from '@sparx/crm-schemas/builtins';
 import { withTenant } from '@sparx/db';
 import type { Customer, Prisma } from '@sparx/db';
 
@@ -22,6 +24,7 @@ import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError } from '../errors';
+import { ensureBuiltInSegment } from './segment-service';
 
 export { merge, findLikelyDuplicates } from './merge-service';
 export type { MergeResult, DuplicateGroup } from './merge-service';
@@ -184,6 +187,144 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Cu
   });
 
   return customer;
+}
+
+// Marketing opt-in from the public storefront (the "Email signup" block,
+// docs/51 §7). Idempotent on the (tenant, property, email) identity: a fresh
+// email becomes a `prospect` with `marketing` consent; a repeat submit (or an
+// existing customer — e.g. someone who checked out) folds `marketing` into the
+// consent scope and clears any prior `doNotContact`, never erroring on the
+// unique constraint. Returns the customer plus whether it was newly created so
+// the caller can decide (it deliberately does NOT leak that to the public).
+export async function subscribe(
+  ctx: ServiceContext,
+  rawInput: unknown
+): Promise<{ customer: Customer; created: boolean }> {
+  const input = SubscribeCustomerInput.parse(rawInput);
+  const propertyId = input.propertyId ?? null;
+  const grantedAt = new Date().toISOString();
+
+  const outcome = await withTenant(ctx, async (tx) => {
+    // Re-subscribe: union the existing consent scope with `marketing`, keep the
+    // earliest grant timestamp, and lift any do-not-contact flag. A deleted row
+    // is restored (deletedAt → null) so the opt-in actually takes effect.
+    const resubscribe = async (existing: Customer) => {
+      const prior = (existing.gdprConsent ?? {}) as {
+        grantedAt?: string;
+        source?: string;
+        scope?: string[];
+        ipAddress?: string;
+      };
+      const scope = Array.from(new Set([...(prior.scope ?? []), 'marketing']));
+      const updated = await tx.customer.update({
+        where: { id: existing.id },
+        data: {
+          doNotContact: false,
+          deletedAt: null,
+          ...(existing.firstName ? {} : input.firstName ? { firstName: input.firstName } : {}),
+          ...(existing.lastName ? {} : input.lastName ? { lastName: input.lastName } : {}),
+          gdprConsent: {
+            ...prior,
+            grantedAt: prior.grantedAt ?? grantedAt,
+            source: prior.source ?? input.source,
+            scope,
+            ...(prior.ipAddress || input.ipAddress
+              ? { ipAddress: prior.ipAddress ?? input.ipAddress }
+              : {}),
+          },
+        },
+      });
+      await writeAuditLog({
+        tx,
+        tenantId: ctx.tenantId,
+        actorId: null,
+        actorType: 'system',
+        action: 'crm.customer.subscribed',
+        entityType: 'Customer',
+        entityId: updated.id,
+        diff: { before: serializeCustomer(existing), after: serializeCustomer(updated) },
+      });
+      return { customer: updated, created: false };
+    };
+
+    // Match the unique identity directly (includes soft-deleted rows so a
+    // re-subscribe resurrects rather than colliding on the constraint).
+    const existing = await tx.customer.findFirst({
+      where: { tenantId: ctx.tenantId, propertyId, email: input.email },
+    });
+    if (existing) return resubscribe(existing);
+
+    // No row yet → create. A concurrent first-time submit (two tabs) can race
+    // between the find above and this insert; the unique constraint catches the
+    // loser, which then falls through to the re-subscribe path on the row the
+    // winner created — so a double-submit is still idempotent, never a 500.
+    try {
+      const created = await tx.customer.create({
+        data: {
+          tenantId: ctx.tenantId,
+          type: 'prospect',
+          propertyId,
+          email: input.email,
+          firstName: input.firstName ?? null,
+          lastName: input.lastName ?? null,
+          doNotContact: false,
+          gdprConsent: {
+            grantedAt,
+            source: input.source,
+            scope: ['marketing'],
+            ...(input.ipAddress ? { ipAddress: input.ipAddress } : {}),
+          },
+        },
+      });
+      await writeAuditLog({
+        tx,
+        tenantId: ctx.tenantId,
+        actorId: null,
+        actorType: 'system',
+        action: 'crm.customer.subscribed',
+        entityType: 'Customer',
+        entityId: created.id,
+        diff: { before: null, after: serializeCustomer(created) },
+      });
+      return { customer: created, created: true };
+    } catch (err) {
+      if (!isUniqueViolation(err)) throw err;
+      const racedRow = await tx.customer.findFirst({
+        where: { tenantId: ctx.tenantId, propertyId, email: input.email },
+      });
+      if (!racedRow) throw err;
+      return resubscribe(racedRow);
+    }
+  });
+
+  // Make the subscriber emailable: ensure the built-in "Newsletter Subscribers"
+  // segment exists (covers tenants that activated CRM before it was a built-in),
+  // then drive the in-process segment evaluator so it materializes membership.
+  // Broadcasts resolve recipients from segment_members, so this is what turns an
+  // opt-in into a reachable audience. Best-effort — a failure here must not undo
+  // the consent capture (the durable source of truth), which already committed.
+  try {
+    await ensureBuiltInSegment(ctx, NEWSLETTER_SEGMENT_SLUG);
+  } catch {
+    // Segment seeding is recoverable on the next subscribe / activation.
+  }
+
+  // Publish on the CRM bus: webhooks + (in prod) the Pub/Sub tee, AND — via the
+  // platform-bus fan-out installed with the consumers — the in-process segment
+  // evaluator, which re-projects the customer and writes the segment_member.
+  await publishCrmEvent({
+    tenantId: ctx.tenantId,
+    topic: 'crm.customer.subscribed',
+    payload: {
+      customerId: outcome.customer.id,
+      email: outcome.customer.email,
+      propertyId,
+      created: outcome.created,
+    },
+    dedupeKey: `crm.customer.subscribed:${outcome.customer.id}:${grantedAt}`,
+  });
+
+  return outcome;
 }
 
 export async function update(
@@ -390,6 +531,18 @@ function sameTags(a: readonly string[], b: readonly string[]): boolean {
 // Serializes a Customer for audit-log JSON. Drops volatile fields that
 // would otherwise produce a noisy diff. Decimal columns are stringified
 // because Prisma's Decimal type isn't JSON-safe out of the box.
+/** A Prisma unique-constraint violation (P2002), checked structurally so we
+ *  don't pull the Prisma runtime in just for the error class. Used by
+ *  `subscribe` to turn a concurrent-insert race into the idempotent path. */
+function isUniqueViolation(err: unknown): boolean {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    'code' in err &&
+    (err as { code?: unknown }).code === 'P2002'
+  );
+}
+
 function serializeCustomer(c: Customer): Record<string, unknown> {
   return {
     id: c.id,

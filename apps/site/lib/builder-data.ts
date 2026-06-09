@@ -239,9 +239,16 @@ function socialsToItems(
 }
 
 /** Build the `site` resolver root for the layout renderer: brand identity + social
- *  links from the resolved tenant. Navigation is Builder-owned (docs/57) — it
- *  lives on the NavMenu node, not here. */
-export function loadSiteData(tenant: ResolvedTenant): DataSources {
+ *  links from the resolved tenant, plus the site's appearance settings. Navigation
+ *  is Builder-owned (docs/57) — it lives on the NavMenu node, not here.
+ *
+ *  `appearance` carries the published appearance policy + the SSR-resolved initial
+ *  mode, so the Builder `ThemeToggle` node can auto-hide unless both themes are
+ *  offered (`policy === 'toggle'`) and paint the right icon before hydration. */
+export function loadSiteData(
+  tenant: ResolvedTenant,
+  appearance?: { policy: string; initial: 'light' | 'dark' }
+): DataSources {
   const root: DataSources = {};
 
   const logo = mediaUrl(tenant.theme?.logoMediaId ?? null, tenant.slug);
@@ -252,6 +259,13 @@ export function loadSiteData(tenant: ResolvedTenant): DataSources {
   });
 
   setAtPath(root, 'site.social', socialsToItems(tenant.socials));
+
+  if (appearance) {
+    setAtPath(root, 'site.appearance', {
+      policy: appearance.policy,
+      initial: appearance.initial,
+    });
+  }
 
   return root;
 }

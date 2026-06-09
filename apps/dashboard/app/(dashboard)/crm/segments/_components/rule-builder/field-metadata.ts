@@ -81,6 +81,12 @@ export const FIELDS: readonly FieldDef[] = [
     group: 'Email engagement',
     kind: 'boolean',
   },
+  {
+    field: 'email.subscribed',
+    label: 'Subscribed to marketing',
+    group: 'Email engagement',
+    kind: 'boolean',
+  },
 ] as const;
 
 export const FIELD_INDEX: Record<SegmentField, FieldDef> = FIELDS.reduce(
