@@ -35,7 +35,7 @@ import * as providerService from './provider-service';
 
 function parseDueDays(paymentTerms: string | null | undefined): number {
   if (!paymentTerms) return 30;
-  const m = paymentTerms.match(/^net(\d+)$/i);
+  const m = /^net(\d+)$/i.exec(paymentTerms);
   return m?.[1] ? parseInt(m[1], 10) : 30;
 }
 
