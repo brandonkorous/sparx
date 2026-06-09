@@ -11,7 +11,7 @@
 // Per-tenant DB context is set via set_config before every account update so
 // the sync_b2b_credit_used trigger works correctly.
 
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import type pino from 'pino';
 import { env } from './env.js';
@@ -28,12 +28,10 @@ interface EscalationResult {
 let prisma: PrismaClient | null = null;
 
 function getDb(): PrismaClient {
-  if (!prisma) {
-    prisma = new PrismaClient({
-      datasourceUrl: env.DATABASE_URL,
-      log: env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
-    });
-  }
+  prisma ??= new PrismaClient({
+    datasourceUrl: env.DATABASE_URL,
+    log: env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+  });
   return prisma;
 }
 
@@ -115,9 +113,7 @@ async function runTenantEscalation(
 
   // Fetch invoices that cross a threshold and need account escalation.
   // Group by account to avoid redundant updates.
-  const overdueInvoices = await db.$queryRaw<
-    Array<{ account_id: string; max_overdue_days: number }>
-  >`
+  const overdueInvoices = await db.$queryRaw<{ account_id: string; max_overdue_days: number }[]>`
     SELECT
       account_id,
       MAX(overdue_days) AS max_overdue_days
@@ -183,13 +179,13 @@ async function runTenantEscalation(
   // The email-worker subscribes to b2b.invoice.overdue and conditionally sends a reminder
   // at 7 days.
   const freshlyOverdue = await db.$queryRaw<
-    Array<{
+    {
       id: string;
       account_id: string;
       overdue_days: number;
       invoice_number: string;
       amount_cents: number;
-    }>
+    }[]
   >`
     SELECT id, account_id, overdue_days, invoice_number, amount_cents
     FROM b2b_invoices

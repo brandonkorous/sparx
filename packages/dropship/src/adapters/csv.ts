@@ -241,8 +241,7 @@ export class CsvAdapter implements SupplierAdapter {
   }
 }
 
-/** Construct the right adapter for a given supplier type. Ph2 ships csv only;
- *  Ph4 adds 'dsers' and 'spocket'. */
+/** Construct the right adapter for a given supplier type. */
 export function createAdapter(type: string, credentials: Credentials): SupplierAdapter {
   switch (type) {
     case 'csv':

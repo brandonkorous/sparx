@@ -60,7 +60,13 @@ const ROUND_OPTIONS = [
 export function SupplierForm({ supplier, onSuccess, onCancel }: Props) {
   const [name, setName] = useState(supplier?.name ?? '');
   const [type, setType] = useState(supplier?.type ?? 'csv');
+  // CSV credentials
   const [csvUrl, setCsvUrl] = useState(supplier?.credentials?.csvUrl ?? '');
+  // DSers credentials
+  const [dsersToken, setDsersToken] = useState(supplier?.credentials?.apiToken ?? '');
+  const [dsersStoreId, setDsersStoreId] = useState(supplier?.credentials?.storeId ?? '');
+  // Spocket credentials
+  const [spocketKey, setSpocketKey] = useState(supplier?.credentials?.apiKey ?? '');
   const [notes, setNotes] = useState(supplier?.notes ?? '');
 
   const [hasPricingRule, setHasPricingRule] = useState(supplier?.pricingRule != null);
@@ -91,7 +97,14 @@ export function SupplierForm({ supplier, onSuccess, onCancel }: Props) {
     setSubmitting(true);
     setError(null);
     try {
-      const credentials: Record<string, string> = type === 'csv' ? { csvUrl: csvUrl.trim() } : {};
+      const credentials: Record<string, string> =
+        type === 'csv'
+          ? { csvUrl: csvUrl.trim() }
+          : type === 'dsers'
+            ? { apiToken: dsersToken.trim(), storeId: dsersStoreId.trim() }
+            : type === 'spocket'
+              ? { apiKey: spocketKey.trim() }
+              : {};
 
       const pricingRule = hasPricingRule
         ? {
@@ -170,6 +183,49 @@ export function SupplierForm({ supplier, onSuccess, onCancel }: Props) {
             />
             <Text size="xs" className="text-[var(--color-muted-foreground)]">
               Must be a publicly accessible URL. The first row must be a header row.
+            </Text>
+          </Stack>
+        )}
+
+        {type === 'dsers' && (
+          <Stack gap={3}>
+            <Stack gap={2}>
+              <Text size="sm" className="font-medium">
+                DSers API token <span className="text-[var(--color-danger)]">*</span>
+              </Text>
+              <Input
+                type="password"
+                placeholder="Paste your DSers API token"
+                value={dsersToken}
+                onChange={(e) => setDsersToken(e.target.value)}
+              />
+            </Stack>
+            <Stack gap={2}>
+              <Text size="sm" className="font-medium">
+                DSers store ID <span className="text-[var(--color-danger)]">*</span>
+              </Text>
+              <Input
+                placeholder="e.g. 123456"
+                value={dsersStoreId}
+                onChange={(e) => setDsersStoreId(e.target.value)}
+              />
+            </Stack>
+          </Stack>
+        )}
+
+        {type === 'spocket' && (
+          <Stack gap={2}>
+            <Text size="sm" className="font-medium">
+              Spocket API key <span className="text-[var(--color-danger)]">*</span>
+            </Text>
+            <Input
+              type="password"
+              placeholder="Paste your Spocket API key"
+              value={spocketKey}
+              onChange={(e) => setSpocketKey(e.target.value)}
+            />
+            <Text size="xs" className="text-[var(--color-muted-foreground)]">
+              Found in your Spocket dashboard under Settings → API.
             </Text>
           </Stack>
         )}
