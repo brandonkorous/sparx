@@ -56,7 +56,11 @@ export function TierCreateButton() {
   });
 
   async function onSubmit(values: TierFormValues) {
-    await createPricingTier(values);
+    const { error } = await createPricingTier(values);
+    if (error) {
+      form.setError('root', { message: error });
+      return;
+    }
     setOpen(false);
     form.reset();
     startTransition(() => router.refresh());
@@ -68,7 +72,7 @@ export function TierCreateButton() {
         New tier
       </Button>
 
-      <Modal open={open} onOpenChange={setOpen}>
+      <Modal open={open} onOpenChange={(v) => { setOpen(v); if (!v) form.reset(); }}>
         <ModalContent className="max-w-md">
           <ModalHeader>
             <ModalTitle>Create pricing tier</ModalTitle>
@@ -180,6 +184,12 @@ export function TierCreateButton() {
                   </FormItem>
                 )}
               />
+
+              {form.formState.errors.root && (
+                <p className="text-sm text-[var(--color-danger)]">
+                  {form.formState.errors.root.message}
+                </p>
+              )}
 
               <Stack direction="row" justify="end" gap={2} className="pt-2">
                 <Button

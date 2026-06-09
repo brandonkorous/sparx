@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { MoreHorizontal, RefreshCw, Pencil, Trash2 } from 'lucide-react';
 import {
   Button,
+  Text,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -15,7 +16,6 @@ import {
   ModalTitle,
   ModalDescription,
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -39,50 +39,69 @@ export function SourceActions({ source }: { source: Source }) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [syncing, startSync] = useTransition();
+  const [deleting, startDelete] = useTransition();
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   function triggerSync() {
-    startTransition(async () => {
-      try {
-        await syncSource(source.id);
+    setSyncError(null);
+    startSync(async () => {
+      const { error } = await syncSource(source.id);
+      if (error) {
+        setSyncError(error);
+      } else {
         router.refresh();
-      } catch {
-        // error swallowed — real apps surface a toast
       }
     });
   }
 
-  async function handleDelete() {
-    await deleteSource(source.id);
-    router.refresh();
+  function handleDelete() {
+    setDeleteError(null);
+    startDelete(async () => {
+      const { error } = await deleteSource(source.id);
+      if (error) {
+        setDeleteError(error);
+      } else {
+        setDeleteOpen(false);
+        router.refresh();
+      }
+    });
   }
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button color="neutral" variant="ghost" size="sm">
-            <MoreHorizontal className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={triggerSync} disabled={isPending}>
-            <RefreshCw className="mr-2 size-4" />
-            {isPending ? 'Syncing…' : 'Sync now'}
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setEditOpen(true)}>
-            <Pencil className="mr-2 size-4" />
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={() => setDeleteOpen(true)}
-            className="text-[var(--color-danger)]"
-          >
-            <Trash2 className="mr-2 size-4" />
-            Remove
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex flex-col items-end gap-1">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button color="neutral" variant="ghost" size="sm">
+              <MoreHorizontal className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={triggerSync} disabled={syncing}>
+              <RefreshCw className="mr-2 size-4" />
+              {syncing ? 'Syncing…' : 'Sync now'}
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+              <Pencil className="mr-2 size-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => setDeleteOpen(true)}
+              className="text-[var(--color-danger)]"
+            >
+              <Trash2 className="mr-2 size-4" />
+              Remove
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        {syncError && (
+          <Text size="xs" className="max-w-[200px] text-right text-[var(--color-danger)]">
+            {syncError}
+          </Text>
+        )}
+      </div>
 
       <Modal open={editOpen} onOpenChange={setEditOpen}>
         <ModalContent>
@@ -101,7 +120,13 @@ export function SourceActions({ source }: { source: Source }) {
         </ModalContent>
       </Modal>
 
-      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+      <AlertDialog
+        open={deleteOpen}
+        onOpenChange={(open) => {
+          if (!open) setDeleteError(null);
+          setDeleteOpen(open);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove &quot;{source.name}&quot;?</AlertDialogTitle>
@@ -110,14 +135,16 @@ export function SourceActions({ source }: { source: Source }) {
               retained.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {deleteError && (
+            <Text size="sm" className="px-6 text-[var(--color-danger)]">
+              {deleteError}
+            </Text>
+          )}
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-[var(--color-danger)] text-white hover:bg-[var(--color-danger)]/90"
-              onClick={() => void handleDelete()}
-            >
-              Remove
-            </AlertDialogAction>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <Button color="danger" disabled={deleting} onClick={() => void handleDelete()}>
+              {deleting ? 'Removing…' : 'Remove'}
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

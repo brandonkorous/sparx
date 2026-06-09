@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { BarChart3 } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import {
   Table,
@@ -14,6 +15,8 @@ import {
   Text,
   Card,
   CardContent,
+  Container,
+  PageHeader,
   Stack,
 } from '@sparx/ui';
 
@@ -119,135 +122,74 @@ export default async function DropshipAnalyticsPage() {
   const isLoss = summary.profitCents < 0;
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Profitability</h1>
-        <p className="mt-1 text-[var(--color-muted-foreground)]">
-          Cost vs. revenue across all dropship orders
-        </p>
-      </div>
-
-      {/* Summary cards */}
-      <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <SummaryCard label="Revenue" value={formatCents(summary.revenueCents)} />
-        <SummaryCard label="Cost" value={formatCents(summary.costCents)} />
-        <SummaryCard
-          label="Profit"
-          value={formatCents(Math.abs(summary.profitCents))}
-          valueClass={isLoss ? 'text-[var(--color-danger)]' : 'text-[var(--color-success)]'}
-          prefix={isLoss ? '−' : '+'}
+    <Container size="full">
+      <Stack gap={6} className="py-10">
+        <PageHeader
+          icon={<BarChart3 className="h-5 w-5" />}
+          title="Profitability"
+          description="Cost vs. revenue across all dropship orders"
         />
-        <SummaryCard
-          label="Margin"
-          value={`${summary.marginPct}%`}
-          valueClass={
-            summary.marginPct >= 20
-              ? 'text-[var(--color-success)]'
-              : summary.marginPct >= 0
-                ? 'text-[var(--color-warning)]'
-                : 'text-[var(--color-danger)]'
-          }
-        />
-      </div>
 
-      <Stack gap={8}>
-        {/* Per-supplier breakdown */}
-        <div>
-          <Text size="lg" className="mb-4 font-semibold">
-            By supplier
-          </Text>
-          {summary.bySupplier.length === 0 ? (
-            <Text className="text-[var(--color-muted-foreground)]">
-              No fulfilled dropship orders yet.
-            </Text>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead className="text-right">Orders</TableHead>
-                  <TableHead className="text-right">Revenue</TableHead>
-                  <TableHead className="text-right">Cost</TableHead>
-                  <TableHead className="text-right">Profit</TableHead>
-                  <TableHead className="text-right">Margin</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {summary.bySupplier.map((row) => (
-                  <TableRow key={row.supplierId}>
-                    <TableCell className="font-medium">
-                      <Link
-                        href={`/dropship/suppliers/${row.supplierId}/catalog`}
-                        className="hover:underline"
-                      >
-                        {row.supplierName}
-                      </Link>
-                    </TableCell>
-                    <TableCell className="text-right">{row.orders}</TableCell>
-                    <TableCell className="text-right">{formatCents(row.revenueCents)}</TableCell>
-                    <TableCell className="text-right">{formatCents(row.costCents)}</TableCell>
-                    <TableCell className="text-right">
-                      <span
-                        className={
-                          row.profitCents >= 0
-                            ? 'text-[var(--color-success)]'
-                            : 'text-[var(--color-danger)]'
-                        }
-                      >
-                        {row.profitCents < 0 ? '−' : '+'}
-                        {formatCents(Math.abs(row.profitCents))}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Badge color={marginColor(row.marginPct)} variant="soft" size="sm">
-                        {row.marginPct}%
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+        {/* Summary cards */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <SummaryCard label="Revenue" value={formatCents(summary.revenueCents)} />
+          <SummaryCard label="Cost" value={formatCents(summary.costCents)} />
+          <SummaryCard
+            label="Profit"
+            value={formatCents(Math.abs(summary.profitCents))}
+            valueClass={isLoss ? 'text-[var(--color-danger)]' : 'text-[var(--color-success)]'}
+            prefix={isLoss ? '−' : '+'}
+          />
+          <SummaryCard
+            label="Margin"
+            value={`${summary.marginPct}%`}
+            valueClass={
+              summary.marginPct >= 20
+                ? 'text-[var(--color-success)]'
+                : summary.marginPct >= 0
+                  ? 'text-[var(--color-warning)]'
+                  : 'text-[var(--color-danger)]'
+            }
+          />
         </div>
 
-        {/* Per-order detail */}
-        <div>
-          <Text size="lg" className="mb-4 font-semibold">
-            Recent orders
-          </Text>
-          {orders.length === 0 ? (
-            <Text className="text-[var(--color-muted-foreground)]">No orders yet.</Text>
-          ) : (
-            <>
+        <Stack gap={8}>
+          {/* Per-supplier breakdown */}
+          <div>
+            <Text size="lg" className="mb-4 font-semibold">
+              By supplier
+            </Text>
+            {summary.bySupplier.length === 0 ? (
+              <Text className="text-[var(--color-muted-foreground)]">
+                No fulfilled dropship orders yet.
+              </Text>
+            ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Order</TableHead>
                     <TableHead>Supplier</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Orders</TableHead>
                     <TableHead className="text-right">Revenue</TableHead>
                     <TableHead className="text-right">Cost</TableHead>
                     <TableHead className="text-right">Profit</TableHead>
                     <TableHead className="text-right">Margin</TableHead>
-                    <TableHead>Date</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.map((row) => (
-                    <TableRow key={row.id}>
-                      <TableCell>
+                  {summary.bySupplier.map((row) => (
+                    <TableRow key={row.supplierId}>
+                      <TableCell className="font-medium">
                         <Link
-                          href={`/commerce/orders/${row.orderId}`}
-                          className="font-mono text-sm hover:underline"
+                          href={`/dropship/suppliers/${row.supplierId}/catalog`}
+                          className="hover:underline"
                         >
-                          #{row.orderNumber}
+                          {row.supplierName}
                         </Link>
                       </TableCell>
-                      <TableCell>{row.supplierName}</TableCell>
-                      <TableCell>
-                        <StatusBadge status={row.status} />
+                      <TableCell className="text-right">{row.orders}</TableCell>
+                      <TableCell className="text-right">
+                        {formatCents(row.revenueCents)}
                       </TableCell>
-                      <TableCell className="text-right">{formatCents(row.revenueCents)}</TableCell>
                       <TableCell className="text-right">{formatCents(row.costCents)}</TableCell>
                       <TableCell className="text-right">
                         <span
@@ -266,24 +208,90 @@ export default async function DropshipAnalyticsPage() {
                           {row.marginPct}%
                         </Badge>
                       </TableCell>
-                      <TableCell>
-                        <Text size="sm" className="text-[var(--color-muted-foreground)]">
-                          {new Date(row.createdAt).toLocaleDateString()}
-                        </Text>
-                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-              {totalOrderCount > 50 && (
-                <Text size="sm" className="mt-3 text-[var(--color-muted-foreground)]">
-                  Showing 50 of {totalOrderCount} orders.
-                </Text>
-              )}
-            </>
-          )}
-        </div>
+            )}
+          </div>
+
+          {/* Per-order detail */}
+          <div>
+            <Text size="lg" className="mb-4 font-semibold">
+              Recent orders
+            </Text>
+            {orders.length === 0 ? (
+              <Text className="text-[var(--color-muted-foreground)]">No orders yet.</Text>
+            ) : (
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Order</TableHead>
+                      <TableHead>Supplier</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Revenue</TableHead>
+                      <TableHead className="text-right">Cost</TableHead>
+                      <TableHead className="text-right">Profit</TableHead>
+                      <TableHead className="text-right">Margin</TableHead>
+                      <TableHead>Date</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {orders.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell>
+                          <Link
+                            href={`/commerce/orders/${row.orderId}`}
+                            className="font-mono text-sm hover:underline"
+                          >
+                            #{row.orderNumber}
+                          </Link>
+                        </TableCell>
+                        <TableCell>{row.supplierName}</TableCell>
+                        <TableCell>
+                          <StatusBadge status={row.status} />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatCents(row.revenueCents)}
+                        </TableCell>
+                        <TableCell className="text-right">{formatCents(row.costCents)}</TableCell>
+                        <TableCell className="text-right">
+                          <span
+                            className={
+                              row.profitCents >= 0
+                                ? 'text-[var(--color-success)]'
+                                : 'text-[var(--color-danger)]'
+                            }
+                          >
+                            {row.profitCents < 0 ? '−' : '+'}
+                            {formatCents(Math.abs(row.profitCents))}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Badge color={marginColor(row.marginPct)} variant="soft" size="sm">
+                            {row.marginPct}%
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Text size="sm" className="text-[var(--color-muted-foreground)]">
+                            {new Date(row.createdAt).toLocaleDateString()}
+                          </Text>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                {totalOrderCount > 50 && (
+                  <Text size="sm" className="mt-3 text-[var(--color-muted-foreground)]">
+                    Showing 50 of {totalOrderCount} orders.
+                  </Text>
+                )}
+              </>
+            )}
+          </div>
+        </Stack>
       </Stack>
-    </div>
+    </Container>
   );
 }

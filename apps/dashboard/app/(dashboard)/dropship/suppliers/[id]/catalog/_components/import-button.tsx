@@ -29,7 +29,7 @@ export function ImportButton({ supplierId, productId, isImported }: Props) {
   return (
     <div className="flex flex-col items-end gap-1">
       <Button
-        color="primary"
+        color="module"
         variant="soft"
         size="sm"
         disabled={pending}

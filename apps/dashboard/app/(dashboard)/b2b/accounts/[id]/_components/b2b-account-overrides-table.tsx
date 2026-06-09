@@ -37,12 +37,18 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [rowErrors, setRowErrors] = useState<Map<string, string>>(new Map());
 
   async function handleDelete(oid: string) {
     setDeleting(oid);
+    setRowErrors((prev) => { const m = new Map(prev); m.delete(oid); return m; });
     try {
-      await deleteAccountOverride(accountId, oid);
-      startTransition(() => router.refresh());
+      const { error } = await deleteAccountOverride(accountId, oid);
+      if (error) {
+        setRowErrors((prev) => new Map(prev).set(oid, error));
+      } else {
+        startTransition(() => router.refresh());
+      }
     } finally {
       setDeleting(null);
     }
@@ -118,16 +124,23 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
                 </Text>
               </TableCell>
               <TableCell>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  color="danger"
-                  disabled={deleting === o.id}
-                  onClick={() => void handleDelete(o.id)}
-                  aria-label="Remove override"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex flex-col items-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    color="danger"
+                    disabled={deleting === o.id}
+                    onClick={() => void handleDelete(o.id)}
+                    aria-label="Remove override"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                  {rowErrors.get(o.id) && (
+                    <Text size="xs" className="text-right text-[var(--color-danger)]">
+                      {rowErrors.get(o.id)}
+                    </Text>
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           ))}

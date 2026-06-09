@@ -12,7 +12,7 @@ export function NewSupplierButton() {
 
   return (
     <>
-      <Button color="primary" onClick={() => setOpen(true)}>
+      <Button color="module" onClick={() => setOpen(true)}>
         <Plus className="mr-1 h-4 w-4" />
         Connect supplier
       </Button>

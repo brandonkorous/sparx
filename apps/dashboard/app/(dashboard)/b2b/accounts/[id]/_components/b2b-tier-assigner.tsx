@@ -32,20 +32,30 @@ export function B2bTierAssigner({ accountId, currentTierId, tiers }: Props) {
   const [isPending, startTransition] = useTransition();
   const [selected, setSelected] = useState<string>(currentTierId ?? '__none__');
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const isDirty = selected !== (currentTierId ?? '__none__');
 
   async function handleSave() {
     setSaving(true);
+    setSaveError(null);
     try {
-      await updateAccountTier(accountId, selected === '__none__' ? null : selected);
-      startTransition(() => router.refresh());
+      const { error } = await updateAccountTier(accountId, selected === '__none__' ? null : selected);
+      if (error) {
+        setSaveError(error);
+      } else {
+        startTransition(() => router.refresh());
+      }
     } finally {
       setSaving(false);
     }
   }
 
   return (
+    <Stack gap={2}>
+    {saveError && (
+      <Text size="sm" className="text-[var(--color-danger)]">{saveError}</Text>
+    )}
     <Stack direction="row" align="center" gap={3} wrap>
       <Select value={selected} onValueChange={setSelected}>
         <SelectTrigger className="w-64">
@@ -78,6 +88,7 @@ export function B2bTierAssigner({ accountId, currentTierId, tiers }: Props) {
           {saving ? 'Saving…' : 'Save'}
         </Button>
       )}
+    </Stack>
     </Stack>
   );
 }

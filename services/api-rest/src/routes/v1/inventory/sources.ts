@@ -1,4 +1,4 @@
-// Inventory Sources CRUD + manual sync trigger.
+// Inventory Sources CRUD + manual sync trigger + external push.
 //
 //   GET    /v1/inventory/sources
 //   POST   /v1/inventory/sources
@@ -6,6 +6,7 @@
 //   PATCH  /v1/inventory/sources/:id
 //   DELETE /v1/inventory/sources/:id
 //   POST   /v1/inventory/sources/:id/sync
+//   POST   /v1/inventory/sources/:id/push   ← external systems (API key auth)
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -24,6 +25,16 @@ const pubLogger: PublisherLogger = {
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
 const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+
+const PushRow = z.object({
+  sku: z.string().min(1).max(255),
+  location: z.string().max(255).optional(),
+  quantity: z.number().int().min(0),
+});
+
+const PushBody = z.object({
+  rows: z.array(PushRow).min(1).max(10_000),
+});
 
 const CreateSourceBody = z.object({
   name: z.string().min(1).max(255),
@@ -191,6 +202,117 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
     );
 
     return reply.send(ok({ queued: true, sourceId: source.id }));
+  });
+
+  // ── External push ─────────────────────────────────────────────────────────────
+  //
+  // Allows any external system (warehouse, ERP, bridge agent) authenticated with
+  // a tenant API key (sk_live_*) to POST stock levels directly. Rows are resolved
+  // against inventory_source_links and upserted into stock_levels immediately —
+  // no worker round-trip. Identical SKU-resolution logic to the CSV worker.
+
+  app.post('/v1/inventory/sources/:id/push', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'editor');
+    const { tenantId, userId } = toInventoryContext(request);
+    const { id } = request.params as { id: string };
+    const { rows } = PushBody.parse(request.body);
+
+    const source = await withTenant({ tenantId }, async (tx) => {
+      const s = await tx.inventorySource.findFirst({ where: { id, tenantId, deletedAt: null } });
+      if (!s) throw notFound('Inventory source not found');
+      return s;
+    });
+
+    if (source.status === 'paused') {
+      return reply.send(ok({ processed: 0, unmatched: 0, skipped: rows.length, reason: 'source_paused' }));
+    }
+
+    interface LinkRecord {
+      id: string;
+      variantId: string;
+      locationId: string;
+      externalSku: string;
+      externalLocation: string | null;
+    }
+
+    const links = await withTenant({ tenantId }, async (tx) => {
+      return tx.inventorySourceLink.findMany({
+        where: { tenantId, sourceId: id, status: 'active' },
+        select: { id: true, variantId: true, locationId: true, externalSku: true, externalLocation: true },
+      });
+    });
+
+    const linkMap = new Map<string, LinkRecord>();
+    for (const link of links) {
+      const key = link.externalLocation !== null
+        ? `${link.externalSku}|${link.externalLocation}`
+        : link.externalSku;
+      linkMap.set(key, link);
+    }
+
+    let processed = 0;
+    let unmatched = 0;
+
+    for (const row of rows) {
+      const exactKey = row.location !== undefined ? `${row.sku}|${row.location}` : row.sku;
+      const link = linkMap.get(exactKey) ?? linkMap.get(row.sku);
+
+      if (!link) {
+        unmatched++;
+        continue;
+      }
+
+      await withTenant({ tenantId }, async (tx) => {
+        const existing = await tx.stockLevel.findFirst({
+          where: { tenantId, variantId: link.variantId, locationId: link.locationId },
+          select: { id: true, allocated: true },
+        });
+
+        if (existing) {
+          const alloc = Number(existing.allocated ?? 0);
+          await tx.stockLevel.update({
+            where: { id: existing.id },
+            data: {
+              onHand: row.quantity,
+              available: Math.max(0, row.quantity - alloc),
+              updatedAt: new Date(),
+            },
+          });
+        } else {
+          await tx.stockLevel.create({
+            data: {
+              tenantId,
+              variantId: link.variantId,
+              locationId: link.locationId,
+              onHand: row.quantity,
+              allocated: 0,
+              available: Math.max(0, row.quantity),
+            },
+          });
+        }
+      });
+
+      processed++;
+    }
+
+    await withTenant({ tenantId }, async (tx) => {
+      await tx.inventorySource.update({
+        where: { id },
+        data: { lastSyncAt: new Date(), status: 'active', updatedAt: new Date() },
+      });
+    });
+
+    await publishEvent(
+      publisher,
+      'inventory.source.sync_completed',
+      tenantId,
+      userId,
+      { sourceId: id, syncedAt: new Date().toISOString(), via: 'push' },
+      pubLogger
+    );
+
+    return reply.send(ok({ processed, unmatched }));
   });
 };
 

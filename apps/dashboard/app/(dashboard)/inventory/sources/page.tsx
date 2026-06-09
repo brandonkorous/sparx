@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import type { Metadata } from 'next';
+import { Database } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import {
   Table,
@@ -10,8 +11,14 @@ import {
   TableHeader,
   TableRow,
   Badge,
+  Card,
+  Container,
+  EmptyState,
+  PageHeader,
+  Stack,
   Text,
 } from '@sparx/ui';
+import { ListToolbar } from '../../_components/list-toolbar';
 import { NewSourceButton } from './_components/new-source-button';
 import { SourceActions } from './_components/source-actions';
 
@@ -50,57 +57,75 @@ export default async function InventorySourcesPage() {
   const sources = await api.get<InventorySource[]>('/v1/inventory/sources');
 
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Sources</h1>
-          <p className="mt-1 text-[var(--color-muted-foreground)]">
-            Inventory feeds that push stock counts into Sparx.
-          </p>
-        </div>
-        <NewSourceButton />
-      </div>
+    <Container size="full">
+      <Stack gap={6} className="py-10">
+        <PageHeader
+          icon={<Database className="h-5 w-5" />}
+          title="Sources"
+          badge={
+            <Badge color="neutral" variant="soft">
+              {sources.length} source{sources.length !== 1 ? 's' : ''}
+            </Badge>
+          }
+          description="Inventory feeds that push stock counts into Sparx."
+          actions={<NewSourceButton />}
+        />
 
-      {sources.length === 0 ? (
-        <Text className="text-[var(--color-muted-foreground)]">
-          No inventory sources connected yet.
-        </Text>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Interval</TableHead>
-              <TableHead>Last sync</TableHead>
-              <TableHead className="w-10" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sources.map((src) => (
-              <TableRow key={src.id}>
-                <TableCell className="font-medium">{src.name}</TableCell>
-                <TableCell>{TYPE_LABELS[src.type] ?? src.type}</TableCell>
-                <TableCell>
-                  <Badge color={STATUS_COLOR[src.status] ?? 'neutral'} variant="soft" size="sm">
-                    {src.status.charAt(0).toUpperCase() + src.status.slice(1)}
-                  </Badge>
-                </TableCell>
-                <TableCell>{syncInterval(src.syncIntervalSec)}</TableCell>
-                <TableCell>
-                  <Text size="sm" className="text-[var(--color-muted-foreground)]">
-                    {src.lastSyncAt ? new Date(src.lastSyncAt).toLocaleString() : '—'}
-                  </Text>
-                </TableCell>
-                <TableCell>
-                  <SourceActions source={src} />
-                </TableCell>
+        <ListToolbar searchPlaceholder="Search sources…" />
+
+        {sources.length === 0 ? (
+          <Card padding="none">
+            <EmptyState
+              title="No inventory sources connected"
+              description="Connect a CSV feed or API source to sync stock levels."
+              action={<NewSourceButton />}
+            />
+          </Card>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Interval</TableHead>
+                <TableHead>Last sync</TableHead>
+                <TableHead className="w-10" />
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
-    </div>
+            </TableHeader>
+            <TableBody>
+              {sources.map((s) => (
+                <TableRow key={s.id}>
+                  <TableCell className="font-medium">{s.name}</TableCell>
+                  <TableCell>
+                    <Text size="sm" className="text-[var(--color-muted-foreground)]">
+                      {TYPE_LABELS[s.type] ?? s.type}
+                    </Text>
+                  </TableCell>
+                  <TableCell>
+                    <Badge color={STATUS_COLOR[s.status] ?? 'neutral'} variant="soft" size="sm">
+                      {s.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Text size="sm" className="text-[var(--color-muted-foreground)]">
+                      {syncInterval(s.syncIntervalSec)}
+                    </Text>
+                  </TableCell>
+                  <TableCell>
+                    <Text size="sm" className="text-[var(--color-muted-foreground)]">
+                      {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
+                    </Text>
+                  </TableCell>
+                  <TableCell>
+                    <SourceActions source={s} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </Stack>
+    </Container>
   );
 }

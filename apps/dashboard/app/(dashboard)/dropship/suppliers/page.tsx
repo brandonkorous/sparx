@@ -1,8 +1,10 @@
 export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
-import { Badge, Stack, Text } from '@sparx/ui';
+import { Truck } from 'lucide-react';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 import { api } from '@/lib/api-rest-client';
+import { ListToolbar } from '../../_components/list-toolbar';
 import { NewSupplierButton } from './_components/new-supplier-button';
 import { SupplierActions } from './_components/supplier-actions';
 
@@ -16,6 +18,10 @@ interface Supplier {
   notes: string | null;
   createdAt: string;
   credentials?: Record<string, string>;
+}
+
+interface Props {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 const STATUS_COLOR: Record<string, 'success' | 'warning' | 'danger' | 'neutral'> = {
@@ -53,78 +59,90 @@ function formatPricingRule(rule: { type: string; value: number } | null) {
   }
 }
 
-export default async function DropshipSuppliersPage() {
-  const { data: suppliers } = await api.getPaged<Supplier[]>('/v1/dropship/suppliers?take=100');
+export default async function DropshipSuppliersPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const q = typeof params.q === 'string' ? params.q : undefined;
+  const qs = new URLSearchParams({ take: '100' });
+  if (q) qs.set('q', q);
+  const { data: suppliers } = await api.getPaged<Supplier[]>(`/v1/dropship/suppliers?${qs}`);
 
   return (
-    <Stack gap={6}>
-      <Stack direction="row" gap={0} className="items-center justify-between">
-        <Stack gap={1}>
-          <Text size="lg" className="font-semibold">
-            Suppliers
-          </Text>
-          <Text size="sm" className="text-[var(--color-muted-foreground)]">
-            Connect suppliers to source and import products for dropshipping.
-          </Text>
-        </Stack>
-        <NewSupplierButton />
-      </Stack>
+    <Container size="full">
+      <Stack gap={6} className="py-10">
+        <PageHeader
+          icon={<Truck className="h-5 w-5" />}
+          title="Suppliers"
+          badge={
+            <Badge color="module" variant="soft">
+              {suppliers.length} supplier{suppliers.length !== 1 ? 's' : ''}
+            </Badge>
+          }
+          description="Connect suppliers to source and import products for dropshipping."
+          actions={<NewSupplierButton />}
+        />
 
-      {suppliers.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-[var(--color-border)] p-12 text-center">
-          <Text className="mb-1 font-medium">No suppliers connected</Text>
-          <Text size="sm" className="mb-4 text-[var(--color-muted-foreground)]">
-            Connect your first supplier to start importing dropship products.
-          </Text>
-          <NewSupplierButton />
-        </div>
-      ) : (
-        <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
-          <table className="w-full text-sm">
-            <thead className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
-              <tr>
-                <th className="px-4 py-3 text-left font-medium">Supplier</th>
-                <th className="px-4 py-3 text-left font-medium">Type</th>
-                <th className="px-4 py-3 text-left font-medium">Status</th>
-                <th className="px-4 py-3 text-left font-medium">Pricing rule</th>
-                <th className="px-4 py-3 text-left font-medium">Last synced</th>
-                <th className="px-4 py-3 text-left font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--color-border)]">
-              {suppliers.map((s) => (
-                <tr key={s.id} className="hover:bg-[var(--color-muted)]">
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/dropship/suppliers/${s.id}/catalog`}
-                      className="font-medium hover:underline"
-                    >
-                      {s.name}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3 text-[var(--color-muted-foreground)]">
-                    {formatType(s.type)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge color={STATUS_COLOR[s.status] ?? 'neutral'} variant="soft" size="sm">
-                      {s.status}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 text-[var(--color-muted-foreground)]">
-                    {formatPricingRule(s.pricingRule)}
-                  </td>
-                  <td className="px-4 py-3 text-[var(--color-muted-foreground)]">
-                    {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
-                  </td>
-                  <td className="px-4 py-3">
-                    <SupplierActions supplier={{ ...s, credentials: s.credentials ?? {} }} />
-                  </td>
+        <ListToolbar searchPlaceholder="Search suppliers…" />
+
+        {suppliers.length === 0 ? (
+          <Card padding="none">
+            <EmptyState
+              title={q ? `No suppliers match "${q}"` : 'No suppliers connected'}
+              description={
+                q
+                  ? 'Try a different search term.'
+                  : 'Connect your first supplier to start importing dropship products.'
+              }
+              action={!q ? <NewSupplierButton /> : undefined}
+            />
+          </Card>
+        ) : (
+          <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
+            <table className="w-full text-sm">
+              <thead className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium">Supplier</th>
+                  <th className="px-4 py-3 text-left font-medium">Type</th>
+                  <th className="px-4 py-3 text-left font-medium">Status</th>
+                  <th className="px-4 py-3 text-left font-medium">Pricing rule</th>
+                  <th className="px-4 py-3 text-left font-medium">Last synced</th>
+                  <th className="px-4 py-3 text-left font-medium">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </Stack>
+              </thead>
+              <tbody className="divide-y divide-[var(--color-border)]">
+                {suppliers.map((s) => (
+                  <tr key={s.id} className="hover:bg-[var(--color-muted)]">
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/dropship/suppliers/${s.id}/catalog`}
+                        className="font-medium hover:underline"
+                      >
+                        {s.name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-[var(--color-muted-foreground)]">
+                      {formatType(s.type)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge color={STATUS_COLOR[s.status] ?? 'neutral'} variant="soft" size="sm">
+                        {s.status}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3 text-[var(--color-muted-foreground)]">
+                      {formatPricingRule(s.pricingRule)}
+                    </td>
+                    <td className="px-4 py-3 text-[var(--color-muted-foreground)]">
+                      {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
+                    </td>
+                    <td className="px-4 py-3">
+                      <SupplierActions supplier={{ ...s, credentials: s.credentials ?? {} }} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Stack>
+    </Container>
   );
 }
