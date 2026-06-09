@@ -41,6 +41,9 @@ export const HeroConfig = z.object({
   // A pure-CSS bouncing scroll-down chevron at the bottom of the hero (the
   // full-screen "keep scrolling" affordance). Suits a `screen`-height hero.
   showScrollHint: z.boolean().default(false),
+  // Break the text inner out of the sf-container max-width so content spans
+  // edge-to-edge — the full-bleed "title at the viewport edge" treatment.
+  fullBleed: z.boolean().default(false),
 });
 export type HeroConfig = z.infer<typeof HeroConfig>;
 
@@ -115,4 +118,5 @@ export const heroFields: SectionField[] = [
     type: 'boolean',
     help: 'A bouncing chevron at the bottom — best with a full-screen hero.',
   },
+  { key: 'fullBleed', label: 'Full-bleed text (edge to edge)', type: 'boolean' },
 ];
