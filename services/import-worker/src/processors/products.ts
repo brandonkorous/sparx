@@ -98,7 +98,9 @@ export async function processProductRows(
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i]!;
-    const sku = row.sku?.trim() || autoSku(row.title ?? `product-${i}`, i);
+    const skuRaw = row.sku?.trim();
+    const sku =
+      skuRaw !== undefined && skuRaw !== '' ? skuRaw : autoSku(row.title ?? `product-${i}`, i);
     const log = logger.child({ rowIndex: i, sku });
 
     try {

@@ -21,7 +21,7 @@ import { z } from 'zod';
 import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { notFound, badRequest, forbidden } from '@sparx/api-core/errors';
+import { notFound, badRequest } from '@sparx/api-core/errors';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
 import { env } from '../../../env.js';
@@ -65,11 +65,12 @@ const WriteOffBody = z.object({
   notes: z.string().max(2000).optional(),
 });
 
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
   // ── List ─────────────────────────────────────────────────────────────────
   app.get('/v1/b2b/invoices', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'viewer');
+    requireRole(request, 'viewer');
     const ctx = toB2bContext(request);
     const q = ListQuery.parse(request.query);
 
@@ -102,7 +103,7 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
   // ── Create ────────────────────────────────────────────────────────────────
   app.post('/v1/b2b/invoices', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const body = CreateBody.parse(request.body);
 
@@ -152,7 +153,7 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
   // ── Fetch one ─────────────────────────────────────────────────────────────
   app.get('/v1/b2b/invoices/:id', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'viewer');
+    requireRole(request, 'viewer');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
 
@@ -173,7 +174,7 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
   // ── Update (notes/due date, unpaid only) ──────────────────────────────────
   app.patch('/v1/b2b/invoices/:id', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
     const body = UpdateBody.parse(request.body);
@@ -203,7 +204,7 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
   // ── Mark paid ─────────────────────────────────────────────────────────────
   app.post('/v1/b2b/invoices/:id/mark-paid', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
     const body = MarkPaidBody.parse(request.body);
@@ -259,7 +260,7 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
   // ── Write off ─────────────────────────────────────────────────────────────
   app.post('/v1/b2b/invoices/:id/write-off', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'admin');
+    requireRole(request, 'admin');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
     const body = WriteOffBody.parse(request.body);

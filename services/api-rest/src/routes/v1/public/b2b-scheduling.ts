@@ -13,6 +13,7 @@
 
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { unauthorized, forbidden, notFound, badRequest } from '@sparx/api-core/errors';
@@ -23,9 +24,6 @@ import {
   type CustomerAuthContext,
 } from '@sparx/customer-auth';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyTx = import('@sparx/db').TxClient & Record<string, any>;
 
 const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
@@ -83,14 +81,15 @@ async function requireContactRole(ctx: CustomerAuthContext, customerId: string, 
   return contact.role;
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
   // ── List available service types ──────────────────────────────────────────
   app.get('/v1/public/b2b/service-types', async (request) => {
     const tenantId = await resolveTenantId(request);
     const ctx: CustomerAuthContext = { tenantId };
 
-    const types = (await withTenant(ctx, (tx) =>
-      (tx as AnyTx).serviceType.findMany({
+    const types = await withTenant(ctx, (tx) =>
+      tx.serviceType.findMany({
         where: { tenantId, deletedAt: null, isActive: true },
         select: {
           id: true,
@@ -103,15 +102,7 @@ const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
         },
         orderBy: { name: 'asc' },
       })
-    )) as {
-      id: string;
-      name: string;
-      description: string | null;
-      durationMinutes: number;
-      color: string | null;
-      requiresVehicle: boolean;
-      notes: string | null;
-    }[];
+    );
 
     return ok({ types });
   });
@@ -126,13 +117,13 @@ const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
     const body = BookBody.parse(request.body);
 
     const appt = await withTenant(ctx, async (tx) => {
-      const svcType = await (tx as AnyTx).serviceType.findFirst({
+      const svcType = await tx.serviceType.findFirst({
         where: { id: body.serviceTypeId, tenantId, isActive: true, deletedAt: null },
         select: { id: true, durationMinutes: true, name: true },
       });
       if (!svcType) throw notFound('Service type not found');
 
-      return (tx as AnyTx).serviceAppointment.create({
+      return tx.serviceAppointment.create({
         data: {
           tenantId,
           serviceTypeId: body.serviceTypeId,
@@ -140,7 +131,10 @@ const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
           customerId,
           scheduledAt: new Date(body.scheduledAt),
           durationMinutes: body.durationMinutes ?? svcType.durationMinutes,
-          vehicleRef: body.vehicleRef ?? null,
+          vehicleRef:
+            body.vehicleRef !== undefined
+              ? (body.vehicleRef as Prisma.InputJsonValue)
+              : Prisma.DbNull,
           notes: body.notes ?? null,
         },
         select: {
@@ -185,8 +179,7 @@ const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
     const role = await requireContactRole(ctx, customerId, accountId);
     const q = PagedQuery.parse(request.query);
 
-    // Viewers only see their own appointments; other roles see all account bookings.
-    const where: Record<string, unknown> = {
+    const where: Prisma.ServiceAppointmentWhereInput = {
       tenantId,
       b2bAccountId: accountId,
       ...(role === 'viewer' ? { customerId } : {}),
@@ -195,7 +188,7 @@ const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
 
     const { items, total } = await withTenant(ctx, async (tx) => {
       const [items, total] = await Promise.all([
-        (tx as AnyTx).serviceAppointment.findMany({
+        tx.serviceAppointment.findMany({
           where,
           select: {
             id: true,
@@ -217,16 +210,14 @@ const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
           take: q.take,
           skip: q.skip,
         }),
-        (tx as AnyTx).serviceAppointment.count({ where }),
+        tx.serviceAppointment.count({ where }),
       ]);
       return { items, total };
     });
 
-    type Row = (typeof items)[number];
-
     return ok(
       paged(
-        (items as Row[]).map((a) => ({
+        items.map((a) => ({
           id: a.id,
           serviceTypeId: a.serviceTypeId,
           serviceTypeName: a.serviceType?.name ?? null,
@@ -260,7 +251,7 @@ const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
     const body = CancelBody.parse(request.body);
 
     const appt = await withTenant(ctx, async (tx) => {
-      const existing = await (tx as AnyTx).serviceAppointment.findFirst({
+      const existing = await tx.serviceAppointment.findFirst({
         where: { id, tenantId, b2bAccountId: accountId, customerId },
         select: {
           id: true,
@@ -274,7 +265,7 @@ const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
         throw badRequest('Cannot cancel a completed appointment');
       if (existing.status === 'cancelled') throw badRequest('Appointment is already cancelled');
 
-      return (tx as AnyTx).serviceAppointment.update({
+      return tx.serviceAppointment.update({
         where: { id },
         data: {
           status: 'cancelled',

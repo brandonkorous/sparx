@@ -35,8 +35,8 @@ interface ServiceType {
 }
 
 export default async function ServiceTypesPage() {
-  const { data } = await api.get<{ types: ServiceType[] }>('/v1/b2b/service-types');
-  const types = data.types ?? [];
+  const result = await api.get<{ types: ServiceType[] }>('/v1/b2b/service-types');
+  const types = result.types ?? [];
 
   return (
     <Container size="full">

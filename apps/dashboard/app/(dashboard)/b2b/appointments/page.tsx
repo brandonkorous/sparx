@@ -189,14 +189,7 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
                     </TableCell>
                     <TableCell>
                       <Badge
-                        color={
-                          (STATUS_BADGE[appt.status] ?? 'outline') as
-                            | 'outline'
-                            | 'info'
-                            | 'success'
-                            | 'warning'
-                            | 'danger'
-                        }
+                        color={STATUS_BADGE[appt.status] ?? 'outline'}
                         variant="soft"
                         size="sm"
                       >

@@ -1,4 +1,4 @@
-import { FileText, Plus } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 import {
   Badge,
@@ -66,7 +66,6 @@ export default async function B2bQuotesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const status = stringParam(params.status);
   const accountId = stringParam(params.account_id);
-  const q = stringParam(params.q);
 
   const query = new URLSearchParams({ take: '100' });
   if (status) query.set('status', status);

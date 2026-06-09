@@ -36,6 +36,7 @@
     "@sparx/crm-schemas": "workspace:*",
     "@sparx/customer-auth": "workspace:^",
     "@sparx/db": "workspace:*",
+    "@sparx/dropship": "workspace:*",
     "@sparx/email": "workspace:*",
     "@sparx/email-platform": "workspace:*",
     "@sparx/events": "workspace:*",

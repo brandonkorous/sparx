@@ -17,8 +17,8 @@ import type { Logger } from 'pino';
 import { z } from 'zod';
 import { prisma, withTenant } from '@sparx/db';
 
-import { processProductRows, type ProductRow } from './processors/products.js';
-import { processCustomerRows, type CustomerRow } from './processors/customers.js';
+import { processProductRows } from './processors/products.js';
+import { processCustomerRows } from './processors/customers.js';
 
 const ImportJobCreatedPayload = z.object({
   jobId: z.string().uuid(),
@@ -68,7 +68,7 @@ export async function handle(
 
   try {
     if (entityType === 'products') {
-      const results = await processProductRows(ctx, rawRows as ProductRow[], { upsert }, log);
+      const results = await processProductRows(ctx, rawRows, { upsert }, log);
       for (const r of results) {
         if (r.status === 'imported') imported++;
         else if (r.status === 'updated') updated++;
@@ -87,7 +87,7 @@ export async function handle(
         );
       }
     } else if (entityType === 'customers') {
-      const results = await processCustomerRows(ctx, rawRows as CustomerRow[], { upsert }, log);
+      const results = await processCustomerRows(ctx, rawRows, { upsert }, log);
       for (const r of results) {
         if (r.status === 'imported') imported++;
         else if (r.status === 'updated') updated++;
@@ -142,7 +142,7 @@ export async function handle(
         where: { id: jobId },
         data: { status: 'failed', completedAt: new Date() },
       })
-    ).catch(() => {});
+    ).catch(() => undefined);
     throw err;
   }
 }

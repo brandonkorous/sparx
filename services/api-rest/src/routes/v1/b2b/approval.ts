@@ -16,7 +16,6 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { withTenant, type TxClient } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -91,11 +90,12 @@ function toRuleView(rule: {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
   // ── List rules ────────────────────────────────────────────────────────────
   app.get('/v1/b2b/approval-rules', async (request) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
 
     const rules = (await withTenant(ctx, (tx) =>
@@ -115,7 +115,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
   // ── Create rule ───────────────────────────────────────────────────────────
   app.post('/v1/b2b/approval-rules', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'admin');
+    requireRole(request, 'admin');
     const ctx = toB2bContext(request);
     const body = RuleBody.parse(request.body);
 
@@ -128,7 +128,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
         if (!account) throw notFound('B2B account not found');
       }
 
-      return (tx as AnyTx).purchaseApprovalRule.create({
+      return tx.purchaseApprovalRule.create({
         data: {
           tenantId: ctx.tenantId,
           accountId: body.accountId ?? null,
@@ -140,7 +140,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
           account: { select: { id: true, companyName: true } },
           requiredApprover: { select: { id: true, name: true, email: true } },
         },
-      }) as Promise<Parameters<typeof toRuleView>[0]>;
+      });
     });
 
     return reply.status(201).send(ok(toRuleView(rule)));
@@ -149,7 +149,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
   // ── Update rule ───────────────────────────────────────────────────────────
   app.patch('/v1/b2b/approval-rules/:id', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'admin');
+    requireRole(request, 'admin');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
     const body = RulePatchBody.parse(request.body);
@@ -161,7 +161,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
       });
       if (!existing) throw notFound('Approval rule not found');
 
-      return (tx as AnyTx).purchaseApprovalRule.update({
+      return tx.purchaseApprovalRule.update({
         where: { id },
         data: {
           ...(body.minAmountCents !== undefined ? { minAmountCents: body.minAmountCents } : {}),
@@ -174,7 +174,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
           account: { select: { id: true, companyName: true } },
           requiredApprover: { select: { id: true, name: true, email: true } },
         },
-      }) as Promise<Parameters<typeof toRuleView>[0]>;
+      });
     });
 
     return reply.send(ok(toRuleView(rule)));
@@ -183,7 +183,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
   // ── Delete (deactivate) rule ──────────────────────────────────────────────
   app.delete('/v1/b2b/approval-rules/:id', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'admin');
+    requireRole(request, 'admin');
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
 
@@ -202,7 +202,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
   // ── Approval queue (pending_approval orders) ──────────────────────────────
   app.get('/v1/b2b/approval-queue', async (request) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const q = QueueQuery.parse(request.query);
 
@@ -260,8 +260,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
           customerId: o.customer.id,
           customerName:
             [o.customer.firstName, o.customer.lastName].filter(Boolean).join(' ') ||
-            o.customer.email ||
-            null,
+            (o.customer.email ?? null),
           customerEmail: o.customer.email,
           b2bAccountId: o.customer.b2bAccountId,
           companyName: o.customer.b2bAccount?.companyName ?? null,
@@ -274,7 +273,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
   // ── Approve order ─────────────────────────────────────────────────────────
   app.post('/v1/b2b/approval-queue/:orderId/approve', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const { orderId } = PathOrderId.parse(request.params);
     const body = ApproveBody.parse(request.body);
@@ -328,7 +327,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
 
       if (paymentTermsRequested && accountId) {
         const paymentTerms = existing.customer.b2bAccount?.paymentTerms ?? paymentTermsRequested;
-        const dueDaysMatch = paymentTerms.match(/^net(\d+)$/i);
+        const dueDaysMatch = /^net(\d+)$/i.exec(paymentTerms);
         const dueDays = dueDaysMatch?.[1] ? parseInt(dueDaysMatch[1], 10) : 30;
         const dueAt = new Date();
         dueAt.setDate(dueAt.getDate() + dueDays);
@@ -393,7 +392,7 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
   // ── Reject order ──────────────────────────────────────────────────────────
   app.post('/v1/b2b/approval-queue/:orderId/reject', async (request, reply) => {
     await requireB2bModule(request);
-    await requireRole(request, 'editor');
+    requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const { orderId } = PathOrderId.parse(request.params);
     const body = RejectBody.parse(request.body);

@@ -1,0 +1,33 @@
+{
+  "name": "@sparx/dropship-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Sparx dropship worker. Handles catalog sync and order routing via Pub/Sub push (Cloud Run). docs/14, docs/64 Ph3.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "start": "node --import tsx src/index.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@google-cloud/pubsub": "^5.3.0",
+    "@prisma/client": "^6.19.3",
+    "@sparx/db": "workspace:*",
+    "@sparx/dropship": "workspace:*",
+    "@sparx/events": "workspace:*",
+    "pino": "^9.5.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

@@ -1,18 +1,5 @@
-import { ModuleStub } from '../../../components/module-stub';
-import { moduleCatalog } from '../../../components/module-catalog';
+import { redirect } from 'next/navigation';
 
-// Dropship is gated at the layout: a tenant without the module sees the upsell,
-// so this page only renders when Dropship is active — the "coming online"
-// preview until the real UI ships. Copy comes from the shared catalog.
 export default function DropshipPage() {
-  const { Icon, title, tagline, description, features } = moduleCatalog.dropship;
-  return (
-    <ModuleStub
-      icon={<Icon className="h-5 w-5" />}
-      title={title}
-      tagline={tagline}
-      description={description}
-      features={features}
-    />
-  );
+  redirect('/dropship/suppliers');
 }

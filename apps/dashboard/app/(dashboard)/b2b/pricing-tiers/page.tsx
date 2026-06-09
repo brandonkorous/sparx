@@ -1,4 +1,4 @@
-import { DollarSign, Plus } from 'lucide-react';
+import { DollarSign } from 'lucide-react';
 
 import {
   Badge,
@@ -46,7 +46,7 @@ export default async function PricingTiersPage() {
   const { data: tiers } = await api.getPaged<PricingTierRow[]>('/v1/b2b/pricing-tiers');
 
   return (
-    <Container size="wide">
+    <Container size="xl">
       <Stack gap={6} className="py-10">
         <PageHeader
           icon={<DollarSign className="h-5 w-5" />}

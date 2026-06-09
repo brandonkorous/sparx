@@ -125,12 +125,12 @@ export async function getProductImportStatusAction(jobId: string): Promise<
     updatedCount: number;
     errorCount: number;
     rowCount: number;
-    rows: Array<{
+    rows: {
       rowIndex: number;
       status: string;
       naturalKey?: string | null;
       errorMsg?: string | null;
-    }>;
+    }[];
   }>
 > {
   return restAction(async () => api.get(`/v1/commerce/products/import/${jobId}`));

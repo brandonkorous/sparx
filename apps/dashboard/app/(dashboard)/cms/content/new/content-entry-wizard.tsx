@@ -21,11 +21,6 @@ import {
   Input,
   Label,
   SchemaFieldRenderer,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Stack,
   Stepper,
   Text,
@@ -35,7 +30,7 @@ import { CheckCircle2, FileText } from 'lucide-react';
 
 import { api } from '@/lib/api-rest-client';
 import { createEntry } from '../../types/actions';
-import { ContentEntryForm, applyFieldChange } from '../../_components/content-entry-form';
+import { ContentEntryForm } from '../../_components/content-entry-form';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -209,8 +204,6 @@ export function ContentEntryWizard({ types, preselectedType }: ContentEntryWizar
     setError(null);
     setStep((s) => s - 1);
   }
-
-  const isLastStep = step === steps.length - 1;
 
   // ── Render ───────────────────────────────────────────────────────────────
 

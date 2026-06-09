@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
   Form,
   FormField,
   FormItem,
@@ -32,9 +32,9 @@ const TierSchema = z.object({
   name: z.string().min(1, 'Name is required').max(127),
   description: z.string().max(2000).optional(),
   discountType: z.enum(['percentage', 'fixed']),
-  discountValue: z.coerce.number().min(0),
-  productScope: z.enum(['all', 'collections', 'products']).default('all'),
-  minOrderCents: z.coerce.number().int().min(0).default(0),
+  discountValue: z.number().min(0),
+  productScope: z.enum(['all', 'collections', 'products']),
+  minOrderCents: z.number().int().min(0),
 });
 
 type TierFormValues = z.infer<typeof TierSchema>;
@@ -68,11 +68,11 @@ export function TierCreateButton() {
         New tier
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Create pricing tier</DialogTitle>
-          </DialogHeader>
+      <Modal open={open} onOpenChange={setOpen}>
+        <ModalContent className="max-w-md">
+          <ModalHeader>
+            <ModalTitle>Create pricing tier</ModalTitle>
+          </ModalHeader>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -127,7 +127,14 @@ export function TierCreateButton() {
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormLabel>Value</FormLabel>
-                      <Input type="number" min={0} step={0.01} placeholder="0" {...field} />
+                      <Input
+                        type="number"
+                        min={0}
+                        step={0.01}
+                        placeholder="0"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
@@ -161,7 +168,14 @@ export function TierCreateButton() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Minimum order (cents)</FormLabel>
-                    <Input type="number" min={0} step={1} placeholder="0 (no minimum)" {...field} />
+                    <Input
+                      type="number"
+                      min={0}
+                      step={1}
+                      placeholder="0 (no minimum)"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -184,8 +198,8 @@ export function TierCreateButton() {
               </Stack>
             </form>
           </Form>
-        </DialogContent>
-      </Dialog>
+        </ModalContent>
+      </Modal>
     </>
   );
 }

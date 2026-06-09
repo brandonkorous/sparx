@@ -237,8 +237,6 @@ export function CustomerFullProfileWizard() {
     }
   }
 
-  const isLastStep = step === STEPS.length - 1;
-
   // ── Render ─────────────────────────────────────────────────────────────
 
   return (

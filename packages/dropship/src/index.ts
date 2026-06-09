@@ -18,3 +18,10 @@ export type {
 } from './types.js';
 
 export { applyPricingRule } from './types.js';
+export { createAdapter, CsvAdapter, DsersAdapter, SpocketAdapter } from './adapters/index.js';
+export type {
+  CsvCredentials,
+  CsvColumnMapping,
+  DsersCredentials,
+  SpocketCredentials,
+} from './adapters/index.js';

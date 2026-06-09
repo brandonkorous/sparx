@@ -69,6 +69,7 @@ async function requireContactRole(
   return contact.role;
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
   // ── List accounts the customer has access to ──────────────────────────────
   app.get('/v1/public/b2b/portal', async (request) => {

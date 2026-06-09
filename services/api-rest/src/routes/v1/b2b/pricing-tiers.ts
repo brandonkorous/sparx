@@ -291,8 +291,6 @@ const b2bPricingTierRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/b2b/resolve-price', async (request) => {
     requireRole(request, 'viewer');
     await requireB2bModule(request);
-    const ctx = toB2bContext(request);
-
     const { variant_id: variantId, account_id: accountId } = z
       .object({
         variant_id: z.string().uuid(),

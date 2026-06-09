@@ -51,5 +51,5 @@ export const b2bManifest: ModuleManifest = {
     },
   ],
   actions: [],
-  entityTypes: ['b2b-account'],
+  entityTypes: [{ id: 'b2b-account', label: 'B2B Account', routePrefix: '/b2b/accounts' }],
 };

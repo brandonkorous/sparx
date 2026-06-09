@@ -21,12 +21,6 @@ const logger = pino({
   },
 });
 
-async function readBody(req: IncomingMessage): Promise<string> {
-  const chunks: Buffer[] = [];
-  for await (const chunk of req as AsyncIterable<Buffer>) chunks.push(chunk);
-  return Buffer.concat(chunks).toString('utf8');
-}
-
 async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
   if (req.method !== 'POST') {
     res.statusCode = 405;

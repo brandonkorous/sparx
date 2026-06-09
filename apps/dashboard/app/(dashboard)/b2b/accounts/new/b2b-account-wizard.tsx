@@ -151,7 +151,7 @@ export function B2bAccountWizard() {
 
   function validateCompany(): boolean {
     const errs: Record<string, string> = {};
-    if (!company.companyName || String(company.companyName).trim() === '') {
+    if (!company.companyName || (company.companyName as string).trim() === '') {
       errs.companyName = 'Company name is required.';
     }
     setCompanyErrors(errs);
@@ -207,13 +207,13 @@ export function B2bAccountWizard() {
         }));
 
       const input = {
-        companyName: String(company.companyName ?? '').trim(),
-        taxId: company.taxId ? String(company.taxId).trim() || undefined : undefined,
-        website: company.website ? String(company.website).trim() || undefined : undefined,
+        companyName: ((company.companyName as string | undefined) ?? '').trim(),
+        taxId: company.taxId ? (company.taxId as string).trim() || undefined : undefined,
+        website: company.website ? (company.website as string).trim() || undefined : undefined,
         status: company.status ?? 'active',
         tags: rawTags,
         pricingTier: pricing.pricingTier
-          ? String(pricing.pricingTier).trim() || undefined
+          ? (pricing.pricingTier as string).trim() || undefined
           : undefined,
         creditLimit: Number(pricing.creditLimit ?? 0),
         discountPercent: Number(pricing.discountPercent ?? 0),
@@ -223,7 +223,7 @@ export function B2bAccountWizard() {
           pricing.fleetSize != null && pricing.fleetSize !== ''
             ? Number(pricing.fleetSize)
             : undefined,
-        notes: pricing.notes ? String(pricing.notes).trim() || undefined : undefined,
+        notes: pricing.notes ? (pricing.notes as string).trim() || undefined : undefined,
         engineProfiles: validProfiles,
       };
 

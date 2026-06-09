@@ -48,7 +48,8 @@ export async function processCustomerRows(
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i]!;
-    const email = row.email?.trim().toLowerCase() || undefined;
+    const emailRaw = row.email?.trim().toLowerCase();
+    const email = emailRaw !== '' ? emailRaw : undefined;
     const log = logger.child({ rowIndex: i, email });
 
     try {
