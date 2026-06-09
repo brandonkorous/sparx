@@ -219,7 +219,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
         const isActive = property.id === effectiveActiveId;
         const propDomains = domainsByProperty.get(property.id) ?? [];
         return (
-          <Card key={property.id} variant={isActive ? 'module' : 'default'}>
+          <Card key={property.id} variant={isActive ? 'module' : 'default'} data-testid="site-card">
             <CardHeader>
               <div className="flex flex-wrap items-center gap-2">
                 <CardTitle>{property.name}</CardTitle>
