@@ -20,6 +20,7 @@
     "@prisma/client": "^6.19.3",
     "@sparx/auth": "workspace:*",
     "@sparx/builder": "workspace:*",
+    "@sparx/commerce": "workspace:*",
     "@sparx/crm": "workspace:*",
     "@sparx/db": "workspace:*",
     "@sparx/email-platform": "workspace:*",

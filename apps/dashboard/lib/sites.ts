@@ -22,6 +22,8 @@ export interface BrandOverride {
   colorBorder?: string | null;
   radiusBase?: string | null;
   hidePricesWhenSignedOut?: boolean | null;
+  defaultCurrency?: string | null;
+  defaultLocale?: string | null;
 }
 
 export interface Property {
@@ -33,6 +35,7 @@ export interface Property {
   status: string;
   settings: Record<string, unknown>;
   brandOverride: BrandOverride | null;
+  moduleScope: string[];
   createdAt: string;
   updatedAt: string;
 }

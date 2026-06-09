@@ -399,7 +399,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
           query.property
             ? tx.property.findFirst({
                 where: { slug: query.property },
-                select: { brandOverride: true },
+                select: { brandOverride: true, moduleScope: true },
               })
             : Promise.resolve(null),
         ])
@@ -458,8 +458,9 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       socials: Array.isArray(tenant.socials) ? tenant.socials : [],
       theme: mergedTheme,
       storefront: {
-        defaultCurrency: storefront?.defaultCurrency ?? 'USD',
-        defaultLocale: storefront?.defaultLocale ?? 'en-US',
+        // Per-site override wins; falls back to tenant StorefrontSettings then hardcoded default.
+        defaultCurrency: override?.defaultCurrency ?? storefront?.defaultCurrency ?? 'USD',
+        defaultLocale: override?.defaultLocale ?? storefront?.defaultLocale ?? 'en-US',
         showStockBelow: storefront?.showStockBelow ?? 10,
         // Per-site commerce gating: the brand_override wins over the tenant setting.
         hidePricesWhenSignedOut:
@@ -467,6 +468,12 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
         requireAuthForCheckout: storefront?.requireAuthForCheckout ?? false,
       },
       consent,
+      // Per-site disabled modules (docs/49 Slice F). Empty = all tenant-active
+      // modules are on. The storefront uses this to gate module-specific routes
+      // (e.g. a wholesale site with commerce disabled shows a static catalogue).
+      disabledModules: Array.isArray(propertyRow?.moduleScope)
+        ? (propertyRow.moduleScope as string[]).filter((v) => typeof v === 'string')
+        : [],
     });
   });
   return Promise.resolve();

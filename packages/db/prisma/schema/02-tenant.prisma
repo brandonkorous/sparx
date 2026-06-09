@@ -23,8 +23,9 @@ model Tenant {
   // touches it. The public tenant payload carries it so the storefront chrome
   // resolves real links. Moved here from TenantBrand.socials (docs/45 §3).
   socials          Json      @default("[]")
-  stripeCustomerId String?   @map("stripe_customer_id") @db.VarChar(255)
-  trialEndsAt      DateTime? @map("trial_ends_at") @db.Timestamptz
+  stripeCustomerId  String?   @map("stripe_customer_id") @db.VarChar(255)
+  stripeAccountId   String?   @map("stripe_account_id") @db.VarChar(255)
+  trialEndsAt       DateTime? @map("trial_ends_at") @db.Timestamptz
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
@@ -243,5 +244,28 @@ model Tenant {
   consentRecords          ConsentRecord[]
   legalAcceptances        PlatformLegalAcceptance[]
 
+  // Onboarding (docs/65 Ph2) — per-tip progress rows shown for 7 days post-signup
+  onboardingChecklist OnboardingChecklist[]
+
   @@map("tenants")
+}
+
+// ─── OnboardingChecklist ─────────────────────────────────────────────────────
+// Per-tenant onboarding tip/task visibility state. Created eagerly at tenant
+// creation (or lazily on first dashboard open); dismissed_at stamps when the
+// tenant owner clicks the dismiss button on a tip card.
+model OnboardingChecklist {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  key         String    @db.VarChar(63)
+  shownAt     DateTime? @map("shown_at") @db.Timestamptz
+  dismissedAt DateTime? @map("dismissed_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key], map: "onboarding_checklist_tenant_key_unique")
+  @@index([tenantId], map: "onboarding_checklist_tenant_idx")
+  @@map("onboarding_checklist")
 }

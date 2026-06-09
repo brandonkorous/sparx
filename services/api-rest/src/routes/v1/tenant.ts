@@ -25,9 +25,12 @@ import { prisma, type Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
-import { conflict, notFound } from '@sparx/api-core/errors';
+import { badRequest, conflict, forbidden, notFound } from '@sparx/api-core/errors';
 import { invalidateModuleCache, type ModuleSlug } from '@sparx/auth';
 import { computeBannerEnabled } from '../../lib/consent.js';
+import { env } from '../../env.js';
+import Stripe from 'stripe';
+import { SignJWT, jwtVerify } from 'jose';
 
 const PatchConsent = z.object({
   mode: z.enum(['off', 'gdpr', 'ccpa']).optional(),
@@ -474,9 +477,15 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     // receives writes). Auto-seeded legal pages (legal_kind set, docs/42) are
     // excluded so the step reflects a page the tenant actually created. Read
     // inside withRequestTenant so the FORCE-RLS count is tenant-scoped.
-    const pageCount = await withRequestTenant(request, (tx) =>
-      tx.contentEntry.count({ where: { typeKey: 'page', legalKind: null, deletedAt: null } })
-    );
+    const [pageCount, tenantRow] = await Promise.all([
+      withRequestTenant(request, (tx) =>
+        tx.contentEntry.count({ where: { typeKey: 'page', legalKind: null, deletedAt: null } })
+      ),
+      prisma.tenant.findUnique({
+        where: { id: auth.tenantId },
+        select: { stripeAccountId: true },
+      }),
+    ]);
 
     const steps = [
       {
@@ -516,18 +525,100 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       {
         id: 'payments' as const,
         title: 'Connect payments',
-        description: 'Stripe Connect — required to take orders.',
-        done: false,
-        comingSoon: true,
+        description: 'Connect Stripe to accept orders and payouts.',
+        done: Boolean(tenantRow?.stripeAccountId),
+        cta: { label: 'Connect Stripe', href: '/onboarding?step=payments' },
       },
     ];
 
-    const actionable = steps.filter((s) => !s.comingSoon);
+    const actionable = steps;
     const completion = actionable.length
       ? actionable.filter((s) => s.done).length / actionable.length
       : 1;
 
     return ok({ state, pageCount, steps, completion });
+  });
+
+  // ── Stripe Connect OAuth ──────────────────────────────────────────────────
+  //
+  //   GET  /v1/tenant/onboarding/stripe/connect-url  → { url } (owner only)
+  //   POST /v1/tenant/onboarding/stripe/exchange      → { stripeAccountId }
+  //
+  // The connect-url route builds the Stripe OAuth URL with a signed state JWT
+  // (HS256, tid+exp) so the exchange endpoint can verify CSRF. The callback
+  // lives in the dashboard at /onboarding/stripe-callback, which posts back
+  // here to exchange the code.
+
+  app.get('/v1/tenant/onboarding/stripe/connect-url', async (request, reply) => {
+    const auth = requireRole(request, 'owner');
+
+    if (!env.STRIPE_CLIENT_ID) {
+      throw badRequest('Stripe Connect is not configured on this platform.');
+    }
+    if (!env.SPARX_INTERNAL_JWT_SECRET) {
+      throw badRequest('Internal JWT secret is not configured.');
+    }
+
+    const redirectUri = (request.query as Record<string, string>).redirect_uri ?? '';
+    if (!redirectUri) throw badRequest('redirect_uri is required');
+
+    // Short-lived (10 min) state token to prevent CSRF on the callback.
+    const secret = new TextEncoder().encode(env.SPARX_INTERNAL_JWT_SECRET);
+    const state = await new SignJWT({ tid: auth.tenantId })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime('10m')
+      .sign(secret);
+
+    const params = new URLSearchParams({
+      response_type: 'code',
+      client_id: env.STRIPE_CLIENT_ID,
+      scope: 'read_write',
+      redirect_uri: redirectUri,
+      state,
+    });
+    const url = `https://connect.stripe.com/oauth/authorize?${params.toString()}`;
+    return reply.send(ok({ url }));
+  });
+
+  const ExchangeBody = z.object({ code: z.string().min(1), state: z.string().min(1) });
+
+  app.post('/v1/tenant/onboarding/stripe/exchange', async (request, reply) => {
+    const auth = requireRole(request, 'owner');
+
+    if (!env.STRIPE_SECRET_KEY) {
+      throw badRequest('Stripe is not configured on this platform.');
+    }
+    if (!env.SPARX_INTERNAL_JWT_SECRET) {
+      throw badRequest('Internal JWT secret is not configured.');
+    }
+
+    const body = ExchangeBody.parse(request.body);
+
+    // Verify state JWT and confirm it belongs to the authenticated tenant.
+    const secret = new TextEncoder().encode(env.SPARX_INTERNAL_JWT_SECRET);
+    let payload: { tid?: unknown };
+    try {
+      const result = await jwtVerify(body.state, secret);
+      payload = result.payload as { tid?: unknown };
+    } catch {
+      throw forbidden('Invalid or expired state token.');
+    }
+    if (payload.tid !== auth.tenantId) throw forbidden('State token tenant mismatch.');
+
+    // Exchange the authorization code for a Stripe account ID.
+    const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-11-20.acacia' as Stripe.LatestApiVersion,
+    });
+    const token = await stripe.oauth.token({ grant_type: 'authorization_code', code: body.code });
+    const stripeAccountId = token.stripe_user_id;
+    if (!stripeAccountId) throw badRequest('Stripe did not return an account ID.');
+
+    await prisma.tenant.update({
+      where: { id: auth.tenantId },
+      data: { stripeAccountId },
+    });
+
+    return reply.send(ok({ stripeAccountId }));
   });
 };
 

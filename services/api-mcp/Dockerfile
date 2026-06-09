@@ -26,6 +26,8 @@ COPY packages/builder-schemas ./packages/builder-schemas
 COPY packages/surface-compile ./packages/surface-compile
 COPY packages/builder ./packages/builder
 COPY packages/email ./packages/email
+COPY packages/commerce-schemas ./packages/commerce-schemas
+COPY packages/commerce ./packages/commerce
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/crm ./packages/crm
 COPY packages/search ./packages/search

@@ -44,6 +44,8 @@
     "@sparx/legal-templates": "workspace:*",
     "@sparx/provider-shippo": "workspace:*",
     "@sparx/provider-stripe": "workspace:*",
+    "jose": "^6.0.10",
+    "stripe": "^17.7.0",
     "@sparx/search": "workspace:*",
     "@sparx/seo-audit": "workspace:*",
     "@sparx/sitebuilder": "workspace:*",

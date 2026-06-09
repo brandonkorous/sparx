@@ -58,8 +58,15 @@ interface PropertyView {
   settings: Record<string, unknown>;
   // Per-site brand override (docs/49 §3) — null = inherit the tenant brand.
   brandOverride: Record<string, unknown> | null;
+  // Per-site disabled modules (docs/49 Slice F). Empty = all tenant-active modules on.
+  moduleScope: string[];
   createdAt: string;
   updatedAt: string;
+}
+
+function parseModuleScope(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((v): v is string => typeof v === 'string');
 }
 
 function toView(row: {
@@ -71,6 +78,7 @@ function toView(row: {
   status: string;
   settings: unknown;
   brandOverride: unknown;
+  moduleScope: unknown;
   createdAt: Date;
   updatedAt: Date;
 }): PropertyView {
@@ -86,6 +94,7 @@ function toView(row: {
         ? (row.settings as Record<string, unknown>)
         : {},
     brandOverride: parseBrandOverride(row.brandOverride),
+    moduleScope: parseModuleScope(row.moduleScope),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
@@ -93,14 +102,28 @@ function toView(row: {
 
 const IdParam = z.object({ id: z.string().uuid() });
 
+const MODULE_SLUGS = [
+  'builder',
+  'commerce',
+  'cms',
+  'crm',
+  'email',
+  'b2b',
+  'dropship',
+  'ai',
+] as const;
+
 // All fields optional → PATCH semantics. `slug` is intentionally immutable here
 // (it's the stable per-tenant handle that anchors the subdomain host).
 // `brandOverride` is the per-site brand override (docs/49 §3); send `null` to
 // clear it (inherit the tenant brand) or a partial object to set it.
+// `moduleScope` replaces the disabled-modules list entirely (full PUT semantics
+// on the array).
 const PatchProperty = z.object({
   name: z.string().min(1).max(255).optional(),
   settings: z.record(z.string(), z.unknown()).optional(),
   brandOverride: PropertyBrandOverrideSchema.nullable().optional(),
+  moduleScope: z.array(z.enum(MODULE_SLUGS)).optional(),
 });
 
 // Create an additional site. `slug` optional → derived from the name. 'primary'
@@ -215,6 +238,9 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       // object → set the override; null → Prisma.DbNull clears it (inherit the
       // tenant brand). `?? DbNull` is exact here since the value is `object | null`.
       data.brandOverride = input.brandOverride ?? Prisma.DbNull;
+    }
+    if (input.moduleScope !== undefined) {
+      data.moduleScope = input.moduleScope;
     }
 
     const row = await withTenant({ tenantId: auth.tenantId, userId: auth.actorId }, async (tx) => {

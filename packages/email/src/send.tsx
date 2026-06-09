@@ -19,6 +19,16 @@ import {
   domainRenewalReminderSubject,
   type DomainRenewalReminderEmailProps,
 } from './templates/domain-renewal-reminder';
+import {
+  OrderConfirmationEmail,
+  orderConfirmationSubject,
+  type OrderConfirmationEmailProps,
+} from './templates/order-confirmation';
+import {
+  ShippingConfirmationEmail,
+  shippingConfirmationSubject,
+  type ShippingConfirmationEmailProps,
+} from './templates/shipping-confirmation';
 
 // Template registry + dispatcher. Two surfaces:
 //
@@ -38,7 +48,12 @@ function defaultFrom(): string {
   return process.env[DEFAULT_FROM_ENV] ?? FALLBACK_FROM;
 }
 
-export type TemplateId = 'password-reset' | 'welcome-merchant' | 'domain-renewal-reminder';
+export type TemplateId =
+  | 'password-reset'
+  | 'welcome-merchant'
+  | 'domain-renewal-reminder'
+  | 'order-confirmation'
+  | 'shipping-confirmation';
 
 export type TemplateSend =
   | {
@@ -59,6 +74,20 @@ export type TemplateSend =
       template: 'domain-renewal-reminder';
       to: string;
       props: DomainRenewalReminderEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'order-confirmation';
+      to: string;
+      props: OrderConfirmationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'shipping-confirmation';
+      to: string;
+      props: ShippingConfirmationEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -134,6 +163,38 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'domain-renewal-reminder',
+      };
+    }
+    case 'order-confirmation': {
+      const element = wrap(<OrderConfirmationEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: orderConfirmationSubject(input.props.orderNumber),
+        html,
+        text,
+        templateId: 'order-confirmation',
+      };
+    }
+    case 'shipping-confirmation': {
+      const element = wrap(<ShippingConfirmationEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: shippingConfirmationSubject(input.props.orderNumber),
+        html,
+        text,
+        templateId: 'shipping-confirmation',
       };
     }
   }

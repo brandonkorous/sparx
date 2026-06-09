@@ -4,9 +4,14 @@ import { ArrowRight } from 'lucide-react';
 import type { OnboardingProgress } from '../welcome/onboarding';
 
 // Compact welcome banner shown on the dashboard home until the tenant
-// either finishes every actionable step OR dismisses onboarding. If the guided
-// wizard hasn't been finished yet, the CTA resumes it (/onboarding picks up at
-// the saved step); once finished, it points at the day-0+ checklist (/welcome).
+// either finishes every actionable step OR dismisses onboarding, whichever
+// comes first. Shown for at most 7 days after the wizard finishes.
+//
+// If the guided wizard hasn't been finished yet: CTA resumes it (/onboarding
+// picks up at the saved step). Once finished: CTA points at the day-0+
+// checklist (/welcome) and the 7-day countdown starts.
+
+const DAYS_7_MS = 7 * 24 * 60 * 60 * 1000;
 
 export interface OnboardingBannerProps {
   progress: OnboardingProgress;
@@ -15,12 +20,19 @@ export interface OnboardingBannerProps {
 export function OnboardingBanner({ progress }: OnboardingBannerProps) {
   if (progress.state.dismissed) return null;
 
+  const wizardFinished = Boolean(progress.state.finishedAt);
+
+  // After the wizard finishes, hide the banner after 7 days (docs/65 Ph2).
+  if (wizardFinished && progress.state.finishedAt) {
+    const finishedMs = new Date(progress.state.finishedAt).getTime();
+    if (Date.now() - finishedMs > DAYS_7_MS) return null;
+  }
+
   const actionable = progress.steps.filter((s) => !s.comingSoon);
   const done = actionable.filter((s) => s.done).length;
   if (done === actionable.length) return null;
 
   const pct = Math.round(progress.completion * 100);
-  const wizardFinished = Boolean(progress.state.finishedAt);
   const cta = wizardFinished
     ? { href: '/welcome', label: 'Open checklist' }
     : { href: '/onboarding', label: 'Resume setup' };

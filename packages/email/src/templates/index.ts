@@ -17,3 +17,15 @@ export {
   domainRenewalReminderSubject,
   type DomainRenewalReminderEmailProps,
 } from './domain-renewal-reminder';
+
+export {
+  OrderConfirmationEmail,
+  orderConfirmationSubject,
+  type OrderConfirmationEmailProps,
+} from './order-confirmation';
+
+export {
+  ShippingConfirmationEmail,
+  shippingConfirmationSubject,
+  type ShippingConfirmationEmailProps,
+} from './shipping-confirmation';
