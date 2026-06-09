@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Container, PageHeader, Stack } from '@sparx/ui';
+import type { FieldDef } from '@sparx/cms-schemas';
 import { FileText } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import { ContentEntryWizard } from './content-entry-wizard';
@@ -18,7 +19,7 @@ interface TypeSchema {
   key: string;
   name: string;
   url_pattern: string | null;
-  schema_json: { fields: unknown[] };
+  schema_json: { fields: FieldDef[] };
 }
 
 interface PageProps {
