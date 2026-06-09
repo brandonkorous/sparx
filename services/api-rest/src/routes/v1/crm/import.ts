@@ -150,8 +150,8 @@ const crmImportExportRoutes: FastifyPluginAsync = async (app) => {
       job_title: c.jobTitle ?? '',
       tags: c.tags.join(','),
       do_not_contact: String(c.doNotContact),
-      created_at: c.createdAt,
-      updated_at: c.updatedAt,
+      created_at: c.createdAt.toISOString(),
+      updated_at: c.updatedAt.toISOString(),
     }));
 
     const csv = toCsv(rows);

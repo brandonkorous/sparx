@@ -20,6 +20,7 @@ export async function createB2bAccountAction(
   return restAction(async () => {
     const account = await api.post<B2bAccountResponse>('/v1/crm/b2b-accounts', input);
     revalidatePath('/crm/b2b');
+    revalidatePath('/b2b/accounts');
     return { id: account.id };
   });
 }

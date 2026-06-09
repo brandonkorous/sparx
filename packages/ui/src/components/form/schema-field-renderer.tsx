@@ -11,13 +11,13 @@
 // rendered by the app-level FieldRenderer which can import @sparx/cms-editor.
 
 import * as React from 'react';
-import { Checkbox } from '../form/checkbox';
-import { Input } from '../form/input';
-import { Label } from '../form/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../overlay/select';
+import { Checkbox } from '../primitives/checkbox';
+import { Input } from './input';
+import { Label } from '../primitives/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 import { Stack } from '../layout/stack';
 import { Text } from '../primitives/text';
-import { Textarea } from '../form/textarea';
+import { Textarea } from './textarea';
 
 // ─── Field shape ────────────────────────────────────────────────────────────
 
@@ -131,7 +131,9 @@ function FieldControl({ field, value, error, onChange, disabled }: FieldControlP
         </Label>
         <Select value={strVal} onValueChange={(v) => onChange(v)} disabled={disabled}>
           <SelectTrigger id={id}>
-            <SelectValue placeholder={field.placeholder ?? `Select ${field.label.toLowerCase()}…`} />
+            <SelectValue
+              placeholder={field.placeholder ?? `Select ${field.label.toLowerCase()}…`}
+            />
           </SelectTrigger>
           <SelectContent>
             {field.options?.map((opt) => (
@@ -221,7 +223,13 @@ function FieldControl({ field, value, error, onChange, disabled }: FieldControlP
         type={inputType}
         value={strVal}
         onChange={(e) =>
-          onChange(field.type === 'number' ? (e.target.value === '' ? '' : Number(e.target.value)) : e.target.value)
+          onChange(
+            field.type === 'number'
+              ? e.target.value === ''
+                ? ''
+                : Number(e.target.value)
+              : e.target.value
+          )
         }
         placeholder={field.placeholder}
         disabled={disabled}
