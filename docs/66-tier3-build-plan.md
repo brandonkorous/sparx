@@ -276,7 +276,7 @@ Bulk pricing tool in the dashboard (`/commerce/products/pricing`):
 
 Generalize the dropship import's existing pricing-rule step to use the new `markup_rules` entity instead of a one-off config.
 
-### Phase S — Surcharges (credit-card fee pass-through)
+### Phase 2b — Surcharges (credit-card fee pass-through)
 
 Independent of markup phases — can ship alongside Phase 1 or 2.
 
@@ -336,12 +336,12 @@ MCP tools (docs/48 §9 / docs/07):
 | 3   | Legal & Consent  | Slice 5 dashboard surfaces             | After 3b                            |
 | 4   | Legal & Consent  | Slice 6 onboarding acceptance gate     | Unblocked (can go first)            |
 | 5   | Product Markup   | Ph1 Catalog markup rules               | Unblocked                           |
-| 6   | Product Markup   | Ph S Surcharges                        | After Checkout (Tier 1)             |
+| 6   | Product Markup   | Ph 2b Surcharges                       | After Checkout (Tier 1)             |
 | 7   | Universal Search | Ph1 Write-sites projector              | Unblocked                           |
 | 8   | Universal Search | Ph2 Additional CMS projectors          | After Ph1                           |
 | 9   | Universal Search | Ph3 Scoped-key 501 fix                 | Unblocked                           |
 | 10  | Marketplace      | Ph1 Themes category                    | Unblocked                           |
-| 11  | Marketplace      | Ph2 Components category                | After Tier 2 Dropship Ph1           |
+| 11  | Marketplace      | Ph2 Components category                | Unblocked                           |
 | 12  | Marketplace      | Ph3 Integrations category              | Unblocked                           |
 | 13  | Product Markup   | Ph2 Matrix + bulk pricing tool         | After Ph1                           |
 | 14  | Product Markup   | Ph3 Invoice/quote-line markup          | After Tier 2 B2B Ph2–3              |

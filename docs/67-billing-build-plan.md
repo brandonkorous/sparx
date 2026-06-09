@@ -219,9 +219,11 @@ Retry logic: Stripe retries failed payments 3 times over 7 days. After 7 days un
 
 Transaction fee calculation runs at order completion time (`POST /v1/checkout/sessions/:id/complete`):
 
+`getActiveModulesTotal(tenantId)` lives in `packages/billing/src/active-total.ts`. It queries `billing_subscription_items` for the tenant, maps each `module_key` to its monthly-equivalent price from `PRICE_CATALOG` (annual prices divided by 12, rounded up), and returns the sum in cents. It does not call Stripe — it reads our own DB rows, which are the source of truth for what modules are active and at what price.
+
 ```typescript
 const modules = tenant.settings.modules;
-const monthlySpend = await getActiveModulesTotal(tenantId); // sum of active module prices
+const monthlySpend = await getActiveModulesTotal(tenantId); // sum from billing_subscription_items × PRICE_CATALOG
 const feeRate =
   monthlySpend >= 299_00 ? 0 : modules.crm?.enabled ? 0.003 : modules.commerce?.enabled ? 0.005 : 0;
 
