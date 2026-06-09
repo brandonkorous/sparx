@@ -214,6 +214,25 @@ const getCart: McpToolDefinition = {
   run: (ctx, input) => cartService.get(ctx, (input as { cartId: string }).cartId),
 };
 
+const getDropshipMarginReport: McpToolDefinition = {
+  name: 'get_dropship_margin_report',
+  description:
+    'Profitability report for dropship orders: total and per-supplier revenue, cost, profit, and margin. Optionally filter to a date range; omit both dates for all-time.',
+  scope: 'read:commerce',
+  confirmation: false,
+  input: z.object({
+    from: z.string().datetime().optional(),
+    to: z.string().datetime().optional(),
+  }),
+  run: (ctx, input) => {
+    const { from, to } = input as { from?: string; to?: string };
+    return reportingService.dropshipMarginReport(
+      ctx,
+      from && to ? { from, to } : undefined
+    );
+  },
+};
+
 export const readTools: AnyMcpTool[] = [
   getProducts,
   getProduct,
@@ -231,4 +250,5 @@ export const readTools: AnyMcpTool[] = [
   getProviderHealth,
   getReturns,
   getCart,
+  getDropshipMarginReport,
 ];

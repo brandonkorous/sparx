@@ -329,6 +329,137 @@ function monthlyFactorFor(unit: string, count: number): number {
   }
 }
 
+// ─── Dropship margin ─────────────────────────────────────────────────
+
+export interface DropshipMarginBySupplier {
+  supplierId: string;
+  supplierName: string;
+  orders: number;
+  costCents: number;
+  revenueCents: number;
+  profitCents: number;
+  marginPct: number;
+}
+
+export interface DropshipMarginReport {
+  rangeLabel: string;
+  totalOrders: number;
+  costCents: number;
+  revenueCents: number;
+  profitCents: number;
+  marginPct: number;
+  bySupplier: DropshipMarginBySupplier[];
+  currency: string;
+}
+
+function lineItemsCost(lineItems: unknown): number {
+  if (!Array.isArray(lineItems)) return 0;
+  return (lineItems as Array<{ quantity?: number; unitPriceCents?: number }>).reduce(
+    (sum, li) => sum + (li.quantity ?? 0) * (li.unitPriceCents ?? 0),
+    0
+  );
+}
+
+export async function dropshipMarginReport(
+  ctx: ServiceContext,
+  range?: DateRange
+): Promise<DropshipMarginReport> {
+  const label = range ? rangeLabel(range) : 'All time';
+  const from = range ? new Date(range.from) : undefined;
+  const to = range ? new Date(range.to) : undefined;
+
+  return withTenant(ctx, async (tx) => {
+    const dateFilter =
+      from || to
+        ? { createdAt: { ...(from && { gte: from }), ...(to && { lte: to }) } }
+        : {};
+
+    const [dsOrders, suppliers] = await Promise.all([
+      tx.dropshipOrder.findMany({
+        where: { status: { in: ['submitted', 'shipped', 'delivered'] }, ...dateFilter },
+        select: { id: true, orderId: true, supplierId: true, lineItems: true },
+      }),
+      tx.dropshipSupplier.findMany({
+        where: { deletedAt: null },
+        select: { id: true, name: true },
+      }),
+    ]);
+
+    const orderIds = [...new Set(dsOrders.map((d) => d.orderId))];
+    const orderItems =
+      orderIds.length > 0
+        ? await tx.orderItem.findMany({
+            where: {
+              orderId: { in: orderIds },
+              variant: { dropshipSourceId: { not: null } },
+            },
+            select: {
+              orderId: true,
+              quantity: true,
+              unitPrice: true,
+              variant: { select: { dropshipSourceId: true } },
+            },
+          })
+        : [];
+
+    // revenue map: orderId → supplierId → cents
+    const revenueMap = new Map<string, Map<string, number>>();
+    for (const item of orderItems) {
+      const supplierId = item.variant?.dropshipSourceId;
+      if (!supplierId) continue;
+      const bySupplier = revenueMap.get(item.orderId) ?? new Map<string, number>();
+      bySupplier.set(
+        supplierId,
+        (bySupplier.get(supplierId) ?? 0) + item.quantity * Math.round(Number(item.unitPrice) * 100)
+      );
+      revenueMap.set(item.orderId, bySupplier);
+    }
+
+    const supplierIndex = new Map(suppliers.map((s) => [s.id, s.name]));
+    const agg = new Map<string, { cost: number; revenue: number; orders: number }>();
+    let totalCost = 0;
+    let totalRevenue = 0;
+
+    for (const dso of dsOrders) {
+      const cost = lineItemsCost(dso.lineItems);
+      const revenue = revenueMap.get(dso.orderId)?.get(dso.supplierId) ?? 0;
+      totalCost += cost;
+      totalRevenue += revenue;
+      const entry = agg.get(dso.supplierId) ?? { cost: 0, revenue: 0, orders: 0 };
+      entry.cost += cost;
+      entry.revenue += revenue;
+      entry.orders++;
+      agg.set(dso.supplierId, entry);
+    }
+
+    const bySupplier: DropshipMarginBySupplier[] = [...agg.entries()]
+      .map(([id, s]) => ({
+        supplierId: id,
+        supplierName: supplierIndex.get(id) ?? id,
+        orders: s.orders,
+        costCents: s.cost,
+        revenueCents: s.revenue,
+        profitCents: s.revenue - s.cost,
+        marginPct: s.revenue > 0 ? +((( s.revenue - s.cost) / s.revenue) * 100).toFixed(1) : 0,
+      }))
+      .sort((a, b) => b.profitCents - a.profitCents);
+
+    const marginPct =
+      totalRevenue > 0 ? +(((totalRevenue - totalCost) / totalRevenue) * 100).toFixed(1) : 0;
+
+    return {
+      rangeLabel: label,
+      totalOrders: dsOrders.length,
+      costCents: totalCost,
+      revenueCents: totalRevenue,
+      profitCents: totalRevenue - totalCost,
+      marginPct,
+      bySupplier,
+      currency: DEFAULT_CURRENCY,
+    };
+  });
+}
+
 // ─── Inventory valuation ─────────────────────────────────────────────
 
 export interface InventoryValuation {
