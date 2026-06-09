@@ -1,8 +1,13 @@
 // Navigation menus.
 //
-//   GET /v1/navigation/menus                 → list every menu
+//   GET /v1/navigation/menus                 → list menus for the active site
 //   GET /v1/navigation/menus/:location       → header / footer / mega / custom_*
 //   PUT /v1/navigation/menus/:location       → replace the whole tree
+//
+// All routes are property-scoped via the `x-sparx-property-id` header that the
+// dashboard site switcher sets (docs/49 Phase 3). Absent header → primary site.
+// The PUT writes a site-specific menu (property_id set); to create a tenant-wide
+// fallback menu instead, clients must explicitly pass `?scope=tenant`.
 //
 // PUT is whole-tree replace rather than per-item CRUD because menu editing
 // is overwhelmingly drag-reorder-and-save in one shot; per-item endpoints
@@ -17,6 +22,7 @@ import { requireRole } from '@sparx/api-core/auth';
 import { badRequest, notFound } from '@sparx/api-core/errors';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
+import { resolvePropertyId } from '../../../lib/property.js';
 
 const LocationParams = z.object({ location: z.string().min(1).max(63) });
 
@@ -46,13 +52,21 @@ interface MenuItemInput {
 const PutBody = z.object({
   name: z.string().min(1).max(120),
   items: z.array(ItemInput).max(500),
+  // Optional: pass scope=tenant to create/update the tenant-wide fallback menu
+  // instead of a site-specific one. Defaults to the active site.
+  scope: z.enum(['site', 'tenant']).optional(),
 });
 
 const navigationRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/navigation/menus', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
+    const propertyId = await resolvePropertyId(
+      auth.tenantId,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
     const rows = await withRequestTenant(request, (tx) =>
       tx.navigationMenu.findMany({
+        where: { propertyId },
         include: { items: { orderBy: { position: 'asc' } } },
         orderBy: { location: 'asc' },
       })
@@ -61,11 +75,15 @@ const navigationRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.get('/v1/navigation/menus/:location', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     const { location } = LocationParams.parse(request.params);
+    const propertyId = await resolvePropertyId(
+      auth.tenantId,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
     const row = await withRequestTenant(request, (tx) =>
       tx.navigationMenu.findFirst({
-        where: { location },
+        where: { location, propertyId },
         include: { items: { orderBy: { position: 'asc' } } },
       })
     );
@@ -78,15 +96,35 @@ const navigationRoutes: FastifyPluginAsync = (app) => {
     const { location } = LocationParams.parse(request.params);
     const input = PutBody.parse(request.body);
 
+    // Resolve the property this menu belongs to. `scope=tenant` lets editors
+    // explicitly manage the tenant-wide fallback (property_id = null).
+    const propertyId =
+      input.scope === 'tenant'
+        ? null
+        : await resolvePropertyId(
+            auth.tenantId,
+            request.headers['x-sparx-property-id'] as string | undefined
+          );
+
     const saved = await withRequestTenant(request, async (tx) => {
-      // Replace strategy: upsert the menu, blow away its items, recreate.
-      // Cheap and atomic inside one transaction; menus stay small (typically
-      // < 100 items) so the rebuild is microseconds.
-      const menu = await tx.navigationMenu.upsert({
-        where: { tenantId_location: { tenantId: auth.tenantId, location } },
-        update: { name: input.name },
-        create: { tenantId: auth.tenantId, location, name: input.name },
+      // Replace strategy: find-or-create the menu, blow away its items, recreate.
+      // Upsert can't be used here because Prisma doesn't know about the partial
+      // unique indexes (property_id IS NULL / IS NOT NULL) — use findFirst + update/create.
+      const existing = await tx.navigationMenu.findFirst({
+        where: { tenantId: auth.tenantId, propertyId, location },
       });
+
+      let menu;
+      if (existing) {
+        menu = await tx.navigationMenu.update({
+          where: { id: existing.id },
+          data: { name: input.name },
+        });
+      } else {
+        menu = await tx.navigationMenu.create({
+          data: { tenantId: auth.tenantId, propertyId, location, name: input.name },
+        });
+      }
 
       await tx.navigationItem.deleteMany({ where: { menuId: menu.id } });
 
@@ -96,8 +134,6 @@ const navigationRoutes: FastifyPluginAsync = (app) => {
         parentItemId: string | null
       ): Promise<void> => {
         for (const item of items) {
-          // The XOR constraint is enforced by Zod above + by the DB CHECK
-          // — this assertion guards against a bug in either layer.
           const xor = (item.entry_id ? 1 : 0) + (item.external_url ? 1 : 0);
           if (xor !== 1) {
             throw badRequest('Each item must specify exactly one of entry_id or external_url.');
@@ -126,7 +162,7 @@ const navigationRoutes: FastifyPluginAsync = (app) => {
         action: 'navigation.menu.updated',
         entityType: 'navigation_menu',
         entityId: menu.id,
-        after: { location, itemCount: position },
+        after: { location, itemCount: position, propertyId },
       });
 
       return tx.navigationMenu.findUniqueOrThrow({

@@ -16,19 +16,29 @@
 // no-op at the database level, never a data migration.
 
 model NavigationMenu {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String   @map("tenant_id") @db.Uuid
-  location  String   @db.VarChar(63)
-  name      String   @db.VarChar(120)
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // Null = tenant-wide fallback (serves all sites). Non-null = overrides the
+  // tenant-wide menu for that specific site. The public by-location route tries
+  // the site-specific menu first, then falls back to the tenant-wide one.
+  propertyId String? @map("property_id") @db.Uuid
+  location   String  @db.VarChar(63)
+  name       String  @db.VarChar(120)
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property         Property?         @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   items            NavigationItem[]
   // Site Builder header/footer slots reference this menu by id. docs/30 §8.
   siteLayoutBlocks SiteLayoutBlock[]
 
-  @@unique([tenantId, location])
+  // Uniqueness enforced by two PARTIAL indexes in the migration (Prisma can't
+  // express partial unique constraints):
+  //   UNIQUE (tenant_id, location) WHERE property_id IS NULL
+  //   UNIQUE (tenant_id, property_id, location) WHERE property_id IS NOT NULL
+  @@index([tenantId, propertyId, location])
   @@map("navigation_menus")
 }
 

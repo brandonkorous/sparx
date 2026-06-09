@@ -316,6 +316,10 @@ export async function installBlueprint(
             authorId: null,
           },
         });
+        // Scope to the installed site so content doesn't bleed into other sites.
+        await tx.contentEntryProperty.create({
+          data: { entryId: row.id, propertyId },
+        });
         await syncReferences(tx, tenantId, row.id, schema, body);
         await recordRevision(tx, {
           tenantId,
@@ -443,6 +447,8 @@ export async function installBlueprint(
           seoTitle: p.seoTitle,
           seoDescription: p.seoDescription,
           ogImageId: asset(p.ogImageAssetId),
+          // Scope to the installed site so it doesn't bleed into other sites.
+          propertyIds: [propertyId],
         });
         result.products.push({ handle: p.handle, id: created.id });
 

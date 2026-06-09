@@ -234,20 +234,30 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
   // Public navigation menu read BY LOCATION — the Builder site layout (docs/45)
   // binds its chrome nav to `site.primaryNav` (location 'header') /
   // `site.footerNav` (location 'footer'); the storefront resolves those here
-  // without needing a menu id. One menu per (tenant, location). Same item
-  // resolution as the by-id read. 404 when the tenant has no menu at that
-  // location (the chrome nav then renders empty).
+  // without needing a menu id. Resolution order (docs/49): site-specific menu
+  // first, then the tenant-wide fallback (property_id IS NULL). 404 when neither
+  // exists (the chrome nav then renders empty).
   app.get('/v1/public/content/navigation/by-location/:location', async (request) => {
     const { location } = z.object({ location: z.string().min(1).max(63) }).parse(request.params);
-    const q = z.object({ tenant: z.string().min(1).max(63) }).parse(request.query);
+    const q = z
+      .object({ tenant: z.string().min(1).max(63), property: z.string().min(1).max(63).optional() })
+      .parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
 
-    const menu = await withTenant({ tenantId }, (tx) =>
-      tx.navigationMenu.findUnique({
-        where: { tenantId_location: { tenantId, location } },
+    const menu = await withTenant({ tenantId }, async (tx) => {
+      // 1. Try the site-specific menu for the active property.
+      const siteMenu = await tx.navigationMenu.findFirst({
+        where: { tenantId, propertyId, location },
         select: { id: true, location: true, name: true, items: NAV_ITEM_SELECT },
-      })
-    );
+      });
+      if (siteMenu) return siteMenu;
+      // 2. Fall back to the tenant-wide menu (property_id IS NULL).
+      return tx.navigationMenu.findFirst({
+        where: { tenantId, propertyId: null, location },
+        select: { id: true, location: true, name: true, items: NAV_ITEM_SELECT },
+      });
+    });
     if (!menu) throw notFound('Navigation menu', location);
     return ok({
       id: menu.id,
