@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Upload } from 'lucide-react';
 import { ImportDialog, ExportButton, type ImportJobResult } from '@sparx/ui';
 import { Button } from '@sparx/ui';
+import { parseXlsxAction } from '@/lib/parse-xlsx-action';
 import { submitProductImportAction, getProductImportStatusAction } from '../../product-actions';
 
 // Client island: Import + Export buttons for the Products list page.
@@ -80,6 +81,7 @@ export function ProductsImportExport({ selectedCount = 0 }: ProductsImportExport
         requiredColumns={REQUIRED_COLUMNS}
         templateCsvContent={TEMPLATE_CSV}
         templateFileName="products-template.csv"
+        onParseXlsx={parseXlsxAction}
         onSubmit={handleSubmit}
         onPollStatus={handlePollStatus}
       />

@@ -59,3 +59,8 @@ export async function cancelBroadcastAction(id: string): Promise<ActionResult<Br
     return row;
   });
 }
+
+export async function bulkCancelBroadcastsAction(ids: string[]): Promise<void> {
+  await Promise.allSettled(ids.map((id) => api.post(`/v1/email/broadcasts/${id}/cancel`, {})));
+  revalidatePath('/email/broadcasts');
+}

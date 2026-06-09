@@ -7,6 +7,7 @@ import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { B2bAccountsTable } from './_components/b2b-accounts-table';
+import { B2bAccountsImportExport } from './_components/b2b-accounts-import-export';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,14 +70,17 @@ export default async function B2bAccountsPage({ searchParams }: PageProps) {
           }
           description="Wholesale and fleet customers. Pricing tiers, credit limits, and account-level overrides power the B2B commerce engine."
           actions={
-            <EntityCreateButton
-              entityType="b2b-account"
-              newHref="/b2b/accounts/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New account
-            </EntityCreateButton>
+            <Stack direction="row" gap={2}>
+              <B2bAccountsImportExport />
+              <EntityCreateButton
+                entityType="b2b-account"
+                newHref="/b2b/accounts/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New account
+              </EntityCreateButton>
+            </Stack>
           }
         />
 

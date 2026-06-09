@@ -161,7 +161,22 @@ async function withSession<T>(fn: (session: SparxSession) => Promise<T>): Promis
   return fn(session);
 }
 
+async function callRaw(session: SparxSession, method: string, path: string): Promise<Response> {
+  const token = await signToken(session);
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method,
+    headers: {
+      authorization: `Bearer ${token}`,
+      ...(await activePropertyHeader()),
+    },
+    cache: 'no-store',
+  });
+  return res;
+}
+
 export const api = {
+  getRaw: async (path: string): Promise<Response> =>
+    withSession(async (s) => callRaw(s, 'GET', path)),
   get: async <T>(path: string): Promise<T> =>
     withSession(async (s) => (await call<T>(s, 'GET', path)).data),
   getPaged: async <T>(path: string): Promise<PagedEnvelope<T>> =>

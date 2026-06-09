@@ -12,7 +12,7 @@ import { requireRole } from '@sparx/api-core/auth';
 import { publish } from '@sparx/api-core/pubsub';
 import { notFound } from '@sparx/api-core/errors';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
-import { productService } from '@sparx/commerce';
+import { productService, discountService } from '@sparx/commerce';
 
 const PathJobId = z.object({ jobId: z.string().uuid() });
 
@@ -146,6 +146,111 @@ const importExportRoutes: FastifyPluginAsync = async (app) => {
 
     reply.header('Content-Type', 'text/csv; charset=utf-8');
     reply.header('Content-Disposition', 'attachment; filename="products-export.csv"');
+    return reply.send(csv);
+  });
+
+  // ──────────────────────────────────────────────────────────────────────
+  // POST /v1/commerce/discounts/import
+  // ──────────────────────────────────────────────────────────────────────
+  app.post('/v1/commerce/discounts/import', async (request, reply) => {
+    const auth = requireRole(request, 'editor');
+    await requireCommerceModule(request);
+
+    const input = SubmitImportBody.parse(request.body);
+
+    const job = await withRequestTenant(request, async (tx) =>
+      tx.importJob.create({
+        data: {
+          tenantId: auth.tenantId,
+          entityType: 'discounts',
+          status: 'pending',
+          fileName: input.fileName ?? null,
+          rowCount: input.rows.length,
+          options: input.options ?? {},
+          rawRows: input.rows,
+          actorId: auth.actorId ?? null,
+        },
+        select: { id: true },
+      })
+    );
+
+    await publish(request.log, 'import.job.created', auth.tenantId, auth.actorId, {
+      jobId: job.id,
+      entityType: 'discounts',
+    });
+
+    reply.statusCode = 202;
+    return ok({ jobId: job.id });
+  });
+
+  // ──────────────────────────────────────────────────────────────────────
+  // GET /v1/commerce/discounts/import/:jobId
+  // ──────────────────────────────────────────────────────────────────────
+  app.get('/v1/commerce/discounts/import/:jobId', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+
+    const { jobId } = PathJobId.parse(request.params);
+
+    const job = await withRequestTenant(request, async (tx) =>
+      tx.importJob.findFirst({
+        where: { id: jobId },
+        include: { rows: { orderBy: { rowIndex: 'asc' }, take: 500 } },
+      })
+    );
+    if (!job) throw notFound('ImportJob', jobId);
+
+    return ok({
+      id: job.id,
+      entityType: job.entityType,
+      status: job.status,
+      fileName: job.fileName,
+      rowCount: job.rowCount,
+      importedCount: job.importedCount,
+      updatedCount: job.updatedCount,
+      errorCount: job.errorCount,
+      completedAt: job.completedAt?.toISOString() ?? null,
+      createdAt: job.createdAt.toISOString(),
+      rows: job.rows.map((r) => ({
+        rowIndex: r.rowIndex,
+        status: r.status,
+        naturalKey: r.naturalKey,
+        errorMsg: r.errorMsg,
+      })),
+    });
+  });
+
+  // ──────────────────────────────────────────────────────────────────────
+  // GET /v1/export/discounts
+  // ──────────────────────────────────────────────────────────────────────
+  app.get('/v1/export/discounts', async (request, reply) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+
+    const ctx = toCommerceContext(request);
+    const discounts = await discountService.listDiscounts(ctx);
+
+    const rows = discounts.map((d) => ({
+      code: d.code ?? '',
+      name: d.name,
+      description: d.description ?? '',
+      type: d.type,
+      scope: d.scope,
+      value_cents: d.valueCents != null ? String(d.valueCents) : '',
+      value_percent: d.valuePercent != null ? String(d.valuePercent) : '',
+      currency: d.currency ?? '',
+      status: d.status,
+      start_at: d.startAt ?? '',
+      end_at: d.endAt ?? '',
+      total_usage_limit: d.totalUsageLimit != null ? String(d.totalUsageLimit) : '',
+      per_customer_limit: String(d.perCustomerLimit),
+      usage_count: String(d.usageCount),
+      updated_at: d.updatedAt,
+    }));
+
+    const csv = toCsv(rows);
+    reply.header('Content-Type', 'text/csv; charset=utf-8');
+    reply.header('Content-Disposition', 'attachment; filename="discounts-export.csv"');
     return reply.send(csv);
   });
 };

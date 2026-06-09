@@ -4,30 +4,26 @@ import * as React from 'react';
 import { Upload } from 'lucide-react';
 import { ImportDialog, ExportButton, type ImportJobResult, Button } from '@sparx/ui';
 import { parseXlsxAction } from '@/lib/parse-xlsx-action';
-import { submitCustomerImportAction, getCustomerImportStatusAction } from '../../customer-actions';
+import { submitDiscountImportAction, getDiscountImportStatusAction } from '../../discount-actions';
 
-const REQUIRED_COLUMNS = ['email'];
+const REQUIRED_COLUMNS = ['name'];
 
-const TEMPLATE_CSV = `email,first_name,last_name,company,phone,type,tags\n"john@example.com","John","Smith","Acme Co","+1 555 123 4567","retail","vip"\n`;
+const TEMPLATE_CSV = `code,name,description,type,scope,value_percent,value_cents,status,start_at,end_at,total_usage_limit,per_customer_limit\n"WELCOME10","Welcome 10% off","New customer discount","percent","order","10","","draft","","","500","1"\n`;
 
-interface CustomersImportExportProps {
-  selectedCount?: number;
-}
-
-export function CustomersImportExport({ selectedCount = 0 }: CustomersImportExportProps) {
+export function DiscountsImportExport() {
   const [importOpen, setImportOpen] = React.useState(false);
 
   async function handleSubmit(
     rows: Record<string, string>[],
     options: { upsert: boolean; fileName: string }
   ) {
-    const result = await submitCustomerImportAction(rows, options);
+    const result = await submitDiscountImportAction(rows, options);
     if (!result.ok) throw new Error(result.error.message);
     return { jobId: result.data.jobId };
   }
 
   async function handlePollStatus(jobId: string): Promise<ImportJobResult> {
-    const result = await getCustomerImportStatusAction(jobId);
+    const result = await getDiscountImportStatusAction(jobId);
     if (!result.ok) throw new Error(result.error.message);
     const d = result.data;
     return {
@@ -45,8 +41,8 @@ export function CustomersImportExport({ selectedCount = 0 }: CustomersImportExpo
     };
   }
 
-  function handleExport(_mode: 'all' | 'selected') {
-    window.open('/api/export/customers', '_blank');
+  function handleExport() {
+    window.open('/api/export/discounts', '_blank');
   }
 
   return (
@@ -60,16 +56,16 @@ export function CustomersImportExport({ selectedCount = 0 }: CustomersImportExpo
         Import
       </Button>
 
-      <ExportButton selectedCount={selectedCount} onExport={handleExport} />
+      <ExportButton onExport={handleExport} />
 
       <ImportDialog
         open={importOpen}
         onOpenChange={setImportOpen}
-        entityType="customers"
-        entityLabel="Customers"
+        entityType="discounts"
+        entityLabel="Discounts"
         requiredColumns={REQUIRED_COLUMNS}
         templateCsvContent={TEMPLATE_CSV}
-        templateFileName="customers-template.csv"
+        templateFileName="discounts-template.csv"
         onParseXlsx={parseXlsxAction}
         onSubmit={handleSubmit}
         onPollStatus={handlePollStatus}

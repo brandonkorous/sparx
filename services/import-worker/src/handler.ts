@@ -19,6 +19,8 @@ import { prisma, withTenant } from '@sparx/db';
 
 import { processProductRows } from './processors/products.js';
 import { processCustomerRows } from './processors/customers.js';
+import { processB2bAccountRows } from './processors/b2b_accounts.js';
+import { processDiscountRows } from './processors/discounts.js';
 
 const ImportJobCreatedPayload = z.object({
   jobId: z.string().uuid(),
@@ -88,6 +90,44 @@ export async function handle(
       }
     } else if (entityType === 'customers') {
       const results = await processCustomerRows(ctx, rawRows, { upsert }, log);
+      for (const r of results) {
+        if (r.status === 'imported') imported++;
+        else if (r.status === 'updated') updated++;
+        else errors++;
+        await withTenant(ctx, (tx) =>
+          tx.importJobRow.create({
+            data: {
+              jobId,
+              tenantId,
+              rowIndex: r.rowIndex,
+              status: r.status,
+              naturalKey: r.naturalKey ?? null,
+              errorMsg: r.errorMsg ?? null,
+            },
+          })
+        );
+      }
+    } else if (entityType === 'b2b_accounts') {
+      const results = await processB2bAccountRows(ctx, rawRows, { upsert }, log);
+      for (const r of results) {
+        if (r.status === 'imported') imported++;
+        else if (r.status === 'updated') updated++;
+        else errors++;
+        await withTenant(ctx, (tx) =>
+          tx.importJobRow.create({
+            data: {
+              jobId,
+              tenantId,
+              rowIndex: r.rowIndex,
+              status: r.status,
+              naturalKey: r.naturalKey ?? null,
+              errorMsg: r.errorMsg ?? null,
+            },
+          })
+        );
+      }
+    } else if (entityType === 'discounts') {
+      const results = await processDiscountRows(ctx, rawRows, { upsert }, log);
       for (const r of results) {
         if (r.status === 'imported') imported++;
         else if (r.status === 'updated') updated++;

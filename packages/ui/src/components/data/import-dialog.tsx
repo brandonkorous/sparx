@@ -52,6 +52,8 @@ export interface ImportDialogProps {
   requiredColumns: string[];
   templateCsvContent?: string;
   templateFileName?: string;
+  /** When provided, .xlsx files are accepted and parsed server-side via this callback. */
+  onParseXlsx?: (file: File) => Promise<{ headers: string[]; rows: Record<string, string>[] }>;
   onSubmit: (
     rows: Record<string, string>[],
     options: { upsert: boolean; fileName: string }
@@ -145,6 +147,7 @@ export function ImportDialog({
   requiredColumns,
   templateCsvContent,
   templateFileName,
+  onParseXlsx,
   onSubmit,
   onPollStatus,
 }: ImportDialogProps) {
@@ -183,6 +186,30 @@ export function ImportDialog({
 
   function loadFile(file: File) {
     setFileName(file.name);
+    const isXlsx =
+      file.name.toLowerCase().endsWith('.xlsx') ||
+      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+    if (isXlsx) {
+      if (!onParseXlsx) {
+        setHeaderErrors(['Excel files are not supported for this import.']);
+        return;
+      }
+      void onParseXlsx(file)
+        .then(({ headers: h, rows: r }) => {
+          setHeaders(h);
+          setRows(r);
+          const missing = requiredColumns.filter((col) => !h.includes(col));
+          setHeaderErrors(
+            missing.length > 0 ? [`Missing required columns: ${missing.join(', ')}`] : []
+          );
+        })
+        .catch(() => {
+          setHeaderErrors(['Failed to parse Excel file. Please check the file and try again.']);
+        });
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
@@ -284,21 +311,25 @@ export function ImportDialog({
                 if (e.key === 'Enter' || e.key === ' ')
                   document.getElementById('import-file-input')?.click();
               }}
-              aria-label="Upload CSV file"
+              aria-label={`Upload ${onParseXlsx ? 'CSV or Excel' : 'CSV'} file`}
             >
               <Upload className="h-8 w-8 text-[var(--color-text-muted)]" />
               <Stack gap={1} className="text-center">
                 <Text size="sm" className="font-medium">
-                  Drop a CSV file here, or click to browse
+                  Drop a {onParseXlsx ? 'CSV or Excel' : 'CSV'} file here, or click to browse
                 </Text>
                 <Text size="xs" variant="muted">
-                  UTF-8 CSV, up to 10,000 rows
+                  {onParseXlsx ? 'CSV or .xlsx' : 'UTF-8 CSV'}, up to 10,000 rows
                 </Text>
               </Stack>
               <input
                 id="import-file-input"
                 type="file"
-                accept=".csv,text/csv"
+                accept={
+                  onParseXlsx
+                    ? '.csv,text/csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    : '.csv,text/csv'
+                }
                 className="sr-only"
                 onChange={onFileInput}
               />

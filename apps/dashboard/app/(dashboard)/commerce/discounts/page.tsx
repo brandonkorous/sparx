@@ -25,6 +25,7 @@ import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { DiscountStatusToggle } from './_components/discount-status-toggle';
+import { DiscountsImportExport } from './_components/discounts-import-export';
 
 interface DiscountRow {
   id: string;
@@ -94,14 +95,17 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
           }
           description="Codes activate when a shopper enters them; automatic discounts apply silently when their conditions match. Stacking rules govern combining with subscribe-and-save and loyalty."
           actions={
-            <EntityCreateButton
-              entityType="discount"
-              newHref="/commerce/discounts/new"
-              color="module"
-              leftIcon={<Plus className="h-4 w-4" />}
-            >
-              New
-            </EntityCreateButton>
+            <Stack direction="row" gap={2}>
+              <DiscountsImportExport />
+              <EntityCreateButton
+                entityType="discount"
+                newHref="/commerce/discounts/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
+            </Stack>
           }
         />
 

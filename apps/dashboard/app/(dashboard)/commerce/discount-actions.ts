@@ -48,6 +48,40 @@ export async function activateDiscountAction(id: string): Promise<ActionResult<{
   });
 }
 
+// ─── Discounts import ─────────────────────────────────────────────────
+
+export async function submitDiscountImportAction(
+  rows: Record<string, string>[],
+  options: { upsert: boolean; fileName: string }
+): Promise<ActionResult<{ jobId: string }>> {
+  return restAction(async () => {
+    const result = await api.post<{ jobId: string }>('/v1/commerce/discounts/import', {
+      rows,
+      options: { upsert: options.upsert },
+      fileName: options.fileName,
+    });
+    return result;
+  });
+}
+
+export async function getDiscountImportStatusAction(jobId: string): Promise<
+  ActionResult<{
+    status: string;
+    importedCount: number;
+    updatedCount: number;
+    errorCount: number;
+    rowCount: number;
+    rows: {
+      rowIndex: number;
+      status: string;
+      naturalKey?: string | null;
+      errorMsg?: string | null;
+    }[];
+  }>
+> {
+  return restAction(async () => api.get(`/v1/commerce/discounts/import/${jobId}`));
+}
+
 // ─── Gift cards ───────────────────────────────────────────────────────
 
 interface GiftCardLookup {
