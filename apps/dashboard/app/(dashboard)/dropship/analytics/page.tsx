@@ -1,8 +1,8 @@
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { serverFetch } from '@/lib/server-fetch';
-import { PageHeader } from '@/components/page-header';
-import { formatMoney } from '@/lib/format';
+import { api } from '@/lib/api-rest-client';
 import {
   Table,
   TableBody,
@@ -52,9 +52,8 @@ interface OrderRow {
   createdAt: string;
 }
 
-interface PagedOrders {
-  data: OrderRow[];
-  total: number;
+function formatCents(cents: number): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
 }
 
 function marginColor(pct: number): 'success' | 'warning' | 'danger' | 'neutral' {
@@ -64,27 +63,80 @@ function marginColor(pct: number): 'success' | 'warning' | 'danger' | 'neutral' 
   return 'danger';
 }
 
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<
+    string,
+    { color: 'success' | 'warning' | 'danger' | 'neutral'; label: string }
+  > = {
+    submitted: { color: 'warning', label: 'Submitted' },
+    shipped: { color: 'neutral', label: 'Shipped' },
+    delivered: { color: 'success', label: 'Delivered' },
+    failed: { color: 'danger', label: 'Failed' },
+  };
+  const { color, label } = map[status] ?? { color: 'neutral' as const, label: status };
+  return (
+    <Badge color={color} variant="soft" size="sm">
+      {label}
+    </Badge>
+  );
+}
+
+function SummaryCard({
+  label,
+  value,
+  valueClass,
+  prefix,
+}: {
+  label: string;
+  value: string;
+  valueClass?: string;
+  prefix?: string;
+}) {
+  return (
+    <Card>
+      <CardContent className="p-5">
+        <Text size="xs" className="mb-1 font-medium text-[var(--color-muted-foreground)]">
+          {label}
+        </Text>
+        <p className={`text-2xl font-semibold tracking-tight ${valueClass ?? ''}`}>
+          {prefix}
+          {value}
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default async function DropshipAnalyticsPage() {
-  const [summary, orders] = await Promise.all([
-    serverFetch<{ data: Summary }>('/v1/dropship/analytics').then((r) => r.data),
-    serverFetch<PagedOrders>('/v1/dropship/analytics/orders?take=50').then((r) => r),
+  const [summary, ordersPage] = await Promise.all([
+    api.get<Summary>('/v1/dropship/analytics'),
+    api.getPaged<OrderRow[]>('/v1/dropship/analytics/orders?take=50'),
   ]);
 
-  const profit = summary.profitCents;
-  const isLoss = profit < 0;
+  const orders = ordersPage.data;
+  const totalOrderCount = (ordersPage.meta as { total?: number }).total ?? orders.length;
+
+  const isLoss = summary.profitCents < 0;
 
   return (
     <div>
-      <PageHeader title="Profitability" description="Cost vs. revenue across all dropship orders" />
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold tracking-tight">Profitability</h1>
+        <p className="mt-1 text-[var(--color-muted-foreground)]">
+          Cost vs. revenue across all dropship orders
+        </p>
+      </div>
 
       {/* Summary cards */}
       <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <SummaryCard label="Revenue" value={formatMoney(summary.revenueCents)} />
-        <SummaryCard label="Cost" value={formatMoney(summary.costCents)} />
+        <SummaryCard label="Revenue" value={formatCents(summary.revenueCents)} />
+        <SummaryCard label="Cost" value={formatCents(summary.costCents)} />
         <SummaryCard
           label="Profit"
-          value={formatMoney(Math.abs(profit))}
-          valueClass={isLoss ? 'text-[var(--color-danger)]' : 'text-[var(--color-success)]'}
+          value={formatCents(Math.abs(summary.profitCents))}
+          valueClass={
+            isLoss ? 'text-[var(--color-danger)]' : 'text-[var(--color-success)]'
+          }
           prefix={isLoss ? '−' : '+'}
         />
         <SummaryCard
@@ -100,8 +152,8 @@ export default async function DropshipAnalyticsPage() {
         />
       </div>
 
-      {/* Per-supplier breakdown */}
-      <Stack gap={6}>
+      <Stack gap={8}>
+        {/* Per-supplier breakdown */}
         <div>
           <Text size="lg" className="mb-4 font-semibold">
             By supplier
@@ -134,8 +186,8 @@ export default async function DropshipAnalyticsPage() {
                       </Link>
                     </TableCell>
                     <TableCell className="text-right">{row.orders}</TableCell>
-                    <TableCell className="text-right">{formatMoney(row.revenueCents)}</TableCell>
-                    <TableCell className="text-right">{formatMoney(row.costCents)}</TableCell>
+                    <TableCell className="text-right">{formatCents(row.revenueCents)}</TableCell>
+                    <TableCell className="text-right">{formatCents(row.costCents)}</TableCell>
                     <TableCell className="text-right">
                       <span
                         className={
@@ -145,7 +197,7 @@ export default async function DropshipAnalyticsPage() {
                         }
                       >
                         {row.profitCents < 0 ? '−' : '+'}
-                        {formatMoney(Math.abs(row.profitCents))}
+                        {formatCents(Math.abs(row.profitCents))}
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
@@ -165,7 +217,7 @@ export default async function DropshipAnalyticsPage() {
           <Text size="lg" className="mb-4 font-semibold">
             Recent orders
           </Text>
-          {orders.data.length === 0 ? (
+          {orders.length === 0 ? (
             <Text className="text-[var(--color-muted-foreground)]">No orders yet.</Text>
           ) : (
             <>
@@ -183,7 +235,7 @@ export default async function DropshipAnalyticsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {orders.data.map((row) => (
+                  {orders.map((row) => (
                     <TableRow key={row.id}>
                       <TableCell>
                         <Link
@@ -197,8 +249,8 @@ export default async function DropshipAnalyticsPage() {
                       <TableCell>
                         <StatusBadge status={row.status} />
                       </TableCell>
-                      <TableCell className="text-right">{formatMoney(row.revenueCents)}</TableCell>
-                      <TableCell className="text-right">{formatMoney(row.costCents)}</TableCell>
+                      <TableCell className="text-right">{formatCents(row.revenueCents)}</TableCell>
+                      <TableCell className="text-right">{formatCents(row.costCents)}</TableCell>
                       <TableCell className="text-right">
                         <span
                           className={
@@ -208,7 +260,7 @@ export default async function DropshipAnalyticsPage() {
                           }
                         >
                           {row.profitCents < 0 ? '−' : '+'}
-                          {formatMoney(Math.abs(row.profitCents))}
+                          {formatCents(Math.abs(row.profitCents))}
                         </span>
                       </TableCell>
                       <TableCell className="text-right">
@@ -225,9 +277,9 @@ export default async function DropshipAnalyticsPage() {
                   ))}
                 </TableBody>
               </Table>
-              {orders.total > 50 && (
+              {totalOrderCount > 50 && (
                 <Text size="sm" className="mt-3 text-[var(--color-muted-foreground)]">
-                  Showing 50 of {orders.total} orders.
+                  Showing 50 of {totalOrderCount} orders.
                 </Text>
               )}
             </>
@@ -235,46 +287,5 @@ export default async function DropshipAnalyticsPage() {
         </div>
       </Stack>
     </div>
-  );
-}
-
-function SummaryCard({
-  label,
-  value,
-  valueClass,
-  prefix,
-}: {
-  label: string;
-  value: string;
-  valueClass?: string;
-  prefix?: string;
-}) {
-  return (
-    <Card>
-      <CardContent className="p-5">
-        <Text size="xs" className="mb-1 font-medium text-[var(--color-muted-foreground)]">
-          {label}
-        </Text>
-        <p className={`text-2xl font-semibold tracking-tight ${valueClass ?? ''}`}>
-          {prefix}
-          {value}
-        </p>
-      </CardContent>
-    </Card>
-  );
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { color: 'success' | 'warning' | 'danger' | 'neutral'; label: string }> = {
-    submitted: { color: 'warning', label: 'Submitted' },
-    shipped: { color: 'neutral', label: 'Shipped' },
-    delivered: { color: 'success', label: 'Delivered' },
-    failed: { color: 'danger', label: 'Failed' },
-  };
-  const { color, label } = map[status] ?? { color: 'neutral' as const, label: status };
-  return (
-    <Badge color={color} variant="soft" size="sm">
-      {label}
-    </Badge>
   );
 }
