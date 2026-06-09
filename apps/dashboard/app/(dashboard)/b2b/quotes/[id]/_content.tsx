@@ -253,7 +253,7 @@ export async function B2bQuoteDetailContent({ id }: Props) {
       </Card>
 
       {/* Notes */}
-      {(quote.customerNote || quote.internalNote) && (
+      {(quote.customerNote ?? quote.internalNote) && (
         <div className="grid gap-4 sm:grid-cols-2">
           {quote.customerNote && (
             <Card>

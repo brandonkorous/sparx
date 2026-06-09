@@ -41,7 +41,7 @@ function formatCents(cents: number): string {
 
 export default async function B2bInvoiceDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const { data: invoice } = await api.get<InvoiceDetail>(`/v1/b2b/invoices/${id}`);
+  const invoice = await api.get<InvoiceDetail>(`/v1/b2b/invoices/${id}`);
   if (!invoice) notFound();
 
   const isActionable = invoice.status === 'unpaid' || invoice.status === 'overdue';

@@ -88,7 +88,7 @@ export function SourceActions({ source }: { source: Source }) {
         <ModalContent>
           <ModalHeader>
             <ModalTitle>Edit source</ModalTitle>
-            <ModalDescription>Update this inventory source's configuration.</ModalDescription>
+            <ModalDescription>Update this inventory source&apos;s configuration.</ModalDescription>
           </ModalHeader>
           <SourceForm
             source={source}
@@ -104,7 +104,7 @@ export function SourceActions({ source }: { source: Source }) {
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove "{source.name}"?</AlertDialogTitle>
+            <AlertDialogTitle>Remove &quot;{source.name}&quot;?</AlertDialogTitle>
             <AlertDialogDescription>
               This will disconnect the source and stop future syncs. Existing stock levels are
               retained.

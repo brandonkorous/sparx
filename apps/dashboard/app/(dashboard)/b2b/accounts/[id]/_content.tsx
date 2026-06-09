@@ -274,16 +274,15 @@ export async function B2bAccountDetailContent({ id }: Props) {
           <FleetProfileEditor
             accountId={account.id}
             initialProfiles={
-              profiles as Array<{
+              profiles as {
                 fitmentCategoryId?: string;
                 fitmentItemId?: string;
                 fitmentVariantId?: string;
                 year?: number;
                 displayName: string;
                 count: number;
-              }>
+              }[]
             }
-            fleetSize={account.fleetSize}
           />
         </CardHeader>
         {profiles.length > 0 && (

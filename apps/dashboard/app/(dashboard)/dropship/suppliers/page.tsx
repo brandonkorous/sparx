@@ -1,11 +1,10 @@
 export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
-import { Badge, Stack, Text, Button } from '@sparx/ui';
+import { Badge, Stack, Text } from '@sparx/ui';
 import { api } from '@/lib/api-rest-client';
 import { NewSupplierButton } from './_components/new-supplier-button';
 import { SupplierActions } from './_components/supplier-actions';
-import { RefreshCw } from 'lucide-react';
 
 interface Supplier {
   id: string;
@@ -16,6 +15,7 @@ interface Supplier {
   pricingRule: { type: string; value: number } | null;
   notes: string | null;
   createdAt: string;
+  credentials?: Record<string, string>;
 }
 
 const STATUS_COLOR: Record<string, 'success' | 'warning' | 'danger' | 'neutral'> = {
@@ -54,7 +54,7 @@ function formatPricingRule(rule: { type: string; value: number } | null) {
 }
 
 export default async function DropshipSuppliersPage() {
-  const { data: suppliers, meta } = await api.getPaged<Supplier>('/v1/dropship/suppliers?take=100');
+  const { data: suppliers } = await api.getPaged<Supplier[]>('/v1/dropship/suppliers?take=100');
 
   return (
     <Stack gap={6}>
@@ -117,7 +117,7 @@ export default async function DropshipSuppliersPage() {
                     {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
                   </td>
                   <td className="px-4 py-3">
-                    <SupplierActions supplier={s as any} />
+                    <SupplierActions supplier={{ ...s, credentials: s.credentials ?? {} }} />
                   </td>
                 </tr>
               ))}

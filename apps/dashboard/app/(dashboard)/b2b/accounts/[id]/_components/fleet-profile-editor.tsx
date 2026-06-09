@@ -42,11 +42,7 @@ interface FleetProfileEditorProps {
   fleetSize?: number | null;
 }
 
-export function FleetProfileEditor({
-  accountId,
-  initialProfiles,
-  fleetSize,
-}: FleetProfileEditorProps) {
+export function FleetProfileEditor({ accountId, initialProfiles }: FleetProfileEditorProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [profiles, setProfiles] = useState<EngineProfile[]>(initialProfiles);
@@ -70,7 +66,7 @@ export function FleetProfileEditor({
   useEffect(() => {
     if (!addOpen) return;
     fetch('/api/fitment/domains')
-      .then((r) => r.json())
+      .then((r) => r.json() as Promise<{ data?: (FitmentNode & { rangeUnit?: string })[] }>)
       .then((j) => setDomains(j.data ?? []))
       .catch(() => setDomains([]));
   }, [addOpen]);
@@ -81,7 +77,7 @@ export function FleetProfileEditor({
       return;
     }
     fetch(`/api/fitment/domains/${selDomain}/categories`)
-      .then((r) => r.json())
+      .then((r) => r.json() as Promise<{ data?: FitmentNode[] }>)
       .then((j) => setCategories(j.data ?? []))
       .catch(() => setCategories([]));
   }, [selDomain]);
@@ -92,7 +88,7 @@ export function FleetProfileEditor({
       return;
     }
     fetch(`/api/fitment/categories/${selCategory}/items`)
-      .then((r) => r.json())
+      .then((r) => r.json() as Promise<{ data?: FitmentNode[] }>)
       .then((j) => setItems(j.data ?? []))
       .catch(() => setItems([]));
   }, [selCategory]);
@@ -103,7 +99,7 @@ export function FleetProfileEditor({
       return;
     }
     fetch(`/api/fitment/items/${selItem}/variants`)
-      .then((r) => r.json())
+      .then((r) => r.json() as Promise<{ data?: FitmentNode[] }>)
       .then((j) => setVariants(j.data ?? []))
       .catch(() => setVariants([]));
   }, [selItem]);
@@ -147,8 +143,8 @@ export function FleetProfileEditor({
         }),
       });
       if (!res.ok) {
-        const err = await res.json().catch(() => null);
-        alert((err as { message?: string })?.message ?? 'Failed to save');
+        const err = (await res.json().catch(() => null)) as { message?: string } | null;
+        alert(err?.message ?? 'Failed to save');
         return;
       }
       setOpen(false);
@@ -215,9 +211,11 @@ export function FleetProfileEditor({
               </ModalHeader>
               <Stack gap={4} className="py-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">Domain</label>
+                  <label htmlFor="fleet-domain" className="mb-1 block text-sm font-medium">
+                    Domain
+                  </label>
                   <Select value={selDomain} onValueChange={setSelDomain}>
-                    <SelectTrigger>
+                    <SelectTrigger id="fleet-domain">
                       <SelectValue placeholder="Select domain…" />
                     </SelectTrigger>
                     <SelectContent>
@@ -231,9 +229,11 @@ export function FleetProfileEditor({
                 </div>
                 {categories.length > 0 && (
                   <div>
-                    <label className="mb-1 block text-sm font-medium">Make</label>
+                    <label htmlFor="fleet-category" className="mb-1 block text-sm font-medium">
+                      Make
+                    </label>
                     <Select value={selCategory} onValueChange={setSelCategory}>
-                      <SelectTrigger>
+                      <SelectTrigger id="fleet-category">
                         <SelectValue placeholder="Select make…" />
                       </SelectTrigger>
                       <SelectContent>
@@ -248,9 +248,11 @@ export function FleetProfileEditor({
                 )}
                 {items.length > 0 && (
                   <div>
-                    <label className="mb-1 block text-sm font-medium">Model</label>
+                    <label htmlFor="fleet-item" className="mb-1 block text-sm font-medium">
+                      Model
+                    </label>
                     <Select value={selItem} onValueChange={setSelItem}>
-                      <SelectTrigger>
+                      <SelectTrigger id="fleet-item">
                         <SelectValue placeholder="Select model…" />
                       </SelectTrigger>
                       <SelectContent>
@@ -265,9 +267,11 @@ export function FleetProfileEditor({
                 )}
                 {variants.length > 0 && (
                   <div>
-                    <label className="mb-1 block text-sm font-medium">Engine</label>
+                    <label htmlFor="fleet-variant" className="mb-1 block text-sm font-medium">
+                      Engine
+                    </label>
                     <Select value={selVariant} onValueChange={setSelVariant}>
-                      <SelectTrigger>
+                      <SelectTrigger id="fleet-variant">
                         <SelectValue placeholder="Select engine…" />
                       </SelectTrigger>
                       <SelectContent>
@@ -282,8 +286,11 @@ export function FleetProfileEditor({
                 )}
                 <div className="flex gap-3">
                   <div className="flex-1">
-                    <label className="mb-1 block text-sm font-medium">Year</label>
+                    <label htmlFor="fleet-year" className="mb-1 block text-sm font-medium">
+                      Year
+                    </label>
                     <Input
+                      id="fleet-year"
                       type="number"
                       min={1900}
                       max={2100}
@@ -293,8 +300,11 @@ export function FleetProfileEditor({
                     />
                   </div>
                   <div className="w-24">
-                    <label className="mb-1 block text-sm font-medium">Count</label>
+                    <label htmlFor="fleet-count" className="mb-1 block text-sm font-medium">
+                      Count
+                    </label>
                     <Input
+                      id="fleet-count"
                       type="number"
                       min={1}
                       value={selCount}

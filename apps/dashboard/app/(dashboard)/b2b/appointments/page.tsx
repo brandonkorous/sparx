@@ -97,7 +97,7 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
   const { data: appointments, meta } = await api.getPaged<AppointmentRow[]>(
     `/v1/b2b/appointments?${query.toString()}`
   );
-  const total = (meta?.total as number | undefined) ?? appointments.length;
+  const total = meta?.total ?? appointments.length;
 
   const pendingCount = appointments.filter((a) =>
     ['requested', 'confirmed'].includes(a.status)
@@ -189,14 +189,7 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
                     </TableCell>
                     <TableCell>
                       <Badge
-                        color={
-                          (STATUS_BADGE[appt.status] ?? 'outline') as
-                            | 'outline'
-                            | 'info'
-                            | 'success'
-                            | 'warning'
-                            | 'danger'
-                        }
+                        color={STATUS_BADGE[appt.status] ?? 'outline'}
                         variant="soft"
                         size="sm"
                       >

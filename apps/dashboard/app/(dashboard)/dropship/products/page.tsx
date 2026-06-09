@@ -34,14 +34,14 @@ function formatCents(cents: number) {
 }
 
 export default async function DropshipProductsPage() {
-  const { data: suppliers } = await api.getPaged<Supplier>('/v1/dropship/suppliers?take=100');
+  const { data: suppliers } = await api.getPaged<Supplier[]>('/v1/dropship/suppliers?take=100');
 
   // For each supplier fetch imported products (isImported=true).
-  const productsBySupplier: Array<{ supplier: Supplier; products: DropshipProduct[] }> = [];
+  const productsBySupplier: { supplier: Supplier; products: DropshipProduct[] }[] = [];
 
   await Promise.all(
     suppliers.map(async (supplier) => {
-      const { data: products } = await api.getPaged<DropshipProduct>(
+      const { data: products } = await api.getPaged<DropshipProduct[]>(
         `/v1/dropship/suppliers/${supplier.id}/catalog?take=250`
       );
       const imported = products.filter((p) => p.isImported);
@@ -69,7 +69,7 @@ export default async function DropshipProductsPage() {
         <div className="rounded-lg border border-dashed border-[var(--color-border)] p-12 text-center">
           <Text className="mb-1 font-medium">No products imported yet</Text>
           <Text size="sm" className="mb-4 text-[var(--color-muted-foreground)]">
-            Browse a supplier's catalog and import products to see them here.
+            Browse a supplier&apos;s catalog and import products to see them here.
           </Text>
           <Link href="/dropship/suppliers">
             <Button color="primary" variant="soft">

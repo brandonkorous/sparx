@@ -1,4 +1,4 @@
-import { DollarSign, Plus } from 'lucide-react';
+import { DollarSign } from 'lucide-react';
 
 import {
   Badge,

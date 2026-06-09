@@ -14,7 +14,6 @@ import {
   ModalHeader,
   ModalTitle,
   ModalDescription,
-  ModalFooter,
   AlertDialog,
   AlertDialogContent,
   AlertDialogHeader,

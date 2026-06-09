@@ -50,8 +50,8 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
         body: JSON.stringify({ paidMethod, notes: notes || undefined }),
       });
       if (!res.ok) {
-        const err = await res.json().catch(() => null);
-        alert((err as { message?: string })?.message ?? 'Failed to mark as paid');
+        const err = (await res.json().catch(() => null)) as { message?: string } | null;
+        alert(err?.message ?? 'Failed to mark as paid');
         return;
       }
       setMarkPaidOpen(false);
@@ -70,8 +70,8 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
         body: JSON.stringify({ notes: notes || undefined }),
       });
       if (!res.ok) {
-        const err = await res.json().catch(() => null);
-        alert((err as { message?: string })?.message ?? 'Failed to write off');
+        const err = (await res.json().catch(() => null)) as { message?: string } | null;
+        alert(err?.message ?? 'Failed to write off');
         return;
       }
       setWriteOffOpen(false);
@@ -98,9 +98,11 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
           </ModalHeader>
           <Stack gap={4} className="py-2">
             <div>
-              <label className="mb-1 block text-sm font-medium">Payment method</label>
+              <label htmlFor="invoice-paid-method" className="mb-1 block text-sm font-medium">
+                Payment method
+              </label>
               <Select value={paidMethod} onValueChange={setPaidMethod}>
-                <SelectTrigger>
+                <SelectTrigger id="invoice-paid-method">
                   <SelectValue placeholder="Select method…" />
                 </SelectTrigger>
                 <SelectContent>
@@ -113,8 +115,11 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
               </Select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">Notes (optional)</label>
+              <label htmlFor="invoice-paid-notes" className="mb-1 block text-sm font-medium">
+                Notes (optional)
+              </label>
               <Textarea
+                id="invoice-paid-notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Reference number, check number, etc."
@@ -149,8 +154,11 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
           </ModalHeader>
           <Stack gap={4} className="py-2">
             <div>
-              <label className="mb-1 block text-sm font-medium">Reason (optional)</label>
+              <label htmlFor="invoice-writeoff-reason" className="mb-1 block text-sm font-medium">
+                Reason (optional)
+              </label>
               <Textarea
+                id="invoice-writeoff-reason"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Reason for write-off…"

@@ -39,9 +39,7 @@ interface ContentNewButtonProps {
 function newHrefFor(key: string): Route {
   // Page type keeps its bespoke create/edit surface (/cms/new).
   // All other types route through the guided wizard at /cms/content/new?type=X.
-  return key === 'page'
-    ? '/cms/new'
-    : (`/cms/content/new?type=${encodeURIComponent(key)}` as Route);
+  return key === 'page' ? '/cms/new' : `/cms/content/new?type=${encodeURIComponent(key)}`;
 }
 
 export function ContentNewButton({ types, activeType }: ContentNewButtonProps) {

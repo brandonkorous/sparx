@@ -13,12 +13,12 @@ interface DropshipProduct {
   title: string;
   description: string | null;
   images: string[];
-  variants: Array<{
+  variants: {
     supplierSku: string;
     costPriceCents: number;
     msrpCents: number | null;
     inventoryQuantity: number | null;
-  }>;
+  }[];
   costPriceCents: number;
   msrpCents: number | null;
   isImported: boolean;
