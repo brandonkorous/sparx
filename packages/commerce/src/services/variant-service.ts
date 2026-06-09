@@ -91,6 +91,8 @@ export interface VariantRow {
   isDefault: boolean;
   position: number;
   metadata: Record<string, unknown>;
+  /** Set when the price is derived from a markup rule (docs/48); null = manual. */
+  markupRuleId: string | null;
   optionValueIds: string[];
   imageCount: number;
   createdAt: string;
@@ -864,6 +866,7 @@ function toVariantRow(v: VariantWithIncludes): VariantRow {
     isDefault: v.isDefault,
     position: v.position,
     metadata: (v.metadata ?? {}) as Record<string, unknown>,
+    markupRuleId: v.markupRuleId,
     optionValueIds: v.optionAssignments.map((oa) => oa.optionValueId),
     imageCount: v._count.images,
     createdAt: v.createdAt.toISOString(),

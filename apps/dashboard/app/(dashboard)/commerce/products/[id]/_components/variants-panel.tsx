@@ -39,9 +39,15 @@ import {
   setDefaultVariantAction,
   updateVariantAction,
 } from '../../../variant-actions';
+import { bindVariantMarkupAction, unbindVariantMarkupAction } from '../../../markup-actions';
 
 import { NewVariantForm } from './new-variant-form';
 import { OptionsEditor } from './options-editor';
+
+export interface MarkupRuleOption {
+  id: string;
+  name: string;
+}
 
 export interface OptionValueRow {
   id: string;
@@ -68,9 +74,12 @@ export interface VariantRow {
   title: string | null;
   priceCents: number;
   compareAtPriceCents: number | null;
+  costCents: number | null;
   currency: string;
   inventoryPolicy: string;
   isDefault: boolean;
+  /** Set when the price is derived from a markup rule (docs/48); null = manual. */
+  markupRuleId: string | null;
   optionValueIds: string[];
   imageCount: number;
   deletedAt: string | null;
@@ -81,6 +90,8 @@ interface Props {
   productTitle: string;
   options: OptionRow[];
   variants: VariantRow[];
+  /** Active catalog markup rules, for the per-variant "Price by rule" control. */
+  markupRules: MarkupRuleOption[];
 }
 
 // Variants tab — two stacked sections: Options (the lattice) and
@@ -88,7 +99,7 @@ interface Props {
 // editor so this works without a Dialog primitive — the dashboard
 // doesn't ship one yet and adding it just for this feels premature.
 
-export function VariantsPanel({ productId, productTitle, options, variants }: Props) {
+export function VariantsPanel({ productId, productTitle, options, variants, markupRules }: Props) {
   const router = useRouter();
   const [optionsOpen, setOptionsOpen] = React.useState(false);
   const [newVariantOpen, setNewVariantOpen] = React.useState(false);
@@ -226,6 +237,7 @@ export function VariantsPanel({ productId, productTitle, options, variants }: Pr
                     variant={variant}
                     productId={productId}
                     valuesById={valuesById}
+                    markupRules={markupRules}
                     onChanged={() => router.refresh()}
                   />
                 ))}
@@ -283,14 +295,44 @@ interface VariantRowProps {
   variant: VariantRow;
   productId: string;
   valuesById: Map<string, { option: OptionRow; value: OptionValueRow }>;
+  markupRules: MarkupRuleOption[];
   onChanged: () => void;
 }
 
-function VariantRowEditor({ variant, productId, valuesById, onChanged }: VariantRowProps) {
+function VariantRowEditor({
+  variant,
+  productId,
+  valuesById,
+  markupRules,
+  onChanged,
+}: VariantRowProps) {
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
   const [priceDraft, setPriceDraft] = React.useState(variant.priceCents.toString());
+
+  // A rule-bound variant's price is rewritten server-side (bind/apply); keep the
+  // inline field in sync when that happens.
+  const isRulePriced = variant.markupRuleId != null;
+  React.useEffect(() => {
+    setPriceDraft(variant.priceCents.toString());
+  }, [variant.priceCents]);
+
+  function onPricingModeChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const next = e.target.value;
+    setError(null);
+    startTransition(async () => {
+      const result =
+        next === 'manual'
+          ? await unbindVariantMarkupAction(variant.id, productId)
+          : await bindVariantMarkupAction(variant.id, productId, next);
+      if (!result.ok) {
+        setError(result.error.message);
+        return;
+      }
+      onChanged();
+    });
+  }
 
   const optionsLabel = variant.optionValueIds
     .map((vid) => {
@@ -387,18 +429,38 @@ function VariantRowEditor({ variant, productId, valuesById, onChanged }: Variant
         </Text>
       </TableCell>
       <TableCell className="text-right tabular-nums">
-        <Input
-          type="number"
-          inputMode="numeric"
-          min={0}
-          step={1}
-          value={priceDraft}
-          onChange={(e) => setPriceDraft(e.target.value)}
-          onBlur={onPriceBlur}
-          disabled={pending || !!variant.deletedAt}
-          className="h-8 w-28 text-right"
-          aria-label={`Price for ${variant.sku}`}
-        />
+        <Stack gap={1} align="end">
+          <Input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            step={1}
+            value={priceDraft}
+            onChange={(e) => setPriceDraft(e.target.value)}
+            onBlur={onPriceBlur}
+            disabled={pending || !!variant.deletedAt || isRulePriced}
+            className="h-8 w-28 text-right"
+            aria-label={`Price for ${variant.sku}`}
+            title={isRulePriced ? 'Price is derived from a markup rule' : undefined}
+          />
+          {markupRules.length > 0 && !variant.deletedAt && (
+            <NativeSelect
+              size="sm"
+              className="w-auto"
+              value={variant.markupRuleId ?? 'manual'}
+              onChange={onPricingModeChange}
+              disabled={pending}
+              aria-label={`Pricing mode for ${variant.sku}`}
+            >
+              <option value="manual">Manual price</option>
+              {markupRules.map((r) => (
+                <option key={r.id} value={r.id}>
+                  By rule: {r.name}
+                </option>
+              ))}
+            </NativeSelect>
+          )}
+        </Stack>
       </TableCell>
       <TableCell>
         <NativeSelect

@@ -3,6 +3,7 @@ import {
   Boxes,
   Layers,
   PackageOpen,
+  Percent,
   Plug,
   PlusCircle,
   Receipt,
@@ -212,6 +213,12 @@ const QUICK_LINKS = [
     title: 'Pricing',
     description: 'Price lists, contract prices for B2B, bulk-quantity tiers.',
     icon: <Tag className="h-5 w-5" />,
+  },
+  {
+    href: '/commerce/markup-rules',
+    title: 'Markup rules',
+    description: 'Price products from cost — percentage, keystone, target margin, flat.',
+    icon: <Percent className="h-5 w-5" />,
   },
   {
     href: '/commerce/discounts',

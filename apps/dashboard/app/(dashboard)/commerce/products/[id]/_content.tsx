@@ -106,11 +106,19 @@ interface VariantRow {
   isDefault: boolean;
   position: number;
   metadata: Record<string, unknown>;
+  markupRuleId: string | null;
   optionValueIds: string[];
   imageCount: number;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+}
+
+interface MarkupRuleSummary {
+  id: string;
+  name: string;
+  isActive: boolean;
+  appliesTo: 'catalog' | 'document' | 'both';
 }
 
 interface ProductFitmentRow {
@@ -190,16 +198,24 @@ export async function ProductDetailContent({ id }: Props) {
     throw err;
   }
 
-  const [options, variants, fitments, domains, warehouses, sites] = await Promise.all([
-    api.get<OptionRow[]>(`/v1/commerce/products/${id}/variants/options`),
-    api.get<VariantRow[]>(`/v1/commerce/products/${id}/variants?include_archived=true`),
-    api.get<ProductFitmentRow[]>(`/v1/commerce/products/${id}/fitment`),
-    api.get<FitmentDomainRow[]>('/v1/commerce/fitment/domains'),
-    api.get<WarehouseRow[]>('/v1/commerce/warehouses'),
-    // Multi-site (docs/49 §3): the "Visible on sites" control. Defensive — a
-    // failed read just hides the control (single-site behavior).
-    listProperties().catch(() => [] as Property[]),
-  ]);
+  const [options, variants, fitments, domains, warehouses, sites, markupRulesRaw] =
+    await Promise.all([
+      api.get<OptionRow[]>(`/v1/commerce/products/${id}/variants/options`),
+      api.get<VariantRow[]>(`/v1/commerce/products/${id}/variants?include_archived=true`),
+      api.get<ProductFitmentRow[]>(`/v1/commerce/products/${id}/fitment`),
+      api.get<FitmentDomainRow[]>('/v1/commerce/fitment/domains'),
+      api.get<WarehouseRow[]>('/v1/commerce/warehouses'),
+      // Multi-site (docs/49 §3): the "Visible on sites" control. Defensive — a
+      // failed read just hides the control (single-site behavior).
+      listProperties().catch(() => [] as Property[]),
+      // Catalog markup rules for the per-variant "Price by rule" control (docs/48).
+      api.get<MarkupRuleSummary[]>('/v1/markup-rules').catch(() => [] as MarkupRuleSummary[]),
+    ]);
+
+  // Only catalog-applying, active rules can price a variant inline.
+  const markupRules = markupRulesRaw
+    .filter((r) => r.isActive && r.appliesTo !== 'document')
+    .map((r) => ({ id: r.id, name: r.name }));
 
   const inventoryLevels = await Promise.all(
     variants.map(async (variant) => ({
@@ -285,6 +301,7 @@ export async function ProductDetailContent({ id }: Props) {
             productTitle={product.title}
             options={options}
             variants={variants}
+            markupRules={markupRules}
           />
         </TabsContent>
 
