@@ -97,7 +97,7 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
   const { data: appointments, meta } = await api.getPaged<AppointmentRow[]>(
     `/v1/b2b/appointments?${query.toString()}`
   );
-  const total = meta?.total ?? appointments.length;
+  const total = (meta?.total as number | undefined) ?? appointments.length;
 
   const pendingCount = appointments.filter((a) =>
     ['requested', 'confirmed'].includes(a.status)

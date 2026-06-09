@@ -60,7 +60,7 @@ export default async function DropshipSuppliersPage() {
     <Stack gap={6}>
       <Stack direction="row" gap={0} className="items-center justify-between">
         <Stack gap={1}>
-          <Text size="xl" className="font-semibold">
+          <Text size="lg" className="font-semibold">
             Suppliers
           </Text>
           <Text size="sm" className="text-[var(--color-muted-foreground)]">

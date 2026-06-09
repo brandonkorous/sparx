@@ -22,6 +22,7 @@ interface InventorySource {
   name: string;
   type: string;
   status: string;
+  config: Record<string, string>;
   lastSyncAt: string | null;
   syncIntervalSec: number;
   notes: string | null;

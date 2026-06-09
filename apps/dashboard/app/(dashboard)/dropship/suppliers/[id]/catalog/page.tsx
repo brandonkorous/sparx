@@ -54,11 +54,11 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
     supplier = await api.get<Supplier>(`/v1/dropship/suppliers/${id}`);
     const qs = new URLSearchParams({ take: String(take), skip: String(skip) });
     if (q) qs.set('q', q);
-    const result = await api.getPaged<DropshipProduct>(
+    const result = await api.getPaged<DropshipProduct[]>(
       `/v1/dropship/suppliers/${id}/catalog?${qs}`
     );
     products = result.data;
-    total = result.meta?.total ?? 0;
+    total = (result.meta?.total as number | undefined) ?? 0;
   } catch {
     notFound();
   }
@@ -76,7 +76,7 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
           >
             <ChevronLeft className="h-4 w-4" /> Suppliers
           </Link>
-          <Text size="xl" className="font-semibold">
+          <Text size="lg" className="font-semibold">
             {supplier.name} — Catalog
           </Text>
           <Text size="sm" className="text-[var(--color-muted-foreground)]">

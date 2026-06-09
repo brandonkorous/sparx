@@ -47,7 +47,7 @@ export default async function B2bInvoiceDetailPage({ params }: PageProps) {
   const isActionable = invoice.status === 'unpaid' || invoice.status === 'overdue';
 
   return (
-    <Container size="focused">
+    <Container size="md">
       <Stack gap={6} className="py-10">
         <PageHeader
           icon={<Receipt className="h-5 w-5" />}

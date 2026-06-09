@@ -56,7 +56,7 @@ export default async function DropshipProductsPage() {
   return (
     <Stack gap={6}>
       <Stack gap={1}>
-        <Text size="xl" className="font-semibold">
+        <Text size="lg" className="font-semibold">
           Dropship products
         </Text>
         <Text size="sm" className="text-[var(--color-muted-foreground)]">

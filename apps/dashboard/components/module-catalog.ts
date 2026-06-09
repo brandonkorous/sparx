@@ -17,6 +17,7 @@ import {
   Sparkles,
   Truck,
   Users,
+  Warehouse,
   type LucideIcon,
 } from 'lucide-react';
 import type { ModuleSlug } from '@sparx/auth';
@@ -181,6 +182,24 @@ export const moduleCatalog: Record<ModuleSlug, ModuleCatalogEntry> = {
         title: 'Reconciliation',
         description: 'Match supplier invoices to orders with variance flags.',
       },
+    ],
+  },
+  inventory: {
+    Icon: Warehouse,
+    title: 'Inventory',
+    tagline: 'Stock levels, locations, and supplier feeds.',
+    description:
+      'The Inventory module tracks stock across locations, syncs supplier feeds, and triggers low-stock alerts so you never oversell.',
+    features: [
+      {
+        title: 'Sources',
+        description: 'CSV and API supplier feeds with configurable sync intervals.',
+      },
+      { title: 'Locations', description: 'Multi-warehouse stock tracking with transfer support.' },
+      { title: 'Sync logs', description: 'Audit trail of every inbound stock update.' },
+      { title: 'Alerts', description: 'Low-stock and out-of-stock notifications.' },
+      { title: 'Commerce bridge', description: 'Live stock pushes to Commerce variants.' },
+      { title: 'Import', description: 'Bulk stock-level updates via CSV.' },
     ],
   },
   ai: {
