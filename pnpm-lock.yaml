@@ -1428,6 +1428,9 @@ importers:
       '@sparx/builder':
         specifier: workspace:*
         version: link:../../packages/builder
+      '@sparx/commerce':
+        specifier: workspace:*
+        version: link:../../packages/commerce
       '@sparx/crm':
         specifier: workspace:*
         version: link:../../packages/crm
@@ -1579,6 +1582,12 @@ importers:
       fastify-plugin:
         specifier: ^5.0.1
         version: 5.1.0
+      jose:
+        specifier: ^6.0.10
+        version: 6.2.3
+      stripe:
+        specifier: ^17.7.0
+        version: 17.7.0
       zod:
         specifier: ^4.4.3
         version: 4.4.3
