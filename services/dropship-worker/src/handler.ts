@@ -16,8 +16,11 @@ export interface PubSubMessage {
 export function parseEvent(message: PubSubMessage): SparxEvent<unknown> | null {
   if (!message.data) return null;
   try {
-    const raw = JSON.parse(Buffer.from(message.data, 'base64').toString('utf8'));
-    if (typeof raw !== 'object' || !raw.type || !raw.tenantId) return null;
+    const raw = JSON.parse(Buffer.from(message.data, 'base64').toString('utf8')) as Record<
+      string,
+      unknown
+    >;
+    if (typeof raw !== 'object' || !raw || !raw['type'] || !raw['tenantId']) return null;
     return raw as SparxEvent<unknown>;
   } catch {
     return null;

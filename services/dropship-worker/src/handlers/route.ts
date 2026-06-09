@@ -5,12 +5,11 @@
 // dropship_orders rows and the appropriate event is published.
 
 import type { Logger } from 'pino';
-import { withTenant, type TxClient } from '@sparx/db';
+import { Prisma } from '@prisma/client';
+import { withTenant } from '@sparx/db';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { createAdapter } from '@sparx/dropship';
 import type { Order, OrderLineItem, ShippingAddress } from '@sparx/dropship';
-
-type AnyTx = TxClient & Record<string, any>;
 
 export interface OrderRoutePayload {
   orderId: string;
@@ -25,8 +24,8 @@ export async function handleOrderRoute(
   log.info({ orderId, tenantId }, 'dropship order.route');
 
   // Load order + line items + variant dropshipSourceId in one pass.
-  const order = await withTenant({ tenantId } as any, async (tx) => {
-    return (tx as AnyTx).order.findFirst({
+  const order = await withTenant({ tenantId }, async (tx) => {
+    return tx.order.findFirst({
       where: { id: orderId, tenantId },
       include: {
         items: {
@@ -44,10 +43,7 @@ export async function handleOrderRoute(
   }
 
   // Group line items by dropshipSourceId (== supplierId on the variant).
-  const bySupplier = new Map<
-    string,
-    Array<{ sku: string; quantity: number; unitPriceCents: number }>
-  >();
+  const bySupplier = new Map<string, { sku: string; quantity: number; unitPriceCents: number }[]>();
 
   for (const item of order.items) {
     const supplierId = item.variant?.dropshipSourceId;
@@ -66,7 +62,7 @@ export async function handleOrderRoute(
     return;
   }
 
-  const shippingAddr = order.shippingAddress as Record<string, any> | null;
+  const shippingAddr = order.shippingAddress as Record<string, string | null | undefined> | null;
   const shipping: ShippingAddress = {
     name: shippingAddr?.name ?? '',
     line1: shippingAddr?.line1 ?? shippingAddr?.address1 ?? '',
@@ -81,8 +77,8 @@ export async function handleOrderRoute(
   const publisher = createPublisher(log as unknown as PublisherLogger);
 
   for (const [supplierId, lineItems] of bySupplier) {
-    const supplier = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipSupplier.findFirst({
+    const supplier = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipSupplier.findFirst({
         where: { id: supplierId, tenantId, deletedAt: null },
       });
     });
@@ -93,8 +89,8 @@ export async function handleOrderRoute(
     }
 
     // Create the dropship_orders row before calling the adapter (idempotent: skip if exists).
-    const existing = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipOrder.findFirst({
+    const existing = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipOrder.findFirst({
         where: { tenantId, orderId, supplierId },
       });
     });
@@ -103,14 +99,14 @@ export async function handleOrderRoute(
       continue;
     }
 
-    const dsOrder = await withTenant({ tenantId } as any, async (tx) => {
-      return (tx as AnyTx).dropshipOrder.create({
+    const dsOrder = await withTenant({ tenantId }, async (tx) => {
+      return tx.dropshipOrder.create({
         data: {
           tenantId,
           orderId,
           supplierId,
           status: 'pending',
-          lineItems: lineItems as any,
+          lineItems: lineItems as unknown as Prisma.InputJsonValue,
         },
       });
     });
@@ -133,8 +129,8 @@ export async function handleOrderRoute(
       const adapter = createAdapter(supplier.type, supplier.credentials as Record<string, string>);
       const result = await adapter.submitOrder(adapterOrder);
 
-      await withTenant({ tenantId } as any, async (tx) => {
-        await (tx as AnyTx).dropshipOrder.update({
+      await withTenant({ tenantId }, async (tx) => {
+        await tx.dropshipOrder.update({
           where: { id: dsOrder.id },
           data: {
             supplierOrderId: result.supplierOrderId,
@@ -179,12 +175,13 @@ export async function handleOrderRoute(
         { dsOrderId: dsOrder.id, status: result.status, supplierId },
         'dropship order submitted'
       );
-    } catch (err: any) {
-      log.error({ supplierId, orderId, err: err?.message }, 'dropship adapter.submitOrder threw');
-      await withTenant({ tenantId } as any, async (tx) => {
-        await (tx as AnyTx).dropshipOrder.update({
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      log.error({ supplierId, orderId, err: errMsg }, 'dropship adapter.submitOrder threw');
+      await withTenant({ tenantId }, async (tx) => {
+        await tx.dropshipOrder.update({
           where: { id: dsOrder.id },
-          data: { status: 'failed', errorMessage: err?.message ?? 'adapter error' },
+          data: { status: 'failed', errorMessage: errMsg },
         });
       });
       await publishEvent(
@@ -192,7 +189,7 @@ export async function handleOrderRoute(
         'dropship.order.failed',
         tenantId,
         null,
-        { dropshipOrderId: dsOrder.id, orderId, supplierId, error: err?.message },
+        { dropshipOrderId: dsOrder.id, orderId, supplierId, error: errMsg },
         log
       );
     }

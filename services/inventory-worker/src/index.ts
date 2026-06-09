@@ -1,5 +1,5 @@
 // Cloud Run entrypoint — Pub/Sub push to POST /.
-// Same OIDC check + dispatch pattern as email-worker and other Cloud Run workers.
+// Same OIDC check + dispatch pattern as dropship-worker and email-worker.
 
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import pino from 'pino';
@@ -45,14 +45,7 @@ function decodeOidcEmail(authHeader: string | undefined): string | null {
   }
 }
 
-const server = createServer((req: IncomingMessage, res: ServerResponse) => {
-  handleRequest(req, res).catch((err: unknown) => {
-    logger.error({ err }, 'dropship-worker: unhandled request error');
-    if (!res.headersSent) res.writeHead(500).end('internal error');
-  });
-});
-
-async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
+const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
   if (req.method === 'GET' && req.url === '/healthz') {
     res.writeHead(200).end('ok');
     return;
@@ -62,12 +55,10 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise
     return;
   }
 
-  // Verify OIDC invoker SA when configured (defense in depth — Cloud Run
-  // frontend already verified the signature).
   if (env.PUBSUB_INVOKER_SA) {
-    const callerEmail = decodeOidcEmail(req.headers.authorization);
+    const callerEmail = decodeOidcEmail(req.headers.authorization as string | undefined);
     if (callerEmail !== env.PUBSUB_INVOKER_SA) {
-      logger.warn({ callerEmail }, 'dropship-worker: OIDC SA mismatch — rejecting');
+      logger.warn({ callerEmail }, 'inventory-worker: OIDC SA mismatch — rejecting');
       res.writeHead(403).end('forbidden');
       return;
     }
@@ -77,7 +68,7 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise
   try {
     body = await readBody(req);
   } catch (err) {
-    logger.error({ err }, 'dropship-worker: failed to read body');
+    logger.error({ err }, 'inventory-worker: failed to read body');
     res.writeHead(500).end('read error');
     return;
   }
@@ -86,7 +77,7 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise
   try {
     envelope = JSON.parse(body) as PubSubPushEnvelope;
   } catch {
-    logger.warn('dropship-worker: invalid JSON body — permanent reject');
+    logger.warn('inventory-worker: invalid JSON body — permanent reject');
     res.writeHead(400).end('bad request');
     return;
   }
@@ -95,7 +86,7 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise
   if (!event) {
     logger.warn(
       { messageId: envelope.message.messageId },
-      'dropship-worker: unparseable event — acking'
+      'inventory-worker: unparseable event — acking'
     );
     res.writeHead(204).end();
     return;
@@ -110,24 +101,20 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise
   try {
     await handle(event, eventLog);
     res.writeHead(204).end();
-  } catch (err: unknown) {
-    eventLog.error(
-      { err: err instanceof Error ? err.message : String(err) },
-      'dropship-worker: handler threw — will retry'
-    );
+  } catch (err: any) {
+    eventLog.error({ err: err?.message }, 'inventory-worker: handler threw — will retry');
     res.writeHead(500).end('internal error');
   }
-}
-
-server.listen(env.PORT, () => {
-  logger.info({ port: env.PORT }, 'dropship-worker listening');
 });
 
-// Graceful shutdown — Cloud Run sends SIGTERM before terminating.
+server.listen(env.PORT, () => {
+  logger.info({ port: env.PORT }, 'inventory-worker listening');
+});
+
 process.on('SIGTERM', () => {
-  logger.info('dropship-worker: SIGTERM received, draining');
+  logger.info('inventory-worker: SIGTERM received, draining');
   server.close(() => {
-    logger.info('dropship-worker: shut down cleanly');
+    logger.info('inventory-worker: shut down cleanly');
     process.exit(0);
   });
   setTimeout(() => process.exit(1), 25_000).unref();

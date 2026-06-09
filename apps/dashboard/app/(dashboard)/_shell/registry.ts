@@ -16,6 +16,7 @@ import { emailManifest } from '@sparx/email-platform/manifest';
 import { builderManifest } from '../builder/manifest';
 import { b2bManifest } from '../b2b/manifest';
 import { dropshipManifest } from '../dropship/manifest';
+import { inventoryManifest } from '../inventory/manifest';
 import { aiManifest } from '../ai/manifest';
 
 // Ordered. This is the sidebar display order under the "Modules" section.
@@ -27,6 +28,7 @@ export const moduleManifests: readonly ModuleManifest[] = [
   emailManifest,
   b2bManifest,
   dropshipManifest,
+  inventoryManifest,
   aiManifest,
 ] as const;
 
