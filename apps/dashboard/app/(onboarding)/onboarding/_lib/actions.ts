@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import type { ThemePreset } from '@sparx/site-themes';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { listProperties, type Property } from '@/lib/sites';
 import type {
   OnboardingCompleted,
   OnboardingStepKey,
@@ -159,6 +160,32 @@ export async function saveSlugAction(slug: string): Promise<WizardResult> {
     await patchOnboarding({ completed: { domain: true }, currentStep: 'payments' });
     revalidatePath('/onboarding');
     return ok;
+  } catch (err) {
+    return fail(err);
+  }
+}
+
+// Step 4 — Domain (purchased path). Marks the domain step complete when the
+// merchant purchases a domain through the onboarding flow instead of picking
+// a .sparx.zone subdomain.
+export async function completeDomainStepAction(): Promise<WizardResult> {
+  try {
+    await patchOnboarding({ completed: { domain: true }, currentStep: 'payments' });
+    revalidatePath('/onboarding');
+    return ok;
+  } catch (err) {
+    return fail(err);
+  }
+}
+
+// Returns the tenant's primary property so the onboarding PurchaseDialog can
+// pre-fill the `propertyId` hidden input.
+export async function getPrimaryPropertyAction(): Promise<WizardResult<Property>> {
+  try {
+    const properties = await listProperties();
+    const primary = properties.find((p) => p.isPrimary) ?? properties[0];
+    if (!primary) return { ok: false, error: 'No property found.' };
+    return { ok: true, data: primary };
   } catch (err) {
     return fail(err);
   }
