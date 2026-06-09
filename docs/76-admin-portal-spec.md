@@ -20,13 +20,13 @@
 
 WizeWorks staff roles (Better Auth organization = WizeWorks):
 
-| Role | Access |
-|------|--------|
-| super_admin | Everything across all products |
-| sparx_admin | Sparx product only |
-| billing_admin | Financial data only, all products |
-| support | Read-only + impersonation (no billing data) |
-| developer | Logs, infrastructure metrics, API keys |
+| Role          | Access                                      |
+| ------------- | ------------------------------------------- |
+| super_admin   | Everything across all products              |
+| sparx_admin   | Sparx product only                          |
+| billing_admin | Financial data only, all products           |
+| support       | Read-only + impersonation (no billing data) |
+| developer     | Logs, infrastructure metrics, API keys      |
 
 Staff never share accounts. Every action is audit-logged with staff member ID, timestamp, and action taken.
 
@@ -37,6 +37,7 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 ### /sparx — Sparx Operations
 
 **Tenant Management**
+
 - List all tenants (search by name, domain, email, plan)
 - Tenant detail: modules active, MRR, storage used, last login
 - Impersonate merchant (staff sees their dashboard, audit-logged)
@@ -48,6 +49,7 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 - View tenant's Pub/Sub event history
 
 **Platform Metrics**
+
 - Total tenants (total / active / churned / trial)
 - MRR by module (which modules drive most revenue)
 - Module adoption rates (% of tenants with each module)
@@ -58,6 +60,7 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 - Email volume (Postal sends across all tenants)
 
 **Domain Management**
+
 - All custom domains across all tenants
 - SSL certificate status (active / expiring / failed)
 - CNAME verification status
@@ -65,6 +68,7 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 - GoDaddy purchase history and renewals
 
 **Billing Operations**
+
 - Failed payment queue (auto-retried tenants)
 - Manual refund tool
 - Coupon creation and management
@@ -72,6 +76,7 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 - Stripe webhook log viewer
 
 **Support Tools**
+
 - Search any order across all tenants by order number
 - Search any customer across all tenants by email
 - View any merchant's Typesense index stats
@@ -79,16 +84,19 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 - View Postal delivery logs for any email
 
 ### /kanninja — kanNINJA Operations
+
 - Board count and active users
 - MRR
 - Support escalations
 
-### /helpninja — HelpNinja Operations  
+### /helpninja — HelpNinja Operations
+
 - Ticket volume
 - Response time metrics
 - MRR
 
 ### /billing — Cross-Product Financial
+
 - Total WizeWorks MRR (all products combined)
 - Revenue by product
 - Revenue by plan tier (Sparx)
@@ -145,4 +153,4 @@ Impersonation is read-only by default. Super admins can enable write access for 
 - [ ] Audit log viewer (every staff action)
 - [ ] Alert: tenant storage > 90% of limit
 - [ ] Alert: tenant failed payment > 7 days
-EOF
+      EOF

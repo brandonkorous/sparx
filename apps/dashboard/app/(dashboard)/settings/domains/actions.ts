@@ -76,9 +76,7 @@ const ContactSchema = z.object({
   city: z.string().min(1, 'City is required.'),
   state: z.string().min(1, 'State / region is required.'),
   postalCode: z.string().min(1, 'Postal code is required.'),
-  country: z
-    .string()
-    .length(2, 'Enter a 2-letter country code (e.g. US).'),
+  country: z.string().length(2, 'Enter a 2-letter country code (e.g. US).'),
 });
 
 const PurchaseSchema = z.object({
@@ -168,13 +166,9 @@ export async function toggleAutoRenew(domainId: string, enabled: boolean): Promi
 
 // ─── Transfer out ─────────────────────────────────────────────────────────────
 
-export async function transferOut(
-  domainId: string
-): Promise<ActionResult & { authCode?: string }> {
+export async function transferOut(domainId: string): Promise<ActionResult & { authCode?: string }> {
   try {
-    const result = await api.post<{ authCode: string }>(
-      `/v1/domains/${domainId}/transfer-out`
-    );
+    const result = await api.post<{ authCode: string }>(`/v1/domains/${domainId}/transfer-out`);
     revalidate();
     return { ok: true, authCode: result.authCode };
   } catch (err) {

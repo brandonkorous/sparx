@@ -13,6 +13,7 @@
 Sparx does not gate features behind plan tiers. Every merchant has access to every capability of their activated modules — unlimited products, unlimited posts, unlimited customers, unlimited orders, unlimited automations, unlimited team members.
 
 The only metered resources are physical:
+
 - **Storage** (files, images, videos)
 - **Email send volume** (Postal infrastructure has real cost at scale)
 
@@ -35,6 +36,7 @@ Publishing their storefront to their sparx.zone URL or a custom domain. Everythi
 When a merchant clicks "Publish" or "Go Live," they're prompted to add a payment method. The billing cycle starts the day they publish. Nothing before that.
 
 **Inactive store archival:**
+
 - 90 days inactive (no login, no publish) → email: "Your store is still waiting"
 - 180 days inactive, no engagement → store archived (content preserved, URL released)
 - Merchant can restore at any time by logging in
@@ -44,9 +46,11 @@ When a merchant clicks "Publish" or "Go Live," they're prompted to add a payment
 ## 3. Module Pricing
 
 ### The Spark Plan (Builder only)
+
 **$10/mo** — activates on publish
 
 Includes:
+
 - One live storefront on sparx.zone subdomain
 - Full theme customizer
 - Unlimited pages (published via CMS)
@@ -61,29 +65,29 @@ The Spark plan is the entry point of a journey, not a stripped product. Products
 
 ### Module Pricing (additive)
 
-| Module | Price | Requires |
-|--------|-------|----------|
-| Builder (Spark) | $10/mo | — |
-| Commerce | +$49/mo | Builder |
-| CMS | $49/mo | Standalone OR Builder |
-| CRM | +$49/mo | Any active module |
-| Email | +$29/mo | Any active module |
-| B2B / Fleet | +$99/mo | Commerce |
-| AI / MCP | +$49/mo | Any active module |
-| Dropship | +$29/mo | Commerce |
-| Chat | +$19/mo | Any active module |
+| Module          | Price   | Requires              |
+| --------------- | ------- | --------------------- |
+| Builder (Spark) | $10/mo  | —                     |
+| Commerce        | +$49/mo | Builder               |
+| CMS             | $49/mo  | Standalone OR Builder |
+| CRM             | +$49/mo | Any active module     |
+| Email           | +$29/mo | Any active module     |
+| B2B / Fleet     | +$99/mo | Commerce              |
+| AI / MCP        | +$49/mo | Any active module     |
+| Dropship        | +$29/mo | Commerce              |
+| Chat            | +$19/mo | Any active module     |
 
 ### Bundles (for pricing page display)
 
 Bundles are pre-configured toggle states — not separate products. The toggle calculator shows bundle savings when relevant combinations are active.
 
-| Bundle | Modules | Price | vs. separate |
-|--------|---------|-------|-------------|
-| Starter | Builder + Commerce | $59/mo | saves $0 |
-| Content | Builder + CMS | $59/mo | saves $0 |
-| Growth | Builder + Commerce + CRM + Email | $147/mo | saves $0 |
-| Pro | Builder + Commerce + CMS + CRM + Email + AI + Dropship | $274/mo | saves $29 |
-| Business | All modules | $373/mo | saves $29 |
+| Bundle   | Modules                                                | Price   | vs. separate |
+| -------- | ------------------------------------------------------ | ------- | ------------ |
+| Starter  | Builder + Commerce                                     | $59/mo  | saves $0     |
+| Content  | Builder + CMS                                          | $59/mo  | saves $0     |
+| Growth   | Builder + Commerce + CRM + Email                       | $147/mo | saves $0     |
+| Pro      | Builder + Commerce + CMS + CRM + Email + AI + Dropship | $274/mo | saves $29    |
+| Business | All modules                                            | $373/mo | saves $29    |
 
 Note: bundles save less than expected because individual module pricing is already fair. The real savings story is vs. competitive stack (see Section 6).
 
@@ -125,33 +129,34 @@ Chat                  + $19    [○──]
 
 The "Same elsewhere" comparison updates dynamically:
 
-| Module | Real-world equivalent | Comparison price |
-|--------|----------------------|-----------------|
-| Builder | Webflow Starter | $23/mo |
-| Commerce | Shopify Basic | $39/mo |
-| CMS | WordPress + hosting | $30/mo |
-| CRM | HubSpot Starter | $50/mo |
-| Email | Mailchimp Standard | $100/mo |
-| B2B | Shopify B2B add-on | $200/mo |
-| AI/MCP | No equivalent | "Unique to Sparx" |
-| Dropship | DSers Pro | $20/mo |
-| Chat | Intercom Starter | $74/mo |
+| Module   | Real-world equivalent | Comparison price  |
+| -------- | --------------------- | ----------------- |
+| Builder  | Webflow Starter       | $23/mo            |
+| Commerce | Shopify Basic         | $39/mo            |
+| CMS      | WordPress + hosting   | $30/mo            |
+| CRM      | HubSpot Starter       | $50/mo            |
+| Email    | Mailchimp Standard    | $100/mo           |
+| B2B      | Shopify B2B add-on    | $200/mo           |
+| AI/MCP   | No equivalent         | "Unique to Sparx" |
+| Dropship | DSers Pro             | $20/mo            |
+| Chat     | Intercom Starter      | $74/mo            |
 
 ---
 
 ## 5. Storage Metering
 
 ### Included Storage (all plans)
+
 **5GB included** — covers ~5,000 product images at typical sizes, or ~50 short product videos, or ~500,000 text pages.
 
 ### Storage Upgrades
 
-| Tier | Additional storage | Price |
-|------|--------------------|-------|
-| S | +10GB | $5/mo |
-| M | +50GB | $20/mo |
-| L | +200GB | $60/mo |
-| XL | +1TB | $200/mo |
+| Tier | Additional storage | Price   |
+| ---- | ------------------ | ------- |
+| S    | +10GB              | $5/mo   |
+| M    | +50GB              | $20/mo  |
+| L    | +200GB             | $60/mo  |
+| XL   | +1TB               | $200/mo |
 
 Storage upgrades stack — a merchant can add multiple tiers.
 
@@ -174,6 +179,7 @@ Need more space?
 Lead with free options before paid. Never show a red warning — calm, informative UI only.
 
 ### Auto-Compression
+
 Opt-in image compression at upload. Reduces file sizes 60–70% with no visible quality loss. Free. Enabled by default for new merchants, opt-in for existing.
 
 ---
@@ -181,9 +187,11 @@ Opt-in image compression at upload. Reduces file sizes 60–70% with no visible 
 ## 6. Email Send Volume
 
 ### Included (all plans with Email module)
+
 **10,000 sends/mo** — covers most SMB merchants.
 
 ### Additional sends
+
 $1 per 1,000 additional sends. Auto-charged. Always visible in dashboard.
 
 ```
@@ -200,12 +208,12 @@ Merchants approaching or exceeding 10,000/mo are notified with their projected o
 
 ## 7. Transaction Fees
 
-| Plan value | Transaction fee |
-|------------|----------------|
-| Spark ($10) | 1% |
-| Up to $100/mo | 0.5% |
-| Up to $200/mo | 0.25% |
-| $299/mo+ | 0% |
+| Plan value    | Transaction fee |
+| ------------- | --------------- |
+| Spark ($10)   | 1%              |
+| Up to $100/mo | 0.5%            |
+| Up to $200/mo | 0.25%           |
+| $299/mo+      | 0%              |
 
 Transaction fees only apply to Sparx-processed payments (Commerce module checkout). B2B orders with manual payment (invoices, wire transfers) are not subject to transaction fees.
 
@@ -216,6 +224,7 @@ sparx.market has a separate commission structure (see 62-sparx-market-architectu
 ## 8. Enterprise Pricing
 
 Custom pricing for:
+
 - 10+ locations / brands under one account
 - $10K+/mo GMV requirements
 - SLA commitments (99.9% uptime)

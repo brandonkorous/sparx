@@ -191,7 +191,7 @@ Setup:
 - Module gate: every request validates the tenant has the `ai` module active. Reject with HTTP 403 if not.
 - Per-tool scope checking: read vs. write scopes per docs/07 §5
 
-API key generation: new `mcp_api_keys` table (tenant_id, key_hash, scopes TEXT[], label, last_used_at, created_at — RLS ENABLE + FORCE). Dashboard Settings → AI Integrations generates scoped keys. Keys are `sparx_mcp_{random}` format, hashed with Argon2id at rest.
+API key generation: new `mcp_api_keys` table (tenant*id, key_hash, scopes TEXT[], label, last_used_at, created_at — RLS ENABLE + FORCE). Dashboard Settings → AI Integrations generates scoped keys. Keys are `sparx_mcp*{random}` format, hashed with Argon2id at rest.
 
 **Why a dedicated table instead of Better Auth API keys:** CLAUDE.md says to use Better Auth's own API key primitives rather than building parallel systems. MCP keys are justified as a separate system because: (1) they carry per-tool scopes (`orders:read`, `products:write`, etc.) that don't map to Better Auth's org-membership model; (2) they need per-key rate-limit counters and a `last_used_at` audit trail queryable by the tenant; (3) they are presented to external AI clients (Claude, ChatGPT, Copilot) on a different auth path than the dashboard session. If Better Auth ever ships a first-class API key primitive with arbitrary metadata and per-key rate limits, migrate to it then.
 

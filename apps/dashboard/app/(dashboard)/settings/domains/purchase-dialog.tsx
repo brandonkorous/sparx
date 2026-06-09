@@ -88,12 +88,15 @@ export function PurchaseDialog({
     if (res.data) onSuccess(res.data);
   }
 
-  const priceLabel = suggestion
-    ? `${formatPrice(suggestion.displayPrice)}/yr`
-    : '';
+  const priceLabel = suggestion ? `${formatPrice(suggestion.displayPrice)}/yr` : '';
 
   return (
-    <Modal open={open} onOpenChange={(v) => { if (!v && step !== 'purchasing') onClose(); }}>
+    <Modal
+      open={open}
+      onOpenChange={(v) => {
+        if (!v && step !== 'purchasing') onClose();
+      }}
+    >
       <ModalContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
         <ModalHeader>
           <ModalTitle className="flex items-center gap-2">
@@ -108,13 +111,17 @@ export function PurchaseDialog({
             <Stack gap={4} align="center" className="py-6 text-center">
               <CheckCircle2 className="size-12 text-[var(--color-success-text)]" />
               <div>
-                <Text weight="medium" className="text-lg">{result.domain.host}</Text>
+                <Text weight="medium" className="text-lg">
+                  {result.domain.host}
+                </Text>
                 <Text size="sm" variant="muted" className="mt-1">
-                  Registered through {new Date(result.expiresAt).toLocaleDateString(undefined, {
+                  Registered through{' '}
+                  {new Date(result.expiresAt).toLocaleDateString(undefined, {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
-                  })}. DNS is propagating — your domain will be active within a few minutes.
+                  })}
+                  . DNS is propagating — your domain will be active within a few minutes.
                 </Text>
               </div>
             </Stack>
@@ -190,9 +197,15 @@ export function PurchaseDialog({
                   {properties.length > 1 && (
                     <div>
                       <Label htmlFor="pd-property">Attach to site</Label>
-                      <NativeSelect id="pd-property" name="propertyId" defaultValue={defaultPropertyId}>
+                      <NativeSelect
+                        id="pd-property"
+                        name="propertyId"
+                        defaultValue={defaultPropertyId}
+                      >
                         {properties.map((p) => (
-                          <option key={p.id} value={p.id}>{p.name}</option>
+                          <option key={p.id} value={p.id}>
+                            {p.name}
+                          </option>
                         ))}
                       </NativeSelect>
                     </div>
@@ -259,12 +272,7 @@ export function PurchaseDialog({
                     </div>
                     <div>
                       <Label htmlFor="pd-addr1">Address</Label>
-                      <Input
-                        id="pd-addr1"
-                        name="address1"
-                        placeholder="123 Main St"
-                        required
-                      />
+                      <Input id="pd-addr1" name="address1" placeholder="123 Main St" required />
                     </div>
                     <div>
                       <Label htmlFor="pd-addr2">Address line 2 (optional)</Label>
@@ -302,8 +310,8 @@ export function PurchaseDialog({
                 {/* Payment notice (Stripe stubbed) */}
                 <div className="rounded-lg border border-[var(--border)] bg-[var(--color-bg-subtle)] px-4 py-3">
                   <Text size="sm" variant="muted">
-                    <strong className="font-medium text-[var(--color-text)]">Billing:</strong>{' '}
-                    This charge will be added to your next invoice. Payment processing via Stripe is
+                    <strong className="font-medium text-[var(--color-text)]">Billing:</strong> This
+                    charge will be added to your next invoice. Payment processing via Stripe is
                     coming soon — purchases are free during the beta.
                   </Text>
                 </div>

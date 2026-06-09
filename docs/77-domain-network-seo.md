@@ -12,50 +12,50 @@ Sparx operates a purposeful network of domains. Each domain has one job and link
 
 ### Platform Domains
 
-| Domain | Purpose | Points to |
-|--------|---------|-----------|
-| sparx.works | Primary brand, marketing site, merchant signup | — |
-| app.sparx.works | Merchant dashboard | GKE LB |
-| api.sparx.works | REST + GraphQL API | GKE LB |
-| mcp.sparx.works | MCP server | GKE LB |
-| status.sparx.works | Status page | GKE LB |
-| sparx.email | Postal sending infrastructure + Email module marketing | GKE LB / Postal |
+| Domain             | Purpose                                                | Points to       |
+| ------------------ | ------------------------------------------------------ | --------------- |
+| sparx.works        | Primary brand, marketing site, merchant signup         | —               |
+| app.sparx.works    | Merchant dashboard                                     | GKE LB          |
+| api.sparx.works    | REST + GraphQL API                                     | GKE LB          |
+| mcp.sparx.works    | MCP server                                             | GKE LB          |
+| status.sparx.works | Status page                                            | GKE LB          |
+| sparx.email        | Postal sending infrastructure + Email module marketing | GKE LB / Postal |
 
 ### Merchant Storefront Domains
 
-| Domain | Purpose |
-|--------|---------|
-| *.sparx.zone | All merchant storefronts (wildcard, one DNS record) |
+| Domain         | Purpose                                                |
+| -------------- | ------------------------------------------------------ |
+| \*.sparx.zone  | All merchant storefronts (wildcard, one DNS record)    |
 | [merchant].com | Custom merchant domains (CNAME → customers.sparx.zone) |
 
 ### Marketplace Domains
 
-| Domain | Purpose |
-|--------|---------|
-| sparx.market | Universal product marketplace (all public products) |
-| sparx.market/auto | Automotive category |
-| sparx.market/beauty | Beauty category |
-| sparx.market/home | Home goods category |
-| sparx.market/fashion | Fashion category |
-| sparx.market/food | Specialty food category |
-| sparx.market/tech | Tech & electronics category |
-| sparxshops.com | Alternate marketplace entry point |
+| Domain               | Purpose                                             |
+| -------------------- | --------------------------------------------------- |
+| sparx.market         | Universal product marketplace (all public products) |
+| sparx.market/auto    | Automotive category                                 |
+| sparx.market/beauty  | Beauty category                                     |
+| sparx.market/home    | Home goods category                                 |
+| sparx.market/fashion | Fashion category                                    |
+| sparx.market/food    | Specialty food category                             |
+| sparx.market/tech    | Tech & electronics category                         |
+| sparxshops.com       | Alternate marketplace entry point                   |
 
 ### Module Marketing Domains
 
-| Domain | Module | Accent color |
-|--------|--------|-------------|
-| sparxcms.com | CMS | Teal #14B8A6 |
-| sparxcrm.com | CRM | Cyan #06B6D4 |
-| sparxemail.com | Email | Sky #0EA5E9 |
-| sparxb2b.com | B2B/Wholesale | Slate #475569 |
-| sparx.host | Managed hosting | — |
-| sparx.software | Developer portal | — |
+| Domain         | Module           | Accent color  |
+| -------------- | ---------------- | ------------- |
+| sparxcms.com   | CMS              | Teal #14B8A6  |
+| sparxcrm.com   | CRM              | Cyan #06B6D4  |
+| sparxemail.com | Email            | Sky #0EA5E9   |
+| sparxb2b.com   | B2B/Wholesale    | Slate #475569 |
+| sparx.host     | Managed hosting  | —             |
+| sparx.software | Developer portal | —             |
 
 ### Defensive Domains
 
-| Domain | Status |
-|--------|--------|
+| Domain         | Status                               |
+| -------------- | ------------------------------------ |
 | sparx.exchange | Registered, redirects to sparx.works |
 
 ---
@@ -79,6 +79,7 @@ sparx.market/[cat]   →   sparxcms.com        (content-relevant)
 ```
 
 **Key rule:** Every domain must have a real landing page, not a redirect. A real landing page:
+
 - Has indexable content (Google can crawl and rank it)
 - Has unique content for that domain's purpose
 - Links back to sparx.works
@@ -99,7 +100,7 @@ sparxcms.com
                       Feature highlights specific to CMS
                       Pricing ($49/mo standalone or with Builder)
                       "Powered by Sparx · Part of sparx.works →"
-                      
+
   /features         → Detailed feature breakdown
   /pricing          → Module pricing + bundle options
   /blog             → CMS-specific content (optional, for SEO)
@@ -124,10 +125,10 @@ sparx.market/auto
                         - Featured merchants in this category
                         - "Are you an auto parts merchant? Join free →"
                         - Links to sparx.works/signup?category=auto
-                      
+
   /products         → All public auto products from all merchants
                       (empty state: "Be the first auto merchant on Sparx")
-                      
+
   /merchants        → Directory of merchants selling auto products
   /blog             → Optional: auto-specific content for long-tail SEO
                       "How to find the right diesel injector for your F-350"
@@ -137,14 +138,14 @@ sparx.market/auto
 
 **Category SEO targets:**
 
-| Category | Primary keywords |
-|----------|----------------|
-| /auto | auto parts online, car parts marketplace, diesel parts |
-| /beauty | independent beauty brands, small business beauty products |
-| /home | handmade home goods, independent home decor |
-| /fashion | independent fashion brands, small business clothing |
-| /food | specialty food online, artisan food marketplace |
-| /tech | independent tech accessories, small business electronics |
+| Category | Primary keywords                                          |
+| -------- | --------------------------------------------------------- |
+| /auto    | auto parts online, car parts marketplace, diesel parts    |
+| /beauty  | independent beauty brands, small business beauty products |
+| /home    | handmade home goods, independent home decor               |
+| /fashion | independent fashion brands, small business clothing       |
+| /food    | specialty food online, artisan food marketplace           |
+| /tech    | independent tech accessories, small business electronics  |
 
 ---
 
@@ -158,7 +159,7 @@ sparxshops.com
                       Browse by category
                       Featured shops (merchant profiles)
                       New arrivals across all merchants
-                      
+
   /shops            → Merchant directory (all public Sparx merchants)
   /shops/[slug]     → Individual merchant profile
   /[category]       → Category browse (mirrors sparx.market categories)
@@ -173,11 +174,13 @@ sparxshops.com targets consumer search intent ("shops", "independent stores") wh
 All domains managed in Cloudflare. Two zone types:
 
 **Platform zones (orange cloud — Cloudflare proxied):**
+
 - sparx.works, sparxcms.com, sparxcrm.com, sparxemail.com, sparxb2b.com, sparxshops.com, sparx.software, sparx.host, sparx.market
 
 Benefits: DDoS protection, WAF, CDN caching for static content, performance.
 
 **Storefront zones (grey cloud — DNS only, not proxied):**
+
 - sparx.zone (wildcard), customers.sparx.zone
 - NOT proxied because Caddy handles SSL via Let's Encrypt on-demand TLS. Cloudflare proxying interferes with ACME challenges on custom merchant domains.
 
@@ -213,7 +216,7 @@ When a merchant adds a custom domain:
    → Caddy on-demand TLS issues Let's Encrypt cert
    → shop.acme.com is live with HTTPS
    → merchant.sparx.zone redirects 301 to custom domain
-   
+
 5. All subsequent visits: cert cached, sub-200ms response
 ```
 
@@ -236,7 +239,7 @@ This is opt-out on Pro+ plans (merchant can remove it). Default on all plans. Th
 - [ ] All domains transferred to Cloudflare (or new Cloudflare account)
 - [ ] DNS records configured per section 6
 - [ ] Orange cloud on platform domains
-- [ ] Grey cloud on *.sparx.zone and customers.sparx.zone
+- [ ] Grey cloud on \*.sparx.zone and customers.sparx.zone
 - [ ] sparx.market Next.js app with category routing
 - [ ] Category landing pages with content (even at 0 products)
 - [ ] Module marketing domains — landing pages
@@ -247,4 +250,4 @@ This is opt-out on Pro+ plans (merchant can remove it). Default on all plans. Th
 - [ ] Canonical tags — prevent duplicate content across surfaces
 - [ ] Google Search Console setup for all domains
 - [ ] Cloudflare Analytics configured
-EOF
+      EOF

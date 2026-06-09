@@ -19,6 +19,7 @@ Sparx integrates with business formation APIs to allow merchants to form an LLC 
 ## 2. Why It Belongs in Sparx
 
 A merchant launching a store on Sparx may not yet have a legal business entity. Formation during onboarding:
+
 - Removes a barrier to launching ("I need to set up my LLC first")
 - Captures the EIN which pre-fills Stripe Connect onboarding
 - Creates a natural upsell: Form LLC → connect payments → go live
@@ -31,6 +32,7 @@ The compliance overhead is zero for Sparx — the formation service handles all 
 ## 3. Integration Decision — FileForms Primary
 
 **FileForms** is the primary integration:
+
 - REST API, Bearer auth — trivial to wrap in a typed Fastify service
 - No volume minimum — works from day one, zero commitment
 - Full white-label — merchant never sees FileForms
@@ -40,6 +42,7 @@ The compliance overhead is zero for Sparx — the formation service handles all 
 - SOC 2 Type I certified
 
 **doola MCP** as optional secondary:
+
 - doola has a live MCP server at mcp.doola.com
 - Works with Claude, ChatGPT, Replit, Lovable
 - Conversational LLC formation without leaving Claude
@@ -49,6 +52,7 @@ The compliance overhead is zero for Sparx — the formation service handles all 
 
 **Pre-build diligence required:**
 Before building, request from FileForms:
+
 - Full endpoint reference
 - Webhook payload + signature spec
 - Rate limits and SLA
@@ -66,25 +70,25 @@ Formation appears as an optional step in onboarding, before payments:
 ```
 Onboarding Step 1: Business info
   Business name entered
-  
+
   "Do you have a legal business entity?"
   [Yes, I'm incorporated]  [No, help me form one]
 
   → "No, help me form one":
-  
+
   What type of business?
   [LLC]  [S-Corp]  [C-Corp]  [Not sure — recommend for me]
-  
+
   Which state?
   [dropdown — defaults to merchant's state from IP]
-  
+
   Business owner name, address, email, phone
-  
+
   [Optional: WHOIS privacy +$7.99/yr]
-  
+
   Total: $[wholesale + Sparx markup]
   [Form my LLC — $[price]]
-  
+
   → Stripe charge
   → FileForms API call
   → Formation status shown in dashboard
@@ -100,23 +104,23 @@ All formation logic behind a provider interface — FileForms can be swapped for
 ```typescript
 // packages/formation/src/types.ts
 interface FormationProvider {
-  createFormation(params: FormationParams): Promise<Formation>
-  getStatus(formationId: string): Promise<FormationStatus>
-  orderEIN(formationId: string): Promise<EINOrder>
-  orderRegisteredAgent(formationId: string, state: string): Promise<RAOrder>
-  fileAnnualReport(entityId: string, year: number): Promise<FilingOrder>
-  getDocuments(formationId: string): Promise<Document[]>
+  createFormation(params: FormationParams): Promise<Formation>;
+  getStatus(formationId: string): Promise<FormationStatus>;
+  orderEIN(formationId: string): Promise<EINOrder>;
+  orderRegisteredAgent(formationId: string, state: string): Promise<RAOrder>;
+  fileAnnualReport(entityId: string, year: number): Promise<FilingOrder>;
+  getDocuments(formationId: string): Promise<Document[]>;
 }
 
 interface FormationParams {
-  tenantId:     string
-  entityType:   'LLC' | 'S_CORP' | 'C_CORP'
-  state:        string  // 2-letter state code
-  entityName:   string
-  members:      Member[]
-  registrant:   ContactInfo
-  whoisPrivacy: boolean
-  addOns:       ('EIN' | 'registered_agent' | 'operating_agreement')[]
+  tenantId: string;
+  entityType: 'LLC' | 'S_CORP' | 'C_CORP';
+  state: string; // 2-letter state code
+  entityName: string;
+  members: Member[];
+  registrant: ContactInfo;
+  whoisPrivacy: boolean;
+  addOns: ('EIN' | 'registered_agent' | 'operating_agreement')[];
 }
 ```
 
@@ -127,35 +131,35 @@ interface FormationParams {
 ```typescript
 // packages/formation/src/providers/fileforms.ts
 
-const FILEFORMS_BASE = 'https://api.fileforms.com'
+const FILEFORMS_BASE = 'https://api.fileforms.com';
 
 export class FileFormsProvider implements FormationProvider {
-  private client: AxiosInstance
+  private client: AxiosInstance;
 
   constructor() {
     this.client = axios.create({
       baseURL: FILEFORMS_BASE,
       headers: {
-        'Authorization': `Bearer ${process.env.FILEFORMS_API_KEY}`,
+        Authorization: `Bearer ${process.env.FILEFORMS_API_KEY}`,
         'Content-Type': 'application/json',
-      }
-    })
+      },
+    });
   }
 
   async createFormation(params: FormationParams): Promise<Formation> {
     const response = await this.client.post('/formations', {
-      entity_type:      params.entityType,
-      state:            params.state,
-      entity_name:      params.entityName,
+      entity_type: params.entityType,
+      state: params.state,
+      entity_name: params.entityName,
       registered_agent: true,
-      white_label:      true,  // never shows FileForms branding
-    })
-    return this.mapToFormation(response.data)
+      white_label: true, // never shows FileForms branding
+    });
+    return this.mapToFormation(response.data);
   }
 
   async getStatus(formationId: string): Promise<FormationStatus> {
-    const response = await this.client.get(`/formations/${formationId}`)
-    return response.data.status  // 'Pending' | 'Filed' | 'Completed'
+    const response = await this.client.get(`/formations/${formationId}`);
+    return response.data.status; // 'Pending' | 'Filed' | 'Completed'
   }
 }
 ```
@@ -170,9 +174,9 @@ FileForms sends status updates via webhook:
 // src/routes/webhooks/fileforms.ts
 fastify.post('/webhooks/fileforms', async (req) => {
   // Verify signature (spec to be confirmed with FileForms)
-  verifyFileFormsSignature(req)
+  verifyFileFormsSignature(req);
 
-  const { formation_id, status, documents } = req.body
+  const { formation_id, status, documents } = req.body;
 
   // Update formation record
   await db.businessFormation.update({
@@ -181,20 +185,21 @@ fastify.post('/webhooks/fileforms', async (req) => {
       status,
       documents: documents ?? [],
       completedAt: status === 'Completed' ? new Date() : null,
-    }
-  })
+    },
+  });
 
   // If completed, check if EIN is included and pre-fill Stripe
   if (status === 'Completed') {
     await pubsub.publish('formation.completed', {
       tenantId: formation.tenantId,
       formationId: formation_id,
-    })
+    });
   }
-})
+});
 ```
 
 Pub/Sub consumer for formation.completed:
+
 - Notifies merchant via email ("Your LLC is formed!")
 - If EIN available, pre-fills Stripe Connect business info
 - Updates onboarding checklist status
@@ -238,10 +243,10 @@ Business Entity
      Wyoming · Filed 2026-05-28
      EIN: 87-XXXXXXX
      Registered Agent: FileForms (via Sparx)
-     
+
      Annual Report Due: Jan 1, 2027
      [Set up auto-renewal →]
-     
+
      Documents:
      - Articles of Organization [Download]
      - Operating Agreement [Download]
@@ -272,23 +277,23 @@ When AI/MCP module is active, expose formation as an MCP tool:
 
 ```
 Tool: sparx.business.form_entity
-  
+
 User: "I need to form an LLC for my business"
 
 Claude: "I can help with that. A few questions:
-  1. What state would you like to form in? (Wyoming and Delaware 
+  1. What state would you like to form in? (Wyoming and Delaware
      are popular for flexibility)
   2. What's the legal name for your LLC?
   3. Will you be the sole member, or are there other owners?
 
-Once I have those, I'll walk you through the filing. 
+Once I have those, I'll walk you through the filing.
 It typically takes 5–7 business days and runs $249 through Sparx."
 
 [After merchant confirms]
 → sparx.business.form_entity({ state, name, members, ... })
 → Stripe charge
 → FileForms API call
-→ "Your LLC filing is submitted. You'll receive your 
+→ "Your LLC filing is submitted. You'll receive your
    Articles of Organization within 5–7 business days."
 ```
 
@@ -313,4 +318,4 @@ It typically takes 5–7 business days and runs $249 through Sparx."
 - [ ] Auto-renewal with merchant consent
 - [ ] MCP tool: sparx.business.form_entity
 - [ ] Fallback: EntityMachine provider implementation (if FileForms fails diligence)
-EOF
+      EOF

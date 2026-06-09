@@ -241,6 +241,7 @@ A grid of type cards, one per active content type in the tenant's schema:
 ```
 
 Each card shows:
+
 - Type icon (from the content type's configured icon, or a default doc icon)
 - Type name
 - "Routable" or "Non-routable" label (routable types generate a public URL; non-routable are data-only)
@@ -256,18 +257,18 @@ Renders only the fields from the selected content type's schema that are marked 
 
 The fields are rendered by `<SchemaFieldRenderer>`, a dynamic component that maps field type → the appropriate `@sparx/ui` input:
 
-| Schema field type | Rendered as |
-|-------------------|-------------|
-| `text` | `<Input>` |
-| `textarea` | `<Textarea>` |
-| `richtext` | `<RichTextEditor>` (simplified toolbar — bold/italic/links only in wizard context) |
-| `number` | `<Input type="number">` |
-| `boolean` | `<Switch>` |
-| `select` | `<Select>` |
-| `multiselect` | `<MultiSelect>` |
-| `date` | `<DatePicker>` |
-| `reference` | `<RecordPicker>` (search + select an existing record) |
-| `media` | skipped in wizard — always deferred to entry editor |
+| Schema field type | Rendered as                                                                        |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| `text`            | `<Input>`                                                                          |
+| `textarea`        | `<Textarea>`                                                                       |
+| `richtext`        | `<RichTextEditor>` (simplified toolbar — bold/italic/links only in wizard context) |
+| `number`          | `<Input type="number">`                                                            |
+| `boolean`         | `<Switch>`                                                                         |
+| `select`          | `<Select>`                                                                         |
+| `multiselect`     | `<MultiSelect>`                                                                    |
+| `date`            | `<DatePicker>`                                                                     |
+| `reference`       | `<RecordPicker>` (search + select an existing record)                              |
+| `media`           | skipped in wizard — always deferred to entry editor                                |
 
 If the content type has **no required fields**, this step is skipped entirely and the wizard goes straight to Step 3. The title field (present on all types) is always treated as required regardless of the schema definition.
 
@@ -275,13 +276,13 @@ Step header copy: "Fill in the required fields for this [Type Name]. Everything 
 
 ### Step 3 — Template & publish settings
 
-| Field | Type | Required | Shown when |
-|-------|------|----------|------------|
-| Title | text | yes | Always (if not already in Step 2 as a required schema field — deduplicated) |
-| Slug | text | yes (routable) | Routable types only — auto-generated from title, editable |
-| Template | select | no | Routable types only — lists templates linked to this content type |
-| Status | radio | yes | Always — Draft (default) / Published |
-| Publish date | datetime | no | Only when Status = Published — defaults to now |
+| Field        | Type     | Required       | Shown when                                                                  |
+| ------------ | -------- | -------------- | --------------------------------------------------------------------------- |
+| Title        | text     | yes            | Always (if not already in Step 2 as a required schema field — deduplicated) |
+| Slug         | text     | yes (routable) | Routable types only — auto-generated from title, editable                   |
+| Template     | select   | no             | Routable types only — lists templates linked to this content type           |
+| Status       | radio    | yes            | Always — Draft (default) / Published                                        |
+| Publish date | datetime | no             | Only when Status = Published — defaults to now                              |
 
 **Template selector behavior:** Shows only templates that have a first-class link to this content type (per docs/51 §4). If no templates are linked, the field is hidden entirely. If exactly one template is linked, it is pre-selected and the field is collapsed (shown as a read-only badge: "Template: Landing Page").
 

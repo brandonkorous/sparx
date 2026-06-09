@@ -11,12 +11,14 @@
 Invoicing is built into the Commerce and B2B modules — not a separate module. The value is the integration: a Sparx invoice knows the customer's order history, payment terms, and CRM context. It's not a standalone billing tool.
 
 **Included in Commerce (+$49/mo):**
+
 - Invoice from any order (one click)
 - Standalone invoice creation
 - Hosted payment page
 - Basic reminders (3 days before, due date)
 
 **Additional capabilities in B2B (+$99/mo):**
+
 - Quote → Invoice conversion (one click)
 - Advanced dunning workflows (7/14/30 days overdue)
 - Aging reports
@@ -110,6 +112,7 @@ invoice.gillettdiesel.com/inv/[uuid]  (if merchant has custom domain)
 ```
 
 The page shows:
+
 - Merchant logo + brand colors
 - Invoice number, issue date, due date
 - Bill To (client name, address)
@@ -132,6 +135,7 @@ The page shows:
 Three entry points:
 
 **From an order:**
+
 ```
 Order #4821 detail page
 → [Create Invoice] button
@@ -144,6 +148,7 @@ Order #4821 detail page
 ```
 
 **From a quote (B2B):**
+
 ```
 Quote #Q-2026-041 detail page (status: Approved)
 → [Convert to Invoice] button
@@ -155,6 +160,7 @@ Quote #Q-2026-041 detail page (status: Approved)
 ```
 
 **Standalone:**
+
 ```
 Invoices → [New Invoice]
 → Select customer (or create new)
@@ -166,12 +172,14 @@ Invoices → [New Invoice]
 ### Sending
 
 On send:
+
 1. PDF generated and stored in GCS
 2. Email sent via Postal with hosted invoice link
 3. Invoice status → `sent`
 4. Merchant's sent_at timestamp recorded
 
 Email template:
+
 ```
 Subject: Invoice INV-2026-0441 from Gillett Diesel Service — $4,820.00 due [date]
 
@@ -191,10 +199,12 @@ Gillett Diesel Service
 ```
 
 ### Reminders (Commerce)
+
 - 3 days before due date: "Friendly reminder" email
 - Due date (if unpaid): "Invoice due today" email
 
 ### Dunning (B2B)
+
 - 7 days overdue: "Invoice overdue" email
 - 14 days overdue: "Second notice" email
 - 30 days overdue: "Final notice" email + flag in CRM as collection risk
@@ -208,6 +218,7 @@ All reminder/dunning emails configurable (enable/disable, custom copy) from Sett
 Clients can pay via:
 
 **Stripe payment link (auto-generated):**
+
 - Card (Visa, Mastercard, Amex)
 - ACH bank transfer (US only)
 - Apple Pay / Google Pay
@@ -215,6 +226,7 @@ Clients can pay via:
 
 **Mark as paid manually:**
 Merchant can record manual payments (cash, check, wire):
+
 ```
 Invoice #4821 → [Record Payment]
   Amount: $4,820.00
@@ -232,6 +244,7 @@ Invoice accepts multiple payments. Status shows `partial` until fully paid. Each
 ## 7. Dashboard UI
 
 ### Invoice List
+
 ```
 Invoices
 
@@ -244,6 +257,7 @@ INV-2026-0438  Pacific Forge        $2,100  Due Jun 20  [VIEWED]
 ```
 
 Status badges use module color system:
+
 - DRAFT → neutral
 - SENT → blue (Email color)
 - VIEWED → teal (CMS color)
@@ -253,6 +267,7 @@ Status badges use module color system:
 - VOID → muted
 
 ### Aging Report (B2B)
+
 ```
 Accounts Receivable Aging
 
@@ -302,7 +317,7 @@ Example:
 "Which invoices are overdue?"
 → list_invoices({ status: 'overdue' })
 → "3 invoices are overdue totaling $8,420.
-   Oldest: INV-2026-0441 from Ranchero Trucking, 
+   Oldest: INV-2026-0441 from Ranchero Trucking,
    $4,820, 12 days overdue.
    Want me to send a reminder?"
 ```
@@ -331,4 +346,4 @@ Example:
 - [ ] MCP tools
 - [ ] Custom invoice number format (Settings → Invoicing)
 - [ ] Custom reminder email copy (Settings → Invoicing)
-EOF
+      EOF

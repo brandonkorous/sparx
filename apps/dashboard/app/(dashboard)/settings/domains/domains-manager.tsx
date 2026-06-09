@@ -81,7 +81,8 @@ function domainStatus(d: Domain): StatusInfo {
       return { label: 'Expiring soon', color: 'warning' };
     }
   }
-  if (d.status === 'active' || d.status === 'verified') return { label: 'Active', color: 'success' };
+  if (d.status === 'active' || d.status === 'verified')
+    return { label: 'Active', color: 'success' };
   if (d.status === 'pending_ssl') return { label: 'SSL provisioning', color: 'warning' };
   if (d.status === 'verifying') return { label: 'Pending DNS', color: 'warning' };
   if (d.status === 'pending') return { label: 'Pending DNS', color: 'warning' };
@@ -211,7 +212,9 @@ function DomainRow({
           </Text>
           <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
             <span className="text-[var(--color-text-secondary)]">CNAME</span>
-            <Code>{d.instructions.cname.name} → {d.instructions.cname.value}</Code>
+            <Code>
+              {d.instructions.cname.name} → {d.instructions.cname.value}
+            </Code>
             {d.instructions.txt && (
               <>
                 <span className="text-[var(--color-text-secondary)]">TXT</span>
@@ -233,9 +236,7 @@ function DomainRow({
             variant="soft"
             color="primary"
             disabled={pending}
-            onClick={() =>
-              onAction(() => verifyDomain(d.id), `${d.host} verified successfully.`)
-            }
+            onClick={() => onAction(() => verifyDomain(d.id), `${d.host} verified successfully.`)}
           >
             <RefreshCw className="size-3.5" /> Verify
           </Button>
@@ -361,9 +362,7 @@ interface RenewPanelProps {
 
 function RenewPanel({ domain, pending, onRenew, onClose }: RenewPanelProps) {
   const [years, setYears] = React.useState(1);
-  const total = domain.renewalPriceCents
-    ? formatPrice(domain.renewalPriceCents * years)
-    : 'N/A';
+  const total = domain.renewalPriceCents ? formatPrice(domain.renewalPriceCents * years) : 'N/A';
 
   return (
     <div className="rounded-lg border border-[var(--border)] bg-[var(--color-bg-subtle)] p-4">
@@ -391,12 +390,7 @@ function RenewPanel({ domain, pending, onRenew, onClose }: RenewPanelProps) {
           )}
         </div>
         <div className="flex gap-2">
-          <Button
-            size="sm"
-            color="primary"
-            disabled={pending}
-            onClick={() => onRenew(years)}
-          >
+          <Button size="sm" color="primary" disabled={pending} onClick={() => onRenew(years)}>
             {pending ? <Spinner className="size-3.5" /> : <RotateCcw className="size-3.5" />}
             Renew {years}yr
           </Button>
@@ -550,12 +544,9 @@ export function DomainsManager({ properties, domains }: DomainsManagerProps) {
     };
   }, []);
 
-  const handleRenew = React.useCallback(
-    (domain: Domain) => {
-      setRenewingId(domain.id);
-    },
-    []
-  );
+  const handleRenew = React.useCallback((domain: Domain) => {
+    setRenewingId(domain.id);
+  }, []);
 
   const handleRenewSubmit = React.useCallback(
     (domain: Domain, years: number) => {
@@ -757,7 +748,7 @@ export function DomainsManager({ properties, domains }: DomainsManagerProps) {
           <Stack gap={4}>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[var(--color-text-secondary)]" />
+                <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--color-text-secondary)]" />
                 <Input
                   placeholder="Search for a domain (e.g. acmeparts.com)"
                   value={query}
@@ -785,10 +776,7 @@ export function DomainsManager({ properties, domains }: DomainsManagerProps) {
 
             {/* Results */}
             {!searching && suggestions !== null && (
-              <SearchResults
-                suggestions={suggestions}
-                onSelect={(s) => setSelectedSuggestion(s)}
-              />
+              <SearchResults suggestions={suggestions} onSelect={(s) => setSelectedSuggestion(s)} />
             )}
 
             {/* Hint */}

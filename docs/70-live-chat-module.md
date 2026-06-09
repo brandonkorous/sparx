@@ -18,6 +18,7 @@ Sparx Live Chat is a built-in customer communication module. Merchants get a bra
 ## 2. Why Build It
 
 Every Sparx merchant currently solves customer support themselves. Options are:
+
 - Ignore it (bad for conversion)
 - Pay Intercom/Zendesk ($100–300/mo)
 - Cobble together Facebook Messenger
@@ -29,12 +30,15 @@ A native chat widget that works out of the box — on their sparx.zone storefron
 ## 3. Three Surfaces
 
 ### Surface 1 — Storefront Widget
+
 Floating chat bubble on merchant's storefront (sparx.zone or custom domain). Shopper opens conversation → merchant responds from dashboard inbox. Conversation history saved in CRM.
 
 ### Surface 2 — Merchant Dashboard Inbox
+
 All customer conversations in one place. Assign to staff members. See customer's order history in sidebar. Quick replies, saved responses. Mobile push notifications.
 
 ### Surface 3 — sparx.market Chat
+
 "Chat with [Merchant Name]" on product pages. Routes to that merchant's inbox. Shopper identified if they have a Sparx account.
 
 ---
@@ -47,9 +51,9 @@ The chat widget is AI-first. Claude Haiku handles the first response:
 Shopper: "Does this injector fit a 2019 Ford F-350 6.7L?"
 
 AI (instant, reads product fitment data from Typesense):
-  "Yes, this Bosch injector is compatible with the 
-   2019 Ford F-350 6.7L Power Stroke. It's also 
-   compatible with 2017–2022 F-250 and F-350 models 
+  "Yes, this Bosch injector is compatible with the
+   2019 Ford F-350 6.7L Power Stroke. It's also
+   compatible with 2017–2022 F-250 and F-350 models
    with the same engine. Want me to add it to your cart?"
 
 If AI can't answer confidently (confidence < 0.8):
@@ -58,6 +62,7 @@ If AI can't answer confidently (confidence < 0.8):
 ```
 
 **What the AI can answer from platform data:**
+
 - Product fitment and compatibility
 - Product availability and inventory
 - Shipping policies and estimates
@@ -66,6 +71,7 @@ If AI can't answer confidently (confidence < 0.8):
 - Store hours and contact info
 
 **What always escalates to human:**
+
 - Pricing negotiations
 - Custom orders
 - Complaints
@@ -80,16 +86,16 @@ No third-party service required. Everything in existing stack:
 ```
 WebSockets        — real-time message delivery
                     socket.io on the API server
-                    
+
 PostgreSQL        — conversation and message storage
                     already in stack, no new service
-                    
+
 Redis pub/sub     — route messages to correct merchant dashboard
                     already in stack
-                    
+
 React chat widget — @sparx/chat-widget package
                     embeds on storefront via Next.js component
-                    
+
 AI layer          — Anthropic API (claude-haiku-4-5)
                     reads product data, fitment, policies
                     fast and cheap per message
@@ -146,16 +152,16 @@ Merchants configure the widget from dashboard Settings → Chat:
 
 ```typescript
 interface ChatWidgetConfig {
-  enabled:          boolean
-  position:         'bottom-right' | 'bottom-left'
-  primaryColor:     string    // defaults to merchant's brand color
-  greeting:         string    // "Hi! How can we help?"
-  awayMessage:      string    // shown when merchant is offline
-  operatingHours:   OperatingHours | null  // null = always on
-  aiEnabled:        boolean   // default true
-  aiPersonaName:    string    // "Sparx Assistant" or custom
-  collectEmail:     boolean   // ask before starting chat if anonymous
-  showOnPages:      'all' | 'product' | 'cart' | string[]
+  enabled: boolean;
+  position: 'bottom-right' | 'bottom-left';
+  primaryColor: string; // defaults to merchant's brand color
+  greeting: string; // "Hi! How can we help?"
+  awayMessage: string; // shown when merchant is offline
+  operatingHours: OperatingHours | null; // null = always on
+  aiEnabled: boolean; // default true
+  aiPersonaName: string; // "Sparx Assistant" or custom
+  collectEmail: boolean; // ask before starting chat if anonymous
+  showOnPages: 'all' | 'product' | 'cart' | string[];
 }
 ```
 
@@ -245,4 +251,4 @@ Right panel (conversation selected):
 - [ ] Read receipts
 - [ ] Typing indicators
 - [ ] File/image attachment support
-EOF
+      EOF

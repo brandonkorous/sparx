@@ -20,26 +20,27 @@ All channel integrations implement a single interface. Adding a new channel is i
 
 ```typescript
 interface ChannelAdapter {
-  id:           string          // 'tiktok_shop' | 'instagram' | 'facebook' | etc.
-  name:         string          // Display name
-  connect(tenantId: string): string              // Returns OAuth URL
-  disconnect(tenantId: string): Promise<void>
-  syncProduct(tenantId: string, product: Product): Promise<void>
-  removeProduct(tenantId: string, productId: string): Promise<void>
-  ingestOrder(payload: unknown): Promise<Order>
-  pushFulfillment(order: Order): Promise<void>
-  syncInventory(tenantId: string, variantId: string, qty: number): Promise<void>
-  getAnalytics(tenantId: string, period: Period): Promise<ChannelAnalytics>
+  id: string; // 'tiktok_shop' | 'instagram' | 'facebook' | etc.
+  name: string; // Display name
+  connect(tenantId: string): string; // Returns OAuth URL
+  disconnect(tenantId: string): Promise<void>;
+  syncProduct(tenantId: string, product: Product): Promise<void>;
+  removeProduct(tenantId: string, productId: string): Promise<void>;
+  ingestOrder(payload: unknown): Promise<Order>;
+  pushFulfillment(order: Order): Promise<void>;
+  syncInventory(tenantId: string, variantId: string, qty: number): Promise<void>;
+  getAnalytics(tenantId: string, period: Period): Promise<ChannelAnalytics>;
 }
 ```
 
 Channel registry — adapters register at startup:
+
 ```typescript
-channelRegistry.register(new TikTokShopAdapter())
-channelRegistry.register(new InstagramShoppingAdapter())
-channelRegistry.register(new FacebookShopAdapter())
-channelRegistry.register(new GoogleShoppingAdapter())
-channelRegistry.register(new AmazonAdapter())
+channelRegistry.register(new TikTokShopAdapter());
+channelRegistry.register(new InstagramShoppingAdapter());
+channelRegistry.register(new FacebookShopAdapter());
+channelRegistry.register(new GoogleShoppingAdapter());
+channelRegistry.register(new AmazonAdapter());
 ```
 
 ---
@@ -49,12 +50,14 @@ channelRegistry.register(new AmazonAdapter())
 ### Tier 1 — Build Month 2–3 (highest merchant demand)
 
 **TikTok Shop**
+
 - ISV partner application: partner.tiktokshop.com (apply immediately)
 - OAuth + product sync + order sync + inventory sync + analytics
 - Full spec: see `27-tiktok-shop-integration.md`
 - GMV Max advertising requirement starting July 2026 (1.5–5% of sales)
 
 **Google Shopping / Merchant Center**
+
 - Not a marketplace — product discovery
 - Products appear in Google Shopping tab and search results
 - Content API for Shopping handles catalog sync
@@ -63,6 +66,7 @@ channelRegistry.register(new AmazonAdapter())
 - No order management needed — checkout stays on Sparx
 
 **Meta — Instagram Shopping + Facebook Shop**
+
 - Meta Commerce API
 - Instagram: tag products in posts and reels
 - Facebook: full storefront inside Facebook
@@ -72,17 +76,20 @@ channelRegistry.register(new AmazonAdapter())
 ### Tier 2 — Build Month 5–6
 
 **Amazon Selling Partner API (SP-API)**
+
 - Most complex integration — strict listing requirements, category attributes, FBA logistics
 - Highest volume marketplace for product brands and dropship merchants
 - Separate spec required before build
 
 **Pinterest Catalogs**
+
 - Product feed sync (not full order management)
 - Drives traffic to Sparx storefront — high purchase intent audience
 - Strong for fashion, home, food, lifestyle merchants
 - Relatively lightweight — primarily a product feed, not full order integration
 
 **Walmart Marketplace**
+
 - Second largest US marketplace
 - Walmart Marketplace API — listings, orders, fulfillment
 - Growing fast, especially home goods, electronics, general merchandise
@@ -124,7 +131,7 @@ Orders from all channels share the same schema, differentiated by source:
 
 ```sql
 ALTER TABLE orders ADD COLUMN source VARCHAR(50) DEFAULT 'storefront';
--- storefront | tiktok_shop | instagram | facebook | amazon | 
+-- storefront | tiktok_shop | instagram | facebook | amazon |
 -- walmart | ebay | etsy | b2b_portal | sparx_market
 
 ALTER TABLE orders ADD COLUMN external_id VARCHAR(255);
@@ -193,6 +200,7 @@ Available to connect:
 ```
 
 Per-channel management page:
+
 - Connection status + shop details
 - Product sync status (synced / pending / errors)
 - Order count from this channel (last 30 days)
@@ -201,6 +209,7 @@ Per-channel management page:
 - Disconnect button
 
 Product list integration:
+
 - Each product shows which channels it's listed on
 - Toggle per channel per product
 - Bulk action: "Push to [Channel]"
@@ -224,6 +233,7 @@ Total: $92,200
 ```
 
 MCP tools:
+
 ```
 get_channel_revenue({ channel, period })
 get_channel_comparison({ period })
@@ -250,6 +260,7 @@ This is a significant activation moment — products showing up in Google search
 ## 10. Implementation Checklist
 
 ### TikTok Shop (Month 2–3)
+
 - [ ] Apply for ISV partner access (partner.tiktokshop.com) — do immediately
 - [ ] OAuth connect flow + token storage
 - [ ] Product sync (Sparx → TikTok)
@@ -261,6 +272,7 @@ This is a significant activation moment — products showing up in Google search
 - [ ] GMV Max ad spend tracker (July 2026 requirement)
 
 ### Google Shopping (Month 2–3)
+
 - [ ] Google Merchant Center API integration
 - [ ] Auto-enrollment on merchant launch
 - [ ] Product feed generation (Google Shopping XML format)
@@ -269,6 +281,7 @@ This is a significant activation moment — products showing up in Google search
 - [ ] Product disapproval handling + merchant notification
 
 ### Meta / Instagram + Facebook (Month 3–4)
+
 - [ ] Meta Business SDK integration
 - [ ] OAuth — Facebook Login for Business
 - [ ] Meta Commerce API — product catalog sync
@@ -278,10 +291,11 @@ This is a significant activation moment — products showing up in Google search
 - [ ] Fulfillment push
 
 ### Amazon (Month 5–6)
+
 - [ ] SP-API registration and authentication
 - [ ] Listing creation with category-specific attributes
 - [ ] Order management (FBM — fulfilled by merchant)
 - [ ] FBA integration (optional, Phase 2)
 - [ ] Inventory sync
 - [ ] Separate spec required before build
-EOF
+      EOF

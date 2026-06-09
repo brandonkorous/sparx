@@ -31,6 +31,7 @@ ALTER TABLE products ADD COLUMN market_approved  BOOLEAN DEFAULT true;
 ```
 
 Merchant workflow:
+
 ```
 Products list → select product → toggle "List on sparx.market"
   → Choose category (auto-suggested based on product type)
@@ -94,6 +95,7 @@ Sparx settles with merchant weekly (every Monday):
 ```
 
 This model:
+
 - Works for any merchant regardless of payment processor
 - Gillett Diesel gets an ACH transfer, doesn't need Stripe
 - Sparx handles all payment complexity
@@ -101,14 +103,14 @@ This model:
 
 ### Commission Structure (tiered by plan)
 
-| Plan | sparx.market commission |
-|------|------------------------|
-| Spark ($10) | 3% |
-| Starter ($79) | 2.5% |
-| Growth ($149) | 2% |
-| Pro ($299) | 1.5% |
-| Business ($449) | 1% |
-| Enterprise | Negotiated |
+| Plan            | sparx.market commission |
+| --------------- | ----------------------- |
+| Spark ($10)     | 3%                      |
+| Starter ($79)   | 2.5%                    |
+| Growth ($149)   | 2%                      |
+| Pro ($299)      | 1.5%                    |
+| Business ($449) | 1%                      |
+| Enterprise      | Negotiated              |
 
 Commission is deducted from settlement, never charged separately. Merchant sees gross sale → commission deducted → net payout in their settlement report.
 
@@ -117,14 +119,18 @@ Commission is deducted from settlement, never charged separately. Merchant sees 
 ## 5. Multi-Merchant Cart (Phased)
 
 ### Phase 1 — Single Merchant Per Cart
+
 When shopper adds a second merchant's product:
+
 ```
 "Your cart contains items from Gillett Diesel.
  Add this item and check out separately, or start a new cart."
 ```
+
 Simple to build. Ships with the initial marketplace launch.
 
 ### Phase 2 — Unified Cart, Split Fulfillment
+
 One Stripe checkout. One receipt. Multiple merchants fulfill independently. Shopper gets separate shipments but pays once. Stripe PaymentIntents with split transfers. Builds when Phase 1 is stable and multi-merchant use is proven.
 
 ---
@@ -196,6 +202,7 @@ sparx.market/merchants/[slug] ←→ [slug].sparx.zone (merchant ↔ marketplace
 ```
 
 Each category page targets category-specific keywords:
+
 - sparx.market/auto → "buy auto parts online," "auto parts marketplace"
 - sparx.market/beauty → "independent beauty brands," "small business beauty"
 
@@ -216,6 +223,7 @@ B2B Portal          $18,400
 ```
 
 Merchant dashboard shows:
+
 - sparx.market GMV (their products sold through marketplace)
 - Commission deducted
 - Net payout from marketplace
@@ -253,4 +261,4 @@ Merchant dashboard shows:
 - [ ] Category-specific SEO content (blog posts, guides)
 - [ ] Mobile app (React Native — browse + purchase)
 - [ ] Affiliate/referral program (share product link, earn %)
-EOF
+      EOF
