@@ -83,7 +83,9 @@ export default async function DropshipProductsPage() {
               description="Browse a supplier's catalog and import products to see them here."
               action={
                 <Link href="/dropship/suppliers">
-                  <Button color="module" variant="soft">Browse suppliers</Button>
+                  <Button color="module" variant="soft">
+                    Browse suppliers
+                  </Button>
                 </Link>
               }
             />

@@ -72,7 +72,13 @@ export function TierCreateButton() {
         New tier
       </Button>
 
-      <Modal open={open} onOpenChange={(v) => { setOpen(v); if (!v) form.reset(); }}>
+      <Modal
+        open={open}
+        onOpenChange={(v) => {
+          setOpen(v);
+          if (!v) form.reset();
+        }}
+      >
         <ModalContent className="max-w-md">
           <ModalHeader>
             <ModalTitle>Create pricing tier</ModalTitle>

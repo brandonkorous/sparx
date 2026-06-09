@@ -40,7 +40,10 @@ export function B2bTierAssigner({ accountId, currentTierId, tiers }: Props) {
     setSaving(true);
     setSaveError(null);
     try {
-      const { error } = await updateAccountTier(accountId, selected === '__none__' ? null : selected);
+      const { error } = await updateAccountTier(
+        accountId,
+        selected === '__none__' ? null : selected
+      );
       if (error) {
         setSaveError(error);
       } else {
@@ -53,42 +56,44 @@ export function B2bTierAssigner({ accountId, currentTierId, tiers }: Props) {
 
   return (
     <Stack gap={2}>
-    {saveError && (
-      <Text size="sm" className="text-[var(--color-danger)]">{saveError}</Text>
-    )}
-    <Stack direction="row" align="center" gap={3} wrap>
-      <Select value={selected} onValueChange={setSelected}>
-        <SelectTrigger className="w-64">
-          <SelectValue placeholder="No pricing tier" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="__none__">No pricing tier (list price)</SelectItem>
-          {tiers.map((t) => (
-            <SelectItem key={t.id} value={t.id}>
-              <Stack direction="row" align="center" gap={2}>
-                <span>{t.name}</span>
-                <Text size="xs" variant="muted">
-                  {t.discountType === 'percentage'
-                    ? `${t.discountValue}% off`
-                    : `$${(t.discountValue / 100).toFixed(2)} off`}
-                </Text>
-              </Stack>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      {isDirty && (
-        <Button
-          color="module"
-          size="sm"
-          disabled={saving || isPending}
-          onClick={() => void handleSave()}
-        >
-          {saving ? 'Saving…' : 'Save'}
-        </Button>
+      {saveError && (
+        <Text size="sm" className="text-[var(--color-danger)]">
+          {saveError}
+        </Text>
       )}
-    </Stack>
+      <Stack direction="row" align="center" gap={3} wrap>
+        <Select value={selected} onValueChange={setSelected}>
+          <SelectTrigger className="w-64">
+            <SelectValue placeholder="No pricing tier" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__none__">No pricing tier (list price)</SelectItem>
+            {tiers.map((t) => (
+              <SelectItem key={t.id} value={t.id}>
+                <Stack direction="row" align="center" gap={2}>
+                  <span>{t.name}</span>
+                  <Text size="xs" variant="muted">
+                    {t.discountType === 'percentage'
+                      ? `${t.discountValue}% off`
+                      : `$${(t.discountValue / 100).toFixed(2)} off`}
+                  </Text>
+                </Stack>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {isDirty && (
+          <Button
+            color="module"
+            size="sm"
+            disabled={saving || isPending}
+            onClick={() => void handleSave()}
+          >
+            {saving ? 'Saving…' : 'Save'}
+          </Button>
+        )}
+      </Stack>
     </Stack>
   );
 }

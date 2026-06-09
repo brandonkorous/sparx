@@ -225,7 +225,9 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
     });
 
     if (source.status === 'paused') {
-      return reply.send(ok({ processed: 0, unmatched: 0, skipped: rows.length, reason: 'source_paused' }));
+      return reply.send(
+        ok({ processed: 0, unmatched: 0, skipped: rows.length, reason: 'source_paused' })
+      );
     }
 
     interface LinkRecord {
@@ -239,15 +241,22 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
     const links = await withTenant({ tenantId }, async (tx) => {
       return tx.inventorySourceLink.findMany({
         where: { tenantId, sourceId: id, status: 'active' },
-        select: { id: true, variantId: true, locationId: true, externalSku: true, externalLocation: true },
+        select: {
+          id: true,
+          variantId: true,
+          locationId: true,
+          externalSku: true,
+          externalLocation: true,
+        },
       });
     });
 
     const linkMap = new Map<string, LinkRecord>();
     for (const link of links) {
-      const key = link.externalLocation !== null
-        ? `${link.externalSku}|${link.externalLocation}`
-        : link.externalSku;
+      const key =
+        link.externalLocation !== null
+          ? `${link.externalSku}|${link.externalLocation}`
+          : link.externalSku;
       linkMap.set(key, link);
     }
 

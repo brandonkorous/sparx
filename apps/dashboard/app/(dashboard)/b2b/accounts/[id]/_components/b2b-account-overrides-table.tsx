@@ -41,7 +41,11 @@ export function B2bAccountOverridesTable({ accountId, overrides }: Props) {
 
   async function handleDelete(oid: string) {
     setDeleting(oid);
-    setRowErrors((prev) => { const m = new Map(prev); m.delete(oid); return m; });
+    setRowErrors((prev) => {
+      const m = new Map(prev);
+      m.delete(oid);
+      return m;
+    });
     try {
       const { error } = await deleteAccountOverride(accountId, oid);
       if (error) {

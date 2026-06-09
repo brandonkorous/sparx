@@ -187,9 +187,7 @@ export default async function DropshipAnalyticsPage() {
                         </Link>
                       </TableCell>
                       <TableCell className="text-right">{row.orders}</TableCell>
-                      <TableCell className="text-right">
-                        {formatCents(row.revenueCents)}
-                      </TableCell>
+                      <TableCell className="text-right">{formatCents(row.revenueCents)}</TableCell>
                       <TableCell className="text-right">{formatCents(row.costCents)}</TableCell>
                       <TableCell className="text-right">
                         <span
