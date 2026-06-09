@@ -524,41 +524,33 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
                   </summary>
                   <Stack gap={2} className="mt-3">
                     <Text size="sm" variant="muted">
-                      Disable a module on this site only. Tenant-level activation is
-                      the master gate — you cannot enable a module that is off for the
-                      whole workspace.
+                      Disable a module on this site only. Tenant-level activation is the master gate
+                      — you cannot enable a module that is off for the whole workspace.
                     </Text>
-                    {(
-                      [
-                        'commerce',
-                        'cms',
-                        'b2b',
-                        'email',
-                        'dropship',
-                        'ai',
-                      ] as const
-                    ).map((slug) => {
-                      const disabled = property.moduleScope.includes(slug);
-                      return (
-                        <div key={slug} className="flex items-center justify-between gap-3">
-                          <Text size="sm">{slug}</Text>
-                          <Button
-                            size="sm"
-                            variant={disabled ? 'soft' : 'ghost'}
-                            color={disabled ? 'danger' : 'neutral'}
-                            disabled={pending}
-                            onClick={() => {
-                              const next = disabled
-                                ? property.moduleScope.filter((s) => s !== slug)
-                                : [...property.moduleScope, slug];
-                              run(() => updateModuleScope(property.id, next));
-                            }}
-                          >
-                            {disabled ? 'Disabled' : 'Enabled'}
-                          </Button>
-                        </div>
-                      );
-                    })}
+                    {(['commerce', 'cms', 'b2b', 'email', 'dropship', 'ai'] as const).map(
+                      (slug) => {
+                        const disabled = property.moduleScope.includes(slug);
+                        return (
+                          <div key={slug} className="flex items-center justify-between gap-3">
+                            <Text size="sm">{slug}</Text>
+                            <Button
+                              size="sm"
+                              variant={disabled ? 'soft' : 'ghost'}
+                              color={disabled ? 'danger' : 'neutral'}
+                              disabled={pending}
+                              onClick={() => {
+                                const next = disabled
+                                  ? property.moduleScope.filter((s) => s !== slug)
+                                  : [...property.moduleScope, slug];
+                                run(() => updateModuleScope(property.id, next));
+                              }}
+                            >
+                              {disabled ? 'Disabled' : 'Enabled'}
+                            </Button>
+                          </div>
+                        );
+                      }
+                    )}
                   </Stack>
                 </details>
 

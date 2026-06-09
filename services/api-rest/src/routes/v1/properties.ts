@@ -103,7 +103,14 @@ function toView(row: {
 const IdParam = z.object({ id: z.string().uuid() });
 
 const MODULE_SLUGS = [
-  'builder', 'commerce', 'cms', 'crm', 'email', 'b2b', 'dropship', 'ai',
+  'builder',
+  'commerce',
+  'cms',
+  'crm',
+  'email',
+  'b2b',
+  'dropship',
+  'ai',
 ] as const;
 
 // All fields optional → PATCH semantics. `slug` is intentionally immutable here
