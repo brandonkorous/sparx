@@ -121,13 +121,13 @@ async function syncCsvSource(
   if (rows.length === 0) return;
 
   // Load all active links for this source in one query.
-  type LinkRecord = {
+  interface LinkRecord {
     id: string;
     variantId: string;
     locationId: string;
     externalSku: string;
     externalLocation: string | null;
-  };
+  }
 
   const links = await withTenant({ tenantId }, async (tx) => {
     return tx.inventorySourceLink.findMany({

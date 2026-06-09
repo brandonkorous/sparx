@@ -16,11 +16,10 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
 import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { notFound, badRequest } from '@sparx/api-core/errors';
+import { notFound } from '@sparx/api-core/errors';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -142,10 +141,10 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
       tenantId: ctx.tenantId,
       deletedAt: null,
     };
-    if (q.status) where['status'] = q.status;
-    if (q.tier_id) where['pricingTierId'] = q.tier_id;
+    if (q.status) where.status = q.status;
+    if (q.tier_id) where.pricingTierId = q.tier_id;
     if (q.q) {
-      where['OR'] = [
+      where.OR = [
         { companyName: { contains: q.q, mode: 'insensitive' } },
         { taxId: { contains: q.q, mode: 'insensitive' } },
       ];
@@ -295,12 +294,12 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
     if (!account) throw notFound('b2b account');
 
     const profiles = Array.isArray(account.engineProfiles)
-      ? (account.engineProfiles as Array<{
+      ? (account.engineProfiles as {
           fitmentCategoryId?: string;
           fitmentItemId?: string;
           fitmentVariantId?: string;
           year?: number;
-        }>)
+        }[])
       : [];
 
     if (profiles.length === 0) {
@@ -313,9 +312,7 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
     const categoryIds = profiles.map((p) => p.fitmentCategoryId).filter(Boolean) as string[];
 
     // Year ranges: find which profiles have a year and collect range filters.
-    const yearFilters = profiles
-      .filter((p) => typeof p.year === 'number')
-      .map((p) => p.year as number);
+    const yearFilters = profiles.filter((p) => typeof p.year === 'number').map((p) => p.year!);
 
     const fitmentWhere: Record<string, unknown> = {
       tenantId: ctx.tenantId,
@@ -328,8 +325,8 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
 
     // If all profiles have a year, add an AND-of-OR year range filter.
     if (yearFilters.length > 0) {
-      fitmentWhere['OR'] = [
-        ...((fitmentWhere['OR'] as unknown[]) ?? []),
+      fitmentWhere.OR = [
+        ...((fitmentWhere.OR as unknown[]) ?? []),
         // Products with no range set (rangeMin IS NULL) match any year.
         { rangeMin: null },
       ];
@@ -338,7 +335,7 @@ const b2bAccountRoutes: FastifyPluginAsync = (app) => {
     // Find distinct productIds matching the fitment criteria.
     const fitmentRows = await withTenant(ctx, (tx) =>
       tx.productFitment.findMany({
-        where: fitmentWhere as Prisma.ProductFitmentWhereInput,
+        where: fitmentWhere,
         select: { productId: true },
         distinct: ['productId'],
       })

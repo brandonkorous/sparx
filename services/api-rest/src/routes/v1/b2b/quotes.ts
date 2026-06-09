@@ -86,13 +86,13 @@ function quoteHtml(quote: {
   customerNote: string | null;
   internalNote: string | null;
   createdAt: Date;
-  items: Array<{
+  items: {
     name: string;
     sku: string;
     quantity: number;
     unitPrice: unknown;
     lineTotal: unknown;
-  }>;
+  }[];
   subtotal: unknown;
   taxTotal: unknown;
   total: unknown;
@@ -158,8 +158,8 @@ const b2bQuoteRoutes: FastifyPluginAsync = (app) => {
     const q = ListQuery.parse(request.query);
 
     const where: Record<string, unknown> = { tenantId: ctx.tenantId };
-    if (q.account_id) where['b2bAccountId'] = q.account_id;
-    if (q.status) where['status'] = q.status;
+    if (q.account_id) where.b2bAccountId = q.account_id;
+    if (q.status) where.status = q.status;
 
     const [items, total] = await Promise.all([
       withTenant(ctx, (tx) =>

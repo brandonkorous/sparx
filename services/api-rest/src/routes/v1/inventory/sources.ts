@@ -89,7 +89,14 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
       });
     });
 
-    await publishEvent(publisher, 'inventory.source.created', tenantId, userId, { sourceId: source.id }, pubLogger);
+    await publishEvent(
+      publisher,
+      'inventory.source.created',
+      tenantId,
+      userId,
+      { sourceId: source.id },
+      pubLogger
+    );
 
     return reply.status(201).send(ok(source));
   });

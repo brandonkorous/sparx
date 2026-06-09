@@ -350,10 +350,8 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
           customerId: body.customerId ?? null,
           scheduledAt: new Date(body.scheduledAt),
           durationMinutes: body.durationMinutes ?? svcType.durationMinutes,
-          vehicleRef: body.vehicleRef !== undefined
-            ? (body.vehicleRef as Prisma.InputJsonValue)
-            : Prisma.DbNull,
-          partsLinked: (body.partsLinked ?? []) as Prisma.InputJsonValue,
+          vehicleRef: body.vehicleRef ?? Prisma.DbNull,
+          partsLinked: body.partsLinked ?? [],
           notes: body.notes ?? null,
           staffNotes: body.staffNotes ?? null,
         },
@@ -413,16 +411,9 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
           ...(body.scheduledAt !== undefined ? { scheduledAt: new Date(body.scheduledAt) } : {}),
           ...(body.durationMinutes !== undefined ? { durationMinutes: body.durationMinutes } : {}),
           ...(body.vehicleRef !== undefined
-            ? {
-                vehicleRef:
-                  body.vehicleRef !== null
-                    ? (body.vehicleRef as Prisma.InputJsonValue)
-                    : Prisma.DbNull,
-              }
+            ? { vehicleRef: body.vehicleRef ?? Prisma.DbNull }
             : {}),
-          ...(body.partsLinked !== undefined
-            ? { partsLinked: body.partsLinked as Prisma.InputJsonValue }
-            : {}),
+          ...(body.partsLinked !== undefined ? { partsLinked: body.partsLinked } : {}),
           ...(body.notes !== undefined ? { notes: body.notes } : {}),
           ...(body.staffNotes !== undefined ? { staffNotes: body.staffNotes } : {}),
         },
@@ -608,10 +599,10 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
 
 function buildVehicleDescription(ref: Record<string, unknown>): string {
   const parts: string[] = [];
-  if (ref.year) parts.push(String(ref.year));
-  if (ref.make) parts.push(String(ref.make));
-  if (ref.model) parts.push(String(ref.model));
-  if (ref.vin) parts.push(`VIN: ${ref.vin}`);
+  if (typeof ref.year === 'number') parts.push(String(ref.year));
+  if (typeof ref.make === 'string') parts.push(ref.make);
+  if (typeof ref.model === 'string') parts.push(ref.model);
+  if (typeof ref.vin === 'string') parts.push(`VIN: ${ref.vin}`);
   return parts.join(' ');
 }
 

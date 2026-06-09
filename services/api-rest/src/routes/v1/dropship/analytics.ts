@@ -51,7 +51,10 @@ const dropshipAnalyticsRoutes: FastifyPluginAsync = async (app) => {
     const query = AnalyticsQuery.parse(request.query);
 
     const [dsOrders, orderItems, suppliers] = await withTenant({ tenantId }, async (tx) => {
-      const dsWhere: Prisma.DropshipOrderWhereInput = { tenantId, status: { in: ['submitted', 'shipped', 'delivered'] } };
+      const dsWhere: Prisma.DropshipOrderWhereInput = {
+        tenantId,
+        status: { in: ['submitted', 'shipped', 'delivered'] },
+      };
       if (query.supplierId) dsWhere.supplierId = query.supplierId;
       if (query.from || query.to) {
         dsWhere.createdAt = {

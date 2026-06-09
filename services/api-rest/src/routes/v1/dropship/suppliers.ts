@@ -178,9 +178,9 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
           tenantId,
           name: body.name,
           type: body.type,
-          credentials: body.credentials as Prisma.InputJsonValue,
+          credentials: body.credentials,
           status: connectionOk ? 'active' : 'error',
-          pricingRule: body.pricingRule ? (body.pricingRule as Prisma.InputJsonValue) : Prisma.JsonNull,
+          pricingRule: body.pricingRule ?? Prisma.JsonNull,
           notes: body.notes ?? null,
         },
       });
@@ -246,12 +246,10 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
         data: {
           ...(body.name !== undefined && { name: body.name }),
           ...(body.credentials !== undefined && {
-            credentials: body.credentials as Prisma.InputJsonValue,
+            credentials: body.credentials,
           }),
           ...(body.pricingRule !== undefined && {
-            pricingRule: body.pricingRule
-              ? (body.pricingRule as Prisma.InputJsonValue)
-              : Prisma.JsonNull,
+            pricingRule: body.pricingRule ?? Prisma.JsonNull,
           }),
           ...(body.notes !== undefined && { notes: body.notes }),
           ...(newStatus !== undefined && { status: newStatus }),
@@ -390,7 +388,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     const pricingRule: PricingRule | null =
       body.pricingRuleOverride ?? (supplier.pricingRule as PricingRule | null) ?? null;
 
-    const variants = dropshipProduct.variants as Array<{
+    const variants = dropshipProduct.variants as {
       supplierSku: string;
       title: string;
       options: Record<string, string>;
@@ -398,7 +396,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       msrpCents: number | null;
       inventoryQuantity: number | null;
       weight: number | null;
-    }>;
+    }[];
 
     const result = await withTenant({ tenantId }, async (tx) => {
       // Generate a unique handle

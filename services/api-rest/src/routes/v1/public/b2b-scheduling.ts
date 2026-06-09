@@ -131,9 +131,10 @@ const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
           customerId,
           scheduledAt: new Date(body.scheduledAt),
           durationMinutes: body.durationMinutes ?? svcType.durationMinutes,
-          vehicleRef: body.vehicleRef !== undefined
-            ? (body.vehicleRef as Prisma.InputJsonValue)
-            : Prisma.DbNull,
+          vehicleRef:
+            body.vehicleRef !== undefined
+              ? (body.vehicleRef as Prisma.InputJsonValue)
+              : Prisma.DbNull,
           notes: body.notes ?? null,
         },
         select: {
