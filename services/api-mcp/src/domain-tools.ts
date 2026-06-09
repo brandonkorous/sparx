@@ -34,7 +34,10 @@ const pubLogger: PublisherLogger = {
 };
 const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
 
-interface Ctx { tenantId: string; userId: string }
+interface Ctx {
+  tenantId: string;
+  userId: string;
+}
 
 // ─── get_domains ─────────────────────────────────────────────────────────────
 
