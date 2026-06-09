@@ -29,13 +29,13 @@ async function verifyCname(host: string, target: string): Promise<boolean> {
 export function parseDomainPurchasedEvent(raw: unknown): SparxEvent<DomainPurchasedPayload> | null {
   if (typeof raw !== 'object' || raw === null) return null;
   const ev = raw as Record<string, unknown>;
-  if (ev['type'] !== 'domain.purchased') return null;
-  if (typeof ev['tenantId'] !== 'string') return null;
-  const data = ev['data'];
+  if (ev.type !== 'domain.purchased') return null;
+  if (typeof ev.tenantId !== 'string') return null;
+  const data = ev.data;
   if (typeof data !== 'object' || data === null) return null;
   const d = data as Record<string, unknown>;
-  if (typeof d['domain'] !== 'string') return null;
-  if (typeof d['dnsConfigured'] !== 'boolean') return null;
+  if (typeof d.domain !== 'string') return null;
+  if (typeof d.dnsConfigured !== 'boolean') return null;
   return raw as SparxEvent<DomainPurchasedPayload>;
 }
 
