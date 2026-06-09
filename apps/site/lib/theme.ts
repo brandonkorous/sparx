@@ -46,7 +46,11 @@ export function buildStorefrontThemeCss(sources: ThemeV2Sources): string {
         }
       : null,
     presentationLight: tenantTheme
-      ? { colorBackground: tenantTheme.colorBackground, colorMuted: tenantTheme.colorMuted }
+      ? {
+          colorBackground: tenantTheme.colorBackground,
+          colorMuted: tenantTheme.colorMuted,
+          colorBorder: tenantTheme.colorBorder,
+        }
       : null,
     snapshotTokens: snapshotTokens ?? null,
   });

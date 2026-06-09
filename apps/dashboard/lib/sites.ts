@@ -1,4 +1,4 @@
-// Multi-site (web PROPERTY) reads + the active-site selection (docs/49). A tenant
+﻿// Multi-site (web PROPERTY) reads + the active-site selection (docs/49). A tenant
 // has one-or-more sites over a shared back office; the dashboard authors ONE at a
 // time, chosen by the site switcher (a cookie → `x-sparx-property-id`, injected
 // by lib/api-rest-client.ts). Server-only (these call api-rest with the staff JWT).
@@ -7,14 +7,21 @@ import { cookies } from 'next/headers';
 import { api } from './api-rest-client';
 import { ACTIVE_PROPERTY_COOKIE } from './api-rest-client';
 
-/** Per-site brand override (docs/49 §3) — null = inherit the tenant brand. Any
- *  field left null inherits that field from the tenant brand. */
+/** Per-site brand + presentation override (docs/49 §3, Slice B) — null = inherit
+ *  the tenant brand or theme. Any absent/null field inherits. */
 export interface BrandOverride {
   businessName?: string | null;
   colorPrimary?: string | null;
   colorPrimaryForeground?: string | null;
   colorAccent?: string | null;
   logoMediaId?: string | null;
+  fontHeading?: string | null;
+  fontBody?: string | null;
+  colorBackground?: string | null;
+  colorMuted?: string | null;
+  colorBorder?: string | null;
+  radiusBase?: string | null;
+  hidePricesWhenSignedOut?: boolean | null;
 }
 
 export interface Property {

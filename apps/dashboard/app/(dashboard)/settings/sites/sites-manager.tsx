@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
@@ -93,7 +93,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
-    run(() => createSite(fd), 'Site created — you’re now editing it.');
+    run(() => createSite(fd), "Site created — you're now editing it.");
     form.reset();
     setCreating(false);
   };
@@ -118,7 +118,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
     const domainCount = (domainsByProperty.get(property.id) ?? []).length;
     const ok = await confirm({
       title: `Delete “${property.name}”?`,
-      description: `This permanently removes this site — its pages, layout, and ${domainCount} domain${domainCount === 1 ? '' : 's'}. Your products, content, and orders are not affected. This can’t be undone.`,
+      description: `This permanently removes this site — its pages, layout, and ${domainCount} domain${domainCount === 1 ? '' : 's'}. Your products, content, and orders are not affected. This can't be undone.`,
       confirmLabel: 'Delete site',
       tone: 'danger',
     });
@@ -129,7 +129,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
   const onDisconnect = async (d: Domain) => {
     const ok = await confirm({
       title: `Disconnect ${d.host}?`,
-      description: 'Traffic to this domain will stop resolving to your site. This can’t be undone.',
+      description: "Traffic to this domain will stop resolving to your site. This can't be undone.",
       confirmLabel: 'Disconnect',
       tone: 'danger',
     });
@@ -171,7 +171,7 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
             </form>
             <Text size="sm" variant="muted" className="mt-2">
               A new site gets its own <Code>handle.yourstore.sparx.zone</Code> address instantly.
-              Connect your own domain below once it’s created.
+              Connect your own domain below once it's created.
             </Text>
           </CardContent>
         )}
@@ -316,52 +316,132 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
                   </Button>
                 </form>
 
-                {/* Per-site brand override (docs/49 §3) — collapsed by default;
-                    blank fields inherit the tenant brand. */}
+                {/* Per-site brand + presentation override (docs/49 §3, Slice B) —
+                    collapsed by default; blank fields inherit the tenant brand. */}
                 <details className="rounded-md border border-[var(--border)] p-3">
                   <summary className="cursor-pointer text-sm font-medium select-none">
-                    Brand override{property.brandOverride ? ' · on' : ''}
+                    Site presentation{property.brandOverride ? ' · on' : ''}
                   </summary>
                   <form
                     onSubmit={(e) => onSaveBrand(e, property.id)}
-                    className="mt-3 flex flex-col gap-3"
+                    className="mt-3 flex flex-col gap-4"
                   >
                     <Text size="sm" variant="muted">
-                      Override this site’s display name and theme colours. Leave a field blank to
-                      inherit your tenant brand. Clear all to remove the override.
+                      Override this site's identity, typography, and surface colours. Leave any
+                      field blank to inherit from your tenant brand or theme.
                     </Text>
-                    <div className="grid gap-3 sm:grid-cols-3">
-                      <div>
-                        <Label htmlFor={`bn-${property.id}`}>Display name</Label>
-                        <Input
-                          id={`bn-${property.id}`}
-                          name="businessName"
-                          defaultValue={property.brandOverride?.businessName ?? ''}
-                          placeholder="Wholesale Co."
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor={`cp-${property.id}`}>Primary colour</Label>
-                        <Input
-                          id={`cp-${property.id}`}
-                          name="colorPrimary"
-                          defaultValue={property.brandOverride?.colorPrimary ?? ''}
-                          placeholder="#6366F1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor={`ca-${property.id}`}>Accent colour</Label>
-                        <Input
-                          id={`ca-${property.id}`}
-                          name="colorAccent"
-                          defaultValue={property.brandOverride?.colorAccent ?? ''}
-                          placeholder="#F59E0B"
-                        />
+
+                    {/* Identity */}
+                    <div>
+                      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+                        Identity
+                      </p>
+                      <div className="grid gap-3 sm:grid-cols-3">
+                        <div>
+                          <Label htmlFor={`bn-${property.id}`}>Display name</Label>
+                          <Input
+                            id={`bn-${property.id}`}
+                            name="businessName"
+                            defaultValue={property.brandOverride?.businessName ?? ''}
+                            placeholder="Wholesale Co."
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`cp-${property.id}`}>Primary colour</Label>
+                          <Input
+                            id={`cp-${property.id}`}
+                            name="colorPrimary"
+                            defaultValue={property.brandOverride?.colorPrimary ?? ''}
+                            placeholder="#6366F1"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`ca-${property.id}`}>Accent colour</Label>
+                          <Input
+                            id={`ca-${property.id}`}
+                            name="colorAccent"
+                            defaultValue={property.brandOverride?.colorAccent ?? ''}
+                            placeholder="#F59E0B"
+                          />
+                        </div>
                       </div>
                     </div>
+
+                    {/* Typography */}
                     <div>
+                      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+                        Typography
+                      </p>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <Label htmlFor={`fh-${property.id}`}>Heading font</Label>
+                          <Input
+                            id={`fh-${property.id}`}
+                            name="fontHeading"
+                            defaultValue={property.brandOverride?.fontHeading ?? ''}
+                            placeholder="Inter"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`fb-${property.id}`}>Body font</Label>
+                          <Input
+                            id={`fb-${property.id}`}
+                            name="fontBody"
+                            defaultValue={property.brandOverride?.fontBody ?? ''}
+                            placeholder="Inter"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Presentation */}
+                    <div>
+                      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
+                        Surfaces
+                      </p>
+                      <div className="grid gap-3 sm:grid-cols-4">
+                        <div>
+                          <Label htmlFor={`cbg-${property.id}`}>Background</Label>
+                          <Input
+                            id={`cbg-${property.id}`}
+                            name="colorBackground"
+                            defaultValue={property.brandOverride?.colorBackground ?? ''}
+                            placeholder="#ffffff"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`cm-${property.id}`}>Muted</Label>
+                          <Input
+                            id={`cm-${property.id}`}
+                            name="colorMuted"
+                            defaultValue={property.brandOverride?.colorMuted ?? ''}
+                            placeholder="#f8f9fa"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`cb-${property.id}`}>Border</Label>
+                          <Input
+                            id={`cb-${property.id}`}
+                            name="colorBorder"
+                            defaultValue={property.brandOverride?.colorBorder ?? ''}
+                            placeholder="#e2e8f0"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`rb-${property.id}`}>Border radius</Label>
+                          <Input
+                            id={`rb-${property.id}`}
+                            name="radiusBase"
+                            defaultValue={property.brandOverride?.radiusBase ?? ''}
+                            placeholder="0.5rem"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 border-t border-[var(--border)] pt-3">
                       <Button type="submit" variant="soft" size="sm" disabled={pending}>
-                        Save brand override
+                        Save site presentation
                       </Button>
                     </div>
                   </form>

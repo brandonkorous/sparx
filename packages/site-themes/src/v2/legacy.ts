@@ -33,7 +33,11 @@ export interface LegacySources {
   themeKey: string;
   brand?: LegacyBrandInput | null;
   // StorefrontTheme presentation columns (light-biased single values).
-  presentationLight?: { colorBackground?: string | null; colorMuted?: string | null } | null;
+  presentationLight?: {
+    colorBackground?: string | null;
+    colorMuted?: string | null;
+    colorBorder?: string | null;
+  } | null;
   // A published snapshot's per-mode v1 compiled tokens, when present.
   snapshotTokens?: { light: Record<string, string>; dark: Record<string, string> } | null;
 }
@@ -90,6 +94,7 @@ export function compileFromLegacy(sources: LegacySources): CompiledThemeV2 {
         light: {
           base100: present(presentationLight?.colorBackground),
           base300: present(presentationLight?.colorMuted),
+          border: present(presentationLight?.colorBorder),
         },
       };
 

@@ -415,6 +415,8 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
         colorPrimary: brand?.colorPrimary ?? null,
         colorPrimaryForeground: brand?.colorPrimaryForeground ?? null,
         colorAccent: brand?.colorAccent ?? null,
+        fontHeading: brand?.fontHeading ?? null,
+        fontBody: brand?.fontBody ?? null,
         logoMediaId: brand?.logoLightMediaId ?? null,
       },
       override
@@ -423,7 +425,8 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     // Brand identity overrides theme identity; theme supplies presentation +
     // fallback. All-null fields are interpreted by the storefront token layer as
     // "use the default theme". `businessName` (when set) is the display name the
-    // storefront shows in the header/title/footer.
+    // storefront shows in the header/title/footer. Per-site presentation overrides
+    // (colorBackground, colorMuted, colorBorder, radiusBase) win over the theme.
     const mergedTheme =
       theme || brand || override
         ? {
@@ -431,15 +434,16 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
             colorPrimary: identity.colorPrimary,
             colorPrimaryForeground: identity.colorPrimaryForeground,
             colorAccent: identity.colorAccent,
-            fontHeading: brand?.fontHeading ?? null,
-            fontBody: brand?.fontBody ?? null,
+            fontHeading: identity.fontHeading,
+            fontBody: identity.fontBody,
             logoMediaId: identity.logoMediaId,
             logoDarkMediaId: brand?.logoDarkMediaId ?? null,
             faviconMediaId: brand?.faviconMediaId ?? null,
-            // Presentation — theme-owned.
-            colorBackground: theme?.colorBackground ?? null,
-            colorMuted: theme?.colorMuted ?? null,
-            radiusBase: theme?.radiusBase ?? null,
+            // Presentation — per-site override wins over the theme preset.
+            colorBackground: override?.colorBackground ?? theme?.colorBackground ?? null,
+            colorMuted: override?.colorMuted ?? theme?.colorMuted ?? null,
+            colorBorder: override?.colorBorder ?? null,
+            radiusBase: override?.radiusBase ?? theme?.radiusBase ?? null,
           }
         : null;
 
@@ -453,12 +457,14 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       // docs/45 §3): an ordered { platform, url }[] the storefront chrome renders.
       socials: Array.isArray(tenant.socials) ? tenant.socials : [],
       theme: mergedTheme,
-      storefront: storefront ?? {
-        defaultCurrency: 'USD',
-        defaultLocale: 'en-US',
-        showStockBelow: 10,
-        hidePricesWhenSignedOut: false,
-        requireAuthForCheckout: false,
+      storefront: {
+        defaultCurrency: storefront?.defaultCurrency ?? 'USD',
+        defaultLocale: storefront?.defaultLocale ?? 'en-US',
+        showStockBelow: storefront?.showStockBelow ?? 10,
+        // Per-site commerce gating: the brand_override wins over the tenant setting.
+        hidePricesWhenSignedOut:
+          override?.hidePricesWhenSignedOut ?? storefront?.hidePricesWhenSignedOut ?? false,
+        requireAuthForCheckout: storefront?.requireAuthForCheckout ?? false,
       },
       consent,
     });
