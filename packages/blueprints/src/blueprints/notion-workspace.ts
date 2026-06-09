@@ -830,7 +830,7 @@ function siteLayoutTree(): BuilderNode {
           gap: 'md',
         },
         children: [
-          node('Logo', { bind: 'site.identity' }),
+          node('Wordmark', { bind: 'site.identity' }),
           // contentWidth:'full' drops the default contained `mx-auto w-full
           // max-w-site` column so this group sizes to its content — letting the
           // header's justify-between pin it to the right (docs/62 D3).

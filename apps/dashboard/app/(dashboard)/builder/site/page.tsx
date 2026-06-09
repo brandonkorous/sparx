@@ -2,12 +2,19 @@ import type { Metadata } from 'next';
 import { SITE_CATALOG, type BuilderLayoutDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
-import { getBrand, getConfig, getTenant } from '../_brand/lib/api';
+import { getBrand, getConfig, getSitePreviewData, getTenant } from '../_brand/lib/api';
 import { propertyOrigin } from '../_brand/lib/property';
 import { listComponentsFull, listLayouts } from '../_lib/api';
 import { listProperties, getActivePropertyId, type Property } from '@/lib/sites';
 import { SiteBuilderApp } from '../_builder/site-builder-app';
 import '../builder.css';
+// The Surface RECIPE — @sparx/site-ui's `sf-*` component/color/variant classes,
+// PRE-SCOPED to `.bx-canvas` by site-ui's build (styles.canvas.css). Loaded here
+// so the layout chrome (Logo · NavMenu/CollapsibleNav · Button · Footer) renders
+// LIVE on the canvas, identical to the published site — matching the page +
+// email editors, which already import it. Without it the chrome's sf-* nodes
+// render unstyled (jammed nav, stuck hamburger).
+import '@sparx/site-ui/styles.canvas.css';
 
 // /builder/site — the site LAYOUT editor (docs/45): the chrome shell (header ·
 // outlet · footer) every page renders inside. Same editor as /builder/page, but
@@ -50,35 +57,39 @@ async function loadLayouts(): Promise<BuilderLayoutDto[]> {
   }
 }
 
-// The active web property's live origin (docs/49), for the canvas browser frame.
-// Mirrors the page route: cookie-active property → primary → first. Defensive at
-// every read so a failure just renders the canvas unframed.
-async function loadSiteOrigin(): Promise<string | undefined> {
+// The active web property (docs/49): cookie-active → primary → first. Drives
+// both the canvas browser-frame origin and the property-scoped brand identity.
+// Defensive — a failure just yields null (unframed canvas, primary brand).
+async function loadActiveProperty(): Promise<{
+  tenantSlug: string | null;
+  active: Property | null;
+}> {
   try {
     const [tenantSlug, properties, activePropertyId] = await Promise.all([
       getTenant().then((t) => t.slug),
       listProperties().catch(() => [] as Property[]),
       getActivePropertyId(),
     ]);
-    if (!tenantSlug) return undefined;
     const active =
       (activePropertyId ? properties.find((p) => p.id === activePropertyId) : undefined) ??
       properties.find((p) => p.isPrimary) ??
       properties[0] ??
       null;
-    return propertyOrigin(tenantSlug, active);
+    return { tenantSlug, active };
   } catch {
-    return undefined;
+    return { tenantSlug: null, active: null };
   }
 }
 
 export default async function BuilderSiteRoute() {
-  const [themeCss, layouts, components, siteOrigin] = await Promise.all([
+  const [themeCss, layouts, components, { tenantSlug, active }] = await Promise.all([
     canvasThemeCss(),
     loadLayouts(),
     listComponentsFull(),
-    loadSiteOrigin(),
+    loadActiveProperty(),
   ]);
+  const siteOrigin = tenantSlug ? propertyOrigin(tenantSlug, active) : undefined;
+  const sitePreview = await getSitePreviewData(active?.slug);
   if (layouts.length === 0) {
     return (
       <div className="px-6 py-8 lg:px-10">
@@ -96,6 +107,7 @@ export default async function BuilderSiteRoute() {
         bindingCatalog={SITE_CATALOG}
         components={components}
         siteOrigin={siteOrigin}
+        sitePreview={sitePreview}
       />
     </>
   );

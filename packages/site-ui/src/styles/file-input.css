@@ -1,14 +1,16 @@
 /* Surface FileInput — styled native file input (docs/46 §3.6). The file-selector
  * button reads the role var `--c-bg`/`--c-fg`; focus ring reads `--c-bg`. */
 
+/* Structure only — the fill + border come from the shared field treatments
+ * (`.sf-fv-outline` | `.sf-fv-filled` | `.sf-fv-ghost`, in input.css), so a
+ * FileInput shares the field `variant` axis with the other controls. */
 .sf-file {
   display: block;
   width: 100%;
   font-family: var(--sf-font-body, inherit);
   font-size: 0.9rem;
   color: var(--sf-base-content, #23211c);
-  background: var(--sf-base-100, #fff);
-  border: 1px solid var(--sf-border, #e3dfd2);
+  border: 1px solid transparent;
   border-radius: var(--sf-radius-field, 0.5rem);
   cursor: pointer;
 }
@@ -29,10 +31,6 @@
 .sf-file:disabled {
   cursor: not-allowed;
   opacity: 0.6;
-}
-.sf-file--ghost {
-  background: transparent;
-  border-color: transparent;
 }
 
 /* Size axis. */

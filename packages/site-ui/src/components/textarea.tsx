@@ -5,7 +5,12 @@
 
 import * as React from 'react';
 import { cx } from '../utils/cx';
-import { colorClass, type ColorKey, type SizeKey } from './_recipes/variants';
+import {
+  colorClass,
+  fieldTreatmentVariants,
+  type ColorKey,
+  type SizeKey,
+} from './_recipes/variants';
 import { FIELD_SIZE_CLASS, type FieldVariant } from './input';
 
 export interface TextareaProps extends Omit<
@@ -16,7 +21,7 @@ export interface TextareaProps extends Omit<
   color?: ColorKey | (string & {});
   /** Size. Defaults to `md`. */
   size?: SizeKey;
-  /** Chrome treatment. Defaults to `default`. */
+  /** Chrome treatment. Defaults to `outline`. */
   variant?: FieldVariant;
   /** Marks the control invalid (danger border + ring, `aria-invalid`). */
   invalid?: boolean;
@@ -25,7 +30,7 @@ export interface TextareaProps extends Omit<
 export function Textarea({
   color = 'primary',
   size = 'md',
-  variant = 'default',
+  variant = 'outline',
   invalid = false,
   className,
   ...rest
@@ -38,7 +43,7 @@ export function Textarea({
         'sf-textarea',
         colorClass(color),
         FIELD_SIZE_CLASS[size],
-        variant === 'ghost' && 'sf-input--ghost',
+        fieldTreatmentVariants[variant],
         invalid && 'sf-input--invalid',
         className
       )}

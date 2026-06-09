@@ -5,7 +5,12 @@
 
 import * as React from 'react';
 import { cx } from '../utils/cx';
-import { colorClass, type ColorKey, type SizeKey } from './_recipes/variants';
+import {
+  colorClass,
+  fieldTreatmentVariants,
+  type ColorKey,
+  type SizeKey,
+} from './_recipes/variants';
 import { type FieldVariant } from './input';
 
 export interface FileInputProps extends Omit<
@@ -16,7 +21,7 @@ export interface FileInputProps extends Omit<
   color?: ColorKey | (string & {});
   /** Size. Defaults to `md`. */
   size?: SizeKey;
-  /** Chrome treatment. Defaults to `default`. */
+  /** Chrome treatment. Defaults to `outline`. */
   variant?: FieldVariant;
 }
 
@@ -31,7 +36,7 @@ const SIZE_CLASS: Record<SizeKey, string> = {
 export function FileInput({
   color = 'primary',
   size = 'md',
-  variant = 'default',
+  variant = 'outline',
   className,
   ...rest
 }: FileInputProps): React.ReactElement {
@@ -43,7 +48,7 @@ export function FileInput({
         'sf-file',
         colorClass(color),
         SIZE_CLASS[size],
-        variant === 'ghost' && 'sf-file--ghost',
+        fieldTreatmentVariants[variant],
         className
       )}
     />

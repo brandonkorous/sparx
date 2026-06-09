@@ -506,7 +506,7 @@ function siteLayoutTree(): BuilderNode {
             box: { padding: 'none' },
             layout: { direction: 'row', collapse: false, gap: 'sm', alignItems: 'center' },
             children: [
-              node('Logo', { bind: 'site.identity' }),
+              node('Wordmark', { bind: 'site.identity' }),
               node('Heading', { props: { level: 'h3', text: 'Marrow & Hale' } }),
             ],
           }),

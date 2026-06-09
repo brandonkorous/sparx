@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { BindingCatalog, BuilderLayoutDto, BuilderPageDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
-import { getBrand, getConfig, getTenant } from '../_brand/lib/api';
+import { getBrand, getConfig, getSitePreviewData, getTenant } from '../_brand/lib/api';
 import { propertyOrigin } from '../_brand/lib/property';
 import { getActiveLayout, getBindingCatalog, listComponentsFull, listPages } from '../_lib/api';
 import { listProperties, getActivePropertyId, type Property } from '@/lib/sites';
@@ -142,6 +142,10 @@ export default async function BuilderPageRoute({ searchParams }: BuilderPageRout
     null;
   const siteOrigin = tenantSlug ? propertyOrigin(tenantSlug, activeProperty) : undefined;
   const previewPropertySlug = activeProperty?.slug;
+  // The active property's site-chrome data (brand identity + social), resolved like
+  // the live site so the locked chrome's header + footer preview the real brand
+  // (docs/49).
+  const sitePreview = await getSitePreviewData(previewPropertySlug);
   return (
     <>
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
@@ -154,6 +158,7 @@ export default async function BuilderPageRoute({ searchParams }: BuilderPageRout
         previewPropertySlug={previewPropertySlug}
         initialPageId={initialPageId}
         components={components}
+        sitePreview={sitePreview}
       />
     </>
   );

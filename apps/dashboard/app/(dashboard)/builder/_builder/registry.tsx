@@ -52,17 +52,26 @@ import {
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 
 import { coerceNavLinks, readClassGroup, setClassGroup } from '@sparx/builder-schemas';
-// Site-chrome leaves render the SAME prebuilt components the live site does
-// (docs/62), so the canvas previews them faithfully — the logo image, the
-// responsive nav collapse — instead of crude `bx-*` placeholders.
+// The canvas renders the SAME @sparx/site-ui components the live site does, so
+// the preview is faithful instead of a `bx-*` approximation (docs/62 / docs/23
+// §17). The remaining `bx-*` are editor chrome (selection, palette) + the media
+// empty-state Placeholder, not content rendering.
 import {
   CollapsibleNav,
+  Divider,
   EditorialSection,
+  EmbedFrame,
   FAQ,
   FeatureGrid,
+  Heading,
   Logo,
   NavMenu,
+  PriceTag,
   SocialLinks,
+  Stat,
+  Text,
+  Wordmark,
+  type WordmarkCollapse,
 } from '@sparx/site-ui';
 // The React-free JSON→HTML serializer (the audited CMS path). Lets the canvas
 // preview an authored Prose doc as real HTML without pulling the TipTap editor
@@ -410,10 +419,16 @@ const DEFS: ComponentDef[] = [
     ],
     defaults: { props: { level: 'h2', text: 'Heading' } },
     renderLeaf: ({ node, value, bound }) => {
-      const level = (node.props.level as string) ?? 'h2';
+      // Same site-ui Heading the live site renders; bare (node.class rides the
+      // canvas wrapper, since Heading isn't leafStylesByClass).
+      const level = ((node.props.level as string) ?? 'h2') as 'h1' | 'h2' | 'h3';
+      const size = node.props.size === 'display' ? 'display' : undefined;
       const text = bound ? firstString(value, '—') : firstString(node.props.text, 'Heading');
-      const Tag = (level === 'h1' ? 'h1' : level === 'h3' ? 'h3' : 'h2') as 'h1';
-      return <Tag className={`bx-h bx-${level}`}>{text}</Tag>;
+      return (
+        <Heading level={level} size={size}>
+          {text}
+        </Heading>
+      );
     },
   },
   {
@@ -439,9 +454,9 @@ const DEFS: ComponentDef[] = [
     ],
     defaults: { props: { variant: 'body', text: 'Some text' } },
     renderLeaf: ({ node, value, bound }) => {
-      const variant = (node.props.variant as string) ?? 'body';
+      const variant = ((node.props.variant as string) ?? 'body') as 'body' | 'eyebrow' | 'meta';
       const text = bound ? firstString(value, '—') : firstString(node.props.text, 'Some text');
-      return <p className={`bx-text bx-text--${variant}`}>{text}</p>;
+      return <Text variant={variant}>{text}</Text>;
     },
   },
   {
@@ -471,7 +486,7 @@ const DEFS: ComponentDef[] = [
       if (bound && typeof value === 'string') {
         return (
           <div className="bx-prose">
-            <p className="bx-text bx-text--body">{value}</p>
+            <Text variant="body">{value}</Text>
           </div>
         );
       }
@@ -485,9 +500,9 @@ const DEFS: ComponentDef[] = [
       }
       return (
         <div className="bx-prose">
-          <p className="bx-text bx-text--body">
+          <Text variant="body">
             Rich body content renders here — paragraphs, headings, lists, quotes, links.
-          </p>
+          </Text>
         </div>
       );
     },
@@ -650,7 +665,7 @@ const DEFS: ComponentDef[] = [
     accepts: [],
     props: [],
     defaults: {},
-    renderLeaf: () => <hr className="bx-divider" />,
+    renderLeaf: () => <Divider />,
   },
   {
     type: 'Video',
@@ -680,20 +695,12 @@ const DEFS: ComponentDef[] = [
     ],
     defaults: { props: { url: '', ratio: 'wide' } },
     renderLeaf: ({ node }) => {
-      const ratio = (node.props.ratio as string) ?? 'wide';
+      const ratio = ((node.props.ratio as string) ?? 'wide') as 'wide' | 'square' | 'portrait';
       const src = youtubeEmbed((node.props.url as string) ?? '');
+      // Empty → the editor's authoring prompt; with a URL → the same site-ui
+      // EmbedFrame the live site renders.
       if (!src) return <Placeholder ratio={ratio} label="Add a YouTube URL" />;
-      return (
-        <div className={`bx-video bx-ratio-${ratio}`}>
-          <iframe
-            src={src}
-            title={firstString(node.name, 'Video')}
-            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            loading="lazy"
-          />
-        </div>
-      );
+      return <EmbedFrame src={src} title={firstString(node.name, 'Video')} ratio={ratio} />;
     },
   },
   {
@@ -724,23 +731,18 @@ const DEFS: ComponentDef[] = [
     ],
     defaults: { props: { query: '', ratio: 'pano' } },
     renderLeaf: ({ node }) => {
-      const ratio = (node.props.ratio as string) ?? 'pano';
+      const ratio = ((node.props.ratio as string) ?? 'pano') as
+        | 'wide'
+        | 'square'
+        | 'portrait'
+        | 'pano';
       const src = mapEmbed(
         (node.props.query as string) ?? '',
         (node.props.embedUrl as string) ?? ''
       );
       if (!src)
         return <Placeholder ratio={ratio === 'pano' ? 'wide' : ratio} label="Add a place" />;
-      return (
-        <div className={`bx-map bx-ratio-${ratio}`}>
-          <iframe
-            src={src}
-            title={firstString(node.name, 'Map')}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        </div>
-      );
+      return <EmbedFrame src={src} title={firstString(node.name, 'Map')} ratio={ratio} />;
     },
   },
   {
@@ -758,12 +760,7 @@ const DEFS: ComponentDef[] = [
     defaults: { props: { value: '0', label: 'Label' } },
     renderLeaf: ({ node, value, bound }) => {
       const big = bound ? firstString(value, '—') : firstString(node.props.value, '0');
-      return (
-        <div className="bx-stat">
-          <span className="bx-stat__value">{big}</span>
-          <span className="bx-stat__label">{firstString(node.props.label)}</span>
-        </div>
-      );
+      return <Stat value={big} label={firstString(node.props.label)} />;
     },
   },
   {
@@ -985,9 +982,9 @@ const DEFS: ComponentDef[] = [
     props: [],
     defaults: {},
     renderLeaf: ({ value, bound }) => {
-      const n = typeof value === 'number' ? value : null;
-      const text = bound && n != null ? `$${n.toFixed(2)}` : '$0.00';
-      return <span className="bx-price">{text}</span>;
+      // Same site-ui PriceTag the live site renders (formats + themes the amount).
+      const n = bound && typeof value === 'number' ? value : null;
+      return <PriceTag amount={n} />;
     },
   },
   {
@@ -1241,6 +1238,52 @@ const DEFS: ComponentDef[] = [
       const logo = Array.isArray(logoRaw) ? (logoRaw as unknown[])[0] : logoRaw;
       const img = asImage(logo);
       return <Logo name={name} src={img?.url} alt={firstString(img?.alt, name)} />;
+    },
+  },
+  {
+    type: 'Wordmark',
+    label: 'Wordmark',
+    kind: 'leaf',
+    group: 'data',
+    icon: Fingerprint,
+    module: 'site',
+    bindable: true,
+    accepts: ['object', 'empty'],
+    surfaces: ['site'],
+    // The brand LOCKUP (docs/62): the logo mark + the company name as one unit,
+    // vs the bare Logo (mark-OR-name). `collapse` picks what survives a narrow
+    // frame — mark-only is the common header pattern.
+    props: [
+      {
+        key: 'collapse',
+        label: 'On mobile',
+        control: 'buttongroup',
+        options: [
+          { value: 'mark', label: 'Mark' },
+          { value: 'name', label: 'Name' },
+          { value: 'none', label: 'Both' },
+        ],
+      },
+    ],
+    defaults: { props: { collapse: 'mark' } },
+    renderLeaf: ({ node, value }) => {
+      // Mark + name from site.identity, collapsing per the chosen mode — the same
+      // Wordmark the live site renders, so the canvas matches production.
+      const identity =
+        value && typeof value === 'object' ? (value as { name?: unknown; logo?: unknown }) : null;
+      const name = firstString(identity?.name);
+      const logoRaw = identity?.logo;
+      const logo = Array.isArray(logoRaw) ? (logoRaw as unknown[])[0] : logoRaw;
+      const img = asImage(logo);
+      const collapse = (node.props.collapse as WordmarkCollapse) ?? 'mark';
+      return (
+        <Wordmark
+          name={name}
+          src={img?.url}
+          alt={firstString(img?.alt, name)}
+          collapse={collapse}
+        />
+      );
     },
   },
   {

@@ -390,7 +390,18 @@ function CanvasNode({
   // Every other node carries node.class on its content wrapper, where the live-
   // compiled utilities (flex/grid/padding/surface) lay out + paint it.
   const leafByClass = def.leafStylesByClass === true && /(^|\s)sf-/.test(node.class ?? '');
-  const innerClass = cn('bx-inner', leafByClass ? undefined : node.class);
+  // The `.bx-node` chrome wrapper is `display:contents` (builder.css) so the live
+  // renderer's wrapperless DOM is reproduced and `node.class` sizing (w-full,
+  // flex-1, mx-auto) resolves against the real flex/grid parent. The selection
+  // `.bx-tag` therefore anchors to THIS element instead — it needs a positioned
+  // box, so add `relative` unless the node already sets its own position (leaf
+  // nodes wear node.class elsewhere, so their wrapper never inherits a position).
+  const hasPosition = /(^|\s)(relative|absolute|fixed|sticky)(\s|$)/.test(node.class ?? '');
+  const innerClass = cn(
+    'bx-inner',
+    leafByClass || !hasPosition ? 'relative' : undefined,
+    leafByClass ? undefined : node.class
+  );
 
   let body: React.ReactNode;
   if (node.type === 'Outlet' && outletSlot !== undefined) {
@@ -529,29 +540,29 @@ function CanvasNode({
         }
       }}
     >
-      <span className="bx-tag">
-        <span className="bx-tag__name">{node.name ?? def.label}</span>
-        {bound ? (
-          <span
-            className="bx-tag__bind"
-            style={{ color: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
-          >
-            <span
-              className="bx-tag__dot"
-              style={{ background: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
-            />
-            {node.binding!.path}
-          </span>
-        ) : null}
-        {bindSlot !== null ? (
-          <span className="bx-tag__bind" style={{ color: 'var(--module-active)' }}>
-            <span className="bx-tag__dot" style={{ background: 'var(--module-active)' }} />
-            field · {bindSlot}
-          </span>
-        ) : null}
-        {iterating ? <span className="bx-tag__repeat">↻ {count}</span> : null}
-      </span>
       <div className={innerClass} style={bgStyle}>
+        <span className="bx-tag">
+          <span className="bx-tag__name">{node.name ?? def.label}</span>
+          {bound ? (
+            <span
+              className="bx-tag__bind"
+              style={{ color: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
+            >
+              <span
+                className="bx-tag__dot"
+                style={{ background: moduleColor(moduleForPath(catalog, node.binding!.path)) }}
+              />
+              {node.binding!.path}
+            </span>
+          ) : null}
+          {bindSlot !== null ? (
+            <span className="bx-tag__bind" style={{ color: 'var(--module-active)' }}>
+              <span className="bx-tag__dot" style={{ background: 'var(--module-active)' }} />
+              field · {bindSlot}
+            </span>
+          ) : null}
+          {iterating ? <span className="bx-tag__repeat">↻ {count}</span> : null}
+        </span>
         {body}
       </div>
     </div>

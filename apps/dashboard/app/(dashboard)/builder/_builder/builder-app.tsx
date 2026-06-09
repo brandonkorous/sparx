@@ -32,6 +32,7 @@ import { FieldsPanel } from './fields-panel';
 import { deriveFieldKey, makeFieldDef, type CreatableType } from './field-kinds';
 import { ImportExportControls } from './import-export-controls';
 import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
+import type { SitePreviewData } from './binding-catalog';
 import {
   createPage,
   deletePage,
@@ -111,6 +112,10 @@ export interface BuilderAppProps {
   /** The active web property's slug (docs/49). Scopes the Preview tab to the site
    *  being authored via `&property=<slug>`; absent ⇒ the tenant's primary site. */
   previewPropertySlug?: string;
+  /** The tenant's real site-chrome data (brand identity + social links) — overlaid
+   *  onto the canvas preview data so the locked chrome's header + footer preview the
+   *  actual brand, matching the live site. Absent ⇒ generic placeholders. */
+  sitePreview?: SitePreviewData | null;
 }
 
 export function BuilderApp({
@@ -122,6 +127,7 @@ export function BuilderApp({
   initialPageId,
   components = [],
   previewPropertySlug,
+  sitePreview,
 }: BuilderAppProps) {
   const confirm = useConfirm();
   const router = useRouter();
@@ -174,6 +180,7 @@ export function BuilderApp({
     tree,
     catalog: bindingCatalog,
     components: componentsByKey,
+    sitePreview,
     save: async (next) => {
       if (!active) return false;
       const res = await savePageTree(active.id, next);

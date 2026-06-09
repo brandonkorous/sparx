@@ -296,9 +296,34 @@ function setAtPath(root: DataSources, dottedKey: string, value: unknown): void {
   cursor[segs[segs.length - 1] ?? ''] = value;
 }
 
+/** The tenant's REAL brand identity, shaped exactly like the storefront's
+ *  `site.identity` resolver root (apps/site loadSiteData) — name + optional logo
+ *  image. Overlaid onto the placeholder preview data so the canvas header (Logo)
+ *  matches the live/published site instead of showing a generic placeholder. */
+export interface SiteIdentityPreview {
+  name: string;
+  tagline: string;
+  logo: { url: string; alt: string } | null;
+}
+
+/** The tenant's REAL site-chrome data — the `site.*` resolver roots the storefront
+ *  loads (apps/site loadSiteData): brand identity + social links. Overlaid onto the
+ *  synthetic preview data so the canvas's header AND footer chrome match the live
+ *  site instead of binding to generic placeholders. */
+export interface SitePreviewData {
+  identity: SiteIdentityPreview;
+  social: { platform: string; url: string }[];
+}
+
 /** Build placeholder data shaped to the catalog so every offered path resolves:
- *  an array source → 3 placeholder records; a record source → one. */
-export function buildPreviewData(sources: DataSource[]): DataSources {
+ *  an array source → 3 placeholder records; a record source → one. When the real
+ *  tenant `site` chrome is supplied it overrides the synthetic `site.identity` +
+ *  `site.social`, so the header (Logo/Wordmark) and footer (SocialLinks) preview
+ *  the actual brand/links (parity with the live site) instead of placeholder text. */
+export function buildPreviewData(
+  sources: DataSource[],
+  site?: SitePreviewData | null
+): DataSources {
   const root: DataSources = {};
   for (const s of sources) {
     const value =
@@ -306,6 +331,15 @@ export function buildPreviewData(sources: DataSource[]): DataSources {
         ? [0, 1, 2].map((i) => buildRecord(s.fields, i))
         : buildRecord(s.fields, 0);
     setAtPath(root, s.key, value);
+  }
+  // Real chrome wins over the placeholder. Set even when the page catalog has no
+  // `site.*` source (the page editor's locked chrome still binds them), so
+  // /builder/page's header + footer resolve too. `site.social` is overwritten even
+  // when empty — an empty array lets SocialLinks fall back to its own clean
+  // placeholder icons instead of the synthetic record garbage.
+  if (site) {
+    setAtPath(root, 'site.identity', site.identity);
+    setAtPath(root, 'site.social', site.social);
   }
   return root;
 }

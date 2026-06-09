@@ -121,7 +121,14 @@ export const BUILDER_STYLE_GUIDE = {
         type: 'NavMenu',
         use: 'Navigation links (Builder-owned, docs/57). props.links = [{ label, href }]. Not bindable.',
       },
-      { type: 'Logo', use: 'Site identity mark; bind to site.identity.' },
+      {
+        type: 'Logo',
+        use: 'Site identity mark OR name (whichever exists); bind to site.identity.',
+      },
+      {
+        type: 'Wordmark',
+        use: 'Brand lockup: logo mark + company name together; bind to site.identity. props.collapse = mark|name|none controls what survives a narrow frame (default mark).',
+      },
       { type: 'SocialLinks', use: 'Social icon row; bind to site.social.' },
     ],
   },
