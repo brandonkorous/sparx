@@ -74,9 +74,7 @@ export function ExportButton({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onSelect={() => onExport('all')}>
-          Export all
-        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onExport('all')}>Export all</DropdownMenuItem>
         <DropdownMenuItem onSelect={() => onExport('selected')}>
           Export selected ({selectedCount})
         </DropdownMenuItem>

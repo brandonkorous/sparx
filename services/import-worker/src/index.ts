@@ -95,7 +95,10 @@ async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<vo
 
   const event = parseEvent(parsed);
   if (!event) {
-    logger.warn({ messageId, raw: parsed }, 'message did not match import.job.created schema; acking');
+    logger.warn(
+      { messageId, raw: parsed },
+      'message did not match import.job.created schema; acking'
+    );
     res.statusCode = 204;
     res.end();
     return;

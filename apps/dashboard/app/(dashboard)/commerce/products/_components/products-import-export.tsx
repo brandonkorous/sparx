@@ -4,10 +4,7 @@ import * as React from 'react';
 import { Upload } from 'lucide-react';
 import { ImportDialog, ExportButton, type ImportJobResult } from '@sparx/ui';
 import { Button } from '@sparx/ui';
-import {
-  submitProductImportAction,
-  getProductImportStatusAction,
-} from '../../product-actions';
+import { submitProductImportAction, getProductImportStatusAction } from '../../product-actions';
 
 // Client island: Import + Export buttons for the Products list page.
 // This component owns the ImportDialog open state so the parent page

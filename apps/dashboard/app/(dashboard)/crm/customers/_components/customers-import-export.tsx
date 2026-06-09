@@ -3,10 +3,7 @@
 import * as React from 'react';
 import { Upload } from 'lucide-react';
 import { ImportDialog, ExportButton, type ImportJobResult, Button } from '@sparx/ui';
-import {
-  submitCustomerImportAction,
-  getCustomerImportStatusAction,
-} from '../../customer-actions';
+import { submitCustomerImportAction, getCustomerImportStatusAction } from '../../customer-actions';
 
 const REQUIRED_COLUMNS = ['email'];
 

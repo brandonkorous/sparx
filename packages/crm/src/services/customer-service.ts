@@ -527,7 +527,7 @@ export async function addAddress(
   customerId: string,
   rawInput: unknown
 ): Promise<CustomerAddress> {
-  const input = CreateCustomerAddressInput.parse({ ...rawInput as object, customerId });
+  const input = CreateCustomerAddressInput.parse({ ...(rawInput as object), customerId });
   return withTenant(ctx, async (tx) => {
     const customer = await tx.customer.findFirst({ where: { id: customerId, deletedAt: null } });
     if (!customer) throw new CrmNotFoundError('Customer', customerId);

@@ -1,14 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Upload,
-  CheckCircle2,
-  XCircle,
-  AlertTriangle,
-  FileText,
-  Download,
-} from 'lucide-react';
+import { Upload, CheckCircle2, XCircle, AlertTriangle, FileText, Download } from 'lucide-react';
 import { Modal, ModalContent, ModalHeader, ModalTitle, ModalFooter } from '../overlay/modal';
 import { Button } from '../primitives/button';
 import { Text } from '../primitives/text';
@@ -106,8 +99,10 @@ function parseCSV(text: string): { headers: string[]; rows: Record<string, strin
       const ch = line[i]!;
       const nx = line[i + 1];
       if (ch === '"') {
-        if (q && nx === '"') { field += '"'; i++; }
-        else q = !q;
+        if (q && nx === '"') {
+          field += '"';
+          i++;
+        } else q = !q;
       } else if (ch === ',' && !q) {
         fields.push(field);
         field = '';
@@ -123,7 +118,9 @@ function parseCSV(text: string): { headers: string[]; rows: Record<string, strin
   const rows = nonEmpty.slice(1).map((line) => {
     const values = splitLine(line);
     const obj: Record<string, string> = {};
-    headers.forEach((h, i) => { obj[h] = (values[i] ?? '').trim(); });
+    headers.forEach((h, i) => {
+      obj[h] = (values[i] ?? '').trim();
+    });
     return obj;
   });
 
@@ -193,7 +190,9 @@ export function ImportDialog({
       setHeaders(h);
       setRows(r);
       const missing = requiredColumns.filter((col) => !h.includes(col));
-      setHeaderErrors(missing.length > 0 ? [`Missing required columns: ${missing.join(', ')}`] : []);
+      setHeaderErrors(
+        missing.length > 0 ? [`Missing required columns: ${missing.join(', ')}`] : []
+      );
     };
     reader.readAsText(file, 'utf-8');
   }
@@ -218,15 +217,17 @@ export function ImportDialog({
       activeJobIdRef.current = id;
       setPhase('progress');
       pollRef.current = setInterval(() => {
-        void onPollStatus(id).then((r) => {
-          if (r.status === 'completed' || r.status === 'failed') {
-            clearInterval(pollRef.current!);
-            setResult(r);
-            setPhase('result');
-          }
-        }).catch(() => {
-          // transient error — keep polling
-        });
+        void onPollStatus(id)
+          .then((r) => {
+            if (r.status === 'completed' || r.status === 'failed') {
+              clearInterval(pollRef.current!);
+              setResult(r);
+              setPhase('result');
+            }
+          })
+          .catch(() => {
+            // transient error — keep polling
+          });
       }, 2000);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Upload failed. Please try again.');
@@ -241,7 +242,9 @@ export function ImportDialog({
     if (errorRows.length === 0) return;
     const lines = [
       'row_index,natural_key,error',
-      ...errorRows.map((r) => `${r.rowIndex},${r.naturalKey ?? ''},${JSON.stringify(r.errorMsg ?? '')}`),
+      ...errorRows.map(
+        (r) => `${r.rowIndex},${r.naturalKey ?? ''},${JSON.stringify(r.errorMsg ?? '')}`
+      ),
     ];
     downloadBlob(lines.join('\r\n'), `import-errors-${entityType}.csv`, 'text/csv');
   }
@@ -268,19 +271,29 @@ export function ImportDialog({
                   ? 'border-[var(--module-active)] bg-[var(--module-active-tint)]'
                   : 'border-[var(--color-border-default)] hover:border-[var(--color-border-strong)]'
               )}
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOver(true);
+              }}
               onDragLeave={() => setDragOver(false)}
               onDrop={onDrop}
               onClick={() => document.getElementById('import-file-input')?.click()}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') document.getElementById('import-file-input')?.click(); }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ')
+                  document.getElementById('import-file-input')?.click();
+              }}
               aria-label="Upload CSV file"
             >
               <Upload className="h-8 w-8 text-[var(--color-text-muted)]" />
               <Stack gap={1} className="text-center">
-                <Text size="sm" className="font-medium">Drop a CSV file here, or click to browse</Text>
-                <Text size="xs" variant="muted">UTF-8 CSV, up to 10,000 rows</Text>
+                <Text size="sm" className="font-medium">
+                  Drop a CSV file here, or click to browse
+                </Text>
+                <Text size="xs" variant="muted">
+                  UTF-8 CSV, up to 10,000 rows
+                </Text>
               </Stack>
               <input
                 id="import-file-input"
@@ -293,10 +306,14 @@ export function ImportDialog({
 
             {fileName && (
               <Stack direction="row" align="center" gap={2}>
-                <FileText className="h-4 w-4 text-[var(--color-text-muted)] shrink-0" />
-                <Text size="sm" className="font-medium truncate">{fileName}</Text>
+                <FileText className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]" />
+                <Text size="sm" className="truncate font-medium">
+                  {fileName}
+                </Text>
                 {rows.length > 0 && (
-                  <Badge color="success" className="ml-auto shrink-0">{rows.length} rows</Badge>
+                  <Badge color="success" className="ml-auto shrink-0">
+                    {rows.length} rows
+                  </Badge>
                 )}
               </Stack>
             )}
@@ -306,7 +323,9 @@ export function ImportDialog({
                 {headerErrors.map((e) => (
                   <Stack key={e} direction="row" align="start" gap={2}>
                     <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-danger)]" />
-                    <Text size="sm" variant="danger">{e}</Text>
+                    <Text size="sm" variant="danger">
+                      {e}
+                    </Text>
                   </Stack>
                 ))}
               </Stack>
@@ -314,7 +333,9 @@ export function ImportDialog({
 
             {requiredColumns.length > 0 && (
               <Stack gap={1}>
-                <Text size="xs" variant="muted" className="font-medium">Required columns</Text>
+                <Text size="xs" variant="muted" className="font-medium">
+                  Required columns
+                </Text>
                 <Stack direction="row" gap={2} className="flex-wrap">
                   {requiredColumns.map((col) => (
                     <Badge
@@ -336,7 +357,11 @@ export function ImportDialog({
                 leftIcon={<Download className="h-4 w-4" />}
                 onClick={(e) => {
                   e.stopPropagation();
-                  downloadBlob(templateCsvContent, templateFileName ?? `${entityType}-template.csv`, 'text/csv');
+                  downloadBlob(
+                    templateCsvContent,
+                    templateFileName ?? `${entityType}-template.csv`,
+                    'text/csv'
+                  );
                 }}
               >
                 Download template CSV
@@ -349,16 +374,14 @@ export function ImportDialog({
         {phase === 'preview' && (
           <Stack gap={5} className="mt-4">
             <Stack direction="row" align="center" justify="between">
-              <Text size="sm" className="font-medium">{rows.length} rows ready to import</Text>
+              <Text size="sm" className="font-medium">
+                {rows.length} rows ready to import
+              </Text>
               <Stack direction="row" align="center" gap={2}>
                 <Label htmlFor="upsert-toggle" className="text-sm">
                   Update existing records
                 </Label>
-                <Switch
-                  id="upsert-toggle"
-                  checked={upsert}
-                  onCheckedChange={setUpsert}
-                />
+                <Switch id="upsert-toggle" checked={upsert} onCheckedChange={setUpsert} />
               </Stack>
             </Stack>
 
@@ -372,9 +395,16 @@ export function ImportDialog({
               <table className="w-full text-xs">
                 <thead className="bg-[var(--color-bg-subtle)]">
                   <tr>
-                    <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">#</th>
+                    <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">
+                      #
+                    </th>
                     {previewHeaders.map((h) => (
-                      <th key={h} className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">{h}</th>
+                      <th
+                        key={h}
+                        className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]"
+                      >
+                        {h}
+                      </th>
                     ))}
                     {headers.length > 8 && (
                       <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">
@@ -400,13 +430,22 @@ export function ImportDialog({
             </div>
 
             {rows.length > 5 && (
-              <Text size="xs" variant="muted">Showing first 5 of {rows.length} rows.</Text>
+              <Text size="xs" variant="muted">
+                Showing first 5 of {rows.length} rows.
+              </Text>
             )}
 
             {errorMsg && (
-              <Stack direction="row" align="start" gap={2} className="rounded-md bg-[var(--color-danger-tint)] p-3">
+              <Stack
+                direction="row"
+                align="start"
+                gap={2}
+                className="rounded-md bg-[var(--color-danger-tint)] p-3"
+              >
                 <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-danger)]" />
-                <Text size="sm" variant="danger">{errorMsg}</Text>
+                <Text size="sm" variant="danger">
+                  {errorMsg}
+                </Text>
               </Stack>
             )}
           </Stack>
@@ -417,8 +456,12 @@ export function ImportDialog({
           <Stack gap={6} className="mt-4 items-center py-8">
             <div className="h-12 w-12 animate-spin rounded-full border-4 border-[var(--color-border-default)] border-t-[var(--module-active)]" />
             <Stack gap={2} className="w-full max-w-xs text-center">
-              <Text size="sm" className="font-medium">Importing {rows.length} rows…</Text>
-              <Text size="xs" variant="muted">This runs in the background. You can close this dialog.</Text>
+              <Text size="sm" className="font-medium">
+                Importing {rows.length} rows…
+              </Text>
+              <Text size="xs" variant="muted">
+                This runs in the background. You can close this dialog.
+              </Text>
             </Stack>
             <Progress value={undefined} className="w-full max-w-xs" />
           </Stack>
@@ -430,52 +473,81 @@ export function ImportDialog({
             {result.status === 'completed' ? (
               <Stack direction="row" align="center" gap={2}>
                 <CheckCircle2 className="h-5 w-5 shrink-0 text-[var(--color-success)]" />
-                <Text size="sm" className="font-medium">Import complete</Text>
+                <Text size="sm" className="font-medium">
+                  Import complete
+                </Text>
               </Stack>
             ) : (
               <Stack direction="row" align="center" gap={2}>
                 <XCircle className="h-5 w-5 shrink-0 text-[var(--color-danger)]" />
-                <Text size="sm" className="font-medium">Import failed</Text>
+                <Text size="sm" className="font-medium">
+                  Import failed
+                </Text>
               </Stack>
             )}
 
             <Stack direction="row" gap={4} className="flex-wrap">
               <Stack gap={1} className="text-center">
                 <Text className="text-2xl font-bold tabular-nums">{result.importedCount}</Text>
-                <Text size="xs" variant="muted">Created</Text>
+                <Text size="xs" variant="muted">
+                  Created
+                </Text>
               </Stack>
               <Stack gap={1} className="text-center">
                 <Text className="text-2xl font-bold tabular-nums">{result.updatedCount}</Text>
-                <Text size="xs" variant="muted">Updated</Text>
+                <Text size="xs" variant="muted">
+                  Updated
+                </Text>
               </Stack>
               {result.errorCount > 0 && (
                 <Stack gap={1} className="text-center">
-                  <Text className="text-2xl font-bold tabular-nums text-[var(--color-danger)]">{result.errorCount}</Text>
-                  <Text size="xs" variant="muted">Errors</Text>
+                  <Text className="text-2xl font-bold text-[var(--color-danger)] tabular-nums">
+                    {result.errorCount}
+                  </Text>
+                  <Text size="xs" variant="muted">
+                    Errors
+                  </Text>
                 </Stack>
               )}
             </Stack>
 
             {result.errorCount > 0 && (
               <Stack gap={3}>
-                <Text size="sm" className="font-medium">Errors</Text>
+                <Text size="sm" className="font-medium">
+                  Errors
+                </Text>
                 <div className="max-h-48 overflow-y-auto rounded-lg border border-[var(--color-border-default)]">
                   <table className="w-full text-xs">
                     <thead className="bg-[var(--color-bg-subtle)]">
                       <tr>
-                        <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">Row</th>
-                        <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">Key</th>
-                        <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">Error</th>
+                        <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">
+                          Row
+                        </th>
+                        <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">
+                          Key
+                        </th>
+                        <th className="px-3 py-2 text-left font-medium text-[var(--color-text-muted)]">
+                          Error
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {result.rows.filter((r) => r.status === 'error').map((r) => (
-                        <tr key={r.rowIndex} className="border-t border-[var(--color-border-default)]">
-                          <td className="px-3 py-1.5 tabular-nums">{r.rowIndex + 1}</td>
-                          <td className="max-w-[100px] truncate px-3 py-1.5">{r.naturalKey ?? '—'}</td>
-                          <td className="px-3 py-1.5 text-[var(--color-danger)]">{r.errorMsg ?? '—'}</td>
-                        </tr>
-                      ))}
+                      {result.rows
+                        .filter((r) => r.status === 'error')
+                        .map((r) => (
+                          <tr
+                            key={r.rowIndex}
+                            className="border-t border-[var(--color-border-default)]"
+                          >
+                            <td className="px-3 py-1.5 tabular-nums">{r.rowIndex + 1}</td>
+                            <td className="max-w-[100px] truncate px-3 py-1.5">
+                              {r.naturalKey ?? '—'}
+                            </td>
+                            <td className="px-3 py-1.5 text-[var(--color-danger)]">
+                              {r.errorMsg ?? '—'}
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
@@ -495,25 +567,23 @@ export function ImportDialog({
         <ModalFooter className="mt-6">
           {phase === 'upload' && (
             <>
-              <Button variant="ghost" onClick={() => handleClose(false)}>Cancel</Button>
-              <Button
-                color="primary"
-                disabled={!canProceed}
-                onClick={() => setPhase('preview')}
-              >
+              <Button variant="ghost" onClick={() => handleClose(false)}>
+                Cancel
+              </Button>
+              <Button color="primary" disabled={!canProceed} onClick={() => setPhase('preview')}>
                 Preview import
               </Button>
             </>
           )}
           {phase === 'preview' && (
             <>
-              <Button variant="ghost" onClick={() => setPhase('upload')}>Back</Button>
-              <Button variant="ghost" onClick={() => handleClose(false)}>Cancel</Button>
-              <Button
-                color="primary"
-                loading={submitting}
-                onClick={() => void submit()}
-              >
+              <Button variant="ghost" onClick={() => setPhase('upload')}>
+                Back
+              </Button>
+              <Button variant="ghost" onClick={() => handleClose(false)}>
+                Cancel
+              </Button>
+              <Button color="primary" loading={submitting} onClick={() => void submit()}>
                 Import {rows.length} rows
               </Button>
             </>
@@ -524,7 +594,9 @@ export function ImportDialog({
             </Button>
           )}
           {phase === 'result' && (
-            <Button color="primary" onClick={() => handleClose(false)}>Done</Button>
+            <Button color="primary" onClick={() => handleClose(false)}>
+              Done
+            </Button>
           )}
         </ModalFooter>
       </ModalContent>

@@ -33,7 +33,13 @@ import { createB2bAccountAction } from '../../../crm/b2b-actions';
 const STEPS = [{ label: 'Company' }, { label: 'Pricing' }, { label: 'Fleet' }];
 
 const COMPANY_FIELDS = [
-  { key: 'companyName', label: 'Company name', type: 'text' as const, required: true, placeholder: 'Gillett Diesel Service' },
+  {
+    key: 'companyName',
+    label: 'Company name',
+    type: 'text' as const,
+    required: true,
+    placeholder: 'Gillett Diesel Service',
+  },
   { key: 'taxId', label: 'Tax ID', type: 'text' as const, placeholder: '12-3456789' },
   { key: 'website', label: 'Website', type: 'url' as const, placeholder: 'https://example.com' },
   {
@@ -169,9 +175,7 @@ export function B2bAccountWizard() {
   // ── Engine profile helpers ──────────────────────────────────────────────
 
   function updateProfile(id: string, field: keyof EngineProfileDraft, value: string) {
-    setEngineProfiles((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
-    );
+    setEngineProfiles((prev) => prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
   }
 
   function removeProfile(id: string) {
@@ -208,11 +212,17 @@ export function B2bAccountWizard() {
         website: company.website ? String(company.website).trim() || undefined : undefined,
         status: company.status ?? 'active',
         tags: rawTags,
-        pricingTier: pricing.pricingTier ? String(pricing.pricingTier).trim() || undefined : undefined,
+        pricingTier: pricing.pricingTier
+          ? String(pricing.pricingTier).trim() || undefined
+          : undefined,
         creditLimit: Number(pricing.creditLimit ?? 0),
         discountPercent: Number(pricing.discountPercent ?? 0),
-        paymentTerms: pricing.paymentTerms && pricing.paymentTerms !== '' ? pricing.paymentTerms : undefined,
-        fleetSize: pricing.fleetSize != null && pricing.fleetSize !== '' ? Number(pricing.fleetSize) : undefined,
+        paymentTerms:
+          pricing.paymentTerms && pricing.paymentTerms !== '' ? pricing.paymentTerms : undefined,
+        fleetSize:
+          pricing.fleetSize != null && pricing.fleetSize !== ''
+            ? Number(pricing.fleetSize)
+            : undefined,
         notes: pricing.notes ? String(pricing.notes).trim() || undefined : undefined,
         engineProfiles: validProfiles,
       };
@@ -314,8 +324,8 @@ export function B2bAccountWizard() {
             <CardContent>
               {engineProfiles.length === 0 ? (
                 <Text size="sm" variant="muted">
-                  No engine profiles. Click &ldquo;Add engine&rdquo; to record the make, model,
-                  and count for each engine variant the fleet runs.
+                  No engine profiles. Click &ldquo;Add engine&rdquo; to record the make, model, and
+                  count for each engine variant the fleet runs.
                 </Text>
               ) : (
                 <Stack gap={2}>
