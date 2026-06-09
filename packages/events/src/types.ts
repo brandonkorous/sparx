@@ -102,11 +102,44 @@ export type EventType =
   // Emitted after a successful GoDaddy purchase + DNS configuration. The
   // domain-worker subscribes to poll DNS propagation and mark the domain active.
   | 'domain.purchased'
+  // ─── B2B (docs/10, docs/64 Ph2-Ph3) ────────────────────────────────────
+  // Quote lifecycle notifications.
+  | 'b2b.quote.submitted'
+  | 'b2b.quote.responded'
+  // Invoice / credit management notifications.
+  | 'b2b.invoice.created'
+  | 'b2b.invoice.overdue'
+  | 'b2b.account.credit_hold'
+  | 'b2b.account.suspended'
+  // Approval workflow notifications (docs/64 B2B Ph6).
+  | 'b2b.order.pending_approval'
+  | 'b2b.order.approved'
+  | 'b2b.order.rejected'
+  // Service scheduling notifications (docs/64 B2B Ph7).
+  | 'b2b.appointment.requested'
+  | 'b2b.appointment.confirmed'
+  | 'b2b.appointment.cancelled'
+  | 'b2b.appointment.reminder'
+  | 'b2b.appointment.completed'
+  // ─── Dropship (docs/14, docs/64 Ph1-Ph3) ───────────────────────────────
+  | 'dropship.supplier.connected'
+  | 'dropship.supplier.sync_started'
+  | 'dropship.supplier.sync_completed'
+  | 'dropship.supplier.error'
+  | 'dropship.order.route'
+  | 'dropship.order.submitted'
+  | 'dropship.order.shipped'
+  | 'dropship.order.delivered'
+  | 'dropship.order.failed'
   // ─── Universal search (docs/39) ─────────────────────────────────────
   // Generic indexing signal: any module emits this post-commit so the
   // commerce-indexer (re)projects ONE entity into the universal `entities`
   // collection. One topic serves every entity type — no per-entity topic.
-  | 'search.entity.changed';
+  | 'search.entity.changed'
+  // ─── Import / Export (docs/68) ───────────────────────────────────────
+  // Emitted by api-rest when a tenant submits a CSV import job. Consumed by
+  // import-worker (Cloud Run) which processes rows and updates the job row.
+  | 'import.job.created';
 
 /** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
  *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */
@@ -175,7 +208,10 @@ export interface EmailSendPayload {
     | 'welcome-merchant'
     | 'domain-renewal-reminder'
     | 'order-confirmation'
-    | 'shipping-confirmation';
+    | 'shipping-confirmation'
+    | 'appointment-confirmation'
+    | 'appointment-reminder'
+    | 'appointment-cancelled';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */
@@ -206,4 +242,11 @@ export interface PaymentFailedPayload {
   failureCode: string | null;
   failureMessage: string | null;
   providerSlug: string;
+}
+
+/** Payload for `import.job.created`. Consumed by import-worker (Cloud Run) to
+ *  process CSV rows and write per-row results back to import_job_rows. */
+export interface ImportJobCreatedPayload {
+  jobId: string;
+  entityType: 'products' | 'customers' | 'b2b_accounts' | 'discounts';
 }

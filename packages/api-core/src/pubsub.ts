@@ -57,7 +57,9 @@ export type EventType =
   | 'order.placed'
   | 'order.fulfilled'
   | 'order.refunded'
-  | 'order.payment_failed';
+  | 'order.payment_failed'
+  // Import jobs (docs/68 §8) — consumed by import-worker (Cloud Run).
+  | 'import.job.created';
 
 export interface SparxEvent<T = unknown> {
   type: EventType;

@@ -124,6 +124,12 @@ export { DatePicker, type DatePickerProps } from './components/form/date-picker'
 export { FileUpload, type FileUploadProps } from './components/form/file-upload';
 export { ColorPicker, type ColorPickerProps } from './components/form/color-picker';
 export { RichTextEditor, type RichTextEditorProps } from './components/form/rich-text-editor';
+export {
+  SchemaFieldRenderer,
+  type SchemaFieldRendererProps,
+  type SimpleField,
+  type SimpleFieldType,
+} from './components/form/schema-field-renderer';
 
 // ── Overlay ───────────────────────────────────────────────
 export {
@@ -314,6 +320,19 @@ export {
   type ListToolbarView,
 } from './components/data/list-toolbar';
 export { Tag, tagVariants, type TagProps } from './components/data/tag';
+export {
+  BulkActionBar,
+  type BulkActionBarProps,
+  type BulkAction,
+} from './components/data/bulk-action-bar';
+export {
+  ImportDialog,
+  type ImportDialogProps,
+  type ImportJobResult,
+  type ImportJobRow,
+  type ImportJobStatus,
+} from './components/data/import-dialog';
+export { ExportButton, type ExportButtonProps } from './components/data/export-button';
 export {
   Timeline,
   TimelineItem,

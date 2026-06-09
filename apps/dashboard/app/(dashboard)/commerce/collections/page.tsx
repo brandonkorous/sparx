@@ -1,38 +1,13 @@
-import { Layers, Plus, Sparkles, Star } from 'lucide-react';
+import { Layers, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  Container,
-  EmptyState,
-  Grid,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../../_components/entity-create-button';
-import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
-
-interface CollectionSummary {
-  id: string;
-  name: string;
-  handle: string;
-  type: 'manual' | 'rules';
-  productCount: number;
-  featured: boolean;
-  updatedAt: string;
-}
+import { CollectionsSelectionTable } from './_components/collections-selection-table';
+import type { CollectionSummary } from './_components/collections-selection-table';
 
 interface CollectionListResponse {
   items: CollectionSummary[];
@@ -124,123 +99,8 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
               }
             />
           </Card>
-        ) : view === 'card' ? (
-          <Grid minItemWidth="18rem" gap={4}>
-            {items.map((c) => (
-              <Card key={c.id} variant="module" padding="md">
-                <Stack gap={3}>
-                  <Stack direction="row" align="start" justify="between" gap={2}>
-                    <Stack gap={1} className="min-w-0">
-                      <EntityRowLink
-                        href={`/commerce/collections/${c.id}`}
-                        entityType="collection"
-                        entityId={c.id}
-                        className="truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                      >
-                        {c.name}
-                      </EntityRowLink>
-                      <Text size="xs" variant="muted">
-                        /{c.handle}
-                      </Text>
-                    </Stack>
-                    <Badge color={c.type === 'rules' ? 'module' : 'outline'} className="text-xs">
-                      {c.type === 'rules' ? (
-                        <>
-                          <Sparkles className="mr-1 h-3 w-3" />
-                          rules
-                        </>
-                      ) : (
-                        'manual'
-                      )}
-                    </Badge>
-                  </Stack>
-                  <Stack direction="row" align="center" justify="between" gap={2}>
-                    {c.featured ? (
-                      <Badge variant="outline" className="text-xs">
-                        <Star className="mr-1 h-3 w-3" />
-                        featured
-                      </Badge>
-                    ) : (
-                      <span />
-                    )}
-                    <Text size="sm" className="tabular-nums">
-                      {c.productCount} product{c.productCount === 1 ? '' : 's'}
-                    </Text>
-                  </Stack>
-                  <Text size="xs" variant="muted">
-                    updated {new Date(c.updatedAt).toLocaleDateString()}
-                  </Text>
-                </Stack>
-              </Card>
-            ))}
-          </Grid>
         ) : (
-          <Card padding="none">
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead className="text-right">Products</TableHead>
-                    <TableHead>Updated</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {items.map((c) => (
-                    <TableRow key={c.id}>
-                      <TableCell>
-                        <Stack gap={1}>
-                          <Stack direction="row" align="center" gap={2}>
-                            <EntityRowLink
-                              href={`/commerce/collections/${c.id}`}
-                              entityType="collection"
-                              entityId={c.id}
-                              className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                            >
-                              {c.name}
-                            </EntityRowLink>
-                            {c.featured && (
-                              <Badge variant="outline" className="text-xs">
-                                <Star className="mr-1 h-3 w-3" />
-                                featured
-                              </Badge>
-                            )}
-                          </Stack>
-                          <Text size="xs" variant="muted">
-                            /{c.handle}
-                          </Text>
-                        </Stack>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          color={c.type === 'rules' ? 'module' : 'outline'}
-                          className="text-xs"
-                        >
-                          {c.type === 'rules' ? (
-                            <>
-                              <Sparkles className="mr-1 h-3 w-3" />
-                              rules
-                            </>
-                          ) : (
-                            'manual'
-                          )}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        <Text size="sm">{c.productCount}</Text>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm" variant="muted">
-                          {new Date(c.updatedAt).toLocaleDateString()}
-                        </Text>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <CollectionsSelectionTable collections={items} view={view} />
         )}
       </Stack>
     </Container>

@@ -13,6 +13,10 @@ interface CustomerResponse {
   id: string;
 }
 
+interface AddressResponse {
+  id: string;
+}
+
 interface MergeResponse {
   primary: { id: string };
   merged: { id: string }[];
@@ -23,6 +27,20 @@ export async function createCustomerAction(input: unknown): Promise<ActionResult
     const customer = await api.post<CustomerResponse>('/v1/crm/customers', input);
     revalidatePath('/crm/customers');
     return { id: customer.id };
+  });
+}
+
+export async function addCustomerAddressAction(
+  customerId: string,
+  input: unknown
+): Promise<ActionResult<{ id: string }>> {
+  return restAction(async () => {
+    const address = await api.post<AddressResponse>(
+      `/v1/crm/customers/${customerId}/addresses`,
+      input
+    );
+    revalidatePath(`/crm/customers/${customerId}`);
+    return { id: address.id };
   });
 }
 
@@ -46,6 +64,48 @@ export async function deleteCustomerAction(
     revalidatePath('/crm/customers');
     return { id: customerId };
   });
+}
+
+export async function bulkDeleteCustomersAction(
+  ids: string[]
+): Promise<ActionResult<{ deleted: number }>> {
+  return restAction(async () => {
+    await Promise.all(ids.map((id) => api.delete<void>(`/v1/crm/customers/${id}`)));
+    revalidatePath('/crm/customers');
+    return { deleted: ids.length };
+  });
+}
+
+export async function submitCustomerImportAction(
+  rows: Record<string, string>[],
+  options: { upsert: boolean; fileName: string }
+): Promise<ActionResult<{ jobId: string }>> {
+  return restAction(async () => {
+    const result = await api.post<{ jobId: string }>('/v1/crm/customers/import', {
+      rows,
+      options: { upsert: options.upsert },
+      fileName: options.fileName,
+    });
+    return result;
+  });
+}
+
+export async function getCustomerImportStatusAction(jobId: string): Promise<
+  ActionResult<{
+    status: string;
+    importedCount: number;
+    updatedCount: number;
+    errorCount: number;
+    rowCount: number;
+    rows: Array<{
+      rowIndex: number;
+      status: string;
+      naturalKey?: string | null;
+      errorMsg?: string | null;
+    }>;
+  }>
+> {
+  return restAction(async () => api.get(`/v1/crm/customers/import/${jobId}`));
 }
 
 export async function mergeCustomersAction(

@@ -52,3 +52,17 @@ export async function cancelOrderAction(input: unknown): Promise<ActionResult<{ 
     return { id: order.id };
   });
 }
+
+export async function bulkCancelOrdersAction(
+  ids: string[]
+): Promise<ActionResult<{ cancelled: number }>> {
+  return restAction(async () => {
+    await Promise.all(
+      ids.map((id) =>
+        api.post<OrderResponse>(`/v1/crm/orders/${id}/cancel`, { reason: 'Bulk cancel' })
+      )
+    );
+    revalidatePath('/crm/orders');
+    return { cancelled: ids.length };
+  });
+}

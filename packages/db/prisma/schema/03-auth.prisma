@@ -43,6 +43,9 @@ model User {
   createdTasks        Task[]       @relation("TaskCreatedBy")
   completedTasks      Task[]       @relation("TaskCompletedBy")
   createdQuotes       Quote[]      @relation("QuoteCreatedBy")
+  b2bInvoicesPaid     B2bInvoice[] @relation("B2bInvoicePaidBy")
+  approvalRulesAsApprover PurchaseApprovalRule[]  @relation("ApprovalRuleApprover")
+  confirmedAppointments   ServiceAppointment[]   @relation("AppointmentConfirmedBy")
 
   // Dashboard shell — per-user pinned/recent navigation state
   favorites UserFavorite[]

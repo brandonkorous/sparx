@@ -23,6 +23,7 @@ const NAV: AccountNavItem[] = [
   { label: 'Wishlist', href: '/account/wishlist' },
   { label: 'Addresses', href: '/account/addresses' },
   { label: 'Profile', href: '/account/profile' },
+  { label: 'B2B Account', href: '/account/b2b' },
 ];
 
 export default function AuthedAccountLayout({ children }: { children: React.ReactNode }) {

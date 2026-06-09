@@ -12,13 +12,14 @@
 import {
   BulkAssignCustomersInput,
   BulkTagCustomersInput,
+  CreateCustomerAddressInput,
   CreateCustomerInput,
   SubscribeCustomerInput,
   UpdateCustomerInput,
 } from '@sparx/crm-schemas';
 import { NEWSLETTER_SEGMENT_SLUG } from '@sparx/crm-schemas/builtins';
 import { withTenant } from '@sparx/db';
-import type { Customer, Prisma } from '@sparx/db';
+import type { Customer, CustomerAddress, Prisma } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
@@ -514,6 +515,45 @@ export async function bulkTag(
     }
 
     return { updatedCount };
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Address management
+// ─────────────────────────────────────────────────────────────────────────
+
+export async function addAddress(
+  ctx: ServiceContext,
+  customerId: string,
+  rawInput: unknown
+): Promise<CustomerAddress> {
+  const input = CreateCustomerAddressInput.parse({ ...(rawInput as object), customerId });
+  return withTenant(ctx, async (tx) => {
+    const customer = await tx.customer.findFirst({ where: { id: customerId, deletedAt: null } });
+    if (!customer) throw new CrmNotFoundError('Customer', customerId);
+
+    if (input.isDefault) {
+      await tx.customerAddress.updateMany({ where: { customerId }, data: { isDefault: false } });
+    }
+
+    return tx.customerAddress.create({
+      data: {
+        tenantId: ctx.tenantId,
+        customerId,
+        type: input.type,
+        label: input.label,
+        isDefault: input.isDefault,
+        recipientName: input.recipientName,
+        company: input.company,
+        line1: input.line1,
+        line2: input.line2,
+        city: input.city,
+        region: input.region ?? null,
+        postalCode: input.postalCode ?? null,
+        country: input.country,
+        phone: input.phone ?? null,
+      },
+    });
   });
 }
 

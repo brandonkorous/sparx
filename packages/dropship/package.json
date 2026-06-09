@@ -1,0 +1,22 @@
+{
+  "name": "@sparx/dropship",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Sparx Dropship — SupplierAdapter interface, normalized types, and pricing rules engine (docs/14, docs/64 Ph1-Ph5).",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sparx/db": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

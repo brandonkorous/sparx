@@ -84,6 +84,12 @@ model Customer {
   // Cookie consent — records this shopper authored while signed in (docs/42 §4)
   consentRecords ConsentRecord[]
 
+  // B2B portal — contact role membership rows (docs/64 B2B Ph5)
+  b2bContactRoles B2bAccountContact[]
+
+  // B2B scheduling — appointments booked by this customer (docs/64 Ph7)
+  serviceAppointments ServiceAppointment[]
+
   @@unique([tenantId, propertyId, email], map: "customers_tenant_property_email_unique")
   @@index([tenantId, propertyId])
   @@index([identityId])

@@ -9,6 +9,7 @@ import { sitebuilderMcpTools } from '@sparx/sitebuilder';
 import { builderMcpTools } from '@sparx/builder/mcp';
 import { emailMcpTools } from '@sparx/email-platform';
 import { searchMcpTools } from '@sparx/search';
+import { domainMcpTools } from './domain-tools.js';
 
 // Structural type spanning every module's tool definition. Each module declares
 // its own scope union; here we only need the shared shape (scope is a string).
@@ -30,6 +31,7 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   ...(builderMcpTools as unknown as AnyMcpTool[]),
   ...(emailMcpTools as unknown as AnyMcpTool[]),
   ...(searchMcpTools as unknown as AnyMcpTool[]),
+  ...(domainMcpTools as unknown as AnyMcpTool[]),
 ];
 
 const WRITE_SCOPES: ReadonlySet<string> = new Set([
@@ -40,6 +42,7 @@ const WRITE_SCOPES: ReadonlySet<string> = new Set([
   'write:builder',
   'write:email',
   'write:email_bulk',
+  'write:domains',
 ]);
 
 const TOOLS_BY_NAME: ReadonlyMap<string, AnyMcpTool> = new Map(

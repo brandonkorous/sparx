@@ -37,7 +37,11 @@ interface ContentNewButtonProps {
 }
 
 function newHrefFor(key: string): Route {
-  return key === 'page' ? '/cms/new' : `/cms/types/${key}/new`;
+  // Page type keeps its bespoke create/edit surface (/cms/new).
+  // All other types route through the guided wizard at /cms/content/new?type=X.
+  return key === 'page'
+    ? '/cms/new'
+    : (`/cms/content/new?type=${encodeURIComponent(key)}` as Route);
 }
 
 export function ContentNewButton({ types, activeType }: ContentNewButtonProps) {
@@ -56,6 +60,7 @@ export function ContentNewButton({ types, activeType }: ContentNewButtonProps) {
     );
   }
 
+  // No type filter active — wizard handles type selection at step 1.
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -68,6 +73,9 @@ export function ContentNewButton({ types, activeType }: ContentNewButtonProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuItem asChild>
+          <Link href="/cms/content/new">Guided wizard…</Link>
+        </DropdownMenuItem>
         {types.map((t) => (
           <DropdownMenuItem key={t.key} asChild>
             <Link href={newHrefFor(t.key)}>{t.name}</Link>

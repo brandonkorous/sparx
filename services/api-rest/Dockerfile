@@ -46,6 +46,7 @@ COPY packages/builder ./packages/builder
 COPY packages/blueprints ./packages/blueprints
 COPY packages/cms-editor ./packages/cms-editor
 COPY packages/email-platform ./packages/email-platform
+COPY packages/godaddy ./packages/godaddy
 COPY services/api-rest ./services/api-rest
 
 # Install only what api-rest needs (and transitive workspace deps).

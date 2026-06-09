@@ -247,6 +247,27 @@ model Tenant {
   // Onboarding (docs/65 Ph2) — per-tip progress rows shown for 7 days post-signup
   onboardingChecklist OnboardingChecklist[]
 
+  // Import jobs (docs/68 §8) — background CSV import processing
+  importJobs ImportJob[]
+
+  // B2B pricing (docs/10, docs/64) — pricing tiers, per-product overrides, invoices, portal contacts, approval rules
+  b2bPricingTiers            B2bPricingTier[]
+  b2bTierProductOverrides    B2bTierProductOverride[]
+  b2bAccountProductOverrides B2bAccountProductOverride[]
+  b2bInvoices                B2bInvoice[]
+  b2bAccountContacts         B2bAccountContact[]
+  purchaseApprovalRules      PurchaseApprovalRule[]
+
+  // B2B scheduling (docs/64 Ph7)
+  serviceTypes        ServiceType[]
+  serviceAppointments ServiceAppointment[]
+
+  // Dropship (docs/14, docs/64 Ph1)
+  dropshipSuppliers    DropshipSupplier[]
+  dropshipProducts     DropshipProduct[]
+  dropshipProductLinks DropshipProductLink[]
+  dropshipOrders       DropshipOrder[]
+
   @@map("tenants")
 }
 

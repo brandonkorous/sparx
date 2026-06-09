@@ -1,16 +1,17 @@
 // CRM customers — list / get / create / update / delete / bulk + queries.
 //
-//   GET    /v1/crm/customers              → list (filterable)
-//   POST   /v1/crm/customers              → create
-//   GET    /v1/crm/customers/:id          → fetch one
-//   PATCH  /v1/crm/customers/:id          → update
-//   DELETE /v1/crm/customers/:id          → soft delete
-//   POST   /v1/crm/customers/bulk-assign  → bulk reassign rep
-//   POST   /v1/crm/customers/bulk-tag     → bulk add/remove tag
-//   GET    /v1/crm/customers/top          → top by spend
-//   GET    /v1/crm/customers/inactive     → no order in N days
-//   GET    /v1/crm/customers/duplicates   → likely duplicate clusters
-//   POST   /v1/crm/customers/merge        → merge two customers
+//   GET    /v1/crm/customers                   → list (filterable)
+//   POST   /v1/crm/customers                   → create
+//   GET    /v1/crm/customers/:id               → fetch one
+//   PATCH  /v1/crm/customers/:id               → update
+//   DELETE /v1/crm/customers/:id               → soft delete
+//   POST   /v1/crm/customers/:id/addresses     → add an address
+//   POST   /v1/crm/customers/bulk-assign       → bulk reassign rep
+//   POST   /v1/crm/customers/bulk-tag          → bulk add/remove tag
+//   GET    /v1/crm/customers/top               → top by spend
+//   GET    /v1/crm/customers/inactive          → no order in N days
+//   GET    /v1/crm/customers/duplicates        → likely duplicate clusters
+//   POST   /v1/crm/customers/merge             → merge two customers
 //
 // Routes are intentionally thin — every write goes through customerService,
 // which owns Zod validation, audit logs, and event publishing. The transport
@@ -146,6 +147,16 @@ const customerRoutes: FastifyPluginAsync = (app) => {
     const result = await customerService.merge(toCrmContext(request), request.body);
     return ok(result);
   });
+
+  app.post('/v1/crm/customers/:id/addresses', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const address = await customerService.addAddress(toCrmContext(request), id, request.body);
+    reply.code(201);
+    return ok(address);
+  });
+
   return Promise.resolve();
 };
 

@@ -29,6 +29,21 @@ import {
   shippingConfirmationSubject,
   type ShippingConfirmationEmailProps,
 } from './templates/shipping-confirmation';
+import {
+  AppointmentConfirmationEmail,
+  appointmentConfirmationSubject,
+  type AppointmentConfirmationEmailProps,
+} from './templates/appointment-confirmation';
+import {
+  AppointmentReminderEmail,
+  appointmentReminderSubject,
+  type AppointmentReminderEmailProps,
+} from './templates/appointment-reminder';
+import {
+  AppointmentCancelledEmail,
+  appointmentCancelledSubject,
+  type AppointmentCancelledEmailProps,
+} from './templates/appointment-cancelled';
 
 // Template registry + dispatcher. Two surfaces:
 //
@@ -53,7 +68,10 @@ export type TemplateId =
   | 'welcome-merchant'
   | 'domain-renewal-reminder'
   | 'order-confirmation'
-  | 'shipping-confirmation';
+  | 'shipping-confirmation'
+  | 'appointment-confirmation'
+  | 'appointment-reminder'
+  | 'appointment-cancelled';
 
 export type TemplateSend =
   | {
@@ -88,6 +106,27 @@ export type TemplateSend =
       template: 'shipping-confirmation';
       to: string;
       props: ShippingConfirmationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'appointment-confirmation';
+      to: string;
+      props: AppointmentConfirmationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'appointment-reminder';
+      to: string;
+      props: AppointmentReminderEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'appointment-cancelled';
+      to: string;
+      props: AppointmentCancelledEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -195,6 +234,54 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'shipping-confirmation',
+      };
+    }
+    case 'appointment-confirmation': {
+      const element = wrap(<AppointmentConfirmationEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: appointmentConfirmationSubject(input.props.serviceTypeName),
+        html,
+        text,
+        templateId: 'appointment-confirmation',
+      };
+    }
+    case 'appointment-reminder': {
+      const element = wrap(<AppointmentReminderEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: appointmentReminderSubject(input.props.serviceTypeName),
+        html,
+        text,
+        templateId: 'appointment-reminder',
+      };
+    }
+    case 'appointment-cancelled': {
+      const element = wrap(<AppointmentCancelledEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: appointmentCancelledSubject(input.props.serviceTypeName),
+        html,
+        text,
+        templateId: 'appointment-cancelled',
       };
     }
   }

@@ -78,6 +78,7 @@ model Product {
   questions              ProductQuestion[]
   translations           ProductTranslation[]
   orderItems             OrderItem[]
+  dropshipLinks          DropshipProductLink[]
 
   @@unique([tenantId, handle], map: "products_tenant_handle_unique")
   @@index([tenantId, status])

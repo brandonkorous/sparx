@@ -298,3 +298,211 @@ export async function removeFromWishlist(tenantSlug: string, variantId: string):
     { method: 'DELETE' }
   );
 }
+
+// ── B2B Portal ──────────────────────────────────────────────────────────────
+
+export interface B2bAccountEntry {
+  accountId: string;
+  companyName: string;
+  role: string;
+  creditLimit: number;
+  creditUsed: number;
+  creditAvailable: number;
+  status: string;
+  paymentTerms: string | null;
+}
+
+export interface B2bInvoiceSummary {
+  unpaidCount: number;
+  unpaidCents: number;
+  overdueCount: number;
+  overdueCents: number;
+  paidCount: number;
+}
+
+export interface B2bPortalSummary {
+  account: B2bAccountEntry & {
+    discountPercent: number;
+    role: string;
+  };
+  invoiceSummary: B2bInvoiceSummary;
+  recentOrders: {
+    id: string;
+    orderNumber: string;
+    status: string;
+    totalCents: number;
+    currency: string;
+    createdAt: string;
+  }[];
+}
+
+export interface B2bInvoiceEntry {
+  id: string;
+  invoiceNumber: string;
+  amountCents: number;
+  status: string;
+  overdueDays: number;
+  dueAt: string;
+  paidAt: string | null;
+  orderId: string | null;
+  notes: string | null;
+  createdAt: string;
+}
+
+export interface B2bOrderEntry {
+  id: string;
+  orderNumber: string;
+  status: string;
+  totalCents: number;
+  currency: string;
+  createdAt: string;
+  customerName: string | null;
+  customerEmail: string | null;
+}
+
+export interface B2bQuoteEntry {
+  id: string;
+  quoteNumber: string;
+  status: string;
+  totalCents: number;
+  currency: string;
+  validUntil: string | null;
+  createdAt: string;
+}
+
+function b2bPortalUrl(path: string, tenantSlug: string): string {
+  return `${API_BASE}/v1/public/b2b/portal${path}?tenant=${encodeURIComponent(tenantSlug)}`;
+}
+
+export async function getB2bAccounts(tenantSlug: string): Promise<B2bAccountEntry[]> {
+  const res = await fetch(b2bPortalUrl('', tenantSlug), { cache: 'no-store' });
+  if (res.status === 401) return [];
+  return (await parse<{ accounts: B2bAccountEntry[] }>(res)).accounts;
+}
+
+export async function getB2bSummary(
+  tenantSlug: string,
+  accountId: string
+): Promise<B2bPortalSummary> {
+  const res = await fetch(b2bPortalUrl(`/${encodeURIComponent(accountId)}/summary`, tenantSlug), {
+    cache: 'no-store',
+  });
+  return parse<B2bPortalSummary>(res);
+}
+
+export async function getB2bInvoices(
+  tenantSlug: string,
+  accountId: string,
+  skip = 0,
+  take = 20
+): Promise<{ items: B2bInvoiceEntry[]; total: number }> {
+  const res = await fetch(
+    `${b2bPortalUrl(`/${encodeURIComponent(accountId)}/invoices`, tenantSlug)}&skip=${skip}&take=${take}`,
+    { cache: 'no-store' }
+  );
+  const json = (await res.json().catch(() => null)) as {
+    success: boolean;
+    data?: B2bInvoiceEntry[];
+    meta?: { total?: number };
+  } | null;
+  if (!res.ok || !json || json.success === false)
+    throw new AccountError('Could not load invoices.', res.status);
+  return { items: json.data ?? [], total: json.meta?.total ?? 0 };
+}
+
+export async function getB2bOrders(
+  tenantSlug: string,
+  accountId: string,
+  skip = 0,
+  take = 20
+): Promise<{ items: B2bOrderEntry[]; total: number }> {
+  const res = await fetch(
+    `${b2bPortalUrl(`/${encodeURIComponent(accountId)}/orders`, tenantSlug)}&skip=${skip}&take=${take}`,
+    { cache: 'no-store' }
+  );
+  const json = (await res.json().catch(() => null)) as {
+    success: boolean;
+    data?: B2bOrderEntry[];
+    meta?: { total?: number };
+  } | null;
+  if (!res.ok || !json || json.success === false)
+    throw new AccountError('Could not load orders.', res.status);
+  return { items: json.data ?? [], total: json.meta?.total ?? 0 };
+}
+
+export async function getB2bQuotes(
+  tenantSlug: string,
+  accountId: string,
+  skip = 0,
+  take = 20
+): Promise<{ items: B2bQuoteEntry[]; total: number }> {
+  const res = await fetch(
+    `${b2bPortalUrl(`/${encodeURIComponent(accountId)}/quotes`, tenantSlug)}&skip=${skip}&take=${take}`,
+    { cache: 'no-store' }
+  );
+  const json = (await res.json().catch(() => null)) as {
+    success: boolean;
+    data?: B2bQuoteEntry[];
+    meta?: { total?: number };
+  } | null;
+  if (!res.ok || !json || json.success === false)
+    throw new AccountError('Could not load quotes.', res.status);
+  return { items: json.data ?? [], total: json.meta?.total ?? 0 };
+}
+
+// ── B2B Appointments ─────────────────────────────────────────────────────────
+
+export interface B2bAppointmentEntry {
+  id: string;
+  serviceTypeId: string;
+  serviceTypeName: string | null;
+  scheduledAt: string;
+  durationMinutes: number;
+  status: string;
+  vehicleRef: Record<string, unknown> | null;
+  notes: string | null;
+  confirmedAt: string | null;
+  completedAt: string | null;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
+  createdAt: string;
+  customerName: string | null;
+}
+
+export async function getB2bAppointments(
+  tenantSlug: string,
+  accountId: string,
+  skip = 0,
+  take = 20,
+  status?: string
+): Promise<{ items: B2bAppointmentEntry[]; total: number }> {
+  let url = `${b2bPortalUrl(`/${encodeURIComponent(accountId)}/appointments`, tenantSlug)}&skip=${skip}&take=${take}`;
+  if (status) url += `&status=${encodeURIComponent(status)}`;
+  const res = await fetch(url, { cache: 'no-store' });
+  const json = (await res.json().catch(() => null)) as {
+    success: boolean;
+    data?: B2bAppointmentEntry[];
+    meta?: { total?: number };
+  } | null;
+  if (!res.ok || !json || json.success === false)
+    throw new AccountError('Could not load appointments.', res.status);
+  return { items: json.data ?? [], total: json.meta?.total ?? 0 };
+}
+
+export async function cancelB2bAppointment(
+  tenantSlug: string,
+  accountId: string,
+  appointmentId: string,
+  reason?: string
+): Promise<void> {
+  const res = await fetch(
+    `${API_BASE}/v1/public/b2b/portal/${encodeURIComponent(accountId)}/appointments/${encodeURIComponent(appointmentId)}/cancel?tenant=${encodeURIComponent(tenantSlug)}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason }),
+      cache: 'no-store',
+    }
+  );
+  if (!res.ok) throw new AccountError('Could not cancel appointment.', res.status);
+}

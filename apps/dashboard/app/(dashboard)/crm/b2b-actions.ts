@@ -20,6 +20,7 @@ export async function createB2bAccountAction(
   return restAction(async () => {
     const account = await api.post<B2bAccountResponse>('/v1/crm/b2b-accounts', input);
     revalidatePath('/crm/b2b');
+    revalidatePath('/b2b/accounts');
     return { id: account.id };
   });
 }
@@ -33,6 +34,29 @@ export async function updateB2bAccountAction(
     revalidatePath('/crm/b2b');
     revalidatePath(`/crm/b2b/${accountId}`);
     return { id: account.id };
+  });
+}
+
+export async function bulkDeleteB2bAccountsAction(
+  ids: string[]
+): Promise<ActionResult<{ deleted: number }>> {
+  return restAction(async () => {
+    await Promise.all(ids.map((id) => api.delete<void>(`/v1/crm/b2b-accounts/${id}`)));
+    revalidatePath('/crm/b2b');
+    return { deleted: ids.length };
+  });
+}
+
+export async function bulkSetB2bStatusAction(
+  ids: string[],
+  status: 'active' | 'credit_hold' | 'suspended' | 'inactive'
+): Promise<ActionResult<{ updated: number }>> {
+  return restAction(async () => {
+    await Promise.all(
+      ids.map((id) => api.patch<B2bAccountResponse>(`/v1/crm/b2b-accounts/${id}`, { status }))
+    );
+    revalidatePath('/crm/b2b');
+    return { updated: ids.length };
   });
 }
 
