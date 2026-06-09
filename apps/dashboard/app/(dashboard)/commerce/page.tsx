@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import {
   Boxes,
+  CreditCard,
   Layers,
   PackageOpen,
   Percent,
@@ -219,6 +220,12 @@ const QUICK_LINKS = [
     title: 'Markup rules',
     description: 'Price products from cost — percentage, keystone, target margin, flat.',
     icon: <Percent className="h-5 w-5" />,
+  },
+  {
+    href: '/commerce/surcharges',
+    title: 'Surcharges',
+    description: 'Pass a card processing or handling fee through to the order as its own line.',
+    icon: <CreditCard className="h-5 w-5" />,
   },
   {
     href: '/commerce/discounts',
