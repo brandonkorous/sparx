@@ -509,9 +509,9 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       {
         id: 'domain' as const,
         title: 'Set your store address',
-        description: 'Your storefront subdomain. Bring a custom domain later.',
+        description: 'Purchase a domain or connect one you already own.',
         done: state.completed.domain,
-        cta: { label: 'Set address', href: '/onboarding' },
+        cta: { label: 'Manage domains', href: '/settings/domains' },
       },
       {
         id: 'payments' as const,

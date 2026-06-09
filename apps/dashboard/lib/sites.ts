@@ -32,7 +32,7 @@ export interface Property {
 
 export interface DomainInstructions {
   cname: { name: string; value: string };
-  txt: { name: string; value: string };
+  txt: { name: string; value: string } | null; // null for subdomain connects (CNAME-only proof)
 }
 
 export interface Domain {
@@ -40,9 +40,17 @@ export interface Domain {
   propertyId: string;
   host: string;
   type: string; // subdomain | custom | purchased
-  status: string; // pending | verifying | verified | active | failed
+  status: string; // pending | verifying | verified | active | failed | pending_ssl | transfer_pending
   isCanonical: boolean;
   verifiedAt: string | null;
+  // Purchase-specific fields (null for custom/zone domains)
+  registrar: string | null;
+  registrarOrderId: string | null;
+  registeredAt: string | null;
+  expiresAt: string | null;
+  autoRenew: boolean;
+  whoisPrivacy: boolean;
+  renewalPriceCents: number | null;
   createdAt: string;
   instructions: DomainInstructions | null;
 }
