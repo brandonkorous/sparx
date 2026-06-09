@@ -71,6 +71,67 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
       autoRenew: z.boolean().optional(),
     }),
   }),
+  z.object({
+    template: z.literal('order-confirmation'),
+    to: z.string().email(),
+    from: z.string().optional(),
+    replyTo: z.string().optional(),
+    variables: Variables,
+    props: z.object({
+      customerName: z.string().min(1),
+      orderNumber: z.string().min(1),
+      totalCents: z.number().int().nonnegative(),
+      currency: z.string().length(3),
+      orderId: z.string().min(1),
+      orderStatusUrl: z.string().url().optional(),
+      lineItems: z
+        .array(
+          z.object({
+            name: z.string().min(1),
+            quantity: z.number().int().positive(),
+            unitTotalCents: z.number().int().nonnegative(),
+          })
+        )
+        .optional(),
+      shippingAddress: z
+        .object({
+          name: z.string().min(1),
+          line1: z.string().min(1),
+          line2: z.string().optional(),
+          city: z.string().min(1),
+          region: z.string().optional(),
+          postalCode: z.string().min(1),
+          country: z.string().length(2),
+        })
+        .optional(),
+    }),
+  }),
+  z.object({
+    template: z.literal('shipping-confirmation'),
+    to: z.string().email(),
+    from: z.string().optional(),
+    replyTo: z.string().optional(),
+    variables: Variables,
+    props: z.object({
+      customerName: z.string().min(1),
+      orderNumber: z.string().min(1),
+      carrier: z.string().min(1),
+      trackingNumber: z.string().min(1),
+      trackingUrl: z.string().url().optional(),
+      estimatedDelivery: z.string().optional(),
+      shippingAddress: z
+        .object({
+          name: z.string().min(1),
+          line1: z.string().min(1),
+          line2: z.string().optional(),
+          city: z.string().min(1),
+          region: z.string().optional(),
+          postalCode: z.string().min(1),
+          country: z.string().length(2),
+        })
+        .optional(),
+    }),
+  }),
 ]);
 
 // Pre-rendered "raw" send — used by broadcasts (render once, send to many) and

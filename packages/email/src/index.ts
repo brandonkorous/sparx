@@ -50,10 +50,14 @@ export {
   PasswordResetEmail,
   WelcomeMerchantEmail,
   DomainRenewalReminderEmail,
+  OrderConfirmationEmail,
+  ShippingConfirmationEmail,
   EmailLayout,
   type PasswordResetEmailProps,
   type WelcomeMerchantEmailProps,
   type DomainRenewalReminderEmailProps,
+  type OrderConfirmationEmailProps,
+  type ShippingConfirmationEmailProps,
 } from './templates';
 
 // Component primitives + tokens — consumed by templates inside this package;
