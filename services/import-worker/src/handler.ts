@@ -17,8 +17,8 @@ import type { Logger } from 'pino';
 import { z } from 'zod';
 import { prisma, withTenant } from '@sparx/db';
 
-import { processProductRows, type ProductRow } from './processors/products.js';
-import { processCustomerRows, type CustomerRow } from './processors/customers.js';
+import { processProductRows } from './processors/products.js';
+import { processCustomerRows } from './processors/customers.js';
 
 const ImportJobCreatedPayload = z.object({
   jobId: z.string().uuid(),
