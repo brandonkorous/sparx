@@ -48,6 +48,16 @@ export async function deleteCustomerAction(
   });
 }
 
+export async function bulkDeleteCustomersAction(
+  ids: string[]
+): Promise<ActionResult<{ deleted: number }>> {
+  return restAction(async () => {
+    await Promise.all(ids.map((id) => api.delete<void>(`/v1/crm/customers/${id}`)));
+    revalidatePath('/crm/customers');
+    return { deleted: ids.length };
+  });
+}
+
 export async function mergeCustomersAction(
   input: unknown
 ): Promise<ActionResult<{ primaryId: string; mergedIds: string[] }>> {

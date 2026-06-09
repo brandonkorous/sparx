@@ -75,3 +75,13 @@ export async function deleteCollectionAction(
     return { id: collectionId };
   });
 }
+
+export async function bulkDeleteCollectionsAction(
+  ids: string[]
+): Promise<ActionResult<{ deleted: number }>> {
+  return restAction(async () => {
+    await Promise.all(ids.map((id) => api.delete<void>(`/v1/commerce/collections/${id}`)));
+    revalidatePath('/commerce/collections');
+    return { deleted: ids.length };
+  });
+}

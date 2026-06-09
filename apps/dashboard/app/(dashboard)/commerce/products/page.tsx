@@ -1,28 +1,12 @@
 import { PackageOpen, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  Container,
-  EmptyState,
-  Grid,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
 import { EntityCreateButton } from '../../_components/entity-create-button';
-import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ProductsSelectionTable } from './_components/products-selection-table';
 import { getUserPreferences } from '../../_shell/preferences';
 
 interface ProductListItem {
@@ -62,12 +46,6 @@ export const dynamic = 'force-dynamic';
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
-
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
-  active: 'success',
-  draft: 'outline',
-  archived: 'warning',
-};
 
 const STATUS_OPTIONS = [
   { value: 'draft', label: 'Draft' },
@@ -238,112 +216,8 @@ export default async function ProductsPage({ searchParams }: PageProps) {
               }
             />
           </Card>
-        ) : view === 'card' ? (
-          <Grid minItemWidth="18rem" gap={4}>
-            {products.map((p) => (
-              <Card key={p.id} variant="module" padding="md">
-                <Stack gap={3}>
-                  <Stack direction="row" align="start" justify="between" gap={2}>
-                    <Stack gap={1} className="min-w-0">
-                      <EntityRowLink
-                        href={`/commerce/products/${p.id}`}
-                        entityType="product"
-                        entityId={p.id}
-                        className="truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                      >
-                        {p.title}
-                      </EntityRowLink>
-                      <Text size="xs" variant="muted">
-                        /{p.handle}
-                      </Text>
-                    </Stack>
-                    <Badge color={STATUS_VARIANT[p.status] ?? 'outline'} className="text-xs">
-                      {p.status}
-                    </Badge>
-                  </Stack>
-                  <Stack direction="row" align="center" justify="between" gap={2}>
-                    <Text size="sm" variant="muted">
-                      {p.vendor ?? '—'}
-                    </Text>
-                    <Text size="sm" className="tabular-nums">
-                      {formatPriceRange(p.priceMinCents, p.priceMaxCents)}
-                    </Text>
-                  </Stack>
-                  <Text size="xs" variant="muted">
-                    {variantsLabel(p.variantCount)} · updated{' '}
-                    {new Date(p.updatedAt).toLocaleDateString()}
-                  </Text>
-                </Stack>
-              </Card>
-            ))}
-          </Grid>
         ) : (
-          <Card padding="none">
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Vendor</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead className="text-right">Variants</TableHead>
-                    <TableHead className="text-right">Price</TableHead>
-                    <TableHead>Updated</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {products.map((p) => (
-                    <TableRow key={p.id}>
-                      <TableCell>
-                        <Stack gap={1}>
-                          <EntityRowLink
-                            href={`/commerce/products/${p.id}`}
-                            entityType="product"
-                            entityId={p.id}
-                            className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                          >
-                            {p.title}
-                          </EntityRowLink>
-                          <Text size="xs" variant="muted">
-                            /{p.handle}
-                          </Text>
-                        </Stack>
-                      </TableCell>
-                      <TableCell>
-                        <Badge color={STATUS_VARIANT[p.status] ?? 'outline'} className="text-xs">
-                          {p.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm" variant="muted">
-                          {p.vendor ?? '—'}
-                        </Text>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm" variant="muted">
-                          {p.productType ?? '—'}
-                        </Text>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        <Text size="sm">{Number.isNaN(p.variantCount) ? '—' : p.variantCount}</Text>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        <Text size="sm" variant="muted">
-                          {formatPriceRange(p.priceMinCents, p.priceMaxCents)}
-                        </Text>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm" variant="muted">
-                          {new Date(p.updatedAt).toLocaleDateString()}
-                        </Text>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <ProductsSelectionTable products={products} view={view} />
         )}
       </Stack>
     </Container>
@@ -358,19 +232,4 @@ function stringParam(v: string | string[] | undefined): string | undefined {
 
 function parseStatus(v: string | undefined): 'draft' | 'active' | 'archived' | undefined {
   return v === 'draft' || v === 'active' || v === 'archived' ? v : undefined;
-}
-
-// Variant count isn't in the search index, so search-result rows pass NaN and
-// render as — (the catalog list passes the real count).
-function variantsLabel(n: number): string {
-  if (Number.isNaN(n)) return '—';
-  return `${n} variant${n === 1 ? '' : 's'}`;
-}
-
-function formatPriceRange(minCents: number | null, maxCents: number | null): string {
-  if (minCents == null) return '—';
-  const fmt = (cents: number) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
-  if (maxCents == null || minCents === maxCents) return fmt(minCents);
-  return `${fmt(minCents)}–${fmt(maxCents)}`;
 }

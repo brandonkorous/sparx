@@ -14,28 +14,20 @@ import {
   Badge,
   Button,
   Card,
-  CardContent,
   Container,
   EmptyState,
-  Grid,
   PageHeader,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Text,
 } from '@sparx/ui';
 import { FileText } from 'lucide-react';
 
 import { api } from '@/lib/api-rest-client';
 import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
-import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ContentNewButton } from './content-new-button';
+import { ContentSelectionTable } from './_components/content-selection-table';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,12 +57,6 @@ const STATUS_OPTIONS = [
   { value: 'archived', label: 'Archived' },
 ];
 
-function entryTitle(e: ApiEntry): string {
-  if (typeof e.body.title === 'string' && e.body.title) return e.body.title;
-  if (typeof e.body.name === 'string' && e.body.name) return e.body.name;
-  return e.slug ?? '(untitled)';
-}
-
 function asString(v: string | string[] | undefined): string | undefined {
   if (typeof v === 'string' && v.length > 0) return v;
   if (Array.isArray(v)) return v[0];
@@ -83,19 +69,6 @@ function buildQuery(params: Record<string, string | undefined>): string {
     if (v) usp.set(k, v);
   }
   return usp.toString();
-}
-
-// Page entries keep the bespoke editor; every other type uses the generic one.
-function entryHref(e: ApiEntry): string {
-  return e.type_key === 'page' ? `/cms/${e.id}` : `/cms/types/${e.type_key}/${e.id}`;
-}
-function rowEntityType(e: ApiEntry): string {
-  return e.type_key === 'page' ? 'page' : 'content-entry';
-}
-// The content-entry detail token carries the type key so the drawer chrome can
-// rebuild the full-page href (/cms/types/<typeKey>/<id>). Page uses a bare id.
-function rowEntityId(e: ApiEntry): string {
-  return e.type_key === 'page' ? e.id : `${e.type_key}:${e.id}`;
 }
 
 interface PageProps {
@@ -235,108 +208,13 @@ export default async function ContentListPage({ searchParams }: PageProps) {
               }
             />
           </Card>
-        ) : view === 'card' ? (
-          <Grid minItemWidth="18rem" gap={4}>
-            {entries.map((e) => (
-              <Card key={e.id} variant="module" padding="md">
-                <Stack gap={3}>
-                  <Stack direction="row" align="start" justify="between" gap={2}>
-                    <Stack gap={1} className="min-w-0">
-                      <EntityRowLink
-                        href={entryHref(e)}
-                        entityType={rowEntityType(e)}
-                        entityId={rowEntityId(e)}
-                        className="truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                      >
-                        {entryTitle(e)}
-                      </EntityRowLink>
-                      {e.slug && (
-                        <Text size="xs" variant="muted">
-                          /{e.slug}
-                        </Text>
-                      )}
-                    </Stack>
-                    <Badge
-                      color={e.status === 'published' ? 'success' : 'outline'}
-                      className="text-xs"
-                    >
-                      {e.status}
-                    </Badge>
-                  </Stack>
-                  <Stack direction="row" align="center" justify="between" gap={2}>
-                    {showType && (
-                      <Badge color="module" variant="soft" className="text-xs">
-                        {typeName.get(e.type_key) ?? e.type_key}
-                      </Badge>
-                    )}
-                    <Text size="xs" variant="muted">
-                      {e.status === 'published' && e.published_at
-                        ? `Published ${new Date(e.published_at).toLocaleDateString()}`
-                        : `Updated ${new Date(e.updated_at).toLocaleDateString()}`}
-                    </Text>
-                  </Stack>
-                </Stack>
-              </Card>
-            ))}
-          </Grid>
         ) : (
-          <Card variant="module" padding="none">
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Title</TableHead>
-                    {showType && <TableHead>Type</TableHead>}
-                    <TableHead>Status</TableHead>
-                    <TableHead>Updated</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {entries.map((e) => (
-                    <TableRow key={e.id}>
-                      <TableCell>
-                        <Stack gap={1}>
-                          <EntityRowLink
-                            href={entryHref(e)}
-                            entityType={rowEntityType(e)}
-                            entityId={rowEntityId(e)}
-                            className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                          >
-                            {entryTitle(e)}
-                          </EntityRowLink>
-                          {e.slug && (
-                            <Text size="xs" variant="muted">
-                              /{e.slug}
-                            </Text>
-                          )}
-                        </Stack>
-                      </TableCell>
-                      {showType && (
-                        <TableCell>
-                          <Badge color="module" variant="soft" className="text-xs">
-                            {typeName.get(e.type_key) ?? e.type_key}
-                          </Badge>
-                        </TableCell>
-                      )}
-                      <TableCell>
-                        <Badge
-                          color={e.status === 'published' ? 'success' : 'outline'}
-                          className="text-xs"
-                        >
-                          {e.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm" variant="muted">
-                          {new Date(e.updated_at).toLocaleDateString()}
-                        </Text>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <ContentSelectionTable
+            entries={entries}
+            view={view}
+            showType={showType}
+            typeName={Object.fromEntries(typeName)}
+          />
         )}
 
         {(nextHref !== null || isPaged) && (

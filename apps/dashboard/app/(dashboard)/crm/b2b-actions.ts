@@ -36,6 +36,29 @@ export async function updateB2bAccountAction(
   });
 }
 
+export async function bulkDeleteB2bAccountsAction(
+  ids: string[]
+): Promise<ActionResult<{ deleted: number }>> {
+  return restAction(async () => {
+    await Promise.all(ids.map((id) => api.delete<void>(`/v1/crm/b2b-accounts/${id}`)));
+    revalidatePath('/crm/b2b');
+    return { deleted: ids.length };
+  });
+}
+
+export async function bulkSetB2bStatusAction(
+  ids: string[],
+  status: 'active' | 'credit_hold' | 'suspended' | 'inactive'
+): Promise<ActionResult<{ updated: number }>> {
+  return restAction(async () => {
+    await Promise.all(
+      ids.map((id) => api.patch<B2bAccountResponse>(`/v1/crm/b2b-accounts/${id}`, { status }))
+    );
+    revalidatePath('/crm/b2b');
+    return { updated: ids.length };
+  });
+}
+
 /** Credit-hold toggle — just a status flip on the B2B account row.
  *  Going through update() means the audit row + RLS check happen via the
  *  same path the rest of the form uses; a dedicated service method would

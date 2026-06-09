@@ -1,37 +1,20 @@
-import { Building2, Plus, AlertTriangle } from 'lucide-react';
+import { Building2, Plus } from 'lucide-react';
 
 import {
   Badge,
   Card,
-  CardContent,
   Container,
   EmptyState,
   PageHeader,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
-import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
-
-interface B2bAccountRow {
-  id: string;
-  companyName: string;
-  status: string;
-  pricingTier: string | null;
-  creditLimit: string | number;
-  creditUsed: string | number;
-  fleetSize: number | null;
-}
+import { B2bAccountsSelectionTable } from './_components/b2b-accounts-selection-table';
+import type { B2bAccountRow } from './_components/b2b-accounts-selection-table';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,12 +22,6 @@ interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline' | 'danger'> = {
-  active: 'success',
-  credit_hold: 'warning',
-  suspended: 'danger',
-  inactive: 'outline',
-};
 const STATUS_VALUES = ['active', 'credit_hold', 'suspended', 'inactive'] as const;
 
 const STATUS_OPTIONS = [
@@ -116,69 +93,7 @@ export default async function B2bAccountsPage({ searchParams }: PageProps) {
             />
           </Card>
         ) : (
-          <Card padding="none">
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Company</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Pricing tier</TableHead>
-                    <TableHead className="text-right">Credit limit</TableHead>
-                    <TableHead className="text-right">Used</TableHead>
-                    <TableHead>Fleet</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {accounts.map((a) => {
-                    const limit = Number(a.creditLimit);
-                    const used = Number(a.creditUsed);
-                    const utilization = limit > 0 ? used / limit : 0;
-                    return (
-                      <TableRow key={a.id}>
-                        <TableCell>
-                          <EntityRowLink
-                            href={`/crm/b2b/${a.id}`}
-                            entityType="b2b-account"
-                            entityId={a.id}
-                            className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                          >
-                            {a.companyName}
-                          </EntityRowLink>
-                        </TableCell>
-                        <TableCell>
-                          <Badge color={STATUS_VARIANT[a.status] ?? 'outline'} className="text-xs">
-                            {a.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Text size="sm" variant="muted">
-                            {a.pricingTier ?? '—'}
-                          </Text>
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          ${limit.toLocaleString()}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          <Stack direction="row" gap={1} align="center" justify="end">
-                            <span>${used.toLocaleString()}</span>
-                            {utilization >= 0.85 && (
-                              <AlertTriangle className="h-3.5 w-3.5 text-[var(--color-warning-500)]" />
-                            )}
-                          </Stack>
-                        </TableCell>
-                        <TableCell>
-                          <Text size="sm" variant="muted">
-                            {a.fleetSize ?? '—'}
-                          </Text>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <B2bAccountsSelectionTable accounts={accounts} />
         )}
       </Stack>
     </Container>

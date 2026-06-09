@@ -315,6 +315,11 @@ export {
 } from './components/data/list-toolbar';
 export { Tag, tagVariants, type TagProps } from './components/data/tag';
 export {
+  BulkActionBar,
+  type BulkActionBarProps,
+  type BulkAction,
+} from './components/data/bulk-action-bar';
+export {
   Timeline,
   TimelineItem,
   TimelineTitle,

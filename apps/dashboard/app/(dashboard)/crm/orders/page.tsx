@@ -3,38 +3,19 @@ import { ShoppingCart, Plus } from 'lucide-react';
 import {
   Badge,
   Card,
-  CardContent,
   Container,
   EmptyState,
   PageHeader,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
-import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
-
-interface OrderRow {
-  id: string;
-  orderNumber: string;
-  status: string;
-  paymentStatus: string;
-  currency: string;
-  total: string | number;
-  amountPaid: string | number;
-  placedAt: string | null;
-  channel: string | null;
-}
+import { OrdersSelectionTable } from './_components/orders-selection-table';
+import type { OrderRow } from './_components/orders-selection-table';
 
 // Orders index — sortable + filterable table. Filters live in the query
 // string so links and saved views serialize cleanly.
@@ -44,14 +25,6 @@ export const dynamic = 'force-dynamic';
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
-
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline' | 'danger'> = {
-  placed: 'outline',
-  fulfilled: 'success',
-  delivered: 'success',
-  cancelled: 'danger',
-  refunded: 'warning',
-};
 
 const STATUS_OPTIONS = [
   { value: 'placed', label: 'Placed' },
@@ -200,67 +173,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
             />
           </Card>
         ) : (
-          <Card padding="none">
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Order #</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Payment</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                    <TableHead className="text-right">Paid</TableHead>
-                    <TableHead>Placed</TableHead>
-                    <TableHead>Channel</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {orders.map((o) => (
-                    <TableRow key={o.id}>
-                      <TableCell>
-                        <EntityRowLink
-                          href={`/crm/orders/${o.id}`}
-                          entityType="order"
-                          entityId={o.id}
-                          className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                        >
-                          {o.orderNumber}
-                        </EntityRowLink>
-                      </TableCell>
-                      <TableCell>
-                        <Badge color={STATUS_VARIANT[o.status] ?? 'outline'} className="text-xs">
-                          {o.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-xs">
-                          {o.paymentStatus}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {o.currency} {Number(o.total).toLocaleString()}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {Number.isNaN(Number(o.amountPaid))
-                          ? '—'
-                          : `${o.currency} ${Number(o.amountPaid).toLocaleString()}`}
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm" variant="muted">
-                          {o.placedAt ? new Date(o.placedAt).toLocaleDateString() : '—'}
-                        </Text>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm" variant="muted">
-                          {o.channel ?? '—'}
-                        </Text>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <OrdersSelectionTable orders={orders} />
         )}
       </Stack>
     </Container>
