@@ -60,6 +60,7 @@ export { SocialLinks, type SocialLinksProps, type SocialItem } from './component
 export { EditorialSection, type EditorialSectionProps } from './components/editorial-section';
 export { FAQ, type FaqProps, type FaqEntry } from './components/faq';
 export { FeatureGrid, type FeatureGridProps, type FeatureItem } from './components/feature-grid';
+export { Signup, type SignupProps } from './components/signup';
 export { EmbedFrame, type EmbedFrameProps, type EmbedRatio } from './components/embed-frame';
 export { Video, type VideoProps } from './components/video';
 export { Map, type MapProps } from './components/map';
@@ -267,6 +268,7 @@ export {
   type ThemeMode,
   type ThemeControllerVariant,
 } from './components/theme-controller';
+export { ThemeToggle, type ThemeToggleProps } from './components/theme-toggle';
 
 // ── Catalog: mockups ───────────────────────────────────────
 export { Browser, type BrowserProps } from './components/browser';

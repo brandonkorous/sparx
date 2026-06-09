@@ -42,6 +42,9 @@ export const SegmentField = z.enum([
   'email.openedLast30d',
   'email.clickedLast30d',
   'email.unsubscribed',
+  // Opted into marketing email (gdpr_consent.scope includes 'marketing' AND not
+  // do-not-contact). Drives the built-in "Newsletter Subscribers" segment.
+  'email.subscribed',
 ]);
 export type SegmentField = z.infer<typeof SegmentField>;
 
@@ -151,6 +154,8 @@ export const CustomerProjection = z.object({
     openedLast30d: z.number().int(),
     clickedLast30d: z.number().int(),
     unsubscribed: z.boolean(),
+    // True when the customer holds marketing consent and isn't do-not-contact.
+    subscribed: z.boolean(),
   }),
 });
 export type CustomerProjection = z.infer<typeof CustomerProjection>;

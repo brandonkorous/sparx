@@ -6,5 +6,5 @@
 
 export { DEFAULT_PIPELINE_TEMPLATE } from './pipeline';
 export type { PipelineTemplate, PipelineStageTemplate } from './pipeline';
-export { BUILT_IN_SEGMENT_TEMPLATES } from './segments';
+export { BUILT_IN_SEGMENT_TEMPLATES, NEWSLETTER_SEGMENT_SLUG } from './segments';
 export type { SegmentTemplate } from './segments';

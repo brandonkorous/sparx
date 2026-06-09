@@ -1,0 +1,24 @@
+/* Surface ThemeToggle — compact icon button that flips light/dark (docs/46 §5.2).
+ * Drives [data-theme] (the @sparx/site-themes mechanism). Mirrors the header
+ * icon-button chrome: transparent at rest, a subtle surface fill on hover. */
+
+.sf-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--sf-radius-field, 0.5rem);
+  background: transparent;
+  color: var(--sf-base-content, #23211c);
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+.sf-theme-toggle:hover {
+  background: var(--sf-base-200, #f4f1e8);
+}
+.sf-theme-toggle:focus-visible {
+  outline: 2px solid var(--sf-primary, #3f6b52);
+  outline-offset: 2px;
+}

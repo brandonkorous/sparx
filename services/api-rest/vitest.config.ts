@@ -1,4 +1,5 @@
 import { configDefaults, defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
 
 // Integration suites under test/integration/** require a live Postgres with
 // migrations applied. CI doesn't run a database yet, so we skip them there
@@ -7,6 +8,12 @@ import { configDefaults, defineConfig } from 'vitest/config';
 const IS_CI = process.env.CI === 'true' || process.env.CI === '1';
 
 export default defineConfig({
+  // The app graph pulls in @sparx/email, which ships raw .tsx (React Email
+  // templates). Without a JSX transform vite's import-analysis can't parse it
+  // and EVERY integration suite fails at import time. Mirror @sparx/email's own
+  // test config so api-rest can transform that JSX (test-only; production runs
+  // through tsx). See packages/email/vitest.config.ts.
+  plugins: [react()],
   test: {
     environment: 'node',
     fileParallelism: false,

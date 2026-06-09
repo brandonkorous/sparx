@@ -7,6 +7,7 @@
 
 import { withTenant } from '@sparx/db';
 
+import { publishCrmEvent } from '../events';
 import { gateHandler, type ConsumerContext } from './registry';
 import { resolveCustomerByEmail } from './resolve';
 
@@ -83,6 +84,19 @@ export function registerEmailEventConsumers(ctx: ConsumerContext): (() => void)[
             });
           }
         });
+
+        // A flipped do-not-contact changes the customer's marketing eligibility,
+        // so re-evaluate their segments (the evaluator drops them from
+        // "Newsletter Subscribers"). Emitted post-commit; the platform-bus fan-out
+        // delivers it to the in-process evaluator. Idempotent via the dedupe key.
+        if (topic === 'email.unsubscribed') {
+          await publishCrmEvent({
+            tenantId: event.tenantId,
+            topic: 'crm.customer.updated',
+            payload: { customerId },
+            dedupeKey: `crm.customer.updated:unsubscribed:${customerId}:${event.id}`,
+          });
+        }
       })
     )
   );

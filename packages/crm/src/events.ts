@@ -33,6 +33,10 @@ export type CrmTopic =
   | 'crm.customer.updated'
   | 'crm.customer.merged'
   | 'crm.customer.deleted'
+  // A marketing opt-in (newsletter block / checkout opt-in). Distinct from
+  // `.created` so the email module can route only consenting contacts to an
+  // audience without re-checking gdpr_consent on every customer write.
+  | 'crm.customer.subscribed'
   | 'crm.b2b_account.created'
   | 'crm.b2b_account.updated'
   | 'crm.pipeline.created'

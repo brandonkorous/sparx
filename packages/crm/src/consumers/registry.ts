@@ -16,6 +16,7 @@ import { isModuleEnabled, invalidateModuleCache } from '@sparx/auth';
 
 import { getDedupeStore } from './dedupe';
 import { getPlatformBus, type PlatformEvent, type PlatformEventHandler } from './platform-bus';
+import { installPlatformBusFanout } from './platform-fanout';
 
 import { registerOrderEventConsumers } from './order-events';
 import { registerEmailEventConsumers } from './email-events';
@@ -39,6 +40,13 @@ export interface ConsumerRegistration {
 export function registerCrmConsumers(opts: RegisterOptions = {}): ConsumerRegistration {
   const bus = opts.bus ?? getPlatformBus();
   const teardowns: (() => void)[] = [];
+
+  // Bridge allowlisted crm.* domain events onto this bus so the consumers below
+  // (the segment evaluator) actually receive them — without it, a service's
+  // `publishCrmEvent('crm.customer.updated')` reaches webhooks + Pub/Sub but never
+  // the in-process evaluator subscribed to that topic. Teardown restores the
+  // prior publisher, so test suites stay isolated.
+  teardowns.push(installPlatformBusFanout(bus));
 
   // Each consumer registers its own subscriptions. The gate wrapper is shared.
   const ctx = { bus, gate: gateHandler };

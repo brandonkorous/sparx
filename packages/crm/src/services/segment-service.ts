@@ -221,3 +221,43 @@ export async function bootstrapBuiltInSegments(ctx: ServiceContext): Promise<Seg
     return seeded;
   });
 }
+
+// Ensure ONE built-in segment exists for a tenant (idempotent, slug-keyed).
+// Unlike bootstrapBuiltInSegments (which seeds the full set on CRM activation),
+// this guarantees a single template is present on demand — used by the
+// storefront signup path so a tenant that activated CRM before a new built-in
+// (e.g. Newsletter Subscribers) landed still gets its target segment materialized
+// the first time someone subscribes. Returns the existing or newly-created row.
+export async function ensureBuiltInSegment(ctx: ServiceContext, slug: string): Promise<Segment> {
+  const template = BUILT_IN_SEGMENT_TEMPLATES.find((t) => t.slug === slug);
+  if (!template) throw new Error(`Unknown built-in segment template: ${slug}`);
+  return withTenant(ctx, async (tx) => {
+    const existing = await tx.segment.findUnique({
+      where: { tenantId_slug: { tenantId: ctx.tenantId, slug } },
+    });
+    if (existing) return existing;
+    const created = await tx.segment.create({
+      data: {
+        tenantId: ctx.tenantId,
+        name: template.name,
+        slug: template.slug,
+        description: template.description,
+        color: template.color,
+        rules: template.rules,
+        isSystem: true,
+        isBuiltIn: true,
+      },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'system',
+      action: 'crm.segment.bootstrapped',
+      entityType: 'Segment',
+      entityId: created.id,
+      diff: { after: { slug: created.slug } },
+    });
+    return created;
+  });
+}

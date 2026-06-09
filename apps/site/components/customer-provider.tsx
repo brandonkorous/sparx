@@ -15,6 +15,9 @@ export type CustomerStatus = 'loading' | 'authenticated' | 'anonymous';
 export interface CustomerContextValue {
   /** The active tenant slug — account pages pass it to the customer-client. */
   tenantSlug: string;
+  /** The active site slug (docs/58 D2), if any — storefront islands (e.g. the
+   *  newsletter signup) tag captures with their origin site. Undefined = primary. */
+  propertySlug?: string;
   customer: Customer | null;
   status: CustomerStatus;
   login: (email: string, password: string) => Promise<void>;
@@ -105,8 +108,8 @@ export function CustomerProvider({
   }, [tenantSlug]);
 
   const value = useMemo<CustomerContextValue>(
-    () => ({ tenantSlug, customer, status, login, register, logout, refresh }),
-    [tenantSlug, customer, status, login, register, logout, refresh]
+    () => ({ tenantSlug, propertySlug, customer, status, login, register, logout, refresh }),
+    [tenantSlug, propertySlug, customer, status, login, register, logout, refresh]
   );
 
   return (
