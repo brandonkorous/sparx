@@ -27,6 +27,7 @@ All three can be built in parallel by separate agents. Dependencies are noted pe
 Install `stripe` SDK in `services/api-rest/`. Add to Secret Manager and `.env.example`: `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`.
 
 Create `services/api-rest/src/lib/stripe.ts`:
+
 - Stripe client singleton (reads key from env)
 - `createPaymentIntent(params)` — creates PaymentIntent with `automatic_payment_methods: { enabled: true }`
 - `confirmPaymentIntent(id)` — confirm + capture
@@ -39,17 +40,18 @@ Pub/Sub events to add in `@sparx/events`: `order.created`, `order.fulfilled`, `o
 
 New route file `services/api-rest/src/routes/v1/checkout.ts` (or extend existing checkout-sessions):
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/v1/checkout/sessions` | Create session from cart — validates inventory, calculates totals, creates PaymentIntent |
-| `GET` | `/v1/checkout/sessions/:id` | Current session state (items, totals, payment intent client secret) |
-| `PATCH` | `/v1/checkout/sessions/:id` | Update shipping address / method / contact info |
-| `POST` | `/v1/checkout/sessions/:id/shipping-rates` | Calculate available shipping rates for current address |
-| `POST` | `/v1/checkout/sessions/:id/complete` | Confirm PaymentIntent → create Order → decrement inventory atomically |
+| Method  | Path                                       | Description                                                                              |
+| ------- | ------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `POST`  | `/v1/checkout/sessions`                    | Create session from cart — validates inventory, calculates totals, creates PaymentIntent |
+| `GET`   | `/v1/checkout/sessions/:id`                | Current session state (items, totals, payment intent client secret)                      |
+| `PATCH` | `/v1/checkout/sessions/:id`                | Update shipping address / method / contact info                                          |
+| `POST`  | `/v1/checkout/sessions/:id/shipping-rates` | Calculate available shipping rates for current address                                   |
+| `POST`  | `/v1/checkout/sessions/:id/complete`       | Confirm PaymentIntent → create Order → decrement inventory atomically                    |
 
 Checkout session creates a `PaymentIntent` and returns `client_secret` to the storefront for Stripe.js to handle 3D Secure, Apple Pay, Google Pay, and Link. The session stores `stripe_payment_intent_id`; completion is idempotent (re-presenting confirmed intent returns the existing order).
 
 Order creation (atomic, in a Postgres transaction):
+
 1. Verify all inventory still available (re-check, don't trust session snapshot)
 2. Decrement `product_variants.inventory_quantity` for each line
 3. Insert `orders` row + `order_lines` rows
@@ -62,6 +64,7 @@ Order creation (atomic, in a Postgres transaction):
 Flat rate shipping for Phase 1 (covers 95% of tenants out of the box):
 
 New `shipping_zones` + `shipping_rates` tables (RLS ENABLE + FORCE):
+
 - `shipping_zones`: id, tenant_id, name, countries TEXT[], regions TEXT[]
 - `shipping_rates`: id, tenant_id, zone_id, name, type (flat/free/weight/price), value_cents, min_weight, max_weight, min_order_cents, is_active
 
@@ -84,12 +87,14 @@ TaxJar / Avalara integration is Phase 2 — deferred until a tenant explicitly n
 ### Phase 5 — Orders dashboard + fulfillment
 
 `apps/app/src/app/(dashboard)/commerce/orders/` — full orders list + detail view:
+
 - Orders list: ListToolbar with status / date / fulfillment filters, search
 - Order detail: timeline, line items, payment status, fulfillment panel, refund panel
 - Fulfillment: "Create fulfillment" (enter tracking number + carrier) → publishes `order.fulfilled` → email-worker sends shipping confirmation
 - Refund: full or partial, back to original payment method via Stripe, inventory restock toggle
 
 API:
+
 - `GET /v1/orders` — list with filters
 - `GET /v1/orders/:id` — full detail
 - `POST /v1/orders/:id/fulfillments` — create fulfillment
@@ -98,6 +103,7 @@ API:
 ### Phase 6 — Storefront checkout UI
 
 `apps/site/app/checkout/` — multi-step React form:
+
 1. Cart review (items, subtotal, discount code input)
 2. Customer info (email, name — pre-populated if logged in)
 3. Shipping (address form, rate selector)
@@ -109,6 +115,7 @@ Uses `@stripe/stripe-js` and `@stripe/react-stripe-js`. PaymentIntent client sec
 ### Phase 7 — Stripe webhooks
 
 `POST /v1/webhooks/stripe` (no auth, signature verification only):
+
 - `payment_intent.succeeded` → mark order paid, publish `payment.captured`
 - `payment_intent.payment_failed` → notify merchant, restore inventory reservation
 - `charge.refunded` → update order financial status
@@ -132,6 +139,7 @@ Extend checkout session: `POST /v1/checkout/sessions/:id/discount` → validate 
 Stripe Connect allows tenants to accept payments through their own Stripe account (marketplace model) or platform account depending on configuration.
 
 For Phase 1, use **Stripe Connect Express** (fastest path to tenant-owns-payments):
+
 1. "Connect Stripe" button in onboarding Step 5 → redirect to Stripe OAuth URL with `scope=read_write&client_id={STRIPE_CLIENT_ID}`
 2. Stripe redirects back to `/api/stripe/callback?code=...`
 3. Exchange code for `stripe_user_id` + `access_token` via `POST https://connect.stripe.com/oauth/token`
@@ -145,6 +153,7 @@ Add `stripe_account_id` + `stripe_access_token` (encrypted) to `tenants` table. 
 ### Phase 2 — Done screen + post-onboarding state
 
 Done screen (`/onboarding/done`):
+
 - Accurately reflects what was completed: live subdomain ✓ / products # ✓ / payments connected ✓ or ✗
 - "Visit Store" → opens `https://{slug}.sparx.zone` in new tab
 - "Go to Dashboard" → redirect to `/`
@@ -176,23 +185,26 @@ Add the combined acceptance checkbox to the sign-up form: _"I agree to the Sparx
 New service `services/api-mcp/` as a GKE Deployment (not Cloud Run — it runs persistent SSE connections).
 
 Setup:
+
 - `@modelcontextprotocol/sdk` as the MCP transport layer
 - Fastify + SSE transport for Claude (MCP over SSE), HTTP transport for ChatGPT/Copilot (MCP over HTTP)
 - Module gate: every request validates the tenant has the `ai` module active. Reject with HTTP 403 if not.
 - Per-tool scope checking: read vs. write scopes per docs/07 §5
 
-API key generation: new `mcp_api_keys` table (tenant_id, key_hash, scopes TEXT[], label, last_used_at, created_at — RLS ENABLE + FORCE). Dashboard Settings → AI Integrations generates scoped keys. Keys are `sparx_mcp_{random}` format, hashed with Argon2id at rest.
+API key generation: new `mcp_api_keys` table (tenant*id, key_hash, scopes TEXT[], label, last_used_at, created_at — RLS ENABLE + FORCE). Dashboard Settings → AI Integrations generates scoped keys. Keys are `sparx_mcp*{random}` format, hashed with Argon2id at rest.
 
 Rate limiting: 60 req/min, 5000 req/day, 10 write tool-calls/min per tenant (configurable via `MCP_QUOTA` constant — docs/07 §7).
 
 ### Phase 2 — Core read tools (Orders + Customers)
 
 Implement the tools from docs/07 §3. All tools follow the same pattern:
+
 1. Extract `tenantId` from validated API key context
 2. Query Prisma with explicit `tenantId` filter (RLS is FORCE on all tables, but still filter explicitly)
 3. Return structured JSON as `{ content: [{ type: 'text', text: JSON.stringify(result) }] }`
 
 **Orders tools:**
+
 - `get_orders({ status?, dateRange?, customerId?, limit?, cursor? })`
 - `get_order({ orderId })`
 - `get_order_stats({ period })`
@@ -201,6 +213,7 @@ Implement the tools from docs/07 §3. All tools follow the same pattern:
 - `update_order_status({ orderId, status })` — write scope, confirmation required
 
 **Customer & CRM tools:**
+
 - `get_customers({ q?, limit?, cursor? })`
 - `get_customer({ customerId })`
 - `get_inactive_customers({ days })`
@@ -213,12 +226,14 @@ All write tools include a `dry_run: true` mode that returns what would be change
 ### Phase 3 — Products, inventory, and analytics tools
 
 **Products & Inventory:**
+
 - `get_products({ q?, status?, limit?, cursor? })`
 - `get_low_inventory({ threshold? })`
 - `get_product_performance({ productId?, period })`
 - `update_inventory({ variantId, adjustment, reason })` — write scope
 
 **Analytics:**
+
 - `get_revenue_summary({ period, compareTo? })`
 - `get_sales_by_product({ period, limit? })`
 - `get_conversion_rate({ period })`
@@ -226,11 +241,13 @@ All write tools include a `dry_run: true` mode that returns what would be change
 ### Phase 4 — Email and dropship tools
 
 **Email:**
+
 - `send_broadcast({ templateId?, subject, body?, segmentId?, customerIds? })` — write scope, confirmation required, publishes `email.send` via Pub/Sub (does NOT call sendTemplate directly)
 - `get_email_stats({ period })`
 - `get_automations()`
 
 **Dropship** (depends on Tier 2 Dropship Phase 1):
+
 - `get_dropship_suppliers()`
 - `sync_supplier({ supplierId })` — triggers catalog sync event
 - `get_pending_dropship_orders()`
@@ -240,6 +257,7 @@ All write tools include a `dry_run: true` mode that returns what would be change
 **Audit trail:** log every MCP tool call to `audit_logs` (already exists) with actor `system/mcp/{client}`, action = tool name, parameters sanitized (no PII in keys), result status.
 
 **Dashboard Settings → AI Integrations:**
+
 - Connection cards: Claude / ChatGPT / Copilot — each shows the MCP server URL + generated key
 - "Generate key" flow: label + scope checkboxes → creates key → shows key once (not stored)
 - Key management: list active keys, revoke individual keys
@@ -255,23 +273,23 @@ TF changes: add `api-mcp` to the service image registry in `infra/terraform/`, a
 
 ## Build order summary
 
-| # | Feature | Phase | Notes |
-|---|---------|-------|-------|
-| 1 | Checkout | Ph1 Stripe foundation | Unblocked |
-| 2 | Checkout | Ph2 Checkout API | After Ph1 |
-| 3 | MCP | Ph1 Service scaffold + auth | Unblocked (parallel) |
-| 4 | Checkout | Ph3 Shipping (flat rate) | After Ph2 |
-| 5 | Checkout | Ph4 Tax (manual rates) | After Ph2 |
-| 6 | MCP | Ph2 Core read tools | After Ph1 |
-| 7 | Onboarding | Ph1 Stripe Connect OAuth | After Checkout Ph1 |
-| 8 | Checkout | Ph5 Orders dashboard + fulfillment | After Ph2 |
-| 9 | Checkout | Ph6 Storefront checkout UI | After Ph2–4 |
-| 10 | Checkout | Ph7 Stripe webhooks | After Ph6 |
-| 11 | Checkout | Ph8 Discounts at checkout | After Ph6 |
-| 12 | Onboarding | Ph2 Done screen + tips | After Onboarding Ph1 |
-| 13 | MCP | Ph3 Products + analytics tools | After Ph2 |
-| 14 | MCP | Ph4 Email + dropship tools | After Ph3; dropship after Tier 2 |
-| 15 | MCP | Ph5 Audit trail + dashboard UI | After Ph2 |
-| 16 | Onboarding | Ph3 Domain integration | After Tier 2 Domain Ph4 |
-| 17 | Onboarding | Ph4 Legal acceptance gate | Unblocked (can go early) |
-| 18 | MCP | Ph6 K8s deployment | After Ph5 |
+| #   | Feature    | Phase                              | Notes                            |
+| --- | ---------- | ---------------------------------- | -------------------------------- |
+| 1   | Checkout   | Ph1 Stripe foundation              | Unblocked                        |
+| 2   | Checkout   | Ph2 Checkout API                   | After Ph1                        |
+| 3   | MCP        | Ph1 Service scaffold + auth        | Unblocked (parallel)             |
+| 4   | Checkout   | Ph3 Shipping (flat rate)           | After Ph2                        |
+| 5   | Checkout   | Ph4 Tax (manual rates)             | After Ph2                        |
+| 6   | MCP        | Ph2 Core read tools                | After Ph1                        |
+| 7   | Onboarding | Ph1 Stripe Connect OAuth           | After Checkout Ph1               |
+| 8   | Checkout   | Ph5 Orders dashboard + fulfillment | After Ph2                        |
+| 9   | Checkout   | Ph6 Storefront checkout UI         | After Ph2–4                      |
+| 10  | Checkout   | Ph7 Stripe webhooks                | After Ph6                        |
+| 11  | Checkout   | Ph8 Discounts at checkout          | After Ph6                        |
+| 12  | Onboarding | Ph2 Done screen + tips             | After Onboarding Ph1             |
+| 13  | MCP        | Ph3 Products + analytics tools     | After Ph2                        |
+| 14  | MCP        | Ph4 Email + dropship tools         | After Ph3; dropship after Tier 2 |
+| 15  | MCP        | Ph5 Audit trail + dashboard UI     | After Ph2                        |
+| 16  | Onboarding | Ph3 Domain integration             | After Tier 2 Domain Ph4          |
+| 17  | Onboarding | Ph4 Legal acceptance gate          | Unblocked (can go early)         |
+| 18  | MCP        | Ph6 K8s deployment                 | After Ph5                        |

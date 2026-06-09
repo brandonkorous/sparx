@@ -13,6 +13,7 @@ This doc is the sequenced build plan for the four Tier 2 modules: Domain Purchas
 **Context:** The platform is pre-live. Tier 1 work (Checkout/Payment, Onboarding completion, MCP/AI) is running in parallel by other agents. Tier 2 work can proceed in parallel on its own branch(es). Billing/Stripe is explicitly deferred — where a phase touches payment (Domain Purchase), stub the Stripe charge with a placeholder that can be wired later.
 
 **Build constraints (from CLAUDE.md):**
+
 - Production-complete — no stubs, no happy-path-only flows
 - Module-gated via feature flags, not plan tiers
 - Event-driven side effects via Pub/Sub (no inline handlers)
@@ -46,17 +47,18 @@ This doc is the sequenced build plan for the four Tier 2 modules: Domain Purchas
 
 Extend `services/api-rest/src/routes/v1/domains.ts`:
 
-| Method | Path | Body | Returns |
-|--------|------|------|---------|
-| `POST` | `/v1/domains/search` | `{ query }` | `DomainSuggestion[]` |
-| `POST` | `/v1/domains/check` | `{ domain }` | `DomainAvailability` |
-| `POST` | `/v1/domains/purchase` | `{ domain, years, privacy, propertyId }` | `{ domain, orderId, expiresAt }` |
-| `POST` | `/v1/domains/:id/renew` | `{ years }` | `{ domain, expiresAt }` |
-| `POST` | `/v1/domains/:id/transfer-out` | — | `{ authCode }` |
-| `PATCH` | `/v1/domains/:id/privacy` | `{ enabled }` | updated domain |
-| `PATCH` | `/v1/domains/:id/auto-renew` | `{ enabled }` | updated domain |
+| Method  | Path                           | Body                                     | Returns                          |
+| ------- | ------------------------------ | ---------------------------------------- | -------------------------------- |
+| `POST`  | `/v1/domains/search`           | `{ query }`                              | `DomainSuggestion[]`             |
+| `POST`  | `/v1/domains/check`            | `{ domain }`                             | `DomainAvailability`             |
+| `POST`  | `/v1/domains/purchase`         | `{ domain, years, privacy, propertyId }` | `{ domain, orderId, expiresAt }` |
+| `POST`  | `/v1/domains/:id/renew`        | `{ years }`                              | `{ domain, expiresAt }`          |
+| `POST`  | `/v1/domains/:id/transfer-out` | —                                        | `{ authCode }`                   |
+| `PATCH` | `/v1/domains/:id/privacy`      | `{ enabled }`                            | updated domain                   |
+| `PATCH` | `/v1/domains/:id/auto-renew`   | `{ enabled }`                            | updated domain                   |
 
 Purchase flow sequence (per docs/24 §4):
+
 1. [Stub] Stripe charge → mock `payment_intent_id`
 2. GoDaddy: `purchaseDomain` → `orderId`
 3. GoDaddy: `configureDNS` with Sparx DNS records (CNAME @/www → customers.sparx.zone, SPF TXT, DKIM TXT with generated keypair, DMARC, MX)
@@ -67,6 +69,7 @@ Purchase flow sequence (per docs/24 §4):
 ### Phase 3 — Domain worker
 
 New Cloud Run worker (`services/domain-worker/`) subscribed to `domain.purchased`:
+
 - Polls DNS propagation for the new domain
 - Marks domain `status: active` once resolved
 - Triggers renewal notification emails (30/14/7 day schedule via existing email-worker)
@@ -75,6 +78,7 @@ New Cloud Run worker (`services/domain-worker/`) subscribed to `domain.purchased
 ### Phase 4 — Dashboard UI
 
 **Settings → Domains panel** (`apps/app/src/app/(dashboard)/settings/domains/`):
+
 - List all domains with status badges (Active / Pending DNS / SSL provisioning / Expiring soon in orange <30d / red <7d)
 - Per-domain actions: Set primary, Renew, Enable WHOIS privacy, Transfer out, Remove
 - "Find a new domain" search flow (debounced 300ms, suggestions grid with pricing, "Purchase & Connect" button → payment confirmation modal → progress steps → success)
@@ -84,6 +88,7 @@ New Cloud Run worker (`services/domain-worker/`) subscribed to `domain.purchased
 ### Phase 5 — MCP tools
 
 Add to MCP server (`services/mcp-server/`):
+
 - `get_domains()` — lists all tenant domains with status
 - `check_domain_availability(domain)` — availability + pricing
 - `suggest_domains(query)` — available suggestions for a business name
@@ -100,6 +105,7 @@ Add to MCP server (`services/mcp-server/`):
 ### Phase 1 — Data model + pricing tiers
 
 New migration — tables (all with RLS ENABLE + FORCE):
+
 - `b2b_pricing_tiers`: id, tenant_id, name, discount_type (percentage/fixed), discount_value, product_scope (all/collections/products), min_order_cents, created_at
 - `b2b_tier_product_overrides`: id, tenant_id, tier_id, product_id (nullable), collection_id (nullable), price_cents (nullable), discount_percentage (nullable)
 - `b2b_account_product_overrides`: same shape but account_id instead of tier_id
@@ -108,11 +114,13 @@ New migration — tables (all with RLS ENABLE + FORCE):
 Price resolution function `resolve_b2b_price(variant_id, b2b_account_id)` → returns effective price + tier used. Implement in Postgres as a SQL function so it's consistent across API calls.
 
 Dashboard UI (`apps/app/src/app/(dashboard)/commerce/b2b/`):
+
 - Account list (name, tier, credit status, outstanding balance)
 - Account detail: info, contacts, credit summary, pricing override table, fleet profile editor, order history
 - Pricing Tiers list + create/edit form
 
 API routes (`services/api-rest/src/routes/v1/b2b/`):
+
 - `GET /v1/b2b/accounts` — list with filters (status, tier, overdue)
 - `GET/POST/PATCH /v1/b2b/accounts/:id`
 - `GET/POST/PATCH /v1/b2b/pricing-tiers`
@@ -126,6 +134,7 @@ New tables: `b2b_quotes` (id, tenant_id, account_id, customer_id, status, expiry
 Quote lifecycle: `draft → submitted → under_review → quoted → accepted/declined/expired`
 
 API routes:
+
 - `GET/POST /v1/b2b/quotes`
 - `GET/PATCH /v1/b2b/quotes/:id`
 - `POST /v1/b2b/quotes/:id/submit`
@@ -135,6 +144,7 @@ API routes:
 - `GET /v1/b2b/quotes/:id/pdf` → stream PDF
 
 Dashboard UI:
+
 - Quotes list (pending response, active, expired)
 - Quote detail / response editor (set per-line prices, add notes, set expiry, send)
 
@@ -143,6 +153,7 @@ Email notifications: `quote.submitted` → merchant, `quote.responded` → custo
 ### Phase 3 — Net terms + credit management
 
 Invoice generation at order creation for net-terms accounts:
+
 - `b2b_invoices` table: id, tenant_id, account_id, order_id, invoice_number, due_at, status (unpaid/paid/overdue), paid_at
 - `POST /v1/b2b/invoices/:id/mark-paid` (manual payment recording)
 - Credit utilization: `credit_used_cents` = sum of unpaid invoices; enforced at order placement
@@ -175,12 +186,14 @@ Extend `@sparx/customer-auth` (not Better Auth — see docs/27) with B2B account
 ### Phase 1 — Connector framework + data model
 
 New tables (all RLS ENABLE + FORCE):
+
 - `dropship_suppliers`: id, tenant_id, name, type (dsers/spocket/faire/autods/custom/csv), credentials JSONB (encrypted), status (connecting/active/error/disconnected), last_sync_at
 - `dropship_products`: id, tenant_id, supplier_id, supplier_product_id, title, description, images JSONB, variants JSONB, cost_price_cents, msrp_cents, raw JSONB, imported_at
 - `dropship_product_links`: id, tenant_id, product_id (→ products), dropship_product_id, supplier_sku, status (active/discontinued)
 - `dropship_orders`: id, tenant_id, order_id (→ orders), supplier_id, supplier_order_id, status (pending/submitted/shipped/delivered/failed), tracking_number, tracking_url, submitted_at, shipped_at
 
 `SupplierAdapter` interface in `packages/dropship/`:
+
 ```typescript
 interface SupplierAdapter {
   authenticate(credentials: Credentials): Promise<boolean>;
@@ -198,6 +211,7 @@ First concrete adapter: CSV file upload. Merchant uploads supplier CSV → norma
 Pricing rules engine: cost + percentage margin / multiplier / flat markup / compare-at = MSRP. Applied at import time, configurable per supplier.
 
 Dashboard UI:
+
 - Suppliers list + Add Supplier flow (select type → enter credentials → test → sync)
 - Supplier catalog browser (search, filter by category/price/shipping-time, Import button)
 - Dropship Products list (imported products, margin %, sync status)
@@ -205,6 +219,7 @@ Dashboard UI:
 ### Phase 3 — Order router
 
 When an order is placed containing dropship products:
+
 1. Order router splits fulfillment groups by supplier
 2. For each group: create `dropship_orders` row, publish `dropship.order.route` event
 3. Dropship worker consumes event → calls `adapter.submitOrder()` → stores `supplier_order_id`
@@ -213,6 +228,7 @@ When an order is placed containing dropship products:
 Mixed orders (inventory + dropship) handled in a single checkout; each group fulfills independently.
 
 New Cloud Run worker `services/dropship-worker/`:
+
 - Subscribes to `dropship.order.route` (submit to supplier)
 - Cron: every 4h catalog sync for Tier 1 suppliers, every 12h for Tier 2
 - Cron: tracking poll for submitted/shipped orders
@@ -236,6 +252,7 @@ Per-product and per-order: cost, revenue, gross margin ($, %), shipping margin. 
 ### Phase 1 — Schema migration
 
 New tables (all RLS ENABLE + FORCE):
+
 ```sql
 stock_locations      -- warehouse / bin / store per tenant
 stock_levels         -- per-variant per-location on_hand + committed + available (generated)
@@ -250,6 +267,7 @@ A variant with no `inventory_source_links` row behaves exactly as today — non-
 ### Phase 2 — Core sync worker + CSV ingest (Tier C)
 
 Source-agnostic `services/inventory-sync-worker/` (Cloud Run):
+
 - Consumes `inventory.external.updated` events → resolves SKU via `inventory_source_links` → upserts `stock_levels` → recomputes `product_variants.inventory_quantity` → publishes `inventory.changed`
 - Conflict rules: external system always wins on `on_hand`; log discrepancies
 - Nightly full-snapshot reconciliation path
@@ -257,6 +275,7 @@ Source-agnostic `services/inventory-sync-worker/` (Cloud Run):
 CSV ingest adapter: merchant uploads stock-level CSV (SKU, location, on_hand) → normalized to `inventory.external.updated` events → worker processes.
 
 Dashboard UI — Connections → Inventory Source:
+
 - Add source (select type: CSV / cloud-api / bridge-agent)
 - SKU mapping view (auto-match by SKU, manual-map unmapped)
 - Sync health panel (last delta, last reconcile, mismatches, source status)
@@ -275,25 +294,25 @@ When unblocked: Windows agent (Node.js + pkg or Tauri) that talks to Fishbowl's 
 
 ## Build order summary
 
-| # | Module | Phase | Approximate scope |
-|---|--------|-------|-------------------|
-| 1 | Domain Purchase | Ph1 GoDaddy client + schema | 1–2 days |
-| 2 | Domain Purchase | Ph2 API endpoints + purchase flow | 1–2 days |
-| 3 | Domain Purchase | Ph3 Domain worker | 1 day |
-| 4 | Domain Purchase | Ph4 Dashboard UI | 1–2 days |
-| 5 | Domain Purchase | Ph5 MCP tools | 0.5 day |
-| 6 | B2B/Wholesale | Ph1 Data model + pricing tiers | 2–3 days |
-| 7 | B2B/Wholesale | Ph2 Quote/RFQ workflow | 2 days |
-| 8 | B2B/Wholesale | Ph3 Net terms + credit | 2 days |
-| 9 | B2B/Wholesale | Ph4 Fleet + fitment | 1–2 days |
-| 10 | B2B/Wholesale | Ph5 B2B portal | 2–3 days |
-| 11 | Dropship | Ph1 Connector framework + schema | 1–2 days |
-| 12 | Dropship | Ph2 CSV adapter + pricing rules + dashboard | 2 days |
-| 13 | Dropship | Ph3 Order router + worker | 1–2 days |
-| 14 | Dropship | Ph4 DSers/Spocket native connectors | 2–3 days |
-| 15 | Inventory Sync | Ph1 Schema migration | 0.5 day |
-| 16 | Inventory Sync | Ph2 Core worker + CSV ingest | 2 days |
-| 17 | Inventory Sync | Ph3–4 Cloud/bridge adapters | Blocked — confirm Gillett |
+| #   | Module          | Phase                                       | Approximate scope         |
+| --- | --------------- | ------------------------------------------- | ------------------------- |
+| 1   | Domain Purchase | Ph1 GoDaddy client + schema                 | 1–2 days                  |
+| 2   | Domain Purchase | Ph2 API endpoints + purchase flow           | 1–2 days                  |
+| 3   | Domain Purchase | Ph3 Domain worker                           | 1 day                     |
+| 4   | Domain Purchase | Ph4 Dashboard UI                            | 1–2 days                  |
+| 5   | Domain Purchase | Ph5 MCP tools                               | 0.5 day                   |
+| 6   | B2B/Wholesale   | Ph1 Data model + pricing tiers              | 2–3 days                  |
+| 7   | B2B/Wholesale   | Ph2 Quote/RFQ workflow                      | 2 days                    |
+| 8   | B2B/Wholesale   | Ph3 Net terms + credit                      | 2 days                    |
+| 9   | B2B/Wholesale   | Ph4 Fleet + fitment                         | 1–2 days                  |
+| 10  | B2B/Wholesale   | Ph5 B2B portal                              | 2–3 days                  |
+| 11  | Dropship        | Ph1 Connector framework + schema            | 1–2 days                  |
+| 12  | Dropship        | Ph2 CSV adapter + pricing rules + dashboard | 2 days                    |
+| 13  | Dropship        | Ph3 Order router + worker                   | 1–2 days                  |
+| 14  | Dropship        | Ph4 DSers/Spocket native connectors         | 2–3 days                  |
+| 15  | Inventory Sync  | Ph1 Schema migration                        | 0.5 day                   |
+| 16  | Inventory Sync  | Ph2 Core worker + CSV ingest                | 2 days                    |
+| 17  | Inventory Sync  | Ph3–4 Cloud/bridge adapters                 | Blocked — confirm Gillett |
 
 ---
 

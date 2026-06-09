@@ -27,12 +27,14 @@ These are all largely independent of each other and can be built in parallel. Le
 `tenant.created` Pub/Sub event is published by `signUpMerchant` but the consumer (seed worker) is not built.
 
 New Cloud Run worker `services/legal-seed-worker/`:
+
 - Subscribes to `tenant.created`
 - Under the new tenant's RLS context (`withRequestTenant`), seeds one `content_entry` per `LEGAL_TEMPLATES` row (status: **draft**, `legalKind`, `legalTemplateVersion`, disclaimer set)
 - Seeds `storefront_doc_placements` rows for footer placements
 - Idempotent on `(tenantId, typeKey, slug)` unique constraint — safe to redeliver
 
 Terraform additions:
+
 - `google_pubsub_topic` for `tenant.created`
 - `google_pubsub_subscription` pointing at the Cloud Run worker URL
 - Add `legal-seed-worker` to cloud-run-worker TF module
@@ -42,15 +44,18 @@ Terraform additions:
 The banner/preference-center island that renders on tenant storefronts.
 
 `apps/site/lib/consent.ts` — client registry:
+
 - `getConsent()` — reads `sparx_consent_state` cookie
 - `onConsentChange(cb)` — listens on `window` `CustomEvent('sparx:consent')`
 - `gateTracker({ category, load })` — runs `load` when category is granted
 
 SSR in `apps/site/app/layout.tsx`:
+
 - Read consent cookie server-side (existing pattern: same as `sparx_theme` cookie)
 - Pass `consentConfig` (from `/v1/public/tenants/:slug` — already in the payload) and `initialConsent` to the consent island
 
 Consent island `apps/site/components/consent/consent-island.tsx` (React client component):
+
 - **Off mode:** render nothing
 - **Quiet notice:** persistent "Manage cookies" link in footer; opens preference center
 - **GDPR banner:** Accept All / Reject All / Manage; non-essential trackers off until accept
@@ -65,17 +70,20 @@ Before-paint script: inline script in `<head>` that reads `sparx_consent_state` 
 Three dashboard surfaces (none built yet):
 
 **CMS → Legal checklist (`/cms/legal`):**
+
 - Add `{ id: 'legal', label: 'Legal', href: '/cms/legal' }` to `cmsManifest.sections`
 - Checklist view: one row per `LEGAL_TEMPLATES` entry, status (Complete / Missing / Stale / Unplaced), completeness ring
 - "Create from template" → `POST /v1/legal/pages` → deep-link to CMS editor
 - Placement manager panel: ordered/toggleable list of footer placements
 
 **Settings → Cookie Consent:**
+
 - Mode selector (off / gdpr / ccpa) with per-category toggles
 - Preview of what the storefront banner will look like
 - Saves via `PATCH /v1/tenant/consent`
 
 **Onboarding progress step:**
+
 - Non-blocking legal readiness indicator in the dashboard (not an onboarding wizard step — docs/15 §1 mandates no extra steps)
 
 ### Slice 6 — Onboarding acceptance gate
@@ -97,6 +105,7 @@ Re-acceptance banner on dashboard: if `GET /v1/me/legal-status` returns stale do
 A migration that loops all existing tenants and seeds legal pages + placements under each tenant's RLS context. Must use the `set_config('app.tenant_id', ...)` pattern per tenant (see CLAUDE.md + `packages/db/CLAUDE.md` — `sparx_owner` is a non-superuser, sees zero rows without `set_config`).
 
 Script structure:
+
 ```sql
 DO $$
 DECLARE t RECORD;
@@ -130,6 +139,7 @@ This is the heaviest migration slice — run against a staging clone first, conf
 The Themes catalog pulls from the tenant's available saved themes + system-provided themes. A "theme" in this context is a set of design tokens (from docs/33 / docs/45 / docs/36 — the Brand & Theme model).
 
 Theme catalog adapter for `/marketplace/themes`:
+
 - List: system themes (curated registry in `@sparx/ui`) + tenant-saved themes
 - Facets: Style/mood (minimal, bold, editorial, playful), Color family, Layout density, Industry
 - Detail page: live preview using the Builder's theme preview mechanism, "Apply" CTA
@@ -143,6 +153,7 @@ Install count + rating: stub with static data for system themes until telemetry 
 The Components catalog exposes the system/shared component registry (docs/53 — `@sparx/blueprints` + system catalog).
 
 Component catalog adapter for `/marketplace/components`:
+
 - List: system components + any shared/tenant-published components
 - Facets: Kind (section/block/widget), Source (system/shared), Module affinity (commerce/cms/crm/…)
 - Detail page: component preview screenshot, what's included, props schema, "Add to workspace" CTA
@@ -154,6 +165,7 @@ Component catalog adapter for `/marketplace/components`:
 The Integrations catalog pulls from the integration registry (the existing `integrations` / `provider_catalog` data model used by the integration-published-docs bridge).
 
 Integration catalog adapter for `/marketplace/integrations`:
+
 - List: all registered integrations (payment providers, shipping providers, tax providers, marketing tools, accounting)
 - Facets: Type (payments/shipping/tax/accounting/marketing), Provider, Pricing (free/paid)
 - Detail page: description, features list, setup requirements, "Connect" CTA
@@ -167,11 +179,13 @@ Mark integrations without a live connect flow as `status: coming-soon` (same pat
 A `marketplace` Typesense collection (or add `category` facet to the existing `entities` collection — see docs/39 Universal Search for the single-collection precedent).
 
 Schema for marketplace items:
+
 ```
 id, category, name, slug, tagline, tags[], facets{} (category-specific), install_count, created_at
 ```
 
 Projector in `services/typesense-worker/` for each live category:
+
 - Blueprints projector: syncs the blueprints registry → `marketplace` collection
 - Themes projector: system themes registry
 - Components projector: system components registry
@@ -182,6 +196,7 @@ The category browse page switches from in-memory filter/sort to Typesense querie
 ### Phase 5 — Public pre-auth funnel
 
 `apps/web` public marketplace browse surface (no auth required):
+
 - Route: `sparx.works/marketplace`
 - Same three-tier IA (home / category / detail) but no install CTAs — replaced with "Sign up to install" + sign-up modal
 - Reuses the same category adapters via a no-auth catalog read (public endpoint strips per-tenant overlay: no installed/applied state)
@@ -198,6 +213,7 @@ The category browse page switches from in-memory filter/sort to Typesense querie
 ### Phase 1 — Write-sites projector
 
 Add a `sites` projector to the `entities` collection:
+
 - Entity type: `site`
 - Fields: `id`, `tenantId`, `title` (site name), `slug`, `type: 'site'`, `url`, `status`, `updatedAt`
 - Triggers: `site.created`, `site.updated`, `site.deleted` events → publish `search.entity.changed`
@@ -206,6 +222,7 @@ Add a `sites` projector to the `entities` collection:
 ### Phase 2 — Additional CMS projectors
 
 The existing CMS projector handles `content_entries` of type `page`. Extend to cover:
+
 - **Blog posts** (`type: post`) — title, excerpt, author, published_at, tags
 - **Templates** (`type: template`) — title, template kind
 - **Components** (`type: component`) — title, component kind
@@ -230,12 +247,14 @@ The storefront's public search (`/v1/public/search`) uses this scoped key — fi
 ### Phase 1 — Catalog markup rules (percentage, multiplier, flat, margin_target)
 
 DB migration — new tables (RLS ENABLE + FORCE):
+
 - `markup_rules` (full schema per docs/48 §7 — all fields except `bands` JSONB for matrix)
 - Add to `product_variants`: `markup_rule_id UUID REFERENCES markup_rules(id)`, `applied_markup JSONB`
 
 `applyMarkupRule(cost, rule)` — pure function in `@sparx/commerce` package. Applies method, rounding, floor, ceiling. Returns `{ price, margin, appliedRule }`.
 
 API:
+
 - `GET/POST /v1/markup-rules` — list + create
 - `GET/PATCH/DELETE /v1/markup-rules/:id`
 - `POST /v1/markup-rules/:id/preview` — dry-run: returns before/after price + margin for all scoped variants, no writes
@@ -248,6 +267,7 @@ Product/variant editor: "Price by rule" toggle. When enabled, shows the computed
 Add `method: 'matrix'` support to `markup_rules` — the `bands` JSONB column is already in the schema. `applyMarkupRule` handles matrix by finding the matching band.
 
 Bulk pricing tool in the dashboard (`/commerce/products/pricing`):
+
 - Select scope: collection, product type, vendor, or all products
 - Pick a rule
 - **Preview table**: side-by-side before/after price + margin for every matching variant (paginated)
@@ -267,6 +287,7 @@ Add to `orders`: `surcharge_total NUMERIC(12,2) DEFAULT 0`, `applied_surcharges 
 Surcharge computation at checkout (in `POST /v1/checkout/sessions/:id/complete`): after tax, query active `surcharge_rules` for the tenant, filter by payment method, compute and snapshot. Show as a line item on the checkout confirmation step ("Card processing fee — 3%").
 
 API:
+
 - `GET/POST/PATCH/DELETE /v1/surcharge-rules`
 
 Dashboard Settings → Payments: Surcharge configuration panel (on/off toggle, percentage/flat, payment methods, label, cap). Compliance notice displayed inline: "Credit-card surcharging laws vary by state. Review the legal requirements for your jurisdiction before enabling."
@@ -290,6 +311,7 @@ Event-driven price recomputation when costs change.
 New `variant.cost.updated` event published whenever `product_variants.cost` changes (via API PATCH or bulk import).
 
 Cloud Run worker `services/markup-recompute-worker/`:
+
 - Subscribes to `variant.cost.updated` and `dropship.cost.synced`
 - For each event: find variants bound to a markup rule whose `cost_basis` matches the changed field
 - Recompute list price with `applyMarkupRule`
@@ -297,6 +319,7 @@ Cloud Run worker `services/markup-recompute-worker/`:
 - Queue for merchant review if outside tolerance → dashboard notification
 
 MCP tools (docs/48 §9 / docs/07):
+
 - `preview_markup({ ruleId, scope })` — dry-run, returns before/after for scope
 - `apply_markup({ ruleId, scope })` — write scope, requires confirmation
 - `get_margin({ variantId })` — current cost/price/margin breakdown
@@ -306,24 +329,24 @@ MCP tools (docs/48 §9 / docs/07):
 
 ## Build order summary
 
-| # | Feature | Phase | Notes |
-|---|---------|-------|-------|
-| 1 | Legal & Consent | Slice 3b seed worker + TF | Unblocked |
-| 2 | Legal & Consent | Slice 4 storefront consent UX | After 3b |
-| 3 | Legal & Consent | Slice 5 dashboard surfaces | After 3b |
-| 4 | Legal & Consent | Slice 6 onboarding acceptance gate | Unblocked (can go first) |
-| 5 | Product Markup | Ph1 Catalog markup rules | Unblocked |
-| 6 | Product Markup | Ph S Surcharges | After Checkout (Tier 1) |
-| 7 | Universal Search | Ph1 Write-sites projector | Unblocked |
-| 8 | Universal Search | Ph2 Additional CMS projectors | After Ph1 |
-| 9 | Universal Search | Ph3 Scoped-key 501 fix | Unblocked |
-| 10 | Marketplace | Ph1 Themes category | Unblocked |
-| 11 | Marketplace | Ph2 Components category | After Tier 2 Dropship Ph1 |
-| 12 | Marketplace | Ph3 Integrations category | Unblocked |
-| 13 | Product Markup | Ph2 Matrix + bulk pricing tool | After Ph1 |
-| 14 | Product Markup | Ph3 Invoice/quote-line markup | After Tier 2 B2B Ph2–3 |
-| 15 | Marketplace | Ph4 Typesense search + facets | After Universal Search Ph1 |
-| 16 | Legal & Consent | Slice 7 backfill (DB Migrate workflow) | After Slice 3b; scheduled carefully |
-| 17 | Product Markup | Ph4 Recompute worker + MCP tools | After Ph1; MCP after Tier 1 MCP Ph3 |
-| 18 | Legal & Consent | Slice 8 polish | After Slice 5 |
-| 19 | Marketplace | Ph5 Public pre-auth funnel | After Ph3 |
+| #   | Feature          | Phase                                  | Notes                               |
+| --- | ---------------- | -------------------------------------- | ----------------------------------- |
+| 1   | Legal & Consent  | Slice 3b seed worker + TF              | Unblocked                           |
+| 2   | Legal & Consent  | Slice 4 storefront consent UX          | After 3b                            |
+| 3   | Legal & Consent  | Slice 5 dashboard surfaces             | After 3b                            |
+| 4   | Legal & Consent  | Slice 6 onboarding acceptance gate     | Unblocked (can go first)            |
+| 5   | Product Markup   | Ph1 Catalog markup rules               | Unblocked                           |
+| 6   | Product Markup   | Ph S Surcharges                        | After Checkout (Tier 1)             |
+| 7   | Universal Search | Ph1 Write-sites projector              | Unblocked                           |
+| 8   | Universal Search | Ph2 Additional CMS projectors          | After Ph1                           |
+| 9   | Universal Search | Ph3 Scoped-key 501 fix                 | Unblocked                           |
+| 10  | Marketplace      | Ph1 Themes category                    | Unblocked                           |
+| 11  | Marketplace      | Ph2 Components category                | After Tier 2 Dropship Ph1           |
+| 12  | Marketplace      | Ph3 Integrations category              | Unblocked                           |
+| 13  | Product Markup   | Ph2 Matrix + bulk pricing tool         | After Ph1                           |
+| 14  | Product Markup   | Ph3 Invoice/quote-line markup          | After Tier 2 B2B Ph2–3              |
+| 15  | Marketplace      | Ph4 Typesense search + facets          | After Universal Search Ph1          |
+| 16  | Legal & Consent  | Slice 7 backfill (DB Migrate workflow) | After Slice 3b; scheduled carefully |
+| 17  | Product Markup   | Ph4 Recompute worker + MCP tools       | After Ph1; MCP after Tier 1 MCP Ph3 |
+| 18  | Legal & Consent  | Slice 8 polish                         | After Slice 5                       |
+| 19  | Marketplace      | Ph5 Public pre-auth funnel             | After Ph3                           |

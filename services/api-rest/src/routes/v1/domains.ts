@@ -70,9 +70,13 @@ const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLo
 // ─── Convenience fee per TLD (cents) ─────────────────────────────────────────
 // Added to the GoDaddy wholesale price when quoting to the tenant (docs/24 §6).
 const TLD_MARKUP: Record<string, number> = {
-  com: 200, net: 200, org: 200,
-  io: 300, app: 300,
-  shop: 150, store: 150,
+  com: 200,
+  net: 200,
+  org: 200,
+  io: 300,
+  app: 300,
+  shop: 150,
+  store: 150,
 };
 function markupForTld(tld: string): number {
   return TLD_MARKUP[tld.toLowerCase()] ?? 200;
@@ -250,7 +254,6 @@ async function findPurchasedDomain(tenantId: string, id: string) {
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature.
 const domainsRoutes: FastifyPluginAsync = async (app) => {
-
   // ── POST /v1/domains/search ───────────────────────────────────────────────
   // Must be registered BEFORE /:id routes so the literal path wins.
   app.post('/v1/domains/search', async (request) => {
@@ -295,15 +298,17 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       ]);
     }
     if (isZoneHost(host)) {
-      throw validationError('sparx.zone domains cannot be purchased — they are issued automatically.', [
-        { field: 'domain', message: 'sparx.zone subdomains cannot be purchased.' },
-      ]);
+      throw validationError(
+        'sparx.zone domains cannot be purchased — they are issued automatically.',
+        [{ field: 'domain', message: 'sparx.zone subdomains cannot be purchased.' }]
+      );
     }
     if (!(await ownProperty(auth.tenantId, input.propertyId))) {
       throw notFound('Property', input.propertyId);
     }
     const existing = await prisma.domain.findUnique({ where: { host }, select: { id: true } });
-    if (existing) throw conflict('That domain is already connected to a site.', { field: 'domain' });
+    if (existing)
+      throw conflict('That domain is already connected to a site.', { field: 'domain' });
 
     // 1. Stripe charge — STUBBED until billing lands (docs/64 §1 constraint).
     const stripePaymentIntentId = `stub_pi_${Date.now()}_${auth.tenantId.replace(/-/g, '').slice(0, 8)}`;
@@ -349,9 +354,10 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
             registrarOrderId: orderId,
             stripePaymentIntentId,
             // amountCents: wholesale + markup; use 0 until Stripe pricing is live
-            amountCents: renewalPriceCents != null
-              ? renewalPriceCents + markupForTld(host.split('.').slice(1).join('.'))
-              : 0,
+            amountCents:
+              renewalPriceCents != null
+                ? renewalPriceCents + markupForTld(host.split('.').slice(1).join('.'))
+                : 0,
             years: input.years,
             type: 'registration',
             status: 'completed',
@@ -409,7 +415,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
         propertyId: input.propertyId,
         dnsConfigured,
       },
-      pubLogger,
+      pubLogger
     );
 
     return ok({
@@ -574,9 +580,10 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
             registrar: 'godaddy',
             registrarOrderId: orderId ?? null,
             stripePaymentIntentId,
-            amountCents: row.renewalPriceCents != null
-              ? row.renewalPriceCents + markupForTld(row.host.split('.').slice(1).join('.'))
-              : 0,
+            amountCents:
+              row.renewalPriceCents != null
+                ? row.renewalPriceCents + markupForTld(row.host.split('.').slice(1).join('.'))
+                : 0,
             years,
             type: 'renewal',
             status: 'completed',

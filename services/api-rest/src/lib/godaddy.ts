@@ -19,14 +19,13 @@ function baseUrl(): string {
 }
 
 function authHeader(): string {
-  const key =
-    env.NODE_ENV === 'production' ? env.GODADDY_API_KEY_PROD : env.GODADDY_API_KEY_OTE;
+  const key = env.NODE_ENV === 'production' ? env.GODADDY_API_KEY_PROD : env.GODADDY_API_KEY_OTE;
   const secret =
     env.NODE_ENV === 'production' ? env.GODADDY_API_SECRET_PROD : env.GODADDY_API_SECRET_OTE;
   if (!key || !secret) {
     throw new GoDaddyError(
       `GoDaddy ${env.NODE_ENV === 'production' ? 'production' : 'OTE'} API credentials not configured`,
-      0,
+      0
     );
   }
   return `sso-key ${key}:${secret}`;
@@ -64,7 +63,7 @@ async function gd<T>(method: string, path: string, body?: unknown): Promise<T> {
 export class GoDaddyError extends Error {
   constructor(
     message: string,
-    public readonly status: number,
+    public readonly status: number
   ) {
     super(message);
     this.name = 'GoDaddyError';
@@ -149,7 +148,7 @@ interface GdTransferOutResponse {
 export async function checkAvailability(domain: string): Promise<DomainAvailability> {
   const res = await gd<GdAvailableResponse>(
     'GET',
-    `/v1/domains/available?domain=${encodeURIComponent(domain)}&checkType=FAST`,
+    `/v1/domains/available?domain=${encodeURIComponent(domain)}&checkType=FAST`
   );
   return {
     available: res.available,
@@ -163,12 +162,12 @@ const DEFAULT_TLDS = ['com', 'net', 'org', 'co', 'io', 'shop', 'store', 'app'];
 
 export async function getDomainSuggestions(
   query: string,
-  tlds: string[] = DEFAULT_TLDS,
+  tlds: string[] = DEFAULT_TLDS
 ): Promise<DomainSuggestion[]> {
   const tldParam = tlds.join(',');
   const items = await gd<GdSuggestion[]>(
     'GET',
-    `/v1/domains/suggest?query=${encodeURIComponent(query)}&tlds=${tldParam}&limit=10`,
+    `/v1/domains/suggest?query=${encodeURIComponent(query)}&tlds=${tldParam}&limit=10`
   );
   return items.map((s) => ({
     domain: s.domain,
@@ -185,7 +184,7 @@ export async function purchaseDomain(
   domain: string,
   years: number,
   registrant: RegistrantContact,
-  privacy: boolean,
+  privacy: boolean
 ): Promise<{ orderId: string }> {
   const contact = {
     firstName: registrant.firstName,
@@ -277,7 +276,7 @@ export function generateDkimKeypair(): { publicKey: string; privateKey: string }
 
 export async function renewDomain(
   domain: string,
-  years: number,
+  years: number
 ): Promise<{ orderId: string | null }> {
   const res = await gd<GdRenewResponse>('POST', `/v1/domains/${encodeURIComponent(domain)}/renew`, {
     period: years,
@@ -298,7 +297,7 @@ export async function initiateTransferOut(domain: string): Promise<{ authCode: s
   // 2. Retrieve the transfer auth code
   const res = await gd<GdTransferOutResponse>(
     'GET',
-    `/v1/domains/${encodeURIComponent(domain)}/transferOut`,
+    `/v1/domains/${encodeURIComponent(domain)}/transferOut`
   );
   return { authCode: res.authCode };
 }
