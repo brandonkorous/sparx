@@ -15,8 +15,9 @@ ALTER TABLE navigation_menus
   ADD COLUMN property_id uuid REFERENCES properties(id) ON DELETE CASCADE;
 
 -- Replace the old single unique with two partial uniques.
-ALTER TABLE navigation_menus
-  DROP CONSTRAINT navigation_menus_tenant_id_location_key;
+-- DROP INDEX (not DROP CONSTRAINT): the original was created with CREATE UNIQUE INDEX,
+-- not ADD CONSTRAINT, so ALTER TABLE ... DROP CONSTRAINT does not apply.
+DROP INDEX IF EXISTS navigation_menus_tenant_id_location_key;
 
 -- One tenant-wide menu per location.
 CREATE UNIQUE INDEX navigation_menus_tenant_location_global
