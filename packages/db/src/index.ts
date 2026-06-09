@@ -4,6 +4,7 @@ export type { TenantContext, TxClient } from './tenant-context';
 
 export type {
   Tenant,
+  OnboardingChecklist,
   User,
   Session,
   Account,
