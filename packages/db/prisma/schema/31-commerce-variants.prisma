@@ -69,6 +69,13 @@ model ProductVariant {
   fulfillmentType  String? @map("fulfillment_type") @db.VarChar(20) // overrides product-level when set
   dropshipSourceId String? @map("dropship_source_id") @db.Uuid
 
+  // Catalog markup (docs/48) — when bound to a rule, `priceCents` is DERIVED.
+  // `appliedMarkup` snapshots the computation: { method, value, costBasisValueCents,
+  // computedPriceCents, computedAt } so margin reporting stays reproducible after
+  // costs drift. Null markupRuleId = manually priced (detached from any rule).
+  markupRuleId  String? @map("markup_rule_id") @db.Uuid
+  appliedMarkup Json?   @map("applied_markup")
+
   isDefault Boolean @default(false) @map("is_default")
   position  Int     @default(0)
   metadata  Json    @default("{}")
@@ -79,6 +86,7 @@ model ProductVariant {
 
   tenant                Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   product               Product                     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  markupRule            MarkupRule?                 @relation(fields: [markupRuleId], references: [id], onDelete: SetNull)
   optionAssignments     ProductVariantOptionValue[]
   images                VariantImage[]
   inventoryLevels       InventoryLevel[]
@@ -103,6 +111,7 @@ model ProductVariant {
   @@unique([tenantId, sku], map: "product_variants_sku_unique")
   @@index([tenantId, productId])
   @@index([tenantId, dropshipSourceId])
+  @@index([tenantId, markupRuleId])
   @@index([tenantId, deletedAt])
   @@map("commerce_product_variants")
 }

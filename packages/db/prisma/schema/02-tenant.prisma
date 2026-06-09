@@ -134,6 +134,7 @@ model Tenant {
   priceListEntries        PriceListEntry[]
   bulkPriceTiers          BulkPriceTier[]
   contractPrices          ContractPrice[]
+  markupRules             MarkupRule[]
   discounts               Discount[]
   discountUsages          DiscountUsage[]
   giftCards               GiftCard[]

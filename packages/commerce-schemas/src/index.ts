@@ -26,6 +26,9 @@ export * from './inventory';
 export * from './pricing';
 export * from './discounts';
 
+// Markup rules + the pure cost→price engine (docs/48).
+export * from './markup';
+
 // Phase 4 — bundles + configurator.
 export * from './bundles';
 

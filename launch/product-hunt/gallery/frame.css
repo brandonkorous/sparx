@@ -1,0 +1,203 @@
+/* ============================================================
+   SPARX — Product Hunt gallery frame system
+   Renders each gallery image at exactly 1270x760 (PH spec).
+   Capture with deviceScaleFactor 2 -> 2540x1520 crisp output.
+   Tokens mirror docs/sparx-design-tokens.css.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
+
+:root {
+  --sparx-primary: #6366f1;
+  --sparx-primary-hover: #4f46e5;
+  --sparx-primary-light: #818cf8;
+  --sparx-primary-tint: #eef2ff;
+
+  --module-builder: #6366f1;
+  --module-commerce: #f97316;
+  --module-cms: #14b8a6;
+  --module-crm: #06b6d4;
+  --module-email: #0ea5e9;
+  --module-b2b: #475569;
+  --module-ai: #ec4899;
+  --module-dropship: #10b981;
+
+  --bg-page: #fafafa;
+  --bg-surface: #ffffff;
+  --border: #e5e5e5;
+  --border-strong: #d4d4d8;
+  --text-primary: #0a0a0a;
+  --text-secondary: #52525b;
+  --text-tertiary: #a1a1aa;
+
+  --font-sans: 'Geist', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: #18181b;
+}
+
+.frame {
+  width: 1270px;
+  height: 760px;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv01';
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top module accent stripe — the 3px stripe rule, scaled up for collateral */
+.frame::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 5px;
+  background: var(--accent, var(--sparx-primary));
+  z-index: 3;
+}
+
+/* ── Caption band ─────────────────────────────────────────── */
+
+.cap {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 52px 60px 26px;
+  gap: 40px;
+}
+
+.cap__text {
+  max-width: 880px;
+}
+
+.cap__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent, var(--sparx-primary));
+  margin-bottom: 16px;
+}
+
+.cap__kicker .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: var(--accent, var(--sparx-primary));
+}
+
+.cap__title {
+  font-size: 42px;
+  line-height: 1.08;
+  font-weight: 600;
+  letter-spacing: -0.028em;
+}
+
+.cap__title em {
+  font-style: normal;
+  color: var(--accent, var(--sparx-primary));
+}
+
+.cap__sub {
+  margin-top: 16px;
+  font-size: 19px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--text-secondary);
+  max-width: 760px;
+}
+
+/* Wordmark — "Spar" neutral, "x" always indigo */
+.wordmark {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+.wordmark x {
+  color: var(--sparx-primary);
+}
+
+/* ── Screenshot stage ─────────────────────────────────────── */
+
+.stage {
+  flex: 1;
+  margin: 0 60px 56px;
+  position: relative;
+  min-height: 0;
+}
+
+.shot {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  box-shadow:
+    0 2px 4px rgba(24, 24, 27, 0.04),
+    0 24px 60px -16px rgba(24, 24, 27, 0.22);
+  overflow: hidden;
+  position: relative;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Optional faint inner ring for crispness on light shots */
+.shot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+  pointer-events: none;
+}
+
+/* ── Dark variant (bookend cards) ─────────────────────────── */
+
+.frame--dark {
+  background: #0f0f10;
+  color: #f4f4f5;
+}
+.frame--dark .cap__sub {
+  color: #a1a1aa;
+}
+.frame--dark .wordmark {
+  color: #f4f4f5;
+}
+.frame--dark .shot {
+  border-color: #2a2a2a;
+  background: #1a1a1a;
+}
+
+/* Subtle brand glow for dark cards */
+.glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  opacity: 0.5;
+  z-index: 0;
+  pointer-events: none;
+}
