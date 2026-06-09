@@ -134,9 +134,7 @@ export default async function DropshipAnalyticsPage() {
         <SummaryCard
           label="Profit"
           value={formatCents(Math.abs(summary.profitCents))}
-          valueClass={
-            isLoss ? 'text-[var(--color-danger)]' : 'text-[var(--color-success)]'
-          }
+          valueClass={isLoss ? 'text-[var(--color-danger)]' : 'text-[var(--color-success)]'}
           prefix={isLoss ? '−' : '+'}
         />
         <SummaryCard
