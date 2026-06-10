@@ -7,9 +7,10 @@
 // is produced by Better Auth's own hasher (scrypt, via better-auth/crypto) so
 // the seeded credential row verifies against the live sign-in flow.
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, type Prisma } from '@prisma/client';
 import { hashPassword } from 'better-auth/crypto';
 import { listBlueprints, type Blueprint } from '@sparx/blueprints';
+import { LEGAL_TEMPLATES, legalEntryBody } from '@sparx/legal-templates';
 
 const prisma = new PrismaClient();
 
@@ -535,6 +536,79 @@ const SPARX_COMPONENTS: {
   },
 ];
 
+// Backfill starter legal pages + footer placements for EXISTING tenants (docs/42
+// Slice 7). New tenants get these from the legal-seed-worker on `tenant.created`;
+// this covers tenants created before that worker existed. Idempotent find-or-create
+// per (tenant, template) — re-running skips everything already present — and it
+// reuses @sparx/legal-templates for the canonical bodies, so there is no fragile
+// inline-SQL copy of the legal text.
+//
+// content_entries + storefront_doc_placements are FORCE-RLS, so each tenant's
+// writes run inside a transaction with app.tenant_id SET LOCAL to that tenant
+// (the WITH CHECK is tenant_id = current_tenant_id()). This mirrors the
+// legal-seed-worker's withTenant() path; sparx_owner is a non-superuser in prod,
+// so the per-tenant set_config is mandatory (see packages/db/CLAUDE.md).
+async function backfillLegalPages(): Promise<void> {
+  const tenants = await prisma.tenant.findMany({ select: { id: true } });
+  let created = 0;
+
+  for (const { id: tenantId } of tenants) {
+    await prisma.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+
+      for (const [i, t] of LEGAL_TEMPLATES.entries()) {
+        const existing = await tx.contentEntry.findFirst({
+          where: { typeKey: 'page', slug: t.defaultSlug },
+          select: { id: true },
+        });
+
+        let entryId: string;
+        if (existing) {
+          entryId = existing.id;
+        } else {
+          const entry = await tx.contentEntry.create({
+            data: {
+              tenantId,
+              typeKey: 'page',
+              slug: t.defaultSlug,
+              status: 'draft',
+              body: legalEntryBody(t) as unknown as Prisma.InputJsonObject,
+              legalKind: t.legalKind,
+              legalTemplateVersion: t.templateVersion,
+            },
+            select: { id: true },
+          });
+          entryId = entry.id;
+          created++;
+        }
+
+        const existingPlacement = await tx.storefrontDocPlacement.findFirst({
+          where: { placement: 'footer', sourceKind: 'cms_entry', entryId },
+          select: { id: true },
+        });
+        if (!existingPlacement) {
+          await tx.storefrontDocPlacement.create({
+            data: {
+              tenantId,
+              placement: 'footer',
+              sourceKind: 'cms_entry',
+              entryId,
+              legalKind: t.legalKind,
+              label: t.title,
+              columnKey: 'legal',
+              position: i,
+            },
+          });
+        }
+      }
+    });
+  }
+
+  console.log(
+    `Backfilled legal pages for ${tenants.length} tenant(s): ${created} entr(ies) created.`
+  );
+}
+
 async function main(): Promise<void> {
   // tenants has no RLS — safe to upsert outside a tenant context. Default
   // settings (incl. the module activation registry read by
@@ -658,6 +732,16 @@ async function main(): Promise<void> {
   } catch (err) {
     console.warn(
       `[seed] marketplace catalog seed skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  // Backfill starter legal pages for existing tenants (docs/42 Slice 7). Wrapped
+  // so a hiccup never blocks the rest of the seed; idempotent on re-run.
+  try {
+    await backfillLegalPages();
+  } catch (err) {
+    console.warn(
+      `[seed] legal pages backfill skipped: ${err instanceof Error ? err.message : String(err)}`
     );
   }
 }

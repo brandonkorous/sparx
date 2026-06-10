@@ -790,6 +790,9 @@ importers:
       '@sparx/builder-schemas':
         specifier: workspace:*
         version: link:../builder-schemas
+      '@sparx/legal-templates':
+        specifier: workspace:*
+        version: link:../legal-templates
       '@sparx/marketplace-schemas':
         specifier: workspace:*
         version: link:../marketplace-schemas

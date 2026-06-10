@@ -20,7 +20,8 @@ WORKDIR /app
 # box→class backfill (scripts/backfill-builder-class.ts) imports
 # @sparx/builder-schemas, and the seed (prisma/seed.ts) imports
 # @sparx/blueprints + @sparx/marketplace-schemas to seed the Sparx-core
-# marketplace catalog (docs/60) — so those workspace packages and their
+# marketplace catalog (docs/60), and @sparx/legal-templates to backfill starter
+# legal pages for existing tenants (docs/42 Slice 7) — so those workspace packages and their
 # transitive closure (cms-/commerce-/crm-/sitebuilder-schemas) must be present
 # too. `pnpm install --filter @sparx/db...` links them but can't materialize
 # source the image never copied.
@@ -34,6 +35,7 @@ COPY packages/commerce-schemas ./packages/commerce-schemas
 COPY packages/sitebuilder-schemas ./packages/sitebuilder-schemas
 COPY packages/marketplace-schemas ./packages/marketplace-schemas
 COPY packages/blueprints ./packages/blueprints
+COPY packages/legal-templates ./packages/legal-templates
 
 # Install only @sparx/db deps; --frozen-lockfile fails the build if anyone
 # forgot to commit a lockfile update.
