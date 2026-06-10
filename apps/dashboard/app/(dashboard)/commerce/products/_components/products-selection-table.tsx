@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Archive, Trash2 } from 'lucide-react';
+import { Archive, DollarSign, Trash2 } from 'lucide-react';
 import {
   Badge,
   BulkActionBar,
@@ -26,6 +26,7 @@ import {
   deleteProductAction,
 } from '../../product-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
+import { BulkPriceAdjustModal } from './bulk-price-adjust-modal';
 
 // Client wrapper around the products table/grid that owns selection state and
 // surfaces the BulkActionBar. The server page.tsx fetches all data and renders
@@ -57,6 +58,7 @@ const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
 
 export function ProductsSelectionTable({ products, view }: ProductsSelectionTableProps) {
   const [selected, setSelected] = React.useState<string[]>([]);
+  const [priceModalOpen, setPriceModalOpen] = React.useState(false);
 
   const allIds = products.map((p) => p.id);
   const allSelected = allIds.length > 0 && allIds.every((id) => selected.includes(id));
@@ -84,6 +86,14 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
       },
     },
     {
+      label: 'Adjust prices',
+      icon: DollarSign,
+      onAction: () => {
+        setPriceModalOpen(true);
+        return Promise.resolve();
+      },
+    },
+    {
       label: 'Archive',
       icon: Archive,
       onAction: async (ids) => {
@@ -104,6 +114,15 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
       },
     },
   ];
+
+  const priceModal = (
+    <BulkPriceAdjustModal
+      open={priceModalOpen}
+      onOpenChange={setPriceModalOpen}
+      productIds={selected}
+      onApplied={() => setSelected([])}
+    />
+  );
 
   if (view === 'card') {
     return (
@@ -156,6 +175,7 @@ export function ProductsSelectionTable({ products, view }: ProductsSelectionTabl
         </Grid>
 
         <BulkActionBar selected={selected} onClear={() => setSelected([])} actions={bulkActions} />
+        {priceModal}
       </>
     );
   }

@@ -5,6 +5,11 @@ import { z } from 'zod';
 import { api } from '@/lib/api-rest-client';
 import type { ActionResult } from './_action-helpers';
 import { restAction } from './_rest-action';
+import type {
+  BulkPriceApplyResult,
+  BulkPricePreview,
+  PriceAdjustment,
+} from './products/_lib/bulk-price-types';
 
 export async function createProductAction(
   input: unknown
@@ -97,6 +102,48 @@ export async function bulkTagProductsAction(
 ): Promise<ActionResult<{ updated: number }>> {
   return restAction(async () => {
     const result = await api.post<{ updated: number }>('/v1/commerce/products/bulk-tag', input);
+    revalidatePath('/commerce/products');
+    return result;
+  });
+}
+
+// ─── Bulk price adjustment + 30-minute revert (B-3) ──────────────────────────
+
+export async function previewBulkPriceAction(
+  productIds: string[],
+  adjustment: PriceAdjustment
+): Promise<ActionResult<BulkPricePreview>> {
+  return restAction(() =>
+    api.post<BulkPricePreview>('/v1/commerce/products/bulk-price/preview', {
+      productIds,
+      adjustment,
+    })
+  );
+}
+
+export async function applyBulkPriceAction(
+  productIds: string[],
+  adjustment: PriceAdjustment
+): Promise<ActionResult<BulkPriceApplyResult>> {
+  return restAction(async () => {
+    const result = await api.post<BulkPriceApplyResult>('/v1/commerce/products/bulk-price/apply', {
+      productIds,
+      adjustment,
+    });
+    revalidatePath('/commerce/products');
+    return result;
+  });
+}
+
+export async function revertBulkPriceAction(
+  operationId: string
+): Promise<ActionResult<{ operationId: string; productCount: number; variantCount: number }>> {
+  return restAction(async () => {
+    const result = await api.post<{
+      operationId: string;
+      productCount: number;
+      variantCount: number;
+    }>('/v1/commerce/products/bulk-price/revert', { operationId });
     revalidatePath('/commerce/products');
     return result;
   });

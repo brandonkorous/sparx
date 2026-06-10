@@ -1,0 +1,38 @@
+// Bulk-operation revert ledger (docs/69 B-3) — captures the before-state of a
+// bulk mutation so it can be undone within a short window (30 minutes). Generic
+// by design (entity_type + field + value_before/after) though the first
+// producer is bulk price adjustment on commerce variants.
+//
+// One row per affected entity. Rows sharing an `operation_id` form one undoable
+// batch; `group_id` (the product id, for price ops) lets the preview/banner
+// summarise "N products". `expires_at` is stamped at apply time (applied_at +
+// window) so the revertability check is a plain `expires_at > now()`.
+//
+// RLS: tenant-scoped → ENABLE + FORCE + tenant_isolation on current_tenant_id().
+
+model BulkOpRevert {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String    @map("tenant_id") @db.Uuid
+  operationId   String    @map("operation_id") @db.Uuid
+  operationType String    @map("operation_type") @db.VarChar(40)
+  // Human label for the batch (same on every row), e.g. "Increased prices by 10%".
+  label         String    @db.VarChar(200)
+  entityType    String    @map("entity_type") @db.VarChar(40)
+  entityId      String    @map("entity_id") @db.Uuid
+  // Optional grouping key (the product id for price ops) for per-group summaries.
+  groupId       String?   @map("group_id") @db.Uuid
+  field         String    @db.VarChar(40)
+  valueBefore   Int       @map("value_before")
+  valueAfter    Int       @map("value_after")
+  appliedBy     String?   @map("applied_by") @db.Uuid
+  appliedAt     DateTime  @default(now()) @map("applied_at") @db.Timestamptz
+  expiresAt     DateTime  @map("expires_at") @db.Timestamptz
+  revertedAt    DateTime? @map("reverted_at") @db.Timestamptz
+  revertedBy    String?   @map("reverted_by") @db.Uuid
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, operationId])
+  @@index([tenantId, appliedAt(sort: Desc)])
+  @@map("bulk_op_reverts")
+}

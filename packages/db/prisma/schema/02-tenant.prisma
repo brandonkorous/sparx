@@ -56,8 +56,11 @@ model Tenant {
   domainPurchases   DomainPurchase[]
 
   // Auth + audit
-  users     User[]
-  auditLogs AuditLog[]
+  users         User[]
+  auditLogs     AuditLog[]
+  // Bulk-operation revert ledger (docs/69 B-3) — before-state for undoable
+  // bulk mutations (price adjustment, …) retained for a 30-minute window.
+  bulkOpReverts BulkOpRevert[]
   apiKeys   ApiKey[]
 
   // Dashboard shell — per-user pinned/recent navigation state

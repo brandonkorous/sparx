@@ -17,6 +17,7 @@ export * as pricingService from './pricing-service';
 export * as discountService from './discount-service';
 export * as markupService from './markup-service';
 export * as surchargeService from './surcharge-service';
+export * as bulkPriceService from './bulk-price-service';
 
 // Phase 4 — bundles + configurator
 export * as configuratorService from './configurator-service';

@@ -11,6 +11,10 @@
 //   DELETE /v1/commerce/products/:id                          → soft delete
 //   POST   /v1/commerce/products/bulk-status                  → bulk status change
 //   POST   /v1/commerce/products/bulk-tag                     → bulk tag add/remove
+//   POST   /v1/commerce/products/bulk-price/preview           → price adjust dry run
+//   POST   /v1/commerce/products/bulk-price/apply             → apply + record undo
+//   POST   /v1/commerce/products/bulk-price/revert            → undo within 30 min
+//   GET    /v1/commerce/products/bulk-price/reversible        → ops in undo window
 //
 // Variant sub-resource:
 //   GET    /v1/commerce/products/:productId/variants          → list variants
@@ -34,7 +38,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { productService, variantService } from '@sparx/commerce';
+import { bulkPriceService, productService, variantService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { withRequestTenant } from '@sparx/api-core/db';
@@ -44,6 +48,7 @@ import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ProductIdParam = z.object({ productId: z.string().uuid() });
+const BulkPriceRevertBody = z.object({ operationId: z.string().uuid() });
 const VariantImageParam = z.object({ imageId: z.string().uuid() });
 
 const ListProductsQuery = z.object({
@@ -194,6 +199,43 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const result = await productService.bulkTag(toCommerceContext(request), request.body);
     return ok(result);
+  });
+
+  // ── Bulk price adjustment + 30-minute revert (docs/69 B-3) ─────────────
+
+  // Dry run — before→after price range per product; writes nothing.
+  app.post('/v1/commerce/products/bulk-price/preview', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    return ok(
+      await bulkPriceService.previewBulkPriceAdjust(toCommerceContext(request), request.body)
+    );
+  });
+
+  // Apply — records before-values for the undo window.
+  app.post('/v1/commerce/products/bulk-price/apply', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    return ok(
+      await bulkPriceService.applyBulkPriceAdjust(toCommerceContext(request), request.body)
+    );
+  });
+
+  // Undo within the 30-minute window.
+  app.post('/v1/commerce/products/bulk-price/revert', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { operationId } = BulkPriceRevertBody.parse(request.body);
+    return ok(
+      await bulkPriceService.revertBulkPriceAdjust(toCommerceContext(request), operationId)
+    );
+  });
+
+  // Operations still inside their undo window (for the products-list banner).
+  app.get('/v1/commerce/products/bulk-price/reversible', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    return ok(await bulkPriceService.listReversibleOps(toCommerceContext(request)));
   });
 
   // ── Variants ─────────────────────────────────────────────
