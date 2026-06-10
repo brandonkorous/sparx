@@ -26,6 +26,7 @@ COPY packages/site-ui/package.json packages/site-ui/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
+COPY packages/chat-widget/package.json packages/chat-widget/
 
 # Install only the @sparx/site subgraph (its deps + transitive workspace deps).
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
@@ -38,6 +39,7 @@ COPY packages/site-ui packages/site-ui
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
 COPY packages/builder-schemas packages/builder-schemas
+COPY packages/chat-widget packages/chat-widget
 COPY apps/site apps/site
 
 # @sparx/site-ui ships its stylesheet as a BUILD artifact (dist/styles.css, Tailwind

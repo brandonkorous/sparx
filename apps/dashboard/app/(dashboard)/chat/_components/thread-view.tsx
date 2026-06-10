@@ -54,13 +54,8 @@ export function ThreadView({
 
   const id = conversation.id;
 
-  // Reset state when navigating to a different conversation.
-  useEffect(() => {
-    setMessages(conversation.messages);
-    setStatus(conversation.status);
-    setAssignedToId(conversation.assignedToId);
-    seen.current = new Set(conversation.messages.map((m) => m.id));
-  }, [conversation]);
+  // State resets per conversation via a `key` on this component in the route
+  // page (remount), so no prop→state sync effect is needed here.
 
   useEffect(() => {
     joinConversation(id);

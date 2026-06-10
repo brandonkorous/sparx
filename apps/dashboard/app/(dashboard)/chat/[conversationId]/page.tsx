@@ -27,6 +27,7 @@ export default async function ConversationPage({
   return (
     <div className="grid h-full grid-cols-1 lg:grid-cols-[1fr_300px]">
       <ThreadView
+        key={conversationId}
         conversation={conversation}
         currentUserId={session.user.id}
         quickReplies={quickReplies}

@@ -8,6 +8,7 @@ const config = {
     reactStrictMode: true,
     transpilePackages: [
         '@sparx/ui',
+        '@sparx/attribution',
         '@sparx/auth',
         '@sparx/db',
         '@sparx/crm',

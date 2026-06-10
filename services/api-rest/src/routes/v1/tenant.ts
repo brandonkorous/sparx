@@ -74,6 +74,8 @@ const MODULE_SLUGS: ModuleSlug[] = [
   'email',
   'b2b',
   'dropship',
+  'inventory',
+  'chat',
   'ai',
 ];
 const MODULE_SLUG_SET = new Set<string>(MODULE_SLUGS);

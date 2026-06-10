@@ -59,7 +59,9 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
   const seenIds = useRef<Set<string>>(new Set());
   const threadEndRef = useRef<HTMLDivElement | null>(null);
   const openRef = useRef(open);
-  openRef.current = open;
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
 
   const base = apiUrl.replace(/\/$/, '');
   const tenantQuery = `tenant=${encodeURIComponent(tenantSlug)}`;
@@ -145,12 +147,11 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
     };
   }, [base, tenantQuery, storageKey, connectSocket]);
 
-  // Auto-scroll + clear unread when opening.
+  // Auto-scroll to the newest message while the panel is open. (Unread is
+  // cleared in the bubble's open handler, not here — setState in an effect
+  // triggers cascading renders.)
   useEffect(() => {
-    if (open) {
-      setUnread(0);
-      threadEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
+    if (open) threadEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [open, messages]);
 
   const accent = config?.primaryColor ?? accentColor ?? null;
@@ -325,7 +326,14 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
           )}
         </div>
       ) : (
-        <button className="sxchat-bubble" aria-label="Open chat" onClick={() => setOpen(true)}>
+        <button
+          className="sxchat-bubble"
+          aria-label="Open chat"
+          onClick={() => {
+            setUnread(0);
+            setOpen(true);
+          }}
+        >
           <ChatIcon />
           {unread > 0 ? <span className="sxchat-unread">{unread}</span> : null}
         </button>

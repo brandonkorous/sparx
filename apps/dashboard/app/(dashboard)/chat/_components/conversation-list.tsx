@@ -53,7 +53,14 @@ export function ConversationList({
   const pathname = usePathname();
   const activeId = pathname.startsWith('/chat/') ? pathname.slice('/chat/'.length) : null;
 
-  useEffect(() => setItems(initial), [initial]);
+  // Re-sync to fresh server data when the layout re-fetches (router.refresh on a
+  // brand-new conversation). React's sanctioned "adjust state during render"
+  // pattern — not an effect, which would cascade renders.
+  const [syncedInitial, setSyncedInitial] = useState(initial);
+  if (initial !== syncedInitial) {
+    setSyncedInitial(initial);
+    setItems(initial);
+  }
 
   useEffect(() => {
     if (!socket) return;
