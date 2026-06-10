@@ -85,11 +85,19 @@ export const CheckoutSessionSnapshot = z.object({
   taxBreakdownRef: z.string().optional(),
   poNumber: z.string().optional(),
   paymentTermsRequested: z.string().optional(),
+  // Customer-facing label for the disclosed surcharge (docs/48 §6), e.g.
+  // "Card processing fee". Present only when a surcharge applies; the storefront
+  // shows it as the line label. Multiple rules collapse to "Surcharges".
+  surchargeLabel: z.string().optional(),
   totals: z.object({
     subtotalCents: MoneyCents,
     discountTotalCents: MoneyCents,
     shippingTotalCents: MoneyCents,
     taxTotalCents: MoneyCents,
+    // Document surcharge disclosed before payment (docs/48 §6). In-flight
+    // sessions compute it live from the active rules + best-known payment
+    // method; completed sessions report the frozen amount. Included in totalCents.
+    surchargeTotalCents: MoneyCents,
     giftCardAppliedCents: MoneyCents,
     storeCreditAppliedCents: MoneyCents,
     totalCents: MoneyCents,

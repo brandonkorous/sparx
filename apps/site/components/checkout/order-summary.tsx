@@ -11,11 +11,15 @@ export function OrderSummary({
   lines,
   totals,
   currency,
+  surchargeLabel,
 }: {
   lines: CartLine[];
   totals: CartTotals;
   currency: string;
+  /** Label for the disclosed surcharge line (docs/48 §6), e.g. "Card processing fee". */
+  surchargeLabel?: string;
 }) {
+  const surchargeCents = totals.surchargeTotalCents ?? 0;
   return (
     <div className="sf-summary" style={{ position: 'sticky', top: '92px' }}>
       <h2 className="sf-h3">Order summary</h2>
@@ -72,10 +76,22 @@ export function OrderSummary({
           <span>{formatMoney(totals.taxTotalCents, currency)}</span>
         </div>
       ) : null}
+      {surchargeCents > 0 ? (
+        <div className="sf-summary__row">
+          <span>{surchargeLabel ?? 'Surcharge'}</span>
+          <span>{formatMoney(surchargeCents, currency)}</span>
+        </div>
+      ) : null}
       <div className="sf-summary__total">
         <span>Total</span>
         <span>{formatMoney(totals.totalCents, currency)}</span>
       </div>
+      {surchargeCents > 0 ? (
+        <p className="sf-muted" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
+          {surchargeLabel ?? 'A surcharge'} of {formatMoney(surchargeCents, currency)} is added to
+          cover payment processing costs and is included in your total.
+        </p>
+      ) : null}
     </div>
   );
 }

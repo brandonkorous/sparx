@@ -30,6 +30,8 @@ export interface CheckoutTotals {
   discountTotalCents: number;
   shippingTotalCents: number;
   taxTotalCents: number;
+  // Disclosed document surcharge (docs/48 §6) — e.g. a card processing fee.
+  surchargeTotalCents?: number;
   totalCents: number;
 }
 
@@ -39,6 +41,8 @@ export interface CheckoutSession {
   step: string;
   currency: string;
   customerEmail?: string;
+  // Customer-facing label for the surcharge line, when one applies.
+  surchargeLabel?: string;
   totals: CheckoutTotals;
 }
 

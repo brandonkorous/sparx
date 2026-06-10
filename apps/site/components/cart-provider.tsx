@@ -42,6 +42,9 @@ export interface CartTotals {
   discountTotalCents: number;
   shippingTotalCents: number;
   taxTotalCents: number;
+  // Disclosed only at checkout (docs/48 §6) once a payment method is known; the
+  // cart itself carries no surcharge, so this is absent in cart context.
+  surchargeTotalCents?: number;
   totalCents: number;
 }
 

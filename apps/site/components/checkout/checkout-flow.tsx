@@ -247,6 +247,7 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
           lines={cart.lines}
           totals={session?.totals ?? cart.totals}
           currency={session?.currency ?? cart.currency}
+          {...(session?.surchargeLabel ? { surchargeLabel: session.surchargeLabel } : {})}
         />
       </aside>
     </div>

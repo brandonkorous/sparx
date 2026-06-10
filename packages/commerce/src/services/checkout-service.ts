@@ -12,6 +12,7 @@
 
 import { orderService } from '@sparx/crm';
 import {
+  type AppliedSurcharge,
   applySurcharges,
   type CheckoutSessionSnapshot,
   CompleteCheckoutInput,
@@ -151,7 +152,29 @@ export async function get(
 ): Promise<CheckoutSessionSnapshot | null> {
   return withTenant(ctx, async (tx) => {
     const row = await tx.checkoutSession.findFirst({ where: { id: sessionId } });
-    return row ? serializeSession(row) : null;
+    if (!row) return null;
+
+    // Surcharge disclosure (docs/48 §6): a completed/expired session already
+    // froze its surcharge into surcharge_total_cents + total; an in-flight
+    // session computes it live from the active rules + the best-known payment
+    // method so the storefront can disclose the fee BEFORE the customer pays.
+    // Either way we recompute against active rules to surface the label.
+    const specs = await surchargeService.listActiveSpecs(ctx, 'checkout', tx);
+    const surcharge = applySurcharges(specs, {
+      subtotalCents: Math.max(0, row.subtotalCents - row.discountTotalCents),
+      shippingCents: row.shippingTotalCents,
+      taxCents: row.taxTotalCents,
+      paymentMethod: surchargeMethodForSession(row),
+    });
+    const terminal = row.step === 'completed' || row.step === 'expired';
+    const surchargeTotalCents = terminal ? row.surchargeTotalCents : surcharge.totalCents;
+    const totalCents = terminal ? row.totalCents : row.totalCents + surcharge.totalCents;
+
+    return serializeSession(row, {
+      surchargeTotalCents,
+      totalCents,
+      surchargeLabel: surchargeLabelFor(surcharge.applied),
+    });
   });
 }
 
@@ -477,11 +500,7 @@ export async function complete(
     // Document surcharge (docs/48 §6) — computed AFTER tax, gated by payment
     // method. Card-processor checkouts classify as 'card'; B2B net-terms / no
     // provider as 'account' (no card fee). Basis reads the post-discount amounts.
-    const surchargePaymentMethod: SurchargePaymentMethod = session.paymentTermsRequested
-      ? 'account'
-      : session.paymentProviderSlug
-        ? 'card'
-        : 'account';
+    const surchargePaymentMethod = surchargeMethodForSession(session);
     const surchargeSpecs = await surchargeService.listActiveSpecs(ctx, 'checkout', tx);
     const surcharge = applySurcharges(surchargeSpecs, {
       subtotalCents: Math.max(0, session.subtotalCents - session.discountTotalCents),
@@ -812,7 +831,35 @@ function assertCanAdvance(from: string, to: string): void {
   }
 }
 
-function serializeSession(row: CheckoutSession): CheckoutSessionSnapshot {
+/**
+ * Coarse payment-method classification driving surcharge gating (docs/48 §6).
+ * Shared by `get()` (pre-payment disclosure) and `complete()` (final charge) so
+ * the disclosed fee and the charged fee always agree. A net-terms request →
+ * 'account' (no card fee); a chosen card provider → 'card'. Before either is
+ * known we default by channel: retail storefront pays by card, B2B on account.
+ */
+function surchargeMethodForSession(row: {
+  paymentTermsRequested: string | null;
+  paymentProviderSlug: string | null;
+  channel: string;
+}): SurchargePaymentMethod {
+  if (row.paymentTermsRequested) return 'account';
+  if (row.paymentProviderSlug) return 'card';
+  return row.channel === 'b2b_portal' ? 'account' : 'card';
+}
+
+/** One human label for the disclosed surcharge: the single rule's label, or a
+ *  generic heading when several rules stack. Null when nothing applies. */
+function surchargeLabelFor(applied: AppliedSurcharge[]): string | null {
+  if (applied.length === 0) return null;
+  if (applied.length === 1) return applied[0]!.label;
+  return 'Surcharges';
+}
+
+function serializeSession(
+  row: CheckoutSession,
+  surcharge: { surchargeTotalCents: number; totalCents: number; surchargeLabel: string | null }
+): CheckoutSessionSnapshot {
   return {
     sessionId: row.id,
     cartId: row.cartId,
@@ -833,14 +880,16 @@ function serializeSession(row: CheckoutSession): CheckoutSessionSnapshot {
     taxBreakdownRef: row.taxBreakdownRef ?? undefined,
     poNumber: row.poNumber ?? undefined,
     paymentTermsRequested: row.paymentTermsRequested ?? undefined,
+    surchargeLabel: surcharge.surchargeLabel ?? undefined,
     totals: {
       subtotalCents: row.subtotalCents,
       discountTotalCents: row.discountTotalCents,
       shippingTotalCents: row.shippingTotalCents,
       taxTotalCents: row.taxTotalCents,
+      surchargeTotalCents: surcharge.surchargeTotalCents,
       giftCardAppliedCents: row.giftCardAppliedCents,
       storeCreditAppliedCents: row.storeCreditAppliedCents,
-      totalCents: row.totalCents,
+      totalCents: surcharge.totalCents,
     },
     expiresAt: row.expiresAt.toISOString(),
   };
