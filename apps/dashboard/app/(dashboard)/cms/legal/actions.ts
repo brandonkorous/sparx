@@ -32,6 +32,16 @@ export async function addLegalPlacement(entryId: string): Promise<LegalActionRes
   return { ok: true };
 }
 
+export async function acknowledgeLegalPage(entryId: string): Promise<LegalActionResult> {
+  try {
+    await api.post(`/v1/legal/pages/${entryId}/acknowledge`);
+  } catch (err) {
+    return { ok: false, error: message(err) };
+  }
+  revalidatePath('/cms/legal');
+  return { ok: true };
+}
+
 export interface ConsentSettingsInput {
   mode: 'off' | 'gdpr' | 'ccpa';
   activeCategories: string[];

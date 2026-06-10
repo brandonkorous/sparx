@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Badge, Button, Card, CardContent, Heading, Stack, Text } from '@sparx/ui';
 import { Check, FileText, Plus } from 'lucide-react';
-import { createLegalPage, addLegalPlacement } from './actions';
+import { createLegalPage, addLegalPlacement, acknowledgeLegalPage } from './actions';
 
 export type ChecklistState = 'complete' | 'missing' | 'draft' | 'stale' | 'unplaced';
 
@@ -83,18 +83,23 @@ export function LegalChecklist({ data }: { data: ChecklistData }) {
               <div className="flex min-w-0 items-center gap-3">
                 <FileText className="size-4 shrink-0 text-[var(--color-text-tertiary)]" />
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Text weight="medium">{item.title}</Text>
                     {item.required ? (
                       <Badge color="neutral" variant="outline">
                         Required
                       </Badge>
                     ) : null}
+                    {item.entry && !item.entry.acknowledged ? (
+                      <Badge color="warning" variant="soft">
+                        Unreviewed starter text
+                      </Badge>
+                    ) : null}
                   </div>
                   <Text size="xs" variant="muted">
                     /{item.entry?.slug ?? item.defaultSlug}
-                    {item.entry && !item.entry.acknowledged
-                      ? ' · starter text — review before publishing'
+                    {item.state === 'stale' && item.entry
+                      ? ` · template v${item.entry.templateVersion ?? '—'} → v${item.entry.currentVersion} available`
                       : ''}
                   </Text>
                 </div>
@@ -105,6 +110,18 @@ export function LegalChecklist({ data }: { data: ChecklistData }) {
                   {item.state === 'complete' ? <Check className="mr-1 size-3" /> : null}
                   {STATE_LABEL[item.state]}
                 </Badge>
+
+                {item.entry && !item.entry.acknowledged ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={pending}
+                    onClick={() => run(() => acknowledgeLegalPage(item.entry!.id))}
+                  >
+                    <Check className="mr-1 size-3" />
+                    Mark reviewed
+                  </Button>
+                ) : null}
 
                 {item.state === 'missing' ? (
                   <Button

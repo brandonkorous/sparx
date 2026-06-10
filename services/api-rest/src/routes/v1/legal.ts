@@ -208,6 +208,42 @@ const legalRoutes: FastifyPluginAsync = (app) => {
     return ok(serializeEntry(created));
   });
 
+  // ── Acknowledge the starter-text disclaimer (docs/42 §3.4) ────────────────
+  // Clears the "unreviewed starter text" badge by stamping
+  // legal_disclaimer_ack_at. One-way + idempotent: re-acknowledging a page that
+  // is already acknowledged is a no-op, never an error.
+  app.post('/v1/legal/pages/:id/acknowledge', async (request) => {
+    const auth = requireRole(request, 'editor');
+    const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
+
+    const result = await withRequestTenant(request, async (tx) => {
+      const entry = await tx.contentEntry.findFirst({
+        where: { id, typeKey: 'page', legalKind: { not: null }, deletedAt: null },
+        select: { id: true, legalKind: true, legalDisclaimerAckAt: true },
+      });
+      if (!entry) throw notFound('Legal page', id);
+      if (entry.legalDisclaimerAckAt) return entry;
+
+      const next = await tx.contentEntry.update({
+        where: { id },
+        data: { legalDisclaimerAckAt: new Date() },
+        select: { id: true, legalKind: true, legalDisclaimerAckAt: true },
+      });
+      await writeAudit(tx, request, auth, {
+        action: 'content.entry.updated',
+        entityType: 'content_entry',
+        entityId: id,
+        after: { legalKind: next.legalKind, legalDisclaimerAckAt: next.legalDisclaimerAckAt },
+      });
+      return next;
+    });
+
+    return ok({
+      id: result.id,
+      acknowledgedAt: result.legalDisclaimerAckAt?.toISOString() ?? null,
+    });
+  });
+
   // ── Placements ────────────────────────────────────────────────────────────
   app.get('/v1/legal/placements', async (request) => {
     requireRole(request, 'viewer');
