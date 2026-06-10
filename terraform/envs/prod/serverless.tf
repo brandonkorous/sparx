@@ -66,6 +66,22 @@ resource "google_project_iam_member" "email_worker_roles" {
   member  = "serviceAccount:${google_service_account.email_worker.email}"
 }
 
+resource "google_service_account" "push_worker" {
+  account_id   = "sparx-push-worker"
+  display_name = "Sparx push-worker (Cloud Run)"
+  description  = "Runtime SA for the push-worker Cloud Run service. Reads the VAPID private key + DB URL from Secret Manager."
+}
+
+resource "google_project_iam_member" "push_worker_roles" {
+  for_each = toset([
+    "roles/cloudsql.client",
+    "roles/secretmanager.secretAccessor",
+  ])
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.push_worker.email}"
+}
+
 resource "google_service_account" "commerce_indexer" {
   account_id   = "sparx-commerce-indexer"
   display_name = "Sparx commerce-indexer (Cloud Run)"
@@ -217,6 +233,60 @@ module "email_worker_cloudrun" {
   depends_on = [
     module.pubsub,
     google_project_iam_member.email_worker_roles,
+    google_service_account_iam_member.pubsub_invoker_token_creator,
+  ]
+}
+
+# push-worker — Web Push fan-out for staff (docs/69 A-6). Lower concurrency than
+# email-worker (the Web Push API is slower per send) and a shorter timeout (the
+# work is I/O-light). VAPID public key is a plain env; the private key is a
+# Secret Manager binding. No-ops until both VAPID values are populated.
+module "push_worker_cloudrun" {
+  source = "../../modules/cloud-run-worker"
+
+  name                  = "push-worker"
+  project_id            = var.project_id
+  region                = var.region
+  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/sparx/push-worker:latest"
+  service_account_email = google_service_account.push_worker.email
+  vpc_connector_id      = google_vpc_access_connector.workers.id
+
+  min_instance_count    = 0
+  max_instance_count    = 10
+  container_concurrency = 4
+  cpu                   = "1"
+  memory                = "512Mi"
+  timeout_seconds       = 60
+
+  env_vars = {
+    NODE_ENV          = "production"
+    SERVICE_NAME      = "push-worker"
+    LOG_LEVEL         = "info"
+    PUBSUB_INVOKER_SA = google_service_account.pubsub_invoker.email
+    VAPID_PUBLIC_KEY  = var.vapid_public_key
+    VAPID_SUBJECT     = "mailto:support@sparx.works"
+  }
+
+  secrets = [
+    {
+      name      = "DATABASE_URL"
+      secret_id = "database-url"
+    },
+    {
+      name      = "VAPID_PRIVATE_KEY"
+      secret_id = "vapid-private-key"
+    },
+  ]
+
+  pubsub_topic                 = "push.send"
+  pubsub_subscription_name     = "push.send.push-worker-cloudrun"
+  pubsub_invoker_sa_email      = google_service_account.pubsub_invoker.email
+  pubsub_dead_letter_topic_id  = module.pubsub.dead_letter_topic == null ? null : "projects/${var.project_id}/topics/${module.pubsub.dead_letter_topic}"
+  pubsub_max_delivery_attempts = 5
+
+  depends_on = [
+    module.pubsub,
+    google_project_iam_member.push_worker_roles,
     google_service_account_iam_member.pubsub_invoker_token_creator,
   ]
 }

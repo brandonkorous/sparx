@@ -50,3 +50,15 @@ variable "sparx_email_dkim_selector" {
   default     = "postal"
   description = "DKIM selector chunk that prefixes ._domainkey for the per-server record (e.g. 'postal-fID0Sm')."
 }
+
+# Web Push (docs/69 A-6). The VAPID PUBLIC key is non-secret (handed to every
+# browser at subscribe time), so it lives as a plain var, not in Secret Manager.
+# The matching private key is the `vapid-private-key` secret. Generate both once
+# with `npx web-push generate-vapid-keys`; set this in terraform.tfvars and the
+# same value as VAPID_PUBLIC_KEY in app-env-configmap.yaml. Empty → push-worker
+# acks every message as a no-op (deployable before keys exist).
+variable "vapid_public_key" {
+  type        = string
+  default     = ""
+  description = "VAPID application-server PUBLIC key (base64url). Non-secret; consumed by push-worker + the dashboard."
+}

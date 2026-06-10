@@ -127,6 +127,10 @@ module "pubsub" {
     "email.send"            = ["email-worker"]
     "email.domain.verified" = []
 
+    # Web push (docs/69 A-6) — chat escalation fans out push.send per recipient;
+    # push-worker (Cloud Run) delivers to staff browser subscriptions via VAPID.
+    "push.send" = ["push-worker"]
+
     # Module lifecycle
     "module.activated"   = []
     "module.deactivated" = []
@@ -216,6 +220,13 @@ module "secrets" {
     # documents:search on products/customers/orders. Optional — the key
     # endpoint returns 501 until this is populated.
     "typesense-search-key",
+    # VAPID private key — push-worker (serverless.tf) binds it to sign Web Push
+    # requests. Generate the pair once (`npx web-push generate-vapid-keys`) and
+    # add the private half out-of-band:
+    #   gcloud secrets versions add vapid-private-key --data-file=- <<< "<priv>"
+    # The PUBLIC half is non-secret: set it as var.vapid_public_key (worker env)
+    # and VAPID_PUBLIC_KEY in k8s/sparx-prod/app-env-configmap.yaml (dashboard).
+    "vapid-private-key",
   ]
 }
 
