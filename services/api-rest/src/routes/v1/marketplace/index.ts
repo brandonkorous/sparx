@@ -21,10 +21,17 @@ import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
 import { getBlueprint, listBlueprints, toSummary, type Blueprint } from '@sparx/blueprints';
+import { MarketplaceCategory } from '@sparx/marketplace-schemas';
 
 import { resolvePrimaryPropertyId } from '../../../lib/property.js';
+import { marketplaceCatalogService } from '../../../lib/marketplace/catalog-service.js';
 
 const KeyParam = z.object({ key: z.string().min(1).max(63) });
+const CategoryParam = z.object({ category: MarketplaceCategory });
+const CategorySlugParam = z.object({
+  category: MarketplaceCategory,
+  slug: z.string().min(1).max(120),
+});
 
 const BrowseQuery = z.object({
   q: z.string().trim().max(120).optional(),
@@ -184,6 +191,39 @@ const marketplaceRoutes: FastifyPluginAsync = (app) => {
     if (!bp) throw notFound('Blueprint', key);
     const installs = await loadInstalls(auth.tenantId);
     return ok(catalogItem(bp, installs.get(bp.key)));
+  });
+
+  // ─── Generic, data-backed catalog (docs/60 §6) ─────────────────────────────
+  //
+  // The DB-backed browse/detail for every category, served through the uniform
+  // adapter + catalog service. The `blueprints` category keeps the bespoke,
+  // registry-backed handlers above (with the per-tenant install overlay) — a
+  // Fastify static route wins over `:category`, so these handle themes /
+  // components / integrations today. Phase 2 folds blueprints onto this generic
+  // path (adding the install overlay here) and retires the bespoke handlers.
+  //
+  // Tenant-scoped read: a tenant additionally sees its OWN draft listings
+  // (docs/60 §6.3) once publishing exists; published+public is all that shows
+  // today.
+  app.get('/v1/marketplace/:category', async (request) => {
+    const auth = requireRole(request, 'viewer');
+    const { category } = CategoryParam.parse(request.params);
+    const result = await marketplaceCatalogService.list(
+      category,
+      request.query as Record<string, unknown>,
+      { tenantId: auth.tenantId }
+    );
+    return ok(result);
+  });
+
+  app.get('/v1/marketplace/:category/:slug', async (request) => {
+    const auth = requireRole(request, 'viewer');
+    const { category, slug } = CategorySlugParam.parse(request.params);
+    const listing = await marketplaceCatalogService.get(category, slug, {
+      tenantId: auth.tenantId,
+    });
+    if (!listing) throw notFound('Listing', `${category}/${slug}`);
+    return ok(listing);
   });
 
   return Promise.resolve();

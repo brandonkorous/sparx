@@ -1,0 +1,253 @@
+// ── Marketplace catalog (docs/60) ──────────────────────────────────────────────
+//
+// The data-driven catalog behind the dual-app marketplace (dashboard authed +
+// apps/web public). FOUR per-category tables share a common "spine" (identity,
+// media, publisher, pricing, status) and add category-specific columns; a
+// uniform adapter normalizes any row into one MarketplaceListing the browse UI
+// renders (docs/60 §6, D4). Listings are PUBLISHER-owned — Sparx-core (seeded),
+// tenant, or partner (D5/D9) — so they are NOT canonically tenant-scoped: a
+// published listing is visible across every tenant AND to the public (no tenant
+// context).
+//
+// RLS (docs/60 §6.3): each catalog table is ENABLE + FORCE with a custom
+// `marketplace_visibility` policy —
+//   USING      (status = 'published' OR publisher_tenant_id = current_tenant_id())
+//   WITH CHECK (publisher_tenant_id IS NOT DISTINCT FROM current_tenant_id())
+// so the public/no-tenant path sees only published rows, a tenant additionally
+// sees its OWN drafts, and a tenant can only write listings it owns — while the
+// no-tenant seed path (publisher_tenant_id NULL) writes Sparx-core rows
+// (NULL IS NOT DISTINCT FROM NULL → true). The `publisher_tenant_id` column is a
+// denormalized copy of the owning tenant (the authoritative link is publisher_id
+// → marketplace_publishers.owner_tenant_id), carried on the row so the policy is
+// a single-column predicate.
+//
+// Sparx-core rows keep their HEAVY payload (a blueprint manifest, a component
+// tree) in the in-code registry and leave `definition`/`tree` NULL — resolved by
+// slug at serve/install time; tenant/partner listings (Phase 5+) carry it inline.
+// `marketplace_publishers` is a NON-RLS registry (publisher identity is public
+// catalog metadata, like the `tenants` dispatch row) — see
+// scripts/rls-audit.ts SHARED_REFERENCE_TABLES.
+
+model MarketplacePublisher {
+  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // sparx — first-party (one seeded row); tenant — a Sparx tenant publishing its
+  // own work; partner — an external/verified third party (D9).
+  type          String  @db.VarChar(20)
+  slug          String  @unique @db.VarChar(80)
+  displayName   String  @map("display_name") @db.VarChar(160)
+  // The owning tenant for type=tenant (and some partners); NULL for sparx. FK to
+  // tenants so a tenant delete cascades its publisher + listings.
+  ownerTenantId String? @map("owner_tenant_id") @db.Uuid
+  websiteUrl    String? @map("website_url") @db.VarChar(2048)
+  supportEmail  String? @map("support_email") @db.VarChar(255)
+  verified      Boolean @default(false)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  owner        Tenant?                  @relation(fields: [ownerTenantId], references: [id], onDelete: Cascade)
+  blueprints   MarketplaceBlueprint[]
+  themes       MarketplaceTheme[]
+  components   MarketplaceComponent[]
+  integrations MarketplaceIntegration[]
+
+  @@index([type])
+  @@index([ownerTenantId])
+  @@map("marketplace_publishers")
+}
+
+model MarketplaceBlueprint {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug        String  @unique @db.VarChar(120)
+  name        String  @db.VarChar(160)
+  tagline     String? @db.VarChar(255)
+  description String? @db.Text
+  // Gallery: ordered [{ url, alt?, kind? }]; the first entry is the card image.
+  media       Json    @default("[]")
+  icon        String? @db.VarChar(64)
+  accent      String? @db.VarChar(9)
+  version     String  @default("1.0.0") @db.VarChar(20)
+  changelog   String? @db.Text
+
+  publisherId       String  @map("publisher_id") @db.Uuid
+  publisherTenantId String? @map("publisher_tenant_id") @db.Uuid
+
+  status     String @default("published") @db.VarChar(20)
+  visibility String @default("public") @db.VarChar(20)
+
+  priceCents   Int    @default(0) @map("price_cents")
+  pricingModel String @default("free") @map("pricing_model") @db.VarChar(20)
+
+  installCount Int     @default(0) @map("install_count")
+  ratingCount  Int     @default(0) @map("rating_count")
+  ratingAvg    Decimal @default(0) @map("rating_avg") @db.Decimal(3, 2)
+  sortWeight   Int     @default(0) @map("sort_weight")
+
+  // ── Blueprint-specific ──────────────────────────────────────────────────────
+  vertical        String   @db.VarChar(20)
+  requiredModules String[] @map("required_modules") @db.VarChar(20)
+  // Lightweight "what this creates" counts for the browse/detail card, so list
+  // queries never load the heavy manifest.
+  contents        Json     @default("{}")
+  // The full @sparx/blueprints manifest for a DATA-backed (tenant/partner)
+  // listing. NULL for Sparx-core rows, whose manifest lives in the in-code
+  // registry and is resolved by slug at install time (docs/60 §6).
+  definition      Json?
+
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  publisher MarketplacePublisher @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+
+  @@index([status, visibility])
+  @@index([publisherTenantId])
+  @@index([publisherId])
+  @@index([vertical])
+  @@map("marketplace_blueprints")
+}
+
+model MarketplaceTheme {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug        String  @unique @db.VarChar(120)
+  name        String  @db.VarChar(160)
+  tagline     String? @db.VarChar(255)
+  description String? @db.Text
+  media       Json    @default("[]")
+  icon        String? @db.VarChar(64)
+  accent      String? @db.VarChar(9)
+  version     String  @default("1.0.0") @db.VarChar(20)
+  changelog   String? @db.Text
+
+  publisherId       String  @map("publisher_id") @db.Uuid
+  publisherTenantId String? @map("publisher_tenant_id") @db.Uuid
+
+  status     String @default("published") @db.VarChar(20)
+  visibility String @default("public") @db.VarChar(20)
+
+  priceCents   Int    @default(0) @map("price_cents")
+  pricingModel String @default("free") @map("pricing_model") @db.VarChar(20)
+
+  installCount Int     @default(0) @map("install_count")
+  ratingCount  Int     @default(0) @map("rating_count")
+  ratingAvg    Decimal @default(0) @map("rating_avg") @db.Decimal(3, 2)
+  sortWeight   Int     @default(0) @map("sort_weight")
+
+  // ── Theme-specific ──────────────────────────────────────────────────────────
+  mood        String? @db.VarChar(40)
+  colorFamily String? @map("color_family") @db.VarChar(40)
+  density     String? @db.VarChar(20)
+  industry    String? @db.VarChar(40)
+  // The saved-theme payload (basePresetKey + presentation overlay + brand look)
+  // for a DATA-backed listing; NULL for Sparx-core presets resolved by slug.
+  tokens      Json?
+
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  publisher MarketplacePublisher @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+
+  @@index([status, visibility])
+  @@index([publisherTenantId])
+  @@index([publisherId])
+  @@index([industry])
+  @@map("marketplace_themes")
+}
+
+model MarketplaceComponent {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug        String  @unique @db.VarChar(120)
+  name        String  @db.VarChar(160)
+  tagline     String? @db.VarChar(255)
+  description String? @db.Text
+  media       Json    @default("[]")
+  icon        String? @db.VarChar(64)
+  accent      String? @db.VarChar(9)
+  version     String  @default("1.0.0") @db.VarChar(20)
+  changelog   String? @db.Text
+
+  publisherId       String  @map("publisher_id") @db.Uuid
+  publisherTenantId String? @map("publisher_tenant_id") @db.Uuid
+
+  status     String @default("published") @db.VarChar(20)
+  visibility String @default("public") @db.VarChar(20)
+
+  priceCents   Int    @default(0) @map("price_cents")
+  pricingModel String @default("free") @map("pricing_model") @db.VarChar(20)
+
+  installCount Int     @default(0) @map("install_count")
+  ratingCount  Int     @default(0) @map("rating_count")
+  ratingAvg    Decimal @default(0) @map("rating_avg") @db.Decimal(3, 2)
+  sortWeight   Int     @default(0) @map("sort_weight")
+
+  // ── Component-specific ──────────────────────────────────────────────────────
+  group    String   @db.VarChar(20)
+  kind     String?  @db.VarChar(20)
+  surfaces String[] @db.VarChar(20)
+  // The builder node tree + prop spec for a DATA-backed (tenant) component; NULL
+  // for Sparx-core registry primitives resolved by slug (docs/60 §7).
+  tree     Json?
+  propSpec Json     @default("[]") @map("prop_spec")
+
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  publisher MarketplacePublisher @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+
+  @@index([status, visibility])
+  @@index([publisherTenantId])
+  @@index([publisherId])
+  @@index([group])
+  @@map("marketplace_components")
+}
+
+model MarketplaceIntegration {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug        String  @unique @db.VarChar(120)
+  name        String  @db.VarChar(160)
+  tagline     String? @db.VarChar(255)
+  description String? @db.Text
+  media       Json    @default("[]")
+  icon        String? @db.VarChar(64)
+  accent      String? @db.VarChar(9)
+  version     String  @default("1.0.0") @db.VarChar(20)
+  changelog   String? @db.Text
+
+  publisherId       String  @map("publisher_id") @db.Uuid
+  publisherTenantId String? @map("publisher_tenant_id") @db.Uuid
+
+  status     String @default("published") @db.VarChar(20)
+  visibility String @default("public") @db.VarChar(20)
+
+  priceCents   Int    @default(0) @map("price_cents")
+  pricingModel String @default("free") @map("pricing_model") @db.VarChar(20)
+
+  installCount Int     @default(0) @map("install_count")
+  ratingCount  Int     @default(0) @map("rating_count")
+  ratingAvg    Decimal @default(0) @map("rating_avg") @db.Decimal(3, 2)
+  sortWeight   Int     @default(0) @map("sort_weight")
+
+  // ── Integration-specific ────────────────────────────────────────────────────
+  // The provider this listing installs (maps to the integration-framework
+  // registry slug); kind buckets it (payment, shipping, tax, …).
+  providerSlug String   @map("provider_slug") @db.VarChar(80)
+  kind         String   @db.VarChar(40)
+  scopes       String[] @db.VarChar(60)
+  // The install/config schema for a DATA-backed listing; NULL for Sparx-core
+  // providers resolved by slug.
+  configSchema Json?    @map("config_schema")
+
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  publisher MarketplacePublisher @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+
+  @@index([status, visibility])
+  @@index([publisherTenantId])
+  @@index([publisherId])
+  @@index([kind])
+  @@map("marketplace_integrations")
+}

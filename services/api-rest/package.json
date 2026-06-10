@@ -45,6 +45,7 @@
     "@sparx/integration-framework": "workspace:*",
     "@sparx/legal": "workspace:*",
     "@sparx/legal-templates": "workspace:*",
+    "@sparx/marketplace-schemas": "workspace:*",
     "@sparx/provider-shippo": "workspace:*",
     "@sparx/provider-stripe": "workspace:*",
     "jose": "^6.0.10",

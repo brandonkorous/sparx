@@ -9,12 +9,82 @@
 
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from 'better-auth/crypto';
+import { listBlueprints, type Blueprint } from '@sparx/blueprints';
 
 const prisma = new PrismaClient();
 
 const TENANT_SLUG = 'e2e-store';
 const STAFF_EMAIL = 'e2e-staff@sparx.test';
 const STAFF_PASSWORD = 'e2e-test-password';
+
+// The first-party publisher every Sparx-core listing belongs to (docs/60 D9).
+const SPARX_PUBLISHER_SLUG = 'sparx';
+
+/** The lightweight "what this creates" counts a blueprint card shows — computed
+ *  from the manifest so the catalog row never has to load it again. */
+function blueprintContents(bp: Blueprint): Record<string, number | string | boolean | null> {
+  const c = bp.commerce;
+  return {
+    products: c?.products.length ?? 0,
+    categories: c?.categories.length ?? 0,
+    collections: c?.collections.length ?? 0,
+    content: bp.content.length,
+    pages: bp.pages.length,
+    emails: bp.emails.length,
+    components: bp.components.length,
+    theme: bp.theme.name,
+    hasLayout: Boolean(bp.layout),
+  };
+}
+
+// Seed the Sparx-core marketplace catalog (docs/60 §6) from the in-code
+// @sparx/blueprints registry — idempotent (upsert by slug). The catalog row is a
+// thin, browse-ready projection (spine + vertical/modules/contents); the heavy
+// manifest stays in the registry and is resolved by slug at install time, so
+// `definition` is left NULL for Sparx-core rows.
+//
+// Runs with NO tenant context (Sparx-core, publisher_tenant_id NULL): the
+// catalog tables are FORCE-RLS with a `marketplace_visibility` policy whose
+// WITH CHECK is `publisher_tenant_id IS NOT DISTINCT FROM current_tenant_id()`,
+// so clearing app.tenant_id lets the NULL ⇔ NULL insert through (and seeds rows
+// `published`, which the same policy keeps readable for the idempotent re-upsert).
+async function seedMarketplaceCatalog(): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    // No tenant context — Sparx-core listings. Explicit (not relying on a fresh
+    // connection) so a pooled connection can't leak a prior tenant id.
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = ''`);
+
+    const publisher = await tx.marketplacePublisher.upsert({
+      where: { slug: SPARX_PUBLISHER_SLUG },
+      update: { type: 'sparx', displayName: 'Sparx', verified: true },
+      create: { slug: SPARX_PUBLISHER_SLUG, type: 'sparx', displayName: 'Sparx', verified: true },
+    });
+
+    for (const bp of listBlueprints()) {
+      const shared = {
+        name: bp.name,
+        tagline: bp.summary.slice(0, 255),
+        description: bp.summary,
+        media: bp.preview ? [{ url: bp.preview, kind: 'image' }] : [],
+        accent: bp.brand.colors.primary,
+        version: bp.version,
+        vertical: bp.vertical,
+        requiredModules: bp.requiresModules,
+        contents: blueprintContents(bp),
+        status: 'published',
+        visibility: 'public',
+        publisherId: publisher.id,
+      };
+      await tx.marketplaceBlueprint.upsert({
+        where: { slug: bp.key },
+        update: shared,
+        create: { slug: bp.key, publishedAt: new Date(), ...shared },
+      });
+    }
+
+    console.log(`Seeded marketplace catalog: ${listBlueprints().length} Sparx-core blueprint(s).`);
+  });
+}
 
 async function main(): Promise<void> {
   // tenants has no RLS — safe to upsert outside a tenant context. Default
@@ -129,6 +199,16 @@ async function main(): Promise<void> {
   } catch (err) {
     console.warn(
       `[seed] e2e-store staff user upsert skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
+  // Sparx-core marketplace catalog (docs/60) — platform data, independent of the
+  // e2e tenant. Wrapped so a catalog hiccup never blocks the rest of the seed.
+  try {
+    await seedMarketplaceCatalog();
+  } catch (err) {
+    console.warn(
+      `[seed] marketplace catalog seed skipped: ${err instanceof Error ? err.message : String(err)}`
     );
   }
 }

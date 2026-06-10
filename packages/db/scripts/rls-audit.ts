@@ -69,6 +69,14 @@ const SHARED_REFERENCE_TABLES = new Set<string>([
   // FORCE-RLS on its own tables, and management routes filter by tenant_id in
   // the app. Deliberately non-RLS (user-approved 2026-06-04).
   'domains',
+  // `marketplace_publishers` (docs/60 §6) is the publisher-identity registry for
+  // the cross-tenant marketplace. A published listing names its publisher to any
+  // tenant AND to the public (no tenant context), so publisher identity is public
+  // catalog metadata — deliberately non-RLS like `tenants`/`domains`. The
+  // `owner_tenant_id` column trips the audit's tenant-id heuristic; the catalog
+  // tables themselves (marketplace_blueprints/themes/components/integrations) DO
+  // carry ENABLE+FORCE + a `marketplace_visibility` policy.
+  'marketplace_publishers',
 ]);
 
 interface TableDef {

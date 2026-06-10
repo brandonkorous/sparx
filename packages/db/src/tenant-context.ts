@@ -56,3 +56,27 @@ export function withTenant<T>(
     return fn(tx);
   });
 }
+
+/**
+ * Run `fn` inside a transaction with NO tenant context — `app.tenant_id` is
+ * explicitly cleared so `current_tenant_id()` returns NULL for every query.
+ *
+ * This is the read path for GLOBAL, cross-tenant data that has its own RLS
+ * posture rather than tenant isolation — e.g. the public marketplace catalog
+ * (docs/60 §6.3), whose `marketplace_visibility` policy shows only published
+ * rows when no tenant is set. Clearing the GUC inside the transaction (rather
+ * than relying on a fresh connection) guarantees a pooled connection that a
+ * previous `withTenant` ran on can't leak its tenant id into this read.
+ *
+ * Do NOT use this to bypass tenant isolation on tenant-scoped tables — those
+ * stay FORCE-RLS and return zero rows with no tenant set, by design.
+ */
+export function withSystem<T>(
+  fn: (tx: TxClient) => Promise<T>,
+  client: PrismaClient = defaultPrisma
+): Promise<T> {
+  return client.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = ''`);
+    return fn(tx);
+  });
+}

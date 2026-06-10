@@ -41,7 +41,9 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@sparx/blueprints": "workspace:*",
     "@sparx/builder-schemas": "workspace:*",
+    "@sparx/marketplace-schemas": "workspace:*",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.11.10",
     "prisma": "^6.2.0",

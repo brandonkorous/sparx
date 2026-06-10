@@ -18,13 +18,22 @@ WORKDIR /app
 # Workspace context: copy just enough of the monorepo for `pnpm install
 # --filter @sparx/db` to work without pulling the world. @sparx/db's
 # box→class backfill (scripts/backfill-builder-class.ts) imports
-# @sparx/builder-schemas, so that workspace package must be present too —
-# `pnpm install --filter @sparx/db...` links it but can't materialize source
-# the image never copied.
+# @sparx/builder-schemas, and the seed (prisma/seed.ts) imports
+# @sparx/blueprints + @sparx/marketplace-schemas to seed the Sparx-core
+# marketplace catalog (docs/60) — so those workspace packages and their
+# transitive closure (cms-/commerce-/crm-/sitebuilder-schemas) must be present
+# too. `pnpm install --filter @sparx/db...` links them but can't materialize
+# source the image never copied.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
 COPY packages/builder-schemas ./packages/builder-schemas
+COPY packages/cms-schemas ./packages/cms-schemas
+COPY packages/crm-schemas ./packages/crm-schemas
+COPY packages/commerce-schemas ./packages/commerce-schemas
+COPY packages/sitebuilder-schemas ./packages/sitebuilder-schemas
+COPY packages/marketplace-schemas ./packages/marketplace-schemas
+COPY packages/blueprints ./packages/blueprints
 
 # Install only @sparx/db deps; --frozen-lockfile fails the build if anyone
 # forgot to commit a lockfile update.

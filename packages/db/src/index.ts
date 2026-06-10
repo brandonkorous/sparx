@@ -1,5 +1,5 @@
 export { prisma } from './client';
-export { withTenant } from './tenant-context';
+export { withTenant, withSystem } from './tenant-context';
 export type { TenantContext, TxClient } from './tenant-context';
 
 export type {

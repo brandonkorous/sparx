@@ -23,9 +23,9 @@ model Tenant {
   // touches it. The public tenant payload carries it so the storefront chrome
   // resolves real links. Moved here from TenantBrand.socials (docs/45 §3).
   socials          Json      @default("[]")
-  stripeCustomerId  String?   @map("stripe_customer_id") @db.VarChar(255)
-  stripeAccountId   String?   @map("stripe_account_id") @db.VarChar(255)
-  trialEndsAt       DateTime? @map("trial_ends_at") @db.Timestamptz
+  stripeCustomerId String?   @map("stripe_customer_id") @db.VarChar(255)
+  stripeAccountId  String?   @map("stripe_account_id") @db.VarChar(255)
+  trialEndsAt      DateTime? @map("trial_ends_at") @db.Timestamptz
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
@@ -61,7 +61,12 @@ model Tenant {
   // Bulk-operation revert ledger (docs/69 B-3) — before-state for undoable
   // bulk mutations (price adjustment, …) retained for a 30-minute window.
   bulkOpReverts BulkOpRevert[]
-  apiKeys   ApiKey[]
+  apiKeys       ApiKey[]
+
+  // Marketplace (docs/60 §6) — the publisher identities this tenant owns when it
+  // publishes blueprints/themes/components/integrations (Phase 5+). Sparx-core
+  // listings belong to the seeded `sparx` publisher, not a tenant.
+  marketplacePublishers MarketplacePublisher[]
 
   // Dashboard shell — per-user pinned/recent navigation state
   userFavorites UserFavorite[]

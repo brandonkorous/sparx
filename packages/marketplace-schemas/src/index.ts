@@ -1,0 +1,8 @@
+// @sparx/marketplace-schemas — the Zod schemas + DTO contract for the
+// data-driven, dual-app marketplace catalog (docs/60). Zod-only (no DB, no
+// React): safe to import from api-rest, the @sparx/db seed, the dashboard, and
+// apps/web alike.
+
+export * from './enums';
+export * from './listing';
+export * from './query';
