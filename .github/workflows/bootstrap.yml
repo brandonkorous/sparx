@@ -478,7 +478,11 @@ jobs:
       # the runner will succeed by hitting the "already exists"
       # idempotent path. See feedback_connect_gateway_stdin.md.
       - name: Create Postal admin user
-        if: ${{ inputs.components == 'all-platform' || inputs.components == 'postal-make-user' }}
+        # Postal is decommissioned from outbound (see project_postal_decommissioned)
+        # and only deploys under components=postal, so it is NOT part of
+        # all-platform anymore — running it there finds no postal-web pod and
+        # fails. Gate to the explicit postal-make-user component only.
+        if: ${{ inputs.components == 'postal-make-user' }}
         env:
           POSTAL_NS: postal
         run: |
@@ -496,7 +500,10 @@ jobs:
             fi
           done
 
-          POD=$(kubectl get pod -n "$POSTAL_NS" -l app=postal-web -o jsonpath='{.items[0].metadata.name}')
+          # Use items[*] (not items[0]) so an empty result yields an empty
+          # string instead of a fatal "array index out of bounds" that set -e
+          # would abort on before the guard below runs. awk takes the first.
+          POD=$(kubectl get pod -n "$POSTAL_NS" -l app=postal-web -o jsonpath='{.items[*].metadata.name}' | awk '{print $1}')
           if [ -z "$POD" ]; then
             echo "::error::no postal-web pod found in $POSTAL_NS; run components=postal first."
             exit 1
