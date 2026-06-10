@@ -8,8 +8,10 @@ import {
   ApproveReturnInput,
   BulkUpdateProductStatusInput,
   CancelSubscriptionInput,
+  CreateSurchargeRuleInput,
   GrantStoreCreditInput,
   IssueGiftCardInput,
+  MarkupScope,
   ModerateReviewInput,
   PauseSubscriptionInput,
   ResumeSubscriptionInput,
@@ -18,10 +20,12 @@ import {
 import {
   discountService,
   inventoryService,
+  markupService,
   productService,
   returnService,
   reviewService,
   subscriptionService,
+  surchargeService,
 } from '../services';
 import type { AnyMcpTool, McpToolDefinition } from './registry';
 
@@ -124,6 +128,29 @@ const moderateReview: McpToolDefinition = {
   run: (ctx, input) => reviewService.moderate(ctx, input),
 };
 
+const applyMarkup: McpToolDefinition = {
+  name: 'apply_markup',
+  description:
+    'Apply a markup rule across its scope (or an override scope): recompute and write the derived price for every priceable variant, stamping a reproducible snapshot. Preview first with preview_markup.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: z.object({ ruleId: z.string().uuid(), scope: MarkupScope.optional() }),
+  run: (ctx, input) => {
+    const { ruleId, scope } = input as { ruleId: string; scope?: unknown };
+    return markupService.applyRule(ctx, ruleId, scope);
+  },
+};
+
+const setSurcharge: McpToolDefinition = {
+  name: 'set_surcharge',
+  description:
+    'Create a surcharge rule (e.g. a credit-card processing fee) — type (percentage/flat), value, payment methods, and label. Surcharging laws vary by jurisdiction; confirm the merchant intends this.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: CreateSurchargeRuleInput,
+  run: (ctx, input) => surchargeService.createRule(ctx, input),
+};
+
 export const writeTools: AnyMcpTool[] = [
   updateInventory,
   publishProduct,
@@ -136,4 +163,6 @@ export const writeTools: AnyMcpTool[] = [
   cancelSubscription,
   approveReturn,
   moderateReview,
+  applyMarkup,
+  setSurcharge,
 ];

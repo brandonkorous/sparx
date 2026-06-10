@@ -4,6 +4,8 @@
 
 import { z } from 'zod';
 
+import { MarkupScope } from '@sparx/commerce-schemas';
+
 import {
   inventoryService,
   productService,
@@ -14,6 +16,7 @@ import {
   fitmentService,
   providerService,
   returnService,
+  markupService,
 } from '../services';
 import type { AnyMcpTool, McpToolDefinition } from './registry';
 
@@ -230,6 +233,30 @@ const getDropshipMarginReport: McpToolDefinition = {
   },
 };
 
+const getMargin: McpToolDefinition = {
+  name: 'get_margin',
+  description:
+    "Current cost, price, and margin breakdown for one variant — profit, margin % (profit/price) and markup % (profit/cost) as 0–1 fractions, plus the markup rule it's derived from, if any.",
+  scope: 'read:commerce',
+  confirmation: false,
+  input: z.object({ variantId: z.string().uuid() }),
+  run: (ctx, input) =>
+    markupService.getVariantMargin(ctx, (input as { variantId: string }).variantId),
+};
+
+const previewMarkup: McpToolDefinition = {
+  name: 'preview_markup',
+  description:
+    'Dry-run a markup rule across its scope (or an override scope): per-variant before/after price + margin, with no writes. Use before apply_markup to see the impact.',
+  scope: 'read:commerce',
+  confirmation: false,
+  input: z.object({ ruleId: z.string().uuid(), scope: MarkupScope.optional() }),
+  run: (ctx, input) => {
+    const { ruleId, scope } = input as { ruleId: string; scope?: unknown };
+    return markupService.previewRule(ctx, ruleId, scope);
+  },
+};
+
 export const readTools: AnyMcpTool[] = [
   getProducts,
   getProduct,
@@ -248,4 +275,6 @@ export const readTools: AnyMcpTool[] = [
   getReturns,
   getCart,
   getDropshipMarginReport,
+  getMargin,
+  previewMarkup,
 ];

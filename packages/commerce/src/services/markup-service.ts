@@ -297,6 +297,69 @@ export async function unbindVariant(ctx: ServiceContext, variantId: string): Pro
   });
 }
 
+// ─── Single-variant margin (read) ──────────────────────────────────────
+
+export interface VariantMargin {
+  variantId: string;
+  sku: string;
+  /** Unit cost in cents; null when the variant carries no cost. */
+  costCents: number | null;
+  /** Current charged price in cents. */
+  priceCents: number;
+  /** price − cost; null without a cost. */
+  profitCents: number | null;
+  /** profit / price, as a 0–1 fraction; null without a cost or at zero price. */
+  marginPct: number | null;
+  /** profit / cost, as a 0–1 fraction; null without a positive cost. */
+  markupPct: number | null;
+  /** The catalog markup rule this variant's price is derived from, if any. */
+  markupRuleId: string | null;
+  /** The reproducible snapshot stamped when a rule priced this variant, if any. */
+  appliedMarkup: AppliedMarkupSnapshot | null;
+}
+
+const round4 = (n: number): number => Math.round(n * 10_000) / 10_000;
+
+/** Current cost / price / margin breakdown for one variant — whether its price
+ *  is rule-derived or manually set. Read-only; the MCP `get_margin` tool wraps it. */
+export async function getVariantMargin(
+  ctx: ServiceContext,
+  variantId: string
+): Promise<VariantMargin> {
+  return withTenant(ctx, async (tx) => {
+    const v = await tx.productVariant.findFirst({
+      where: { id: variantId },
+      select: {
+        id: true,
+        sku: true,
+        costCents: true,
+        priceCents: true,
+        markupRuleId: true,
+        appliedMarkup: true,
+      },
+    });
+    if (!v) throw new CommerceNotFoundError('ProductVariant', variantId);
+
+    const profitCents = v.costCents == null ? null : v.priceCents - v.costCents;
+    const marginPct =
+      profitCents == null || v.priceCents === 0 ? null : round4(profitCents / v.priceCents);
+    const markupPct =
+      profitCents == null || !v.costCents ? null : round4(profitCents / v.costCents);
+
+    return {
+      variantId: v.id,
+      sku: v.sku,
+      costCents: v.costCents,
+      priceCents: v.priceCents,
+      profitCents,
+      marginPct,
+      markupPct,
+      markupRuleId: v.markupRuleId,
+      appliedMarkup: (v.appliedMarkup ?? null) as AppliedMarkupSnapshot | null,
+    };
+  });
+}
+
 // ─── Scope-wide preview / apply (the bulk pricing tool) ─────────────────
 
 export async function previewRule(
