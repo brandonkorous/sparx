@@ -22,6 +22,7 @@ COPY apps/web/package.json apps/web/
 COPY packages/ui/package.json packages/ui/
 COPY packages/legal/package.json packages/legal/
 COPY packages/attribution/package.json packages/attribution/
+COPY packages/chat-widget/package.json packages/chat-widget/
 
 # Install only the @sparx/web subgraph (its deps + transitive workspace deps).
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
@@ -30,6 +31,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 COPY packages/ui packages/ui
 COPY packages/legal packages/legal
 COPY packages/attribution packages/attribution
+COPY packages/chat-widget packages/chat-widget
 COPY apps/web apps/web
 
 # next.config.ts must have `output: 'standalone'` and outputFileTracingRoot

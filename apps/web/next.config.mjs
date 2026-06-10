@@ -6,7 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  transpilePackages: ['@sparx/ui'],
+  transpilePackages: ['@sparx/ui', '@sparx/chat-widget'],
   typedRoutes: true,
   // Standalone output for Docker — produces .next/standalone with a minimal
   // node_modules and a server.js entrypoint.

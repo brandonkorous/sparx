@@ -19,7 +19,9 @@ import {
   type MarketplaceListing,
 } from '@/lib/marketplace';
 import { getCategory } from '@/lib/marketplace-registry';
+import { fetchChatAvailability } from '@/lib/chat';
 import { ListingCard } from '../../_components/listing-card';
+import { MarketChatCta } from '../../_components/chat-cta';
 
 export const revalidate = 300;
 
@@ -98,6 +100,17 @@ export default async function ListingDetailPage({
     item.category === 'blueprints'
       ? 'Start with this blueprint'
       : `Sign up to use this ${cat.singular}`;
+
+  // "Chat with {publisher}" CTA (docs/72 §"Chat module integration"). Only for
+  // tenant-published listings whose tenant has the chat module live — first-party
+  // (sparx) and partner listings have no tenant inbox to route a buyer to. The
+  // browser-reachable api origin is read server-side (a runtime value, not the
+  // build-time-baked NEXT_PUBLIC_*) and handed to the client widget as a prop.
+  const chatSlug = item.publisher.type === 'tenant' ? item.publisher.slug : null;
+  const chatAvailable = chatSlug ? await fetchChatAvailability(chatSlug) : null;
+  const chatApiUrl =
+    process.env.SPARX_PUBLIC_API_REST_URL ?? process.env.NEXT_PUBLIC_API_URL ?? '';
+  const showChat = Boolean(chatSlug && chatAvailable && chatApiUrl);
 
   return (
     <>
@@ -281,6 +294,15 @@ export default async function ListingDetailPage({
                   {ctaLabel}
                 </Button>
               </a>
+
+              {showChat && chatSlug ? (
+                <MarketChatCta
+                  apiUrl={chatApiUrl}
+                  tenantSlug={chatSlug}
+                  publisherName={item.publisher.displayName}
+                  accentColor={accent}
+                />
+              ) : null}
 
               {included.length > 0 ? (
                 <Detail label="What's included">

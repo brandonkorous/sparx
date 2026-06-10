@@ -3,7 +3,7 @@
 **Platform:** Sparx (sparx.works)
 **Company:** WizeWorks (wize.works)
 **Author:** Brandon Korous (me@brandonkorous.com)
-**Last Updated:** 2026-06-09
+**Last Updated:** 2026-06-10
 
 ---
 
@@ -145,3 +145,5 @@ Decisions locked in during the v2 documentation pass (vs. the original WizeWorks
 | 68  | Wizards, Import/Export & Bulk Ops   | Multi-step creation wizards (Product, B2B Account, Customer); CSV import/export with column mapping + row-level results; bulk operations bar (status, price, tags, delete) across all entities        |
 | 69  | Tier 4 Build Plan                   | Live Chat module (Track A: DB/WebSocket/AI/widget/inbox/notifications) + Wizards/Import/Bulk (Track B: six phases); tracks are fully independent                                                      |
 | 80  | Marketing Attribution & Analytics   | Two-level attribution (WizeWorks acquisition + tenant commerce) on one engine; UTM taxonomy, first-party consent-gated capture, cross-domain identity stitch, revenue models, MCP tools, phased build |
+| 81  | Automation Module                   | _Planned._ One cross-module workflow engine; Locked/Managed/Custom tiers, mandatory gate layer, durable resumable runs, AI authoring; external Zapier/Make/n8n as complementary partners              |
+| 82  | Event Bus Unification & Fan-In      | _Planned — docs/81 Phase 0._ Unify the divergent `EventType` registries into one canonical source + a single `automation.trigger` fan-in topic teed from all three publish paths                      |

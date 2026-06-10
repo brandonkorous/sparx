@@ -274,6 +274,9 @@ importers:
       '@sparx/attribution':
         specifier: workspace:*
         version: link:../../packages/attribution
+      '@sparx/chat-widget':
+        specifier: workspace:*
+        version: link:../../packages/chat-widget
       '@sparx/legal':
         specifier: workspace:*
         version: link:../../packages/legal

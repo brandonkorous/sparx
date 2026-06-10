@@ -57,4 +57,14 @@ export interface ChatWidgetProps {
   source?: 'storefront' | 'sparx_market';
   /** Display name shown in the panel header (defaults to "Chat"). */
   title?: string;
+  /** Hide the floating launcher bubble. The panel then opens only through the
+   *  controlled `open` prop — for embedding behind an explicit CTA, e.g. the
+   *  sparx.market "Chat with {publisher}" button. */
+  hideLauncher?: boolean;
+  /** Controlled open state. When provided, the parent owns open/close and must
+   *  pair it with `onOpenChange`. Omit for the default self-managed bubble. */
+  open?: boolean;
+  /** Notified whenever the widget requests an open-state change (e.g. its close
+   *  button). The required companion to a controlled `open`. */
+  onOpenChange?: (open: boolean) => void;
 }

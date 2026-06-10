@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@sparx/attribution": "workspace:*",
+    "@sparx/chat-widget": "workspace:*",
     "@sparx/legal": "workspace:*",
     "@sparx/ui": "workspace:*",
     "geist": "^1.3.1",

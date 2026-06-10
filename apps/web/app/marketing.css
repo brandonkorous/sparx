@@ -400,3 +400,199 @@
 .mkt-faq-item[open] .mkt-faq-icon {
   transform: rotate(45deg);
 }
+
+/* ── COOKIE CONSENT: banner + preference center (docs/42) ────────
+   Client-only GDPR opt-in chrome. Bottom-left card on desktop, a
+   full-width bottom sheet on mobile; the preference center is a
+   centered modal. Controls are <Button>/<Checkbox> from @sparx/ui —
+   these classes only do layout + the card surface. */
+.mkt-consent-banner {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 1000;
+  width: 440px;
+  max-width: calc(100vw - 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 24px;
+  background-color: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 14px;
+  box-shadow: 0 12px 44px rgba(9, 9, 11, 0.16);
+  animation: mkt-consent-in 0.24s ease;
+}
+.mkt-consent-banner__text strong {
+  display: block;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 15px;
+  color: #18181b;
+}
+.mkt-consent-banner__text p {
+  margin: 6px 0 0;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 20px;
+  color: #52525b;
+}
+.mkt-consent-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.mkt-consent-link {
+  color: var(--sparx-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Persistent, quiet affordance after a decision — consent can always be changed. */
+.mkt-consent-pill {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 1000;
+  padding: 8px 14px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: #52525b;
+  background-color: #fff;
+  border: 1px solid #e4e4e7;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(9, 9, 11, 0.1);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.mkt-consent-pill:hover {
+  color: #18181b;
+  border-color: #d4d4d8;
+}
+
+.mkt-consent-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1010;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.mkt-consent-scrim {
+  position: absolute;
+  inset: 0;
+  border: none;
+  padding: 0;
+  background-color: rgba(9, 9, 11, 0.5);
+  cursor: pointer;
+  animation: mkt-consent-fade 0.2s ease;
+}
+.mkt-consent-modal {
+  position: relative;
+  z-index: 1;
+  width: 480px;
+  max-width: 100%;
+  padding: 28px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(9, 9, 11, 0.28);
+  animation: mkt-consent-in 0.24s ease;
+}
+.mkt-consent-modal__title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  color: #18181b;
+}
+.mkt-consent-modal__lede {
+  margin: 8px 0 4px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 20px;
+  color: #52525b;
+}
+.mkt-consent-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 0;
+  border-top: 1px solid #f0f0f2;
+}
+.mkt-consent-row__text strong {
+  display: block;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 14px;
+  color: #18181b;
+}
+.mkt-consent-row__text span {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  line-height: 18px;
+  color: #71717a;
+}
+.mkt-consent-row--locked {
+  border-top: none;
+}
+.mkt-consent-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 20px;
+}
+
+@keyframes mkt-consent-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes mkt-consent-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .mkt-consent-banner {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    max-width: none;
+  }
+  .mkt-consent-banner__actions {
+    justify-content: stretch;
+  }
+  .mkt-consent-banner__actions > * {
+    flex: 1 1 auto;
+  }
+  .mkt-consent-pill {
+    left: 12px;
+    bottom: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mkt-consent-banner,
+  .mkt-consent-modal,
+  .mkt-consent-scrim {
+    animation: none;
+  }
+}

@@ -5,6 +5,7 @@ import { PostHogProvider as PHProvider } from 'posthog-js/react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useReportWebVitals } from 'next/web-vitals';
 import { useEffect, Suspense } from 'react';
+import { gateTracker } from '../lib/consent';
 
 // Core Web Vitals → PostHog (docs/50 §4). Reports LCP / CLS / INP / FCP / TTFB
 // as a `web_vitals` event so field performance is trackable next to the rest of
@@ -47,11 +48,20 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
     if (!key) return;
-    posthog.init(key, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? 'https://us.i.posthog.com',
-      person_profiles: 'identified_only',
-      capture_pageview: false,
-      capture_pageleave: true,
+    // Analytics is consent-gated (docs/42). PostHog only initialises once the
+    // visitor grants the `analytics` category — immediately if they already have,
+    // otherwise the moment they accept. Until then no PostHog cookies or network
+    // calls fire. gateTracker returns an unsubscribe fn for cleanup.
+    return gateTracker({
+      category: 'analytics',
+      load: () => {
+        posthog.init(key, {
+          api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? 'https://us.i.posthog.com',
+          person_profiles: 'identified_only',
+          capture_pageview: false,
+          capture_pageleave: true,
+        });
+      },
     });
   }, []);
 

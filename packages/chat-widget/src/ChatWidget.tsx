@@ -41,11 +41,31 @@ function isAgent(m: ChatMessage): boolean {
 }
 
 export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
-  const { apiUrl, tenantSlug, accentColor, source = 'storefront', title = 'Chat' } = props;
+  const {
+    apiUrl,
+    tenantSlug,
+    accentColor,
+    source = 'storefront',
+    title = 'Chat',
+    hideLauncher = false,
+    onOpenChange,
+  } = props;
   const storageKey = `sparx_chat:${tenantSlug}`;
 
   const [config, setConfig] = useState<PublicChatConfig | null>(null);
-  const [open, setOpen] = useState(false);
+  // Open state is optionally controlled: when the parent passes `open`, it owns
+  // the value (e.g. an external "Chat with {publisher}" CTA); otherwise the
+  // widget self-manages via its launcher bubble.
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpenControlled = props.open !== undefined;
+  const open = isOpenControlled ? (props.open as boolean) : internalOpen;
+  const setOpen = useCallback(
+    (next: boolean) => {
+      if (!isOpenControlled) setInternalOpen(next);
+      onOpenChange?.(next);
+    },
+    [isOpenControlled, onOpenChange]
+  );
   const [conversation, setConversation] = useState<StoredConversation | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -325,7 +345,7 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
             </>
           )}
         </div>
-      ) : (
+      ) : hideLauncher ? null : (
         <button
           className="sxchat-bubble"
           aria-label="Open chat"
