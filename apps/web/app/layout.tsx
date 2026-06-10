@@ -47,7 +47,7 @@ const PRODUCT_SCHEMA = {
     'A modular content and commerce operating system. Builder, CRM, CMS, email, B2B, and AI — one platform, one bill, one data layer.',
   offers: {
     '@type': 'Offer',
-    price: '49',
+    price: '10',
     priceCurrency: 'USD',
   },
   url: 'https://sparx.works',

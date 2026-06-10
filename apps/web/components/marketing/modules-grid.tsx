@@ -18,7 +18,7 @@ const MODULES: ModuleCard[] = [
     title: 'Themes, pages, live URLs.',
     description:
       'The site builder. Pick a theme, edit blocks, point your domain. No code. No staging dance.',
-    price: '$49/mo',
+    price: '$10/mo',
   },
   {
     id: 'commerce',

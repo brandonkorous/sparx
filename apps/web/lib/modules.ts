@@ -136,7 +136,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'Commerce activates on top of Builder. Bundled in Starter ($79/mo), Growth ($149/mo), Pro ($299/mo), and Business ($449/mo).',
+        'A flat $49/mo. Pair it with Builder for a hosted storefront or run it headless against the API — either way it’s one toggle on one bill, off the moment you stop selling.',
     },
   },
   cms: {
@@ -186,7 +186,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '',
       bundleNote:
-        'CMS can run alone ($49/mo, no Builder required) or bundled into Content ($79/mo with Builder) or all-in Pro ($299/mo).',
+        'A flat $49/mo that runs standalone — no Builder required. Add Builder when you want it rendered on a hosted Sparx site. One bill with everything else, cancel anytime.',
     },
     marketingDomain: 'sparxcms.com',
   },
@@ -237,7 +237,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'CRM activates on top of Builder + Commerce. Bundled in Growth ($149/mo, with Email) and everything above.',
+        'A flat $49/mo. It sits on the same database as your orders and content — no sync, no glue — so switch it on alongside whatever modules you already run. One bill, off anytime.',
     },
     marketingDomain: 'sparxcrm.com',
   },
@@ -288,7 +288,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'Email activates on top of Builder. Bundled in Growth ($149/mo, with CRM) and everything above.',
+        'A flat $29/mo — send 10K or 1M a month for the same price. Switch it on and transactional + marketing wire into every module you run. One bill, no per-email metering.',
     },
     marketingDomain: 'sparxemail.com',
   },
@@ -339,7 +339,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'B2B activates on top of Builder + Commerce. The full Business bundle ($449/mo) includes B2B + every other module + 0% transaction fees.',
+        'A flat $99/mo, layered on Commerce. Wholesale pricing, net terms, RFQ, purchase orders, and fleet accounts — native, on one bill with everything else.',
     },
     marketingDomain: 'sparxb2b.com',
   },
@@ -390,7 +390,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'AI/MCP activates on top of Builder. Bundled in Pro ($299/mo) and Business ($449/mo).',
+        'A flat $49/mo. Connect any MCP client and read or write live data across every module you run — scoped, audited, revocable, all on one bill.',
     },
   },
   dropship: {
@@ -439,7 +439,7 @@ export const MODULES: Record<MarketingModule, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'Dropship activates on top of Builder + Commerce. Bundled in Pro ($299/mo) and Business ($449/mo).',
+        'A flat $29/mo, layered on Commerce. Supplier sync, margin rules, and automated routing — sell without holding inventory, on one bill with everything else.',
     },
   },
 };

@@ -853,7 +853,7 @@ function ModulesStrip() {
     {
       module: 'builder',
       label: 'Builder',
-      price: '$49/mo',
+      price: '$10/mo',
       title: 'Site builder',
       body: 'Themes, pages, and live URLs — no code.',
     },

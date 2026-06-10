@@ -9,7 +9,7 @@
  * Per-module `elsewhere` is the real, published 2026 price of the named tool
  * each module replaces (see the cost-savings ledger on the page for sources).
  */
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Display, Spark } from './primitives';
 
 interface Mod {
@@ -23,6 +23,9 @@ interface Mod {
   long: string;
   feats: string[];
   replaces: string;
+  /** Add-ons render below the core eight under an "Add-ons" divider; they are
+   *  priced on top, never part of the "eight modules" story. */
+  addon?: boolean;
 }
 
 const MODULES: Mod[] = [
@@ -154,6 +157,23 @@ const MODULES: Mod[] = [
     ],
     replaces: 'a dropshipping app like Spocket',
   },
+  {
+    key: 'chat',
+    name: 'Live Chat',
+    desc: 'Widget, AI replies, inbox',
+    price: 19,
+    elsewhere: 74,
+    color: 'var(--module-chat)',
+    long: 'A themed chat widget on every page, an AI first responder that answers product and policy questions from your own catalog, and a staff inbox for everything it escalates. Leads from sparx.market route here too.',
+    feats: [
+      'Storefront widget in your theme',
+      'AI answers from your own catalog',
+      'Staff inbox — assign, reply, resolve',
+      'Web-push + email notifications',
+    ],
+    replaces: 'a live-chat + AI inbox like Intercom',
+    addon: true,
+  },
 ];
 
 const DEFAULT_ON = new Set(['builder', 'commerce', 'cms']);
@@ -199,197 +219,215 @@ export function PricingSwitchboard() {
           {MODULES.map((m, i) => {
             const isOn = on[m.key];
             const isOpen = openKey === m.key;
+            const firstAddon = !!m.addon && (i === 0 || !MODULES[i - 1]?.addon);
             return (
-              <div
-                key={m.key}
-                style={{
-                  borderBottom:
-                    i === MODULES.length - 1 ? undefined : '1px solid var(--color-border-default)',
-                }}
-              >
-                <div
-                  role="button"
-                  tabIndex={0}
-                  aria-expanded={isOpen}
-                  onClick={() => setOpenKey(isOpen ? null : m.key)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setOpenKey(isOpen ? null : m.key);
-                    }
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '16px',
-                    padding: '16px 4px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: 9999,
-                      backgroundColor: m.color,
-                      flexShrink: 0,
-                    }}
-                  />
+              <Fragment key={m.key}>
+                {firstAddon ? (
                   <div
                     style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '2px',
-                      flex: 1,
-                      minWidth: 0,
-                    }}
-                  >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-sans)',
-                          fontWeight: 500,
-                          fontSize: '16px',
-                          color: 'var(--color-text-primary)',
-                        }}
-                      >
-                        {m.name}
-                      </span>
-                      <Chevron open={isOpen} />
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-sans)',
-                        fontSize: '13px',
-                        color: 'var(--color-text-tertiary)',
-                      }}
-                    >
-                      {m.desc}
-                    </span>
-                  </div>
-                  <span
-                    style={{
+                      padding: '16px 4px 6px',
+                      marginTop: '8px',
                       fontFamily: 'var(--font-sans)',
-                      fontWeight: isOn ? 500 : 400,
-                      fontSize: '15px',
-                      width: '78px',
-                      flexShrink: 0,
-                      textAlign: 'right',
-                      color: isOn ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                      fontWeight: 500,
+                      fontSize: '13px',
+                      color: 'var(--color-text-tertiary)',
                     }}
                   >
-                    + ${m.price}
-                  </span>
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={isOn}
-                    aria-label={m.name}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setOn((s) => ({ ...s, [m.key]: !s[m.key] }));
+                    Add-ons
+                  </div>
+                ) : null}
+                <div
+                  style={{
+                    borderBottom:
+                      i === MODULES.length - 1
+                        ? undefined
+                        : '1px solid var(--color-border-default)',
+                  }}
+                >
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={isOpen}
+                    onClick={() => setOpenKey(isOpen ? null : m.key)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setOpenKey(isOpen ? null : m.key);
+                      }
                     }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: isOn ? 'flex-end' : 'flex-start',
-                      width: 44,
-                      height: 26,
-                      borderRadius: 9999,
-                      padding: '0 3px',
-                      border: 'none',
-                      background: isOn ? m.color : '#e4e4e7',
+                      gap: '16px',
+                      padding: '16px 4px',
                       cursor: 'pointer',
-                      flexShrink: 0,
-                      transition: 'background 0.15s ease',
                     }}
                   >
                     <span
                       style={{
-                        width: 20,
-                        height: 20,
+                        width: 10,
+                        height: 10,
                         borderRadius: 9999,
-                        backgroundColor: '#fff',
-                        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.18)',
+                        backgroundColor: m.color,
+                        flexShrink: 0,
                       }}
                     />
-                  </button>
-                </div>
-
-                {isOpen ? (
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '15px',
-                      padding: '2px 4px 24px 30px',
-                    }}
-                  >
-                    <p
-                      style={{
-                        margin: 0,
-                        maxWidth: '580px',
-                        fontFamily: 'var(--font-sans)',
-                        fontSize: '14px',
-                        lineHeight: '22px',
-                        color: 'var(--color-text-secondary)',
-                      }}
-                    >
-                      {m.long}
-                    </p>
-                    <ul
-                      style={{
-                        listStyle: 'none',
-                        margin: 0,
-                        padding: 0,
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '10px 28px',
-                      }}
-                    >
-                      {m.feats.map((f) => (
-                        <li
-                          key={f}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '9px',
-                            width: '260px',
-                            maxWidth: '100%',
-                            fontFamily: 'var(--font-sans)',
-                            fontSize: '13.5px',
-                            color: 'var(--color-text-secondary)',
-                          }}
-                        >
-                          <span
-                            style={{
-                              width: 5,
-                              height: 5,
-                              borderRadius: 9999,
-                              backgroundColor: m.color,
-                              flexShrink: 0,
-                            }}
-                          />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
                     <div
                       style={{
-                        fontFamily: 'var(--font-sans)',
-                        fontSize: '13px',
-                        color: 'var(--color-text-tertiary)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '2px',
+                        flex: 1,
+                        minWidth: 0,
                       }}
                     >
-                      Replaces {m.replaces} — about{' '}
-                      <b style={{ fontWeight: 500, color: 'var(--color-text-secondary)' }}>
-                        ${m.elsewhere}/mo
-                      </b>{' '}
-                      bought separately.
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span
+                          style={{
+                            fontFamily: 'var(--font-sans)',
+                            fontWeight: 500,
+                            fontSize: '16px',
+                            color: 'var(--color-text-primary)',
+                          }}
+                        >
+                          {m.name}
+                        </span>
+                        <Chevron open={isOpen} />
+                      </span>
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-sans)',
+                          fontSize: '13px',
+                          color: 'var(--color-text-tertiary)',
+                        }}
+                      >
+                        {m.desc}
+                      </span>
                     </div>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-sans)',
+                        fontWeight: isOn ? 500 : 400,
+                        fontSize: '15px',
+                        width: '78px',
+                        flexShrink: 0,
+                        textAlign: 'right',
+                        color: isOn ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                      }}
+                    >
+                      + ${m.price}
+                    </span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={isOn}
+                      aria-label={m.name}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOn((s) => ({ ...s, [m.key]: !s[m.key] }));
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: isOn ? 'flex-end' : 'flex-start',
+                        width: 44,
+                        height: 26,
+                        borderRadius: 9999,
+                        padding: '0 3px',
+                        border: 'none',
+                        background: isOn ? m.color : '#e4e4e7',
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                        transition: 'background 0.15s ease',
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: 9999,
+                          backgroundColor: '#fff',
+                          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.18)',
+                        }}
+                      />
+                    </button>
                   </div>
-                ) : null}
-              </div>
+
+                  {isOpen ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '15px',
+                        padding: '2px 4px 24px 30px',
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          maxWidth: '580px',
+                          fontFamily: 'var(--font-sans)',
+                          fontSize: '14px',
+                          lineHeight: '22px',
+                          color: 'var(--color-text-secondary)',
+                        }}
+                      >
+                        {m.long}
+                      </p>
+                      <ul
+                        style={{
+                          listStyle: 'none',
+                          margin: 0,
+                          padding: 0,
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: '10px 28px',
+                        }}
+                      >
+                        {m.feats.map((f) => (
+                          <li
+                            key={f}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '9px',
+                              width: '260px',
+                              maxWidth: '100%',
+                              fontFamily: 'var(--font-sans)',
+                              fontSize: '13.5px',
+                              color: 'var(--color-text-secondary)',
+                            }}
+                          >
+                            <span
+                              style={{
+                                width: 5,
+                                height: 5,
+                                borderRadius: 9999,
+                                backgroundColor: m.color,
+                                flexShrink: 0,
+                              }}
+                            />
+                            {f}
+                          </li>
+                        ))}
+                      </ul>
+                      <div
+                        style={{
+                          fontFamily: 'var(--font-sans)',
+                          fontSize: '13px',
+                          color: 'var(--color-text-tertiary)',
+                        }}
+                      >
+                        Replaces {m.replaces} — about{' '}
+                        <b style={{ fontWeight: 500, color: 'var(--color-text-secondary)' }}>
+                          ${m.elsewhere}/mo
+                        </b>{' '}
+                        bought separately.
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </Fragment>
             );
           })}
         </div>

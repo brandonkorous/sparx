@@ -42,7 +42,7 @@ const MODULE_DOTS = [
 
 const METRICS = [
   { value: '5 min', subtitle: 'to a live store' },
-  { value: '$49', valueSuffix: '/mo', subtitle: 'starting price' },
+  { value: '$10', valueSuffix: '/mo', subtitle: 'starting price' },
   { value: '1', valueSuffix: ' bill', subtitle: 'replaces 4–6 tools' },
   { value: 'MCP', valueSpark: true, subtitle: 'native AI access' },
 ] as const;
