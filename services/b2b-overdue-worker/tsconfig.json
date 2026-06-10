@@ -3,5 +3,5 @@
   "compilerOptions": {
     "lib": ["ES2023"]
   },
-  "include": ["src"]
+  "include": ["src/**/*", "test/**/*"]
 }

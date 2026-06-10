@@ -16,7 +16,7 @@ import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/even
 import type pino from 'pino';
 import { env } from './env.js';
 
-interface EscalationResult {
+export interface EscalationResult {
   tenantsScanned: number;
   invoicesMarkedOverdue: number;
   accountsCreditHold: number;
@@ -76,7 +76,12 @@ export async function runOverdueCheck(logger: pino.Logger): Promise<EscalationRe
   return result;
 }
 
-async function runTenantEscalation(
+// Exported for integration testing: the daily escalation for a single tenant.
+// `runOverdueCheck` is the production entrypoint (constructs its own owner-role
+// db + Pub/Sub publisher and fans this out over every tenant); tests drive this
+// directly with an injected db + capturing publisher so they can assert the
+// account-status transitions in isolation.
+export async function runTenantEscalation(
   db: PrismaClient,
   publisher: ReturnType<typeof makePublisher>,
   logger: pino.Logger,
