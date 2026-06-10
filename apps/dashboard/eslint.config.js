@@ -40,6 +40,9 @@ const BANNED_SERVICE_PACKAGES = [
 ];
 
 export default [
+  // Standalone utility scripts that aren't part of the typed Next app (and so
+  // aren't in any tsconfig the typed-lint project service knows about).
+  { ignores: ['ph-capture.mjs'] },
   ...rootConfig,
   {
     // Hard wall: no backing-service imports anywhere under apps/dashboard.

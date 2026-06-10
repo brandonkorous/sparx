@@ -11,7 +11,7 @@ import {
   resolveFirstTouch,
   resolveLastTouch,
   serializeSnapshot,
-} from '../src/index';
+} from './index';
 
 describe('classify', () => {
   it('trusts an explicit medium first', () => {

@@ -35,6 +35,14 @@ export interface RowResult {
   errorMsg?: string;
 }
 
+// Trim a CSV cell; a blank/whitespace-only cell becomes undefined so it falls
+// to the column default (null) rather than persisting an empty string.
+function blank(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (trimmed === undefined || trimmed === '') return undefined;
+  return trimmed;
+}
+
 function normalizeStatus(
   val: string | undefined
 ): 'active' | 'credit_hold' | 'suspended' | 'inactive' {
@@ -121,14 +129,14 @@ export async function processB2bAccountRows(
       } else {
         await b2bAccountService.create(ctx, {
           companyName,
-          taxId: row.tax_id?.trim() || null,
-          website: row.website?.trim() || null,
-          pricingTier: row.pricing_tier?.trim() || null,
+          taxId: blank(row.tax_id) ?? null,
+          website: blank(row.website) ?? null,
+          pricingTier: blank(row.pricing_tier) ?? null,
           creditLimit: creditLimit ?? 0,
           paymentTerms: normalizePaymentTerms(row.payment_terms),
           discountPercent: discountPercent ?? 0,
           status: normalizeStatus(row.status),
-          notes: row.notes?.trim() || null,
+          notes: blank(row.notes) ?? null,
           tags: tags ?? [],
         });
         results.push({ rowIndex: i, status: 'imported', naturalKey: companyName });

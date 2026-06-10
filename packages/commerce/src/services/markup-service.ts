@@ -232,7 +232,7 @@ export async function bindVariant(
       data: {
         priceCents: priced.result.priceCents,
         markupRuleId: ruleId,
-        appliedMarkup: priced.snapshot as unknown as Prisma.InputJsonValue,
+        appliedMarkup: priced.snapshot,
       },
     });
     await refreshProductPriceRange(tx, variant.productId);
@@ -403,7 +403,7 @@ export async function applyRule(
         data: {
           priceCents: priced.result.priceCents,
           markupRuleId: rule.id,
-          appliedMarkup: priced.snapshot as unknown as Prisma.InputJsonValue,
+          appliedMarkup: priced.snapshot,
         },
       });
       applied += 1;
@@ -443,12 +443,12 @@ export async function applyRule(
 
 // ─── Internal: pricing one variant ──────────────────────────────────────
 
-type VariantForPricing = {
+interface VariantForPricing {
   id: string;
   productId: string;
   costCents: number | null;
   compareAtPriceCents: number | null;
-};
+}
 
 interface PricedVariant {
   costCents: number;
@@ -630,15 +630,15 @@ function toCreateData(
     name: input.name!,
     method: input.method!,
     value: input.value ?? null,
-    bands: (input.bands ?? []) as unknown as Prisma.InputJsonValue,
+    bands: input.bands ?? [],
     costBasis: input.costBasis ?? 'variant_cost',
-    rounding: (input.rounding ?? {}) as unknown as Prisma.InputJsonValue,
+    rounding: input.rounding ?? {},
     floorProfitCents: input.floorProfitCents ?? null,
     floorMargin: input.floorMargin ?? null,
     ceilingSrc: input.ceilingSrc ?? 'none',
     ceilingValueCents: input.ceilingValueCents ?? null,
     appliesTo: input.appliesTo ?? 'catalog',
-    scope: (input.scope ?? { type: 'all' }) as unknown as Prisma.InputJsonValue,
+    scope: input.scope ?? { type: 'all' },
     priority: input.priority ?? 0,
     isActive: input.isActive ?? true,
   };
@@ -649,13 +649,9 @@ function toUpdateData(input: RuleWriteInput): Prisma.MarkupRuleUncheckedUpdateIn
     ...(input.name !== undefined ? { name: input.name } : {}),
     ...(input.method !== undefined ? { method: input.method } : {}),
     ...(input.value !== undefined ? { value: input.value } : {}),
-    ...(input.bands !== undefined
-      ? { bands: input.bands as unknown as Prisma.InputJsonValue }
-      : {}),
+    ...(input.bands !== undefined ? { bands: input.bands } : {}),
     ...(input.costBasis !== undefined ? { costBasis: input.costBasis } : {}),
-    ...(input.rounding !== undefined
-      ? { rounding: input.rounding as unknown as Prisma.InputJsonValue }
-      : {}),
+    ...(input.rounding !== undefined ? { rounding: input.rounding } : {}),
     ...(input.floorProfitCents !== undefined ? { floorProfitCents: input.floorProfitCents } : {}),
     ...(input.floorMargin !== undefined ? { floorMargin: input.floorMargin } : {}),
     ...(input.ceilingSrc !== undefined ? { ceilingSrc: input.ceilingSrc } : {}),
@@ -663,9 +659,7 @@ function toUpdateData(input: RuleWriteInput): Prisma.MarkupRuleUncheckedUpdateIn
       ? { ceilingValueCents: input.ceilingValueCents }
       : {}),
     ...(input.appliesTo !== undefined ? { appliesTo: input.appliesTo } : {}),
-    ...(input.scope !== undefined
-      ? { scope: input.scope as unknown as Prisma.InputJsonValue }
-      : {}),
+    ...(input.scope !== undefined ? { scope: input.scope } : {}),
     ...(input.priority !== undefined ? { priority: input.priority } : {}),
     ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
   };

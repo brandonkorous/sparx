@@ -37,6 +37,14 @@ export interface RowResult {
   errorMsg?: string;
 }
 
+// Trim a CSV cell; a blank/whitespace-only cell becomes undefined so it falls
+// to the column default rather than persisting an empty string.
+function blank(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (trimmed === undefined || trimmed === '') return undefined;
+  return trimmed;
+}
+
 type DiscountType = 'percent' | 'fixed' | 'free_shipping' | 'buy_x_get_y' | 'bundle';
 type DiscountScope = 'order' | 'product' | 'collection' | 'shipping';
 
@@ -78,7 +86,7 @@ export async function processDiscountRows(
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i]!;
-    const code = row.code?.trim().toUpperCase() || undefined;
+    const code = blank(row.code)?.toUpperCase();
     const naturalKey = code ?? `row-${i + 1}`;
     const log = logger.child({ rowIndex: i, code });
 
@@ -99,14 +107,14 @@ export async function processDiscountRows(
 
       const base = {
         name: row.name.trim(),
-        description: row.description?.trim() || undefined,
+        description: blank(row.description),
         type: normalizeType(row.type),
         scope: normalizeScope(row.scope),
         valueCents: parseCents(row.value_cents),
         valuePercent: parseNum(row.value_percent),
-        currency: row.currency?.toUpperCase() || undefined,
-        startAt: row.start_at?.trim() || undefined,
-        endAt: row.end_at?.trim() || undefined,
+        currency: blank(row.currency)?.toUpperCase(),
+        startAt: blank(row.start_at),
+        endAt: blank(row.end_at),
         totalUsageLimit: parseInt10(row.total_usage_limit),
         perCustomerLimit: parseInt10(row.per_customer_limit) ?? 1,
       };
