@@ -9,6 +9,7 @@ import {
   RemoveQuoteItemInput,
   UpdateQuoteInput,
 } from '@sparx/crm-schemas';
+import { PriceQuoteLineInput } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
 import type { Prisma, Quote, QuoteItem } from '@sparx/db';
 
@@ -17,7 +18,16 @@ import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { computeLine, computeTotals } from './order-totals';
+import { resolveAndPriceLine } from './quote-markup';
 import { nextQuoteNumber } from './record-numbers';
+
+// Re-exported so api-rest's B2B respond flow can price lines by markup within
+// its own transaction (docs/48 §5).
+export { resolveAndPriceLine } from './quote-markup';
+
+// A quote line can be priced "by markup" while it is still being composed:
+// draft (CRM-authored) or submitted/under_review (a B2B merchant responding).
+const PRICEABLE_STATUSES = ['draft', 'submitted', 'under_review'];
 
 export interface QuoteWithItems extends Quote {
   items: QuoteItem[];
@@ -217,6 +227,78 @@ export async function addItem(ctx: ServiceContext, rawInput: unknown): Promise<Q
     });
     await recomputeQuoteTotals(tx, input.quoteId);
     return created;
+  });
+}
+
+/**
+ * Price one quote line "by markup" (docs/48 §5). Derives the line's unitPrice
+ * from a cost basis + a markup rule / ad-hoc directive, stamps the mandatory
+ * reproducibility snapshot onto the line, and recomputes the quote totals.
+ * Allowed only while the quote is still being priced (see PRICEABLE_STATUSES).
+ */
+export async function priceItemByMarkup(
+  ctx: ServiceContext,
+  rawInput: unknown
+): Promise<QuoteItem> {
+  const input = PriceQuoteLineInput.parse(rawInput);
+  return withTenant(ctx, async (tx) => {
+    const item = await tx.quoteItem.findFirst({
+      where: { id: input.itemId, quoteId: input.quoteId },
+    });
+    if (!item) throw new CrmNotFoundError('QuoteItem', input.itemId);
+    const quote = await tx.quote.findUnique({ where: { id: input.quoteId } });
+    if (!quote) throw new CrmNotFoundError('Quote', input.quoteId);
+    if (!PRICEABLE_STATUSES.includes(quote.status)) {
+      throw new CrmValidationError(`Cannot reprice a quote in status "${quote.status}"`);
+    }
+
+    const priced = await resolveAndPriceLine(tx, ctx.tenantId, {
+      variantId: item.variantId,
+      explicitCostCents: input.costCents ?? null,
+      markup: input.markup,
+    });
+
+    const line = computeLine({
+      sku: item.sku,
+      name: item.name,
+      quantity: item.quantity,
+      unitPrice: priced.unitPrice,
+      taxAmount: Number(item.taxAmount),
+      discountAmount: Number(item.discountAmount),
+    });
+
+    const updated = await tx.quoteItem.update({
+      where: { id: item.id },
+      data: {
+        unitPrice: priced.unitPrice,
+        costCents: priced.costCents,
+        appliedMarkup: priced.snapshot,
+        lineSubtotal: line.lineSubtotal,
+        taxAmount: line.taxAmount,
+        discountAmount: line.discountAmount,
+        lineTotal: line.lineTotal,
+      },
+    });
+    await recomputeQuoteTotals(tx, input.quoteId);
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'crm.quote.item.repriced',
+      entityType: 'QuoteItem',
+      entityId: item.id,
+      diff: {
+        after: {
+          unitPrice: priced.unitPrice,
+          costCents: priced.costCents,
+          markup: priced.snapshot,
+        },
+      },
+    });
+
+    return updated;
   });
 }
 

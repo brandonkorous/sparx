@@ -362,3 +362,136 @@ export function marginToMarkup(margin: number): number {
   const m = Math.min(Math.max(margin, 0), 0.9999);
   return m / (1 - m);
 }
+
+// ─── Document-line markup (docs/48 §5) ────────────────────────────────
+// A quote/invoice line can be priced by markup at document time, against a
+// per-line cost basis, with the computation snapshotted onto the line so the
+// quoted/invoiced price stays reproducible after catalog costs drift. Unlike
+// the catalog `AppliedMarkupSnapshot` above, the rule reference is OPTIONAL — a
+// manual line (a part not in the catalog, a sublet charge, freight) is priced
+// by an ad-hoc markup that is not a saved rule.
+
+// Where a document line's cost basis came from.
+export const LineCostSource = z.enum([
+  'variant_cost', // the linked catalog variant's cost_cents
+  'manual', // entered on the line (manual part / sublet / freight)
+]);
+export type LineCostSource = z.infer<typeof LineCostSource>;
+
+// Snapshot persisted on quote_items.applied_markup.
+export const LineMarkupSnapshot = z.object({
+  ruleId: Uuid.nullable(), // null for an ad-hoc markup
+  ruleName: z.string().nullable(),
+  method: MarkupMethod, // effective method (matched band's method for a matrix rule)
+  value: z.number().finite().nullable(),
+  costSource: LineCostSource,
+  costBasisValueCents: z.number().int(),
+  computedPriceCents: z.number().int(),
+  marginPct: z.number(), // carried so margin reporting needs no recompute
+  markupPct: z.number(),
+  computedAt: z.string(),
+});
+export type LineMarkupSnapshot = z.infer<typeof LineMarkupSnapshot>;
+
+// The markup directive a caller sends to price a document line: apply a saved
+// rule by id, or an ad-hoc single-method markup. Ad-hoc can't be a matrix —
+// pick a saved matrix rule for cost-band pricing.
+export const LineMarkupInput = z
+  .discriminatedUnion('kind', [
+    z.object({ kind: z.literal('rule'), ruleId: Uuid }),
+    z.object({
+      kind: z.literal('adhoc'),
+      method: BandMethod,
+      value: z.number().finite(),
+    }),
+  ])
+  .superRefine((v, ctx) => {
+    if (v.kind !== 'adhoc') return;
+    if (v.method === 'margin_target' && (v.value <= 0 || v.value >= 1)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['value'],
+        message: 'margin_target value must be a fraction between 0 and 1 (e.g. 0.45)',
+      });
+    }
+    if (v.method === 'multiplier' && v.value <= 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['value'],
+        message: 'multiplier value must be greater than 0',
+      });
+    }
+    if ((v.method === 'percentage' || v.method === 'flat') && v.value < 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['value'],
+        message: `${v.method} value cannot be negative`,
+      });
+    }
+  });
+export type LineMarkupInput = z.infer<typeof LineMarkupInput>;
+
+// Input for the "price this quote line by markup" endpoint. `costCents`
+// overrides the linked variant's cost — and is required for a manual line that
+// has no variant to fall back to.
+export const PriceQuoteLineInput = z.object({
+  quoteId: Uuid,
+  itemId: Uuid,
+  costCents: z.number().int().nonnegative().nullable().optional(),
+  markup: LineMarkupInput,
+});
+export type PriceQuoteLineInput = z.infer<typeof PriceQuoteLineInput>;
+
+// A markup directive already resolved to the pure engine's input: the service
+// reads the saved rule (turning it into a spec) and records where the cost came
+// from, then hands this to `priceLineByMarkup`.
+export type ResolvedLineMarkup =
+  | {
+      kind: 'rule';
+      ruleId: string;
+      ruleName: string;
+      spec: MarkupRuleSpec;
+      costSource: LineCostSource;
+    }
+  | {
+      kind: 'adhoc';
+      method: BandMethod;
+      value: number;
+      costSource: LineCostSource;
+    };
+
+export interface PricedLineMarkup {
+  result: MarkupResult;
+  snapshot: LineMarkupSnapshot;
+}
+
+/**
+ * Price one document line from its cost using a resolved markup (saved rule or
+ * ad-hoc) and produce the mandatory snapshot (docs/48 §5). Pure and
+ * deterministic — the caller resolves a saved rule to { spec, id, name } and
+ * supplies `computedAt`. Reuses the same `applyMarkupRule` engine as catalog
+ * pricing so the two never drift.
+ */
+export function priceLineByMarkup(
+  costCents: number,
+  markup: ResolvedLineMarkup,
+  computedAt: string,
+  ctx?: MarkupContext
+): PricedLineMarkup {
+  const spec: MarkupRuleSpec =
+    markup.kind === 'rule' ? markup.spec : { method: markup.method, value: markup.value };
+  const result = applyMarkupRule(costCents, spec, ctx);
+  const snapshot: LineMarkupSnapshot = {
+    ruleId: markup.kind === 'rule' ? markup.ruleId : null,
+    ruleName: markup.kind === 'rule' ? markup.ruleName : null,
+    method: result.method,
+    value: markup.kind === 'rule' ? (spec.value ?? null) : markup.value,
+    costSource: markup.costSource,
+    costBasisValueCents: result.costBasisValueCents,
+    computedPriceCents: result.priceCents,
+    marginPct: result.marginPct,
+    markupPct: result.markupPct,
+    computedAt,
+  };
+  return { result, snapshot };
+}

@@ -19,6 +19,8 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant } from '@sparx/db';
+import { quoteService } from '@sparx/crm';
+import { LineMarkupInput } from '@sparx/commerce-schemas';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound, badRequest } from '@sparx/api-core/errors';
@@ -51,13 +53,22 @@ const CreateBody = z.object({
 });
 
 const RespondBody = z.object({
-  // Per-line quoted prices: map of itemId → unitPriceCents
+  // Per line, the merchant either sets the quoted price directly
+  // (`unitPriceCents`) or derives it "by markup" (docs/48 §5): a markup
+  // directive against a cost basis (`costCents`, else the linked variant cost),
+  // snapshotted onto the line.
   lineItems: z.array(
-    z.object({
-      itemId: z.string().uuid(),
-      unitPriceCents: z.number().int().min(0),
-      notes: z.string().max(500).optional(),
-    })
+    z
+      .object({
+        itemId: z.string().uuid(),
+        unitPriceCents: z.number().int().min(0).optional(),
+        costCents: z.number().int().min(0).optional(),
+        markup: LineMarkupInput.optional(),
+        notes: z.string().max(500).optional(),
+      })
+      .refine((l) => l.unitPriceCents != null || l.markup != null, {
+        message: 'Each line needs either a unitPriceCents or a markup directive',
+      })
   ),
   expiresAt: z.string().datetime().optional(),
   merchantNote: z.string().max(2000).optional(),
@@ -342,11 +353,33 @@ const b2bQuoteRoutes: FastifyPluginAsync = (app) => {
 
     // Apply per-line prices in a transaction.
     const updated = await withTenant(ctx, async (tx) => {
-      // Update each quoted line item price.
+      // Update each quoted line item price — directly, or derived by markup
+      // with a reproducibility snapshot (docs/48 §5).
       for (const line of body.lineItems) {
         const item = quote.items.find((i) => i.id === line.itemId);
         if (!item) continue;
-        const unitPrice = line.unitPriceCents / 100;
+
+        if (line.markup) {
+          const priced = await quoteService.resolveAndPriceLine(tx, ctx.tenantId, {
+            variantId: item.variantId,
+            explicitCostCents: line.costCents ?? null,
+            markup: line.markup,
+          });
+          const lineSubtotal = priced.unitPrice * item.quantity;
+          await tx.quoteItem.update({
+            where: { id: line.itemId },
+            data: {
+              unitPrice: priced.unitPrice,
+              costCents: priced.costCents,
+              appliedMarkup: priced.snapshot,
+              lineSubtotal,
+              lineTotal: lineSubtotal,
+            },
+          });
+          continue;
+        }
+
+        const unitPrice = (line.unitPriceCents ?? 0) / 100;
         const lineSubtotal = unitPrice * item.quantity;
         await tx.quoteItem.update({
           where: { id: line.itemId },

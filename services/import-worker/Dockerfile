@@ -17,6 +17,9 @@ COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
 COPY packages/events ./packages/events
 COPY packages/commerce ./packages/commerce
+# @sparx/commerce-schemas (pure markup engine) is a dep of both @sparx/commerce
+# and now @sparx/crm (quote-line markup, docs/48 §5).
+COPY packages/commerce-schemas ./packages/commerce-schemas
 COPY packages/crm ./packages/crm
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/api-core ./packages/api-core

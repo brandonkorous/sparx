@@ -94,6 +94,21 @@ const quoteRoutes: FastifyPluginAsync = (app) => {
     reply.code(204);
   });
 
+  // Price one line "by markup" (docs/48 §5): derive its unit price from a cost
+  // basis + a markup rule / ad-hoc directive, stamping a reproducible snapshot.
+  app.post('/v1/crm/quotes/:id/items/:itemId/markup', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id, itemId } = ItemPath.parse(request.params);
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    const item = await quoteService.priceItemByMarkup(toCrmContext(request), {
+      ...body,
+      quoteId: id,
+      itemId,
+    });
+    return ok(item);
+  });
+
   // ── lifecycle ───────────────────────────────────────────────────────────
 
   app.post('/v1/crm/quotes/:id/submit', async (request) => {

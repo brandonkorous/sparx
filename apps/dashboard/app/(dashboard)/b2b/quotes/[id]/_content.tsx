@@ -21,10 +21,18 @@ import {
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
-import { QuoteRespondEditor } from './_components/quote-respond-editor';
+import { QuoteRespondEditor, type MarkupRuleSummary } from './_components/quote-respond-editor';
 import { QuoteLifecycleButtons } from './_components/quote-lifecycle-buttons';
 
 export const dynamic = 'force-dynamic';
+
+interface LineMarkupSnapshot {
+  ruleName: string | null;
+  method: string;
+  marginPct: number;
+  markupPct: number;
+  costBasisValueCents: number;
+}
 
 interface QuoteItem {
   id: string;
@@ -33,7 +41,15 @@ interface QuoteItem {
   quantity: number;
   unitPrice: string | number;
   lineTotal: string | number;
+  variantId: string | null;
+  costCents: number | null;
+  appliedMarkup: LineMarkupSnapshot | null;
 }
+
+// The list endpoint returns every active rule; we keep the document-applicable
+// ones for the respond editor's markup picker. `appliesTo` rides along the same
+// shape the pure engine needs.
+type MarkupRuleApi = MarkupRuleSummary & { appliesTo: string };
 
 interface QuoteDetail {
   id: string;
@@ -80,6 +96,16 @@ export async function B2bQuoteDetailContent({ id }: Props) {
     `$${Number(n).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 
   const canRespond = ['submitted', 'under_review'].includes(quote.status);
+
+  // Document-applicable markup rules for the respond editor's picker. Commerce
+  // may be disabled (404) on a B2B-only tenant — degrade to ad-hoc markup only.
+  const markupRules: MarkupRuleSummary[] = canRespond
+    ? await api
+        .get<MarkupRuleApi[]>('/v1/markup-rules?is_active=true')
+        .then((rules) => rules.filter((r) => r.appliesTo === 'document' || r.appliesTo === 'both'))
+        .catch(() => [])
+    : [];
+
   const canAccept = ['quoted', 'submitted'].includes(quote.status);
   const canDecline = ['quoted', 'submitted', 'under_review'].includes(quote.status);
 
@@ -178,7 +204,7 @@ export async function B2bQuoteDetailContent({ id }: Props) {
         </CardHeader>
         <CardContent className="p-0">
           {canRespond ? (
-            <QuoteRespondEditor quoteId={id} items={quote.items} />
+            <QuoteRespondEditor quoteId={id} items={quote.items} rules={markupRules} />
           ) : (
             <Table>
               <TableHeader>
@@ -194,7 +220,21 @@ export async function B2bQuoteDetailContent({ id }: Props) {
                 {quote.items.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell>
-                      <Text size="sm">{item.name}</Text>
+                      <Stack gap={1}>
+                        <Text size="sm">{item.name}</Text>
+                        {item.appliedMarkup && (
+                          <Stack direction="row" align="center" gap={2} wrap>
+                            <Badge color="module" variant="soft">
+                              By markup
+                            </Badge>
+                            <Text size="xs" variant="muted">
+                              {item.appliedMarkup.ruleName ?? 'Ad-hoc'} ·{' '}
+                              {item.appliedMarkup.marginPct}% margin · cost{' '}
+                              {fmt(item.appliedMarkup.costBasisValueCents / 100)}
+                            </Text>
+                          </Stack>
+                        )}
+                      </Stack>
                     </TableCell>
                     <TableCell>
                       <Text size="sm" variant="muted">

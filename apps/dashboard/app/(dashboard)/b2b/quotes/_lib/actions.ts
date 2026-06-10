@@ -14,14 +14,27 @@ export async function quoteLifecycleAction(
   }
 }
 
-interface RespondItem {
+// A merchant prices each line either directly (`unitPriceCents`) or "by markup"
+// (docs/48 §5): a markup directive against a cost basis (`costCents`, else the
+// linked variant cost), snapshotted onto the line by api-rest.
+export type LineMarkupDirective =
+  | { kind: 'rule'; ruleId: string }
+  | {
+      kind: 'adhoc';
+      method: 'percentage' | 'multiplier' | 'flat' | 'margin_target';
+      value: number;
+    };
+
+export interface RespondLine {
   itemId: string;
-  unitPriceCents: number;
+  unitPriceCents?: number;
+  costCents?: number;
+  markup?: LineMarkupDirective;
 }
 
 export async function respondToQuote(
   quoteId: string,
-  lineItems: RespondItem[],
+  lineItems: RespondLine[],
   merchantNote?: string
 ): Promise<{ error?: string }> {
   try {

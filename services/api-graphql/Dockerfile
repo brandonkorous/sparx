@@ -30,6 +30,10 @@ COPY packages/cms-editor ./packages/cms-editor
 COPY packages/auth ./packages/auth
 COPY packages/legal ./packages/legal
 COPY packages/crm-schemas ./packages/crm-schemas
+# @sparx/crm now depends on @sparx/commerce-schemas (the pure markup engine) for
+# quote-line markup pricing (docs/48 §5), so it must be present even though the
+# GraphQL surface doesn't import commerce directly.
+COPY packages/commerce-schemas ./packages/commerce-schemas
 COPY packages/crm ./packages/crm
 COPY services/api-graphql ./services/api-graphql
 

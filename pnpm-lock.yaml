@@ -718,6 +718,9 @@ importers:
       '@sparx/auth':
         specifier: workspace:*
         version: link:../auth
+      '@sparx/commerce-schemas':
+        specifier: workspace:*
+        version: link:../commerce-schemas
       '@sparx/crm-schemas':
         specifier: workspace:*
         version: link:../crm-schemas
@@ -1667,6 +1670,9 @@ importers:
       '@sparx/commerce':
         specifier: workspace:*
         version: link:../../packages/commerce
+      '@sparx/commerce-schemas':
+        specifier: workspace:*
+        version: link:../../packages/commerce-schemas
       '@sparx/crm':
         specifier: workspace:*
         version: link:../../packages/crm

@@ -77,6 +77,16 @@ model QuoteItem {
   lineTotal      Decimal @default(0) @map("line_total") @db.Decimal(12, 2)
   metadata       Json    @default("{}")
 
+  // Document-line markup (docs/48 §5). When a line is priced "by markup" — a
+  // rule or an ad-hoc markup against a cost basis — costCents records the cost
+  // used and appliedMarkup snapshots the computation ({ ruleId, ruleName,
+  // method, value, costSource, costBasisValueCents, computedPriceCents,
+  // marginPct, markupPct, computedAt }; ruleId null for ad-hoc) so the quoted
+  // unitPrice stays reproducible after catalog costs drift. Null = priced
+  // manually / from the catalog, detached from any markup.
+  costCents     Int?  @map("cost_cents")
+  appliedMarkup Json? @map("applied_markup")
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 

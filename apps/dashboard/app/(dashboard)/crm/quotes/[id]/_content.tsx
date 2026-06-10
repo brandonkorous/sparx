@@ -24,6 +24,14 @@ import { api, type ApiRestError } from '@/lib/api-rest-client';
 
 import { QuoteLifecycleActions } from './_components/quote-lifecycle-actions';
 
+interface LineMarkupSnapshot {
+  ruleName: string | null;
+  method: string;
+  marginPct: number;
+  markupPct: number;
+  costBasisValueCents: number;
+}
+
 interface QuoteItem {
   id: string;
   sku: string;
@@ -33,6 +41,8 @@ interface QuoteItem {
   discountAmount: string | number;
   taxAmount: string | number;
   lineTotal: string | number;
+  costCents: number | null;
+  appliedMarkup: LineMarkupSnapshot | null;
 }
 
 interface QuoteWithItems {
@@ -179,7 +189,23 @@ export async function QuoteDetailContent({ id }: Props) {
                   <TableCell>
                     <code className="text-xs">{item.sku}</code>
                   </TableCell>
-                  <TableCell>{item.name}</TableCell>
+                  <TableCell>
+                    <Stack gap={1}>
+                      <Text size="sm">{item.name}</Text>
+                      {item.appliedMarkup && (
+                        <Stack direction="row" align="center" gap={2} wrap>
+                          <Badge color="module" variant="soft">
+                            By markup
+                          </Badge>
+                          <Text size="xs" variant="muted">
+                            {item.appliedMarkup.ruleName ?? 'Ad-hoc'} ·{' '}
+                            {item.appliedMarkup.marginPct}% margin · cost {quote.currency}{' '}
+                            {(item.appliedMarkup.costBasisValueCents / 100).toLocaleString()}
+                          </Text>
+                        </Stack>
+                      )}
+                    </Stack>
+                  </TableCell>
                   <TableCell className="text-right tabular-nums">{item.quantity}</TableCell>
                   <TableCell className="text-right tabular-nums">
                     {quote.currency} {Number(item.unitPrice).toLocaleString()}
