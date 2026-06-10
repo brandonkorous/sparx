@@ -11,14 +11,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
 
-import { STYLE_ELEMENT_ID, WIDGET_CSS } from './styles.js';
+import { STYLE_ELEMENT_ID, WIDGET_CSS } from './styles';
 import type {
   ChatMessage,
   ChatWidgetProps,
   ClientToServerEvents,
   PublicChatConfig,
   ServerToClientEvents,
-} from './types.js';
+} from './types';
 
 type ChatSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
