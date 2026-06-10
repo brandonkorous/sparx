@@ -15,7 +15,6 @@ import {
   NativeSelect,
   Stack,
   Text,
-  useConfirm,
 } from '@sparx/ui';
 import { Plus, X } from 'lucide-react';
 import { updateGeneralSettings } from './actions';
@@ -63,7 +62,6 @@ export interface GeneralFormProps {
 
 export function GeneralForm({ tenant }: GeneralFormProps) {
   const router = useRouter();
-  const confirm = useConfirm();
   const [error, setError] = React.useState<string | null>(null);
   const [message, setMessage] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
@@ -94,24 +92,11 @@ export function GeneralForm({ tenant }: GeneralFormProps) {
     .map((r) => ({ platform: r.platform.trim(), url: r.url.trim() }))
     .filter((r) => r.platform && r.url);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setMessage(null);
     const formData = new FormData(e.currentTarget);
-
-    // A slug change moves the site's subdomain and breaks old links — confirm it.
-    const slugValue = formData.get('slug');
-    const newSlug = (typeof slugValue === 'string' ? slugValue : '').trim().toLowerCase();
-    if (newSlug && newSlug !== tenant.slug) {
-      const confirmed = await confirm({
-        title: 'Change your site URL?',
-        description: `Your site moves from ${tenant.slug}.sparx.zone to ${newSlug}.sparx.zone. Links to the old address will stop working.`,
-        confirmLabel: 'Change URL',
-        tone: 'danger',
-      });
-      if (!confirmed) return;
-    }
 
     startTransition(async () => {
       const result = await updateGeneralSettings(formData);
@@ -146,11 +131,9 @@ export function GeneralForm({ tenant }: GeneralFormProps) {
             </Stack>
             <Stack gap={2}>
               <Label htmlFor="slug">Site URL</Label>
-              <Input id="slug" name="slug" defaultValue={tenant.slug} />
-              <input type="hidden" name="originalSlug" value={tenant.slug} />
+              <Input id="slug" name="slug" defaultValue={tenant.slug} disabled />
               <Text size="xs" variant="muted">
-                Your subdomain — {tenant.slug}.sparx.zone. Lowercase letters, numbers, and hyphens;
-                changing it moves your site and breaks links to the old address.
+                The slug your tenant is keyed by. Contact support to change.
               </Text>
             </Stack>
             <Stack gap={2}>

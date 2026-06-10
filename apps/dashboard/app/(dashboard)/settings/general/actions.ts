@@ -23,15 +23,6 @@ const TenantUpdateSchema = z.object({
   socials: z.array(SocialLink).max(50),
 });
 
-// Slug is a SEPARATE endpoint (PATCH /v1/tenant/slug) — its own role gate,
-// reserved-name guard, and global-uniqueness check live there. Mirror the
-// api-rest rule so an obviously-bad slug fails inline before the round-trip.
-const SlugSchema = z
-  .string()
-  .min(3, 'Site URL must be at least 3 characters.')
-  .max(63)
-  .regex(/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/, 'Use lowercase letters, numbers, and hyphens.');
-
 // Parse the hidden `socials` JSON field into a clean { platform, url }[],
 // dropping anything malformed or incomplete (defensive — the client already
 // filters, and the PATCH REPLACES the whole array).
@@ -69,29 +60,7 @@ export async function updateGeneralSettings(formData: FormData): Promise<UpdateG
     return { ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid input.' };
   }
 
-  // Only touch the slug endpoint when the slug actually changed — the field is
-  // editable, but most saves leave it untouched (and the call is role-gated).
-  const rawSlug = formData.get('slug');
-  const originalSlug = formData.get('originalSlug');
-  const slug = typeof rawSlug === 'string' ? rawSlug.trim().toLowerCase() : '';
-  const slugChanged =
-    slug.length > 0 &&
-    typeof originalSlug === 'string' &&
-    slug !== originalSlug.trim().toLowerCase();
-
-  if (slugChanged) {
-    const slugParsed = SlugSchema.safeParse(slug);
-    if (!slugParsed.success) {
-      return { ok: false, error: slugParsed.error.issues[0]?.message ?? 'Invalid site URL.' };
-    }
-  }
-
   try {
-    // Slug first: if it's reserved/taken the rest of the save is skipped, so we
-    // never half-apply name/email against a rejected rename.
-    if (slugChanged) {
-      await api.patch<{ slug: string }>('/v1/tenant/slug', { slug });
-    }
     await api.patch<{ id: string }>('/v1/tenant', parsed.data);
   } catch (err) {
     return { ok: false, error: (err as ApiRestError).message ?? 'Update failed.' };
