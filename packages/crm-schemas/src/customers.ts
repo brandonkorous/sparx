@@ -41,12 +41,14 @@ export type CreateCustomerInput = z.infer<typeof CreateCustomerInput>;
 export const UpdateCustomerInput = CreateCustomerInput.partial();
 export type UpdateCustomerInput = z.infer<typeof UpdateCustomerInput>;
 
-// Newsletter / email-capture subscribe — the public storefront "Email signup"
-// block (docs/51 §7). Deliberately minimal: a visitor hands over an email (and
-// maybe a name) and opts into marketing. The service upserts on the
-// (tenant, property, email) identity and folds `marketing` into gdpr_consent, so
-// a repeat submit is idempotent rather than a unique-constraint error. No `type`
-// here — a fresh capture is always a `prospect`; an existing customer keeps theirs.
+// Newsletter / email-capture subscribe — the marketing opt-in path shared by the
+// storefront "Email signup" block (docs/51 §7, via /v1/public/signup) and the
+// generic named-list capture (/v1/public/newsletter, e.g. the sparx.works /early
+// waitlist). Deliberately minimal: a visitor hands over an email (and maybe a
+// name) and opts into marketing. The service upserts on the (tenant, property,
+// email) identity and folds `marketing` into gdpr_consent, so a repeat submit is
+// idempotent rather than a unique-constraint error. No `type` here — a fresh
+// capture is always a `prospect`; an existing customer keeps theirs.
 export const SubscribeCustomerInput = z.object({
   email: z.string().email().max(255),
   // The site (web property) the form was on (docs/58 D2). Null → a tenant-level
@@ -59,6 +61,25 @@ export const SubscribeCustomerInput = z.object({
   source: z.enum(['signup', 'checkout', 'api']).default('signup'),
   // Captured server-side as proof of the opt-in (mirrors the consent record).
   ipAddress: z.string().optional(),
+  // The named marketing list this opt-in joins (e.g. 'early-access', 'newsletter').
+  // Stamped onto the customer as a TAG, so the list is a filterable, segment-
+  // targetable slice — the matching built-in segment (if any) materializes
+  // membership from the tag. Null/absent → the generic opt-in with no list tag.
+  list: z
+    .string()
+    .min(1)
+    .max(63)
+    .regex(/^[a-z0-9-]+$/, 'list must be a kebab-case slug')
+    .nullable()
+    .optional(),
+  // Free-text context captured with the opt-in (e.g. the waitlist "what are you
+  // building?" prompt). Stored under customer.metadata.signup; never clobbers an
+  // existing note on re-subscribe (the first answer is the durable one).
+  note: z.string().max(2000).nullable().optional(),
+  // Extra structured context shallow-merged under customer.metadata.signup (e.g.
+  // the capture page or a marketing-attribution touch). For first-party callers
+  // only — never populated from raw untrusted client input.
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 export type SubscribeCustomerInput = z.infer<typeof SubscribeCustomerInput>;
 

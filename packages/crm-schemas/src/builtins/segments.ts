@@ -97,10 +97,30 @@ const NEWSLETTER_SUBSCRIBERS: SegmentTemplate = {
   },
 };
 
+// The slug of the early-access / waitlist segment. Shared so the public
+// newsletter capture (customerService.subscribe with list='early-access') can
+// ensure it exists on the first signup, and so an email broadcast can target
+// the waitlist cohort specifically — narrower than all Newsletter Subscribers.
+export const EARLY_ACCESS_SEGMENT_SLUG = 'early-access';
+
+const EARLY_ACCESS: SegmentTemplate = {
+  name: 'Early Access',
+  slug: EARLY_ACCESS_SEGMENT_SLUG,
+  description: 'Prospects who joined an early-access / waitlist list (tagged "early-access").',
+  color: '#6366F1',
+  rules: {
+    kind: 'predicate',
+    field: 'customer.tags',
+    op: 'contains',
+    value: EARLY_ACCESS_SEGMENT_SLUG,
+  },
+};
+
 export const BUILT_IN_SEGMENT_TEMPLATES: readonly SegmentTemplate[] = [
   HIGH_VALUE,
   AT_RISK,
   B2B_FLEET,
   NEW_CUSTOMERS,
   NEWSLETTER_SUBSCRIBERS,
+  EARLY_ACCESS,
 ];
