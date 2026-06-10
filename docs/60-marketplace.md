@@ -1,6 +1,6 @@
 # Marketplace — the unified, categorized add-on surface
 
-**Version:** 0.2.0
+**Version:** 0.3.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-10
 
@@ -389,21 +389,38 @@ on either surface.
 
 ## 15. Phasing / build plan
 
-1. **Catalog spine.** Per-category tables (start with `Blueprint`, `Theme`, `MarketplaceComponent`,
-   `MarketplaceIntegration`) + publisher columns + the §6.3 RLS; a catalog service + adapter interface;
-   `GET /v1/marketplace/:category` (authed) + `GET /v1/public/marketplace/:category`; seed Sparx-core
-   listings from the existing registries (idempotent, via the migration pipeline).
-2. **Generic `[category]` shell.** The three shared pages (home, browse with facet rail + sort +
-   load-more, detail) in the dashboard; **move blueprints onto it** as the first adapter (real,
-   end-to-end). Other categories show as registry tiles (`coming-soon`).
-3. **`@sparx/components` extraction** (+ `/catalog` subpath) → **Components** category live (system
-   primitives + seeded composed components; "Copy to my components").
-4. **Themes** (seed `@sparx/site-themes` presets; "Apply" → active site `themeKey`), then
-   **Integrations** (seed from the provider registry; "Connect" → provider install flow).
-5. **Public marketplace on `apps/web`** over the public endpoints — the browse/detail gallery + the
-   "sign up to install" funnel hand-off (docs/54 §15).
-6. **Typesense** marketplace collection (projectors, facet aggregation) — swap behind the adapter; the
-   SQL adapter remains the dev/no-index fallback.
+> **Status (2026-06-10): phases 1–5 SHIPPED — all four categories (Blueprints, Themes, Integrations,
+> Components) are live on the dashboard AND the public surface, seeded in prod.** Phase 6 (Typesense)
+> is the only remaining build item and is scale-only (the SQL adapter is the documented fallback,
+> M5). Phases 7–8 remain deferred by design.
+>
+> One deliberate deviation from the original plan: Themes/Integrations/Components went live via a
+> **curated inline seed** in `packages/db/prisma/seed.ts` (each row's `slug` = the in-code key — theme
+> preset key / provider slug / builder component `type` — with the heavy payload column NULL, resolved
+> by slug), **not** via the `@sparx/components` package extraction (phase 3). The extraction (D8) is
+> still worthwhile to unify the registry across apps, but the catalog did not need it to go live, and
+> the inline seed avoided new `@sparx/db` dependencies. The public surface lives at **`/market`** (so
+> the `sparx.market` vanity domain lands on it), not `/marketplace`.
+
+1. **Catalog spine.** ✅ SHIPPED. Per-category tables + publisher columns + the §6.3 RLS; a catalog
+   service + adapter interface; `GET /v1/marketplace/:category` (authed) + `GET /v1/public/marketplace/:category`;
+   idempotent Sparx-core seed via the migration pipeline.
+2. **Generic `[category]` shell.** ✅ SHIPPED. The three shared pages (home, browse with facet rail +
+   sort + load-more, detail) in the dashboard; blueprints folded onto it as the first adapter with a
+   per-tenant install overlay; the bespoke handlers retired.
+3. **Components category.** ✅ SHIPPED (via curated seed, not `@sparx/components` extraction — see the
+   status note above). Fifteen marketplace-worthy system components; "Add to my components" hands off
+   to `/builder/components/<type>` (the existing Copy-to-tenant flow, docs/53). The `@sparx/components`
+   extraction + `/catalog` subpath remains a worthwhile refactor, but is no longer blocking.
+4. **Themes + Integrations.** ✅ SHIPPED. Themes (six `@sparx/site-themes` presets; "Apply" → active
+   site `themeKey` via `PUT /v1/sitebuilder/config/theme`, D11) and Integrations (six providers;
+   "Connect" → `/commerce/providers`). _Follow-up: only Stripe + Shippo are registered in api-rest's
+   provider bootstrap; PayPal/EasyPost/TaxJar/Avalara bundles exist but need activating before their
+   Connect fully completes._
+5. **Public marketplace on `apps/web`.** ✅ SHIPPED at `/market` over the public endpoints — the
+   browse/detail gallery + the "sign up to install" funnel hand-off (docs/54 §15).
+6. **Typesense** marketplace collection (projectors, facet aggregation) — **remaining; scale-only.**
+   Swap behind the adapter; the SQL adapter remains the dev/no-index fallback (M5).
 7. **Publishing workflow** (tenant/partner authoring → submit → review → publish) — **deferred; gets
    its own doc** when we build it. The catalog schema (§6) supports it now (publisher, status,
    visibility); the authoring + review _experience_ is not built in this round.

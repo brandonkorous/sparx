@@ -1,8 +1,8 @@
 # Sparx Platform — Tier 3 Build Plan
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-09
+**Last Updated:** 2026-06-10
 
 ---
 
@@ -13,6 +13,20 @@ Tier 3 covers the platform polish work needed before real tenant signups: comple
 These are all largely independent of each other and can be built in parallel. Legal & Consent is the highest priority since it gates compliant signups. Marketplace and Universal Search are enhancement work. Product Markup is an important Commerce feature that directly serves Gillett Diesel.
 
 **Build constraints (CLAUDE.md):** production-complete, event-driven side effects, module-gated where appropriate, RLS on all tenant tables, conventional commits, no Co-Authored-By.
+
+> **Status snapshot (2026-06-10).** Most of Tier 3 has shipped — this plan predates several of those
+> builds, so treat the per-feature notes below as authoritative over the original "Remaining" lines.
+>
+> - **Marketplace (Feature 2): DONE** except Typesense (scale-only). All four categories are live on
+>   both surfaces; the marketplace was re-specced as the data-driven catalog in [docs/60](60-marketplace.md)
+>   v0.3, which supersedes this section's phasing.
+> - **Universal Search (Feature 3): DONE.** Ph1 + Ph2 projectors shipped and the scoped-key 501 is
+>   fixed (`generateScopedSearchKey` in `@sparx/search`).
+> - **Product Markup (Feature 4): Ph1, Ph2, and Surcharges (Ph2b) shipped.** Remaining: Ph3
+>   (quote/invoice-line markup) and Ph4 (cost-change recompute worker + MCP tools).
+> - **Legal & Consent (Feature 1): slices 3b–6 shipped** (seed worker, storefront consent UX,
+>   dashboard surfaces, onboarding acceptance gate). Remaining: **Slice 7 (backfill existing tenants)**
+>   and **Slice 8 (polish)**.
 
 ---
 
@@ -130,9 +144,16 @@ This is the heaviest migration slice — run against a staging clone first, conf
 
 ## Feature 2 — Marketplace Completion (docs/60)
 
-**Spec:** [docs/60-marketplace.md](60-marketplace.md)
-**Already shipped:** Marketplace home (`/marketplace`), Blueprints category (browse + detail + install), category registry with Themes/Integrations/Components as `coming-soon` stubs.
-**Remaining:** Themes category (live), Components category (live), Integrations category (live), Typesense-backed search, public pre-auth funnel.
+**Spec:** [docs/60-marketplace.md](60-marketplace.md) — note the marketplace was re-specced as a
+data-driven catalog in docs/60 v0.2/v0.3, which supersedes the phasing below; statuses here reflect
+that build.
+**Shipped (2026-06-10):** the data-driven catalog spine (4 per-category tables + publisher model +
+RLS), the generic `[category]` dashboard shell, and **all four categories live on both surfaces** —
+Blueprints (install/go-live), Themes (Apply → active-site theme), Integrations (Connect →
+`/commerce/providers`), Components (Add → `/builder/components`). The **public marketplace** is live at
+`sparx.works/market` with the sign-up funnel hand-off. Catalog seeded in prod.
+**Remaining:** only **Typesense-backed search** (Phase 4 below) — scale-only; the SQL adapter is the
+documented fallback until listing volume warrants an index.
 
 ### Phase 1 — Themes category
 
