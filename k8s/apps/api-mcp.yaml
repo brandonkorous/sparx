@@ -9,16 +9,18 @@
 # api-rest uses. SPARX_INTERNAL_JWT_SECRET is shared so dashboard-issued
 # JWTs accepted by api-rest are also accepted here.
 #
-# PARKED — 2026-05-29. Deployment is scaled to 0 and HPA + PDB are removed
-# until the SSD_TOTAL_GB quota (currently 235/250GB) is bumped. While
-# parked: mcp.sparx.works will 502 (Caddy has no upstream). Restore plan
-# after quota bump:
-#   1. Set replicas: 2 below.
-#   2. Re-add the HorizontalPodAutoscaler (minReplicas: 1, maxReplicas: 2,
-#      same CPU=70% target as api-rest) and PodDisruptionBudget
-#      (minAvailable: 1).
-#   3. Drop the matching kubectl delete steps from bootstrap.yml so the
-#      next reapply doesn't tear them down again.
+# UNPARKED — 2026-06-10. Running at a single replica now that the
+# SSD_TOTAL_GB quota that forced the 2026-05-29 parking is resolved (the
+# regional limit was raised from 250GB to ~41TB; current usage ~420GB). The
+# pod is stateless (no PVC), so one replica schedules comfortably.
+#
+# HPA + PDB are deliberately still omitted at one replica: an HPA needs room
+# above the floor to do anything, and a PodDisruptionBudget with
+# minAvailable: 1 against a single replica would block every voluntary node
+# drain (Autopilot reschedules constantly). bootstrap.yml still deletes any
+# leftover api-mcp HPA/PDB — now a harmless no-op. To scale out later: raise
+# replicas, re-add an HPA (minReplicas: 1, maxReplicas: 2, CPU 70% like
+# api-rest) + PDB (minAvailable: 1), and drop those bootstrap delete steps.
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -29,7 +31,7 @@ metadata:
     app: api-mcp
     tier: api
 spec:
-  replicas: 0 # PARKED — restore to 2 after SSD_TOTAL_GB quota bump
+  replicas: 1 # unparked 2026-06-10 (SSD quota resolved); single replica, no HPA
   revisionHistoryLimit: 5
   strategy:
     type: RollingUpdate
