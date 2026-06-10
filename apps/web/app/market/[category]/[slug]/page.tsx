@@ -108,8 +108,7 @@ export default async function ListingDetailPage({
   // build-time-baked NEXT_PUBLIC_*) and handed to the client widget as a prop.
   const chatSlug = item.publisher.type === 'tenant' ? item.publisher.slug : null;
   const chatAvailable = chatSlug ? await fetchChatAvailability(chatSlug) : null;
-  const chatApiUrl =
-    process.env.SPARX_PUBLIC_API_REST_URL ?? process.env.NEXT_PUBLIC_API_URL ?? '';
+  const chatApiUrl = process.env.SPARX_PUBLIC_API_REST_URL ?? process.env.NEXT_PUBLIC_API_URL ?? '';
   const showChat = Boolean(chatSlug && chatAvailable && chatApiUrl);
 
   return (

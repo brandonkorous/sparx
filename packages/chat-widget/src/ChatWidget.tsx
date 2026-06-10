@@ -58,7 +58,7 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
   // widget self-manages via its launcher bubble.
   const [internalOpen, setInternalOpen] = useState(false);
   const isOpenControlled = props.open !== undefined;
-  const open = isOpenControlled ? (props.open as boolean) : internalOpen;
+  const open = isOpenControlled ? props.open! : internalOpen;
   const setOpen = useCallback(
     (next: boolean) => {
       if (!isOpenControlled) setInternalOpen(next);
