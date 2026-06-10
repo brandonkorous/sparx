@@ -91,7 +91,16 @@ reconciles them into the one canonical registry. No build blocker from deferring
 - ☐ Prisma models `Automation` / `AutomationRun` / `AutomationRunStep` (new schema file)
 - ☐ Hand-authored migration SQL: tables + `ENABLE`+`FORCE` RLS + `tenant_isolation`
   on all three (`tenant_id` on run_steps too); `UNIQUE(automation_id, dedupe_key)`
-- ☐ `current_tenant_id()` policy form consistent with the rest of the schema
+- ☐ **RLS form (confirmed from `20260728000000_push_subscriptions`):** quoted idents,
+  `ALTER TABLE "x" ENABLE/FORCE ROW LEVEL SECURITY;` then
+  `CREATE POLICY tenant_isolation ON "x" USING ("tenant_id" = current_tenant_id()) WITH CHECK ("tenant_id" = current_tenant_id());`
+  — use `current_tenant_id()` (reads `app.tenant_id` via `withTenant`), NOT the
+  `current_setting('app.current_tenant_id')` one-off in `20260714010000_b2b_invoices`.
+  tenant_id FK → `tenants(id) ON DELETE CASCADE`. Migrate via hand-authored
+  `migration.sql` + `migrate deploy` (NOT `migrate dev` — non-interactive-broken here).
+- ☐ Tenant-relation modeling decision: declare `tenant`/`automation`/`run` relations
+  so `migrate diff` drift-check stays clean (adds 3 inverse fields to the `Tenant`
+  model — a shared file; keep the edit additive).
 - ☐ Apply to docker (`migrate deploy`), drift-check (`migrate diff`)
 - ☐ Indexes: `(tenant_id, status, trigger_type)`, runs `(status, resume_at)`
 
@@ -168,6 +177,7 @@ reconciles them into the one canonical registry. No build blocker from deferring
 ## 5. Session log
 
 - **2026-06-10** — Build log created. Sequencing decided (engine-core before Phase-0
-  fan-in). **Slice A `@sparx/automation-schemas` DONE** — trigger/condition/action/
-  automation/run schemas + column-mapping helpers, 7/7 tests, typecheck + lint clean.
-  Next: Slice B (data model).
+  fan-in). **Slice A `@sparx/automation-schemas` DONE + committed** (`25164b9`) —
+  trigger/condition/action/automation/run schemas + column-mapping helpers, 7/7
+  tests, typecheck + lint clean. Grounded the Slice B RLS form (`current_tenant_id()`
+  per push_subscriptions). Next session resumes at Slice B (data model).
