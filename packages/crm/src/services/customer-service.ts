@@ -217,6 +217,15 @@ export async function subscribe(
         ipAddress?: string;
       };
       const scope = Array.from(new Set([...(prior.scope ?? []), 'marketing']));
+      // Add the list tag (idempotent) and capture the signup context once — never
+      // clobber an earlier note, so the first "what are you building?" answer wins.
+      const priorMeta = (existing.metadata ?? {}) as Record<string, unknown>;
+      const nextTags =
+        input.list && !existing.tags.includes(input.list) ? [...existing.tags, input.list] : null;
+      const nextMeta =
+        priorMeta.signup === undefined && (input.list || input.note || input.metadata)
+          ? ({ ...priorMeta, ...buildSignupMeta(input, grantedAt) } as Prisma.InputJsonValue)
+          : null;
       const updated = await tx.customer.update({
         where: { id: existing.id },
         data: {
@@ -224,6 +233,8 @@ export async function subscribe(
           deletedAt: null,
           ...(existing.firstName ? {} : input.firstName ? { firstName: input.firstName } : {}),
           ...(existing.lastName ? {} : input.lastName ? { lastName: input.lastName } : {}),
+          ...(nextTags ? { tags: nextTags } : {}),
+          ...(nextMeta ? { metadata: nextMeta } : {}),
           gdprConsent: {
             ...prior,
             grantedAt: prior.grantedAt ?? grantedAt,
@@ -269,6 +280,8 @@ export async function subscribe(
           firstName: input.firstName ?? null,
           lastName: input.lastName ?? null,
           doNotContact: false,
+          tags: input.list ? [input.list] : [],
+          metadata: buildSignupMeta(input, grantedAt) as Prisma.InputJsonValue,
           gdprConsent: {
             grantedAt,
             source: input.source,
@@ -308,6 +321,18 @@ export async function subscribe(
     await ensureBuiltInSegment(ctx, NEWSLETTER_SEGMENT_SLUG);
   } catch {
     // Segment seeding is recoverable on the next subscribe / activation.
+  }
+
+  // If this opt-in joined a named list that has a matching built-in segment
+  // (e.g. 'early-access'), ensure that segment too so the cohort is a distinct,
+  // broadcast-targetable slice — narrower than all Newsletter Subscribers.
+  if (input.list) {
+    try {
+      await ensureBuiltInSegment(ctx, input.list);
+    } catch {
+      // Not a built-in list slug (or a transient miss) — the tag still makes the
+      // contact filterable; a real built-in materializes on a later subscribe.
+    }
   }
 
   // Publish on the CRM bus: webhooks + (in prod) the Pub/Sub tee, AND — via the
@@ -560,6 +585,22 @@ export async function addAddress(
 // ─────────────────────────────────────────────────────────────────────────
 // Internal helpers
 // ─────────────────────────────────────────────────────────────────────────
+
+/** Builds the customer.metadata payload for a marketing opt-in — the list slug,
+ *  the free-text note ("what are you building?"), the source, and any extra
+ *  first-party context — nested under a `signup` key so it never collides with
+ *  other metadata a customer accrues later. */
+function buildSignupMeta(
+  input: SubscribeCustomerInput,
+  capturedAt: string
+): Record<string, unknown> {
+  const signup: Record<string, unknown> = { ...(input.metadata ?? {}) };
+  if (input.list) signup.list = input.list;
+  if (input.note) signup.note = input.note;
+  signup.source = input.source;
+  signup.capturedAt = capturedAt;
+  return { signup };
+}
 
 function sameTags(a: readonly string[], b: readonly string[]): boolean {
   if (a.length !== b.length) return false;

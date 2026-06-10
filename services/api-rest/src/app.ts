@@ -72,6 +72,7 @@ import publicBuilderRoutes from './routes/v1/public/builder.js';
 import publicMediaRoutes from './routes/v1/public/media.js';
 import publicConsentRoutes from './routes/v1/public/consent.js';
 import publicSignupRoutes from './routes/v1/public/signup.js';
+import publicNewsletterRoutes from './routes/v1/public/newsletter.js';
 import publicMarketplaceRoutes from './routes/v1/public/marketplace.js';
 import publicRedirectRoutes from './routes/v1/public/redirects.js';
 import publicB2bPortalRoutes from './routes/v1/public/b2b-portal.js';
@@ -533,6 +534,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicMediaRoutes);
   await app.register(publicConsentRoutes);
   await app.register(publicSignupRoutes);
+  await app.register(publicNewsletterRoutes);
   await app.register(publicMarketplaceRoutes);
   await app.register(publicChatRoutes);
   await app.register(publicRedirectRoutes);
