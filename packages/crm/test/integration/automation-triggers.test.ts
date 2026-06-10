@@ -21,6 +21,13 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { withTenant } from '@sparx/db';
 
 import * as customerService from '../../src/services/customer-service';
+import {
+  b2bAccountService,
+  dealService,
+  pipelineService,
+  quoteLifecycleService,
+  quoteService,
+} from '../../src/services/index.js';
 import { runDailyAutomationTriggers } from '../../src/schedulers/automation-triggers';
 import { disposeTestContext, makeTestContext, type TestContext } from '../helpers.js';
 
@@ -61,6 +68,15 @@ describe('scheduled automation triggers — inactivity (outcome-level)', () => {
     return t.publisher.events
       .filter((e) => (e.payload as { reason?: string }).reason === 'inactive')
       .map((e) => (e.payload as { customerId: string }).customerId);
+  }
+
+  // Generic: the entity ids carried on signals with a given `reason`, read from
+  // `idKey` (customerId / dealId / b2bAccountId / quoteId depending on trigger).
+  function emittedIds(reason: string, idKey: string): string[] {
+    return t.publisher.events
+      .filter((e) => (e.payload as { reason?: string }).reason === reason)
+      .map((e) => (e.payload as Record<string, string>)[idKey])
+      .filter((id): id is string => Boolean(id));
   }
 
   it('flags a customer past the threshold and ignores recent / never-ordered ones', async () => {
@@ -127,5 +143,70 @@ describe('scheduled automation triggers — inactivity (outcome-level)', () => {
     // them to a single delivered signal.
     const keys = new Set(occurrences.map((e) => e.dedupeKey));
     expect(keys.size).toBe(1);
+  });
+
+  it('flags a customer that crosses the high-value spend threshold', async () => {
+    const id = await customerLastOrdered(null);
+    // totalSpent isn't a create-input field — it's denormalized from orders.
+    await withTenant(t.ctx, (tx) =>
+      tx.customer.update({ where: { id }, data: { totalSpent: 7500 } })
+    );
+
+    await runDailyAutomationTriggers(t.ctx); // default highValueAmount = 5000
+    expect(emittedIds('high_value', 'customerId')).toContain(id);
+  });
+
+  it('flags a deal whose expected close date is inside the window', async () => {
+    const pipeline = await pipelineService.bootstrapDefaultPipeline(t.ctx);
+    const customerId = await customerLastOrdered(null);
+    const closesSoon = new Date(Date.now() + 3 * DAY).toISOString().slice(0, 10);
+    const deal = await dealService.create(t.ctx, {
+      pipelineId: pipeline.id,
+      stageId: pipeline.stages[0]!.id,
+      customerId,
+      title: 'Closing soon',
+      value: 1000,
+      currency: 'USD',
+      expectedCloseDate: closesSoon,
+    });
+
+    await runDailyAutomationTriggers(t.ctx); // default dealCloseSoonDays = 7
+    expect(emittedIds('close_date_approaching', 'dealId')).toContain(deal.id);
+  });
+
+  it('flags a B2B account whose credit utilization is near its limit', async () => {
+    const account = await b2bAccountService.create(t.ctx, {
+      companyName: 'Near Limit LLC',
+      creditLimit: 1000,
+    });
+    // creditUsed is normally synced from unpaid invoices; set it directly to
+    // push utilization past the 0.85 default without standing up an invoice.
+    await withTenant(t.ctx, (tx) =>
+      tx.b2BAccount.update({ where: { id: account.id }, data: { creditUsed: 900 } })
+    );
+
+    await runDailyAutomationTriggers(t.ctx); // default creditUtilizationThreshold = 0.85
+    expect(emittedIds('credit_near_limit', 'b2bAccountId')).toContain(account.id);
+  });
+
+  it('flags a submitted quote whose validity window is closing', async () => {
+    const customerId = await customerLastOrdered(null);
+    const quote = await quoteService.create(t.ctx, {
+      customerId,
+      items: [{ sku: 'EXP-1', name: 'Expiring item', quantity: 1, unitPrice: 100 }],
+    });
+    // The trigger only considers submitted/accepted quotes — a draft is invisible.
+    await quoteLifecycleService.submit(t.ctx, { quoteId: quote.id });
+    // Pull validUntil into the 7-day default window. Set it directly so the test
+    // doesn't depend on the create-input date format.
+    await withTenant(t.ctx, (tx) =>
+      tx.quote.update({
+        where: { id: quote.id },
+        data: { validUntil: new Date(Date.now() + 3 * DAY) },
+      })
+    );
+
+    await runDailyAutomationTriggers(t.ctx); // default quoteExpirySoonDays = 7
+    expect(emittedIds('expiring_soon', 'quoteId')).toContain(quote.id);
   });
 });
