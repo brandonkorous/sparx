@@ -27,6 +27,12 @@ COPY packages/surface-compile ./packages/surface-compile
 COPY packages/builder ./packages/builder
 COPY packages/email ./packages/email
 COPY packages/commerce-schemas ./packages/commerce-schemas
+# @sparx/commerce's provider-service imports @sparx/integration-framework (the
+# provider plug-in SDK) at module load — the commerce MCP tools pull it in — so it
+# must be in the image. Its only workspace dep is commerce-schemas (above). Omitting
+# it crashlooped api-mcp with ERR_MODULE_NOT_FOUND. (@sparx/commerce's other dep
+# @sparx/ui is NOT copied — the MCP code path never loads it.)
+COPY packages/integration-framework ./packages/integration-framework
 COPY packages/commerce ./packages/commerce
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/crm ./packages/crm
