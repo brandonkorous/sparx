@@ -19,12 +19,15 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { isModuleEnabled } from '@sparx/auth';
 import { customerService } from '@sparx/crm';
-import { prisma } from '@sparx/db';
+import { prisma, withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { moduleDisabled, notFound } from '@sparx/api-core/errors';
 
 const Query = z.object({
   tenant: z.string().min(1).max(63),
+  // Optional site (web property) slug to scope the contact to. Omitted → the
+  // tenant's primary site (so a contact is never left floating tenant-level).
+  property: z.string().min(1).max(63).optional(),
 });
 
 const Body = z.object({
@@ -60,14 +63,29 @@ const publicNewsletterRoutes: FastifyPluginAsync = (app) => {
     // The contact spine is a CRM concern — gate the capture on it.
     if (!(await isModuleEnabled(tenant.id, 'crm'))) throw moduleDisabled('crm');
 
+    // Scope the contact to a SITE so the dashboard's per-site CRM views include
+    // it — a contact with no property floats at the tenant level and shows under
+    // no site. Use the named `?property=` slug if given, else the tenant's primary
+    // site. properties is FORCE RLS, so resolve under withTenant.
+    const property = await withTenant({ tenantId: tenant.id }, (tx) =>
+      q.property
+        ? tx.property.findFirst({
+            where: { tenantId: tenant.id, slug: q.property },
+            select: { id: true },
+          })
+        : tx.property.findFirst({
+            where: { tenantId: tenant.id, isPrimary: true },
+            select: { id: true },
+          })
+    );
+
     await customerService.subscribe(
       { tenantId: tenant.id },
       {
         email: body.email,
         firstName: body.firstName ?? null,
         lastName: body.lastName ?? null,
-        // Named lists are tenant-level (not site-scoped) by construction.
-        propertyId: null,
+        propertyId: property?.id ?? null,
         source: 'signup',
         list: body.list,
         note: body.note ?? null,
