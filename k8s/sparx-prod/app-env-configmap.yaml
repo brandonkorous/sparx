@@ -68,5 +68,5 @@ data:
   # sparx-app-secrets / Secret Manager. Generate a pair once with
   # `npx web-push generate-vapid-keys`; paste the public key here, then re-apply
   # via `bootstrap app-env`. Empty → the toggle shows "not configured yet".
-  VAPID_PUBLIC_KEY: ''
+  VAPID_PUBLIC_KEY: 'BBpWC4B-khWME-4XJO2ubCXo9vqZYEMIz3b21Ef2J3VruF6bldk7u8V5a4urFPG5V6uEZlRlSipfjrUJVzBMcvs'
   LOG_LEVEL: info
