@@ -1,7 +1,6 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { ThemePreset } from '@sparx/site-themes';
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
 import type {
@@ -9,7 +8,6 @@ import type {
   OnboardingStepKey,
   SlugAvailability,
   WizardResult,
-  WizardThemeOption,
 } from './types';
 
 // Server-action adapters for the onboarding wizard. Like the rest of the
@@ -26,9 +24,9 @@ const ok = { ok: true, data: undefined } as const;
 
 interface OnboardingPatch {
   currentStep?: OnboardingStepKey;
-  category?: string | null;
   finishedAt?: string | null;
-  dismissed?: boolean;
+  blueprintKey?: string | null;
+  installId?: string | null;
   completed?: Partial<OnboardingCompleted>;
 }
 
@@ -36,50 +34,75 @@ async function patchOnboarding(patch: OnboardingPatch): Promise<void> {
   await api.patch('/v1/tenant/onboarding', patch);
 }
 
-function toWizardTheme(t: ThemePreset): WizardThemeOption {
-  const light = t.tokenDefaults.light as unknown as Record<string, string>;
-  return {
-    key: t.key,
-    name: t.name,
-    description: t.description,
-    category: t.category,
-    swatches: ['colorPrimary', 'colorAccent', 'colorBackground', 'colorForeground'].map(
-      (k) => light[k] ?? '#000000'
-    ),
-  };
+// ── Step 1 — Template ────────────────────────────────────────────────────────
+//
+// Pick a complete blueprint. Installing it provisions a whole themed site (pages,
+// theme, brand, products, content, emails) as DRAFT onto the tenant's primary
+// property, and enables the modules the blueprint needs. The site stays a draft
+// until the Launch step publishes it — so nothing is public until the tenant says
+// so. The blueprint key + install id are tracked on the onboarding state so the
+// Launch step can publish deterministically and the flow resumes mid-setup.
+
+export async function selectTemplateAction(
+  key: string
+): Promise<WizardResult<{ installId: string }>> {
+  try {
+    // If a DIFFERENT template was installed earlier in this flow (the tenant
+    // changed their mind), reset it first — install is one row per blueprint, and
+    // we don't want to strand an orphan draft. Re-selecting the SAME template
+    // keeps the existing install (idempotent).
+    const state = await api.get<{ blueprintKey: string | null; installId: string | null }>(
+      '/v1/tenant/onboarding'
+    );
+
+    let installId: string;
+    if (state.blueprintKey === key && state.installId) {
+      installId = state.installId;
+    } else {
+      if (state.installId && state.blueprintKey && state.blueprintKey !== key) {
+        await api
+          .post(`/v1/blueprints/installs/${encodeURIComponent(state.installId)}/reset`)
+          .catch(() => undefined);
+      }
+      const res = await api.post<{ install_id: string }>(
+        `/v1/blueprints/${encodeURIComponent(key)}/install`
+      );
+      installId = res.install_id;
+    }
+
+    await patchOnboarding({
+      blueprintKey: key,
+      installId,
+      completed: { template: true },
+      currentStep: 'domain',
+    });
+    revalidatePath('/onboarding');
+    return { ok: true, data: { installId } };
+  } catch (err) {
+    return fail(err);
+  }
 }
 
-// Step 1 — Business. Saves the store name + category, then silently enables the
-// `builder` + `commerce` modules so the later steps' endpoints respond
-// (theme catalog + product create are both module-gated). Also seeds the
-// tenant-level brand (docs/30 §6): businessName always, plus an optional logo
-// and primary color the tenant can set inline here. Brand is ungated, so this
-// seeds the source of truth before any module choice — a tenant always has a
-// brand even if Builder is later turned off.
-export async function saveBusinessAction(input: {
-  name: string;
-  category: string | null;
-  logoMediaId?: string | null;
-  colorPrimary?: string | null;
-}): Promise<WizardResult> {
+// The "start from scratch" path: no blueprint. Turn the Builder on (so the
+// starter seeds and the tenant can design), clear any prior template selection,
+// and advance. The Launch step detects the absent install and routes into the
+// Builder instead of a publish-this-showcase preview.
+export async function startFromScratchAction(): Promise<WizardResult> {
   try {
-    const name = input.name.trim();
-    if (!name) return { ok: false, error: 'Store name is required.' };
-
-    const brandPatch: Record<string, unknown> = { businessName: name };
-    if (input.logoMediaId) brandPatch.logoLightMediaId = input.logoMediaId;
-    if (input.colorPrimary) brandPatch.colorPrimary = input.colorPrimary;
-
-    await api.patch('/v1/tenant', { name });
-    await Promise.all([
-      api.patch('/v1/tenant/modules/builder', { enabled: true }),
-      api.patch('/v1/tenant/modules/commerce', { enabled: true }),
-      api.patch('/v1/brand', brandPatch),
-    ]);
+    // If a template was installed earlier and is being abandoned, tear it down so
+    // the tenant truly starts blank.
+    const state = await api.get<{ installId: string | null }>('/v1/tenant/onboarding');
+    if (state.installId) {
+      await api
+        .post(`/v1/blueprints/installs/${encodeURIComponent(state.installId)}/reset`)
+        .catch(() => undefined);
+    }
+    await api.patch('/v1/tenant/modules/builder', { enabled: true });
     await patchOnboarding({
-      category: input.category,
-      completed: { business: true },
-      currentStep: 'theme',
+      blueprintKey: null,
+      installId: null,
+      completed: { template: true },
+      currentStep: 'domain',
     });
     revalidatePath('/onboarding');
     return ok;
@@ -88,61 +111,8 @@ export async function saveBusinessAction(input: {
   }
 }
 
-// Step 2 — Theme. Loads the catalog lazily (after modules are on) so the
-// initial page render — which happens before the business step enables the
-// module — never hits the gated endpoint.
-export async function loadThemeStepAction(): Promise<
-  WizardResult<{ themes: WizardThemeOption[]; currentThemeKey: string }>
-> {
-  try {
-    const [catalog, config] = await Promise.all([
-      api.get<{ themes: ThemePreset[] }>('/v1/sitebuilder/themes'),
-      api.get<{ themeKey: string }>('/v1/sitebuilder/config'),
-    ]);
-    return {
-      ok: true,
-      data: { themes: catalog.themes.map(toWizardTheme), currentThemeKey: config.themeKey },
-    };
-  } catch (err) {
-    return fail(err);
-  }
-}
+// ── Step 2 — Domain ──────────────────────────────────────────────────────────
 
-export async function applyThemeAction(themeKey: string): Promise<WizardResult> {
-  try {
-    await api.put('/v1/sitebuilder/config/theme', { themeKey });
-    await patchOnboarding({ completed: { theme: true }, currentStep: 'product' });
-    revalidatePath('/onboarding');
-    return ok;
-  } catch (err) {
-    return fail(err);
-  }
-}
-
-// Step 3 — Product. Creates the merchant's first product as `active` (the
-// create endpoint treats that as publish-now). Variants/pricing/media are
-// filled later from the product detail tabs.
-export async function createFirstProductAction(input: {
-  title: string;
-  description?: string;
-}): Promise<WizardResult> {
-  try {
-    const title = input.title.trim();
-    if (!title) return { ok: false, error: 'Product title is required.' };
-
-    const description = input.description?.trim();
-    const body: Record<string, unknown> = { title, status: 'active' };
-    if (description) body.description = description;
-    await api.post('/v1/commerce/products', body);
-    await patchOnboarding({ completed: { product: true }, currentStep: 'domain' });
-    revalidatePath('/onboarding');
-    return ok;
-  } catch (err) {
-    return fail(err);
-  }
-}
-
-// Step 4 — Domain. Live check + commit of the storefront subdomain.
 export async function checkSlugAction(slug: string): Promise<WizardResult<SlugAvailability>> {
   try {
     const data = await api.get<SlugAvailability>(
@@ -165,9 +135,8 @@ export async function saveSlugAction(slug: string): Promise<WizardResult> {
   }
 }
 
-// Step 4 — Domain (purchased path). Marks the domain step complete when the
-// merchant purchases a domain through the onboarding flow instead of picking
-// a .sparx.zone subdomain.
+// Domain (purchased path). Marks the domain step complete when the tenant buys a
+// domain through onboarding instead of picking a .sparx.zone subdomain.
 export async function completeDomainStepAction(): Promise<WizardResult> {
   try {
     await patchOnboarding({ completed: { domain: true }, currentStep: 'payments' });
@@ -191,20 +160,10 @@ export async function getPrimaryPropertyAction(): Promise<WizardResult<Property>
   }
 }
 
-// Advance/rewind without completing a step (Back, or Skip-for-now).
-export async function goToStepAction(step: OnboardingStepKey): Promise<WizardResult> {
-  try {
-    await patchOnboarding({ currentStep: step });
-    revalidatePath('/onboarding');
-    return ok;
-  } catch (err) {
-    return fail(err);
-  }
-}
+// ── Step 3 — Payments ────────────────────────────────────────────────────────
 
-// Stripe Connect OAuth — returns the Stripe OAuth URL so the client can
-// navigate the merchant there. The redirect_uri points back to this app's
-// /onboarding/stripe-callback route handler.
+// Stripe Connect OAuth — returns the Stripe OAuth URL so the client can navigate
+// the merchant there. The redirect_uri points back to /onboarding/stripe-callback.
 export async function startStripeConnectAction(): Promise<WizardResult<{ url: string }>> {
   try {
     const callbackUrl = `${process.env.NEXT_PUBLIC_DASHBOARD_URL ?? ''}/onboarding/stripe-callback`;
@@ -217,20 +176,75 @@ export async function startStripeConnectAction(): Promise<WizardResult<{ url: st
   }
 }
 
-// Step 5 / finish — marks the wizard finished and lands on the Done screen.
-// `finishedAt` flips the welcome checklist to its completed state; we leave
-// `dismissed` false so the day-0+ banner still nudges any remaining work.
-export async function finishOnboardingAction(input: {
+// Advance from payments to the Launch step. Marks payments complete only when
+// Stripe is actually connected (it's optional to launch).
+export async function completePaymentsAction(input: {
   paymentsConnected?: boolean;
 }): Promise<WizardResult> {
   try {
     await patchOnboarding({
       completed: input.paymentsConnected ? { payments: true } : undefined,
-      currentStep: 'done',
-      finishedAt: new Date().toISOString(),
+      currentStep: 'launch',
     });
+    revalidatePath('/onboarding');
+    return ok;
+  } catch (err) {
+    return fail(err);
+  }
+}
+
+// ── Step 4 — Launch ──────────────────────────────────────────────────────────
+
+// Mint a short-lived site-preview token so the Launch step's iframe can render
+// the tenant's DRAFT site (the installed-but-unpublished template). Requires the
+// Builder module, which the template install turned on.
+export async function getPreviewTokenAction(): Promise<WizardResult<{ token: string }>> {
+  try {
+    const data = await api.get<{ token: string; expires_in: number }>('/v1/builder/preview-token');
+    return { ok: true, data: { token: data.token } };
+  } catch (err) {
+    return fail(err);
+  }
+}
+
+// Publish the chosen template — the one-tap "Launch". Goes live (publishes every
+// page, product, the layout, and the theme the install created), then marks
+// onboarding finished. After this the site is public at {slug}.sparx.zone.
+export async function publishAndFinishAction(installId: string): Promise<WizardResult> {
+  try {
+    await api.post(`/v1/blueprints/installs/${encodeURIComponent(installId)}/go-live`);
+    await patchOnboarding({ finishedAt: new Date().toISOString() });
     revalidatePath('/');
     revalidatePath('/welcome');
+    revalidatePath('/onboarding');
+    return ok;
+  } catch (err) {
+    return fail(err);
+  }
+}
+
+// Finish onboarding WITHOUT publishing — the "start from scratch" finish and the
+// "I'll publish later" escape hatch. `finishedAt` flips the welcome checklist to
+// its completed state; we leave `dismissed` false so the day-0+ banner still
+// nudges any remaining work.
+export async function finishOnboardingAction(): Promise<WizardResult> {
+  try {
+    await patchOnboarding({ finishedAt: new Date().toISOString() });
+    revalidatePath('/');
+    revalidatePath('/welcome');
+    revalidatePath('/onboarding');
+    return ok;
+  } catch (err) {
+    return fail(err);
+  }
+}
+
+// ── Navigation ───────────────────────────────────────────────────────────────
+
+// Advance/rewind without completing a step (Back, or Skip-for-now).
+export async function goToStepAction(step: OnboardingStepKey): Promise<WizardResult> {
+  try {
+    await patchOnboarding({ currentStep: step });
     revalidatePath('/onboarding');
     return ok;
   } catch (err) {

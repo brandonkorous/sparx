@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import posthog from 'posthog-js';
 import { ATTR_COOKIES, deserializeSnapshot } from '@sparx/attribution';
@@ -49,6 +49,7 @@ function identifyWithFirstTouch(userId: string): void {
 
 export default function SignUpPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
 
@@ -64,7 +65,12 @@ export default function SignUpPage() {
         return;
       }
       if (result.userId) identifyWithFirstTouch(result.userId);
-      router.push('/onboarding');
+      // Carry the marketplace funnel's template pick into onboarding so a referred
+      // visitor lands on their chosen template pre-selected (docs/60 Ph5).
+      const blueprint = searchParams.get('blueprint');
+      router.push(
+        blueprint ? `/onboarding?blueprint=${encodeURIComponent(blueprint)}` : '/onboarding'
+      );
       router.refresh();
     });
   }

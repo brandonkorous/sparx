@@ -32,7 +32,26 @@ export type Align = z.infer<typeof Align>;
 export const AppearancePolicy = z.enum(['light-only', 'dark-only', 'auto', 'toggle']);
 export type AppearancePolicy = z.infer<typeof AppearancePolicy>;
 
-export const ThemeKey = z.enum(['apex', 'industrial', 'drift', 'market', 'fleet', 'drop']);
+export const ThemeKey = z.enum([
+  'apex',
+  'industrial',
+  'drift',
+  'market',
+  'fleet',
+  'drop',
+  // Marketplace theme catalog (docs/60) — must stay in lockstep with
+  // @sparx/site-themes' ThemeKey union (the preset each slug resolves to).
+  'noir',
+  'sage',
+  'coast',
+  'ember',
+  'mono',
+  'bloom',
+  'meridian',
+  'terra',
+  'pulse',
+  'linen',
+]);
 export type ThemeKey = z.infer<typeof ThemeKey>;
 
 export const LayoutSlot = z.enum(['header', 'footer', 'announcement']);

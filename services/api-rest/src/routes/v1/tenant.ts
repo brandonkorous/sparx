@@ -187,7 +187,11 @@ const ModulePatch = z.object({
   enabled: z.boolean(),
 });
 
-const ONBOARDING_STEPS = ['business', 'theme', 'product', 'domain', 'payments', 'done'] as const;
+// Template-first onboarding (docs/15): pick a blueprint → domain → payments →
+// preview & launch. The Theme + Product steps are absorbed by the chosen template
+// (it ships theme, brand, products, and content). `launch` is terminal — the
+// preview-and-publish screen.
+const ONBOARDING_STEPS = ['template', 'domain', 'payments', 'launch'] as const;
 type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
 const OnboardingPatch = z.object({
@@ -196,11 +200,14 @@ const OnboardingPatch = z.object({
   finishedAt: z.string().datetime().nullable().optional(),
   currentStep: z.enum(ONBOARDING_STEPS).optional(),
   category: z.string().max(63).nullable().optional(),
+  // The chosen blueprint + its install row, tracked so the Launch step can
+  // publish (go-live) deterministically and the flow resumes mid-onboarding.
+  // Both null on the "start from scratch" path (no blueprint installed).
+  blueprintKey: z.string().max(64).nullable().optional(),
+  installId: z.string().uuid().nullable().optional(),
   completed: z
     .object({
-      business: z.boolean().optional(),
-      theme: z.boolean().optional(),
-      product: z.boolean().optional(),
+      template: z.boolean().optional(),
       domain: z.boolean().optional(),
       payments: z.boolean().optional(),
     })
@@ -208,9 +215,7 @@ const OnboardingPatch = z.object({
 });
 
 interface OnboardingCompleted {
-  business: boolean;
-  theme: boolean;
-  product: boolean;
+  template: boolean;
   domain: boolean;
   payments: boolean;
 }
@@ -221,13 +226,13 @@ interface OnboardingState {
   finishedAt: string | null;
   currentStep: OnboardingStep;
   category: string | null;
+  blueprintKey: string | null;
+  installId: string | null;
   completed: OnboardingCompleted;
 }
 
 const DEFAULT_COMPLETED: OnboardingCompleted = {
-  business: false,
-  theme: false,
-  product: false,
+  template: false,
   domain: false,
   payments: false,
 };
@@ -236,8 +241,10 @@ const DEFAULT_ONBOARDING: OnboardingState = {
   dismissed: false,
   startedAt: null,
   finishedAt: null,
-  currentStep: 'business',
+  currentStep: 'template',
   category: null,
+  blueprintKey: null,
+  installId: null,
   completed: DEFAULT_COMPLETED,
 };
 
@@ -257,12 +264,12 @@ function readOnboarding(settings: unknown): OnboardingState {
     finishedAt: typeof rec.finishedAt === 'string' ? rec.finishedAt : null,
     currentStep: ONBOARDING_STEPS.includes(rec.currentStep as OnboardingStep)
       ? (rec.currentStep as OnboardingStep)
-      : 'business',
+      : 'template',
     category: typeof rec.category === 'string' ? rec.category : null,
+    blueprintKey: typeof rec.blueprintKey === 'string' ? rec.blueprintKey : null,
+    installId: typeof rec.installId === 'string' ? rec.installId : null,
     completed: {
-      business: completedRaw.business === true,
-      theme: completedRaw.theme === true,
-      product: completedRaw.product === true,
+      template: completedRaw.template === true,
       domain: completedRaw.domain === true,
       payments: completedRaw.payments === true,
     },
@@ -522,10 +529,10 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       },
       {
         id: 'theme' as const,
-        title: 'Pick a theme',
-        description: 'Choose and customize your storefront look in Site Builder.',
-        done: state.completed.theme,
-        cta: { label: 'Open Site Builder', href: '/sitebuilder/design' },
+        title: 'Choose a template',
+        description: 'Start from a complete, themed template — or design your own in the Builder.',
+        done: state.completed.template,
+        cta: { label: 'Browse templates', href: '/marketplace/blueprints' },
       },
       {
         id: 'domain' as const,

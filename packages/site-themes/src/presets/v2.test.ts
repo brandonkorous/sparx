@@ -5,9 +5,26 @@ import type { CompiledColorTokensV2 } from '../v2/types';
 import { DEFAULT_THEME_KEY_V2, getThemePresetV2, THEME_DEFAULTS_V2, THEME_KEYS_V2 } from './v2';
 
 describe('v2 preset catalog', () => {
-  it('ships all six themes with complete light + dark color sets', () => {
+  it('ships the full theme catalog with complete light + dark color sets', () => {
     expect(Object.keys(THEME_DEFAULTS_V2).sort()).toEqual(
-      ['apex', 'drift', 'drop', 'fleet', 'industrial', 'market'].sort()
+      [
+        'apex',
+        'drift',
+        'drop',
+        'fleet',
+        'industrial',
+        'market',
+        'noir',
+        'sage',
+        'coast',
+        'ember',
+        'mono',
+        'bloom',
+        'meridian',
+        'terra',
+        'pulse',
+        'linen',
+      ].sort()
     );
     for (const key of THEME_KEYS_V2) {
       const p = THEME_DEFAULTS_V2[key];

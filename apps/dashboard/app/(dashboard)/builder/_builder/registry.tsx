@@ -427,7 +427,11 @@ const DEFS: ComponentDef[] = [
       // canvas wrapper, since Heading isn't leafStylesByClass).
       const level = ((node.props.level as string) ?? 'h2') as 'h1' | 'h2' | 'h3';
       const size = node.props.size === 'display' ? 'display' : undefined;
-      const text = bound ? firstString(value, '—') : firstString(node.props.text, 'Heading');
+      // Graceful empty (mirrors the live renderer): a bound heading whose value
+      // resolves empty falls back to its authored static text, not a bare dash, so
+      // preview == production for a hero on a site with no records yet.
+      const fallback = firstString(node.props.text, 'Heading');
+      const text = bound ? firstString(value, fallback) : fallback;
       return (
         <Heading level={level} size={size}>
           {text}
@@ -459,7 +463,10 @@ const DEFS: ComponentDef[] = [
     defaults: { props: { variant: 'body', text: 'Some text' } },
     renderLeaf: ({ node, value, bound }) => {
       const variant = ((node.props.variant as string) ?? 'body') as 'body' | 'eyebrow' | 'meta';
-      const text = bound ? firstString(value, '—') : firstString(node.props.text, 'Some text');
+      // Graceful empty (mirrors the live renderer): bound-but-empty falls back to
+      // the authored static text rather than a bare dash.
+      const fallback = firstString(node.props.text, 'Some text');
+      const text = bound ? firstString(value, fallback) : fallback;
       return <Text variant={variant}>{text}</Text>;
     },
   },

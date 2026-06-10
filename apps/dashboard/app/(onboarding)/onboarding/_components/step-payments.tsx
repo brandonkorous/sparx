@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Badge, Button, Heading, Stack, Text } from '@sparx/ui';
 import { CheckCircle, CreditCard } from 'lucide-react';
-import { finishOnboardingAction, startStripeConnectAction } from '../_lib/actions';
+import { completePaymentsAction, startStripeConnectAction } from '../_lib/actions';
 import type { StepNav } from './onboarding-wizard';
 
 export function StepPayments({ nav }: { nav: StepNav }) {
@@ -33,7 +33,7 @@ export function StepPayments({ nav }: { nav: StepNav }) {
   function onFinish() {
     setError(null);
     startFinish(async () => {
-      const res = await finishOnboardingAction({ paymentsConnected: stripeConnected });
+      const res = await completePaymentsAction({ paymentsConnected: stripeConnected });
       if (res.ok) nav.onNext();
       else setError(res.error);
     });
@@ -99,7 +99,7 @@ export function StepPayments({ nav }: { nav: StepNav }) {
           Back
         </Button>
         <Button color="module" onClick={onFinish} disabled={pending} loading={finishPending}>
-          {stripeConnected ? 'Finish setup' : 'Skip for now'}
+          {stripeConnected ? 'Continue' : 'Skip for now'}
         </Button>
       </Stack>
     </Stack>

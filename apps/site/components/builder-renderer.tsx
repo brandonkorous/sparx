@@ -274,7 +274,12 @@ function renderLeaf(
       const size = str('size') === 'display' ? 'display' : undefined;
       return (
         <Heading level={level} size={size} className={leafClass}>
-          {bound ? asText(value) : str('text')}
+          {/* Graceful empty: a bound heading whose value resolves empty (e.g. a
+              hero bound to the latest post on a site with none) falls back to its
+              authored static text instead of rendering a blank <h1>. Matches the
+              Button/Stat leaves, which already prefer the bound value then the
+              static prop. */}
+          {(bound ? asText(value) : '') || str('text')}
         </Heading>
       );
     }
@@ -282,7 +287,8 @@ function renderLeaf(
       const variant = (str('variant') || 'body') as 'body' | 'eyebrow' | 'meta';
       return (
         <Text variant={variant} className={leafClass}>
-          {bound ? asText(value) : str('text')}
+          {/* Graceful empty (see Heading): bound-but-empty falls back to static. */}
+          {(bound ? asText(value) : '') || str('text')}
         </Text>
       );
     }
