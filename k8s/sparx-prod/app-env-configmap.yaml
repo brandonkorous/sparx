@@ -70,3 +70,13 @@ data:
   # via `bootstrap app-env`. Empty → the toggle shows "not configured yet".
   VAPID_PUBLIC_KEY: 'BBpWC4B-khWME-4XJO2ubCXo9vqZYEMIz3b21Ef2J3VruF6bldk7u8V5a4urFPG5V6uEZlRlSipfjrUJVzBMcvs'
   LOG_LEVEL: info
+  # Platform dogfood tenant (docs/80 §2) — Sparx/WizeWorks running as a
+  # tenant-of-record. SPARX_PLATFORM_TENANT_ID is the IMMUTABLE tenant UUID allowed
+  # to claim a reserved brand slug (the carve-out in api-rest PATCH /v1/tenant/slug).
+  # Keyed on the id so it stays valid across the korous-store → wizeworks rename.
+  # FILL with the korous-store tenant id BEFORE doing the rename; empty → carve-out
+  # off (safe default — reserved slugs blocked for everyone).
+  SPARX_PLATFORM_TENANT_ID: ''
+  # The slug the apps/web /early waitlist writes into
+  # (POST /v1/public/newsletter?tenant=…) — the final brand slug after the rename.
+  SPARX_PLATFORM_TENANT_SLUG: wizeworks

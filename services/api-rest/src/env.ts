@@ -35,14 +35,13 @@ const EnvSchema = z
     // independently. Optional in dev; unset → the endpoint returns 401.
     SPARX_INTERNAL_ACQUISITION_TOKEN: z.string().min(16).optional(),
     // The platform's OWN tenant (docs/80 §2 dogfooding) — Sparx/WizeWorks running
-    // as a tenant-of-record. It is the ONE tenant permitted to claim a reserved
+    // as a tenant-of-record. Its tenant ID is the ONE allowed to claim a reserved
     // BRAND slug (e.g. `wizeworks`) via PATCH /v1/tenant/slug — the reservation
-    // exists to stop OUTSIDE tenants from squatting Sparx/WizeWorks subdomains, not
-    // the platform itself. Matched against the requesting tenant's CURRENT slug, so
-    // it is ops-controlled and never user-settable. Unset → no carve-out (every
-    // tenant is blocked from reserved slugs, the default). Also the tenant the
-    // apps/web /early waitlist writes into.
-    SPARX_PLATFORM_TENANT_SLUG: z.string().optional(),
+    // stops OUTSIDE tenants from squatting Sparx/WizeWorks subdomains, not the
+    // platform itself. Keyed on the immutable ID (not the slug) so the value stays
+    // valid across the very rename it authorizes. Ops-controlled, never
+    // user-settable. Unset → no carve-out (reserved slugs blocked for everyone).
+    SPARX_PLATFORM_TENANT_ID: z.string().optional(),
     // Optional: when set, the Pub/Sub publisher uses Google Cloud Pub/Sub;
     // otherwise it logs to stdout and is a no-op (dev default). The publisher
     // resolves a topic per `EventType` (topic name == event type) — there is

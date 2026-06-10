@@ -160,17 +160,12 @@ const SlugBody = z.object({ slug: SlugSchema });
 
 // The platform's OWN tenant (docs/80 §2) may claim a reserved BRAND slug — the
 // reservation stops OUTSIDE tenants from squatting Sparx/WizeWorks subdomains, not
-// the platform itself. Designated by SPARX_PLATFORM_TENANT_SLUG (ops-set, never
-// user-settable) and matched against the requesting tenant's CURRENT slug, so a
-// self-serve tenant can never trip the carve-out. Unset env → always false.
-async function isPlatformTenant(tenantId: string): Promise<boolean> {
-  const platformSlug = env.SPARX_PLATFORM_TENANT_SLUG;
-  if (!platformSlug) return false;
-  const self = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { slug: true },
-  });
-  return self?.slug === platformSlug;
+// the platform itself. Designated by SPARX_PLATFORM_TENANT_ID (ops-set, never
+// user-settable). Keyed on the IMMUTABLE tenant id — stable across the very rename
+// it authorizes — so the env value never changes as korous-store → wizeworks.
+// Unset env → always false (reserved slugs blocked for everyone, the default).
+function isPlatformTenant(tenantId: string): boolean {
+  return Boolean(env.SPARX_PLATFORM_TENANT_ID) && tenantId === env.SPARX_PLATFORM_TENANT_ID;
 }
 
 // Three deterministic suggestions when a desired slug is taken/invalid.
@@ -363,7 +358,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     if (!SLUG_RE.test(normalized) || normalized.length < 3 || normalized.length > 63) {
       return ok({ available: false, reason: 'invalid', suggestions: slugSuggestions(normalized) });
     }
-    if (RESERVED_SLUGS.has(normalized) && !(await isPlatformTenant(auth.tenantId))) {
+    if (RESERVED_SLUGS.has(normalized) && !isPlatformTenant(auth.tenantId)) {
       return ok({ available: false, reason: 'reserved', suggestions: slugSuggestions(normalized) });
     }
     const existing = await prisma.tenant.findUnique({
@@ -381,7 +376,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     const auth = requireRole(request, 'admin');
     const { slug } = SlugBody.parse(request.body);
     const normalized = slug.trim().toLowerCase();
-    if (RESERVED_SLUGS.has(normalized) && !(await isPlatformTenant(auth.tenantId))) {
+    if (RESERVED_SLUGS.has(normalized) && !isPlatformTenant(auth.tenantId)) {
       throw conflict('That subdomain is reserved.', 'slug');
     }
     const existing = await prisma.tenant.findUnique({

@@ -39,6 +39,14 @@ spec:
           ports:
             - name: http
               containerPort: 3000
+          # Non-secret shared config. The marketing app now makes SERVER-SIDE calls
+          # to api-rest — the marketplace catalog and the /early waitlist — so it
+          # needs the in-cluster SPARX_API_REST_URL + SPARX_PLATFORM_TENANT_SLUG.
+          # Without this, those fetches fall back to http://localhost:3100 and fail
+          # in prod. (Secrets stay out — the marketing app needs none.)
+          envFrom:
+            - configMapRef:
+                name: sparx-app-env
           env:
             - name: NODE_ENV
               value: production
