@@ -184,6 +184,14 @@ module "secrets" {
     "godaddy-api-secret-prod",
     "postal-api-key",
     "cloudflare-api-token",
+    # Internal service-to-service shared secret (docs/16 §2.5). Both api-rest and
+    # the CRM/commerce CronJob pods read it from sparx-app-secrets to auth the
+    # /internal/* cron endpoints. Machine-to-machine; value added out-of-band.
+    # NOTE: auth-database-url, sparx-internal-jwt-secret, and
+    # sparx-internal-acquisition-token also live in Secret Manager but predate
+    # this list (created out-of-band) — reconcile them in via `terraform import`
+    # in a follow-up so the list is the complete source of truth.
+    "sparx-internal-cron-token",
     # Typesense admin/search API key. commerce-indexer reads it via Secret
     # Manager → Cloud Run env binding. Rotated by the operator manually
     # (Typesense doesn't have rotation hooks).

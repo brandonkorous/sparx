@@ -209,6 +209,7 @@ jobs:
             better-auth-secret
             sparx-internal-jwt-secret
             sparx-internal-acquisition-token
+            sparx-internal-cron-token
             stripe-secret-key
             stripe-webhook-secret
             godaddy-api-key-ote
