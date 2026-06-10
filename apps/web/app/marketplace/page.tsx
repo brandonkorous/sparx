@@ -1,26 +1,9 @@
-import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
-import { ComingSoon } from '@/components/marketing/coming-soon';
+// The public marketplace moved to /market (docs/60 Phase 5) so the sparx.market
+// vanity domain (Caddy 301 → sparx.works/market) lands directly on it. This old
+// route permanently redirects to keep any external links working.
 
-export const metadata: Metadata = {
-  title: 'Marketplace — Sparx',
-  description:
-    'Themes, plugins, and integrations from the Sparx community. The marketplace lights up with v1.1, after the billing pipeline is stress-tested in the wild.',
-  alternates: { canonical: '/marketplace' },
-  robots: { index: false },
-};
+import { permanentRedirect } from 'next/navigation';
 
-export default function MarketplacePage() {
-  return (
-    <>
-      <Nav />
-      <ComingSoon
-        eyebrow="Platform"
-        title="Marketplace"
-        description="Themes, plugins, and connectors from the Sparx community. Hosted on sparx.market once the billing and revenue-share pipeline is stress-tested in production — targeted for v1.1."
-      />
-      <Footer />
-    </>
-  );
+export default function MarketplaceRedirect(): never {
+  permanentRedirect('/market');
 }

@@ -1,26 +1,9 @@
-import type { Metadata } from 'next';
-import { Nav } from '@/components/marketing/nav';
-import { Footer } from '@/components/marketing/footer';
-import { ComingSoon } from '@/components/marketing/coming-soon';
+// Themes are now a marketplace category (docs/60 Phase 5). This standalone route
+// permanently redirects to the marketplace's themes browse (a coming-soon teaser
+// until the themes catalog is seeded in Phase 4).
 
-export const metadata: Metadata = {
-  title: 'Themes — Sparx',
-  description:
-    'Curated themes for every commerce vertical — apparel, food, wholesale, services, content. Every theme works on phone and desktop, headless if you want.',
-  alternates: { canonical: '/themes' },
-  robots: { index: false },
-};
+import { permanentRedirect } from 'next/navigation';
 
-export default function ThemesPage() {
-  return (
-    <>
-      <Nav />
-      <ComingSoon
-        eyebrow="Platform"
-        title="Themes"
-        description="Curated themes for every commerce vertical — apparel, food, wholesale, services, content. Each theme works on phone and desktop, supports the full Sparx module set, and stays headless-friendly. The first batch of free themes ships with v1.0."
-      />
-      <Footer />
-    </>
-  );
+export default function ThemesRedirect(): never {
+  permanentRedirect('/market/themes');
 }
