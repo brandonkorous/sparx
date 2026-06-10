@@ -100,9 +100,16 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: Component,
     accent: '#14b8a6',
     tagline: 'Reusable building blocks for the Builder canvas.',
-    status: 'coming-soon',
-    facets: [],
-    sorts: [],
+    status: 'live',
+    facets: [
+      { key: 'group', label: 'Group', type: 'multi' },
+      { key: 'surface', label: 'Surface', type: 'multi' },
+    ],
+    sorts: [
+      { key: 'popular', label: 'Most popular' },
+      { key: 'newest', label: 'Newest' },
+      { key: 'name', label: 'Name (A–Z)' },
+    ],
   },
 ];
 

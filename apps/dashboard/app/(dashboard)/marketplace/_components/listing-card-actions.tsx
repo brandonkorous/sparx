@@ -8,6 +8,7 @@ import type { MarketplaceListing } from '../_types';
 import { BlueprintCardActions } from './blueprint-card-actions';
 import { ThemeCardActions } from './theme-card-actions';
 import { IntegrationCardActions } from './integration-card-actions';
+import { ComponentCardActions } from './component-card-actions';
 
 export function ListingCardActions({
   item,
@@ -37,6 +38,9 @@ export function ListingCardActions({
         canInstall={canInstall}
       />
     );
+  }
+  if (item.category === 'components') {
+    return <ComponentCardActions componentSlug={item.slug} />;
   }
   return null;
 }

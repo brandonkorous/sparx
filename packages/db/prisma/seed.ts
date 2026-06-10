@@ -229,9 +229,32 @@ async function seedMarketplaceCatalog(): Promise<void> {
       });
     }
 
+    // Components — slug = builder component `type`; tree NULL (the node tree lives
+    // in the in-code PALETTE, resolved by type when copied into a tenant component).
+    for (const cmp of SPARX_COMPONENTS) {
+      const shared = {
+        name: cmp.name,
+        tagline: cmp.tagline.slice(0, 255),
+        description: cmp.description,
+        group: cmp.group,
+        kind: cmp.kind,
+        surfaces: cmp.surfaces,
+        sortWeight: cmp.sortWeight,
+        status: 'published',
+        visibility: 'public',
+        publisherId: publisher.id,
+      };
+      await tx.marketplaceComponent.upsert({
+        where: { slug: cmp.slug },
+        update: shared,
+        create: { slug: cmp.slug, publishedAt: new Date(), ...shared },
+      });
+    }
+
     console.log(
       `Seeded marketplace catalog: ${listBlueprints().length} blueprint(s), ` +
-        `${SPARX_THEMES.length} theme(s), ${SPARX_INTEGRATIONS.length} integration(s).`
+        `${SPARX_THEMES.length} theme(s), ${SPARX_INTEGRATIONS.length} integration(s), ` +
+        `${SPARX_COMPONENTS.length} component(s).`
     );
   });
 }
@@ -324,6 +347,191 @@ const SPARX_INTEGRATIONS: {
     description:
       'Enterprise-grade tax determination and compliance across thousands of jurisdictions — for sellers whose tax footprint has outgrown a single state.',
     sortWeight: 38,
+  },
+];
+
+// The Sparx-core COMPONENT catalog (docs/60 §6/§7, Marketplace Components). A
+// curated selection of the builder's system components (the in-code PALETTE
+// registry) — each row's `slug` IS the component `type`, so the dashboard "Add"
+// action deep-links to /builder/components/<type> (where the existing "Copy to my
+// components" flow clones it into a tenant BuilderComponent, docs/53). The node
+// `tree` is NULL for these Sparx-core rows (resolved by type at copy time, like
+// blueprints/themes); copy is curated marketplace metadata, kept inline so the
+// catalog row needs no dependency on the dashboard registry. Low-level primitives
+// (Divider, Stack, Icon) are intentionally omitted — the marketplace surfaces
+// composed, reusable blocks, not substrate.
+const SPARX_COMPONENTS: {
+  slug: string;
+  name: string;
+  group: string;
+  kind: string;
+  surfaces: string[];
+  tagline: string;
+  description: string;
+  sortWeight: number;
+}[] = [
+  {
+    slug: 'EditorialSection',
+    name: 'Editorial Section',
+    group: 'Content & media',
+    kind: 'Section',
+    surfaces: ['page'],
+    tagline: 'A long-form marketing block — eyebrow, headline, body, and CTA.',
+    description:
+      'A flexible editorial band for landing pages: an optional eyebrow, a headline, body copy, and a call-to-action, with sensible spacing and rhythm out of the box.',
+    sortWeight: 60,
+  },
+  {
+    slug: 'FeatureGrid',
+    name: 'Feature Grid',
+    group: 'Content & media',
+    kind: 'Block',
+    surfaces: ['page'],
+    tagline: 'A responsive grid of numbered feature cards.',
+    description:
+      'Show off capabilities or selling points in a clean, responsive grid of numbered cards — collapses to a single column on phones.',
+    sortWeight: 56,
+  },
+  {
+    slug: 'FAQ',
+    name: 'FAQ',
+    group: 'Content & media',
+    kind: 'Block',
+    surfaces: ['page'],
+    tagline: 'An expandable list of question-and-answer pairs.',
+    description:
+      'Answer common questions inline with an accessible, expandable accordion — great for product pages, pricing, and support.',
+    sortWeight: 52,
+  },
+  {
+    slug: 'Carousel',
+    name: 'Carousel',
+    group: 'Layout',
+    kind: 'Block',
+    surfaces: ['page', 'site'],
+    tagline: 'A rotating slideshow — autoplay, arrows, and dots.',
+    description:
+      'Each child becomes a slide, with autoplay, arrow controls, and dot indicators. Use it for testimonials, hero rotations, or product highlights.',
+    sortWeight: 48,
+  },
+  {
+    slug: 'Stat',
+    name: 'Stat',
+    group: 'Content & media',
+    kind: 'Widget',
+    surfaces: ['page'],
+    tagline: 'A large headline number with a label.',
+    description:
+      'A single, bold metric — a big number and a short label. Drop a few into a row to make an at-a-glance proof strip.',
+    sortWeight: 40,
+  },
+  {
+    slug: 'Card',
+    name: 'Card',
+    group: 'Layout',
+    kind: 'Block',
+    surfaces: ['page', 'site'],
+    tagline: 'A bordered surface that groups related content.',
+    description:
+      'A versatile container that groups related content on a bordered, optionally module-striped surface. The building block for grids and feature rows.',
+    sortWeight: 44,
+  },
+  {
+    slug: 'Video',
+    name: 'Video',
+    group: 'Content & media',
+    kind: 'Widget',
+    surfaces: ['page'],
+    tagline: 'An embedded video.',
+    description: 'Embed a video by URL with a responsive, aspect-correct frame.',
+    sortWeight: 36,
+  },
+  {
+    slug: 'Map',
+    name: 'Map',
+    group: 'Content & media',
+    kind: 'Widget',
+    surfaces: ['page'],
+    tagline: 'An embedded map for a place or search.',
+    description:
+      'Show a location or search result on an embedded map — handy for store and service pages.',
+    sortWeight: 34,
+  },
+  {
+    slug: 'Signup',
+    name: 'Signup Form',
+    group: 'Data-aware',
+    kind: 'Widget',
+    surfaces: ['page', 'site'],
+    tagline: 'An email-capture form wired to your CRM.',
+    description:
+      'Capture emails straight into your CRM as subscribers. Drop it in a footer or a landing section and the submissions just flow into Sparx.',
+    sortWeight: 58,
+  },
+  {
+    slug: 'BuyBox',
+    name: 'Buy Box',
+    group: 'Data-aware',
+    kind: 'Block',
+    surfaces: ['page'],
+    tagline: 'The complete purchase block — price, variants, quantity, add-to-cart.',
+    description:
+      'Everything a shopper needs to buy: live price, variant pickers, a quantity stepper, and an add-to-cart button — all bound to the product record.',
+    sortWeight: 54,
+  },
+  {
+    slug: 'ProductForm',
+    name: 'Product Form',
+    group: 'Data-aware',
+    kind: 'Block',
+    surfaces: ['page'],
+    tagline: 'Wraps buy-box atoms in a shared variant + quantity context.',
+    description:
+      'Compose your own purchase UI: ProductForm provides the shared variant + quantity state that VariantPicker, Quantity, and Add-to-Cart read from.',
+    sortWeight: 42,
+  },
+  {
+    slug: 'PriceTag',
+    name: 'Price Tag',
+    group: 'Data-aware',
+    kind: 'Widget',
+    surfaces: ['page'],
+    tagline: "Displays a product's price, bound to the record.",
+    description:
+      "Renders a product or variant's price with currency formatting, bound to the bound record.",
+    sortWeight: 32,
+  },
+  {
+    slug: 'ImageDisplay',
+    name: 'Image Display',
+    group: 'Data-aware',
+    kind: 'Widget',
+    surfaces: ['page'],
+    tagline: "Renders an image or gallery from a record's media field.",
+    description:
+      "Binds to a record's media field and renders a single image or a gallery — the data-aware counterpart to the static Image component.",
+    sortWeight: 30,
+  },
+  {
+    slug: 'NavMenu',
+    name: 'Navigation Menu',
+    group: 'Site',
+    kind: 'Widget',
+    surfaces: ['site'],
+    tagline: 'A navigation menu bound to a site menu or hand-typed links.',
+    description:
+      'Your site navigation — bound to a managed site menu or hand-typed links. Lives in the site layout so it renders on every page.',
+    sortWeight: 38,
+  },
+  {
+    slug: 'SocialLinks',
+    name: 'Social Links',
+    group: 'Site',
+    kind: 'Widget',
+    surfaces: ['site'],
+    tagline: 'A row of social-profile links from your site identity.',
+    description: 'A tidy row of social-profile icons pulled from your site identity settings.',
+    sortWeight: 28,
   },
 ];
 
