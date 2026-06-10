@@ -45,6 +45,7 @@ import domainCheckRoutes from './routes/internal/domain-check.js';
 import crmCronRoutes from './routes/internal/crm-cron.js';
 import commerceCronRoutes from './routes/internal/commerce-cron.js';
 import emailTriggerRoutes from './routes/internal/email-triggers.js';
+import acquisitionReportRoutes from './routes/internal/acquisition-report.js';
 import contentTypeRoutes from './routes/v1/content/types.js';
 import entryRoutes from './routes/v1/content/entries.js';
 import publishRoutes from './routes/v1/content/publish.js';
@@ -498,6 +499,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(crmCronRoutes);
   await app.register(commerceCronRoutes);
   await app.register(emailTriggerRoutes);
+  await app.register(acquisitionReportRoutes);
 
   // v1 surface. Each route file owns its own URL prefix so this central
   // map is easy to skim. Adding a new route group is a one-line registration.

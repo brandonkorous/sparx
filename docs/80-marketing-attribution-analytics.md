@@ -330,6 +330,15 @@ attribution?: {
 - **Channel ROI:** cost (paid spend, imported) vs LTV (Stripe). The one report that reallocates the
   next launch budget.
 
+**Shipped (interim):** the acquisition funnel above is exposed today as a cross-tenant **internal
+endpoint** — `GET /internal/acquisition/summary` (JSON, or `?format=csv`; optional `since`/`until`
+window) — aggregating `tenants.acquisition_*` by channel / source / campaign with a `with_billing`
+conversion proxy (`stripeCustomerId` set). It is **not** a dashboard page: Sparx has no cross-tenant
+operator login yet (see [docs/16 §2.4](16-auth-security.md)), so the report runs as a
+System/Internal principal behind a shared-secret header (`X-Sparx-Internal-Acquisition-Token`,
+[docs/16 §2.5](16-auth-security.md)). A real launch-day operator console lands when the platform-operator
+auth tier is built.
+
 ## 11. Tenant-level use (product feature)
 
 ### 11.1 Reports

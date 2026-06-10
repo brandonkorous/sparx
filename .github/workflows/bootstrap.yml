@@ -208,6 +208,7 @@ jobs:
             redis-url
             better-auth-secret
             sparx-internal-jwt-secret
+            sparx-internal-acquisition-token
             stripe-secret-key
             stripe-webhook-secret
             godaddy-api-key-ote

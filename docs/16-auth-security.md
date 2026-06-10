@@ -1,8 +1,8 @@
 # Sparx Platform — Authentication, Multi-Tenancy & Security
 
-**Version:** 2.1
+**Version:** 2.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-06-10
 
 ---
 
@@ -37,11 +37,21 @@ Rolling auth primitives from scratch — password hashing, token rotation, MFA, 
 
 ---
 
-## 2. Auth Layers
+## 2. Auth Layers — the identity tier model
 
-Sparx has two distinct user populations requiring auth:
+Sparx authenticates **five distinct kinds of principal**, each with its own identity store, isolation boundary, and session mechanism. Conflating any two of them is a security bug — a tenant customer is not a tenant staff member, and neither is a WizeWorks operator. The tiers:
 
-### Layer 1 — Tenant Staff (Platform Users)
+| #   | Tier                       | Who                                           | Identity store                    | Isolation                         | Session / credential                          | Status          |
+| --- | -------------------------- | --------------------------------------------- | --------------------------------- | --------------------------------- | --------------------------------------------- | --------------- |
+| 1   | **Tenant Staff**           | People running a Sparx tenant account         | Better Auth (organization member) | One tenant (`tid` in every token) | JWT 15 min + rotating refresh (HTTP-only)     | ✅ Built        |
+| 2   | **Tenant Customer**        | Shoppers/members of a tenant's storefront     | `@sparx/customer-auth` (docs/27)  | One tenant, RLS-isolated          | `sparx_customer_session` cookie, separate JWT | ✅ Built        |
+| 3   | **Programmatic (API key)** | Headless frontends, MCP, integrations         | `api_keys` table (SHA-256 hash)   | One tenant, scope-limited         | `sparx_live_…` bearer key                     | ✅ Built        |
+| 4   | **Platform Operator**      | WizeWorks staff operating the platform itself | _none yet_ — see §2.4             | **Cross-tenant** (all tenants)    | Interim: internal shared-secret header        | ⚠️ **Deferred** |
+| 5   | **System / Internal**      | Machine-to-machine service calls (cron, push) | Shared secret in Secret Manager   | Cross-tenant, ClusterIP-only      | `X-Sparx-Internal-*-Token` header             | ✅ Built (§2.5) |
+
+The rule that ties them together: **a session is scoped to the narrowest tier that satisfies the request.** A storefront shopper never receives a staff token; a staff member never receives a cross-tenant operator capability; an internal service call never rides on a human's session. Crossing a tier boundary is always an explicit, audited hop (e.g. a staff member impersonating a customer for support, once §2.4 ships), never an implicit widening of an existing token.
+
+### Layer 1 — Tenant Staff (Tenant Users)
 
 Staff members managing a Sparx tenant account.
 
@@ -94,6 +104,60 @@ Scopes: Granular (read:orders, write:inventory, mcp:read, etc.)
 Expiry: Optional — set at creation (none, 30d, 90d, 1y)
 Rotation: Old key valid for configurable overlap window
 ```
+
+### Layer 4 — Platform Operator (WizeWorks Staff) — Deliberately Deferred
+
+WizeWorks employees who operate the **platform itself** — support engineers answering a tenant ticket, finance reading cross-tenant revenue, growth reading acquisition by channel — are a **fundamentally different principal** from a tenant staff member. A tenant staff member belongs to exactly one tenant and must never see another tenant's data; a platform operator's entire job is the cross-tenant view.
+
+**This tier does not exist yet, and that is a deliberate Phase-1 decision.** Building a cross-tenant superuser is the single highest-blast-radius thing the platform can have — one compromised operator credential reads every tenant's data. We defer it until there is a concrete operational need that the interim mechanism (below) can't serve, and until we can build it correctly. Until then:
+
+- There is **no login that grants cross-tenant access.** Every interactive session — staff or customer — is pinned to one tenant via `tid` and re-validated against RLS. There is no "view all tenants" toggle anywhere in the dashboard.
+- Cross-tenant reads that genuinely must happen today (e.g. the acquisition report, docs/80 §10) run as **System/Internal principals** (§2.5): ClusterIP-only endpoints behind a shared-secret header, invoked by an operator with `kubectl`/`curl` or a CronJob — never exposed to the public internet, never behind a human dashboard login.
+
+**Why not "just add an `is_staff` flag to the users table"?** Because it collapses the isolation boundary that the entire RLS model rests on. A `users` row is a tenant member; the moment one of them can read across tenants, the `tid`-in-token invariant and the FORCE-RLS backstop (§4) both stop being true, and every authorization check downstream has to grow a special case. The operator tier must be a **separate identity, not a privileged tenant user.**
+
+#### Design for when it ships
+
+When the operational need arrives, build it as its own tier — do not retrofit it onto Layer 1:
+
+- **Separate identity store.** Operators authenticate against a distinct principal set (a separate Better Auth instance/organization reserved for WizeWorks, or a dedicated `platform_operators` table) — not a row in any tenant's `users`. An operator has **no** `tid`; they are explicitly tenant-less until they assume a tenant context.
+- **Capability-scoped, not role-scoped.** Operator permissions are explicit capabilities (`support:read`, `billing:read`, `acquisition:read`, `tenant:impersonate`, `tenant:suspend`), granted individually and defaulting to none. There is no "operator admin" that implies everything.
+- **No ambient RLS bypass.** Operators do **not** get `BYPASSRLS`. Cross-tenant reads go through explicit, audited service functions that either (a) query intentionally-global tables (`tenants`, `plans`) directly, or (b) loop tenant contexts with `set_config('app.tenant_id', …)` one tenant at a time. The default posture stays "RLS is enforced"; cross-tenant access is a named, logged operation, not a property of the connection.
+- **Tenant impersonation is an explicit, time-boxed, audited hop.** To act _inside_ a tenant (support), an operator mints a short-lived, single-tenant **impersonation token** — a normal Layer-1 staff token stamped with `tid`, `actor_type: 'operator'`, the operator's real id, and a hard expiry. Every action it takes is audit-logged as an impersonation (§7), and the tenant owner can see it. The operator's cross-tenant identity is never itself a tenant session.
+- **MFA mandatory, sessions short, everything logged.** Operator auth requires MFA, uses the shortest practical session, and writes an audit row for every cross-tenant read — not just mutations. The audit `actor_type` enum (§7) already reserves `system`; add `operator` when this lands.
+- **Surface it as a separate app, not a dashboard route.** The operator console is its own deployment (e.g. `admin.sparx.works`) with its own auth boundary, so a bug in the tenant dashboard can never escalate into cross-tenant access.
+
+Until all of that exists, the honest answer to "where's the admin panel?" is: **there isn't one, by design** — operators use the §2.5 internal endpoints, and we accept the friction as the price of not shipping a cross-tenant superuser before we can secure it.
+
+### Layer 5 — System / Internal Service Principals
+
+Machine-to-machine calls between Sparx's own components — k8s CronJobs poking a scheduler, Pub/Sub push subscriptions, Caddy's on-demand-TLS ask, the acquisition report — authenticate with a **shared secret in a request header**, not a JWT and not a human session.
+
+```
+Header:   X-Sparx-Internal-<Purpose>-Token
+Compare:  constant-time (node:crypto timingSafeEqual) against an env secret
+Exposure: ClusterIP-only — never routed through Caddy/the public internet
+Secret:   GCP Secret Manager → synced into the `sparx-app-secrets` k8s Secret
+          by the bootstrap workflow's canonical KEYS list; api-rest loads it
+          via `envFrom: secretRef`.
+```
+
+Live internal principals (`services/api-rest/src/routes/internal/`):
+
+| Endpoint                          | Header                               | Secret env                         |
+| --------------------------------- | ------------------------------------ | ---------------------------------- |
+| `/internal/crm/*` (CronJobs)      | `X-Sparx-Internal-Cron-Token`        | `SPARX_INTERNAL_CRON_TOKEN`        |
+| `/internal/commerce/*` (CronJobs) | `X-Sparx-Internal-Cron-Token`        | `SPARX_INTERNAL_CRON_TOKEN`        |
+| `/internal/acquisition/summary`   | `X-Sparx-Internal-Acquisition-Token` | `SPARX_INTERNAL_ACQUISITION_TOKEN` |
+
+**Rules for adding an internal principal:**
+
+1. **One secret per blast radius, not one secret for everything.** The acquisition report exposes cross-tenant business intelligence — a different blast radius than triggering a scheduler — so it gets its **own** token (`SPARX_INTERNAL_ACQUISITION_TOKEN`), rotatable and grantable independently of the cron token. Bundle two purposes under one secret only when leaking one would be no worse than leaking the other.
+2. **Constant-time compare, fail-closed.** Compare with `timingSafeEqual`; if the secret env is unset, return 401 (disabled) rather than allowing — a forgotten secret in prod must surface loudly, never fail open.
+3. **ClusterIP-only, hidden from OpenAPI.** Internal routes set `schema: { hide: true }` and are never added to the public ingress. They are an internal contract, not a customer API.
+4. **Register the secret in the canonical list.** Add the lowercase key to the `KEYS` array in [bootstrap.yml](../.github/workflows/bootstrap.yml) (`Sync sparx-app-secrets`) so it syncs from Secret Manager; `envFrom: secretRef` then exposes it to api-rest automatically.
+
+An internal principal is the **correct, minimal substitute for the deferred operator tier (§2.4)** for read-only cross-tenant reporting. It is _not_ a substitute for interactive operator workflows (impersonation, per-tenant support actions) — those wait for §2.4.
 
 ---
 

@@ -28,6 +28,12 @@ const EnvSchema = z
     // header. Optional in dev so a fresh checkout boots; missing-in-prod
     // is the operator's responsibility to provision via Secret Manager.
     SPARX_INTERNAL_CRON_TOKEN: z.string().min(16).optional(),
+    // Shared secret for the internal L-PLAT acquisition report
+    // (GET /internal/acquisition/summary, docs/80 §10). A SEPARATE secret from
+    // the cron token because it exposes cross-tenant business intelligence — a
+    // different blast radius than triggering a scheduler — so it rotates
+    // independently. Optional in dev; unset → the endpoint returns 401.
+    SPARX_INTERNAL_ACQUISITION_TOKEN: z.string().min(16).optional(),
     // Optional: when set, the Pub/Sub publisher uses Google Cloud Pub/Sub;
     // otherwise it logs to stdout and is a no-op (dev default). The publisher
     // resolves a topic per `EventType` (topic name == event type) — there is
