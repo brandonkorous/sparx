@@ -1,0 +1,31 @@
+import { NextResponse, type NextRequest } from 'next/server';
+import { ATTR_COOKIES, newVisitorId } from '@sparx/attribution';
+
+// Edge attribution seed (docs/80 §5.3, §7.2). Mints a first-party visitor id on
+// the first response so capture survives even if the client bundle is blocked —
+// the client component (attribution-capture.tsx) enriches with referrer + UTMs.
+// Scoped to `.sparx.works` in prod so app.sparx.works reads it at signup; host-only
+// on localhost / preview hosts where a registrable-domain cookie won't set.
+export function middleware(request: NextRequest): NextResponse {
+  const response = NextResponse.next();
+
+  if (!request.cookies.has(ATTR_COOKIES.visitor)) {
+    const host = request.nextUrl.hostname;
+    const onSparx = host === 'sparx.works' || host.endsWith('.sparx.works');
+    response.cookies.set(ATTR_COOKIES.visitor, newVisitorId(), {
+      domain: onSparx ? '.sparx.works' : undefined,
+      path: '/',
+      maxAge: 400 * 86_400, // Chrome's cap
+      sameSite: 'lax',
+      secure: request.nextUrl.protocol === 'https:',
+    });
+  }
+
+  return response;
+}
+
+// Run on pages, not on static assets, the image optimizer, or files with an
+// extension (`.png`, `.svg`, …) — they don't need an attribution touch.
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.[\\w]+$).*)'],
+};

@@ -8,6 +8,9 @@ import { cookies, headers } from 'next/headers';
 export interface SignUpFormState {
   ok: boolean;
   error?: string;
+  /** New user's id on success — the client stamps first-touch onto the PostHog
+   *  person with it (docs/80 §6.1). */
+  userId?: string;
 }
 
 // Creates Tenant + User + Account in one transaction, then signs the user in
@@ -60,8 +63,18 @@ export async function signUpAction(formData: FormData): Promise<SignUpFormState>
         }
       : null;
 
+  let userId = '';
   try {
-    await signUpMerchant({ email, password, name, storeName, ipAddress, userAgent, acquisition });
+    const result = await signUpMerchant({
+      email,
+      password,
+      name,
+      storeName,
+      ipAddress,
+      userAgent,
+      acquisition,
+    });
+    userId = result.userId;
   } catch (err) {
     if (err instanceof SignUpError) {
       return { ok: false, error: err.message };
@@ -79,5 +92,5 @@ export async function signUpAction(formData: FormData): Promise<SignUpFormState>
     return { ok: false, error: 'Account created, but sign-in failed. Try signing in.' };
   }
 
-  return { ok: true };
+  return { ok: true, userId };
 }

@@ -3,6 +3,8 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import posthog from 'posthog-js';
+import { ATTR_COOKIES, deserializeSnapshot } from '@sparx/attribution';
 import {
   Button,
   Card,
@@ -21,6 +23,30 @@ import {
 const LEGAL_BASE = 'https://sparx.works/legal';
 import { signUpAction } from '../actions';
 
+function readCookie(name: string): string | null {
+  const match = new RegExp(`(?:^|;\\s*)${name}=([^;]+)`).exec(document.cookie);
+  return match?.[1] ? decodeURIComponent(match[1]) : null;
+}
+
+// Stamp first-touch onto the PostHog person at signup (docs/80 §6.1). $set_once
+// (the 3rd identify arg) so a later session can't overwrite the original source.
+function identifyWithFirstTouch(userId: string): void {
+  if (!userId || !posthog.__loaded) return;
+  const first = deserializeSnapshot(readCookie(ATTR_COOKIES.first));
+  posthog.identify(
+    userId,
+    {},
+    first
+      ? {
+          first_touch_channel: first.channel,
+          first_touch_source: first.source,
+          first_touch_campaign: first.campaign,
+          first_touch_at: first.capturedAt,
+        }
+      : {}
+  );
+}
+
 export default function SignUpPage() {
   const router = useRouter();
   const [error, setError] = React.useState<string | null>(null);
@@ -37,6 +63,7 @@ export default function SignUpPage() {
         setError(result.error ?? 'Could not create account.');
         return;
       }
+      if (result.userId) identifyWithFirstTouch(result.userId);
       router.push('/onboarding');
       router.refresh();
     });
