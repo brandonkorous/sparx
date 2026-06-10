@@ -172,6 +172,13 @@ module "pubsub" {
 module "secrets" {
   source = "../../modules/secrets"
 
+  # Source of truth for app/platform secret CONTAINERS. Values are added
+  # out-of-band (`gcloud secrets versions add`); the bootstrap workflow's KEYS
+  # list syncs the k8s-app subset into the sparx-app-secrets Secret. Keep the two
+  # in lockstep — a secret the app references but that's absent here (or from
+  # KEYS) fails silently at runtime (the 2026-06-10 cron-token incident).
+  # Still provisioned out-of-band, NOT yet reconciled here: sparx-db-app-password,
+  # sparx-db-owner-password (DB setup), postal-* (decommissioned), mailgun SMTP creds.
   secret_ids = [
     "database-url",
     "redis-url",
@@ -184,13 +191,19 @@ module "secrets" {
     "godaddy-api-secret-prod",
     "postal-api-key",
     "cloudflare-api-token",
-    # Internal service-to-service shared secret (docs/16 §2.5). Both api-rest and
-    # the CRM/commerce CronJob pods read it from sparx-app-secrets to auth the
-    # /internal/* cron endpoints. Machine-to-machine; value added out-of-band.
-    # NOTE: auth-database-url, sparx-internal-jwt-secret, and
-    # sparx-internal-acquisition-token also live in Secret Manager but predate
-    # this list (created out-of-band) — reconcile them in via `terraform import`
-    # in a follow-up so the list is the complete source of truth.
+    # Better Auth (Layer 1 staff) — its own Postgres URL alongside the app DB.
+    "auth-database-url",
+    # Mailgun HTTP API key — the email-worker Cloud Run service binds it
+    # (serverless.tf). Declared here so the TF that references it also owns it.
+    "mailgun-api-key",
+    # Internal service-to-service shared secrets (docs/16 §2.5). api-rest and the
+    # CronJob pods read these from sparx-app-secrets; values are machine-to-machine,
+    # added out-of-band via `gcloud secrets versions add`.
+    #   jwt         — signs dashboard→api-rest internal-trust JWTs
+    #   acquisition — gates the cross-tenant acquisition report (docs/80 §10)
+    #   cron        — auth for the /internal/crm/* + /internal/commerce/* CronJobs
+    "sparx-internal-jwt-secret",
+    "sparx-internal-acquisition-token",
     "sparx-internal-cron-token",
     # Typesense admin/search API key. commerce-indexer reads it via Secret
     # Manager → Cloud Run env binding. Rotated by the operator manually
