@@ -76,7 +76,7 @@ data:
   # Keyed on the id so it stays valid across the korous-store → wizeworks rename.
   # FILL with the korous-store tenant id BEFORE doing the rename; empty → carve-out
   # off (safe default — reserved slugs blocked for everyone).
-  SPARX_PLATFORM_TENANT_ID: ''
+  SPARX_PLATFORM_TENANT_ID: 1bfef66a-a489-4e0f-99fd-f041adc7ffaa
   # The slug the apps/web /early waitlist writes into
   # (POST /v1/public/newsletter?tenant=…) — the final brand slug after the rename.
   SPARX_PLATFORM_TENANT_SLUG: wizeworks
