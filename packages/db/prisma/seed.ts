@@ -205,11 +205,127 @@ async function seedMarketplaceCatalog(): Promise<void> {
       });
     }
 
+    // Integrations — providerSlug maps to a real @sparx/provider-* bundle; the
+    // "Connect" CTA hands off to /commerce/providers. configSchema NULL (resolved
+    // by provider slug at connect time).
+    for (const it of SPARX_INTEGRATIONS) {
+      const shared = {
+        name: it.name,
+        tagline: it.tagline.slice(0, 255),
+        description: it.description,
+        accent: it.accent,
+        providerSlug: it.providerSlug,
+        kind: it.kind,
+        scopes: it.scopes,
+        sortWeight: it.sortWeight,
+        status: 'published',
+        visibility: 'public',
+        publisherId: publisher.id,
+      };
+      await tx.marketplaceIntegration.upsert({
+        where: { slug: it.slug },
+        update: shared,
+        create: { slug: it.slug, publishedAt: new Date(), ...shared },
+      });
+    }
+
     console.log(
-      `Seeded marketplace catalog: ${listBlueprints().length} blueprint(s), ${SPARX_THEMES.length} theme(s).`
+      `Seeded marketplace catalog: ${listBlueprints().length} blueprint(s), ` +
+        `${SPARX_THEMES.length} theme(s), ${SPARX_INTEGRATIONS.length} integration(s).`
     );
   });
 }
+
+// The Sparx-core INTEGRATION catalog (docs/60 §6, Marketplace Integrations). Each
+// row's `providerSlug` maps to a real integration-framework provider bundle
+// (@sparx/provider-*); the marketplace is DISCOVERY and the dashboard "Connect"
+// CTA hands off to Settings → Integrations (/commerce/providers) for the actual
+// install/config (docs/66 MP-Ph3). `configSchema` is NULL for these Sparx-core
+// rows (resolved by provider slug at connect time).
+const SPARX_INTEGRATIONS: {
+  slug: string;
+  name: string;
+  providerSlug: string;
+  kind: string;
+  scopes: string[];
+  accent: string;
+  tagline: string;
+  description: string;
+  sortWeight: number;
+}[] = [
+  {
+    slug: 'stripe',
+    name: 'Stripe',
+    providerSlug: 'stripe',
+    kind: 'Payments',
+    scopes: ['payments', 'refunds', 'payouts'],
+    accent: '#635bff',
+    tagline: 'Accept cards, wallets, and local payment methods worldwide.',
+    description:
+      'Connect Stripe to take card and wallet payments, issue refunds, and reconcile payouts. The default, battle-tested payments rail for Sparx commerce.',
+    sortWeight: 60,
+  },
+  {
+    slug: 'paypal',
+    name: 'PayPal',
+    providerSlug: 'paypal',
+    kind: 'Payments',
+    scopes: ['payments', 'refunds'],
+    accent: '#003087',
+    tagline: 'Let customers check out with PayPal and Pay Later.',
+    description:
+      'Offer PayPal and Pay Later at checkout for buyers who prefer it — a familiar, trusted button that lifts conversion in many markets.',
+    sortWeight: 48,
+  },
+  {
+    slug: 'shippo',
+    name: 'Shippo',
+    providerSlug: 'shippo',
+    kind: 'Shipping',
+    scopes: ['rates', 'labels', 'tracking'],
+    accent: '#0b7285',
+    tagline: 'Real-time rates, labels, and tracking across major carriers.',
+    description:
+      'Pull live shipping rates at checkout, buy and print labels, and track shipments across USPS, UPS, FedEx, and more — all from one connection.',
+    sortWeight: 55,
+  },
+  {
+    slug: 'easypost',
+    name: 'EasyPost',
+    providerSlug: 'easypost',
+    kind: 'Shipping',
+    scopes: ['rates', 'labels', 'tracking'],
+    accent: '#164b9b',
+    tagline: 'Multi-carrier shipping — rates, labels, and tracking via one API.',
+    description:
+      'An alternative multi-carrier shipping connection: real-time rates, label purchase, and tracking, with broad carrier coverage and address verification.',
+    sortWeight: 42,
+  },
+  {
+    slug: 'taxjar',
+    name: 'TaxJar',
+    providerSlug: 'taxjar',
+    kind: 'Tax',
+    scopes: ['tax_calculation', 'reporting'],
+    accent: '#3bb273',
+    tagline: 'Automated US sales-tax calculation and reporting.',
+    description:
+      'Calculate accurate sales tax at checkout by jurisdiction and keep filing-ready reports — so tax stops being a spreadsheet at month-end.',
+    sortWeight: 45,
+  },
+  {
+    slug: 'avalara',
+    name: 'Avalara',
+    providerSlug: 'avalara',
+    kind: 'Tax',
+    scopes: ['tax_calculation', 'compliance'],
+    accent: '#ff6a13',
+    tagline: 'Enterprise tax calculation and compliance.',
+    description:
+      'Enterprise-grade tax determination and compliance across thousands of jurisdictions — for sellers whose tax footprint has outgrown a single state.',
+    sortWeight: 38,
+  },
+];
 
 async function main(): Promise<void> {
   // tenants has no RLS — safe to upsert outside a tenant context. Default

@@ -85,9 +85,13 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: Plug,
     accent: '#f97316',
     tagline: 'Payments, shipping, tax, and the rest of your stack.',
-    status: 'coming-soon',
-    facets: [],
-    sorts: [],
+    status: 'live',
+    facets: [{ key: 'kind', label: 'Type', type: 'multi' }],
+    sorts: [
+      { key: 'popular', label: 'Most popular' },
+      { key: 'newest', label: 'Newest' },
+      { key: 'name', label: 'Name (A–Z)' },
+    ],
   },
   {
     id: 'components',
