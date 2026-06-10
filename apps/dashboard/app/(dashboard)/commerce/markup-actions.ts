@@ -7,6 +7,36 @@ import { api } from '@/lib/api-rest-client';
 import type { ActionResult } from './_action-helpers';
 import { restAction } from './_rest-action';
 
+// ─── Scope-picker helpers (the bulk pricing tool) ──────────────────────
+
+export interface ScopeProductOption {
+  id: string;
+  title: string;
+  priceMinCents: number | null;
+}
+
+interface ProductListItem {
+  id: string;
+  title: string;
+  priceMinCents: number | null;
+}
+
+/** Typeahead for the "specific products" scope — searches the catalog by title
+ *  and returns a trimmed option list (id + title + min price) for the picker. */
+export async function searchScopeProductsAction(
+  q: string
+): Promise<ActionResult<ScopeProductOption[]>> {
+  return restAction(async () => {
+    const query = new URLSearchParams({ take: '20' });
+    const term = q.trim();
+    if (term) query.set('q', term);
+    const { data } = await api.getPaged<ProductListItem[]>(
+      `/v1/commerce/products?${query.toString()}`
+    );
+    return data.map((p) => ({ id: p.id, title: p.title, priceMinCents: p.priceMinCents }));
+  });
+}
+
 // ─── Rule CRUD ────────────────────────────────────────────────────────
 
 export async function createMarkupRuleAction(

@@ -4,7 +4,11 @@ import { Badge, Container, PageHeader, Stack, Text } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
-import { MarkupRulesManager, type MarkupRuleRow } from './_components/markup-rules-manager';
+import {
+  MarkupRulesManager,
+  type CollectionOption,
+  type MarkupRuleRow,
+} from './_components/markup-rules-manager';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +18,11 @@ export const metadata = { title: 'Markup rules — Commerce' };
 // by rule, so a vendor price-list import or a cost change re-prices without
 // re-typing every SKU.
 export default async function MarkupRulesPage() {
-  const rules = await api.get<MarkupRuleRow[]>('/v1/markup-rules');
+  const [rules, collectionList] = await Promise.all([
+    api.get<MarkupRuleRow[]>('/v1/markup-rules'),
+    api.get<{ items: CollectionOption[] }>('/v1/commerce/collections?take=100'),
+  ]);
+  const collections = collectionList.items;
 
   return (
     <Container size="full">
@@ -33,7 +41,7 @@ export default async function MarkupRulesPage() {
           Markup is a cost → list-price step. B2B tiers and discounts apply on top of the list price
           it produces, so margin reporting stays honest.
         </Text>
-        <MarkupRulesManager initialRules={rules} />
+        <MarkupRulesManager initialRules={rules} collections={collections} />
       </Stack>
     </Container>
   );

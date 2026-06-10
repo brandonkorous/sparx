@@ -2,6 +2,7 @@ import Link from 'next/link';
 import {
   Boxes,
   CreditCard,
+  DollarSign,
   Layers,
   PackageOpen,
   Percent,
@@ -218,8 +219,15 @@ const QUICK_LINKS = [
   {
     href: '/commerce/markup-rules',
     title: 'Markup rules',
-    description: 'Price products from cost — percentage, keystone, target margin, flat.',
+    description: 'Price products from cost — percentage, keystone, target margin, flat, matrix.',
     icon: <Percent className="h-5 w-5" />,
+  },
+  {
+    href: '/commerce/products/pricing',
+    title: 'Bulk pricing',
+    description:
+      'Apply a markup rule across a collection, type, or hand-picked set — preview, then commit.',
+    icon: <DollarSign className="h-5 w-5" />,
   },
   {
     href: '/commerce/surcharges',

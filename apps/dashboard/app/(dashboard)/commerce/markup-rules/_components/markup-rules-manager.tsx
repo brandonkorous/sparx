@@ -11,6 +11,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Checkbox,
   Heading,
   Input,
   NativeSelect,
@@ -45,6 +46,17 @@ interface Scope {
   type: 'all' | 'collection' | 'product_type' | 'vendor' | 'products';
   value?: string;
   ids?: string[];
+}
+export interface CollectionOption {
+  id: string;
+  name: string;
+}
+type BandMethod = 'percentage' | 'multiplier' | 'flat' | 'margin_target';
+interface MatrixBand {
+  costMinCents: number;
+  costMaxCents: number | null;
+  method: BandMethod;
+  value: number;
 }
 export interface MarkupRuleRow {
   id: string;
@@ -83,6 +95,154 @@ function toStoredValue(method: string, display: string): number | null {
   return n;
 }
 
+// ─── Matrix band editing (docs/48 §3.4) ─────────────────────────────────
+// A matrix prices each cost tier by its own sub-method. The form edits dollars
+// + a display value per band; submit converts to the cents/fraction the engine
+// stores. The top band may leave its upper bound blank (open-ended).
+
+interface BandRowState {
+  minStr: string; // dollars
+  maxStr: string; // dollars; '' = open-ended top band
+  method: BandMethod;
+  valueStr: string; // display value, per-method unit
+}
+
+function emptyBandRow(): BandRowState {
+  return { minStr: '0', maxStr: '', method: 'percentage', valueStr: '' };
+}
+
+function bandsToRows(bands: MatrixBand[]): BandRowState[] {
+  if (!bands || bands.length === 0) return [emptyBandRow()];
+  return bands.map((b) => ({
+    minStr: String(b.costMinCents / 100),
+    maxStr: b.costMaxCents == null ? '' : String(b.costMaxCents / 100),
+    method: b.method,
+    valueStr: toDisplayValue(b.method, b.value),
+  }));
+}
+
+/** Convert the editable rows to engine bands, or null if any row is invalid. */
+function rowsToBands(rows: BandRowState[]): MatrixBand[] | null {
+  const out: MatrixBand[] = [];
+  for (const r of rows) {
+    const min = Math.round(Number(r.minStr) * 100);
+    const max = r.maxStr.trim() === '' ? null : Math.round(Number(r.maxStr) * 100);
+    const value = toStoredValue(r.method, r.valueStr);
+    if (!Number.isFinite(min) || value == null) return null;
+    if (max != null && (!Number.isFinite(max) || max < min)) return null;
+    out.push({ costMinCents: Math.max(0, min), costMaxCents: max, method: r.method, value });
+  }
+  return out.length > 0 ? out : null;
+}
+
+const BAND_UNIT: Record<BandMethod, string> = {
+  percentage: '% over cost',
+  margin_target: '% margin',
+  multiplier: '× mult',
+  flat: '$ flat',
+};
+
+function MatrixBandsEditor({
+  rows,
+  onChange,
+}: {
+  rows: BandRowState[];
+  onChange: (rows: BandRowState[]) => void;
+}) {
+  function patch(i: number, next: Partial<BandRowState>) {
+    onChange(rows.map((r, idx) => (idx === i ? { ...r, ...next } : r)));
+  }
+  function add() {
+    const last = rows[rows.length - 1];
+    const nextMin = last && last.maxStr.trim() !== '' ? last.maxStr : '';
+    onChange([...rows, { ...emptyBandRow(), minStr: nextMin || '0' }]);
+  }
+  function remove(i: number) {
+    onChange(rows.length > 1 ? rows.filter((_, idx) => idx !== i) : rows);
+  }
+
+  return (
+    <Stack gap={2}>
+      <Text size="xs" variant="muted" weight="medium">
+        Cost bands
+      </Text>
+      <Stack gap={2}>
+        {rows.map((r, i) => (
+          <Stack key={i} direction="row" gap={2} align="end" wrap>
+            <Field label="Cost ≥ ($)" className="w-28">
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="any"
+                value={r.minStr}
+                onChange={(e) => patch(i, { minStr: e.target.value })}
+              />
+            </Field>
+            <Field label="Cost < ($)" className="w-28">
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="any"
+                value={r.maxStr}
+                onChange={(e) => patch(i, { maxStr: e.target.value })}
+                placeholder="∞"
+              />
+            </Field>
+            <Field label="Method" className="w-40">
+              <NativeSelect
+                value={r.method}
+                onChange={(e) => patch(i, { method: e.target.value as BandMethod })}
+              >
+                <option value="percentage">Percentage</option>
+                <option value="multiplier">Multiplier</option>
+                <option value="flat">Flat</option>
+                <option value="margin_target">Target margin</option>
+              </NativeSelect>
+            </Field>
+            <Field label={BAND_UNIT[r.method]} className="w-28">
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="any"
+                value={r.valueStr}
+                onChange={(e) => patch(i, { valueStr: e.target.value })}
+              />
+            </Field>
+            <Button
+              type="button"
+              size="xs"
+              variant="ghost"
+              color="danger"
+              className="mb-1"
+              leftIcon={<Trash2 className="h-3.5 w-3.5" />}
+              onClick={() => remove(i)}
+              disabled={rows.length === 1}
+              aria-label={`Remove band ${i + 1}`}
+            >
+              Remove
+            </Button>
+          </Stack>
+        ))}
+      </Stack>
+      <div>
+        <Button
+          type="button"
+          size="xs"
+          variant="outline"
+          leftIcon={<Plus className="h-3.5 w-3.5" />}
+          onClick={add}
+        >
+          Add band
+        </Button>
+      </div>
+      <Text size="xs" variant="muted">
+        Bands are matched low → high by cost. Leave the top band’s upper bound blank for open-ended.
+        A cost outside every band clamps to the nearest.
+      </Text>
+    </Stack>
+  );
+}
+
 function methodSummary(r: MarkupRuleRow): string {
   switch (r.method) {
     case 'percentage':
@@ -115,7 +275,13 @@ function scopeSummary(s: Scope): string {
 
 // ─── Manager ────────────────────────────────────────────────────────────
 
-export function MarkupRulesManager({ initialRules }: { initialRules: MarkupRuleRow[] }) {
+export function MarkupRulesManager({
+  initialRules,
+  collections,
+}: {
+  initialRules: MarkupRuleRow[];
+  collections: CollectionOption[];
+}) {
   const router = useRouter();
   const confirm = useConfirm();
   const [editing, setEditing] = React.useState<MarkupRuleRow | 'new' | null>(null);
@@ -204,6 +370,7 @@ export function MarkupRulesManager({ initialRules }: { initialRules: MarkupRuleR
         <RuleForm
           key={editing === 'new' ? 'new' : editing.id}
           rule={editing === 'new' ? null : editing}
+          collections={collections}
           onClose={() => setEditing(null)}
           onSaved={() => {
             setEditing(null);
@@ -328,10 +495,12 @@ export function MarkupRulesManager({ initialRules }: { initialRules: MarkupRuleR
 
 function RuleForm({
   rule,
+  collections,
   onClose,
   onSaved,
 }: {
   rule: MarkupRuleRow | null;
+  collections: CollectionOption[];
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -339,6 +508,12 @@ function RuleForm({
   const [method, setMethod] = React.useState(rule?.method ?? 'percentage');
   const [valueStr, setValueStr] = React.useState(
     rule ? toDisplayValue(rule.method, rule.value) : ''
+  );
+  const [bands, setBands] = React.useState<BandRowState[]>(() =>
+    rule?.method === 'matrix' ? bandsToRows(rule.bands as MatrixBand[]) : [emptyBandRow()]
+  );
+  const [collectionIds, setCollectionIds] = React.useState<string[]>(() =>
+    rule?.scope?.type === 'collection' ? (rule.scope.ids ?? []) : []
   );
   const [costBasis, setCostBasis] = React.useState(rule?.costBasis ?? 'variant_cost');
   const [roundStrategy, setRoundStrategy] = React.useState(rule?.rounding?.strategy ?? 'none');
@@ -378,9 +553,11 @@ function RuleForm({
   // Live readout against a sample cost (docs/48 §2 binding rule: show both).
   const preview = React.useMemo(() => {
     const sampleCents = Math.round((Number(sampleDollars) || 0) * 100);
+    const matrixBands = isMatrix ? rowsToBands(bands) : null;
     const spec: MarkupRuleSpec = {
       method,
-      value: toStoredValue(method, valueStr),
+      value: isMatrix ? null : toStoredValue(method, valueStr),
+      bands: matrixBands ?? undefined,
       rounding:
         roundStrategy === 'none'
           ? null
@@ -394,7 +571,8 @@ function RuleForm({
       ceilingSrc,
       ceilingValueCents: ceilingValue ? Math.round(Number(ceilingValue) * 100) : null,
     };
-    if (isMatrix || spec.value == null || !Number.isFinite(sampleCents)) return null;
+    if (!Number.isFinite(sampleCents)) return null;
+    if (isMatrix ? !matrixBands : spec.value == null) return null;
     try {
       return applyMarkupRule(sampleCents, spec, { compareAtCents: null, msrpCents: null });
     } catch {
@@ -403,6 +581,7 @@ function RuleForm({
   }, [
     method,
     valueStr,
+    bands,
     roundStrategy,
     roundPrecision,
     roundEnding,
@@ -418,31 +597,51 @@ function RuleForm({
     e.preventDefault();
     setError(null);
 
+    let value: number | null = null;
+    let matrixBands: MatrixBand[] | null = null;
     if (isMatrix) {
-      setError('Cost-band matrix rules arrive with the bulk pricing tool (Phase 2).');
-      return;
-    }
-    const value = toStoredValue(method, valueStr);
-    if (value == null) {
-      setError('Enter a valid value for this method.');
-      return;
+      matrixBands = rowsToBands(bands);
+      if (!matrixBands) {
+        setError(
+          'Each band needs a min cost and a value; an upper bound, if set, must be ≥ the min.'
+        );
+        return;
+      }
+    } else {
+      value = toStoredValue(method, valueStr);
+      if (value == null) {
+        setError('Enter a valid value for this method.');
+        return;
+      }
     }
 
-    const scope: Scope =
-      scopeType === 'all'
-        ? { type: 'all' }
-        : scopeType === 'product_type'
-          ? { type: 'product_type', value: scopeValue.trim() }
-          : { type: 'vendor', value: scopeValue.trim() };
-    if (scopeType !== 'all' && !scopeValue.trim()) {
-      setError('Enter the product type or vendor to scope to.');
-      return;
+    let scope: Scope;
+    if (scopeType === 'all') {
+      scope = { type: 'all' };
+    } else if (scopeType === 'collection') {
+      if (collectionIds.length === 0) {
+        setError('Pick at least one collection to scope to.');
+        return;
+      }
+      scope = { type: 'collection', ids: collectionIds };
+    } else if (scopeType === 'product_type') {
+      if (!scopeValue.trim()) {
+        setError('Enter the product type to scope to.');
+        return;
+      }
+      scope = { type: 'product_type', value: scopeValue.trim() };
+    } else {
+      if (!scopeValue.trim()) {
+        setError('Enter the vendor to scope to.');
+        return;
+      }
+      scope = { type: 'vendor', value: scopeValue.trim() };
     }
 
     const payload = {
       name: name.trim(),
       method,
-      value,
+      ...(isMatrix ? { value: null, bands: matrixBands } : { value }),
       costBasis,
       rounding:
         roundStrategy === 'none'
@@ -496,7 +695,7 @@ function RuleForm({
                   <option value="multiplier">Multiplier (keystone)</option>
                   <option value="flat">Flat markup</option>
                   <option value="margin_target">Target margin</option>
-                  <option value="matrix">Cost-band matrix (Phase 2)</option>
+                  <option value="matrix">Cost-band matrix</option>
                 </NativeSelect>
               </Field>
               {!isMatrix && (
@@ -522,8 +721,10 @@ function RuleForm({
               </Field>
             </Stack>
 
-            {/* Live readout */}
-            {!isMatrix && (
+            {isMatrix && <MatrixBandsEditor rows={bands} onChange={setBands} />}
+
+            {/* Live readout — works for every method incl. matrix */}
+            {
               <Stack
                 direction="row"
                 align="center"
@@ -556,7 +757,7 @@ function RuleForm({
                   </Text>
                 )}
               </Stack>
-            )}
+            }
 
             {/* Guards */}
             <Stack direction="row" gap={3} wrap>
@@ -659,11 +860,12 @@ function RuleForm({
                   onChange={(e) => setScopeType(e.target.value as never)}
                 >
                   <option value="all">All products</option>
+                  <option value="collection">By collection</option>
                   <option value="product_type">By product type</option>
                   <option value="vendor">By vendor</option>
                 </NativeSelect>
               </Field>
-              {scopeType !== 'all' && (
+              {(scopeType === 'product_type' || scopeType === 'vendor') && (
                 <Field
                   label={scopeType === 'vendor' ? 'Vendor' : 'Product type'}
                   className="min-w-[12rem] flex-1"
@@ -681,11 +883,21 @@ function RuleForm({
               </Stack>
             </Stack>
 
-            {scopeType !== 'all' && (
-              <Text size="xs" variant="muted">
-                Collection and specific-product scoping arrive with the bulk pricing tool (Phase 2).
-              </Text>
+            {scopeType === 'collection' && (
+              <CollectionPicker
+                collections={collections}
+                selected={collectionIds}
+                onChange={setCollectionIds}
+              />
             )}
+
+            <Text size="xs" variant="muted">
+              Need to target a one-off set of SKUs? Use the{' '}
+              <a className="underline" href="/commerce/products/pricing">
+                bulk pricing tool
+              </a>{' '}
+              to preview and apply this rule across an ad-hoc product selection.
+            </Text>
 
             {error && (
               <Text size="sm" variant="danger" role="alert">
@@ -705,6 +917,44 @@ function RuleForm({
         </form>
       </CardContent>
     </Card>
+  );
+}
+
+function CollectionPicker({
+  collections,
+  selected,
+  onChange,
+}: {
+  collections: CollectionOption[];
+  selected: string[];
+  onChange: (ids: string[]) => void;
+}) {
+  if (collections.length === 0) {
+    return (
+      <Text size="xs" variant="muted">
+        No collections yet — create one under Collections first, or scope by product type / vendor.
+      </Text>
+    );
+  }
+  function toggle(id: string) {
+    onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id]);
+  }
+  return (
+    <Stack
+      gap={1}
+      className="max-h-48 overflow-auto rounded border border-[var(--color-border-default)] p-3"
+    >
+      {collections.map((c) => (
+        <label key={c.id} className="flex cursor-pointer items-center gap-2">
+          <Checkbox
+            checked={selected.includes(c.id)}
+            onCheckedChange={() => toggle(c.id)}
+            aria-label={c.name}
+          />
+          <Text size="sm">{c.name}</Text>
+        </label>
+      ))}
+    </Stack>
   );
 }
 
