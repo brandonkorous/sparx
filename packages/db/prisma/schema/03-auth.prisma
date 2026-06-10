@@ -47,6 +47,9 @@ model User {
   approvalRulesAsApprover PurchaseApprovalRule[]  @relation("ApprovalRuleApprover")
   confirmedAppointments   ServiceAppointment[]   @relation("AppointmentConfirmedBy")
 
+  // Live Chat module — conversations this staff user is assigned to (docs/56)
+  assignedChats ChatConversation[] @relation("ChatAssignedTo")
+
   // Dashboard shell — per-user pinned/recent navigation state
   favorites UserFavorite[]
   recents   UserRecent[]

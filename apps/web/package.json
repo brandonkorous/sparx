@@ -12,6 +12,7 @@
     "clean": "rm -rf .turbo .next *.tsbuildinfo"
   },
   "dependencies": {
+    "@sparx/attribution": "workspace:*",
     "@sparx/legal": "workspace:*",
     "@sparx/ui": "workspace:*",
     "geist": "^1.3.1",

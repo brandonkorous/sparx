@@ -12,6 +12,7 @@ import {
   Building2,
   FileText,
   LayoutTemplate,
+  MessagesSquare,
   Send,
   ShoppingCart,
   Sparkles,
@@ -200,6 +201,33 @@ export const moduleCatalog: Record<ModuleSlug, ModuleCatalogEntry> = {
       { title: 'Alerts', description: 'Low-stock and out-of-stock notifications.' },
       { title: 'Commerce bridge', description: 'Live stock pushes to Commerce variants.' },
       { title: 'Import', description: 'Bulk stock-level updates via CSV.' },
+    ],
+  },
+  chat: {
+    Icon: MessagesSquare,
+    title: 'Live Chat',
+    tagline: 'Storefront chat widget, AI replies, and a staff inbox.',
+    description:
+      'The Live Chat module adds a floating chat widget to your storefront, answers common questions with AI, and routes anything it cannot handle to a real person in the dashboard inbox.',
+    features: [
+      {
+        title: 'Storefront widget',
+        description: 'Themed floating bubble on every page, with an optional pre-chat form.',
+      },
+      {
+        title: 'AI first responder',
+        description: 'Answers product and policy questions, escalating when unsure.',
+      },
+      { title: 'Staff inbox', description: 'Assign, reply, resolve, and tag conversations.' },
+      {
+        title: 'Customer context',
+        description: 'Orders, lifetime value, and recent activity beside every thread.',
+      },
+      { title: 'Quick replies', description: 'Slash-triggered canned responses for your team.' },
+      {
+        title: 'Notifications',
+        description: 'Desktop push and email fallback when no one is watching the inbox.',
+      },
     ],
   },
   ai: {

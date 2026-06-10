@@ -1,4 +1,6 @@
+import type { AttributionSnapshot } from '@sparx/attribution';
 import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
+import type { Prisma } from '@prisma/client';
 import { authPrisma } from './prisma';
 import { auth } from './server';
 
@@ -10,6 +12,17 @@ import { auth } from './server';
 // This is the v0 path; richer onboarding (plan picker, store template,
 // invitation flow) per docs/15 will replace this.
 
+/** First-party acquisition attribution read at signup (docs/80 §6.1 / L-PLAT). */
+export interface SignUpAcquisition {
+  /** Denormalized from first-touch — the acquisition model for L-PLAT (docs/80 §9). */
+  channel: string | null;
+  source: string | null;
+  campaign: string | null;
+  /** Full snapshots retained for later model recompute (docs/80 §8.3). */
+  firstTouch: AttributionSnapshot | null;
+  lastTouch: AttributionSnapshot | null;
+}
+
 export interface SignUpMerchantInput {
   email: string;
   password: string;
@@ -19,6 +32,9 @@ export interface SignUpMerchantInput {
    *  (docs/42 §6). Null when unavailable (e.g. a non-HTTP caller). */
   ipAddress?: string | null;
   userAgent?: string | null;
+  /** Marketing attribution (docs/80 §6.1) — the first-party acquisition snapshot
+   *  read from the attribution cookies at signup. Null when absent or unconsented. */
+  acquisition?: SignUpAcquisition | null;
 }
 
 export interface SignUpMerchantResult {
@@ -79,12 +95,28 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
   const passwordHash = await ctx.password.hash(input.password);
 
   try {
+    const acq = input.acquisition;
     const { userId, tenantId } = await authPrisma.$transaction(async (tx) => {
       const tenant = await tx.tenant.create({
         data: {
           name: input.storeName,
           slug,
           email,
+          // Attribution (docs/80 §8.3) — written once at signup. Denormalized
+          // channel/source/campaign drive the acquisition report; the full
+          // snapshots are retained for model recompute.
+          ...(acq && {
+            acquisitionChannel: acq.channel,
+            acquisitionSource: acq.source,
+            acquisitionCampaign: acq.campaign,
+            acquiredAt: new Date(),
+            ...(acq.firstTouch && {
+              acquisitionFirstTouch: acq.firstTouch as unknown as Prisma.InputJsonValue,
+            }),
+            ...(acq.lastTouch && {
+              acquisitionLastTouch: acq.lastTouch as unknown as Prisma.InputJsonValue,
+            }),
+          }),
         },
       });
 

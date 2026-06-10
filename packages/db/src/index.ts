@@ -154,6 +154,10 @@ export type {
   Broadcast,
   EmailEvent,
   EmailSuppression,
+  // Live Chat
+  ChatConversation,
+  ChatMessage,
+  ChatQuickReply,
 } from '@prisma/client';
 
 // `Prisma` is exported as a VALUE (not type-only) because callers need the

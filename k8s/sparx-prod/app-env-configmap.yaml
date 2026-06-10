@@ -54,4 +54,11 @@ data:
   # makes constantly.
   SPARX_EMAIL_PROVIDER: console
   SPARX_POSTAL_URL: http://postal-web.postal.svc.cluster.local:5000
+  # Live Chat (docs/56, docs/69 A-2) — the in-cluster Redis StatefulSet
+  # (k8s/redis, sparx-prod) backs the socket.io adapter so a chat message
+  # delivered to one api-rest replica fans out to chat sockets on every other
+  # replica. Unset → in-memory adapter (single-instance only). Caddy's
+  # reverse_proxy on api.sparx.works upgrades /ws/chat transparently — no
+  # Caddyfile change needed.
+  REDIS_URL: redis://redis.sparx-prod.svc.cluster.local:6379
   LOG_LEVEL: info

@@ -15,7 +15,17 @@ import { ModuleToggleRow } from './_components/module-toggle-row';
 export const dynamic = 'force-dynamic';
 
 interface ModuleMeta {
-  slug: 'builder' | 'commerce' | 'cms' | 'crm' | 'email' | 'b2b' | 'dropship' | 'ai';
+  slug:
+    | 'builder'
+    | 'commerce'
+    | 'cms'
+    | 'crm'
+    | 'email'
+    | 'b2b'
+    | 'dropship'
+    | 'inventory'
+    | 'chat'
+    | 'ai';
   label: string;
   description: string;
 }
@@ -47,6 +57,16 @@ const MODULES: ModuleMeta[] = [
     slug: 'dropship',
     label: 'Dropship',
     description: 'Supplier catalog sync, order routing, inventory feeds.',
+  },
+  {
+    slug: 'inventory',
+    label: 'Inventory',
+    description: 'Stock levels, locations, supplier feeds, low-stock alerts.',
+  },
+  {
+    slug: 'chat',
+    label: 'Live Chat',
+    description: 'Storefront chat widget, AI replies, and a staff inbox.',
   },
   { slug: 'ai', label: 'AI', description: 'Sparx AI assistant features inside the dashboard.' },
 ];

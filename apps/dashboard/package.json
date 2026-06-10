@@ -20,6 +20,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^5.4.0",
+    "@sparx/attribution": "workspace:*",
     "@sparx/auth": "workspace:*",
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/cms-editor": "workspace:*",
@@ -52,6 +53,7 @@
     "next": "^16.2.6",
     "posthog-js": "^1.376.4",
     "react": "^19.2.6",
+    "socket.io-client": "^4.8.1",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.76.1",
     "zod": "^4.4.3"

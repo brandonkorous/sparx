@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@sparx/builder-schemas": "workspace:*",
+    "@sparx/chat-widget": "workspace:*",
     "@sparx/cms-editor": "workspace:*",
     "@sparx/section-template-react": "workspace:*",
     "@sparx/sitebuilder-schemas": "workspace:*",

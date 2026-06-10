@@ -34,6 +34,7 @@ export const MODULE_COLOR_KEYS = [
   'b2b',
   'ai',
   'dropship',
+  'chat',
 ] as const;
 
 export type SemanticColorKey = (typeof COLOR_KEYS)[number];

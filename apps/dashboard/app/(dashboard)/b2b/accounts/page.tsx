@@ -6,7 +6,7 @@ import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
-import { B2bAccountsTable } from './_components/b2b-accounts-table';
+import { B2bAccountsSelectionTable } from './_components/b2b-accounts-selection-table';
 import { B2bAccountsImportExport } from './_components/b2b-accounts-import-export';
 
 export const dynamic = 'force-dynamic';
@@ -108,7 +108,7 @@ export default async function B2bAccountsPage({ searchParams }: PageProps) {
             />
           </Card>
         ) : (
-          <B2bAccountsTable accounts={accounts} />
+          <B2bAccountsSelectionTable accounts={accounts} />
         )}
       </Stack>
     </Container>

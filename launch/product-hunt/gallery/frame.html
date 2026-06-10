@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="frame.css" />
+  </head>
+  <body>
+    <div class="frame" id="frame">
+      <div class="cap">
+        <div class="cap__text">
+          <span class="cap__kicker"><span class="dot"></span><span id="kicker"></span></span>
+          <h1 class="cap__title" id="title"></h1>
+          <p class="cap__sub" id="sub"></p>
+        </div>
+        <span class="wordmark">Spar<x>x</x></span>
+      </div>
+      <div class="stage">
+        <div class="shot"><img id="shot" alt="" /></div>
+      </div>
+    </div>
+
+    <script>
+      const FRAMES = {
+        '02': {
+          accent: '#6366f1',
+          kicker: 'The dashboard',
+          title: 'One platform. <em>Eight modules.</em> One bill.',
+          sub: 'Every module shares one data layer, one login, and one bill — all in a single dashboard. Switch them on as you grow.',
+          shot: 'shots/workspace.png',
+        },
+        '03': {
+          accent: '#ec4899',
+          kicker: 'AI · MCP',
+          title: "Your AI doesn't just answer. <em>It operates.</em>",
+          sub: 'Connect Claude, ChatGPT, or Copilot once. Query orders, update inventory, send a quote — in plain language. Scoped per-agent, every call audited.',
+          shot: 'shots/ai.png',
+        },
+        '04': {
+          accent: '#6366f1',
+          kicker: 'Site builder',
+          title: 'Build it once. <em>Keep it forever.</em>',
+          sub: 'A visual, no-code editor for desktop, mobile, and email. The same block tree powers a five-product shop and a 50,000-SKU catalog.',
+          shot: 'shots/builder.png',
+        },
+        '05': {
+          accent: '#f97316',
+          kicker: 'Live sites',
+          title: 'Content or commerce. <em>Or both.</em>',
+          sub: 'Themed sites with real checkout, B2B pricing, and fitment search — or a pure content site. Selling is a capability, never the assumption.',
+          shot: 'shots/storefront.png',
+        },
+        '06': {
+          accent: '#6366f1',
+          kicker: 'One data layer',
+          title: 'Cancel the <em>six-tool stack.</em>',
+          sub: 'Builder + CMS + CRM + email + B2B + AI — natively, on one database. No Zapier, no sync drift, no “the HubSpot record disagrees with the Shopify record.”',
+          shot: 'shots/consolidate.png',
+        },
+        '07': {
+          accent: '#10b981',
+          kicker: 'Pricing',
+          title: 'Pay only for <em>what you use.</em>',
+          sub: 'Builder is $10/mo. Add a module when you need it, drop it when you don’t — or take a bundle. No feature held hostage behind a tier.',
+          shot: 'shots/pricing.png',
+        },
+      };
+
+      const id = new URLSearchParams(location.search).get('id') || '02';
+      const f = FRAMES[id];
+      document.getElementById('frame').style.setProperty('--accent', f.accent);
+      document.getElementById('kicker').textContent = f.kicker;
+      document.getElementById('title').innerHTML = f.title;
+      document.getElementById('sub').textContent = f.sub;
+      document.getElementById('shot').src = f.shot;
+    </script>
+  </body>
+</html>

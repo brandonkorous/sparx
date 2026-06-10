@@ -10,6 +10,7 @@ import { env } from './env.js';
 import { startScheduledPublishLoop } from './lib/scheduled-publish.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
+import { attachChatWebsocket } from './websocket/index.js';
 
 async function main(): Promise<void> {
   // Hand api-core its Pub/Sub config before any route handler can call
@@ -59,12 +60,20 @@ async function main(): Promise<void> {
   // via its own advisory lock — see lib/email-dispatch.ts.
   const stopEmailDispatch = startEmailDispatchLoop(app.log);
 
+  // Live Chat WebSocket server (docs/56, docs/69 A-2). Attaches socket.io to the
+  // Fastify HTTP server at /ws/chat; uses the Redis adapter when REDIS_URL is
+  // set (multi-replica fan-out) and the in-memory adapter otherwise.
+  const chatWs = await attachChatWebsocket(app.server, app.log);
+
   const shutdown = (signal: NodeJS.Signals): void => {
     app.log.info({ signal }, 'shutdown received');
     stopScheduledPublish();
     stopSitebuilderPublish();
     stopWebhookDelivery();
     stopEmailDispatch();
+    void chatWs.close().catch((err: unknown) => {
+      app.log.error({ err }, 'chat websocket close failed');
+    });
     void app
       .close()
       .then(() => {

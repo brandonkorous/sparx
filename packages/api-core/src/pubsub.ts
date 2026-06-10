@@ -59,7 +59,11 @@ export type EventType =
   | 'order.refunded'
   | 'order.payment_failed'
   // Import jobs (docs/68 §8) — consumed by import-worker (Cloud Run).
-  | 'import.job.created';
+  | 'import.job.created'
+  // Live Chat (docs/56, docs/69) — a customer message needs a human (AI
+  // disabled / escalated / outside hours). Consumed by email-worker (chat
+  // notification fallback) + the web-push sender. See docs/69 A-3 / A-6.
+  | 'chat.message.received';
 
 export interface SparxEvent<T = unknown> {
   type: EventType;

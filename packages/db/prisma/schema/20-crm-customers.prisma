@@ -90,6 +90,9 @@ model Customer {
   // B2B scheduling — appointments booked by this customer (docs/64 Ph7)
   serviceAppointments ServiceAppointment[]
 
+  // Live Chat — conversations opened by this customer (docs/56)
+  chatConversations ChatConversation[]
+
   @@unique([tenantId, propertyId, email], map: "customers_tenant_property_email_unique")
   @@index([tenantId, propertyId])
   @@index([identityId])

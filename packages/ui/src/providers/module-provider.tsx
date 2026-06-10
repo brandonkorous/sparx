@@ -18,6 +18,7 @@ export type SparxModule =
   | 'ai'
   | 'dropship'
   | 'inventory'
+  | 'chat'
   | 'platform';
 
 interface ModuleColors {
@@ -38,6 +39,7 @@ const MODULE_COLORS: Record<SparxModule, ModuleColors> = {
   ai: { color: '#EC4899', tint: '#FDF2F8', text: '#9D174D' },
   dropship: { color: '#10B981', tint: '#ECFDF5', text: '#065F46' },
   inventory: { color: '#F59E0B', tint: '#FFFBEB', text: '#B45309' },
+  chat: { color: '#8B5CF6', tint: '#F5F3FF', text: '#6D28D9' },
   platform: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA' },
 };
 

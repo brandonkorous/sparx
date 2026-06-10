@@ -26,6 +26,7 @@
   --module-b2b: #475569;
   --module-ai: #ec4899;
   --module-dropship: #10b981;
+  --module-chat: #8b5cf6;
 
   /* Active module — set by ModuleProvider, read by components */
   --module-active: var(--sparx-primary);
@@ -357,6 +358,13 @@
   --c-ink: color-mix(in oklch, var(--module-dropship) 58%, var(--color-text-primary));
   --c-hover: color-mix(in oklch, var(--module-dropship) 86%, var(--color-text-primary));
   --c-tint: color-mix(in oklch, var(--module-dropship) 14%, transparent);
+}
+.sx-c-chat {
+  --c-bg: var(--module-chat);
+  --c-fg: #ffffff;
+  --c-ink: color-mix(in oklch, var(--module-chat) 58%, var(--color-text-primary));
+  --c-hover: color-mix(in oklch, var(--module-chat) 86%, var(--color-text-primary));
+  --c-tint: color-mix(in oklch, var(--module-chat) 14%, transparent);
 }
 
 /* Indeterminate <Progress> — a sliding pill that loops when no value is set. */

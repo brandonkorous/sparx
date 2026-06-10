@@ -34,6 +34,7 @@ import { getLegalFooterLinks } from '@/lib/legal';
 import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/builder';
 import { loadSiteData } from '@/lib/builder-data';
 import { ConsentManager } from '@/components/consent/consent-manager';
+import { ChatWidget } from '@sparx/chat-widget';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import { resolveActivePropertySlug, resolveTenant, type TenantTheme } from '@/lib/tenant';
@@ -197,6 +198,15 @@ function navNodesToFooterColumns(nodes: NavNode[]): FooterColumn[] {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const tenant = await resolveTenant();
+  // Live Chat (docs/56, docs/69 A-4) — the floating widget mounts only when the
+  // tenant has the `chat` module active. The widget is a client component, so it
+  // talks to the browser-reachable public API origin (NEXT_PUBLIC_API_URL), not
+  // the in-cluster SPARX_API_REST_URL the SSR data fetchers use.
+  const chatEnabled = Boolean(
+    (tenant?.settings as { modules?: { chat?: { enabled?: boolean } } } | undefined)?.modules?.chat
+      ?.enabled
+  );
+  const chatApiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
   // Active site slug (docs/58 D1) — handed to CartProvider so storefront carts
   // (and the orders they become) are tagged with their origin site. Cheap: the
   // underlying resolveSiteRoute() is request-cached alongside resolveTenant.
@@ -452,6 +462,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 </div>
                 <MiniCart />
                 <ConsentManager tenant={tenant.slug} config={tenant.consent} />
+                {chatEnabled && chatApiUrl ? (
+                  <ChatWidget
+                    apiUrl={chatApiUrl}
+                    tenantSlug={tenant.slug}
+                    accentColor={tenant.theme?.colorPrimary ?? null}
+                  />
+                ) : null}
               </CartProvider>
             </WishlistProvider>
           </CustomerProvider>

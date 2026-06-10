@@ -21,6 +21,8 @@ const MODULE_SLUGS: ModuleSlug[] = [
   'email',
   'b2b',
   'dropship',
+  'inventory',
+  'chat',
   'ai',
 ];
 

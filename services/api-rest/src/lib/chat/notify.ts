@@ -1,0 +1,110 @@
+// Live Chat — staff notification fan-out (docs/56, docs/69 A-6).
+//
+// When an inbound customer message needs a human (AI disabled / escalated /
+// outside hours) this publishes:
+//   • `chat.message.received` to Pub/Sub — the channel a future web-push sender
+//     (kept OUT of email-worker per the service-boundary rule) consumes.
+//   • one `email.send` per owner/admin — the "New chat message" notification,
+//     rendered by email-worker's existing pipeline (chat-notification template).
+//
+// Guarded against spam: only the FIRST inbound message of an unassigned
+// conversation notifies. Once staff is assigned or the thread is underway, no
+// further emails fire.
+
+import type { FastifyBaseLogger } from 'fastify';
+import { prisma, withTenant } from '@sparx/db';
+import type { TenantContext } from '@sparx/db';
+import { publish } from '@sparx/api-core/pubsub';
+
+import { firstNonEmpty } from './types.js';
+
+const DASHBOARD_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.sparx.works';
+
+export type EscalationReason = 'ai_disabled' | 'away' | 'escalated';
+
+export async function escalateToHuman(
+  ctx: TenantContext,
+  conversationId: string,
+  logger: FastifyBaseLogger,
+  reason: EscalationReason
+): Promise<void> {
+  // The event every notification channel keys off (web push, future consumers).
+  await publish(logger, 'chat.message.received', ctx.tenantId, null, {
+    conversationId,
+    reason,
+  });
+
+  try {
+    const info = await withTenant(ctx, async (tx) => {
+      const conv = await tx.chatConversation.findUnique({
+        where: { id: conversationId },
+        select: {
+          assignedToId: true,
+          visitorName: true,
+          visitorEmail: true,
+          customer: { select: { firstName: true, lastName: true, email: true } },
+        },
+      });
+      if (!conv) return null;
+      const customerCount = await tx.chatMessage.count({
+        where: { conversationId, senderType: 'customer' },
+      });
+      const lastCustomer = await tx.chatMessage.findFirst({
+        where: { conversationId, senderType: 'customer' },
+        orderBy: { createdAt: 'desc' },
+        select: { body: true },
+      });
+      return { conv, customerCount, snippet: lastCustomer?.body ?? '' };
+    });
+
+    if (!info?.conv) return;
+    // Staff already owns it, or this isn't the first inbound — don't email.
+    if (info.conv.assignedToId || info.customerCount > 1) return;
+
+    const fullName = [info.conv.customer?.firstName, info.conv.customer?.lastName]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+    const customerName =
+      firstNonEmpty(
+        fullName,
+        info.conv.visitorName,
+        info.conv.customer?.email,
+        info.conv.visitorEmail
+      ) ?? 'A visitor';
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: ctx.tenantId },
+      select: { name: true },
+    });
+
+    // owner/admin recipients. `users` is ENABLE-only RLS (not FORCE), so the
+    // tenant filter scopes correctly without a tenant GUC.
+    const recipients = await prisma.user.findMany({
+      where: { tenantId: ctx.tenantId, role: { in: ['owner', 'admin'] } },
+      select: { email: true },
+    });
+
+    const conversationUrl = `${DASHBOARD_URL.replace(/\/$/, '')}/chat/${conversationId}`;
+    const snippet = info.snippet.slice(0, 200);
+
+    await Promise.all(
+      recipients
+        .filter((r) => r.email)
+        .map((r) =>
+          publish(logger, 'email.send', ctx.tenantId, null, {
+            template: 'chat-notification',
+            to: r.email,
+            props: {
+              customerName,
+              messageSnippet: snippet,
+              conversationUrl,
+              ...(tenant?.name ? { storeName: tenant.name } : {}),
+            },
+          })
+        )
+    );
+  } catch (err) {
+    logger.error({ err, conversationId }, 'chat staff notification failed');
+  }
+}

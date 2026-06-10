@@ -33,6 +33,16 @@ const EnvSchema = z
     // resolves a topic per `EventType` (topic name == event type) — there is
     // no shared/fan-out topic to configure.
     GCP_PROJECT_ID: z.string().optional(),
+    // Optional: when set (e.g. redis://redis:6379), the Live Chat WebSocket
+    // server uses the socket.io Redis adapter so a message delivered to one
+    // api-rest replica fans out to chat sockets on every other replica. Unset
+    // (dev / single-instance) → the default in-memory adapter, which is correct
+    // for one process. Mirrors the GCP_PROJECT_ID Pub/Sub stub philosophy.
+    REDIS_URL: z.string().optional(),
+    // Optional: when set, the Live Chat AI handler (docs/69 A-3) auto-responds
+    // to storefront messages via Claude Haiku. Unset → AI is disabled and every
+    // inbound customer message routes straight to a human (notification fires).
+    ANTHROPIC_API_KEY: z.string().optional(),
     // GoDaddy Reseller API credentials (docs/24 §3, docs/24 §10).
     // OTE (staging) credentials — used when NODE_ENV !== 'production'.
     GODADDY_API_KEY_OTE: z.string().optional(),

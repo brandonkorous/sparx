@@ -132,6 +132,19 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
         .optional(),
     }),
   }),
+  z.object({
+    template: z.literal('chat-notification'),
+    to: z.string().email(),
+    from: z.string().optional(),
+    replyTo: z.string().optional(),
+    variables: Variables,
+    props: z.object({
+      customerName: z.string().min(1),
+      messageSnippet: z.string(),
+      conversationUrl: z.string().url(),
+      storeName: z.string().optional(),
+    }),
+  }),
 ]);
 
 // Pre-rendered "raw" send — used by broadcasts (render once, send to many) and

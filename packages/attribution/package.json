@@ -1,0 +1,29 @@
+{
+  "name": "@sparx/attribution",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Marketing attribution engine (docs/80): UTM taxonomy + controlled vocabulary, a deterministic channel classifier, and a validating campaign-link builder. The single source of truth for utm_* values across WizeWorks acquisition (L-PLAT) and tenant commerce (L-TEN) attribution. Dependency-free; consumed by apps/web + apps/site capture (Phase 1+) and the launch link generator (Phase 0).",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "links": "node --import tsx src/cli.ts",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "tsx": "^4.20.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

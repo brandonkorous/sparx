@@ -28,6 +28,7 @@ export type ModuleSlug =
   | 'b2b'
   | 'dropship'
   | 'inventory'
+  | 'chat'
   | 'ai';
 
 // Canonical ordering is irrelevant here — callers (sidebar, breadcrumb) order
@@ -41,6 +42,7 @@ const ALL_MODULES: readonly ModuleSlug[] = [
   'b2b',
   'dropship',
   'inventory',
+  'chat',
   'ai',
 ];
 

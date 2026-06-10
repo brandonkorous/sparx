@@ -44,6 +44,11 @@ import {
   appointmentCancelledSubject,
   type AppointmentCancelledEmailProps,
 } from './templates/appointment-cancelled';
+import {
+  ChatNotificationEmail,
+  chatNotificationSubject,
+  type ChatNotificationEmailProps,
+} from './templates/chat-notification';
 
 // Template registry + dispatcher. Two surfaces:
 //
@@ -71,7 +76,8 @@ export type TemplateId =
   | 'shipping-confirmation'
   | 'appointment-confirmation'
   | 'appointment-reminder'
-  | 'appointment-cancelled';
+  | 'appointment-cancelled'
+  | 'chat-notification';
 
 export type TemplateSend =
   | {
@@ -127,6 +133,13 @@ export type TemplateSend =
       template: 'appointment-cancelled';
       to: string;
       props: AppointmentCancelledEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'chat-notification';
+      to: string;
+      props: ChatNotificationEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -282,6 +295,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'appointment-cancelled',
+      };
+    }
+    case 'chat-notification': {
+      const element = wrap(<ChatNotificationEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: chatNotificationSubject(input.props.customerName),
+        html,
+        text,
+        templateId: 'chat-notification',
       };
     }
   }

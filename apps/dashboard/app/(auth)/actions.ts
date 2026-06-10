@@ -1,8 +1,9 @@
 'use server';
 
+import { ATTR_COOKIES, deserializeSnapshot } from '@sparx/attribution';
 import { signUpMerchant, SignUpError } from '@sparx/auth';
 import { auth } from '@sparx/auth/server';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 export interface SignUpFormState {
   ok: boolean;
@@ -42,8 +43,25 @@ export async function signUpAction(formData: FormData): Promise<SignUpFormState>
   const ipAddress = fwd && fwd.length > 0 ? fwd : null;
   const userAgent = hdrs.get('user-agent');
 
+  // Marketing attribution (docs/80 §6.1) — the first-party touch cookies are set
+  // on sparx.works and carried here across the `.sparx.works` boundary. Acquisition
+  // is attributed to first-touch (docs/80 §9); both snapshots ride along for recompute.
+  const cookieStore = await cookies();
+  const firstTouch = deserializeSnapshot(cookieStore.get(ATTR_COOKIES.first)?.value);
+  const lastTouch = deserializeSnapshot(cookieStore.get(ATTR_COOKIES.last)?.value);
+  const acquisition =
+    firstTouch || lastTouch
+      ? {
+          channel: firstTouch?.channel ?? lastTouch?.channel ?? null,
+          source: firstTouch?.source ?? lastTouch?.source ?? null,
+          campaign: firstTouch?.campaign ?? lastTouch?.campaign ?? null,
+          firstTouch,
+          lastTouch,
+        }
+      : null;
+
   try {
-    await signUpMerchant({ email, password, name, storeName, ipAddress, userAgent });
+    await signUpMerchant({ email, password, name, storeName, ipAddress, userAgent, acquisition });
   } catch (err) {
     if (err instanceof SignUpError) {
       return { ok: false, error: err.message };

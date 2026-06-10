@@ -1,0 +1,91 @@
+// Live Chat module (docs/56, docs/69 Track A) — first-party customer chat.
+//
+// Three tables: conversations (one thread per customer/visitor), messages (the
+// thread body; sender_type ∈ customer | staff | ai), and quick_replies
+// (tenant-authored canned responses). Tenant-scoped with ENABLE + FORCE RLS via
+// current_tenant_id() (policies in migration 20260722000000_chat). Messages
+// denormalize tenant_id so the isolation policy filters without joining
+// conversations (same pattern as order_items / import_job_rows).
+
+model ChatConversation {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String  @map("tenant_id") @db.Uuid
+  customerId   String? @map("customer_id") @db.Uuid
+  assignedToId String? @map("assigned_to") @db.Uuid
+
+  status  String  @default("open") @db.VarChar(20) // open | pending | resolved | spam
+  source  String  @default("storefront") @db.VarChar(20) // storefront | sparx_market | dashboard
+  subject String? @db.VarChar(255)
+
+  // Captured by the pre-chat form for an anonymous visitor (customer_id null).
+  // Promoted onto a Customer row once the CRM resolves/creates the contact.
+  visitorName  String? @map("visitor_name") @db.VarChar(255)
+  visitorEmail String? @map("visitor_email") @db.VarChar(255)
+
+  // Opaque ownership token for an anonymous storefront visitor — issued when the
+  // widget opens a conversation, echoed back via the `x-chat-token` header on
+  // every subsequent public call (mirrors carts.guest_token). Never exposed to
+  // staff endpoints.
+  visitorToken String? @map("visitor_token") @db.VarChar(64)
+
+  // Inbound (customer) messages the staff inbox hasn't read yet — drives the
+  // sidebar unread badge without scanning chat_messages on every render.
+  unreadStaff Int @default(0) @map("unread_staff")
+
+  lastMessageAt DateTime? @map("last_message_at") @db.Timestamptz
+  resolvedAt    DateTime? @map("resolved_at") @db.Timestamptz
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  assignedTo User?     @relation("ChatAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  messages ChatMessage[]
+
+  @@index([tenantId, status, lastMessageAt(sort: Desc)])
+  @@index([tenantId, assignedToId])
+  @@index([customerId])
+  @@map("chat_conversations")
+}
+
+model ChatMessage {
+  id             String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String @map("tenant_id") @db.Uuid
+  conversationId String @map("conversation_id") @db.Uuid
+
+  senderType String  @map("sender_type") @db.VarChar(10) // customer | staff | ai
+  senderId   String? @map("sender_id") @db.Uuid // user id (staff) or customer id; null for anon/ai
+
+  body        String  @db.Text
+  attachments Json    @default("[]")
+
+  aiGenerated  Boolean @default(false) @map("ai_generated")
+  aiConfidence Float?  @map("ai_confidence")
+
+  readAt    DateTime? @map("read_at") @db.Timestamptz
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant       Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([tenantId])
+  @@map("chat_messages")
+}
+
+model ChatQuickReply {
+  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String  @map("tenant_id") @db.Uuid
+  title    String  @db.VarChar(100)
+  body     String  @db.Text
+  shortcut String? @db.VarChar(50)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("chat_quick_replies")
+}

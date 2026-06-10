@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="frame.css" />
+    <style>
+      .frame {
+        background:
+          radial-gradient(
+            900px 520px at 78% -8%,
+            rgba(99, 102, 241, 0.1),
+            transparent 60%
+          ),
+          radial-gradient(
+            700px 520px at 0% 110%,
+            rgba(236, 72, 153, 0.07),
+            transparent 55%
+          ),
+          #fafafa;
+        padding: 70px 70px 60px;
+        justify-content: space-between;
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .wm {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+      .wm x {
+        color: var(--sparx-primary);
+      }
+      .url {
+        font-family: var(--font-mono);
+        font-size: 15px;
+        color: var(--text-tertiary);
+      }
+      .mid {
+        max-width: 1000px;
+      }
+      .eyebrow {
+        font-size: 17px;
+        font-weight: 500;
+        color: var(--sparx-primary);
+        margin-bottom: 22px;
+      }
+      h1 {
+        font-size: 76px;
+        line-height: 1.02;
+        font-weight: 600;
+        letter-spacing: -0.035em;
+        color: #0a0a0a;
+      }
+      h1 .muted {
+        color: #c4c4cc;
+      }
+      .sub {
+        margin-top: 26px;
+        font-size: 21px;
+        line-height: 1.55;
+        color: var(--text-secondary);
+        max-width: 720px;
+      }
+      .chips {
+        margin-top: 38px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #27272a;
+        background: #fff;
+        border: 1px solid var(--border);
+        padding: 11px 18px;
+        border-radius: 9999px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      }
+      .chip i {
+        width: 9px;
+        height: 9px;
+        border-radius: 9999px;
+      }
+      .bottom {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+      }
+      .modules {
+        display: flex;
+        align-items: center;
+        gap: 0;
+      }
+      .modules .m {
+        width: 30px;
+        height: 30px;
+        border-radius: 9999px;
+        border: 2.5px solid #fafafa;
+        margin-left: -8px;
+      }
+      .modules .label {
+        margin-left: 16px;
+        font-size: 15px;
+        color: var(--text-secondary);
+      }
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #0a0a0a;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 500;
+        padding: 14px 24px;
+        border-radius: 12px;
+      }
+      .cta x {
+        color: var(--sparx-primary-light);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame" style="--accent: #6366f1">
+      <div class="top">
+        <span class="wm">Spar<x>x</x></span>
+        <span class="url">sparx.works</span>
+      </div>
+
+      <div class="mid">
+        <div class="eyebrow">AI builds it. Sparx keeps it.</div>
+        <h1>The site that's still<br /><span class="muted">yours next year.</span></h1>
+        <p class="sub">
+          Anyone can generate a website in seconds. Almost nobody can keep one
+          alive. Sparx is where it lives afterward — maintained and extended by
+          you, no-code by default, full code when you want it. For years.
+        </p>
+        <div class="chips">
+          <span class="chip"><i style="background: #6366f1"></i>No-code editor</span>
+          <span class="chip"><i style="background: #10b981"></i>Own your data</span>
+          <span class="chip"><i style="background: #475569"></i>Headless API</span>
+          <span class="chip"><i style="background: #ec4899"></i>MCP-native</span>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <div class="modules">
+          <span class="m" style="background: #6366f1"></span>
+          <span class="m" style="background: #f97316"></span>
+          <span class="m" style="background: #14b8a6"></span>
+          <span class="m" style="background: #06b6d4"></span>
+          <span class="m" style="background: #0ea5e9"></span>
+          <span class="m" style="background: #475569"></span>
+          <span class="m" style="background: #ec4899"></span>
+          <span class="m" style="background: #10b981"></span>
+          <span class="label">Eight modules. One platform. One bill.</span>
+        </div>
+        <span class="cta">Live in 5 minutes &middot; sparx.works</span>
+      </div>
+    </div>
+  </body>
+</html>

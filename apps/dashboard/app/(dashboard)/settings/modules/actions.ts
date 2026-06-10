@@ -29,6 +29,8 @@ const VALID_SLUGS: ReadonlySet<ModuleSlug> = new Set([
   'email',
   'b2b',
   'dropship',
+  'inventory',
+  'chat',
   'ai',
 ]);
 

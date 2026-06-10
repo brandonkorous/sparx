@@ -28,6 +28,7 @@ import {
   Layers,
   LayoutTemplate,
   Mail,
+  MessagesSquare,
   Package,
   Plus,
   ShoppingCart,
@@ -121,6 +122,14 @@ const MODULE_REGISTRY: ModuleEntry[] = [
     label: 'Dropship',
     description: 'Suppliers, routing, reconciliation',
     icon: <Truck className="h-4 w-4" />,
+  },
+  {
+    slug: 'chat',
+    id: 'chat',
+    href: '/chat',
+    label: 'Live Chat',
+    description: 'Widget, AI replies, staff inbox',
+    icon: <MessagesSquare className="h-4 w-4" />,
   },
   {
     slug: 'ai',
