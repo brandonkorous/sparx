@@ -66,9 +66,17 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: Palette,
     accent: '#8b5cf6',
     tagline: 'Brand looks — color, type, and shape — applied site-wide.',
-    status: 'coming-soon',
-    facets: [],
-    sorts: [],
+    status: 'live',
+    facets: [
+      { key: 'industry', label: 'Industry', type: 'multi' },
+      { key: 'mood', label: 'Style', type: 'multi' },
+      { key: 'colorFamily', label: 'Color', type: 'multi' },
+    ],
+    sorts: [
+      { key: 'popular', label: 'Most popular' },
+      { key: 'newest', label: 'Newest' },
+      { key: 'name', label: 'Name (A–Z)' },
+    ],
   },
   {
     id: 'integrations',

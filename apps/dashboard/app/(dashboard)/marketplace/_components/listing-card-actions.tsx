@@ -7,6 +7,7 @@
 import type { MarketplaceListing } from '../_types';
 
 import { BlueprintCardActions } from './blueprint-card-actions';
+import { ThemeCardActions } from './theme-card-actions';
 
 export function ListingCardActions({
   item,
@@ -25,6 +26,9 @@ export function ListingCardActions({
         canInstall={canInstall}
       />
     );
+  }
+  if (item.category === 'themes') {
+    return <ThemeCardActions themeSlug={item.slug} themeName={item.name} canInstall={canInstall} />;
   }
   return null;
 }

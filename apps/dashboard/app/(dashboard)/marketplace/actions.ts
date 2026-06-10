@@ -45,6 +45,23 @@ export async function goLiveAction(
   }
 }
 
+// Apply a marketplace THEME to the active site (docs/60 §10, D11 — active-site
+// only). The theme's slug IS the @sparx/site-themes preset key, so this is the
+// same call the Brand & Theme editor's "select theme" makes: it loads the preset
+// into the active property's DRAFT (x-sparx-property-id is forwarded by the
+// client). Nothing goes live until the tenant reviews + publishes in the editor.
+export async function applyThemeAction(slug: string): Promise<ActionResult<{ themeKey: string }>> {
+  try {
+    await api.put<unknown>('/v1/sitebuilder/config/theme', { themeKey: slug });
+    revalidatePath('/marketplace');
+    revalidatePath('/builder', 'layout');
+    return { ok: true, data: { themeKey: slug } };
+  } catch (err) {
+    const e = err as ApiRestError;
+    return { ok: false, error: { message: e.message ?? 'Could not apply theme.' } };
+  }
+}
+
 // Reset & reinstall (docs/54 D8): tears down everything the install created and
 // deletes the install row, so the blueprint can be installed fresh. Destructive —
 // the card gates it behind a confirm.

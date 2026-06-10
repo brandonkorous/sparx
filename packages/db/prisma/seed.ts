@@ -20,6 +20,105 @@ const STAFF_PASSWORD = 'e2e-test-password';
 // The first-party publisher every Sparx-core listing belongs to (docs/60 D9).
 const SPARX_PUBLISHER_SLUG = 'sparx';
 
+// The Sparx-core THEME catalog (docs/60 §6, Marketplace Themes). Each row's
+// `slug` is the @sparx/site-themes preset key, so the dashboard "Apply" action
+// (PUT /v1/sitebuilder/config/theme { themeKey }) and the storefront token
+// compiler resolve it by slug — the heavy token payload stays in the in-code
+// preset, so `tokens` is left NULL for these Sparx-core rows (mirrors blueprints).
+// Curated marketplace copy + facets live here rather than importing the presets,
+// so the catalog row needs no @sparx/site-themes dependency.
+const SPARX_THEMES: {
+  slug: string;
+  name: string;
+  accent: string;
+  mood: string;
+  colorFamily: string;
+  density: string;
+  industry: string;
+  tagline: string;
+  description: string;
+  sortWeight: number;
+}[] = [
+  {
+    slug: 'apex',
+    name: 'Apex',
+    accent: '#6366f1',
+    mood: 'Minimal',
+    colorFamily: 'Indigo',
+    density: 'Standard',
+    industry: 'General',
+    tagline: 'Clean, modern, and versatile — a confident default for any store.',
+    description:
+      'A minimal, content-first theme that gets out of the way of your products. Balanced spacing, crisp type, and a single accent colour make Apex the safe, sharp starting point for almost any catalog.',
+    sortWeight: 60,
+  },
+  {
+    slug: 'industrial',
+    name: 'Industrial',
+    accent: '#475569',
+    mood: 'Bold',
+    colorFamily: 'Slate',
+    density: 'Standard',
+    industry: 'Industrial & B2B',
+    tagline: 'Heavy-duty and utilitarian — built for parts, equipment, and trade.',
+    description:
+      'Squared corners, strong rules, and a no-nonsense palette. Industrial is tuned for parts catalogs, equipment, and wholesale where customers scan specs and SKUs, not lifestyle imagery.',
+    sortWeight: 50,
+  },
+  {
+    slug: 'drift',
+    name: 'Drift',
+    accent: '#78716c',
+    mood: 'Editorial',
+    colorFamily: 'Stone',
+    density: 'Spacious',
+    industry: 'Fashion & Apparel',
+    tagline: 'Editorial and airy — lets big imagery and typography lead.',
+    description:
+      'Generous whitespace, oversized headings, and full-bleed imagery. Drift is an editorial theme for apparel and lifestyle brands that sell on look and feel.',
+    sortWeight: 45,
+  },
+  {
+    slug: 'market',
+    name: 'Market',
+    accent: '#f59e0b',
+    mood: 'Vibrant',
+    colorFamily: 'Amber',
+    density: 'Standard',
+    industry: 'Food & Beverage',
+    tagline: 'Warm and lively — appetizing for food, drink, and local goods.',
+    description:
+      'A warm, energetic palette with rounded shapes and friendly type. Market suits food, beverage, and local makers who want a storefront that feels inviting and fresh.',
+    sortWeight: 40,
+  },
+  {
+    slug: 'fleet',
+    name: 'Fleet',
+    accent: '#1d4ed8',
+    mood: 'Utilitarian',
+    colorFamily: 'Blue',
+    density: 'Wide',
+    industry: 'Fleet & Industrial',
+    tagline: 'Data-dense and professional — a wide layout for fleet B2B.',
+    description:
+      'A wide, information-rich layout built for fleet operators and B2B buyers who work in tables, specs, and bulk orders. Fleet reads like a well-organised dashboard, not a boutique.',
+    sortWeight: 55,
+  },
+  {
+    slug: 'drop',
+    name: 'Drop',
+    accent: '#111827',
+    mood: 'Bold',
+    colorFamily: 'Graphite',
+    density: 'Compact',
+    industry: 'Dropship & DTC',
+    tagline: 'High-contrast and punchy — made for hype drops and DTC.',
+    description:
+      'High-contrast, tight, and bold. Drop is made for single-product launches, hype drops, and direct-to-consumer brands that want one thing front and centre.',
+    sortWeight: 35,
+  },
+];
+
 /** The lightweight "what this creates" counts a blueprint card shows — computed
  *  from the manifest so the catalog row never has to load it again. */
 function blueprintContents(bp: Blueprint): Record<string, number | string | boolean | null> {
@@ -82,7 +181,33 @@ async function seedMarketplaceCatalog(): Promise<void> {
       });
     }
 
-    console.log(`Seeded marketplace catalog: ${listBlueprints().length} Sparx-core blueprint(s).`);
+    // Themes — slug = @sparx/site-themes preset key; tokens NULL (resolved by
+    // slug, like blueprints). Curated marketplace copy + facets from SPARX_THEMES.
+    for (const t of SPARX_THEMES) {
+      const shared = {
+        name: t.name,
+        tagline: t.tagline.slice(0, 255),
+        description: t.description,
+        accent: t.accent,
+        mood: t.mood,
+        colorFamily: t.colorFamily,
+        density: t.density,
+        industry: t.industry,
+        sortWeight: t.sortWeight,
+        status: 'published',
+        visibility: 'public',
+        publisherId: publisher.id,
+      };
+      await tx.marketplaceTheme.upsert({
+        where: { slug: t.slug },
+        update: shared,
+        create: { slug: t.slug, publishedAt: new Date(), ...shared },
+      });
+    }
+
+    console.log(
+      `Seeded marketplace catalog: ${listBlueprints().length} blueprint(s), ${SPARX_THEMES.length} theme(s).`
+    );
   });
 }
 
