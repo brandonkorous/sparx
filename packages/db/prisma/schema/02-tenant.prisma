@@ -61,6 +61,8 @@ model Tenant {
   // Bulk-operation revert ledger (docs/69 B-3) — before-state for undoable
   // bulk mutations (price adjustment, …) retained for a 30-minute window.
   bulkOpReverts BulkOpRevert[]
+  // Web Push subscriptions for staff browser notifications (docs/69 A-6).
+  pushSubscriptions PushSubscription[]
   apiKeys       ApiKey[]
 
   // Marketplace (docs/60 §6) — the publisher identities this tenant owns when it

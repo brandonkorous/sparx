@@ -1,0 +1,27 @@
+// Web Push subscriptions — one row per (staff user, browser endpoint). The
+// dashboard registers a service worker, subscribes via the Push API with the
+// VAPID public key, and POSTs the subscription here. push-worker reads these to
+// deliver `push.send` notifications; a 410 Gone on send means the subscription
+// expired → the worker deletes it. A browser has one endpoint per VAPID key, so
+// (tenant, endpoint) is unique and re-subscribing updates the owning user/keys.
+//
+// RLS: tenant-scoped → ENABLE + FORCE + tenant_isolation on current_tenant_id().
+
+model PushSubscription {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  endpoint   String   @db.Text
+  p256dh     String   @db.Text
+  auth       String   @db.Text
+  userAgent  String?  @map("user_agent") @db.VarChar(400)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+  lastSeenAt DateTime @default(now()) @map("last_seen_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, endpoint])
+  @@index([tenantId, userId])
+  @@map("push_subscriptions")
+}

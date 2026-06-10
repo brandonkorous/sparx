@@ -82,6 +82,7 @@ import crmRoutes from './routes/v1/crm/index.js';
 import b2bRoutes from './routes/v1/b2b/index.js';
 import chatRoutes from './routes/v1/chat/index.js';
 import publicChatRoutes from './routes/v1/public/chat.js';
+import pushRoutes from './routes/v1/push.js';
 import sitebuilderRoutes from './routes/v1/sitebuilder/index.js';
 import builderRoutes from './routes/v1/builder/index.js';
 import commerceRoutes from './routes/v1/commerce/index.js';
@@ -541,6 +542,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(crmRoutes);
   await app.register(b2bRoutes);
   await app.register(chatRoutes);
+  await app.register(pushRoutes);
   await app.register(sitebuilderRoutes);
   await app.register(builderRoutes);
   await app.register(commerceRoutes);

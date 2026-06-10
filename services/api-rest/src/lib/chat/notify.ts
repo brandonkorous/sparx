@@ -82,27 +82,42 @@ export async function escalateToHuman(
     // tenant filter scopes correctly without a tenant GUC.
     const recipients = await prisma.user.findMany({
       where: { tenantId: ctx.tenantId, role: { in: ['owner', 'admin'] } },
-      select: { email: true },
+      select: { id: true, email: true },
     });
 
     const conversationUrl = `${DASHBOARD_URL.replace(/\/$/, '')}/chat/${conversationId}`;
     const snippet = info.snippet.slice(0, 200);
 
+    // Each recipient gets an email (if they have an address) AND a web-push
+    // fan-out (delivered only if they've registered a browser subscription).
+    // push.send is composed here so push-worker stays a dumb sender.
     await Promise.all(
-      recipients
-        .filter((r) => r.email)
-        .map((r) =>
-          publish(logger, 'email.send', ctx.tenantId, null, {
-            template: 'chat-notification',
-            to: r.email,
-            props: {
-              customerName,
-              messageSnippet: snippet,
-              conversationUrl,
-              ...(tenant?.name ? { storeName: tenant.name } : {}),
-            },
-          })
-        )
+      recipients.flatMap((r) => {
+        const sends: Promise<void>[] = [
+          publish(logger, 'push.send', ctx.tenantId, null, {
+            userId: r.id,
+            title: `New message from ${customerName}`,
+            body: snippet || 'New chat message',
+            url: conversationUrl,
+            tag: `chat-${conversationId}`,
+          }),
+        ];
+        if (r.email) {
+          sends.push(
+            publish(logger, 'email.send', ctx.tenantId, null, {
+              template: 'chat-notification',
+              to: r.email,
+              props: {
+                customerName,
+                messageSnippet: snippet,
+                conversationUrl,
+                ...(tenant?.name ? { storeName: tenant.name } : {}),
+              },
+            })
+          );
+        }
+        return sends;
+      })
     );
   } catch (err) {
     logger.error({ err, conversationId }, 'chat staff notification failed');

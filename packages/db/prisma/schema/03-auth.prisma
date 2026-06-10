@@ -31,9 +31,11 @@ model User {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  sessions Session[]
-  accounts Account[]
+  tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sessions          Session[]
+  accounts          Account[]
+  // Web Push subscriptions registered from this user's browsers (docs/69 A-6).
+  pushSubscriptions PushSubscription[]
 
   // CRM module — staff acting as sales rep / task owner / activity actor
   assignedCustomers   Customer[]   @relation("CustomerAssignedRep")

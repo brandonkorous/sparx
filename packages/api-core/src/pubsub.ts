@@ -63,7 +63,12 @@ export type EventType =
   // Live Chat (docs/56, docs/69) — a customer message needs a human (AI
   // disabled / escalated / outside hours). Consumed by email-worker (chat
   // notification fallback) + the web-push sender. See docs/69 A-3 / A-6.
-  | 'chat.message.received';
+  | 'chat.message.received'
+  // Web push fan-out (docs/69 A-6) — one per recipient staff user, carrying the
+  // composed { userId, title, body, url, tag }. Consumed by push-worker, which
+  // delivers to that user's browser push subscriptions. Generic (any module can
+  // publish it), mirroring `email.send`.
+  | 'push.send';
 
 export interface SparxEvent<T = unknown> {
   type: EventType;

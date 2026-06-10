@@ -61,4 +61,12 @@ data:
   # reverse_proxy on api.sparx.works upgrades /ws/chat transparently — no
   # Caddyfile change needed.
   REDIS_URL: redis://redis.sparx-prod.svc.cluster.local:6379
+  # Web Push (docs/69 A-6) — the VAPID PUBLIC key. NOT a secret (it's handed to
+  # every browser at subscribe time). The dashboard settings page reads this at
+  # runtime and passes it to the opt-in toggle; push-worker also needs it (set
+  # there via Terraform env). The matching VAPID_PRIVATE_KEY lives in
+  # sparx-app-secrets / Secret Manager. Generate a pair once with
+  # `npx web-push generate-vapid-keys`; paste the public key here, then re-apply
+  # via `bootstrap app-env`. Empty → the toggle shows "not configured yet".
+  VAPID_PUBLIC_KEY: ''
   LOG_LEVEL: info

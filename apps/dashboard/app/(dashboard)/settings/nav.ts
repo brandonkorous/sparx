@@ -1,5 +1,6 @@
 ﻿import type { LucideIcon } from 'lucide-react';
 import {
+  Bell,
   CreditCard,
   Globe,
   GlobeLock,
@@ -53,6 +54,14 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
     description: 'Activate or deactivate platform modules for this tenant.',
     icon: Layers,
     href: '/settings/modules',
+    ready: true,
+  },
+  {
+    id: 'notifications',
+    label: 'Notifications',
+    description: 'Browser push alerts for chat and other events. Per-device.',
+    icon: Bell,
+    href: '/settings/notifications',
     ready: true,
   },
   {
