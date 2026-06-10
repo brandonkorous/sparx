@@ -140,7 +140,18 @@ export default async function BuilderBlueprintsPage() {
                         blueprintKey={bp.key}
                         blueprintName={bp.name}
                         latestVersion={bp.version}
-                        install={bp.install}
+                        // /v1/blueprints (the install engine, docs/54) is the
+                        // snake_case catalog; map onto the marketplace overlay shape.
+                        install={
+                          bp.install
+                            ? {
+                                id: bp.install.id,
+                                status: bp.install.status,
+                                version: bp.install.version,
+                                updateAvailable: bp.install.update_available,
+                              }
+                            : null
+                        }
                         canInstall={canInstall}
                       />
                     </Stack>

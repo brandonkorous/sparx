@@ -1,8 +1,27 @@
-// Shared marketplace catalog types (docs/60). Kept in a plain module (NOT the
-// 'use server' actions file, which may only export async functions) so both server
-// pages and client components can import them.
+// Marketplace catalog types for the dashboard. A local mirror of the API's
+// @sparx/marketplace-schemas contract (docs/60), kept as a plain module so both
+// server pages and client components can import it. (Defined locally rather than
+// imported from the package so the dashboard takes no new workspace dependency —
+// the shape is stable; keep it in lockstep with packages/marketplace-schemas.)
 
-export interface CatalogContents {
+export type MarketplaceCategoryId = 'blueprints' | 'themes' | 'components' | 'integrations';
+
+export interface MarketplaceMedia {
+  url: string;
+  alt?: string;
+  kind: 'image' | 'video';
+}
+
+export interface MarketplacePublisherDto {
+  id: string;
+  type: 'sparx' | 'tenant' | 'partner';
+  slug: string;
+  displayName: string;
+  verified: boolean;
+  websiteUrl: string | null;
+}
+
+export interface BlueprintContents {
   products: number;
   categories: number;
   collections: number;
@@ -10,40 +29,78 @@ export interface CatalogContents {
   pages: number;
   emails: number;
   components: number;
-  theme: string;
+  theme: string | null;
   hasLayout: boolean;
 }
 
-export interface CatalogInstall {
+export interface BlueprintFacets {
+  vertical: string;
+  requiredModules: string[];
+  contents: BlueprintContents;
+}
+
+export interface ThemeFacets {
+  mood: string | null;
+  colorFamily: string | null;
+  density: string | null;
+  industry: string | null;
+}
+
+export interface ComponentFacets {
+  group: string;
+  kind: string | null;
+  surfaces: string[];
+}
+
+export interface IntegrationFacets {
+  providerSlug: string;
+  kind: string;
+  scopes: string[];
+}
+
+/** A blueprint's per-tenant install state — a route overlay (docs/60 §6). */
+export interface MarketplaceInstallState {
   id: string;
   status: string;
   version: string;
-  update_available: boolean;
+  updateAvailable: boolean;
 }
 
-/** A catalog row — identity + counts + this tenant's install state. */
-export interface CatalogItem {
-  key: string;
-  version: string;
+/** The normalized listing the browse/detail UI renders for any category. Exactly
+ *  the block matching `category` is populated. */
+export interface MarketplaceListing {
+  category: MarketplaceCategoryId;
+  id: string;
+  slug: string;
   name: string;
-  summary: string;
-  vertical: string;
-  preview?: string;
-  requiresModules: string[];
-  contents: CatalogContents;
-  install: CatalogInstall | null;
+  tagline: string | null;
+  description: string | null;
+  media: MarketplaceMedia[];
+  icon: string | null;
+  accent: string | null;
+  version: string;
+  publisher: MarketplacePublisherDto;
+  price: { cents: number; model: 'free' | 'one_time' | 'subscription' };
+  status: string;
+  visibility: string;
+  installCount: number;
+  rating: { average: number; count: number };
+  sortWeight: number;
+  publishedAt: string | null;
+  blueprint: BlueprintFacets | null;
+  theme: ThemeFacets | null;
+  component: ComponentFacets | null;
+  integration: IntegrationFacets | null;
+  install?: MarketplaceInstallState | null;
 }
 
-export interface BrowseFacets {
-  vertical: Record<string, number>;
-  modules: Record<string, number>;
-  status: { installed: number; available: number };
-}
+/** facetKey → (value → count). */
+export type MarketplaceFacetBucket = Record<string, number>;
 
 /** The faceted, paged browse response (docs/60 §6). */
-export interface BrowseResponse {
-  items: CatalogItem[];
+export interface MarketplaceListResponse {
+  items: MarketplaceListing[];
   total: number;
-  facets: BrowseFacets;
+  facets: Record<string, MarketplaceFacetBucket>;
   next_cursor: string | null;
 }

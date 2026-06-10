@@ -15,13 +15,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Badge, Button, Stack, Text, toast, useConfirm } from '@sparx/ui';
 
+import type { MarketplaceInstallState } from '../_types';
+
 import { installBlueprintAction, resetBlueprintAction } from '../actions';
 
 interface Props {
   blueprintKey: string;
   blueprintName: string;
   latestVersion: string;
-  install: { id: string; status: string; version: string; update_available: boolean } | null;
+  install: MarketplaceInstallState | null;
   canInstall: boolean;
 }
 
@@ -140,7 +142,7 @@ export function BlueprintCardActions({
     );
   }
 
-  const driftBadge = install.update_available ? (
+  const driftBadge = install.updateAvailable ? (
     <Badge
       color="warning"
       variant="soft"

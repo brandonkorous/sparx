@@ -12,9 +12,9 @@ import { Button, Container, Grid, Heading, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { MARKETPLACE_CATEGORIES } from './_registry';
-import type { BrowseResponse } from './_types';
+import type { MarketplaceListResponse } from './_types';
 import { CategoryTile } from './_components/category-tile';
-import { BlueprintCard } from './_components/blueprint-card';
+import { ListingCard } from './_components/listing-card';
 import { MarketplaceSearch } from './_components/marketplace-search';
 
 export const dynamic = 'force-dynamic';
@@ -24,7 +24,7 @@ export default async function MarketplacePage() {
   const canInstall = session.user.role === 'owner' || session.user.role === 'admin';
 
   const featured = await api
-    .get<BrowseResponse>('/v1/marketplace/blueprints?limit=6&sort=popular')
+    .get<MarketplaceListResponse>('/v1/marketplace/blueprints?limit=6&sort=popular')
     .catch(() => null);
   const blueprintCount = featured?.total ?? 0;
 
@@ -63,7 +63,7 @@ export default async function MarketplacePage() {
             </div>
             <Grid minItemWidth="16rem" gap={4}>
               {featured.items.map((item) => (
-                <BlueprintCard key={item.key} item={item} canInstall={canInstall} />
+                <ListingCard key={item.slug} item={item} canInstall={canInstall} />
               ))}
             </Grid>
           </Stack>

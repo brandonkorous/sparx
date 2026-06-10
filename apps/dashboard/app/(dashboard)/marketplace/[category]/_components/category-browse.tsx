@@ -1,10 +1,14 @@
 'use client';
 
-// Blueprints browse (docs/60 §5): facet rail + sort + active-filter chips + a
-// paged grid with "Load more". Filter/sort/search live in the URL — changing one
-// navigates, and the server refetches page 1 (the parent remounts this component
-// via a key, resetting the accumulated list). "Load more" appends the next cursor
-// page via the fetchBlueprintsPage server action.
+// Generic category browse (docs/60 §5): a registry-driven facet rail + sort +
+// active-filter chips + a paged grid with "Load more", for ANY category. The
+// facet dimensions come from the category's registry spec (key + label + multi/
+// single), and their counts come from the API's faceted response — so themes,
+// components, and integrations get the same browse with no new code once they're
+// live. Filter/sort/search live in the URL — changing one navigates and the
+// server refetches page 1 (the parent remounts this via a key, resetting the
+// accumulated list). "Load more" appends the next cursor page via the
+// fetchCategoryPage server action.
 
 import * as React from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -20,11 +24,11 @@ import {
   Stack,
   Text,
 } from '@sparx/ui';
+import type { MarketplaceFacetBucket, MarketplaceListing } from '../../_types';
 
-import { BlueprintCard } from '../../_components/blueprint-card';
-import type { BrowseFacets, CatalogItem } from '../../_types';
-import type { SortSpec } from '../../_registry';
-import { fetchBlueprintsPage } from '../actions';
+import { ListingCard } from '../../_components/listing-card';
+import type { FacetSpec, SortSpec } from '../../_registry';
+import { fetchCategoryPage } from '../actions';
 
 const ACRONYMS: Record<string, string> = { b2b: 'B2B', cms: 'CMS', crm: 'CRM', seo: 'SEO' };
 function humanize(v: string): string {
@@ -34,18 +38,22 @@ function humanize(v: string): string {
 interface Props {
   // Only serializable fields cross the server→client boundary — NOT the registry
   // entry itself (its `icon` is a function and can't be passed to a client component).
+  categoryId: string;
   singular: string;
   sorts: SortSpec[];
-  initialItems: CatalogItem[];
-  facets: BrowseFacets;
+  facetSpecs: FacetSpec[];
+  initialItems: MarketplaceListing[];
+  facets: Record<string, MarketplaceFacetBucket>;
   total: number;
   initialCursor: string | null;
   canInstall: boolean;
 }
 
-export function BlueprintsBrowse({
+export function CategoryBrowse({
+  categoryId,
   singular,
   sorts,
+  facetSpecs,
   initialItems,
   facets,
   total,
@@ -62,7 +70,6 @@ export function BlueprintsBrowse({
   const [filtersOpen, setFiltersOpen] = React.useState(false);
 
   const sort = searchParams.get('sort') ?? 'popular';
-  const status = searchParams.get('status');
   const selectedOf = (key: string) =>
     new Set((searchParams.get(key) ?? '').split(',').filter(Boolean));
 
@@ -76,15 +83,23 @@ export function BlueprintsBrowse({
     router.push(qs ? `${pathname}?${qs}` : pathname);
   }
 
-  function toggleMulti(key: string, value: string) {
-    const cur = selectedOf(key);
+  // A `multi` facet toggles a value in/out of a comma-joined set; a `single`
+  // facet replaces (or clears) the param.
+  function toggleFacet(spec: FacetSpec, value: string) {
+    if (spec.type === 'single') {
+      updateParams({ [spec.key]: searchParams.get(spec.key) === value ? null : value });
+      return;
+    }
+    const cur = selectedOf(spec.key);
     if (cur.has(value)) cur.delete(value);
     else cur.add(value);
-    updateParams({ [key]: cur.size ? [...cur].join(',') : null });
+    updateParams({ [spec.key]: cur.size ? [...cur].join(',') : null });
   }
 
-  function setStatus(value: 'installed' | 'available') {
-    updateParams({ status: status === value ? null : value });
+  function isChecked(spec: FacetSpec, value: string): boolean {
+    return spec.type === 'single'
+      ? searchParams.get(spec.key) === value
+      : selectedOf(spec.key).has(value);
   }
 
   function loadMore() {
@@ -95,63 +110,39 @@ export function BlueprintsBrowse({
         query[k] = v;
       });
       query.cursor = cursor;
-      const res = await fetchBlueprintsPage(query);
+      const res = await fetchCategoryPage(categoryId, query);
       setItems((prev) => [...prev, ...res.items]);
       setCursor(res.next_cursor);
     });
   }
 
-  // active-filter chips
+  // active-filter chips, across every facet dimension
   const chips: { key: string; value: string; label: string }[] = [];
-  for (const key of ['vertical', 'modules']) {
-    for (const v of selectedOf(key)) chips.push({ key, value: v, label: humanize(v) });
-  }
-  if (status) {
-    chips.push({
-      key: 'status',
-      value: status,
-      label: status === 'installed' ? 'Installed' : 'Available',
-    });
+  for (const spec of facetSpecs) {
+    for (const v of selectedOf(spec.key))
+      chips.push({ key: spec.key, value: v, label: humanize(v) });
   }
 
   const rail = (
     <Stack gap={5}>
-      <FacetBlock title="Vertical">
-        {sortedEntries(facets.vertical).map(([val, count]) => (
-          <FacetRow
-            key={val}
-            label={humanize(val)}
-            count={count}
-            checked={selectedOf('vertical').has(val)}
-            onToggle={() => toggleMulti('vertical', val)}
-          />
-        ))}
-      </FacetBlock>
-      <FacetBlock title="Requires module">
-        {sortedEntries(facets.modules).map(([val, count]) => (
-          <FacetRow
-            key={val}
-            label={humanize(val)}
-            count={count}
-            checked={selectedOf('modules').has(val)}
-            onToggle={() => toggleMulti('modules', val)}
-          />
-        ))}
-      </FacetBlock>
-      <FacetBlock title="Status">
-        <FacetRow
-          label="Installed"
-          count={facets.status.installed}
-          checked={status === 'installed'}
-          onToggle={() => setStatus('installed')}
-        />
-        <FacetRow
-          label="Available"
-          count={facets.status.available}
-          checked={status === 'available'}
-          onToggle={() => setStatus('available')}
-        />
-      </FacetBlock>
+      {facetSpecs.map((spec) => {
+        const counts = facets[spec.key] ?? {};
+        const entries = sortedEntries(counts);
+        if (entries.length === 0) return null;
+        return (
+          <FacetBlock key={spec.key} title={spec.label}>
+            {entries.map(([val, count]) => (
+              <FacetRow
+                key={val}
+                label={humanize(val)}
+                count={count}
+                checked={isChecked(spec, val)}
+                onToggle={() => toggleFacet(spec, val)}
+              />
+            ))}
+          </FacetBlock>
+        );
+      })}
     </Stack>
   );
 
@@ -177,7 +168,7 @@ export function BlueprintsBrowse({
               Filters
             </Button>
             <NativeSelect
-              aria-label="Sort blueprints"
+              aria-label={`Sort ${singular}s`}
               value={sort}
               onChange={(e) =>
                 updateParams({ sort: e.target.value === 'popular' ? null : e.target.value })
@@ -201,7 +192,7 @@ export function BlueprintsBrowse({
                 variant="soft"
                 size="sm"
                 onClick={() =>
-                  c.key === 'status' ? updateParams({ status: null }) : toggleMulti(c.key, c.value)
+                  updateParams({ [c.key]: removeFromCsv(searchParams.get(c.key), c.value) })
                 }
               >
                 {c.label}
@@ -222,7 +213,7 @@ export function BlueprintsBrowse({
             align="center"
             className="rounded-lg border border-[var(--color-border)] p-10 text-center"
           >
-            <Text variant="muted">No blueprints match these filters.</Text>
+            <Text variant="muted">No {singular}s match these filters.</Text>
             <Button variant="outline" size="sm" onClick={() => router.push(pathname)}>
               Clear filters
             </Button>
@@ -231,7 +222,7 @@ export function BlueprintsBrowse({
           <>
             <Grid minItemWidth="14rem" gap={4}>
               {items.map((item) => (
-                <BlueprintCard key={item.key} item={item} canInstall={canInstall} />
+                <ListingCard key={item.slug} item={item} canInstall={canInstall} />
               ))}
             </Grid>
             {cursor ? (
@@ -261,6 +252,13 @@ export function BlueprintsBrowse({
       </Drawer>
     </div>
   );
+}
+
+/** Remove one value from a comma-joined param, returning the new value (or null
+ *  when empty) — used to dismiss an active-filter chip. */
+function removeFromCsv(current: string | null, value: string): string | null {
+  const next = (current ?? '').split(',').filter((v) => v && v !== value);
+  return next.length ? next.join(',') : null;
 }
 
 function sortedEntries(counts: Record<string, number>): [string, number][] {

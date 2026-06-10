@@ -21,12 +21,22 @@ import {
   type MarketplaceSort,
 } from '@sparx/marketplace-schemas';
 
-import { ADAPTERS, type CategoryAdapter } from './adapters.js';
+import { ADAPTERS, type FacetDef } from './adapters.js';
 
 /** Browse context. With a tenantId the read runs under that tenant (so a future
  *  "my drafts" overlay sees them); without, it's the public no-tenant path. */
 export interface CatalogContext {
   tenantId?: string;
+}
+
+/** Optional per-request hooks the catalog service stays agnostic about (docs/60
+ *  §6). `enrich` runs inside the read tx after the listings load and may mutate
+ *  them (e.g. set each blueprint's per-tenant `install` state); `extraFacets`
+ *  are merged with the adapter's so a synthetic dimension (e.g. install
+ *  `status`) participates in filtering + counts like any other. */
+export interface ListOptions {
+  enrich?: (tx: TxClient, listings: MarketplaceListing[]) => Promise<void>;
+  extraFacets?: FacetDef[];
 }
 
 function run<T>(ctx: CatalogContext, fn: (tx: TxClient) => Promise<T>): Promise<T> {
@@ -49,14 +59,14 @@ function facetTokens(value: unknown): string[] {
   return out;
 }
 
-/** Read each adapter facet's selection from the raw query (comma-separated, or a
+/** Read each facet's selection from the raw query (comma-separated, or a
  *  repeated key). */
 function parseFacetParams(
-  adapter: CategoryAdapter,
+  facets: FacetDef[],
   raw: Record<string, unknown>
 ): Record<string, Set<string>> {
   const out: Record<string, Set<string>> = {};
-  for (const f of adapter.facets) out[f.key] = new Set(facetTokens(raw[f.key]));
+  for (const f of facets) out[f.key] = new Set(facetTokens(raw[f.key]));
   return out;
 }
 
@@ -96,13 +106,19 @@ export const marketplaceCatalogService = {
   async list(
     category: MarketplaceCategory,
     rawQuery: Record<string, unknown>,
-    ctx: CatalogContext
+    ctx: CatalogContext,
+    options?: ListOptions
   ): Promise<MarketplaceListResponse> {
     const adapter = ADAPTERS[category];
+    const facetDefs = [...adapter.facets, ...(options?.extraFacets ?? [])];
     const query = MarketplaceBrowseQuery.parse(rawQuery);
-    const params = parseFacetParams(adapter, rawQuery);
+    const params = parseFacetParams(facetDefs, rawQuery);
 
-    const all = await run(ctx, (tx) => adapter.loadVisible(tx));
+    const all = await run(ctx, async (tx) => {
+      const listings = await adapter.loadVisible(tx);
+      if (options?.enrich) await options.enrich(tx, listings);
+      return listings;
+    });
 
     // 1. Free-text narrow. Facet COUNTS are computed over this set so the rail
     //    reflects the current search.
@@ -114,7 +130,7 @@ export const marketplaceCatalogService = {
     // 2. Facet selections — AND across facets, OR within a facet. `skip` lets the
     //    count pass below exclude a facet's OWN selection.
     const matches = (l: MarketplaceListing, skip?: string): boolean =>
-      adapter.facets.every(
+      facetDefs.every(
         (f) =>
           f.key === skip ||
           params[f.key]!.size === 0 ||
@@ -133,7 +149,7 @@ export const marketplaceCatalogService = {
     // 4. Facet counts — each over the q-narrowed set with the OTHER facets
     //    applied but its own selection excluded (proper faceted search).
     const facets: Record<string, MarketplaceFacetBucket> = {};
-    for (const f of adapter.facets) {
+    for (const f of facetDefs) {
       facets[f.key] = tally(searched.filter((l) => matches(l, f.key)).flatMap((l) => f.values(l)));
     }
 
@@ -143,9 +159,14 @@ export const marketplaceCatalogService = {
   get(
     category: MarketplaceCategory,
     slug: string,
-    ctx: CatalogContext
+    ctx: CatalogContext,
+    options?: Pick<ListOptions, 'enrich'>
   ): Promise<MarketplaceListing | null> {
     const adapter = ADAPTERS[category];
-    return run(ctx, (tx) => adapter.loadOne(tx, slug));
+    return run(ctx, async (tx) => {
+      const listing = await adapter.loadOne(tx, slug);
+      if (listing && options?.enrich) await options.enrich(tx, [listing]);
+      return listing;
+    });
   },
 };

@@ -79,6 +79,21 @@ export const IntegrationFacets = z.object({
 });
 export type IntegrationFacets = z.infer<typeof IntegrationFacets>;
 
+// ── Per-tenant overlay ───────────────────────────────────────────────────────
+
+/** A blueprint's install state for the CURRENT tenant (docs/60 §6). This is a
+ *  per-tenant OVERLAY the authed route layers on, never part of the
+ *  tenant-agnostic catalog — so it's absent/null on the public surface. The same
+ *  shape generalizes to a theme's "applied" or an integration's "connected"
+ *  state in later phases. */
+export const MarketplaceInstallState = z.object({
+  id: z.string(),
+  status: z.string(),
+  version: z.string(),
+  updateAvailable: z.boolean(),
+});
+export type MarketplaceInstallState = z.infer<typeof MarketplaceInstallState>;
+
 // ── The listing ─────────────────────────────────────────────────────────────
 
 export const MarketplaceListing = z.object({
@@ -105,5 +120,8 @@ export const MarketplaceListing = z.object({
   theme: ThemeFacets.nullable(),
   component: ComponentFacets.nullable(),
   integration: IntegrationFacets.nullable(),
+  // Per-tenant overlay, route-supplied (absent on the public surface + from the
+  // tenant-agnostic catalog service).
+  install: MarketplaceInstallState.nullish(),
 });
 export type MarketplaceListing = z.infer<typeof MarketplaceListing>;
