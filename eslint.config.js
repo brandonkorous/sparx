@@ -21,6 +21,10 @@ export default tseslint.config(
       '**/.turbo/**',
       '**/coverage/**',
       '**/*.config.{js,mjs,cjs,ts}',
+      // Marketplace bundle-authoring scratch (recovered sources, generators,
+      // asset renderer) — regenerated on demand, never committed (docs/85).
+      'marketplace-catalog/_*/**',
+      '**/_marketplace-assets.mjs',
     ],
   },
   js.configs.recommended,

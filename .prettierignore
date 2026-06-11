@@ -21,3 +21,12 @@ packages/db/prisma/migrations/**
 
 # Locally-installed Claude Code skills (untracked, regenerated on install)
 .claude/skills/**
+
+# Marketplace bundle-authoring scratch
+marketplace-catalog/_src/**
+marketplace-catalog/_gen/**
+marketplace-catalog/_assets/**
+apps/dashboard/_marketplace-assets.mjs
+
+# Local media storage (LocalStorage MEDIA_LOCAL_DIR — generated artifacts)
+**/.media-tmp/**
