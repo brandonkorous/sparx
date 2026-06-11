@@ -127,36 +127,107 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     // Install state is tenant-level: blueprints always install into the PRIMARY
     // property (docs/54 D6), so the catalog reads its rows, not the active site's.
     const propertyId = await resolvePrimaryPropertyId(auth.tenantId);
-    const installs = await withTenant({ tenantId: auth.tenantId }, (tx) =>
-      tx.tenantBlueprintInstall.findMany({
-        where: { propertyId },
-        select: { id: true, blueprintKey: true, blueprintVersion: true, status: true },
-      })
-    );
+    const [rows, installs] = await Promise.all([
+      // DATA-first (docs/85): the catalog is the thin marketplace rows, so
+      // bundle-ingested blueprints show up here alongside the legacy code ones.
+      withTenant({ tenantId: auth.tenantId }, (tx) =>
+        tx.marketplaceBlueprint.findMany({
+          where: { status: 'published', visibility: 'public' },
+          orderBy: { sortWeight: 'desc' },
+          select: {
+            slug: true,
+            name: true,
+            tagline: true,
+            description: true,
+            vertical: true,
+            requiredModules: true,
+            contents: true,
+            version: true,
+            media: true,
+          },
+        })
+      ),
+      withTenant({ tenantId: auth.tenantId }, (tx) =>
+        tx.tenantBlueprintInstall.findMany({
+          where: { propertyId },
+          select: { id: true, blueprintKey: true, blueprintVersion: true, status: true },
+        })
+      ),
+    ]);
     const byKey = new Map(installs.map((i) => [i.blueprintKey, i]));
-    const blueprints = listBlueprints().map((bp) => {
-      const inst = byKey.get(bp.key);
-      return {
-        ...toSummary(bp),
-        contents: summarizeContents(bp),
-        // Version-drift (§9): when the installed version trails the catalog's, the
-        // card offers an upgrade hint (the apply itself is deferred, §13 step 5).
-        install: inst
-          ? {
-              id: inst.id,
-              status: inst.status,
-              version: inst.blueprintVersion,
-              update_available: inst.blueprintVersion !== bp.version,
-            }
-          : null,
-      };
-    });
+
+    const installState = (key: string, version: string) => {
+      const inst = byKey.get(key);
+      // Version-drift (§9): when the installed version trails the catalog's, the
+      // card offers an upgrade hint (the apply itself is deferred, §13 step 5).
+      return inst
+        ? {
+            id: inst.id,
+            status: inst.status,
+            version: inst.blueprintVersion,
+            update_available: inst.blueprintVersion !== version,
+          }
+        : null;
+    };
+
+    const blueprints =
+      rows.length > 0
+        ? rows.map((r) => {
+            const media = Array.isArray(r.media) ? (r.media as { url?: string }[]) : [];
+            return {
+              key: r.slug,
+              name: r.name,
+              summary: r.tagline ?? r.description ?? '',
+              vertical: r.vertical,
+              version: r.version,
+              requiredModules: r.requiredModules,
+              ...(media[0]?.url ? { preview: media[0].url } : {}),
+              contents: (r.contents ?? {}) as Record<string, unknown>,
+              install: installState(r.slug, r.version),
+            };
+          })
+        : // Fallback to the in-code registry only when the catalog table is empty
+          // (a fresh dev DB before the seed/ingest has run).
+          listBlueprints().map((bp) => ({
+            ...toSummary(bp),
+            contents: summarizeContents(bp),
+            install: installState(bp.key, bp.version),
+          }));
     return ok({ blueprints, property_id: propertyId });
   });
 
-  app.get('/v1/blueprints/:key', (request) => {
-    requireRole(request, 'viewer');
+  app.get('/v1/blueprints/:key', async (request) => {
+    const auth = requireRole(request, 'viewer');
     const { key } = KeyParam.parse(request.params);
+    const row = await withTenant({ tenantId: auth.tenantId }, (tx) =>
+      tx.marketplaceBlueprint.findFirst({
+        where: { slug: key },
+        select: {
+          slug: true,
+          name: true,
+          tagline: true,
+          description: true,
+          vertical: true,
+          requiredModules: true,
+          contents: true,
+          version: true,
+          media: true,
+        },
+      })
+    );
+    if (row) {
+      const media = Array.isArray(row.media) ? (row.media as { url?: string }[]) : [];
+      return ok({
+        key: row.slug,
+        name: row.name,
+        summary: row.tagline ?? row.description ?? '',
+        vertical: row.vertical,
+        version: row.version,
+        requiredModules: row.requiredModules,
+        ...(media[0]?.url ? { preview: media[0].url } : {}),
+        contents: (row.contents ?? {}) as Record<string, unknown>,
+      });
+    }
     const bp = getBlueprint(key);
     if (!bp) throw notFound('Blueprint', key);
     return ok({ ...toSummary(bp), contents: summarizeContents(bp) });
