@@ -129,7 +129,7 @@ No custom billing UI — the Stripe Customer Portal is embedded into Sparx dashb
 
 ## 6. Trial → Grace → Suspend Lifecycle
 
-Modules are chosen up front in onboarding (docs/15 §3), so the trial is about *keeping* them, not picking them. The whole lifecycle is deliberately humane: the public site rides out a grace window, **only the public site ever locks** (the owner is never shut out of the dashboard), and **data is retained throughout**.
+Modules are chosen up front in onboarding (docs/15 §3), so the trial is about _keeping_ them, not picking them. The whole lifecycle is deliberately humane: the public site rides out a grace window, **only the public site ever locks** (the owner is never shut out of the dashboard), and **data is retained throughout**.
 
 **Build status:** designed and locked (2026-06-11); deferred until the onboarding UI is concrete. No Stripe subscription code exists yet — this is greenfield.
 
@@ -152,7 +152,7 @@ The site stays live for visitors; the dashboard nudges daily. A lapsed **active*
 
 ### Day 21 — Suspend
 
-No active subscription past grace → the **storefront** (`apps/site`) serves a full-page, **non-bypassable** "site unavailable" overlay — a friendly Sparx-flavored message (e.g. *"Catching a fresh spark — back in a flash"*) that never exposes a billing problem to the tenant's customers. The site is suspended to the public; **the dashboard stays fully open** so the owner can add a card or export. **Nothing is deleted.**
+No active subscription past grace → the **storefront** (`apps/site`) serves a full-page, **non-bypassable** "site unavailable" overlay — a friendly Sparx-flavored message (e.g. _"Catching a fresh spark — back in a flash"_) that never exposes a billing problem to the tenant's customers. The site is suspended to the public; **the dashboard stays fully open** so the owner can add a card or export. **Nothing is deleted.**
 
 ### Anytime — Reactivate
 
@@ -162,14 +162,14 @@ Adding a card switches modules back on and lifts the overlay; the subscription r
 
 The in-app counterpart to the storefront overlay — escalation, not nagging:
 
-| When | Treatment |
-| --- | --- |
-| Trial days 1–6 | Quiet `Trial · N days left` chip in the topbar |
-| Day 7 | First **dismissible** banner → Billing |
-| Days 12–14 | Persistent banner with live countdown |
-| Day 14 (paused) | Prominent banner: "modules paused · site live for 7 more days" + ModuleGate on each paused module |
-| Days 15–21 (grace) | Countdown intensifies: "site goes offline in N days" |
-| Day 21 (suspended) | Can't-miss banner: "your site is offline — add payment to restore instantly" |
+| When               | Treatment                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| Trial days 1–6     | Quiet `Trial · N days left` chip in the topbar                                                    |
+| Day 7              | First **dismissible** banner → Billing                                                            |
+| Days 12–14         | Persistent banner with live countdown                                                             |
+| Day 14 (paused)    | Prominent banner: "modules paused · site live for 7 more days" + ModuleGate on each paused module |
+| Days 15–21 (grace) | Countdown intensifies: "site goes offline in N days"                                              |
+| Day 21 (suspended) | Can't-miss banner: "your site is offline — add payment to restore instantly"                      |
 
 ### Implementation notes
 

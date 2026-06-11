@@ -41,11 +41,11 @@ This doc owns the **layout**. The **flows** that live inside it (which steps, wh
 
 ### Rail anatomy
 
-| Slot | Content |
-| --- | --- |
-| Top | Sparx wordmark (full-page) or the wizard's title (modal), e.g. "New product" |
+| Slot   | Content                                                                                                                                                   |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Top    | Sparx wordmark (full-page) or the wizard's title (modal), e.g. "New product"                                                                              |
 | Middle | Vertical journey — numbered markers + label + sublabel; a connector line; states: `upcoming` (outline), `current` (filled, ring), `done` (filled + check) |
-| Bottom | A context card (icon + one line that reframes the current step) and utility links (Sign out / Need help, or Cancel) |
+| Bottom | A context card (icon + one line that reframes the current step) and utility links (Sign out / Need help, or Cancel)                                       |
 
 ### Rail color follows the module
 
@@ -54,7 +54,7 @@ The rail adopts the active module color via `<ModuleProvider>` (`--module-active
 ### Working-pane anatomy
 
 - **Step header:** left-aligned `Heading` (~28–30px full-page, ~22–24px modal) + a muted supporting line. Never an uppercase mono eyebrow (no-eyebrows rule).
-- **Content:** the step's body. A step should fit without scrolling where possible; long content scrolls *inside the pane*, never the frame.
+- **Content:** the step's body. A step should fit without scrolling where possible; long content scrolls _inside the pane_, never the frame.
 - **Action row:** Back (ghost, left) and the primary advance (right). Skip, when a step is genuinely optional, sits next to the primary as "Skip for now." The plan/summary panels that some steps need (e.g. the pricing switchboard's plan card) live inside the pane, not the rail.
 
 ---
@@ -90,12 +90,12 @@ In-dashboard creation of a complex object (Product, B2B Account, Email campaign)
 
 ### Full-page vs. modal — pick by context
 
-| Use **full-page** | Use **modal** |
-| --- | --- |
+| Use **full-page**                              | Use **modal**                            |
+| ---------------------------------------------- | ---------------------------------------- |
 | User is not yet in the app (signup/onboarding) | User is already working in the dashboard |
-| First-run / once-per-tenant setup | Repeated, on-demand creation |
-| The flow *is* the destination | The flow returns you to where you were |
-| Long or high-stakes (install, billing setup) | Bounded (3–5 steps, one object) |
+| First-run / once-per-tenant setup              | Repeated, on-demand creation             |
+| The flow _is_ the destination                  | The flow returns you to where you were   |
+| Long or high-stakes (install, billing setup)   | Bounded (3–5 steps, one object)          |
 
 ---
 

@@ -174,9 +174,8 @@ export function StepTemplate({
       </div>
 
       <Text size="sm" variant="muted" className="mt-4 mb-3.5 block">
-        Showing{' '}
-        <span className="font-medium text-[var(--color-text-primary)]">{shown.length}</span> of{' '}
-        {blueprints.length} templates that fit your modules
+        Showing <span className="font-medium text-[var(--color-text-primary)]">{shown.length}</span>{' '}
+        of {blueprints.length} templates that fit your modules
       </Text>
 
       {error && (

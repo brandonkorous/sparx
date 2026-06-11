@@ -45,9 +45,7 @@ async function patchOnboarding(patch: OnboardingPatch): Promise<void> {
 // catalog to a compatible subset. Persisted in ONE bulk write, then advances to
 // the Template step.
 
-export async function saveModulesAction(
-  modules: Record<string, boolean>
-): Promise<WizardResult> {
+export async function saveModulesAction(modules: Record<string, boolean>): Promise<WizardResult> {
   try {
     await api.put('/v1/tenant/modules', { modules });
     await patchOnboarding({ completed: { modules: true }, currentStep: 'template' });
@@ -187,9 +185,7 @@ export async function saveWorkspaceAction(input: {
 
 // Mark the domain step complete (a domain was bought, or the tenant chose the
 // free address) and advance to the next step.
-export async function completeDomainStepAction(
-  next: OnboardingStepKey
-): Promise<WizardResult> {
+export async function completeDomainStepAction(next: OnboardingStepKey): Promise<WizardResult> {
   try {
     await patchOnboarding({ completed: { domain: true }, currentStep: next });
     revalidatePath('/onboarding');

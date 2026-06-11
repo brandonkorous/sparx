@@ -24,7 +24,7 @@ Onboarding is **not a modal**. It is a focused full-screen route (`apps/dashboar
 - **Clean working pane** on the right: the only thing that changes between steps. Left-aligned headline + supporting line at the top of each step. Nothing floats center-stacked in a void.
 - **Responsive** (top-2 rule): under ~940px the rail collapses to a slim indigo top bar with a compact dot-progress; the pane goes full width; grids stack to one column.
 
-The frame must *earn* being full-page — it is not a modal with the walls removed.
+The frame must _earn_ being full-page — it is not a modal with the walls removed.
 
 ---
 
@@ -34,7 +34,7 @@ The opening move is choosing **capabilities (modules)** — not a theme, not a t
 
 1. **It is the honest expression of "modules, not plans."** The tenant explicitly chooses the capabilities they will be billed for, up front, instead of discovering them implicitly.
 2. **It is the only filter that scales.** The blueprint catalog will hold hundreds to thousands of templates. Modules are the primary cut that makes the gallery tractable before search and category even apply.
-3. **It inverts activation.** Historically the blueprint installer derived modules from the chosen template (`enableModules(blueprint.requiresModules)`). Now the **explicit module selection drives activation and billing**, and a template's `requiresModules` becomes a **compatibility filter** (show only templates whose needs ⊆ the selected modules). The template installs *content* within the capabilities already chosen — it never surprise-activates a module.
+3. **It inverts activation.** Historically the blueprint installer derived modules from the chosen template (`enableModules(blueprint.requiresModules)`). Now the **explicit module selection drives activation and billing**, and a template's `requiresModules` becomes a **compatibility filter** (show only templates whose needs ⊆ the selected modules). The template installs _content_ within the capabilities already chosen — it never surprise-activates a module.
 
 ---
 
@@ -52,7 +52,7 @@ Sign up ──▶ ① Modules ──▶ ② Template ──▶ ③ Workspace ─
 An exact replica of the marketing **pricing switchboard** (`apps/web/components/marketing/pricing-switchboard.tsx`): one toggle row per module + a live **calculated plan card** (total $/mo, per-module breakdown, "save $X on one bill," module count). Same modules, prices, colors, and copy — onboarding and the public pricing page must never diverge.
 
 - Modules and prices are owned by **docs/17 §2**. Defaults on: **Builder ($10) + Commerce ($49) + CMS ($49)** = $108/mo.
-- The plan card shows what the tenant pays **after** the 14-day trial. The CTA is **Continue** (the trial already started at signup; see §8). Subtext: *"Free for 14 days · no card today."*
+- The plan card shows what the tenant pays **after** the 14-day trial. The CTA is **Continue** (the trial already started at signup; see §8). Subtext: _"Free for 14 days · no card today."_
 - **Builder can be turned off.** Builder renders and serves the hosted site; a tenant running Sparx **headless** (own frontend against the API/MCP, or a content/CRM-only back office) does not need it. Turning Builder **off** triggers a **warn + confirm** ("Your hosted site won't be served — you'll use Sparx headlessly. Continue?") per the destructive-action rule.
 - The selection is the input to Step 2's filter and to billing.
 
@@ -77,13 +77,13 @@ Names the tenant's company and its first site. Signup already ran `slugify(compa
 **Claiming a custom domain is a significant revenue moment, and it is treated as one.** This is its own step, led by search — not a checkbox tucked under the subdomain field.
 
 - **Lead with search.** A prominent "find your domain" field with live availability + pricing (registrar integration; see `settings/domains`). Offer the obvious match as a hero result (`bobsbarbers.com — available — $X/yr`) plus alternatives.
-- **Aspirational, not pushy framing.** A custom domain reads as *making it yours / official*, not an add-on being sold. One-tap purchase via the existing `PurchaseDialog`.
+- **Aspirational, not pushy framing.** A custom domain reads as _making it yours / official_, not an add-on being sold. One-tap purchase via the existing `PurchaseDialog`.
 - **Never blocks.** The free `<slug>.sparx.zone` address always works and is one click ("start free for now — add a domain anytime"). The step is **skippable**.
 - **Domain attach rate is a tracked metric** (§9). Do not bury this step or shrink it in future iterations.
 
 ### 4.5 — Step 5 · Payments (conditional)
 
-**Stripe Connect** — connects the tenant's *own* account so their store can accept customer payments and receive payouts. This is entirely separate from the tenant's Sparx subscription (docs/17 §5).
+**Stripe Connect** — connects the tenant's _own_ account so their store can accept customer payments and receive payouts. This is entirely separate from the tenant's Sparx subscription (docs/17 §5).
 
 - **Conditional:** shown only if a **selling module** (Commerce / B2B / Dropship) is enabled. A content/CRM-only tenant skips this step — there is nothing to collect.
 - **Skippable;** the site still launches, and checkout simply stays off until Connect is finished.
@@ -96,17 +96,17 @@ One tap publishes the installed draft. No embedded iframe — the storefront ser
 
 ## 5. Information Policy: Need / Like / Later
 
-| Information | Stage | Class | Why there |
-| --- | --- | --- | --- |
-| Name · email · password | Sign up | **Need** | Can't mint an identity without it |
-| Company name → slug | Sign up → confirm in Workspace | **Need** | Creates the tenant + `<slug>.sparx.zone`; refined later |
-| Module selection | Onboarding · 1 | **Need** | Explicit capability choice — drives activation & billing, filters the catalog |
-| Template choice | Onboarding · 2 | **Need** | Installs the whole site as a draft |
-| Site name | Onboarding · 3 | **Need** | Defaulted ("Primary"), editable |
-| Custom domain | Onboarding · 4 | **Like** | Featured upsell; free subdomain works instantly |
-| Payments (Stripe Connect) | Onboarding · 5 | **Like** | Only to take real orders; conditional + skippable |
-| Business / physical address | Dashboard checklist | **Later** | Captured when a module needs it — shipping origin, tax nexus, invoices, local SEO |
-| Real catalog · team · media | Dashboard checklist | **Later** | Template seeds a believable site; swap in the real thing after launch |
+| Information                 | Stage                          | Class     | Why there                                                                         |
+| --------------------------- | ------------------------------ | --------- | --------------------------------------------------------------------------------- |
+| Name · email · password     | Sign up                        | **Need**  | Can't mint an identity without it                                                 |
+| Company name → slug         | Sign up → confirm in Workspace | **Need**  | Creates the tenant + `<slug>.sparx.zone`; refined later                           |
+| Module selection            | Onboarding · 1                 | **Need**  | Explicit capability choice — drives activation & billing, filters the catalog     |
+| Template choice             | Onboarding · 2                 | **Need**  | Installs the whole site as a draft                                                |
+| Site name                   | Onboarding · 3                 | **Need**  | Defaulted ("Primary"), editable                                                   |
+| Custom domain               | Onboarding · 4                 | **Like**  | Featured upsell; free subdomain works instantly                                   |
+| Payments (Stripe Connect)   | Onboarding · 5                 | **Like**  | Only to take real orders; conditional + skippable                                 |
+| Business / physical address | Dashboard checklist            | **Later** | Captured when a module needs it — shipping origin, tax nexus, invoices, local SEO |
+| Real catalog · team · media | Dashboard checklist            | **Later** | Template seeds a believable site; swap in the real thing after launch             |
 
 **Physical address is deliberately omitted from onboarding** (decision A). It means different things per module and a CMS/CRM-only tenant has no use for it; forcing it taxes the 5-minute goal.
 
@@ -147,14 +147,14 @@ After launch the tenant lands in the dashboard. Everything deferred to protect t
 
 ## 9. Success Metrics
 
-| Metric | Target |
-| --- | --- |
-| Time to live site | < 5 minutes |
-| Onboarding completion rate | > 80% |
+| Metric                                                      | Target       |
+| ----------------------------------------------------------- | ------------ |
+| Time to live site                                           | < 5 minutes  |
+| Onboarding completion rate                                  | > 80%        |
 | **Domain attach rate (custom domain bought in onboarding)** | track + grow |
-| Payment (Connect) connection rate, day 1 — selling tenants | > 60% |
-| Trial-to-paid conversion | > 30% |
-| Day-7 retention | > 70% |
+| Payment (Connect) connection rate, day 1 — selling tenants  | > 60%        |
+| Trial-to-paid conversion                                    | > 30%        |
+| Day-7 retention                                             | > 70%        |
 
 ---
 

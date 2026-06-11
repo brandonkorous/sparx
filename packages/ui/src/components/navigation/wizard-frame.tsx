@@ -295,8 +295,7 @@ export function WizardFrame({
   onRequestClose,
 }: WizardFrameProps) {
   const selectable = React.useCallback(
-    (key: string, index: number) =>
-      canSelectStep ? canSelectStep(key, index) : index <= current,
+    (key: string, index: number) => (canSelectStep ? canSelectStep(key, index) : index <= current),
     [canSelectStep, current]
   );
 
