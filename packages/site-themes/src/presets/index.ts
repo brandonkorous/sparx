@@ -5,16 +5,6 @@ import { drift } from './drift';
 import { market } from './market';
 import { fleet } from './fleet';
 import { drop } from './drop';
-import { noir } from './noir';
-import { sage } from './sage';
-import { coast } from './coast';
-import { ember } from './ember';
-import { mono } from './mono';
-import { bloom } from './bloom';
-import { meridian } from './meridian';
-import { terra } from './terra';
-import { pulse } from './pulse';
-import { linen } from './linen';
 
 export const THEMES: Record<ThemeKey, ThemePreset> = {
   apex,
@@ -23,59 +13,14 @@ export const THEMES: Record<ThemeKey, ThemePreset> = {
   market,
   fleet,
   drop,
-  noir,
-  sage,
-  coast,
-  ember,
-  mono,
-  bloom,
-  meridian,
-  terra,
-  pulse,
-  linen,
 };
 
-// Stable display order for the theme gallery — the original six, then the
-// marketplace catalog themes (docs/60).
-export const THEME_LIST: ThemePreset[] = [
-  apex,
-  industrial,
-  drift,
-  market,
-  fleet,
-  drop,
-  noir,
-  sage,
-  coast,
-  ember,
-  mono,
-  bloom,
-  meridian,
-  terra,
-  pulse,
-  linen,
-];
+// Stable display order for the theme gallery.
+export const THEME_LIST: ThemePreset[] = [apex, industrial, drift, market, fleet, drop];
 
 export const DEFAULT_THEME_KEY: ThemeKey = 'apex';
 
-export {
-  apex,
-  industrial,
-  drift,
-  market,
-  fleet,
-  drop,
-  noir,
-  sage,
-  coast,
-  ember,
-  mono,
-  bloom,
-  meridian,
-  terra,
-  pulse,
-  linen,
-};
+export { apex, industrial, drift, market, fleet, drop };
 
 // Token Model v2 preset defaults (docs/33-token-model-v2.md). Lives alongside
 // the v1 tokenDefaults until the read path cuts over in §3.

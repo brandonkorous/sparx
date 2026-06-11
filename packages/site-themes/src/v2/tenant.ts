@@ -12,7 +12,7 @@
 
 import { compileTokensV2 } from './compile';
 import { getThemePresetV2 } from '../presets/v2';
-import type { BrandTokenDoc, CompiledThemeV2, PresentationOverlayV2 } from './types';
+import type { BrandTokenDoc, CompiledThemeV2, PresentationOverlayV2, ThemePresetV2 } from './types';
 
 /** Tenant brand as stored in the TenantBrand columns + the `tokens` JSONB (the
  *  subset the v2 engine consumes; selected by publish-service and returned by
@@ -60,6 +60,10 @@ export function brandColsToTokenDoc(cols: TenantBrandColumns | null | undefined)
 
 export interface CompileForTenantArgs {
   themeKey: string;
+  /** A DATA theme's full v2 preset (docs/60), carried per-tenant from a marketplace
+   *  apply. When present it wins over `themeKey`, so the compile needs no code
+   *  preset. When absent the preset is resolved from the code registry by key. */
+  preset?: ThemePresetV2 | null;
   /** TenantBrand identity columns (brand-owned slots win). */
   brand?: TenantBrandColumns | null;
   /** The Site Builder presentation overlay (surfaces/neutral/status/border). */
@@ -67,12 +71,14 @@ export interface CompileForTenantArgs {
 }
 
 /**
- * Compile a tenant's storefront theme: the v2 preset for `themeKey`, with brand
- * identity layered on top and the tenant's presentation overlay over that.
- * Always complete (the preset supplies every slot) even with no brand/overlay.
+ * Compile a tenant's storefront theme: the v2 preset (an inline DATA preset when
+ * supplied, else the code preset for `themeKey`), with brand identity layered on
+ * top and the tenant's presentation overlay over that. Always complete (the
+ * preset supplies every slot) even with no brand/overlay.
  */
 export function compileThemeForTenant(args: CompileForTenantArgs): CompiledThemeV2 {
-  return compileTokensV2(getThemePresetV2(args.themeKey), {
+  const preset = args.preset ?? getThemePresetV2(args.themeKey);
+  return compileTokensV2(preset, {
     brand: brandColsToTokenDoc(args.brand),
     presentation: args.presentation ?? null,
   });

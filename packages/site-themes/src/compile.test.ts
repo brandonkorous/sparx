@@ -56,7 +56,7 @@ describe('tokensToCssVars', () => {
 });
 
 describe('theme catalog', () => {
-  it('ships the full theme catalog with light + dark defaults', () => {
+  it('ships all six themes with light + dark defaults', () => {
     expect(THEME_LIST.map((t) => t.key)).toEqual([
       'apex',
       'industrial',
@@ -64,16 +64,6 @@ describe('theme catalog', () => {
       'market',
       'fleet',
       'drop',
-      'noir',
-      'sage',
-      'coast',
-      'ember',
-      'mono',
-      'bloom',
-      'meridian',
-      'terra',
-      'pulse',
-      'linen',
     ]);
     for (const theme of THEME_LIST) {
       expect(Object.keys(theme.tokenDefaults.light).length).toBeGreaterThan(0);

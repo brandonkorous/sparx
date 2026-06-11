@@ -11,6 +11,7 @@ import { PrismaClient, type Prisma } from '@prisma/client';
 import { hashPassword } from 'better-auth/crypto';
 import { listBlueprints, type Blueprint } from '@sparx/blueprints';
 import { LEGAL_TEMPLATES, legalEntryBody } from '@sparx/legal-templates';
+import { SPARX_DATA_THEMES } from './marketplace/themes';
 
 const prisma = new PrismaClient();
 
@@ -312,9 +313,14 @@ async function seedMarketplaceCatalog(): Promise<void> {
       });
     }
 
-    // Themes — slug = @sparx/site-themes preset key; tokens NULL (resolved by
-    // slug, like blueprints). Curated marketplace copy + facets from SPARX_THEMES.
+    // Themes (docs/85). The 6 foundations (apex…drop) stay code presets resolved
+    // by slug → `tokens` NULL. The 10 marketplace themes are DATA: their full
+    // `DataThemePreset` rides in `tokens`, applied at runtime with no code preset
+    // (the apply path writes it into draftSettings; the compile engine reads it).
+    // SPARX_THEMES drives the catalog copy/facets; SPARX_DATA_THEMES the payload.
+    const dataThemeBySlug = new Map(SPARX_DATA_THEMES.map((t) => [t.slug, t.preset]));
     for (const t of SPARX_THEMES) {
+      const tokens = dataThemeBySlug.get(t.slug);
       const shared = {
         name: t.name,
         tagline: t.tagline.slice(0, 255),
@@ -328,6 +334,7 @@ async function seedMarketplaceCatalog(): Promise<void> {
         status: 'published',
         visibility: 'public',
         publisherId: publisher.id,
+        ...(tokens ? { tokens: tokens as unknown as Prisma.InputJsonValue } : {}),
       };
       await tx.marketplaceTheme.upsert({
         where: { slug: t.slug },

@@ -12,8 +12,11 @@ import { withTenant, type TxClient } from '@sparx/db';
 import {
   applyBrandIdentityTokens,
   compileTokens,
+  compileTokensFromDefaults,
   compileThemeForTenant,
+  type CompiledTokens,
   type PresentationOverlayV2,
+  type ThemePresetV2,
 } from '@sparx/site-themes';
 
 import { publishSitebuilderEvent } from '../events';
@@ -120,7 +123,11 @@ async function overlayBrand(
   tx: TxClient,
   tenantId: string,
   snapshot: PublishedSnapshot,
-  presentation: PresentationOverlayV2 | null
+  presentation: PresentationOverlayV2 | null,
+  // A DATA theme's inline v2 preset (docs/85 §7). When present the v2 compile uses
+  // it directly instead of resolving a code preset by themeKey — so a marketplace
+  // (no-code) theme renders with zero code-preset dependency.
+  preset: ThemePresetV2 | null
 ): Promise<PublishedSnapshot> {
   const brand = await tx.tenantBrand.findUnique({
     where: { tenantId },
@@ -145,10 +152,20 @@ async function overlayBrand(
     : snapshot.compiledTokens;
   const compiledV2 = compileThemeForTenant({
     themeKey: snapshot.themeKey,
+    preset,
     brand,
     presentation,
   });
   return { ...snapshot, compiledTokens, compiledV2 };
+}
+
+/** A DATA theme's inline payload, persisted in a settings JSON blob under
+ *  `themePreset` (docs/85 §7). `v1` drives the legacy snapshot compile; `v2` drives
+ *  the read-time v2 compile here. Typed loosely at the boundary. */
+function readThemePreset(settings: unknown): { v1?: CompiledTokens; v2?: ThemePresetV2 } | null {
+  if (!settings || typeof settings !== 'object') return null;
+  const p = (settings as { themePreset?: { v1?: CompiledTokens; v2?: ThemePresetV2 } }).themePreset;
+  return p && typeof p === 'object' ? p : null;
 }
 
 // The presentation overlay persisted in a settings JSON blob (draft config or a
@@ -168,11 +185,13 @@ export async function getPublishedSnapshot(ctx: ServiceContext): Promise<Publish
     const version = await tx.siteVersion.findUnique({ where: { id: config.publishedVersionId } });
     if (!version) return null;
     const presentation = readPresentation(version.settingsSnapshot);
+    const preset = readThemePreset(version.settingsSnapshot);
     const withBrand = await overlayBrand(
       tx,
       ctx.tenantId,
       toPublishedSnapshot(version),
-      presentation
+      presentation,
+      preset?.v2 ?? null
     );
     const assignments = await readAssignmentSnapshot(tx, ctx.tenantId);
     return { ...withBrand, assignments };
@@ -189,9 +208,14 @@ export async function getDraftSnapshot(ctx: ServiceContext): Promise<PublishedSn
     const draft = await readDraft(tx);
     const settings = (config.draftSettings ?? {}) as {
       tokens?: { light?: Record<string, string>; dark?: Record<string, string> };
+      themePreset?: { v1?: CompiledTokens };
     };
-    const compiled = compileTokens(config.themeKey, settings.tokens ?? {});
+    const inlineV1 = settings.themePreset?.v1;
+    const compiled = inlineV1
+      ? compileTokensFromDefaults(inlineV1, settings.tokens ?? {})
+      : compileTokens(config.themeKey, settings.tokens ?? {});
     const presentation = readPresentation(config.draftSettings);
+    const preset = readThemePreset(config.draftSettings);
     const definitions = await readDefinitionsForSections(tx, draft.sections);
     const snapshot: PublishedSnapshot = {
       versionNumber: 0,
@@ -202,7 +226,7 @@ export async function getDraftSnapshot(ctx: ServiceContext): Promise<PublishedSn
       layout: draft.layout,
       definitions,
     };
-    const withBrand = await overlayBrand(tx, ctx.tenantId, snapshot, presentation);
+    const withBrand = await overlayBrand(tx, ctx.tenantId, snapshot, presentation, preset?.v2 ?? null);
     const assignments = await readAssignmentSnapshot(tx, ctx.tenantId);
     return { ...withBrand, assignments };
   });

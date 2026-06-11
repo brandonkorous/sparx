@@ -5,13 +5,13 @@
 // publishService.publishNow runs.
 
 import { SelectThemeInput, UpdateSettingsInput } from '@sparx/sitebuilder-schemas';
-import type { SiteConfig } from '@sparx/db';
+import type { Prisma, SiteConfig } from '@sparx/db';
 import { withTenant } from '@sparx/db';
-import { getTheme, THEME_LIST, type ThemePreset } from '@sparx/site-themes';
+import { getTheme, isThemeKey, THEME_LIST, type ThemePreset } from '@sparx/site-themes';
 
 import { writeAuditLog } from '../audit';
 import { publishSitebuilderEvent } from '../events';
-import type { ServiceContext } from '../errors';
+import { SitebuilderNotFoundError, type ServiceContext } from '../errors';
 import { getOrCreateConfig } from './_config';
 
 // ── Static catalog (no tenant) ──────────────────────────────────────────────
@@ -32,11 +32,33 @@ export function getConfig(ctx: ServiceContext): Promise<SiteConfig> {
 
 export async function selectTheme(ctx: ServiceContext, rawInput: unknown): Promise<SiteConfig> {
   const input = SelectThemeInput.parse(rawInput);
+  const slug = input.themeKey;
   const updated = await withTenant(ctx, async (tx) => {
     const config = await getOrCreateConfig(tx, ctx.tenantId);
+
+    // Resolve the slug: a marketplace DATA theme carries its full preset in
+    // `tokens`; the 6 code foundations resolve by key. (docs/85 §7)
+    const row = await tx.marketplaceTheme.findFirst({ where: { slug }, select: { tokens: true } });
+    const dataPreset = (row?.tokens ?? null) as { v1?: unknown; v2?: unknown } | null;
+    const isData = Boolean(dataPreset?.v1 && dataPreset?.v2);
+    if (!isData && !isThemeKey(slug)) {
+      throw new SitebuilderNotFoundError('Theme', slug);
+    }
+
+    // Carry (or clear) the inline preset in draftSettings so the compile engine
+    // applies it with no code preset. A code foundation clears any prior inline.
+    const draftSettings: Record<string, unknown> = {
+      ...((config.draftSettings as Record<string, unknown> | null) ?? {}),
+    };
+    if (isData) {
+      draftSettings.themePreset = dataPreset;
+    } else {
+      delete draftSettings.themePreset;
+    }
+
     const next = await tx.siteConfig.update({
       where: { tenantId: ctx.tenantId },
-      data: { themeKey: input.themeKey },
+      data: { themeKey: slug, draftSettings: draftSettings as Prisma.InputJsonValue },
     });
     await writeAuditLog({
       tx,

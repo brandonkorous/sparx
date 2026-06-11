@@ -4,25 +4,7 @@
 
 import type { ThemeTokens, ThemeTokenKey } from './tokens';
 
-export type ThemeKey =
-  | 'apex'
-  | 'industrial'
-  | 'drift'
-  | 'market'
-  | 'fleet'
-  | 'drop'
-  // Marketplace theme catalog (docs/60) — distinct personalities for verticals
-  // the original six don't cover.
-  | 'noir'
-  | 'sage'
-  | 'coast'
-  | 'ember'
-  | 'mono'
-  | 'bloom'
-  | 'meridian'
-  | 'terra'
-  | 'pulse'
-  | 'linen';
+export type ThemeKey = 'apex' | 'industrial' | 'drift' | 'market' | 'fleet' | 'drop';
 
 export type ThemeCategory = 'general' | 'b2b' | 'fashion' | 'food' | 'fleet' | 'dropship';
 

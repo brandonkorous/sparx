@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "aurora",
+  "name": "Aurora",
+  "version": "1.0.0",
+  "tagline": "Cool aurora gradient — teal and violet over deep night surfaces.",
+  "description": "A modern dark-leaning theme with a teal-to-violet aurora accent, soft surfaces, and a clean geometric sans. Built for SaaS, portfolios, and brands that want a calm, premium feel.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Modern",
+    "colorFamily": "Teal",
+    "density": "Standard",
+    "industry": "Technology"
+  },
+  "pricing": { "model": "free", "priceCents": 0 },
+  "media": [
+    { "file": "media/preview.png", "kind": "image", "alt": "Aurora theme home page" },
+    { "file": "media/swatch.svg", "kind": "image", "alt": "Aurora palette swatch" }
+  ],
+  "author": { "displayName": "Sparx", "website": "https://sparx.works" },
+  "requires": { "modules": ["builder"] }
+}

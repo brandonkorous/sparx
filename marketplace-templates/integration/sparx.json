@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "category": "integration",
+  "slug": "acme-crm",
+  "name": "Acme CRM",
+  "version": "1.0.0",
+  "tagline": "Sync contacts and read deals from Acme CRM over its REST API.",
+  "description": "A declarative connector for Acme CRM: authenticate with an API key, pull contacts and deals as external data sources, and receive contact webhooks. No code — just configuration the platform runs safely.",
+  "payload": "integration.ts",
+  "facets": {
+    "kind": "Data",
+    "scopes": ["contacts:read", "deals:read", "webhooks"]
+  },
+  "pricing": { "model": "subscription", "priceCents": 0 },
+  "media": [{ "file": "media/logo.svg", "kind": "image", "alt": "Acme CRM logo" }],
+  "author": { "displayName": "Sparx", "website": "https://sparx.works" },
+  "requires": { "modules": ["builder"] }
+}

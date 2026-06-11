@@ -13,8 +13,16 @@ import { PresentationOverlay, SiteSettings } from './site-settings';
 // downstream against the tenant's loaded definitions (sectionService), not here.
 const SectionTypeRef = z.union([SectionTypeEnum, CustomSectionTypeSchema]);
 
+// `themeKey` is a slug, not the closed code-preset enum: it is either one of the
+// code foundations (apex…drop) OR a marketplace DATA theme slug (docs/85). The
+// service resolves which it is and applies the right path; an unknown slug is
+// rejected there.
 export const SelectThemeInput = z.object({
-  themeKey: ThemeKey,
+  themeKey: z
+    .string()
+    .min(1)
+    .max(63)
+    .regex(/^[a-z0-9][a-z0-9-]*$/, 'Use lowercase letters, numbers, and internal hyphens.'),
 });
 export type SelectThemeInput = z.infer<typeof SelectThemeInput>;
 

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "cta-banner",
+  "name": "CTA Banner",
+  "version": "1.0.0",
+  "tagline": "A full-width call-to-action band — heading, supporting text, and a button.",
+  "description": "A reusable, parameterized call-to-action section. Drop it on any page and fill in the heading, body, and button via fields. Re-themes automatically to the site's tokens.",
+  "payload": "component.tsx",
+  "facets": {
+    "group": "content",
+    "surfaces": ["page", "site"]
+  },
+  "pricing": { "model": "free", "priceCents": 0 },
+  "media": [{ "file": "media/preview.png", "kind": "image", "alt": "CTA Banner on a sample page" }],
+  "author": { "displayName": "Sparx", "website": "https://sparx.works" },
+  "requires": { "modules": ["builder"] }
+}

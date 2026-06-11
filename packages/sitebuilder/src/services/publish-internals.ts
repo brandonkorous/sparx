@@ -5,7 +5,13 @@
 // SAME transaction as the publish.
 
 import type { Prisma, SiteConfig, SiteVersion, TxClient } from '@sparx/db';
-import { compileTokens, toStorefrontThemeColumns, type CompiledThemeV2 } from '@sparx/site-themes';
+import {
+  compileTokens,
+  compileTokensFromDefaults,
+  toStorefrontThemeColumns,
+  type CompiledThemeV2,
+  type CompiledTokens,
+} from '@sparx/site-themes';
 import { customSlugOf, type SectionField, type TemplateNode } from '@sparx/sitebuilder-schemas';
 
 import type { SnapshotAssignments } from './assignment-service';
@@ -207,8 +213,15 @@ export async function publishWithinTx(
 
   const settings = (config.draftSettings ?? {}) as {
     tokens?: { light?: Record<string, string>; dark?: Record<string, string> };
+    // A DATA theme applied from the marketplace carries its full preset here
+    // (docs/85 §7). When present we compile the v1 snapshot from its inline
+    // light/dark defaults instead of resolving a code preset by themeKey.
+    themePreset?: { v1?: CompiledTokens };
   };
-  const compiled = compileTokens(config.themeKey, settings.tokens ?? {});
+  const inlineV1 = settings.themePreset?.v1;
+  const compiled = inlineV1
+    ? compileTokensFromDefaults(inlineV1, settings.tokens ?? {})
+    : compileTokens(config.themeKey, settings.tokens ?? {});
   const draft = await readDraft(tx);
   // Pin the custom-section definitions this draft references so the published
   // snapshot renders them deterministically (docs/38 Phase C).

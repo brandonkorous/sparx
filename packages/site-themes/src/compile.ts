@@ -36,10 +36,23 @@ function pickKnown(partial: Partial<ThemeTokens> | undefined): Partial<ThemeToke
  * the preset default so the output is always a complete ThemeTokens map.
  */
 export function compileTokens(themeKey: string, overlay?: ThemeOverlay): CompiledTokens {
-  const preset = getTheme(themeKey);
+  return compileTokensFromDefaults(getTheme(themeKey).tokenDefaults, overlay);
+}
+
+/**
+ * Like `compileTokens`, but takes the preset's light/dark defaults DIRECTLY
+ * instead of resolving them from the code registry by key. This is the seam for
+ * DATA themes (docs/60): a tenant who applied a marketplace theme carries its
+ * `DataThemePreset.v1` defaults in draftSettings, and the publish snapshot
+ * compiles from them with no code preset.
+ */
+export function compileTokensFromDefaults(
+  defaults: CompiledTokens,
+  overlay?: ThemeOverlay
+): CompiledTokens {
   return {
-    light: { ...preset.tokenDefaults.light, ...pickKnown(overlay?.light) },
-    dark: { ...preset.tokenDefaults.dark, ...pickKnown(overlay?.dark) },
+    light: { ...defaults.light, ...pickKnown(overlay?.light) },
+    dark: { ...defaults.dark, ...pickKnown(overlay?.dark) },
   };
 }
 
