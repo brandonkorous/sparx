@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Plus, Users } from 'lucide-react';
 
-import { crmManifest } from '@sparx/crm/manifest';
+import { crmManifest } from './manifest';
 import {
   Button,
   Card,

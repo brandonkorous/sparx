@@ -16,59 +16,15 @@
 import type { Topic } from '@google-cloud/pubsub';
 import { PubSub } from '@google-cloud/pubsub';
 import type { FastifyBaseLogger } from 'fastify';
+import { AUTOMATION_FANIN_TOPIC, teeToFanIn, type EventType } from '@sparx/events';
 import { withTenant } from '@sparx/db';
 import { enqueueWebhookDeliveries } from './webhook-delivery.js';
 
-export type EventType =
-  // Content
-  | 'content.entry.created'
-  | 'content.entry.updated'
-  | 'content.entry.published'
-  | 'content.entry.scheduled'
-  | 'content.entry.unpublished'
-  | 'content.entry.deleted'
-  | 'content.revision.created'
-  | 'content_type.upserted'
-  // Media
-  | 'media.uploaded'
-  | 'media.processed'
-  | 'media.deleted'
-  // Email — published by api-rest (Better Auth verification + welcome)
-  // and consumed by email-worker. 'email.domain.verified' is emitted by
-  // worker-domain once DKIM/SPF checks pass; no subscribers yet.
-  | 'email.send'
-  | 'email.domain.verified'
-  // Webhooks / redirects (Phase 4)
-  | 'redirect.added'
-  | 'redirect.removed'
-  // Search — admin-triggered full reindex; consumed by commerce-indexer,
-  // which bulk-projects the tenant's products/customers/orders from
-  // Postgres into Typesense. See services/commerce-indexer/src/reindex.ts.
-  | 'search.reindex.requested'
-  // Tenant blueprints (docs/54) — emitted after a one-click template install
-  // succeeds or fails. No subscribers yet (best-effort observability).
-  | 'template.installed'
-  | 'template.install_failed'
-  // Payment lifecycle (emitted by the Stripe webhook handler after provider
-  // confirmation). Consumers get the authoritative post-Stripe signal.
-  | 'payment.captured'
-  | 'payment.failed'
-  // Order lifecycle (checkout-complete fan-out)
-  | 'order.placed'
-  | 'order.fulfilled'
-  | 'order.refunded'
-  | 'order.payment_failed'
-  // Import jobs (docs/68 §8) — consumed by import-worker (Cloud Run).
-  | 'import.job.created'
-  // Live Chat (docs/56, docs/69) — a customer message needs a human (AI
-  // disabled / escalated / outside hours). Consumed by email-worker (chat
-  // notification fallback) + the web-push sender. See docs/69 A-3 / A-6.
-  | 'chat.message.received'
-  // Web push fan-out (docs/69 A-6) — one per recipient staff user, carrying the
-  // composed { userId, title, body, url, tag }. Consumed by push-worker, which
-  // delivers to that user's browser push subscriptions. Generic (any module can
-  // publish it), mirroring `email.send`.
-  | 'push.send';
+// The canonical event registry lives in @sparx/events (docs/82 §3.1 — one source
+// of truth; the two unions had drifted). api-core re-exports it so existing
+// `@sparx/api-core/pubsub` importers are unchanged. Type-only ⇒ no runtime dep,
+// and every service that COPYs api-core already COPYs @sparx/events.
+export type { EventType };
 
 export interface SparxEvent<T = unknown> {
   type: EventType;
@@ -84,13 +40,13 @@ interface Publisher {
 
 class CloudPubSubPublisher implements Publisher {
   private readonly client: PubSub;
-  private readonly topicCache = new Map<EventType, Topic>();
+  private readonly topicCache = new Map<string, Topic>();
 
   constructor(client: PubSub) {
     this.client = client;
   }
 
-  private topicFor(type: EventType): Topic {
+  private topicFor(type: string): Topic {
     let topic = this.topicCache.get(type);
     if (!topic) {
       topic = this.client.topic(type, {
@@ -109,6 +65,13 @@ class CloudPubSubPublisher implements Publisher {
       // even though each subscriber only sees its own topic.
       attributes: { type: event.type, tenantId: event.tenantId },
     });
+    // Tee to the automation fan-in (docs/82 §3.3) after the per-type publish.
+    // Best-effort — a fan-in failure must not surface as a publish failure.
+    try {
+      await teeToFanIn(this.topicFor(AUTOMATION_FANIN_TOPIC), event);
+    } catch {
+      // swallow — fan-in is additive; one missed automation trigger is recoverable
+    }
   }
 }
 

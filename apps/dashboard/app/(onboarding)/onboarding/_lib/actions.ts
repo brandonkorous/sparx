@@ -14,6 +14,10 @@ import type {
 // dashboard, every call goes through api-rest with the server-held JWT — the
 // wizard islands never touch api-rest directly. Each step persists its result
 // AND advances `currentStep` so the flow resumes where the tenant left off.
+//
+// Modules-first flow (docs/15 v2): modules → template → workspace → domain →
+// payments → launch. `next` is passed where the next step is conditional (after
+// domain, Payments is shown only when a selling module is on).
 
 function fail(err: unknown): { ok: false; error: string } {
   const e = err as ApiRestError;
@@ -34,14 +38,34 @@ async function patchOnboarding(patch: OnboardingPatch): Promise<void> {
   await api.patch('/v1/tenant/onboarding', patch);
 }
 
-// ── Step 1 — Template ────────────────────────────────────────────────────────
+// ── Step 1 — Modules ─────────────────────────────────────────────────────────
+//
+// The opening move: switch on the modules you need. The selection drives billing
+// (the trial subscription, when platform billing lands) AND filters the template
+// catalog to a compatible subset. Persisted in ONE bulk write, then advances to
+// the Template step.
+
+export async function saveModulesAction(
+  modules: Record<string, boolean>
+): Promise<WizardResult> {
+  try {
+    await api.put('/v1/tenant/modules', { modules });
+    await patchOnboarding({ completed: { modules: true }, currentStep: 'template' });
+    revalidatePath('/onboarding');
+    return ok;
+  } catch (err) {
+    return fail(err);
+  }
+}
+
+// ── Step 2 — Template ────────────────────────────────────────────────────────
 //
 // Pick a complete blueprint. Installing it provisions a whole themed site (pages,
 // theme, brand, products, content, emails) as DRAFT onto the tenant's primary
 // property, and enables the modules the blueprint needs. The site stays a draft
-// until the Launch step publishes it — so nothing is public until the tenant says
-// so. The blueprint key + install id are tracked on the onboarding state so the
-// Launch step can publish deterministically and the flow resumes mid-setup.
+// until the Launch step publishes it. The blueprint key + install id are tracked
+// on the onboarding state so Launch can publish deterministically and the flow
+// resumes mid-setup.
 
 export async function selectTemplateAction(
   key: string
@@ -74,7 +98,7 @@ export async function selectTemplateAction(
       blueprintKey: key,
       installId,
       completed: { template: true },
-      currentStep: 'domain',
+      currentStep: 'workspace',
     });
     revalidatePath('/onboarding');
     return { ok: true, data: { installId } };
@@ -89,8 +113,6 @@ export async function selectTemplateAction(
 // Builder instead of a publish-this-showcase preview.
 export async function startFromScratchAction(): Promise<WizardResult> {
   try {
-    // If a template was installed earlier and is being abandoned, tear it down so
-    // the tenant truly starts blank.
     const state = await api.get<{ installId: string | null }>('/v1/tenant/onboarding');
     if (state.installId) {
       await api
@@ -102,7 +124,7 @@ export async function startFromScratchAction(): Promise<WizardResult> {
       blueprintKey: null,
       installId: null,
       completed: { template: true },
-      currentStep: 'domain',
+      currentStep: 'workspace',
     });
     revalidatePath('/onboarding');
     return ok;
@@ -111,7 +133,12 @@ export async function startFromScratchAction(): Promise<WizardResult> {
   }
 }
 
-// ── Step 2 — Domain ──────────────────────────────────────────────────────────
+// ── Step 3 — Workspace ───────────────────────────────────────────────────────
+//
+// Name the company, confirm the storefront handle (slug), and name the first
+// site. The slug is editable here — the last chance before the site goes live;
+// after launch it's locked (changing a live address breaks links). All three
+// writes are idempotent, so re-saving unchanged values is a no-op.
 
 export async function checkSlugAction(slug: string): Promise<WizardResult<SlugAvailability>> {
   try {
@@ -124,10 +151,27 @@ export async function checkSlugAction(slug: string): Promise<WizardResult<SlugAv
   }
 }
 
-export async function saveSlugAction(slug: string): Promise<WizardResult> {
+export async function saveWorkspaceAction(input: {
+  companyName: string;
+  slug: string;
+  siteName: string;
+}): Promise<WizardResult> {
   try {
-    await api.patch('/v1/tenant/slug', { slug });
-    await patchOnboarding({ completed: { domain: true }, currentStep: 'payments' });
+    // Slug first — it's the most likely to fail (taken/reserved), and the
+    // endpoint enforces both, so a bad slug aborts before any other write.
+    await api.patch('/v1/tenant/slug', { slug: input.slug });
+    await api.patch('/v1/tenant', { name: input.companyName });
+
+    // Rename the PRIMARY property to the chosen site name.
+    const properties = await listProperties();
+    const primary = properties.find((p) => p.isPrimary) ?? properties[0];
+    if (primary && primary.name !== input.siteName) {
+      await api.patch(`/v1/properties/${encodeURIComponent(primary.id)}`, {
+        name: input.siteName,
+      });
+    }
+
+    await patchOnboarding({ completed: { workspace: true }, currentStep: 'domain' });
     revalidatePath('/onboarding');
     return ok;
   } catch (err) {
@@ -135,11 +179,19 @@ export async function saveSlugAction(slug: string): Promise<WizardResult> {
   }
 }
 
-// Domain (purchased path). Marks the domain step complete when the tenant buys a
-// domain through onboarding instead of picking a .sparx.zone subdomain.
-export async function completeDomainStepAction(): Promise<WizardResult> {
+// ── Step 4 — Domain ──────────────────────────────────────────────────────────
+//
+// The featured upsell: search for and buy a custom domain, or continue on the
+// free `<slug>.sparx.zone` address. `next` is 'payments' when a selling module is
+// on, else 'launch'.
+
+// Mark the domain step complete (a domain was bought, or the tenant chose the
+// free address) and advance to the next step.
+export async function completeDomainStepAction(
+  next: OnboardingStepKey
+): Promise<WizardResult> {
   try {
-    await patchOnboarding({ completed: { domain: true }, currentStep: 'payments' });
+    await patchOnboarding({ completed: { domain: true }, currentStep: next });
     revalidatePath('/onboarding');
     return ok;
   } catch (err) {
@@ -160,7 +212,7 @@ export async function getPrimaryPropertyAction(): Promise<WizardResult<Property>
   }
 }
 
-// ── Step 3 — Payments ────────────────────────────────────────────────────────
+// ── Step 5 — Payments ────────────────────────────────────────────────────────
 
 // Stripe Connect OAuth — returns the Stripe OAuth URL so the client can navigate
 // the merchant there. The redirect_uri points back to /onboarding/stripe-callback.
@@ -176,15 +228,16 @@ export async function startStripeConnectAction(): Promise<WizardResult<{ url: st
   }
 }
 
-// Advance from payments to the Launch step. Marks payments complete only when
+// Advance from payments to the next step. Marks payments complete only when
 // Stripe is actually connected (it's optional to launch).
 export async function completePaymentsAction(input: {
   paymentsConnected?: boolean;
+  next: OnboardingStepKey;
 }): Promise<WizardResult> {
   try {
     await patchOnboarding({
       completed: input.paymentsConnected ? { payments: true } : undefined,
-      currentStep: 'launch',
+      currentStep: input.next,
     });
     revalidatePath('/onboarding');
     return ok;
@@ -193,11 +246,11 @@ export async function completePaymentsAction(input: {
   }
 }
 
-// ── Step 4 — Launch ──────────────────────────────────────────────────────────
+// ── Step 6 — Launch ──────────────────────────────────────────────────────────
 
-// Mint a short-lived site-preview token so the Launch step's iframe can render
-// the tenant's DRAFT site (the installed-but-unpublished template). Requires the
-// Builder module, which the template install turned on.
+// Mint a short-lived site-preview token so the Launch step's "Preview in a new
+// tab" can render the tenant's DRAFT site. Requires the Builder module, which the
+// template install (or the scratch path) turned on.
 export async function getPreviewTokenAction(): Promise<WizardResult<{ token: string }>> {
   try {
     const data = await api.get<{ token: string; expires_in: number }>('/v1/builder/preview-token');

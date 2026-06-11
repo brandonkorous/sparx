@@ -14,7 +14,7 @@
 // rows around — disabling is reversible and tenants would be upset to
 // lose their edited pipeline on a brief disable.
 
-import { invalidateModuleCache } from '@sparx/auth';
+import { invalidateModuleCache } from '@sparx/modules';
 
 import * as pipelineService from '../services/pipeline-service';
 import * as segmentService from '../services/segment-service';

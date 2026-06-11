@@ -1,0 +1,104 @@
+// Invoicing module (docs/87) — authored billing documents.
+//
+// A BillingDocument is a human-built estimate / work order / invoice / ticket
+// that moves through a tenant-configured stage workflow and bills a retail
+// Customer OR a B2BAccount. The workflow/stage/line-type config tables below are
+// the Phase 1 substrate — the documents, lines, snapshots and payments land in
+// later phases (docs/87 §16). The shape deliberately mirrors the proven CRM
+// Pipeline / PipelineStage pattern (22-crm-pipelines.prisma): tenant-owned,
+// ordered, editable stages with a semantic `stageType` that drives behavior
+// while the customer-facing label stays the tenant's.
+//
+// Gated by the `invoicing` module flag (docs/87 §14), not a plan tier.
+
+// A tenant-configured document lifecycle. A "Quick Invoice" is a one-stage
+// workflow; a shop builds "Estimate → Approved → In Progress → Invoiced → Paid".
+model DocumentWorkflow {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String    @map("tenant_id") @db.Uuid
+  name       String    @db.VarChar(120)
+  slug       String    @db.VarChar(63)
+  isDefault  Boolean   @default(false) @map("is_default")
+  sortOrder  Int       @default(0) @map("sort_order")
+  archivedAt DateTime? @map("archived_at") @db.Timestamptz
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  stages DocumentStage[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, archivedAt])
+  @@map("document_workflows")
+}
+
+// An ordered step in a workflow. `customerLabel` is the noun shown to the
+// customer at this stage ("Estimate", "Invoice", "Work Order", "Ticket") — this
+// is how one engine serves every industry. System behavior keys off `stageType`,
+// never the label.
+model DocumentStage {
+  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String  @map("tenant_id") @db.Uuid
+  workflowId    String  @map("workflow_id") @db.Uuid
+  name          String  @db.VarChar(120)
+  customerLabel String  @map("customer_label") @db.VarChar(60)
+  // draft | open | committed | final | paid | void
+  // committed = customer-approved; final = billable/locked.
+  stageType String @default("draft") @map("stage_type") @db.VarChar(20)
+  // Freeze an immutable BillingDocumentSnapshot when a document enters here (§4).
+  snapshotOnEnter Boolean @default(false) @map("snapshot_on_enter")
+  // Mint a stage-specific document number on first entry (EST-… then INV-…) (§9).
+  numberOnEnter Boolean @default(false) @map("number_on_enter")
+  numberPrefix  String? @map("number_prefix") @db.VarChar(12)
+  // Once final/paid, the document's lines are frozen.
+  locksEditing Boolean @default(false) @map("locks_editing")
+  color        String? @db.VarChar(9)
+  sortOrder    Int     @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  workflow DocumentWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, workflowId])
+  @@index([workflowId, sortOrder])
+  @@map("document_stages")
+}
+
+// Tenant-owned line-type registry. A line type carries BEHAVIOR (how the line is
+// priced + taxed), not just a label — that is what lets "Part", "Labor",
+// "Sublet", "Freight", "Shop materials" all flow through one document engine
+// (docs/87 §5). Seeded with defaults on module activation; fully editable.
+model BillingDocumentLineType {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  // Stable per-tenant reference key (idempotent seeding + line FKs); slug-like.
+  key   String @db.VarChar(63)
+  name  String @db.VarChar(80)
+  label String @db.VarChar(80)
+  // catalog | markup | labor | flat | pass_through (docs/87 §5)
+  pricingMode String @default("flat") @map("pricing_mode") @db.VarChar(16)
+  // Parts usually taxable; labor often not (jurisdiction-dependent). Per-line
+  // overridable — this is just the default a new line of this type inherits.
+  defaultTaxable Boolean @default(true) @map("default_taxable")
+  // A `markup` line defaults to this rule/matrix (resolved by the shipped engine).
+  defaultMarkupRuleId String? @map("default_markup_rule_id") @db.Uuid
+  // Optional pricing helper, e.g. `percent_of_labor` for shop-materials.
+  computation String? @db.VarChar(40)
+  // Reporting buckets (parts vs labor vs sublet margin).
+  glCode    String? @map("gl_code") @db.VarChar(40)
+  category  String? @db.VarChar(40)
+  isActive  Boolean @default(true) @map("is_active")
+  sortOrder Int     @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant            Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  defaultMarkupRule MarkupRule? @relation("LineTypeDefaultMarkupRule", fields: [defaultMarkupRuleId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, key])
+  @@index([tenantId, isActive])
+  @@map("billing_document_line_types")
+}

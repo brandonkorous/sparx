@@ -84,6 +84,13 @@ function universalTargetForCrm(
   return typeof recordId === 'string' ? { entityType: map.entityType, recordId } : null;
 }
 
+// docs/82 §3.3 automation fan-in. Mirrors @sparx/events' AUTOMATION_FANIN_TOPIC —
+// kept inline so `@sparx/crm/pubsub` stays free of an @sparx/events dependency (it
+// already owns a PubSub client). This is the known two-bus footgun (docs/82 §3.3):
+// the tee MUST sit where BOTH crm.* and platform order.* events pass, or crm.*
+// triggers silently never reach automations — so it's installed on both wrappers.
+const AUTOMATION_FANIN_TOPIC = 'automation.trigger';
+
 // One shared Pub/Sub client + topic cache across both bridges. Topics are
 // created in Terraform; the client only publishes.
 class TopicPublisher {
@@ -108,6 +115,22 @@ class TopicPublisher {
   async publish(envelope: IndexerEnvelope, attributes: Record<string, string>): Promise<void> {
     const data = Buffer.from(JSON.stringify(envelope));
     await this.topicFor(envelope.type).publishMessage({ data, attributes });
+  }
+
+  /** Tee one event onto the automation fan-in topic (docs/82 §3.3). The original
+   *  type rides as a `type` attribute; `data.__automationDepth` (if a cascade
+   *  emitter stamped it) is forwarded for the engine's loop-guard, default 0. */
+  async fanIn(envelope: IndexerEnvelope): Promise<void> {
+    const depthRaw = (envelope.data as Record<string, unknown>).__automationDepth;
+    const depth = typeof depthRaw === 'number' && Number.isFinite(depthRaw) ? depthRaw : 0;
+    await this.topicFor(AUTOMATION_FANIN_TOPIC).publishMessage({
+      data: Buffer.from(JSON.stringify(envelope)),
+      attributes: {
+        type: envelope.type,
+        tenantId: envelope.tenantId,
+        __automationDepth: String(depth),
+      },
+    });
   }
 }
 
@@ -167,6 +190,13 @@ export class CrmPubSubPublisher implements CrmPublisher {
       }
     }
 
+    // Tee every crm.* event to the automation fan-in (docs/82 §3.3). Best-effort.
+    try {
+      await this.topics.fanIn(envelope);
+    } catch (err) {
+      this.logger.error({ err, topic: event.topic }, 'crm-pubsub: fan-in tee failed');
+    }
+
     await this.inner.publish(event);
   }
 }
@@ -197,6 +227,14 @@ class PubSubTeePlatformBus implements PlatformEventBus {
         await this.topics.publish(envelope, { type: event.topic, tenantId: event.tenantId });
       } catch (err) {
         this.logger.error({ err, topic: event.topic }, 'platform-pubsub: publish failed');
+      }
+      // The two-bus fan-in (docs/82 §3.3): order.* reaches automations via the
+      // platform bus, crm.* via the CRM bus above — both must tee or automations
+      // see a partial event stream. Best-effort.
+      try {
+        await this.topics.fanIn(envelope);
+      } catch (err) {
+        this.logger.error({ err, topic: event.topic }, 'platform-pubsub: fan-in tee failed');
       }
     }
     await this.inner.publish(event);

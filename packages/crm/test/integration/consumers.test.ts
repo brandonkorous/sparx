@@ -22,7 +22,7 @@ import crypto from 'node:crypto';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { prisma, withTenant } from '@sparx/db';
-import { invalidateModuleCache } from '@sparx/auth';
+import { invalidateModuleCache } from '@sparx/modules';
 import {
   customerService,
   registerCrmConsumers,

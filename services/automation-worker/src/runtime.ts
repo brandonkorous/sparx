@@ -12,13 +12,18 @@
 // DEFINER scan helpers; per-run/per-tenant work re-enters withTenant. handleTrigger
 // uses the same default client (no override passed).
 //
-// NOTE (Slice F): module-owned effect executors (crm.add_tag, email.send, …)
-// register through @sparx/automation's `registerAction` seam. They live with
-// their service packages and land in Slice F together with the seeded system
-// automations that use them. Until then the worker registers only the platform
-// built-ins (platform.webhook); an automation referencing an unwired action
-// fails its step loudly (UnregisteredActionError) rather than silently skipping.
+// Module-owned effect executors (crm.add_tag, crm.create_task, …) register
+// through @sparx/automation's `registerAction` seam via @sparx/automation-actions
+// (the module-effect composition root). @sparx/crm is now backend-clean (its
+// dashboard manifest moved to the dashboard; module-gating moved to @sparx/modules),
+// so this stays a lean worker — no React/UI/auth in the image.
+//
+// `installCrmPubSubBridge` swaps @sparx/crm's default LoggingPublisher (which
+// discards) for the real per-topic Pub/Sub publisher, so a crm.* event an
+// executor produces actually reaches the downstream consumers (email-worker,
+// search indexer, webhooks). It no-ops when GCP_PROJECT_ID is unset (dev/test).
 
+import { installModuleActions, seedSystemAutomations } from '@sparx/automation-actions';
 import {
   handleTrigger,
   installBuiltins,
@@ -29,14 +34,26 @@ import {
   type TickResult,
   type TriggerEnvelope,
 } from '@sparx/automation';
+import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { prisma } from '@sparx/db';
 import { createPublisher } from '@sparx/events';
 import type { Logger } from 'pino';
 import { env } from './env.js';
 
-function makeDeps(logger: Logger): EngineDeps {
-  // Idempotent: registers the built-in resolvers/scanners/actions once.
+let engineInstalled = false;
+
+/** One-time engine setup (idempotent guards make repeat calls safe). */
+function ensureEngineInstalled(logger: Logger): void {
+  if (engineInstalled) return;
+  engineInstalled = true;
   installBuiltins();
+  installModuleActions();
+  // Real Pub/Sub for crm.* events the executors emit (no-op without projectId).
+  installCrmPubSubBridge({ projectId: env.GCP_PROJECT_ID, logger });
+}
+
+function makeDeps(logger: Logger): EngineDeps {
+  ensureEngineInstalled(logger);
   // createPublisher caches internally — projectId unset ⇒ dev logging stub.
   const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger });
   return { publisher, logger };
@@ -54,7 +71,34 @@ export async function runTick(logger: Logger): Promise<TickSummary> {
   return { schedule, runs };
 }
 
+/** The module slug a `module.activated` envelope carries, if any. */
+function activatedModule(data: unknown): string | undefined {
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    const m = (data as Record<string, unknown>).module;
+    if (typeof m === 'string' && m.length > 0) return m;
+  }
+  return undefined;
+}
+
 export async function ingest(envelope: TriggerEnvelope, logger: Logger): Promise<void> {
   const deps = makeDeps(logger);
+
+  // `module.activated` is a PROVISIONING signal, not an automation trigger:
+  // install the activated module's system automations (idempotent), rather than
+  // matching automations to fire. This is the event-driven seed path (docs/84
+  // Slice E4) replacing the dashboard's direct /v1/<module>/bootstrap calls.
+  if (envelope.type === 'module.activated') {
+    const module = activatedModule(envelope.data);
+    const installed = await seedSystemAutomations(
+      { tenantId: envelope.tenantId },
+      module ? { module } : {}
+    );
+    logger.info(
+      { tenantId: envelope.tenantId, module, count: installed.length },
+      'seeded system automations on module activation'
+    );
+    return;
+  }
+
   await handleTrigger(envelope, deps);
 }

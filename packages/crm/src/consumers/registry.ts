@@ -12,7 +12,7 @@
 // calls them all. Order matters only for the test "drain everything" path;
 // at runtime handlers fan out concurrently.
 
-import { isModuleEnabled, invalidateModuleCache } from '@sparx/auth';
+import { isModuleEnabled, invalidateModuleCache } from '@sparx/modules';
 
 import { getDedupeStore } from './dedupe';
 import { getPlatformBus, type PlatformEvent, type PlatformEventHandler } from './platform-bus';

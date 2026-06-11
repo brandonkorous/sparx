@@ -179,6 +179,24 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
           );
         })}
 
+        {/* SEO — a cross-cutting platform tool (audits every module's pages:
+            products, collections, CMS + Builder pages), not an activatable
+            module. It rides at the END of the module list rather than in a
+            module manifest, and stays neutral-colored (no module hue) so it
+            reads as platform-level. New modules append above it. See docs/50 §7. */}
+        <Link
+          href="/seo"
+          title="SEO"
+          aria-label="SEO"
+          aria-current={isActivePath(pathname, '/seo') ? 'page' : undefined}
+          className={tileClass(isActivePath(pathname, '/seo'), expanded)}
+        >
+          <span className={tileIconClass(isActivePath(pathname, '/seo'))}>
+            <Gauge className="h-4 w-4" />
+          </span>
+          {expanded && <span className="flex-1 truncate text-left">SEO</span>}
+        </Link>
+
         <RailGroup
           label="Favorites"
           groupIcon={Star}
@@ -217,8 +235,8 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
 
       {/* Marketplace — blueprints now, integrations soon (docs/54): one-click
           install of a whole themed site, with more categories to come. Platform-
-          level, not a module, so it pins to the bottom cluster beside SEO +
-          Settings. */}
+          level, not a module, so it pins to the bottom cluster beside Settings.
+          (SEO moved to the end of the module list above.) */}
       <Link
         href="/marketplace"
         title="Marketplace"
@@ -229,21 +247,6 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
           <Store className="h-4 w-4" />
         </span>
         {expanded && <span className="flex-1 truncate text-left">Marketplace</span>}
-      </Link>
-
-      {/* SEO is a cross-cutting platform tool (audits every module's pages), not
-          a module — so it pins to the bottom cluster beside Settings rather than
-          living in a module manifest. See docs/50 §7. */}
-      <Link
-        href="/seo"
-        title="SEO"
-        aria-label="SEO"
-        className={tileClass(isActivePath(pathname, '/seo'), expanded)}
-      >
-        <span className={tileIconClass(isActivePath(pathname, '/seo'))}>
-          <Gauge className="h-4 w-4" />
-        </span>
-        {expanded && <span className="flex-1 truncate text-left">SEO</span>}
       </Link>
 
       <Link

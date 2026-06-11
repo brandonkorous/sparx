@@ -144,6 +144,14 @@ module "pubsub" {
     "module.activated"   = []
     "module.deactivated" = []
 
+    # Automation fan-in (docs/82 §3.3). EVERY publish path tees a copy of each
+    # event here after its per-type publish; the automation-worker is the sole
+    # subscriber (a Cloud Run PUSH subscription in automation.tf, NOT a pull
+    # subscriber listed here). One firehose topic + one subscription is cheaper
+    # than N per-type subscriptions and additive — per-type topics stay for
+    # targeted consumers. Topic-only here.
+    "automation.trigger" = []
+
     # Stripe webhooks
     "stripe.webhook" = ["worker-billing"]
 

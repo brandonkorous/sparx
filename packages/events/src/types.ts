@@ -13,6 +13,13 @@
 export type EventType =
   // Platform / tenant lifecycle
   | 'tenant.created'
+  // Module lifecycle (docs/82 §4 [ADD]). Published by api-rest when a tenant
+  // toggles a module flag; consumed to seed module defaults (CRM pipeline +
+  // segments, email default automations, automation system seeds) and to flip
+  // the per-tenant module-gate cache. First-class bus topics — previously only
+  // an in-process platform-bus event with no publisher.
+  | 'module.activated'
+  | 'module.deactivated'
   // Tenant blueprints (docs/54) — one-click marketplace template installs
   | 'template.install'
   | 'template.installed'
@@ -152,6 +159,18 @@ export type EventType =
   // commerce-indexer (re)projects ONE entity into the universal `entities`
   // collection. One topic serves every entity type — no per-entity topic.
   | 'search.entity.changed'
+  // Admin-triggered full reindex of a tenant — consumed by commerce-indexer,
+  // which bulk-projects the tenant's products/customers/orders into Typesense.
+  | 'search.reindex.requested'
+  // ─── Live Chat (docs/56, docs/69) ───────────────────────────────────
+  // A customer message needs a human (AI disabled / escalated / outside
+  // hours). Consumed by email-worker (notification fallback) + push-worker.
+  | 'chat.message.received'
+  // ─── Notifications ──────────────────────────────────────────────────
+  // Web-push fan-out, one per recipient staff user, carrying the composed
+  // { userId, title, body, url, tag }. Consumed by push-worker. Generic —
+  // any module may publish it, mirroring `email.send`.
+  | 'push.send'
   // ─── Import / Export (docs/68) ───────────────────────────────────────
   // Emitted by api-rest when a tenant submits a CSV import job. Consumed by
   // import-worker (Cloud Run) which processes rows and updates the job row.

@@ -4,6 +4,7 @@
 
 export * as customerService from './customer-service';
 export * as b2bAccountService from './b2b-account-service';
+export * as b2bEscalationService from './b2b-escalation-service';
 export * as pipelineService from './pipeline-service';
 export * as dealService from './deal-service';
 export * as activityService from './activity-service';

@@ -34,6 +34,11 @@ export const ActionType = z.enum([
   'b2b.create_quote',
   'b2b.convert_quote',
   'b2b.update_terms',
+  // Per-account dunning step: mark the account's past-due invoices overdue and
+  // ladder the account (credit-hold → suspend) by oldest-overdue age. The
+  // thresholds live in the action config so the Locked seed's definition shows
+  // them (docs/81 §3.1, docs/84 Slice F2).
+  'b2b.escalate_overdue',
   // Platform / control flow
   'platform.webhook',
   'platform.wait', // durable delay — parks the run via resume_at (§7); config.delaySeconds

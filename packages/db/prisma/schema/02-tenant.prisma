@@ -158,6 +158,11 @@ model Tenant {
   markupRules             MarkupRule[]
   markupRecomputeReviews  MarkupRecomputeReview[]
   surchargeRules          SurchargeRule[]
+
+  // Invoicing module (docs/87) — authored billing documents
+  documentWorkflows        DocumentWorkflow[]
+  documentStages           DocumentStage[]
+  billingDocumentLineTypes BillingDocumentLineType[]
   discounts               Discount[]
   discountUsages          DiscountUsage[]
   giftCards               GiftCard[]

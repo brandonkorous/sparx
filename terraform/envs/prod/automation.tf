@@ -185,18 +185,57 @@ resource "google_cloud_scheduler_job" "automation_tick" {
   ]
 }
 
-# ─── Slice E (event fan-in) — provision when `automation.trigger` exists ───
+# ─── Slice E (event fan-in) ────────────────────────────────────────────────
 #
-# A push subscription on the `automation.trigger` topic, pointed at
-# "${google_cloud_run_v2_service.automation_worker.uri}/", with an oidc_token as
-# google_service_account.pubsub_invoker (already granted run.invoker below) and
-# the standard DLQ + retry policy. Mirror the push_config in
-# modules/cloud-run-worker/main.tf. Deferred here because the topic + the three
-# publish-path tees are Slice E (docs/82).
+# The automation-worker is the SOLE subscriber on the `automation.trigger` fan-in
+# topic (provisioned in main.tf): every publish path tees a copy of each event
+# there (docs/82 §3.3), and this push subscription delivers the firehose to the
+# worker's POST / handler. The worker filters — it ignores events no active
+# automation matches, and dispatches `module.activated` to the system-automation
+# seed path (docs/84 Slice E4). The OIDC token authenticates as pubsub_invoker,
+# whose run.invoker grant is below; the worker re-checks the `email` claim against
+# PUBSUB_INVOKER_SA.
 resource "google_cloud_run_v2_service_iam_member" "automation_pubsub_invoker" {
   project  = google_cloud_run_v2_service.automation_worker.project
   location = google_cloud_run_v2_service.automation_worker.location
   name     = google_cloud_run_v2_service.automation_worker.name
   role     = "roles/run.invoker"
   member   = "serviceAccount:${google_service_account.pubsub_invoker.email}"
+}
+
+resource "google_pubsub_subscription" "automation_trigger" {
+  name    = "automation.trigger.automation-worker"
+  project = var.project_id
+  topic   = module.pubsub.topic_ids["automation.trigger"]
+
+  ack_deadline_seconds       = 60
+  message_retention_duration = "604800s" # 7 days
+
+  push_config {
+    push_endpoint = "${google_cloud_run_v2_service.automation_worker.uri}/"
+    oidc_token {
+      service_account_email = google_service_account.pubsub_invoker.email
+      audience              = google_cloud_run_v2_service.automation_worker.uri
+    }
+  }
+
+  retry_policy {
+    minimum_backoff = "10s"
+    maximum_backoff = "600s"
+  }
+
+  # Failed deliveries (worker 5xx) land in the shared DLQ after 5 attempts.
+  dynamic "dead_letter_policy" {
+    for_each = module.pubsub.dead_letter_topic == null ? [] : [1]
+    content {
+      dead_letter_topic     = "projects/${var.project_id}/topics/${module.pubsub.dead_letter_topic}"
+      max_delivery_attempts = 5
+    }
+  }
+
+  expiration_policy {
+    ttl = "" # never expire
+  }
+
+  depends_on = [google_cloud_run_v2_service_iam_member.automation_pubsub_invoker]
 }

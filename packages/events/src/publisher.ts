@@ -7,6 +7,7 @@
 
 import type { Topic } from '@google-cloud/pubsub';
 import { PubSub } from '@google-cloud/pubsub';
+import { AUTOMATION_FANIN_TOPIC, teeToFanIn } from './fan-in';
 import type { EventType, SparxEvent } from './types';
 
 export interface PublisherLogger {
@@ -21,13 +22,13 @@ export interface Publisher {
 
 class CloudPubSubPublisher implements Publisher {
   private readonly client: PubSub;
-  private readonly topicCache = new Map<EventType, Topic>();
+  private readonly topicCache = new Map<string, Topic>();
 
   constructor(client: PubSub) {
     this.client = client;
   }
 
-  private topicFor(type: EventType): Topic {
+  private topicFor(type: string): Topic {
     let topic = this.topicCache.get(type);
     if (!topic) {
       topic = this.client.topic(type, {
@@ -46,6 +47,14 @@ class CloudPubSubPublisher implements Publisher {
       // subscriber already only sees its own topic.
       attributes: { type: event.type, tenantId: event.tenantId },
     });
+    // Tee to the automation fan-in (docs/82 §3.3). Best-effort: the per-type
+    // publish above already succeeded, so a fan-in hiccup must not surface as a
+    // publish failure (which would mislead the caller / its retry).
+    try {
+      await teeToFanIn(this.topicFor(AUTOMATION_FANIN_TOPIC), event);
+    } catch {
+      // swallow — fan-in is additive; one missed automation trigger is recoverable
+    }
   }
 }
 

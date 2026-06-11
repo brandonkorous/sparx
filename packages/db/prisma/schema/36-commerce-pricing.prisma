@@ -169,6 +169,8 @@ model MarkupRule {
   tenant           Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   variants         ProductVariant[]
   recomputeReviews MarkupRecomputeReview[]
+  // Invoicing line types that default to this rule (docs/87 §5).
+  billingLineTypeDefaults BillingDocumentLineType[] @relation("LineTypeDefaultMarkupRule")
 
   @@index([tenantId, isActive])
   @@map("markup_rules")

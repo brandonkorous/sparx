@@ -1,8 +1,10 @@
 // Dashboard shell manifest for the CRM module.
 //
-// Imported by the dashboard via `@sparx/crm/manifest` — keep this file
-// dependency-light: types from @sparx/ui/shell, icons from lucide-react,
-// nothing else. See docs/24-dashboard-shell.md §3 for the contract.
+// Lives in the dashboard (not @sparx/crm) — it's pure shell UI (lucide icons +
+// @sparx/ui/shell types) and has no place in the CRM service-layer package,
+// which must stay backend-safe so lean workers can import @sparx/crm/services
+// without pulling React. Mirrors @sparx/email-platform/manifest's split.
+// See docs/24-dashboard-shell.md §3 for the manifest contract.
 
 import type { ModuleManifest } from '@sparx/ui/shell';
 import {

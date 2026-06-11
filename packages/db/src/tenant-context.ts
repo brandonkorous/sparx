@@ -9,6 +9,20 @@ export type TxClient = Prisma.TransactionClient;
 export interface TenantContext {
   tenantId: string;
   userId?: string;
+  /**
+   * An ALREADY-OPEN, tenant-scoped transaction to compose into. When set,
+   * `withTenant` runs `fn` directly on it instead of opening a fresh
+   * transaction — so several service calls (and, in the automation engine, the
+   * per-step effect + the step-record write) commit ATOMICALLY as one unit.
+   *
+   * Contract: the caller has already set the tenant GUC on this tx (i.e. it came
+   * from an enclosing `withTenant({ tenantId })`), and `tenantId` here MUST match
+   * that GUC. We do NOT re-assert the GUC (re-setting it could clobber the
+   * enclosing scope), so passing a `tx` whose GUC differs from `tenantId` is a
+   * caller bug. Prisma forbids nested `$transaction`, the other reason we reuse
+   * rather than wrap.
+   */
+  tx?: TxClient;
 }
 
 // Postgres rejects parameter placeholders for `SET LOCAL`, so we validate the
@@ -37,6 +51,8 @@ function assertUuid(value: string, field: string): void {
  *   const orders = await withTenant({ tenantId: req.tenant.id }, (tx) =>
  *     tx.order.findMany({ where: { status: 'pending' } })
  *   );
+ *
+ * Pass `context.tx` to compose into an enclosing transaction (see TenantContext.tx).
  */
 export function withTenant<T>(
   context: TenantContext,
@@ -46,6 +62,12 @@ export function withTenant<T>(
   assertUuid(context.tenantId, 'tenantId');
   if (context.userId !== undefined) {
     assertUuid(context.userId, 'userId');
+  }
+
+  // Compose into an already-open transaction (the GUC is the caller's
+  // responsibility — see TenantContext.tx). No nested $transaction, no re-SET.
+  if (context.tx) {
+    return fn(context.tx);
   }
 
   return client.$transaction(async (tx) => {

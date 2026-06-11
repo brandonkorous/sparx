@@ -9,11 +9,11 @@ import type { ModuleManifest, ModuleAction, ModuleSection, ModuleIcon } from '@s
 import type { SparxModule } from '@sparx/ui';
 
 import { commerceManifest } from '@sparx/commerce/manifest';
-import { crmManifest } from '@sparx/crm/manifest';
 import { cmsManifest } from '@sparx/cms-editor/manifest';
 import { emailManifest } from '@sparx/email-platform/manifest';
 
 import { builderManifest } from '../builder/manifest';
+import { crmManifest } from '../crm/manifest';
 import { b2bManifest } from '../b2b/manifest';
 import { dropshipManifest } from '../dropship/manifest';
 import { inventoryManifest } from '../inventory/manifest';

@@ -3,6 +3,7 @@
 //   GET    /v1/tenant                              → basic tenant card
 //   PATCH  /v1/tenant                              → name / email
 //   GET    /v1/tenant/modules                      → [{slug, enabled}]
+//   PUT    /v1/tenant/modules                      → bulk-set { slug: enabled } (owner/admin)
 //   PATCH  /v1/tenant/modules/:slug                → toggle enabled (owner/admin)
 //   GET    /v1/tenant/onboarding                   → raw onboarding state
 //   PATCH  /v1/tenant/onboarding                   → patch onboarding state
@@ -187,11 +188,26 @@ const ModulePatch = z.object({
   enabled: z.boolean(),
 });
 
-// Template-first onboarding (docs/15): pick a blueprint → domain → payments →
-// preview & launch. The Theme + Product steps are absorbed by the chosen template
-// (it ships theme, brand, products, and content). `launch` is terminal — the
-// preview-and-publish screen.
-const ONBOARDING_STEPS = ['template', 'domain', 'payments', 'launch'] as const;
+// Bulk module set (onboarding Modules step). A `{ slug: enabled }` map applied
+// in ONE read-modify-write; absent slugs are left untouched.
+const ModulesBulkPut = z.object({
+  modules: z.record(z.string(), z.boolean()),
+});
+
+// Modules-first onboarding (docs/15 v2): modules → template → workspace → domain
+// → payments → launch. The tenant explicitly picks their modules FIRST (that
+// selection drives billing AND filters the template catalog to a compatible
+// subset), then a complete blueprint ships theme, brand, products, and content.
+// `payments` is conditional (only when a selling module is on) and `launch` is
+// terminal — the preview-and-publish screen.
+const ONBOARDING_STEPS = [
+  'modules',
+  'template',
+  'workspace',
+  'domain',
+  'payments',
+  'launch',
+] as const;
 type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 
 const OnboardingPatch = z.object({
@@ -207,7 +223,9 @@ const OnboardingPatch = z.object({
   installId: z.string().uuid().nullable().optional(),
   completed: z
     .object({
+      modules: z.boolean().optional(),
       template: z.boolean().optional(),
+      workspace: z.boolean().optional(),
       domain: z.boolean().optional(),
       payments: z.boolean().optional(),
     })
@@ -215,7 +233,9 @@ const OnboardingPatch = z.object({
 });
 
 interface OnboardingCompleted {
+  modules: boolean;
   template: boolean;
+  workspace: boolean;
   domain: boolean;
   payments: boolean;
 }
@@ -232,7 +252,9 @@ interface OnboardingState {
 }
 
 const DEFAULT_COMPLETED: OnboardingCompleted = {
+  modules: false,
   template: false,
+  workspace: false,
   domain: false,
   payments: false,
 };
@@ -241,7 +263,7 @@ const DEFAULT_ONBOARDING: OnboardingState = {
   dismissed: false,
   startedAt: null,
   finishedAt: null,
-  currentStep: 'template',
+  currentStep: 'modules',
   category: null,
   blueprintKey: null,
   installId: null,
@@ -264,12 +286,14 @@ function readOnboarding(settings: unknown): OnboardingState {
     finishedAt: typeof rec.finishedAt === 'string' ? rec.finishedAt : null,
     currentStep: ONBOARDING_STEPS.includes(rec.currentStep as OnboardingStep)
       ? (rec.currentStep as OnboardingStep)
-      : 'template',
+      : 'modules',
     category: typeof rec.category === 'string' ? rec.category : null,
     blueprintKey: typeof rec.blueprintKey === 'string' ? rec.blueprintKey : null,
     installId: typeof rec.installId === 'string' ? rec.installId : null,
     completed: {
+      modules: completedRaw.modules === true,
       template: completedRaw.template === true,
+      workspace: completedRaw.workspace === true,
       domain: completedRaw.domain === true,
       payments: completedRaw.payments === true,
     },
@@ -440,6 +464,54 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     invalidateModuleCache(auth.tenantId, slug as ModuleSlug);
 
     return ok({ slug, enabled });
+  });
+
+  // Bulk-set module flags in ONE read-modify-write — the onboarding Modules step
+  // flips the whole switchboard at once, so N per-slug round-trips (and N racing
+  // cache invalidations) would be wasteful. Merges the provided slugs into
+  // settings.modules (absent slugs untouched), invalidates the cache for each
+  // slug whose value actually changed, and returns the full module list (same
+  // shape as GET). Owner/admin only, mirroring the per-slug PATCH.
+  app.put('/v1/tenant/modules', async (request) => {
+    const auth = requireRole(request, 'admin');
+    const { modules } = ModulesBulkPut.parse(request.body);
+
+    const entries = Object.entries(modules);
+    for (const [slug] of entries) {
+      if (!MODULE_SLUG_SET.has(slug)) throw badRequest(`Unknown module slug: ${slug}`);
+    }
+
+    const before = await prisma.tenant.findUnique({
+      where: { id: auth.tenantId },
+      select: { settings: true },
+    });
+    if (!before) throw notFound('Tenant', auth.tenantId);
+
+    const currentSettings = (before.settings as Record<string, unknown> | null) ?? {};
+    const currentModules = (currentSettings.modules as Record<string, unknown> | undefined) ?? {};
+    const currentFlags = readModuleFlags(before.settings);
+
+    const nextModules: Record<string, unknown> = { ...currentModules };
+    const changed: string[] = [];
+    for (const [slug, enabled] of entries) {
+      if (currentFlags[slug] !== enabled) changed.push(slug);
+      const slot = (currentModules[slug] as Record<string, unknown> | undefined) ?? {};
+      nextModules[slug] = { ...slot, enabled };
+    }
+
+    const nextSettings = {
+      ...currentSettings,
+      modules: nextModules,
+    } as Prisma.InputJsonValue;
+
+    await prisma.tenant.update({
+      where: { id: auth.tenantId },
+      data: { settings: nextSettings },
+    });
+    for (const slug of changed) invalidateModuleCache(auth.tenantId, slug as ModuleSlug);
+
+    const flags = readModuleFlags(nextSettings);
+    return ok(MODULE_SLUGS.map((slug) => ({ slug, enabled: flags[slug] === true })));
   });
 
   app.get('/v1/tenant/onboarding', async (request) => {

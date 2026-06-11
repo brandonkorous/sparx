@@ -16,6 +16,8 @@
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "@sparx/automation": "workspace:*",
+    "@sparx/automation-actions": "workspace:*",
+    "@sparx/crm": "workspace:*",
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",
     "pino": "^9.5.0",

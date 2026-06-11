@@ -2,11 +2,15 @@
 
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Badge, Button, Heading, Stack, Text } from '@sparx/ui';
-import { CheckCircle, CreditCard } from 'lucide-react';
+import { Badge, Button, Text, WizardStep } from '@sparx/ui';
+import { CheckCircle, CreditCard, Info } from 'lucide-react';
 import { completePaymentsAction, startStripeConnectAction } from '../_lib/actions';
 import type { StepNav } from './onboarding-wizard';
 
+// Step 5 — Payments (only shown when a selling module is on). Connects Stripe
+// CONNECT — the account that RECEIVES money from customers — which is a different
+// thing from the tenant's own Sparx subscription (the trial). The note spells
+// that out so "connect Stripe" never reads as "enter a card to pay Sparx".
 export function StepPayments({ nav }: { nav: StepNav }) {
   const searchParams = useSearchParams();
   const stripeConnected = searchParams.get('stripe_connected') === '1';
@@ -22,62 +26,69 @@ export function StepPayments({ nav }: { nav: StepNav }) {
     setError(null);
     startConnect(async () => {
       const res = await startStripeConnectAction();
-      if (res.ok) {
-        window.location.href = res.data.url;
-      } else {
-        setError(res.error);
-      }
+      if (res.ok) window.location.href = res.data.url;
+      else setError(res.error);
     });
   }
 
   function onFinish() {
     setError(null);
     startFinish(async () => {
-      const res = await completePaymentsAction({ paymentsConnected: stripeConnected });
+      const res = await completePaymentsAction({
+        paymentsConnected: stripeConnected,
+        next: nav.nextKey,
+      });
       if (res.ok) nav.onNext();
       else setError(res.error);
     });
   }
 
   return (
-    <Stack gap={6}>
-      <Stack gap={1}>
-        <Heading level={3}>Connect payments</Heading>
-        <Text variant="muted">
-          Connect a processor to start taking orders. Your store can go live now and you can connect
-          payments whenever you&apos;re ready — checkout simply stays off until then.
-        </Text>
-      </Stack>
-
-      <div className="rounded-lg border border-[var(--color-border-default)] p-5">
-        <Stack direction="row" align="center" justify="between" gap={3}>
-          <Stack direction="row" align="center" gap={3}>
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-bg-subtle)]">
+    <WizardStep
+      width="default"
+      header={{
+        title: 'Get paid',
+        supporting:
+          "Connect your Stripe account so your store can take customer payments. Your site can go live now and you can connect this whenever you're ready — checkout simply stays off until then.",
+      }}
+      actions={{
+        onBack: nav.onBack,
+        onNext: onFinish,
+        nextLabel: stripeConnected ? 'Continue' : 'Skip for now',
+        nextLoading: finishPending,
+        nextDisabled: pending,
+      }}
+    >
+      <div className="max-w-xl rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-6">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--color-bg-subtle)]">
               {stripeConnected ? (
                 <CheckCircle className="h-5 w-5 text-[var(--color-success-text)]" />
               ) : (
                 <CreditCard className="h-5 w-5 text-[var(--color-text-secondary)]" />
               )}
             </span>
-            <Stack gap={1}>
-              <Stack direction="row" align="center" gap={2}>
+            <div>
+              <span className="flex items-center gap-2">
                 <Text weight="medium">Stripe</Text>
                 {stripeConnected && (
-                  <Badge color="success" variant="soft">
+                  <Badge color="success" variant="soft" size="sm">
                     Connected
                   </Badge>
                 )}
-              </Stack>
+              </span>
               <Text size="sm" variant="muted">
                 {stripeConnected
                   ? 'Your Stripe account is connected. Checkout is enabled.'
-                  : 'Cards, wallets, and bank debits via Stripe Connect.'}
+                  : 'Cards, wallets, and bank debits — paid out to your bank.'}
               </Text>
-            </Stack>
-          </Stack>
+            </div>
+          </div>
           {!stripeConnected && (
             <Button
               variant="outline"
+              color="neutral"
               onClick={onConnectStripe}
               disabled={pending}
               loading={connectPending}
@@ -85,23 +96,25 @@ export function StepPayments({ nav }: { nav: StepNav }) {
               Connect Stripe
             </Button>
           )}
-        </Stack>
+        </div>
+
+        <div className="mt-4 flex items-start gap-2.5 border-t border-[var(--color-border-default)] pt-4">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+          <Text size="xs" variant="muted">
+            This is the account that{' '}
+            <span className="font-medium text-[var(--color-text-secondary)]">
+              receives money from your customers
+            </span>{' '}
+            — separate from your own Sparx subscription, which stays free for 14 days.
+          </Text>
+        </div>
       </div>
 
       {error && (
-        <Text size="sm" variant="danger" role="alert" aria-live="polite">
+        <Text size="sm" variant="danger" role="alert" aria-live="polite" className="mt-4 block">
           {error}
         </Text>
       )}
-
-      <Stack direction="row" justify="between">
-        <Button variant="ghost" onClick={nav.onBack} disabled={pending || nav.navPending}>
-          Back
-        </Button>
-        <Button color="module" onClick={onFinish} disabled={pending} loading={finishPending}>
-          {stripeConnected ? 'Continue' : 'Skip for now'}
-        </Button>
-      </Stack>
-    </Stack>
+    </WizardStep>
   );
 }

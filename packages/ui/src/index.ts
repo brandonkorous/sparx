@@ -280,6 +280,15 @@ export {
 export { Pagination, type PaginationProps } from './components/navigation/pagination';
 export { Stepper, type StepperProps, type StepperStep } from './components/navigation/stepper';
 export {
+  WizardFrame,
+  WizardStep,
+  type WizardFrameProps,
+  type WizardStepProps,
+  type WizardStepActions,
+  type WizardStepDef,
+  type WizardVariant,
+} from './components/navigation/wizard-frame';
+export {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
