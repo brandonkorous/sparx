@@ -181,7 +181,8 @@ export const moduleCatalog: Record<ModuleSlug, ModuleCatalogEntry> = {
       },
       {
         title: 'Typed lines',
-        description: 'Parts (marked up), labor (rate × hours), sublet, freight, materials, and fees.',
+        description:
+          'Parts (marked up), labor (rate × hours), sublet, freight, materials, and fees.',
       },
       {
         title: 'Stage snapshots',

@@ -207,8 +207,7 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
     return () => clearTimeout(handle);
   }, [normalizedSlug, unchangedSlug]);
 
-  const slugOk =
-    unchangedSlug || (slugCheck.status === 'done' && slugCheck.result.available);
+  const slugOk = unchangedSlug || (slugCheck.status === 'done' && slugCheck.result.available);
 
   // ── Navigation ───────────────────────────────────────────────────────────────
   const goPersist = React.useCallback(
@@ -347,9 +346,7 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
   };
 
   const chosenBlueprintLabel =
-    choice === 'scratch'
-      ? 'Start from scratch'
-      : (blueprintName(choice) ?? 'Pick a blueprint');
+    choice === 'scratch' ? 'Start from scratch' : (blueprintName(choice) ?? 'Pick a blueprint');
   pushEntry('template', 'Blueprint', chosenBlueprintLabel, choice === null);
   pushEntry('workspace', 'Workspace', `${normalizedSlug || initial.slug}.sparx.zone`);
   pushEntry(
@@ -452,7 +449,7 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
             )}
             <div
               key={step}
-              className={`${head ? 'mt-7 ' : ''}animate-in fade-in-0 slide-in-from-bottom-2 duration-300 motion-reduce:animate-none`}
+              className={`${head ? 'mt-7' : ''}animate-in fade-in-0 slide-in-from-bottom-2 duration-300 motion-reduce:animate-none`}
             >
               {body}
             </div>

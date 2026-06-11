@@ -32,7 +32,10 @@ export interface ComputedBillingTotals {
 
 /** Per-line numbers. Tax is charged on (subtotal − discount) when the line is
  *  taxable, at the document's rate (0.0875 = 8.75%). */
-export function computeBillingLine(line: BillingLineForTotals, taxRate: number): ComputedBillingLine {
+export function computeBillingLine(
+  line: BillingLineForTotals,
+  taxRate: number
+): ComputedBillingLine {
   const lineSubtotal = round2(line.quantity * line.unitPrice);
   const discountAmount = round2(line.discountAmount ?? 0);
   const taxBase = Math.max(0, lineSubtotal - discountAmount);

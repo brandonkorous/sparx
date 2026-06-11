@@ -218,11 +218,21 @@ export function StepLaunch({
           disabled={!previewHref}
           rightIcon={<ExternalLink className="h-3.5 w-3.5" />}
         >
-          <a href={previewHref ?? '#'} target="_blank" rel="noreferrer" aria-disabled={!previewHref}>
+          <a
+            href={previewHref ?? '#'}
+            target="_blank"
+            rel="noreferrer"
+            aria-disabled={!previewHref}
+          >
             Preview in a new tab
           </a>
         </Button>
-        <Button variant="soft" color="neutral" asChild leftIcon={<PencilRuler className="h-4 w-4" />}>
+        <Button
+          variant="soft"
+          color="neutral"
+          asChild
+          leftIcon={<PencilRuler className="h-4 w-4" />}
+        >
           <Link href={BUILDER_HREF}>Customize first</Link>
         </Button>
         <Button
@@ -239,15 +249,7 @@ export function StepLaunch({
   );
 }
 
-function ValuePoint({
-  icon,
-  title,
-  body,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  body: string;
-}) {
+function ValuePoint({ icon, title, body }: { icon: React.ReactNode; title: string; body: string }) {
   return (
     <div className="flex items-start gap-3">
       <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--module-active-tint)]">
@@ -292,9 +294,9 @@ function SavingsBanner({
       </div>
       <Text size="sm" variant="muted" className="mx-auto mt-2 block max-w-[42ch]">
         That&apos;s{' '}
-        <span className="font-medium text-[var(--color-text-primary)]">${usd(annualSavings)}</span> a
-        year. {count} best-in-class {count === 1 ? 'tool' : 'tools'} on one platform, one login, one
-        invoice — for ${usd(monthlyTotal)}/mo after your free trial.
+        <span className="font-medium text-[var(--color-text-primary)]">${usd(annualSavings)}</span>{' '}
+        a year. {count} best-in-class {count === 1 ? 'tool' : 'tools'} on one platform, one login,
+        one invoice — for ${usd(monthlyTotal)}/mo after your free trial.
       </Text>
     </div>
   );

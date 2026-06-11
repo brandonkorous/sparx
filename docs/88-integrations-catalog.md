@@ -69,16 +69,16 @@ the marketplace currently collapses both into one `kind` string, which is why ac
 Eight shapes. Each has a distinct runtime owner, lifecycle, and trust posture. **Do not invent a
 ninth without adding it here** — that's the same discipline as the module manifest.
 
-| # | Shape | What it is | Runtime owner | Acquire action | Direction | Trust edge |
-|---|-------|-----------|---------------|----------------|-----------|------------|
-| 1 | **Provider adapter** | Install + config + secrets + webhooks; executes per-transaction logic on the tenant's behalf | `@sparx/integration-framework` `ProviderBundle` + `provider-*` pkg | **Connect** | outbound, request-time | partner adapter runs code → review + sandbox |
-| 2 | **Sales channel** | Two-way catalog/order sync to an external selling surface | channel-sync worker (per channel) | **Add channel** | bidirectional, continuous | OAuth scopes to a marketplace account |
-| 3 | **Sync source** | Mirror of an external system of record (ERP/WMS/ledger) | sync bridge + reconciliation | **Connect source** | inbound-primary, batched | on-prem bridge / credentials |
-| 4 | **Connector (action target)** | Outbound effector an automation action or webhook invokes | automation action executor (gated) | **Authorize** | outbound, event-time | external side effect → gate layer |
-| 5 | **Data source** | Read-only binding into the builder (`ext.*` REST/GraphQL/SQL) | hardened SSRF proxy + render path | **Bind** | inbound, render-time | SSRF; untrusted upstream |
-| 6 | **Inbound trigger** | External system calls _into_ Sparx (webhook / channel push) → fires an automation | event bus + `automation.trigger` fan-in | **Generate URL** | inbound | shared-secret auth on the endpoint |
-| 7 | **Identity provider** | SSO/OIDC for platform or storefront auth | Better Auth (platform) / `@sparx/customer-auth` (storefront) | **Enable SSO** | inbound, login-time | token/secret handling |
-| 8 | **Registrar** | Domain purchase, DNS, transfer | domain service | **Buy / Connect domain** | outbound, lifecycle | money movement; DNS authority |
+| #   | Shape                         | What it is                                                                                   | Runtime owner                                                      | Acquire action           | Direction                 | Trust edge                                   |
+| --- | ----------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------ | ------------------------- | -------------------------------------------- |
+| 1   | **Provider adapter**          | Install + config + secrets + webhooks; executes per-transaction logic on the tenant's behalf | `@sparx/integration-framework` `ProviderBundle` + `provider-*` pkg | **Connect**              | outbound, request-time    | partner adapter runs code → review + sandbox |
+| 2   | **Sales channel**             | Two-way catalog/order sync to an external selling surface                                    | channel-sync worker (per channel)                                  | **Add channel**          | bidirectional, continuous | OAuth scopes to a marketplace account        |
+| 3   | **Sync source**               | Mirror of an external system of record (ERP/WMS/ledger)                                      | sync bridge + reconciliation                                       | **Connect source**       | inbound-primary, batched  | on-prem bridge / credentials                 |
+| 4   | **Connector (action target)** | Outbound effector an automation action or webhook invokes                                    | automation action executor (gated)                                 | **Authorize**            | outbound, event-time      | external side effect → gate layer            |
+| 5   | **Data source**               | Read-only binding into the builder (`ext.*` REST/GraphQL/SQL)                                | hardened SSRF proxy + render path                                  | **Bind**                 | inbound, render-time      | SSRF; untrusted upstream                     |
+| 6   | **Inbound trigger**           | External system calls _into_ Sparx (webhook / channel push) → fires an automation            | event bus + `automation.trigger` fan-in                            | **Generate URL**         | inbound                   | shared-secret auth on the endpoint           |
+| 7   | **Identity provider**         | SSO/OIDC for platform or storefront auth                                                     | Better Auth (platform) / `@sparx/customer-auth` (storefront)       | **Enable SSO**           | inbound, login-time       | token/secret handling                        |
+| 8   | **Registrar**                 | Domain purchase, DNS, transfer                                                               | domain service                                                     | **Buy / Connect domain** | outbound, lifecycle       | money movement; DNS authority                |
 
 **The key reframe:** shapes 1–3 are commerce-flavored and mostly exist; shapes 4–6 are what the
 **Automation module** needs and are mostly undocumented as a contract; shapes 7–8 are platform
@@ -96,7 +96,7 @@ There are two vocabularies in the repo and they don't match:
   single `ProviderBundle` may implement several at once (Stripe = payment + subscription_billing +
   tax), which is correct and stays.
 - **Marketplace facets** ([docs/60](60-marketplace.md) §8): `payments · shipping · tax · accounting ·
-  marketing`. Two of these — **`accounting` and `marketing`** — have **no runtime representation**.
+marketing`. Two of these — **`accounting` and `marketing`** — have **no runtime representation**.
   They are phantom facets: the catalog advertises a filter the platform can't fulfil.
 
 **Resolution (decided here):**
@@ -117,29 +117,29 @@ There are two vocabularies in the repo and they don't match:
 Status legend: ✅ built & registered · 🟡 package/spec exists, not activated · 📄 documented, not
 built · ⬜ not started.
 
-| Purpose | Named integration | Shape | Doc | Status |
-|---------|------------------|-------|-----|--------|
-| Payments | **Stripe** | 1 provider | [60](60-marketplace.md) | ✅ registered (payment+subs+tax) |
-| Payments | PayPal | 1 provider | [60](60-marketplace.md) | 🟡 `provider-paypal` exists, **not bootstrapped** |
-| Tax | Stripe Tax | 1 provider | [60](60-marketplace.md) | ✅ via Stripe bundle |
-| Tax | TaxJar | 1 provider | [60](60-marketplace.md) | 🟡 `provider-taxjar`, not bootstrapped |
-| Tax | Avalara | 1 provider | [60](60-marketplace.md) | 🟡 `provider-avalara`, not bootstrapped |
-| Shipping | **Shippo** | 1 provider | [60](60-marketplace.md) | ✅ registered |
-| Shipping | EasyPost | 1 provider | [60](60-marketplace.md) | 🟡 `provider-easypost`, not bootstrapped |
-| Subscription billing | Stripe Billing | 1 provider | [17](17-billing-subscriptions.md) | ✅ via Stripe bundle |
-| Dropship | Generic supplier connector | 1 provider | [14](14-dropship-integration-prd.md) | 📄 framework speced (`DropshipProvider` iface exists) |
-| Sales channel | TikTok Shop | 2 channel | [27](27-tiktok-shop-integration.md) | 📄 |
-| Sales channel | Social commerce (Meta/IG, Pinterest, Google Shopping) | 2 channel | [71](71-social-commerce-channels.md) | 📄 |
-| Inventory sync | ERP/WMS mirror (generic + on-prem bridge) | 3 sync | [28](28-inventory-sync-integration.md) | 📄 |
-| Accounting | QuickBooks / Xero | 3 sync | — | ⬜ (phantom facet, §4) |
-| Marketing | Klaviyo / Mailchimp / SMS | 4 connector / 2 channel | — | ⬜ (phantom facet, §4) |
-| Workflow connector | Zapier · Make.com · n8n | 4 connector | [81](81-automation-module.md) §10 | 📄 Phase 5 |
-| Workflow trigger | Inbound webhook → `webhook.received` | 6 inbound | [81](81-automation-module.md) §10 / [82](82-event-bus-unification.md) | 📄 |
-| Data source | `ext.*` REST/GraphQL/SQL | 5 data | [63](63-external-data-connections.md) | 📄 capstone, deferred |
-| Identity | Social SSO | 7 identity | [16](16-auth-security.md) | ⬜ (`identity` reserved in `ProviderKind`) |
-| Registrar | GoDaddy reseller | 8 registrar | [24](24-domain-purchase-management.md) | ✅ partial (lookup unwired in onboarding) |
-| Email infra | Mailgun | (platform) | [13](13-email-platform-prd.md) | ✅ |
-| Business formation | (formation API) | 4 connector | [74](74-business-formation-integration.md) | 📄 |
+| Purpose              | Named integration                                     | Shape                   | Doc                                                                   | Status                                                |
+| -------------------- | ----------------------------------------------------- | ----------------------- | --------------------------------------------------------------------- | ----------------------------------------------------- |
+| Payments             | **Stripe**                                            | 1 provider              | [60](60-marketplace.md)                                               | ✅ registered (payment+subs+tax)                      |
+| Payments             | PayPal                                                | 1 provider              | [60](60-marketplace.md)                                               | 🟡 `provider-paypal` exists, **not bootstrapped**     |
+| Tax                  | Stripe Tax                                            | 1 provider              | [60](60-marketplace.md)                                               | ✅ via Stripe bundle                                  |
+| Tax                  | TaxJar                                                | 1 provider              | [60](60-marketplace.md)                                               | 🟡 `provider-taxjar`, not bootstrapped                |
+| Tax                  | Avalara                                               | 1 provider              | [60](60-marketplace.md)                                               | 🟡 `provider-avalara`, not bootstrapped               |
+| Shipping             | **Shippo**                                            | 1 provider              | [60](60-marketplace.md)                                               | ✅ registered                                         |
+| Shipping             | EasyPost                                              | 1 provider              | [60](60-marketplace.md)                                               | 🟡 `provider-easypost`, not bootstrapped              |
+| Subscription billing | Stripe Billing                                        | 1 provider              | [17](17-billing-subscriptions.md)                                     | ✅ via Stripe bundle                                  |
+| Dropship             | Generic supplier connector                            | 1 provider              | [14](14-dropship-integration-prd.md)                                  | 📄 framework speced (`DropshipProvider` iface exists) |
+| Sales channel        | TikTok Shop                                           | 2 channel               | [27](27-tiktok-shop-integration.md)                                   | 📄                                                    |
+| Sales channel        | Social commerce (Meta/IG, Pinterest, Google Shopping) | 2 channel               | [71](71-social-commerce-channels.md)                                  | 📄                                                    |
+| Inventory sync       | ERP/WMS mirror (generic + on-prem bridge)             | 3 sync                  | [28](28-inventory-sync-integration.md)                                | 📄                                                    |
+| Accounting           | QuickBooks / Xero                                     | 3 sync                  | —                                                                     | ⬜ (phantom facet, §4)                                |
+| Marketing            | Klaviyo / Mailchimp / SMS                             | 4 connector / 2 channel | —                                                                     | ⬜ (phantom facet, §4)                                |
+| Workflow connector   | Zapier · Make.com · n8n                               | 4 connector             | [81](81-automation-module.md) §10                                     | 📄 Phase 5                                            |
+| Workflow trigger     | Inbound webhook → `webhook.received`                  | 6 inbound               | [81](81-automation-module.md) §10 / [82](82-event-bus-unification.md) | 📄                                                    |
+| Data source          | `ext.*` REST/GraphQL/SQL                              | 5 data                  | [63](63-external-data-connections.md)                                 | 📄 capstone, deferred                                 |
+| Identity             | Social SSO                                            | 7 identity              | [16](16-auth-security.md)                                             | ⬜ (`identity` reserved in `ProviderKind`)            |
+| Registrar            | GoDaddy reseller                                      | 8 registrar             | [24](24-domain-purchase-management.md)                                | ✅ partial (lookup unwired in onboarding)             |
+| Email infra          | Mailgun                                               | (platform)              | [13](13-email-platform-prd.md)                                        | ✅                                                    |
+| Business formation   | (formation API)                                       | 4 connector             | [74](74-business-formation-integration.md)                            | 📄                                                    |
 
 Reality check on what _actually_ works end-to-end: **only Stripe + Shippo register at boot**
 ([providers-bootstrap.ts](../services/api-rest/src/lib/providers-bootstrap.ts)). The other four
@@ -175,17 +175,18 @@ framework:
 
 ## 7. The workflow-connector contract (shape #4 — what Automation needs next)
 
-[docs/81](81-automation-module.md) §10 currently scopes external integration to **Zapier / Make / n8n
-+ inbound webhooks**. That's the _escape-hatch_ tier. The richer, first-party tier is a **Connector**:
-a registered outbound effector that an automation **action** invokes directly. This section is the
-contract; the build lands in docs/81 Phase 5.
+[docs/81](81-automation-module.md) §10 currently scopes external integration to \*\*Zapier / Make / n8n
+
+- inbound webhooks**. That's the *escape-hatch* tier. The richer, first-party tier is a **Connector**:
+  a registered outbound effector that an automation **action\*\* invokes directly. This section is the
+  contract; the build lands in docs/81 Phase 5.
 
 A **Connector** is to an automation action what a `ProviderBundle` is to checkout:
 
 - **Registration.** A connector registers a `ConnectorDescriptor`: `slug`, `displayName`, `vendor`,
   auth mode (`oauth` | `api_key` | `none`), `requiredScopes[]`, and an **`actions[]` manifest**.
 - **Action manifest.** Each action = `{ id, label, paramsSchema (JSON Schema), requiredScopes[],
-  gateManifest }`. The params schema renders in the automation builder exactly like the provider
+gateManifest }`. The params schema renders in the automation builder exactly like the provider
   config form renders in the install dialog — same JSON-Schema-driven form machinery.
 - **Invocation.** `invoke(actionId, params, ctx)` where `ctx` carries the tenant, the resolved
   trigger entity, and the secret reader. The executor is a **thin call**, identical in posture to the
@@ -259,15 +260,15 @@ fleet + parts) shapes several P3 picks.
 
 ## 9. Decisions (locked)
 
-| # | Decision | Choice | Why |
-|---|----------|--------|-----|
-| I1 | Two axes | **`purpose` (facet, open) × `shape` (contract, closed set of 8)** | The overload is the root problem; separating them routes installs correctly. |
-| I2 | `ProviderKind` scope | **Sub-vocabulary of shape #1 only — never the whole taxonomy** | Channels/connectors/data-sources are different shapes, not more provider kinds. |
-| I3 | Phantom facets | **`accounting`→sync, `marketing`→connector/channel; keep `coming-soon` until built** | Don't advertise a filter the runtime can't fulfil. |
-| I4 | Connector = gated action | **Outbound connectors route through the docs/81 gate layer like any action** | An external side effect is exactly what the gate governs. |
-| I5 | Connector auth | **Reuse the integration-framework OAuth + SecretReader** | One secrets/install path for providers and connectors. |
-| I6 | Partner integrations | **First-party only at launch; partner connectors/adapters behind review + sandbox** | Executing partner code is the sharp edge ([60](60-marketplace.md) §11, [85](85-creator-marketplace.md)). |
-| I7 | A new provider is "live" only when bootstrapped | **Seed row + registration both required** | A catalog row without registration is a dead "Connect" button (current PayPal/TaxJar/etc.). |
+| #   | Decision                                        | Choice                                                                               | Why                                                                                                      |
+| --- | ----------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| I1  | Two axes                                        | **`purpose` (facet, open) × `shape` (contract, closed set of 8)**                    | The overload is the root problem; separating them routes installs correctly.                             |
+| I2  | `ProviderKind` scope                            | **Sub-vocabulary of shape #1 only — never the whole taxonomy**                       | Channels/connectors/data-sources are different shapes, not more provider kinds.                          |
+| I3  | Phantom facets                                  | **`accounting`→sync, `marketing`→connector/channel; keep `coming-soon` until built** | Don't advertise a filter the runtime can't fulfil.                                                       |
+| I4  | Connector = gated action                        | **Outbound connectors route through the docs/81 gate layer like any action**         | An external side effect is exactly what the gate governs.                                                |
+| I5  | Connector auth                                  | **Reuse the integration-framework OAuth + SecretReader**                             | One secrets/install path for providers and connectors.                                                   |
+| I6  | Partner integrations                            | **First-party only at launch; partner connectors/adapters behind review + sandbox**  | Executing partner code is the sharp edge ([60](60-marketplace.md) §11, [85](85-creator-marketplace.md)). |
+| I7  | A new provider is "live" only when bootstrapped | **Seed row + registration both required**                                            | A catalog row without registration is a dead "Connect" button (current PayPal/TaxJar/etc.).              |
 
 ---
 

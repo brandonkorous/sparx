@@ -51,7 +51,11 @@ export async function priceBillingLine(
         explicitCostCents: args.explicitCostCents ?? null,
         markup: args.markup,
       });
-      return { unitPrice: priced.unitPrice, costCents: priced.costCents, appliedMarkup: priced.snapshot };
+      return {
+        unitPrice: priced.unitPrice,
+        costCents: priced.costCents,
+        appliedMarkup: priced.snapshot,
+      };
     }
 
     case 'pass_through': {

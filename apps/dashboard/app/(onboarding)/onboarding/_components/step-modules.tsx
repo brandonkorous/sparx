@@ -91,7 +91,9 @@ function ModuleRow({
         <span
           className={cn(
             'w-16 shrink-0 text-right text-sm',
-            on ? 'font-medium text-[var(--color-text-primary)]' : 'text-[var(--color-text-tertiary)]'
+            on
+              ? 'font-medium text-[var(--color-text-primary)]'
+              : 'text-[var(--color-text-tertiary)]'
           )}
         >
           + ${m.price}
@@ -119,7 +121,9 @@ function ModuleRow({
           </ul>
           <Text size="xs" variant="muted">
             Replaces {m.replaces} — about{' '}
-            <span className="font-medium text-[var(--color-text-secondary)]">${m.elsewhere}/mo</span>{' '}
+            <span className="font-medium text-[var(--color-text-secondary)]">
+              ${m.elsewhere}/mo
+            </span>{' '}
             bought separately.
           </Text>
         </div>

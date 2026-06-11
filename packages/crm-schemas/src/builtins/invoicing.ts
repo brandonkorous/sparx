@@ -6,13 +6,7 @@
 // Service / Repair flow showing the full estimate→paid lifecycle, and a
 // starter line-type registry covering the common charge shapes.
 
-export type DocumentStageTypeLiteral =
-  | 'draft'
-  | 'open'
-  | 'committed'
-  | 'final'
-  | 'paid'
-  | 'void';
+export type DocumentStageTypeLiteral = 'draft' | 'open' | 'committed' | 'final' | 'paid' | 'void';
 
 export type LinePricingModeLiteral = 'catalog' | 'markup' | 'labor' | 'flat' | 'pass_through';
 

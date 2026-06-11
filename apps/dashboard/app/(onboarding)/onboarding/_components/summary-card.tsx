@@ -109,7 +109,10 @@ export function SummaryCard({
           plan.items.map((m) => (
             <div key={m.key} className="flex items-center justify-between">
               <span className="flex items-center gap-2.5">
-                <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: m.colorVar }} />
+                <span
+                  className="h-2 w-2 shrink-0 rounded-full"
+                  style={{ background: m.colorVar }}
+                />
                 <Text size="sm" variant="muted">
                   {m.name}
                 </Text>

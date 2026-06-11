@@ -70,7 +70,9 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireInvoicingModule(request);
     const { lineId } = LinePathIds.parse(request.params);
-    return ok(await billingLineService.updateLine(toInvoicingContext(request), lineId, request.body));
+    return ok(
+      await billingLineService.updateLine(toInvoicingContext(request), lineId, request.body)
+    );
   });
 
   app.delete('/v1/invoicing/documents/:id/lines/:lineId', async (request) => {

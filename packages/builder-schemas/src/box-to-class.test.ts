@@ -176,7 +176,7 @@ describe('legacy Button style → class-first recipe', () => {
     expect(once.class).toBe('sf-btn sf-c-neutral sf-v-glass sf-btn--sz-md');
     expect(once.props).toEqual({ label: 'Read' });
     // Second pass: already class-first → unchanged.
-    const twice = migrateNode(once as unknown as LegacyNode);
+    const twice = migrateNode(once);
     expect(twice).toEqual(once);
   });
 });

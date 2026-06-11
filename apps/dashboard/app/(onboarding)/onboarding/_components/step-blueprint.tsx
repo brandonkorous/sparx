@@ -54,7 +54,9 @@ export function StepBlueprint({
 
   const q = search.trim().toLowerCase();
   const matchesQ = (bp: WizardBlueprint) =>
-    !q || bp.name.toLowerCase().includes(q) || VERTICAL_LABEL[bp.vertical].toLowerCase().includes(q);
+    !q ||
+    bp.name.toLowerCase().includes(q) ||
+    VERTICAL_LABEL[bp.vertical].toLowerCase().includes(q);
   const fits = (bp: WizardBlueprint) => capRequirements(bp).every((m) => activeFilter.has(m));
 
   const queryMatched = blueprints.filter(matchesQ);
@@ -199,7 +201,9 @@ export function StepBlueprint({
         <div className="mt-6 flex items-center gap-3 rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-bg-subtle)] px-[18px] py-4">
           <Lock className="h-[18px] w-[18px] shrink-0 text-[var(--color-text-tertiary)]" />
           <Text size="sm" variant="muted">
-            <span className="font-medium text-[var(--color-text-primary)]">{hidden.length} more</span>{' '}
+            <span className="font-medium text-[var(--color-text-primary)]">
+              {hidden.length} more
+            </span>{' '}
             {hidden.length === 1 ? 'blueprint' : 'blueprints'} unlock with{' '}
             <span className="font-medium text-[var(--color-text-primary)]">
               {[...lockedMods].map((m) => MODULE_BY_KEY[m]?.name ?? m).join(', ')}

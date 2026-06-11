@@ -87,7 +87,9 @@ export type CreateDocumentLineTypeInput = z.infer<typeof CreateDocumentLineTypeI
 
 // `key` is immutable once set (it is the stable line FK), so the update shape
 // drops it.
-export const UpdateDocumentLineTypeInput = CreateDocumentLineTypeInput.omit({ key: true }).partial();
+export const UpdateDocumentLineTypeInput = CreateDocumentLineTypeInput.omit({
+  key: true,
+}).partial();
 export type UpdateDocumentLineTypeInput = z.infer<typeof UpdateDocumentLineTypeInput>;
 
 // ── Documents (Phase 2) ─────────────────────────────────────────────────────

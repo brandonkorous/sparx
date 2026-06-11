@@ -5,7 +5,10 @@
 // blocked when the document sits on an edit-locking stage.
 
 import { AddBillingLineInput, UpdateBillingLineInput } from '@sparx/crm-schemas';
-import { LineMarkupInput, type LineMarkupInput as LineMarkupInputType } from '@sparx/commerce-schemas';
+import {
+  LineMarkupInput,
+  type LineMarkupInput as LineMarkupInputType,
+} from '@sparx/commerce-schemas';
 import { Prisma, withTenant } from '@sparx/db';
 import type { BillingDocumentLineType } from '@sparx/db';
 
@@ -38,7 +41,12 @@ export async function addLine(
     });
     const taxable = input.taxable ?? lineType?.defaultTaxable ?? true;
     const computed = computeBillingLine(
-      { quantity: input.quantity, unitPrice: priced.unitPrice, discountAmount: input.discountAmount, taxable },
+      {
+        quantity: input.quantity,
+        unitPrice: priced.unitPrice,
+        discountAmount: input.discountAmount,
+        taxable,
+      },
       Number(doc.taxRate)
     );
     const sortOrder = input.sortOrder ?? (await nextSortOrder(tx, documentId));
@@ -116,7 +124,8 @@ export async function updateLine(
     let appliedMarkup = existing.appliedMarkup as Prisma.InputJsonValue | null;
 
     if (repriceNeeded) {
-      const pricingMode: BillingPricingMode = (lineType?.pricingMode as BillingPricingMode) ?? 'flat';
+      const pricingMode: BillingPricingMode =
+        (lineType?.pricingMode as BillingPricingMode) ?? 'flat';
       const directive = markup ?? defaultMarkup(lineType, pricingMode);
       const priced = await priceBillingLine(tx, ctx.tenantId, {
         pricingMode,
@@ -127,13 +136,16 @@ export async function updateLine(
       });
       unitPrice = priced.unitPrice;
       costCents = priced.costCents;
-      appliedMarkup = (priced.appliedMarkup ?? null);
+      appliedMarkup = priced.appliedMarkup ?? null;
     }
 
     const quantity = input.quantity ?? Number(existing.quantity);
     const taxable = input.taxable ?? existing.taxable;
     const discountAmount = input.discountAmount ?? Number(existing.discountAmount);
-    const computed = computeBillingLine({ quantity, unitPrice, discountAmount, taxable }, Number(doc.taxRate));
+    const computed = computeBillingLine(
+      { quantity, unitPrice, discountAmount, taxable },
+      Number(doc.taxRate)
+    );
 
     await tx.billingDocumentLine.update({
       where: { id: lineId },
@@ -143,10 +155,14 @@ export async function updateLine(
           : {}),
         ...(input.productId !== undefined ? { productId: input.productId } : {}),
         ...(input.variantId !== undefined ? { variantId: input.variantId } : {}),
-        ...(input.technicianUserId !== undefined ? { technicianUserId: input.technicianUserId } : {}),
+        ...(input.technicianUserId !== undefined
+          ? { technicianUserId: input.technicianUserId }
+          : {}),
         ...(input.description !== undefined ? { description: input.description } : {}),
         ...(input.sortOrder !== undefined ? { sortOrder: input.sortOrder } : {}),
-        ...(input.metadata !== undefined ? { metadata: input.metadata as Prisma.InputJsonValue } : {}),
+        ...(input.metadata !== undefined
+          ? { metadata: input.metadata as Prisma.InputJsonValue }
+          : {}),
         quantity,
         unitPrice,
         costCents,

@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.8
+**Version:** 1.9
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-11
 
@@ -16,22 +16,23 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** Slice F2 cont. + F3. **Slice E is COMPLETE** — the event-driven module
-> activation path is fully live. Slices A–D plus **F1 + F2-a** done; **E1–E4 done** (canonical
-> registry; `automation.trigger` topic + push subscription; fan-in tee in all 3 paths; worker
-> seeds on `module.activated`; AND the publish lynchpin: the `/v1/tenant/modules` PATCH + PUT
-> toggle routes now publish `module.{activated,deactivated}` to BOTH buses, transition-gated).
-> CRM (pipeline/segments) and Email (default automations, via a new api-rest in-process consumer)
-> seed in-process within the toggle request; system automations seed via the Pub/Sub fan-in to the
-> worker. The dashboard's redundant `/v1/crm/bootstrap` follow-up call is retired (the endpoints
-> stay as idempotent admin escape hatches). The new onboarding modules-first PUT seeds for free.
+> **▶ RESUME HERE:** Slice F2 cont. (email-driven seeds) + F2 backfill + F3. **Slice E COMPLETE**
+> (event-driven activation fully live) and **F1 email send executors COMPLETE**. Slices A–D plus
+> **E1–E4** done; **F1** now has CRM (6) + B2B (escalate) + **email (`send_campaign` / `send_internal`,
+> via the lean `@sparx/email-sends` enqueue primitive — NOT email-platform, which would drag React
+> into the worker)**. So the engine can now SEND email: an event → executor → `enqueueSend` →
+> `ScheduledSend` → api-rest email-dispatch tick → `email.send`.
 >
-> **Next:** (F2 cont.) the CRM-sweep + email-driven seeds (inactivity/win-back/quote-expiry/
-> deal-closing) — these need the email executors (`email.send_campaign` / `send_internal`) first
-> (F1 cont.). (F2 backfill) call `seedSystemAutomations` for tenants whose modules are ALREADY
-> active (activation only fires forward; existing tenants need a one-time sweep). (F3) parity-check
-> then DELETE the b2b-overdue cron (its escalation logic now lives in the reusable service).
-> Older context below.
+> **Next:** (F2 cont.) re-express the email-driven system seeds now that the send executors exist —
+> inactivity/win-back (customer), quote-expiry, deal-closing internal alert. Each is an
+> event-triggered `Automation` row in `SYSTEM_AUTOMATIONS` (mirror `B2B_OVERDUE_ESCALATION`) whose
+> action is `email.send_campaign` / `send_internal`. The triggers (`crm.customer.inactive`,
+> `quote.expiring`, …) must exist as events + resolvers — check `resolvers/builtins.ts` coverage and
+> add resolvers for any missing entity. (F2 backfill) call `seedSystemAutomations` for tenants whose
+> modules are ALREADY active (activation only fires forward; existing tenants need a one-time sweep —
+> a worker reconcile or an internal endpoint over a "tenants with module X" SECURITY DEFINER scan).
+> (F3) parity-check then DELETE the b2b-overdue cron (its escalation logic now lives in the reusable
+> service). Older context below.
 >
 > **(historical) F2-a (B2B dunning ladder) done** — the riskiest piece (docs/81 §3.1's canonical
 > Locked behavior) is built, tested, and live-able on the schedule tick.
@@ -102,21 +103,22 @@ reconciles them into the one canonical registry. No build blocker from deferring
 
 ### Package / service inventory (what this feature introduces)
 
-| Artifact                                                    | Purpose                                                                                                                                              | Status |
-| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| `packages/automation-schemas` (`@sparx/automation-schemas`) | Zod schemas + types (trigger/condition/action/automation/gate)                                                                                       | ☑      |
-| `packages/automation` (`@sparx/automation`)                 | Engine: registries, evaluator, gates, executor, run state machine, service layer                                                                     | ☑      |
-| `packages/automation-actions` (`@sparx/automation-actions`) | Module executors + scanners + seed catalog (composition root) — calls existing services via `registerAction`. CRM + B2B done; email/commerce pending | ◐      |
-| `packages/crm` `b2bEscalationService`                       | Reusable per-account dunning ladder (extracted from the cron); publisher-agnostic, tx-aware                                                          | ☑      |
-| `packages/db` RLS GUC fix (`20260801000000`)                | Corrects 8 b2b/import tables' `tenant_isolation` policy (`app.current_tenant_id` → `current_tenant_id()` + WITH CHECK)                               | ☑      |
-| `packages/modules` (`@sparx/modules`)                       | Module-enablement primitives (extracted from `@sparx/auth` so lean backends probe flags without the auth/email/UI closure)                           | ☑      |
-| `services/automation-worker`                                | Cloud Run: Cloud Scheduler tick (schedule + run advance) + push consumer on `automation.trigger`                                                     | ☑      |
-| `packages/db` scan helpers                                  | `find_due_automation_runs` / `find_active_scheduled_automations` SECURITY DEFINER (cross-tenant discovery)                                           | ☑      |
-| `terraform/envs/prod/automation.tf`                         | Cloud Run service + Cloud Scheduler tick job + runtime/scheduler SAs (push sub deferred to E)                                                        | ☑      |
-| `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                                                                                     | ☑      |
-| `services/api-rest` routes                                  | `/v1/automations` CRUD + internal trigger/tick endpoints                                                                                             | ☐      |
-| `apps/dashboard` surface                                    | List / detail / builder / run history (docs/34 standard)                                                                                             | ☐      |
-| MCP write-tool                                              | AI authoring path (mirrors crm `mcp/write-tools.ts`)                                                                                                 | ☐      |
+| Artifact                                                    | Purpose                                                                                                                                                                                     | Status |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| `packages/automation-schemas` (`@sparx/automation-schemas`) | Zod schemas + types (trigger/condition/action/automation/gate)                                                                                                                              | ☑      |
+| `packages/automation` (`@sparx/automation`)                 | Engine: registries, evaluator, gates, executor, run state machine, service layer                                                                                                            | ☑      |
+| `packages/automation-actions` (`@sparx/automation-actions`) | Module executors + scanners + seed catalog (composition root) — calls existing services via `registerAction`. CRM + B2B + email-send done; email sequence + commerce pending                | ◐      |
+| `packages/email-sends` (`@sparx/email-sends`)               | Lean email enqueue primitive (`enqueueSend`: suppression + `ScheduledSend` write). `@sparx/db` only — NO render/React deps, so the worker can enqueue without the email-platform UI closure | ☑      |
+| `packages/crm` `b2bEscalationService`                       | Reusable per-account dunning ladder (extracted from the cron); publisher-agnostic, tx-aware                                                                                                 | ☑      |
+| `packages/db` RLS GUC fix (`20260801000000`)                | Corrects 8 b2b/import tables' `tenant_isolation` policy (`app.current_tenant_id` → `current_tenant_id()` + WITH CHECK)                                                                      | ☑      |
+| `packages/modules` (`@sparx/modules`)                       | Module-enablement primitives (extracted from `@sparx/auth` so lean backends probe flags without the auth/email/UI closure)                                                                  | ☑      |
+| `services/automation-worker`                                | Cloud Run: Cloud Scheduler tick (schedule + run advance) + push consumer on `automation.trigger`                                                                                            | ☑      |
+| `packages/db` scan helpers                                  | `find_due_automation_runs` / `find_active_scheduled_automations` SECURITY DEFINER (cross-tenant discovery)                                                                                  | ☑      |
+| `terraform/envs/prod/automation.tf`                         | Cloud Run service + Cloud Scheduler tick job + runtime/scheduler SAs (push sub deferred to E)                                                                                               | ☑      |
+| `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                                                                                                                            | ☑      |
+| `services/api-rest` routes                                  | `/v1/automations` CRUD + internal trigger/tick endpoints                                                                                                                                    | ☐      |
+| `apps/dashboard` surface                                    | List / detail / builder / run history (docs/34 standard)                                                                                                                                    | ☐      |
+| MCP write-tool                                              | AI authoring path (mirrors crm `mcp/write-tools.ts`)                                                                                                                                        | ☐      |
 
 ---
 
@@ -299,7 +301,7 @@ isn't silently skipped.
 
 ### Slice F — module executors + seed + retire crons ◐
 
-**F1 — module action executors ◐ (CRM + B2B done)**
+**F1 — module action executors ◐ (CRM + B2B + email send done; email sequence\_\* + commerce pending)**
 
 - ☑ `@sparx/automation-actions` package (the module-effect composition root) — keeps the
   engine lean; the worker calls `installModuleActions()` at boot.
@@ -316,30 +318,29 @@ isn't silently skipped.
 - ☑ Worker wiring: `installModuleActions()` (now CRM + B2B) + `installCrmPubSubBridge()` at boot;
   closure UNCHANGED (b2b lives in `@sparx/crm` + `@sparx/automation-actions`, both already
   COPY'd; `@sparx/events` promoted dev→prod dep but already in the closure).
-- ☐ Email executors (`email.send_campaign` / `send_internal` / `sequence_*`) — **design RESOLVED
-  2026-06-11, build next.** Send path investigated end-to-end: the email module already has the
-  production send pipeline — a `ScheduledSend` row (`50-email.prisma`) → the api-rest
-  `email-dispatch` tick (`lib/email-dispatch.ts`, 60s, advisory-locked, cross-tenant via
-  `find_due_scheduled_sends`) → `publish('email.send')` → email-worker. `ScheduledSend.automationId`
-  is **nullable**, so an engine send rides the SAME loop with `automationId: null` (gets suppression
-  - frequency-cap + delay + the dispatch for free). `SendPayload` already supports three body modes:
-    `template`+`props` (coded), pre-rendered `raw`, and **`defer` {builderEmailId, subject, preheader}**
-    (reload a published Builder email tree + personalize per recipient at dispatch — this IS a
-    "campaign"). **Plan:** (1) add `automationService.enqueueSend(ctx, spec)` to `@sparx/email-platform`
-    — suppression-check (scope) then `scheduledSend.create` with `automationId: null` + `dueAt` +
-    optional `dedupeKey` (`createMany skipDuplicates` for the cap path); honors "executors call
-    services" so suppression/caps stay in the service. (2) `installEmailActions()` in a new
-    `automation-actions/src/email.ts`: `email.send_campaign` (config `{builderEmailId, subject,
-preheader?}` → `defer`, or `{template, props?}`; recipient = trigger entity email; marketing scope)
-  - `email.send_internal` (config `{to?, subject, html/text | template, props?}` → `raw`/template;
-    recipient = config.to or tenant notification address; transactional scope so staff notices aren't
-    suppressed by customer prefs). (3) recipient resolution needs an email field off the resolved
-    `fields` (mirror `entity.ts`'s id helpers — verify the resolver exposes `customer.email` etc.).
-    **⚠ Dockerfile closure:** `@sparx/automation-actions` gains an `@sparx/email-platform` dep → the
-    automation-worker image must COPY `@sparx/email-platform` + its transitive closure (use the
-    server-safe surface — `automationService`/`enqueueSend` only; NO `@sparx/email`/`@sparx/builder`
-    render deps, since rendering stays in api-rest's dispatch tick, not the worker). Worker only
-    ENQUEUES. (4) then F2 cont. can re-express the email-driven CRM-sweep seeds on top.
+- ☑ **2 email executors — `email.send_campaign` + `email.send_internal`** (`automation-actions/src/email.ts`,
+  `installEmailActions`). Both PUBLISH a send (never direct-deliver, docs/81 §5.4): they call
+  `enqueueSend`, which writes a `ScheduledSend` (`automationId: null`) that the api-rest `email-dispatch`
+  tick turns into an `email.send`. `send_campaign` is a customer-addressed marketing send — recipient
+  is the trigger's `customer.email`, skips a do-not-contact contact, body is a published Builder email
+  (`defer`, personalized at dispatch) OR a coded template. `send_internal` is a staff notification (raw
+  body, transactional scope, configured `to`).
+  - **⚠ Closure decision (changed from the original plan):** `@sparx/email-platform` pulls in
+    `@sparx/email` + `@sparx/ui` + `lucide-react` + React (peer) — importing it into the worker would
+    blow up the deliberately-lean image (its Dockerfile is proud of "no React/UI/auth"). So instead of
+    `automationService.enqueueSend`, the enqueue primitive lives in a NEW lean **`@sparx/email-sends`**
+    (deps: `@sparx/db` only — no render libs): `enqueueSend(ctx, spec)` = suppression-check +
+    `scheduledSend.createMany({skipDuplicates})`. The executor calls it; the worker COPYs only
+    `packages/email-sends`. The render half stays in api-rest's dispatch tick (which has the email/builder
+    libs). This still honors "executors call a service" while keeping the worker React-free.
+  - Recipient/flag reads off the resolved `fields` via `entity.ts` (`requireStringField` for
+    `customer.email`, `optionalBoolField` for `customer.doNotContact`). `installEmailActions()` wired into
+    `installModuleActions()`; worker closure now 10 packages (added `email-sends`).
+  - **Tests (docker DB):** `@sparx/email-sends` enqueue 4/4 (enqueue/payload/dueAt, marketing
+    suppression skip, transactional-through-marketing-suppression, dedupe idempotency — on the sparx_app
+    FORCE-RLS client); `automation-actions` email engine-path 2/2 (event → handleTrigger →
+    runAutomationTick → ScheduledSend for `customer.email`; do-not-contact skip). Suite 13/13.
+- ☐ `email.sequence_add` / `email.sequence_remove` (sequence membership — not yet built)
 - ☐ Commerce executors (`commerce.*`)
 
 **F2 — seed system automations ◐ (dunning done)**
@@ -595,3 +596,22 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   a module → CRM/Email seed in-process within the request + system automations seed via the worker
   fan-in. **Next:** F2 cont. (email-driven seeds — need email executors) + existing-tenant backfill
   - F3 (retire the b2b cron). Parity test still deferred.
+- **2026-06-11 (cont.)** — **F1 email send executors DONE.** With dev killed I regenerated the
+  Prisma client (clearing the stale-invoicing-client noise; api-rest tsc 0) and built the email
+  effects. Traced the send pipeline end-to-end and hit the key fork: `@sparx/email-platform` drags
+  `@sparx/email` + `@sparx/ui` + React into anything that imports it — fatal for the deliberately
+  React-free automation-worker. So instead of `automationService.enqueueSend`, I created a NEW lean
+  **`@sparx/email-sends`** (deps: `@sparx/db` only): `enqueueSend(ctx, spec)` = suppression-check +
+  `scheduledSend.createMany({skipDuplicates})` with `automationId: null`, riding the existing
+  email-dispatch tick. Built `email.send_campaign` (customer `customer.email`, do-not-contact skip,
+  Builder-email `defer` or coded template, marketing scope) + `email.send_internal` (raw staff note,
+  transactional) in `automation-actions/src/email.ts`; added `requireStringField`/`optionalBoolField`
+  to `entity.ts`; wired `installEmailActions()`; worker Dockerfile COPYs the lean `email-sends` (now
+  10 pkgs, still no React). **Verify (docker DB up):** email-sends 4/4 (enqueue/suppression/dedupe on
+  the sparx_app FORCE-RLS client), automation-actions 13/13 (incl. the new 2 engine-path email tests
+  — caught + fixed a `ConditionGroup.logic` casing bug, it's `'AND'` not `'and'`), worker 4/4;
+  typecheck (email-sends/automation-actions/worker) 0, lint 0, prettier clean. Full `pnpm typecheck`:
+  all 35 typecheck tasks pass (only `@sparx/db#build` prisma-generate EPERMs — the user restarted
+  `pnpm dev`, re-locking the Windows query_engine DLL; the client is already current, so it's a
+  no-op env flake, not a code issue). **Next:** F2 cont. email-driven seeds (win-back / inactivity /
+  quote-expiry / deal-closing) on top of these executors; backfill; F3.

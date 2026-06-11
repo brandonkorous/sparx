@@ -80,7 +80,9 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
       throw new CrmNotFoundError('DocumentWorkflow', input.workflowId);
     }
     if (workflow.stages.length === 0) {
-      throw new CrmValidationError('This workflow has no stages — add a stage before creating a document.');
+      throw new CrmValidationError(
+        'This workflow has no stages — add a stage before creating a document.'
+      );
     }
     // Resolve the starting stage: the one supplied (must belong to the workflow)
     // or the workflow's first stage.
@@ -137,7 +139,8 @@ export async function update(
 
     if (input.customerId !== undefined || input.b2bAccountId !== undefined) {
       const customerId = input.customerId !== undefined ? input.customerId : before.customerId;
-      const b2bAccountId = input.b2bAccountId !== undefined ? input.b2bAccountId : before.b2bAccountId;
+      const b2bAccountId =
+        input.b2bAccountId !== undefined ? input.b2bAccountId : before.b2bAccountId;
       if (!customerId && !b2bAccountId) {
         throw new CrmValidationError('A billing document must bill a customer or a B2B account.');
       }
@@ -152,15 +155,21 @@ export async function update(
         ...(input.assignedUserId !== undefined ? { assignedUserId: input.assignedUserId } : {}),
         ...(input.currency !== undefined ? { currency: input.currency } : {}),
         ...(input.taxRate !== undefined ? { taxRate: input.taxRate } : {}),
-        ...(input.billTo !== undefined ? { billTo: (input.billTo ?? null) as Prisma.InputJsonValue } : {}),
-        ...(input.shipTo !== undefined ? { shipTo: (input.shipTo ?? null) as Prisma.InputJsonValue } : {}),
+        ...(input.billTo !== undefined
+          ? { billTo: (input.billTo ?? null) as Prisma.InputJsonValue }
+          : {}),
+        ...(input.shipTo !== undefined
+          ? { shipTo: (input.shipTo ?? null) as Prisma.InputJsonValue }
+          : {}),
         ...(input.shippingTotal !== undefined ? { shippingTotal: input.shippingTotal } : {}),
         ...(input.surchargeTotal !== undefined ? { surchargeTotal: input.surchargeTotal } : {}),
         ...(input.notes !== undefined ? { notes: input.notes } : {}),
         ...(input.validUntil !== undefined
           ? { validUntil: input.validUntil ? new Date(input.validUntil) : null }
           : {}),
-        ...(input.metadata !== undefined ? { metadata: input.metadata as Prisma.InputJsonValue } : {}),
+        ...(input.metadata !== undefined
+          ? { metadata: input.metadata as Prisma.InputJsonValue }
+          : {}),
       },
     });
     await writeAuditLog({
@@ -175,11 +184,10 @@ export async function update(
     });
     // taxRate / shipping / surcharge feed totals — recompute after a header edit.
     const doc = await recomputeTotals(tx, ctx.tenantId, documentId);
-    return tx.billingDocument
-      .findUniqueOrThrow({
-        where: { id: doc.id },
-        include: { lines: { orderBy: { sortOrder: 'asc' } } },
-      });
+    return tx.billingDocument.findUniqueOrThrow({
+      where: { id: doc.id },
+      include: { lines: { orderBy: { sortOrder: 'asc' } } },
+    });
   });
 }
 

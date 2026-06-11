@@ -43,7 +43,10 @@ const workflowRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/invoicing/workflows', async (request, reply) => {
     requireRole(request, 'editor');
     await requireInvoicingModule(request);
-    const workflow = await documentWorkflowService.create(toInvoicingContext(request), request.body);
+    const workflow = await documentWorkflowService.create(
+      toInvoicingContext(request),
+      request.body
+    );
     reply.code(201);
     return ok(workflow);
   });
