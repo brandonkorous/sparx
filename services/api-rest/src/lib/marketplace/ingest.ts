@@ -18,13 +18,14 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
 
-import { withSystem } from '@sparx/db';
-import type { Prisma, TxClient } from '@sparx/db';
+import { Prisma, withSystem } from '@sparx/db';
+import type { TxClient } from '@sparx/db';
 import { DataThemePreset, type MarketplaceCategory } from '@sparx/marketplace-schemas';
 import { BuilderNodeSchema, PropSpecListSchema } from '@sparx/builder-schemas';
 import { safeParseBlueprint, type Blueprint } from '@sparx/blueprints';
 
 import { artifactExists, writeArtifact } from './artifacts.js';
+import { getStorage, marketplaceMediaKey, marketplaceMediaUrl } from '../storage.js';
 
 // ── Manifest (sparx.json) ─────────────────────────────────────────────────────
 
@@ -172,6 +173,73 @@ function compileArtifact(manifest: Manifest, payload: unknown, dir: string): unk
   }
 }
 
+// ── Media (docs/85 §4/§6) ─────────────────────────────────────────────────────
+
+const MEDIA_EXT_RE = /\.(png|jpe?g|webp|svg)$/i;
+const MEDIA_CONTENT_TYPES: Record<string, string> = {
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  webp: 'image/webp',
+  svg: 'image/svg+xml',
+};
+
+/** The two card images every bundle must ship (docs/85 §4). */
+const REQUIRED_MEDIA = ['icon.png', 'preview.png'] as const;
+
+export interface MediaEntry {
+  url: string;
+  kind: string;
+  alt: string;
+}
+
+/** Fail fast if a required image is missing — checked in validateBundle so a bad
+ *  bundle never reaches storage. */
+async function assertRequiredMedia(dir: string): Promise<void> {
+  for (const req of REQUIRED_MEDIA) {
+    try {
+      await fs.access(join(dir, 'media', req));
+    } catch {
+      throw new IngestError(`missing required media/${req}`, dir);
+    }
+  }
+}
+
+/** Copy every image in the bundle's media/ dir to public storage and return the
+ *  catalog row's media[] — preview first (the card/detail use media[0] as the
+ *  hero), then icon, then any extras. */
+async function processMedia(
+  dir: string,
+  category: MarketplaceCategory,
+  slug: string,
+  manifest: Manifest
+): Promise<MediaEntry[]> {
+  const mediaDir = join(dir, 'media');
+  const files = (await fs.readdir(mediaDir)).filter((f) => MEDIA_EXT_RE.test(f));
+  const rank = (f: string): number => (f === 'preview.png' ? 0 : f === 'icon.png' ? 1 : 2);
+  files.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+
+  const altByFile = new Map(
+    manifest.media.map((m) => [m.file.replace(/^media\//, ''), m.alt ?? null] as const)
+  );
+  const entries: MediaEntry[] = [];
+  for (const file of files) {
+    const ext = file.split('.').pop()!.toLowerCase();
+    const bytes = await fs.readFile(join(mediaDir, file));
+    await getStorage().writeObject(
+      marketplaceMediaKey(category, slug, file),
+      MEDIA_CONTENT_TYPES[ext] ?? 'application/octet-stream',
+      bytes
+    );
+    entries.push({
+      url: marketplaceMediaUrl(category, slug, file),
+      kind: file === 'icon.png' ? 'icon' : file === 'preview.png' ? 'preview' : 'image',
+      alt: altByFile.get(file) ?? manifest.name,
+    });
+  }
+  return entries;
+}
+
 // ── Catalog row upsert (thin — NO payload column) ─────────────────────────────
 
 async function resolveSparxPublisherId(tx: TxClient): Promise<string> {
@@ -218,7 +286,8 @@ async function upsertRow(
   tx: TxClient,
   manifest: Manifest,
   artifact: unknown,
-  publisherId: string
+  publisherId: string,
+  media: MediaEntry[]
 ): Promise<void> {
   const spine = {
     name: manifest.name,
@@ -227,6 +296,7 @@ async function upsertRow(
     accent: manifest.accent ?? null,
     icon: manifest.icon ?? null,
     version: manifest.version,
+    media: media as unknown as Prisma.InputJsonValue,
     status: 'published',
     visibility: 'public',
     priceCents: manifest.pricing.priceCents,
@@ -239,6 +309,9 @@ async function upsertRow(
     case 'theme': {
       const data = {
         ...spine,
+        // Null the payload column: the DataThemePreset lives in storage, never here
+        // (docs/85 §6). Explicit so re-ingesting a legacy SQL-inline row clears it.
+        tokens: Prisma.DbNull,
         mood: facetString(manifest.facets, 'mood'),
         colorFamily: facetString(manifest.facets, 'colorFamily'),
         density: facetString(manifest.facets, 'density'),
@@ -254,6 +327,9 @@ async function upsertRow(
     case 'component': {
       const data = {
         ...spine,
+        // Null the payload columns: the node tree + propSpec live in storage.
+        tree: Prisma.DbNull,
+        propSpec: [] as unknown as Prisma.InputJsonValue,
         group: facetString(manifest.facets, 'group') ?? 'content',
         kind: facetString(manifest.facets, 'kind'),
         surfaces: facetStringArray(manifest.facets, 'surfaces'),
@@ -269,6 +345,8 @@ async function upsertRow(
       const bp = artifact as Blueprint;
       const data = {
         ...spine,
+        // Null the payload column: the manifest lives in storage.
+        definition: Prisma.DbNull,
         vertical: facetString(manifest.facets, 'vertical') ?? bp.vertical,
         requiredModules: facetStringArray(manifest.facets, 'requiredModules'),
         contents: blueprintContents(bp),
@@ -283,6 +361,8 @@ async function upsertRow(
     case 'integration': {
       const data = {
         ...spine,
+        // Null the payload column: a connector artifact (Phase 2) lives in storage.
+        configSchema: Prisma.DbNull,
         providerSlug: facetString(manifest.facets, 'providerSlug') ?? manifest.slug,
         kind: facetString(manifest.facets, 'kind') ?? 'other',
         scopes: facetStringArray(manifest.facets, 'scopes'),
@@ -321,6 +401,7 @@ export async function validateBundle(
     throw new IngestError(`invalid sparx.json: ${parsed.error.message}`, dir);
   }
   const manifest = parsed.data;
+  await assertRequiredMedia(dir);
   const payload = await loadPayload(dir, manifest.payload);
   const artifact = compileArtifact(manifest, payload, dir);
   return { manifest, category: SINGULAR_TO_PLURAL[manifest.category], artifact };
@@ -347,13 +428,17 @@ export async function ingestBundle(dir: string): Promise<IngestResult> {
     );
   }
 
+  // Copy the card imagery to public storage (idempotent) + build the row media[].
+  // Done on every run so metadata/media can refresh without a version bump.
+  const media = await processMedia(dir, category, slug, manifest);
+
   // No-clobber: an already-stored artifact at this exact version is left intact.
   if (await artifactExists(category, slug, version)) {
-    // Still re-upsert the row so catalog metadata (facets/copy) can be corrected
-    // without a version bump, but the immutable artifact is never rewritten.
+    // Still re-upsert the row so catalog metadata (facets/copy/media) can be
+    // corrected without a version bump, but the immutable artifact is never rewritten.
     await withSystem(async (tx) => {
       const publisherId = await resolveSparxPublisherId(tx);
-      await upsertRow(tx, manifest, artifact, publisherId);
+      await upsertRow(tx, manifest, artifact, publisherId, media);
     });
     return { category, slug, version, written: false };
   }
@@ -365,7 +450,7 @@ export async function ingestBundle(dir: string): Promise<IngestResult> {
   }
   await withSystem(async (tx) => {
     const publisherId = await resolveSparxPublisherId(tx);
-    await upsertRow(tx, manifest, artifact, publisherId);
+    await upsertRow(tx, manifest, artifact, publisherId, media);
   });
   return { category, slug, version, written: true };
 }
@@ -398,7 +483,7 @@ export async function ingestCatalog(root: string): Promise<IngestResult[]> {
   let categories: string[];
   try {
     categories = (await fs.readdir(root, { withFileTypes: true }))
-      .filter((d) => d.isDirectory())
+      .filter((d) => d.isDirectory() && !d.name.startsWith('_'))
       .map((d) => d.name);
   } catch {
     return [];
@@ -407,7 +492,7 @@ export async function ingestCatalog(root: string): Promise<IngestResult[]> {
   for (const category of categories) {
     const categoryDir = join(root, category);
     const slugs = (await fs.readdir(categoryDir, { withFileTypes: true }))
-      .filter((d) => d.isDirectory())
+      .filter((d) => d.isDirectory() && !d.name.startsWith('_'))
       .map((d) => d.name);
     for (const slug of slugs) {
       results.push(await ingestBundle(join(categoryDir, slug)));

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "coast",
+  "name": "Coast",
+  "version": "1.0.0",
+  "tagline": "Airy and coastal — teal-blue with a warm sand accent and rounded shapes.",
+  "description": "A breezy teal-blue palette with a sand accent and rounded shapes. Coast is built for travel, hospitality, home, and lifestyle brands that want light, open, and inviting.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Fresh",
+    "colorFamily": "Teal",
+    "density": "Standard",
+    "industry": "Travel & Hospitality"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Coast icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Coast theme preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#0e7490",
+  "sortWeight": 48
+}

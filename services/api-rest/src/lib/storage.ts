@@ -318,6 +318,22 @@ export function marketplaceArtifactKey(category: string, slug: string, version: 
   return `marketplace/${category}/${slug}/${version}.json`;
 }
 
+// Marketplace media key (docs/85 §6) — the catalog card imagery (icon.png,
+// preview.png, screenshots). Lands on the private bucket (no `/variants/`) and is
+// served, world-readable, by GET /v1/public/marketplace/media/* (api-rest pipes
+// the bytes — the org forbids allUsers on the bucket; Cloudflare absorbs repeats).
+export function marketplaceMediaKey(category: string, slug: string, filename: string): string {
+  return `marketplace/media/${category}/${slug}/${filename}`;
+}
+
+// The browser-reachable URL for a marketplace media object. Absolute in prod
+// (MEDIA_PUBLIC_URL = the api public origin, fronted by Cloudflare); relative in
+// dev (empty base) — the bytes are still served by the route below.
+export function marketplaceMediaUrl(category: string, slug: string, filename: string): string {
+  const base = env.MEDIA_PUBLIC_URL || '';
+  return `${base}/v1/public/marketplace/media/${category}/${slug}/${filename}`;
+}
+
 function safeFilename(name: string): string {
   // Strip path traversal and non-printable bytes; collapse whitespace.
   const base = name.split(/[\\/]/).pop() ?? 'file';

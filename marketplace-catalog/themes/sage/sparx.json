@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "sage",
+  "name": "Sage",
+  "version": "1.0.0",
+  "tagline": "Calm and botanical — soft greens, warm serif headings, easy spacing.",
+  "description": "Soft greens, generous whitespace, and warm serif headings make Sage feel grounded and unhurried — a natural fit for wellness, plants, beauty, and slow-living brands.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Calm",
+    "colorFamily": "Green",
+    "density": "Spacious",
+    "industry": "Wellness & Beauty"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Sage icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Sage theme preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#4d7c5a",
+  "sortWeight": 52
+}

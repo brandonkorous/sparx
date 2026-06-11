@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "terra",
+  "name": "Terra",
+  "version": "1.0.0",
+  "tagline": "Earthy and handmade — terracotta and olive over warm sandy neutrals.",
+  "description": "Terracotta and olive over warm, sandy neutrals with a serif headline. Terra feels handmade and grounded — a natural fit for makers, pottery, home goods, and roasters.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Earthy",
+    "colorFamily": "Terracotta",
+    "density": "Standard",
+    "industry": "Makers & Home"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Terra icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Terra theme preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#9a3412",
+  "sortWeight": 42
+}

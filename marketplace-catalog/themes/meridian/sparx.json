@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "meridian",
+  "name": "Meridian",
+  "version": "1.0.0",
+  "tagline": "Professional and trustworthy — navy with a sky accent, crisp and wide.",
+  "description": "Navy with a sky-blue accent, tight corners, and a wide, structured layout. Meridian reads as competent and trustworthy — made for professional services, SaaS, and B2B.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Professional",
+    "colorFamily": "Blue",
+    "density": "Wide",
+    "industry": "Professional Services"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Meridian icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Meridian theme preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#1e3a8a",
+  "sortWeight": 54
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "noir",
+  "name": "Noir",
+  "version": "1.0.0",
+  "tagline": "Dark, high-contrast luxury — restrained type and a single gold accent.",
+  "description": "A black-on-black luxury theme with a warm gold accent and elegant serif headings. Noir suits fine jewelry, premium fashion, and brands that sell on restraint and craftsmanship.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Luxe",
+    "colorFamily": "Black",
+    "density": "Spacious",
+    "industry": "Jewelry & Luxury"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Noir icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Noir theme preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#b08d57",
+  "sortWeight": 58
+}

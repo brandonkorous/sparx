@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "bloom",
+  "name": "Bloom",
+  "version": "1.0.0",
+  "tagline": "Playful and soft — pink and violet, generous rounding, friendly type.",
+  "description": "Pink and violet over soft surfaces, rounded shapes, and friendly type. Bloom brings warmth and joy to kids, crafts, bakeries, and any brand that wants to feel approachable.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Playful",
+    "colorFamily": "Pink",
+    "density": "Standard",
+    "industry": "Crafts & Kids"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Bloom icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Bloom theme preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#db2777",
+  "sortWeight": 44
+}

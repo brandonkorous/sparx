@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "linen",
+  "name": "Linen",
+  "version": "1.0.0",
+  "tagline": "Soft and editorial — warm charcoal and clay over creamy neutrals.",
+  "description": "Warm charcoal and clay over creamy linen neutrals, with classic serif headings. Linen has a quiet editorial polish suited to apparel, lifestyle, and stationery brands.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Editorial",
+    "colorFamily": "Stone",
+    "density": "Spacious",
+    "industry": "Apparel & Lifestyle"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Linen icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Linen theme preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#a8755a",
+  "sortWeight": 49
+}
