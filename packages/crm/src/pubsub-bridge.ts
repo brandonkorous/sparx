@@ -121,7 +121,7 @@ class TopicPublisher {
    *  type rides as a `type` attribute; `data.__automationDepth` (if a cascade
    *  emitter stamped it) is forwarded for the engine's loop-guard, default 0. */
   async fanIn(envelope: IndexerEnvelope): Promise<void> {
-    const depthRaw = (envelope.data as Record<string, unknown>).__automationDepth;
+    const depthRaw = envelope.data.__automationDepth;
     const depth = typeof depthRaw === 'number' && Number.isFinite(depthRaw) ? depthRaw : 0;
     await this.topicFor(AUTOMATION_FANIN_TOPIC).publishMessage({
       data: Buffer.from(JSON.stringify(envelope)),
