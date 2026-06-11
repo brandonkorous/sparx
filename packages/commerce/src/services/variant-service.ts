@@ -434,6 +434,9 @@ export async function update(
 ): Promise<void> {
   const input = UpdateVariantInput.parse(rawInput);
 
+  let prevCostCents: number | null = null;
+  let costChanged = false;
+
   const result = await withTenant(ctx, async (tx) => {
     const before = await tx.productVariant.findFirst({
       where: { id: variantId, deletedAt: null },
@@ -486,6 +489,11 @@ export async function update(
       await refreshProductPriceRange(tx, before.productId);
     }
 
+    if (input.costCents !== undefined && before.costCents !== updated.costCents) {
+      costChanged = true;
+      prevCostCents = before.costCents;
+    }
+
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -506,6 +514,24 @@ export async function update(
     topic: 'variant.updated',
     data: { variantId: result.id, productId: result.productId },
   });
+
+  // A cost move re-derives the price for any rule bound to this variant on the
+  // variant_cost basis (docs/48 §8). Emitted as its own event so the markup-
+  // recompute-worker subscribes narrowly instead of filtering every variant.updated.
+  if (costChanged) {
+    await publishCommerceEvent({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      topic: 'variant.cost.updated',
+      data: {
+        variantId: result.id,
+        productId: result.productId,
+        basis: 'variant_cost',
+        prevCostCents,
+        newCostCents: result.costCents,
+      },
+    });
+  }
 }
 
 export async function renameSku(

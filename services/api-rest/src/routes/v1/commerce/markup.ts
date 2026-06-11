@@ -6,7 +6,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { markupService } from '@sparx/commerce';
+import { markupRecomputeService, markupService } from '@sparx/commerce';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
@@ -14,6 +14,10 @@ import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-
 const PathId = z.object({ id: z.string().uuid() });
 const VariantParam = z.object({ variantId: z.string().uuid() });
 const BindBody = z.object({ ruleId: z.string().uuid() });
+const BulkResolveBody = z.object({
+  ids: z.array(z.string().uuid()).min(1).max(500),
+  action: z.enum(['approve', 'reject']),
+});
 
 // Optional { scope } override body for preview/apply. The scope itself is
 // validated inside the service (MarkupScope) so this route stays schema-light.
@@ -102,6 +106,49 @@ const markupRoutes: FastifyPluginAsync = async (app) => {
     const { variantId } = VariantParam.parse(request.params);
     await markupService.unbindVariant(toCommerceContext(request), variantId);
     reply.code(204);
+  });
+
+  // ─── Staged price-recompute review queue (docs/48 §8/§11) ───────────────
+  // Cost-driven price changes the markup-recompute-worker chose not to apply
+  // silently (a rule in review mode, or auto beyond its tolerance band).
+
+  app.get('/v1/markup-recompute-reviews', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const q = request.query as Record<string, string | undefined>;
+    return ok(
+      await markupRecomputeService.listReviews(toCommerceContext(request), {
+        ...(q?.status ? { status: q.status } : {}),
+      })
+    );
+  });
+
+  app.get('/v1/markup-recompute-reviews/count', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    return ok({ pending: await markupRecomputeService.countPending(toCommerceContext(request)) });
+  });
+
+  app.post('/v1/markup-recompute-reviews/:id/approve', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await markupRecomputeService.approveReview(toCommerceContext(request), id));
+  });
+
+  app.post('/v1/markup-recompute-reviews/:id/reject', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    await markupRecomputeService.rejectReview(toCommerceContext(request), id);
+    reply.code(204);
+  });
+
+  app.post('/v1/markup-recompute-reviews/bulk', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { ids, action } = BulkResolveBody.parse(request.body);
+    return ok(await markupRecomputeService.resolveReviews(toCommerceContext(request), ids, action));
   });
 };
 

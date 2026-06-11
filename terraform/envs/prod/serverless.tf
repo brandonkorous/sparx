@@ -82,6 +82,25 @@ resource "google_project_iam_member" "push_worker_roles" {
   member  = "serviceAccount:${google_service_account.push_worker.email}"
 }
 
+resource "google_service_account" "markup_recompute_worker" {
+  account_id   = "sparx-markup-recompute"
+  display_name = "Sparx markup-recompute-worker (Cloud Run)"
+  description  = "Runtime SA for the markup-recompute-worker Cloud Run service. Reads the DB URL from Secret Manager, re-derives catalog prices on a cost change, and publishes price.recomputed / product.updated."
+}
+
+# pubsub.publisher (unlike the other CR workers) because this worker PUBLISHES —
+# price.recomputed / price.recompute.staged + product.updated to reindex.
+resource "google_project_iam_member" "markup_recompute_worker_roles" {
+  for_each = toset([
+    "roles/cloudsql.client",
+    "roles/secretmanager.secretAccessor",
+    "roles/pubsub.publisher",
+  ])
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.markup_recompute_worker.email}"
+}
+
 resource "google_service_account" "commerce_indexer" {
   account_id   = "sparx-commerce-indexer"
   display_name = "Sparx commerce-indexer (Cloud Run)"
@@ -287,6 +306,56 @@ module "push_worker_cloudrun" {
   depends_on = [
     module.pubsub,
     google_project_iam_member.push_worker_roles,
+    google_service_account_iam_member.pubsub_invoker_token_creator,
+  ]
+}
+
+# markup-recompute-worker — cost-driven price recompute (docs/48 Phase 4).
+# Consumes variant.cost.updated; re-derives the list price for variants bound to
+# a markup rule and either auto-applies it (within the rule's tolerance) or stages
+# it for review. Low concurrency — each message is a small per-variant transaction.
+module "markup_recompute_worker_cloudrun" {
+  source = "../../modules/cloud-run-worker"
+
+  name                  = "markup-recompute-worker"
+  project_id            = var.project_id
+  region                = var.region
+  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/sparx/markup-recompute-worker:latest"
+  service_account_email = google_service_account.markup_recompute_worker.email
+  vpc_connector_id      = google_vpc_access_connector.workers.id
+
+  min_instance_count    = 0
+  max_instance_count    = 10
+  container_concurrency = 8
+  cpu                   = "1"
+  memory                = "512Mi"
+  timeout_seconds       = 120
+
+  env_vars = {
+    NODE_ENV          = "production"
+    SERVICE_NAME      = "markup-recompute-worker"
+    LOG_LEVEL         = "info"
+    PUBSUB_INVOKER_SA = google_service_account.pubsub_invoker.email
+    # Set so downstream events (price.recomputed, product.updated) publish to Pub/Sub.
+    GCP_PROJECT_ID = var.project_id
+  }
+
+  secrets = [
+    {
+      name      = "DATABASE_URL"
+      secret_id = "database-url"
+    },
+  ]
+
+  pubsub_topic                 = "variant.cost.updated"
+  pubsub_subscription_name     = "variant.cost.updated.markup-recompute-worker-cloudrun"
+  pubsub_invoker_sa_email      = google_service_account.pubsub_invoker.email
+  pubsub_dead_letter_topic_id  = module.pubsub.dead_letter_topic == null ? null : "projects/${var.project_id}/topics/${module.pubsub.dead_letter_topic}"
+  pubsub_max_delivery_attempts = 5
+
+  depends_on = [
+    module.pubsub,
+    google_project_iam_member.markup_recompute_worker_roles,
     google_service_account_iam_member.pubsub_invoker_token_creator,
   ]
 }

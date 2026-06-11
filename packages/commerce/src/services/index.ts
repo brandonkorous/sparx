@@ -16,6 +16,7 @@ export * as inventoryService from './inventory-service';
 export * as pricingService from './pricing-service';
 export * as discountService from './discount-service';
 export * as markupService from './markup-service';
+export * as markupRecomputeService from './markup-recompute-service';
 export * as surchargeService from './surcharge-service';
 export * as bulkPriceService from './bulk-price-service';
 

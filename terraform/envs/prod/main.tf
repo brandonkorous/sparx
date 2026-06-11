@@ -86,6 +86,15 @@ module "pubsub" {
     "inventory.low"      = []
     "inventory.depleted" = []
 
+    # Markup recompute (docs/48 §8) — a variant cost move (direct edit or dropship
+    # sync) triggers a price recompute. markup-recompute-worker consumes
+    # variant.cost.updated via its Cloud Run PUSH subscription in serverless.tf;
+    # price.recomputed / price.recompute.staged are topic-only fan-out signals
+    # (no idle pull subscription) for future notification + analytics consumers.
+    "variant.cost.updated"   = []
+    "price.recomputed"       = []
+    "price.recompute.staged" = []
+
     # Search — admin-triggered full reindex. api-rest publishes; the
     # commerce-indexer consumes via its Cloud Run PUSH subscription declared
     # in serverless.tf (search.reindex.requested.commerce-indexer-cloudrun).

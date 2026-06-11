@@ -74,6 +74,8 @@ export interface MarkupRuleRow {
   scope: Scope;
   priority: number;
   isActive: boolean;
+  recomputeMode: 'auto' | 'review' | 'off';
+  recomputeTolerancePct: number | null;
   boundVariantCount: number;
 }
 
@@ -417,7 +419,16 @@ export function MarkupRulesManager({
                 {initialRules.map((r) => (
                   <TableRow key={r.id}>
                     <TableCell>
-                      <Text weight="medium">{r.name}</Text>
+                      <Stack gap={1}>
+                        <Text weight="medium">{r.name}</Text>
+                        {r.appliesTo !== 'document' && r.recomputeMode !== 'auto' && (
+                          <Text size="xs" variant="muted">
+                            {r.recomputeMode === 'off'
+                              ? 'Cost changes ignored'
+                              : 'Cost changes queued for review'}
+                          </Text>
+                        )}
+                      </Stack>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{methodSummary(r)}</Badge>
@@ -532,6 +543,10 @@ function RuleForm({
     rule?.ceilingValueCents != null ? String(rule.ceilingValueCents / 100) : ''
   );
   const [appliesTo, setAppliesTo] = React.useState(rule?.appliesTo ?? 'catalog');
+  const [recomputeMode, setRecomputeMode] = React.useState(rule?.recomputeMode ?? 'auto');
+  const [recomputeTolerance, setRecomputeTolerance] = React.useState(
+    rule?.recomputeTolerancePct != null ? String(rule.recomputeTolerancePct) : '15'
+  );
   const [scopeType, setScopeType] = React.useState(rule?.scope?.type ?? 'all');
   const [scopeValue, setScopeValue] = React.useState(rule?.scope?.value ?? '');
   const [isActive, setIsActive] = React.useState(rule?.isActive ?? true);
@@ -657,6 +672,12 @@ function RuleForm({
       appliesTo,
       scope,
       isActive,
+      recomputeMode,
+      // Tolerance only matters in auto mode; blank = unbounded (any delta auto-applies).
+      recomputeTolerancePct:
+        recomputeMode === 'auto' && recomputeTolerance.trim() !== ''
+          ? Number(recomputeTolerance)
+          : null,
     };
 
     startTransition(async () => {
@@ -852,6 +873,49 @@ function RuleForm({
                 </NativeSelect>
               </Field>
             </Stack>
+
+            {/* Cost-driven recompute (docs/48 §8) — only meaningful for catalog rules. */}
+            {appliesTo !== 'document' && (
+              <Stack
+                gap={2}
+                className="rounded border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] p-3"
+              >
+                <Text size="xs" variant="muted" weight="medium">
+                  When a bound variant’s cost changes
+                </Text>
+                <Stack direction="row" gap={3} wrap align="end">
+                  <Field label="Recompute" className="min-w-[14rem] flex-1">
+                    <NativeSelect
+                      value={recomputeMode}
+                      onChange={(e) => setRecomputeMode(e.target.value as never)}
+                    >
+                      <option value="auto">Auto-apply within tolerance</option>
+                      <option value="review">Always queue for review</option>
+                      <option value="off">Don’t recompute</option>
+                    </NativeSelect>
+                  </Field>
+                  {recomputeMode === 'auto' && (
+                    <Field label="Tolerance (± % price change)" className="min-w-[10rem] flex-1">
+                      <Input
+                        type="number"
+                        inputMode="decimal"
+                        step="any"
+                        value={recomputeTolerance}
+                        onChange={(e) => setRecomputeTolerance(e.target.value)}
+                        placeholder="blank = any"
+                      />
+                    </Field>
+                  )}
+                </Stack>
+                <Text size="xs" variant="muted">
+                  {recomputeMode === 'off'
+                    ? 'Prices stay frozen when costs move — re-apply the rule manually to refresh.'
+                    : recomputeMode === 'review'
+                      ? 'Every cost-driven price change waits in the Price changes queue for approval.'
+                      : 'Small price moves apply automatically; anything beyond the tolerance is queued for review so a cost spike never silently reprices.'}
+                </Text>
+              </Stack>
+            )}
 
             <Stack direction="row" gap={3} wrap align="end">
               <Field label="Scope" className="min-w-[10rem] flex-1">

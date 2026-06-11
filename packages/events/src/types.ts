@@ -44,6 +44,14 @@ export type EventType =
   | 'variant.created'
   | 'variant.updated'
   | 'variant.deleted'
+  // Markup recompute (docs/48 §8). A variant's cost moved (direct edit or a
+  // dropship supplier sync) → the markup-recompute-worker re-derives the price
+  // for variants bound to a markup rule. `price.recomputed` is emitted when the
+  // new price is auto-applied; `price.recompute.staged` when it is queued for
+  // human approval instead (a cost spike never silently reprices).
+  | 'variant.cost.updated'
+  | 'price.recomputed'
+  | 'price.recompute.staged'
   // Inventory
   | 'inventory.adjusted'
   | 'inventory.low'
@@ -257,4 +265,18 @@ export interface PaymentFailedPayload {
 export interface ImportJobCreatedPayload {
   jobId: string;
   entityType: 'products' | 'customers' | 'b2b_accounts' | 'discounts';
+}
+
+/** Payload for `variant.cost.updated` (docs/48 §8). Two publishers emit it —
+ *  the variant editor (`variant_cost` basis, on a direct cost edit) and the
+ *  dropship catalog sync (`supplier_cost` basis) — so the contract lives here.
+ *  The markup-recompute-worker re-reads live state to compute, so prev/new cost
+ *  are advisory (for the staged-review display + logging), not the source of
+ *  truth. `basis` tells the worker which cost dimension actually moved. */
+export interface VariantCostUpdatedPayload {
+  variantId: string;
+  productId: string;
+  basis: 'variant_cost' | 'supplier_cost';
+  prevCostCents: number | null;
+  newCostCents: number | null;
 }

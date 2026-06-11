@@ -156,6 +156,7 @@ model Tenant {
   bulkPriceTiers          BulkPriceTier[]
   contractPrices          ContractPrice[]
   markupRules             MarkupRule[]
+  markupRecomputeReviews  MarkupRecomputeReview[]
   surchargeRules          SurchargeRule[]
   discounts               Discount[]
   discountUsages          DiscountUsage[]

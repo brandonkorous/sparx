@@ -44,6 +44,14 @@ export type CeilingSrc = z.infer<typeof CeilingSrc>;
 export const MarkupAppliesTo = z.enum(['catalog', 'document', 'both']);
 export type MarkupAppliesTo = z.infer<typeof MarkupAppliesTo>;
 
+// Per-rule cost-driven recompute policy (docs/48 §8). When a bound variant's cost
+// moves, the markup-recompute-worker re-derives the price and:
+//   auto   → applies it when the price moves within `recomputeTolerancePct`; stages beyond
+//   review → always stages the change for approval (a cost spike never silently reprices)
+//   off    → ignores cost changes (the rule is frozen)
+export const RecomputeMode = z.enum(['auto', 'review', 'off']);
+export type RecomputeMode = z.infer<typeof RecomputeMode>;
+
 export const RoundingStrategy = z.enum(['none', 'nearest', 'charm']);
 export type RoundingStrategy = z.infer<typeof RoundingStrategy>;
 
@@ -108,6 +116,10 @@ const MarkupRuleObject = z.object({
   scope: MarkupScope.default({ type: 'all' }),
   priority: z.number().int().nonnegative().max(1_000_000).default(0),
   isActive: z.boolean().default(true),
+  // Cost-driven recompute policy (docs/48 §8). Tolerance is a percent price delta
+  // (15 = ±15%) honoured only in `auto` mode; null = unbounded.
+  recomputeMode: RecomputeMode.default('auto'),
+  recomputeTolerancePct: z.number().min(0).max(10_000).nullable().optional(),
 });
 
 // Per-method consistency: matrix needs bands; everything else needs a value
@@ -347,6 +359,34 @@ export function applyMarkupRule(
     method: effectiveMethod,
     costBasisValueCents: cost,
   };
+}
+
+// ─── Catalog variant pricing + snapshot (docs/48 §4/§8) ───────────────
+// Pure: a cost + a rule spec → the charged price AND the reproducible snapshot
+// stamped on product_variants.applied_markup. Shared by markup-service
+// (bind/apply, server-side) AND the markup-recompute-worker so the catalog
+// snapshot shape can never drift between the two write paths. `ruleId` /
+// `costBasis` come from the rule row; `computedAt` is injected so the function
+// stays deterministic and I/O-free.
+export function priceVariantByRule(
+  costCents: number,
+  ruleId: string,
+  spec: MarkupRuleSpec,
+  costBasis: MarkupCostBasis,
+  computedAt: string,
+  ctx?: MarkupContext
+): { result: MarkupResult; snapshot: AppliedMarkupSnapshot } {
+  const result = applyMarkupRule(costCents, spec, ctx);
+  const snapshot: AppliedMarkupSnapshot = {
+    ruleId,
+    method: result.method,
+    value: spec.value ?? null,
+    costBasis,
+    costBasisValueCents: result.costBasisValueCents,
+    computedPriceCents: result.priceCents,
+    computedAt,
+  };
+  return { result, snapshot };
 }
 
 // ─── markup ↔ margin conversions (docs/48 §2) ─────────────────────────

@@ -14,8 +14,8 @@
 // writeAuditLog in-tx → publishCommerceEvent after commit.
 
 import {
-  applyMarkupRule,
   CreateMarkupRuleInput,
+  priceVariantByRule,
   UpdateMarkupRuleInput,
   type AppliedMarkupSnapshot,
   type MarkupBand,
@@ -56,6 +56,8 @@ export interface MarkupRuleRow {
   scope: MarkupScope;
   priority: number;
   isActive: boolean;
+  recomputeMode: string;
+  recomputeTolerancePct: number | null;
   boundVariantCount: number;
   createdAt: string;
   updatedAt: string;
@@ -530,20 +532,19 @@ function priceVariant(
     basis === 'supplier_cost' ? (supplierCost ?? variant.costCents) : variant.costCents;
   if (costCents == null) return null;
 
-  const result = applyMarkupRule(costCents, ruleToSpec(rule), {
-    compareAtCents: variant.compareAtPriceCents,
-    msrpCents: supplier.msrpByProduct.get(variant.productId) ?? null,
-  });
-
-  const snapshot: AppliedMarkupSnapshot = {
-    ruleId: rule.id,
-    method: result.method,
-    value: rule.value == null ? null : Number(rule.value),
-    costBasis: basis,
-    costBasisValueCents: costCents,
-    computedPriceCents: result.priceCents,
-    computedAt: new Date().toISOString(),
-  };
+  // Same pure engine + snapshot builder the recompute worker uses (docs/48 §8) —
+  // one source of truth keeps the two catalog write paths from drifting.
+  const { result, snapshot } = priceVariantByRule(
+    costCents,
+    rule.id,
+    ruleToSpec(rule),
+    basis,
+    new Date().toISOString(),
+    {
+      compareAtCents: variant.compareAtPriceCents,
+      msrpCents: supplier.msrpByProduct.get(variant.productId) ?? null,
+    }
+  );
   return { costCents, result, snapshot };
 }
 
@@ -663,6 +664,9 @@ function serializeRule(rule: MarkupRule & { _count?: { variants: number } }): Ma
     scope: toScope(rule.scope),
     priority: rule.priority,
     isActive: rule.isActive,
+    recomputeMode: rule.recomputeMode,
+    recomputeTolerancePct:
+      rule.recomputeTolerancePct == null ? null : Number(rule.recomputeTolerancePct),
     boundVariantCount: rule._count?.variants ?? 0,
     createdAt: rule.createdAt.toISOString(),
     updatedAt: rule.updatedAt.toISOString(),
@@ -684,6 +688,8 @@ type RuleWriteInput = Partial<{
   scope: MarkupScope;
   priority: number;
   isActive: boolean;
+  recomputeMode: string;
+  recomputeTolerancePct: number | null;
 }>;
 
 function toCreateData(
@@ -704,6 +710,8 @@ function toCreateData(
     scope: input.scope ?? { type: 'all' },
     priority: input.priority ?? 0,
     isActive: input.isActive ?? true,
+    recomputeMode: input.recomputeMode ?? 'auto',
+    recomputeTolerancePct: input.recomputeTolerancePct ?? null,
   };
 }
 
@@ -725,5 +733,9 @@ function toUpdateData(input: RuleWriteInput): Prisma.MarkupRuleUncheckedUpdateIn
     ...(input.scope !== undefined ? { scope: input.scope } : {}),
     ...(input.priority !== undefined ? { priority: input.priority } : {}),
     ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
+    ...(input.recomputeMode !== undefined ? { recomputeMode: input.recomputeMode } : {}),
+    ...(input.recomputeTolerancePct !== undefined
+      ? { recomputeTolerancePct: input.recomputeTolerancePct }
+      : {}),
   };
 }

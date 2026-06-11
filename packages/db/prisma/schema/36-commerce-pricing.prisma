@@ -153,14 +153,71 @@ model MarkupRule {
   priority Int     @default(0)
   isActive Boolean @default(true) @map("is_active")
 
+  // Cost-driven recompute (docs/48 §8). When a bound variant's cost moves, the
+  // markup-recompute-worker re-derives the list price. `recomputeMode`:
+  //   auto   → apply automatically when the new price moves within tolerance; stage beyond it
+  //   review → always stage the change for approval (a cost spike never silently reprices)
+  //   off    → freeze; cost changes are ignored
+  // `recomputeTolerancePct` is the auto-apply band as a percent price delta
+  // (10.00 = ±10%); null = unbounded (any delta auto-applies under `auto`).
+  recomputeMode         String   @default("auto") @map("recompute_mode") @db.VarChar(10)
+  recomputeTolerancePct Decimal? @map("recompute_tolerance_pct") @db.Decimal(6, 2)
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  variants ProductVariant[]
+  tenant           Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variants         ProductVariant[]
+  recomputeReviews MarkupRecomputeReview[]
 
   @@index([tenantId, isActive])
   @@map("markup_rules")
+}
+
+// Staged price recompute (docs/48 §8/§11). When a bound variant's cost changes
+// and the rule's mode is `review` — or `auto` but the new price moves BEYOND the
+// rule's tolerance band — the markup-recompute-worker does NOT silently reprice.
+// It records the proposed change here for a human to approve or reject, with the
+// full computed snapshot stored so approval is a pure write (no recompute) and the
+// price stays reproducible even if the cost drifts again before someone acts.
+// At most one PENDING review exists per variant (partial unique index, hand-SQL —
+// Prisma can't express the predicate); a re-trigger replaces the prior proposal.
+model MarkupRecomputeReview {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+  variantId    String @map("variant_id") @db.Uuid
+  markupRuleId String @map("markup_rule_id") @db.Uuid
+
+  // What moved + what it would become. `oldCostCents` is best-effort (the cost
+  // before the change, when the publisher knows it); `newCostCents` is the basis
+  // the proposed price was computed from.
+  oldCostCents  Int? @map("old_cost_cents")
+  newCostCents  Int  @map("new_cost_cents")
+  oldPriceCents Int  @map("old_price_cents")
+  newPriceCents Int  @map("new_price_cents")
+
+  // The AppliedMarkupSnapshot stamped onto the variant verbatim on approve —
+  // { ruleId, method, value, costBasis, costBasisValueCents, computedPriceCents, computedAt }.
+  appliedMarkup Json @map("applied_markup")
+
+  // 'tolerance_exceeded' (auto mode, Δ beyond the band) | 'review_mode' (always-review rule).
+  reason String @default("review_mode") @db.VarChar(30)
+  // pending | approved | rejected
+  status String @default("pending") @db.VarChar(20)
+
+  resolvedAt DateTime? @map("resolved_at") @db.Timestamptz
+  resolvedBy String?   @map("resolved_by") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  rule    MarkupRule     @relation(fields: [markupRuleId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, status])
+  @@index([tenantId, variantId])
+  @@map("markup_recompute_reviews")
 }
 
 // Surcharge rule (docs/48 §6) — a document-level fee that passes through a

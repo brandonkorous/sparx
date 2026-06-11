@@ -9,6 +9,7 @@ import {
   Plug,
   PlusCircle,
   Receipt,
+  RefreshCw,
   RotateCcw,
   ShoppingCart,
   Sparkles,
@@ -228,6 +229,13 @@ const QUICK_LINKS = [
     description:
       'Apply a markup rule across a collection, type, or hand-picked set — preview, then commit.',
     icon: <DollarSign className="h-5 w-5" />,
+  },
+  {
+    href: '/commerce/price-reviews',
+    title: 'Price changes',
+    description:
+      'Cost-driven price changes waiting for approval — recomputed from a markup rule, beyond its auto-apply tolerance.',
+    icon: <RefreshCw className="h-5 w-5" />,
   },
   {
     href: '/commerce/surcharges',

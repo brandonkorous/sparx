@@ -45,6 +45,7 @@ jobs:
           - media-worker
           - email-worker
           - push-worker
+          - markup-recompute-worker
           - commerce-indexer
           - legal-seed-worker
           - domain-worker

@@ -33,6 +33,7 @@ export type CommerceTopic = Extract<
   | 'variant.created'
   | 'variant.updated'
   | 'variant.deleted'
+  | 'variant.cost.updated'
   | 'inventory.adjusted'
   | 'inventory.low'
   | 'inventory.depleted'
