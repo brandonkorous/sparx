@@ -1,8 +1,8 @@
 # Marketplace — the unified, categorized add-on surface
 
-**Version:** 0.3.0
+**Version:** 0.3.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-10
+**Last Updated:** 2026-06-11
 
 ---
 
@@ -37,7 +37,11 @@ docs:
   `@sparx/components` package (§7) that holds the primitive registry the catalog seeds from.
 - **Themes** — saved themes (brand/theme model in [docs/45](45-builder-site-layout.md) /
   [docs/33](33-token-model-v2.md)).
-- **Integrations** — the provider registry + install flow (payment/shipping/tax providers).
+- **Integrations** — the provider registry + install flow (payment/shipping/tax providers). The full
+  integration **taxonomy** (the `purpose` × `shape` model, the non-provider shapes — channels,
+  connectors, data sources — and the prioritized build catalog) lives in
+  [docs/88](88-integrations-catalog.md); this doc owns only the catalog shell + the provider-adapter
+  install flow.
 - **Search/facets** ride **Typesense** — [docs/22](22-typesense-search-spec.md) +
   [docs/39](39-universal-search.md).
 

@@ -15,6 +15,7 @@ export type SparxModule =
   | 'crm'
   | 'email'
   | 'b2b'
+  | 'invoicing'
   | 'ai'
   | 'dropship'
   | 'inventory'
@@ -36,6 +37,7 @@ const MODULE_COLORS: Record<SparxModule, ModuleColors> = {
   crm: { color: '#06B6D4', tint: '#ECFEFF', text: '#0E7490' },
   email: { color: '#0EA5E9', tint: '#F0F9FF', text: '#0369A1' },
   b2b: { color: '#475569', tint: '#F1F5F9', text: '#334155' },
+  invoicing: { color: '#65A30D', tint: '#F7FEE7', text: '#3F6212' },
   ai: { color: '#EC4899', tint: '#FDF2F8', text: '#9D174D' },
   dropship: { color: '#10B981', tint: '#ECFDF5', text: '#065F46' },
   inventory: { color: '#F59E0B', tint: '#FFFBEB', text: '#B45309' },

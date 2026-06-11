@@ -2,31 +2,33 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Badge, Button, Card, Heading, Stack, Text } from '@sparx/ui';
 import {
-  ArrowLeft,
   ArrowRight,
+  Boxes,
   ExternalLink,
   PartyPopper,
   PencilRuler,
+  Receipt,
   Rocket,
+  Shuffle,
+  Sparkles,
+  TrendingUp,
 } from 'lucide-react';
-import {
-  finishOnboardingAction,
-  getPreviewTokenAction,
-  publishAndFinishAction,
-} from '../_lib/actions';
+import { getPreviewTokenAction } from '../_lib/actions';
+import type { OnboardingModule } from '../_lib/modules';
 import type { WizardBlueprint } from '../_lib/types';
 
 const STORE_ZONE = 'sparx.zone';
-// Where "Customize" drops the tenant — the Builder, on the draft we just installed.
 const BUILDER_HREF = '/builder/page';
 
-/** Build a storefront URL for this tenant, env-aware. Prod resolves the tenant by
- *  its zone subdomain (siteOrigin already carries the slug); dev resolves it by a
- *  `?tenant=<slug>` query against the shared local origin. A preview token, when
- *  given, serves the DRAFT. */
+function usd(n: number): string {
+  return n.toLocaleString('en-US');
+}
+
+/** Env-aware storefront URL. Prod resolves the tenant by its zone subdomain;
+ *  dev resolves by `?tenant=<slug>`. A preview token, when given, serves the
+ *  DRAFT. */
 function buildSiteUrl(
   siteOrigin: string,
   slug: string,
@@ -40,87 +42,53 @@ function buildSiteUrl(
   return qs ? `${siteOrigin}/?${qs}` : `${siteOrigin}/`;
 }
 
-interface LaunchUrls {
-  siteOrigin: string;
-  useTenantParam: boolean;
-}
-
-/** The "what you're about to publish" facts, mirroring the gallery card's line. */
 function contentFacts(bp: WizardBlueprint | null): string[] {
   if (!bp) return [];
   const c = bp.contents;
   const facts: string[] = [];
+  if (c.pages > 0) facts.push(`${c.pages} pages`);
   if (c.products > 0) facts.push(`${c.products} products`);
-  if (c.content > 0) facts.push(`${c.content} pages of content`);
+  if (c.content > 0) facts.push(`${c.content} content entries`);
   if (c.emails > 0) facts.push(`${c.emails} emails`);
   facts.push(`${c.theme} theme`);
   return facts;
 }
 
+// Step 6 — Launch (work pane). The terminal celebration — and the best moment to
+// make the tenant FEEL the value before they publish: a prominent savings banner
+// (monthly + annualized), the "everything you switched on" list showing what each
+// module replaces and what it'd cost elsewhere, and what the blueprint already
+// dropped into their site. The primary action (Publish my site) lives in the
+// setup card; this body is the upsell + the secondary affordances. `published`
+// flips it to the success view.
 export function StepLaunch({
   slug,
   installId,
   blueprint,
   siteOrigin,
   useTenantParam,
+  published,
+  modules,
+  monthlyTotal,
+  monthlyElsewhere,
   onDifferentTemplate,
 }: {
   slug: string;
-  /** The install to publish on Launch; null on the "start from scratch" path. */
   installId: string | null;
-  /** The chosen template (for the summary), resolved from the catalog. */
   blueprint: WizardBlueprint | null;
   siteOrigin: string;
   useTenantParam: boolean;
-  /** Jump back to the template gallery to re-pick. */
-  onDifferentTemplate: () => void;
-}) {
-  // No template installed → the scratch finish screen (nothing to publish).
-  if (!installId) {
-    return <ScratchFinish />;
-  }
-
-  return (
-    <TemplateLaunch
-      slug={slug}
-      installId={installId}
-      blueprint={blueprint}
-      urls={{ siteOrigin, useTenantParam }}
-      onDifferentTemplate={onDifferentTemplate}
-    />
-  );
-}
-
-// ── Blueprint path: confirm what's installed, then one-tap publish ─────────────
-//
-// No embedded preview: the site is installed as a DRAFT, and the storefront only
-// serves PUBLISHED catalog/content — so a pre-publish preview shows empty product
-// + journal grids, which reads as "unfinished" exactly when we want confidence.
-// Instead we summarize what's set up and offer a full-fidelity "Preview in a new
-// tab" (the real site, draft token) for anyone who wants to look before launching.
-
-function TemplateLaunch({
-  slug,
-  installId,
-  blueprint,
-  urls,
-  onDifferentTemplate,
-}: {
-  slug: string;
-  installId: string;
-  blueprint: WizardBlueprint | null;
-  urls: LaunchUrls;
+  published: boolean;
+  modules: OnboardingModule[];
+  monthlyTotal: number;
+  monthlyElsewhere: number;
   onDifferentTemplate: () => void;
 }) {
   const [token, setToken] = React.useState<string | null>(null);
-  const [published, setPublished] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [publishing, startPublish] = React.useTransition();
-
   const host = `${slug}.${STORE_ZONE}`;
 
-  // Mint a draft-preview token on mount so "Preview in a new tab" opens the DRAFT.
   React.useEffect(() => {
+    if (!installId) return;
     let active = true;
     void getPreviewTokenAction().then((res) => {
       if (active && res.ok) setToken(res.data.token);
@@ -128,125 +96,233 @@ function TemplateLaunch({
     return () => {
       active = false;
     };
-  }, []);
-
-  function publish() {
-    setError(null);
-    startPublish(async () => {
-      const res = await publishAndFinishAction(installId);
-      if (res.ok) setPublished(true);
-      else setError(res.error);
-    });
-  }
+  }, [installId]);
 
   if (published) {
-    return <LaunchSuccess slug={slug} urls={urls} />;
+    return <LaunchSuccess slug={slug} siteOrigin={siteOrigin} useTenantParam={useTenantParam} />;
   }
 
-  const previewHref = token
-    ? buildSiteUrl(urls.siteOrigin, slug, urls.useTenantParam, token)
-    : null;
+  const monthlySavings = Math.max(0, monthlyElsewhere - monthlyTotal);
+  const annualSavings = monthlySavings * 12;
+
+  // Scratch path — nothing to publish; the card's CTA opens the Builder.
+  if (!installId) {
+    return (
+      <div className="mx-auto max-w-xl">
+        <Stack gap={5} align="center" className="text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--module-active-tint)]">
+            <PencilRuler className="h-7 w-7 text-[var(--module-active)]" />
+          </span>
+          <Stack gap={2} align="center">
+            <Heading level={2}>Your workspace is ready</Heading>
+            <Text variant="muted">
+              You&apos;re starting from a blank canvas. Hit{' '}
+              <span className="font-medium text-[var(--color-text-primary)]">Finish setup</span> to
+              open the Builder and design your site — publish whenever you&apos;re ready.
+            </Text>
+          </Stack>
+        </Stack>
+        {monthlySavings > 0 && (
+          <div className="mt-7">
+            <SavingsBanner
+              monthlySavings={monthlySavings}
+              annualSavings={annualSavings}
+              count={modules.length}
+              monthlyTotal={monthlyTotal}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const previewHref = token ? buildSiteUrl(siteOrigin, slug, useTenantParam, token) : null;
   const facts = contentFacts(blueprint);
 
   return (
-    <div className="mx-auto w-full max-w-xl px-6 py-12">
-      <Stack gap={8}>
-        <Stack gap={3} align="center" className="text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--module-active-tint)]">
-            <Rocket className="h-7 w-7 text-[var(--module-active)]" />
-          </span>
-          <Heading level={1}>Your site is ready</Heading>
+    <div className="mx-auto max-w-xl">
+      <Stack gap={5} align="center" className="text-center">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--module-active-tint)]">
+          <Rocket className="h-7 w-7 text-[var(--module-active)]" />
+        </span>
+        <Stack gap={2} align="center">
+          <Heading level={2}>Your site is ready</Heading>
           <Text variant="muted">
-            {blueprint
-              ? `The ${blueprint.name} template is installed and styled. Publish to make it live at ${host}.`
-              : `Your site is installed and styled. Publish to make it live at ${host}.`}
+            {blueprint ? (
+              <>
+                The{' '}
+                <span className="font-medium text-[var(--color-text-primary)]">
+                  {blueprint.name}
+                </span>{' '}
+                blueprint is installed as a private draft. Publishing makes it live at{' '}
+                <span className="font-medium text-[var(--color-text-primary)]">{host}</span> —
+                nothing&apos;s locked, so keep editing in the Builder anytime.
+              </>
+            ) : (
+              <>
+                Your site is installed as a private draft. Publishing makes it live at{' '}
+                <span className="font-medium text-[var(--color-text-primary)]">{host}</span> — and
+                you can keep editing it in the Builder afterward.
+              </>
+            )}
           </Text>
         </Stack>
+      </Stack>
 
-        {facts.length > 0 && (
-          <Stack direction="row" justify="center" gap={2} className="flex-wrap">
+      {/* ── The value: savings banner ─────────────────────────────────────── */}
+      {monthlySavings > 0 && (
+        <div className="mt-7">
+          <SavingsBanner
+            monthlySavings={monthlySavings}
+            annualSavings={annualSavings}
+            count={modules.length}
+            monthlyTotal={monthlyTotal}
+          />
+        </div>
+      )}
+
+      {/* ── Everything you switched on (what each module replaces) ────────── */}
+      {modules.length > 0 && (
+        <div className="mt-5 overflow-hidden rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
+          <div className="flex items-center justify-between border-b border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-5 py-3">
+            <Text size="sm" weight="medium">
+              Everything you switched on
+            </Text>
+            <Text size="xs" variant="muted">
+              worth ${usd(monthlyElsewhere)}/mo elsewhere
+            </Text>
+          </div>
+          <div className="px-5">
+            {modules.map((m, i) => (
+              <div
+                key={m.key}
+                className={
+                  'flex items-center justify-between gap-3 py-3' +
+                  (i < modules.length - 1 ? ' border-b border-[var(--color-border-default)]' : '')
+                }
+              >
+                <span className="flex min-w-0 items-start gap-3">
+                  <span
+                    className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
+                    style={{ background: m.colorVar }}
+                  />
+                  <span className="min-w-0">
+                    <Text size="sm" weight="medium">
+                      {m.name}
+                    </Text>
+                    <Text size="xs" variant="muted">
+                      Replaces {m.replaces}
+                    </Text>
+                  </span>
+                </span>
+                <Text size="sm" variant="muted" className="shrink-0 whitespace-nowrap line-through">
+                  ${m.elsewhere}/mo
+                </Text>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Already in your site (blueprint content) ──────────────────────── */}
+      {facts.length > 0 && (
+        <div className="mt-5">
+          <Text size="sm" weight="medium" className="mb-2 block">
+            Already in your site
+          </Text>
+          <Stack direction="row" gap={2} className="flex-wrap">
             {facts.map((f) => (
               <Badge key={f} variant="soft" color="neutral">
                 {f}
               </Badge>
             ))}
           </Stack>
-        )}
+        </div>
+      )}
 
-        {error && (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite" className="text-center">
-            {error}
-          </Text>
-        )}
-
-        <Stack gap={3} align="center">
-          <Button
-            color="module"
-            size="lg"
-            onClick={publish}
-            disabled={publishing}
-            loading={publishing}
-            leftIcon={publishing ? undefined : <Rocket className="h-4 w-4" />}
-            className="w-full"
-          >
-            {publishing ? 'Publishing…' : 'Publish my site'}
-          </Button>
-
-          <Stack direction="row" justify="center" gap={2} className="flex-wrap">
-            <Button
-              variant="soft"
-              color="neutral"
-              asChild
-              disabled={!previewHref}
-              rightIcon={<ExternalLink className="h-3.5 w-3.5" />}
-            >
-              <a
-                href={previewHref ?? '#'}
-                target="_blank"
-                rel="noreferrer"
-                aria-disabled={!previewHref}
-              >
-                Preview in a new tab
-              </a>
-            </Button>
-            <Button
-              variant="ghost"
-              color="neutral"
-              asChild
-              leftIcon={<PencilRuler className="h-4 w-4" />}
-            >
-              <Link href={BUILDER_HREF}>Customize first</Link>
-            </Button>
-          </Stack>
-
-          <Button
-            variant="ghost"
-            color="neutral"
-            size="sm"
-            onClick={onDifferentTemplate}
-            disabled={publishing}
-            leftIcon={<ArrowLeft className="h-4 w-4" />}
-          >
-            Choose a different template
-          </Button>
-        </Stack>
-      </Stack>
+      {/* ── Secondary actions (Publish lives in the setup card) ───────────── */}
+      <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+        <Button
+          variant="outline"
+          color="module"
+          asChild
+          disabled={!previewHref}
+          rightIcon={<ExternalLink className="h-3.5 w-3.5" />}
+        >
+          <a href={previewHref ?? '#'} target="_blank" rel="noreferrer" aria-disabled={!previewHref}>
+            Preview in a new tab
+          </a>
+        </Button>
+        <Button variant="soft" color="neutral" asChild leftIcon={<PencilRuler className="h-4 w-4" />}>
+          <Link href={BUILDER_HREF}>Customize first</Link>
+        </Button>
+        <Button
+          variant="ghost"
+          color="neutral"
+          size="sm"
+          onClick={onDifferentTemplate}
+          leftIcon={<Shuffle className="h-3.5 w-3.5" />}
+        >
+          Choose a different blueprint
+        </Button>
+      </div>
     </div>
   );
 }
 
-// ── Success: the site is live ─────────────────────────────────────────────────
-
-function LaunchSuccess({ slug, urls }: { slug: string; urls: LaunchUrls }) {
-  const liveUrl = buildSiteUrl(urls.siteOrigin, slug, urls.useTenantParam);
+function SavingsBanner({
+  monthlySavings,
+  annualSavings,
+  count,
+  monthlyTotal,
+}: {
+  monthlySavings: number;
+  annualSavings: number;
+  count: number;
+  monthlyTotal: number;
+}) {
   return (
-    <div className="mx-auto w-full max-w-xl px-6 py-12">
-      <Stack gap={8}>
+    <div className="rounded-2xl border border-[var(--color-success-border,var(--color-border-default))] bg-[var(--color-success-tint)] px-6 py-5 text-center">
+      <div className="flex items-center justify-center gap-2">
+        <Sparkles className="h-4 w-4 text-[var(--color-success-text)]" />
+        <Text size="sm" weight="medium" className="text-[var(--color-success-text)]">
+          You&apos;re saving
+        </Text>
+      </div>
+      <div className="mt-1 flex items-baseline justify-center gap-1">
+        <span className="text-[3rem] leading-[1] font-medium tracking-[-0.04em] text-[var(--color-success-text)]">
+          ${usd(monthlySavings)}
+        </span>
+        <span className="text-lg text-[var(--color-success-text)]/70">/mo</span>
+      </div>
+      <Text size="sm" variant="muted" className="mx-auto mt-2 block max-w-[42ch]">
+        That&apos;s{' '}
+        <span className="font-medium text-[var(--color-text-primary)]">${usd(annualSavings)}</span> a
+        year. {count} best-in-class {count === 1 ? 'tool' : 'tools'} on one platform, one login, one
+        invoice — for ${usd(monthlyTotal)}/mo after your free trial.
+      </Text>
+    </div>
+  );
+}
+
+function LaunchSuccess({
+  slug,
+  siteOrigin,
+  useTenantParam,
+}: {
+  slug: string;
+  siteOrigin: string;
+  useTenantParam: boolean;
+}) {
+  const liveUrl = buildSiteUrl(siteOrigin, slug, useTenantParam);
+  return (
+    <div className="mx-auto max-w-xl">
+      <Stack gap={5}>
         <Stack gap={3} align="center" className="text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--module-active-tint)]">
             <PartyPopper className="h-7 w-7 text-[var(--module-active)]" />
           </span>
-          <Heading level={1}>You&apos;re live</Heading>
+          <Heading level={2}>You&apos;re live</Heading>
           <Text variant="muted">
             Your site is published and ready for the world. Here&apos;s where to go next.
           </Text>
@@ -274,58 +350,6 @@ function LaunchSuccess({ slug, urls }: { slug: string; urls: LaunchUrls }) {
             title="Finish the setup checklist"
             description="A few day-one tasks to get production-ready."
           />
-        </Stack>
-
-        <Stack direction="row" justify="center">
-          <Button color="module" asChild rightIcon={<ArrowRight className="h-4 w-4" />}>
-            <Link href="/">Go to dashboard</Link>
-          </Button>
-        </Stack>
-      </Stack>
-    </div>
-  );
-}
-
-// ── Scratch path: workspace ready, no showcase to publish ─────────────────────
-
-function ScratchFinish() {
-  const router = useRouter();
-  const [pending, startTransition] = React.useTransition();
-
-  function go(href: string) {
-    startTransition(async () => {
-      await finishOnboardingAction();
-      router.push(href);
-    });
-  }
-
-  return (
-    <div className="mx-auto w-full max-w-xl px-6 py-12">
-      <Stack gap={8}>
-        <Stack gap={3} align="center" className="text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--module-active-tint)]">
-            <PencilRuler className="h-7 w-7 text-[var(--module-active)]" />
-          </span>
-          <Heading level={1}>Your workspace is ready</Heading>
-          <Text variant="muted">
-            You&apos;re starting from a blank canvas. Open the Builder to design your site, then
-            publish it whenever you&apos;re ready.
-          </Text>
-        </Stack>
-
-        <Stack direction="row" justify="center" gap={3}>
-          <Button variant="ghost" color="neutral" onClick={() => go('/')} disabled={pending}>
-            Go to dashboard
-          </Button>
-          <Button
-            color="module"
-            onClick={() => go(BUILDER_HREF)}
-            disabled={pending}
-            loading={pending}
-            rightIcon={<ArrowRight className="h-4 w-4" />}
-          >
-            Open the Builder
-          </Button>
         </Stack>
       </Stack>
     </div>

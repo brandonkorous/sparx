@@ -34,6 +34,10 @@ export type {
   B2BAccount,
   Pipeline,
   PipelineStage,
+  // Invoicing (docs/87)
+  DocumentWorkflow,
+  DocumentStage,
+  BillingDocumentLineType,
   Deal,
   DealOrder,
   DealQuote,

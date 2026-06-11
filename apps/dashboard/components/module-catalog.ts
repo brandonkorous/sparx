@@ -13,6 +13,7 @@ import {
   FileText,
   LayoutTemplate,
   MessagesSquare,
+  ReceiptText,
   Send,
   ShoppingCart,
   Sparkles,
@@ -164,6 +165,36 @@ export const moduleCatalog: Record<ModuleSlug, ModuleCatalogEntry> = {
       {
         title: 'Fleet management',
         description: 'VIN/asset-tagged ordering for service operations.',
+      },
+    ],
+  },
+  invoicing: {
+    Icon: ReceiptText,
+    title: 'Invoicing',
+    tagline: 'Estimates, work orders, and invoices you build by hand.',
+    description:
+      'The Invoicing module adds authored billing documents — estimates, work orders, and invoices you build line by line and move through your own stages. Bill a walk-in customer or a B2B account, mix marked-up parts with labor and pass-through charges, and keep an immutable record at every stage.',
+    features: [
+      {
+        title: 'Your workflow',
+        description: 'Configure your own stages — estimate, approved, in progress, invoiced, paid.',
+      },
+      {
+        title: 'Typed lines',
+        description: 'Parts (marked up), labor (rate × hours), sublet, freight, materials, and fees.',
+      },
+      {
+        title: 'Stage snapshots',
+        description: 'Freeze an immutable, printable record each time a document advances.',
+      },
+      {
+        title: 'Bill anyone',
+        description: 'Charge a retail customer or a net-terms B2B account from one document.',
+      },
+      { title: 'Live margin', description: 'See cost, price, and profit per line as you build.' },
+      {
+        title: 'Deposits & payments',
+        description: 'Take deposits, record partial payments, and track the balance due.',
       },
     ],
   },

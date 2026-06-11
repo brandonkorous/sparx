@@ -16,6 +16,8 @@
 
 import { invalidateModuleCache } from '@sparx/modules';
 
+import * as documentLineTypeService from '../services/document-line-type-service';
+import * as documentWorkflowService from '../services/document-workflow-service';
 import * as pipelineService from '../services/pipeline-service';
 import * as segmentService from '../services/segment-service';
 import type { ConsumerContext } from './registry';
@@ -34,6 +36,20 @@ export function registerModuleActivationConsumers(ctx: ConsumerContext): (() => 
       const serviceCtx = { tenantId: event.tenantId, userId: undefined };
       await pipelineService.bootstrapDefaultPipeline(serviceCtx);
       await segmentService.bootstrapBuiltInSegments(serviceCtx);
+    }),
+
+    // Invoicing (docs/87): on activation, seed the built-in document workflows
+    // (Invoice, Service / Repair) and the starter line-type registry. Both
+    // bootstraps are slug/key-keyed and idempotent, so a re-activation is a
+    // safe no-op. Rows survive `module.deactivated` — a brief disable should
+    // never lose a tenant's edited workflows.
+    ctx.bus.subscribe('module.activated', async (event) => {
+      const slug = (event.payload as { module?: string } | null)?.module;
+      if (slug !== 'invoicing') return;
+      invalidateModuleCache(event.tenantId, 'invoicing');
+      const serviceCtx = { tenantId: event.tenantId, userId: undefined };
+      await documentWorkflowService.bootstrapDefaultWorkflows(serviceCtx);
+      await documentLineTypeService.bootstrapDefaultLineTypes(serviceCtx);
     }),
   ];
 }

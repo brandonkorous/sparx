@@ -20,6 +20,12 @@ export * as orderFulfillmentsService from './order-fulfillments-service';
 export * as quoteService from './quote-service';
 export * as quoteLifecycleService from './quote-lifecycle-service';
 
+// Invoicing module (docs/87) — authored billing documents. Phase 1 exposes the
+// workflow / stage / line-type config surface; documents + lines land in later
+// phases.
+export * as documentWorkflowService from './document-workflow-service';
+export * as documentLineTypeService from './document-line-type-service';
+
 // CRM reporting — read-only metrics for the dashboard reports page and
 // the MCP get_crm_metrics tool. Live queries today; nightly rollup later.
 export * as reportingService from './reporting-service';

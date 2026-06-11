@@ -20,14 +20,17 @@
 // repro that originally bit CRM activation. RMW always produces a valid
 // nested structure regardless of starting shape.
 
-import type { FastifyPluginAsync } from 'fastify';
+import type { FastifyBaseLogger, FastifyPluginAsync } from 'fastify';
+import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { prisma, type Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
+import { publish } from '@sparx/api-core/pubsub';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { badRequest, conflict, forbidden, notFound } from '@sparx/api-core/errors';
 import { invalidateModuleCache, type ModuleSlug } from '@sparx/auth';
+import { publishPlatformEvent } from '@sparx/crm';
 import { computeBannerEnabled } from '../../lib/consent.js';
 import { env } from '../../env.js';
 import Stripe from 'stripe';
@@ -74,12 +77,49 @@ const MODULE_SLUGS: ModuleSlug[] = [
   'crm',
   'email',
   'b2b',
+  'invoicing',
   'dropship',
   'inventory',
   'chat',
   'ai',
 ];
 const MODULE_SLUG_SET = new Set<string>(MODULE_SLUGS);
+
+// Announce a module on/off transition on BOTH event buses (docs/82 Slice E4).
+// The tenant route stays module-agnostic — it knows nothing about pipelines or
+// email automations; it only says "this module just turned on/off" and lets the
+// consumers seed themselves. The two buses reach two different process spaces:
+//
+//   1. api-core publish() → the `module.{activated,deactivated}` Pub/Sub topic,
+//      which (a) enqueues webhook deliveries for tenant subscriptions and (b)
+//      tees to `automation.trigger`, where the automation-worker (a SEPARATE
+//      process) seeds the activated module's system automations.
+//   2. the in-process platform bus → the CRM + Email activation consumers that
+//      run inside THIS api-rest process (default pipeline + segments; default
+//      email automations). publishPlatformEvent awaits every subscriber, so the
+//      seed completes before the route returns — which is why the dashboard no
+//      longer needs a separate /v1/<module>/bootstrap round-trip.
+//
+// Every consumer is idempotent, so a redundant announce is a safe no-op; callers
+// still fire only on an actual transition to keep the bus quiet.
+async function announceModuleTransition(
+  log: FastifyBaseLogger,
+  tenantId: string,
+  actorId: string | null,
+  slug: ModuleSlug,
+  enabled: boolean
+): Promise<void> {
+  const type = enabled ? 'module.activated' : 'module.deactivated';
+  const data = { module: slug };
+  await publish(log, type, tenantId, actorId, data);
+  await publishPlatformEvent({
+    id: randomUUID(),
+    topic: type,
+    tenantId,
+    occurredAt: new Date(),
+    payload: data,
+  });
+}
 
 // A single social link (a SITE setting, not brand identity — docs/45 §3).
 // `platform` is a known key (instagram, x, …) for icon mapping, or a free-text
@@ -446,6 +486,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     });
     if (!before) throw notFound('Tenant', auth.tenantId);
 
+    const wasEnabled = readModuleFlags(before.settings)[slug] === true;
     const currentSettings = (before.settings as Record<string, unknown> | null) ?? {};
     const currentModules = (currentSettings.modules as Record<string, unknown> | undefined) ?? {};
     const currentSlot = (currentModules[slug] as Record<string, unknown> | undefined) ?? {};
@@ -462,6 +503,19 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       data: { settings: nextSettings },
     });
     invalidateModuleCache(auth.tenantId, slug as ModuleSlug);
+
+    // Seed (or tear-down-acknowledge) downstream consumers only on a real
+    // transition — see announceModuleTransition. Post-commit + post-invalidate
+    // so the consumers read the new flag state.
+    if (wasEnabled !== enabled) {
+      await announceModuleTransition(
+        request.log,
+        auth.tenantId,
+        auth.actorId,
+        slug as ModuleSlug,
+        enabled
+      );
+    }
 
     return ok({ slug, enabled });
   });
@@ -508,7 +562,20 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       where: { id: auth.tenantId },
       data: { settings: nextSettings },
     });
-    for (const slug of changed) invalidateModuleCache(auth.tenantId, slug as ModuleSlug);
+    // Invalidate the gate cache, then announce each transition so the activated
+    // modules seed themselves (CRM pipeline/segments, email automations, system
+    // automations) — the onboarding Modules step flips several at once and each
+    // gets its own activation event.
+    for (const slug of changed) {
+      invalidateModuleCache(auth.tenantId, slug as ModuleSlug);
+      await announceModuleTransition(
+        request.log,
+        auth.tenantId,
+        auth.actorId,
+        slug as ModuleSlug,
+        modules[slug] === true
+      );
+    }
 
     const flags = readModuleFlags(nextSettings);
     return ok(MODULE_SLUGS.map((slug) => ({ slug, enabled: flags[slug] === true })));

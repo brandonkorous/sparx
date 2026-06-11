@@ -4,14 +4,16 @@
 //
 // Every toggle and read goes through api-rest now (`PATCH /v1/tenant/modules/:slug`,
 // `GET /v1/tenant/modules`). The role gate (owner/admin only), persistence,
-// and the in-process module-gate cache invalidation all live there. The CRM
-// activation bootstrap is a separate, idempotent admin call to the CRM route
-// (`POST /v1/crm/bootstrap`) — it's intentionally not folded into the toggle
-// endpoint so the tenant route stays module-agnostic.
+// and the in-process module-gate cache invalidation all live there.
 //
-// Cross-process cache (api-rest's separate LRU) self-heals within 60s via the
-// TTL. We don't publish a Pub/Sub event yet — that lands when the platform-wide
-// event bus moves off the in-process stub.
+// Activation seeding is no longer the dashboard's job (docs/82 Slice E4): the
+// toggle route publishes `module.activated` on both event buses, so the CRM
+// pipeline/segments and email default automations seed themselves synchronously
+// inside that request, and the automation-worker seeds system automations off
+// the fan-in. We used to follow the toggle with a separate `POST /v1/crm/bootstrap`
+// — that's now redundant and has been removed.
+//
+// Cross-process cache (api-rest's separate LRU) self-heals within 60s via the TTL.
 
 import 'server-only';
 import { revalidatePath } from 'next/cache';
@@ -47,13 +49,9 @@ export async function setModuleEnabledAction(
       { enabled }
     );
 
-    // CRM activation seeds the default pipeline + built-in segments. The
-    // same functions also run when the platform bus delivers
-    // `module.activated` to the api-rest consumer; both paths are
-    // idempotent so a double-run is a no-op.
-    if (enabled && slug === 'crm') {
-      await api.post<{ bootstrapped: boolean }>('/v1/crm/bootstrap', {});
-    }
+    // Activation seeding (CRM pipeline/segments, email automations, system
+    // automations) is handled by the toggle route's `module.activated` publish —
+    // see the file header. No follow-up bootstrap call needed.
 
     revalidatePath('/settings/modules');
     revalidatePath(`/${slug}`, 'layout');

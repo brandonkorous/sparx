@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.7
+**Version:** 1.8
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-11
 
@@ -16,19 +16,22 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** Slice E4 — publish `module.activated` + retire the bootstraps. Slices
-> A–D plus **F1 + F2-a** done; **Slice E1–E3 done** (canonical registry; `automation.trigger`
-> topic and push subscription; fan-in tee in all 3 paths); **E4 worker-side done** (the worker
-> seeds on `module.activated`). The ONE remaining lynchpin is the publish: the
-> `/v1/tenant/modules` toggle routes (`tenant.ts`) must publish `module.activated` to both buses —
-> DEFERRED while another agent has `tenant.ts` open. Once it's clear: (1) drop the ~10-line dual
-> publish into the PATCH and PUT handlers, (2) add the Email in-process `module.activated` consumer
-> (mirror the CRM one, calling `automationService.provisionDefaults`), (3) retire the dashboard's
-> direct `/v1/{crm,email}/bootstrap` calls. Then the whole event-driven activation path is live:
-> CRM/Email seed in-process, automation seeds via the Pub/Sub fan-in.
+> **▶ RESUME HERE:** Slice F2 cont. + F3. **Slice E is COMPLETE** — the event-driven module
+> activation path is fully live. Slices A–D plus **F1 + F2-a** done; **E1–E4 done** (canonical
+> registry; `automation.trigger` topic + push subscription; fan-in tee in all 3 paths; worker
+> seeds on `module.activated`; AND the publish lynchpin: the `/v1/tenant/modules` PATCH + PUT
+> toggle routes now publish `module.{activated,deactivated}` to BOTH buses, transition-gated).
+> CRM (pipeline/segments) and Email (default automations, via a new api-rest in-process consumer)
+> seed in-process within the toggle request; system automations seed via the Pub/Sub fan-in to the
+> worker. The dashboard's redundant `/v1/crm/bootstrap` follow-up call is retired (the endpoints
+> stay as idempotent admin escape hatches). The new onboarding modules-first PUT seeds for free.
 >
-> Then: Slice F2 cont. (the CRM-sweep + email-driven seeds — need email executors first), F3
-> (retire crons). Older context below.
+> **Next:** (F2 cont.) the CRM-sweep + email-driven seeds (inactivity/win-back/quote-expiry/
+> deal-closing) — these need the email executors (`email.send_campaign` / `send_internal`) first
+> (F1 cont.). (F2 backfill) call `seedSystemAutomations` for tenants whose modules are ALREADY
+> active (activation only fires forward; existing tenants need a one-time sweep). (F3) parity-check
+> then DELETE the b2b-overdue cron (its escalation logic now lives in the reusable service).
+> Older context below.
 >
 > **(historical) F2-a (B2B dunning ladder) done** — the riskiest piece (docs/81 §3.1's canonical
 > Locked behavior) is built, tested, and live-able on the schedule tick.
@@ -56,8 +59,9 @@ Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/bl
 > executors (`email.send_campaign` / `send_internal`) first (F1 cont.). (F3) parity-check then
 > DELETE the crons.
 >
-> **Slice E (event fan-in, docs/82)** still required for EVENT-triggered automations to fire
-> live (push handler wired; subscription stub in `automation.tf`); independent of F.
+> **Slice E (event fan-in, docs/82) — DONE.** EVENT-triggered automations now fire live: every
+> publish path tees to `automation.trigger`, the worker subscribes, and `module.activated` is
+> actually published (the toggle routes). Was the prerequisite for the F2 seed wiring below.
 >
 > **⚠ Prod-correctness finding (Slice D):** the engine's cross-tenant tick scans
 > originally assumed a BYPASSRLS `sparx_owner` connection. **Prod grants no ambient
@@ -230,7 +234,7 @@ dedupe_key)`. DDL generated Prisma-exact via `migrate diff` then RLS hand-append
 >   `cloudscheduler`) → platform-apply (creates service + scheduler) →
 >   deploy-prod (rolls the real tag). Same bootstrapping every Cloud Run worker used.
 
-### Slice E — Phase 0 event substrate (docs/82) ◐
+### Slice E — Phase 0 event substrate (docs/82) ☑
 
 **E1 — canonical registry ☑**
 
@@ -256,21 +260,35 @@ validate` clean. (`module.activated`/`deactivated` topics already existed — em
   off an `@sparx/events` dep. Carries `__automationDepth` from the envelope (default 0) for the
   loop-guard. Unit test 3/3; best-effort (a tee failure never fails the per-type publish).
 
-**E4 — `module.activated` consumers ◐ (worker done; api-rest side blocked)**
+**E4 — `module.activated` publish + consumers ☑**
 
 - ☑ **automation-worker** dispatches `module.activated` → `seedSystemAutomations({tenantId},
-{module})` (a provisioning signal, not a trigger). `seedSystemAutomations` now filters the
-  catalog by the activated module. So once `module.activated` is published, the worker seeds the
-  dunning automation via the fan-in — no second subscription.
-- ☐ **CRM** in-process consumer is already wired (`registerModuleActivationConsumers`) — it goes
-  live the moment `module.activated` is published to the in-process bus.
-- ☐ **Email** in-process consumer (seed default automations; convert `/v1/email/bootstrap`).
-- ⃠ **Publish + dashboard cleanup DEFERRED — `tenant.ts` collision.** The toggle routes
-  (`PATCH`/`PUT /v1/tenant/modules`) must publish `module.activated` to BOTH buses (api-core
-  `publish` → Pub/Sub → fan-in → worker; in-process → CRM/Email). That file currently has
-  ANOTHER agent's uncommitted changes, so the ~10-line publish + retiring the dashboard's direct
-  `/v1/{crm,email}/bootstrap` calls wait until it's clear. Everything else is in place; the
-  publish is the last lynchpin.
+{module})` (a provisioning signal, not a trigger). `seedSystemAutomations` filters the catalog
+  by the activated module. So once `module.activated` is published, the worker seeds the dunning
+  automation via the fan-in — no second subscription.
+- ☑ **Publish lynchpin** — `routes/v1/tenant.ts` `announceModuleTransition(log, tenantId, actorId,
+slug, enabled)` publishes `module.{activated,deactivated}` to BOTH buses: api-core `publish()`
+  (→ per-type Pub/Sub topic + webhook enqueue + fan-in tee → worker) and `publishPlatformEvent()`
+  (→ in-process bus → CRM/Email consumers, awaited so seeding completes before the route returns).
+  Wired into BOTH the per-slug `PATCH` and the bulk `PUT /v1/tenant/modules` (onboarding modules
+  step), **transition-gated** (fires only on an actual on/off change). Idempotent consumers make a
+  redundant announce harmless.
+- ☑ **CRM** in-process consumer was already wired (`registerModuleActivationConsumers`) — now
+  actually driven by the publish above (it was dead before: no publisher existed).
+- ☑ **Email** in-process consumer — `services/api-rest/src/lib/email-module-activation.ts`
+  (`registerEmailModuleActivationConsumer`, wired in `index.ts`): on `module.activated` for
+  `email`, calls `automationService.provisionDefaults`. Lives at the api-rest composition root
+  (not in `@sparx/email-platform`) because the platform bus is owned by `@sparx/crm` and email
+  must not depend on CRM. Unit test 2/2 (mock email service + real in-memory bus; CI-safe, no DB).
+- ☑ **Dashboard cleanup** — the redundant `POST /v1/crm/bootstrap` follow-up in
+  `settings/modules/actions.ts` is removed (the toggle's publish seeds CRM synchronously now). The
+  `/v1/{crm,email}/bootstrap` ENDPOINTS stay as idempotent admin escape hatches (the email one is
+  also a deliberate user button on the email-automations page — untouched).
+
+**Verification:** my files typecheck clean (the only `tsc` errors in api-rest are 3 stale-Prisma-
+client `BillingDocument*`/`Document*` refs from ANOTHER agent's uncommitted invoicing schema,
+ungenerated because of the Windows `query_engine.dll` lock — not from this work; clear on next
+`prisma generate`). Lint 0, prettier clean. Tests: email consumer 2/2, CRM `pubsub-bridge` 6/6.
 
 **Parity test ⃠** — a strict `EventType` ↔ topics parity is NOT cleanly achievable yet: the
 canonical union carries many aspirational events (b2b._, dropship._, subscription._) with no
@@ -298,7 +316,30 @@ isn't silently skipped.
 - ☑ Worker wiring: `installModuleActions()` (now CRM + B2B) + `installCrmPubSubBridge()` at boot;
   closure UNCHANGED (b2b lives in `@sparx/crm` + `@sparx/automation-actions`, both already
   COPY'd; `@sparx/events` promoted dev→prod dep but already in the closure).
-- ☐ Email executors (`email.send_campaign` / `send_internal` / `sequence_*`)
+- ☐ Email executors (`email.send_campaign` / `send_internal` / `sequence_*`) — **design RESOLVED
+  2026-06-11, build next.** Send path investigated end-to-end: the email module already has the
+  production send pipeline — a `ScheduledSend` row (`50-email.prisma`) → the api-rest
+  `email-dispatch` tick (`lib/email-dispatch.ts`, 60s, advisory-locked, cross-tenant via
+  `find_due_scheduled_sends`) → `publish('email.send')` → email-worker. `ScheduledSend.automationId`
+  is **nullable**, so an engine send rides the SAME loop with `automationId: null` (gets suppression
+  - frequency-cap + delay + the dispatch for free). `SendPayload` already supports three body modes:
+    `template`+`props` (coded), pre-rendered `raw`, and **`defer` {builderEmailId, subject, preheader}**
+    (reload a published Builder email tree + personalize per recipient at dispatch — this IS a
+    "campaign"). **Plan:** (1) add `automationService.enqueueSend(ctx, spec)` to `@sparx/email-platform`
+    — suppression-check (scope) then `scheduledSend.create` with `automationId: null` + `dueAt` +
+    optional `dedupeKey` (`createMany skipDuplicates` for the cap path); honors "executors call
+    services" so suppression/caps stay in the service. (2) `installEmailActions()` in a new
+    `automation-actions/src/email.ts`: `email.send_campaign` (config `{builderEmailId, subject,
+preheader?}` → `defer`, or `{template, props?}`; recipient = trigger entity email; marketing scope)
+  - `email.send_internal` (config `{to?, subject, html/text | template, props?}` → `raw`/template;
+    recipient = config.to or tenant notification address; transactional scope so staff notices aren't
+    suppressed by customer prefs). (3) recipient resolution needs an email field off the resolved
+    `fields` (mirror `entity.ts`'s id helpers — verify the resolver exposes `customer.email` etc.).
+    **⚠ Dockerfile closure:** `@sparx/automation-actions` gains an `@sparx/email-platform` dep → the
+    automation-worker image must COPY `@sparx/email-platform` + its transitive closure (use the
+    server-safe surface — `automationService`/`enqueueSend` only; NO `@sparx/email`/`@sparx/builder`
+    render deps, since rendering stays in api-rest's dispatch tick, not the worker). Worker only
+    ENQUEUES. (4) then F2 cont. can re-express the email-driven CRM-sweep seeds on top.
 - ☐ Commerce executors (`commerce.*`)
 
 **F2 — seed system automations ◐ (dunning done)**
@@ -307,8 +348,12 @@ isn't silently skipped.
   engine-path test mirrors the parity oracle: invoice→overdue, account→credit_hold@14d /
   suspended@30d, reminder event on fresh-overdue, monotonic on re-run. Schedule-tick-driven —
   live without Slice E.
-- ☐ **Seed wiring** — `seedSystemAutomations` has no caller yet (ARCH FORK in RESUME: api-rest
-  consumer vs. worker reconcile vs. Slice E fan-in; + existing-tenant backfill).
+- ☑ **Seed wiring — LIVE via Slice E** (the ARCH FORK resolved to "Slice E fan-in"). The toggle
+  routes publish `module.activated` → fan-in → worker `ingest()` → `seedSystemAutomations({tenantId},
+{module})`. So activating B2B now seeds the dunning automation for that tenant automatically.
+- ☐ **Existing-tenant backfill** — activation only fires forward; tenants whose modules are
+  ALREADY active need a one-time `seedSystemAutomations` sweep (a worker reconcile pass or an
+  internal endpoint over a "tenants with module X active" SECURITY DEFINER scan).
 - ☐ Re-express CRM sweep (inactive/high-value/deal-closing/credit-near-limit/quote-expiry) —
   needs the email executors first.
 - ☐ Seed remaining default Managed automations (abandoned-cart, win-back, fulfilled→review)
@@ -530,3 +575,23 @@ current_setting('app.current_tenant_id')::uuid)`. That GUC name is **wrong** (`w
   publish `module.activated` from the `tenant.ts` toggle routes (DEFERRED — another agent's file)
   - the Email in-process consumer + retiring the dashboard bootstrap calls. Parity test deferred
     (needs the union↔topic reconciliation — logged, not silently skipped).
+- **2026-06-11 (cont.)** — **Slice E COMPLETE — E4 publish lynchpin landed.** `tenant.ts` had
+  settled (onboarding modules-first work committed-adjacent; my edits are purely additive), so I
+  wired the publish. Added `announceModuleTransition(log, tenantId, actorId, slug, enabled)` to
+  `routes/v1/tenant.ts`: publishes `module.{activated,deactivated}` to BOTH buses — api-core
+  `publish()` (per-type topic + webhook enqueue + fan-in tee → worker) and `publishPlatformEvent()`
+  (in-process → CRM/Email, awaited). Called from the per-slug `PATCH` AND the bulk `PUT
+/v1/tenant/modules` (onboarding), transition-gated (only on a real on/off change). Added the
+  **Email** in-process consumer `services/api-rest/src/lib/email-module-activation.ts`
+  (`registerEmailModuleActivationConsumer`, wired in `index.ts`) → `automationService.
+provisionDefaults` on `module.activated` for `email`; placed at the api-rest composition root so
+  email doesn't depend on CRM (which owns the bus). Retired the dashboard's redundant `POST
+/v1/crm/bootstrap` follow-up in `settings/modules/actions.ts` (the toggle seeds CRM synchronously
+  now); the bootstrap endpoints stay as idempotent escape hatches. **Verify:** my files typecheck
+  clean — the only api-rest `tsc` errors are 3 stale-Prisma-client `BillingDocument*`/`Document*`
+  refs from another agent's ungenerated invoicing schema (Windows DLL lock blocks `prisma generate`;
+  not this work). Lint 0, prettier clean. New email-consumer unit test 2/2 (mocked email service +
+  real in-memory bus, CI-safe, no DB); CRM `pubsub-bridge` 6/6. Slice E is now fully live: activate
+  a module → CRM/Email seed in-process within the request + system automations seed via the worker
+  fan-in. **Next:** F2 cont. (email-driven seeds — need email executors) + existing-tenant backfill
+  - F3 (retire the b2b cron). Parity test still deferred.

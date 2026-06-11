@@ -23,6 +23,7 @@ export type ModuleSlug =
   | 'crm'
   | 'email'
   | 'b2b'
+  | 'invoicing'
   | 'dropship'
   | 'inventory'
   | 'chat'
@@ -37,6 +38,7 @@ const ALL_MODULES: readonly ModuleSlug[] = [
   'crm',
   'email',
   'b2b',
+  'invoicing',
   'dropship',
   'inventory',
   'chat',

@@ -1,42 +1,47 @@
 'use client';
 
 import * as React from 'react';
-import { WizardFrame, type WizardStepDef } from '@sparx/ui';
-import { goToStepAction } from '../_lib/actions';
-import { isSellingSelected } from '../_lib/modules';
-import type { OnboardingStepKey, WizardInitialState } from '../_lib/types';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { Heading, Text, WizardFrame, type WizardStepDef } from '@sparx/ui';
+import {
+  checkSlugAction,
+  completeDomainStepAction,
+  completePaymentsAction,
+  finishOnboardingAction,
+  goToStepAction,
+  publishAndFinishAction,
+  saveModulesAction,
+  saveWorkspaceAction,
+  selectTemplateAction,
+  startFromScratchAction,
+} from '../_lib/actions';
+import { ONBOARDING_MODULES, isSellingSelected } from '../_lib/modules';
+import type { OnboardingStepKey, SlugAvailability, WizardInitialState } from '../_lib/types';
 import { StepModules } from './step-modules';
-import { StepTemplate } from './step-template';
+import { StepBlueprint } from './step-blueprint';
 import { StepWorkspace } from './step-workspace';
 import { StepDomain } from './step-domain';
 import { StepPayments } from './step-payments';
 import { StepLaunch } from './step-launch';
+import { SummaryCard, type SummaryEntry } from './summary-card';
 import { RailFooter } from './rail-footer';
 
-// The orchestrator for the modules-first guided setup (docs/15 v2). It owns the
-// step machine + the live module selection, renders the persistent WizardFrame
-// (the flat-indigo rail + journey), and swaps the working pane per step. Payments
-// is conditional — it's only in the journey when a selling module is on.
+// The orchestrator for the modules-first guided setup (docs/15 v2). It is the
+// BRAIN: it owns every step's state, computes the next/back math, and renders the
+// persistent two-column content area — a swapping WORK pane on the left and a
+// constant SUMMARY CARD on the right. The card houses the primary CTA on every
+// step (so navigation is consistent) and accretes a receipt as the tenant goes.
+// The step components are presentational bodies; all the wiring lives here.
 
-/** Each step's navigation contract. */
-export interface StepNav {
-  /** Advance to the next step (client-only — the completing action already
-   *  persisted `currentStep`). */
-  onNext: () => void;
-  /** Skip this step without completing it (persists + advances). */
-  onSkip: () => void;
-  /** Go back one step (persists + advances). */
-  onBack: () => void;
-  /** True while a persist-and-navigate transition is in flight. */
-  navPending: boolean;
-  /** The resolved next step — passed to completing actions whose successor is
-   *  conditional (after Domain, Payments only exists when selling). */
-  nextKey: OnboardingStepKey;
-}
+export type SlugCheck =
+  | { status: 'idle' }
+  | { status: 'checking' }
+  | { status: 'done'; result: SlugAvailability };
 
 const STEP_DEFS: Record<OnboardingStepKey, WizardStepDef> = {
   modules: { key: 'modules', label: 'Modules', sublabel: 'What you need' },
-  template: { key: 'template', label: 'Template', sublabel: 'A starting point' },
+  template: { key: 'template', label: 'Blueprint', sublabel: 'A starting point' },
   workspace: { key: 'workspace', label: 'Workspace', sublabel: 'Name your site' },
   domain: { key: 'domain', label: 'Domain', sublabel: 'Make it yours' },
   payments: { key: 'payments', label: 'Payments', sublabel: 'Get paid' },
@@ -54,13 +59,13 @@ const RAIL: Record<OnboardingStepKey, RailCopy> = {
     title: 'Switch on what you use.',
     blurb: 'One toggle per module. Free for 14 days.',
     context:
-      'Switch on only what you need — the bill updates live and your picks narrow the templates that fit. Free for 14 days, no card today.',
+      'Switch on only what you need — the bill updates live and your picks narrow the blueprints that fit. Free for 14 days, no card today.',
   },
   template: {
     title: 'Pick a starting point.',
     blurb: 'A complete, themed site — not a blank page.',
     context:
-      'Every template installs a whole site — pages, design, products, copy. Filtered to your modules; search to widen it.',
+      'Every blueprint installs a whole site — pages, design, products, copy. Filtered to your modules; search to widen it.',
   },
   workspace: {
     title: 'Name your workspace.',
@@ -88,6 +93,35 @@ const RAIL: Record<OnboardingStepKey, RailCopy> = {
   },
 };
 
+const HEAD: Partial<Record<OnboardingStepKey, { title: string; supporting: string }>> = {
+  modules: {
+    title: 'Switch on what you use',
+    supporting:
+      "Every module is one toggle — flip it and your plan updates the instant you do. You're free for 14 days with no card; this is just what you'll pay after. Your picks narrow the blueprints next.",
+  },
+  template: {
+    title: 'Pick a starting point',
+    supporting:
+      'Complete, themed sites — pages, design, products, and copy in place from the first second. Filtered to the modules you chose; pick one to load it into your setup.',
+  },
+  workspace: {
+    title: 'Name your workspace',
+    supporting:
+      'This is your company and its first site. We pre-filled what you told us at signup — tweak anything. Your free address goes live the moment you launch.',
+  },
+  domain: {
+    title: 'Make it yours',
+    supporting:
+      "A custom domain builds trust — and it's yours to keep. Grab the perfect one now, or start free on your .sparx.zone address and add a domain anytime.",
+  },
+  payments: {
+    title: 'Get paid',
+    supporting:
+      "Connect your Stripe account so your store can take customer payments. Your site can go live now and you can connect this whenever you're ready — checkout stays off until then.",
+  },
+  // launch renders its own hero in the body.
+};
+
 const FULL_ORDER: OnboardingStepKey[] = [
   'modules',
   'template',
@@ -97,120 +131,344 @@ const FULL_ORDER: OnboardingStepKey[] = [
   'launch',
 ];
 
+/** A blueprint key, the literal `'scratch'` sentinel (blank-canvas path), or
+ *  null when nothing is chosen yet. */
+type BlueprintChoice = string | null;
+
 export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const stripeConnected = searchParams.get('stripe_connected') === '1';
+
   const [step, setStep] = React.useState<OnboardingStepKey>(initial.step);
   const [modules, setModules] = React.useState<Record<string, boolean>>(initial.modules);
-  // Template selection can change mid-session, so track it here (not from the
-  // page-load snapshot) — Launch publishes whatever was installed this session.
-  const [blueprintKey, setBlueprintKey] = React.useState<string | null>(initial.blueprintKey);
-  const [installId, setInstallId] = React.useState<string | null>(initial.installId);
-  const [navPending, startNav] = React.useTransition();
 
-  // Payments drops out of the journey when nothing sells.
+  // Blueprint: `choice` is the SELECTED key (or scratch / null); `installedKey` +
+  // `installId` are what's actually provisioned. Selecting only sets `choice`;
+  // Continue installs (select-then-confirm). A marketplace-referred visitor
+  // (`?blueprint=`) lands with their pick pre-selected.
+  const [choice, setChoice] = React.useState<BlueprintChoice>(
+    initial.blueprintKey ?? initial.preselectKey
+  );
+  const [installedKey, setInstalledKey] = React.useState<string | null>(initial.blueprintKey);
+  const [installId, setInstallId] = React.useState<string | null>(initial.installId);
+
+  // Workspace fields (lifted so the card can echo them live).
+  const [companyName, setCompanyName] = React.useState(initial.companyName);
+  const [slug, setSlug] = React.useState(initial.slug);
+  const [siteName, setSiteName] = React.useState(initial.siteName);
+  const [slugCheck, setSlugCheck] = React.useState<SlugCheck>({ status: 'idle' });
+
+  // Domain choice — defaults to the free address so Continue always works.
+  const [domain, setDomain] = React.useState<{ kind: 'free' } | { kind: 'custom'; host: string }>({
+    kind: 'free',
+  });
+
+  const [published, setPublished] = React.useState(false);
+  const [busy, startBusy] = React.useTransition();
+  const [error, setError] = React.useState<string | null>(null);
+
+  const selling = isSellingSelected(modules);
   const order = React.useMemo(
-    () => (isSellingSelected(modules) ? FULL_ORDER : FULL_ORDER.filter((s) => s !== 'payments')),
-    [modules]
+    () => (selling ? FULL_ORDER : FULL_ORDER.filter((s) => s !== 'payments')),
+    [selling]
   );
 
   const idx = Math.max(0, order.indexOf(step));
   const nextKey = order[Math.min(idx + 1, order.length - 1)] ?? 'launch';
   const prevKey = order[Math.max(idx - 1, 0)] ?? 'modules';
 
+  // ── Plan math ───────────────────────────────────────────────────────────────
+  const activeModules = ONBOARDING_MODULES.filter((m) => modules[m.key]);
+  const total = activeModules.reduce((s, m) => s + m.price, 0);
+  const elsewhere = activeModules.reduce((s, m) => s + m.elsewhere, 0);
+  const planItems = activeModules.map((m) => ({
+    key: m.key,
+    name: m.name,
+    price: m.price,
+    colorVar: m.colorVar,
+  }));
+
+  // ── Slug availability (debounced) — drives Workspace validity ────────────────
+  const normalizedSlug = slug.trim().toLowerCase();
+  const unchangedSlug = normalizedSlug === initial.slug.trim().toLowerCase();
+  React.useEffect(() => {
+    if (!normalizedSlug || unchangedSlug) {
+      setSlugCheck({ status: 'idle' });
+      return;
+    }
+    setSlugCheck({ status: 'checking' });
+    const handle = setTimeout(() => {
+      void checkSlugAction(normalizedSlug).then((res) => {
+        if (res.ok) setSlugCheck({ status: 'done', result: res.data });
+        else setSlugCheck({ status: 'idle' });
+      });
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [normalizedSlug, unchangedSlug]);
+
+  const slugOk =
+    unchangedSlug || (slugCheck.status === 'done' && slugCheck.result.available);
+
+  // ── Navigation ───────────────────────────────────────────────────────────────
   const goPersist = React.useCallback(
     (target: OnboardingStepKey) => {
-      startNav(async () => {
+      startBusy(async () => {
         await goToStepAction(target);
         setStep(target);
       });
     },
-    [startNav]
+    [startBusy]
   );
 
-  const nav: StepNav = {
-    onNext: () => setStep(nextKey),
-    onSkip: () => goPersist(nextKey),
-    onBack: () => goPersist(prevKey),
-    navPending,
-    nextKey,
+  const blueprintName = (key: string | null): string | null => {
+    if (!key) return null;
+    return initial.blueprints.find((b) => b.key === key)?.name ?? null;
   };
 
-  const steps = order.map((k) => STEP_DEFS[k]);
+  // ── Per-step commit (the card's primary CTA) ─────────────────────────────────
+  function onContinue() {
+    setError(null);
+    startBusy(async () => {
+      let res: { ok: boolean; error?: string } = { ok: true };
+      switch (step) {
+        case 'modules':
+          res = await saveModulesAction(modules);
+          break;
+        case 'template':
+          if (choice === 'scratch') {
+            res = await startFromScratchAction();
+            if (res.ok) {
+              setInstalledKey(null);
+              setInstallId(null);
+            }
+          } else if (choice) {
+            const r = await selectTemplateAction(choice);
+            res = r;
+            if (r.ok) {
+              setInstalledKey(choice);
+              setInstallId(r.data.installId);
+            }
+          }
+          break;
+        case 'workspace':
+          res = await saveWorkspaceAction({
+            companyName: companyName.trim(),
+            slug: normalizedSlug,
+            siteName: siteName.trim(),
+          });
+          break;
+        case 'domain':
+          res = await completeDomainStepAction(nextKey);
+          break;
+        case 'payments':
+          res = await completePaymentsAction({ paymentsConnected: stripeConnected, next: nextKey });
+          break;
+        case 'launch':
+          if (published) {
+            router.push('/');
+            return;
+          }
+          if (installId) {
+            res = await publishAndFinishAction(installId);
+            if (res.ok) {
+              setPublished(true);
+              return;
+            }
+          } else {
+            res = await finishOnboardingAction();
+            if (res.ok) {
+              router.push('/builder/page');
+              return;
+            }
+          }
+          break;
+      }
+      if (res.ok) setStep(nextKey);
+      else setError(res.error ?? 'Something went wrong.');
+    });
+  }
 
-  // Only jump to a step the tenant has already visited (no skipping ahead).
-  const onStepSelect = (_key: string, index: number) => {
-    if (index < idx) goPersist(order[index]!);
+  // A custom domain was bought via the PurchaseDialog — record it and advance.
+  function onDomainPurchased(host: string) {
+    setDomain({ kind: 'custom', host });
+    setError(null);
+    startBusy(async () => {
+      const res = await completeDomainStepAction(nextKey);
+      if (res.ok) setStep(nextKey);
+      else setError(res.error ?? 'Something went wrong.');
+    });
+  }
+
+  // ── canContinue + CTA label per step ─────────────────────────────────────────
+  const canContinue = (() => {
+    switch (step) {
+      case 'modules':
+        return activeModules.length > 0;
+      case 'template':
+        return choice !== null;
+      case 'workspace':
+        return companyName.trim().length > 0 && siteName.trim().length > 0 && Boolean(slugOk);
+      default:
+        return true;
+    }
+  })();
+
+  const ctaLabel = (() => {
+    switch (step) {
+      case 'template':
+        return choice === 'scratch' ? 'Start from scratch' : 'Use this blueprint';
+      case 'payments':
+        return stripeConnected ? 'Continue' : 'Skip for now';
+      case 'launch':
+        if (published) return 'Go to dashboard';
+        return installId ? 'Publish my site' : 'Finish setup';
+      default:
+        return 'Continue';
+    }
+  })();
+
+  // ── Accreting receipt rows ───────────────────────────────────────────────────
+  const entries: SummaryEntry[] = [];
+  const pushEntry = (
+    key: OnboardingStepKey,
+    label: string,
+    value: React.ReactNode,
+    pending = false
+  ) => {
+    const sIdx = order.indexOf(key);
+    if (sIdx < 0 || sIdx > idx) return; // not reached yet
+    entries.push({
+      key,
+      label,
+      value,
+      status: pending ? 'pending' : sIdx < idx ? 'done' : 'active',
+    });
   };
 
+  const chosenBlueprintLabel =
+    choice === 'scratch'
+      ? 'Start from scratch'
+      : (blueprintName(choice) ?? 'Pick a blueprint');
+  pushEntry('template', 'Blueprint', chosenBlueprintLabel, choice === null);
+  pushEntry('workspace', 'Workspace', `${normalizedSlug || initial.slug}.sparx.zone`);
+  pushEntry(
+    'domain',
+    'Domain',
+    domain.kind === 'custom' ? domain.host : `Free · ${normalizedSlug || initial.slug}.sparx.zone`
+  );
+  if (selling) {
+    pushEntry('payments', 'Payments', stripeConnected ? 'Connected' : 'Set up later');
+  }
+
+  // ── Work body per step ───────────────────────────────────────────────────────
   let body: React.ReactNode;
   switch (step) {
     case 'modules':
-      body = <StepModules value={modules} onChange={setModules} nav={nav} />;
+      body = <StepModules value={modules} onChange={setModules} />;
       break;
     case 'template':
       body = (
-        <StepTemplate
+        <StepBlueprint
           blueprints={initial.blueprints}
-          preselectKey={initial.preselectKey}
           selectedModules={modules}
-          onInstalled={(key, id) => {
-            setBlueprintKey(key);
-            setInstallId(id);
-          }}
-          nav={nav}
+          preselectKey={initial.preselectKey}
+          selectedKey={choice}
+          onSelect={setChoice}
         />
       );
       break;
     case 'workspace':
       body = (
         <StepWorkspace
-          initial={{
-            companyName: initial.companyName,
-            slug: initial.slug,
-            siteName: initial.siteName,
-          }}
-          nav={nav}
+          companyName={companyName}
+          slug={slug}
+          siteName={siteName}
+          onCompany={setCompanyName}
+          onSlug={setSlug}
+          onSite={setSiteName}
+          check={slugCheck}
+          unchangedSlug={unchangedSlug}
         />
       );
       break;
     case 'domain':
       body = (
         <StepDomain
-          slug={initial.slug}
+          slug={normalizedSlug || initial.slug}
           defaultQuery={initial.companyName.replace(/[^a-z0-9]+/gi, '').toLowerCase()}
-          nav={nav}
+          onPurchased={onDomainPurchased}
         />
       );
       break;
     case 'payments':
-      body = <StepPayments nav={nav} />;
+      body = <StepPayments stripeConnected={stripeConnected} />;
       break;
-    case 'launch': {
-      const chosen = initial.blueprints.find((b) => b.key === blueprintKey) ?? null;
+    case 'launch':
       body = (
         <StepLaunch
-          slug={initial.slug}
+          slug={normalizedSlug || initial.slug}
           installId={installId}
-          blueprint={chosen}
+          blueprint={initial.blueprints.find((b) => b.key === installedKey) ?? null}
           siteOrigin={initial.siteOrigin}
           useTenantParam={initial.useTenantParam}
+          published={published}
+          modules={activeModules}
+          monthlyTotal={total}
+          monthlyElsewhere={elsewhere}
           onDifferentTemplate={() => goPersist('template')}
         />
       );
       break;
-    }
   }
+
+  const onStepSelect = (_key: string, index: number) => {
+    if (index < idx) goPersist(order[index]!);
+  };
+
+  const head = HEAD[step];
 
   return (
     <WizardFrame
       variant="page"
       lede={{ title: RAIL[step].title, blurb: RAIL[step].blurb }}
       context={RAIL[step].context}
-      steps={steps}
+      steps={order.map((k) => STEP_DEFS[k])}
       current={idx}
       onStepSelect={onStepSelect}
       footer={<RailFooter />}
     >
-      {body}
+      <div className="mx-auto w-full max-w-[1120px] px-12 py-12 max-[940px]:px-5 max-[940px]:py-8">
+        <div className="grid grid-cols-[1fr_340px] items-start gap-8 max-[1040px]:grid-cols-1">
+          {/* WORK column — swaps per step */}
+          <div className="min-w-0">
+            {head && (
+              <div className="flex flex-col gap-2">
+                <Heading level={2}>{head.title}</Heading>
+                <Text variant="muted" className="max-w-[58ch]">
+                  {head.supporting}
+                </Text>
+              </div>
+            )}
+            <div
+              key={step}
+              className={`${head ? 'mt-7 ' : ''}animate-in fade-in-0 slide-in-from-bottom-2 duration-300 motion-reduce:animate-none`}
+            >
+              {body}
+            </div>
+          </div>
+
+          {/* SUMMARY card — persistent across steps */}
+          <SummaryCard
+            plan={{ total, elsewhere, items: planItems }}
+            entries={entries}
+            cta={{ label: ctaLabel, onClick: onContinue, disabled: !canContinue, loading: busy }}
+            onBack={idx > 0 ? () => goPersist(prevKey) : undefined}
+            error={error}
+            collapsibleModules={idx > 0}
+          />
+        </div>
+      </div>
     </WizardFrame>
   );
 }

@@ -1,26 +1,17 @@
 'use client';
 
 import * as React from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Badge, Button, Text, WizardStep } from '@sparx/ui';
+import { Badge, Button, Text } from '@sparx/ui';
 import { CheckCircle, CreditCard, Info } from 'lucide-react';
-import { completePaymentsAction, startStripeConnectAction } from '../_lib/actions';
-import type { StepNav } from './onboarding-wizard';
+import { startStripeConnectAction } from '../_lib/actions';
 
-// Step 5 — Payments (only shown when a selling module is on). Connects Stripe
-// CONNECT — the account that RECEIVES money from customers — which is a different
-// thing from the tenant's own Sparx subscription (the trial). The note spells
-// that out so "connect Stripe" never reads as "enter a card to pay Sparx".
-export function StepPayments({ nav }: { nav: StepNav }) {
-  const searchParams = useSearchParams();
-  const stripeConnected = searchParams.get('stripe_connected') === '1';
-  const stripeError = searchParams.get('stripe_error');
-
-  const [error, setError] = React.useState<string | null>(stripeError ?? null);
-  const [connectPending, startConnect] = React.useTransition();
-  const [finishPending, startFinish] = React.useTransition();
-
-  const pending = connectPending || finishPending;
+// Step 5 — Payments (work pane). Connects Stripe CONNECT — the account that
+// RECEIVES customer money — which the note makes clear is separate from the
+// tenant's own Sparx subscription. Continue/Skip lives in the setup card; this
+// body owns the Connect action (a redirect to Stripe OAuth).
+export function StepPayments({ stripeConnected }: { stripeConnected: boolean }) {
+  const [error, setError] = React.useState<string | null>(null);
+  const [connecting, startConnect] = React.useTransition();
 
   function onConnectStripe() {
     setError(null);
@@ -31,35 +22,9 @@ export function StepPayments({ nav }: { nav: StepNav }) {
     });
   }
 
-  function onFinish() {
-    setError(null);
-    startFinish(async () => {
-      const res = await completePaymentsAction({
-        paymentsConnected: stripeConnected,
-        next: nav.nextKey,
-      });
-      if (res.ok) nav.onNext();
-      else setError(res.error);
-    });
-  }
-
   return (
-    <WizardStep
-      width="default"
-      header={{
-        title: 'Get paid',
-        supporting:
-          "Connect your Stripe account so your store can take customer payments. Your site can go live now and you can connect this whenever you're ready — checkout simply stays off until then.",
-      }}
-      actions={{
-        onBack: nav.onBack,
-        onNext: onFinish,
-        nextLabel: stripeConnected ? 'Continue' : 'Skip for now',
-        nextLoading: finishPending,
-        nextDisabled: pending,
-      }}
-    >
-      <div className="max-w-xl rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-6">
+    <div className="max-w-xl">
+      <div className="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-6">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--color-bg-subtle)]">
@@ -90,8 +55,8 @@ export function StepPayments({ nav }: { nav: StepNav }) {
               variant="outline"
               color="neutral"
               onClick={onConnectStripe}
-              disabled={pending}
-              loading={connectPending}
+              disabled={connecting}
+              loading={connecting}
             >
               Connect Stripe
             </Button>
@@ -115,6 +80,6 @@ export function StepPayments({ nav }: { nav: StepNav }) {
           {error}
         </Text>
       )}
-    </WizardStep>
+    </div>
   );
 }
