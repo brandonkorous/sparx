@@ -16,32 +16,35 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** Slice F3 (retire the b2b-overdue cron) + the email-driven-seed CONTENT FORK
-> (a user decision — see below). **F2 backfill COMPLETE** this session: existing module-active
-> tenants are now back-filled with their system automations via a daily worker reconcile pass.
-> **Slice E COMPLETE** (event-driven activation live) and **F1 email send executors COMPLETE**.
-> Slices A–D + **E1–E4** + **F2-a (dunning)** + **F2 backfill** done; **F1** has CRM (6) + B2B
-> (escalate) + **email (`send_campaign` / `send_internal`)**. The engine can SEND email and now
-> SEEDS every module-active tenant (forward via activation, backward via reconcile).
+> **▶ RESUME HERE:** Email-driven seeds (BLOCKED on the CONTENT FORK decision below) + commerce
+> executors. **Slice F3 DONE** this session (the b2b-overdue cron retired) and **F2 backfill DONE**.
+> Slices A–D + **E1–E4** + **F1** (CRM 6 + B2B escalate + email send) + **F2-a (dunning)** + **F2
+> backfill** + **F3** all done. The engine can SEND email, SEEDS every module-active tenant (forward
+> via activation, backward via the daily reconcile), and is now the SOLE dunning implementation.
 >
 > **F2 backfill (this session):** SECURITY DEFINER `find_tenants_with_active_module(p_module)`
-> (migration `20260804000000`, REVOKE PUBLIC / GRANT sparx_app) → `reconcileSystemSeeds(db)` in
+> (migration `20260805000000`, REVOKE PUBLIC / GRANT sparx_app) → `reconcileSystemSeeds(db)` in
 > `@sparx/automation-actions` (distinct owning modules → scan module-active tenants → idempotent
 > `seedSystemAutomations` per tenant) → worker `POST /internal/cron/reconcile-seeds` (same
 > tick-auth) → a DAILY Cloud Scheduler job (`automation-reconcile-seeds`, 02:07 UTC, automation.tf).
 > Self-healing: also covers any dropped `module.activated` event. Tests: automation-actions
 > reconcile 2/2 (active-seeded / inactive-skipped + idempotent), worker route 2/2 (403 + authorized
 > backfill). The seed/run gate still blocks execution for a tenant inactive at runtime, so seeding a
-> later-disabled tenant is harmless.
+> later-disabled tenant is harmless. (Migration timestamp is `20260805000000` — bumped from an
+> initial `20260804000000` that collided with a concurrent invoicing migration of the same stamp.)
 >
-> **Next — Slice F3 (retire the b2b cron):** now SAFE to do (backfill closed the "existing tenants
-> have no unified dunning automation" gap that blocked it). Parity-verify vs
-> `b2b-overdue-worker/test/integration/escalation.test.ts` (swap it to drive the engine), then
-> DELETE `services/b2b-overdue-worker` AND its Terraform (Cloud Run + Cloud Scheduler) + the
-> build-images/deploy-prod matrix entries — a TF-managed-resource deletion, mirror same session (no
-> drift). Until F3 lands, a newly-activated b2b tenant runs BOTH the cron and the engine dunning →
-> escalation stays monotonic/idempotent (safe) but can double-emit the `b2b.invoice.overdue`
-> reminder once; F3 ends that.
+> **F3 (this session) — b2b-overdue cron RETIRED.** ⚠ Surprise finding on inspection:
+> `services/b2b-overdue-worker` was **dead code — never wired into deployment** (NOT in the
+> build-images matrix, NOT in Terraform, NOT a k8s CronJob; the only deployed "overdue" cron is
+> `crm-overdue-reminders`, an unrelated CRM-task sweep hitting api-rest). So the unified-engine
+> dunning automation is the FIRST actually-deployed b2b dunning — there was no live double-notify to
+> worry about, and no TF/CI/k8s to unwind. F3 = delete the dead service + refresh the lockfile +
+> retire its now-stale comments. Parity is held by the engine's `b2b-escalation` test (4/4 — the
+> same invoice→overdue / credit_hold@14d / suspended@30d / monotonic oracle); the only behavioral
+> delta vs the old cron is its defensive `credit_used` resync, which F2-a already established is a
+> no-op (escalation doesn't change the unpaid+overdue set credit_used sums). ⚠ If a
+> `b2b-overdue-worker` Cloud Run was ever stood up MANUALLY (outside IaC), it would now be orphaned
+> drift — worth a `gcloud run services list` check, but the code/IaC shows it was never deployed.
 >
 > **⚠ Email-driven-seed CONTENT FORK (needs a product decision — do NOT guess):** win-back /
 > quote-expiry as a _system_ seed can't be turnkey. A coded `win-back` template can't render a
@@ -135,7 +138,7 @@ reconciles them into the one canonical registry. No build blocker from deferring
 | `packages/modules` (`@sparx/modules`)                       | Module-enablement primitives (extracted from `@sparx/auth` so lean backends probe flags without the auth/email/UI closure)                                                                  | ☑      |
 | `services/automation-worker`                                | Cloud Run: Cloud Scheduler tick (schedule + run advance) + push consumer on `automation.trigger`                                                                                            | ☑      |
 | `packages/db` scan helpers                                  | `find_due_automation_runs` / `find_active_scheduled_automations` SECURITY DEFINER (cross-tenant discovery)                                                                                  | ☑      |
-| `packages/db` backfill scan (`20260804000000`)              | `find_tenants_with_active_module(p_module)` SECURITY DEFINER — discovers module-active tenants for the seed reconcile pass                                                                  | ☑      |
+| `packages/db` backfill scan (`20260805000000`)              | `find_tenants_with_active_module(p_module)` SECURITY DEFINER — discovers module-active tenants for the seed reconcile pass                                                                  | ☑      |
 | `reconcileSystemSeeds` + worker reconcile endpoint          | Daily backfill: seed system automations for already-module-active tenants (`POST /internal/cron/reconcile-seeds` + Cloud Scheduler `automation-reconcile-seeds`)                            | ☑      |
 | `terraform/envs/prod/automation.tf`                         | Cloud Run service + Cloud Scheduler tick job + runtime/scheduler SAs (push sub deferred to E)                                                                                               | ☑      |
 | `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                                                                                                                            | ☑      |
@@ -376,7 +379,7 @@ isn't silently skipped.
   routes publish `module.activated` → fan-in → worker `ingest()` → `seedSystemAutomations({tenantId},
 {module})`. So activating B2B now seeds the dunning automation for that tenant automatically.
 - ☑ **Existing-tenant backfill** — `find_tenants_with_active_module(p_module)` SECURITY DEFINER scan
-  (migration `20260804000000`) → `reconcileSystemSeeds(db)` (distinct owning modules → scan →
+  (migration `20260805000000`) → `reconcileSystemSeeds(db)` (distinct owning modules → scan →
   idempotent `seedSystemAutomations` per tenant) → worker `POST /internal/cron/reconcile-seeds`
   (tick-auth) → daily Cloud Scheduler `automation-reconcile-seeds`. Covers pre-engine tenants AND
   self-heals a dropped `module.activated`. Tests: reconcile 2/2 (active-seeded / inactive-skipped +
@@ -388,12 +391,22 @@ isn't silently skipped.
   draft). Don't ship a system seed that enqueues sends with no working CTA.
 - ☐ Seed remaining default Managed automations (abandoned-cart, win-back, fulfilled→review)
 
-**F3 — retire crons ☐**
+**F3 — retire crons ☑ (b2b-overdue gone)**
 
-- ☐ Parity-verify vs existing engines (the outcome-tests already guard these), then DELETE crons.
-  The dunning oracle (`b2b-overdue-worker/escalation.test.ts`) stays 4/4; F3 swaps it to drive
-  the engine, then deletes `b2b-overdue-worker` (its escalation logic now lives in the reusable
-  service).
+- ☑ **`services/b2b-overdue-worker` DELETED.** ⚠ It turned out to be **dead code — never wired into
+  deployment** (absent from the `build-images.yml` matrix, from Terraform, and from `k8s/cronjobs`;
+  the only deployed "overdue" cron is `crm-overdue-reminders`, an unrelated CRM-task sweep). So the
+  unified-engine dunning automation is the FIRST actually-deployed b2b dunning — F3 needed NO TF/CI/
+  k8s changes and there was never a live double-notify. Parity is held by the engine's
+  `automation-actions/test/integration/b2b-escalation.test.ts` (4/4 — same invoice→overdue /
+  credit_hold@14d / suspended@30d / monotonic oracle the deleted `b2b-overdue-worker/escalation.test.ts`
+  asserted). Only behavioral delta: the cron's defensive `credit_used` resync, a no-op per F2-a
+  (escalation never changes the unpaid+overdue set credit_used sums). Lockfile refreshed (workspace
+  globs `services/*`); stale "the cron does X / until retired" comments in `b2b-escalation-service.ts`
+  - `automation-actions/src/b2b.ts` retired to past tense.
+- ☐ (residual) No other cron retired yet — `crm-overdue-reminders` (k8s CronJob → api-rest) still
+  drives CRM task reminders via the email-automation path; re-expressing it on the unified engine is
+  a later F-slice, not part of this dunning retirement.
 
 > **Decisions logged in Slice F1:**
 >
@@ -653,7 +666,7 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   — surfaced it to the user and pivoted to the UNBLOCKED, fully-complete prerequisite: the **F2
   backfill** (also the safe precondition for F3 — retiring the cron before back-filling existing b2b
   tenants would stop their dunning). Built: SECURITY DEFINER `find_tenants_with_active_module(p_module)`
-  (migration `20260804000000`, REVOKE PUBLIC / GRANT sparx_app; applied to docker, 94 migrations, only
+  (migration `20260805000000`, REVOKE PUBLIC / GRANT sparx_app; applied to docker, 94 migrations, only
   mine pending) → `reconcileSystemSeeds(db)` in `@sparx/automation-actions` (distinct owning modules
   → cross-tenant scan → idempotent `seedSystemAutomations` per tenant; warns on an unsupported
   null-module seed) → worker `reconcileSeeds(logger)` + `POST /internal/cron/reconcile-seeds`
@@ -663,6 +676,26 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   active-seeded/inactive-skipped + idempotent); automation-worker typecheck/lint clean + 6/6 (+2
   route: 403 + authorized backfill of a b2b tenant); `terraform fmt -check` + `validate` clean;
   prettier clean on all touched TS. Purely additive (new migration + new package export + new worker
-  route + new TF job) — no existing export/behavior changed. **Next:** Slice F3 (retire the b2b cron,
-  now unblocked — includes deleting `services/b2b-overdue-worker` + its TF, mirror same session) +
-  the email-seed content fork once the user picks an approach.
+  route + new TF job) — no existing export/behavior changed. (Migration timestamp bumped
+  `20260804000000` → `20260805000000` to dodge a same-stamp collision with a concurrent agent's
+  `20260804000000_invoicing_snapshots`; the rename was re-recorded on docker — orphaned record
+  pruned — so local `migrate status` is clean.)
+- **2026-06-11 (cont.)** — **Slice F3 (retire the b2b-overdue cron) DONE — user-chosen next slice.**
+  ⚠ On inspection, `services/b2b-overdue-worker` was **dead code: never wired into deployment** (not
+  in the `build-images.yml` matrix, not in Terraform, not a `k8s/cronjobs` entry — the only deployed
+  "overdue" cron is `crm-overdue-reminders`, an unrelated CRM-task sweep hitting api-rest). So the
+  unified-engine dunning automation was already the FIRST actually-deployed b2b dunning: no live
+  double-notify, no TF/CI/k8s to unwind. **Parity confirmed** by reading both — `escalateAccount`
+  (the reusable service the engine calls) faithfully reproduces the cron's per-tenant SQL ladder
+  (mark unpaid-past-due → overdue + `overdue_days`; ≥14d & active → `credit_hold`; ≥30d → `suspended`,
+  monotonic; fresh-overdue → `b2b.invoice.overdue` reminder), the engine's `b2b-escalation` test
+  (4/4) being the standing oracle; the only delta is the cron's `credit_used` resync, a no-op per
+  F2-a. **Did:** deleted the service dir, refreshed the lockfile (`pnpm install`, −34 lines, scoped to
+  the removed importer), retired the now-stale cron-reference comments in `b2b-escalation-service.ts`
+  - `automation-actions/src/b2b.ts` to past tense. **Heads-up:** if a `b2b-overdue-worker` Cloud Run
+    was ever stood up manually (outside IaC), it is now orphaned — `gcloud run services list` to confirm
+    none exists; the code/IaC shows it never was. **Note:** the user committed this session's work
+    concurrently (commits `3d82f94c` migration + `8322a7f9` everything incl. the deletion, unpushed);
+    this doc-sync (F3 section + the `20260805000000` number fix the commit captured stale) lands on top.
+    **Next:** email-driven seeds once the user picks a CONTENT-FORK approach (RESUME) + commerce
+    executors.
