@@ -4,7 +4,14 @@
 // passthrough of already-migrated nodes.
 
 import { describe, expect, it } from 'vitest';
-import { migrateNode, migrateTree, type LegacyNode } from './box-to-class';
+import {
+  legacyButtonClass,
+  legacyButtonStyleToClass,
+  migrateNode,
+  migrateTree,
+  seedNode,
+  type LegacyNode,
+} from './box-to-class';
 
 describe('migrateNode / migrateTree', () => {
   it('converts a container box/layout into a class string and drops the objects', () => {
@@ -120,5 +127,56 @@ describe('migrateNode / migrateTree', () => {
     expect(tree.binding).toEqual({ path: 'cms.posts' });
     expect(tree).not.toHaveProperty('box');
     expect(stats.droppedHiddenOn).toBe(1);
+  });
+});
+
+describe('legacy Button style → class-first recipe', () => {
+  it('maps each legacy style to its Surface recipe (frosted CTAs via glass)', () => {
+    expect(legacyButtonStyleToClass('primary')).toBe(
+      'sf-btn sf-c-primary sf-v-solid sf-btn--sz-md'
+    );
+    expect(legacyButtonStyleToClass('soft')).toBe('sf-btn sf-c-primary sf-v-soft sf-btn--sz-md');
+    expect(legacyButtonStyleToClass('dark')).toBe('sf-btn sf-c-neutral sf-v-glass sf-btn--sz-md');
+    expect(legacyButtonStyleToClass('glass')).toBe('sf-btn sf-c-surface sf-v-glass sf-btn--sz-md');
+    expect(legacyButtonStyleToClass('link')).toBe('sf-btn sf-c-primary sf-v-link sf-btn--sz-md');
+  });
+
+  it('defaults an unknown / missing style to primary solid (matches the old default)', () => {
+    expect(legacyButtonStyleToClass()).toBe('sf-btn sf-c-primary sf-v-solid sf-btn--sz-md');
+    expect(legacyButtonStyleToClass('')).toBe('sf-btn sf-c-primary sf-v-solid sf-btn--sz-md');
+    expect(legacyButtonStyleToClass('bogus')).toBe('sf-btn sf-c-primary sf-v-solid sf-btn--sz-md');
+  });
+
+  it('legacyButtonClass converts a legacy Button + strips the dead style prop', () => {
+    const out = legacyButtonClass('Button', undefined, { label: 'Go', style: 'soft' });
+    expect(out).not.toBeNull();
+    expect(out?.cls).toBe('sf-btn sf-c-primary sf-v-soft sf-btn--sz-md');
+    expect(out?.props).toEqual({ label: 'Go' }); // style dropped
+  });
+
+  it('legacyButtonClass is a no-op for non-buttons, recipe-classed, or style-less nodes', () => {
+    expect(legacyButtonClass('Heading', undefined, { style: 'primary' })).toBeNull();
+    expect(
+      legacyButtonClass('Button', 'sf-btn sf-c-accent sf-v-solid', { style: 'primary' })
+    ).toBeNull(); // already class-first
+    expect(legacyButtonClass('Button', undefined, { label: 'No style' })).toBeNull();
+  });
+
+  it('seedNode bakes the recipe class onto a Button authored with props.style', () => {
+    const node = seedNode('b1', 'Button', {
+      props: { label: 'Shop', style: 'primary', href: '/x' },
+    });
+    expect(node.class).toBe('sf-btn sf-c-primary sf-v-solid sf-btn--sz-md');
+    expect(node.props).toEqual({ label: 'Shop', href: '/x' }); // style folded into class
+  });
+
+  it('migrateNode converts a class-only legacy Button (no box/layout) and is idempotent', () => {
+    const legacy: LegacyNode = { id: 'b', type: 'Button', props: { label: 'Read', style: 'dark' } };
+    const once = migrateNode(legacy);
+    expect(once.class).toBe('sf-btn sf-c-neutral sf-v-glass sf-btn--sz-md');
+    expect(once.props).toEqual({ label: 'Read' });
+    // Second pass: already class-first → unchanged.
+    const twice = migrateNode(once as unknown as LegacyNode);
+    expect(twice).toEqual(once);
   });
 });

@@ -12,7 +12,12 @@
 export type { Binding, BuilderNode, Device } from '@sparx/builder-schemas';
 // The class-first authoring vocabulary (docs/61) — the ergonomic box/layout DTO
 // the editor's controls + seed data compile to a `class` string.
-export { boxLayoutClass, type BoxStyle, type LayoutStyle } from '@sparx/builder-schemas';
+export {
+  boxLayoutClass,
+  legacyButtonStyleToClass,
+  type BoxStyle,
+  type LayoutStyle,
+} from '@sparx/builder-schemas';
 
 // Binding RESOLUTION lives with the model now (docs/44 §2.3) so the editor and
 // the storefront renderer share one implementation. Re-exported here so the

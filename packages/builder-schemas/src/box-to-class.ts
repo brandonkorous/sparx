@@ -249,6 +249,55 @@ export function boxLayoutClass(
   );
 }
 
+// ── Legacy Button `style` prop → class-first recipe (docs/47 §7, docs/61) ──────
+//
+// Pre-recipe buttons carried their look in a `props.style` enum
+// (primary/soft/dark/glass/link). The storefront painted that with inline CSS; the
+// editor canvas couldn't reproduce it and fell back to a neutral button — a WYSIWYG
+// drift, and such a button isn't restyleable from the inspector (its Color/Variant
+// controls read & write `sf-*` classes). The class-first button IS the Surface
+// recipe (`sf-btn sf-c-* sf-v-* sf-btn--sz-*`), so each legacy style maps to its
+// recipe equivalent. Frosted CTAs use the recipe's `glass` treatment:
+// glass×neutral = frosted-dark, glass×surface = frosted-light (site-ui recipes.css).
+const LEGACY_BUTTON_STYLE_CLASS: Record<string, string> = {
+  primary: 'sf-c-primary sf-v-solid',
+  soft: 'sf-c-primary sf-v-soft',
+  dark: 'sf-c-neutral sf-v-glass',
+  glass: 'sf-c-surface sf-v-glass',
+  link: 'sf-c-primary sf-v-link',
+};
+
+/** The class-first recipe class for a legacy Button `style` value (default
+ *  `primary` — matching the storefront's old `buttonStyle` default). Always a full
+ *  recipe: the `sf-btn` base + color×treatment + the `md` size. */
+export function legacyButtonStyleToClass(style?: string): string {
+  const recipe = LEGACY_BUTTON_STYLE_CLASS[style ?? 'primary'] ?? LEGACY_BUTTON_STYLE_CLASS.primary;
+  return `sf-btn ${recipe} sf-btn--sz-md`;
+}
+
+/** True when a class string already carries the Surface button recipe base — so a
+ *  conversion is a no-op (keeps the migration idempotent). */
+function hasButtonRecipe(cls: string | undefined): boolean {
+  return /(^|\s)sf-btn(\s|$)/.test(cls ?? '');
+}
+
+/** If `node` is a legacy Button (a `props.style` enum, no recipe class yet), return
+ *  the recipe class to carry + the props with the now-dead `style` stripped. Returns
+ *  null when there's nothing to convert (not a Button, already class-first, or no
+ *  legacy style) so callers leave the node untouched. Idempotent. */
+export function legacyButtonClass(
+  type: string,
+  cls: string | undefined,
+  props: Record<string, unknown> | undefined
+): { cls: string; props: Record<string, unknown> } | null {
+  if (type !== 'Button') return null;
+  const style = props?.style;
+  if (typeof style !== 'string' || style === '') return null;
+  if (hasButtonRecipe(cls)) return null;
+  const { style: _drop, ...rest } = props ?? {};
+  return { cls: cx(cls, legacyButtonStyleToClass(style)), props: rest };
+}
+
 // ── Public: the seed node factory (starters + blueprints) ─────────────────────
 
 export interface SeedNodeOpts {
@@ -307,14 +356,23 @@ export function seedNode(id: string, type: string, opts: SeedNodeOpts = {}): Bui
   }
 
   // Single element.
-  const cls = cx(
+  let cls = cx(
     fullBleed ? 'w-full' : '',
     isContainer && contained ? 'mx-auto w-full max-w-site' : '',
     band,
     contentClasses(box, layout, isContainer),
     opts.cls
   );
-  const node: BuilderNode = { id, type, props };
+  // A legacy Button authored with `props.style` (starters/blueprints) → carry the
+  // class-first recipe instead, so it renders identically in both renderers and is
+  // restyleable from the inspector (docs/47 §7).
+  let nodeProps = props;
+  const btn = legacyButtonClass(type, cls, props);
+  if (btn) {
+    cls = btn.cls;
+    nodeProps = btn.props;
+  }
+  const node: BuilderNode = { id, type, props: nodeProps };
   if (cls) node.class = cls;
   if (name) node.name = name;
   if (opts.bind) node.binding = { path: opts.bind };
@@ -373,6 +431,13 @@ export function migrateNode(node: LegacyNode, stats?: MigrateStats): BuilderNode
     if (stats) stats.passthrough += 1;
     const out: BuilderNode = { id: node.id, type: node.type, props: node.props ?? {} };
     if (node.class) out.class = node.class;
+    // A legacy Button (class-only shape but still styled via `props.style`, no
+    // recipe class) → fold the style into the class-first recipe (docs/47 §7).
+    const btn = legacyButtonClass(out.type, out.class, out.props);
+    if (btn) {
+      out.class = btn.cls;
+      out.props = btn.props;
+    }
     if (node.name) out.name = node.name;
     if (node.binding) out.binding = node.binding;
     if (children) out.children = children;

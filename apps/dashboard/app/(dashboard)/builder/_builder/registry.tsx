@@ -84,6 +84,7 @@ import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 
 import {
   boxLayoutClass,
+  legacyButtonStyleToClass,
   makeId,
   type BoxStyle,
   type BuilderNode,
@@ -599,10 +600,11 @@ const DEFS: ComponentDef[] = [
           </span>
         );
       }
-      // Legacy tree (no recipe class): fall back to a neutral soft button so
-      // the canvas still looks like a button without needing bx-btn CSS.
+      // Legacy tree (no recipe class — a starter/blueprint button styled via the old
+      // `props.style` enum): map that enum to the SAME recipe class the storefront
+      // now uses, so the canvas preview matches the live site exactly (docs/47 §7).
       return (
-        <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-md">
+        <span className={legacyButtonStyleToClass(firstString(node.props.style))}>
           {label}
           {children}
         </span>

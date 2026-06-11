@@ -16,6 +16,7 @@ import * as React from 'react';
 import {
   cardinalityOf,
   coerceNavLinks,
+  legacyButtonStyleToClass,
   resolvePath,
   type BuilderNode,
   type Cardinality,
@@ -227,33 +228,6 @@ function parseFeatureItems(raw: string): { number: string; title: string; body: 
 }
 // ── Leaf rendering ─────────────────────────────────────────────────────────
 
-function buttonStyle(style: string): React.CSSProperties {
-  if (style === 'link') {
-    return { color: 'var(--sf-primary)', textDecoration: 'underline', fontWeight: 600 };
-  }
-  const base: React.CSSProperties = {
-    display: 'inline-block',
-    padding: '0.7rem 1.75rem',
-    borderRadius: 'var(--sf-radius-field)',
-    fontWeight: 600,
-    fontSize: '0.95rem',
-    textAlign: 'center',
-    // Keep the comfortable button weight, but never overflow a container narrower
-    // than 160px (a phone, a tight column) — min() drops the floor to 100% there
-    // (docs/62). Inline style can't carry @media; min() is the responsive lever.
-    minWidth: 'min(160px, 100%)',
-  };
-  // Translucent CTAs (the photo-panel pairing): a frosted dark "primary" and a
-  // frosted light "secondary" that stay legible over any background photo.
-  const frosted: React.CSSProperties = { ...base, backdropFilter: 'blur(6px)' };
-  if (style === 'soft')
-    return { ...base, background: 'var(--sf-base-200)', color: 'var(--sf-primary)' };
-  if (style === 'dark') return { ...frosted, background: 'rgba(23,26,35,0.78)', color: '#ffffff' };
-  if (style === 'glass')
-    return { ...frosted, background: 'rgba(255,255,255,0.86)', color: '#171a23' };
-  return { ...base, background: 'var(--sf-primary)', color: 'var(--sf-primary-content)' };
-}
-
 function renderLeaf(
   node: BuilderNode,
   value: unknown,
@@ -310,40 +284,24 @@ function renderLeaf(
     case 'Button': {
       const label = (bound ? asText(value) : '') || str('label') || 'Button';
       const href = str('href');
-      // Semantics (docs/47): a linked button is an `<a>`; an action button with no
-      // link is a real `<button type="button">` — accessible + keyboard-activatable,
-      // never a bare `<span>`. (The editor canvas uses an inert `<span>` ONLY because
-      // each node sits inside a `role="button"` selection wrapper; the published
-      // site has no such wrapper, so it ships the correct element.) A nested Icon
-      // renders inline AFTER the label via `children`.
-      // Class-first (docs/47 §7): a Surface-classed button carries the recipe class
-      // (`sf-btn sf-c-* sf-v-* sf-btn--sz-*`) on the element itself; legacy trees
-      // with no class fall back to the inline `style`-prop treatment (reset for the
-      // native <button> element).
-      if (leafClass) {
-        return href ? (
-          <a href={href} className={leafClass}>
-            {label}
-            {children}
-          </a>
-        ) : (
-          <button type="button" className={leafClass}>
-            {label}
-            {children}
-          </button>
-        );
-      }
-      const style = buttonStyle(str('style') || 'primary');
+      // Class-first (docs/47 §7): a button's look is the Surface recipe class
+      // (`sf-btn sf-c-* sf-v-* sf-btn--sz-*`). A recipe-classed button carries it on
+      // the element; a LEGACY button (no class, styled via the old `props.style`
+      // enum) maps that enum to the SAME recipe, so it renders identically to the
+      // editor canvas + a class-first button — no parallel inline-style path.
+      // Semantics: a linked button is an `<a>`; an action button a real
+      // `<button type="button">` (accessible, never a bare `<span>`). The editor
+      // canvas uses an inert `<span>` ONLY because each node sits in a
+      // `role="button"` selection wrapper; the site ships the correct element. A
+      // nested Icon renders inline AFTER the label via `children`.
+      const className = leafClass ?? legacyButtonStyleToClass(str('style'));
       return href ? (
-        <a href={href} style={{ ...style, textDecoration: 'none' }}>
+        <a href={href} className={className}>
           {label}
           {children}
         </a>
       ) : (
-        <button
-          type="button"
-          style={{ ...style, border: 'none', font: 'inherit', cursor: 'pointer' }}
-        >
+        <button type="button" className={className}>
           {label}
           {children}
         </button>
