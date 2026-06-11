@@ -185,6 +185,41 @@ resource "google_cloud_scheduler_job" "automation_tick" {
   ]
 }
 
+# ─── Cloud Scheduler reconcile-seeds (daily backfill) ─────────────────────
+# Slice E seeds a module's system automations only on `module.activated` (forward
+# only). This daily pass back-fills tenants whose module was already active before
+# the engine shipped — and self-heals any dropped activation event — by re-running
+# the idempotent seed for every module-active tenant (docs/84 Slice F2 backfill).
+# Same tick-invoker SA + run.invoker grant as the per-minute tick.
+resource "google_cloud_scheduler_job" "automation_reconcile_seeds" {
+  name             = "${local.name_prefix}-automation-reconcile-seeds"
+  project          = var.project_id
+  region           = var.region
+  description      = "Daily backfill: seed system automations for every tenant whose owning module is already active (docs/84 Slice F2 backfill)."
+  schedule         = "7 2 * * *" # 02:07 UTC daily — offset from the 00:00 dunning window so same-day activations settle first.
+  time_zone        = "Etc/UTC"
+  attempt_deadline = "320s"
+
+  retry_config {
+    retry_count = 1
+  }
+
+  http_target {
+    http_method = "POST"
+    uri         = "${google_cloud_run_v2_service.automation_worker.uri}/internal/cron/reconcile-seeds"
+
+    oidc_token {
+      service_account_email = google_service_account.automation_scheduler.email
+      audience              = google_cloud_run_v2_service.automation_worker.uri
+    }
+  }
+
+  depends_on = [
+    google_cloud_run_v2_service_iam_member.automation_scheduler_invoker,
+    google_service_account_iam_member.automation_scheduler_token_creator,
+  ]
+}
+
 # ─── Slice E (event fan-in) ────────────────────────────────────────────────
 #
 # The automation-worker is the SOLE subscriber on the `automation.trigger` fan-in

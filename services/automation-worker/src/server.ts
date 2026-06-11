@@ -8,6 +8,13 @@
 //                              scheduled system automations live — no event
 //                              fan-in required (that's Slice E).
 //
+//   POST /internal/cron/reconcile-seeds
+//                              Cloud Scheduler (daily). Same auth as the tick.
+//                              Back-fills system automations for tenants whose
+//                              owning module is already active (docs/84 Slice F2
+//                              backfill) — Slice E seeds only forward, so this
+//                              covers pre-existing tenants + dropped events.
+//
 //   POST /                     Pub/Sub push on `automation.trigger`. Guarded by
 //                              the OIDC `email` claim == PUBSUB_INVOKER_SA. Decodes
 //                              the SparxEvent envelope → handleTrigger. The
@@ -27,7 +34,7 @@ import { createServer, type IncomingMessage, type Server, type ServerResponse } 
 import pino from 'pino';
 import { z } from 'zod';
 import { env } from './env.js';
-import { ingest, runTick } from './runtime.js';
+import { ingest, reconcileSeeds, runTick } from './runtime.js';
 
 export const logger = pino({
   level: env.LOG_LEVEL,
@@ -100,6 +107,20 @@ async function handleTickRequest(req: IncomingMessage, res: ServerResponse): Pro
   }
   const summary = await runTick(logger);
   logger.info(summary, 'tick complete');
+  res.statusCode = 200;
+  res.setHeader('content-type', 'application/json');
+  res.end(JSON.stringify(summary));
+}
+
+// ── POST /internal/cron/reconcile-seeds (Cloud Scheduler, daily) ─────────────
+async function handleReconcileRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!tickAuthorized(req)) {
+    res.statusCode = 403;
+    res.end('Forbidden');
+    return;
+  }
+  const summary = await reconcileSeeds(logger);
+  logger.info(summary, 'reconcile-seeds complete');
   res.statusCode = 200;
   res.setHeader('content-type', 'application/json');
   res.end(JSON.stringify(summary));
@@ -186,6 +207,11 @@ export async function handleRequest(req: IncomingMessage, res: ServerResponse): 
 
   if (url === '/internal/cron/tick') {
     await handleTickRequest(req, res);
+    return;
+  }
+
+  if (url === '/internal/cron/reconcile-seeds') {
+    await handleReconcileRequest(req, res);
     return;
   }
 

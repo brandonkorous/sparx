@@ -1,13 +1,12 @@
 // B2B action executors + the b2b_account scanner (docs/84 Slice F2).
 //
-// The dunning ladder, re-expressed on the unified engine (docs/81 §3.1). A
-// scheduled automation scans `b2b_account`; each account with past-due invoices
-// runs the `b2b.escalate_overdue` action, which CALLS the reusable
-// `b2bEscalationService.escalateAccount` (the logic that previously lived ONLY
-// inline in `services/b2b-overdue-worker/cron.ts`) and then publishes the
-// resulting `b2b.*` notifications on the `@sparx/events` bus — the same events the
-// cron emitted, so the email-worker's reminder / credit-hold / suspension flows
-// are unchanged.
+// The dunning ladder, re-expressed on the unified engine (docs/81 §3.1) — and the
+// SOLE implementation since the `b2b-overdue-worker` cron was retired (Slice F3;
+// it was never deployed). A scheduled automation scans `b2b_account`; each account
+// with past-due invoices runs the `b2b.escalate_overdue` action, which CALLS the
+// reusable `b2bEscalationService.escalateAccount` and then publishes the resulting
+// `b2b.*` notifications on the `@sparx/events` bus — the reminder / credit-hold /
+// suspension events the email-worker consumes.
 
 import {
   registerAction,

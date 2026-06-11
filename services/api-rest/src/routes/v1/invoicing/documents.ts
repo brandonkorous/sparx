@@ -8,16 +8,20 @@
 //   POST   /v1/invoicing/documents/:id/lines             → add a line (priced)
 //   PATCH  /v1/invoicing/documents/:id/lines/:lineId     → update a line
 //   DELETE /v1/invoicing/documents/:id/lines/:lineId     → remove a line
+//   POST   /v1/invoicing/documents/:id/advance           → move to a stage (§3)
+//   GET    /v1/invoicing/documents/:id/snapshots         → frozen-record history
+//   GET    /v1/invoicing/documents/:id/snapshots/:sid    → one frozen record
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { billingDocumentService, billingLineService } from '@sparx/crm';
+import { billingDocumentService, billingDocumentStageService, billingLineService } from '@sparx/crm';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const LinePathIds = z.object({ id: z.string().uuid(), lineId: z.string().uuid() });
+const SnapshotPathIds = z.object({ id: z.string().uuid(), snapshotId: z.string().uuid() });
 
 const documentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/invoicing/documents', async (request) => {
@@ -80,6 +84,35 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const { lineId } = LinePathIds.parse(request.params);
     return ok(await billingLineService.removeLine(toInvoicingContext(request), lineId));
+  });
+
+  // ── Stage advance ──────────────────────────────────────────────────────────
+  // Moves the document to a stage in its workflow; entering the stage runs its
+  // configured effects (number / snapshot / finalize / lock).
+  app.post('/v1/invoicing/documents/:id/advance', async (request) => {
+    requireRole(request, 'editor');
+    await requireInvoicingModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(
+      await billingDocumentStageService.advance(toInvoicingContext(request), id, request.body)
+    );
+  });
+
+  // ── Snapshots (append-only frozen records) ───────────────────────────────────
+  app.get('/v1/invoicing/documents/:id/snapshots', async (request) => {
+    requireRole(request, 'viewer');
+    await requireInvoicingModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await billingDocumentStageService.listSnapshots(toInvoicingContext(request), id));
+  });
+
+  app.get('/v1/invoicing/documents/:id/snapshots/:snapshotId', async (request) => {
+    requireRole(request, 'viewer');
+    await requireInvoicingModule(request);
+    const { snapshotId } = SnapshotPathIds.parse(request.params);
+    return ok(
+      await billingDocumentStageService.getSnapshot(toInvoicingContext(request), snapshotId)
+    );
   });
 
   return Promise.resolve();

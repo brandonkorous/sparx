@@ -146,6 +146,52 @@ describe('automation-worker HTTP surface', () => {
     expect(completed?.status).toBe('completed');
   });
 
+  it('POST /internal/cron/reconcile-seeds rejects a missing/bad token with 403', async () => {
+    const noToken = await fetch(`${base}/internal/cron/reconcile-seeds`, { method: 'POST' });
+    expect(noToken.status).toBe(403);
+
+    const badToken = await fetch(`${base}/internal/cron/reconcile-seeds`, {
+      method: 'POST',
+      headers: { 'x-sparx-internal-cron-token': 'wrong' },
+    });
+    expect(badToken.status).toBe(403);
+  });
+
+  it('the authorized reconcile-seeds tick backfills a module-active tenant', async () => {
+    // A b2b-active tenant that never received `module.activated` (predates the
+    // engine) — so it has no system automations yet.
+    const slug = `aw-recon-${crypto.randomBytes(5).toString('hex')}`;
+    const tenant = await ownerDb.tenant.create({
+      data: {
+        slug,
+        name: `AW Recon ${slug}`,
+        email: `${slug}@sparx.test`,
+        plan: 'starter',
+        status: 'active',
+        settings: { modules: { b2b: { enabled: true } } },
+      },
+      select: { id: true },
+    });
+    createdTenants.push(tenant.id);
+
+    expect(
+      await ownerDb.automation.count({ where: { tenantId: tenant.id, origin: 'system' } })
+    ).toBe(0);
+
+    const res = await fetch(`${base}/internal/cron/reconcile-seeds`, {
+      method: 'POST',
+      headers: { 'x-sparx-internal-cron-token': CRON_TOKEN },
+    });
+    expect(res.status).toBe(200);
+    const summary = (await res.json()) as { tenantsSeeded: number };
+    expect(summary.tenantsSeeded).toBeGreaterThanOrEqual(1);
+
+    const seeded = await ownerDb.automation.findFirst({
+      where: { tenantId: tenant.id, origin: 'system' },
+    });
+    expect(seeded?.name).toBe('B2B overdue escalation');
+  });
+
   it('push with a non-trigger payload acks (204) without enqueuing', async () => {
     const body = JSON.stringify({
       message: {

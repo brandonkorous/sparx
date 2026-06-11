@@ -1,0 +1,107 @@
+// System-automation seed BACKFILL — reconcileSystemSeeds against a live Postgres
+// (docs/84 Slice F2 backfill).
+//
+// Slice E seeds a module's system automations only on `module.activated` (forward
+// only). This proves the daily reconcile pass closes the gap for tenants whose
+// module was ALREADY active: it discovers them via the
+// find_tenants_with_active_module SECURITY DEFINER scan (run as the worker's
+// sparx_app identity) and idempotently installs the module's system automation.
+//
+// Discovery runs on the sparx_app client (FORCE RLS — the worker's prod
+// identity); seeding rides seedSystemAutomations' own withTenant. Setup/asserts
+// use a sparx_owner client.
+
+import crypto from 'node:crypto';
+
+import { PrismaClient } from '@prisma/client';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+
+import { reconcileSystemSeeds } from '../../src/index.js';
+
+const ownerDb = new PrismaClient({
+  datasourceUrl:
+    process.env.MIGRATION_DATABASE_URL ??
+    'postgresql://sparx_owner:devpassword@localhost:5544/sparx?schema=public',
+});
+const appDb = new PrismaClient({
+  datasourceUrl:
+    process.env.DATABASE_URL ??
+    'postgresql://sparx_app:devpassword@localhost:5544/sparx?schema=public',
+});
+
+const createdTenants: string[] = [];
+
+async function makeTenant(opts: { b2bEnabled: boolean }): Promise<string> {
+  const slug = `recon-${crypto.randomBytes(4).toString('hex')}`;
+  const tenant = await ownerDb.tenant.create({
+    data: {
+      slug,
+      name: slug,
+      email: `${slug}@sparx.test`,
+      plan: 'starter',
+      status: 'active',
+      settings: opts.b2bEnabled ? { modules: { b2b: { enabled: true } } } : { modules: {} },
+    },
+    select: { id: true },
+  });
+  createdTenants.push(tenant.id);
+  return tenant.id;
+}
+
+function systemAutomations(tenantId: string) {
+  return ownerDb.automation.findMany({ where: { tenantId, origin: 'system' } });
+}
+
+beforeAll(async () => {
+  // Fail fast with a clear message if docker Postgres isn't up.
+  await ownerDb.$queryRaw`SELECT 1`;
+});
+
+afterAll(async () => {
+  for (const id of createdTenants) {
+    await ownerDb.tenant.delete({ where: { id } }).catch(() => undefined);
+  }
+  await ownerDb.$disconnect();
+  await appDb.$disconnect();
+});
+
+describe('reconcileSystemSeeds (backfill)', () => {
+  it('seeds the B2B dunning automation for a module-active tenant, skips an inactive one', async () => {
+    const activeTenant = await makeTenant({ b2bEnabled: true });
+    const inactiveTenant = await makeTenant({ b2bEnabled: false });
+
+    // Pre-state: neither tenant has any system automation (Slice E never fired
+    // for them — they predate the engine / their activation event was dropped).
+    expect(await systemAutomations(activeTenant)).toHaveLength(0);
+    expect(await systemAutomations(inactiveTenant)).toHaveLength(0);
+
+    const summary = await reconcileSystemSeeds(appDb);
+
+    // The active tenant now holds exactly the Locked dunning automation.
+    const active = await systemAutomations(activeTenant);
+    expect(active).toHaveLength(1);
+    expect(active[0]!.name).toBe('B2B overdue escalation');
+    expect(active[0]!.locked).toBe(true);
+    expect(active[0]!.status).toBe('active');
+
+    // The b2b-inactive tenant is untouched.
+    expect(await systemAutomations(inactiveTenant)).toHaveLength(0);
+
+    // The summary reports a b2b module pass that covered at least our tenant
+    // (the cross-tenant scan may also pick up other suites' residue — assert a
+    // lower bound, not an exact fleet count).
+    const b2b = summary.modules.find((m) => m.module === 'b2b');
+    expect(b2b).toBeDefined();
+    expect(b2b!.tenants).toBeGreaterThanOrEqual(1);
+  });
+
+  it('is idempotent — a second reconcile installs no duplicate', async () => {
+    const tenantId = await makeTenant({ b2bEnabled: true });
+
+    await reconcileSystemSeeds(appDb);
+    await reconcileSystemSeeds(appDb);
+
+    const rows = await systemAutomations(tenantId);
+    expect(rows).toHaveLength(1);
+  });
+});

@@ -63,7 +63,16 @@ export type CrmTopic =
   | 'crm.deal.order_attached'
   | 'crm.deal.order_detached'
   | 'crm.deal.quote_attached'
-  | 'crm.deal.quote_detached';
+  | 'crm.deal.quote_detached'
+  // Invoicing — authored billing documents (docs/87 §13). A stage transition is
+  // exactly the kind of event a tenant automation rule gates ("when a Repair
+  // Order reaches Approved, email the customer"). These reach the automation
+  // fan-in + webhook fan-out through the standard CRM-bus bridge.
+  | 'crm.billing_document.created'
+  | 'crm.billing_document.stage_changed'
+  | 'crm.billing_document.finalized'
+  | 'crm.billing_document.paid'
+  | 'crm.billing_document.voided';
 
 export interface Publisher {
   publish(event: CrmEvent): Promise<void>;

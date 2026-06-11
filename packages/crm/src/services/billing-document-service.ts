@@ -15,9 +15,17 @@ import { withTenant } from '@sparx/db';
 import type { BillingDocument, BillingDocumentLine, Prisma } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
+import { publishCrmEvent, type CrmTopic } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
+import { applyStageEntryEffects } from './billing-document-stage-service';
 import { computeBillingTotals } from './billing-totals';
+
+interface PendingDocEvent {
+  topic: CrmTopic;
+  payload: Record<string, unknown>;
+  dedupeKey: string;
+}
 
 export interface DocumentWithLines extends BillingDocument {
   lines: BillingDocumentLine[];
@@ -71,7 +79,7 @@ export async function get(ctx: ServiceContext, documentId: string): Promise<Docu
 
 export async function create(ctx: ServiceContext, rawInput: unknown): Promise<DocumentWithLines> {
   const input = CreateBillingDocumentInput.parse(rawInput);
-  return withTenant(ctx, async (tx) => {
+  const { document, events } = await withTenant(ctx, async (tx) => {
     const workflow = await tx.documentWorkflow.findUnique({
       where: { id: input.workflowId },
       include: { stages: { orderBy: { sortOrder: 'asc' } } },
@@ -111,8 +119,12 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
         validUntil: input.validUntil ? new Date(input.validUntil) : null,
         metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
       },
-      include: { lines: true },
     });
+    // Run the starting stage's entry effects — the default single-stage Invoice
+    // mints its INV- number on create (§9); a snapshot-on-enter first stage would
+    // freeze here too. Treated identically to any later transition.
+    const { events: entryEvents } = await applyStageEntryEffects(tx, ctx, created, stage);
+
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -123,8 +135,36 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
       entityId: created.id,
       diff: { after: { workflowId: workflow.id, stageId: stage.id } },
     });
-    return created;
+
+    const withLines = await tx.billingDocument.findUniqueOrThrow({
+      where: { id: created.id },
+      include: { lines: { orderBy: { sortOrder: 'asc' } } },
+    });
+    const createdEvent: PendingDocEvent = {
+      topic: 'crm.billing_document.created',
+      payload: {
+        documentId: withLines.id,
+        number: withLines.number,
+        customerId: withLines.customerId,
+        b2bAccountId: withLines.b2bAccountId,
+        workflowId: withLines.workflowId,
+        stageId: withLines.stageId,
+        currency: withLines.currency,
+      },
+      dedupeKey: `crm.billing_document.created:${withLines.id}`,
+    };
+    return { document: withLines, events: [createdEvent, ...entryEvents] };
   });
+
+  for (const e of events) {
+    await publishCrmEvent({
+      tenantId: ctx.tenantId,
+      topic: e.topic,
+      payload: e.payload,
+      dedupeKey: e.dedupeKey,
+    });
+  }
+  return document;
 }
 
 export async function update(
@@ -134,8 +174,16 @@ export async function update(
 ): Promise<DocumentWithLines> {
   const input = UpdateBillingDocumentInput.parse(rawInput);
   return withTenant(ctx, async (tx) => {
-    const before = await tx.billingDocument.findUnique({ where: { id: documentId } });
+    const before = await tx.billingDocument.findUnique({
+      where: { id: documentId },
+      include: { stage: true },
+    });
     if (before?.deletedAt !== null) throw new CrmNotFoundError('BillingDocument', documentId);
+    // A locked stage (final/paid) freezes the header too — taxRate/shipping edits
+    // would otherwise diverge the live totals from the frozen snapshot.
+    if (before.stage.locksEditing) {
+      throw new CrmValidationError('This document is locked for editing at its current stage.');
+    }
 
     if (input.customerId !== undefined || input.b2bAccountId !== undefined) {
       const customerId = input.customerId !== undefined ? input.customerId : before.customerId;

@@ -23,7 +23,12 @@
 // executor produces actually reaches the downstream consumers (email-worker,
 // search indexer, webhooks). It no-ops when GCP_PROJECT_ID is unset (dev/test).
 
-import { installModuleActions, seedSystemAutomations } from '@sparx/automation-actions';
+import {
+  installModuleActions,
+  reconcileSystemSeeds,
+  seedSystemAutomations,
+  type ReconcileSummary,
+} from '@sparx/automation-actions';
 import {
   handleTrigger,
   installBuiltins,
@@ -69,6 +74,18 @@ export async function runTick(logger: Logger): Promise<TickSummary> {
   const schedule = await runScheduleTick(deps, prisma);
   const runs = await runAutomationTick(deps, prisma, env.TICK_BATCH);
   return { schedule, runs };
+}
+
+/**
+ * Daily backfill/reconcile pass: seed system automations for every tenant whose
+ * owning module is ALREADY active (docs/84 Slice F2 backfill). Slice E only
+ * seeds forward on `module.activated`, so tenants active before the engine
+ * shipped — and any whose activation event was dropped — are covered here.
+ * Idempotent; runs on the shared sparx_app client (cross-tenant discovery via
+ * the `find_tenants_with_active_module` SECURITY DEFINER scan).
+ */
+export async function reconcileSeeds(logger: Logger): Promise<ReconcileSummary> {
+  return reconcileSystemSeeds(prisma, logger);
 }
 
 /** The module slug a `module.activated` envelope carries, if any. */

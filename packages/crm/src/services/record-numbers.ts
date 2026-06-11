@@ -32,6 +32,30 @@ export async function nextInvoiceNumber(tx: TxClient, tenantId: string): Promise
   return formatNumber(INVOICE_PREFIX, count + 1);
 }
 
+// ── Invoicing module billing documents (docs/87 §9) ──────────────────────────
+// A billing document carries ONE stable per-tenant sequence for life. The
+// human-facing number swaps prefix as the document advances (EST-000123 →
+// INV-000123) but the numeric suffix never changes — so numbering allocates the
+// sequence once (on first `numberOnEnter` stage) and later stages only re-format
+// it with their own prefix. The (tenant_id, number_seq) unique constraint is the
+// collision backstop, identical in spirit to the order/quote number guard.
+
+/** Next stable per-tenant document sequence. Count of already-numbered documents
+ *  + 1 — monotonic, gap-prone on voids (fine for a human id). */
+export async function nextBillingDocumentSeq(tx: TxClient, tenantId: string): Promise<number> {
+  const count = await tx.billingDocument.count({
+    where: { tenantId, numberSeq: { not: null } },
+  });
+  return count + 1;
+}
+
+/** Format a document number from a stage's prefix + the document's stable
+ *  sequence. The configured prefix already carries its own separator ("INV-",
+ *  "EST-"), so it is concatenated verbatim — `('INV-', 123)` → `'INV-000123'`. */
+export function formatBillingNumber(prefix: string, seq: number): string {
+  return `${prefix}${seq.toString().padStart(PAD_LENGTH, '0')}`;
+}
+
 function formatNumber(prefix: string, value: number): string {
   return `${prefix}-${value.toString().padStart(PAD_LENGTH, '0')}`;
 }

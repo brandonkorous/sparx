@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.9
+**Version:** 1.10
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-11
 
@@ -16,23 +16,44 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** Slice F2 cont. (email-driven seeds) + F2 backfill + F3. **Slice E COMPLETE**
-> (event-driven activation fully live) and **F1 email send executors COMPLETE**. Slices A–D plus
-> **E1–E4** done; **F1** now has CRM (6) + B2B (escalate) + **email (`send_campaign` / `send_internal`,
-> via the lean `@sparx/email-sends` enqueue primitive — NOT email-platform, which would drag React
-> into the worker)**. So the engine can now SEND email: an event → executor → `enqueueSend` →
-> `ScheduledSend` → api-rest email-dispatch tick → `email.send`.
+> **▶ RESUME HERE:** Slice F3 (retire the b2b-overdue cron) + the email-driven-seed CONTENT FORK
+> (a user decision — see below). **F2 backfill COMPLETE** this session: existing module-active
+> tenants are now back-filled with their system automations via a daily worker reconcile pass.
+> **Slice E COMPLETE** (event-driven activation live) and **F1 email send executors COMPLETE**.
+> Slices A–D + **E1–E4** + **F2-a (dunning)** + **F2 backfill** done; **F1** has CRM (6) + B2B
+> (escalate) + **email (`send_campaign` / `send_internal`)**. The engine can SEND email and now
+> SEEDS every module-active tenant (forward via activation, backward via reconcile).
 >
-> **Next:** (F2 cont.) re-express the email-driven system seeds now that the send executors exist —
-> inactivity/win-back (customer), quote-expiry, deal-closing internal alert. Each is an
-> event-triggered `Automation` row in `SYSTEM_AUTOMATIONS` (mirror `B2B_OVERDUE_ESCALATION`) whose
-> action is `email.send_campaign` / `send_internal`. The triggers (`crm.customer.inactive`,
-> `quote.expiring`, …) must exist as events + resolvers — check `resolvers/builtins.ts` coverage and
-> add resolvers for any missing entity. (F2 backfill) call `seedSystemAutomations` for tenants whose
-> modules are ALREADY active (activation only fires forward; existing tenants need a one-time sweep —
-> a worker reconcile or an internal endpoint over a "tenants with module X" SECURITY DEFINER scan).
-> (F3) parity-check then DELETE the b2b-overdue cron (its escalation logic now lives in the reusable
-> service). Older context below.
+> **F2 backfill (this session):** SECURITY DEFINER `find_tenants_with_active_module(p_module)`
+> (migration `20260804000000`, REVOKE PUBLIC / GRANT sparx_app) → `reconcileSystemSeeds(db)` in
+> `@sparx/automation-actions` (distinct owning modules → scan module-active tenants → idempotent
+> `seedSystemAutomations` per tenant) → worker `POST /internal/cron/reconcile-seeds` (same
+> tick-auth) → a DAILY Cloud Scheduler job (`automation-reconcile-seeds`, 02:07 UTC, automation.tf).
+> Self-healing: also covers any dropped `module.activated` event. Tests: automation-actions
+> reconcile 2/2 (active-seeded / inactive-skipped + idempotent), worker route 2/2 (403 + authorized
+> backfill). The seed/run gate still blocks execution for a tenant inactive at runtime, so seeding a
+> later-disabled tenant is harmless.
+>
+> **Next — Slice F3 (retire the b2b cron):** now SAFE to do (backfill closed the "existing tenants
+> have no unified dunning automation" gap that blocked it). Parity-verify vs
+> `b2b-overdue-worker/test/integration/escalation.test.ts` (swap it to drive the engine), then
+> DELETE `services/b2b-overdue-worker` AND its Terraform (Cloud Run + Cloud Scheduler) + the
+> build-images/deploy-prod matrix entries — a TF-managed-resource deletion, mirror same session (no
+> drift). Until F3 lands, a newly-activated b2b tenant runs BOTH the cron and the engine dunning →
+> escalation stays monotonic/idempotent (safe) but can double-emit the `b2b.invoice.overdue`
+> reminder once; F3 ends that.
+>
+> **⚠ Email-driven-seed CONTENT FORK (needs a product decision — do NOT guess):** win-back /
+> quote-expiry as a _system_ seed can't be turnkey. A coded `win-back` template can't render a
+> working CTA (BrandTokens carry `storeName` + `logoUrl` but NO site URL — see `brand.tsx`), and the
+> Builder `defer` path needs a tenant-authored email that doesn't
+> exist at seed time. So "ship win-back on" needs one of: (A) add a `siteUrl` to brand resolution +
+> ship a real coded `win-back` template (+ register in `@sparx/email` send.tsx AND the email-worker
+> `handler.ts` `TemplateSendSchema` — the worker validates against a CLOSED union); (B) provision a
+> default win-back **Builder email** per tenant on email activation + seed the automation referencing
+> it (most on-brand, most work); (C) seed win-back as **draft**, tenant completes + activates. The
+> _mechanism_ is fully built (schedule + customer scanner + `email.send_campaign`); only the content
+> source is the open decision. Surfaced to the user this session. Older context below.
 >
 > **(historical) F2-a (B2B dunning ladder) done** — the riskiest piece (docs/81 §3.1's canonical
 > Locked behavior) is built, tested, and live-able on the schedule tick.
@@ -114,6 +135,8 @@ reconciles them into the one canonical registry. No build blocker from deferring
 | `packages/modules` (`@sparx/modules`)                       | Module-enablement primitives (extracted from `@sparx/auth` so lean backends probe flags without the auth/email/UI closure)                                                                  | ☑      |
 | `services/automation-worker`                                | Cloud Run: Cloud Scheduler tick (schedule + run advance) + push consumer on `automation.trigger`                                                                                            | ☑      |
 | `packages/db` scan helpers                                  | `find_due_automation_runs` / `find_active_scheduled_automations` SECURITY DEFINER (cross-tenant discovery)                                                                                  | ☑      |
+| `packages/db` backfill scan (`20260804000000`)              | `find_tenants_with_active_module(p_module)` SECURITY DEFINER — discovers module-active tenants for the seed reconcile pass                                                                  | ☑      |
+| `reconcileSystemSeeds` + worker reconcile endpoint          | Daily backfill: seed system automations for already-module-active tenants (`POST /internal/cron/reconcile-seeds` + Cloud Scheduler `automation-reconcile-seeds`)                            | ☑      |
 | `terraform/envs/prod/automation.tf`                         | Cloud Run service + Cloud Scheduler tick job + runtime/scheduler SAs (push sub deferred to E)                                                                                               | ☑      |
 | `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                                                                                                                            | ☑      |
 | `services/api-rest` routes                                  | `/v1/automations` CRUD + internal trigger/tick endpoints                                                                                                                                    | ☐      |
@@ -343,7 +366,7 @@ isn't silently skipped.
 - ☐ `email.sequence_add` / `email.sequence_remove` (sequence membership — not yet built)
 - ☐ Commerce executors (`commerce.*`)
 
-**F2 — seed system automations ◐ (dunning done)**
+**F2 — seed system automations ◐ (dunning + backfill done)**
 
 - ☑ **B2B dunning ladder → Locked system automation** (`seedSystemAutomations` catalog). 4/4
   engine-path test mirrors the parity oracle: invoice→overdue, account→credit_hold@14d /
@@ -352,11 +375,17 @@ isn't silently skipped.
 - ☑ **Seed wiring — LIVE via Slice E** (the ARCH FORK resolved to "Slice E fan-in"). The toggle
   routes publish `module.activated` → fan-in → worker `ingest()` → `seedSystemAutomations({tenantId},
 {module})`. So activating B2B now seeds the dunning automation for that tenant automatically.
-- ☐ **Existing-tenant backfill** — activation only fires forward; tenants whose modules are
-  ALREADY active need a one-time `seedSystemAutomations` sweep (a worker reconcile pass or an
-  internal endpoint over a "tenants with module X active" SECURITY DEFINER scan).
-- ☐ Re-express CRM sweep (inactive/high-value/deal-closing/credit-near-limit/quote-expiry) —
-  needs the email executors first.
+- ☑ **Existing-tenant backfill** — `find_tenants_with_active_module(p_module)` SECURITY DEFINER scan
+  (migration `20260804000000`) → `reconcileSystemSeeds(db)` (distinct owning modules → scan →
+  idempotent `seedSystemAutomations` per tenant) → worker `POST /internal/cron/reconcile-seeds`
+  (tick-auth) → daily Cloud Scheduler `automation-reconcile-seeds`. Covers pre-engine tenants AND
+  self-heals a dropped `module.activated`. Tests: reconcile 2/2 (active-seeded / inactive-skipped +
+  idempotent), worker route 2/2. A null-module (always-on) seed would need an all-tenants scan — none
+  exist; the reconcile warns loudly if one is added so the gap isn't silent.
+- ☐ Re-express CRM sweep (inactive/win-back/high-value/deal-closing/credit-near-limit/quote-expiry) —
+  the _mechanism_ is built (customer scanner + `email.send_campaign`), but the email CONTENT SOURCE
+  is an open product decision (see the RESUME "CONTENT FORK": coded+siteUrl vs Builder-authored vs
+  draft). Don't ship a system seed that enqueues sends with no working CTA.
 - ☐ Seed remaining default Managed automations (abandoned-cart, win-back, fulfilled→review)
 
 **F3 — retire crons ☐**
@@ -615,3 +644,25 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   `pnpm dev`, re-locking the Windows query_engine DLL; the client is already current, so it's a
   no-op env flake, not a code issue). **Next:** F2 cont. email-driven seeds (win-back / inactivity /
   quote-expiry / deal-closing) on top of these executors; backfill; F3.
+- **2026-06-11 (cont.)** — **Slice F2 backfill DONE + email-seed content fork surfaced.** Started F2
+  cont. (email-driven seeds) but tracing the path surfaced a genuine PRODUCT-CONTENT fork: a _system_
+  seed can't produce a turnkey marketing email (coded `win-back` template can't render a working CTA
+  — BrandTokens carry storeName/logoUrl but no site URL; the Builder `defer` path needs a
+  tenant-authored email absent at seed time). The send MECHANISM is fully built; the content source
+  is a real decision (coded+siteUrl / Builder-authored / draft-until-configured), so I did NOT guess
+  — surfaced it to the user and pivoted to the UNBLOCKED, fully-complete prerequisite: the **F2
+  backfill** (also the safe precondition for F3 — retiring the cron before back-filling existing b2b
+  tenants would stop their dunning). Built: SECURITY DEFINER `find_tenants_with_active_module(p_module)`
+  (migration `20260804000000`, REVOKE PUBLIC / GRANT sparx_app; applied to docker, 94 migrations, only
+  mine pending) → `reconcileSystemSeeds(db)` in `@sparx/automation-actions` (distinct owning modules
+  → cross-tenant scan → idempotent `seedSystemAutomations` per tenant; warns on an unsupported
+  null-module seed) → worker `reconcileSeeds(logger)` + `POST /internal/cron/reconcile-seeds`
+  (reuses `tickAuthorized`) → a DAILY Cloud Scheduler job `automation-reconcile-seeds` (02:07 UTC,
+  automation.tf, same scheduler SA + existing run.invoker grant). Self-healing for dropped activation
+  events too. **Verify:** automation-actions typecheck/lint clean + 15/15 (+2 reconcile:
+  active-seeded/inactive-skipped + idempotent); automation-worker typecheck/lint clean + 6/6 (+2
+  route: 403 + authorized backfill of a b2b tenant); `terraform fmt -check` + `validate` clean;
+  prettier clean on all touched TS. Purely additive (new migration + new package export + new worker
+  route + new TF job) — no existing export/behavior changed. **Next:** Slice F3 (retire the b2b cron,
+  now unblocked — includes deleting `services/b2b-overdue-worker` + its TF, mirror same session) +
+  the email-seed content fork once the user picks an approach.

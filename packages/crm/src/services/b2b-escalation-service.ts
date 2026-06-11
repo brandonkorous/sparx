@@ -1,11 +1,12 @@
 // B2B dunning ladder — the per-account escalation step (docs/10 §9, docs/64 Ph3,
 // docs/81 §3.1, docs/84 Slice F2).
 //
-// This is the reusable home for the escalation logic that previously lived ONLY
-// inline in `services/b2b-overdue-worker/cron.ts` (the gap docs/84 flagged: "no
-// reusable service"). The automation engine's `b2b.escalate_overdue` executor
-// calls this once per account the scheduled `b2b_account` scan surfaces; the
-// legacy cron can delegate to it too until it is retired (Slice F3).
+// This is the reusable home for the escalation logic. It originally lived ONLY
+// inline in the `b2b-overdue-worker` cron (the gap docs/84 flagged: "no reusable
+// service"); that cron was never wired into deployment and was deleted in Slice
+// F3, so this service — driven by the automation engine's `b2b.escalate_overdue`
+// executor, once per account the scheduled `b2b_account` scan surfaces — is now
+// the single source of truth for the dunning ladder.
 //
 // Two deliberate shape choices:
 //   • Per-account, not per-tenant batch. The cron did one bulk UPDATE across the

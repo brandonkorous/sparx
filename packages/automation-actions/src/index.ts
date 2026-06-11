@@ -12,6 +12,11 @@ export { installCrmActions } from './crm.js';
 export { installB2bActions } from './b2b.js';
 export { installEmailActions } from './email.js';
 export { seedSystemAutomations, SYSTEM_AUTOMATIONS } from './seeds/index.js';
+export {
+  reconcileSystemSeeds,
+  type ReconcileSummary,
+  type ReconcileModuleResult,
+} from './seeds/reconcile.js';
 
 import { installB2bActions } from './b2b.js';
 import { installCrmActions } from './crm.js';

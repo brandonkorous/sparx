@@ -138,6 +138,14 @@ export const UpdateBillingDocumentInput = z
   .partial();
 export type UpdateBillingDocumentInput = z.infer<typeof UpdateBillingDocumentInput>;
 
+// Move a document to another stage in its workflow (docs/87 §3). Entering the
+// target stage runs its configured entry effects: mint/restamp the number,
+// freeze an immutable snapshot, set finalized/voided timestamps, lock editing.
+export const AdvanceBillingDocumentInput = z.object({
+  stageId: z.string().uuid(),
+});
+export type AdvanceBillingDocumentInput = z.infer<typeof AdvanceBillingDocumentInput>;
+
 export const ListBillingDocumentsInput = z.object({
   workflowId: z.string().uuid().optional(),
   stageId: z.string().uuid().optional(),
