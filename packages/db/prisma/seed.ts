@@ -16,6 +16,35 @@ import { SPARX_DATA_COMPONENTS } from './marketplace/components';
 
 const prisma = new PrismaClient();
 
+// A self-contained SVG swatch for a theme card (docs/85 assets) — a data URI, so
+// it renders in both apps with no file hosting (the GCS media pipeline replaces
+// this in a later phase). Uses the data theme's real surface/brand tokens when
+// present, else the catalog accent.
+function themeSwatch(
+  name: string,
+  accent: string,
+  preset?: { v2?: { light?: Record<string, string> } }
+): string {
+  const c = preset?.v2?.light ?? {};
+  const bg = c.base100 ?? '#ffffff';
+  const primary = c.primary ?? accent;
+  const acc = c.accent ?? accent;
+  const fg = c.baseContent ?? '#0f172a';
+  const border = c.border ?? '#e2e8f0';
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300">` +
+    `<rect width="480" height="300" fill="${bg}"/>` +
+    `<rect x="0" y="0" width="480" height="96" fill="${primary}"/>` +
+    `<circle cx="408" cy="48" r="26" fill="${acc}"/>` +
+    `<rect x="40" y="150" width="220" height="20" rx="10" fill="${fg}" opacity="0.85"/>` +
+    `<rect x="40" y="186" width="320" height="14" rx="7" fill="${fg}" opacity="0.35"/>` +
+    `<rect x="40" y="212" width="280" height="14" rx="7" fill="${fg}" opacity="0.35"/>` +
+    `<rect x="0.5" y="0.5" width="479" height="299" fill="none" stroke="${border}"/>` +
+    `<text x="40" y="64" font-family="system-ui,sans-serif" font-size="30" font-weight="700" fill="#ffffff">${name}</text>` +
+    `</svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
 const TENANT_SLUG = 'e2e-store';
 const STAFF_EMAIL = 'e2e-staff@sparx.test';
 const STAFF_PASSWORD = 'e2e-test-password';
@@ -330,6 +359,7 @@ async function seedMarketplaceCatalog(): Promise<void> {
         tagline: t.tagline.slice(0, 255),
         description: t.description,
         accent: t.accent,
+        media: [{ url: themeSwatch(t.name, t.accent, tokens), kind: 'image', alt: t.name }],
         mood: t.mood,
         colorFamily: t.colorFamily,
         density: t.density,
