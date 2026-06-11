@@ -11,10 +11,17 @@
 //   POST   /v1/invoicing/documents/:id/advance           → move to a stage (§3)
 //   GET    /v1/invoicing/documents/:id/snapshots         → frozen-record history
 //   GET    /v1/invoicing/documents/:id/snapshots/:sid    → one frozen record
+//   POST   /v1/invoicing/documents/:id/payments          → record a payment (§8)
+//   GET    /v1/invoicing/documents/:id/payments          → payment history
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { billingDocumentService, billingDocumentStageService, billingLineService } from '@sparx/crm';
+import {
+  billingDocumentService,
+  billingDocumentStageService,
+  billingLineService,
+  billingPaymentService,
+} from '@sparx/crm';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
@@ -113,6 +120,29 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     return ok(
       await billingDocumentStageService.getSnapshot(toInvoicingContext(request), snapshotId)
     );
+  });
+
+  // ── Payments / AR (§8) ───────────────────────────────────────────────────────
+  // A payment is allowed on a locked/finalized document — locking freezes lines,
+  // not the act of paying.
+  app.post('/v1/invoicing/documents/:id/payments', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireInvoicingModule(request);
+    const { id } = PathId.parse(request.params);
+    const result = await billingPaymentService.recordPayment(
+      toInvoicingContext(request),
+      id,
+      request.body
+    );
+    reply.code(201);
+    return ok(result);
+  });
+
+  app.get('/v1/invoicing/documents/:id/payments', async (request) => {
+    requireRole(request, 'viewer');
+    await requireInvoicingModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await billingPaymentService.listPayments(toInvoicingContext(request), id));
   });
 
   return Promise.resolve();

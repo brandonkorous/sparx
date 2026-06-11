@@ -36,6 +36,10 @@ export interface FreshlyOverdueInvoice {
   invoiceNumber: string;
   amountCents: number;
   overdueDays: number;
+  /** Which AR table this open balance came from. During the docs/87 §15
+   *  coexistence the ladder reads net-terms balances from BOTH the legacy
+   *  `b2b_invoices` header and the authored `billing_documents`. */
+  source: 'b2b_invoice' | 'billing_document';
 }
 
 export interface AccountEscalation {
@@ -121,6 +125,41 @@ export async function escalateAccount(
           invoiceNumber: inv.invoiceNumber,
           amountCents: inv.amountCents,
           overdueDays: age,
+          source: 'b2b_invoice',
+        });
+      }
+    }
+
+    // Authored billing documents (docs/87 §8) — the second open-balance source
+    // during coexistence. A net-terms document carries a `dueAt` (set on
+    // finalize) and an open `balance`; past due, it's marked overdue and folds
+    // into the same ladder. `balance > 0` + `dueAt < now` excludes drafts/paid.
+    const documents = await tx.billingDocument.findMany({
+      where: {
+        b2bAccountId: accountId,
+        deletedAt: null,
+        status: { in: ['unpaid', 'partial', 'overdue'] },
+        dueAt: { not: null, lt: now },
+        balance: { gt: 0 },
+      },
+      select: { id: true, status: true, dueAt: true, number: true, balance: true },
+    });
+    for (const doc of documents) {
+      if (!doc.dueAt) continue; // narrows the type; the filter already guarantees it
+      const age = daysPastDue(doc.dueAt, now);
+      maxOverdueDays = Math.max(maxOverdueDays, age);
+      const wasOverdue = doc.status === 'overdue';
+      await tx.billingDocument.update({
+        where: { id: doc.id },
+        data: { status: 'overdue', overdueDays: age },
+      });
+      if (!wasOverdue) {
+        freshlyOverdue.push({
+          id: doc.id,
+          invoiceNumber: doc.number ?? doc.id,
+          amountCents: Math.round(Number(doc.balance) * 100),
+          overdueDays: age,
+          source: 'billing_document',
         });
       }
     }

@@ -91,7 +91,7 @@ function makeStage(overrides: Partial<DocumentStage> = {}): DocumentStage {
     createdAt: new Date(0),
     updatedAt: new Date(0),
     ...overrides,
-  } as unknown as DocumentStage;
+  };
 }
 
 describe('buildSnapshotPayload', () => {

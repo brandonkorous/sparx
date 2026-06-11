@@ -49,6 +49,7 @@ model User {
   billingDocumentsAssigned  BillingDocument[]         @relation("BillingDocumentAssignee")
   billingLinesAsTechnician  BillingDocumentLine[]     @relation("BillingLineTechnician")
   billingSnapshotsAuthored  BillingDocumentSnapshot[] @relation("BillingSnapshotAuthor")
+  billingPaymentsRecorded   BillingDocumentPayment[]  @relation("BillingPaymentRecordedBy")
   approvalRulesAsApprover PurchaseApprovalRule[]  @relation("ApprovalRuleApprover")
   confirmedAppointments   ServiceAppointment[]   @relation("AppointmentConfirmedBy")
 

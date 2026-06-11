@@ -30,6 +30,7 @@ import { writeAuditLog } from '../audit';
 import { publishCrmEvent, type CrmTopic } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
+import { netTermsDays } from './billing-ar';
 import { buildSnapshotPayload } from './billing-snapshot';
 import type { DocumentWithLines } from './billing-document-service';
 import { formatBillingNumber, nextBillingDocumentSeq } from './record-numbers';
@@ -60,8 +61,9 @@ export async function advance(
     if (doc?.deletedAt !== null) throw new CrmNotFoundError('BillingDocument', documentId);
 
     const target = await tx.documentStage.findUnique({ where: { id: input.stageId } });
+    if (!target) throw new CrmNotFoundError('DocumentStage', input.stageId);
     // A stage from another workflow is not a valid destination for this document.
-    if (!target || target.workflowId !== doc.workflowId) {
+    if (target.workflowId !== doc.workflowId) {
       throw new CrmNotFoundError('DocumentStage', input.stageId);
     }
     if (target.id === doc.stageId) {
@@ -144,7 +146,24 @@ export async function applyStageEntryEffects(
 
   // 2. Lifecycle timestamps + AR status driven by the semantic stage type.
   const enteringFinal = stage.stageType === 'final' && document.finalizedAt === null;
-  if (enteringFinal) data.finalizedAt = new Date();
+  if (enteringFinal) {
+    const finalizedAt = new Date();
+    data.finalizedAt = finalizedAt;
+    // Net-terms B2B documents get a due date from the account's terms on finalize
+    // (§8). Retail / already-dated documents keep their dueAt.
+    if (document.b2bAccountId && document.dueAt === null) {
+      const account = await tx.b2BAccount.findUnique({
+        where: { id: document.b2bAccountId },
+        select: { paymentTerms: true },
+      });
+      const days = netTermsDays(account?.paymentTerms);
+      if (days > 0) {
+        const due = new Date(finalizedAt);
+        due.setUTCDate(due.getUTCDate() + days);
+        data.dueAt = due;
+      }
+    }
+  }
   if (stage.stageType === 'void') {
     data.voidedAt = document.voidedAt ?? new Date();
     data.status = 'void';

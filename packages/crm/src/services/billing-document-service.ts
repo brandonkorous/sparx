@@ -18,6 +18,7 @@ import { writeAuditLog } from '../audit';
 import { publishCrmEvent, type CrmTopic } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
+import { aggregatePayments, deriveDocumentStatus } from './billing-ar';
 import { applyStageEntryEffects } from './billing-document-stage-service';
 import { computeBillingTotals } from './billing-totals';
 
@@ -117,6 +118,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
         surchargeTotal: input.surchargeTotal,
         notes: input.notes ?? null,
         validUntil: input.validUntil ? new Date(input.validUntil) : null,
+        dueAt: input.dueAt ? new Date(input.dueAt) : null,
         metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
       },
     });
@@ -215,6 +217,9 @@ export async function update(
         ...(input.validUntil !== undefined
           ? { validUntil: input.validUntil ? new Date(input.validUntil) : null }
           : {}),
+        ...(input.dueAt !== undefined
+          ? { dueAt: input.dueAt ? new Date(input.dueAt) : null }
+          : {}),
         ...(input.metadata !== undefined
           ? { metadata: input.metadata as Prisma.InputJsonValue }
           : {}),
@@ -264,8 +269,11 @@ export async function remove(ctx: ServiceContext, documentId: string): Promise<{
 // Shared helpers (used by billing-line-service)
 // ─────────────────────────────────────────────────────────────────────────
 
-/** Recompute and persist the document totals from its current lines + header
- *  taxRate / shipping / surcharge. Runs inside the caller's transaction. */
+/** Recompute and persist the full money picture from the document's current
+ *  lines (subtotal/tax/total), payment rows (amountPaid/depositTotal), and AR
+ *  state (balance/status/paidAt). The single authority for the cached totals —
+ *  every line, payment, and header edit funnels through here. Runs inside the
+ *  caller's transaction. */
 export async function recomputeTotals(
   tx: Prisma.TransactionClient,
   tenantId: string,
@@ -273,7 +281,7 @@ export async function recomputeTotals(
 ): Promise<BillingDocument> {
   const doc = await tx.billingDocument.findUnique({
     where: { id: documentId },
-    include: { lines: true },
+    include: { lines: true, payments: true },
   });
   if (!doc) throw new CrmNotFoundError('BillingDocument', documentId);
 
@@ -288,7 +296,19 @@ export async function recomputeTotals(
     Number(doc.shippingTotal),
     Number(doc.surchargeTotal)
   );
-  const balance = round2(totals.total - Number(doc.amountPaid));
+  const { amountPaid, depositTotal } = aggregatePayments(
+    doc.payments.map((p) => ({ kind: p.kind, amount: Number(p.amount) }))
+  );
+  const balance = round2(totals.total - amountPaid);
+  const now = new Date();
+  const status = deriveDocumentStatus({
+    total: totals.total,
+    amountPaid,
+    dueAt: doc.dueAt,
+    voided: doc.voidedAt !== null,
+    now,
+  });
+  const paidAt = status === 'paid' ? (doc.paidAt ?? now) : null;
 
   return tx.billingDocument.update({
     where: { id: documentId },
@@ -297,7 +317,11 @@ export async function recomputeTotals(
       discountTotal: totals.discountTotal,
       taxTotal: totals.taxTotal,
       total: totals.total,
+      amountPaid,
+      depositTotal,
       balance,
+      status,
+      paidAt,
     },
   });
 }

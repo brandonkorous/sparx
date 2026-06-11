@@ -97,12 +97,27 @@ export function installB2bActions(): void {
       orderBy: { updatedAt: 'desc' },
       take: 5_000,
     });
+    // Past-due open balances from BOTH AR sources (docs/87 §8 coexistence): the
+    // legacy b2b_invoices header AND authored billing_documents. UNION so an
+    // account with overdue authored invoices is scanned + laddered even with no
+    // legacy invoices. RLS scopes both tables to the tenant.
     const agg = await ctx.tx.$queryRaw<OverdueAgg[]>`
       SELECT account_id,
-             MAX(GREATEST(0, EXTRACT(DAY FROM (now() - due_at))::int))::int AS max_days_past_due,
+             MAX(days_past_due)::int AS max_days_past_due,
              COUNT(*)::int AS actionable_count
-      FROM b2b_invoices
-      WHERE status IN ('unpaid', 'overdue') AND due_at < now()
+      FROM (
+        SELECT account_id,
+               GREATEST(0, EXTRACT(DAY FROM (now() - due_at))::int) AS days_past_due
+        FROM b2b_invoices
+        WHERE status IN ('unpaid', 'overdue') AND due_at < now()
+        UNION ALL
+        SELECT b2b_account_id AS account_id,
+               GREATEST(0, EXTRACT(DAY FROM (now() - due_at))::int) AS days_past_due
+        FROM billing_documents
+        WHERE b2b_account_id IS NOT NULL AND deleted_at IS NULL
+          AND status IN ('unpaid', 'partial', 'overdue')
+          AND balance > 0 AND due_at IS NOT NULL AND due_at < now()
+      ) ar
       GROUP BY account_id
     `;
     const byAccount = new Map(agg.map((r) => [r.account_id, r]));

@@ -112,6 +112,9 @@ export const CreateBillingDocumentInput = z
     surchargeTotal: z.number().min(0).default(0),
     notes: z.string().max(5000).optional().nullable(),
     validUntil: z.string().datetime().optional().nullable(),
+    // Net-terms due date. Usually set automatically on finalize from the B2B
+    // account's payment terms (§8); settable by hand for an explicit term.
+    dueAt: z.string().datetime().optional().nullable(),
     metadata: z.record(z.string(), z.unknown()).optional(),
   })
   .refine((v) => Boolean(v.customerId) || Boolean(v.b2bAccountId), {
@@ -133,10 +136,40 @@ export const UpdateBillingDocumentInput = z
     surchargeTotal: z.number().min(0),
     notes: z.string().max(5000).nullable(),
     validUntil: z.string().datetime().nullable(),
+    dueAt: z.string().datetime().nullable(),
     metadata: z.record(z.string(), z.unknown()),
   })
   .partial();
 export type UpdateBillingDocumentInput = z.infer<typeof UpdateBillingDocumentInput>;
+
+// ── Payments / AR (Phase 4, §8) ──────────────────────────────────────────────
+export const BillingPaymentKind = z.enum(['deposit', 'payment', 'refund']);
+export type BillingPaymentKind = z.infer<typeof BillingPaymentKind>;
+
+export const BillingPaymentMethod = z.enum([
+  'cash',
+  'card',
+  'check',
+  'ach',
+  'wire',
+  'store_credit',
+  'other',
+]);
+export type BillingPaymentMethod = z.infer<typeof BillingPaymentMethod>;
+
+// Record a deposit / payment / refund against a document. Append-only: a
+// correction is a new `refund` row, never an edit. `amount` is always positive;
+// `kind` decides the direction.
+export const RecordBillingPaymentInput = z.object({
+  kind: BillingPaymentKind.default('payment'),
+  method: BillingPaymentMethod.default('other'),
+  amount: z.number().positive(),
+  reference: z.string().max(120).optional().nullable(),
+  providerRef: z.string().max(200).optional().nullable(),
+  note: z.string().max(2000).optional().nullable(),
+  receivedAt: z.string().datetime().optional().nullable(),
+});
+export type RecordBillingPaymentInput = z.infer<typeof RecordBillingPaymentInput>;
 
 // Move a document to another stage in its workflow (docs/87 §3). Entering the
 // target stage runs its configured entry effects: mint/restamp the number,

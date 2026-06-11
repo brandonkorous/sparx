@@ -125,6 +125,16 @@ module "pubsub" {
     "crm.customer.deleted" = []
     "crm.customer.merged"  = []
 
+    # Invoicing — authored billing documents (docs/87 §13). Published on the CRM
+    # bus and teed to the automation fan-in + webhook fan-out via the standard
+    # bridge. Topic-only (empty list = no idle pull subscription); a stage
+    # transition is a prime automation trigger ("Repair Order reaches Approved").
+    "crm.billing_document.created"       = []
+    "crm.billing_document.stage_changed" = []
+    "crm.billing_document.finalized"     = []
+    "crm.billing_document.paid"          = []
+    "crm.billing_document.voided"        = []
+
     # Cart
     "cart.abandoned" = []
 

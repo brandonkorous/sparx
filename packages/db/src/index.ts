@@ -41,6 +41,7 @@ export type {
   BillingDocument,
   BillingDocumentLine,
   BillingDocumentSnapshot,
+  BillingDocumentPayment,
   Deal,
   DealOrder,
   DealQuote,
