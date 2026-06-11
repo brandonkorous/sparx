@@ -130,9 +130,7 @@ function TemplateLaunch({
     return <LaunchSuccess slug={slug} urls={urls} />;
   }
 
-  const previewSrc = token
-    ? buildSiteUrl(urls.siteOrigin, slug, urls.useTenantParam, token)
-    : null;
+  const previewSrc = token ? buildSiteUrl(urls.siteOrigin, slug, urls.useTenantParam, token) : null;
 
   return (
     <div className="flex flex-1 flex-col">
