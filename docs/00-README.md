@@ -3,7 +3,7 @@
 **Platform:** Sparx (sparx.works)
 **Company:** WizeWorks (wize.works)
 **Author:** Brandon Korous (me@brandonkorous.com)
-**Last Updated:** 2026-06-10
+**Last Updated:** 2026-06-11
 
 ---
 
@@ -56,16 +56,19 @@ Sparx is one of several products under the WizeWorks umbrella:
 
 Sparx is built around independently activatable modules:
 
-| Module        | Standalone | Marketing Domain |
-| ------------- | ---------- | ---------------- |
-| Storefront    | $49/mo     | sparx.works      |
-| Commerce      | +$49/mo    | sparx.works      |
-| CMS           | $49/mo     | sparxcms.com     |
-| CRM           | +$49/mo    | sparxcrm.com     |
-| Email         | +$29/mo    | sparxemail.com   |
-| B2B/Wholesale | +$99/mo    | sparxb2b.com     |
-| AI/MCP        | +$49/mo    | sparx.works      |
-| Dropship      | +$29/mo    | sparx.works      |
+Each module is an independent, flat-priced toggle (no tiers, no base plan). See [17-billing-subscriptions.md](17-billing-subscriptions.md) §2.
+
+| Module      | Price  | Marketing Domain |
+| ----------- | ------ | ---------------- |
+| Builder     | $10/mo | sparx.works      |
+| Commerce    | $49/mo | sparx.works      |
+| CMS         | $49/mo | sparxcms.com     |
+| CRM         | $49/mo | sparxcrm.com     |
+| Email       | $29/mo | sparxemail.com   |
+| B2B · Fleet | $99/mo | sparxb2b.com     |
+| AI · MCP    | $49/mo | sparx.works      |
+| Dropship    | $29/mo | sparx.works      |
+| Live Chat   | $19/mo | sparx.works      |
 
 ## Key v2 Decisions
 
@@ -96,9 +99,9 @@ Decisions locked in during the v2 documentation pass (vs. the original WizeWorks
 | 12  | CMS PRD                             | Content, media, SEO, blog, landing pages                                                                                                                                                                                                                                                                       |
 | 13  | Email Platform PRD                  | Postal infrastructure, automations, domain auth                                                                                                                                                                                                                                                                |
 | 14  | Dropship Integration PRD            | Supplier connectors, catalog sync, order routing                                                                                                                                                                                                                                                               |
-| 15  | Merchant Onboarding PRD             | 5-minute signup flow, progressive disclosure                                                                                                                                                                                                                                                                   |
+| 15  | Merchant Onboarding PRD             | Modules-first 6-step wizard (modules → template → workspace → domain → payments → launch); two-pane frame; live in < 5 min                                                                                                                                                                                                                                                                   |
 | 16  | Multi-Tenancy & Security            | Isolation, Better Auth, RBAC, audit logs                                                                                                                                                                                                                                                                       |
-| 17  | Billing & Subscriptions             | Modular pricing, Stripe, managed hosting                                                                                                                                                                                                                                                                       |
+| 17  | Billing & Subscriptions             | Per-module pricing; two Stripe integrations (Subscriptions + Connect); 14-day trial → grace → suspend lifecycle                                                                                                                                                                                                                                                                       |
 | 18  | Frontend Architecture               | Next.js, design system, monorepo                                                                                                                                                                                                                                                                               |
 | 19  | Testing Strategy                    | Unit, integration, E2E, load testing                                                                                                                                                                                                                                                                           |
 | 20  | Operational Runbook                 | Monitoring, incidents, backup, restore                                                                                                                                                                                                                                                                         |
@@ -149,3 +152,4 @@ Decisions locked in during the v2 documentation pass (vs. the original WizeWorks
 | 82  | Event Bus Unification & Fan-In      | _Planned — docs/81 Phase 0._ Unify the divergent `EventType` registries into one canonical source + a single `automation.trigger` fan-in topic teed from all three publish paths                                                                                                                               |
 | 83  | Tenant Attribution (L-TEN) Tracker  | _Planned — docs/80 Phase 3._ Build tracker for tenant-level storefront attribution: capture in apps/site, 3 tables + columns on customers/orders, ingestion API, conversion stitching, reports, MCP                                                                                                            |
 | 85  | Creator Marketplace                 | _Planned — extends docs/60._ Third-party submissions (theme/component/blueprint/integration) as an allow-listed bundle compiled to a declarative artifact; GCS storage, scan/approve review, no-deploy runtime apply, feature-count price caps + payouts, deferred integration code sandbox; Sparx dogfoods it |
+| 86  | Wizard Layout Pattern               | Two-pane wizard frame as a reusable pattern — full-page (onboarding) + modal (create-wizards) variants; one `WizardFrame` primitive, module-colored rail                                                                                                                                                       |

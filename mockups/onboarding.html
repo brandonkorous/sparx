@@ -1,0 +1,1734 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx · Onboarding redesign</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1;
+        --indigo-600: #4f46e5;
+        --indigo-700: #4338ca;
+        --indigo-900: #312e81;
+        --indigo-tint: #eef2ff;
+
+        --bg-page: #fafafa;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f4f4f5;
+        --border: #e5e5e5;
+        --border-strong: #d4d4d8;
+
+        --text: #0a0a0a;
+        --text-2: #52525b;
+        --text-3: #a1a1aa;
+
+        --success: #10b981;
+        --success-tint: #ecfdf5;
+        --success-text: #065f46;
+
+        --radius-lg: 8px;
+        --radius-xl: 12px;
+        --radius-2xl: 16px;
+        --radius-full: 9999px;
+        --shadow-md: 0 2px 8px 0 rgb(0 0 0 / 0.08);
+        --shadow-lg: 0 10px 30px -8px rgb(49 46 129 / 0.18);
+        --ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: 'Geist', 'Inter', system-ui, sans-serif;
+        color: var(--text);
+        background: var(--bg-page);
+        -webkit-font-smoothing: antialiased;
+        letter-spacing: -0.011em;
+      }
+      .shell {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* ── LEFT RAIL ──────────────────────────────────────────────────────── */
+      .rail {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding: 36px 32px 28px;
+        color: #fff;
+        background: #4f46e5;
+        overflow: hidden;
+      }
+      .rail > * {
+        position: relative;
+        z-index: 1;
+      }
+      .wordmark {
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        color: #fff;
+      }
+      .wordmark .x {
+        color: #c7d2fe;
+      }
+      .rail-lede {
+        margin-top: 34px;
+      }
+      .rail-lede h1 {
+        font-size: 25px;
+        font-weight: 500;
+        line-height: 1.2;
+        letter-spacing: -0.025em;
+      }
+      .rail-lede p {
+        margin-top: 9px;
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: rgba(255, 255, 255, 0.66);
+        max-width: 24ch;
+      }
+      .journey {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+      }
+      .jstep {
+        display: grid;
+        grid-template-columns: 30px 1fr;
+        gap: 13px;
+        align-items: start;
+        padding: 8px 0;
+        cursor: pointer;
+        position: relative;
+      }
+      .jstep .marker {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 13px;
+        font-weight: 500;
+        border: 1.5px solid rgba(255, 255, 255, 0.28);
+        color: rgba(255, 255, 255, 0.6);
+        background: transparent;
+        transition: all 0.25s var(--ease);
+      }
+      .jstep:not(:last-child) .marker::after {
+        content: '';
+        position: absolute;
+        left: 14.5px;
+        top: 36px;
+        width: 1.5px;
+        height: calc(100% - 26px);
+        background: rgba(255, 255, 255, 0.18);
+      }
+      .jstep .jlabel {
+        font-size: 13.5px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.6);
+        line-height: 1.8;
+        transition: color 0.25s;
+      }
+      .jstep .jsub {
+        font-size: 11.5px;
+        color: rgba(255, 255, 255, 0.4);
+        margin-top: -2px;
+      }
+      .jstep.done .marker {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: transparent;
+        color: #fff;
+      }
+      .jstep.done .jlabel {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .jstep.current .marker {
+        background: #fff;
+        border-color: #fff;
+        color: var(--indigo-700);
+        box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.14);
+      }
+      .jstep.current .jlabel {
+        color: #fff;
+      }
+      .rail-foot {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .context {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius-xl);
+        padding: 13px 15px;
+        display: flex;
+        gap: 11px;
+        align-items: flex-start;
+      }
+      .context svg {
+        flex: none;
+        margin-top: 1px;
+        opacity: 0.85;
+      }
+      .context p {
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.78);
+      }
+      .rail-links {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12.5px;
+      }
+      .rail-links a {
+        color: rgba(255, 255, 255, 0.55);
+        text-decoration: none;
+      }
+      .rail-links a:hover {
+        color: #fff;
+      }
+
+      /* ── WORKING PANE ───────────────────────────────────────────────────── */
+      .pane {
+        overflow-y: auto;
+        background: var(--bg-page);
+      }
+      .pane-inner {
+        max-width: 960px;
+        padding: 52px 56px 80px;
+        margin: 0 auto;
+      }
+      .view {
+        display: none;
+        animation: rise 0.4s var(--ease);
+      }
+      .view.active {
+        display: block;
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .pane-head h2 {
+        font-size: 29px;
+        font-weight: 500;
+        letter-spacing: -0.025em;
+        line-height: 1.15;
+      }
+      .pane-head p {
+        margin-top: 9px;
+        font-size: 15px;
+        color: var(--text-2);
+        line-height: 1.55;
+        max-width: 58ch;
+      }
+
+      /* ── MODULES STEP · the pricing switchboard ─────────────────────────── */
+      .switchboard {
+        margin-top: 28px;
+        display: flex;
+        gap: 32px;
+        align-items: flex-start;
+      }
+      .sb-list {
+        flex: 1;
+        min-width: 0;
+      }
+      .sb-row {
+        border-bottom: 1px solid var(--border);
+      }
+      .sb-row:last-child {
+        border-bottom: none;
+      }
+      .sb-head {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 4px;
+        cursor: pointer;
+      }
+      .sb-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex: none;
+      }
+      .sb-meta {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .sb-name {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15.5px;
+        font-weight: 500;
+      }
+      .sb-name .chev {
+        color: #c4c4cc;
+        transition: transform 0.2s;
+      }
+      .sb-row.open .sb-name .chev {
+        transform: rotate(180deg);
+      }
+      .sb-desc {
+        font-size: 12.5px;
+        color: var(--text-3);
+      }
+      .sb-price {
+        width: 64px;
+        text-align: right;
+        font-size: 15px;
+        flex: none;
+        color: var(--text-3);
+      }
+      .sb-row.on .sb-price {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .swt {
+        width: 44px;
+        height: 26px;
+        border-radius: 9999px;
+        padding: 0 3px;
+        border: none;
+        background: #e4e4e7;
+        cursor: pointer;
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        transition: background 0.15s;
+      }
+      .sb-row.on .swt {
+        justify-content: flex-end;
+      }
+      .swt span {
+        width: 20px;
+        height: 20px;
+        border-radius: 9999px;
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+      }
+      .sb-detail {
+        display: none;
+        padding: 2px 4px 22px 29px;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .sb-row.open .sb-detail {
+        display: flex;
+      }
+      .sb-detail p {
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--text-2);
+        max-width: 560px;
+      }
+      .sb-feats {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px 26px;
+      }
+      .sb-feats li {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        width: 248px;
+        max-width: 100%;
+        font-size: 13px;
+        color: var(--text-2);
+      }
+      .sb-feats li i {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        flex: none;
+      }
+      .sb-replaces {
+        font-size: 12.5px;
+        color: var(--text-3);
+      }
+      .sb-replaces b {
+        font-weight: 500;
+        color: var(--text-2);
+      }
+      .sb-addon-label {
+        padding: 16px 4px 6px;
+        margin-top: 6px;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--text-3);
+      }
+
+      /* the calculated plan card */
+      .sb-plan {
+        width: 304px;
+        flex: none;
+        position: sticky;
+        top: 0;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-2xl);
+        box-shadow: 0 16px 44px rgba(15, 15, 20, 0.08);
+        overflow: hidden;
+      }
+      .plan-top {
+        padding: 24px 24px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .plan-top .ph {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .plan-top .ph b {
+        font-size: 15px;
+        font-weight: 500;
+      }
+      .plan-top .ph .badge {
+        font-size: 11px;
+        color: var(--indigo-700);
+        background: var(--indigo-tint);
+        padding: 3px 9px;
+        border-radius: 9999px;
+      }
+      .plan-total {
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+      }
+      .plan-total .amt {
+        font-size: 72px;
+        line-height: 68px;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+      }
+      .plan-total .per {
+        font-size: 20px;
+        color: var(--text-3);
+      }
+      .plan-sub {
+        font-size: 12.5px;
+        color: var(--text-2);
+      }
+      .plan-break {
+        padding: 18px 24px;
+        border-top: 1px solid #f1f1f3;
+        background: #fcfcfd;
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+      }
+      .plan-break .li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13.5px;
+      }
+      .plan-break .li .nm {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--text-2);
+      }
+      .plan-break .li .nm i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      .plan-break .li .pr {
+        font-weight: 500;
+      }
+      .plan-save {
+        padding: 16px 24px;
+        border-top: 1px solid #f1f1f3;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .plan-save .cmp {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12.5px;
+        color: var(--text-2);
+      }
+      .plan-save .cmp s {
+        color: var(--text-3);
+      }
+      .plan-save .pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 11px;
+        background: var(--success-tint);
+        color: var(--success-text);
+        border-radius: var(--radius-lg);
+        font-size: 12.5px;
+        font-weight: 500;
+      }
+      .plan-cta {
+        padding: 6px 24px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .plan-trial {
+        font-size: 11.5px;
+        color: var(--text-3);
+        text-align: center;
+      }
+
+      /* ── TEMPLATE STEP ──────────────────────────────────────────────────── */
+      .filterbar {
+        margin-top: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        flex: 1;
+        min-width: 220px;
+        height: 40px;
+        padding: 0 14px;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        color: var(--text-3);
+      }
+      .search:focus-within {
+        border-color: var(--indigo);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+      }
+      .search input {
+        border: none;
+        outline: none;
+        font: inherit;
+        font-size: 14px;
+        flex: 1;
+        background: none;
+        color: var(--text);
+      }
+      .fchips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .fchip {
+        --mc: var(--indigo);
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12.5px;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: var(--radius-full);
+        border: 1px solid var(--mc);
+        background: color-mix(in srgb, var(--mc) 12%, #fff);
+        color: color-mix(in srgb, var(--mc) 72%, #000);
+        cursor: pointer;
+        user-select: none;
+      }
+      .fchip .fdot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--mc);
+      }
+      .fchip.off {
+        border-color: var(--border);
+        background: var(--bg-surface);
+        color: var(--text-3);
+      }
+      .fchip.off .fdot {
+        background: var(--border-strong);
+      }
+      .countline {
+        margin: 18px 0 14px;
+        font-size: 13px;
+        color: var(--text-2);
+      }
+      .countline b {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+      .tpl {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        cursor: pointer;
+        transition:
+          transform 0.2s var(--ease),
+          box-shadow 0.2s,
+          border-color 0.2s;
+        display: flex;
+        flex-direction: column;
+      }
+      .tpl:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--border-strong);
+      }
+      .thumb {
+        aspect-ratio: 16 / 10;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid var(--border);
+      }
+      .thumb .shot {
+        position: absolute;
+        inset: 0;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .shot .bar {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .shot .bar i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.12);
+        display: block;
+      }
+      .shot .bar span {
+        margin-left: auto;
+        height: 7px;
+        width: 46px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.55);
+      }
+      .shot .hero {
+        flex: 1;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 7px;
+        padding: 16px;
+      }
+      .shot .hero b {
+        height: 11px;
+        width: 64%;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.9);
+      }
+      .shot .hero u {
+        height: 7px;
+        width: 84%;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.5);
+      }
+      .shot .hero em {
+        height: 18px;
+        width: 78px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.92);
+        margin-top: 4px;
+      }
+      .shot .cards {
+        display: flex;
+        gap: 7px;
+      }
+      .shot .cards i {
+        flex: 1;
+        height: 26px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.7);
+      }
+      .tpl-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 9px;
+        border-radius: var(--radius-full);
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--text-2);
+        backdrop-filter: blur(4px);
+      }
+      .tpl-body {
+        padding: 15px 17px 17px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        flex: 1;
+      }
+      .tpl-body .name {
+        font-size: 15px;
+        font-weight: 500;
+      }
+      .tpl-body .sum {
+        font-size: 12.5px;
+        color: var(--text-2);
+        line-height: 1.5;
+      }
+      .tpl-mods {
+        margin-top: auto;
+        padding-top: 11px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .tpl-mod {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 2px 8px 2px 7px;
+        border-radius: var(--radius-full);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .tpl-mod .d {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+      }
+      .locked {
+        margin-top: 22px;
+        border: 1px dashed var(--border-strong);
+        border-radius: var(--radius-xl);
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--bg-subtle);
+      }
+      .locked svg {
+        color: var(--text-3);
+        flex: none;
+      }
+      .locked p {
+        font-size: 13px;
+        color: var(--text-2);
+      }
+      .locked b {
+        color: var(--text);
+        font-weight: 500;
+      }
+      .scratch {
+        margin-top: 24px;
+        border-top: 1px solid var(--border);
+        padding-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .scratch p {
+        font-size: 13.5px;
+        color: var(--text-2);
+      }
+
+      /* ── DOMAIN STEP (featured upsell) ──────────────────────────────────── */
+      .dom-results {
+        margin-top: 18px;
+        max-width: 560px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .dom-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 13px 16px;
+        background: var(--bg-surface);
+      }
+      .dom-row.featured {
+        border-color: var(--indigo);
+        box-shadow: 0 0 0 1px var(--indigo);
+        background: var(--indigo-tint);
+      }
+      .dom-name {
+        font-size: 15px;
+        font-weight: 500;
+      }
+      .dom-name .tld {
+        color: var(--text-3);
+        font-weight: 400;
+      }
+      .dom-avail {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: var(--success-text);
+        margin-top: 3px;
+      }
+      .dom-right {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex: none;
+      }
+      .dom-price {
+        font-size: 13px;
+        color: var(--text-2);
+      }
+      .dom-price b {
+        color: var(--text);
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .dom-free {
+        margin-top: 16px;
+        max-width: 560px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        border: 1px dashed var(--border-strong);
+        border-radius: var(--radius-xl);
+        padding: 13px 16px;
+        background: var(--bg-subtle);
+      }
+
+      /* ── FORM STEPS ─────────────────────────────────────────────────────── */
+      .card {
+        margin-top: 26px;
+        max-width: 620px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 26px;
+      }
+      .field {
+        margin-bottom: 20px;
+      }
+      .field:last-child {
+        margin-bottom: 0;
+      }
+      label.fld {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 7px;
+      }
+      label.fld .opt {
+        color: var(--text-3);
+        font-weight: 400;
+      }
+      .input {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-lg);
+        padding: 0 12px;
+        height: 42px;
+        background: #fff;
+      }
+      .input:focus-within {
+        border-color: var(--indigo);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+      }
+      .input input {
+        border: none;
+        outline: none;
+        font: inherit;
+        font-size: 14px;
+        flex: 1;
+        background: none;
+      }
+      .input .suffix {
+        font-size: 13px;
+        color: var(--text-3);
+      }
+      .hint {
+        margin-top: 8px;
+        font-size: 12.5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--success-text);
+      }
+      .tabs {
+        display: flex;
+        gap: 22px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 18px;
+      }
+      .tabs button {
+        background: none;
+        border: none;
+        font: inherit;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--text-3);
+        padding: 0 0 12px;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+      }
+      .tabs button.on {
+        color: var(--indigo-600);
+        border-bottom-color: var(--indigo);
+      }
+      .processor {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 16px 18px;
+      }
+      .processor .ic {
+        width: 42px;
+        height: 42px;
+        border-radius: var(--radius-lg);
+        background: var(--bg-subtle);
+        display: grid;
+        place-items: center;
+        color: var(--text-2);
+        flex: none;
+      }
+      .processor .pt {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .processor .ps {
+        font-size: 12.5px;
+        color: var(--text-2);
+        margin-top: 2px;
+      }
+      .note-row {
+        margin-top: 16px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        font-size: 12.5px;
+        color: var(--text-2);
+        line-height: 1.5;
+      }
+      .note-row svg {
+        flex: none;
+        margin-top: 1px;
+        color: var(--text-3);
+      }
+      .actions {
+        margin-top: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 620px;
+      }
+
+      /* ── LAUNCH STEP ────────────────────────────────────────────────────── */
+      .ready-card {
+        margin-top: 26px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-2xl);
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+      }
+      .ready-card .copy {
+        padding: 30px;
+      }
+      .ready-card .copy .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--success-text);
+        background: var(--success-tint);
+        padding: 4px 11px;
+        border-radius: var(--radius-full);
+      }
+      .ready-card .copy h3 {
+        font-size: 23px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        margin-top: 16px;
+      }
+      .ready-card .copy p {
+        font-size: 14px;
+        color: var(--text-2);
+        line-height: 1.55;
+        margin-top: 8px;
+      }
+      .ready-facts {
+        margin-top: 18px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip {
+        font-size: 12.5px;
+        font-weight: 500;
+        padding: 5px 12px;
+        border-radius: var(--radius-full);
+        background: var(--bg-subtle);
+        color: var(--text-2);
+      }
+      .ready-card .preview {
+        border-left: 1px solid var(--border);
+        background: linear-gradient(150deg, #eef2ff, #e0e7ff);
+        position: relative;
+        min-height: 230px;
+      }
+      .ready-card .preview .shot {
+        inset: 22px;
+      }
+      .launch-row {
+        margin-top: 28px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      /* ── BUTTONS ────────────────────────────────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: var(--radius-lg);
+        padding: 0 18px;
+        height: 42px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.15s;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .btn-block {
+        width: 100%;
+      }
+      .btn-lg {
+        height: 48px;
+        padding: 0 24px;
+        font-size: 15px;
+      }
+      .btn-primary {
+        background: var(--indigo);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--indigo-600);
+      }
+      .btn-outline {
+        background: #fff;
+        border-color: var(--border-strong);
+        color: var(--text);
+      }
+      .btn-outline:hover {
+        background: var(--bg-subtle);
+      }
+      .btn-ghost {
+        background: none;
+        color: var(--text-2);
+      }
+      .btn-ghost:hover {
+        background: var(--bg-subtle);
+      }
+
+      /* ── MOBILE RAIL COLLAPSE ───────────────────────────────────────────── */
+      .railbar {
+        display: none;
+      }
+      @media (max-width: 1040px) {
+        .switchboard {
+          flex-direction: column;
+        }
+        .sb-plan {
+          width: 100%;
+          position: static;
+          order: -1;
+        }
+      }
+      @media (max-width: 940px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+        .rail {
+          display: none;
+        }
+        .railbar {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 14px 18px;
+          background: linear-gradient(120deg, #4f46e5, #4338ca);
+          color: #fff;
+          position: sticky;
+          top: 0;
+          z-index: 5;
+        }
+        .railbar .dots {
+          display: flex;
+          gap: 6px;
+          margin-left: auto;
+        }
+        .railbar .dots i {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.35);
+        }
+        .railbar .dots i.on {
+          background: #fff;
+          width: 22px;
+          border-radius: 4px;
+        }
+        .pane-inner {
+          padding: 30px 20px 64px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .ready-card {
+          grid-template-columns: 1fr;
+        }
+        .ready-card .preview {
+          border-left: none;
+          border-top: 1px solid var(--border);
+        }
+      }
+
+      /* dev toolbar */
+      .devbar {
+        position: fixed;
+        bottom: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(10, 10, 10, 0.86);
+        backdrop-filter: blur(8px);
+        color: #fff;
+        border-radius: var(--radius-full);
+        padding: 7px 8px;
+        display: flex;
+        gap: 4px;
+        z-index: 50;
+        font-size: 12px;
+      }
+      .devbar button {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        font: inherit;
+        font-weight: 500;
+        padding: 6px 13px;
+        border-radius: var(--radius-full);
+        cursor: pointer;
+      }
+      .devbar button.on {
+        background: var(--indigo);
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <!-- ── LEFT RAIL ─────────────────────────────────────────────── -->
+      <aside class="rail">
+        <div class="wordmark">Spar<span class="x">x</span></div>
+        <div class="rail-lede">
+          <h1 id="railTitle">Let's get you live.</h1>
+          <p id="railBlurb">Five quick steps. Most of it is already done for you.</p>
+        </div>
+
+        <nav class="journey" id="journey">
+          <div class="jstep" data-step="0">
+            <div class="marker">1</div>
+            <div><div class="jlabel">Modules</div><div class="jsub">What you need</div></div>
+          </div>
+          <div class="jstep" data-step="1">
+            <div class="marker">2</div>
+            <div><div class="jlabel">Template</div><div class="jsub">A starting point</div></div>
+          </div>
+          <div class="jstep" data-step="2">
+            <div class="marker">3</div>
+            <div><div class="jlabel">Workspace</div><div class="jsub">Name your site</div></div>
+          </div>
+          <div class="jstep" data-step="3">
+            <div class="marker">4</div>
+            <div><div class="jlabel">Domain</div><div class="jsub">Make it yours</div></div>
+          </div>
+          <div class="jstep" data-step="4">
+            <div class="marker">5</div>
+            <div><div class="jlabel">Payments</div><div class="jsub">Get paid</div></div>
+          </div>
+          <div class="jstep" data-step="5">
+            <div class="marker">6</div>
+            <div><div class="jlabel">Launch</div><div class="jsub">Go live</div></div>
+          </div>
+        </nav>
+
+        <div class="rail-foot">
+          <div class="context">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+            <p id="railContext">
+              Switch on only what you need — the bill updates live and your picks narrow the templates
+              that fit. Free for 14 days, no card today.
+            </p>
+          </div>
+          <div class="rail-links">
+            <a href="#">Need help?</a>
+            <a href="#">Sign out</a>
+          </div>
+        </div>
+      </aside>
+
+      <div class="railbar">
+        <span class="wordmark">Spar<span class="x">x</span></span>
+        <span class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span>
+      </div>
+
+      <!-- ── WORKING PANE ──────────────────────────────────────────── -->
+      <main class="pane">
+        <div class="pane-inner">
+          <!-- STEP 1 · MODULES (the switchboard) -->
+          <section class="view active" data-view="0">
+            <div class="pane-head">
+              <h2>Switch on what you use</h2>
+              <p>
+                Every module is one toggle — flip it and your plan updates the instant you do. You're
+                free for 14 days with no card; this is just what you'll pay after, and you can change
+                it anytime. We'll use your picks to show you the right templates next.
+              </p>
+            </div>
+
+            <div class="switchboard">
+              <div class="sb-list" id="sbList"></div>
+              <aside class="sb-plan" id="sbPlan"></aside>
+            </div>
+          </section>
+
+          <!-- STEP 2 · TEMPLATE -->
+          <section class="view" data-view="1">
+            <div class="pane-head">
+              <h2>Pick a starting point</h2>
+              <p>
+                Complete, themed sites — pages, design, products, and copy in place from the first
+                second. Filtered to the modules you chose; search or toggle to widen the field.
+              </p>
+            </div>
+
+            <div class="filterbar">
+              <label class="search">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input id="tplSearch" placeholder="Search templates…" />
+              </label>
+              <div class="fchips" id="fchips"></div>
+            </div>
+
+            <div class="countline" id="countline"></div>
+            <div class="grid" id="gallery"></div>
+            <div class="locked" id="locked" style="display: none"></div>
+
+            <div class="scratch">
+              <p>Prefer a blank canvas?</p>
+              <button class="btn btn-outline">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Start from scratch
+              </button>
+            </div>
+          </section>
+
+          <!-- STEP 3 · WORKSPACE -->
+          <section class="view" data-view="2">
+            <div class="pane-head">
+              <h2>Name your workspace</h2>
+              <p>
+                This is your company and its first site. We pre-filled what you told us at signup —
+                tweak anything. Your free address goes live the moment you launch.
+              </p>
+            </div>
+
+            <div class="card">
+              <div class="field">
+                <label class="fld" for="w-co">Company name</label>
+                <div class="input"><input id="w-co" value="Bob's Barbers" /></div>
+              </div>
+              <div class="field">
+                <label class="fld" for="w-slug">Workspace address</label>
+                <div class="input">
+                  <input id="w-slug" value="bobs-barbers" />
+                  <span class="suffix">.sparx.zone</span>
+                </div>
+                <div class="hint">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  bobs-barbers.sparx.zone is available
+                </div>
+              </div>
+              <div class="field">
+                <label class="fld" for="w-site">Site name <span class="opt">· you can add more sites later</span></label>
+                <div class="input"><input id="w-site" value="Primary" /></div>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-ghost" data-go="1">Back</button>
+              <button class="btn btn-primary" data-go="3">Continue</button>
+            </div>
+          </section>
+
+          <!-- STEP 4 · DOMAIN (featured upsell — never minimized) -->
+          <section class="view" data-view="3">
+            <div class="pane-head">
+              <h2>Make it yours</h2>
+              <p>
+                A custom domain builds trust — and it's yours to keep. Grab the perfect one now, or
+                start free on your .sparx.zone address and add a domain anytime.
+              </p>
+            </div>
+
+            <label class="search" style="margin-top: 26px; max-width: 560px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input value="bobsbarbers" placeholder="Search for your domain…" />
+            </label>
+
+            <div class="dom-results">
+              <div class="dom-row featured">
+                <div>
+                  <div class="dom-name">bobsbarbers<span class="tld">.com</span></div>
+                  <div class="dom-avail">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Available · best match
+                  </div>
+                </div>
+                <div class="dom-right">
+                  <span class="dom-price"><b>$12.99</b>/yr</span>
+                  <button class="btn btn-primary">Add</button>
+                </div>
+              </div>
+              <div class="dom-row">
+                <div>
+                  <div class="dom-name">bobsbarbers<span class="tld">.shop</span></div>
+                  <div class="dom-avail">Available</div>
+                </div>
+                <div class="dom-right">
+                  <span class="dom-price"><b>$3.99</b>/yr</span>
+                  <button class="btn btn-outline">Add</button>
+                </div>
+              </div>
+              <div class="dom-row">
+                <div>
+                  <div class="dom-name">getbobsbarbers<span class="tld">.com</span></div>
+                  <div class="dom-avail">Available</div>
+                </div>
+                <div class="dom-right">
+                  <span class="dom-price"><b>$12.99</b>/yr</span>
+                  <button class="btn btn-outline">Add</button>
+                </div>
+              </div>
+              <div class="dom-row">
+                <div>
+                  <div class="dom-name">bobsbarbers<span class="tld">.co</span></div>
+                  <div class="dom-avail">Available</div>
+                </div>
+                <div class="dom-right">
+                  <span class="dom-price"><b>$24.99</b>/yr</span>
+                  <button class="btn btn-outline">Add</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="dom-free">
+              <div>
+                <div style="font-size: 13.5px; font-weight: 500">Start free for now</div>
+                <div style="font-size: 12.5px; color: var(--text-2); margin-top: 2px">
+                  Your site is live at <b>bobs-barbers.sparx.zone</b> — add a domain anytime from Settings.
+                </div>
+              </div>
+              <button class="btn btn-ghost" data-go="4">Use free address</button>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-ghost" data-go="2">Back</button>
+              <button class="btn btn-primary" data-go="4">Continue</button>
+            </div>
+          </section>
+
+          <!-- STEP 5 · PAYMENTS (Stripe Connect — only when a selling module is on) -->
+          <section class="view" data-view="4">
+            <div class="pane-head">
+              <h2>Get paid</h2>
+              <p>
+                Connect your Stripe account so your store can take customer payments. Your site can go
+                live now and you can connect this whenever you're ready — checkout simply stays off
+                until then.
+              </p>
+            </div>
+
+            <div class="card">
+              <div class="processor">
+                <span class="ic">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                </span>
+                <div style="flex: 1">
+                  <div class="pt">Stripe</div>
+                  <div class="ps">Cards, wallets, and bank debits — paid out to your bank.</div>
+                </div>
+                <button class="btn btn-outline">Connect Stripe</button>
+              </div>
+              <div class="note-row">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                <span>This is the account that <b>receives money from your customers</b> — separate from your own Sparx subscription, which stays free for 14 days.</span>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-ghost" data-go="3">Back</button>
+              <button class="btn btn-primary" data-go="5">Skip for now</button>
+            </div>
+          </section>
+
+          <!-- STEP 6 · LAUNCH -->
+          <section class="view" data-view="5">
+            <div class="pane-head">
+              <h2>Your site is ready</h2>
+              <p>
+                The <strong>Beauty Salon &amp; Spa</strong> template is installed and styled. Publish
+                to make it live at <strong>bobs-barbers.sparx.zone</strong>.
+              </p>
+            </div>
+
+            <div class="ready-card">
+              <div class="copy">
+                <span class="eyebrow">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Installed &amp; styled
+                </span>
+                <h3>One tap from the world.</h3>
+                <p>
+                  Everything's in place — home, services, and contact pages, your booking flow, and
+                  the theme. Publishing flips it live; nothing here is locked in.
+                </p>
+                <div class="ready-facts">
+                  <span class="chip">8 services</span>
+                  <span class="chip">6 pages of content</span>
+                  <span class="chip">2 emails</span>
+                  <span class="chip">Bloom theme</span>
+                </div>
+              </div>
+              <div class="preview">
+                <div class="shot">
+                  <div class="bar"><i></i><i></i><i></i><span></span></div>
+                  <div class="hero" style="background: linear-gradient(135deg, #db2777, #831843)">
+                    <b></b><u></u><em></em>
+                  </div>
+                  <div class="cards"><i></i><i></i><i></i></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="launch-row">
+              <button class="btn btn-primary btn-lg">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09Z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2Z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/></svg>
+                Publish my site
+              </button>
+              <a class="btn btn-outline" href="#">
+                Preview in a new tab
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+              </a>
+              <button class="btn btn-ghost">Customize first</button>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="devbar" id="devbar">
+      <button class="on" data-go="0">Modules</button>
+      <button data-go="1">Template</button>
+      <button data-go="2">Workspace</button>
+      <button data-go="3">Domain</button>
+      <button data-go="4">Payments</button>
+      <button data-go="5">Launch</button>
+    </div>
+
+    <script>
+      // ── Module catalog — EXACT mirror of apps/web pricing-switchboard.tsx ──
+      const MODULES = [
+        { key: 'builder', name: 'Builder', desc: 'Themes, pages, live URLs', price: 10, elsewhere: 39, color: '#6366f1', long: 'The foundation every Sparx site starts on. Pick a polished theme, edit blocks, point your domain — automatic SSL, edge-cached pages, instant TTFB worldwide.', feats: ['Theme-first, customize what matters', 'Custom domain + automatic SSL', 'CDN-cached, stale-while-revalidate', 'Headless SDK for Next, Remix, Astro'], replaces: 'Webflow + hosting + a CDN' },
+        { key: 'commerce', name: 'Commerce', desc: 'Cart, checkout, orders', price: 49, elsewhere: 399, color: '#f97316', long: 'Products, inventory, payments, tax, and shipping. A conversion-optimized single-page checkout out of the box, D2C and B2B from the same codebase.', feats: ['Variants, bundles, real-time inventory', 'Apple Pay + one-tap checkout', 'Stripe, PayPal, Klarna, Affirm', 'Avalara/TaxJar tax · Shippo/EasyPost'], replaces: 'Shopify Advanced + tax & shipping apps' },
+        { key: 'cms', name: 'CMS', desc: 'Words, media, SEO', price: 49, elsewhere: 99, color: '#14b8a6', long: 'A real editor with autosave and revisions, structured content types with a typed API, a media library, and SEO scored on every publish.', feats: ['Block editor, autosave + revisions', 'Structured content types + typed API', 'Auto WebP/AVIF media library', 'Per-page SEO + JSON-LD'], replaces: 'a headless CMS like Storyblok + a media CDN' },
+        { key: 'crm', name: 'CRM', desc: 'Customers, pipeline, signal', price: 49, elsewhere: 300, color: '#06b6d4', long: 'One customer record across orders, email, support, RFQs, and AI conversations — on the same database as everything else. No sync, no glue, no duplicate records.', feats: ['One record, no deduping', 'Dynamic segments from any signal', 'Pipeline tied to order status', 'Automations + activity timeline'], replaces: 'HubSpot Sales Pro + an automation seat' },
+        { key: 'email', name: 'Email', desc: 'Transactional + marketing', price: 29, elsewhere: 165, color: '#0ea5e9', long: 'Transactional and marketing email from your own sending domain, with SPF, DKIM, and DMARC auto-configured. Flat price — send 10K or 1M a month, same bill.', feats: ['Transactional wired into every module', 'Campaigns + A/B testing', 'Your domain, your reputation', 'No per-email pricing, ever'], replaces: 'Klaviyo + a transactional email service' },
+        { key: 'b2b', name: 'B2B · Fleet', desc: 'Wholesale, net terms, fleet', price: 99, elsewhere: 2400, color: '#475569', long: 'Wholesale pricing, net terms, purchase orders, RFQ, fleet accounts, and service scheduling — natively, not a bolt-on.', feats: ['Account-tier + contract pricing', 'Net 15 / 30 / 60 / 90 + PO checkout', 'Fleet: vehicles, VIN, cost centers', 'RFQ + bookable service bays'], replaces: 'Shopify Plus for native B2B' },
+        { key: 'ai', name: 'AI · MCP', desc: 'Native MCP server', price: 49, elsewhere: 103, color: '#ec4899', long: 'The first content + commerce platform built around the Model Context Protocol. Connect any AI client once and read or write live data in plain English. Scoped, audited, revocable.', feats: ['First-class MCP server, per-tenant', 'Read & write everything the API can', 'Per-agent keys, per-tool scopes', 'Claude, ChatGPT, Copilot, Cursor'], replaces: 'Zapier Team + custom integration work' },
+        { key: 'dropship', name: 'Dropship', desc: 'Suppliers, sync, fulfillment', price: 29, elsewhere: 60, color: '#10b981', long: 'Supplier sync, margin math, and automated order routing — on a real platform underneath, not an app stacked on an app.', feats: ['Supplier connectors + CSV/FTP/API', 'Per-supplier margin rules', 'Automated multi-supplier routing', 'Real-time stock sync'], replaces: 'a dropshipping app like Spocket' },
+        { key: 'chat', name: 'Live Chat', desc: 'Widget, AI replies, inbox', price: 19, elsewhere: 74, color: '#8b5cf6', long: 'A themed chat widget on every page, an AI first responder that answers from your own catalog, and a staff inbox for everything it escalates.', feats: ['Storefront widget in your theme', 'AI answers from your own catalog', 'Staff inbox — assign, reply, resolve', 'Web-push + email notifications'], replaces: 'a live-chat + AI inbox like Intercom', addon: true },
+      ];
+      const MOD = Object.fromEntries(MODULES.map((m) => [m.key, m]));
+      // Modules a template can require (Builder is universal; Chat is an add-on).
+      const CAP_KEYS = ['commerce', 'cms', 'crm', 'email', 'b2b', 'ai', 'dropship'];
+
+      const TEMPLATES = [
+        { name: 'Auto Parts & Service', tag: 'Store', sum: 'Catalog, fitment lookup, and a service-booking CTA for parts & repair shops.', mods: ['commerce', 'crm'], g1: '#475569', g2: '#1e293b' },
+        { name: 'Antique Shop', tag: 'Store', sum: 'A warm, editorial storefront for one-of-a-kind finds and curated collections.', mods: ['commerce'], g1: '#92400e', g2: '#451a03' },
+        { name: 'Beauty Salon & Spa', tag: 'Services', sum: 'Service menu, booking, and a gallery built to convert local searches.', mods: ['crm', 'cms'], g1: '#db2777', g2: '#831843' },
+        { name: 'Tattoo Studio', tag: 'Services', sum: 'Artist portfolios, a bold landing page, and a consult request flow.', mods: ['cms', 'crm'], g1: '#0f172a', g2: '#020617' },
+        { name: 'Team Workspace + Docs', tag: 'Publication', sum: 'A docs-and-knowledge site with clean navigation and a journal.', mods: ['cms'], g1: '#0d9488', g2: '#134e4a' },
+        { name: 'Local Café', tag: 'Store', sum: 'Menu, story, and online ordering for a neighborhood spot.', mods: ['commerce', 'cms'], g1: '#a16207', g2: '#422006' },
+        { name: 'Newsletter & Blog', tag: 'Publication', sum: 'A publication front page with subscribe-driven growth.', mods: ['cms', 'email'], g1: '#0369a1', g2: '#082f49' },
+        { name: 'Field & Supply', tag: 'Wholesale', sum: 'B2B pricing, account applications, and quote requests for distributors.', mods: ['b2b', 'commerce'], g1: '#334155', g2: '#0f172a' },
+        { name: 'Dropship Boutique', tag: 'Store', sum: 'A trend-led storefront sourced and fulfilled through suppliers.', mods: ['commerce', 'dropship'], g1: '#0f766e', g2: '#134e4a' },
+      ];
+
+      const RAIL = [
+        { title: 'Switch on what you use.', blurb: "One toggle per module. Free for 14 days.", context: 'Switch on only what you need — the bill updates live and your picks narrow the templates that fit. Free for 14 days, no card today.' },
+        { title: 'Pick a starting point.', blurb: 'A complete, themed site — not a blank page.', context: 'Every template installs a whole site — pages, design, products, copy. Filtered to your modules; search to widen it.' },
+        { title: 'Name your workspace.', blurb: 'Your company and its first site.', context: 'Pre-filled from signup — tweak anything. Your free .sparx.zone address is set; claim a custom domain next.' },
+        { title: 'Make it yours.', blurb: 'Claim a custom domain — or start free.', context: 'A custom domain builds trust and is yours to keep. Skip it and your free .sparx.zone address works instantly.' },
+        { title: 'Get paid.', blurb: 'Connect Stripe to accept customer payments.', context: 'This connects the account that RECEIVES money from your customers — separate from your Sparx subscription. Skippable.' },
+        { title: 'Ready to launch.', blurb: "Your site is built. One tap and it's live.", context: 'Publishing makes your draft live at your address. Keep editing in the Builder afterward — anytime.' },
+      ];
+
+      // ── State ──────────────────────────────────────────────────────────────
+      const on = {};
+      MODULES.forEach((m) => (on[m.key] = ['builder', 'commerce', 'cms'].includes(m.key)));
+      let openKey = null;
+      let search = '';
+
+      const fmtIcon =
+        '<svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+      function renderSwitchboard() {
+        const list = document.getElementById('sbList');
+        let html = '';
+        MODULES.forEach((m, i) => {
+          const firstAddon = m.addon && (i === 0 || !MODULES[i - 1].addon);
+          if (firstAddon) html += `<div class="sb-addon-label">Add-ons</div>`;
+          const isOn = on[m.key];
+          const isOpen = openKey === m.key;
+          html += `
+            <div class="sb-row ${isOn ? 'on' : ''} ${isOpen ? 'open' : ''}" data-key="${m.key}">
+              <div class="sb-head" data-act="toggle-detail">
+                <span class="sb-dot" style="background:${m.color}"></span>
+                <span class="sb-meta">
+                  <span class="sb-name">${m.name}${fmtIcon}</span>
+                  <span class="sb-desc">${m.desc}</span>
+                </span>
+                <span class="sb-price">+ $${m.price}</span>
+                <button class="swt" data-act="toggle" style="background:${isOn ? m.color : '#e4e4e7'}" aria-checked="${isOn}"><span></span></button>
+              </div>
+              <div class="sb-detail">
+                <p>${m.long}</p>
+                <ul class="sb-feats">${m.feats
+                  .map((f) => `<li><i style="background:${m.color}"></i>${f}</li>`)
+                  .join('')}</ul>
+                <div class="sb-replaces">Replaces ${m.replaces} — about <b>$${m.elsewhere}/mo</b> bought separately.</div>
+              </div>
+            </div>`;
+        });
+        list.innerHTML = html;
+
+        list.querySelectorAll('.sb-head').forEach((head) => {
+          const key = head.closest('.sb-row').dataset.key;
+          head.addEventListener('click', (e) => {
+            if (e.target.closest('[data-act="toggle"]')) {
+              on[key] = !on[key];
+              renderSwitchboard();
+              renderPlan();
+            } else {
+              openKey = openKey === key ? null : key;
+              renderSwitchboard();
+            }
+          });
+        });
+      }
+
+      function renderPlan() {
+        const active = MODULES.filter((m) => on[m.key]);
+        const total = active.reduce((s, m) => s + m.price, 0);
+        const elsewhere = active.reduce((s, m) => s + m.elsewhere, 0);
+        const save = Math.max(0, elsewhere - total);
+        document.getElementById('sbPlan').innerHTML = `
+          <div class="plan-top">
+            <div class="ph"><b>Your plan</b><span class="badge">${active.length} ${active.length === 1 ? 'module on' : 'modules on'}</span></div>
+            <div class="plan-total"><span class="amt">$${total}</span><span class="per">/mo</span></div>
+            <span class="plan-sub">After your free trial · one invoice for everything</span>
+          </div>
+          <div class="plan-break">
+            ${
+              active.length === 0
+                ? `<span class="plan-sub">Flip on a module to start.</span>`
+                : active
+                    .map(
+                      (m) =>
+                        `<div class="li"><span class="nm"><i style="background:${m.color}"></i>${m.name}</span><span class="pr">$${m.price}</span></div>`
+                    )
+                    .join('')
+            }
+          </div>
+          <div class="plan-save">
+            <div class="cmp"><span>Same stack, stitched together</span><s>$${elsewhere}/mo</s></div>
+            <div class="pill">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              You save $${save}/mo on one bill
+            </div>
+          </div>
+          <div class="plan-cta">
+            <button class="btn btn-primary btn-block" data-go="1">
+              Continue
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+            <span class="plan-trial">Free for 14 days · no card today · cancel anytime</span>
+          </div>`;
+        document.querySelector('#sbPlan [data-go]').addEventListener('click', () => go(1));
+      }
+
+      function renderChips() {
+        const c = document.getElementById('fchips');
+        const caps = CAP_KEYS.filter((k) => on[k]);
+        c.innerHTML = caps
+          .map(
+            (k) =>
+              `<span class="fchip" data-mod="${k}" style="--mc:${MOD[k].color}"><span class="fdot"></span>${MOD[k].name}</span>`
+          )
+          .join('');
+        c.querySelectorAll('.fchip').forEach((el) =>
+          el.addEventListener('click', () => {
+            el.classList.toggle('off');
+            renderGallery();
+          })
+        );
+      }
+
+      function activeFilter() {
+        const off = new Set([...document.querySelectorAll('.fchip.off')].map((e) => e.dataset.mod));
+        return new Set(CAP_KEYS.filter((k) => on[k] && !off.has(k)));
+      }
+
+      function renderGallery() {
+        const filter = activeFilter();
+        const q = search.trim().toLowerCase();
+        const fits = (t) => t.mods.every((m) => filter.has(m));
+        const matchesQ = (t) => !q || t.name.toLowerCase().includes(q) || t.tag.toLowerCase().includes(q);
+        const shown = TEMPLATES.filter((t) => fits(t) && matchesQ(t));
+        const hidden = TEMPLATES.filter((t) => !fits(t) && matchesQ(t));
+        const lockedMods = new Set();
+        hidden.forEach((t) => t.mods.filter((m) => !filter.has(m)).forEach((m) => lockedMods.add(m)));
+
+        document.getElementById('countline').innerHTML = `Showing <b>${shown.length}</b> of ${TEMPLATES.length} templates that fit your modules`;
+        document.getElementById('gallery').innerHTML = shown
+          .map(
+            (t) => `
+          <article class="tpl">
+            <div class="thumb">
+              <div class="shot">
+                <div class="bar"><i></i><i></i><i></i><span></span></div>
+                <div class="hero" style="background:linear-gradient(135deg, ${t.g1}, ${t.g2})"><b></b><u></u><em></em></div>
+                <div class="cards"><i></i><i></i><i></i></div>
+              </div>
+              <span class="tpl-badge">${t.tag}</span>
+            </div>
+            <div class="tpl-body">
+              <div class="name">${t.name}</div>
+              <div class="sum">${t.sum}</div>
+              <div class="tpl-mods">${t.mods
+                .map(
+                  (m) =>
+                    `<span class="tpl-mod" style="background:color-mix(in srgb, ${MOD[m].color} 13%, #fff);color:${MOD[m].color}"><span class="d" style="background:${MOD[m].color}"></span>${MOD[m].name}</span>`
+                )
+                .join('')}</div>
+            </div>
+          </article>`
+          )
+          .join('');
+
+        const lockedEl = document.getElementById('locked');
+        if (hidden.length > 0) {
+          const names = [...lockedMods].map((m) => MOD[m].name).join(', ');
+          lockedEl.style.display = 'flex';
+          lockedEl.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <p><b>${hidden.length} more</b> ${hidden.length === 1 ? 'template' : 'templates'} unlock with <b>${names}</b> — add ${lockedMods.size === 1 ? 'it' : 'one'} back on the Modules step.</p>`;
+        } else {
+          lockedEl.style.display = 'none';
+        }
+      }
+
+      // ── Step switching ─────────────────────────────────────────────────────
+      let step = 0;
+      function go(n) {
+        step = n;
+        document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
+        document.querySelector(`.view[data-view="${n}"]`).classList.add('active');
+        document.querySelectorAll('.jstep').forEach((s, i) => {
+          s.classList.toggle('current', i === n);
+          s.classList.toggle('done', i < n);
+        });
+        document.querySelectorAll('#devbar button').forEach((b, i) => b.classList.toggle('on', i === n));
+        document.querySelectorAll('#dots i').forEach((d, i) => d.classList.toggle('on', i === n));
+        document.getElementById('railTitle').textContent = RAIL[n].title;
+        document.getElementById('railBlurb').textContent = RAIL[n].blurb;
+        document.getElementById('railContext').textContent = RAIL[n].context;
+        if (n === 1) {
+          renderChips();
+          renderGallery();
+        }
+        document.querySelector('.pane').scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      renderSwitchboard();
+      renderPlan();
+      document.getElementById('tplSearch').addEventListener('input', (e) => {
+        search = e.target.value;
+        renderGallery();
+      });
+      document.querySelectorAll('[data-go]').forEach((el) =>
+        el.addEventListener('click', () => go(Number(el.dataset.go)))
+      );
+      document.querySelectorAll('.jstep').forEach((s) =>
+        s.addEventListener('click', () => go(Number(s.dataset.step)))
+      );
+      go(0);
+    </script>
+  </body>
+</html>

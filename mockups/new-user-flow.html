@@ -1,0 +1,1182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sparx · New-User Flow Architecture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #6366f1;
+        --indigo-600: #4f46e5;
+        --indigo-700: #4338ca;
+        --indigo-900: #312e81;
+        --indigo-tint: #eef2ff;
+
+        --bg: #fafafa;
+        --surface: #ffffff;
+        --subtle: #f4f4f5;
+        --border: #e5e5e5;
+        --border-strong: #d4d4d8;
+        --text: #0a0a0a;
+        --text-2: #52525b;
+        --text-3: #a1a1aa;
+
+        --slate: #475569;
+        --slate-tint: #f1f5f9;
+        --slate-text: #334155;
+
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+
+        --radius: 12px;
+        --radius-lg: 16px;
+        --mono: 'Geist Mono', ui-monospace, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0d0d0f;
+          --surface: #161618;
+          --subtle: #1f1f23;
+          --border: #2a2a2e;
+          --border-strong: #3a3a40;
+          --text: #f3f3f4;
+          --text-2: #a1a1aa;
+          --text-3: #6b6b73;
+          --indigo-tint: #1c1a3a;
+          --slate-tint: #1c222e;
+          --slate-text: #cbd5e1;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: 'Geist', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        letter-spacing: -0.011em;
+        -webkit-font-smoothing: antialiased;
+        padding: 56px 28px 90px;
+        background-image: radial-gradient(
+          circle at 88% -10%,
+          rgba(99, 102, 241, 0.08),
+          transparent 42%
+        );
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+      }
+
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--indigo-600);
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .eyebrow::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--indigo);
+      }
+      h1 {
+        font-size: 38px;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        line-height: 1.08;
+        margin: 16px 0 12px;
+      }
+      .sub {
+        font-size: 16px;
+        color: var(--text-2);
+        max-width: 64ch;
+      }
+
+      /* legend */
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 26px;
+      }
+      .lg {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 13px;
+        padding: 7px 14px 7px 11px;
+        border-radius: 9999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+      }
+      .lg b {
+        font-weight: 500;
+      }
+      .lg small {
+        color: var(--text-3);
+      }
+      .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        flex: none;
+      }
+      .dot.need {
+        background: var(--indigo);
+      }
+      .dot.like {
+        background: var(--surface);
+        border: 2px solid var(--slate);
+      }
+      .dot.later {
+        background: transparent;
+        border: 2px dashed var(--text-3);
+      }
+
+      /* principles */
+      .principles {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin: 30px 0 8px;
+      }
+      .pr {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 18px 20px;
+        min-width: 0;
+      }
+      .pr .k {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-3);
+      }
+      .pr .v {
+        font-size: 15.5px;
+        font-weight: 500;
+        margin-top: 8px;
+        letter-spacing: -0.02em;
+      }
+      .pr .d {
+        font-size: 13px;
+        color: var(--text-2);
+        margin-top: 5px;
+      }
+
+      /* journey rail */
+      .journey {
+        margin-top: 40px;
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 0;
+      }
+      .stage {
+        display: contents;
+      }
+      .rail {
+        position: relative;
+        display: flex;
+        justify-content: center;
+      }
+      .rail .num {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--indigo);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 15px;
+        font-weight: 500;
+        z-index: 2;
+        box-shadow: 0 0 0 5px var(--bg);
+      }
+      .rail.soft .num {
+        background: var(--surface);
+        color: var(--text-2);
+        border: 1.5px solid var(--border-strong);
+      }
+      .rail::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: -40px;
+        left: 50%;
+        width: 2px;
+        transform: translateX(-50%);
+        background: linear-gradient(var(--border-strong), var(--border));
+      }
+      .stage:last-child .rail::before {
+        display: none;
+      }
+      .stage .body {
+        padding: 0 0 40px 22px;
+        min-width: 0;
+      }
+      .stage .body > .label {
+        font-size: 12px;
+        font-family: var(--mono);
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--text-3);
+      }
+      .stage .body > h2 {
+        font-size: 22px;
+        font-weight: 500;
+        letter-spacing: -0.022em;
+        margin: 4px 0 2px;
+      }
+      .stage .body > .blurb {
+        font-size: 14px;
+        color: var(--text-2);
+        margin-bottom: 16px;
+        max-width: 62ch;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 20px;
+        min-width: 0;
+      }
+      .card.lead {
+        border-left: 3px solid var(--indigo);
+      }
+
+      /* captured / creates lists */
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+      }
+      .col h4 {
+        font-size: 11px;
+        font-family: var(--mono);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-3);
+        margin-bottom: 10px;
+      }
+      ul.items {
+        list-style: none;
+      }
+      ul.items li {
+        position: relative;
+        padding: 4px 0 4px 22px;
+        font-size: 13.5px;
+        color: var(--text);
+      }
+      ul.items li::before {
+        content: '';
+        position: absolute;
+        left: 2px;
+        top: 10px;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+      }
+      li.need::before {
+        background: var(--indigo);
+      }
+      li.like::before {
+        background: var(--surface);
+        border: 2px solid var(--slate);
+        top: 9px;
+      }
+      li.later::before {
+        background: transparent;
+        border: 2px dashed var(--text-3);
+        top: 9px;
+        border-radius: 3px;
+      }
+      ul.items li small {
+        display: block;
+        color: var(--text-3);
+        font-size: 12px;
+      }
+      ul.items li code {
+        font-family: var(--mono);
+        font-size: 12px;
+        background: var(--subtle);
+        padding: 1px 5px;
+        border-radius: 4px;
+        color: var(--indigo-700);
+      }
+      @media (prefers-color-scheme: dark) {
+        ul.items li code {
+          color: #b3b8ff;
+        }
+      }
+
+      /* onboarding 5-step strip */
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+      }
+      .step {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .step .sn {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-3);
+        letter-spacing: 0.05em;
+      }
+      .step .st {
+        font-size: 15px;
+        font-weight: 500;
+        margin: 3px 0 9px;
+        letter-spacing: -0.015em;
+      }
+      .step ul.items li {
+        padding-left: 20px;
+        font-size: 12.5px;
+      }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 500;
+        font-family: var(--mono);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 3px 9px;
+        border-radius: 9999px;
+        margin-bottom: 10px;
+        width: fit-content;
+      }
+      .tag.need {
+        background: var(--indigo-tint);
+        color: var(--indigo-700);
+      }
+      @media (prefers-color-scheme: dark) {
+        .tag.need {
+          color: #b3b8ff;
+        }
+      }
+      .tag.like {
+        background: var(--slate-tint);
+        color: var(--slate-text);
+      }
+
+      /* the modules callout — the headline answer */
+      .callout {
+        margin-top: 6px;
+        background: linear-gradient(150deg, var(--indigo-700), var(--indigo-900));
+        color: #fff;
+        border-radius: var(--radius-lg);
+        padding: 24px 26px;
+        position: relative;
+        overflow: hidden;
+      }
+      .callout::after {
+        content: '';
+        position: absolute;
+        top: -80px;
+        right: -60px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(129, 140, 248, 0.5), transparent 70%);
+      }
+      .callout .ck {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #c7d2fe;
+        position: relative;
+      }
+      .callout .cq {
+        font-size: 19px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        margin-top: 10px;
+        max-width: 60ch;
+        position: relative;
+      }
+      .callout .cd {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.74);
+        margin-top: 10px;
+        max-width: 64ch;
+        position: relative;
+      }
+
+      /* decisions */
+      .section-h {
+        margin: 50px 0 18px;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .section-h h3 {
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+      }
+      .section-h span {
+        font-size: 13px;
+        color: var(--text-2);
+      }
+      .decisions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      .dec {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-top: 3px solid var(--indigo);
+        border-radius: var(--radius);
+        padding: 18px 20px;
+        min-width: 0;
+      }
+      .dec .id {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--indigo-600);
+        font-weight: 500;
+      }
+      .dec .q {
+        font-size: 15px;
+        font-weight: 500;
+        margin: 6px 0 8px;
+        letter-spacing: -0.015em;
+      }
+      .dec .rec {
+        font-size: 13px;
+        color: var(--text-2);
+      }
+      .dec .pick {
+        margin-top: 12px;
+        font-size: 12.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 11px;
+        border-radius: 9999px;
+        background: var(--subtle);
+        color: var(--text);
+      }
+      .dec .pick b {
+        font-weight: 500;
+        color: var(--indigo-700);
+      }
+      @media (prefers-color-scheme: dark) {
+        .dec .pick b {
+          color: #b3b8ff;
+        }
+      }
+
+      /* billing lifecycle timeline */
+      .bl-lede {
+        font-size: 14px;
+        color: var(--text-2);
+        line-height: 1.55;
+        max-width: 70ch;
+        margin-bottom: 24px;
+      }
+      .bl {
+        display: grid;
+        grid-template-columns: 36px 1fr;
+      }
+      .bl-stage {
+        display: contents;
+      }
+      .bl-rail {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        padding-top: 3px;
+      }
+      .bl-rail::before {
+        content: '';
+        position: absolute;
+        top: 4px;
+        bottom: -22px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        background: var(--border-strong);
+      }
+      .bl-stage.bl-last .bl-rail::before {
+        display: none;
+      }
+      .bl-dot {
+        position: relative;
+        z-index: 1;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--sc);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--sc) 18%, transparent);
+      }
+      .bl-body {
+        padding: 0 0 26px 18px;
+        min-width: 0;
+      }
+      .bl-day {
+        display: inline-block;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--sc);
+        background: color-mix(in srgb, var(--sc) 13%, transparent);
+        padding: 3px 9px;
+        border-radius: 9999px;
+      }
+      .bl-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--sc);
+        border-radius: var(--radius);
+        padding: 15px 17px;
+      }
+      .bl-card .bl-day {
+        margin-bottom: 9px;
+      }
+      .bl-title {
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: -0.015em;
+        margin-bottom: 4px;
+      }
+      .bl-card p {
+        font-size: 13px;
+        color: var(--text-2);
+        line-height: 1.5;
+      }
+      .bl-card p code {
+        font-family: var(--mono);
+        font-size: 11.5px;
+        background: var(--subtle);
+        padding: 1px 5px;
+        border-radius: 4px;
+        color: var(--indigo-700);
+      }
+      @media (prefers-color-scheme: dark) {
+        .bl-card p code {
+          color: #b3b8ff;
+        }
+      }
+      .bl-fork {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 9px;
+      }
+      /* the "what visitors see" overlay depiction */
+      .overlay-demo {
+        margin-top: 13px;
+        position: relative;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        aspect-ratio: 16 / 6;
+      }
+      .overlay-demo .site {
+        position: absolute;
+        inset: 0;
+        padding: 13px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        background: var(--subtle);
+      }
+      .overlay-demo .site i {
+        height: 8px;
+        border-radius: 4px;
+        background: var(--border-strong);
+        display: block;
+      }
+      .overlay-demo .scrim {
+        position: absolute;
+        inset: 0;
+        background: rgba(9, 9, 14, 0.52);
+        backdrop-filter: blur(2px);
+        display: grid;
+        place-items: center;
+      }
+      .overlay-demo .msg {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 13px 18px;
+        text-align: center;
+        max-width: 72%;
+      }
+      .overlay-demo .msg b {
+        font-size: 13.5px;
+        font-weight: 500;
+      }
+      .overlay-demo .msg small {
+        display: block;
+        font-size: 11.5px;
+        color: var(--text-2);
+        margin-top: 3px;
+      }
+
+      /* matrix */
+      .matrixwrap {
+        margin-top: 18px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      thead th {
+        text-align: left;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-3);
+        font-weight: 500;
+        padding: 12px 16px;
+        background: var(--subtle);
+        border-bottom: 1px solid var(--border);
+      }
+      tbody td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+        color: var(--text-2);
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      tbody td:first-child {
+        color: var(--text);
+        font-weight: 500;
+        white-space: nowrap;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11.5px;
+        font-weight: 500;
+        padding: 2px 9px;
+        border-radius: 9999px;
+      }
+      .pill.need {
+        background: var(--indigo-tint);
+        color: var(--indigo-700);
+      }
+      .pill.like {
+        background: var(--slate-tint);
+        color: var(--slate-text);
+      }
+      .pill.later {
+        background: var(--subtle);
+        color: var(--text-3);
+      }
+      @media (prefers-color-scheme: dark) {
+        .pill.need {
+          color: #b3b8ff;
+        }
+      }
+
+      .foot {
+        margin-top: 40px;
+        font-size: 12.5px;
+        color: var(--text-3);
+        font-family: var(--mono);
+      }
+
+      @media (max-width: 860px) {
+        .principles,
+        .steps,
+        .decisions {
+          grid-template-columns: 1fr;
+        }
+        .cols {
+          grid-template-columns: 1fr;
+        }
+        h1 {
+          font-size: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="eyebrow">Onboarding · Information Architecture</div>
+      <h1>What a new user goes through</h1>
+      <p class="sub">
+        The end-to-end path from first touch to a live site — and exactly what we capture at each
+        stage. Split three ways: what we <b>need</b> to stand up a working account &amp; site, what
+        we'd <b>like</b> but can defer, and what comes <b>later</b> once they're in.
+      </p>
+
+      <div class="legend">
+        <span class="lg"><span class="dot need"></span><b>Need</b><small>required to function</small></span>
+        <span class="lg"><span class="dot like"></span><b>Like</b><small>optional · skippable</small></span>
+        <span class="lg"><span class="dot later"></span><b>Later</b><small>post-launch</small></span>
+      </div>
+
+      <div class="principles">
+        <div class="pr">
+          <div class="k">Principle 01</div>
+          <div class="v">Modules, not plans</div>
+          <div class="d">No tiers. Each module activates independently; a tenant pays only for what's on.</div>
+        </div>
+        <div class="pr">
+          <div class="k">Principle 02</div>
+          <div class="v">Live in under 5 minutes</div>
+          <div class="d">Every required field earns its place. Anything optional is skippable or deferred.</div>
+        </div>
+        <div class="pr">
+          <div class="k">Principle 03</div>
+          <div class="v">Complete from second one</div>
+          <div class="d">A template installs a whole site — pages, design, products, copy. Nothing 1/10th built.</div>
+        </div>
+      </div>
+
+      <!-- ───────────────────────── JOURNEY ───────────────────────── -->
+      <div class="journey">
+        <!-- Stage 0 -->
+        <div class="stage">
+          <div class="rail soft"><div class="num">0</div></div>
+          <div class="body">
+            <div class="label">Pre-signup · external</div>
+            <h2>Marketing · Pricing · Marketplace</h2>
+            <p class="blurb">
+              No account yet. The only thing we capture is <b>intent</b> — and an optional funnel
+              that carries a chosen template (and therefore its modules) into signup.
+            </p>
+            <div class="card">
+              <ul class="items">
+                <li class="later">
+                  Attribution &amp; first-touch source
+                  <small>stamped onto the person at signup (docs/80)</small>
+                </li>
+                <li class="like">
+                  <code>?blueprint=&lt;key&gt;</code> funnel
+                  <small>pre-selects a template on the gallery for a referred visitor</small>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 1 -->
+        <div class="stage">
+          <div class="rail"><div class="num">1</div></div>
+          <div class="body">
+            <div class="label">Account creation</div>
+            <h2>Sign up</h2>
+            <p class="blurb">
+              The minimum to mint an identity. <code>slugify(company)</code> derives the tenant slug,
+              and the tenant is <b>born with one primary site</b> on an always-on subdomain.
+            </p>
+            <div class="card lead">
+              <div class="cols">
+                <div class="col">
+                  <h4>We capture (need)</h4>
+                  <ul class="items">
+                    <li class="need">Your name</li>
+                    <li class="need">Work email</li>
+                    <li class="need">Password</li>
+                    <li class="need">
+                      Company / store name
+                      <small>→ <code>"Bobs Barbers"</code> becomes <code>bobs-barbers</code></small>
+                    </li>
+                    <li class="need">Agree to Terms · Privacy · AUP</li>
+                  </ul>
+                </div>
+                <div class="col">
+                  <h4>What it creates</h4>
+                  <ul class="items">
+                    <li class="need">User + Account</li>
+                    <li class="need">Tenant <small>name + derived <code>slug</code></small></li>
+                    <li class="need">
+                      One primary Property
+                      <small><code>isPrimary</code> · host <code>&lt;slug&gt;.sparx.zone</code> · name "Default"</small>
+                    </li>
+                    <li class="later">14-day trial starts <small>no card required</small></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="stage">
+          <div class="rail"><div class="num">2</div></div>
+          <div class="body">
+            <div class="label">The framed wizard · 5 steps</div>
+            <h2>Onboarding</h2>
+            <p class="blurb">
+              The two-pane flow. You pick your <b>capabilities first</b> — that narrows a catalog of
+              hundreds of templates to the ones that fit — then choose one to install a complete draft
+              site. The rest is confirm &amp; launch.
+            </p>
+            <div class="steps">
+              <div class="step">
+                <span class="sn">Step 1</span>
+                <span class="st">Modules</span>
+                <span class="tag need">Need</span>
+                <ul class="items">
+                  <li class="need">Pick what you need <small>sell · publish · CRM · email · B2B · AI</small></li>
+                  <li class="need">Multi-select <small>each activates &amp; bills independently</small></li>
+                  <li class="need">Filters the template catalog</li>
+                </ul>
+              </div>
+              <div class="step">
+                <span class="sn">Step 2</span>
+                <span class="st">Template</span>
+                <span class="tag need">Need</span>
+                <ul class="items">
+                  <li class="need">Filtered to your modules</li>
+                  <li class="need">Search across 100s <small>installs a full draft</small></li>
+                  <li class="need">Or start from scratch</li>
+                </ul>
+              </div>
+              <div class="step">
+                <span class="sn">Step 3</span>
+                <span class="st">Workspace</span>
+                <span class="tag need">Confirm</span>
+                <ul class="items">
+                  <li class="need">Company name <small>pre-filled, editable</small></li>
+                  <li class="need">Slug <small>live <code>&lt;slug&gt;.sparx.zone</code></small></li>
+                  <li class="need">Site name <small>default → rename</small></li>
+                  <li class="like">Search / buy custom domain</li>
+                </ul>
+              </div>
+              <div class="step">
+                <span class="sn">Step 4</span>
+                <span class="st">Payments</span>
+                <span class="tag like">Like</span>
+                <ul class="items">
+                  <li class="like">Connect Stripe</li>
+                  <li class="later">Skippable — checkout off until connected</li>
+                </ul>
+              </div>
+              <div class="step">
+                <span class="sn">Step 5</span>
+                <span class="st">Launch</span>
+                <span class="tag need">Need</span>
+                <ul class="items">
+                  <li class="need">One-tap <b>Publish</b></li>
+                  <li class="need">Draft → live at the address</li>
+                  <li class="like">Preview / customize first</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="stage">
+          <div class="rail soft"><div class="num">3</div></div>
+          <div class="body">
+            <div class="label">Post-launch · in the product</div>
+            <h2>Dashboard</h2>
+            <p class="blurb">
+              They're live. Everything we deferred to protect the 5-minute path surfaces here —
+              contextually, when a module actually needs it.
+            </p>
+            <div class="card">
+              <div class="cols">
+                <div class="col">
+                  <h4>Welcome checklist (later)</h4>
+                  <ul class="items">
+                    <li class="later">
+                      Business / physical address
+                      <small>only when a module needs it — shipping origin · tax nexus · invoices · local SEO</small>
+                    </li>
+                    <li class="later">Add real products &amp; media</li>
+                    <li class="later">Invite team · connect a domain</li>
+                  </ul>
+                </div>
+                <div class="col">
+                  <h4>Pricing switchboard</h4>
+                  <ul class="items">
+                    <li class="later">Add / remove modules anytime</li>
+                    <li class="later">Flat per-module price <small>trial covers it until day 14</small></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- the headline answer to "where do modules get picked?" -->
+      <div class="callout">
+        <div class="ck">Modules come first — and steer everything after</div>
+        <div class="cq">Capabilities are an explicit choice, not a side effect of the template — and that choice filters the catalog.</div>
+        <div class="cd">
+          With hundreds–thousands of blueprints, modules are the primary filter: pick "Sell + Email"
+          and the gallery narrows to templates that fit. Your selection drives what's activated
+          <em>and billed</em>; the template installs real content within it. A blueprint's
+          <code style="font-family:var(--mono);font-size:12px;color:#c7d2fe">requiresModules</code> flips from the
+          <em>trigger</em> to a <em>compatibility filter</em> (show only templates whose needs ⊆ your pick).
+          À-la-carte curation still lives in the dashboard switchboard, after launch.
+        </div>
+      </div>
+
+      <!-- ───────────────────────── DECISIONS ───────────────────────── -->
+      <!-- ───────────────────────── BILLING LIFECYCLE ───────────────────────── -->
+      <div class="section-h">
+        <h3>Billing lifecycle</h3>
+        <span>trial → payment → pause → suspend — and back, anytime</span>
+      </div>
+      <p class="bl-lede">
+        The plan from step 1 is a Stripe <b>subscription</b> created at module-select — trialing, with
+        no card. The owner can always reach the dashboard to add one; the locks below only ever apply
+        to the <b>public site</b>, and nothing is deleted along the way.
+      </p>
+      <div class="bl">
+        <div class="bl-stage" style="--sc: var(--indigo)">
+          <div class="bl-rail"><span class="bl-dot"></span></div>
+          <div class="bl-body">
+            <div class="bl-card">
+              <span class="bl-day">Day 0 · trial starts</span>
+              <div class="bl-title">Subscription created — no card</div>
+              <p>
+                One subscription, <b>one line item per active module</b> (toggling later adds/removes
+                items, prorated). <code>trial_period_days: 14</code>, no payment method. Everything's on.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bl-stage" style="--sc: var(--indigo)">
+          <div class="bl-rail"><span class="bl-dot" style="opacity: 0.5"></span></div>
+          <div class="bl-body">
+            <div class="bl-card">
+              <span class="bl-day">Days 7 · 12 · 14 · heads-up</span>
+              <div class="bl-title">Countdown — add a payment method</div>
+              <p>Dashboard banner + emails: "3 days left — add a card to keep Builder, Commerce, CMS." Nothing changes yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bl-stage" style="--sc: var(--text-3)">
+          <div class="bl-rail"><span class="bl-dot"></span></div>
+          <div class="bl-body">
+            <span class="bl-day" style="--sc: var(--text-2)">Day 14 · trial ends — it forks</span>
+            <div class="bl-fork">
+              <div class="bl-card" style="--sc: var(--success)">
+                <span class="bl-day">Card on file → active</span>
+                <div class="bl-title">Subscription goes live</div>
+                <p>First invoice = the sum of active modules, one bill. Business as usual.</p>
+              </div>
+              <div class="bl-card" style="--sc: var(--warning)">
+                <span class="bl-day">No card → modules pause</span>
+                <div class="bl-title">Dashboard features gate</div>
+                <p>Paid modules show "add payment to reactivate." The public site <b>stays live</b> — grace begins.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bl-stage" style="--sc: var(--warning)">
+          <div class="bl-rail"><span class="bl-dot"></span></div>
+          <div class="bl-body">
+            <div class="bl-card">
+              <span class="bl-day">Days 14–21 · grace (~7 days)</span>
+              <div class="bl-title">Site stays live; we keep nudging</div>
+              <p>
+                Visitors see the site normally; the owner gets daily reactivation prompts. A lapsed
+                <em>active</em> subscription (failed renewal → Stripe retries + dunning) lands in this
+                same grace state.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bl-stage" style="--sc: var(--danger)">
+          <div class="bl-rail"><span class="bl-dot"></span></div>
+          <div class="bl-body">
+            <div class="bl-card">
+              <span class="bl-day">Day 21 · site paused</span>
+              <div class="bl-title">Public site shows a friendly, non-bypassable overlay</div>
+              <p>
+                No active subscription past grace → the storefront serves a full-page "unavailable"
+                screen that can't be dismissed. The dashboard stays open so the owner can add a card;
+                data is retained.
+              </p>
+              <div class="overlay-demo">
+                <div class="site">
+                  <i style="width: 38%"></i>
+                  <i style="width: 86%; height: 26px; margin-top: 4px"></i>
+                  <i style="width: 70%"></i>
+                  <i style="width: 78%"></i>
+                </div>
+                <div class="scrim">
+                  <div class="msg">
+                    <b>Catching a fresh spark</b>
+                    <small>This site will be back in a flash.</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bl-stage bl-last" style="--sc: var(--success)">
+          <div class="bl-rail"><span class="bl-dot"></span></div>
+          <div class="bl-body">
+            <div class="bl-card">
+              <span class="bl-day">Anytime · reactivate</span>
+              <div class="bl-title">Add a card → restored instantly</div>
+              <p>Modules switch back on and the overlay lifts. The subscription resumes from its retained items — no rebuild, no data loss.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ───────────────────────── DECISIONS ───────────────────────── -->
+      <div class="section-h">
+        <h3>Decisions to confirm</h3>
+        <span>three open calls before I wire it in</span>
+      </div>
+      <div class="decisions">
+        <div class="dec">
+          <div class="id">Decision A</div>
+          <div class="q">Physical address in onboarding?</div>
+          <div class="rec">
+            It means different things per module and a CMS/CRM-only tenant has no use for it. Forcing
+            it up front taxes the 5-minute goal.
+          </div>
+          <div class="pick">Recommend → <b>omit; capture contextually later</b></div>
+        </div>
+        <div class="dec">
+          <div class="id">Decision B</div>
+          <div class="q">Site-name default label?</div>
+          <div class="rec">
+            Signup creates the primary site named <code style="font-family:var(--mono);font-size:12px">"Default"</code>.
+            Your note suggested "Primary." The editor pre-fills whatever we pick.
+          </div>
+          <div class="pick">Your call → <b>"Default" vs "Primary"</b></div>
+        </div>
+        <div class="dec">
+          <div class="id">Decision C</div>
+          <div class="q">Editable tenant slug in onboarding?</div>
+          <div class="rec">
+            Pre-launch it's safe to rename, but it needs a real tenant-slug rename op (update tenant +
+            primary host). Read-only is simpler.
+          </div>
+          <div class="pick">Recommend → <b>editable (build rename op)</b></div>
+        </div>
+      </div>
+
+      <!-- ───────────────────────── MATRIX ───────────────────────── -->
+      <div class="section-h">
+        <h3>Capture matrix</h3>
+        <span>what · when · why</span>
+      </div>
+      <div class="matrixwrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Information</th>
+              <th>Stage</th>
+              <th>Class</th>
+              <th>Why there</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Name · email · password</td>
+              <td>Sign up</td>
+              <td><span class="pill need">Need</span></td>
+              <td>Can't mint an identity without it.</td>
+            </tr>
+            <tr>
+              <td>Company name → slug</td>
+              <td>Sign up → confirm in Workspace</td>
+              <td><span class="pill need">Need</span></td>
+              <td>Creates the tenant + its <code style="font-family:var(--mono);font-size:12px">&lt;slug&gt;.sparx.zone</code> address; refined later.</td>
+            </tr>
+            <tr>
+              <td>Module selection</td>
+              <td>Onboarding · 1</td>
+              <td><span class="pill need">Need</span></td>
+              <td>Explicit capability choice — drives activation &amp; billing, and filters the catalog.</td>
+            </tr>
+            <tr>
+              <td>Template choice</td>
+              <td>Onboarding · 2</td>
+              <td><span class="pill need">Need</span></td>
+              <td>Filtered to your modules &amp; searchable; installs the whole site as a draft.</td>
+            </tr>
+            <tr>
+              <td>Site name</td>
+              <td>Onboarding · 3</td>
+              <td><span class="pill need">Need</span></td>
+              <td>Defaulted, editable — multi-site tenants name their first property.</td>
+            </tr>
+            <tr>
+              <td>Custom domain</td>
+              <td>Onboarding · 3</td>
+              <td><span class="pill like">Like</span></td>
+              <td>Free subdomain works instantly; bring/buy a domain anytime.</td>
+            </tr>
+            <tr>
+              <td>Payments (Stripe)</td>
+              <td>Onboarding · 4</td>
+              <td><span class="pill like">Like</span></td>
+              <td>Only needed to take real orders; checkout stays off until connected.</td>
+            </tr>
+            <tr>
+              <td>Business / physical address</td>
+              <td>Dashboard checklist</td>
+              <td><span class="pill later">Later</span></td>
+              <td>Captured when a module needs it (shipping · tax · invoices · local SEO).</td>
+            </tr>
+            <tr>
+              <td>Real catalog · team · media</td>
+              <td>Dashboard checklist</td>
+              <td><span class="pill later">Later</span></td>
+              <td>Template seeds a believable site; they swap in the real thing after launch.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="foot">sparx.works · onboarding flow architecture · proposal for review</div>
+    </div>
+  </body>
+</html>

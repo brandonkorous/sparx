@@ -1,8 +1,8 @@
 # Sparx Platform — Billing & Subscriptions
 
-**Version:** 2.3
+**Version:** 2.4
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-06
+**Last Updated:** 2026-06-11
 
 ---
 
@@ -92,6 +92,11 @@ Gillett Diesel Service Inc. is the first managed hosting client at $750/month, o
 
 ## 5. Stripe Integration
 
+### Two Stripe integrations — never conflated
+
+1. **Platform billing (tenant pays Sparx)** — Stripe **Billing / Subscriptions**. One subscription per tenant; **one item per active module** (add/remove mid-cycle, prorated). The 14-day trial and the lifecycle in §6 live here. The card is collected post-onboarding, **never during it**.
+2. **Merchant payouts (the tenant's customers pay the tenant)** — Stripe **Connect**. Connected in the onboarding "Payments" step (docs/15 §4.5), conditional on a selling module being active. Transaction fees (above) are taken here. Entirely independent of the tenant's own subscription.
+
 All billing handled via Stripe:
 
 - Subscription plans defined as Stripe Products + Prices
@@ -105,7 +110,7 @@ All billing handled via Stripe:
   Metering/gating is deferred — create-site is open until the billing build wires
   this item; the Sites settings page is where the count surfaces.
 - Transaction fees calculated via Stripe Connect (when applicable)
-- Failed payment: 3 retry attempts over 7 days → store read-only → 30 days → deactivated (data retained 90 days)
+- Failed payment / trial expiry: handled by the **Trial → Grace → Suspend** lifecycle in §6 — a 7-day grace window (site stays live), then a non-bypassable storefront overlay; modules pause, the dashboard stays open, and data is retained throughout.
 
 ### Stripe Customer Portal
 
@@ -122,16 +127,57 @@ No custom billing UI — the Stripe Customer Portal is embedded into Sparx dashb
 
 ---
 
-## 6. Trial
+## 6. Trial → Grace → Suspend Lifecycle
 
-- 14-day free trial with full access to all modules
-- No credit card required to start
-- Full access during trial
-- Day 12: in-app prompt to choose your modules
-- Day 14: choose the modules to keep, and add a payment method to continue
-- Trial data preserved 30 days after expiry
+Modules are chosen up front in onboarding (docs/15 §3), so the trial is about *keeping* them, not picking them. The whole lifecycle is deliberately humane: the public site rides out a grace window, **only the public site ever locks** (the owner is never shut out of the dashboard), and **data is retained throughout**.
 
-Trial-to-paid conversion is tracked as a primary business metric. Target: >30%.
+**Build status:** designed and locked (2026-06-11); deferred until the onboarding UI is concrete. No Stripe subscription code exists yet — this is greenfield.
+
+### Day 0 — Trial starts (no card)
+
+At module-select a single Stripe subscription is created **trialing** (`trial_period_days: 14`), with **one line item per active module** and **no payment method**. Everything is on. The onboarding plan card shows the post-trial monthly.
+
+### Days 7 / 12 / 14 — Heads-up
+
+Dashboard banner + emails count down: "3 days left — add a payment method to keep Builder, Commerce, CMS." Nothing changes yet.
+
+### Day 14 — Trial ends (forks)
+
+- **Card on file → active.** Subscription goes live; first invoice = sum of active modules, one bill.
+- **No card → modules pause.** `trial_settings.end_behavior.missing_payment_method: 'pause'`. Paid module features gate in the dashboard ("add payment to reactivate"). **The public site stays live** — the grace window begins.
+
+### Days 14–21 — Grace (7 days)
+
+The site stays live for visitors; the dashboard nudges daily. A lapsed **active** subscription (failed renewal → Stripe Smart Retries + dunning) lands in this same grace state.
+
+### Day 21 — Suspend
+
+No active subscription past grace → the **storefront** (`apps/site`) serves a full-page, **non-bypassable** "site unavailable" overlay — a friendly Sparx-flavored message (e.g. *"Catching a fresh spark — back in a flash"*) that never exposes a billing problem to the tenant's customers. The site is suspended to the public; **the dashboard stays fully open** so the owner can add a card or export. **Nothing is deleted.**
+
+### Anytime — Reactivate
+
+Adding a card switches modules back on and lifts the overlay; the subscription resumes from its retained items — no rebuild, no data loss.
+
+### Dashboard prompting ladder
+
+The in-app counterpart to the storefront overlay — escalation, not nagging:
+
+| When | Treatment |
+| --- | --- |
+| Trial days 1–6 | Quiet `Trial · N days left` chip in the topbar |
+| Day 7 | First **dismissible** banner → Billing |
+| Days 12–14 | Persistent banner with live countdown |
+| Day 14 (paused) | Prominent banner: "modules paused · site live for 7 more days" + ModuleGate on each paused module |
+| Days 15–21 (grace) | Countdown intensifies: "site goes offline in N days" |
+| Day 21 (suspended) | Can't-miss banner: "your site is offline — add payment to restore instantly" |
+
+### Implementation notes
+
+- **The storefront billing-state check is on the public hot path** — it must be cached (per-tenant, short TTL, invalidated on subscription webhooks) so it does not tax TTFB.
+- **Module toggle ↔ subscription item must stay in sync.** Toggling a module in the dashboard switchboard flips `tenants.settings.modules.<slug>.enabled` **and** adds/removes the matching Stripe subscription item (prorated), with **Stripe webhooks as the source of truth** for subscription state.
+- **Platform/internal tenants are exempt** from trial suspension (the dogfood `wizeworks` tenant and any reserved/platform tenant via `SPARX_PLATFORM_TENANT_ID`).
+
+Trial-to-paid conversion is a primary business metric. Target: >30%.
 
 ---
 

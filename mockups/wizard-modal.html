@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sparx · Wizard (modal variant)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* Commerce module color drives this wizard's rail (via ModuleProvider in real code) */
+        --mc-1: #fb923c;
+        --mc-2: #ea580c;
+        --mc-3: #9a3412;
+        --module: #f97316;
+        --module-600: #ea580c;
+        --module-tint: #fff7ed;
+
+        --bg-page: #fafafa;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f4f4f5;
+        --border: #e5e5e5;
+        --border-strong: #d4d4d8;
+        --text: #0a0a0a;
+        --text-2: #52525b;
+        --text-3: #a1a1aa;
+        --indigo: #6366f1;
+
+        --radius-lg: 8px;
+        --radius-xl: 12px;
+        --radius-2xl: 16px;
+        --radius-full: 9999px;
+        --shadow-modal: 0 30px 80px -20px rgba(15, 15, 25, 0.45);
+        --ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: 'Geist', 'Inter', system-ui, sans-serif;
+        color: var(--text);
+        letter-spacing: -0.011em;
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+      }
+
+      /* ── Faux dashboard behind the modal ────────────────────────────────── */
+      .app-bg {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        background: var(--bg-page);
+      }
+      .app-bg .side {
+        background: var(--bg-surface);
+        border-right: 1px solid var(--border);
+        padding: 20px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      .app-bg .side .wm {
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        margin-bottom: 14px;
+      }
+      .app-bg .side .wm i {
+        color: var(--indigo);
+        font-style: normal;
+      }
+      .app-bg .side .nav {
+        height: 30px;
+        border-radius: 7px;
+        background: var(--bg-subtle);
+      }
+      .app-bg .side .nav.on {
+        background: var(--module-tint);
+      }
+      .app-bg .main {
+        padding: 26px 30px;
+      }
+      .app-bg .main .h {
+        height: 26px;
+        width: 220px;
+        border-radius: 7px;
+        background: var(--border-strong);
+        margin-bottom: 18px;
+      }
+      .app-bg .main .row {
+        height: 56px;
+        border-radius: 10px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        margin-bottom: 11px;
+      }
+      .scrim {
+        position: fixed;
+        inset: 0;
+        background: rgba(12, 12, 18, 0.42);
+        backdrop-filter: blur(2px);
+      }
+
+      /* ── The wizard modal ───────────────────────────────────────────────── */
+      .modal {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .dialog {
+        width: min(920px, 100%);
+        height: min(680px, 88vh);
+        background: var(--bg-surface);
+        border-radius: var(--radius-2xl);
+        box-shadow: var(--shadow-modal);
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 250px 1fr;
+      }
+
+      /* rail (module-colored) */
+      .rail {
+        position: relative;
+        color: #fff;
+        background: var(--mc-2);
+        padding: 24px 22px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .rail > * {
+        position: relative;
+        z-index: 1;
+      }
+      .rail-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .rail-title {
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+      }
+      .rail-x {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.16);
+        color: #fff;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+      }
+      .journey {
+        margin-top: 26px;
+        display: flex;
+        flex-direction: column;
+      }
+      .jstep {
+        display: grid;
+        grid-template-columns: 26px 1fr;
+        gap: 12px;
+        align-items: start;
+        padding: 7px 0;
+        cursor: pointer;
+        position: relative;
+      }
+      .jstep .marker {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        font-weight: 500;
+        border: 1.5px solid rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 0.65);
+        transition: all 0.25s var(--ease);
+      }
+      .jstep:not(:last-child) .marker::after {
+        content: '';
+        position: absolute;
+        left: 12.5px;
+        top: 31px;
+        width: 1.5px;
+        height: calc(100% - 22px);
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .jstep .jlabel {
+        font-size: 13px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.62);
+        line-height: 1.95;
+        transition: color 0.25s;
+      }
+      .jstep.done .marker {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: transparent;
+        color: #fff;
+      }
+      .jstep.done .jlabel {
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .jstep.current .marker {
+        background: #fff;
+        border-color: #fff;
+        color: var(--mc-3);
+        box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.16);
+      }
+      .jstep.current .jlabel {
+        color: #fff;
+      }
+      .rail-context {
+        margin-top: auto;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: var(--radius-xl);
+        padding: 12px 13px;
+        font-size: 12px;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.82);
+      }
+
+      /* working pane */
+      .pane {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .pane-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 30px 32px;
+      }
+      .view {
+        display: none;
+        animation: rise 0.35s var(--ease);
+      }
+      .view.active {
+        display: block;
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .ph h2 {
+        font-size: 23px;
+        font-weight: 500;
+        letter-spacing: -0.022em;
+      }
+      .ph p {
+        margin-top: 7px;
+        font-size: 14px;
+        color: var(--text-2);
+        line-height: 1.5;
+        max-width: 52ch;
+      }
+      .body {
+        margin-top: 22px;
+      }
+      .field {
+        margin-bottom: 18px;
+      }
+      label.fld {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 7px;
+      }
+      .input,
+      .ta {
+        width: 100%;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-lg);
+        padding: 0 12px;
+        height: 42px;
+        background: #fff;
+        font: inherit;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+      }
+      .ta {
+        height: auto;
+        padding: 11px 12px;
+        line-height: 1.5;
+      }
+      .input:focus-within,
+      .input.focus {
+        border-color: var(--module);
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18);
+      }
+      .input input {
+        border: none;
+        outline: none;
+        font: inherit;
+        font-size: 14px;
+        flex: 1;
+        background: none;
+      }
+      .input .pre {
+        color: var(--text-3);
+        font-size: 14px;
+      }
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .typecards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .typecard {
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 14px 15px;
+        cursor: pointer;
+        display: flex;
+        gap: 11px;
+        align-items: flex-start;
+      }
+      .typecard.on {
+        border-color: var(--module);
+        box-shadow: 0 0 0 1px var(--module);
+        background: var(--module-tint);
+      }
+      .typecard .ic {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--bg-subtle);
+        display: grid;
+        place-items: center;
+        color: var(--text-2);
+        flex: none;
+      }
+      .typecard.on .ic {
+        background: #fff;
+        color: var(--module-600);
+      }
+      .typecard b {
+        font-size: 13.5px;
+        font-weight: 500;
+      }
+      .typecard small {
+        display: block;
+        font-size: 12px;
+        color: var(--text-2);
+        margin-top: 2px;
+      }
+
+      .opt {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 13px 14px;
+        margin-bottom: 10px;
+      }
+      .opt .on-name {
+        font-size: 13.5px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+      .vals {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+      }
+      .val {
+        font-size: 12.5px;
+        padding: 5px 11px;
+        border-radius: var(--radius-full);
+        background: var(--bg-subtle);
+        color: var(--text);
+      }
+      .val.add {
+        border: 1px dashed var(--border-strong);
+        background: none;
+        color: var(--text-3);
+        cursor: pointer;
+      }
+      .add-opt {
+        margin-top: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--module-600);
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+      thead th {
+        text-align: left;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-3);
+        font-weight: 500;
+        padding: 10px 13px;
+        background: var(--bg-subtle);
+        border-bottom: 1px solid var(--border);
+      }
+      tbody td {
+        padding: 10px 13px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-2);
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      tbody td:first-child {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .review {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+      }
+      .review .rrow {
+        display: flex;
+        justify-content: space-between;
+        padding: 13px 16px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13.5px;
+      }
+      .review .rrow:last-child {
+        border-bottom: none;
+      }
+      .review .rrow span {
+        color: var(--text-2);
+      }
+      .review .rrow b {
+        font-weight: 500;
+      }
+
+      /* pinned action bar */
+      .actionbar {
+        border-top: 1px solid var(--border);
+        padding: 14px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--bg-surface);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: var(--radius-lg);
+        padding: 0 18px;
+        height: 42px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.15s;
+      }
+      .btn-primary {
+        background: var(--module);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--module-600);
+      }
+      .btn-ghost {
+        background: none;
+        color: var(--text-2);
+      }
+      .btn-ghost:hover {
+        background: var(--bg-subtle);
+      }
+
+      @media (max-width: 720px) {
+        .dialog {
+          width: 100%;
+          height: 100%;
+          border-radius: 0;
+          grid-template-columns: 1fr;
+          grid-template-rows: auto 1fr;
+        }
+        .rail {
+          padding: 14px 18px;
+        }
+        .journey {
+          flex-direction: row;
+          gap: 6px;
+          margin-top: 14px;
+          overflow-x: auto;
+        }
+        .jstep:not(:last-child) .marker::after {
+          display: none;
+        }
+        .jstep .jlabel,
+        .jstep .jsub {
+          display: none;
+        }
+        .rail-context {
+          display: none;
+        }
+        .modal {
+          padding: 0;
+        }
+      }
+
+      .devbar {
+        position: fixed;
+        bottom: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(10, 10, 10, 0.86);
+        backdrop-filter: blur(8px);
+        color: #fff;
+        border-radius: var(--radius-full);
+        padding: 7px 8px;
+        display: flex;
+        gap: 4px;
+        z-index: 50;
+        font-size: 12px;
+      }
+      .devbar button {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        font: inherit;
+        font-weight: 500;
+        padding: 6px 13px;
+        border-radius: var(--radius-full);
+        cursor: pointer;
+      }
+      .devbar button.on {
+        background: var(--module);
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- faux dashboard underneath, to show the modal overlays in-context -->
+    <div class="app-bg">
+      <div class="side">
+        <div class="wm">Spar<i>x</i></div>
+        <div class="nav"></div>
+        <div class="nav on"></div>
+        <div class="nav"></div>
+        <div class="nav"></div>
+        <div class="nav"></div>
+      </div>
+      <div class="main">
+        <div class="h"></div>
+        <div class="row"></div>
+        <div class="row"></div>
+        <div class="row"></div>
+        <div class="row"></div>
+      </div>
+    </div>
+    <div class="scrim"></div>
+
+    <div class="modal">
+      <div class="dialog">
+        <!-- module-colored rail -->
+        <aside class="rail">
+          <div class="rail-top">
+            <span class="rail-title">New product</span>
+            <button class="rail-x" aria-label="Close">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+          <nav class="journey" id="journey">
+            <div class="jstep" data-step="0"><div class="marker">1</div><div class="jlabel">Details</div></div>
+            <div class="jstep" data-step="1"><div class="marker">2</div><div class="jlabel">Options</div></div>
+            <div class="jstep" data-step="2"><div class="marker">3</div><div class="jlabel">Variants</div></div>
+            <div class="jstep" data-step="3"><div class="marker">4</div><div class="jlabel">Review</div></div>
+          </nav>
+          <div class="rail-context" id="railCtx">
+            Start with the basics — name, price, and whether it ships. You can refine everything after
+            it's created.
+          </div>
+        </aside>
+
+        <!-- working pane -->
+        <main class="pane">
+          <div class="pane-scroll">
+            <!-- STEP 1 · DETAILS -->
+            <section class="view active" data-view="0">
+              <div class="ph">
+                <h2>Product details</h2>
+                <p>The essentials. Everything here is editable later.</p>
+              </div>
+              <div class="body">
+                <div class="field">
+                  <label class="fld">Product name</label>
+                  <div class="input focus"><input value="Heavy-Duty Brake Kit" /></div>
+                </div>
+                <div class="field">
+                  <label class="fld">Description</label>
+                  <div class="ta">Complete front + rear brake kit for 3/4-ton diesel trucks. Rotors, pads, and hardware included.</div>
+                </div>
+                <div class="two">
+                  <div class="field">
+                    <label class="fld">Price</label>
+                    <div class="input"><span class="pre">$&nbsp;</span><input value="389.00" /></div>
+                  </div>
+                  <div class="field">
+                    <label class="fld">SKU</label>
+                    <div class="input"><input value="BRK-HD-001" /></div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="fld">Type</label>
+                  <div class="typecards">
+                    <div class="typecard on">
+                      <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
+                      <div><b>Physical</b><small>Ships to the customer</small></div>
+                    </div>
+                    <div class="typecard">
+                      <span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m8 11 4 4 4-4"/><rect width="20" height="6" x="2" y="15" rx="2"/></svg></span>
+                      <div><b>Digital</b><small>Download or license</small></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- STEP 2 · OPTIONS -->
+            <section class="view" data-view="1">
+              <div class="ph">
+                <h2>Options</h2>
+                <p>Add options like size or fitment and we'll build the variant matrix for you.</p>
+              </div>
+              <div class="body">
+                <div class="opt">
+                  <div class="on-name">Fitment</div>
+                  <div class="vals"><span class="val">Front</span><span class="val">Rear</span><span class="val">Full kit</span><span class="val add">+ Add value</span></div>
+                </div>
+                <div class="opt">
+                  <div class="on-name">Finish</div>
+                  <div class="vals"><span class="val">Standard</span><span class="val">Slotted</span><span class="val add">+ Add value</span></div>
+                </div>
+                <button class="add-opt">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                  Add another option
+                </button>
+              </div>
+            </section>
+
+            <!-- STEP 3 · VARIANTS -->
+            <section class="view" data-view="2">
+              <div class="ph">
+                <h2>Variants</h2>
+                <p>6 variants from Fitment × Finish. Set price and stock, or keep the defaults.</p>
+              </div>
+              <div class="body">
+                <table>
+                  <thead><tr><th>Variant</th><th>Price</th><th>SKU</th><th>Stock</th></tr></thead>
+                  <tbody>
+                    <tr><td>Front · Standard</td><td>$389.00</td><td>BRK-HD-001-FS</td><td>12</td></tr>
+                    <tr><td>Front · Slotted</td><td>$429.00</td><td>BRK-HD-001-FL</td><td>8</td></tr>
+                    <tr><td>Rear · Standard</td><td>$349.00</td><td>BRK-HD-001-RS</td><td>10</td></tr>
+                    <tr><td>Rear · Slotted</td><td>$389.00</td><td>BRK-HD-001-RL</td><td>6</td></tr>
+                    <tr><td>Full kit · Standard</td><td>$689.00</td><td>BRK-HD-001-KS</td><td>5</td></tr>
+                    <tr><td>Full kit · Slotted</td><td>$769.00</td><td>BRK-HD-001-KL</td><td>4</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- STEP 4 · REVIEW -->
+            <section class="view" data-view="3">
+              <div class="ph">
+                <h2>Review &amp; create</h2>
+                <p>Looks good? Create the product as a draft — publish it whenever you're ready.</p>
+              </div>
+              <div class="body">
+                <div class="review">
+                  <div class="rrow"><span>Name</span><b>Heavy-Duty Brake Kit</b></div>
+                  <div class="rrow"><span>Type</span><b>Physical</b></div>
+                  <div class="rrow"><span>From</span><b>$349.00</b></div>
+                  <div class="rrow"><span>Options</span><b>Fitment, Finish</b></div>
+                  <div class="rrow"><span>Variants</span><b>6</b></div>
+                  <div class="rrow"><span>Total stock</span><b>45 units</b></div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- pinned action bar -->
+          <div class="actionbar">
+            <button class="btn btn-ghost" id="backBtn">Back</button>
+            <button class="btn btn-primary" id="nextBtn">Continue</button>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="devbar" id="devbar">
+      <button class="on" data-go="0">Details</button>
+      <button data-go="1">Options</button>
+      <button data-go="2">Variants</button>
+      <button data-go="3">Review</button>
+    </div>
+
+    <script>
+      const CTX = [
+        "Start with the basics — name, price, and whether it ships. You can refine everything after it's created.",
+        "Options like fitment or size define the variants. Add as many as you need.",
+        'Every combination is a variant. Tune price, SKU, and stock per row.',
+        "One look before it's created. It saves as a draft — nothing goes live yet.",
+      ];
+      const LABELS = ['Continue', 'Continue', 'Continue', 'Create product'];
+      let step = 0;
+      const last = 3;
+
+      function go(n) {
+        step = Math.max(0, Math.min(last, n));
+        document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
+        document.querySelector(`.view[data-view="${step}"]`).classList.add('active');
+        document.querySelectorAll('.jstep').forEach((s, i) => {
+          s.classList.toggle('current', i === step);
+          s.classList.toggle('done', i < step);
+        });
+        document.querySelectorAll('#devbar button').forEach((b, i) => b.classList.toggle('on', i === step));
+        document.getElementById('railCtx').textContent = CTX[step];
+        document.getElementById('nextBtn').textContent = LABELS[step];
+        document.getElementById('backBtn').style.visibility = step === 0 ? 'hidden' : 'visible';
+        document.querySelector('.pane-scroll').scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      document.getElementById('nextBtn').addEventListener('click', () => go(step + 1));
+      document.getElementById('backBtn').addEventListener('click', () => go(step - 1));
+      document.querySelectorAll('[data-go]').forEach((el) =>
+        el.addEventListener('click', () => go(Number(el.dataset.go)))
+      );
+      document.querySelectorAll('.jstep').forEach((s) =>
+        s.addEventListener('click', () => go(Number(s.dataset.step)))
+      );
+      go(0);
+    </script>
+  </body>
+</html>
