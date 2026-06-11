@@ -225,3 +225,49 @@ export type AddBillingLineInput = z.infer<typeof AddBillingLineInput>;
 
 export const UpdateBillingLineInput = BillingLineWriteCore.partial();
 export type UpdateBillingLineInput = z.infer<typeof UpdateBillingLineInput>;
+
+// ── Print templates (Phase 5b, §10) ──────────────────────────────────────────
+// The document's printed presentation is ONE BuilderNode tree (AUTHOR-only) — a
+// peer of the page/email builder trees. Validated structurally HERE so crm-schemas
+// stays free of a @sparx/builder-schemas dependency; the api-rest renderer, which
+// has builder-schemas, interprets the tree (resolving bindings + serializing Prose).
+export interface InvoiceTemplateNodeInput {
+  id: string;
+  type: string;
+  name?: string;
+  class?: string;
+  props?: Record<string, unknown>;
+  binding?: { path: string; format?: string };
+  children?: InvoiceTemplateNodeInput[];
+}
+
+export const InvoiceTemplateNode: z.ZodType<InvoiceTemplateNodeInput> = z.lazy(() =>
+  z.object({
+    id: z.string().min(1).max(64),
+    type: z.string().min(1).max(40),
+    name: z.string().max(120).optional(),
+    class: z.string().max(2000).optional(),
+    props: z.record(z.string(), z.unknown()).optional(),
+    binding: z
+      .object({ path: z.string().min(1).max(200), format: z.string().max(40).optional() })
+      .optional(),
+    children: z.array(InvoiceTemplateNode).optional(),
+  })
+);
+
+export const CreateBillingTemplateInput = z.object({
+  name: z.string().min(1).max(120),
+  // Defaults to a blank single-section tree when omitted.
+  tree: InvoiceTemplateNode.optional(),
+  isDefault: z.boolean().default(false),
+});
+export type CreateBillingTemplateInput = z.infer<typeof CreateBillingTemplateInput>;
+
+export const UpdateBillingTemplateInput = z
+  .object({
+    name: z.string().min(1).max(120),
+    // The high-frequency editor autosave path.
+    tree: InvoiceTemplateNode,
+  })
+  .partial();
+export type UpdateBillingTemplateInput = z.infer<typeof UpdateBillingTemplateInput>;

@@ -272,6 +272,36 @@ model BillingDocumentSnapshot {
   @@map("billing_document_snapshots")
 }
 
+// A builder-authored PRINT TEMPLATE (docs/87 §10) — the document's printed
+// presentation as ONE BuilderNode tree, AUTHOR-only. A peer of BuilderEmail in
+// the builder framework: the editor edits `draftTree`, publishing snapshots it
+// into `publishedTree`. The tenant's default template (one per tenant) drives the
+// `…/pdf` render; absent a published default, the built-in code renderer is used,
+// so a tenant never *must* design one. A built-in default tree ships seeded
+// (lazy-materialised on first list); the builder edits that copy.
+model BillingDocumentTemplate {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  name     String @db.VarChar(120)
+  // One default per tenant (partial-unique WHERE is_default, hand-SQL) — the
+  // template `…/pdf` resolves when published.
+  isDefault Boolean @default(false) @map("is_default")
+
+  // The editor's working tree; publishing snapshots it into publishedTree. Both
+  // are validated BuilderNode trees (the same shape the page/email builders store).
+  draftTree     Json      @map("draft_tree")
+  publishedTree Json?     @map("published_tree")
+  publishedAt   DateTime? @map("published_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("billing_document_templates")
+}
+
 // A payment / deposit / refund recorded against a billing document (docs/87 §8).
 // Append-only: a correction is a new (refund) row, never an edit or delete — the
 // document's `amountPaid` / `depositTotal` / `balance` / `status` are derived from

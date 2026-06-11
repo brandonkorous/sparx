@@ -9,12 +9,14 @@ import { requireRole } from '@sparx/api-core/auth';
 import workflowRoutes from './workflows.js';
 import lineTypeRoutes from './line-types.js';
 import documentRoutes from './documents.js';
+import templateRoutes from './templates.js';
 import { toInvoicingContext } from '../../../lib/invoicing-context.js';
 
 const invoicingRoutes: FastifyPluginAsync = async (app) => {
   await app.register(workflowRoutes);
   await app.register(lineTypeRoutes);
   await app.register(documentRoutes);
+  await app.register(templateRoutes);
 
   // Idempotent seed for tenants that just enabled invoicing. The same bootstrap
   // functions run on the `module.activated` consumer; both paths are no-ops on

@@ -13,6 +13,8 @@
 //   GET    /v1/invoicing/documents/:id/snapshots/:sid    → one frozen record
 //   POST   /v1/invoicing/documents/:id/payments          → record a payment (§8)
 //   GET    /v1/invoicing/documents/:id/payments          → payment history
+//   GET    /v1/invoicing/documents/:id/pdf               → branded print-HTML (§10)
+//   GET    /v1/invoicing/documents/:id/snapshots/:sid/pdf → print a frozen record
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -21,10 +23,12 @@ import {
   billingDocumentStageService,
   billingLineService,
   billingPaymentService,
+  billingRenderService,
 } from '@sparx/crm';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
+import { renderTenantInvoiceHtml, resolveInvoiceBrand } from '../../../lib/invoice-render.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const LinePathIds = z.object({ id: z.string().uuid(), lineId: z.string().uuid() });
@@ -143,6 +147,49 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const { id } = PathId.parse(request.params);
     return ok(await billingPaymentService.listPayments(toInvoicingContext(request), id));
+  });
+
+  // ── PDF / print (§10) ────────────────────────────────────────────────────────
+  // v1 returns branded print-styled HTML (the browser's Print → PDF path); a
+  // server-side PDF byte stream is the documented fast-follow. Render data + the
+  // tenant brand are assembled, then routed through the tenant's ACTIVE published
+  // template (the builder-authored path) or the built-in default renderer.
+  app.get('/v1/invoicing/documents/:id/pdf', async (request, reply) => {
+    requireRole(request, 'viewer');
+    await requireInvoicingModule(request);
+    const ctx = toInvoicingContext(request);
+    const { id } = PathId.parse(request.params);
+    const [data, brand] = await Promise.all([
+      billingRenderService.buildRenderData(ctx, id),
+      resolveInvoiceBrand(ctx),
+    ]);
+    const html = await renderTenantInvoiceHtml(ctx, data, brand);
+    void reply.header('Content-Type', 'text/html; charset=utf-8');
+    void reply.header(
+      'Content-Disposition',
+      `inline; filename="${data.number ?? 'document'}.html"`
+    );
+    return reply.send(html);
+  });
+
+  // Print a frozen snapshot — the approved estimate / final invoice exactly as it
+  // stood when captured (§4). Renders the frozen substance; brand is resolved live.
+  app.get('/v1/invoicing/documents/:id/snapshots/:snapshotId/pdf', async (request, reply) => {
+    requireRole(request, 'viewer');
+    await requireInvoicingModule(request);
+    const ctx = toInvoicingContext(request);
+    const { snapshotId } = SnapshotPathIds.parse(request.params);
+    const [data, brand] = await Promise.all([
+      billingRenderService.buildRenderDataFromSnapshot(ctx, snapshotId),
+      resolveInvoiceBrand(ctx),
+    ]);
+    const html = await renderTenantInvoiceHtml(ctx, data, brand);
+    void reply.header('Content-Type', 'text/html; charset=utf-8');
+    void reply.header(
+      'Content-Disposition',
+      `inline; filename="${data.number ?? 'document'}.html"`
+    );
+    return reply.send(html);
   });
 
   return Promise.resolve();

@@ -35,6 +35,7 @@ import {
   EmailProviderError,
   EmailValidationError,
 } from '@sparx/email-platform';
+import { AutomationNotFoundError, LockedAutomationError } from '@sparx/automation';
 import { createAuthPlugin } from '@sparx/api-core/auth';
 import { createErrorsPlugin, type ErrorEnvelope } from '@sparx/api-core/errors-plugin';
 import { env } from './env.js';
@@ -106,6 +107,7 @@ import emailWebhookRoutes from './routes/v1/public/email-webhook.js';
 import dashboardRoutes from './routes/v1/dashboard.js';
 import searchRoutes from './routes/v1/search.js';
 import seoAuditRoutes from './routes/v1/seo/audit.js';
+import automationRoutes from './routes/v1/automations/index.js';
 import { bootstrapProviders } from './lib/providers-bootstrap.js';
 import pretty from 'pino-pretty';
 
@@ -422,6 +424,42 @@ function emailErrorMapper(
   return undefined;
 }
 
+// Automation engine service-layer errors. The LOCKED-tier guard is a state
+// conflict (the rule is platform-managed) — 409 with a distinct code so the
+// dashboard can offer "Duplicate to edit" rather than a generic failure.
+function automationErrorMapper(
+  err: unknown,
+  request: { id: string },
+  reply: FastifyReply
+): FastifyReply | undefined {
+  const requestId = request.id;
+  if (err instanceof AutomationNotFoundError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'NOT_FOUND',
+        message: err.message,
+        details: { entityType: 'Automation', entityId: err.automationId },
+        request_id: requestId,
+      },
+    };
+    return reply.code(404).send(body);
+  }
+  if (err instanceof LockedAutomationError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'AUTOMATION_LOCKED',
+        message: err.message,
+        details: { automationId: err.automationId },
+        request_id: requestId,
+      },
+    };
+    return reply.code(409).send(body);
+  }
+  return undefined;
+}
+
 export async function createApp(): Promise<FastifyInstance> {
   // Populate the integration-framework registry + wire the SecretReader
   // before any route can call providerService.runPayment*.
@@ -467,6 +505,7 @@ export async function createApp(): Promise<FastifyInstance> {
         sitebuilderErrorMapper,
         builderErrorMapper,
         emailErrorMapper,
+        automationErrorMapper,
       ],
     })
   );
@@ -568,6 +607,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(dashboardRoutes);
   await app.register(searchRoutes);
   await app.register(seoAuditRoutes);
+  await app.register(automationRoutes);
 
   return app;
 }

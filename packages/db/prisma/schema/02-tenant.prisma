@@ -167,6 +167,7 @@ model Tenant {
   billingDocumentLines     BillingDocumentLine[]
   billingDocumentSnapshots BillingDocumentSnapshot[]
   billingDocumentPayments  BillingDocumentPayment[]
+  billingDocumentTemplates BillingDocumentTemplate[]
   discounts               Discount[]
   discountUsages          DiscountUsage[]
   giftCards               GiftCard[]

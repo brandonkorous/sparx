@@ -6,6 +6,8 @@
 // Service / Repair flow showing the full estimate→paid lifecycle, and a
 // starter line-type registry covering the common charge shapes.
 
+import type { InvoiceTemplateNodeInput } from '../invoicing';
+
 export type DocumentStageTypeLiteral = 'draft' | 'open' | 'committed' | 'final' | 'paid' | 'void';
 
 export type LinePricingModeLiteral = 'catalog' | 'markup' | 'labor' | 'flat' | 'pass_through';
@@ -199,3 +201,76 @@ export const DEFAULT_DOCUMENT_LINE_TYPES: DocumentLineTypeTemplate[] = [
     sortOrder: 6,
   },
 ];
+
+// ── Print template (docs/87 §10, Phase 5b) ────────────────────────────────────
+//
+// The document's printed presentation is ONE BuilderNode tree, AUTHOR-only — a
+// peer of the page/email builder trees. The renderer (api-rest's renderInvoiceTree)
+// drops the shared print section builders in wherever a DATA-AWARE invoice node
+// sits, surrounded by authorable CHROME (heading / prose terms / image / divider /
+// containers). These are the data-aware node types the renderer recognises; the
+// rest are ordinary builder primitives.
+export const INVOICE_STRUCTURED_NODE_TYPES = [
+  'InvoiceMasthead', // logo + document head (number/status/dates) — the combined header
+  'InvoiceLogo', // seller logo / business name block (split from the masthead)
+  'InvoiceMeta', // document head only (number/status/dates)
+  'InvoiceParties', // bill-to + ship-to blocks
+  'InvoiceLineTable', // the line-items table
+  'InvoiceTotals', // subtotal → balance-due summary
+  'InvoiceNotes', // the document's own notes
+  'InvoicePayments', // the payment ledger
+  'InvoiceFooter', // business name + number footer line
+] as const;
+
+// The built-in default template — reproduces the code default renderer's layout as
+// an editable tree, plus an authorable Prose "terms" block. Seeded (lazy) on the
+// tenant's first template list; from then on it's an ordinary editable template.
+// Node ids are stable + unique within this tree.
+const DEFAULT_TEMPLATE_TREE: InvoiceTemplateNodeInput = {
+  id: 'tpl-root',
+  type: 'Section',
+  name: 'Document',
+  class: 'stack gap-lg',
+  children: [
+    { id: 'tpl-masthead', type: 'InvoiceMasthead', name: 'Header' },
+    { id: 'tpl-parties', type: 'InvoiceParties', name: 'Bill to / Ship to' },
+    { id: 'tpl-lines', type: 'InvoiceLineTable', name: 'Line items' },
+    { id: 'tpl-totals', type: 'InvoiceTotals', name: 'Totals' },
+    {
+      id: 'tpl-terms',
+      type: 'Prose',
+      name: 'Terms',
+      class: 'notes',
+      props: {
+        doc: {
+          type: 'doc',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Payment is due upon receipt unless net terms apply. Thank you for your business.',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    { id: 'tpl-notes', type: 'InvoiceNotes', name: 'Document notes' },
+    { id: 'tpl-payments', type: 'InvoicePayments', name: 'Payments' },
+    { id: 'tpl-footer', type: 'InvoiceFooter', name: 'Footer' },
+  ],
+};
+
+export interface DocumentTemplateSeed {
+  name: string;
+  tree: InvoiceTemplateNodeInput;
+}
+
+/** The default print template seeded per tenant (docs/87 §10). */
+export const DEFAULT_INVOICE_TEMPLATE: DocumentTemplateSeed = {
+  name: 'Default',
+  tree: DEFAULT_TEMPLATE_TREE,
+};

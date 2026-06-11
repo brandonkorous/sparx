@@ -77,3 +77,9 @@ export {
   type ServiceCtx,
   type SystemAutomationSpec,
 } from './service/automation-service';
+export {
+  getAutomationRun,
+  listAutomationRuns,
+  type AutomationRunWithSteps,
+  type ListRunsFilter,
+} from './service/run-service';

@@ -28,6 +28,8 @@
     "@prisma/client": "^6.19.3",
     "@sparx/api-core": "workspace:*",
     "@sparx/auth": "workspace:*",
+    "@sparx/automation": "workspace:*",
+    "@sparx/automation-schemas": "workspace:*",
     "@sparx/blueprints": "workspace:*",
     "@sparx/builder": "workspace:*",
     "@sparx/builder-schemas": "workspace:*",

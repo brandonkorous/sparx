@@ -29,6 +29,32 @@ export * as billingDocumentService from './billing-document-service';
 export * as billingLineService from './billing-line-service';
 export * as billingDocumentStageService from './billing-document-stage-service';
 export * as billingPaymentService from './billing-payment-service';
+export * as billingRenderService from './billing-render-service';
+export * as billingTemplateService from './billing-template-service';
+export type { BillingTemplateDto } from './billing-template-service';
+// The default renderer + the shared print section builders the builder-authored
+// template renderer (api-rest's renderInvoiceTree) composes (docs/87 §10).
+export {
+  renderBillingDocumentHtml,
+  resolveBillingBrand,
+  invoiceStyles,
+  invoiceHtmlShell,
+  sellerBlockHtml,
+  docHeadBlockHtml,
+  partiesBlockHtml,
+  lineTableHtml,
+  totalsBlockHtml,
+  notesBlockHtml,
+  paymentsBlockHtml,
+  escapeHtml,
+  formatMoney,
+  formatDate,
+  type BillingRenderBrand,
+  type BillingRenderData,
+  type BillingRenderParty,
+  type BillingRenderLine,
+  type BillingRenderTotals,
+} from './billing-document-html';
 
 // CRM reporting — read-only metrics for the dashboard reports page and
 // the MCP get_crm_metrics tool. Live queries today; nightly rollup later.

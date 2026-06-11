@@ -8,11 +8,17 @@ export { DEFAULT_PIPELINE_TEMPLATE } from './pipeline';
 export type { PipelineTemplate, PipelineStageTemplate } from './pipeline';
 export { BUILT_IN_SEGMENT_TEMPLATES, NEWSLETTER_SEGMENT_SLUG } from './segments';
 export type { SegmentTemplate } from './segments';
-export { DEFAULT_DOCUMENT_WORKFLOWS, DEFAULT_DOCUMENT_LINE_TYPES } from './invoicing';
+export {
+  DEFAULT_DOCUMENT_WORKFLOWS,
+  DEFAULT_DOCUMENT_LINE_TYPES,
+  DEFAULT_INVOICE_TEMPLATE,
+  INVOICE_STRUCTURED_NODE_TYPES,
+} from './invoicing';
 export type {
   DocumentWorkflowTemplate,
   DocumentStageTemplate,
   DocumentLineTypeTemplate,
   DocumentStageTypeLiteral,
   LinePricingModeLiteral,
+  DocumentTemplateSeed,
 } from './invoicing';

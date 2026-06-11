@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.10
+**Version:** 1.12
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-11
 
@@ -16,11 +16,19 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** Email-driven seeds (BLOCKED on the CONTENT FORK decision below) + commerce
-> executors. **Slice F3 DONE** this session (the b2b-overdue cron retired) and **F2 backfill DONE**.
-> Slices A–D + **E1–E4** + **F1** (CRM 6 + B2B escalate + email send) + **F2-a (dunning)** + **F2
-> backfill** + **F3** all done. The engine can SEND email, SEEDS every module-active tenant (forward
-> via activation, backward via the daily reconcile), and is now the SOLE dunning implementation.
+> **▶ RESUME HERE:** **Slice G-UI — the dashboard automations surface** (list / detail / trigger +
+> condition + action builder / run history, docs/34 standard) — its API contract (`/v1/automations`
+> CRUD + clone + status + run-history) is now BUILT + tested (G-API ☑ this session). Alternatively
+> **Slice H MCP write-tool** (also a consumer of the same service layer). Still sequenced/deferred:
+> **email-driven seeds** behind the **Default Builder-emails library** (user decision B + "build
+> defaults for emails, later"), and **commerce executors** (not cleanly buildable — no product/variant
+> resolver, `create_invoice` collides with in-flight `billing_documents`, no consuming automation).
+> **G-API DONE** this session: `/v1/automations` REST surface (RBAC not module-gated; LOCKED→409;
+> run-history reads) + `automationErrorMapper` + `@sparx/automation` run-read service. **Slice F3 DONE**
+> (b2b-overdue cron retired) and **F2 backfill DONE**. Slices A–D + **E1–E4** + **F1** (CRM 6 + B2B
+> escalate + email send) + **F2-a (dunning)** + **F2 backfill** + **F3** + **G-API** all done. The
+> engine can SEND email, SEEDS every module-active tenant (forward via activation, backward via the
+> daily reconcile), is the SOLE dunning implementation, and is now **tenant-authorable over REST**.
 >
 > **F2 backfill (this session):** SECURITY DEFINER `find_tenants_with_active_module(p_module)`
 > (migration `20260805000000`, REVOKE PUBLIC / GRANT sparx_app) → `reconcileSystemSeeds(db)` in
@@ -46,17 +54,27 @@ Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/bl
 > `b2b-overdue-worker` Cloud Run was ever stood up MANUALLY (outside IaC), it would now be orphaned
 > drift — worth a `gcloud run services list` check, but the code/IaC shows it was never deployed.
 >
-> **⚠ Email-driven-seed CONTENT FORK (needs a product decision — do NOT guess):** win-back /
-> quote-expiry as a _system_ seed can't be turnkey. A coded `win-back` template can't render a
-> working CTA (BrandTokens carry `storeName` + `logoUrl` but NO site URL — see `brand.tsx`), and the
-> Builder `defer` path needs a tenant-authored email that doesn't
-> exist at seed time. So "ship win-back on" needs one of: (A) add a `siteUrl` to brand resolution +
-> ship a real coded `win-back` template (+ register in `@sparx/email` send.tsx AND the email-worker
-> `handler.ts` `TemplateSendSchema` — the worker validates against a CLOSED union); (B) provision a
-> default win-back **Builder email** per tenant on email activation + seed the automation referencing
-> it (most on-brand, most work); (C) seed win-back as **draft**, tenant completes + activates. The
-> _mechanism_ is fully built (schedule + customer scanner + `email.send_campaign`); only the content
-> source is the open decision. Surfaced to the user this session. Older context below.
+> **✅ Email-driven-seed CONTENT FORK — RESOLVED → (B) Builder-authored defaults** (user decision,
+> 2026-06-11). System-seeded marketing emails (win-back, etc.) source content from **Builder-authored
+> default emails** provisioned per tenant on email-module activation; the seed references them via
+> `email.send_campaign` `defer`. NOT coded templates (A — a coded win-back can't render a working CTA;
+> `BrandTokens` carry `storeName`/`logoUrl` but NO site URL, confirmed in `brand.tsx`) and NOT
+> draft-until-configured (C). The _send mechanism_ is fully built; the content now depends on a NEW
+> tracked slice → **Default Builder-emails library + per-tenant provisioning** (the user's "emails are
+> vital and take users the most time — ship a solid default set with the email module"). So the
+> unified-engine email seeds are **sequenced behind** that library slice (not started — user queued it
+> as later work). See memory `project_email_defaults_builder_authored`.
+>
+> **⚠ Reconciliation finding (don't build a THIRD parallel system):** a coded email-automation system
+> ALREADY exists — `@sparx/email-platform` `DEFAULT_AUTOMATIONS` (11 defaults: order-confirmed/shipped/
+> delivered, cart-abandoned, **win-back**, welcome-customer, b2b-account-approved, quote-received,
+> invoice-due/overdue) seeded by `automationService.provisionDefaults` on email activation, content via
+> coded `templateKey`, with its OWN `evaluateTrigger` engine. Its win-back triggers on
+> `crm.customer.inactive` — which has NO publisher (dead). The unified engine (docs/81/82) is meant to
+> SUBSUME this. The Builder-defaults + unified-seed work must RECONCILE/retire the coded
+> `DEFAULT_AUTOMATIONS`, not run a third path. `builderEmailService` already renders a Builder email
+> node-tree (`BuilderNode`) with tenant-brand resolution — the render half exists; the default
+> node-trees + the provisioning step do not.
 >
 > **(historical) F2-a (B2B dunning ladder) done** — the riskiest piece (docs/81 §3.1's canonical
 > Locked behavior) is built, tested, and live-able on the schedule tick.
@@ -142,7 +160,8 @@ reconciles them into the one canonical registry. No build blocker from deferring
 | `reconcileSystemSeeds` + worker reconcile endpoint          | Daily backfill: seed system automations for already-module-active tenants (`POST /internal/cron/reconcile-seeds` + Cloud Scheduler `automation-reconcile-seeds`)                            | ☑      |
 | `terraform/envs/prod/automation.tf`                         | Cloud Run service + Cloud Scheduler tick job + runtime/scheduler SAs (push sub deferred to E)                                                                                               | ☑      |
 | `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                                                                                                                            | ☑      |
-| `services/api-rest` routes                                  | `/v1/automations` CRUD + internal trigger/tick endpoints                                                                                                                                    | ☐      |
+| `services/api-rest` routes                                  | `/v1/automations` CRUD + clone + status + run-history reads (trigger/tick live in the worker, not api-rest)                                                                                 | ☑      |
+| `packages/automation` run reads                             | `listAutomationRuns` / `getAutomationRun` (tenant-scoped run-history read path for REST/MCP/UI)                                                                                             | ☑      |
 | `apps/dashboard` surface                                    | List / detail / builder / run history (docs/34 standard)                                                                                                                                    | ☐      |
 | MCP write-tool                                              | AI authoring path (mirrors crm `mcp/write-tools.ts`)                                                                                                                                        | ☐      |
 
@@ -366,8 +385,16 @@ isn't silently skipped.
     suppression skip, transactional-through-marketing-suppression, dedupe idempotency — on the sparx_app
     FORCE-RLS client); `automation-actions` email engine-path 2/2 (event → handleTrigger →
     runAutomationTick → ScheduledSend for `customer.email`; do-not-contact skip). Suite 13/13.
-- ☐ `email.sequence_add` / `email.sequence_remove` (sequence membership — not yet built)
-- ☐ Commerce executors (`commerce.*`)
+- ⃠ `email.sequence_add` / `email.sequence_remove` — DEFERRED (aspirational, like the schema notes):
+  NO email-sequence/drip subsystem exists in `@sparx/email-platform`, so these aren't an
+  executor-over-existing-service — they'd require building the whole sequence-membership system first.
+- ⃠ Commerce executors (`commerce.*`) — DEFERRED (not cleanly buildable yet, verified 2026-06-11): the
+  resolver catalog has `order` but **no product/variant** resolver, so `commerce.update_inventory` has
+  no trigger entity to read; `commerce.create_invoice` collides with the in-flight `billing_documents`
+  work (no stable invoice service to call); `commerce.create_order` has no trigger semantic or consumer;
+  `commerce.apply_discount` has no crisp spec (discount-code vs store-credit grant). None has a
+  consuming automation. Building them now would be partial — revisit once a product/variant resolver +
+  a concrete consuming automation exist.
 
 **F2 — seed system automations ◐ (dunning + backfill done)**
 
@@ -386,10 +413,20 @@ isn't silently skipped.
   idempotent), worker route 2/2. A null-module (always-on) seed would need an all-tenants scan — none
   exist; the reconcile warns loudly if one is added so the gap isn't silent.
 - ☐ Re-express CRM sweep (inactive/win-back/high-value/deal-closing/credit-near-limit/quote-expiry) —
-  the _mechanism_ is built (customer scanner + `email.send_campaign`), but the email CONTENT SOURCE
-  is an open product decision (see the RESUME "CONTENT FORK": coded+siteUrl vs Builder-authored vs
-  draft). Don't ship a system seed that enqueues sends with no working CTA.
-- ☐ Seed remaining default Managed automations (abandoned-cart, win-back, fulfilled→review)
+  the _send mechanism_ is built (customer scanner + `email.send_campaign`). CONTENT FORK RESOLVED → (B)
+  Builder-authored defaults, so this is **sequenced behind the Default Builder-emails library** (next
+  bullet): the seed references a provisioned default Builder email via `defer`. Don't ship a system
+  seed that enqueues sends with no working CTA.
+- ☐ Seed remaining default Managed automations (abandoned-cart, win-back, fulfilled→review) — same
+  dependency on the Builder-emails library.
+- ☐ **NEW TASK (user-queued 2026-06-11) — Default Builder-emails library + per-tenant provisioning.**
+  Author a solid starter set of default **Builder emails** (node-trees) and provision them per tenant
+  on `module.activated(email)` (their theme, fully editable); these become the content source the
+  unified-engine email seeds `defer` to. **Must reconcile/retire the existing coded
+  `@sparx/email-platform` `DEFAULT_AUTOMATIONS`** (see the RESUME reconciliation finding) — not a third
+  parallel system. Render half exists (`builderEmailService` → `renderEmailTree` with brand); the
+  default node-trees + provisioning step do not. Its own design+build slice (memory
+  `project_email_defaults_builder_authored`).
 
 **F3 — retire crons ☑ (b2b-overdue gone)**
 
@@ -485,7 +522,36 @@ current_setting('app.current_tenant_id')::uuid)`. That GUC name is **wrong** (`w
 > pipeline. **Not bundled into another agent's feature — it's a DB-layer correctness fix and a
 > new migration file, touching no other source.**
 
-### Slice G — Phase 3 dashboard UI ☐ (see docs/81 §8)
+### Slice G — Phase 3 dashboard UI ◐ (see docs/81 §8) — **REST API backend DONE**
+
+**G-API — `/v1/automations` REST surface ☑** (the API-first spine; the dashboard UI + MCP are
+consumers of these). New `services/api-rest/src/routes/v1/automations/index.ts`:
+
+- ☑ `GET /v1/automations` (filter status/triggerType/origin) · `POST` (create, always user-origin
+  draft) · `GET/PATCH/DELETE /:id` · `POST /:id/clone` ("Duplicate to edit") · `POST /:id/status`
+  (draft|active|paused) · `GET /:id/runs` + `GET /:id/runs/:runId` (run + ordered steps w/ gate_log).
+- ☑ **RBAC, no module gate** — automations are a PLATFORM capability (docs/81 §3, no `automations`
+  slug), so the routes do role checks only (`requireRole` viewer-read / editor-write), NOT
+  `requireModule`. The dangerous bits are gated at runtime by the engine's gate layer, not the route.
+- ☑ **LOCKED-tier guard surfaced as HTTP** — the service throws `LockedAutomationError` /
+  `AutomationNotFoundError`; added `automationErrorMapper` to `app.ts` (→ `409 AUTOMATION_LOCKED` with a
+  distinct code so the dashboard can offer "Duplicate to edit", and `404 NOT_FOUND`). A tenant can
+  never create a `system`/`locked` rule — origin/locked are service-set, never accepted from the body.
+- ☑ **Run-history reads** added to `@sparx/automation` (`listAutomationRuns` / `getAutomationRun`,
+  tenant-scoped via `withTenant`, run scoped to its automation so a cross-automation run id 404s). The
+  engine already WROTE runs/steps (`history/log.ts`); this is the read side for REST/MCP/UI.
+- ☑ **Wiring:** `@sparx/automation` + `@sparx/automation-schemas` added to api-rest deps + Dockerfile
+  COPY closure (the route needs only the service layer → closure is just those two; db/events already
+  present, NO executor/CRM/commerce closure pulled in). `pnpm install` lockfile change scoped to the
+  two new links.
+- ☑ **Tests (docker DB, real Fastify via `app.inject`):** `automations-routes.test.ts` 7/7 — 401
+  no-token, full lifecycle (create→list→get→update→status), RBAC (viewer 403 on create), 404 + 422,
+  LOCKED guard (edit/status/delete 409 + clone 201), delete, run-history (empty list, seeded
+  run-with-steps, cross-automation 404). typecheck + lint + prettier clean; `@sparx/automation` 35/35.
+
+**G-UI — dashboard surface ☐** — list / detail / trigger+condition+action builder / run history
+(docs/34 working-area standard). Not started; the API above is its contract.
+**MCP write-tool ☐** (Slice H) — also a consumer of the service layer above.
 
 ### Slice H — Phase 4 AI assistant ☐ (MCP write-tool)
 
@@ -699,3 +765,35 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
     this doc-sync (F3 section + the `20260805000000` number fix the commit captured stale) lands on top.
     **Next:** email-driven seeds once the user picks a CONTENT-FORK approach (RESUME) + commerce
     executors.
+- **2026-06-11 (cont.)** — **Content-fork RESOLVED + next-slice repointed; no new code.** User picked
+  **(B) Builder-authored defaults** for system-seeded marketing emails and surfaced a broader product
+  task: ship a **library of default Builder emails** with the email module ("emails are vital and take
+  users the most time"). Recorded as a new tracked F2 task + memory `project_email_defaults_builder_authored`.
+  **Investigated the next build and ruled out two candidates with evidence:** (1) **commerce executors**
+  — read the resolver catalog (`resolvers/builtins.ts`: customer/deal/order only, NO product/variant)
+  and the commerce services; `update_inventory` has no trigger entity, `create_invoice` collides with
+  the in-flight `billing_documents`, `create_order`/`apply_discount` lack a trigger semantic/spec, none
+  has a consuming automation → not cleanly buildable, deferred with reasons (NOT half-built). (2)
+  **`email.sequence_*`** — no sequence subsystem exists, deferred. **⚠ Reconciliation finding:** a
+  PARALLEL coded email-automation system already exists (`@sparx/email-platform` `DEFAULT_AUTOMATIONS` +
+  its own `evaluateTrigger`, 11 coded-`templateKey` defaults incl. a dead `crm.customer.inactive`
+  win-back) that the unified engine must subsume, not run beside. **Repointed RESUME → `/v1/automations`
+  REST API (Slice G backend)** as the next slice: clean, additive, API-first (CLAUDE.md), unblocks the
+  Custom tier + dashboard UI + MCP, no product gaps, no cross-agent collision (new route file; only the
+  shared route-registration line is touched).
+- **2026-06-11 (cont.)** — **Slice G-API (`/v1/automations` REST surface) DONE.** New
+  `services/api-rest/src/routes/v1/automations/index.ts`: list (filter status/triggerType/origin),
+  create (user-origin draft), get/patch/delete, `:id/clone` ("Duplicate to edit"), `:id/status`
+  (draft|active|paused), `:id/runs` + `:id/runs/:runId` (run + ordered steps w/ gate_log). RBAC only
+  (`requireRole` viewer-read / editor-write) — automations are a PLATFORM capability, NOT a module, so
+  no `requireModule`. Added run-history reads to `@sparx/automation` (`listAutomationRuns` /
+  `getAutomationRun`, tenant-scoped, run scoped to its automation). Added `automationErrorMapper` to
+  `app.ts` mapping `LockedAutomationError`→`409 AUTOMATION_LOCKED` (distinct code → dashboard offers
+  "Duplicate to edit") + `AutomationNotFoundError`→`404`. Wiring: `@sparx/automation` +
+  `@sparx/automation-schemas` added to api-rest deps + Dockerfile COPY closure (route needs only the
+  service layer → no executor/CRM/commerce closure pulled in); `pnpm install` lockfile change scoped to
+  the two new links. **Verify:** automation + api-rest typecheck clean, lint 0, prettier clean;
+  `automations-routes.test.ts` 7/7 (401, lifecycle, RBAC 403, 404+422, LOCKED 409 + clone 201, delete,
+  run-history) + `@sparx/automation` 35/35. Purely additive — no existing route/behavior changed; the
+  other agent's in-flight invoicing files in the working tree were left untouched. **Next:** Slice G-UI
+  (dashboard surface) or Slice H (MCP write-tool) — both consume this API.

@@ -25,6 +25,8 @@ COPY packages/auth ./packages/auth
 COPY packages/modules ./packages/modules
 COPY packages/email ./packages/email
 COPY packages/events ./packages/events
+COPY packages/automation-schemas ./packages/automation-schemas
+COPY packages/automation ./packages/automation
 COPY packages/api-core ./packages/api-core
 COPY packages/cms-schemas ./packages/cms-schemas
 COPY packages/crm-schemas ./packages/crm-schemas
