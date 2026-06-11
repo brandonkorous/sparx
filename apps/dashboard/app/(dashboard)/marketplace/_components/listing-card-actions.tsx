@@ -13,9 +13,13 @@ import { ComponentCardActions } from './component-card-actions';
 export function ListingCardActions({
   item,
   canInstall,
+  detail = false,
 }: {
   item: MarketplaceListing;
   canInstall: boolean;
+  // True on the listing DETAIL page. Components route browse cards to the detail
+  // (where the storage-backed tree resolves the real action) — docs/85 §7.
+  detail?: boolean;
 }) {
   if (item.category === 'blueprints') {
     return (
@@ -40,7 +44,14 @@ export function ListingCardActions({
     );
   }
   if (item.category === 'components') {
-    return <ComponentCardActions slug={item.slug} name={item.name} component={item.component} />;
+    return (
+      <ComponentCardActions
+        slug={item.slug}
+        name={item.name}
+        component={item.component}
+        detail={detail}
+      />
+    );
   }
   return null;
 }

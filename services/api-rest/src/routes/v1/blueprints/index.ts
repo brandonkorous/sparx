@@ -28,6 +28,7 @@ import {
 } from '@sparx/blueprints';
 
 import { resolvePrimaryPropertyId } from '../../../lib/property.js';
+import { readArtifact } from '../../../lib/marketplace/artifacts.js';
 import {
   findInstall,
   goLiveInstall,
@@ -39,17 +40,22 @@ import {
 const KeyParam = z.object({ key: z.string().min(1).max(63) });
 const IdParam = z.object({ id: z.string().uuid() });
 
-// Resolve a blueprint manifest DATA-FIRST (docs/85): the source of truth is the
-// marketplace catalog row's `definition` JSON, parsed back into a Blueprint. Falls
-// back to the in-code @sparx/blueprints registry for any row not yet serialized
-// (and so a no-deploy publish can later add blueprints purely as data).
+// Resolve a blueprint manifest DATA-FIRST (docs/85 §7): the source of truth is the
+// compiled artifact in object storage (`marketplace/blueprints/<slug>/<version>.json`),
+// read by the thin catalog row's pinned `version` and parsed back into a Blueprint.
+// Falls back to the in-code @sparx/blueprints registry for any row whose artifact
+// was never ingested — so a no-deploy publish adds blueprints purely as data, while
+// the legacy code blueprints keep installing during migration.
 async function resolveBlueprint(tenantId: string, key: string): Promise<Blueprint | null> {
   const row = await withTenant({ tenantId }, (tx) =>
-    tx.marketplaceBlueprint.findFirst({ where: { slug: key }, select: { definition: true } })
+    tx.marketplaceBlueprint.findFirst({ where: { slug: key }, select: { version: true } })
   );
-  if (row?.definition) {
-    const parsed = safeParseBlueprint(row.definition);
-    if (parsed.success) return parsed.data;
+  if (row) {
+    const artifact = await readArtifact('blueprints', key, row.version);
+    if (artifact != null) {
+      const parsed = safeParseBlueprint(artifact);
+      if (parsed.success) return parsed.data;
+    }
   }
   return getBlueprint(key);
 }

@@ -134,13 +134,18 @@ class GcsStorage implements MediaStorage {
   }
 
   async writeObject(key: string, contentType: string, body: Buffer | Readable) {
+    const isPublic = this.isPublicKey(key);
     const file = this.file(key);
     const stream = file.createWriteStream({
       contentType,
       resumable: false,
       // Variants are world-readable behind CDN — see the bucket TF for the
       // ACL/IAM that makes this work without a per-object publicRead grant.
-      metadata: { cacheControl: 'public, max-age=31536000, immutable' },
+      // Private objects (marketplace artifacts, originals) are mutable-by-
+      // version, so no immutable cache directive on those.
+      metadata: isPublic
+        ? { cacheControl: 'public, max-age=31536000, immutable' }
+        : { cacheControl: 'private, no-store' },
     });
     if (Buffer.isBuffer(body)) {
       await new Promise<void>((resolveStream, reject) => {
@@ -151,7 +156,9 @@ class GcsStorage implements MediaStorage {
     } else {
       await pipeline(body, stream);
     }
-    return { url: this.publicUrl(key) };
+    // Public (variant) keys get a stable CDN URL; private keys (artifacts,
+    // originals) have none — callers read them back via readObject(key).
+    return { url: isPublic ? this.publicUrl(key) : '' };
   }
 
   async deleteObject(key: string): Promise<void> {
@@ -301,6 +308,14 @@ export function variantKey(
   ext: string
 ): string {
   return `${tenantId}/variants/${assetId}/${format}-${width}.${ext}`;
+}
+
+// Marketplace artifact key (docs/85 §6). Private object — the compiled,
+// immutable-per-version declarative artifact (theme tokens / component tree /
+// blueprint manifest / connector spec). No `/variants/` segment, so it lands on
+// the private bucket and is read back via readObject(), never a public URL.
+export function marketplaceArtifactKey(category: string, slug: string, version: string): string {
+  return `marketplace/${category}/${slug}/${version}.json`;
 }
 
 function safeFilename(name: string): string {

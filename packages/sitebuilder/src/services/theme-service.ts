@@ -30,20 +30,34 @@ export function getConfig(ctx: ServiceContext): Promise<SiteConfig> {
   return withTenant(ctx, (tx) => getOrCreateConfig(tx, ctx.tenantId));
 }
 
-export async function selectTheme(ctx: ServiceContext, rawInput: unknown): Promise<SiteConfig> {
+export interface SelectThemeResolution {
+  /** Resolve a marketplace DATA theme's full `DataThemePreset` by slug, or null
+   *  when the slug is not a marketplace data theme (a code foundation, or unknown).
+   *  Injected by the api-rest route because the artifact lives in object storage,
+   *  not a column (docs/85 §6/§7) — the @sparx/sitebuilder package never reaches
+   *  storage directly. */
+  resolveDataPreset?: (slug: string) => Promise<unknown>;
+}
+
+export async function selectTheme(
+  ctx: ServiceContext,
+  rawInput: unknown,
+  resolution: SelectThemeResolution = {}
+): Promise<SiteConfig> {
   const input = SelectThemeInput.parse(rawInput);
   const slug = input.themeKey;
+
+  // Resolve the slug (docs/85 §7): a marketplace DATA theme carries its full
+  // `DataThemePreset` as a storage artifact (resolved by the injected callback);
+  // the code foundations resolve by key. A slug that is neither is unknown.
+  const dataPreset = resolution.resolveDataPreset ? await resolution.resolveDataPreset(slug) : null;
+  const isData = dataPreset != null;
+  if (!isData && !isThemeKey(slug)) {
+    throw new SitebuilderNotFoundError('Theme', slug);
+  }
+
   const updated = await withTenant(ctx, async (tx) => {
     const config = await getOrCreateConfig(tx, ctx.tenantId);
-
-    // Resolve the slug: a marketplace DATA theme carries its full preset in
-    // `tokens`; the 6 code foundations resolve by key. (docs/85 §7)
-    const row = await tx.marketplaceTheme.findFirst({ where: { slug }, select: { tokens: true } });
-    const dataPreset = (row?.tokens ?? null) as { v1?: unknown; v2?: unknown } | null;
-    const isData = Boolean(dataPreset?.v1 && dataPreset?.v2);
-    if (!isData && !isThemeKey(slug)) {
-      throw new SitebuilderNotFoundError('Theme', slug);
-    }
 
     // Carry (or clear) the inline preset in draftSettings so the compile engine
     // applies it with no code preset. A code foundation clears any prior inline.

@@ -105,7 +105,7 @@ export default async function ListingDetailPage({
                   </Badge>
                 ) : null}
                 <Heading level={1}>{item.name}</Heading>
-                <ListingCardActions item={item} canInstall={canInstall} />
+                <ListingCardActions item={item} canInstall={canInstall} detail />
                 {included.length > 0 ? (
                   <div>
                     <Text size="sm" weight="medium" className="mb-2">

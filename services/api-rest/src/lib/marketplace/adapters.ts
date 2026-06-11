@@ -13,6 +13,7 @@
 // link).
 
 import type { TxClient } from '@sparx/db';
+import { readArtifact } from './artifacts.js';
 import type {
   BlueprintContents,
   ComponentFacets,
@@ -224,23 +225,36 @@ interface ComponentRow extends SpineRow {
   group: string;
   kind: string | null;
   surfaces: string[];
+}
+
+// The component DATA payload (docs/85 §6) — the node tree + prop spec — lives in
+// the storage artifact, NOT a column. `artifact` is the parsed object on a DETAIL
+// load (`loadOne` reads it from storage); browse passes nothing, so the heavy tree
+// never rides a card and browse never touches storage.
+interface ComponentArtifact {
   tree?: unknown;
   propSpec?: unknown;
 }
 
-// `detail` surfaces the DATA payload (tree + propSpec) for the "Add" clone path
-// (docs/85). Browse omits it — the node tree is heavy and unused on a card.
-function componentListing(row: ComponentRow, detail = false): MarketplaceListing {
+function componentListing(
+  row: ComponentRow,
+  artifact?: ComponentArtifact | null
+): MarketplaceListing {
+  const tree = artifact?.tree ?? null;
   const component: ComponentFacets = {
     group: row.group,
     kind: row.kind,
     surfaces: row.surfaces,
-    // Cheap flag on every row (browse + detail): does this carry a DATA tree to
-    // clone, vs a system-palette pointer resolved by builder `type`? The heavy
-    // tree/propSpec themselves ride only on detail.
-    dataBacked: row.tree != null,
-    ...(detail
-      ? { tree: row.tree ?? null, propSpec: Array.isArray(row.propSpec) ? row.propSpec : [] }
+    // dataBacked + tree/propSpec are DETAIL-only (resolved from the storage
+    // artifact). On browse `artifact` is undefined, so a card carries neither and
+    // routes to the detail page, which resolves the real "Add" vs palette-pointer
+    // action.
+    ...(artifact
+      ? {
+          dataBacked: tree != null,
+          tree,
+          propSpec: Array.isArray(artifact.propSpec) ? artifact.propSpec : [],
+        }
       : {}),
   };
   return {
@@ -266,7 +280,11 @@ const componentAdapter: CategoryAdapter = {
       where: { slug },
       include: { publisher: PUBLISHER_SELECT },
     });
-    return row ? componentListing(row, true) : null;
+    if (!row) return null;
+    // Resolve the DATA payload from storage (docs/85 §7); a row with no artifact is
+    // a legacy palette pointer → tree stays null, the card deep-links to the builder.
+    const artifact = await readArtifact<ComponentArtifact>('components', slug, row.version);
+    return componentListing(row, artifact);
   },
   searchText: (l) => `${l.name} ${l.tagline ?? ''} ${l.component?.group ?? ''}`,
   facets: [

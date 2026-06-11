@@ -11,69 +11,8 @@ import { PrismaClient, type Prisma } from '@prisma/client';
 import { hashPassword } from 'better-auth/crypto';
 import { listBlueprints, type Blueprint } from '@sparx/blueprints';
 import { LEGAL_TEMPLATES, legalEntryBody } from '@sparx/legal-templates';
-import { SPARX_DATA_THEMES } from './marketplace/themes';
-import { SPARX_DATA_COMPONENTS } from './marketplace/components';
 
 const prisma = new PrismaClient();
-
-// A self-contained SVG swatch for a theme card (docs/85 assets) — a data URI, so
-// it renders in both apps with no file hosting (the GCS media pipeline replaces
-// this in a later phase). Uses the data theme's real surface/brand tokens when
-// present, else the catalog accent.
-function themeSwatch(
-  name: string,
-  accent: string,
-  preset?: { v2?: { light?: Record<string, string> } }
-): string {
-  const c = preset?.v2?.light ?? {};
-  const bg = c.base100 ?? '#ffffff';
-  const primary = c.primary ?? accent;
-  const acc = c.accent ?? accent;
-  const fg = c.baseContent ?? '#0f172a';
-  const border = c.border ?? '#e2e8f0';
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300">` +
-    `<rect width="480" height="300" fill="${bg}"/>` +
-    `<rect x="0" y="0" width="480" height="96" fill="${primary}"/>` +
-    `<circle cx="408" cy="48" r="26" fill="${acc}"/>` +
-    `<rect x="40" y="150" width="220" height="20" rx="10" fill="${fg}" opacity="0.85"/>` +
-    `<rect x="40" y="186" width="320" height="14" rx="7" fill="${fg}" opacity="0.35"/>` +
-    `<rect x="40" y="212" width="280" height="14" rx="7" fill="${fg}" opacity="0.35"/>` +
-    `<rect x="0.5" y="0.5" width="479" height="299" fill="none" stroke="${border}"/>` +
-    `<text x="40" y="64" font-family="system-ui,sans-serif" font-size="30" font-weight="700" fill="#ffffff">${name}</text>` +
-    `</svg>`;
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-}
-
-// A clean wireframe swatch for a composed-component card (docs/85 assets) — a
-// data URI so it renders anywhere with no file hosting. A teal accent bar (the
-// Components category color) over neutral placeholder blocks, plus the name.
-function componentSwatch(name: string): string {
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300">` +
-    `<rect width="480" height="300" fill="#f8fafc"/>` +
-    `<rect x="40" y="40" width="400" height="52" rx="8" fill="#14b8a6"/>` +
-    `<rect x="40" y="112" width="180" height="148" rx="8" fill="#e2e8f0"/>` +
-    `<rect x="236" y="112" width="204" height="68" rx="8" fill="#e2e8f0"/>` +
-    `<rect x="236" y="192" width="204" height="68" rx="8" fill="#e2e8f0"/>` +
-    `<text x="60" y="74" font-family="system-ui,sans-serif" font-size="24" font-weight="700" fill="#ffffff">${name}</text>` +
-    `</svg>`;
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-}
-
-// A branded wordmark swatch for an integration card (docs/85 assets) — the
-// provider's accent over a soft tint, name centered. A data URI placeholder until
-// the GCS media pipeline carries real provider logos.
-function integrationSwatch(name: string, accent: string): string {
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300">` +
-    `<rect width="480" height="300" fill="${accent}" opacity="0.08"/>` +
-    `<circle cx="240" cy="120" r="44" fill="${accent}"/>` +
-    `<text x="240" y="132" font-family="system-ui,sans-serif" font-size="36" font-weight="800" fill="#ffffff" text-anchor="middle">${name.slice(0, 1)}</text>` +
-    `<text x="240" y="220" font-family="system-ui,sans-serif" font-size="30" font-weight="700" fill="${accent}" text-anchor="middle">${name}</text>` +
-    `</svg>`;
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-}
 
 const TENANT_SLUG = 'e2e-store';
 const STAFF_EMAIL = 'e2e-staff@sparx.test';
@@ -365,9 +304,9 @@ async function seedMarketplaceCatalog(): Promise<void> {
         status: 'published',
         visibility: 'public',
         publisherId: publisher.id,
-        // Serialize the full manifest as DATA (docs/85) so install resolves it
-        // from the row, not the code registry — the no-deploy path.
-        definition: bp as unknown as Prisma.InputJsonValue,
+        // No payload column: the manifest is resolved by slug → the in-code
+        // @sparx/blueprints registry, OR (for a bundle item) the storage artifact
+        // (docs/85 §6/§7). `definition` stays NULL.
       };
       await tx.marketplaceBlueprint.upsert({
         where: { slug: bp.key },
@@ -376,20 +315,26 @@ async function seedMarketplaceCatalog(): Promise<void> {
       });
     }
 
-    // Themes (docs/85). The 6 foundations (apex…drop) stay code presets resolved
-    // by slug → `tokens` NULL. The 10 marketplace themes are DATA: their full
-    // `DataThemePreset` rides in `tokens`, applied at runtime with no code preset
-    // (the apply path writes it into draftSettings; the compile engine reads it).
-    // SPARX_THEMES drives the catalog copy/facets; SPARX_DATA_THEMES the payload.
-    const dataThemeBySlug = new Map(SPARX_DATA_THEMES.map((t) => [t.slug, t.preset]));
+    // Themes (docs/85 §7). The 6 foundations (apex…drop) are CODE presets resolved
+    // by slug → `tokens` NULL. The 10 marketplace data themes (noir…linen) are
+    // seeded as BUNDLES via the ingest (a storage artifact + thin row), NOT here —
+    // a thin row with no artifact AND no code preset would break Apply — so the
+    // loop filters SPARX_THEMES to the foundations until those bundles land.
+    const FOUNDATION_THEME_SLUGS = new Set([
+      'apex',
+      'industrial',
+      'drift',
+      'market',
+      'fleet',
+      'drop',
+    ]);
     for (const t of SPARX_THEMES) {
-      const tokens = dataThemeBySlug.get(t.slug);
+      if (!FOUNDATION_THEME_SLUGS.has(t.slug)) continue;
       const shared = {
         name: t.name,
         tagline: t.tagline.slice(0, 255),
         description: t.description,
         accent: t.accent,
-        media: [{ url: themeSwatch(t.name, t.accent, tokens), kind: 'image', alt: t.name }],
         mood: t.mood,
         colorFamily: t.colorFamily,
         density: t.density,
@@ -398,7 +343,6 @@ async function seedMarketplaceCatalog(): Promise<void> {
         status: 'published',
         visibility: 'public',
         publisherId: publisher.id,
-        ...(tokens ? { tokens: tokens as unknown as Prisma.InputJsonValue } : {}),
       };
       await tx.marketplaceTheme.upsert({
         where: { slug: t.slug },
@@ -416,7 +360,6 @@ async function seedMarketplaceCatalog(): Promise<void> {
         tagline: it.tagline.slice(0, 255),
         description: it.description,
         accent: it.accent,
-        media: [{ url: integrationSwatch(it.name, it.accent), kind: 'image', alt: it.name }],
         providerSlug: it.providerSlug,
         kind: it.kind,
         scopes: it.scopes,
@@ -454,35 +397,14 @@ async function seedMarketplaceCatalog(): Promise<void> {
       });
     }
 
-    // Composed DATA components (docs/85) — the node tree + propSpec ride in the
-    // row, and "Add" clones them into a tenant component (no builder `type`).
-    for (const cmp of SPARX_DATA_COMPONENTS) {
-      const shared = {
-        name: cmp.name,
-        tagline: cmp.tagline.slice(0, 255),
-        description: cmp.description,
-        group: cmp.group,
-        kind: cmp.kind,
-        surfaces: cmp.surfaces,
-        sortWeight: cmp.sortWeight,
-        status: 'published',
-        visibility: 'public',
-        publisherId: publisher.id,
-        media: [{ url: componentSwatch(cmp.name), kind: 'image', alt: cmp.name }],
-        tree: cmp.tree as unknown as Prisma.InputJsonValue,
-        propSpec: cmp.propSpec as unknown as Prisma.InputJsonValue,
-      };
-      await tx.marketplaceComponent.upsert({
-        where: { slug: cmp.slug },
-        update: shared,
-        create: { slug: cmp.slug, publishedAt: new Date(), ...shared },
-      });
-    }
+    // Composed DATA components (docs/85) are seeded as BUNDLES via the ingest
+    // (a storage artifact + thin row), not here — the seed only carries the
+    // legacy palette-pointer components above.
 
     console.log(
       `Seeded marketplace catalog: ${listBlueprints().length} blueprint(s), ` +
-        `${SPARX_THEMES.length} theme(s), ${SPARX_INTEGRATIONS.length} integration(s), ` +
-        `${SPARX_COMPONENTS.length + SPARX_DATA_COMPONENTS.length} component(s).`
+        `6 foundation theme(s), ${SPARX_INTEGRATIONS.length} integration(s), ` +
+        `${SPARX_COMPONENTS.length} component(s).`
     );
   });
 }

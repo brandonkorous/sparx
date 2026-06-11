@@ -39,7 +39,10 @@ that contains anything outside this list:
 <slug>/
   sparx.json          REQUIRED  — the metadata manifest (see below)
   <payload>           REQUIRED  — exactly ONE category payload file (e.g. theme.ts)
-  media/              OPTIONAL  — images only: .png .jpg .jpeg .webp .svg
+  media/
+    icon.png          REQUIRED  — square mark for cards/lists (512×512, ≤256 KB)
+    preview.png       REQUIRED  — detail-view hero (1600×1000, 16:10, ≤2 MB)
+    …                 OPTIONAL  — more images: .png .jpg .jpeg .webp .svg
   README.md           OPTIONAL  — human-readable description (markdown, no HTML)
   CHANGELOG.md        OPTIONAL  — version history (markdown)
 ```
@@ -47,8 +50,10 @@ that contains anything outside this list:
 **Denied automatically:** any other file or extension — `node_modules/`, lockfiles,
 `*.sh`/`*.bat`, dotfiles other than none, nested packages, binaries other than the
 allowed image types, symlinks, a second payload file, files above a size cap, or any
-import the payload makes outside the allow-listed authoring API. A bundle that trips
-any rule is **denied with the offending path(s)** and never reaches storage.
+import the payload makes outside the allow-listed authoring API. A bundle is **also
+denied if it is missing a required file** — the payload, `icon.png`, or `preview.png`
+(or either image is off-spec in format/dimensions/size). A bundle that trips any rule
+is **denied with the offending path(s)** and never reaches storage.
 
 ## `sparx.json` — the metadata manifest (every category)
 
@@ -64,7 +69,10 @@ any rule is **denied with the offending path(s)** and never reaches storage.
   "payload": "theme.ts", // the single payload file in this bundle
   "facets": {}, // category-specific (see each template)
   "pricing": { "model": "free", "priceCents": 0 }, // free | one_time | subscription
-  "media": [{ "file": "media/preview.png", "kind": "image", "alt": "Aurora home page" }],
+  "media": [
+    { "file": "media/icon.png", "kind": "icon", "alt": "Aurora mark" },
+    { "file": "media/preview.png", "kind": "preview", "alt": "Aurora home page" },
+  ],
   "author": { "displayName": "Your Studio", "website": "https://example.com" },
   "requires": { "modules": [] }, // category-specific (see each template)
 }

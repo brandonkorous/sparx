@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "tsx watch --clear-screen=false src/index.ts",
     "start": "node --import tsx src/index.ts",
+    "marketplace:ingest": "node --import tsx src/scripts/marketplace-ingest.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",

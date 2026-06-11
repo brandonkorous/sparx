@@ -15,6 +15,7 @@ import {
   requireSitebuilderModule,
   toSitebuilderContext,
 } from '../../../lib/sitebuilder-context.js';
+import { resolveThemePreset } from '../../../lib/marketplace/resolve.js';
 
 const themeRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/sitebuilder/themes', async (request) => {
@@ -33,7 +34,12 @@ const themeRoutes: FastifyPluginAsync = (app) => {
   app.put('/v1/sitebuilder/config/theme', async (request) => {
     requireRole(request, 'editor');
     await requireSitebuilderModule(request);
-    const config = await themeService.selectTheme(toSitebuilderContext(request), request.body);
+    const ctx = toSitebuilderContext(request);
+    // The route owns marketplace resolution (artifact lives in storage, docs/85
+    // §7); the service keeps validation + the code-foundation fallback.
+    const config = await themeService.selectTheme(ctx, request.body, {
+      resolveDataPreset: (slug) => resolveThemePreset(ctx.tenantId, slug),
+    });
     return ok(config);
   });
 

@@ -1,10 +1,22 @@
 # Creator Marketplace — submissions, the declarative contract, and the no-deploy runtime
 
-**Version:** 0.1.0
+**Version:** 0.2.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-10
 
 ---
+
+> **Architecture locked — 2026-06-10 (do not re-litigate).** Every compiled artifact
+> (theme tokens, component node-tree, blueprint manifest, connector spec) is stored as
+> an **immutable, versioned object in storage** — **never** in a SQL column. The catalog
+> row is a **thin index**: identity + the filterable facets + media URLs + the artifact's
+> (derived) storage key. Browse — the hot path — reads only the thin row; apply/install —
+> the cold path — does one storage read. `.ts`/`.tsx` is **authoring only**: it is compiled
+> to JSON server-side and is never stored or executed live; the raw bundle is archived to
+> storage for re-scan/audit. Storage is the **existing** `MediaStorage` abstraction
+> (`getStorage()` → local filesystem in dev, GCS in prod —
+> [`services/api-rest/src/lib/storage.ts`](../services/api-rest/src/lib/storage.ts)), not a
+> new system. Full rationale and the storage vs. DB call are in **§6**.
 
 ## 1. Purpose & relationship to other docs
 
@@ -72,7 +84,10 @@ The canonical templates live in [`marketplace-templates/`](../marketplace-templa
                                 media[], author, requires)
   <payload>           REQUIRED  exactly ONE category payload (theme.ts / component.tsx
                                 / blueprint.ts / integration.ts)
-  media/              OPTIONAL  images only: .png .jpg .jpeg .webp .svg
+  media/
+    icon.png          REQUIRED  square mark for cards/lists (512×512, ≤256 KB)
+    preview.png       REQUIRED  detail-view hero (1600×1000, 16:10, ≤2 MB)
+    …                 OPTIONAL  more images: .png .jpg .jpeg .webp .svg
   README.md           OPTIONAL  markdown, no HTML
   CHANGELOG.md        OPTIONAL  markdown
 ```
@@ -80,8 +95,10 @@ The canonical templates live in [`marketplace-templates/`](../marketplace-templa
 **Strict allow-list ("no other things").** A bundle containing anything outside this
 list is denied with the offending path(s): a second payload file, any `.js`/`.ts`
 besides the one payload, `node_modules/`, lockfiles, shell/batch scripts, binaries
-other than the allowed image types, symlinks, oversize files. See each template's
-README for the per-category payload fields and per-category facets.
+other than the allowed image types, symlinks, oversize files. A bundle **missing** a
+required file — the payload, `icon.png`, or `preview.png` — is denied just the same
+(the validator checks both presence and the dimension/format/size bounds above). See
+each template's README for the per-category payload fields and per-category facets.
 
 `sparx.json` is the common metadata; `facets`/`requires` are category-specific and
 map 1:1 onto the docs/60 adapter facets (theme: mood/colorFamily/density/industry;
@@ -120,42 +137,74 @@ Every stage is **deny-with-reason**; nothing partial reaches storage. The pipeli
 runs as a Pub/Sub worker (`marketplace.submission.received` → a Cloud Run
 `submission-worker`), so a large bundle never blocks a request.
 
-## 6. Storage (Google Cloud Storage)
+## 6. Storage — where every artifact lives (locked)
 
-One regional bucket, three prefixes:
+**"Storage" = the existing `MediaStorage` abstraction, not the repo and not SQL.**
+`getStorage()` ([`services/api-rest/src/lib/storage.ts`](../services/api-rest/src/lib/storage.ts))
+resolves to **`LocalStorage` (local filesystem, `MEDIA_LOCAL_DIR`) in dev** and
+**`GcsStorage` (Google Cloud Storage, `GCS_MEDIA_BUCKET`) in prod** — the same layer
+that already backs tenant media. We reuse it; we do not build a new storage system, and
+nothing here is committed to git or written to a SQL column.
 
-| Prefix                                       | Access                     | Contents                          |
-| -------------------------------------------- | -------------------------- | --------------------------------- |
-| `artifacts/<category>/<slug>/<version>.json` | private (read by api-rest) | the compiled declarative artifact |
-| `media/<category>/<slug>/…`                  | public-read (CDN)          | preview images, logos, swatches   |
-| `bundles/<category>/<slug>/<version>.zip`    | private (review/audit)     | the archived original submission  |
+One namespace, three kinds of object:
 
-- The **catalog row stays thin** (docs/60): identity + facets + a `media[]` of public
-  CDN URLs + a pointer to the artifact object. The heavy artifact is fetched from GCS
-  on apply/install and cached (it is immutable per version).
-- **Themes are small enough to inline** their artifact in `marketplace_themes.tokens`
-  (the column already exists) — no GCS round-trip for the hot path. Larger artifacts
-  (blueprint manifests, component trees) may inline in `definition`/`tree` **or**
-  pointer to GCS; Phase 1 inlines (they are still small); GCS-pointer is the scale
-  valve. Either way the **runtime reads data, never code**.
-- Media flows through the existing `media-worker` (Cloud Run) for resize/derivatives;
-  a CDN sits in front of the `media/` prefix.
-- Signed upload URLs gate the submitter's zip upload; the bucket is otherwise private.
+| Key                                                   | Access                     | Contents                                         |
+| ----------------------------------------------------- | -------------------------- | ------------------------------------------------ |
+| `marketplace/<category>/<slug>/<version>.json`        | private (read by api-rest) | the compiled declarative **artifact**            |
+| `marketplace/media/<category>/<slug>/…`               | public-read (CDN)          | `icon.png`, `preview.png`, screenshots, logos    |
+| `marketplace/bundles/<category>/<slug>/<version>.zip` | private (review/audit)     | the archived original submission (`.ts` + media) |
+
+**The DB never holds a payload.** The catalog row (docs/60) is a **thin index**:
+identity, the **filterable facets** (theme: mood/colorFamily/density/industry;
+component: group/surfaces; blueprint: vertical/requiredModules; integration:
+kind/scopes), a `media[]` of public CDN URLs, `version`, and the publisher. The
+artifact's storage key is **derived by convention** from `(category, slug, version)` —
+no pointer column, no migration. The legacy `tokens` / `definition` / `tree` /
+`propSpec` JSON columns are **left unused** (new items write nothing into them).
+
+**Why storage, not the DB column (decided 2026-06-10):**
+
+- **The DB stays lean.** Browse — the hot, frequent path — reads only thin columns and
+  never pulls a payload. Apply/Install — cold, user-initiated, latency-insensitive —
+  does one storage read.
+- **Uniform with code + media + bundles, which must be in storage regardless.** The §9
+  integration code tier, the archived raw bundle, and every image already live in
+  storage; resolving the declarative artifacts from the same place gives **one** artifact
+  path, not "DB for three categories, storage for the fourth."
+- **No drift, no 2-phase commit.** Artifacts are **immutable per version**: a new version
+  is a new object at a new key; the row's `version` is flipped only after the object is
+  written. A row can never point at a missing artifact, and a failed write leaves a
+  harmless orphan (GC'd later).
+- **Not a performance fix.** At hundreds–thousands of small JSON items the DB would be
+  fine too (column projection + Postgres TOAST). We choose storage for **leanness +
+  uniformity**, not because JSONB is slow — so we don't pretend a speed problem we won't
+  hit.
+
+**Blueprint facet carve-out.** A blueprint's _artifact_ lives in storage like the rest;
+only the handful of **filterable/reportable** fields (vertical, requiredModules, the
+content counts shown on the card) are duplicated onto the thin row so the catalog can
+filter/sort/report without fetching the artifact. The manifest internals stay in the
+storage object.
+
+Media flows through the existing `media-worker` for derivatives; a CDN fronts the public
+`marketplace/media/` prefix. Signed upload URLs gate a submitter's zip (Phase 2);
+first-party items are ingested directly (§14).
 
 ## 7. Runtime resolution — apply/install/add/connect with no deploy
 
-Each acquire verb reads the **artifact** (from the row's JSON column or its GCS
-pointer) and replays it through the platform's existing services. No code-registry
-lookup by slug; no deploy.
+Each acquire verb reads the **artifact from storage** (the derived
+`marketplace/<category>/<slug>/<version>.json` key, via `getStorage().readObject`,
+cached — it is immutable per version) and replays it through the platform's existing
+services. No SQL payload, no code-registry lookup by slug, no deploy.
 
 - **Theme → Apply.** Load `DataThemePreset`; write it into the tenant's
   `SiteConfig.draftSettings.themePreset`; the compile engine compiles from the inline
   preset (the `compileTokensFromDefaults` / `compileThemeForTenant({preset})` seam
   added in `@sparx/site-themes`). Publish snapshots it forward; the storefront renders
   from the snapshot. **No code preset, no closed enum.**
-- **Blueprint → Install.** `parseBlueprint(definition)` → `installBlueprint(ctx, bp)`
+- **Blueprint → Install.** `parseBlueprint(artifact)` → `installBlueprint(ctx, bp)`
   (the installer already takes a `Blueprint` object). Routes resolve the manifest from
-  the DB row, not the code registry.
+  the **storage artifact**, not a SQL column or the code registry.
 - **Component → Add.** `componentService.create({ tree, propSpec, … })` clones the
   artifact into the tenant's own component library (editable copy). Publish expands
   `custom:*` → primitives, so the storefront only sees data.
@@ -201,11 +250,25 @@ is a **sandboxed code tier**:
 - **Review:** automated scan (§5) for everyone; **manual** approve/deny for
   third-party submissions (a review queue with the offending paths / cap explanation
   surfaced); first-party auto-approves after the automated scan.
-- **Versioning/updates:** a new `version` is a new immutable artifact. Installed items
-  **pin** their version; a tenant **opts in** to an update. Phase 1's answer is
-  pin + manual re-install (re-install reconciles against tenant customizations the same
-  way blueprint reset/reinstall does). A true 3-way merge is acknowledged-hard and
-  out of scope here (docs/54 already flags it).
+- **Versioning/updates.** A new `version` is a **new immutable artifact** at a new
+  storage key (`…/<version>.json`); an existing version is never overwritten. This is
+  version-addressed _by construction_ — but two pieces must exist **from the first write**
+  (retrofitting version-addressing later is the painful migration):
+  - **Ingest guard (Phase 1):** the validator requires a valid **semver**, enforces a
+    **monotonic bump** (no going backwards, no re-using a published version), and
+    **refuses to clobber** an already-stored artifact object.
+  - **Acquire pins the version (Phase 1):** acquire copies the artifact into the tenant's
+    own space, so a tenant is decoupled from later updates. Blueprints record
+    `blueprintVersion` on the install row; a theme **Apply** copies the artifact into
+    `draftSettings.themePreset`; a component **Add** clones the tree into the tenant's
+    library. The source `slug@version` is stamped on the copy so "update available" can be
+    computed later.
+  - **Deferred (Phase 2+):** the self-service "publish an update" flow, **update-available**
+    hints + one-click update for themes/components, and **deprecate/yank** of a bad version
+    with a per-item version history. Applying an update across tenant customizations is the
+    acknowledged-hard 3-way merge that docs/54 already flags; Phase 1's answer stays
+    pin + manual re-install (re-install reconciles the same way blueprint reset/reinstall
+    does). Old versions remain readable from storage for any tenant pinned to them.
 
 ## 11. Security summary
 
@@ -217,16 +280,17 @@ private bundles/artifacts, public CDN media only • RLS-scoped catalog writes
 
 ## 12. Phasing
 
-| Phase                          | Ships                                                                                                                                                                                                                 | Notes                                                                                 |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| **1 — Data runtime + dogfood** | The no-deploy apply/install/add runtime (§7) for themes/components/blueprints + Sparx's own 10/10/10 catalog authored to the §4 contract and pushed through validation. The `DataThemePreset` engine seam. GCS media. | Delivers the original ask; proves the contract end-to-end. No third-party intake yet. |
-| **2 — Submission + review**    | Zip upload → §5 pipeline → review queue → publish. Publisher onboarding (tenant/partner). Declarative **integration connector** tier (Connect).                                                                       | Opens third-party intake for free items.                                              |
-| **3 — Monetization**           | Price caps enforced + Stripe Connect payouts + paid acquire/billing.                                                                                                                                                  | The financial subsystem.                                                              |
-| **4 — Code tier**              | The integration sandbox (§9) for code providers.                                                                                                                                                                      | The hardest/riskiest; demand-driven.                                                  |
+| Phase                          | Ships                                                                                                                                                                                                                                                                        | Notes                                                                                                           |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **1 — Data runtime + dogfood** | The no-deploy apply/install/add runtime (§7) reading **storage-backed artifacts** + Sparx's own 10/10/10 catalog authored to the §4 contract, **ingested to storage** (compile → `writeObject` → thin row) and pushed through validation. The `DataThemePreset` engine seam. | Delivers the original ask; proves the contract **and the storage path** end-to-end. No self-service intake yet. |
+| **2 — Submission + review**    | The **self-service** front door: zip upload → §5 pipeline → review queue → publish. Publisher onboarding (tenant/partner). Declarative **integration connector** tier (Connect). (Storage + ingest already exist from Phase 1; Phase 2 adds the upload UI + review queue.)   | Opens third-party intake for free items.                                                                        |
+| **3 — Monetization**           | Price caps enforced + Stripe Connect payouts + paid acquire/billing.                                                                                                                                                                                                         | The financial subsystem.                                                                                        |
+| **4 — Code tier**              | The integration sandbox (§9) for code providers.                                                                                                                                                                                                                             | The hardest/riskiest; demand-driven.                                                                            |
 
 ## 13. Open questions
 
-- Inline-artifact vs GCS-pointer threshold per category (Phase 1 inlines; revisit at scale).
+- ~~Inline-artifact vs storage threshold per category~~ — **resolved 2026-06-10 (§6):**
+  all compiled artifacts live in storage; the DB row is a thin index. No inlining.
 - Revenue-share percentage and refund window (Phase 3).
 - Trademark/brand-impersonation policy for third-party themes/blueprints (review policy).
 - Connector-tier coverage ceiling — when does the code tier become blocking?
