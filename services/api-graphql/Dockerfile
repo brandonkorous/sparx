@@ -28,6 +28,7 @@ COPY packages/email ./packages/email
 # NOT copied: the /serialize subpath never loads it, so the symlink stays unused.
 COPY packages/cms-editor ./packages/cms-editor
 COPY packages/auth ./packages/auth
+COPY packages/modules ./packages/modules
 COPY packages/legal ./packages/legal
 COPY packages/crm-schemas ./packages/crm-schemas
 # @sparx/crm now depends on @sparx/commerce-schemas (the pure markup engine) for

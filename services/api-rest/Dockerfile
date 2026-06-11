@@ -22,6 +22,7 @@ COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
 COPY packages/dropship ./packages/dropship
 COPY packages/auth ./packages/auth
+COPY packages/modules ./packages/modules
 COPY packages/email ./packages/email
 COPY packages/events ./packages/events
 COPY packages/api-core ./packages/api-core
