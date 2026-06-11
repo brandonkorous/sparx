@@ -303,6 +303,11 @@ model Tenant {
   stockLevels          StockLevel[]
   inventorySourceLinks InventorySourceLink[]
 
+  // Automation module (docs/81) — the cross-module rule engine
+  automations        Automation[]
+  automationRuns     AutomationRun[]
+  automationRunSteps AutomationRunStep[]
+
   @@map("tenants")
 }
 

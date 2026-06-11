@@ -1,0 +1,112 @@
+// Automation module (docs/81, docs/84) — the cross-module rule engine. ONE
+// engine, three tiers (Locked / Managed / Custom) keyed by `origin` + `locked`.
+// Every tenant-facing "when X, if Y, do Z" runs here; inline invariants
+// (suppression, tax, RLS) stay inline by shape (docs/81 §3.1).
+//
+// All three tables are tenant-scoped → ENABLE + FORCE RLS + tenant_isolation in
+// the migration (run_steps carries its own tenant_id; a join can't satisfy FORCE
+// RLS). The rule document shape lives in @sparx/automation-schemas.
+
+model Automation {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  name        String  @db.VarChar(255)
+  description String? @db.Text
+  status      String  @default("draft") @db.VarChar(20) // draft | active | paused | error
+
+  // Trigger flattened to type + JSON config (@sparx/automation-schemas triggerToColumns).
+  triggerType   String @map("trigger_type") @db.VarChar(100)
+  triggerConfig Json   @default("{}") @map("trigger_config")
+
+  // ConditionGroup ({ logic, conditions[] }) + the ordered action list.
+  conditions Json @default("{}")
+  actions    Json @default("[]")
+
+  // AI authoring provenance (docs/81 §4).
+  aiGenerated Boolean @default(false) @map("ai_generated")
+  aiPrompt    String? @map("ai_prompt") @db.Text
+
+  // Tier model (docs/81 §3.1): origin user|system + locked (non-disable-able);
+  // cloned_from records "Duplicate to edit" lineage. System-managed, not tenant-set.
+  origin     String  @default("user") @db.VarChar(10) // user | system
+  locked     Boolean @default(false)
+  clonedFrom String? @map("cloned_from") @db.Uuid
+
+  // Loop-guard ceiling for rule -> event -> rule cascades (docs/81 §7).
+  maxDepth Int @default(3) @map("max_depth") @db.SmallInt
+
+  runCount    Int       @default(0) @map("run_count")
+  errorCount  Int       @default(0) @map("error_count")
+  lastRunAt   DateTime? @map("last_run_at") @db.Timestamptz
+  lastErrorAt DateTime? @map("last_error_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  clonedFromAuto Automation?     @relation("AutomationClone", fields: [clonedFrom], references: [id], onDelete: SetNull)
+  clones         Automation[]    @relation("AutomationClone")
+  runs           AutomationRun[]
+
+  @@index([tenantId, status, triggerType])
+  @@index([tenantId, updatedAt(sort: Desc)])
+  @@map("automations")
+}
+
+model AutomationRun {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  automationId String @map("automation_id") @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+
+  triggerEvent Json   @map("trigger_event")
+  // At-least-once guard: (automation_id, dedupe_key) is UNIQUE so a Pub/Sub
+  // redelivery collapses to one run (docs/81 §7).
+  dedupeKey    String @map("dedupe_key") @db.Text
+  // Cascade depth for the loop-guard (docs/81 §7).
+  causeDepth   Int    @default(0) @map("cause_depth") @db.SmallInt
+
+  status       String    @default("running") @db.VarChar(20) // running | waiting | completed | failed | skipped
+  cursorIndex  Int       @default(0) @map("cursor_index") // next action to run
+  resumeAt     DateTime? @map("resume_at") @db.Timestamptz // durable-delay wake time
+  actionsTotal Int       @map("actions_total")
+  errorMessage String?   @map("error_message") @db.Text
+
+  startedAt   DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  completedAt DateTime? @map("completed_at") @db.Timestamptz
+
+  tenant     Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  automation Automation          @relation(fields: [automationId], references: [id], onDelete: Cascade)
+  steps      AutomationRunStep[]
+
+  @@unique([automationId, dedupeKey], map: "automation_runs_automation_dedupe_unique")
+  @@index([tenantId, status])
+  // Owner-scoped tick scans wake-due runs across tenants (docs/81 §7).
+  @@index([status, resumeAt])
+  @@map("automation_runs")
+}
+
+model AutomationRunStep {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  runId    String @map("run_id") @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid // FORCE RLS needs this on the row
+
+  actionIndex Int     @map("action_index")
+  actionType  String  @map("action_type") @db.VarChar(100)
+  status      String  @default("pending") @db.VarChar(20) // pending|running|completed|failed|skipped|gated
+  input       Json?
+  output      Json?
+  error       String? @db.Text
+  // Policy-decision audit: [{ gate, decision, reason }] — `gated` != `failed` (docs/81 §7.1).
+  gateLog     Json?   @map("gate_log")
+
+  startedAt   DateTime? @map("started_at") @db.Timestamptz
+  completedAt DateTime? @map("completed_at") @db.Timestamptz
+
+  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  run    AutomationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, actionIndex])
+  @@index([tenantId])
+  @@map("automation_run_steps")
+}

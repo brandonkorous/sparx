@@ -16,13 +16,15 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** Slice B — data model. Slice A (`@sparx/automation-schemas`)
-> is DONE: schemas + types written, 7/7 tests green, typecheck + lint clean,
-> committed. Next: add Prisma models `Automation` / `AutomationRun` /
-> `AutomationRunStep` (new schema file under `packages/db/prisma/schema/`) + a
-> hand-authored migration with `ENABLE`+`FORCE` RLS + `tenant_isolation` on all
-> three (`tenant_id` on run_steps too) + `UNIQUE(automation_id, dedupe_key)`,
-> apply to docker, drift-check.
+> **▶ RESUME HERE:** Slice C — engine core (`@sparx/automation`). Slices A + B
+> are DONE: schemas package (7/7 tests) + data model (3 tables, RLS, migration
+> `20260730000000_automation_engine` applied to docker, 0 drift, client regen'd).
+> Next: scaffold `packages/automation` — trigger registry, entity resolver,
+> condition evaluator, **gated dispatcher** (§7.1), action executor, `handleTrigger`
+>
+> - `runAutomationTick` durable run state machine, service layer. Test against
+>   docker DB with synthetic envelopes. Build incrementally (resolver+evaluator
+>   first, then gates, then run machine).
 
 ---
 
@@ -61,7 +63,7 @@ reconciles them into the one canonical registry. No build blocker from deferring
 | `packages/automation-schemas` (`@sparx/automation-schemas`) | Zod schemas + types (trigger/condition/action/automation/gate)                   | ☑      |
 | `packages/automation` (`@sparx/automation`)                 | Engine: registries, evaluator, gates, executor, run state machine, service layer | ☐      |
 | `services/automation-worker`                                | Cloud Run push consumer on `automation.trigger` + advisory-lock tick             | ☐      |
-| `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                 | ☐      |
+| `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                 | ☑      |
 | `services/api-rest` routes                                  | `/v1/automations` CRUD + internal trigger/tick endpoints                         | ☐      |
 | `apps/dashboard` surface                                    | List / detail / builder / run history (docs/34 standard)                         | ☐      |
 | MCP write-tool                                              | AI authoring path (mirrors crm `mcp/write-tools.ts`)                             | ☐      |
@@ -86,23 +88,22 @@ reconciles them into the one canonical registry. No build blocker from deferring
 > truly-optional unknown values. Also: `.superRefine` + `ctx.addIssue` was a
 > silent no-op in this setup; `.refine((v) => boolean, {path})` is reliable.
 
-### Slice B — data model ☐
+### Slice B — data model ☑
 
-- ☐ Prisma models `Automation` / `AutomationRun` / `AutomationRunStep` (new schema file)
-- ☐ Hand-authored migration SQL: tables + `ENABLE`+`FORCE` RLS + `tenant_isolation`
-  on all three (`tenant_id` on run_steps too); `UNIQUE(automation_id, dedupe_key)`
-- ☐ **RLS form (confirmed from `20260728000000_push_subscriptions`):** quoted idents,
-  `ALTER TABLE "x" ENABLE/FORCE ROW LEVEL SECURITY;` then
-  `CREATE POLICY tenant_isolation ON "x" USING ("tenant_id" = current_tenant_id()) WITH CHECK ("tenant_id" = current_tenant_id());`
-  — use `current_tenant_id()` (reads `app.tenant_id` via `withTenant`), NOT the
-  `current_setting('app.current_tenant_id')` one-off in `20260714010000_b2b_invoices`.
-  tenant_id FK → `tenants(id) ON DELETE CASCADE`. Migrate via hand-authored
-  `migration.sql` + `migrate deploy` (NOT `migrate dev` — non-interactive-broken here).
-- ☐ Tenant-relation modeling decision: declare `tenant`/`automation`/`run` relations
-  so `migrate diff` drift-check stays clean (adds 3 inverse fields to the `Tenant`
-  model — a shared file; keep the edit additive).
-- ☐ Apply to docker (`migrate deploy`), drift-check (`migrate diff`)
-- ☐ Indexes: `(tenant_id, status, trigger_type)`, runs `(status, resume_at)`
+- ☑ Prisma models `Automation` / `AutomationRun` / `AutomationRunStep` (`71-automation.prisma`)
+- ☑ Hand-authored migration `20260730000000_automation_engine` — tables + `ENABLE`+`FORCE`
+  RLS + `tenant_isolation` on all three (`tenant_id` on run_steps); `UNIQUE(automation_id,
+dedupe_key)`. DDL generated Prisma-exact via `migrate diff` then RLS hand-appended.
+- ☑ RLS form: `current_tenant_id()` + `WITH CHECK` (per push_subscriptions), quoted idents.
+- ☑ Tenant relations declared on all 3 (3 inverse fields added to `Tenant` in `02-tenant.prisma`).
+- ☑ Applied to docker (`migrate deploy`, 89/89), drift-check shows **0 automation drift**,
+  client regenerated, `@sparx/db` typecheck clean.
+- ☑ Indexes incl. owner-scoped tick scan `(status, resume_at)`.
+
+> **Note — pre-existing repo index-name drift:** `migrate diff` reports ~dozens of cosmetic
+> `ALTER INDEX … RENAME` lines for OTHER tables (hand-authored short names vs Prisma's
+> auto names). Not ours — the 3 automation tables used Prisma-exact names → 0 added drift.
+> A repo-wide cleanup is a separate sweep, out of scope here.
 
 ### Slice C — engine core (`@sparx/automation`) — Phase 1 ☐
 
@@ -180,4 +181,7 @@ reconciles them into the one canonical registry. No build blocker from deferring
   fan-in). **Slice A `@sparx/automation-schemas` DONE + committed** (`25164b9`) —
   trigger/condition/action/automation/run schemas + column-mapping helpers, 7/7
   tests, typecheck + lint clean. Grounded the Slice B RLS form (`current_tenant_id()`
-  per push_subscriptions). Next session resumes at Slice B (data model).
+  per push_subscriptions). **Slice B data model DONE** — 3 Prisma models + 3 Tenant
+  inverses + migration `20260730000000_automation_engine` (Prisma-exact DDL + hand-added
+  RLS), applied to docker (89/89), 0 drift, client regenerated, db typecheck clean.
+  Next session resumes at Slice C (engine core).
