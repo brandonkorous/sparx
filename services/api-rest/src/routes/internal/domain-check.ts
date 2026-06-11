@@ -36,6 +36,10 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   'api.sparx.works',
   'mcp.sparx.works',
   'graphql.sparx.works',
+  // media.sparx.works — public CDN host for media variants + marketplace item
+  // imagery (Caddyfile routes it to api-rest). Without this entry on-demand TLS
+  // is denied and Cloudflare returns 525 on every media URL (docs/85).
+  'media.sparx.works',
   // sparx.zone apex (tenant *.sparx.zone subdomains are checked via
   // `domains` table in Phase 2)
   'sparx.zone',
