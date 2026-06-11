@@ -19,12 +19,7 @@
 
 import { AdvanceBillingDocumentInput } from '@sparx/crm-schemas';
 import { withTenant } from '@sparx/db';
-import type {
-  BillingDocument,
-  BillingDocumentSnapshot,
-  DocumentStage,
-  Prisma,
-} from '@sparx/db';
+import type { BillingDocument, BillingDocumentSnapshot, DocumentStage, Prisma } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent, type CrmTopic } from '../events';

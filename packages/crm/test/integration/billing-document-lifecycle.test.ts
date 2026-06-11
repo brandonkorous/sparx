@@ -156,11 +156,15 @@ describe('billing document lifecycle', () => {
 
     // Estimate → Approved (committed, snapshot) → In Progress → Invoiced (final,
     // number re-stamp, snapshot, lock).
-    await billingDocumentStageService.advance(test.ctx, est.id, { stageId: stageByName('Approved') });
+    await billingDocumentStageService.advance(test.ctx, est.id, {
+      stageId: stageByName('Approved'),
+    });
     await billingDocumentStageService.advance(test.ctx, est.id, {
       stageId: stageByName('In Progress'),
     });
-    await billingDocumentStageService.advance(test.ctx, est.id, { stageId: stageByName('Invoiced') });
+    await billingDocumentStageService.advance(test.ctx, est.id, {
+      stageId: stageByName('Invoiced'),
+    });
 
     const fresh = await billingDocumentService.get(test.ctx, est.id);
     expect(fresh.number).toBe(`INV-${suffix}`); // same suffix, swapped prefix (§9)

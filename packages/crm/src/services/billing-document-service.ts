@@ -217,9 +217,7 @@ export async function update(
         ...(input.validUntil !== undefined
           ? { validUntil: input.validUntil ? new Date(input.validUntil) : null }
           : {}),
-        ...(input.dueAt !== undefined
-          ? { dueAt: input.dueAt ? new Date(input.dueAt) : null }
-          : {}),
+        ...(input.dueAt !== undefined ? { dueAt: input.dueAt ? new Date(input.dueAt) : null } : {}),
         ...(input.metadata !== undefined
           ? { metadata: input.metadata as Prisma.InputJsonValue }
           : {}),
