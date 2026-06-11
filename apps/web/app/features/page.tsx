@@ -21,15 +21,19 @@ export const metadata: Metadata = {
   description: `The pricing page lists ${counts.modules} modules. This is what's inside them: ${counts.live} shipped capabilities, ${counts.building} more in build, all on one data layer and one bill. Activate only what you need.`,
   alternates: { canonical: '/features' },
   // The marketing site historically headlines modules; this page (and its share
-  // card) is about sheer breadth. Without an explicit openGraph block the page
-  // inherits the root layout's generic "Everything, ignited." OG text — the image
-  // is still inherited from the root opengraph-image.tsx, which is what we want.
+  // card) is about sheer breadth, so it sets its own OG text + image (the local
+  // opengraph-image.tsx) rather than inheriting the root's generic card.
+  // `type: 'article'` + publishedTime gives social scrapers a publish date
+  // (LinkedIn surfaces it; without it the card shows "No publication date").
   openGraph: {
     title: OG_TITLE,
     description: OG_DESCRIPTION,
     url: 'https://sparx.works/features',
     siteName: 'Sparx',
-    type: 'website',
+    type: 'article',
+    publishedTime: '2026-06-11T00:00:00.000Z',
+    modifiedTime: '2026-06-11T00:00:00.000Z',
+    authors: ['WizeWorks, Inc.'],
   },
   twitter: {
     card: 'summary_large_image',
