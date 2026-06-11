@@ -6,7 +6,7 @@
 
 The single, exhaustive inventory of **everything Sparx does** — every user-facing
 capability across every module, with an honest build status. The per-module PRDs
-(docs/08–14, etc.) describe *intent*; this document describes *reality* as of the
+(docs/08–14, etc.) describe _intent_; this document describes _reality_ as of the
 date above, grounded in the actual `packages/`, `services/`, and `apps/` code, not
 just the design docs.
 
@@ -21,11 +21,11 @@ It exists for two reasons:
 
 ## Status legend
 
-| Marker | Meaning |
-| ------ | ------- |
-| ✅ **Live** | Substantively implemented and wired into the API/UI. A tenant can use it today. |
+| Marker          | Meaning                                                                                   |
+| --------------- | ----------------------------------------------------------------------------------------- |
+| ✅ **Live**     | Substantively implemented and wired into the API/UI. A tenant can use it today.           |
 | 🔨 **In build** | Partial / scaffolded / actively under construction. Some code exists; not yet end-to-end. |
-| 🗺️ **Planned** | Designed (has a PRD/spec) but little or no code. Committed direction, not yet started. |
+| 🗺️ **Planned**  | Designed (has a PRD/spec) but little or no code. Committed direction, not yet started.    |
 
 > Status reflects platform capability, not per-tenant activation. Every module is
 > feature-flagged (locked decision #6) — "Live" means the code ships and works when
@@ -36,19 +36,19 @@ It exists for two reasons:
 Eleven activatable modules (`packages/modules` canonical slugs) plus the
 cross-cutting platform that every module shares.
 
-| # | Module | Slug | Headline | Status |
-| - | ------ | ---- | -------- | ------ |
-| 1 | Builder | `builder` | Sites, pages, themes, email — visually authored | ✅ Live |
-| 2 | Commerce | `commerce` | Cart, checkout, orders, payments | ✅ Live |
-| 3 | CMS | `cms` | Words, media, structured content, SEO | ✅ Live |
-| 4 | CRM | `crm` | Customers, pipeline, segments, activity | ✅ Live |
-| 5 | Email | `email` | Transactional + marketing on your own domain | ✅ Live |
-| 6 | B2B / Wholesale / Fleet | `b2b` | Accounts, net terms, RFQ, fleet, scheduling | ✅ Live |
-| 7 | Invoicing | `invoicing` | Estimates → work orders → invoices, billing documents | 🔨 In build |
-| 8 | Dropship | `dropship` | Supplier sync, margin math, order routing | ✅ Live |
-| 9 | Inventory | `inventory` | Multi-warehouse stock, reservations, adjustments | ✅ Live |
-| 10 | Live Chat | `chat` | AI-first storefront chat + staff inbox | ✅ Live |
-| 11 | AI / MCP | `ai` | First-class MCP server for Claude, ChatGPT, Copilot | ✅ Live |
+| #   | Module                  | Slug        | Headline                                              | Status      |
+| --- | ----------------------- | ----------- | ----------------------------------------------------- | ----------- |
+| 1   | Builder                 | `builder`   | Sites, pages, themes, email — visually authored       | ✅ Live     |
+| 2   | Commerce                | `commerce`  | Cart, checkout, orders, payments                      | ✅ Live     |
+| 3   | CMS                     | `cms`       | Words, media, structured content, SEO                 | ✅ Live     |
+| 4   | CRM                     | `crm`       | Customers, pipeline, segments, activity               | ✅ Live     |
+| 5   | Email                   | `email`     | Transactional + marketing on your own domain          | ✅ Live     |
+| 6   | B2B / Wholesale / Fleet | `b2b`       | Accounts, net terms, RFQ, fleet, scheduling           | ✅ Live     |
+| 7   | Invoicing               | `invoicing` | Estimates → work orders → invoices, billing documents | 🔨 In build |
+| 8   | Dropship                | `dropship`  | Supplier sync, margin math, order routing             | ✅ Live     |
+| 9   | Inventory               | `inventory` | Multi-warehouse stock, reservations, adjustments      | ✅ Live     |
+| 10  | Live Chat               | `chat`      | AI-first storefront chat + staff inbox                | ✅ Live     |
+| 11  | AI / MCP                | `ai`        | First-class MCP server for Claude, ChatGPT, Copilot   | ✅ Live     |
 
 Cross-cutting platform (§12–§23) ships regardless of which modules a tenant runs:
 search, automation, multi-site, marketplace, auth, billing, onboarding, legal,
@@ -62,6 +62,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 (`node = {box/layout/props/class}`), two surfaces (page renderer + email renderer).
 
 ### Page & site composition
+
 - ✅ **Node-tree page model** — recursive Section/Grid/Stack/Card composition.
 - ✅ **Drag-and-drop block editor** — every block responsive & accessible by default.
 - ✅ **Layers panel** — collapsible node tree with dnd-kit reorder + re-parent.
@@ -76,6 +77,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - 🗺️ **Collaborative / multi-user editing** — single-author today; no CRDT.
 
 ### Site layout & navigation
+
 - ✅ **Site layout system** — persistent header/footer chrome + page content outlet.
 - ✅ **Layout catalog** — many layouts per tenant; one active; publish ≠ active.
 - ✅ **Per-page layout assignment** — layout defaults with per-page overrides.
@@ -83,6 +85,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Responsive site chrome** — 3-tier header/footer collapse with visibility rules.
 
 ### Theming & brand
+
 - ✅ **Six curated themes** — Apex, Industrial, Drift, Market, Fleet, Drop.
 - ✅ **Brand & Theme editor** — `builder/_brand`; resolves via `publishNow` → compiled tokens.
 - ✅ **Token-based color system** — semantic palette + `-content` pairs, never hardcoded.
@@ -93,6 +96,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Per-site brand override** — property-level brand shadows the tenant brand.
 
 ### Class-first / utility authoring
+
 - ✅ **Utility-class authoring** — tokenized Tailwind utilities in `node.class`.
 - ✅ **Four-axis style recipe** — color × variant × size × shape on every element.
 - ✅ **Layout controls** — flex/grid, direction, gap, justify, align, wrap.
@@ -102,6 +106,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - 🔨 **Class allowlist governance** — curated vocabulary; enforcement still permissive.
 
 ### Components & data binding
+
 - ✅ **Primitive components** — Section, Grid, Stack, Card, Carousel.
 - ✅ **Content leaves** — Heading, Text, Prose (rich text), Image, Button.
 - ✅ **Data-aware components** — PriceTag, ImageDisplay, Signup, Logo, NavMenu.
@@ -115,6 +120,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - 🗺️ **External data connections** — bind REST/GraphQL/SQL as `ext.*` (docs/63, capstone).
 
 ### Publishing
+
 - ✅ **Draft → publish lifecycle** — snapshot to published, expand components, emit event.
 - ✅ **Version history + rollback** — browse and restore prior published versions.
 - ✅ **Draft preview tokens** — pre-publish preview URLs (`?sparxPreview=…`).
@@ -122,11 +128,13 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Per-page SEO fields** — title, description, canonical, OG image, noindex + score chip.
 
 ### Tenant blueprints
+
 - ✅ **One-click blueprints** — provision a whole themed tenant (layout, pages, components, content, products, brand, theme).
 - ✅ **Idempotent installer** — resumable install with running/installed/failed tracking.
 - ✅ **Blueprint marketplace discovery** — browse + install from `/marketplace`.
 
 ### Email builder
+
 - ✅ **Email authoring surface** — `/builder/email`; email = one node-tree (author-only).
 - ✅ **Subject + preheader fields** + starter email templates.
 - ✅ **Per-recipient personalization** — deferred render for recipient-bound emails.
@@ -138,6 +146,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 ## 2. Commerce
 
 ### Products & catalog
+
 - ✅ **Products & variants** — multi-variant SKUs, price/cost/compare-at, option matrix.
 - ✅ **Collections** — manual + rules-based (by tag, vendor, price, type).
 - ✅ **Categories & taxonomy** — hierarchical organization.
@@ -150,6 +159,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Wishlists** — saved items per customer.
 
 ### Pricing & discounts
+
 - ✅ **Base pricing** — list/cost/compare-at in integer cents.
 - ✅ **Bulk price tiers** — "10+ at $5 off" per variant or price list.
 - ✅ **Price lists** — segment/channel/account overrides with date ranges.
@@ -164,6 +174,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Surcharges** — card/handling/fuel fees (% or flat), payment-method gating, refund proration.
 
 ### Checkout & payments
+
 - ✅ **Persistent carts** — guest (cookie) + authenticated, with guest→customer merge.
 - ✅ **Cart abandonment** — 2-hour threshold → `cart.abandoned` event.
 - ✅ **Multi-step checkout** — cart → contact → shipping → payment → review.
@@ -175,6 +186,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Idempotent completion** — same key always resolves to same order.
 
 ### Tax & shipping
+
 - ✅ **Manual tax zones/rates** + per-product tax class.
 - ✅ **Tax providers** — TaxJar, Avalara, Stripe Tax.
 - ✅ **Tax exemption certificates** — per customer/account with jurisdiction + upload.
@@ -184,6 +196,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Local pickup** — pickup-at-warehouse option.
 
 ### Orders & fulfillment
+
 - ✅ **Order lifecycle** — pending → confirmed → processing → fulfilled → delivered.
 - ✅ **Financial states** — pending → paid/invoiced → overdue → partial/full refund.
 - ✅ **Partial fulfillments** — multiple shipments per order, carrier + tracking.
@@ -196,6 +209,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - 🗺️ **Return shipping labels** — auto-generated carrier labels for returns.
 
 ### Reporting & ops
+
 - ✅ **Commerce analytics** — revenue by period, orders by status, top products/customers, AOV, conversion funnel, inventory valuation.
 - ✅ **CSV export** — reports, orders, customers.
 - ✅ **Bulk price adjustment** — dry-run with 30-minute revert ledger.
@@ -340,6 +354,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 ## 12. Search & discovery (cross-cutting)
 
 ### Universal search & Typesense
+
 - ✅ **Typesense deployment** — GKE pod, persistent volume.
 - ✅ **Products / customers / orders collections** — searchable + facetable, real-time Pub/Sub sync.
 - ✅ **Full reindex** — on-demand or scheduled.
@@ -353,6 +368,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - 🔨 **Universal `entities` collection** — one collection + projector registry + `search.entity.changed`; Ph1 (5 projectors + `/v1/search/all` + ⌘K) built; write-site + CMS projectors pending.
 
 ### SEO / AIO discoverability
+
 - ✅ **Sitemap** — multi-site-aware XML at `/sitemap.xml` (pages, products, collections, builder pages).
 - ✅ **Redirects** — 301/302 with chain detection + hit counter; auto-create on slug change.
 - ✅ **SEO fields everywhere** — builder pages, products, collections, CMS entries.

@@ -133,10 +133,10 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
               margin: 0,
             }}
           >
-            The pricing page lists modules. This is what&apos;s actually inside them —{' '}
-            {counts.live} shipped capabilities, {counts.building} more in build, and{' '}
-            {counts.planned} on the roadmap. One platform replaces a stack of six or eight separate
-            tools, and every piece reads and writes the same data.
+            The pricing page lists modules. This is what&apos;s actually inside them — {counts.live}{' '}
+            shipped capabilities, {counts.building} more in build, and {counts.planned} on the
+            roadmap. One platform replaces a stack of six or eight separate tools, and every piece
+            reads and writes the same data.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -150,7 +150,9 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
                 </Button>
               </a>
             </div>
-            <span style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+            <span
+              style={{ fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}
+            >
               No credit card · Live in five minutes
             </span>
           </div>
@@ -181,14 +183,20 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
                 {m.v}
                 {'suffix' in m && m.suffix ? (
                   <span
-                    style={{ color: 'var(--color-text-tertiary)', fontWeight: 400, fontSize: '16px' }}
+                    style={{
+                      color: 'var(--color-text-tertiary)',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                    }}
                   >
                     {m.suffix}
                   </span>
                 ) : null}
                 {'spark' in m && m.spark ? <Spark /> : null}
               </span>
-              <span style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+              <span
+                style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}
+              >
                 {m.s}
               </span>
             </div>
@@ -208,7 +216,9 @@ function StatusLegend() {
       {order.map((s) => (
         <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
           <Dot color={STATUS_META[s].color} size={8} />
-          <span style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+          <span
+            style={{ fontFamily: SANS, fontSize: '13px', color: 'var(--color-text-secondary)' }}
+          >
             {STATUS_META[s].label}
           </span>
         </span>
@@ -367,7 +377,14 @@ function FeaturesCta(): ReactNode {
             </Button>
           </a>
         </div>
-        <span style={{ marginTop: '22px', fontFamily: MONO, fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+        <span
+          style={{
+            marginTop: '22px',
+            fontFamily: MONO,
+            fontSize: '12px',
+            color: 'var(--color-text-tertiary)',
+          }}
+        >
           No credit card · Cancel anytime · Your data, always exportable
         </span>
       </Container>

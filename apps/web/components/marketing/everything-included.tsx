@@ -1,6 +1,6 @@
 import { Button } from '@sparx/ui';
 import { CAPABILITY_AREAS, capabilityCounts } from '@/lib/capabilities';
-import { Display, Dot, Section, SectionHeader, Spark } from './primitives';
+import { Display, Dot, Section, SectionHeader } from './primitives';
 
 /**
  * Home-page breadth band. The modules grid above sells the tiles; this answers
