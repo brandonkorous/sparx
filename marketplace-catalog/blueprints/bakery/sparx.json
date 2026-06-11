@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "bakery",
+  "name": "Bakery",
+  "version": "1.0.0",
+  "tagline": "Baked fresh, daily.",
+  "description": "Baked fresh, daily. A ready-to-edit retail starter for Bloom Bakehouse — a matching theme, site layout, home page, and about page, all installed to draft for you to customize and publish.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "requiredModules": ["builder", "cms", "commerce"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Bakery icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Bakery preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#db2777",
+  "sortWeight": 48
+}

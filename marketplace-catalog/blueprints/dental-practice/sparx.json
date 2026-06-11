@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "dental-practice",
+  "name": "Dental Practice",
+  "version": "1.0.0",
+  "tagline": "Modern care, gentle hands.",
+  "description": "Modern care, gentle hands. A ready-to-edit services starter for Brightwater Dental — a matching theme, site layout, home page, and about page, all installed to draft for you to customize and publish.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "requiredModules": ["builder", "cms", "crm"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Dental Practice icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Dental Practice preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#0e7490",
+  "sortWeight": 54
+}

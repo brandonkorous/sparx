@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "photography-portfolio",
+  "name": "Photography Portfolio",
+  "version": "1.0.0",
+  "tagline": "Light, held still.",
+  "description": "Light, held still. A ready-to-edit content starter for Frame & Field — a matching theme, site layout, home page, and about page, all installed to draft for you to customize and publish.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "content",
+    "requiredModules": ["builder", "cms"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Photography Portfolio icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Photography Portfolio preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#111111",
+  "sortWeight": 56
+}

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "jewelry-boutique",
+  "name": "Jewelry Boutique",
+  "version": "1.0.0",
+  "tagline": "Quiet luxury, made to keep.",
+  "description": "Quiet luxury, made to keep. A ready-to-edit retail starter for Noir Atelier — a matching theme, site layout, home page, and about page, all installed to draft for you to customize and publish.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "requiredModules": ["builder", "cms", "commerce"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Jewelry Boutique icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Jewelry Boutique preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#0a0a0a",
+  "sortWeight": 42
+}
