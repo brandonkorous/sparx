@@ -53,3 +53,6 @@ marketplace-catalog/_src/
 marketplace-catalog/_gen/
 marketplace-catalog/_assets/
 apps/dashboard/_marketplace-assets.mjs
+
+# Local media storage (LocalStorage MEDIA_LOCAL_DIR — generated, never committed)
+**/.media-tmp/
