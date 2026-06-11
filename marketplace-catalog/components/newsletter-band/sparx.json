@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "newsletter-band",
+  "name": "Newsletter Band",
+  "version": "1.0.0",
+  "tagline": "An email-capture band wired to your CRM.",
+  "description": "A centered subscribe band — heading, a line of copy, and a Signup form that drops subscribers straight into your CRM.",
+  "payload": "component.tsx",
+  "facets": {
+    "group": "data",
+    "kind": "Block",
+    "surfaces": ["page", "site"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Newsletter Band icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Newsletter Band preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#14b8a6",
+  "sortWeight": 48
+}

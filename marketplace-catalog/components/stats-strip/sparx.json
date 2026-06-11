@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "stats-strip",
+  "name": "Stats Strip",
+  "version": "1.0.0",
+  "tagline": "A row of big proof numbers.",
+  "description": "Four bold metrics in a row on an inverse band — an at-a-glance proof strip.",
+  "payload": "component.tsx",
+  "facets": {
+    "group": "content",
+    "kind": "Block",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Stats Strip icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Stats Strip preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#14b8a6",
+  "sortWeight": 46
+}

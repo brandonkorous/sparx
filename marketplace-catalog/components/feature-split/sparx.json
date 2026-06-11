@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "feature-split",
+  "name": "Feature Split",
+  "version": "1.0.0",
+  "tagline": "An image beside a feature headline, body, and link.",
+  "description": "A media-and-text feature row — image on one side, a headline, paragraph, and button on the other.",
+  "payload": "component.tsx",
+  "facets": {
+    "group": "content",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Feature Split icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Feature Split preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#14b8a6",
+  "sortWeight": 52
+}

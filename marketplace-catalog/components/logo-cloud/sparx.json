@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "logo-cloud",
+  "name": "Logo Cloud",
+  "version": "1.0.0",
+  "tagline": "A row of partner or customer logos.",
+  "description": "A simple proof strip — a caption above a responsive row of logos. Swap in your own marks.",
+  "payload": "component.tsx",
+  "facets": {
+    "group": "content",
+    "kind": "Block",
+    "surfaces": ["page", "site"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "Logo Cloud icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "Logo Cloud preview"
+    }
+  ],
+  "author": {
+    "displayName": "Sparx"
+  },
+  "accent": "#14b8a6",
+  "sortWeight": 44
+}
