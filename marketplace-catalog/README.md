@@ -36,11 +36,22 @@ Cloud SQL). The runtime already reads from storage, so the moment the prod inges
 runs, all items appear in the marketplace browse (the dashboard `/marketplace` and
 `/v1/blueprints` are DB-first).
 
-The prod ingest is the same `marketplace:ingest` script run in-cluster — it needs
-(a) the `marketplace-catalog/` bundles and (b) the app env (`GCS_MEDIA_BUCKET`,
-`MEDIA_PUBLIC_URL`, `DATABASE_URL` via the Cloud SQL Auth Proxy). The intended
-mechanism, mirroring the DB seed (see [packages/db/CLAUDE.md](../packages/db/CLAUDE.md)):
-a K8s Job from the api-rest image (which must `COPY marketplace-catalog/`) with the
-Auth Proxy sidecar + the app SA (GCS write), triggered by a workflow flag
-(e.g. `db-migrate.yml -f run_marketplace_ingest=true`). Until that's wired, the
-items are authored, validated, and committed — ready to ingest.
+The prod ingest is the same `marketplace:ingest` script run in-cluster, wired as a
+dedicated manual workflow:
+
+```bash
+gh workflow run marketplace-ingest.yml
+```
+
+It ([.github/workflows/marketplace-ingest.yml](../.github/workflows/marketplace-ingest.yml))
+builds the api-rest image with these bundles baked in (the Dockerfile `COPY
+marketplace-catalog`), pushes it under a distinct `marketplace-ingest-<sha>` tag
+(never clobbering the deployed `:latest`), then applies a one-off Job
+([k8s/sparx-prod/marketplace-ingest-job.yaml](../k8s/sparx-prod/marketplace-ingest-job.yaml)).
+
+No Cloud SQL Auth Proxy sidecar is needed: the Job runs as the `sparx-app` workload
+SA and hydrates from the same `sparx-app-env` + `sparx-app-secrets` the live api-rest
+pods use — so it gets `DATABASE_URL` (in-cluster PgBouncer) **and** `GCS_MEDIA_BUCKET`
+/ `MEDIA_PUBLIC_URL`, writing artifacts + media to the same object storage the runtime
+reads from. The runtime is already DB-first, so the moment the Job completes every
+item appears in the dashboard `/marketplace` and `/v1/blueprints`.

@@ -1,0 +1,72 @@
+# Marketplace ingest Job — applied by .github/workflows/marketplace-ingest.yml
+# after the api-rest image (with marketplace-catalog/ baked in) is built + pushed.
+# The workflow substitutes ${IMAGE} and ${RUN_ID} via `envsubst` before apply.
+#
+# Unlike db-migrate-job.yaml this needs NO Cloud SQL Auth Proxy sidecar: it runs
+# the api-rest image as the `sparx-app` workload SA and hydrates from the same
+# sparx-app-env + sparx-app-secrets the live api-rest pods use. That gives it
+# DATABASE_URL (in-cluster PgBouncer) AND GCS_MEDIA_BUCKET / MEDIA_PUBLIC_URL —
+# so the ingest writes artifacts + media to the SAME object storage the runtime
+# reads from. The ingest script clears tenant context (withSystem) to upsert the
+# Sparx-core marketplace rows, exactly as the running api-rest does.
+#
+# Idempotent: re-running the same bundle version is a no-op write (artifacts are
+# immutable per version); bump the version in a bundle's sparx.json to publish an
+# update. The Job name includes ${RUN_ID} so each run is a fresh (immutable) Job;
+# TTL of 1h cleans up completed Jobs.
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: marketplace-ingest-${RUN_ID}
+  namespace: sparx-prod
+  labels:
+    app.kubernetes.io/name: marketplace-ingest
+    app.kubernetes.io/part-of: sparx
+    app.kubernetes.io/component: ingest
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: marketplace-ingest
+    spec:
+      serviceAccountName: sparx-app
+      restartPolicy: Never
+      containers:
+        - name: ingest
+          image: ${IMAGE}
+          imagePullPolicy: IfNotPresent
+          # Override the server ENTRYPOINT (node … src/index.ts). WORKDIR in the
+          # image is /app/services/api-rest, so this relative path resolves; the
+          # script reads /app/marketplace-catalog (repoRoot/marketplace-catalog).
+          command: ['node', '--import', 'tsx', 'src/scripts/marketplace-ingest.ts']
+          envFrom:
+            - configMapRef:
+                name: sparx-app-env
+            - secretRef:
+                name: sparx-app-secrets
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SERVICE_NAME
+              value: marketplace-ingest
+            - name: LOG_LEVEL
+              value: info
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ['ALL']
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: '200m'
+              memory: '512Mi'
+            limits:
+              cpu: '1000m'
+              memory: '1Gi'

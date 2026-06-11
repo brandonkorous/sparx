@@ -51,6 +51,13 @@ COPY packages/email-platform ./packages/email-platform
 COPY packages/godaddy ./packages/godaddy
 COPY services/api-rest ./services/api-rest
 
+# First-party marketplace bundles (docs/85). Read at ingest time by
+# src/scripts/marketplace-ingest.ts (run as a one-off Job — see
+# k8s/sparx-prod/marketplace-ingest-job.yaml + .github/workflows/marketplace-ingest.yml).
+# The script resolves repoRoot/marketplace-catalog → /app/marketplace-catalog.
+# ~6MB of sources + screenshots; baked in so the Job needs no extra fetch.
+COPY marketplace-catalog ./marketplace-catalog
+
 # Install only what api-rest needs (and transitive workspace deps).
 RUN pnpm install --filter @sparx/api-rest... --frozen-lockfile --prod=false
 
