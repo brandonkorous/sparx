@@ -1,0 +1,202 @@
+# automation-worker — the Automation engine runtime (docs/81, docs/84 Slice D).
+#
+# Unlike the Pub/Sub-push workers in serverless.tf, this service is driven by a
+# Cloud Scheduler tick (the schedule + run advance ticks). The event-fan-in push
+# subscription on `automation.trigger` is DEFERRED to Slice E — that topic does
+# not exist yet. The push handler is already wired in the worker, so when Slice E
+# provisions the topic + subscription, no code change is needed here beyond the
+# subscription block (marked below).
+#
+# Connection: sparx_app via the `database-url` secret — the engine's cross-tenant
+# discovery runs through SECURITY DEFINER helpers (migration 20260731000000), so
+# NO owner/BYPASSRLS connection is required (docs/16 §4: no ambient RLS bypass).
+#
+# Auth model:
+#   - Cloud Scheduler authenticates to Cloud Run with an OIDC token minted as the
+#     dedicated `automation-scheduler` SA, which holds roles/run.invoker on the
+#     service. The worker additionally verifies the OIDC `email` claim matches
+#     (TICK_INVOKER_SA) — no shared secret lands in the scheduler-job config.
+#
+# Cloud Scheduler API enablement lives in terraform/bootstrap (cloudscheduler.googleapis.com).
+
+# ─── Runtime service account ──────────────────────────────────────────────
+resource "google_service_account" "automation_worker" {
+  account_id   = "sparx-automation-worker"
+  display_name = "Sparx automation-worker (Cloud Run)"
+  description  = "Runtime SA for the automation-worker. Reads the DB URL from Secret Manager (sparx_app), drives the engine ticks, and publishes cascade events (an action that emits an event) to Pub/Sub."
+}
+
+resource "google_project_iam_member" "automation_worker_roles" {
+  for_each = toset([
+    "roles/cloudsql.client",
+    "roles/secretmanager.secretAccessor",
+    # The engine publisher emits events an action cascades (loop-guarded). Same
+    # grant the markup-recompute worker has for the same reason.
+    "roles/pubsub.publisher",
+  ])
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.automation_worker.email}"
+}
+
+# ─── Cloud Scheduler tick-invoker SA ──────────────────────────────────────
+resource "google_service_account" "automation_scheduler" {
+  account_id   = "sparx-automation-scheduler"
+  display_name = "Sparx automation-worker tick scheduler"
+  description  = "Identity Cloud Scheduler impersonates to invoke the automation-worker tick. Holds only roles/run.invoker on the automation-worker Cloud Run service."
+}
+
+# Cloud Scheduler's project service agent mints the OIDC token as the SA above.
+resource "google_service_account_iam_member" "automation_scheduler_token_creator" {
+  service_account_id = google_service_account.automation_scheduler.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:service-${data.google_project.this.number}@gcp-sa-cloudscheduler.iam.gserviceaccount.com"
+}
+
+# ─── Cloud Run service ────────────────────────────────────────────────────
+resource "google_cloud_run_v2_service" "automation_worker" {
+  name     = "automation-worker"
+  location = var.region
+  project  = var.project_id
+
+  deletion_protection = false
+
+  template {
+    service_account                  = google_service_account.automation_worker.email
+    timeout                          = "300s"
+    max_instance_request_concurrency = 8
+
+    scaling {
+      # Scale-to-zero: the scheduler wakes it each minute; pushes (Slice E) wake
+      # it on demand. The tick's advisory lock makes overlapping invocations safe.
+      min_instance_count = 0
+      max_instance_count = 4
+    }
+
+    vpc_access {
+      connector = google_vpc_access_connector.workers.id
+      egress    = "PRIVATE_RANGES_ONLY"
+    }
+
+    containers {
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/sparx/automation-worker:latest"
+
+      ports {
+        container_port = 8080
+      }
+
+      resources {
+        limits = {
+          cpu    = "1"
+          memory = "512Mi"
+        }
+      }
+
+      env {
+        name  = "NODE_ENV"
+        value = "production"
+      }
+      env {
+        name  = "SERVICE_NAME"
+        value = "automation-worker"
+      }
+      env {
+        name  = "LOG_LEVEL"
+        value = "info"
+      }
+      # Real per-topic Pub/Sub for cascade events the engine emits.
+      env {
+        name  = "GCP_PROJECT_ID"
+        value = var.project_id
+      }
+      # OIDC caller the tick endpoint trusts (the scheduler SA).
+      env {
+        name  = "TICK_INVOKER_SA"
+        value = google_service_account.automation_scheduler.email
+      }
+      # Slice E: the Pub/Sub push invoker for POST / (automation.trigger). Set now
+      # so the push path is locked down the moment the subscription is added.
+      env {
+        name  = "PUBSUB_INVOKER_SA"
+        value = google_service_account.pubsub_invoker.email
+      }
+
+      env {
+        name = "DATABASE_URL"
+        value_source {
+          secret_key_ref {
+            secret  = "database-url"
+            version = "latest"
+          }
+        }
+      }
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      # CI bumps the image tag on every deploy; TF owns only the initial pin.
+      template[0].containers[0].image,
+      client,
+      client_version,
+    ]
+  }
+
+  depends_on = [
+    google_project_iam_member.automation_worker_roles,
+  ]
+}
+
+# ─── Cloud Scheduler tick ─────────────────────────────────────────────────
+resource "google_cloud_run_v2_service_iam_member" "automation_scheduler_invoker" {
+  project  = google_cloud_run_v2_service.automation_worker.project
+  location = google_cloud_run_v2_service.automation_worker.location
+  name     = google_cloud_run_v2_service.automation_worker.name
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:${google_service_account.automation_scheduler.email}"
+}
+
+resource "google_cloud_scheduler_job" "automation_tick" {
+  name             = "${local.name_prefix}-automation-tick"
+  project          = var.project_id
+  region           = var.region
+  description      = "Drives the automation engine: one schedule tick + one run-advance tick per minute (docs/84 Slice D)."
+  schedule         = "* * * * *"
+  time_zone        = "Etc/UTC"
+  attempt_deadline = "320s"
+
+  retry_config {
+    retry_count = 1
+  }
+
+  http_target {
+    http_method = "POST"
+    uri         = "${google_cloud_run_v2_service.automation_worker.uri}/internal/cron/tick"
+
+    oidc_token {
+      service_account_email = google_service_account.automation_scheduler.email
+      audience              = google_cloud_run_v2_service.automation_worker.uri
+    }
+  }
+
+  depends_on = [
+    google_cloud_run_v2_service_iam_member.automation_scheduler_invoker,
+    google_service_account_iam_member.automation_scheduler_token_creator,
+  ]
+}
+
+# ─── Slice E (event fan-in) — provision when `automation.trigger` exists ───
+#
+# A push subscription on the `automation.trigger` topic, pointed at
+# "${google_cloud_run_v2_service.automation_worker.uri}/", with an oidc_token as
+# google_service_account.pubsub_invoker (already granted run.invoker below) and
+# the standard DLQ + retry policy. Mirror the push_config in
+# modules/cloud-run-worker/main.tf. Deferred here because the topic + the three
+# publish-path tees are Slice E (docs/82).
+resource "google_cloud_run_v2_service_iam_member" "automation_pubsub_invoker" {
+  project  = google_cloud_run_v2_service.automation_worker.project
+  location = google_cloud_run_v2_service.automation_worker.location
+  name     = google_cloud_run_v2_service.automation_worker.name
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:${google_service_account.pubsub_invoker.email}"
+}

@@ -19,11 +19,11 @@ import {
   type ServiceCtx,
 } from '../../src/service/automation-service';
 import {
+  appDb,
   createTenant,
   dropTenant,
   getRun,
   makeDeps,
-  ownerDb,
   runsFor,
   seedCustomer,
 } from '../helpers';
@@ -158,7 +158,7 @@ describe('engine — ingest + execution', () => {
     const [run] = await runsFor(autoId);
     expect(run?.status).toBe('running');
 
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
 
     const after = await getRun(run!.id);
     expect(after?.status).toBe('completed');
@@ -221,7 +221,7 @@ describe('engine — ingest + execution', () => {
       ],
     });
     await handleTrigger(evt(t, customerId), deps);
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
 
     const [run] = await runsFor(autoId);
     expect(run?.status).toBe('failed');
@@ -245,13 +245,13 @@ describe('engine — ingest + execution', () => {
     });
     await handleTrigger(evt(t, customerId), deps);
 
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
     let [run] = await runsFor(autoId);
     expect(run?.status).toBe('waiting');
     expect(run?.cursorIndex).toBe(2);
     expect(recordedFor(t)).toHaveLength(1);
 
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
     [run] = await runsFor(autoId);
     expect(run?.status).toBe('completed');
     expect(recordedFor(t)).toHaveLength(2);
@@ -269,8 +269,8 @@ describe('engine — ingest + execution', () => {
       ],
     });
     await handleTrigger(evt(t, customerId), deps);
-    await runAutomationTick(deps, ownerDb);
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
+    await runAutomationTick(deps, appDb);
     const [run] = await runsFor(autoId);
     expect(run?.status).toBe('waiting');
     expect(recordedFor(t)).toHaveLength(0);
@@ -288,7 +288,7 @@ describe('engine — ingest + execution', () => {
       ],
     });
     await handleTrigger(evt(t, customerId), deps);
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
 
     const [run] = await runsFor(autoId);
     expect(run?.status).toBe('completed');
@@ -307,7 +307,7 @@ describe('engine — ingest + execution', () => {
       actions: [{ type: 'crm.update_field', config: { field: 'x' } }],
     });
     await handleTrigger(evt(t, customerId), deps);
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
     expect(recordedFor(t)[0]?.config.transformed).toBe(true);
   });
 
@@ -321,13 +321,13 @@ describe('engine — ingest + execution', () => {
     });
     await handleTrigger(evt(t, customerId), deps);
 
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
     let [run] = await runsFor(autoId);
     expect(run?.status).toBe('waiting');
     expect(run?.cursorIndex).toBe(0); // NOT advanced — same action re-runs
     expect(recordedFor(t)).toHaveLength(0);
 
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
     [run] = await runsFor(autoId);
     expect(run?.status).toBe('completed');
     expect(recordedFor(t)).toHaveLength(1);
@@ -342,7 +342,7 @@ describe('engine — ingest + execution', () => {
       actions: [{ type: 'crm.add_tag', config: {} }],
     });
     await handleTrigger(evt(t, customerId), deps);
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
     const [run] = await runsFor(autoId);
     expect(run?.steps[0]?.status).toBe('gated');
     expect(run?.steps[0]?.error).toBe('automations_disabled');
@@ -358,7 +358,7 @@ describe('engine — ingest + execution', () => {
       actions: [{ type: 'platform.webhook', config: { url: 'http://127.0.0.1:9/x' } }],
     });
     await handleTrigger(evt(t, customerId), deps);
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
     const [run] = await runsFor(autoId);
     expect(run?.status).toBe('completed');
     expect(run?.steps[0]?.status).toBe('gated');
@@ -391,14 +391,14 @@ describe('engine — scheduled (predicate) triggers', () => {
     await setAutomationStatus(ctx, a.id, 'active');
 
     const now = new Date();
-    const first = await runScheduleTick(deps, ownerDb, now);
+    const first = await runScheduleTick(deps, appDb, now);
     expect(first.enqueued).toBe(1);
 
-    const second = await runScheduleTick(deps, ownerDb, now);
+    const second = await runScheduleTick(deps, appDb, now);
     expect(second.enqueued).toBe(0); // dedupe within the day window
     expect(await runsFor(a.id)).toHaveLength(1);
 
-    await runAutomationTick(deps, ownerDb);
+    await runAutomationTick(deps, appDb);
     const [run] = await runsFor(a.id);
     expect(run?.status).toBe('completed');
     expect(recordedFor(t)).toHaveLength(1);

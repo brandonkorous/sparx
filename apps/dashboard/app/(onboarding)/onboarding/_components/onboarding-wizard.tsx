@@ -76,6 +76,8 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
       <StepLaunch
         slug={initial.slug}
         installId={initial.installId}
+        siteOrigin={initial.siteOrigin}
+        useTenantParam={initial.useTenantParam}
         onDifferentTemplate={() => goPersist('template')}
       />
     );

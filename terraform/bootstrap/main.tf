@@ -24,6 +24,8 @@ locals {
     "artifactregistry.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudresourcemanager.googleapis.com",
+    # Cloud Scheduler drives the automation-worker tick (terraform/envs/prod/automation.tf).
+    "cloudscheduler.googleapis.com",
     "compute.googleapis.com",
     "connectgateway.googleapis.com",
     "container.googleapis.com",

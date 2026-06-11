@@ -29,6 +29,16 @@ export interface ScheduleTickResult {
   enqueued: number;
 }
 
+/** Raw shape returned by `find_active_scheduled_automations` (snake_case). */
+interface ScheduledAutomationRow {
+  id: string;
+  tenant_id: string;
+  trigger_type: string;
+  trigger_config: unknown;
+  conditions: unknown;
+  actions: unknown;
+}
+
 export async function runScheduleTick(
   deps: EngineDeps,
   db: PrismaClient,
@@ -36,18 +46,21 @@ export async function runScheduleTick(
 ): Promise<ScheduleTickResult> {
   installBuiltins();
 
-  // Cross-tenant scan of active scheduled automations (owner/BYPASSRLS).
-  const autos = await db.automation.findMany({
-    where: { status: 'active', triggerType: { startsWith: 'schedule.' } },
-    select: {
-      id: true,
-      tenantId: true,
-      triggerType: true,
-      triggerConfig: true,
-      conditions: true,
-      actions: true,
-    },
-  });
+  // Cross-tenant DISCOVERY via the SECURITY DEFINER helper — the worker runs as
+  // FORCE RLS-bound `sparx_app` (no ambient bypass in prod, docs/16 §4). The
+  // per-automation predicate scan + enqueue below stays withTenant-scoped.
+  const rows = await db.$queryRaw<ScheduledAutomationRow[]>`
+    SELECT id, tenant_id, trigger_type, trigger_config, conditions, actions
+    FROM find_active_scheduled_automations()
+  `;
+  const autos = rows.map((r) => ({
+    id: r.id,
+    tenantId: r.tenant_id,
+    triggerType: r.trigger_type,
+    triggerConfig: r.trigger_config,
+    conditions: r.conditions,
+    actions: r.actions,
+  }));
 
   const result: ScheduleTickResult = { automations: 0, enqueued: 0 };
 

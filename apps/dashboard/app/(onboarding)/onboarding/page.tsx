@@ -72,17 +72,28 @@ export default async function OnboardingPage({
     ? (sp.step as OnboardingStepKey)
     : null;
 
+  // Storefront origin for the Launch preview. In prod the tenant's site lives at
+  // its canonical zone subdomain; in dev the local storefront resolves tenants by
+  // `?tenant=<slug>` (no per-tenant DNS), so point there and flag the param.
+  const slug = tenant.slug ?? '';
+  const isDev = process.env.NODE_ENV !== 'production';
+  const siteOrigin = isDev
+    ? (process.env.SPARX_SITE_DEV_ORIGIN ?? 'http://localhost:3004')
+    : `https://${slug}.sparx.zone`;
+
   return (
     <OnboardingWizard
       initial={{
         step: stepParam ?? state.currentStep,
         storeName: tenant.name ?? '',
-        slug: tenant.slug ?? '',
+        slug,
         completed: state.completed,
         blueprints,
         blueprintKey: state.blueprintKey,
         installId: state.installId,
         preselectKey,
+        siteOrigin,
+        useTenantParam: isDev,
       }}
     />
   );

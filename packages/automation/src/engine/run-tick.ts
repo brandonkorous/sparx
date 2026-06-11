@@ -7,10 +7,14 @@
 // redeploy, or scale-to-zero resumes exactly where it left off, never replays a
 // committed step.
 //
-// The due-run scan is cross-tenant, so it runs on the OWNER connection
-// (BYPASSRLS) — the `db` argument MUST be the owner client (the worker connects
-// as `sparx_owner`, exactly like the b2b-overdue / webhook ticks). Per-run work
-// then re-enters `withTenant` so every read/write is FORCE-RLS scoped.
+// The due-run DISCOVERY is cross-tenant, but the worker runs as the FORCE
+// RLS-bound `sparx_app` role — prod grants NO ambient RLS bypass (docs/16 §4,
+// Decision F3; even `sparx_owner` is non-superuser there). So the scan goes
+// through the `find_due_automation_runs` SECURITY DEFINER function (migration
+// 20260731000000) — exactly like `find_pending_webhook_deliveries` — which
+// crosses only the column subset in its RETURNS clause. Every subsequent
+// read/write then re-enters `withTenant` so it is FORCE-RLS scoped. `db` is the
+// app-role client.
 
 import { Action } from '@sparx/automation-schemas';
 import type { PrismaClient } from '@prisma/client';
@@ -49,6 +53,16 @@ interface DueRun {
   triggerEvent: unknown;
 }
 
+/** Raw shape returned by `find_due_automation_runs` (snake_case columns). */
+interface DueRunRow {
+  id: string;
+  tenant_id: string;
+  automation_id: string;
+  cause_depth: number;
+  cursor_index: number;
+  trigger_event: unknown;
+}
+
 export async function runAutomationTick(
   deps: EngineDeps,
   db: PrismaClient,
@@ -65,22 +79,20 @@ export async function runAutomationTick(
   }
 
   try {
-    const now = new Date();
-    const due = (await db.automationRun.findMany({
-      where: {
-        OR: [{ status: 'running' }, { status: 'waiting', resumeAt: { lte: now } }],
-      },
-      select: {
-        id: true,
-        tenantId: true,
-        automationId: true,
-        causeDepth: true,
-        cursorIndex: true,
-        triggerEvent: true,
-      },
-      orderBy: { startedAt: 'asc' },
-      take: batch,
-    })) as DueRun[];
+    // Cross-tenant discovery via the SECURITY DEFINER helper (NOW() inside the
+    // function gates waiting runs by resume_at) — see the header note.
+    const rows = await db.$queryRaw<DueRunRow[]>`
+      SELECT id, tenant_id, automation_id, cause_depth, cursor_index, trigger_event
+      FROM find_due_automation_runs(${batch}::int)
+    `;
+    const due: DueRun[] = rows.map((r) => ({
+      id: r.id,
+      tenantId: r.tenant_id,
+      automationId: r.automation_id,
+      causeDepth: r.cause_depth,
+      cursorIndex: r.cursor_index,
+      triggerEvent: r.trigger_event,
+    }));
 
     const result: TickResult = {
       acquired: true,

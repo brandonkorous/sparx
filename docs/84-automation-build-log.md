@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-10
 
@@ -16,17 +16,33 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** Slice D — `services/automation-worker` (Cloud Run). Slices
-> A + B + C are DONE. The engine (`@sparx/automation`) is complete + green
-> (35/35: condition evaluator, resolver registry, **gated dispatcher**, durable
-> run state machine, schedule tick, service layer). Next: a thin Cloud Run worker
-> that (1) runs `runScheduleTick` + `runAutomationTick` on a Cloud Scheduler tick
-> and (2) exposes the push handler → `handleTrigger`. **Schedule-first path:** the
-> scheduled system automations (inactivity / dunning sweeps — the docs/81 Phase 2
-> cron replacements) need ONLY the schedule tick, not the event fan-in — so Slice
-> D + F can retire the crons WITHOUT the risky Slice E fan-in surgery. The worker
-> wires `@sparx/crm` etc. so Slice F can register the module action executors
-> (crm.create_task / add_tag / …) through the `registerAction` seam.
+> **▶ RESUME HERE:** Slice F — module action executors, seed system automations,
+> retire crons. Slices A + B + C + **D are DONE**. The worker
+> (`services/automation-worker`) is built + green (4/4 e2e against docker as
+> `sparx_app`): Cloud Scheduler tick → `runScheduleTick` + `runAutomationTick`,
+> Pub/Sub push → `handleTrigger`, deployed via Cloud Run + a per-minute Cloud
+> Scheduler job (Terraform in `terraform/envs/prod/automation.tf`). **The schedule
+> tick is now LIVE-capable** — so the cron-replacement system automations need only
+> Slice F (executors + seed), NOT the Slice E event fan-in.
+>
+> **Next (Slice F, in order):** (1) register the module action executors
+> (`crm.add_tag` / `crm.create_task` / `email.send` / …) into the worker through
+> the `registerAction` seam — until then a non-`platform.*` action fails its step
+> with `UnregisteredActionError` (loud, by design). (2) Seed the Managed/Locked
+> system automations (inactivity, dunning, win-back) via `upsertSystemAutomation`.
+> (3) Parity-check against the cron outcome-tests, then DELETE the crons.
+>
+> **Slice E (event fan-in, docs/82)** is still required for EVENT-triggered
+> automations to fire live (the push handler is wired + the subscription block is
+> stubbed in `automation.tf`); it can land before or after F. F alone makes the
+> scheduled sweeps live.
+>
+> **⚠ Prod-correctness finding (Slice D):** the engine's cross-tenant tick scans
+> originally assumed a BYPASSRLS `sparx_owner` connection. **Prod grants no ambient
+> RLS bypass** (docs/16 §4, Decision F3 — even `sparx_owner` is non-superuser and
+> FORCE-RLS-bound). A plain cross-tenant `findMany` would return **zero rows in
+> prod, silently** (no automation ever runs, no error). Fixed in this slice — see
+> the Slice D notes.
 
 ---
 
@@ -60,15 +76,17 @@ reconciles them into the one canonical registry. No build blocker from deferring
 
 ### Package / service inventory (what this feature introduces)
 
-| Artifact                                                    | Purpose                                                                          | Status |
-| ----------------------------------------------------------- | -------------------------------------------------------------------------------- | ------ |
-| `packages/automation-schemas` (`@sparx/automation-schemas`) | Zod schemas + types (trigger/condition/action/automation/gate)                   | ☑      |
-| `packages/automation` (`@sparx/automation`)                 | Engine: registries, evaluator, gates, executor, run state machine, service layer | ☑      |
-| `services/automation-worker`                                | Cloud Run push consumer on `automation.trigger` + advisory-lock tick             | ☐      |
-| `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                 | ☑      |
-| `services/api-rest` routes                                  | `/v1/automations` CRUD + internal trigger/tick endpoints                         | ☐      |
-| `apps/dashboard` surface                                    | List / detail / builder / run history (docs/34 standard)                         | ☐      |
-| MCP write-tool                                              | AI authoring path (mirrors crm `mcp/write-tools.ts`)                             | ☐      |
+| Artifact                                                    | Purpose                                                                                                    | Status |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------ |
+| `packages/automation-schemas` (`@sparx/automation-schemas`) | Zod schemas + types (trigger/condition/action/automation/gate)                                             | ☑      |
+| `packages/automation` (`@sparx/automation`)                 | Engine: registries, evaluator, gates, executor, run state machine, service layer                           | ☑      |
+| `services/automation-worker`                                | Cloud Run: Cloud Scheduler tick (schedule + run advance) + push consumer on `automation.trigger`           | ☑      |
+| `packages/db` scan helpers                                  | `find_due_automation_runs` / `find_active_scheduled_automations` SECURITY DEFINER (cross-tenant discovery) | ☑      |
+| `terraform/envs/prod/automation.tf`                         | Cloud Run service + Cloud Scheduler tick job + runtime/scheduler SAs (push sub deferred to E)              | ☑      |
+| `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                                           | ☑      |
+| `services/api-rest` routes                                  | `/v1/automations` CRUD + internal trigger/tick endpoints                                                   | ☐      |
+| `apps/dashboard` surface                                    | List / detail / builder / run history (docs/34 standard)                                                   | ☐      |
+| MCP write-tool                                              | AI authoring path (mirrors crm `mcp/write-tools.ts`)                                                       | ☐      |
 
 ---
 
@@ -140,12 +158,51 @@ dedupe_key)`. DDL generated Prisma-exact via `migrate diff` then RLS hand-append
 >   never replays a committed step) requires each step to commit independently; wrapping a
 >   whole run in one tx would roll back earlier committed steps on a later failure.
 
-### Slice D — `services/automation-worker` ☐
+### Slice D — `services/automation-worker` ☑
 
-- ☐ Tick endpoint (Cloud Scheduler) → `runScheduleTick` + `runAutomationTick` (owner conn) — **this alone makes scheduled system automations live; no event fan-in needed**
-- ☐ Cloud Run push handler → `handleTrigger` (event-driven; live once Slice E provisions the fan-in)
-- ☐ Wire `@sparx/crm` (+ email/commerce/b2b as needed) so Slice F registers module executors via `registerAction`
-- ☐ env.ts, Dockerfile (COPY closure: automation + automation-schemas + db + events + crm), `cloud-run-worker` TF module
+- ☑ Tick endpoint `POST /internal/cron/tick` (Cloud Scheduler) → `runScheduleTick` then `runAutomationTick` — **this alone makes scheduled system automations live; no event fan-in needed**
+- ☑ Cloud Run push handler `POST /` → `handleTrigger` (wired + tested; goes live once Slice E provisions the `automation.trigger` subscription)
+- ☑ `env.ts` (sparx_app DATABASE_URL — NO owner conn), `runtime.ts` (engine deps + `runTick`/`ingest`), side-effect-free `server.ts` + thin `index.ts`, `Dockerfile` (COPY closure: automation + automation-schemas + db + events), `.env.example`
+- ☑ End-to-end integration test (4/4) driving the REAL HTTP server against docker **as `sparx_app`**: push → run enqueued → tick → completed; tick-auth 403; non-trigger ack
+- ☑ Terraform `automation.tf`: Cloud Run service + per-minute Cloud Scheduler job (OIDC) + runtime SA + scheduler-invoker SA; `cloudscheduler.googleapis.com` added to bootstrap; `terraform validate` + `fmt` clean
+- ☑ CI: `automation-worker` added to `build-images.yml` matrix + the `gcloud run services update` loop in `deploy-prod.yml`
+- ⃠ **Module action executors (crm/email/commerce/b2b) deferred to Slice F** — you can't register an executor that doesn't exist yet; wiring lands with the executors + the seeded automations that use them. The worker registers `platform.webhook` + the control-flow built-ins now.
+- ⃠ **Pub/Sub push subscription deferred to Slice E** — the `automation.trigger` topic + 3 publish-path tees are Slice E. The IAM `run.invoker` for the pubsub invoker SA + the subscription stub are pre-placed in `automation.tf`.
+
+> **Decisions logged in Slice D:**
+>
+> - **CROSS-TENANT DISCOVERY VIA `SECURITY DEFINER`, NOT A BYPASSRLS CONNECTION.**
+>   Slice C's ticks did a plain cross-tenant `automationRun.findMany` /
+>   `automation.findMany`, assuming the worker connects as a BYPASSRLS
+>   `sparx_owner` (the run-tick header even said so). **That is wrong for prod:**
+>   docs/16 §4 (Decision F3) grants NO ambient RLS bypass — prod `sparx_owner` is
+>   a non-superuser, FORCE-RLS-bound, and sees **0 rows** on a tenant table without
+>   a GUC (the documented backfill footgun). The tick would have returned zero due
+>   runs in prod **silently** — every automation dead, no error. Fixed by mirroring
+>   the existing, prod-proven `find_due_scheduled_entries` /
+>   `find_pending_webhook_deliveries` pattern: migration `20260731000000` adds
+>   `find_due_automation_runs(p_limit)` + `find_active_scheduled_automations()`
+>   SECURITY DEFINER (owned by `sparx_owner`, granted `sparx_app`); the ticks call
+>   them for DISCOVERY only, then drive each run/automation under `withTenant`
+>   (RLS-scoped). The worker connects as **`sparx_app`** via the existing
+>   `database-url` secret — no owner secret, no new BYPASSRLS role.
+> - **Tests now run the ticks through a real `sparx_app` (NOBYPASSRLS) client**
+>   (`appDb` in `test/helpers.ts`), with setup/asserts on `ownerDb`. Local
+>   `sparx_owner` is a superuser, so running ticks on it would MASK exactly the
+>   bug above; `appDb` exercises the prod RLS boundary honestly. 35/35 still green.
+> - **Tick auth = OIDC (prod) OR internal-cron token (local/manual).** Cloud
+>   Scheduler authenticates with an OIDC token as a dedicated
+>   `sparx-automation-scheduler` SA (run.invoker on the service); the worker also
+>   checks the `email` claim against `TICK_INVOKER_SA`. This keeps the shared cron
+>   secret OUT of the scheduler-job config/TF state. The token path remains for
+>   local `curl` + manual invocation.
+> - **Schedule tick THEN run tick, in one tick** — a run the schedule tick just
+>   enqueued advances in the same invocation rather than waiting a full interval.
+> - **First-deploy ordering:** the new image must exist before `terraform apply`
+>   creates the Cloud Run service (it pins `:latest`). Sequence: push to `main`
+>   (build-images builds `automation-worker`) → bootstrap-apply (enables
+>   `cloudscheduler`) → platform-apply (creates service + scheduler) →
+>   deploy-prod (rolls the real tag). Same bootstrapping every Cloud Run worker used.
 
 ### Slice E — Phase 0 event substrate (docs/82) ☐
 
@@ -216,3 +273,22 @@ dedupe_key)`. DDL generated Prisma-exact via `migrate diff` then RLS hand-append
   docker; typecheck + lint + prettier clean. Decisions captured in Slice C checklist notes.
   Next session resumes at Slice D (`services/automation-worker`) — schedule-first path retires
   the crons without the Slice E fan-in.
+- **2026-06-10 (cont.)** — **Slice D `services/automation-worker` DONE.** Built the
+  Cloud Run worker: `POST /internal/cron/tick` (Cloud Scheduler) → schedule tick +
+  run tick; `POST /` (Pub/Sub push, Slice-E-ready) → `handleTrigger`; `GET /healthz`.
+  Side-effect-free `server.ts` + thin `index.ts`; `runtime.ts` builds the engine
+  deps on the shared `@sparx/db` `prisma` (sparx_app) for one pool across ticks +
+  ingest. **Caught + fixed a prod-correctness bug:** the Slice C ticks assumed a
+  BYPASSRLS owner connection that prod does NOT grant (Decision F3) — they'd return
+  0 due runs silently in prod. Replaced the cross-tenant `findMany`s with two new
+  SECURITY DEFINER helpers (migration `20260731000000_automation_scan_helpers`,
+  applied to docker), mirroring `find_due_scheduled_entries`. Upgraded the engine
+  tests to drive ticks through a real `sparx_app` (`appDb`) client so the prod RLS
+  boundary is actually exercised — 35/35 still green. Worker e2e suite 4/4 against
+  docker. Terraform `automation.tf` (Cloud Run service + per-minute OIDC Cloud
+  Scheduler job + runtime/scheduler SAs; push sub deferred to E); added
+  `cloudscheduler.googleapis.com` to bootstrap; `terraform validate`/`fmt` clean.
+  CI: `automation-worker` registered in build-images + deploy-prod Cloud Run loop.
+  typecheck + lint + prettier clean across automation/automation-worker/db. Next:
+  Slice F (module executors + seed system automations + retire crons) — the
+  schedule tick is now live so this needs no Slice E fan-in.

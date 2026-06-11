@@ -14,10 +14,25 @@ import type { Publisher, SparxEvent } from '@sparx/events';
 import type { EngineDeps, EngineLogger } from '../src/engine-types';
 import { _resetTenantStateCache } from '../src/gates/tenant-state';
 
+// Owner (BYPASSRLS locally) — used for SETUP + ASSERTIONS only: creating
+// tenants/customers without a GUC, and reading runs/steps back cross-tenant.
 export const ownerDb = new PrismaClient({
   datasourceUrl:
     process.env.MIGRATION_DATABASE_URL ??
     'postgresql://sparx_owner:devpassword@localhost:5544/sparx?schema=public',
+});
+
+// App role (NOBYPASSRLS) — the worker's PROD identity. The ticks must drive
+// through THIS so the suite exercises the real RLS boundary: cross-tenant
+// discovery only via the SECURITY DEFINER scan helpers, all execution under
+// withTenant. A plain cross-tenant findMany here would (correctly) return zero
+// rows — which is exactly the prod failure mode the DEFINER functions exist to
+// avoid. Local `sparx_owner` is a superuser, so running ticks on `ownerDb`
+// would mask that bug; `appDb` does not.
+export const appDb = new PrismaClient({
+  datasourceUrl:
+    process.env.DATABASE_URL ??
+    'postgresql://sparx_app:devpassword@localhost:5544/sparx?schema=public',
 });
 
 const noop = (): void => undefined;

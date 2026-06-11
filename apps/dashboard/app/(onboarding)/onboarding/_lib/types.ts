@@ -54,6 +54,11 @@ export interface WizardInitialState {
    *  null on the "start from scratch" path. */
   blueprintKey: string | null;
   installId: string | null;
+  /** Storefront origin the Launch preview/links target. Prod is the tenant's
+   *  canonical zone host (`https://<slug>.sparx.zone`); dev points at the local
+   *  storefront, which resolves tenants by `?tenant=<slug>` instead of subdomain. */
+  siteOrigin: string;
+  useTenantParam: boolean;
   /** From the marketplace funnel (`/sign-up?blueprint=<key>`) — auto-highlight
    *  that template on the gallery so a referred visitor lands on their pick. */
   preselectKey: string | null;
