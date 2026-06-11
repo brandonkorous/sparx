@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import posthog from 'posthog-js';
 import { ATTR_COOKIES, deserializeSnapshot } from '@sparx/attribution';
@@ -49,7 +49,6 @@ function identifyWithFirstTouch(userId: string): void {
 
 export default function SignUpPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [error, setError] = React.useState<string | null>(null);
   const [pending, startTransition] = React.useTransition();
 
@@ -66,8 +65,10 @@ export default function SignUpPage() {
       }
       if (result.userId) identifyWithFirstTouch(result.userId);
       // Carry the marketplace funnel's template pick into onboarding so a referred
-      // visitor lands on their chosen template pre-selected (docs/60 Ph5).
-      const blueprint = searchParams.get('blueprint');
+      // visitor lands on their chosen template pre-selected (docs/60 Ph5). Read it
+      // from the URL at submit time (client-only) rather than useSearchParams, which
+      // would force this page out of static prerender and break `next build`.
+      const blueprint = new URLSearchParams(window.location.search).get('blueprint');
       router.push(
         blueprint ? `/onboarding?blueprint=${encodeURIComponent(blueprint)}` : '/onboarding'
       );
