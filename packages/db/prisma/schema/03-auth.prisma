@@ -46,6 +46,8 @@ model User {
   completedTasks      Task[]       @relation("TaskCompletedBy")
   createdQuotes       Quote[]      @relation("QuoteCreatedBy")
   b2bInvoicesPaid     B2bInvoice[] @relation("B2bInvoicePaidBy")
+  billingDocumentsAssigned BillingDocument[]     @relation("BillingDocumentAssignee")
+  billingLinesAsTechnician BillingDocumentLine[] @relation("BillingLineTechnician")
   approvalRulesAsApprover PurchaseApprovalRule[]  @relation("ApprovalRuleApprover")
   confirmedAppointments   ServiceAppointment[]   @relation("AppointmentConfirmedBy")
 

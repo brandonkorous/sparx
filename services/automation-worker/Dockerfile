@@ -13,15 +13,18 @@ WORKDIR /app
 
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
-# Workspace closure (9 packages, all backend-safe — no React/UI/auth). The engine
+# Workspace closure (10 packages, all backend-safe — no React/UI/auth). The engine
 # half: automation → automation-schemas + db + events. The executor half:
 # automation-actions → crm (now slim: commerce-schemas + crm-schemas + db +
 # modules) — the heavy ui/auth/email/cms-editor deps were removed from @sparx/crm
-# (docs/84 Slice F1 follow-up). pnpm needs every workspace source dir in the
-# dependency tree present to install.
+# (docs/84 Slice F1 follow-up). The email executors enqueue through @sparx/email-sends,
+# a LEAN producer (db only) — deliberately NOT @sparx/email-platform, which would
+# drag @sparx/email + @sparx/ui + React into this image (docs/84 Slice F1). pnpm
+# needs every workspace source dir in the dependency tree present to install.
 COPY packages/automation ./packages/automation
 COPY packages/automation-schemas ./packages/automation-schemas
 COPY packages/automation-actions ./packages/automation-actions
+COPY packages/email-sends ./packages/email-sends
 COPY packages/crm ./packages/crm
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/commerce-schemas ./packages/commerce-schemas

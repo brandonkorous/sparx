@@ -26,6 +26,7 @@ export function StepDomain({
   const [query, setQuery] = React.useState(defaultQuery);
   const [suggestions, setSuggestions] = React.useState<DomainSuggestion[]>([]);
   const [searching, setSearching] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
   const [purchaseTarget, setPurchaseTarget] = React.useState<DomainSuggestion | null>(null);
   const [primaryProperty, setPrimaryProperty] = React.useState<Property | null>(null);
   const purchasedHostRef = React.useRef<string | null>(null);
@@ -40,13 +41,20 @@ export function StepDomain({
     if (!query.trim()) {
       setSuggestions([]);
       setSearching(false);
+      setError(null);
       return;
     }
     setSearching(true);
+    setError(null);
     const handle = setTimeout(() => {
       void searchDomains(query.trim()).then((res) => {
         setSearching(false);
-        if (res.ok) setSuggestions(res.data ?? []);
+        if (res.ok) {
+          setSuggestions(res.data ?? []);
+        } else {
+          setSuggestions([]);
+          setError(res.error ?? 'Search failed.');
+        }
       });
     }, 400);
     return () => clearTimeout(handle);
@@ -114,7 +122,13 @@ export function StepDomain({
         </div>
       )}
 
-      {!searching && query.trim() && suggestions.length === 0 && (
+      {!searching && error && (
+        <Text size="sm" variant="danger" className="mt-4 block" role="alert" aria-live="polite">
+          {error}
+        </Text>
+      )}
+
+      {!searching && !error && query.trim() && suggestions.length === 0 && (
         <Text size="sm" variant="muted" className="mt-4 block">
           No domains found for &ldquo;{query}&rdquo;. Try a different name.
         </Text>

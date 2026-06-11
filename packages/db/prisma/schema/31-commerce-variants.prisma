@@ -108,6 +108,7 @@ model ProductVariant {
   stockLevels           StockLevel[]
   inventorySourceLinks  InventorySourceLink[]
   recomputeReviews      MarkupRecomputeReview[]
+  billingDocumentLines  BillingDocumentLine[]
 
   @@unique([tenantId, sku], map: "product_variants_sku_unique")
   @@index([tenantId, productId])

@@ -17,6 +17,7 @@ import { ModulesMegaContent, MODULE_NAV } from './modules-menu';
 // to their own pages.
 const LINKS = [
   { label: 'Platform', href: '/platform' },
+  { label: 'Features', href: '/features' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'Docs', href: '/docs' },
   { label: 'Customers', href: '/customers' },

@@ -4,6 +4,7 @@ import { Permanence } from '@/components/marketing/permanence';
 import { LogoStrip } from '@/components/marketing/logo-strip';
 import { StackReplacement } from '@/components/marketing/stack-replacement';
 import { ModulesGrid } from '@/components/marketing/modules-grid';
+import { EverythingIncluded } from '@/components/marketing/everything-included';
 import { DashboardShowcase } from '@/components/marketing/dashboard-showcase';
 import { McpSpotlight } from '@/components/marketing/mcp-spotlight';
 import { B2bSpotlight } from '@/components/marketing/b2b-spotlight';
@@ -25,6 +26,7 @@ export default function HomePage() {
       <LogoStrip />
       <StackReplacement />
       <ModulesGrid />
+      <EverythingIncluded />
       <DashboardShowcase />
       <McpSpotlight />
       <B2bSpotlight />

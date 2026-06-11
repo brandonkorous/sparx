@@ -38,6 +38,8 @@ export type {
   DocumentWorkflow,
   DocumentStage,
   BillingDocumentLineType,
+  BillingDocument,
+  BillingDocumentLine,
   Deal,
   DealOrder,
   DealQuote,

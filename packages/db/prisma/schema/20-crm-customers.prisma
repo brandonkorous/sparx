@@ -65,6 +65,7 @@ model Customer {
   segmentMembers SegmentMember[]
   orders         Order[]
   quotes         Quote[]
+  billingDocuments BillingDocument[]
 
   // Commerce module inverse relations
   carts            Cart[]

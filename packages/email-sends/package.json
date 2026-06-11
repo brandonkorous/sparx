@@ -1,0 +1,32 @@
+{
+  "name": "@sparx/email-sends",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Lean, backend-safe email enqueue: writes a ScheduledSend row (suppression-checked) that the api-rest email-dispatch tick later turns into an email.send. NO render/React deps — so backend workers (automation-worker) can enqueue a send without dragging in @sparx/email/@sparx/ui. @sparx/email-platform owns the management surface; this owns only the producer primitive.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@sparx/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

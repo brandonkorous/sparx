@@ -24,8 +24,9 @@ model DocumentWorkflow {
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  stages DocumentStage[]
+  tenant    Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  stages    DocumentStage[]
+  documents BillingDocument[]
 
   @@unique([tenantId, slug])
   @@index([tenantId, archivedAt])
@@ -58,8 +59,9 @@ model DocumentStage {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  workflow DocumentWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  tenant    Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  workflow  DocumentWorkflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  documents BillingDocument[]
 
   @@index([tenantId, workflowId])
   @@index([workflowId, sortOrder])
@@ -97,8 +99,124 @@ model BillingDocumentLineType {
 
   tenant            Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   defaultMarkupRule MarkupRule? @relation("LineTypeDefaultMarkupRule", fields: [defaultMarkupRuleId], references: [id], onDelete: SetNull)
+  lines             BillingDocumentLine[]
 
   @@unique([tenantId, key])
   @@index([tenantId, isActive])
   @@map("billing_document_line_types")
+}
+
+// An authored billing document (docs/87 §2/§6/§11). Bills a retail Customer OR
+// a B2BAccount (at least one set — the Deal pattern). Lives on a workflow at a
+// stage; lines carry the charges; totals are derived from the lines plus the
+// per-document tax rate, shipping, and surcharge. Money is Decimal(12,2) dollars
+// (matching orders/quotes); cost basis is Int cents (matching the markup engine).
+model BillingDocument {
+  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String  @map("tenant_id") @db.Uuid
+  workflowId     String  @map("workflow_id") @db.Uuid
+  stageId        String  @map("stage_id") @db.Uuid
+  customerId     String? @map("customer_id") @db.Uuid
+  b2bAccountId   String? @map("b2b_account_id") @db.Uuid
+  assignedUserId String? @map("assigned_user_id") @db.Uuid
+
+  // Minted per `numberOnEnter` stage (Phase 3). Null until the document reaches
+  // a numbering stage. Unique per tenant when set (NULLs don't collide).
+  number   String? @map("number") @db.VarChar(63)
+  currency String  @default("USD") @db.VarChar(3)
+
+  // Denormalized party snapshots ({ name, address, … }) frozen onto the document
+  // so a later customer-record edit never rewrites a finalized document (§6).
+  billTo Json? @map("bill_to")
+  shipTo Json? @map("ship_to")
+
+  // Tax rate applied to taxable lines (0.0875 = 8.75%); the per-line `taxable`
+  // flag selects which lines it hits. Jurisdiction automation deferred (§17).
+  taxRate Decimal @default(0) @map("tax_rate") @db.Decimal(6, 4)
+
+  subtotal       Decimal @default(0) @db.Decimal(12, 2)
+  discountTotal  Decimal @default(0) @map("discount_total") @db.Decimal(12, 2)
+  taxTotal       Decimal @default(0) @map("tax_total") @db.Decimal(12, 2)
+  shippingTotal  Decimal @default(0) @map("shipping_total") @db.Decimal(12, 2)
+  surchargeTotal Decimal @default(0) @map("surcharge_total") @db.Decimal(12, 2)
+  total          Decimal @default(0) @db.Decimal(12, 2)
+  depositTotal   Decimal @default(0) @map("deposit_total") @db.Decimal(12, 2)
+  amountPaid     Decimal @default(0) @map("amount_paid") @db.Decimal(12, 2)
+  balance        Decimal @default(0) @db.Decimal(12, 2)
+
+  // AR status (Phase 4 drives transitions): unpaid | partial | paid | overdue | void
+  status String @default("unpaid") @db.VarChar(20)
+
+  notes       String?   @db.Text
+  validUntil  DateTime? @map("valid_until") @db.Timestamptz
+  finalizedAt DateTime? @map("finalized_at") @db.Timestamptz
+  voidedAt    DateTime? @map("voided_at") @db.Timestamptz
+  metadata    Json      @default("{}")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  tenant       Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  workflow     DocumentWorkflow @relation(fields: [workflowId], references: [id])
+  stage        DocumentStage    @relation(fields: [stageId], references: [id])
+  customer     Customer?        @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  b2bAccount   B2BAccount?      @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  assignedUser User?            @relation("BillingDocumentAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  lines        BillingDocumentLine[]
+
+  @@unique([tenantId, number], map: "billing_documents_tenant_number_unique")
+  @@index([tenantId, workflowId, stageId])
+  @@index([tenantId, customerId])
+  @@index([tenantId, b2bAccountId])
+  @@index([tenantId, status])
+  @@index([tenantId, updatedAt(sort: Desc)])
+  @@map("billing_documents")
+}
+
+// A single charge line on a billing document (docs/87 §5). Its behavior comes
+// from the referenced line type's `pricingMode`; the computed snapshot
+// (`appliedMarkup`) is stamped on markup/pass-through lines so the price is
+// reproducible after cost drift (the §5 reproducibility requirement). `quantity`
+// is Decimal to carry fractional labor hours (e.g. 2.5 h).
+model BillingDocumentLine {
+  id               String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String  @map("tenant_id") @db.Uuid
+  documentId       String  @map("document_id") @db.Uuid
+  lineTypeId       String? @map("line_type_id") @db.Uuid
+  productId        String? @map("product_id") @db.Uuid
+  variantId        String? @map("variant_id") @db.Uuid
+  technicianUserId String? @map("technician_user_id") @db.Uuid
+
+  description String  @db.VarChar(500)
+  quantity   Decimal @default(1) @db.Decimal(12, 3)
+  unitPrice  Decimal @default(0) @map("unit_price") @db.Decimal(12, 2)
+
+  // Cost basis (Int cents) + reproducibility snapshot for markup/pass-through
+  // lines. Null for flat/labor/catalog lines that aren't cost-derived.
+  costCents     Int?  @map("cost_cents")
+  appliedMarkup Json? @map("applied_markup")
+
+  taxable        Boolean @default(true)
+  discountAmount Decimal @default(0) @map("discount_amount") @db.Decimal(12, 2)
+  taxAmount      Decimal @default(0) @map("tax_amount") @db.Decimal(12, 2)
+  lineSubtotal   Decimal @default(0) @map("line_subtotal") @db.Decimal(12, 2)
+  lineTotal      Decimal @default(0) @map("line_total") @db.Decimal(12, 2)
+
+  sortOrder Int  @default(0) @map("sort_order")
+  metadata  Json @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  document   BillingDocument          @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  lineType   BillingDocumentLineType? @relation(fields: [lineTypeId], references: [id], onDelete: SetNull)
+  product    Product?                 @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variant    ProductVariant?          @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  technician User?                    @relation("BillingLineTechnician", fields: [technicianUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, documentId])
+  @@index([variantId])
+  @@map("billing_document_lines")
 }

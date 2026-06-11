@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Badge, Button, Card, Heading, Stack, Text } from '@sparx/ui';
+import { Button, Card, Heading, Stack, Text } from '@sparx/ui';
 import {
   ArrowRight,
   Boxes,
@@ -181,63 +181,32 @@ export function StepLaunch({
         </div>
       )}
 
-      {/* ── Everything you switched on (what each module replaces) ────────── */}
-      {modules.length > 0 && (
-        <div className="mt-5 overflow-hidden rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
-          <div className="flex items-center justify-between border-b border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-5 py-3">
-            <Text size="sm" weight="medium">
-              Everything you switched on
-            </Text>
-            <Text size="xs" variant="muted">
-              worth ${usd(monthlyElsewhere)}/mo elsewhere
-            </Text>
-          </div>
-          <div className="px-5">
-            {modules.map((m, i) => (
-              <div
-                key={m.key}
-                className={
-                  'flex items-center justify-between gap-3 py-3' +
-                  (i < modules.length - 1 ? ' border-b border-[var(--color-border-default)]' : '')
-                }
-              >
-                <span className="flex min-w-0 items-start gap-3">
-                  <span
-                    className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
-                    style={{ background: m.colorVar }}
-                  />
-                  <span className="min-w-0">
-                    <Text size="sm" weight="medium">
-                      {m.name}
-                    </Text>
-                    <Text size="xs" variant="muted">
-                      Replaces {m.replaces}
-                    </Text>
-                  </span>
-                </span>
-                <Text size="sm" variant="muted" className="shrink-0 whitespace-nowrap line-through">
-                  ${m.elsewhere}/mo
-                </Text>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* ── Why that number is real (the platform value) ──────────────────── */}
+      <div className="mt-5 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-5">
+        <Stack gap={4}>
+          <ValuePoint
+            icon={<Boxes className="h-4 w-4 text-[var(--module-active)]" />}
+            title="One platform, not a patched-together stack"
+            body="Your storefront, content, customers, and email run on one database — nothing to integrate, sync, or keep in step. It just works together."
+          />
+          <ValuePoint
+            icon={<Receipt className="h-4 w-4 text-[var(--module-active)]" />}
+            title="One login, one invoice"
+            body="Flat per-module pricing — no per-seat fees, no cut of every order, no surprise overages. Turn modules on and off anytime."
+          />
+          <ValuePoint
+            icon={<TrendingUp className="h-4 w-4 text-[var(--module-active)]" />}
+            title="Built to grow with you"
+            body="From your first sale to enterprise volume on the same platform — and an MCP-native API so AI can run it all, no re-platforming ever."
+          />
+        </Stack>
+      </div>
 
       {/* ── Already in your site (blueprint content) ──────────────────────── */}
       {facts.length > 0 && (
-        <div className="mt-5">
-          <Text size="sm" weight="medium" className="mb-2 block">
-            Already in your site
-          </Text>
-          <Stack direction="row" gap={2} className="flex-wrap">
-            {facts.map((f) => (
-              <Badge key={f} variant="soft" color="neutral">
-                {f}
-              </Badge>
-            ))}
-          </Stack>
-        </div>
+        <Text size="sm" variant="muted" className="mt-4 block text-center">
+          {facts.join(' · ')} — installed and ready to edit.
+        </Text>
       )}
 
       {/* ── Secondary actions (Publish lives in the setup card) ───────────── */}
@@ -265,6 +234,32 @@ export function StepLaunch({
         >
           Choose a different blueprint
         </Button>
+      </div>
+    </div>
+  );
+}
+
+function ValuePoint({
+  icon,
+  title,
+  body,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--module-active-tint)]">
+        {icon}
+      </span>
+      <div>
+        <Text size="sm" weight="medium">
+          {title}
+        </Text>
+        <Text size="sm" variant="muted">
+          {body}
+        </Text>
       </div>
     </div>
   );

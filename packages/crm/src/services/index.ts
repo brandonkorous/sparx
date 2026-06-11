@@ -25,6 +25,8 @@ export * as quoteLifecycleService from './quote-lifecycle-service';
 // phases.
 export * as documentWorkflowService from './document-workflow-service';
 export * as documentLineTypeService from './document-line-type-service';
+export * as billingDocumentService from './billing-document-service';
+export * as billingLineService from './billing-line-service';
 
 // CRM reporting — read-only metrics for the dashboard reports page and
 // the MCP get_crm_metrics tool. Live queries today; nightly rollup later.

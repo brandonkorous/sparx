@@ -52,6 +52,7 @@ model B2BAccount {
   // B2B module inverse relations
   productOverrides   B2bAccountProductOverride[]
   invoices           B2bInvoice[]
+  billingDocuments   BillingDocument[]
   contacts           B2bAccountContact[]
   approvalRules      PurchaseApprovalRule[]
   appointments       ServiceAppointment[]

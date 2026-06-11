@@ -9,7 +9,11 @@
 
 import type { ResolvedFields } from '@sparx/automation';
 
-export function requireEntityId(fields: ResolvedFields, key: string, action: string): string {
+/** Read a REQUIRED non-empty string field, throwing a clear config error if the
+ *  trigger entity didn't resolve it. Used for ids AND for other required string
+ *  fields like `customer.email` (an email executor wired to a customerless
+ *  trigger is misconfigured — fail loud, never send to nobody). */
+export function requireStringField(fields: ResolvedFields, key: string, action: string): string {
   const value = fields[key];
   if (typeof value !== 'string' || value.length === 0) {
     throw new Error(
@@ -20,7 +24,19 @@ export function requireEntityId(fields: ResolvedFields, key: string, action: str
   return value;
 }
 
+/** Required entity id — a thin, intent-revealing alias of requireStringField. */
+export function requireEntityId(fields: ResolvedFields, key: string, action: string): string {
+  return requireStringField(fields, key, action);
+}
+
 export function optionalEntityId(fields: ResolvedFields, key: string): string | undefined {
   const value = fields[key];
   return typeof value === 'string' && value.length > 0 ? value : undefined;
+}
+
+/** Read an optional boolean field (e.g. `customer.doNotContact`). Returns
+ *  undefined when the trigger didn't resolve it. */
+export function optionalBoolField(fields: ResolvedFields, key: string): boolean | undefined {
+  const value = fields[key];
+  return typeof value === 'boolean' ? value : undefined;
 }

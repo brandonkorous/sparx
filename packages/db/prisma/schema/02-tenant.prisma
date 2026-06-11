@@ -163,6 +163,8 @@ model Tenant {
   documentWorkflows        DocumentWorkflow[]
   documentStages           DocumentStage[]
   billingDocumentLineTypes BillingDocumentLineType[]
+  billingDocuments         BillingDocument[]
+  billingDocumentLines     BillingDocumentLine[]
   discounts               Discount[]
   discountUsages          DiscountUsage[]
   giftCards               GiftCard[]

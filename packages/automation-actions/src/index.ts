@@ -10,15 +10,17 @@
 
 export { installCrmActions } from './crm.js';
 export { installB2bActions } from './b2b.js';
+export { installEmailActions } from './email.js';
 export { seedSystemAutomations, SYSTEM_AUTOMATIONS } from './seeds/index.js';
 
 import { installB2bActions } from './b2b.js';
 import { installCrmActions } from './crm.js';
+import { installEmailActions } from './email.js';
 
 /** Register every module action executor + scanner (idempotent). */
 export function installModuleActions(): void {
   installCrmActions();
   installB2bActions();
-  // installEmailActions();    — Slice F (email.send_campaign / sequence_*)
+  installEmailActions();
   // installCommerceActions(); — Slice F (commerce.*)
 }
