@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.0
+**Version:** 1.2
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-10
 
@@ -16,15 +16,17 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** Slice C — engine core (`@sparx/automation`). Slices A + B
-> are DONE: schemas package (7/7 tests) + data model (3 tables, RLS, migration
-> `20260730000000_automation_engine` applied to docker, 0 drift, client regen'd).
-> Next: scaffold `packages/automation` — trigger registry, entity resolver,
-> condition evaluator, **gated dispatcher** (§7.1), action executor, `handleTrigger`
->
-> - `runAutomationTick` durable run state machine, service layer. Test against
->   docker DB with synthetic envelopes. Build incrementally (resolver+evaluator
->   first, then gates, then run machine).
+> **▶ RESUME HERE:** Slice D — `services/automation-worker` (Cloud Run). Slices
+> A + B + C are DONE. The engine (`@sparx/automation`) is complete + green
+> (35/35: condition evaluator, resolver registry, **gated dispatcher**, durable
+> run state machine, schedule tick, service layer). Next: a thin Cloud Run worker
+> that (1) runs `runScheduleTick` + `runAutomationTick` on a Cloud Scheduler tick
+> and (2) exposes the push handler → `handleTrigger`. **Schedule-first path:** the
+> scheduled system automations (inactivity / dunning sweeps — the docs/81 Phase 2
+> cron replacements) need ONLY the schedule tick, not the event fan-in — so Slice
+> D + F can retire the crons WITHOUT the risky Slice E fan-in surgery. The worker
+> wires `@sparx/crm` etc. so Slice F can register the module action executors
+> (crm.create_task / add_tag / …) through the `registerAction` seam.
 
 ---
 
@@ -61,7 +63,7 @@ reconciles them into the one canonical registry. No build blocker from deferring
 | Artifact                                                    | Purpose                                                                          | Status |
 | ----------------------------------------------------------- | -------------------------------------------------------------------------------- | ------ |
 | `packages/automation-schemas` (`@sparx/automation-schemas`) | Zod schemas + types (trigger/condition/action/automation/gate)                   | ☑      |
-| `packages/automation` (`@sparx/automation`)                 | Engine: registries, evaluator, gates, executor, run state machine, service layer | ☐      |
+| `packages/automation` (`@sparx/automation`)                 | Engine: registries, evaluator, gates, executor, run state machine, service layer | ☑      |
 | `services/automation-worker`                                | Cloud Run push consumer on `automation.trigger` + advisory-lock tick             | ☐      |
 | `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                 | ☑      |
 | `services/api-rest` routes                                  | `/v1/automations` CRUD + internal trigger/tick endpoints                         | ☐      |
@@ -105,26 +107,45 @@ dedupe_key)`. DDL generated Prisma-exact via `migrate diff` then RLS hand-append
 > auto names). Not ours — the 3 automation tables used Prisma-exact names → 0 added drift.
 > A repo-wide cleanup is a separate sweep, out of scope here.
 
-### Slice C — engine core (`@sparx/automation`) — Phase 1 ☐
+### Slice C — engine core (`@sparx/automation`) — Phase 1 ☑
 
-- ☐ Trigger registry / catalog (event + schedule kinds; module ownership)
-- ☐ Entity resolver registry (hydrate fields under `withTenant` — §5.3)
-- ☐ Condition evaluator (all operators, AND/OR, against resolved fields)
-- ☐ **Gated dispatcher** — only path to an effect; global chain + per-action manifest
-  (empty must be explicit); `GateResult` allow/deny/transform/defer; coverage test (§7.1)
-- ☐ Action executor — thin calls into gated capability services; bulk via revert ledger
-- ☐ `handleTrigger` — match active automations, loop-guard, hydrate, eval, idempotent upsert
-- ☐ `runAutomationTick` — advisory-lock tick, cursor advance, durable `wait`, fail-stop
-- ☐ Scheduled-predicate trigger class — `(schedule, query)` → one run per matched row
-- ☐ Service layer — automation CRUD (create/update/pause/clone "Duplicate to edit")
-- ☐ Run + per-step history logging (incl. `gated` decisions + `gate_log`)
-- ☐ Integration tests against docker DB with synthetic envelopes
+- ☑ Trigger/entity resolver registry (event resolvers + schedule scanners; `registerResolver`/`registerScanner` seam; built-ins for customer/deal/order + customer scanner)
+- ☑ Condition evaluator (all 12 operators, AND/OR, numeric/date coercion, against resolved fields) — pure, unit-tested
+- ☑ **Gated dispatcher** — only path to an effect; global chain (tenant-active, kill-switch, module-active) + per-action manifest (empty must carry a justifying note — enforced at registration); `GateResult` allow/deny/transform/defer; coverage test (§7.1)
+- ☑ Action registry + built-in executor (`platform.webhook` w/ egress SSRF gate) + `registerAction` seam for module executors; `platform.wait`/`platform.stop` are run-loop control flow
+- ☑ `handleTrigger` — match active automations, loop-guard (`__automationDepth` vs `max_depth`), hydrate, eval, idempotent upsert (`dedupeOf`)
+- ☑ `runAutomationTick` — advisory-lock (`4242_4250`) cross-tenant scan on owner conn; per-step transaction (durable: step N commits before N+1); cursor advance, durable `wait`, gate `defer` park, fail-stop
+- ☑ `runScheduleTick` — `(schedule, predicate)` scan → one run per matched row; window-scoped dedupe; UTC cadence arithmetic (daily/weekly/monthly/once)
+- ☑ Service layer — CRUD + `setAutomationStatus` + clone ("Duplicate to edit") + `upsertSystemAutomation` seed; **locked** tier rejects edit/status/delete; origin/locked system-managed
+- ☑ Run + per-step history logging (`completed`/`gated`/`failed`/control; `gate_log` audit trail; `completeRun`/`failRun`)
+- ☑ Integration tests against docker (35/35: 12 engine end-to-end incl. idempotency/wait/fail-stop/gated/transform/defer/kill-switch/SSRF + schedule, 9 service, 14 unit)
+
+> **Decisions logged in Slice C:**
+>
+> - **Engine envelope is `TriggerEnvelope` (`type: string`)**, not the strict `SparxEvent`
+>   `EventType` union — the engine handles `schedule.*` + the docs/81 §5.2 `[ADD]`
+>   trigger types not yet in the canonical registry. `SparxEvent` is assignable to it;
+>   Slice E reconciles the registry.
+> - **Module action executors (crm/email/commerce/b2b) register via the `registerAction`
+>   seam in a later slice**, where the engine is wired with those service packages — keeps
+>   `@sparx/automation` deps lean (`@sparx/db` + `@sparx/events` + schemas). Slice C ships
+>   the platform-level `platform.webhook` as the one real built-in effect; the integration
+>   suite exercises the machinery via stand-in executors registered through the same seam.
+> - **`dispatch` throws `UnregisteredActionError` for an unwired action** — a loud failure,
+>   never a silent no-op (so a not-yet-registered module action is visible, not skipped).
+> - **Skips are log-only in Slice C** (condition-not-met / max-depth don't persist a run row),
+>   to avoid row explosion on high-volume events; persisted "evaluated, didn't match" history
+>   is a UI-slice (G) concern.
+> - **Per-step transactions, not per-run** — the durable property (a redeploy resumes mid-run,
+>   never replays a committed step) requires each step to commit independently; wrapping a
+>   whole run in one tx would roll back earlier committed steps on a later failure.
 
 ### Slice D — `services/automation-worker` ☐
 
-- ☐ Cloud Run push handler → `handleTrigger`
-- ☐ Tick endpoint (Cloud Scheduler) → `runAutomationTick`
-- ☐ env.ts, Dockerfile (COPY closure), `cloud-run-worker` TF module (Slice E)
+- ☐ Tick endpoint (Cloud Scheduler) → `runScheduleTick` + `runAutomationTick` (owner conn) — **this alone makes scheduled system automations live; no event fan-in needed**
+- ☐ Cloud Run push handler → `handleTrigger` (event-driven; live once Slice E provisions the fan-in)
+- ☐ Wire `@sparx/crm` (+ email/commerce/b2b as needed) so Slice F registers module executors via `registerAction`
+- ☐ env.ts, Dockerfile (COPY closure: automation + automation-schemas + db + events + crm), `cloud-run-worker` TF module
 
 ### Slice E — Phase 0 event substrate (docs/82) ☐
 
@@ -184,4 +205,14 @@ dedupe_key)`. DDL generated Prisma-exact via `migrate diff` then RLS hand-append
   per push_subscriptions). **Slice B data model DONE** — 3 Prisma models + 3 Tenant
   inverses + migration `20260730000000_automation_engine` (Prisma-exact DDL + hand-added
   RLS), applied to docker (89/89), 0 drift, client regenerated, db typecheck clean.
-  Next session resumes at Slice C (engine core).
+  **Slice C engine core DONE** — `@sparx/automation` (`packages/automation`): condition
+  evaluator (12 ops), entity-resolver + schedule-scanner registries (built-ins for
+  customer/deal/order), gated dispatcher (global chain + per-action manifest +
+  allow/deny/transform/defer), `platform.webhook` built-in + SSRF egress gate +
+  `registerAction` seam, `handleTrigger` (loop-guard + idempotent upsert), `runAutomationTick`
+  (advisory-lock, per-step-transaction durable run machine, wait/defer park, fail-stop),
+  `runScheduleTick` (predicate scan + window dedupe), service layer (CRUD + clone + locked
+  guard + system seed). **35/35 tests green** (12 engine e2e + 9 service + 14 unit) against
+  docker; typecheck + lint + prettier clean. Decisions captured in Slice C checklist notes.
+  Next session resumes at Slice D (`services/automation-worker`) — schedule-first path retires
+  the crons without the Slice E fan-in.
