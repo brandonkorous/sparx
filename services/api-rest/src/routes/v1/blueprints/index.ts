@@ -19,7 +19,13 @@ import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { conflict, notFound } from '@sparx/api-core/errors';
-import { getBlueprint, listBlueprints, toSummary, type Blueprint } from '@sparx/blueprints';
+import {
+  getBlueprint,
+  listBlueprints,
+  safeParseBlueprint,
+  toSummary,
+  type Blueprint,
+} from '@sparx/blueprints';
 
 import { resolvePrimaryPropertyId } from '../../../lib/property.js';
 import {
@@ -32,6 +38,21 @@ import {
 
 const KeyParam = z.object({ key: z.string().min(1).max(63) });
 const IdParam = z.object({ id: z.string().uuid() });
+
+// Resolve a blueprint manifest DATA-FIRST (docs/85): the source of truth is the
+// marketplace catalog row's `definition` JSON, parsed back into a Blueprint. Falls
+// back to the in-code @sparx/blueprints registry for any row not yet serialized
+// (and so a no-deploy publish can later add blueprints purely as data).
+async function resolveBlueprint(tenantId: string, key: string): Promise<Blueprint | null> {
+  const row = await withTenant({ tenantId }, (tx) =>
+    tx.marketplaceBlueprint.findFirst({ where: { slug: key }, select: { definition: true } })
+  );
+  if (row?.definition) {
+    const parsed = safeParseBlueprint(row.definition);
+    if (parsed.success) return parsed.data;
+  }
+  return getBlueprint(key);
+}
 
 /** A small "what this creates" breakdown for the browse/detail card. */
 function summarizeContents(bp: Blueprint) {
@@ -138,7 +159,7 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/blueprints/:key/install', async (request) => {
     const auth = requireRole(request, 'admin');
     const { key } = KeyParam.parse(request.params);
-    const bp = getBlueprint(key);
+    const bp = await resolveBlueprint(auth.tenantId, key);
     if (!bp) throw notFound('Blueprint', key);
     const propertyId = await resolvePrimaryPropertyId(auth.tenantId);
     const existing = await findInstall(auth.tenantId, propertyId, key);

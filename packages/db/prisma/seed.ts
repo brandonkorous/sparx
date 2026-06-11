@@ -306,6 +306,9 @@ async function seedMarketplaceCatalog(): Promise<void> {
         status: 'published',
         visibility: 'public',
         publisherId: publisher.id,
+        // Serialize the full manifest as DATA (docs/85) so install resolves it
+        // from the row, not the code registry — the no-deploy path.
+        definition: bp as unknown as Prisma.InputJsonValue,
       };
       await tx.marketplaceBlueprint.upsert({
         where: { slug: bp.key },
