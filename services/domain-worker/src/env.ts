@@ -13,6 +13,9 @@ const EnvSchema = z.object({
   GODADDY_API_SECRET_OTE: z.string().optional(),
   GODADDY_API_KEY_PROD: z.string().optional(),
   GODADDY_API_SECRET_PROD: z.string().optional(),
+  // Override decoupling the GoDaddy environment from NODE_ENV; unset → follows
+  // NODE_ENV. See @sparx/godaddy resolveEnv (OTE sandbox is chronically degraded).
+  GODADDY_ENV: z.enum(['prod', 'production', 'ote', 'test']).optional(),
   SPARX_CNAME_TARGET: z.string().default('customers.sparx.zone'),
   SPARX_DASHBOARD_URL: z.string().default('https://app.sparx.works'),
 });

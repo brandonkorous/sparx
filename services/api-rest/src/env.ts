@@ -58,12 +58,17 @@ const EnvSchema = z
     // inbound customer message routes straight to a human (notification fires).
     ANTHROPIC_API_KEY: z.string().optional(),
     // GoDaddy Reseller API credentials (docs/24 §3, docs/24 §10).
-    // OTE (staging) credentials — used when NODE_ENV !== 'production'.
+    // OTE (staging) credentials — used when the resolved env is OTE.
     GODADDY_API_KEY_OTE: z.string().optional(),
     GODADDY_API_SECRET_OTE: z.string().optional(),
-    // Production credentials — used when NODE_ENV === 'production'.
+    // Production credentials — used when the resolved env is prod.
     GODADDY_API_KEY_PROD: z.string().optional(),
     GODADDY_API_SECRET_PROD: z.string().optional(),
+    // Optional override decoupling the GoDaddy environment from NODE_ENV
+    // ('prod'|'production' | 'ote'|'test'). Unset → follows NODE_ENV. Lets local
+    // dev hit GoDaddy's FREE production read endpoints (available/suggest; only
+    // purchase charges), since the OTE sandbox is chronically degraded.
+    GODADDY_ENV: z.enum(['prod', 'production', 'ote', 'test']).optional(),
     // Stripe platform-level keys. Used by the webhook handler and Stripe
     // Connect OAuth. Per-tenant keys live in ProviderInstallation configs.
     // STRIPE_SECRET_KEY       — platform/connect account secret key

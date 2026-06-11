@@ -12,17 +12,38 @@ import { generateKeyPairSync } from 'node:crypto';
 const OTE_BASE = 'https://api.ote-godaddy.com';
 const PROD_BASE = 'https://api.godaddy.com';
 
+/**
+ * Which GoDaddy environment to talk to.
+ *
+ * Defaults to following NODE_ENV (`production` → prod, else OTE), but an explicit
+ * `GODADDY_ENV` (`prod`|`production` / `ote`|`test`) overrides it. This decouples
+ * the registrar environment from NODE_ENV so local dev / staging can point at the
+ * production READ endpoints — `available` and `suggest` cost nothing; only
+ * `purchase` charges — which is necessary because GoDaddy's OTE sandbox is
+ * chronically degraded (it returns blanket 500 ERROR_INTERNAL across all
+ * endpoints). Production is unaffected: NODE_ENV=production still resolves to prod
+ * with no GODADDY_ENV set.
+ */
+function resolveEnv(): 'prod' | 'ote' {
+  const explicit = process.env.GODADDY_ENV?.trim().toLowerCase();
+  if (explicit === 'prod' || explicit === 'production') return 'prod';
+  if (explicit === 'ote' || explicit === 'test') return 'ote';
+  return process.env.NODE_ENV === 'production' ? 'prod' : 'ote';
+}
+
 function baseUrl(): string {
-  return process.env.NODE_ENV === 'production' ? PROD_BASE : OTE_BASE;
+  return resolveEnv() === 'prod' ? PROD_BASE : OTE_BASE;
 }
 
 function authHeader(): string {
-  const isProd = process.env.NODE_ENV === 'production';
+  const isProd = resolveEnv() === 'prod';
   const key = isProd ? process.env.GODADDY_API_KEY_PROD : process.env.GODADDY_API_KEY_OTE;
   const secret = isProd ? process.env.GODADDY_API_SECRET_PROD : process.env.GODADDY_API_SECRET_OTE;
   if (!key || !secret) {
+    const suffix = isProd ? 'PROD' : 'OTE';
     throw new GoDaddyError(
-      `GoDaddy ${isProd ? 'production' : 'OTE'} API credentials not configured`,
+      `GoDaddy ${isProd ? 'production' : 'OTE'} API credentials not configured ` +
+        `(set GODADDY_API_KEY_${suffix} / GODADDY_API_SECRET_${suffix})`,
       0
     );
   }
