@@ -69,6 +69,14 @@ export const ComponentFacets = z.object({
   group: z.string(),
   kind: z.string().nullable(),
   surfaces: z.array(z.string()),
+  // True when this is a composed DATA component (a node tree to clone) vs a
+  // system-palette pointer. Cheap; present on browse + detail.
+  dataBacked: z.boolean().optional(),
+  // The DATA payload (docs/85), populated only on DETAIL (loadOne), not browse:
+  // the node tree + prop spec the "Add" action clones into a tenant component.
+  // Null for system-palette pointers (resolved by builder `type` at copy time).
+  tree: z.unknown().nullable().optional(),
+  propSpec: z.array(z.unknown()).optional(),
 });
 export type ComponentFacets = z.infer<typeof ComponentFacets>;
 

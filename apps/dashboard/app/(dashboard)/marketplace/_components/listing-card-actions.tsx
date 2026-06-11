@@ -40,7 +40,7 @@ export function ListingCardActions({
     );
   }
   if (item.category === 'components') {
-    return <ComponentCardActions componentSlug={item.slug} />;
+    return <ComponentCardActions slug={item.slug} name={item.name} component={item.component} />;
   }
   return null;
 }

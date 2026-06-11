@@ -138,6 +138,10 @@ export async function copyComponent(seed: {
   icon: string;
   surfaces: ComponentSurface[];
   tree: BuilderNode;
+  // Optional — a marketplace DATA component (docs/85) ships its field spec +
+  // description; the system-component copy path omits them.
+  propSpec?: PropSpec[];
+  description?: string | null;
 }): Promise<ActionResult<ComponentDto>> {
   return run(async () => {
     const { components } = await api.get<{ components: ComponentSummaryDto[] }>(
@@ -151,6 +155,8 @@ export async function copyComponent(seed: {
       icon: seed.icon,
       surfaces: seed.surfaces,
       tree: seed.tree,
+      ...(seed.propSpec ? { propSpec: seed.propSpec } : {}),
+      ...(seed.description ? { description: seed.description } : {}),
     });
   });
 }

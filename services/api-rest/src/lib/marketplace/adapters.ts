@@ -224,10 +224,25 @@ interface ComponentRow extends SpineRow {
   group: string;
   kind: string | null;
   surfaces: string[];
+  tree?: unknown;
+  propSpec?: unknown;
 }
 
-function componentListing(row: ComponentRow): MarketplaceListing {
-  const component: ComponentFacets = { group: row.group, kind: row.kind, surfaces: row.surfaces };
+// `detail` surfaces the DATA payload (tree + propSpec) for the "Add" clone path
+// (docs/85). Browse omits it — the node tree is heavy and unused on a card.
+function componentListing(row: ComponentRow, detail = false): MarketplaceListing {
+  const component: ComponentFacets = {
+    group: row.group,
+    kind: row.kind,
+    surfaces: row.surfaces,
+    // Cheap flag on every row (browse + detail): does this carry a DATA tree to
+    // clone, vs a system-palette pointer resolved by builder `type`? The heavy
+    // tree/propSpec themselves ride only on detail.
+    dataBacked: row.tree != null,
+    ...(detail
+      ? { tree: row.tree ?? null, propSpec: Array.isArray(row.propSpec) ? row.propSpec : [] }
+      : {}),
+  };
   return {
     ...baseListing(row, 'components'),
     blueprint: null,
@@ -244,14 +259,14 @@ const componentAdapter: CategoryAdapter = {
       where: BROWSE_WHERE,
       include: { publisher: PUBLISHER_SELECT },
     });
-    return rows.map(componentListing);
+    return rows.map((r) => componentListing(r));
   },
   loadOne: async (tx, slug) => {
     const row = await tx.marketplaceComponent.findFirst({
       where: { slug },
       include: { publisher: PUBLISHER_SELECT },
     });
-    return row ? componentListing(row) : null;
+    return row ? componentListing(row, true) : null;
   },
   searchText: (l) => `${l.name} ${l.tagline ?? ''} ${l.component?.group ?? ''}`,
   facets: [

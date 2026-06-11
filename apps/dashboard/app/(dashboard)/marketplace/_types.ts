@@ -50,6 +50,11 @@ export interface ComponentFacets {
   group: string;
   kind: string | null;
   surfaces: string[];
+  // True for a composed DATA component (a tree to clone) vs a system pointer.
+  dataBacked?: boolean;
+  // DATA payload (docs/85) — present only on detail; drives the "Add" clone.
+  tree?: unknown;
+  propSpec?: unknown[];
 }
 
 export interface IntegrationFacets {

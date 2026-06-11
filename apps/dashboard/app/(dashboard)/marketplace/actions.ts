@@ -9,7 +9,15 @@
 import 'server-only';
 import { revalidatePath } from 'next/cache';
 
+import type {
+  BuilderNode,
+  ComponentGroup,
+  ComponentSurface,
+  PropSpec,
+} from '@sparx/builder-schemas';
+
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { copyComponent } from '../builder/components/_lib/component-actions';
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: { message: string } };
 
@@ -60,6 +68,35 @@ export async function applyThemeAction(slug: string): Promise<ActionResult<{ the
     const e = err as ApiRestError;
     return { ok: false, error: { message: e.message ?? 'Could not apply theme.' } };
   }
+}
+
+// Add a marketplace DATA component (docs/85) to the tenant's own component
+// library: clone its node tree + propSpec into a new BuilderComponent (the same
+// copyComponent path the builder's "Copy" uses), generating a unique key. Returns
+// the new key so the card can deep-link into the editor.
+export async function addComponentAction(input: {
+  name: string;
+  group: string;
+  surfaces: string[];
+  tree: unknown;
+  propSpec?: unknown[];
+  description?: string | null;
+}): Promise<ActionResult<{ key: string }>> {
+  const res = await copyComponent({
+    name: input.name,
+    group: (input.group as ComponentGroup) || 'content',
+    icon: 'box',
+    surfaces: (input.surfaces.length ? input.surfaces : ['page']) as ComponentSurface[],
+    tree: input.tree as BuilderNode,
+    propSpec: input.propSpec as PropSpec[] | undefined,
+    description: input.description ?? null,
+  });
+  if (!res.ok || !res.data) {
+    const message = res.ok ? 'Could not add component.' : (res.error ?? 'Could not add component.');
+    return { ok: false, error: { message } };
+  }
+  revalidatePath('/builder/components', 'layout');
+  return { ok: true, data: { key: res.data.key } };
 }
 
 // Reset & reinstall (docs/54 D8): tears down everything the install created and

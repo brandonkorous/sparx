@@ -226,7 +226,13 @@ export async function getDraftSnapshot(ctx: ServiceContext): Promise<PublishedSn
       layout: draft.layout,
       definitions,
     };
-    const withBrand = await overlayBrand(tx, ctx.tenantId, snapshot, presentation, preset?.v2 ?? null);
+    const withBrand = await overlayBrand(
+      tx,
+      ctx.tenantId,
+      snapshot,
+      presentation,
+      preset?.v2 ?? null
+    );
     const assignments = await readAssignmentSnapshot(tx, ctx.tenantId);
     return { ...withBrand, assignments };
   });

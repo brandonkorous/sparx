@@ -12,6 +12,7 @@ import { hashPassword } from 'better-auth/crypto';
 import { listBlueprints, type Blueprint } from '@sparx/blueprints';
 import { LEGAL_TEMPLATES, legalEntryBody } from '@sparx/legal-templates';
 import { SPARX_DATA_THEMES } from './marketplace/themes';
+import { SPARX_DATA_COMPONENTS } from './marketplace/components';
 
 const prisma = new PrismaClient();
 
@@ -389,10 +390,34 @@ async function seedMarketplaceCatalog(): Promise<void> {
       });
     }
 
+    // Composed DATA components (docs/85) — the node tree + propSpec ride in the
+    // row, and "Add" clones them into a tenant component (no builder `type`).
+    for (const cmp of SPARX_DATA_COMPONENTS) {
+      const shared = {
+        name: cmp.name,
+        tagline: cmp.tagline.slice(0, 255),
+        description: cmp.description,
+        group: cmp.group,
+        kind: cmp.kind,
+        surfaces: cmp.surfaces,
+        sortWeight: cmp.sortWeight,
+        status: 'published',
+        visibility: 'public',
+        publisherId: publisher.id,
+        tree: cmp.tree as unknown as Prisma.InputJsonValue,
+        propSpec: cmp.propSpec as unknown as Prisma.InputJsonValue,
+      };
+      await tx.marketplaceComponent.upsert({
+        where: { slug: cmp.slug },
+        update: shared,
+        create: { slug: cmp.slug, publishedAt: new Date(), ...shared },
+      });
+    }
+
     console.log(
       `Seeded marketplace catalog: ${listBlueprints().length} blueprint(s), ` +
         `${SPARX_THEMES.length} theme(s), ${SPARX_INTEGRATIONS.length} integration(s), ` +
-        `${SPARX_COMPONENTS.length} component(s).`
+        `${SPARX_COMPONENTS.length + SPARX_DATA_COMPONENTS.length} component(s).`
     );
   });
 }
