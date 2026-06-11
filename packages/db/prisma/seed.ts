@@ -61,6 +61,20 @@ function componentSwatch(name: string): string {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
+// A branded wordmark swatch for an integration card (docs/85 assets) — the
+// provider's accent over a soft tint, name centered. A data URI placeholder until
+// the GCS media pipeline carries real provider logos.
+function integrationSwatch(name: string, accent: string): string {
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300">` +
+    `<rect width="480" height="300" fill="${accent}" opacity="0.08"/>` +
+    `<circle cx="240" cy="120" r="44" fill="${accent}"/>` +
+    `<text x="240" y="132" font-family="system-ui,sans-serif" font-size="36" font-weight="800" fill="#ffffff" text-anchor="middle">${name.slice(0, 1)}</text>` +
+    `<text x="240" y="220" font-family="system-ui,sans-serif" font-size="30" font-weight="700" fill="${accent}" text-anchor="middle">${name}</text>` +
+    `</svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
 const TENANT_SLUG = 'e2e-store';
 const STAFF_EMAIL = 'e2e-staff@sparx.test';
 const STAFF_PASSWORD = 'e2e-test-password';
@@ -402,6 +416,7 @@ async function seedMarketplaceCatalog(): Promise<void> {
         tagline: it.tagline.slice(0, 255),
         description: it.description,
         accent: it.accent,
+        media: [{ url: integrationSwatch(it.name, it.accent), kind: 'image', alt: it.name }],
         providerSlug: it.providerSlug,
         kind: it.kind,
         scopes: it.scopes,
