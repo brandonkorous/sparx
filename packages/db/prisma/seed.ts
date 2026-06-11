@@ -45,6 +45,22 @@ function themeSwatch(
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
+// A clean wireframe swatch for a composed-component card (docs/85 assets) — a
+// data URI so it renders anywhere with no file hosting. A teal accent bar (the
+// Components category color) over neutral placeholder blocks, plus the name.
+function componentSwatch(name: string): string {
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300">` +
+    `<rect width="480" height="300" fill="#f8fafc"/>` +
+    `<rect x="40" y="40" width="400" height="52" rx="8" fill="#14b8a6"/>` +
+    `<rect x="40" y="112" width="180" height="148" rx="8" fill="#e2e8f0"/>` +
+    `<rect x="236" y="112" width="204" height="68" rx="8" fill="#e2e8f0"/>` +
+    `<rect x="236" y="192" width="204" height="68" rx="8" fill="#e2e8f0"/>` +
+    `<text x="60" y="74" font-family="system-ui,sans-serif" font-size="24" font-weight="700" fill="#ffffff">${name}</text>` +
+    `</svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
 const TENANT_SLUG = 'e2e-store';
 const STAFF_EMAIL = 'e2e-staff@sparx.test';
 const STAFF_PASSWORD = 'e2e-test-password';
@@ -437,6 +453,7 @@ async function seedMarketplaceCatalog(): Promise<void> {
         status: 'published',
         visibility: 'public',
         publisherId: publisher.id,
+        media: [{ url: componentSwatch(cmp.name), kind: 'image', alt: cmp.name }],
         tree: cmp.tree as unknown as Prisma.InputJsonValue,
         propSpec: cmp.propSpec as unknown as Prisma.InputJsonValue,
       };
