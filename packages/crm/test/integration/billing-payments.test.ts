@@ -2,9 +2,9 @@
 //   (1) deposit → partial → paid drives the payment-derived status + fires the
 //       crm.billing_document.paid event when the balance first clears,
 //   (2) a refund reopens a paid document,
-//   (3) the B2B escalation ladder dual-reads OPEN BILLING-DOCUMENT balances —
-//       a past-due authored invoice is marked overdue and escalates the account
-//       exactly like a legacy B2bInvoice (the §15 coexistence requirement).
+//   (3) the B2B escalation ladder reads OPEN BILLING-DOCUMENT balances (the sole
+//       AR source post docs/87 §15) — a past-due authored invoice is marked
+//       overdue and escalates the account.
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 

@@ -228,9 +228,9 @@ async function checkAvailabilityBulk(
 
 // Curated TLD menu for domain search. The suggest endpoint only surfaces these,
 // so the list IS the menu the tenant sees — spanning classics, tech, commerce,
-// and content/brand TLDs, all in the affordable tier. Premium-priced TLDs (.inc,
-// .llc, .ai-adjacent novelty, …) are intentionally excluded so a ~$12 search
-// never sits beside a $2,000 option; they remain purchasable by exact domain via
+// and content/brand TLDs, all in the affordable tier. Premium-priced TLDs (.ai
+// ~$420/yr, .inc, .llc, …) are intentionally excluded so a ~$12 search never sits
+// beside a $400+ outlier; they remain purchasable by exact domain via
 // checkAvailability(). Callers can override `tlds` for a narrower/wider set.
 const DEFAULT_TLDS = [
   'com',
@@ -240,7 +240,6 @@ const DEFAULT_TLDS = [
   'io',
   'app',
   'dev',
-  'ai',
   'xyz',
   'tech',
   'shop',

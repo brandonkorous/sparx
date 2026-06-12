@@ -1,10 +1,11 @@
 // Fastify factory for the MCP server.
 //
-// Surface:
+// Surface (host is the dedicated mcp.sparx.works subdomain, so the path
+// carries no redundant `/mcp` segment — the subdomain already says it):
 //   • GET  /health           — liveness/readiness probe
-//   • POST /v1/mcp           — MCP JSON-RPC over Streamable HTTP
-//   • GET  /v1/mcp           — SSE channel for server→client messages
-//   • DELETE /v1/mcp         — explicit session termination
+//   • POST /v1               — MCP JSON-RPC over Streamable HTTP
+//   • GET  /v1               — SSE channel for server→client messages
+//   • DELETE /v1             — explicit session termination
 //
 // Auth: bearer JWT (see ./auth.ts). One McpServer + transport pair is built
 // per request — stateless mode — so each call is hermetic and easy to test.
@@ -89,7 +90,7 @@ export async function createApp(): Promise<FastifyInstance> {
   // the SDK opens for streaming responses; DELETE terminates a session.
   app.route({
     method: ['POST', 'GET', 'DELETE'],
-    url: '/v1/mcp',
+    url: '/v1',
     handler: async (request, reply) => {
       const auth = await authenticate(request);
       // POST is the only method that carries a JSON-RPC body — GET opens the

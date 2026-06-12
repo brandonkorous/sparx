@@ -154,4 +154,77 @@ describe('evaluateConditions', () => {
     expect(evaluateConditions(group(both, 'AND'), fields)).toBe(false);
     expect(evaluateConditions(group(both, 'OR'), fields)).toBe(true);
   });
+
+  it('nested groups give mixed precedence: A AND (B OR C)', () => {
+    // fleet AND (totalSpent > 5000  OR  daysSinceLastOrder >= 45)
+    //  = true AND (false OR true) = true
+    const rule: ConditionGroup = {
+      logic: 'AND',
+      conditions: [
+        { field: 'customer.type', operator: 'eq', value: 'fleet' },
+        {
+          logic: 'OR',
+          conditions: [
+            { field: 'customer.totalSpent', operator: 'gt', value: 5000 },
+            { field: 'customer.daysSinceLastOrder', operator: 'gte', value: 45 },
+          ],
+        },
+      ],
+    };
+    expect(evaluateConditions(rule, fields)).toBe(true);
+  });
+
+  it('a failing sub-group fails the AND', () => {
+    // fleet AND (totalSpent > 5000  OR  totalSpent > 9000) = true AND (false OR false) = false
+    const rule: ConditionGroup = {
+      logic: 'AND',
+      conditions: [
+        { field: 'customer.type', operator: 'eq', value: 'fleet' },
+        {
+          logic: 'OR',
+          conditions: [
+            { field: 'customer.totalSpent', operator: 'gt', value: 5000 },
+            { field: 'customer.totalSpent', operator: 'gt', value: 9000 },
+          ],
+        },
+      ],
+    };
+    expect(evaluateConditions(rule, fields)).toBe(false);
+  });
+
+  it('three levels: A AND (B OR (C AND D))', () => {
+    // fleet AND (totalSpent > 9000  OR  (totalSpent >= 1500 AND daysSinceLastOrder >= 45))
+    //  = true AND (false OR (true AND true)) = true
+    const rule: ConditionGroup = {
+      logic: 'AND',
+      conditions: [
+        { field: 'customer.type', operator: 'eq', value: 'fleet' },
+        {
+          logic: 'OR',
+          conditions: [
+            { field: 'customer.totalSpent', operator: 'gt', value: 9000 },
+            {
+              logic: 'AND',
+              conditions: [
+                { field: 'customer.totalSpent', operator: 'gte', value: 1500 },
+                { field: 'customer.daysSinceLastOrder', operator: 'gte', value: 45 },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    expect(evaluateConditions(rule, fields)).toBe(true);
+  });
+
+  it('an empty sub-group passes (no filter), like an empty root', () => {
+    const rule: ConditionGroup = {
+      logic: 'AND',
+      conditions: [
+        { field: 'customer.type', operator: 'eq', value: 'fleet' },
+        { logic: 'OR', conditions: [] },
+      ],
+    };
+    expect(evaluateConditions(rule, fields)).toBe(true);
+  });
 });

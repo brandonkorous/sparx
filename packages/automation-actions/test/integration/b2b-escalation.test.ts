@@ -63,6 +63,11 @@ function makeDeps(publisher: Publisher): EngineDeps {
 
 const createdTenants: string[] = [];
 
+// Net-terms AR now lives on billing_documents (docs/87 §15), so the ladder's
+// open-balance source is a finalised billing document on the net-terms-ar
+// workflow — seeded here in the PRE-escalation state (status `unpaid`, balance
+// owing, due date already past) exactly as it would stand the moment before the
+// daily scan runs.
 async function seedAccountWithInvoice(opts: {
   dueDaysAgo: number;
   status?: string;
@@ -91,18 +96,53 @@ async function seedAccountWithInvoice(opts: {
     },
     select: { id: true },
   });
-  const invoice = await ownerDb.b2bInvoice.create({
+
+  const workflow = await ownerDb.documentWorkflow.create({
     data: {
       tenantId: tenant.id,
-      accountId: account.id,
-      invoiceNumber: `INV-${slug}`,
-      amountCents: 50_000,
+      name: 'Net-terms AR',
+      slug: 'net-terms-ar',
+      sortOrder: 100,
+      stages: {
+        create: [
+          {
+            tenantId: tenant.id,
+            name: 'Invoice',
+            customerLabel: 'Invoice',
+            stageType: 'final',
+            numberOnEnter: true,
+            numberPrefix: 'INV-',
+            snapshotOnEnter: false,
+            locksEditing: true,
+            sortOrder: 0,
+          },
+        ],
+      },
+    },
+    include: { stages: true },
+  });
+  const stage = workflow.stages[0]!;
+
+  const doc = await ownerDb.billingDocument.create({
+    data: {
+      tenantId: tenant.id,
+      workflowId: workflow.id,
+      stageId: stage.id,
+      b2bAccountId: account.id,
+      number: `INV-${slug}`,
+      numberSeq: 1,
+      currency: 'USD',
+      subtotal: 500,
+      total: 500,
+      balance: 500,
+      amountPaid: 0,
       status: 'unpaid',
       dueAt: new Date(Date.now() - opts.dueDaysAgo * DAY),
+      finalizedAt: new Date(),
     },
     select: { id: true },
   });
-  return { tenantId: tenant.id, accountId: account.id, invoiceId: invoice.id };
+  return { tenantId: tenant.id, accountId: account.id, invoiceId: doc.id };
 }
 
 beforeAll(() => {
@@ -131,7 +171,7 @@ describe('b2b dunning ladder on the automation engine', () => {
     const account = await ownerDb.b2BAccount.findUniqueOrThrow({ where: { id: accountId } });
     expect(account.status).toBe('credit_hold');
 
-    const invoice = await ownerDb.b2bInvoice.findUniqueOrThrow({ where: { id: invoiceId } });
+    const invoice = await ownerDb.billingDocument.findUniqueOrThrow({ where: { id: invoiceId } });
     expect(invoice.status).toBe('overdue');
     expect(invoice.overdueDays).toBeGreaterThanOrEqual(14);
 
@@ -169,7 +209,7 @@ describe('b2b dunning ladder on the automation engine', () => {
 
     // The invoice is still flagged overdue (5 days) — the reminder path — but no
     // account-level escalation fired.
-    const invoice = await ownerDb.b2bInvoice.findUniqueOrThrow({ where: { id: invoiceId } });
+    const invoice = await ownerDb.billingDocument.findUniqueOrThrow({ where: { id: invoiceId } });
     expect(invoice.status).toBe('overdue');
     expect(pub.forAccount('b2b.account.credit_hold', accountId)).toHaveLength(0);
     expect(pub.forAccount('b2b.account.suspended', accountId)).toHaveLength(0);

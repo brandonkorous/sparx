@@ -156,15 +156,25 @@ export async function resolveSiteByHost(rawHost: string): Promise<SiteRoute | nu
 
   // 1. Exact host row — the general path (custom domains + additional-site
   //    subdomains). `domains` is non-RLS, so the bare client reads it directly.
-  //    Only 'verified'/'active' rows route (a pending connect can't hijack a
-  //    host). The property's slug/status come from a SEPARATE tenant-scoped read
-  //    below — `properties` is FORCE RLS, so a nested include from the bare
-  //    client would be filtered to null in prod (no app.tenant_id GUC set).
+  //    A connected (BYO) domain routes only once 'verified'/'active' (a pending
+  //    connect can't hijack a host). A PURCHASED domain we registered ourselves
+  //    and pointed at our ingress has no ownership ambiguity, so it routes — and
+  //    is cert-authorized — the moment it exists (pending_ssl/verifying), without
+  //    waiting on the domain-worker to advance status. The globally-unique `host`
+  //    stays the cross-tenant guard either way. The property's slug/status come
+  //    from a SEPARATE tenant-scoped read below — `properties` is FORCE RLS, so a
+  //    nested include from the bare client would be filtered to null in prod.
   const row = await prisma.domain.findUnique({
     where: { host },
-    select: { status: true, tenantId: true, propertyId: true },
+    select: { status: true, type: true, tenantId: true, propertyId: true },
   });
-  if (row && (row.status === 'verified' || row.status === 'active')) {
+  if (
+    row &&
+    (row.status === 'verified' ||
+      row.status === 'active' ||
+      (row.type === 'purchased' &&
+        (row.status === 'pending_ssl' || row.status === 'verifying')))
+  ) {
     const tenant = await prisma.tenant.findUnique({
       where: { id: row.tenantId },
       select: { slug: true, status: true },

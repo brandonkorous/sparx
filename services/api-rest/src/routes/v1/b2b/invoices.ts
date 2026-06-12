@@ -1,24 +1,29 @@
-// B2B invoices — net-terms credit management (docs/10 §9, docs/64 Ph3).
+// B2B invoices — net-terms accounts-receivable (docs/10 §9, docs/87 §15).
 //
-// Invoices are auto-created by the order placement handler when the B2B
-// account has payment_terms set (e.g. 'net30'). They can also be created
-// manually for service work billed outside an order flow.
+// As of Phase 8 these routes are backed by `billing_documents` (the one billing
+// engine), NOT the legacy `b2b_invoices` table — a B2B receivable is a
+// BillingDocument on the system `net-terms-ar` workflow. The route shape is
+// preserved (a thin "invoice" projection of the document) so the dashboard and
+// customer portal keep working; the status vocabulary is now billing-native:
+//   unpaid | partial | paid | overdue | void
+// ("void" replaces the old "written_off").
 //
-// Status flow: unpaid → paid | overdue → paid | written_off
-// Overdue escalation is handled by the b2b-overdue-worker Cloud Run cron.
-// Credit-hold and suspended account status changes are published here so
-// consumers (email-worker, CRM activity feed) react without polling.
+// Invoices are auto-created by checkout / approval when a B2B account orders on
+// net terms; they can also be created manually for work billed outside an order.
+// Credit utilisation (`credit_used`) re-syncs automatically through the billing
+// money authority (recomputeTotals → sync_b2b_credit_used) on every mutation.
 //
 //   GET    /v1/b2b/invoices                    → list (filtered by account/status)
 //   POST   /v1/b2b/invoices                    → create manually
 //   GET    /v1/b2b/invoices/:id                → fetch one
-//   PATCH  /v1/b2b/invoices/:id                → update notes / due date (unpaid only)
-//   POST   /v1/b2b/invoices/:id/mark-paid      → record payment, sync credit_used
-//   POST   /v1/b2b/invoices/:id/write-off      → cancel invoice, sync credit_used
+//   PATCH  /v1/b2b/invoices/:id                → update notes / due date (open only)
+//   POST   /v1/b2b/invoices/:id/mark-paid      → record full payment, lift hold
+//   POST   /v1/b2b/invoices/:id/write-off      → void the receivable
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { withTenant } from '@sparx/db';
+import { withTenant, type Prisma } from '@sparx/db';
+import { b2bArService, billingPaymentService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound, badRequest } from '@sparx/api-core/errors';
@@ -37,7 +42,7 @@ const PathId = z.object({ id: z.string().uuid() });
 
 const ListQuery = z.object({
   account_id: z.string().uuid().optional(),
-  status: z.enum(['unpaid', 'overdue', 'paid', 'written_off']).optional(),
+  status: z.enum(['unpaid', 'partial', 'paid', 'overdue', 'void']).optional(),
   take: z.coerce.number().int().min(1).max(250).default(50),
   skip: z.coerce.number().int().min(0).default(0),
 });
@@ -56,6 +61,7 @@ const UpdateBody = z.object({
   notes: z.string().max(2000).optional(),
 });
 
+// Map the legacy paid-method vocabulary to the billing payment-method enum.
 const MarkPaidBody = z.object({
   paidMethod: z.enum(['check', 'ach', 'wire', 'credit_card', 'other']),
   notes: z.string().max(2000).optional(),
@@ -64,6 +70,66 @@ const MarkPaidBody = z.object({
 const WriteOffBody = z.object({
   notes: z.string().max(2000).optional(),
 });
+
+const PAID_METHOD_MAP: Record<string, string> = {
+  check: 'check',
+  ach: 'ach',
+  wire: 'wire',
+  credit_card: 'card',
+  other: 'other',
+};
+
+// The shape `/v1/b2b/invoices` returns — a B2B-AR projection of a billing
+// document, preserving the historical field names the dashboard + portal read.
+const INVOICE_INCLUDE = {
+  b2bAccount: { select: { id: true, companyName: true, paymentTerms: true } },
+  payments: {
+    orderBy: { receivedAt: 'desc' },
+    include: { recordedBy: { select: { id: true, name: true, email: true } } },
+  },
+} satisfies Prisma.BillingDocumentInclude;
+
+type InvoiceDoc = Prisma.BillingDocumentGetPayload<{ include: typeof INVOICE_INCLUDE }>;
+
+function cents(d: Prisma.Decimal | number): number {
+  return Math.round(Number(d) * 100);
+}
+
+function mapInvoice(doc: InvoiceDoc) {
+  const meta = (doc.metadata ?? {}) as Record<string, unknown>;
+  // Most recent real payment drives the displayed method + "recorded by".
+  const lastPayment = doc.payments.find((p) => p.kind !== 'refund') ?? doc.payments[0] ?? null;
+  return {
+    id: doc.id,
+    accountId: doc.b2bAccountId,
+    orderId: typeof meta.orderId === 'string' ? meta.orderId : null,
+    invoiceNumber: doc.number ?? '',
+    amountCents: cents(doc.total),
+    balanceCents: cents(doc.balance),
+    status: doc.status,
+    overdueDays: doc.overdueDays,
+    dueAt: doc.dueAt ? doc.dueAt.toISOString() : null,
+    paidAt: doc.paidAt ? doc.paidAt.toISOString() : null,
+    paidMethod: doc.status === 'paid' ? (lastPayment?.method ?? null) : null,
+    notes: doc.notes,
+    createdAt: doc.createdAt.toISOString(),
+    updatedAt: doc.updatedAt.toISOString(),
+    account: doc.b2bAccount
+      ? {
+          id: doc.b2bAccount.id,
+          companyName: doc.b2bAccount.companyName,
+          paymentTerms: doc.b2bAccount.paymentTerms,
+        }
+      : null,
+    paidBy: lastPayment?.recordedBy
+      ? {
+          id: lastPayment.recordedBy.id,
+          name: lastPayment.recordedBy.name,
+          email: lastPayment.recordedBy.email,
+        }
+      : null,
+  };
+}
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
@@ -74,64 +140,46 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
     const ctx = toB2bContext(request);
     const q = ListQuery.parse(request.query);
 
-    const invoiceWhere = {
-      tenantId: ctx.tenantId,
-      ...(q.account_id ? { accountId: q.account_id } : {}),
+    const where: Prisma.BillingDocumentWhereInput = {
+      b2bAccountId: q.account_id ?? { not: null },
+      deletedAt: null,
       ...(q.status ? { status: q.status } : {}),
     };
 
     const { items, total } = await withTenant(ctx, async (tx) => {
       const [items, total] = await Promise.all([
-        tx.b2bInvoice.findMany({
-          where: invoiceWhere,
-          include: {
-            account: { select: { id: true, companyName: true } },
-            paidBy: { select: { id: true, name: true } },
-          },
+        tx.billingDocument.findMany({
+          where,
+          include: INVOICE_INCLUDE,
           orderBy: { dueAt: 'asc' },
           take: q.take,
           skip: q.skip,
         }),
-        tx.b2bInvoice.count({ where: invoiceWhere }),
+        tx.billingDocument.count({ where }),
       ]);
       return { items, total };
     });
 
-    return reply.send(paged(items, { total, skip: q.skip, take: q.take }));
+    return reply.send(paged(items.map(mapInvoice), { total, skip: q.skip, take: q.take }));
   });
 
-  // ── Create ────────────────────────────────────────────────────────────────
+  // ── Create (manual) ────────────────────────────────────────────────────────
   app.post('/v1/b2b/invoices', async (request, reply) => {
     await requireB2bModule(request);
     requireRole(request, 'editor');
     const ctx = toB2bContext(request);
     const body = CreateBody.parse(request.body);
 
-    const invoice = await withTenant(ctx, async (tx) => {
-      // Verify the account belongs to this tenant.
-      const account = await tx.b2BAccount.findFirst({
-        where: { id: body.accountId, tenantId: ctx.tenantId, deletedAt: null },
-        select: { id: true, creditLimit: true, creditUsed: true },
-      });
-      if (!account) throw notFound('B2B account not found');
-
-      const inv = await tx.b2bInvoice.create({
-        data: {
-          tenantId: ctx.tenantId,
-          accountId: body.accountId,
-          orderId: body.orderId,
-          invoiceNumber: body.invoiceNumber,
-          amountCents: body.amountCents,
-          dueAt: new Date(body.dueAt),
-          notes: body.notes,
-        },
-      });
-
-      // Sync credit_used on the account.
-      await tx.$executeRaw`SELECT sync_b2b_credit_used(${body.accountId}::uuid)`;
-
-      return inv;
+    const doc = await b2bArService.createOrderArDocument(ctx, {
+      b2bAccountId: body.accountId,
+      orderId: body.orderId ?? null,
+      amount: body.amountCents / 100,
+      dueAt: new Date(body.dueAt),
+      numberOverride: body.invoiceNumber,
+      notes: body.notes ?? null,
+      description: 'Invoice',
     });
+    const invoice = await loadInvoice(ctx, doc.id);
 
     await publishEvent(
       publisher,
@@ -139,7 +187,7 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
       ctx.tenantId,
       ctx.userId,
       {
-        invoiceId: invoice.id,
+        invoiceId: doc.id,
         accountId: body.accountId,
         amountCents: body.amountCents,
         dueAt: body.dueAt,
@@ -157,21 +205,12 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
     const ctx = toB2bContext(request);
     const { id } = PathId.parse(request.params);
 
-    const invoice = await withTenant(ctx, (tx) =>
-      tx.b2bInvoice.findFirst({
-        where: { id, tenantId: ctx.tenantId },
-        include: {
-          account: { select: { id: true, companyName: true, paymentTerms: true } },
-          paidBy: { select: { id: true, name: true, email: true } },
-        },
-      })
-    );
-
+    const invoice = await loadInvoice(ctx, id);
     if (!invoice) throw notFound('Invoice not found');
     return reply.send(ok(invoice));
   });
 
-  // ── Update (notes/due date, unpaid only) ──────────────────────────────────
+  // ── Update (notes / due date, open only) ───────────────────────────────────
   app.patch('/v1/b2b/invoices/:id', async (request, reply) => {
     await requireB2bModule(request);
     requireRole(request, 'editor');
@@ -179,26 +218,13 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     const body = UpdateBody.parse(request.body);
 
-    const updated = await withTenant(ctx, async (tx) => {
-      const existing = await tx.b2bInvoice.findFirst({
-        where: { id, tenantId: ctx.tenantId },
-        select: { id: true, status: true },
-      });
-      if (!existing) throw notFound('Invoice not found');
-      if (existing.status === 'paid' || existing.status === 'written_off') {
-        throw badRequest(`Cannot edit a ${existing.status} invoice`);
-      }
-
-      return tx.b2bInvoice.update({
-        where: { id },
-        data: {
-          ...(body.dueAt !== undefined ? { dueAt: new Date(body.dueAt) } : {}),
-          ...(body.notes !== undefined ? { notes: body.notes } : {}),
-        },
-      });
+    await b2bArService.updateArDocument(ctx, id, {
+      ...(body.dueAt !== undefined ? { dueAt: new Date(body.dueAt) } : {}),
+      ...(body.notes !== undefined ? { notes: body.notes } : {}),
     });
 
-    return reply.send(ok(updated));
+    const invoice = await loadInvoice(ctx, id);
+    return reply.send(ok(invoice));
   });
 
   // ── Mark paid ─────────────────────────────────────────────────────────────
@@ -209,55 +235,52 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     const body = MarkPaidBody.parse(request.body);
 
-    const invoice = await withTenant(ctx, async (tx) => {
-      const existing = await tx.b2bInvoice.findFirst({
-        where: { id, tenantId: ctx.tenantId },
-        select: { id: true, status: true, accountId: true, amountCents: true },
-      });
-      if (!existing) throw notFound('Invoice not found');
-      if (existing.status === 'paid') throw badRequest('Invoice is already paid');
-      if (existing.status === 'written_off') throw badRequest('Cannot pay a written-off invoice');
+    // Snapshot the open balance, then record a single payment that clears it.
+    const before = await withTenant(ctx, (tx) =>
+      tx.billingDocument.findFirst({
+        where: { id, b2bAccountId: { not: null }, deletedAt: null },
+        select: { id: true, status: true, balance: true, b2bAccountId: true, notes: true },
+      })
+    );
+    if (!before) throw notFound('Invoice not found');
+    if (before.status === 'paid') throw badRequest('Invoice is already paid');
+    if (before.status === 'void') throw badRequest('Cannot pay a voided invoice');
 
-      const paid = await tx.b2bInvoice.update({
-        where: { id },
-        data: {
-          status: 'paid',
-          paidAt: new Date(),
-          paidByUserId: ctx.userId,
-          paidMethod: body.paidMethod,
-          ...(body.notes !== undefined ? { notes: body.notes } : {}),
-        },
+    const balance = Number(before.balance);
+    if (balance > 0) {
+      await billingPaymentService.recordPayment(ctx, id, {
+        kind: 'payment',
+        method: PAID_METHOD_MAP[body.paidMethod] ?? 'other',
+        amount: balance,
+        ...(body.notes !== undefined ? { note: body.notes } : {}),
       });
+    }
 
-      // Recompute credit_used after payment.
-      await tx.$executeRaw`SELECT sync_b2b_credit_used(${existing.accountId}::uuid)`;
-
-      // Lift credit_hold if all invoices are now paid.
-      const unpaidCount = await tx.b2bInvoice.count({
-        where: {
-          accountId: existing.accountId,
-          tenantId: ctx.tenantId,
-          status: { in: ['unpaid', 'overdue'] },
-        },
-      });
-      if (unpaidCount === 0) {
-        await tx.b2BAccount.updateMany({
+    // Lift credit_hold if the account now has no open receivables.
+    const liftAccountId = before.b2bAccountId;
+    if (liftAccountId) {
+      await withTenant(ctx, async (tx) => {
+        const open = await tx.billingDocument.count({
           where: {
-            id: existing.accountId,
-            tenantId: ctx.tenantId,
-            status: 'credit_hold',
+            b2bAccountId: liftAccountId,
+            deletedAt: null,
+            status: { in: ['unpaid', 'partial', 'overdue'] },
           },
-          data: { status: 'active' },
         });
-      }
+        if (open === 0) {
+          await tx.b2BAccount.updateMany({
+            where: { id: liftAccountId, status: 'credit_hold' },
+            data: { status: 'active' },
+          });
+        }
+      });
+    }
 
-      return paid;
-    });
-
+    const invoice = await loadInvoice(ctx, id);
     return reply.send(ok(invoice));
   });
 
-  // ── Write off ─────────────────────────────────────────────────────────────
+  // ── Write off (void the receivable) ────────────────────────────────────────
   app.post('/v1/b2b/invoices/:id/write-off', async (request, reply) => {
     await requireB2bModule(request);
     requireRole(request, 'admin');
@@ -265,30 +288,39 @@ const b2bInvoiceRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     const body = WriteOffBody.parse(request.body);
 
-    const invoice = await withTenant(ctx, async (tx) => {
-      const existing = await tx.b2bInvoice.findFirst({
-        where: { id, tenantId: ctx.tenantId },
-        select: { id: true, status: true, accountId: true },
-      });
-      if (!existing) throw notFound('Invoice not found');
-      if (existing.status === 'paid') throw badRequest('Cannot write off a paid invoice');
-      if (existing.status === 'written_off') throw badRequest('Invoice is already written off');
+    const before = await withTenant(ctx, (tx) =>
+      tx.billingDocument.findFirst({
+        where: { id, b2bAccountId: { not: null }, deletedAt: null },
+        select: { id: true, status: true },
+      })
+    );
+    if (!before) throw notFound('Invoice not found');
+    if (before.status === 'paid') throw badRequest('Cannot write off a paid invoice');
+    if (before.status === 'void') throw badRequest('Invoice is already written off');
 
-      const written = await tx.b2bInvoice.update({
-        where: { id },
-        data: {
-          status: 'written_off',
-          ...(body.notes !== undefined ? { notes: body.notes } : {}),
-        },
-      });
+    await b2bArService.voidArDocument(
+      ctx,
+      id,
+      body.notes !== undefined ? { note: body.notes } : {}
+    );
 
-      await tx.$executeRaw`SELECT sync_b2b_credit_used(${existing.accountId}::uuid)`;
-
-      return written;
-    });
-
+    const invoice = await loadInvoice(ctx, id);
     return reply.send(ok(invoice));
   });
+
+  // Load + project one invoice, scoped to B2B-AR documents.
+  async function loadInvoice(
+    ctx: ReturnType<typeof toB2bContext>,
+    id: string
+  ): Promise<ReturnType<typeof mapInvoice> | null> {
+    const doc = await withTenant(ctx, (tx) =>
+      tx.billingDocument.findFirst({
+        where: { id, b2bAccountId: { not: null }, deletedAt: null },
+        include: INVOICE_INCLUDE,
+      })
+    );
+    return doc ? mapInvoice(doc) : null;
+  }
 };
 
 export default b2bInvoiceRoutes;

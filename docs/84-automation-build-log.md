@@ -600,7 +600,11 @@ change). New `@sparx/automation-schemas` dashboard dep (canonical types + `trigg
   remove_tag/add_note/update_field/create_task/update_deal_stage/send_internal/escalate_overdue) +
   **raw-JSON config mode** for ID-bearing/union configs (`email.send_campaign`) AND a universal escape
   hatch toggle on every action. Honest (per-action config is validated at DISPATCH, not at create — the
-  client can't type-check it) and lossless. Actions reorder (up/down) + remove.
+  client can't type-check it) and lossless. The list is **drag-to-reorder** (dnd-kit): the WHOLE CARD is
+  the drag surface (user preference — more direct than a handle) via a guarded `CardPointerSensor` that
+  ignores pointer-downs on a form control, so dragging the chrome reorders while inputs/selects stay
+  usable; a `KeyboardSensor` keeps it reorderable without a mouse, and stable per-action ids keep each
+  card's JSON-mode/buffer state with the ITEM across a drag.
 - ☑ **Tier model surfaced exactly as the service enforces it** — a LOCKED (platform-managed) rule shows
   only **"Duplicate to edit"** (clone → user-origin editable copy) + View runs; no edit/pause/delete.
   The `/[id]/edit` route bounces a locked rule to its detail; the `AUTOMATION_LOCKED` (409) maps to the

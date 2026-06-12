@@ -2,8 +2,11 @@ import { describe, expect, it } from 'vitest';
 
 import {
   Condition,
+  ConditionGroup,
   CreateAutomationInput,
+  MAX_CONDITION_DEPTH,
   Trigger,
+  isConditionGroup,
   triggerFromColumns,
   triggerToColumns,
 } from '../src/index';
@@ -81,6 +84,55 @@ describe('automation rule document schemas', () => {
         name: 'Bad action',
         trigger: { kind: 'event', eventType: 'order.placed' },
         actions: [{ type: 'commerce.delete_everything', config: {} }],
+      })
+    ).toThrow();
+  });
+
+  it('parses a nested condition group (mixed precedence) and flags the sub-group', () => {
+    const parsed = ConditionGroup.parse({
+      logic: 'AND',
+      conditions: [
+        { field: 'customer.type', operator: 'eq', value: 'fleet' },
+        {
+          logic: 'OR',
+          conditions: [
+            { field: 'customer.totalSpent', operator: 'gt', value: 5000 },
+            { field: 'customer.daysSinceLastOrder', operator: 'gte', value: 45 },
+          ],
+        },
+      ],
+    });
+    expect(isConditionGroup(parsed.conditions[0])).toBe(false); // leaf
+    expect(isConditionGroup(parsed.conditions[1])).toBe(true); // sub-group
+  });
+
+  it('a flat (all-leaf) group still parses unchanged — backward compatible', () => {
+    const parsed = ConditionGroup.parse({
+      logic: 'OR',
+      conditions: [{ field: 'order.total', operator: 'gte', value: 100 }],
+    });
+    expect(parsed.logic).toBe('OR');
+    expect(isConditionGroup(parsed.conditions[0])).toBe(false);
+  });
+
+  it(`rejects nesting deeper than ${MAX_CONDITION_DEPTH} levels`, () => {
+    // root → group → group → group (4 levels) exceeds the bound.
+    expect(() =>
+      ConditionGroup.parse({
+        logic: 'AND',
+        conditions: [
+          {
+            logic: 'AND',
+            conditions: [
+              {
+                logic: 'AND',
+                conditions: [
+                  { logic: 'AND', conditions: [{ field: 'a', operator: 'is_set' }] },
+                ],
+              },
+            ],
+          },
+        ],
       })
     ).toThrow();
   });

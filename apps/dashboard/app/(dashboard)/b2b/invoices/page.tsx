@@ -31,6 +31,7 @@ interface InvoiceRow {
   invoiceNumber: string;
   status: string;
   amountCents: number;
+  balanceCents: number;
   overdueDays: number;
   dueAt: string;
   paidAt: string | null;
@@ -40,17 +41,21 @@ interface InvoiceRow {
 
 const STATUS_VARIANT: Record<string, 'outline' | 'warning' | 'success' | 'danger'> = {
   unpaid: 'outline',
+  partial: 'warning',
   overdue: 'danger',
   paid: 'success',
-  written_off: 'warning',
+  void: 'outline',
 };
 
 const STATUS_OPTIONS = [
   { value: 'unpaid', label: 'Unpaid' },
+  { value: 'partial', label: 'Partially paid' },
   { value: 'overdue', label: 'Overdue' },
   { value: 'paid', label: 'Paid' },
-  { value: 'written_off', label: 'Written off' },
+  { value: 'void', label: 'Voided' },
 ];
+
+const OPEN_STATUSES = ['unpaid', 'partial', 'overdue'];
 
 function stringParam(v: string | string[] | undefined): string | undefined {
   if (Array.isArray(v)) return v[0];
@@ -77,8 +82,8 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
 
   const overdueCount = invoices.filter((i) => i.status === 'overdue').length;
   const totalOwed = invoices
-    .filter((i) => ['unpaid', 'overdue'].includes(i.status))
-    .reduce((sum, i) => sum + i.amountCents, 0);
+    .filter((i) => OPEN_STATUSES.includes(i.status))
+    .reduce((sum, i) => sum + i.balanceCents, 0);
 
   return (
     <Container size="full">

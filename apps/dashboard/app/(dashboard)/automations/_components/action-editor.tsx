@@ -2,6 +2,13 @@
 
 // Action editor — the ordered list of effects an automation runs (docs/81 §5.4).
 //
+// Actions run as an ORDERED sequence (with durable waits between steps), so the
+// list is drag-to-reorder (dnd-kit). The WHOLE CARD is the drag surface (more
+// direct than a handle) — a guarded pointer sensor ignores pointer-downs that
+// land on a form control (input / textarea / select / button / link), so dragging
+// the card chrome reorders while the fields inside stay fully usable (focus, text
+// select, dropdowns). A keyboard sensor keeps it reorderable without a mouse.
+//
 // Each action is a typed `type` + an opaque `config` bag; per-action config is
 // validated at DISPATCH by the executing service, not here. So the editor offers:
 //   • a type picker limited to actions with a registered executor whose module is
@@ -15,6 +22,22 @@
 
 import * as React from 'react';
 import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import {
   Button,
   Input,
   Label,
@@ -25,7 +48,7 @@ import {
   SelectValue,
   Textarea,
 } from '@sparx/ui';
-import { ArrowDown, ArrowUp, Code2, Plus, Trash2 } from 'lucide-react';
+import { Code2, GripVertical, Plus, Trash2 } from 'lucide-react';
 import type { Action } from '@sparx/automation-schemas';
 import {
   actionDef,
@@ -38,6 +61,50 @@ import {
 
 type Config = Record<string, unknown>;
 
+// Module-level counter for stable per-action ids (dnd-kit needs a stable id per
+// item, and the Action schema carries none). Uniqueness only matters within one
+// list; a monotonic counter is enough and never collides across reorders.
+let ACTION_UID = 0;
+const newActionId = () => `act-${ACTION_UID++}`;
+
+// Whole-card dragging means the pointer-down can land on a form control inside
+// the card. Walk up from the event target to the card root: if we pass any
+// interactive element first, DON'T start a drag — let the control handle it.
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  let el = target as HTMLElement | null;
+  while (el) {
+    if (el.dataset?.actionCard === 'true') return false; // reached card chrome
+    const tag = el.tagName;
+    if (
+      tag === 'INPUT' ||
+      tag === 'TEXTAREA' ||
+      tag === 'SELECT' ||
+      tag === 'BUTTON' ||
+      tag === 'A' ||
+      tag === 'OPTION' ||
+      el.isContentEditable ||
+      el.getAttribute('role') === 'combobox'
+    ) {
+      return true;
+    }
+    el = el.parentElement;
+  }
+  return false;
+}
+
+// PointerSensor that starts a drag from the card chrome but never from a control.
+class CardPointerSensor extends PointerSensor {
+  static override activators = [
+    {
+      eventName: 'onPointerDown' as const,
+      handler: ({ nativeEvent: event }: React.PointerEvent): boolean => {
+        if (!event.isPrimary || event.button !== 0) return false;
+        return !isInteractiveTarget(event.target);
+      },
+    },
+  ];
+}
+
 function stringifyJson(value: unknown): string {
   if (value === undefined) return '';
   try {
@@ -49,7 +116,7 @@ function stringifyJson(value: unknown): string {
 
 /** A textarea whose buffer is local; commits the parsed value on every valid
  *  edit, shows an error otherwise. Re-initialised from props by remounting via a
- *  `key` (callers key it on action index + type/field) — no prop-sync effect. */
+ *  `key` (callers key it on the action id + type/field) — no prop-sync effect. */
 function JsonField({
   value,
   onChange,
@@ -206,22 +273,29 @@ function FieldInput({
 }
 
 function ActionCard({
+  id,
   action,
   index,
-  total,
   enabledModules,
   onChange,
   onRemove,
-  onMove,
 }: {
+  id: string;
   action: Action;
   index: number;
-  total: number;
   enabledModules: readonly string[];
   onChange: (next: Action) => void;
   onRemove: () => void;
-  onMove: (dir: -1 | 1) => void;
 }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : undefined,
+  };
+
   const def = actionDef(action.type);
   const [jsonMode, setJsonMode] = React.useState(def?.mode === 'json');
 
@@ -245,9 +319,20 @@ function ActionCard({
   const showJson = jsonMode || forcedJson;
 
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-[var(--color-border-default)] p-3">
+    <div
+      ref={setNodeRef}
+      style={style}
+      data-action-card="true"
+      {...attributes}
+      {...listeners}
+      aria-label={`Action ${index + 1} — drag to reorder`}
+      className="flex cursor-grab flex-col gap-3 rounded-md border border-[var(--color-border-default)] p-3 focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none active:cursor-grabbing"
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
+          <span className="text-[var(--color-text-tertiary)]" aria-hidden="true">
+            <GripVertical className="h-4 w-4" />
+          </span>
           <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--color-bg-subtle)] text-xs font-medium">
             {index + 1}
           </span>
@@ -265,26 +350,6 @@ function ActionCard({
           </Select>
         </div>
         <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => onMove(-1)}
-            disabled={index === 0}
-            aria-label="Move up"
-          >
-            <ArrowUp className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => onMove(1)}
-            disabled={index === total - 1}
-            aria-label="Move down"
-          >
-            <ArrowDown className="h-3.5 w-3.5" />
-          </Button>
           {!forcedJson && (
             <Button
               type="button"
@@ -323,7 +388,7 @@ function ActionCard({
         <div className="flex flex-col gap-1">
           <Label>Config (JSON)</Label>
           <JsonField
-            key={`${index}:${action.type}:full`}
+            key={`${id}:${action.type}:full`}
             value={config}
             rows={5}
             onChange={(v) => onChange({ ...action, config: (v ?? {}) as Config })}
@@ -344,7 +409,7 @@ function ActionCard({
                 field={field}
                 config={config}
                 onConfig={(next) => onChange({ ...action, config: next })}
-                fieldKey={`${index}:${action.type}:${field.key}`}
+                fieldKey={`${id}:${action.type}:${field.key}`}
               />
               {field.help && (
                 <span className="text-xs text-[var(--color-text-tertiary)]">{field.help}</span>
@@ -364,9 +429,29 @@ interface Props {
 }
 
 export function ActionEditor({ value, onChange, enabledModules }: Props) {
+  // Stable ids parallel to `value`, owned here and kept in lockstep with every
+  // add/remove/reorder so dnd-kit's `items` + React keys track the ITEM (not the
+  // index) — so a card's JSON-mode/buffer state follows its action across a drag.
+  const [ids, setIds] = React.useState<string[]>(() => value.map(newActionId));
+  React.useEffect(() => {
+    // Safety net: reconcile only if some external replace changed the length.
+    setIds((cur) =>
+      cur.length === value.length ? cur : value.map((_, i) => cur[i] ?? newActionId())
+    );
+  }, [value]);
+
+  const sensors = useSensors(
+    useSensor(CardPointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+  // Stable DndContext id so dnd-kit's a11y description ids match across SSR +
+  // client (its counter fallback otherwise trips a hydration warning).
+  const dndId = React.useId();
+
   function addAction() {
     const first = availableActions(enabledModules)[0];
     const type = first?.type ?? 'platform.stop';
+    setIds((cur) => [...cur, newActionId()]);
     onChange([...value, { type, config: first?.jsonTemplate ?? {} }]);
   }
 
@@ -375,17 +460,18 @@ export function ActionEditor({ value, onChange, enabledModules }: Props) {
   }
 
   function removeAction(index: number) {
+    setIds((cur) => cur.filter((_, i) => i !== index));
     onChange(value.filter((_, i) => i !== index));
   }
 
-  function moveAction(index: number, dir: -1 | 1) {
-    const target = index + dir;
-    if (target < 0 || target >= value.length) return;
-    const next = [...value];
-    const [item] = next.splice(index, 1);
-    if (!item) return;
-    next.splice(target, 0, item);
-    onChange(next);
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIdx = ids.indexOf(String(active.id));
+    const newIdx = ids.indexOf(String(over.id));
+    if (oldIdx < 0 || newIdx < 0) return;
+    setIds((cur) => arrayMove(cur, oldIdx, newIdx));
+    onChange(arrayMove(value, oldIdx, newIdx));
   }
 
   return (
@@ -395,20 +481,23 @@ export function ActionEditor({ value, onChange, enabledModules }: Props) {
           No actions yet — add at least one effect to run.
         </p>
       ) : (
-        <div className="flex flex-col gap-3">
-          {value.map((a, i) => (
-            <ActionCard
-              key={i}
-              action={a}
-              index={i}
-              total={value.length}
-              enabledModules={enabledModules}
-              onChange={(next) => updateAction(i, next)}
-              onRemove={() => removeAction(i)}
-              onMove={(dir) => moveAction(i, dir)}
-            />
-          ))}
-        </div>
+        <DndContext id={dndId} sensors={sensors} onDragEnd={handleDragEnd}>
+          <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+            <div className="flex flex-col gap-3">
+              {value.map((a, i) => (
+                <ActionCard
+                  key={ids[i] ?? i}
+                  id={ids[i] ?? `fallback-${i}`}
+                  action={a}
+                  index={i}
+                  enabledModules={enabledModules}
+                  onChange={(next) => updateAction(i, next)}
+                  onRemove={() => removeAction(i)}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
       <div>
         <Button

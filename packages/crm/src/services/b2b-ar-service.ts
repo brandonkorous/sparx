@@ -21,16 +21,13 @@
 // authority — it derives totals/balance/status AND re-syncs the account's
 // `credit_used`, so every AR mutation keeps credit utilisation consistent.
 
-import {
-  NET_TERMS_AR_WORKFLOW,
-  NET_TERMS_AR_WORKFLOW_SLUG,
-} from '@sparx/crm-schemas/builtins';
+import { NET_TERMS_AR_WORKFLOW, NET_TERMS_AR_WORKFLOW_SLUG } from '@sparx/crm-schemas/builtins';
 import { withTenant } from '@sparx/db';
 import type { DocumentStage, Prisma } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
-import { CrmNotFoundError } from '../errors';
+import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { recomputeTotals, type DocumentWithLines } from './billing-document-service';
 import { buildSnapshotPayload } from './billing-snapshot';
 import { formatBillingNumber, nextBillingDocumentSeq } from './record-numbers';
@@ -161,10 +158,10 @@ export async function createOrderArDocument(
         dueAt: input.dueAt,
         finalizedAt: now,
         notes: input.notes ?? null,
-        billTo: input.billTo ?? ({ name: account.companyName } as Prisma.InputJsonValue),
-        metadata: (input.orderId
+        billTo: input.billTo ?? { name: account.companyName },
+        metadata: input.orderId
           ? { source: 'b2b_order', orderId: input.orderId }
-          : { source: 'b2b_manual' }) as Prisma.InputJsonValue,
+          : { source: 'b2b_manual' },
       },
     });
 
@@ -226,6 +223,47 @@ export async function createOrderArDocument(
 
     return tx.billingDocument.findUniqueOrThrow({
       where: { id: doc.id },
+      include: { lines: { orderBy: { sortOrder: 'asc' } } },
+    });
+  });
+}
+
+/** Edit an OPEN net-terms AR document's due date / notes (the legacy unpaid-only
+ *  PATCH). The order-derived document sits on a locked stage, so this bypasses the
+ *  authoring header-update lock — but only for the two safe fields, and never on a
+ *  paid/void document. `recomputeTotals` re-derives the overdue status from the new
+ *  due date and re-syncs credit. */
+export async function updateArDocument(
+  ctx: ServiceContext,
+  documentId: string,
+  patch: { dueAt?: Date; notes?: string }
+): Promise<DocumentWithLines> {
+  return withTenant(ctx, async (tx) => {
+    const before = await tx.billingDocument.findUnique({ where: { id: documentId } });
+    if (before?.deletedAt !== null) throw new CrmNotFoundError('BillingDocument', documentId);
+    if (before.status === 'paid' || before.status === 'void') {
+      throw new CrmValidationError(`Cannot edit a ${before.status} invoice.`);
+    }
+    await tx.billingDocument.update({
+      where: { id: documentId },
+      data: {
+        ...(patch.dueAt !== undefined ? { dueAt: patch.dueAt } : {}),
+        ...(patch.notes !== undefined ? { notes: patch.notes } : {}),
+      },
+    });
+    await recomputeTotals(tx, ctx.tenantId, documentId);
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'invoicing.b2b_ar.updated',
+      entityType: 'BillingDocument',
+      entityId: documentId,
+      diff: null,
+    });
+    return tx.billingDocument.findUniqueOrThrow({
+      where: { id: documentId },
       include: { lines: { orderBy: { sortOrder: 'asc' } } },
     });
   });

@@ -30,9 +30,10 @@ interface InvoiceDetail {
 
 const STATUS_VARIANT: Record<string, 'outline' | 'warning' | 'success' | 'danger'> = {
   unpaid: 'outline',
+  partial: 'warning',
   overdue: 'danger',
   paid: 'success',
-  written_off: 'warning',
+  void: 'outline',
 };
 
 function formatCents(cents: number): string {
@@ -44,7 +45,8 @@ export default async function B2bInvoiceDetailPage({ params }: PageProps) {
   const invoice = await api.get<InvoiceDetail>(`/v1/b2b/invoices/${id}`);
   if (!invoice) notFound();
 
-  const isActionable = invoice.status === 'unpaid' || invoice.status === 'overdue';
+  const isActionable =
+    invoice.status === 'unpaid' || invoice.status === 'overdue' || invoice.status === 'partial';
 
   return (
     <Container size="md">

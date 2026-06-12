@@ -318,8 +318,11 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
         },
       });
 
-      // If this was a net-terms B2B order, create the invoice now (was deferred
-      // during checkout pending approval).
+      // If this was a net-terms B2B order, create the AR document now (was
+      // deferred during checkout pending approval). The receivable is a
+      // BillingDocument on the system `net-terms-ar` workflow (docs/87 §15), not a
+      // `b2b_invoices` row; createOrderArDocument composes into this tx and
+      // re-syncs credit_used.
       const meta = (existing.metadata ?? {}) as Record<string, unknown>;
       const paymentTermsRequested =
         typeof meta.paymentTermsRequested === 'string' ? meta.paymentTermsRequested : null;
@@ -332,21 +335,18 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
         const dueDays = dueDaysMatch?.[1] ? parseInt(dueDaysMatch[1], 10) : 30;
         const dueAt = new Date();
         dueAt.setDate(dueAt.getDate() + dueDays);
-        const invoiceCount = await tx.b2bInvoice.count({ where: { tenantId: ctx.tenantId } });
-        const invoiceNumber = `INV-${(invoiceCount + 1).toString().padStart(6, '0')}`;
-        const totalCents = Math.round(Number(existing.total) * 100);
-        const invoice = await tx.b2bInvoice.create({
-          data: {
-            tenantId: ctx.tenantId,
-            accountId,
+        const arDoc = await b2bArService.createOrderArDocument(
+          { tenantId: ctx.tenantId, userId: ctx.userId ?? undefined, tx },
+          {
+            b2bAccountId: accountId,
             orderId,
-            invoiceNumber,
-            amountCents: totalCents,
+            amount: Number(existing.total),
+            currency: existing.currency,
             dueAt,
-          },
-        });
-        await tx.$executeRaw`SELECT sync_b2b_credit_used(${accountId}::uuid)`;
-        b2bInvoiceId = invoice.id;
+            description: `Order ${existing.orderNumber}`,
+          }
+        );
+        b2bInvoiceId = arDoc.id;
       }
 
       return { order: updated, b2bInvoiceId, accountId };

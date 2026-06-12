@@ -1,6 +1,6 @@
 # Sparx Platform — Invoicing & Billing Documents
 
-**Version:** 0.1 (design — approved direction, not yet scheduled)
+**Version:** 0.2 (built — Phases 1–8 shipped)
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-11
 
@@ -330,17 +330,28 @@ AR-header responsibility**, so the two converge.
 `BillingDocument` handles authored documents. The `b2b-escalation-service` + credit sync read open
 balances from **both** during the overlap.
 
-**Migrate (Phase 8):** retire `B2bInvoice` into `BillingDocument`:
+**Migrated (Phase 8, shipped 2026-06-11):** `B2bInvoice` retired into `BillingDocument`.
 
-1. Seed a built-in **"Net-terms AR"** workflow (`Invoice → Paid`, `final`+net-terms semantics).
-2. Backfill each `B2bInvoice` → a `BillingDocument` on that workflow (one synthetic line from the
-   order, or a lines backfill once `OrderItem` carries cost/markup), preserving `invoice_number`,
-   status, `dueAt`, payments. RLS-safe per-tenant backfill loop ([db CLAUDE.md]).
-3. Repoint the checkout auto-invoice + approval invoice creation at `BillingDocument`.
-4. Point credit-sync + escalation solely at `BillingDocument`; drop the dual-read.
-5. Keep `b2b_invoices` read-only for one release, then remove (expand/contract).
-
-This is its own phase with its own migration discipline — flagged, not rushed.
+1. A **system `net-terms-ar` workflow** (`Invoice → Paid`; the Invoice stage is `final` + numbered +
+   locked + snapshot-on-enter) is the convergence target. It is NOT a user-facing default seeded on
+   `invoicing` activation — it is **lazily ensured by the B2B flow itself** (`b2bArService`), because
+   `billing_documents` is a **shared AR substrate** the way `customers` is shared across CRM /
+   Commerce / B2B. The order-derived AR path is therefore gated on the **`b2b`** module, not
+   `invoicing`; the `invoicing` module gates only the authoring _surface_ (dashboard editor, workflow
+   / template CRUD, MCP authoring tools).
+2. A backfill migration (`20260807000000_b2b_invoices_to_billing_documents`) maps each `B2bInvoice` →
+   a finalised `BillingDocument` (one synthetic line carrying the amount; a payment row when paid;
+   `written_off` → `void`), preserving `invoice_number`, status, `dueAt` and payments via an RLS-safe
+   per-tenant `set_config` loop ([db CLAUDE.md]). Idempotent (tagged `metadata.b2bInvoiceId`).
+3. Checkout (`commerce/checkout-service`) + approval (`api-rest b2b/approval`) now call
+   `b2bArService.createOrderArDocument`, composing into the order transaction.
+4. `sync_b2b_credit_used()` was rewritten to sum **open `billing_documents` balances**, and credit
+   re-syncs through the billing money authority (`recomputeTotals`) on every AR mutation. Escalation
+   + the automation scanner read AR solely from `billing_documents` (the dual-read is gone).
+5. The REST `/v1/b2b/invoices` routes, dashboard `/b2b/invoices` pages, and the customer portal are
+   backed by `billing_documents` (a thin "invoice" projection), with the now billing-native status
+   vocabulary `unpaid | partial | paid | overdue | void` (`void` replaces `written_off`).
+6. **`b2b_invoices` is kept read-only this release; a later contract migration drops the table.**
 
 ---
 
@@ -359,6 +370,11 @@ This is its own phase with its own migration discipline — flagged, not rushed.
 
 Phase 1 is shippable on its own (config surface, no documents yet) — consistent with "deploy early,
 deploy small."
+
+> **Status (2026-06-11): Phases 1–8 are all shipped.** The remaining work is the contract half of
+> the §15 migration (drop the read-only `b2b_invoices` table next release) plus the deferred
+> follow-ons (visual template-builder canvas; markup-rule picker in the line grid; `invoicing` in
+> `ONBOARDING_MODULES` + the marketing pricing switchboard).
 
 ---
 

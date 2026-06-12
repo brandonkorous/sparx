@@ -69,9 +69,17 @@ export function StepDomain({
     }
   }
 
-  const available = suggestions.filter((s) => s.available);
-  const taken = suggestions.filter((s) => !s.available);
-  const [featured, ...alternatives] = available;
+  // The exact domain the query implies leads the list. If it's available it's the
+  // hero; if it's taken we say so plainly (so a near-miss look-alike never reads as
+  // "your domain is free") and feature the best available alternative instead.
+  const exact = suggestions.find((s) => s.exact);
+  const exactTaken = exact && !exact.available ? exact : null;
+  const others = suggestions.filter((s) => !s.exact);
+  const availableOthers = others.filter((s) => s.available);
+  const takenOthers = others.filter((s) => !s.available);
+  const hero: DomainSuggestion | null =
+    exact && exact.available ? exact : (availableOthers[0] ?? null);
+  const restAvailable = exact && exact.available ? availableOthers : availableOthers.slice(1);
 
   return (
     <div className="max-w-xl">
@@ -100,15 +108,16 @@ export function StepDomain({
 
       {!searching && suggestions.length > 0 && (
         <div className="mt-4 flex flex-col gap-2.5">
-          {featured && (
+          {exactTaken && <ExactTakenRow domain={exactTaken.domain} />}
+          {hero && (
             <DomainRow
-              suggestion={featured}
+              suggestion={hero}
               featured
               disabled={!primaryProperty}
-              onBuy={() => setPurchaseTarget(featured)}
+              onBuy={() => setPurchaseTarget(hero)}
             />
           )}
-          {alternatives.map((s) => (
+          {restAvailable.map((s) => (
             <DomainRow
               key={s.domain}
               suggestion={s}
@@ -116,7 +125,7 @@ export function StepDomain({
               onBuy={() => setPurchaseTarget(s)}
             />
           ))}
-          {taken.map((s) => (
+          {takenOthers.map((s) => (
             <DomainRow key={s.domain} suggestion={s} disabled onBuy={() => undefined} />
           ))}
         </div>
@@ -226,6 +235,26 @@ function DomainRow({
           </Button>
         </div>
       )}
+    </div>
+  );
+}
+
+// The exact domain the tenant searched, when it's already registered. Shown first
+// so a near-miss look-alike below is never mistaken for "your domain is available."
+function ExactTakenRow({ domain }: { domain: string }) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-4 py-3.5">
+      <div className="min-w-0">
+        <Text weight="medium" className="truncate">
+          {domain}
+        </Text>
+        <Text size="xs" variant="muted" className="mt-0.5">
+          Already registered — here are close ones you can grab.
+        </Text>
+      </div>
+      <Badge color="neutral" variant="soft" size="sm">
+        Taken
+      </Badge>
     </div>
   );
 }

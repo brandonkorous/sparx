@@ -52,7 +52,7 @@ async function postMcp(
 ): Promise<{ statusCode: number; body: string }> {
   const res = await app.inject({
     method: 'POST',
-    url: '/v1/mcp',
+    url: '/v1',
     headers: {
       authorization: `Bearer ${token}`,
       'content-type': 'application/json',
@@ -93,10 +93,10 @@ describe('mcp-server smoke', () => {
     expect(res.json()).toMatchObject({ status: 'ok' });
   });
 
-  it('POST /v1/mcp without auth returns 401', async () => {
+  it('POST /v1 without auth returns 401', async () => {
     const res = await app.inject({
       method: 'POST',
-      url: '/v1/mcp',
+      url: '/v1',
       headers: {
         'content-type': 'application/json',
         accept: 'application/json, text/event-stream',

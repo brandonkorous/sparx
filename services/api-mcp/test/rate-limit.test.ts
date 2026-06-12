@@ -57,7 +57,7 @@ async function postMcp(
 ): Promise<{ statusCode: number; body: string; headers: Record<string, unknown> }> {
   const res = await app.inject({
     method: 'POST',
-    url: '/v1/mcp',
+    url: '/v1',
     headers: {
       authorization: `Bearer ${token}`,
       'content-type': 'application/json',

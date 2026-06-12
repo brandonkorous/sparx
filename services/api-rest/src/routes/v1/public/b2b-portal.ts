@@ -132,11 +132,13 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
             discountPercent: true,
           },
         }),
-        tx.b2bInvoice.groupBy({
+        // Net-terms AR now lives on billing_documents (docs/87 §15). Summarise the
+        // account's receivables by status, summing the OPEN balance per bucket.
+        tx.billingDocument.groupBy({
           by: ['status'],
-          where: { accountId },
+          where: { b2bAccountId: accountId, deletedAt: null },
           _count: { id: true },
-          _sum: { amountCents: true },
+          _sum: { balance: true },
         }),
         tx.b2bAccountContact
           .findMany({ where: { accountId, isActive: true }, select: { customerId: true } })
@@ -170,12 +172,13 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
       paidCount: 0,
     };
     for (const g of invoiceCounts) {
-      if (g.status === 'unpaid') {
-        invoiceSummary.unpaidCount = g._count.id;
-        invoiceSummary.unpaidCents = g._sum.amountCents ?? 0;
+      const balanceCents = Math.round(Number(g._sum.balance ?? 0) * 100);
+      if (g.status === 'unpaid' || g.status === 'partial') {
+        invoiceSummary.unpaidCount += g._count.id;
+        invoiceSummary.unpaidCents += balanceCents;
       } else if (g.status === 'overdue') {
         invoiceSummary.overdueCount = g._count.id;
-        invoiceSummary.overdueCents = g._sum.amountCents ?? 0;
+        invoiceSummary.overdueCents = balanceCents;
       } else if (g.status === 'paid') {
         invoiceSummary.paidCount = g._count.id;
       }
@@ -211,19 +214,21 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
     await requireContactRole(ctx, customerId, accountId);
     const q = PagedQuery.parse(request.query);
 
+    const invoiceWhere = { b2bAccountId: accountId, deletedAt: null };
     const { invoiceItems, invoiceTotal } = await withTenant(ctx, async (tx) => {
       const [invoiceItems, invoiceTotal] = await Promise.all([
-        tx.b2bInvoice.findMany({
-          where: { accountId },
+        tx.billingDocument.findMany({
+          where: invoiceWhere,
           select: {
             id: true,
-            invoiceNumber: true,
-            amountCents: true,
+            number: true,
+            total: true,
+            balance: true,
             status: true,
             overdueDays: true,
             dueAt: true,
             paidAt: true,
-            orderId: true,
+            metadata: true,
             notes: true,
             createdAt: true,
           },
@@ -231,7 +236,7 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
           take: q.take,
           skip: q.skip,
         }),
-        tx.b2bInvoice.count({ where: { accountId } }),
+        tx.billingDocument.count({ where: invoiceWhere }),
       ]);
       return { invoiceItems, invoiceTotal };
     });
@@ -240,12 +245,22 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
 
     return ok(
       paged(
-        invoiceItems.map((inv: InvoiceRow) => ({
-          ...inv,
-          dueAt: inv.dueAt.toISOString(),
-          paidAt: inv.paidAt?.toISOString() ?? null,
-          createdAt: inv.createdAt.toISOString(),
-        })),
+        invoiceItems.map((inv: InvoiceRow) => {
+          const meta = (inv.metadata ?? {}) as Record<string, unknown>;
+          return {
+            id: inv.id,
+            invoiceNumber: inv.number ?? '',
+            amountCents: Math.round(Number(inv.total) * 100),
+            balanceCents: Math.round(Number(inv.balance) * 100),
+            status: inv.status,
+            overdueDays: inv.overdueDays,
+            orderId: typeof meta.orderId === 'string' ? meta.orderId : null,
+            notes: inv.notes,
+            dueAt: inv.dueAt ? inv.dueAt.toISOString() : null,
+            paidAt: inv.paidAt ? inv.paidAt.toISOString() : null,
+            createdAt: inv.createdAt.toISOString(),
+          };
+        }),
         { total: invoiceTotal, skip: q.skip, take: q.take }
       )
     );

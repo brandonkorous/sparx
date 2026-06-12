@@ -14,8 +14,7 @@ import type { TxClient } from '@sparx/db';
 
 const ORDER_PREFIX = 'O';
 const QUOTE_PREFIX = 'Q';
-const INVOICE_PREFIX = 'INV';
-const PAD_LENGTH = 6; // O-000001, Q-000001, INV-000001
+const PAD_LENGTH = 6; // O-000001, Q-000001
 
 export async function nextOrderNumber(tx: TxClient, tenantId: string): Promise<string> {
   const count = await tx.order.count({ where: { tenantId } });
@@ -25,11 +24,6 @@ export async function nextOrderNumber(tx: TxClient, tenantId: string): Promise<s
 export async function nextQuoteNumber(tx: TxClient, tenantId: string): Promise<string> {
   const count = await tx.quote.count({ where: { tenantId } });
   return formatNumber(QUOTE_PREFIX, count + 1);
-}
-
-export async function nextInvoiceNumber(tx: TxClient, tenantId: string): Promise<string> {
-  const count = await tx.b2bInvoice.count({ where: { tenantId } });
-  return formatNumber(INVOICE_PREFIX, count + 1);
 }
 
 // ── Invoicing module billing documents (docs/87 §9) ──────────────────────────

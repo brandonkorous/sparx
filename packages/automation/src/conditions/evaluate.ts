@@ -3,15 +3,18 @@
 // Pure: a `ConditionGroup` + a flat resolved-field map → boolean. No DB, no
 // side effects — the engine hydrates the entity first (resolver registry), then
 // this decides "should this rule run for this record." An empty group always
-// passes (no filter). Combines with AND (default) or OR.
+// passes (no filter). Combines with AND (default) or OR, and a child may itself
+// be a nested sub-group (mixed precedence like `A AND (B OR C)`) — recursed here.
 
-import type { Condition, ConditionGroup } from '@sparx/automation-schemas';
+import { type Condition, type ConditionGroup, isConditionGroup } from '@sparx/automation-schemas';
 
 import type { ResolvedFields } from '../engine-types';
 
 export function evaluateConditions(group: ConditionGroup, fields: ResolvedFields): boolean {
   if (group.conditions.length === 0) return true;
-  const verdicts = group.conditions.map((c) => evaluateOne(c, fields));
+  const verdicts = group.conditions.map((node) =>
+    isConditionGroup(node) ? evaluateConditions(node, fields) : evaluateOne(node, fields)
+  );
   return group.logic === 'OR' ? verdicts.some(Boolean) : verdicts.every(Boolean);
 }
 

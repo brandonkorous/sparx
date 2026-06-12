@@ -93,6 +93,23 @@ function markupForTld(tld: string): number {
   return TLD_MARKUP[tld.toLowerCase()] ?? 200;
 }
 
+/** The EXACT domain a search query implies, so we can report its true status.
+ *  `suggest` only returns AVAILABLE look-alikes, so without this a taken exact
+ *  match (gillettdiesel.com) is invisible and a near-miss (gillett-diesel.com)
+ *  reads as "your domain is available". A query with a dot is treated as a
+ *  literal host; otherwise non-alphanumerics are stripped and `.com` appended. */
+function deriveExactHost(query: string): string | null {
+  const q = query.trim().toLowerCase();
+  if (!q) return null;
+  if (q.includes('.')) {
+    const h = normalizeHost(q);
+    return isValidHost(h) && !isZoneHost(h) ? h : null;
+  }
+  const label = q.replace(/[^a-z0-9]+/g, '');
+  if (label.length < 1 || label.length > 63) return null;
+  return `${label}.com`;
+}
+
 // ─── View types ──────────────────────────────────────────────────────────────
 
 interface DomainView {
@@ -271,13 +288,43 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     const { query } = SearchBody.parse(request.body);
     const suggestions = await getDomainSuggestions(query);
-    return ok(
-      suggestions.map((s) => ({
-        ...s,
-        displayPrice: s.price + markupForTld(s.tld),
-        renewalDisplayPrice: s.renewalPrice + markupForTld(s.tld),
-      }))
-    );
+
+    const priced = suggestions.map((s) => ({
+      ...s,
+      exact: false,
+      displayPrice: s.price + markupForTld(s.tld),
+      renewalDisplayPrice: s.renewalPrice + markupForTld(s.tld),
+    }));
+
+    // Lead with the EXACT domain's true status — suggest() only returns available
+    // look-alikes, so a taken exact match would otherwise be invisible.
+    const exactHost = deriveExactHost(query);
+    if (exactHost) {
+      const dup = priced.find((s) => s.domain === exactHost);
+      if (dup) {
+        dup.exact = true;
+      } else {
+        try {
+          const avail = await checkAvailability(exactHost);
+          const fee = markupForTld(avail.tld);
+          priced.unshift({
+            domain: exactHost,
+            tld: avail.tld,
+            available: avail.available,
+            price: avail.price,
+            renewalPrice: avail.renewalPrice,
+            currency: avail.currency,
+            exact: true,
+            displayPrice: avail.price + fee,
+            renewalDisplayPrice: avail.renewalPrice + fee,
+          });
+        } catch {
+          // exact lookup is best-effort; the suggestions still stand
+        }
+      }
+    }
+
+    return ok(priced);
   });
 
   // ── POST /v1/domains/check ────────────────────────────────────────────────
@@ -348,16 +395,26 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     const expiresAt = new Date(registeredAt);
     expiresAt.setFullYear(expiresAt.getFullYear() + input.years);
 
-    // Fetch the RENEWAL price for the renewal_price_cents column — NOT the
-    // possibly-promo first-year price (they differ sharply for TLDs like .shop:
-    // $0.99 to register, $59.99 to renew).
+    // Pricing: the (possibly promo) first-year REGISTRATION price drives the
+    // purchase CHARGE; the RENEWAL price drives the renewal_price_cents column and
+    // any additional years. They differ sharply for TLDs like .shop ($0.99 to
+    // register, $59.99 to renew), so they must not be conflated.
+    let registrationPriceCents: number | null = null;
     let renewalPriceCents: number | null = null;
     try {
       const avail = await checkAvailability(host);
+      registrationPriceCents = avail.price;
       renewalPriceCents = avail.renewalPrice;
     } catch {
       // Non-fatal; price lookup may fail
     }
+    const purchaseTld = host.split('.').slice(1).join('.');
+    const amountCents =
+      registrationPriceCents != null
+        ? registrationPriceCents +
+          (renewalPriceCents ?? registrationPriceCents) * (input.years - 1) +
+          markupForTld(purchaseTld)
+        : 0;
 
     const [purchaseRow, domainRow] = await prisma.$transaction(async (tx) => {
       const purchase = await withTenant({ tenantId: auth.tenantId }, (wtx) =>
@@ -368,11 +425,8 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
             registrar: 'godaddy',
             registrarOrderId: orderId,
             stripePaymentIntentId,
-            // amountCents: wholesale + markup; use 0 until Stripe pricing is live
-            amountCents:
-              renewalPriceCents != null
-                ? renewalPriceCents + markupForTld(host.split('.').slice(1).join('.'))
-                : 0,
+            // registration (+ renewal for extra years) + our markup, in cents
+            amountCents,
             years: input.years,
             type: 'registration',
             status: 'completed',

@@ -25,6 +25,8 @@ export interface DomainSuggestion {
   domain: string;
   tld: string;
   available: boolean;
+  /** True for the exact domain the query implies (shown first, even if taken). */
+  exact?: boolean;
   /** First-year price incl. our convenience fee, in cents. */
   displayPrice: number;
   /** Renewal price incl. our convenience fee, in cents. */
