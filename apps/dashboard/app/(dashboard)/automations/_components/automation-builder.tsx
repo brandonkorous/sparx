@@ -196,9 +196,7 @@ export function AutomationBuilder({ enabledModules, initial }: Props) {
               min={1}
               max={10}
               value={maxDepth}
-              onChange={(e) =>
-                setMaxDepth(Math.min(10, Math.max(1, Number(e.target.value) || 1)))
-              }
+              onChange={(e) => setMaxDepth(Math.min(10, Math.max(1, Number(e.target.value) || 1)))}
               className="w-24"
             />
             <span className="text-xs text-[var(--color-text-tertiary)]">

@@ -95,8 +95,7 @@ function JsonField({
 
 function setKey(config: Config, key: string, val: unknown): Config {
   const next = { ...config };
-  const empty =
-    val === undefined || val === '' || (Array.isArray(val) && val.length === 0);
+  const empty = val === undefined || val === '' || (Array.isArray(val) && val.length === 0);
   if (empty) delete next[key];
   else next[key] = val;
   return next;
@@ -133,7 +132,9 @@ function FieldInput({
           value={primitiveText(raw)}
           placeholder={field.placeholder}
           onChange={(e) =>
-            onConfig(setKey(config, field.key, e.target.value === '' ? undefined : Number(e.target.value)))
+            onConfig(
+              setKey(config, field.key, e.target.value === '' ? undefined : Number(e.target.value))
+            )
           }
         />
       );
@@ -325,9 +326,7 @@ function ActionCard({
             key={`${index}:${action.type}:full`}
             value={config}
             rows={5}
-            onChange={(v) =>
-              onChange({ ...action, config: (v ?? {}) as Config })
-            }
+            onChange={(v) => onChange({ ...action, config: (v ?? {}) as Config })}
           />
         </div>
       ) : def?.mode === 'fields' && def.configFields ? (

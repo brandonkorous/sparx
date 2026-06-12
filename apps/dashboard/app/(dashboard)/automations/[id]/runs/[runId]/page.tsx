@@ -58,7 +58,11 @@ function GateLog({ entries }: { entries: GateLogEntry[] }) {
               {g.decision}
             </Badge>
             <code className="font-mono text-xs">{g.gate}</code>
-            {g.reason && <Text size="sm" variant="muted">— {g.reason}</Text>}
+            {g.reason && (
+              <Text size="sm" variant="muted">
+                — {g.reason}
+              </Text>
+            )}
           </li>
         ))}
       </ul>

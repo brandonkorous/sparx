@@ -11,7 +11,16 @@
 // natural entry like `customer.totalSpent ≥ 100` stores a real number.
 
 import * as React from 'react';
-import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@sparx/ui';
+import {
+  Button,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@sparx/ui';
 import { Plus, Trash2 } from 'lucide-react';
 import type { Condition, ConditionGroup, ConditionOperator } from '@sparx/automation-schemas';
 import {
@@ -145,7 +154,9 @@ export function ConditionEditor({ value, onChange, label = 'Conditions' }: Props
                     placeholder={def?.list ? 'a, b, c' : 'value'}
                     onChange={(e) =>
                       updateCondition(i, {
-                        value: def?.list ? coerceList(e.target.value) : coerceScalar(e.target.value),
+                        value: def?.list
+                          ? coerceList(e.target.value)
+                          : coerceScalar(e.target.value),
                       })
                     }
                     className="w-48 text-sm"

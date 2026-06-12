@@ -21,6 +21,7 @@ import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
+import { b2bArService } from '@sparx/crm';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
 import { env } from '../../../env.js';
 

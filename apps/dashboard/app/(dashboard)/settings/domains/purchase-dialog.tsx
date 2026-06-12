@@ -187,11 +187,17 @@ export function PurchaseDialog({
                   <div>
                     <Label htmlFor="pd-years">Registration period</Label>
                     <NativeSelect id="pd-years" name="years" defaultValue="1">
-                      {[1, 2, 3, 5].map((y) => (
-                        <option key={y} value={y}>
-                          {y} year{y > 1 ? 's' : ''} — {formatPrice(suggestion.displayPrice * y)}
-                        </option>
-                      ))}
+                      {[1, 2, 3, 5].map((y) => {
+                        // Year one is the (possibly promo) registration price; each
+                        // additional year is the renewal price.
+                        const total =
+                          suggestion.displayPrice + suggestion.renewalDisplayPrice * (y - 1);
+                        return (
+                          <option key={y} value={y}>
+                            {y} year{y > 1 ? 's' : ''} — {formatPrice(total)}
+                          </option>
+                        );
+                      })}
                     </NativeSelect>
                   </div>
                   {properties.length > 1 && (

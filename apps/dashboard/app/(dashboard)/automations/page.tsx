@@ -11,15 +11,7 @@
 import Link from 'next/link';
 import { Plus, Workflow } from 'lucide-react';
 import { listEnabledModules, requireSession } from '@sparx/auth';
-import {
-  Badge,
-  Button,
-  Card,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-} from '@sparx/ui';
+import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import type { AutomationDto } from './_lib/types';

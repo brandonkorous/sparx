@@ -36,10 +36,9 @@ export interface FreshlyOverdueInvoice {
   invoiceNumber: string;
   amountCents: number;
   overdueDays: number;
-  /** Which AR table this open balance came from. During the docs/87 §15
-   *  coexistence the ladder reads net-terms balances from BOTH the legacy
-   *  `b2b_invoices` header and the authored `billing_documents`. */
-  source: 'b2b_invoice' | 'billing_document';
+  /** The AR source. Net-terms balances now live solely on `billing_documents`
+   *  (docs/87 §15 — the legacy `b2b_invoices` dual-read was dropped in Phase 8). */
+  source: 'billing_document';
 }
 
 export interface AccountEscalation {
@@ -100,40 +99,14 @@ export async function escalateAccount(
       };
     }
 
-    // Every unpaid/overdue invoice for this account. A single account is a handful
-    // of rows, so we recompute age in JS rather than the cron's tenant-wide SQL.
-    const invoices = await tx.b2bInvoice.findMany({
-      where: { accountId, status: { in: ['unpaid', 'overdue'] } },
-      select: { id: true, status: true, dueAt: true, invoiceNumber: true, amountCents: true },
-    });
-
     const freshlyOverdue: FreshlyOverdueInvoice[] = [];
     let maxOverdueDays = 0;
 
-    for (const inv of invoices) {
-      if (inv.dueAt >= now) continue; // not past due yet — leave it unpaid
-      const age = daysPastDue(inv.dueAt, now);
-      maxOverdueDays = Math.max(maxOverdueDays, age);
-      const wasUnpaid = inv.status === 'unpaid';
-      await tx.b2bInvoice.update({
-        where: { id: inv.id },
-        data: { status: 'overdue', overdueDays: age },
-      });
-      if (wasUnpaid) {
-        freshlyOverdue.push({
-          id: inv.id,
-          invoiceNumber: inv.invoiceNumber,
-          amountCents: inv.amountCents,
-          overdueDays: age,
-          source: 'b2b_invoice',
-        });
-      }
-    }
-
-    // Authored billing documents (docs/87 §8) — the second open-balance source
-    // during coexistence. A net-terms document carries a `dueAt` (set on
-    // finalize) and an open `balance`; past due, it's marked overdue and folds
-    // into the same ladder. `balance > 0` + `dueAt < now` excludes drafts/paid.
+    // Net-terms AR for this account, now sourced solely from `billing_documents`
+    // (docs/87 §15 — `b2b_invoices` retired into the billing engine in Phase 8). A
+    // net-terms document carries a `dueAt` (set on finalize) and an open `balance`;
+    // past due, it's marked overdue and folds into the dunning ladder. `balance > 0`
+    // + `dueAt < now` excludes drafts/paid/void.
     const documents = await tx.billingDocument.findMany({
       where: {
         b2bAccountId: accountId,

@@ -135,6 +135,55 @@ export const DEFAULT_DOCUMENT_WORKFLOWS: DocumentWorkflowTemplate[] = [
   },
 ];
 
+// ── System "Net-terms AR" workflow (docs/87 §15) ─────────────────────────────
+//
+// The convergence target for order-derived B2B net-terms AR. When a B2B order is
+// placed on net terms (checkout / approval), the AR header is materialised as a
+// BillingDocument on THIS workflow rather than the legacy `b2b_invoices` table —
+// so the one billing-document engine owns every receivable.
+//
+// It is NOT part of `DEFAULT_DOCUMENT_WORKFLOWS` (the user-facing Invoice /
+// Service-Repair starters seeded on `invoicing` activation). This is a SYSTEM
+// workflow, lazily ensured by the B2B flow itself (gated on the `b2b` module, not
+// `invoicing`) — `billing_documents` is a shared AR substrate, the same way
+// `customers` is shared across CRM / Commerce / B2B. Resolve it by its stable
+// slug; never assume it pre-exists.
+//
+// The order-derived document is constructed already-finalised at the Invoice
+// stage (the charge came from a placed order — its lines aren't hand-authored),
+// so the Invoice stage is `final` + locked + numbered + snapshot-on-enter.
+export const NET_TERMS_AR_WORKFLOW_SLUG = 'net-terms-ar';
+
+export const NET_TERMS_AR_WORKFLOW: DocumentWorkflowTemplate = {
+  name: 'Net-terms AR',
+  slug: NET_TERMS_AR_WORKFLOW_SLUG,
+  isDefault: false,
+  sortOrder: 100,
+  stages: [
+    {
+      name: 'Invoice',
+      customerLabel: 'Invoice',
+      stageType: 'final',
+      snapshotOnEnter: true,
+      numberOnEnter: true,
+      numberPrefix: 'INV-',
+      locksEditing: true,
+      sortOrder: 0,
+      color: '#6366F1',
+    },
+    {
+      name: 'Paid',
+      customerLabel: 'Receipt',
+      stageType: 'paid',
+      snapshotOnEnter: false,
+      numberOnEnter: false,
+      locksEditing: true,
+      sortOrder: 1,
+      color: '#10B981',
+    },
+  ],
+};
+
 export const DEFAULT_DOCUMENT_LINE_TYPES: DocumentLineTypeTemplate[] = [
   {
     key: 'part',

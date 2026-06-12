@@ -308,7 +308,7 @@ export async function recomputeTotals(
   });
   const paidAt = status === 'paid' ? (doc.paidAt ?? now) : null;
 
-  return tx.billingDocument.update({
+  const updated = await tx.billingDocument.update({
     where: { id: documentId },
     data: {
       subtotal: totals.subtotal,
@@ -322,6 +322,18 @@ export async function recomputeTotals(
       paidAt,
     },
   });
+
+  // A B2B document's open balance IS the account's net-terms AR (docs/87 §15), so
+  // this single money chokepoint is also where credit utilisation re-syncs — every
+  // create / line / payment / void funnels through here, so `credit_used` can never
+  // drift from open AR regardless of which surface mutated the document. Retail
+  // documents (no account) skip it. The function sums open `billing_documents`
+  // balances and is RLS-safe (runs under the caller's tenant GUC).
+  if (updated.b2bAccountId) {
+    await tx.$executeRaw`SELECT sync_b2b_credit_used(${updated.b2bAccountId}::uuid)`;
+  }
+
+  return updated;
 }
 
 /** Throw a clean NOT_FOUND if a referenced party doesn't exist for this tenant,

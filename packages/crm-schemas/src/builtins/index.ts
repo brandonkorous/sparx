@@ -13,6 +13,8 @@ export {
   DEFAULT_DOCUMENT_LINE_TYPES,
   DEFAULT_INVOICE_TEMPLATE,
   INVOICE_STRUCTURED_NODE_TYPES,
+  NET_TERMS_AR_WORKFLOW,
+  NET_TERMS_AR_WORKFLOW_SLUG,
 } from './invoicing';
 export type {
   DocumentWorkflowTemplate,

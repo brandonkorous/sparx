@@ -202,12 +202,19 @@ function DomainRow({
       </div>
       {suggestion.available && (
         <div className="flex shrink-0 items-center gap-3">
-          <Text size="sm" variant="muted">
-            <span className="font-medium text-[var(--color-text-primary)]">
-              ${(suggestion.displayPrice / 100).toFixed(2)}
-            </span>
-            /yr
-          </Text>
+          <div className="text-right">
+            <Text size="sm" variant="muted">
+              <span className="font-medium text-[var(--color-text-primary)]">
+                ${(suggestion.displayPrice / 100).toFixed(2)}
+              </span>
+              /yr
+            </Text>
+            {suggestion.renewalDisplayPrice > suggestion.displayPrice && (
+              <Text size="xs" variant="muted">
+                then ${(suggestion.renewalDisplayPrice / 100).toFixed(2)}/yr
+              </Text>
+            )}
+          </div>
           <Button
             color={featured ? 'module' : 'neutral'}
             variant={featured ? 'solid' : 'outline'}

@@ -25,8 +25,11 @@ export interface DomainSuggestion {
   domain: string;
   tld: string;
   available: boolean;
-  price: number;
+  /** First-year price incl. our convenience fee, in cents. */
   displayPrice: number;
+  /** Renewal price incl. our convenience fee, in cents. */
+  renewalDisplayPrice: number;
+  price: number;
   currency: string;
 }
 
@@ -34,8 +37,9 @@ export interface DomainAvailability {
   domain: string;
   tld: string;
   available: boolean;
-  price: number;
   displayPrice: number;
+  renewalDisplayPrice: number;
+  price: number;
   currency: string;
 }
 

@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.13
+**Version:** 1.14
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-11
 
@@ -16,13 +16,24 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** **Slice G-UI — the dashboard automations surface** (list / detail / trigger +
-> condition + action builder / run history, docs/34 standard) — the LAST remaining consumer of the
-> automation service layer. Its full contract is now BUILT + tested on TWO transports: `/v1/automations`
-> REST (G-API ☑) and the MCP authoring tools (Slice H ☑ this session). Still sequenced/deferred:
-> **email-driven seeds** behind the **Default Builder-emails library** (user decision B + "build
-> defaults for emails, later"), and **commerce executors** (not cleanly buildable — no product/variant
-> resolver, `create_invoice` collides with in-flight `billing_documents`, no consuming automation).
+> **▶ RESUME HERE:** **Slice G-UI — DONE this session.** The dashboard automations surface
+> (`apps/dashboard/.../automations/*`) is built: **list** (status-filter chips + per-row module tags +
+> run stats + inline enable/pause), **detail/review** (trigger + conditions + ordered actions, runs
+> preview), the full **builder** (event/schedule trigger editor, flat AND/OR condition editor, ordered
+> action editor with typed config fields + a JSON escape hatch), **run history + run detail** (per-step
+> status, timing, input/output, and the `gate_log` audit trail), and a **platform-level nav tile**
+> (rail + mobile). It is a pure CONSUMER of the G-API REST surface via Server Actions — **no api-rest or
+> engine change**. The tier model shows up in the UI exactly as the service enforces it: a LOCKED rule
+> offers only "Duplicate to edit" + View runs (no edit/pause/delete), and the edit route bounces a
+> locked rule to its detail. **The automation engine is now complete end-to-end: tenant- AND
+> AI-authorable across THREE surfaces (REST + MCP + dashboard), schedule/event-driven, sending email,
+> seeding every module-active tenant, the sole dunning impl, and now fully observable.** Remaining
+> tracked work, both still user-sequenced: (1) the **Default Builder-emails library + per-tenant
+> provisioning** (user decision B — unblocks the email-driven CRM-sweep seeds; must reconcile/retire the
+> coded `@sparx/email-platform` DEFAULT_AUTOMATIONS, not a third system) and (2) **Slice I — Phase 5
+> external** (Zapier/Make/inbound `webhook.received`). **Commerce executors** stay deferred (no
+> product/variant resolver, `create_invoice` collides with in-flight `billing_documents`, no consuming
+> automation). Slices A–H + G-API + **G-UI** all done.
 > **Slice H DONE** this session: `automationMcpTools` (9 tools — `list/get/create/update/clone/delete/
 set_status` + `get_runs`/`get_run`) wrapping the SAME service layer, published by `services/api-mcp`;
 > `read:automations`/`write:automations` scopes; LOCKED→error-result + "clone to edit" enforced over
@@ -173,7 +184,7 @@ reconciles them into the one canonical registry. No build blocker from deferring
 | `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                                                                                                                            | ☑      |
 | `services/api-rest` routes                                  | `/v1/automations` CRUD + clone + status + run-history reads (trigger/tick live in the worker, not api-rest)                                                                                 | ☑      |
 | `packages/automation` run reads                             | `listAutomationRuns` / `getAutomationRun` (tenant-scoped run-history read path for REST/MCP/UI)                                                                                             | ☑      |
-| `apps/dashboard` surface                                    | List / detail / builder / run history (docs/34 standard)                                                                                                                                    | ☐      |
+| `apps/dashboard` surface (`/automations/*`)                 | List / detail / builder / run history (docs/34 standard) — platform-level full-page routes, pure consumer of the G-API REST surface via Server Actions                                      | ☑      |
 | `packages/automation/src/mcp` (`automationMcpTools`)        | AI authoring path — 9 MCP tools wrapping the service layer; published by `services/api-mcp` (mirrors crm `mcp/`). `read:automations` / `write:automations` scopes                           | ☑      |
 
 ---
@@ -560,9 +571,49 @@ consumers of these). New `services/api-rest/src/routes/v1/automations/index.ts`:
   LOCKED guard (edit/status/delete 409 + clone 201), delete, run-history (empty list, seeded
   run-with-steps, cross-automation 404). typecheck + lint + prettier clean; `@sparx/automation` 35/35.
 
-**G-UI — dashboard surface ☐** — list / detail / trigger+condition+action builder / run history
-(docs/34 working-area standard). Not started; the API + MCP tools above are its contract.
-**MCP write-tool ☑** (Slice H) — built this session, see below.
+**G-UI — dashboard surface ☑** (this session) — the platform-level authoring + observability surface
+at `apps/dashboard/.../automations/*`, a pure CONSUMER of the G-API REST surface (no api-rest/engine
+change). New `@sparx/automation-schemas` dashboard dep (canonical types + `triggerToColumns`/
+`triggerFromColumns` + the zod parsers → no vocab drift vs REST/MCP) + Dockerfile COPY.
+
+- ☑ **Platform-level, full-page routes** — `/automations` (list), `/new`, `/[id]` (detail), `/[id]/edit`,
+  `/[id]/runs`, `/[id]/runs/[runId]`. NOT a module manifest (`ModuleManifest.id` excludes `'platform'`)
+  and NOT the `@detail` drawer system (that's keyed off module manifests) — it mirrors **SEO** (the
+  platform-tool precedent): a neutral rail tile + mobile-nav entry shown when **≥1 module is active**,
+  and a `layout.tsx` wrapping the surface in `<ModuleProvider module="platform">` so `color="module"` /
+  `variant="module"` resolve to the platform brand (Sparx Indigo). The page itself renders an "activate
+  a module" state if a tenant somehow has 0 active.
+- ☑ **List** — status-filter chips (All/Active/Paused/Draft/Error + counts), a card per rule with the
+  derived module tags ("CRM + Email"), trigger summary, run/error counts + last-run, `OriginBadge`
+  (System/Locked), and an inline enable/pause `Switch` (editor+, non-locked) that runs the status
+  Server Action (revalidates → row reflects new status).
+- ☑ **Builder** (create + edit, one component) — `TriggerEditor` (event with curated per-active-module
+  suggestions + free text, OR schedule = cadence daily/weekly/monthly/once + a predicate scan over
+  `customer`/`b2b_account` reusing the condition editor for the `where` selector), `ConditionEditor`
+  (the FLAT AND/OR group, 12 operators, valueless ops hide the value, list ops comma-split, light
+  value coercion), and `ActionEditor`. Client-side validation (name/trigger/≥1 action/required config
+  fields) before the Server Action; the server stays source of truth.
+- ☑ **Action-editor fidelity (decision)** — the type picker offers ONLY actions with a registered
+  executor whose owning module is active (deferred `commerce.*` / `b2b` quote-terms / `email.sequence_*`
+  are defined so an existing rule still renders + round-trips, but never offered for a NEW action,
+  mirroring docs/81 §6/§8). **Typed config fields** for picker-free configs (wait/stop/webhook/add_tag/
+  remove_tag/add_note/update_field/create_task/update_deal_stage/send_internal/escalate_overdue) +
+  **raw-JSON config mode** for ID-bearing/union configs (`email.send_campaign`) AND a universal escape
+  hatch toggle on every action. Honest (per-action config is validated at DISPATCH, not at create — the
+  client can't type-check it) and lossless. Actions reorder (up/down) + remove.
+- ☑ **Tier model surfaced exactly as the service enforces it** — a LOCKED (platform-managed) rule shows
+  only **"Duplicate to edit"** (clone → user-origin editable copy) + View runs; no edit/pause/delete.
+  The `/[id]/edit` route bounces a locked rule to its detail; the `AUTOMATION_LOCKED` (409) maps to the
+  friendly message. `origin`/`locked` are never tenant-set (service invariant, unchanged).
+- ☑ **Run history** — list (newest-first) + run detail with each step's status badge, timing,
+  input/output (collapsible JSON), error, and the **`gate_log`** audit trail (allow/deny/transform/defer
+  color-coded — docs/81 §7.1). Deterministic UTC timestamp formatting (no locale/tz → hydration-safe).
+- ☑ **RBAC, no module gate** — viewer reads; editor+ writes (New/Edit/Delete/toggle gated on role; the
+  new/edit pages redirect a viewer; the REST also 403s). Automations are a platform capability.
+- ☑ **Verify** — `@sparx/dashboard` typecheck clean, lint **0 errors / 0 warnings**, prettier clean,
+  and the **`next build` production build passes (exit 0)** with all six `/automations/*` routes
+  compiled. No change to api-rest, `@sparx/automation`, or the engine; the other agent's in-flight
+  invoicing files were left untouched.
 
 ### Slice H — Phase 4 AI assistant ☑ (MCP authoring tools)
 
@@ -884,3 +935,26 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
     `_shell/registry.ts`) left untouched. **Next:** Slice G-UI (dashboard surface) — the last consumer of
     the now-two-transport (REST + MCP) service layer; or Slice I (external/inbound webhooks). Email-driven
     seeds remain queued behind the user's Default Builder-emails library.
+- **2026-06-11 (cont.)** — **Slice G-UI (dashboard automations surface) DONE.** The third authoring
+  surface (after REST + MCP), a pure CONSUMER of the G-API REST endpoints — **no api-rest or engine
+  change**. New routes under `apps/dashboard/.../automations/`: list, `/new`, `/[id]` detail/review,
+  `/[id]/edit`, `/[id]/runs`, `/[id]/runs/[runId]`. **Platform-level, not a module** — `ModuleManifest.id`
+  excludes `'platform'` and the `@detail` drawer system is keyed off module manifests, so (like SEO) it
+  uses full-page routes, a neutral rail + mobile-nav tile shown when ≥1 module is active, and a
+  `layout.tsx` `<ModuleProvider module="platform">` (Sparx Indigo) for `color/variant="module"`. Built:
+  status-filtered list (module tags + run stats + inline enable/pause), the full builder (event/schedule
+  `TriggerEditor` with a predicate scan reusing the `ConditionEditor`; the flat AND/OR condition editor;
+  the ordered `ActionEditor` — typed config fields for picker-free actions + a JSON escape hatch, picker
+  limited to executor-backed + active-module actions), and run history + per-step `gate_log` run detail.
+  Tier model surfaced as the service enforces it (LOCKED → "Duplicate to edit" + View runs only; edit
+  route bounces locked → detail; 409 AUTOMATION_LOCKED → friendly copy). RBAC viewer-read / editor-write.
+  **No-drift:** added `@sparx/automation-schemas` as a dashboard dep (canonical types +
+  `triggerToColumns`/`triggerFromColumns` + zod parsers) + Dockerfile COPY (closure = just zod, already
+  present); `pnpm install` lockfile scoped to the one link. **Verify:** `@sparx/dashboard` typecheck
+  clean, lint **0/0**, prettier clean, and the **`next build` production build passes (exit 0)** with all
+  six `/automations/*` routes compiled. Fixed 3 `noUncheckedIndexedAccess`/lint nits + centralised a
+  `primitiveText` helper en route. Other agent's invoicing files untouched; nothing committed. **The
+  automation engine is now complete end-to-end** — tenant- AND AI-authorable across REST + MCP +
+  dashboard, schedule/event-driven, email-sending, self-seeding, sole dunning impl, and observable.
+  **Next:** Default Builder-emails library (unblocks email-driven seeds) or Slice I (external) — both
+  user-sequenced.

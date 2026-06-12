@@ -11,7 +11,11 @@
 
 import { revalidatePath } from 'next/cache';
 import { api } from '@/lib/api-rest-client';
-import type { AutomationStatus, CreateAutomationInput, UpdateAutomationInput } from '@sparx/automation-schemas';
+import type {
+  AutomationStatus,
+  CreateAutomationInput,
+  UpdateAutomationInput,
+} from '@sparx/automation-schemas';
 import type { ActionResult } from './_lib/rest-action';
 import { restAction } from './_lib/rest-action';
 import type { AutomationDto } from './_lib/types';

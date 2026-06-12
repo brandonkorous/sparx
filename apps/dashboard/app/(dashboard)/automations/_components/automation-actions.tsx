@@ -32,7 +32,8 @@ export function AutomationActions({
   function setStatus(next: 'active' | 'paused') {
     startTransition(async () => {
       const result = await setAutomationStatusAction(automation.id, next);
-      if (result.ok) toast.success(next === 'active' ? 'Automation activated.' : 'Automation paused.');
+      if (result.ok)
+        toast.success(next === 'active' ? 'Automation activated.' : 'Automation paused.');
       else toast.error(result.error.message);
     });
   }

@@ -9,14 +9,18 @@
 //                it reuses <ConditionEditor>.
 
 import * as React from 'react';
-import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@sparx/ui';
-import type { ConditionGroup, ScheduleSpec, Trigger } from '@sparx/automation-schemas';
 import {
-  DAYS_OF_WEEK,
-  SCAN_ENTITIES,
-  SCHEDULE_CADENCES,
-  TRIGGER_EVENTS,
-} from '../_lib/catalog';
+  Button,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@sparx/ui';
+import type { ConditionGroup, ScheduleSpec, Trigger } from '@sparx/automation-schemas';
+import { DAYS_OF_WEEK, SCAN_ENTITIES, SCHEDULE_CADENCES, TRIGGER_EVENTS } from '../_lib/catalog';
 import { ConditionEditor } from './condition-editor';
 
 const EVENT_DATALIST_ID = 'automation-trigger-events';
@@ -140,7 +144,10 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex flex-col gap-1.5">
               <Label>Runs</Label>
-              <Select value={value.schedule.cadence} onValueChange={(v) => setCadence(v as ScheduleSpec['cadence'])}>
+              <Select
+                value={value.schedule.cadence}
+                onValueChange={(v) => setCadence(v as ScheduleSpec['cadence'])}
+              >
                 <SelectTrigger className="w-36">
                   <SelectValue />
                 </SelectTrigger>
@@ -185,7 +192,9 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
                   max={28}
                   value={value.schedule.dayOfMonth}
                   onChange={(e) =>
-                    patchSchedule({ dayOfMonth: Math.min(28, Math.max(1, Number(e.target.value) || 1)) })
+                    patchSchedule({
+                      dayOfMonth: Math.min(28, Math.max(1, Number(e.target.value) || 1)),
+                    })
                   }
                   className="w-24"
                 />

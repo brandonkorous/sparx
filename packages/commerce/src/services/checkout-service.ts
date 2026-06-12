@@ -10,7 +10,7 @@
 // Order via @sparx/crm's orderService and fires the post-commit events
 // (order.placed, inventory.adjusted, email.send).
 
-import { orderService } from '@sparx/crm';
+import { orderService, b2bArService } from '@sparx/crm';
 import {
   type AppliedSurcharge,
   applySurcharges,
@@ -41,11 +41,6 @@ function parseDueDays(paymentTerms: string | null | undefined): number {
   if (!paymentTerms) return 30;
   const m = /^net(\d+)$/i.exec(paymentTerms);
   return m?.[1] ? parseInt(m[1], 10) : 30;
-}
-
-async function nextInvoiceNumber(tx: TxClient, tenantId: string): Promise<string> {
-  const count = await tx.b2bInvoice.count({ where: { tenantId } });
-  return `INV-${(count + 1).toString().padStart(6, '0')}`;
 }
 
 const DEFAULT_SESSION_TTL_MIN = 60; // 1 hour
@@ -575,9 +570,14 @@ export async function complete(
       }
     }
 
-    // B2B net-terms: auto-create invoice and sync credit_used.
-    // Skipped when the order is gated for approval — invoice creation runs
-    // inside the approval route once the order is approved.
+    // B2B net-terms: auto-create the AR document and sync credit_used.
+    // Skipped when the order is gated for approval — creation runs inside the
+    // approval route once the order is approved.
+    //
+    // The receivable is now a BillingDocument on the system `net-terms-ar`
+    // workflow (docs/87 §15), not a `b2b_invoices` row. createOrderArDocument
+    // composes into THIS checkout transaction (tx injection) and re-syncs the
+    // account's credit_used via the billing money authority.
     let b2bInvoiceId: string | null = null;
     if (
       !pendingApproval &&
@@ -592,19 +592,18 @@ export async function complete(
       const dueDays = parseDueDays(account?.paymentTerms ?? session.paymentTermsRequested);
       const dueAt = new Date();
       dueAt.setDate(dueAt.getDate() + dueDays);
-      const invoiceNumber = await nextInvoiceNumber(tx, ctx.tenantId);
-      const invoice = await tx.b2bInvoice.create({
-        data: {
-          tenantId: ctx.tenantId,
-          accountId: session.b2bAccountId,
+      const arDoc = await b2bArService.createOrderArDocument(
+        { tenantId: ctx.tenantId, userId: ctx.userId ?? undefined, tx },
+        {
+          b2bAccountId: session.b2bAccountId,
           orderId: order.id,
-          invoiceNumber,
-          amountCents: session.totalCents,
+          amount: session.totalCents / 100,
+          currency: session.currency,
           dueAt,
-        },
-      });
-      await tx.$executeRaw`SELECT sync_b2b_credit_used(${session.b2bAccountId}::uuid)`;
-      b2bInvoiceId = invoice.id;
+          description: `Order ${order.orderNumber}`,
+        }
+      );
+      b2bInvoiceId = arDoc.id;
     }
 
     // Mark the session completed + record the resulting order so the

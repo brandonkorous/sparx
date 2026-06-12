@@ -97,8 +97,7 @@ export function summarizeTrigger(triggerType: string, triggerConfig: unknown): s
   const trigger = parseTrigger(triggerType, triggerConfig);
   if (!trigger) return triggerType;
   if (trigger.kind === 'event') return `On ${trigger.eventType}`;
-  const entity =
-    SCAN_ENTITY_LABEL[trigger.predicate.entity] ?? trigger.predicate.entity;
+  const entity = SCAN_ENTITY_LABEL[trigger.predicate.entity] ?? trigger.predicate.entity;
   return `${humanizeSchedule(trigger.schedule)} · ${entity}`;
 }
 
@@ -109,13 +108,15 @@ const SCAN_ENTITY_LABEL: Record<string, string> = {
 
 // ─── status badges ───────────────────────────────────────────────────────────
 
-const AUTOMATION_STATUS: Record<AutomationStatus, { color: string; variant: string; label: string }> =
-  {
-    active: { color: 'success', variant: 'soft', label: 'Active' },
-    paused: { color: 'neutral', variant: 'soft', label: 'Paused' },
-    draft: { color: 'neutral', variant: 'outline', label: 'Draft' },
-    error: { color: 'danger', variant: 'soft', label: 'Error' },
-  };
+const AUTOMATION_STATUS: Record<
+  AutomationStatus,
+  { color: string; variant: string; label: string }
+> = {
+  active: { color: 'success', variant: 'soft', label: 'Active' },
+  paused: { color: 'neutral', variant: 'soft', label: 'Paused' },
+  draft: { color: 'neutral', variant: 'outline', label: 'Draft' },
+  error: { color: 'danger', variant: 'soft', label: 'Error' },
+};
 
 export function AutomationStatusBadge({ status }: { status: AutomationStatus }) {
   const s = AUTOMATION_STATUS[status] ?? AUTOMATION_STATUS.draft;

@@ -43,9 +43,10 @@ export default async function EditAutomationPage({ params }: PageProps) {
     id: automation.id,
     name: automation.name,
     description: automation.description,
-    trigger:
-      parseTrigger(automation.triggerType, automation.triggerConfig) ??
-      { kind: 'event', eventType: automation.triggerType },
+    trigger: parseTrigger(automation.triggerType, automation.triggerConfig) ?? {
+      kind: 'event',
+      eventType: automation.triggerType,
+    },
     conditions: parseConditions(automation.conditions),
     actions: parseActions(automation.actions),
     maxDepth: automation.maxDepth,

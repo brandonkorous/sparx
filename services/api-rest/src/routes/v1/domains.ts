@@ -73,13 +73,21 @@ const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLo
 // ─── Convenience fee per TLD (cents) ─────────────────────────────────────────
 // Added to the GoDaddy wholesale price when quoting to the tenant (docs/24 §6).
 const TLD_MARKUP: Record<string, number> = {
+  // commerce TLDs — leanest convenience fee
+  shop: 150,
+  store: 150,
+  online: 150,
+  site: 150,
+  // classics + generic — standard fee (also the fall-through default)
   com: 200,
   net: 200,
   org: 200,
+  // tech / premium-leaning — slightly higher fee
   io: 300,
   app: 300,
-  shop: 150,
-  store: 150,
+  dev: 300,
+  ai: 300,
+  tech: 300,
 };
 function markupForTld(tld: string): number {
   return TLD_MARKUP[tld.toLowerCase()] ?? 200;
@@ -267,6 +275,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       suggestions.map((s) => ({
         ...s,
         displayPrice: s.price + markupForTld(s.tld),
+        renewalDisplayPrice: s.renewalPrice + markupForTld(s.tld),
       }))
     );
   });
@@ -279,6 +288,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     return ok({
       ...avail,
       displayPrice: avail.price + markupForTld(avail.tld),
+      renewalDisplayPrice: avail.renewalPrice + markupForTld(avail.tld),
     });
   });
 
@@ -338,13 +348,15 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     const expiresAt = new Date(registeredAt);
     expiresAt.setFullYear(expiresAt.getFullYear() + input.years);
 
-    // Fetch wholesale price for the renewal_price_cents column
+    // Fetch the RENEWAL price for the renewal_price_cents column — NOT the
+    // possibly-promo first-year price (they differ sharply for TLDs like .shop:
+    // $0.99 to register, $59.99 to renew).
     let renewalPriceCents: number | null = null;
     try {
       const avail = await checkAvailability(host);
-      renewalPriceCents = avail.price;
+      renewalPriceCents = avail.renewalPrice;
     } catch {
-      // Non-fatal; price lookup may fail on OTE
+      // Non-fatal; price lookup may fail
     }
 
     const [purchaseRow, domainRow] = await prisma.$transaction(async (tx) => {

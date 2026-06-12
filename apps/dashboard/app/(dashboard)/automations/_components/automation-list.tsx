@@ -124,7 +124,9 @@ export function AutomationList({
                         checked={a.status === 'active'}
                         disabled={pending}
                         onCheckedChange={(next) => toggle(a, next)}
-                        aria-label={a.status === 'active' ? 'Pause automation' : 'Activate automation'}
+                        aria-label={
+                          a.status === 'active' ? 'Pause automation' : 'Activate automation'
+                        }
                       />
                     )}
 

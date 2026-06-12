@@ -5,6 +5,8 @@
 export * as customerService from './customer-service';
 export * as b2bAccountService from './b2b-account-service';
 export * as b2bEscalationService from './b2b-escalation-service';
+// Order-derived B2B net-terms AR, materialised as BillingDocuments (docs/87 §15).
+export * as b2bArService from './b2b-ar-service';
 export * as pipelineService from './pipeline-service';
 export * as dealService from './deal-service';
 export * as activityService from './activity-service';

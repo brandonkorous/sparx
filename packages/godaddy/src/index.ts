@@ -77,6 +77,12 @@ async function gd<T>(method: string, path: string, body?: unknown): Promise<T> {
   return (text ? JSON.parse(text) : undefined) as T;
 }
 
+/** GoDaddy returns prices in micro-units (USD * 1,000,000). Convert to integer
+ *  cents — the unit the rest of Sparx (markup, Stripe, UI) speaks. */
+function microToCents(micro: number | undefined | null): number {
+  return micro != null ? Math.round(micro / 10000) : 0;
+}
+
 // ─── Error class ─────────────────────────────────────────────────────────────
 
 export class GoDaddyError extends Error {
@@ -93,8 +99,10 @@ export class GoDaddyError extends Error {
 
 export interface DomainAvailability {
   available: boolean;
-  /** Wholesale price in cents. */
+  /** First-year registration price, in cents. */
   price: number;
+  /** Renewal price, in cents (differs sharply from `price` for promo TLDs, e.g. .shop). */
+  renewalPrice: number;
   currency: string;
   tld: string;
 }
@@ -102,8 +110,10 @@ export interface DomainAvailability {
 export interface DomainSuggestion {
   domain: string;
   available: boolean;
-  /** Wholesale price in cents. */
+  /** First-year registration price, in cents. */
   price: number;
+  /** Renewal price, in cents. */
+  renewalPrice: number;
   currency: string;
   tld: string;
 }
@@ -137,9 +147,20 @@ export interface DnsRecord {
 interface GdAvailableResponse {
   available: boolean;
   price?: number;
+  renewalPrice?: number;
   currency?: string;
   period?: number;
   tld?: string;
+}
+
+interface GdBulkAvailableResponse {
+  domains?: Array<{
+    domain: string;
+    available?: boolean;
+    price?: number;
+    renewalPrice?: number;
+    currency?: string;
+  }>;
 }
 
 interface GdSuggestion {
@@ -171,13 +192,67 @@ export async function checkAvailability(domain: string): Promise<DomainAvailabil
   );
   return {
     available: res.available,
-    price: res.price ?? 0,
+    price: microToCents(res.price),
+    renewalPrice: microToCents(res.renewalPrice ?? res.price),
     currency: res.currency ?? 'USD',
     tld: res.tld ?? domain.split('.').slice(1).join('.'),
   };
 }
 
-const DEFAULT_TLDS = ['com', 'net', 'org', 'co', 'io', 'shop', 'store', 'app'];
+/** Bulk availability + pricing for many domains in one call. `suggest` returns
+ *  names only (no price), so a suggestion batch is enriched through this. Returns
+ *  a map keyed by domain; taken/missing domains simply aren't present. */
+async function checkAvailabilityBulk(
+  domains: string[]
+): Promise<Map<string, { available: boolean; price: number; renewalPrice: number; currency: string }>> {
+  const map = new Map<
+    string,
+    { available: boolean; price: number; renewalPrice: number; currency: string }
+  >();
+  if (domains.length === 0) return map;
+  const res = await gd<GdBulkAvailableResponse>(
+    'POST',
+    '/v1/domains/available?checkType=FAST',
+    domains
+  );
+  for (const d of res.domains ?? []) {
+    map.set(d.domain, {
+      available: d.available ?? false,
+      price: microToCents(d.price),
+      renewalPrice: microToCents(d.renewalPrice ?? d.price),
+      currency: d.currency ?? 'USD',
+    });
+  }
+  return map;
+}
+
+// Curated TLD menu for domain search. The suggest endpoint only surfaces these,
+// so the list IS the menu the tenant sees — spanning classics, tech, commerce,
+// and content/brand TLDs, all in the affordable tier. Premium-priced TLDs (.inc,
+// .llc, .ai-adjacent novelty, …) are intentionally excluded so a ~$12 search
+// never sits beside a $2,000 option; they remain purchasable by exact domain via
+// checkAvailability(). Callers can override `tlds` for a narrower/wider set.
+const DEFAULT_TLDS = [
+  'com',
+  'co',
+  'net',
+  'org',
+  'io',
+  'app',
+  'dev',
+  'ai',
+  'xyz',
+  'tech',
+  'shop',
+  'store',
+  'online',
+  'site',
+  'studio',
+  'blog',
+  'me',
+  'info',
+  'biz',
+];
 
 export async function getDomainSuggestions(
   query: string,
@@ -186,15 +261,30 @@ export async function getDomainSuggestions(
   const tldParam = tlds.join(',');
   const items = await gd<GdSuggestion[]>(
     'GET',
-    `/v1/domains/suggest?query=${encodeURIComponent(query)}&tlds=${tldParam}&limit=10`
+    `/v1/domains/suggest?query=${encodeURIComponent(query)}&tlds=${tldParam}&limit=20`
   );
-  return items.map((s) => ({
-    domain: s.domain,
-    available: s.available ?? true,
-    price: s.price ?? 0,
-    currency: s.currency ?? 'USD',
-    tld: s.tld ?? s.domain.split('.').slice(1).join('.'),
-  }));
+
+  // `suggest` returns names only — enrich with real availability + pricing in a
+  // single bulk call. Best-effort: if pricing fails, fall back to unpriced names
+  // rather than erroring the whole search.
+  let priced: Awaited<ReturnType<typeof checkAvailabilityBulk>> = new Map();
+  try {
+    priced = await checkAvailabilityBulk(items.map((s) => s.domain));
+  } catch {
+    // leave `priced` empty
+  }
+
+  return items.map((s) => {
+    const p = priced.get(s.domain);
+    return {
+      domain: s.domain,
+      available: p?.available ?? s.available ?? true,
+      price: p?.price ?? 0,
+      renewalPrice: p?.renewalPrice ?? p?.price ?? 0,
+      currency: p?.currency ?? s.currency ?? 'USD',
+      tld: s.tld ?? s.domain.split('.').slice(1).join('.'),
+    };
+  });
 }
 
 // ─── Legal agreements ─────────────────────────────────────────────────────────

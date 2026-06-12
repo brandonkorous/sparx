@@ -170,14 +170,7 @@ export const COMMON_CONDITION_FIELDS: readonly string[] = [
 
 // ─── actions ─────────────────────────────────────────────────────────────────
 
-export type ConfigFieldType =
-  | 'text'
-  | 'textarea'
-  | 'number'
-  | 'tags'
-  | 'email'
-  | 'select'
-  | 'json';
+export type ConfigFieldType = 'text' | 'textarea' | 'number' | 'tags' | 'email' | 'select' | 'json';
 
 export interface ActionConfigField {
   key: string;
@@ -247,7 +240,9 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     description: 'End the automation early and log the reason.',
     mode: 'fields',
     available: true,
-    configFields: [{ key: 'reason', label: 'Reason', type: 'text', placeholder: 'No longer needed' }],
+    configFields: [
+      { key: 'reason', label: 'Reason', type: 'text', placeholder: 'No longer needed' },
+    ],
   },
   {
     type: 'platform.webhook',
@@ -257,10 +252,26 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     mode: 'fields',
     available: true,
     configFields: [
-      { key: 'url', label: 'URL', type: 'text', required: true, placeholder: 'https://example.com/hook' },
+      {
+        key: 'url',
+        label: 'URL',
+        type: 'text',
+        required: true,
+        placeholder: 'https://example.com/hook',
+      },
       { key: 'method', label: 'Method', type: 'select', options: HTTP_METHODS },
-      { key: 'headers', label: 'Extra headers', type: 'json', help: 'JSON object of header name → value.' },
-      { key: 'payload', label: 'Payload', type: 'json', help: 'Arbitrary JSON sent under `payload`.' },
+      {
+        key: 'headers',
+        label: 'Extra headers',
+        type: 'json',
+        help: 'JSON object of header name → value.',
+      },
+      {
+        key: 'payload',
+        label: 'Payload',
+        type: 'json',
+        help: 'Arbitrary JSON sent under `payload`.',
+      },
     ],
   },
   // ── CRM ──
@@ -300,7 +311,13 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     available: true,
     configFields: [
       { key: 'field', label: 'Field', type: 'text', required: true, placeholder: 'type' },
-      { key: 'value', label: 'Value', type: 'json', required: true, help: 'Validated by the customer service.' },
+      {
+        key: 'value',
+        label: 'Value',
+        type: 'json',
+        required: true,
+        help: 'Validated by the customer service.',
+      },
     ],
   },
   {
@@ -361,7 +378,12 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     configFields: [
       { key: 'to', label: 'To', type: 'email', required: true },
       { key: 'subject', label: 'Subject', type: 'text', required: true },
-      { key: 'text', label: 'Text body', type: 'textarea', help: 'Provide a text and/or HTML body.' },
+      {
+        key: 'text',
+        label: 'Text body',
+        type: 'textarea',
+        help: 'Provide a text and/or HTML body.',
+      },
       { key: 'html', label: 'HTML body', type: 'textarea' },
     ],
   },
@@ -390,7 +412,12 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     mode: 'fields',
     available: true,
     configFields: [
-      { key: 'creditHoldDays', label: 'Credit-hold after (days)', type: 'number', placeholder: '14' },
+      {
+        key: 'creditHoldDays',
+        label: 'Credit-hold after (days)',
+        type: 'number',
+        placeholder: '14',
+      },
       { key: 'suspendDays', label: 'Suspend after (days)', type: 'number', placeholder: '30' },
     ],
   },
