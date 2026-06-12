@@ -46,11 +46,34 @@ resource "google_service_account" "automation_scheduler" {
   description  = "Identity Cloud Scheduler impersonates to invoke the automation-worker tick. Holds only roles/run.invoker on the automation-worker Cloud Run service."
 }
 
+# Cloud Scheduler's service agent is NOT auto-created when the API is enabled —
+# it is provisioned lazily the first time a job mints an OIDC token, which is too
+# late for the IAM binding below (it 400s with "service account ... does not
+# exist"). Force its creation synchronously so the binding has a real principal
+# to grant. Unlike the gcp-sa-pubsub agent (reliably present once topics exist),
+# this one needs the explicit nudge.
+resource "google_project_service_identity" "cloudscheduler" {
+  provider = google-beta
+  project  = var.project_id
+  service  = "cloudscheduler.googleapis.com"
+}
+
+# generateServiceIdentity returns before the new agent has propagated into the
+# IAM database, so a binding created in the same apply still 400s with "does not
+# exist". Let it settle before granting the role (GCP service-agent propagation
+# is typically seconds; 60s is comfortable headroom on first project bring-up).
+resource "time_sleep" "cloudscheduler_identity_propagation" {
+  depends_on      = [google_project_service_identity.cloudscheduler]
+  create_duration = "60s"
+}
+
 # Cloud Scheduler's project service agent mints the OIDC token as the SA above.
 resource "google_service_account_iam_member" "automation_scheduler_token_creator" {
   service_account_id = google_service_account.automation_scheduler.name
   role               = "roles/iam.serviceAccountTokenCreator"
-  member             = "serviceAccount:service-${data.google_project.this.number}@gcp-sa-cloudscheduler.iam.gserviceaccount.com"
+  member             = "serviceAccount:${google_project_service_identity.cloudscheduler.email}"
+
+  depends_on = [time_sleep.cloudscheduler_identity_propagation]
 }
 
 # ─── Cloud Run service ────────────────────────────────────────────────────
