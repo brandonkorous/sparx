@@ -572,3 +572,104 @@ module "legal_seed_worker_cloudrun" {
     google_service_account_iam_member.pubsub_invoker_token_creator,
   ]
 }
+
+# domain-worker — finalizes PURCHASED domains (docs/24 §4-5). Consumes
+# domain.purchased: retries the GoDaddy DNS config if the synchronous call at
+# purchase failed, polls CNAME propagation, then flips the domain pending_ssl →
+# active. Without this subscriber, a purchase writes GoDaddy DNS but the row
+# never advances. (Go-live no longer DEPENDS on this — a purchased domain is
+# trusted/routable immediately in resolveSiteByHost — but the worker keeps status
+# accurate and retries a failed DNS write.)
+#
+# The image is already built + pushed by build-images.yml; this is the missing
+# Cloud Run + subscription wiring (the `domain.purchased = ["worker-domain"]` map
+# entry in main.tf only created an idle pull sub — nothing consumed the event).
+#
+# NOT wired yet: the nightly renewal-reminder cron (POST /internal/cron/
+# renewal-check). The endpoint authenticates by the x-sparx-internal-cron-token
+# header; wiring Cloud Scheduler without putting that secret in the job config
+# wants an OIDC email-claim check like the automation-worker tick (a small
+# domain-worker change). Tracked as a follow-up — it fires 30 days before a
+# 1-year expiry, so it's off the pre-launch critical path.
+resource "google_service_account" "domain_worker" {
+  account_id   = "sparx-domain-worker"
+  display_name = "Sparx domain-worker (Cloud Run)"
+  description  = "Runtime SA for the domain-worker. Reads the DB URL + GoDaddy API creds from Secret Manager, configures purchased-domain DNS, and publishes renewal-reminder email.send events."
+}
+
+resource "google_project_iam_member" "domain_worker_roles" {
+  for_each = toset([
+    "roles/cloudsql.client",
+    "roles/secretmanager.secretAccessor",
+    # The renewal-reminder cron publishes email.send to Pub/Sub.
+    "roles/pubsub.publisher",
+  ])
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.domain_worker.email}"
+}
+
+module "domain_worker_cloudrun" {
+  source = "../../modules/cloud-run-worker"
+
+  name                  = "domain-worker"
+  project_id            = var.project_id
+  region                = var.region
+  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/sparx/domain-worker:latest"
+  service_account_email = google_service_account.domain_worker.email
+  vpc_connector_id      = google_vpc_access_connector.workers.id
+
+  min_instance_count    = 0
+  max_instance_count    = 5
+  container_concurrency = 4
+  cpu                   = "1"
+  memory                = "512Mi"
+  # A CNAME poll that hasn't propagated throws → 500 → Pub/Sub redelivers with
+  # backoff, so the handler stays fast; the retry policy does the waiting.
+  timeout_seconds = 120
+
+  env_vars = {
+    NODE_ENV          = "production"
+    SERVICE_NAME      = "domain-worker"
+    LOG_LEVEL         = "info"
+    PUBSUB_INVOKER_SA = google_service_account.pubsub_invoker.email
+    # Real per-topic Pub/Sub for the renewal-reminder email.send events.
+    GCP_PROJECT_ID = var.project_id
+    # CNAME target purchased domains point at — matches buildSparxDnsRecords().
+    SPARX_CNAME_TARGET  = "customers.sparx.zone"
+    SPARX_DASHBOARD_URL = "https://app.sparx.works"
+  }
+
+  secrets = [
+    {
+      name      = "DATABASE_URL"
+      secret_id = "database-url"
+    },
+    # NODE_ENV=production selects the *_PROD GoDaddy pair for the DNS-config retry.
+    {
+      name      = "GODADDY_API_KEY_PROD"
+      secret_id = "godaddy-api-key-prod"
+    },
+    {
+      name      = "GODADDY_API_SECRET_PROD"
+      secret_id = "godaddy-api-secret-prod"
+    },
+    # Guards POST /internal/cron/renewal-check (used once the cron is scheduled).
+    {
+      name      = "SPARX_INTERNAL_CRON_TOKEN"
+      secret_id = "sparx-internal-cron-token"
+    },
+  ]
+
+  pubsub_topic                 = "domain.purchased"
+  pubsub_subscription_name     = "domain.purchased.domain-worker-cloudrun"
+  pubsub_invoker_sa_email      = google_service_account.pubsub_invoker.email
+  pubsub_dead_letter_topic_id  = module.pubsub.dead_letter_topic == null ? null : "projects/${var.project_id}/topics/${module.pubsub.dead_letter_topic}"
+  pubsub_max_delivery_attempts = 5
+
+  depends_on = [
+    module.pubsub,
+    google_project_iam_member.domain_worker_roles,
+    google_service_account_iam_member.pubsub_invoker_token_creator,
+  ]
+}

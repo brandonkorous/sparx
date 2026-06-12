@@ -126,9 +126,7 @@ describe('automation rule document schemas', () => {
             conditions: [
               {
                 logic: 'AND',
-                conditions: [
-                  { logic: 'AND', conditions: [{ field: 'a', operator: 'is_set' }] },
-                ],
+                conditions: [{ logic: 'AND', conditions: [{ field: 'a', operator: 'is_set' }] }],
               },
             ],
           },

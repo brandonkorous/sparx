@@ -1,8 +1,8 @@
 # Sparx Platform — Automation Module Spec
 
-**Version:** 1.5
+**Version:** 1.6
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-10
+**Last Updated:** 2026-06-11
 
 ---
 
@@ -262,10 +262,15 @@ interface Condition {
   value: unknown;
 }
 
-// Multiple conditions: AND by default, OR supported.
+// A group combines leaf conditions AND/OR nested sub-groups, so a rule can express
+// mixed precedence like `A AND (B OR C)`. Nesting is bounded (MAX_CONDITION_DEPTH =
+// 3 levels) and the schema is built as explicit finite levels (NOT z.lazy), so it
+// stays a finite, $ref-free JSON-Schema — safe for REST validation AND MCP tool
+// registration. A flat (all-leaf) group is the original shape, so existing stored
+// automations parse unchanged.
 interface ConditionGroup {
   logic: 'AND' | 'OR';
-  conditions: Condition[];
+  conditions: (Condition | ConditionGroup)[]; // a child may be a nested sub-group
 }
 ```
 

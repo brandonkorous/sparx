@@ -10,6 +10,7 @@ import { Badge } from '@sparx/ui';
 import {
   Action as ActionSchema,
   ConditionGroup as ConditionGroupSchema,
+  isConditionGroup,
   triggerFromColumns,
 } from '@sparx/automation-schemas';
 import type {
@@ -219,27 +220,45 @@ export function conditionToText(c: Condition): string {
   return `${c.field} ${label} ${conditionValueText(c.value)}`.trim();
 }
 
-export function ConditionGroupView({ group }: { group: ConditionGroup }) {
+export function ConditionGroupView({
+  group,
+  nested = false,
+}: {
+  group: ConditionGroup;
+  nested?: boolean;
+}) {
   if (group.conditions.length === 0) {
-    return (
+    return nested ? (
+      <span className="text-sm text-[var(--color-text-tertiary)]">(empty group)</span>
+    ) : (
       <p className="text-sm text-[var(--color-text-tertiary)]">
         No conditions — runs on every trigger.
       </p>
     );
   }
-  const joiner = group.logic === 'AND' ? 'AND' : 'OR';
+  const joiner = group.logic;
   return (
-    <ul className="flex flex-col gap-1">
-      {group.conditions.map((c, i) => (
-        <li key={i} className="flex items-center gap-2 text-sm">
+    <ul
+      className={
+        nested
+          ? 'flex flex-col gap-1 border-l-2 border-[var(--color-border-default)] pl-3'
+          : 'flex flex-col gap-1'
+      }
+    >
+      {group.conditions.map((node, i) => (
+        <li key={i} className="flex items-start gap-2 text-sm">
           {i > 0 && (
-            <span className="text-xs font-medium tracking-wide text-[var(--color-text-tertiary)] uppercase">
+            <span className="mt-0.5 text-xs font-medium tracking-wide text-[var(--color-text-tertiary)] uppercase">
               {joiner}
             </span>
           )}
-          <code className="rounded bg-[var(--color-bg-subtle)] px-1.5 py-0.5 font-mono text-xs">
-            {conditionToText(c)}
-          </code>
+          {isConditionGroup(node) ? (
+            <ConditionGroupView group={node} nested />
+          ) : (
+            <code className="rounded bg-[var(--color-bg-subtle)] px-1.5 py-0.5 font-mono text-xs">
+              {conditionToText(node as Condition)}
+            </code>
+          )}
         </li>
       ))}
     </ul>

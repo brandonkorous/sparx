@@ -13,7 +13,11 @@ import type { ResolvedFields } from '../engine-types';
 export function evaluateConditions(group: ConditionGroup, fields: ResolvedFields): boolean {
   if (group.conditions.length === 0) return true;
   const verdicts = group.conditions.map((node) =>
-    isConditionGroup(node) ? evaluateConditions(node, fields) : evaluateOne(node, fields)
+    // A child is either a nested sub-group (recurse) or a leaf condition. The
+    // guard narrows the group case; the leaf cast is sound (guard ruled out a group).
+    isConditionGroup(node)
+      ? evaluateConditions(node, fields)
+      : evaluateOne(node as Condition, fields)
   );
   return group.logic === 'OR' ? verdicts.some(Boolean) : verdicts.every(Boolean);
 }

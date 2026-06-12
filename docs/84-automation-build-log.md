@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.14
+**Version:** 1.15
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-11
 
@@ -19,8 +19,9 @@ Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/bl
 > **▶ RESUME HERE:** **Slice G-UI — DONE this session.** The dashboard automations surface
 > (`apps/dashboard/.../automations/*`) is built: **list** (status-filter chips + per-row module tags +
 > run stats + inline enable/pause), **detail/review** (trigger + conditions + ordered actions, runs
-> preview), the full **builder** (event/schedule trigger editor, flat AND/OR condition editor, ordered
-> action editor with typed config fields + a JSON escape hatch), **run history + run detail** (per-step
+> preview), the full **builder** (event/schedule trigger editor, **nested AND/OR condition editor** —
+> mixed precedence like `A AND (B OR C)`, depth-bounded — and a drag-to-reorder ordered action editor
+> with typed config fields + a JSON escape hatch), **run history + run detail** (per-step
 > status, timing, input/output, and the `gate_log` audit trail), and a **platform-level nav tile**
 > (rail + mobile). It is a pure CONSUMER of the G-API REST surface via Server Actions — **no api-rest or
 > engine change**. The tier model shows up in the UI exactly as the service enforces it: a LOCKED rule
@@ -962,3 +963,27 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   dashboard, schedule/event-driven, email-sending, self-seeding, sole dunning impl, and observable.
   **Next:** Default Builder-emails library (unblocks email-driven seeds) or Slice I (external) — both
   user-sequenced.
+- **2026-06-11 (cont.)** — **G-UI polish (user-driven): action drag-and-drop + NESTED condition groups.**
+  (1) **Action reordering → drag-and-drop** (dnd-kit). User preference: drag the WHOLE CARD, not a handle
+  — implemented via a guarded `CardPointerSensor` that ignores pointer-downs on form controls (so inputs/
+  selects stay usable) + a `KeyboardSensor` for a11y; stable per-action ids keep each card's state with
+  the item across a drag. Memory `feedback_drag_whole_element_not_handle`.
+  (2) **Nested AND/OR condition groups** (the real expressiveness upgrade — flat AND/OR can't express
+  `A AND (B OR C)`). Cross-package: **schema** (`@sparx/automation-schemas` `condition.ts`) — `ConditionGroup`
+  now accepts leaf conditions OR nested sub-groups, built as **explicit finite levels (depth 3), NOT
+  `z.lazy`** so it stays a finite `$ref`-free JSON-Schema (verified the MCP tool registration still boots —
+  the prior 500-risk area) and over-deep trees are REJECTED, not silently accepted; backward compatible (a
+  flat all-leaf group is unchanged) → existing stored automations parse as-is. Added `isConditionGroup`
+  guard + `ConditionNode`/`MAX_CONDITION_DEPTH` exports. **Evaluator** (`@sparx/automation` `evaluate.ts`)
+  recurses into sub-groups. **Dashboard** `ConditionEditor` is now recursive (per-group All/Any + Add
+  condition / Add group, "Add group" hidden at max depth) and `ConditionGroupView` renders the tree indented.
+  **Verify:** automation-schemas typecheck + **10/10** (+3 nested: parse / backward-compat / depth-reject);
+  automation evaluator typecheck + **13/13** (+4 nested: mixed precedence / failing sub-group / 3-level /
+  empty sub-group); **api-mcp 4/4** (JSON-schema conversion still clean — finite-level design paid off);
+  **api-rest 7/7** (backward compat); dashboard typecheck + lint **0/0** + prettier + **`next build` exit 0**.
+  Bumped docs/81 §5.3 (v1.5→1.6). ⚠ **Pre-existing, UNRELATED failure surfaced:** `@sparx/automation` full
+  suite is 38/39 — `engine.test.ts > parks a durable wait and resumes it on a later tick` fails (`waiting` vs
+  `completed`). It's in the run-tick RESUME path (untouched by this work) and **fails identically on the
+  pre-change HEAD files** (verified by reverting condition.ts/evaluate.ts and re-running) — a flaky
+  `delaySeconds: 0` resume timing issue someone introduced when the suite grew 35→39, not this slice. Worth a
+  separate look. Nothing committed.
