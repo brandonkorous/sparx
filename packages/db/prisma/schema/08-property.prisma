@@ -69,6 +69,9 @@ model Property {
   siteVersions         SiteVersion[]
   sitePublishSchedules SitePublishSchedule[]
   storefrontTheme      StorefrontTheme?
+  // Per-site commerce defaults + checkout policy (docs/49 Phase 6b); a site with
+  // no row inherits the primary's at read time.
+  storefrontSettings   StorefrontSettings?
 
   // Custom + purchased hostnames pointing at this site (docs/49 §5, docs/24).
   domains Domain[]

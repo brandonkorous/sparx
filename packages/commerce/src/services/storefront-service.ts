@@ -1,14 +1,17 @@
-// storefrontService — per-tenant storefront settings + theme tokens.
+// storefrontService — per-site storefront settings + theme tokens.
 //
-// Sitebuilder owns layout; this service owns the commerce-relevant
-// defaults (currency, channels, abandonment threshold, theme overrides).
+// Sitebuilder owns layout; this service owns the commerce-relevant defaults
+// (currency, channels, abandonment threshold, theme overrides).
 //
-// Both settings and theme are one-row-per-tenant (tenantId is the
-// primary key) so reads and upserts are point lookups. RLS enforces
-// per-tenant isolation regardless.
+// Settings + theme are now one-row-per-(tenant, PROPERTY) (docs/49 Phase 6): each
+// of a tenant's SITES keeps its own. A site with no settings row of its own
+// INHERITS the tenant's PRIMARY site's settings at read time (resolveSettingsRow:
+// property → primary → code defaults), so adding a site never silently resets
+// currency/locale/checkout policy. RLS enforces per-tenant isolation regardless;
+// property_id is app-tier scoping within the tenant.
 
 import { UpdateStorefrontSettingsInput, UpdateStorefrontThemeInput } from '@sparx/commerce-schemas';
-import { withTenant } from '@sparx/db';
+import { withTenant, type TxClient } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
@@ -35,11 +38,42 @@ const DEFAULTS: StorefrontSettings = {
   requireAuthForCheckout: false,
 };
 
-export async function getSettings(ctx: ServiceContext): Promise<StorefrontSettings> {
+// The raw settings row returned by Prisma (the subset every reader needs).
+type SettingsRow = NonNullable<Awaited<ReturnType<TxClient['storefrontSettings']['findUnique']>>>;
+
+/**
+ * Resolve the settings row that GOVERNS a site (docs/49 Phase 6b): the site's own
+ * row, else the tenant's PRIMARY site's row (inheritance), else null (caller uses
+ * code defaults). Shared by every settings reader — the dashboard service, the
+ * public storefront payload, the cart, and the search projector — so the
+ * fallback is identical everywhere. Runs inside the caller's withTenant tx (RLS
+ * already scopes it to the tenant).
+ */
+export async function resolveSettingsRow(
+  tx: TxClient,
+  tenantId: string,
+  propertyId: string
+): Promise<SettingsRow | null> {
+  const own = await tx.storefrontSettings.findUnique({
+    where: { tenantId_propertyId: { tenantId, propertyId } },
+  });
+  if (own) return own;
+  const primary = await tx.property.findFirst({
+    where: { isPrimary: true },
+    select: { id: true },
+  });
+  if (!primary || primary.id === propertyId) return null;
+  return tx.storefrontSettings.findUnique({
+    where: { tenantId_propertyId: { tenantId, propertyId: primary.id } },
+  });
+}
+
+export async function getSettings(
+  ctx: ServiceContext,
+  propertyId: string
+): Promise<StorefrontSettings> {
   return withTenant(ctx, async (tx) => {
-    const row = await tx.storefrontSettings.findUnique({
-      where: { tenantId: ctx.tenantId },
-    });
+    const row = await resolveSettingsRow(tx, ctx.tenantId, propertyId);
     if (!row) return DEFAULTS;
     return {
       defaultCurrency: row.defaultCurrency,
@@ -56,18 +90,23 @@ export async function getSettings(ctx: ServiceContext): Promise<StorefrontSettin
   });
 }
 
-export async function updateSettings(ctx: ServiceContext, rawInput: unknown): Promise<void> {
+export async function updateSettings(
+  ctx: ServiceContext,
+  propertyId: string,
+  rawInput: unknown
+): Promise<void> {
   const input = UpdateStorefrontSettingsInput.parse(rawInput);
 
   await withTenant(ctx, async (tx) => {
     const before = await tx.storefrontSettings.findUnique({
-      where: { tenantId: ctx.tenantId },
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId } },
     });
 
     await tx.storefrontSettings.upsert({
-      where: { tenantId: ctx.tenantId },
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId } },
       create: {
         tenantId: ctx.tenantId,
+        propertyId,
         defaultCurrency: input.defaultCurrency,
         defaultLocale: input.defaultLocale,
         defaultWarehouseId: input.defaultWarehouseId ?? null,
@@ -98,7 +137,7 @@ export async function updateSettings(ctx: ServiceContext, rawInput: unknown): Pr
         ? 'commerce.storefront.settings.updated'
         : 'commerce.storefront.settings.created',
       entityType: 'StorefrontSettings',
-      entityId: ctx.tenantId,
+      entityId: propertyId,
       diff: { before: before as Record<string, unknown> | null, after: input },
     });
   });

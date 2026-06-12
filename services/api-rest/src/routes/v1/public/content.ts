@@ -18,6 +18,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma, withTenant } from '@sparx/db';
+import { storefrontService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { notFound, badRequest } from '@sparx/api-core/errors';
 import { serializeEntry } from '@sparx/api-core/entries';
@@ -368,16 +369,10 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
               radiusBase: true,
             },
           }),
-          tx.storefrontSettings.findUnique({
-            where: { tenantId: tenant.id },
-            select: {
-              defaultCurrency: true,
-              defaultLocale: true,
-              showStockBelow: true,
-              hidePricesWhenSignedOut: true,
-              requireAuthForCheckout: true,
-            },
-          }),
+          // The active site's settings, inheriting the primary's when the site has
+          // no row of its own (docs/49 Phase 6b). Returns the full row; the payload
+          // below reads currency/locale/stock/auth off it.
+          storefrontService.resolveSettingsRow(tx, tenant.id, propertyId),
           // Tenant-level brand is the source of truth for IDENTITY (docs/30 §6):
           // logo/favicon + brand colours + brand type. It WINS over StorefrontTheme
           // here; the theme keeps only presentation tokens (background/muted/radius).

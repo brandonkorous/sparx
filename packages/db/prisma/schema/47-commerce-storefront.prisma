@@ -4,8 +4,16 @@
 // channels enabled, abandonment threshold) and the limited set of theme
 // tokens a tenant can override without touching Sitebuilder.
 
+// One row per (tenant, PROPERTY) — each site's commerce defaults + checkout
+// policy (docs/49 Phase 6b). A site with no row of its own INHERITS the tenant's
+// PRIMARY site's settings at read time (services resolve property → primary →
+// code defaults), so adding a site never silently resets currency/locale. The
+// migration adds property_id, backfills to the primary, and swaps the PK.
 model StorefrontSettings {
-  tenantId String @id @map("tenant_id") @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  // One settings row per property → property_id is globally unique, making the
+  // Property↔StorefrontSettings back-relation one-to-one.
+  propertyId String @unique @map("property_id") @db.Uuid
 
   defaultCurrency         String  @default("USD") @map("default_currency") @db.VarChar(3)
   defaultLocale           String  @default("en-US") @map("default_locale") @db.VarChar(10)
@@ -23,8 +31,10 @@ model StorefrontSettings {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
+  @@id([tenantId, propertyId])
   @@map("commerce_storefront_settings")
 }
 

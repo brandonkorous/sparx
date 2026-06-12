@@ -39,13 +39,17 @@ const storefrontRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/storefront/settings', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    return ok(await storefrontService.getSettings(toCommerceContext(request)));
+    const ctx = toCommerceContext(request);
+    const propertyId = await resolveRequestProperty(request, ctx.tenantId);
+    return ok(await storefrontService.getSettings(ctx, propertyId));
   });
 
   app.patch('/v1/commerce/storefront/settings', async (request) => {
     requireRole(request, 'admin');
     await requireCommerceModule(request);
-    await storefrontService.updateSettings(toCommerceContext(request), request.body);
+    const ctx = toCommerceContext(request);
+    const propertyId = await resolveRequestProperty(request, ctx.tenantId);
+    await storefrontService.updateSettings(ctx, propertyId, request.body);
     return ok({ updated: true });
   });
 

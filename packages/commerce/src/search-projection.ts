@@ -81,10 +81,19 @@ export async function projectProduct(
 
     if (!product) return null;
 
-    const settings = await tx.storefrontSettings.findFirst({
-      where: { tenantId: ctx.tenantId },
-      select: { defaultCurrency: true },
+    // Settings are per-site now (docs/49 Phase 6b); the search index is tenant-wide
+    // (one collection per tenant), so index products in the tenant's PRIMARY site's
+    // currency — the canonical tenant default.
+    const primary = await tx.property.findFirst({
+      where: { isPrimary: true },
+      select: { id: true },
     });
+    const settings = primary
+      ? await tx.storefrontSettings.findUnique({
+          where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: primary.id } },
+          select: { defaultCurrency: true },
+        })
+      : null;
 
     const activeVariants = product.variants;
     const priceCentsList = activeVariants.map((v) => v.priceCents);

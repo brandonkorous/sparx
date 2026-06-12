@@ -17,7 +17,12 @@ import { randomUUID } from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
-import { cartService, discountService, type ServiceContext } from '@sparx/commerce';
+import {
+  cartService,
+  discountService,
+  storefrontService,
+  type ServiceContext,
+} from '@sparx/commerce';
 import { withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { badRequest } from '@sparx/api-core/errors';
@@ -141,13 +146,17 @@ function totalsView(t: {
   };
 }
 
-async function defaultCurrency(tenantId: string): Promise<string> {
-  const row = await withTenant({ tenantId }, (tx) =>
-    tx.storefrontSettings.findUnique({
-      where: { tenantId },
-      select: { defaultCurrency: true },
-    })
-  );
+// The cart's currency comes from its ORIGIN site's settings (docs/49 Phase 6b),
+// inheriting the primary's when that site has no row of its own. When the cart
+// isn't site-tagged (no `?property=`), fall back to the tenant's primary site.
+async function defaultCurrency(tenantId: string, propertyId: string | null): Promise<string> {
+  const row = await withTenant({ tenantId }, async (tx) => {
+    const effective =
+      propertyId ??
+      (await tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } }))?.id;
+    if (!effective) return null;
+    return storefrontService.resolveSettingsRow(tx, tenantId, effective);
+  });
   return row?.defaultCurrency ?? 'USD';
 }
 
@@ -168,7 +177,7 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
         )?.id ?? null)
       : null;
     const token = randomUUID();
-    const currency = await defaultCurrency(tenantId);
+    const currency = await defaultCurrency(tenantId, propertyId);
     const { cartId } = await cartService.create(ctx, {
       channel: 'storefront',
       currency,
