@@ -172,8 +172,7 @@ export async function resolveSiteByHost(rawHost: string): Promise<SiteRoute | nu
     row &&
     (row.status === 'verified' ||
       row.status === 'active' ||
-      (row.type === 'purchased' &&
-        (row.status === 'pending_ssl' || row.status === 'verifying')))
+      (row.type === 'purchased' && (row.status === 'pending_ssl' || row.status === 'verifying')))
   ) {
     const tenant = await prisma.tenant.findUnique({
       where: { id: row.tenantId },

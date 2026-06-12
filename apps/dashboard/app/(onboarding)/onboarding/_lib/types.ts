@@ -79,6 +79,42 @@ export interface WizardInitialState {
   /** From the marketplace funnel (`/sign-up?blueprint=<key>`) — auto-highlight
    *  that template on the gallery so a referred visitor lands on their pick. */
   preselectKey: string | null;
+  /** Platform flag: is buying a NEW domain open yet? Off until tenant billing
+   *  (Stripe) lands — the Domain step then discloses "checkout opens soon" and
+   *  buying is deferred. Free `.sparx.zone` addresses and connecting a domain you
+   *  already own are always available, flag or not. */
+  domainPurchaseEnabled: boolean;
+}
+
+/** ICANN registrant contact — required to register any domain. Captured at the
+ *  Domain step when a tenant chooses a paid domain, carried until Launch. */
+export interface RegistrantContact {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
+/** A domain the tenant chose to BUY during onboarding. In the deferred-purchase
+ *  flow the choice (domain + ICANN contact + price) is captured at the Domain
+ *  step but NOT charged or registered until Launch — a custom domain is the one
+ *  paid, opt-in add-on, billed only when the tenant commits to going live. */
+export interface PendingDomain {
+  domain: string;
+  /** First-year price incl. our fee, in cents — what we charge at launch. */
+  displayPrice: number;
+  /** Renewal price incl. our fee, in cents — per additional year. */
+  renewalDisplayPrice: number;
+  years: number;
+  privacy: boolean;
+  propertyId: string;
+  contact: RegistrantContact;
 }
 
 export type SlugAvailability =

@@ -22,15 +22,75 @@ import { CheckCircle2, Globe, Lock } from 'lucide-react';
 import type { Property } from '@/lib/sites';
 import { purchaseDomain, type DomainSuggestion, type PurchaseResult } from './actions';
 
+/** The domain choice captured in `select` mode — everything needed to register
+ *  later (at the onboarding Launch step) WITHOUT charging or registering now. */
+export interface DomainSelection {
+  domain: string;
+  displayPrice: number;
+  renewalDisplayPrice: number;
+  years: number;
+  privacy: boolean;
+  propertyId: string;
+  contact: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address1: string;
+    address2?: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
+}
+
 export interface PurchaseDialogProps {
   open: boolean;
   onClose: () => void;
   suggestion: DomainSuggestion | null;
   properties: Property[];
-  onSuccess: (result: PurchaseResult) => void;
+  /** `purchase` (default, Settings): charge + register on submit. `select`
+   *  (onboarding): capture the choice and hand it back via `onSelect` — the
+   *  actual charge happens later at Launch, so nothing is billed here. */
+  mode?: 'purchase' | 'select';
+  /** Called after a successful registration in `purchase` mode. */
+  onSuccess?: (result: PurchaseResult) => void;
+  /** Called with the captured choice in `select` mode (no charge yet). */
+  onSelect?: (selection: DomainSelection) => void;
 }
 
 type Step = 'form' | 'purchasing' | 'success';
+
+/** Read a text field out of FormData (form inputs are always strings, never File). */
+function str(fd: FormData, key: string): string {
+  const v = fd.get(key);
+  return typeof v === 'string' ? v : '';
+}
+
+/** Pull the structured selection out of the form (used by both modes). */
+function readSelection(fd: FormData, suggestion: DomainSuggestion): DomainSelection {
+  return {
+    domain: suggestion.domain,
+    displayPrice: suggestion.displayPrice,
+    renewalDisplayPrice: suggestion.renewalDisplayPrice,
+    years: Number(str(fd, 'years')) || 1,
+    privacy: str(fd, 'privacy') === 'true',
+    propertyId: str(fd, 'propertyId'),
+    contact: {
+      firstName: str(fd, 'firstName'),
+      lastName: str(fd, 'lastName'),
+      email: str(fd, 'email'),
+      phone: str(fd, 'phone'),
+      address1: str(fd, 'address1'),
+      address2: str(fd, 'address2') || undefined,
+      city: str(fd, 'city'),
+      state: str(fd, 'state'),
+      postalCode: str(fd, 'postalCode'),
+      country: str(fd, 'country').toUpperCase(),
+    },
+  };
+}
 
 // Cosmetic progress labels shown during the ~5-second purchase operation.
 const PURCHASE_STEPS = ['Reserving domain', 'Configuring DNS', 'Finalising'];
@@ -44,7 +104,9 @@ export function PurchaseDialog({
   onClose,
   suggestion,
   properties,
+  mode = 'purchase',
   onSuccess,
+  onSelect,
 }: PurchaseDialogProps) {
   const [step, setStep] = React.useState<Step>('form');
   const [activeStep, setActiveStep] = React.useState(0);
@@ -71,6 +133,18 @@ export function PurchaseDialog({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    // Select mode (onboarding): capture the choice and hand it back — no charge,
+    // no registration. The purchase happens later, at the Launch step.
+    if (mode === 'select') {
+      if (!suggestion) return;
+      const fd = new FormData(e.currentTarget);
+      onSelect?.(readSelection(fd, suggestion));
+      onClose();
+      return;
+    }
+
+    // Purchase mode (Settings): charge + register now.
     setStep('purchasing');
     setActiveStep(0);
 
@@ -85,7 +159,7 @@ export function PurchaseDialog({
 
     setResult(res.data ?? null);
     setStep('success');
-    if (res.data) onSuccess(res.data);
+    if (res.data) onSuccess?.(res.data);
   }
 
   const priceLabel = suggestion ? `${formatPrice(suggestion.displayPrice)}/yr` : '';
@@ -101,7 +175,9 @@ export function PurchaseDialog({
         <ModalHeader>
           <ModalTitle className="flex items-center gap-2">
             <Globe className="size-5 text-[var(--color-primary)]" />
-            {step === 'success' ? 'Domain registered!' : `Purchase ${suggestion?.domain ?? ''}`}
+            {step === 'success'
+              ? 'Domain registered!'
+              : `${mode === 'select' ? 'Add' : 'Purchase'} ${suggestion?.domain ?? ''}`}
           </ModalTitle>
         </ModalHeader>
 
@@ -313,12 +389,24 @@ export function PurchaseDialog({
                   </Stack>
                 </div>
 
-                {/* Payment notice (Stripe stubbed) */}
+                {/* Payment notice — mode-aware. Select mode (onboarding) charges
+                    at Launch, not now; purchase mode (Settings) charges on submit. */}
                 <div className="rounded-lg border border-[var(--border)] bg-[var(--color-bg-subtle)] px-4 py-3">
                   <Text size="sm" variant="muted">
-                    <strong className="font-medium text-[var(--color-text)]">Billing:</strong> This
-                    charge will be added to your next invoice. Payment processing via Stripe is
-                    coming soon — purchases are free during the beta.
+                    <strong className="font-medium text-[var(--color-text)]">Billing:</strong>{' '}
+                    {mode === 'select' ? (
+                      <>
+                        You won&apos;t be charged now. This domain is registered and billed (
+                        {priceLabel}) when you publish at the Launch step — your free address stays
+                        free until then.
+                      </>
+                    ) : (
+                      <>
+                        Your card is charged {priceLabel} now to register this domain. It renews at{' '}
+                        {suggestion ? formatPrice(suggestion.renewalDisplayPrice) : ''}/yr; turn off
+                        auto-renew anytime.
+                      </>
+                    )}
                   </Text>
                 </div>
               </Stack>
@@ -329,7 +417,7 @@ export function PurchaseDialog({
                 Cancel
               </Button>
               <Button type="submit" color="primary" form="purchase-form">
-                Purchase &amp; connect — {priceLabel}
+                {mode === 'select' ? 'Add to my site' : 'Purchase & connect'} — {priceLabel}
               </Button>
             </ModalFooter>
           </form>

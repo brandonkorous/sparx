@@ -11,6 +11,11 @@ export default async function DomainsSettingsPage() {
     listDomains().catch(() => [] as Domain[]),
   ]);
 
+  // Domain-checkout gate (mirrors api-rest's DOMAIN_PURCHASE_ENABLED, the security
+  // boundary). Off → buying a new domain shows "checkout opens soon"; searching,
+  // connecting an owned domain, and managing existing domains stay fully live.
+  const purchaseEnabled = process.env.DOMAIN_PURCHASE_ENABLED === 'true';
+
   return (
     <Container size="lg">
       <Stack gap={6} className="py-10">
@@ -18,7 +23,11 @@ export default async function DomainsSettingsPage() {
           title="Domains"
           description="Purchase new domains, track renewals, and manage WHOIS privacy and DNS settings."
         />
-        <DomainsManager properties={properties} domains={domains} />
+        <DomainsManager
+          properties={properties}
+          domains={domains}
+          purchaseEnabled={purchaseEnabled}
+        />
       </Stack>
     </Container>
   );

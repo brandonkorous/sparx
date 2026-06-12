@@ -24,6 +24,7 @@ import {
   AlertTriangle,
   ArrowRightLeft,
   CalendarClock,
+  Clock,
   ExternalLink,
   Globe,
   Lock,
@@ -55,6 +56,9 @@ import { PurchaseDialog } from './purchase-dialog';
 export interface DomainsManagerProps {
   properties: Property[];
   domains: Domain[];
+  /** Is buying a new domain open yet? Off until tenant billing (Stripe) lands —
+   *  search + connect stay live; the buy action shows "checkout opens soon". */
+  purchaseEnabled: boolean;
 }
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
@@ -406,10 +410,11 @@ function RenewPanel({ domain, pending, onRenew, onClose }: RenewPanelProps) {
 
 interface SearchResultsProps {
   suggestions: DomainSuggestion[];
+  purchaseEnabled: boolean;
   onSelect: (suggestion: DomainSuggestion) => void;
 }
 
-function SearchResults({ suggestions, onSelect }: SearchResultsProps) {
+function SearchResults({ suggestions, purchaseEnabled, onSelect }: SearchResultsProps) {
   if (suggestions.length === 0) {
     return (
       <Text size="sm" variant="muted" className="py-2">
@@ -432,13 +437,17 @@ function SearchResults({ suggestions, onSelect }: SearchResultsProps) {
               {formatPrice(s.displayPrice)}/yr
             </Text>
           </Stack>
-          {s.available ? (
+          {!s.available ? (
+            <Badge color="neutral" variant="soft">
+              Taken
+            </Badge>
+          ) : purchaseEnabled ? (
             <Button size="sm" color="primary" onClick={() => onSelect(s)}>
               <Plus className="size-3.5" /> Buy
             </Button>
           ) : (
             <Badge color="neutral" variant="soft">
-              Taken
+              <Clock className="size-3" /> Soon
             </Badge>
           )}
         </div>
@@ -449,7 +458,7 @@ function SearchResults({ suggestions, onSelect }: SearchResultsProps) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export function DomainsManager({ properties, domains }: DomainsManagerProps) {
+export function DomainsManager({ properties, domains, purchaseEnabled }: DomainsManagerProps) {
   const router = useRouter();
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
@@ -747,6 +756,22 @@ export function DomainsManager({ properties, domains }: DomainsManagerProps) {
         </CardHeader>
         <CardContent>
           <Stack gap={4}>
+            {!purchaseEnabled && (
+              <div className="flex items-start gap-2.5 rounded-lg border border-[var(--border)] bg-[var(--color-bg-subtle)] px-4 py-3">
+                <Clock className="mt-0.5 size-4 shrink-0 text-[var(--color-text-secondary)]" />
+                <Text size="sm" variant="muted">
+                  <strong className="font-medium text-[var(--color-text)]">
+                    Checkout opens soon.
+                  </strong>{' '}
+                  Search and pricing are live, but buying a new domain isn&apos;t open yet. In the
+                  meantime, connect a domain you already own from{' '}
+                  <Link href="/settings/sites" className="underline">
+                    Sites
+                  </Link>
+                  .
+                </Text>
+              </div>
+            )}
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[var(--color-text-secondary)]" />
@@ -777,7 +802,11 @@ export function DomainsManager({ properties, domains }: DomainsManagerProps) {
 
             {/* Results */}
             {!searching && suggestions !== null && (
-              <SearchResults suggestions={suggestions} onSelect={(s) => setSelectedSuggestion(s)} />
+              <SearchResults
+                suggestions={suggestions}
+                purchaseEnabled={purchaseEnabled}
+                onSelect={(s) => setSelectedSuggestion(s)}
+              />
             )}
 
             {/* Hint */}

@@ -347,7 +347,7 @@ balances from **both** during the overlap.
    `b2bArService.createOrderArDocument`, composing into the order transaction.
 4. `sync_b2b_credit_used()` was rewritten to sum **open `billing_documents` balances**, and credit
    re-syncs through the billing money authority (`recomputeTotals`) on every AR mutation. Escalation
-   + the automation scanner read AR solely from `billing_documents` (the dual-read is gone).
+   - the automation scanner read AR solely from `billing_documents` (the dual-read is gone).
 5. The REST `/v1/b2b/invoices` routes, dashboard `/b2b/invoices` pages, and the customer portal are
    backed by `billing_documents` (a thin "invoice" projection), with the now billing-native status
    vocabulary `unpaid | partial | paid | overdue | void` (`void` replaces `written_off`).

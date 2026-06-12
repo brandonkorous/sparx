@@ -110,6 +110,12 @@ export default async function OnboardingPage({
     ? (process.env.SPARX_SITE_DEV_ORIGIN ?? 'http://localhost:3004')
     : `https://${slug}.sparx.zone`;
 
+  // Domain-checkout gate (mirrors api-rest's DOMAIN_PURCHASE_ENABLED, the security
+  // boundary — this flag only governs UX). Off → the Domain step shows prices +
+  // "checkout opens soon" instead of letting a tenant buy. Both read the same key
+  // from the shared app-env, so they stay in lockstep.
+  const domainPurchaseEnabled = process.env.DOMAIN_PURCHASE_ENABLED === 'true';
+
   return (
     <OnboardingWizard
       initial={{
@@ -125,6 +131,7 @@ export default async function OnboardingPage({
         preselectKey,
         siteOrigin,
         useTenantParam: isDev,
+        domainPurchaseEnabled,
       }}
     />
   );

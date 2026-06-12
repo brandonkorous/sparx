@@ -154,13 +154,13 @@ interface GdAvailableResponse {
 }
 
 interface GdBulkAvailableResponse {
-  domains?: Array<{
+  domains?: {
     domain: string;
     available?: boolean;
     price?: number;
     renewalPrice?: number;
     currency?: string;
-  }>;
+  }[];
 }
 
 interface GdSuggestion {
@@ -204,7 +204,9 @@ export async function checkAvailability(domain: string): Promise<DomainAvailabil
  *  a map keyed by domain; taken/missing domains simply aren't present. */
 async function checkAvailabilityBulk(
   domains: string[]
-): Promise<Map<string, { available: boolean; price: number; renewalPrice: number; currency: string }>> {
+): Promise<
+  Map<string, { available: boolean; price: number; renewalPrice: number; currency: string }>
+> {
   const map = new Map<
     string,
     { available: boolean; price: number; renewalPrice: number; currency: string }

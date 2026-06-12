@@ -11,13 +11,20 @@ import {
   finishOnboardingAction,
   goToStepAction,
   publishAndFinishAction,
+  purchaseSelectedDomainAction,
   saveModulesAction,
   saveWorkspaceAction,
   selectTemplateAction,
   startFromScratchAction,
 } from '../_lib/actions';
 import { ONBOARDING_MODULES, isSellingSelected } from '../_lib/modules';
-import type { OnboardingStepKey, SlugAvailability, WizardInitialState } from '../_lib/types';
+import type {
+  OnboardingStepKey,
+  PendingDomain,
+  SlugAvailability,
+  WizardInitialState,
+} from '../_lib/types';
+import type { DomainSelection } from '@/app/(dashboard)/settings/domains/purchase-dialog';
 import { StepModules } from './step-modules';
 import { StepBlueprint } from './step-blueprint';
 import { StepWorkspace } from './step-workspace';
@@ -159,10 +166,10 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
   const [siteName, setSiteName] = React.useState(initial.siteName);
   const [slugCheck, setSlugCheck] = React.useState<SlugCheck>({ status: 'idle' });
 
-  // Domain choice — defaults to the free address so Continue always works.
-  const [domain, setDomain] = React.useState<{ kind: 'free' } | { kind: 'custom'; host: string }>({
-    kind: 'free',
-  });
+  // Domain choice — null = the free `.sparx.zone` address (the no-card default, so
+  // Continue always works). A `PendingDomain` is a paid domain the tenant chose
+  // but hasn't paid for: it's registered + charged at Launch, not here.
+  const [pendingDomain, setPendingDomain] = React.useState<PendingDomain | null>(null);
 
   const [published, setPublished] = React.useState(false);
   const [busy, startBusy] = React.useTransition();
@@ -263,10 +270,22 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
         case 'payments':
           res = await completePaymentsAction({ paymentsConnected: stripeConnected, next: nextKey });
           break;
-        case 'launch':
+        case 'launch': {
           if (published) {
             router.push('/');
             return;
+          }
+          // Buy the chosen domain FIRST (charge + register). A failure here — card
+          // declined, domain taken since they picked it, or checkout closed —
+          // blocks launch with the API's message; we never publish onto a domain
+          // we couldn't secure.
+          if (pendingDomain && initial.domainPurchaseEnabled) {
+            const bought = await purchaseSelectedDomainAction(pendingDomain);
+            if (!bought.ok) {
+              setError(bought.error ?? 'We couldn’t complete the domain purchase.');
+              return;
+            }
+            setPendingDomain(null);
           }
           if (installId) {
             res = await publishAndFinishAction(installId);
@@ -282,21 +301,21 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
             }
           }
           break;
+        }
       }
       if (res.ok) setStep(nextKey);
       else setError(res.error ?? 'Something went wrong.');
     });
   }
 
-  // A custom domain was bought via the PurchaseDialog — record it and advance.
-  function onDomainPurchased(host: string) {
-    setDomain({ kind: 'custom', host });
+  // A paid domain was chosen in the Domain step's select dialog — hold it (it's
+  // charged + registered at Launch, not now). Continue advances normally.
+  function onDomainSelected(selection: DomainSelection) {
+    setPendingDomain(selection);
     setError(null);
-    startBusy(async () => {
-      const res = await completeDomainStepAction(nextKey);
-      if (res.ok) setStep(nextKey);
-      else setError(res.error ?? 'Something went wrong.');
-    });
+  }
+  function onDomainCleared() {
+    setPendingDomain(null);
   }
 
   // ── canContinue + CTA label per step ─────────────────────────────────────────
@@ -321,6 +340,9 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
         return stripeConnected ? 'Continue' : 'Skip for now';
       case 'launch':
         if (published) return 'Go to dashboard';
+        if (pendingDomain && initial.domainPurchaseEnabled) {
+          return installId ? 'Pay & publish' : 'Pay & finish';
+        }
         return installId ? 'Publish my site' : 'Finish setup';
       default:
         return 'Continue';
@@ -352,7 +374,9 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
   pushEntry(
     'domain',
     'Domain',
-    domain.kind === 'custom' ? domain.host : `Free · ${normalizedSlug || initial.slug}.sparx.zone`
+    pendingDomain
+      ? `${pendingDomain.domain} · $${(pendingDomain.displayPrice / 100).toFixed(2)} at launch`
+      : `Free · ${normalizedSlug || initial.slug}.sparx.zone`
   );
   if (selling) {
     pushEntry('payments', 'Payments', stripeConnected ? 'Connected' : 'Set up later');
@@ -394,7 +418,10 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
         <StepDomain
           slug={normalizedSlug || initial.slug}
           defaultQuery={initial.companyName.replace(/[^a-z0-9]+/gi, '').toLowerCase()}
-          onPurchased={onDomainPurchased}
+          purchaseEnabled={initial.domainPurchaseEnabled}
+          selectedHost={pendingDomain?.domain ?? null}
+          onSelect={onDomainSelected}
+          onClearSelection={onDomainCleared}
         />
       );
       break;
@@ -413,6 +440,7 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
           modules={activeModules}
           monthlyTotal={total}
           monthlyElsewhere={elsewhere}
+          pendingDomain={pendingDomain}
           onDifferentTemplate={() => goPersist('template')}
         />
       );

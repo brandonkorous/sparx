@@ -6,6 +6,7 @@ import { listProperties, type Property } from '@/lib/sites';
 import type {
   OnboardingCompleted,
   OnboardingStepKey,
+  PendingDomain,
   SlugAvailability,
   WizardResult,
 } from './types';
@@ -190,6 +191,29 @@ export async function completeDomainStepAction(next: OnboardingStepKey): Promise
     await patchOnboarding({ completed: { domain: true }, currentStep: next });
     revalidatePath('/onboarding');
     return ok;
+  } catch (err) {
+    return fail(err);
+  }
+}
+
+// Buy the domain the tenant chose at the Domain step — deferred to Launch so the
+// charge is tied to actually going live (and never fronted for someone who
+// abandons setup). Calls the gated /v1/domains/purchase, which charges the tenant
+// for real BEFORE registering with GoDaddy. Returns the host on success; surfaces
+// the API's message on failure (e.g. checkout closed, domain taken, card declined)
+// so Launch can show it without publishing.
+export async function purchaseSelectedDomainAction(
+  input: PendingDomain
+): Promise<WizardResult<{ host: string }>> {
+  try {
+    const res = await api.post<{ domain: { host: string } }>('/v1/domains/purchase', {
+      domain: input.domain,
+      years: input.years,
+      privacy: input.privacy,
+      propertyId: input.propertyId,
+      contact: input.contact,
+    });
+    return { ok: true, data: { host: res.domain.host } };
   } catch (err) {
     return fail(err);
   }

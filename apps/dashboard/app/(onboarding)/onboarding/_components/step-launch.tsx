@@ -7,6 +7,7 @@ import {
   ArrowRight,
   Boxes,
   ExternalLink,
+  Globe,
   PartyPopper,
   PencilRuler,
   Receipt,
@@ -17,7 +18,7 @@ import {
 } from 'lucide-react';
 import { getPreviewTokenAction } from '../_lib/actions';
 import type { OnboardingModule } from '../_lib/modules';
-import type { WizardBlueprint } from '../_lib/types';
+import type { PendingDomain, WizardBlueprint } from '../_lib/types';
 
 const STORE_ZONE = 'sparx.zone';
 const BUILDER_HREF = '/builder/page';
@@ -71,6 +72,7 @@ export function StepLaunch({
   modules,
   monthlyTotal,
   monthlyElsewhere,
+  pendingDomain,
   onDifferentTemplate,
 }: {
   slug: string;
@@ -82,6 +84,8 @@ export function StepLaunch({
   modules: OnboardingModule[];
   monthlyTotal: number;
   monthlyElsewhere: number;
+  /** A paid domain chosen earlier — charged + registered when they publish. */
+  pendingDomain: PendingDomain | null;
   onDifferentTemplate: () => void;
 }) {
   const [token, setToken] = React.useState<string | null>(null);
@@ -122,6 +126,11 @@ export function StepLaunch({
             </Text>
           </Stack>
         </Stack>
+        {pendingDomain && (
+          <div className="mt-7">
+            <DomainChargeCard domain={pendingDomain} />
+          </div>
+        )}
         {monthlySavings > 0 && (
           <div className="mt-7">
             <SavingsBanner
@@ -168,6 +177,13 @@ export function StepLaunch({
           </Text>
         </Stack>
       </Stack>
+
+      {/* ── Paid domain (charged at publish) ──────────────────────────────── */}
+      {pendingDomain && (
+        <div className="mt-7">
+          <DomainChargeCard domain={pendingDomain} />
+        </div>
+      )}
 
       {/* ── The value: savings banner ─────────────────────────────────────── */}
       {monthlySavings > 0 && (
@@ -245,6 +261,40 @@ export function StepLaunch({
           Choose a different blueprint
         </Button>
       </div>
+    </div>
+  );
+}
+
+// The chosen paid domain, shown on Launch as a one-time charge line item — the
+// "and charge it here" half of the disclosure: you picked it on the Domain step
+// for free; publishing is where it's actually billed and registered.
+function DomainChargeCard({ domain }: { domain: PendingDomain }) {
+  const first = `$${(domain.displayPrice / 100).toFixed(2)}`;
+  const renews =
+    domain.renewalDisplayPrice > domain.displayPrice
+      ? `$${(domain.renewalDisplayPrice / 100).toFixed(2)}`
+      : null;
+  return (
+    <div className="rounded-2xl border border-[var(--module-active)] bg-[var(--module-active-tint)] px-6 py-5 text-left">
+      <div className="flex items-center gap-2">
+        <Globe className="h-4 w-4 text-[var(--module-active)]" />
+        <Text size="sm" weight="medium" className="text-[var(--module-active)]">
+          Custom domain
+        </Text>
+      </div>
+      <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <Text weight="medium" className="text-lg">
+          {domain.domain}
+        </Text>
+        <Text size="sm" variant="muted">
+          <span className="font-medium text-[var(--color-text-primary)]">{first}</span> charged when
+          you publish{renews ? ` · then ${renews}/yr` : ''}
+        </Text>
+      </div>
+      <Text size="xs" variant="muted" className="mt-2 block">
+        We register it and point it at your site automatically — no DNS to set up. Not ready? Go
+        back a step and switch to your free address; you won&apos;t be charged.
+      </Text>
     </div>
   );
 }

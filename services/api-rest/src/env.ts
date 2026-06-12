@@ -69,6 +69,20 @@ const EnvSchema = z
     // dev hit GoDaddy's FREE production read endpoints (available/suggest; only
     // purchase charges), since the OTE sandbox is chronically degraded.
     GODADDY_ENV: z.enum(['prod', 'production', 'ote', 'test']).optional(),
+    // Domain-checkout kill-switch. A domain registration is a HARD pass-through
+    // cost — the instant we call GoDaddy `purchaseDomain`, ICANN/GoDaddy bills the
+    // Sparx reseller account for real (no trial, no reversal). So buying a NEW
+    // domain (and renewing one) is gated OFF until tenant billing (Stripe
+    // card-on-file) is wired and we can charge the tenant BEFORE registering. Off
+    // → POST /v1/domains/purchase and /:id/renew return 403, and the dashboard
+    // shows "checkout opens soon". Free *.sparx.zone subdomains and connecting a
+    // domain you already own are unaffected — they cost nothing. Env is a string;
+    // only the literal "true"/"1" enables it (avoids the z.coerce.boolean footgun
+    // where the string "false" is truthy).
+    DOMAIN_PURCHASE_ENABLED: z
+      .string()
+      .optional()
+      .transform((v) => v === 'true' || v === '1'),
     // Stripe platform-level keys. Used by the webhook handler and Stripe
     // Connect OAuth. Per-tenant keys live in ProviderInstallation configs.
     // STRIPE_SECRET_KEY       — platform/connect account secret key

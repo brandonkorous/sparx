@@ -2,26 +2,38 @@
 
 import * as React from 'react';
 import { Badge, Button, Input, Spinner, Text, cn } from '@sparx/ui';
-import { Check, Search } from 'lucide-react';
+import { Check, Clock, Globe, Search, X } from 'lucide-react';
 import type { Property } from '@/lib/sites';
-import { PurchaseDialog } from '@/app/(dashboard)/settings/domains/purchase-dialog';
+import {
+  PurchaseDialog,
+  type DomainSelection,
+} from '@/app/(dashboard)/settings/domains/purchase-dialog';
 import { searchDomains, type DomainSuggestion } from '@/app/(dashboard)/settings/domains/actions';
 import { getPrimaryPropertyAction } from '../_lib/actions';
 
 const STORE_ZONE = 'sparx.zone';
 
-// Step 4 — Domain (work pane). The featured upsell, never minimized: search-led,
-// best match highlighted, buy in place. The free `<slug>.sparx.zone` fallback is
-// the card's default Continue, so this body is just the search + results; buying a
-// domain reports up (`onPurchased`) and the orchestrator advances.
+// Step 4 — Domain (work pane). Search-led, best match highlighted. Buying a domain
+// is DEFERRED: a custom domain is a paid registration, so the choice is captured
+// here (with the ICANN contact + price) and only charged at the Launch step — the
+// free `<slug>.sparx.zone` address is always the no-card default. When checkout
+// isn't open yet (`purchaseEnabled` false) the results stay informational (price +
+// "soon") and the only live paths are the free address or connecting a domain you
+// already own.
 export function StepDomain({
   slug,
   defaultQuery,
-  onPurchased,
+  purchaseEnabled,
+  selectedHost,
+  onSelect,
+  onClearSelection,
 }: {
   slug: string;
   defaultQuery: string;
-  onPurchased: (host: string) => void;
+  purchaseEnabled: boolean;
+  selectedHost: string | null;
+  onSelect: (selection: DomainSelection) => void;
+  onClearSelection: () => void;
 }) {
   const [query, setQuery] = React.useState(defaultQuery);
   const [suggestions, setSuggestions] = React.useState<DomainSuggestion[]>([]);
@@ -29,7 +41,6 @@ export function StepDomain({
   const [error, setError] = React.useState<string | null>(null);
   const [purchaseTarget, setPurchaseTarget] = React.useState<DomainSuggestion | null>(null);
   const [primaryProperty, setPrimaryProperty] = React.useState<Property | null>(null);
-  const purchasedHostRef = React.useRef<string | null>(null);
 
   React.useEffect(() => {
     void getPrimaryPropertyAction().then((res) => {
@@ -60,15 +71,6 @@ export function StepDomain({
     return () => clearTimeout(handle);
   }, [query]);
 
-  function handlePurchaseClose() {
-    const host = purchasedHostRef.current;
-    setPurchaseTarget(null);
-    if (host) {
-      purchasedHostRef.current = null;
-      onPurchased(host);
-    }
-  }
-
   // The exact domain the query implies leads the list. If it's available it's the
   // hero; if it's taken we say so plainly (so a near-miss look-alike never reads as
   // "your domain is free") and feature the best available alternative instead.
@@ -77,12 +79,39 @@ export function StepDomain({
   const others = suggestions.filter((s) => !s.exact);
   const availableOthers = others.filter((s) => s.available);
   const takenOthers = others.filter((s) => !s.available);
-  const hero: DomainSuggestion | null =
-    exact && exact.available ? exact : (availableOthers[0] ?? null);
-  const restAvailable = exact && exact.available ? availableOthers : availableOthers.slice(1);
+  const hero: DomainSuggestion | null = exact?.available ? exact : (availableOthers[0] ?? null);
+  const restAvailable = exact?.available ? availableOthers : availableOthers.slice(1);
+
+  const canAdd = purchaseEnabled && primaryProperty != null;
 
   return (
     <div className="max-w-xl">
+      {/* A domain is already chosen — billed at Launch, not now. Let them drop it. */}
+      {selectedHost && (
+        <div className="mb-4 flex items-center justify-between gap-4 rounded-xl border border-[var(--module-active)] bg-[var(--module-active-tint)] px-4 py-3.5">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <Globe className="h-4 w-4 shrink-0 text-[var(--module-active)]" />
+            <div className="min-w-0">
+              <Text weight="medium" className="truncate">
+                {selectedHost}
+              </Text>
+              <Text size="xs" variant="muted">
+                Added — you&apos;ll be charged when you publish.
+              </Text>
+            </div>
+          </div>
+          <Button
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            onClick={onClearSelection}
+            leftIcon={<X className="h-3.5 w-3.5" />}
+          >
+            Use free address
+          </Button>
+        </div>
+      )}
+
       <div className="relative">
         <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[var(--color-text-tertiary)]" />
         <Input
@@ -113,7 +142,8 @@ export function StepDomain({
             <DomainRow
               suggestion={hero}
               featured
-              disabled={!primaryProperty}
+              comingSoon={!purchaseEnabled}
+              disabled={!canAdd}
               onBuy={() => setPurchaseTarget(hero)}
             />
           )}
@@ -121,7 +151,8 @@ export function StepDomain({
             <DomainRow
               key={s.domain}
               suggestion={s}
-              disabled={!primaryProperty}
+              comingSoon={!purchaseEnabled}
+              disabled={!canAdd}
               onBuy={() => setPurchaseTarget(s)}
             />
           ))}
@@ -143,8 +174,31 @@ export function StepDomain({
         </Text>
       )}
 
+      {/* Paid-add-on disclosure — distinct copy for "checkout open" vs "soon". */}
+      {purchaseEnabled ? (
+        <div className="mt-4 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-4 py-3.5">
+          <Text size="xs" variant="muted">
+            A custom domain is a paid registration — you&apos;ll be charged when you publish at the
+            Launch step, not now. It&apos;s the one optional add-on with a cost; signing up and your
+            free address are always free.
+          </Text>
+        </div>
+      ) : (
+        <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-4 py-3.5">
+          <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+          <Text size="xs" variant="muted">
+            Custom domains are a paid registration and{' '}
+            <span className="font-medium text-[var(--color-text-secondary)]">
+              checkout opens soon
+            </span>
+            . For now, launch on your free address — or connect a domain you already own from
+            Settings. You&apos;re never charged to sign up.
+          </Text>
+        </div>
+      )}
+
       {/* Free-address note — "Continue" (in the setup card) keeps this address. */}
-      <div className="mt-4 rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-bg-subtle)] px-4 py-3.5">
+      <div className="mt-3 rounded-xl border border-dashed border-[var(--color-border-strong)] bg-[var(--color-bg-subtle)] px-4 py-3.5">
         <Text size="sm" weight="medium">
           Happy on the free address?
         </Text>
@@ -157,14 +211,16 @@ export function StepDomain({
         </Text>
       </div>
 
-      {primaryProperty && (
+      {purchaseEnabled && primaryProperty && (
         <PurchaseDialog
           open={purchaseTarget !== null}
-          onClose={handlePurchaseClose}
+          onClose={() => setPurchaseTarget(null)}
           suggestion={purchaseTarget}
           properties={[primaryProperty]}
-          onSuccess={() => {
-            purchasedHostRef.current = purchaseTarget?.domain ?? null;
+          mode="select"
+          onSelect={(selection) => {
+            setPurchaseTarget(null);
+            onSelect(selection);
           }}
         />
       )}
@@ -175,11 +231,13 @@ export function StepDomain({
 function DomainRow({
   suggestion,
   featured = false,
+  comingSoon = false,
   disabled,
   onBuy,
 }: {
   suggestion: DomainSuggestion;
   featured?: boolean;
+  comingSoon?: boolean;
   disabled: boolean;
   onBuy: () => void;
 }) {
@@ -224,15 +282,21 @@ function DomainRow({
               </Text>
             )}
           </div>
-          <Button
-            color={featured ? 'module' : 'neutral'}
-            variant={featured ? 'solid' : 'outline'}
-            size="sm"
-            onClick={onBuy}
-            disabled={disabled}
-          >
-            Add
-          </Button>
+          {comingSoon ? (
+            <Badge color="neutral" variant="soft" size="sm">
+              <Clock className="h-3 w-3" /> Soon
+            </Badge>
+          ) : (
+            <Button
+              color={featured ? 'module' : 'neutral'}
+              variant={featured ? 'solid' : 'outline'}
+              size="sm"
+              onClick={onBuy}
+              disabled={disabled}
+            >
+              Add
+            </Button>
+          )}
         </div>
       )}
     </div>

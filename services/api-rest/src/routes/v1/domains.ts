@@ -32,7 +32,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma, withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
-import { notFound, conflict, validationError, badRequest } from '@sparx/api-core/errors';
+import { notFound, conflict, validationError, badRequest, forbidden } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import type { DomainPurchasedPayload } from '@sparx/events';
@@ -60,6 +60,7 @@ import {
   setAutoRenew,
   GoDaddyError,
 } from '../../lib/godaddy.js';
+import { chargeForDomain, refundDomainCharge } from '../../lib/domain-billing.js';
 import { env } from '../../env.js';
 
 // Pub/Sub publisher — one instance for the lifetime of the process.
@@ -341,14 +342,30 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
 
   // ── POST /v1/domains/purchase ─────────────────────────────────────────────
   // Full purchase flow (docs/24 §4, docs/64 Module 1 Ph2):
-  //   1. [Stub] Stripe charge → mock payment_intent_id
-  //   2. GoDaddy: purchaseDomain → orderId
-  //   3. GoDaddy: generateDkimKeypair + configureDNS (Sparx record set)
-  //   4. DB: insert domain_purchases + upsert domains row (type: purchased)
-  //   5. Pub/Sub: publish domain.purchased
-  //   6. Return { domain, orderId, expiresAt, purchase }
+  //   0. Gate: checkout must be OPEN (env.DOMAIN_PURCHASE_ENABLED) — buying a
+  //      domain is a real, non-refundable charge to our reseller account.
+  //   1. Price + re-check availability (REQUIRED — we never charge blind, and in
+  //      the deferred-purchase flow the domain is chosen before it's bought).
+  //   2. Charge the tenant for real (chargeForDomain) BEFORE registering.
+  //   3. GoDaddy: purchaseDomain → orderId (refund the charge if this fails).
+  //   4. GoDaddy: generateDkimKeypair + configureDNS (Sparx record set)
+  //   5. DB: insert domain_purchases + upsert domains row (type: purchased)
+  //   6. Pub/Sub: publish domain.purchased
+  //   7. Return { domain, orderId, expiresAt, purchase }
   app.post('/v1/domains/purchase', async (request) => {
     const auth = requireRole(request, 'editor');
+
+    // 0. Checkout gate. A domain registration bills the Sparx reseller account the
+    //    instant GoDaddy is called (ICANN: no trial, no reversal), so buying is
+    //    OFF until tenant billing (Stripe) lets us charge the buyer FIRST. Free
+    //    *.sparx.zone subdomains and connecting an owned domain are unaffected —
+    //    only buying a NEW domain is gated here.
+    if (!env.DOMAIN_PURCHASE_ENABLED) {
+      throw forbidden(
+        "Domain checkout isn't open yet. Your site is live on its free address — you can buy a custom domain from Settings once checkout opens."
+      );
+    }
+
     const input = PurchaseBody.parse(request.body);
 
     const host = normalizeHost(input.domain);
@@ -370,13 +387,51 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     if (existing)
       throw conflict('That domain is already connected to a site.', { field: 'domain' });
 
-    // 1. Stripe charge — STUBBED until billing lands (docs/64 §1 constraint).
-    const stripePaymentIntentId = `stub_pi_${Date.now()}_${auth.tenantId.replace(/-/g, '').slice(0, 8)}`;
+    // 1. Price the order — REQUIRED before charging (never charge an unknown
+    //    amount). This also RE-CHECKS availability: in the deferred-purchase flow
+    //    the domain is chosen at the Domain step but bought at Launch, so it could
+    //    have been registered by someone else in between. The (possibly promo)
+    //    first-year REGISTRATION price drives the first year; the RENEWAL price
+    //    drives the renewal_price_cents column and any additional years — they
+    //    differ sharply for TLDs like .shop ($0.99 to register, $59.99 to renew),
+    //    so they must not be conflated.
+    const avail = await checkAvailability(host);
+    if (!avail.available) {
+      throw conflict(
+        'That domain is no longer available — it was registered elsewhere. Try another.',
+        { field: 'domain' }
+      );
+    }
+    const registrationPriceCents = avail.price;
+    const renewalPriceCents = avail.renewalPrice;
+    const purchaseTld = host.split('.').slice(1).join('.');
+    const amountCents =
+      registrationPriceCents +
+      (renewalPriceCents ?? registrationPriceCents) * (input.years - 1) +
+      markupForTld(purchaseTld);
+    if (amountCents <= 0) {
+      throw badRequest('Could not determine the price for that domain. Please try again.');
+    }
 
-    // 2. GoDaddy: purchase
-    const { orderId } = await purchaseDomain(host, input.years, input.contact, input.privacy);
+    // 2. Charge the tenant FIRST — fail here and nothing is registered (the tenant
+    //    is never billed for a domain we couldn't complete).
+    const { paymentIntentId } = await chargeForDomain({
+      tenantId: auth.tenantId,
+      amountCents,
+      description: `Domain registration: ${host} (${input.years}yr)`,
+    });
 
-    // 3. GoDaddy: DKIM keypair + DNS
+    // 3. GoDaddy: register. If this fails AFTER we charged, refund so the tenant is
+    //    never billed for a domain they didn't get.
+    let orderId: string;
+    try {
+      ({ orderId } = await purchaseDomain(host, input.years, input.contact, input.privacy));
+    } catch (err) {
+      await refundDomainCharge(paymentIntentId).catch(() => undefined);
+      throw err;
+    }
+
+    // 4. GoDaddy: DKIM keypair + DNS
     const { publicKey: dkimPublicKey, privateKey: dkimPrivateKey } = generateDkimKeypair();
     const dnsRecords = buildSparxDnsRecords(dkimPublicKey);
 
@@ -390,31 +445,10 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       pubLogger.warn({ err, host }, 'domains: GoDaddy DNS config failed; domain-worker will retry');
     }
 
-    // 4. DB: insert purchase ledger row + upsert domain row
+    // 5. DB: insert purchase ledger row + upsert domain row
     const registeredAt = new Date();
     const expiresAt = new Date(registeredAt);
     expiresAt.setFullYear(expiresAt.getFullYear() + input.years);
-
-    // Pricing: the (possibly promo) first-year REGISTRATION price drives the
-    // purchase CHARGE; the RENEWAL price drives the renewal_price_cents column and
-    // any additional years. They differ sharply for TLDs like .shop ($0.99 to
-    // register, $59.99 to renew), so they must not be conflated.
-    let registrationPriceCents: number | null = null;
-    let renewalPriceCents: number | null = null;
-    try {
-      const avail = await checkAvailability(host);
-      registrationPriceCents = avail.price;
-      renewalPriceCents = avail.renewalPrice;
-    } catch {
-      // Non-fatal; price lookup may fail
-    }
-    const purchaseTld = host.split('.').slice(1).join('.');
-    const amountCents =
-      registrationPriceCents != null
-        ? registrationPriceCents +
-          (renewalPriceCents ?? registrationPriceCents) * (input.years - 1) +
-          markupForTld(purchaseTld)
-        : 0;
 
     const [purchaseRow, domainRow] = await prisma.$transaction(async (tx) => {
       const purchase = await withTenant({ tenantId: auth.tenantId }, (wtx) =>
@@ -424,7 +458,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
             domain: host,
             registrar: 'godaddy',
             registrarOrderId: orderId,
-            stripePaymentIntentId,
+            stripePaymentIntentId: paymentIntentId,
             // registration (+ renewal for extra years) + our markup, in cents
             amountCents,
             years: input.years,
@@ -647,15 +681,41 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
   // ── POST /v1/domains/:id/renew ────────────────────────────────────────────
   app.post('/v1/domains/:id/renew', async (request) => {
     const auth = requireRole(request, 'editor');
+
+    // Renewing bills the reseller account just like a new registration, so it's
+    // gated behind the same checkout switch — renewals open when checkout does.
+    if (!env.DOMAIN_PURCHASE_ENABLED) {
+      throw forbidden("Domain checkout isn't open yet — renewals open when checkout does.");
+    }
+
     const { id } = IdParam.parse(request.params);
     const { years } = RenewBody.parse(request.body);
 
     const row = await findPurchasedDomain(auth.tenantId, id);
 
-    // [Stub] Stripe charge for renewal price
-    const stripePaymentIntentId = `stub_pi_renew_${Date.now()}_${auth.tenantId.replace(/-/g, '').slice(0, 8)}`;
+    // Price the renewal — REQUIRED before charging. `years` of the renewal price
+    // plus our per-TLD fee.
+    const renewalTld = row.host.split('.').slice(1).join('.');
+    const amountCents =
+      row.renewalPriceCents != null ? row.renewalPriceCents * years + markupForTld(renewalTld) : 0;
+    if (amountCents <= 0) {
+      throw badRequest('Could not determine the renewal price for that domain.');
+    }
 
-    const { orderId } = await gdRenewDomain(row.host, years);
+    // Charge the tenant FIRST; refund if GoDaddy then fails.
+    const { paymentIntentId } = await chargeForDomain({
+      tenantId: auth.tenantId,
+      amountCents,
+      description: `Domain renewal: ${row.host} (${years}yr)`,
+    });
+
+    let orderId: string | null;
+    try {
+      ({ orderId } = await gdRenewDomain(row.host, years));
+    } catch (err) {
+      await refundDomainCharge(paymentIntentId).catch(() => undefined);
+      throw err;
+    }
 
     const newExpiresAt = new Date(row.expiresAt ?? new Date());
     newExpiresAt.setFullYear(newExpiresAt.getFullYear() + years);
@@ -668,11 +728,8 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
             domain: row.host,
             registrar: 'godaddy',
             registrarOrderId: orderId ?? null,
-            stripePaymentIntentId,
-            amountCents:
-              row.renewalPriceCents != null
-                ? row.renewalPriceCents + markupForTld(row.host.split('.').slice(1).join('.'))
-                : 0,
+            stripePaymentIntentId: paymentIntentId,
+            amountCents,
             years,
             type: 'renewal',
             status: 'completed',
