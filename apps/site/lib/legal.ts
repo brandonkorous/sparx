@@ -17,12 +17,21 @@ export interface LegalLink {
   columnKey: string;
 }
 
-export async function getLegalFooterLinks(tenantSlug: string): Promise<LegalLink[]> {
+export async function getLegalFooterLinks(
+  tenantSlug: string,
+  // The active site (docs/49 Phase 6c) — the footer shows this site's legal links
+  // plus the tenant-wide ones; omitted → the tenant's primary site.
+  propertySlug?: string
+): Promise<LegalLink[]> {
   try {
     return await publicGet<LegalLink[]>(
       '/v1/public/legal/placements',
-      { tenant: tenantSlug, placement: 'footer' },
-      { tag: `legal-placements:${tenantSlug}` }
+      {
+        tenant: tenantSlug,
+        placement: 'footer',
+        ...(propertySlug ? { property: propertySlug } : {}),
+      },
+      { tag: `legal-placements:${tenantSlug}${propertySlug ? `:${propertySlug}` : ''}` }
     );
   } catch {
     // A legal-placements outage must never take down the storefront chrome —

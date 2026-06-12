@@ -12,6 +12,12 @@
 model StorefrontDocPlacement {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId     String   @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) this placement is scoped to (docs/49 Phase 6c). NULL =
+  // tenant-wide — shows on EVERY site (the default + every pre-rollout row). A
+  // non-null value scopes the placement to that one site, so a multi-brand tenant
+  // can give each site its own footer legal links. The public read resolves the
+  // active site and returns (NULL ∪ that site). NOT a security boundary.
+  propertyId   String?  @map("property_id") @db.Uuid
   placement    String   @db.VarChar(40) // footer | checkout | terms_gate
   sourceKind   String   @map("source_kind") @db.VarChar(30) // cms_entry | integration_doc
   entryId      String?  @map("entry_id") @db.Uuid
@@ -24,10 +30,14 @@ model StorefrontDocPlacement {
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  entry  ContentEntry? @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  tenant   Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property?     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  entry    ContentEntry? @relation(fields: [entryId], references: [id], onDelete: Cascade)
 
-  @@unique([tenantId, placement, sourceKind, entryId])
+  // Per-site uniqueness (docs/49 Phase 6c): the same entry can be placed on
+  // different sites (and tenant-wide). Explicit map name — the default
+  // (table + 5 columns + _key) blows past Postgres's 63-char identifier limit.
+  @@unique([tenantId, propertyId, placement, sourceKind, entryId], map: "storefront_doc_placements_prop_placement_source_entry_key")
   @@index([tenantId, placement, enabled, position])
   @@map("storefront_doc_placements")
 }

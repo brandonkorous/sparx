@@ -326,7 +326,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // compliance-driven, not editorial. Omitted entirely when nothing is
   // published yet.
   if (tenant && !builderLayout) {
-    const legalLinks = await getLegalFooterLinks(tenant.slug);
+    const legalLinks = await getLegalFooterLinks(tenant.slug, activePropertySlug ?? undefined);
     if (legalLinks.length > 0) {
       footerColumns = [
         ...footerColumns,

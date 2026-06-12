@@ -28,8 +28,17 @@ import {
   legalEntryBody,
   type LegalKind,
 } from '@sparx/legal-templates';
+import { resolvePropertyId } from '../../lib/property.js';
 
 type Json = Prisma.InputJsonValue;
+
+/** The active site (docs/49 Phase 6c) — the `x-sparx-property-id` the dashboard
+ *  switcher sets, else the tenant's primary. Drives which site's placements the
+ *  manager reflects. */
+function activeProperty(request: { headers: Record<string, unknown> }, tenantId: string) {
+  const requested = request.headers['x-sparx-property-id'];
+  return resolvePropertyId(tenantId, typeof requested === 'string' ? requested : null);
+}
 
 const LEGAL_KINDS = LEGAL_TEMPLATES.map((t) => t.legalKind) as [LegalKind, ...LegalKind[]];
 
@@ -164,9 +173,16 @@ const legalRoutes: FastifyPluginAsync = (app) => {
         summary: 'Created from legal starter template',
       });
 
-      // Footer placement (find-or-create — avoids the nullable compound unique).
+      // Tenant-wide footer placement (docs/49 Phase 6c — propertyId null = every
+      // site). Find-or-create scoped to null so a site-specific placement of the
+      // same page never blocks the default tenant-wide one.
       const existingPlacement = await tx.storefrontDocPlacement.findFirst({
-        where: { placement: 'footer', sourceKind: 'cms_entry', entryId: entry.id },
+        where: {
+          placement: 'footer',
+          sourceKind: 'cms_entry',
+          entryId: entry.id,
+          propertyId: null,
+        },
         select: { id: true },
       });
       if (!existingPlacement) {
@@ -246,10 +262,13 @@ const legalRoutes: FastifyPluginAsync = (app) => {
 
   // ── Placements ────────────────────────────────────────────────────────────
   app.get('/v1/legal/placements', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
+    // Show the active site's footer: tenant-wide (null) placements + this site's
+    // own (docs/49 Phase 6c). `propertyId` rides along so the UI can show scope.
+    const propertyId = await activeProperty(request, auth.tenantId);
     const rows = await withRequestTenant(request, (tx) =>
       tx.storefrontDocPlacement.findMany({
-        where: { placement: 'footer' },
+        where: { placement: 'footer', OR: [{ propertyId: null }, { propertyId }] },
         orderBy: { position: 'asc' },
         select: {
           id: true,
@@ -259,6 +278,7 @@ const legalRoutes: FastifyPluginAsync = (app) => {
           position: true,
           enabled: true,
           entryId: true,
+          propertyId: true,
           entry: { select: { slug: true, status: true } },
         },
       })
@@ -272,6 +292,8 @@ const legalRoutes: FastifyPluginAsync = (app) => {
         position: r.position,
         enabled: r.enabled,
         entryId: r.entryId,
+        // null = shown on every site; otherwise scoped to this one site.
+        propertyId: r.propertyId,
         slug: r.entry?.slug ?? null,
         status: r.entry?.status ?? null,
       }))
@@ -286,8 +308,14 @@ const legalRoutes: FastifyPluginAsync = (app) => {
         label: z.string().max(120).optional(),
         columnKey: z.string().max(40).optional(),
         position: z.number().int().min(0).optional(),
+        // Scope to the active site only (docs/49 Phase 6c). Default false =
+        // tenant-wide (shown on every site) — the common case for legal docs.
+        siteScoped: z.boolean().optional(),
       })
       .parse(request.body);
+
+    // A site-scoped placement targets the active site; tenant-wide stays null.
+    const propertyId = input.siteScoped ? await activeProperty(request, auth.tenantId) : null;
 
     const created = await withRequestTenant(request, async (tx) => {
       const entry = await tx.contentEntry.findFirst({
@@ -296,10 +324,16 @@ const legalRoutes: FastifyPluginAsync = (app) => {
       });
       if (!entry) throw notFound('Page', input.entryId);
       const dup = await tx.storefrontDocPlacement.findFirst({
-        where: { placement: 'footer', sourceKind: 'cms_entry', entryId: entry.id },
+        where: { placement: 'footer', sourceKind: 'cms_entry', entryId: entry.id, propertyId },
         select: { id: true },
       });
-      if (dup) throw conflict('That page is already placed in the footer.');
+      if (dup) {
+        throw conflict(
+          propertyId
+            ? 'That page is already placed in this site’s footer.'
+            : 'That page is already placed in the footer.'
+        );
+      }
       const maxPos = await tx.storefrontDocPlacement.aggregate({
         where: { placement: 'footer' },
         _max: { position: true },
@@ -307,6 +341,7 @@ const legalRoutes: FastifyPluginAsync = (app) => {
       return tx.storefrontDocPlacement.create({
         data: {
           tenantId: auth.tenantId,
+          propertyId,
           placement: 'footer',
           sourceKind: 'cms_entry',
           entryId: entry.id,

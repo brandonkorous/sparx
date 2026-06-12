@@ -72,6 +72,9 @@ model Property {
   // Per-site commerce defaults + checkout policy (docs/49 Phase 6b); a site with
   // no row inherits the primary's at read time.
   storefrontSettings   StorefrontSettings?
+  // Per-site legal/footer doc placements (docs/49 Phase 6c); null-property
+  // placements are tenant-wide and show on every site.
+  docPlacements        StorefrontDocPlacement[]
 
   // Custom + purchased hostnames pointing at this site (docs/49 §5, docs/24).
   domains Domain[]

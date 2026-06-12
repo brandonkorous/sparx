@@ -279,13 +279,23 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       .object({
         tenant: z.string().min(1).max(63),
         placement: z.enum(['footer', 'checkout', 'terms_gate']).default('footer'),
+        // The active site (docs/49 Phase 6c) — the footer returns this site's
+        // placements PLUS the tenant-wide (null-property) ones. Absent → primary.
+        property: z.string().min(1).max(63).optional(),
       })
       .parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property ?? null);
 
     const rows = await withTenant({ tenantId }, (tx) =>
       tx.storefrontDocPlacement.findMany({
-        where: { placement: q.placement, enabled: true },
+        // Tenant-wide (null) placements show on every site; site-scoped ones only
+        // on their site. A sibling site's exclusive links never appear here.
+        where: {
+          placement: q.placement,
+          enabled: true,
+          OR: [{ propertyId: null }, { propertyId }],
+        },
         orderBy: { position: 'asc' },
         select: {
           id: true,
