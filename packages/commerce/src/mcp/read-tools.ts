@@ -88,8 +88,12 @@ const getTopProducts: McpToolDefinition = {
 };
 
 const getTopCustomers: McpToolDefinition = {
-  name: 'get_top_customers',
-  description: 'Top customers by total spend for a date range.',
+  // Distinct from CRM's `get_top_customers` (lifetime spend): this is the
+  // commerce sales-report variant, ranked by revenue within a date range. MCP
+  // tool names are GLOBAL across modules, so the two cannot share a name — a
+  // collision makes the SDK throw at registration and the server can't boot.
+  name: 'get_top_customers_by_revenue',
+  description: 'Top customers by revenue within a date range (commerce sales report).',
   scope: 'read:commerce',
   confirmation: false,
   input: z.object({

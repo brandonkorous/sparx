@@ -3,12 +3,13 @@
 // "is this a write tool call?" without pulling in the SDK.
 
 import type { z } from 'zod';
-import { crmMcpTools } from '@sparx/crm';
+import { crmMcpTools, invoicingMcpTools } from '@sparx/crm';
 import { commerceMcpTools } from '@sparx/commerce';
 import { sitebuilderMcpTools } from '@sparx/sitebuilder';
 import { builderMcpTools } from '@sparx/builder/mcp';
 import { emailMcpTools } from '@sparx/email-platform';
 import { searchMcpTools } from '@sparx/search';
+import { automationMcpTools } from '@sparx/automation';
 import { domainMcpTools } from './domain-tools.js';
 
 // Structural type spanning every module's tool definition. Each module declares
@@ -31,7 +32,13 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   ...(builderMcpTools as unknown as AnyMcpTool[]),
   ...(emailMcpTools as unknown as AnyMcpTool[]),
   ...(searchMcpTools as unknown as AnyMcpTool[]),
+  // Automations are a PLATFORM capability (no module slug); the tools are
+  // reachable whenever MCP itself is (the `ai` module gate in auth.ts).
+  ...(automationMcpTools as unknown as AnyMcpTool[]),
   ...(domainMcpTools as unknown as AnyMcpTool[]),
+  // Invoicing (docs/87 §12) — own scopes; additionally gated on the `invoicing`
+  // module flag in server.ts dispatch (MODULE_BY_SCOPE).
+  ...(invoicingMcpTools as unknown as AnyMcpTool[]),
 ];
 
 const WRITE_SCOPES: ReadonlySet<string> = new Set([
@@ -42,7 +49,9 @@ const WRITE_SCOPES: ReadonlySet<string> = new Set([
   'write:builder',
   'write:email',
   'write:email_bulk',
+  'write:automations',
   'write:domains',
+  'write:invoicing',
 ]);
 
 const TOOLS_BY_NAME: ReadonlyMap<string, AnyMcpTool> = new Map(

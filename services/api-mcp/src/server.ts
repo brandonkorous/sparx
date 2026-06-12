@@ -13,11 +13,22 @@
 // `destructiveHint` annotation so the MCP client can prompt the user.
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { isModuleEnabled, type ModuleSlug } from '@sparx/auth';
 import type { McpAuthContext } from './auth.js';
 import { recordToolInvocation } from './audit.js';
 import { ALL_MCP_TOOLS, type AnyMcpTool } from './tool-registry.js';
 
 const SERVER_INFO = { name: 'sparx-mcp', version: '1.0.0' } as const;
+
+// Scopes whose tools also require a specific MODULE to be active (beyond the
+// global `ai` gate). Sparx is module-based — a disabled module stores no rows
+// (docs/87 §14) — so a tool that writes a module's data refuses when that module
+// is off, mirroring the REST routes' `requireXModule`. Only modules that opt in
+// appear here; everything else is reachable on scope alone (the prior behavior).
+const MODULE_BY_SCOPE: Record<string, ModuleSlug> = {
+  'read:invoicing': 'invoicing',
+  'write:invoicing': 'invoicing',
+};
 
 export function buildServerForRequest(auth: McpAuthContext): McpServer {
   const server = new McpServer(SERVER_INFO);
@@ -60,6 +71,21 @@ async function dispatch(
         {
           type: 'text',
           text: `forbidden: tool "${tool.name}" requires scope "${tool.scope}" which is not granted`,
+        },
+      ],
+    };
+  }
+
+  // Module gate — a tool whose scope maps to a module refuses when that module
+  // isn't active for the tenant (docs/87 §14: a disabled module stores no rows).
+  const requiredModule = MODULE_BY_SCOPE[tool.scope];
+  if (requiredModule && !(await isModuleEnabled(auth.tenantId, requiredModule))) {
+    return {
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: `forbidden: the ${requiredModule} module is not active for this tenant`,
         },
       ],
     };

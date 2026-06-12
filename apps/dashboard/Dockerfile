@@ -49,6 +49,9 @@ COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
 COPY packages/attribution/package.json packages/attribution/
+# Automation authoring UI (docs/84 Slice G-UI) — pure zod schemas + the
+# triggerToColumns/FromColumns round-trip helpers; only dep is zod (already present).
+COPY packages/automation-schemas/package.json packages/automation-schemas/
 # Root postinstall runs `pnpm --filter @sparx/db db:generate`, which needs
 # both the schema source AND the prisma config file (the new multi-file
 # schema lives in prisma/schema/, declared in prisma.config.ts).
@@ -90,6 +93,7 @@ COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
 COPY packages/builder-schemas packages/builder-schemas
 COPY packages/attribution packages/attribution
+COPY packages/automation-schemas packages/automation-schemas
 COPY apps/dashboard apps/dashboard
 
 # Generate Prisma client (the dashboard imports @sparx/db which re-exports it).

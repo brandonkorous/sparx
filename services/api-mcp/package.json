@@ -19,6 +19,8 @@
     "@modelcontextprotocol/sdk": "^1.0.4",
     "@prisma/client": "^6.19.3",
     "@sparx/auth": "workspace:*",
+    "@sparx/automation": "workspace:*",
+    "@sparx/automation-schemas": "workspace:*",
     "@sparx/builder": "workspace:*",
     "@sparx/commerce": "workspace:*",
     "@sparx/crm": "workspace:*",
@@ -35,6 +37,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
+    "@vitejs/plugin-react": "^5.1.0",
     "dotenv": "^16.4.7",
     "pino-pretty": "^13.0.0",
     "tsx": "^4.19.2",

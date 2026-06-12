@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.12
+**Version:** 1.13
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-11
 
@@ -17,18 +17,29 @@ The **living build state** for the Automation feature. The design lives in
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
 > **▶ RESUME HERE:** **Slice G-UI — the dashboard automations surface** (list / detail / trigger +
-> condition + action builder / run history, docs/34 standard) — its API contract (`/v1/automations`
-> CRUD + clone + status + run-history) is now BUILT + tested (G-API ☑ this session). Alternatively
-> **Slice H MCP write-tool** (also a consumer of the same service layer). Still sequenced/deferred:
+> condition + action builder / run history, docs/34 standard) — the LAST remaining consumer of the
+> automation service layer. Its full contract is now BUILT + tested on TWO transports: `/v1/automations`
+> REST (G-API ☑) and the MCP authoring tools (Slice H ☑ this session). Still sequenced/deferred:
 > **email-driven seeds** behind the **Default Builder-emails library** (user decision B + "build
 > defaults for emails, later"), and **commerce executors** (not cleanly buildable — no product/variant
 > resolver, `create_invoice` collides with in-flight `billing_documents`, no consuming automation).
-> **G-API DONE** this session: `/v1/automations` REST surface (RBAC not module-gated; LOCKED→409;
-> run-history reads) + `automationErrorMapper` + `@sparx/automation` run-read service. **Slice F3 DONE**
-> (b2b-overdue cron retired) and **F2 backfill DONE**. Slices A–D + **E1–E4** + **F1** (CRM 6 + B2B
-> escalate + email send) + **F2-a (dunning)** + **F2 backfill** + **F3** + **G-API** all done. The
-> engine can SEND email, SEEDS every module-active tenant (forward via activation, backward via the
-> daily reconcile), is the SOLE dunning implementation, and is now **tenant-authorable over REST**.
+> **Slice H DONE** this session: `automationMcpTools` (9 tools — `list/get/create/update/clone/delete/
+set_status` + `get_runs`/`get_run`) wrapping the SAME service layer, published by `services/api-mcp`;
+> `read:automations`/`write:automations` scopes; LOCKED→error-result + "clone to edit" enforced over
+> MCP exactly as REST; reachable on an `ai`-only tenant (platform capability, no feature module). ⚠ It
+> ALSO unblocked TWO pre-existing latent bugs in `api-mcp` (both masked because the whole suite was
+> dormant-red): (1) the vitest config lacked the `@vitejs/plugin-react` JSX transform `@sparx/email`'s
+> raw `.tsx` needs (the documented api-rest PR#41 issue, never applied here) and (2) a **duplicate MCP
+> tool name** — `get_top_customers` defined in BOTH `@sparx/crm` and `@sparx/commerce` — which made the
+> SDK throw at registration so **the MCP server could not boot a single session**. Fixed both;
+> renamed the commerce tool → `get_top_customers_by_revenue` (the date-ranged sales-report variant;
+> CRM owns the lifetime-spend name). api-mcp suite now **12/12** (4 new automation + the unblocked
+> smoke 5 + rate-limit 3). **G-API DONE** (prior session): `/v1/automations` REST surface + run-history
+> reads + `automationErrorMapper`. **Slice F3 DONE** (b2b-overdue cron retired) and **F2 backfill DONE**.
+> Slices A–D + **E1–E4** + **F1** (CRM 6 + B2B escalate + email send) + **F2-a (dunning)** + **F2
+> backfill** + **F3** + **G-API** + **H (MCP)** all done. The engine can SEND email, SEEDS every
+> module-active tenant (forward via activation, backward via the daily reconcile), is the SOLE dunning
+> implementation, and is now **tenant- AND AI-authorable** (REST + MCP) over one service layer.
 >
 > **F2 backfill (this session):** SECURITY DEFINER `find_tenants_with_active_module(p_module)`
 > (migration `20260805000000`, REVOKE PUBLIC / GRANT sparx_app) → `reconcileSystemSeeds(db)` in
@@ -163,7 +174,7 @@ reconciles them into the one canonical registry. No build blocker from deferring
 | `services/api-rest` routes                                  | `/v1/automations` CRUD + clone + status + run-history reads (trigger/tick live in the worker, not api-rest)                                                                                 | ☑      |
 | `packages/automation` run reads                             | `listAutomationRuns` / `getAutomationRun` (tenant-scoped run-history read path for REST/MCP/UI)                                                                                             | ☑      |
 | `apps/dashboard` surface                                    | List / detail / builder / run history (docs/34 standard)                                                                                                                                    | ☐      |
-| MCP write-tool                                              | AI authoring path (mirrors crm `mcp/write-tools.ts`)                                                                                                                                        | ☐      |
+| `packages/automation/src/mcp` (`automationMcpTools`)        | AI authoring path — 9 MCP tools wrapping the service layer; published by `services/api-mcp` (mirrors crm `mcp/`). `read:automations` / `write:automations` scopes                           | ☑      |
 
 ---
 
@@ -550,10 +561,60 @@ consumers of these). New `services/api-rest/src/routes/v1/automations/index.ts`:
   run-with-steps, cross-automation 404). typecheck + lint + prettier clean; `@sparx/automation` 35/35.
 
 **G-UI — dashboard surface ☐** — list / detail / trigger+condition+action builder / run history
-(docs/34 working-area standard). Not started; the API above is its contract.
-**MCP write-tool ☐** (Slice H) — also a consumer of the service layer above.
+(docs/34 working-area standard). Not started; the API + MCP tools above are its contract.
+**MCP write-tool ☑** (Slice H) — built this session, see below.
 
-### Slice H — Phase 4 AI assistant ☐ (MCP write-tool)
+### Slice H — Phase 4 AI assistant ☑ (MCP authoring tools)
+
+The AI path onto the SAME service layer the REST routes use (one service, three transports). New
+`packages/automation/src/mcp/` exports `automationMcpTools`, published by `services/api-mcp` exactly
+like `crmMcpTools` (registry barrel pattern). The AI **authors rules**, it never fires an effect —
+the gated dispatcher stays the sole path to an effect; the engine's `dispatch` is not exported here.
+
+- ☑ **9 tools** — reads (`list_automations`, `get_automation`, `get_automation_runs`,
+  `get_automation_run`) + writes (`create_automation`, `update_automation`, `set_automation_status`,
+  `clone_automation`, `delete_automation`). Writes carry `confirmation: true` → the MCP server emits
+  the `destructiveHint` so clients prompt. Reads open.
+- ☑ **Same schemas as REST, no drift** — the write tools reuse `CreateAutomationInput` /
+  `UpdateAutomationInput` / `CloneAutomationInput` from `@sparx/automation-schemas`, so the authoring
+  vocabulary the AI sees (trigger kinds, the 12 condition operators, the typed action catalog) is
+  exactly what the dashboard + SDKs see. (Verified all 9 inputs convert to JSON-schema cleanly — the
+  recursive `ConditionGroup` + discriminated-union `Trigger`/`Action` derive fine under zod v4.)
+- ☑ **Tier model enforced over MCP exactly as REST** — origin/locked are service-set (a tenant/AI can
+  never create a `system`/`locked` rule); a LOCKED rule's `update`/`status`/`delete` returns an error
+  result naming the platform-managed lock, and `clone_automation` is the "Duplicate to edit" path.
+  Proven by the integration test (locked update → error, clone → user-origin copy with `clonedFrom`).
+- ☑ **Scopes** — `read:automations` / `write:automations` added to `api-mcp` `auth.ts` (owner/admin/
+  editor write, viewer reads) + `WRITE_SCOPES` (rate-limiter write-classification). Automations are a
+  PLATFORM capability, so the tools are reachable whenever MCP itself is — the `ai`-module gate in
+  `auth.ts`, not any feature module. The test proves this on an **`ai`-only tenant** (no crm/commerce).
+- ☑ **Closure** — `@sparx/automation` + `@sparx/automation-schemas` added to api-mcp deps + Dockerfile
+  COPY (db/events already present). The MCP tools call only the SERVICE layer, so the executor closure
+  (`@sparx/automation-actions` + crm/commerce/b2b) is NOT pulled into the image.
+- ☑ **Tests** — `services/api-mcp/test/automation-tools.test.ts` 4/4 driving the real Fastify MCP app
+  over JSON-RPC: tools published + reachable on an ai-only tenant; authoring lifecycle (create → list →
+  get → set status → empty run history); LOCKED clone-not-edit; scope enforcement (a read-only key
+  reads but a write is denied naming `write:automations`). Full api-mcp suite **12/12**.
+
+> **⚠ Two pre-existing `api-mcp` bugs fixed en route (both masked by a dormant-red suite).** Adding
+> the automation tools made the api-mcp suite actually run for the first time in a while, which
+> surfaced two latent failures that had nothing to do with this slice:
+>
+> 1. **Missing JSX transform.** The api-mcp `vitest.config.ts` lacked `@vitejs/plugin-react`, but its
+>    tool-registry graph pulls in `@sparx/email-platform` → `@sparx/email` (raw React-Email `.tsx`).
+>    Without the transform, vite's import-analysis can't parse the JSX and **every** suite fails at
+>    import time. This is the exact issue PR#41 fixed for api-rest; the fix was never mirrored here.
+>    Applied the same one-line config (`plugins: [react()]`) + the devDep. Test-only — prod runs tsx.
+> 2. **Duplicate MCP tool name `get_top_customers`** — defined in BOTH `@sparx/crm`
+>    (lifetime-spend list) AND `@sparx/commerce` (date-ranged revenue report). MCP tool names are
+>    GLOBAL across modules, so the SDK throws `Tool ... is already registered` during
+>    `buildServerForRequest` → **the server could not boot a single MCP session** (every request 500'd,
+>    including `initialize`). It went unseen because the JSX issue kept the suite from ever running.
+>    Fix: renamed the commerce tool → `get_top_customers_by_revenue` (CRM owns the customer-spine
+>    name; the commerce one is the sales-report variant). A tool-name change is a contract change in
+>    principle, but this tool literally could not be registered/served, so there is no live consumer.
+>    Found via a throwaway diagnostic that counts duplicate names across the merged registry (109
+>    tools, now 0 dupes) — worth re-running if a new module's tools ever collide.
 
 ### Slice I — Phase 5 external (Zapier / Make / inbound webhooks) ☐
 
@@ -797,3 +858,29 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   run-history) + `@sparx/automation` 35/35. Purely additive — no existing route/behavior changed; the
   other agent's in-flight invoicing files in the working tree were left untouched. **Next:** Slice G-UI
   (dashboard surface) or Slice H (MCP write-tool) — both consume this API.
+- **2026-06-11 (cont.)** — **Slice H (MCP authoring tools) DONE.** New `packages/automation/src/mcp/`
+  (registry + read-tools + write-tools + barrel) exporting `automationMcpTools` — 9 tools wrapping the
+  SAME service layer as the REST routes (one service, three transports), published by `services/api-mcp`
+  via the established `crmMcpTools` registry pattern. Reads (`list_automations` / `get_automation` /
+  `get_automation_runs` / `get_automation_run`, `read:automations`, open) + writes (`create` / `update`
+  / `set_status` / `clone` / `delete`, `write:automations`, `confirmation:true` → destructiveHint). The
+  AI authors rules only — `dispatch` is not exported, the gated dispatcher stays the sole effect path.
+  Write tools reuse `Create/Update/CloneAutomationInput` from `@sparx/automation-schemas` (no vocab
+  drift vs REST/dashboard). Tier model enforced over MCP exactly as REST (origin/locked service-set;
+  LOCKED update/status/delete → error result; clone = "Duplicate to edit"). Scopes added to api-mcp
+  `auth.ts` (owner/admin/editor write, viewer read) + `WRITE_SCOPES`. Closure: `@sparx/automation` +
+  `@sparx/automation-schemas` → api-mcp deps + Dockerfile COPY (service layer only, no executor
+  closure). **⚠ Fixed two pre-existing api-mcp bugs the dormant suite had hidden:** (1) added the
+  missing `@vitejs/plugin-react` JSX transform to api-mcp's vitest config (the api-rest PR#41 issue,
+  never mirrored — `@sparx/email`'s raw `.tsx` in the graph made EVERY suite fail at import); (2)
+  **duplicate MCP tool name** `get_top_customers` (CRM lifetime-spend AND commerce date-ranged report)
+  → the SDK threw at registration so the server couldn't boot a session (every request 500'd, incl.
+  `initialize`). Renamed the commerce tool → `get_top_customers_by_revenue` (CRM owns the customer-spine
+  name); found via a throwaway dup-name diagnostic (109 tools → 0 dupes). **Verify:** automation +
+  api-mcp + commerce typecheck clean, lint 0, prettier clean; `automation-tools.test.ts` 4/4 (published
+  - reachable on an ai-only tenant; lifecycle; LOCKED clone-not-edit; scope denial) — full api-mcp
+    suite now **12/12** (was unrunnable), `@sparx/automation` 35/35. Lockfile scoped to the two links +
+    the `@vitejs/plugin-react` devDep; the other agent's invoicing files (dashboard `invoicing/` +
+    `_shell/registry.ts`) left untouched. **Next:** Slice G-UI (dashboard surface) — the last consumer of
+    the now-two-transport (REST + MCP) service layer; or Slice I (external/inbound webhooks). Email-driven
+    seeds remain queued behind the user's Default Builder-emails library.

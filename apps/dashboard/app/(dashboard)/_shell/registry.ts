@@ -14,6 +14,7 @@ import { emailManifest } from '@sparx/email-platform/manifest';
 
 import { builderManifest } from '../builder/manifest';
 import { crmManifest } from '../crm/manifest';
+import { invoicingManifest } from '../invoicing/manifest';
 import { b2bManifest } from '../b2b/manifest';
 import { dropshipManifest } from '../dropship/manifest';
 import { inventoryManifest } from '../inventory/manifest';
@@ -26,6 +27,7 @@ export const moduleManifests: readonly ModuleManifest[] = [
   commerceManifest,
   cmsManifest,
   crmManifest,
+  invoicingManifest,
   emailManifest,
   b2bManifest,
   dropshipManifest,

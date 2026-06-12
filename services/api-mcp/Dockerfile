@@ -19,6 +19,12 @@ COPY packages/auth ./packages/auth
 COPY packages/modules ./packages/modules
 COPY packages/legal ./packages/legal
 COPY packages/events ./packages/events
+# @sparx/automation MCP tools (the AI authoring path) call only the automation
+# SERVICE layer → closure is just these two (db/events already above; the module
+# executors in @sparx/automation-actions are NOT pulled in — the AI authors
+# rules, it never fires an effect directly).
+COPY packages/automation-schemas ./packages/automation-schemas
+COPY packages/automation ./packages/automation
 COPY packages/builder-schemas ./packages/builder-schemas
 # @sparx/builder (page-service behind the Builder MCP tools) + its transitive
 # surface-compile dep. The MCP tools import @sparx/builder/mcp, a subpath that

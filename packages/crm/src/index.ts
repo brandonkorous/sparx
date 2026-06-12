@@ -14,6 +14,11 @@ export * as crmMcp from './mcp';
 // `crmMcp.` namespace prefix.
 export { crmMcpTools } from './mcp';
 export type { AnyMcpTool, McpScope, McpToolDefinition } from './mcp';
+// Invoicing module tools (docs/87 §12) — a separate array with its own
+// read:invoicing / write:invoicing scopes (the MCP server gates them on the
+// `invoicing` module flag).
+export { invoicingMcpTools } from './mcp';
+export type { InvoicingMcpScope, InvoicingMcpTool } from './mcp';
 export {
   WebhookFanoutPublisher,
   preconnectWebhookFanout,

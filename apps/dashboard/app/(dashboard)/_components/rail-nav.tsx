@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { ModuleProvider, useRailExpanded, Wordmark } from '@sparx/ui';
-import { Clock, Gauge, Home, Plus, Search, Settings, Star, Store } from 'lucide-react';
+import { Clock, Gauge, Home, Plus, Search, Settings, Star, Store, Workflow } from 'lucide-react';
 import {
   moduleManifests,
   findFavoritableById,
@@ -178,6 +178,26 @@ export function RailNav({ pathname, enabledModules, favorites, recents }: RailNa
             </ModuleProvider>
           );
         })}
+
+        {/* Automations — a platform CAPABILITY, not an activatable module
+            (docs/81 §1, §3): a cross-module rule engine reachable whenever the
+            tenant has ≥1 trigger-capable module active. Like SEO it rides at the
+            end of the module list, stays neutral-colored (no module hue), and is
+            not in `moduleManifests`. See docs/84 Slice G-UI. */}
+        {enabledModules.length > 0 && (
+          <Link
+            href="/automations"
+            title="Automations"
+            aria-label="Automations"
+            aria-current={isActivePath(pathname, '/automations') ? 'page' : undefined}
+            className={tileClass(isActivePath(pathname, '/automations'), expanded)}
+          >
+            <span className={tileIconClass(isActivePath(pathname, '/automations'))}>
+              <Workflow className="h-4 w-4" />
+            </span>
+            {expanded && <span className="flex-1 truncate text-left">Automations</span>}
+          </Link>
+        )}
 
         {/* SEO — a cross-cutting platform tool (audits every module's pages:
             products, collections, CMS + Builder pages), not an activatable

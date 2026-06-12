@@ -197,6 +197,43 @@ export async function getDomainSuggestions(
   }));
 }
 
+// ─── Legal agreements ─────────────────────────────────────────────────────────
+
+export interface DomainAgreement {
+  agreementKey: string;
+  title: string;
+  url: string;
+}
+
+interface GdAgreement {
+  agreementKey: string;
+  title?: string;
+  url?: string;
+}
+
+/**
+ * The registration agreements GoDaddy requires for a TLD. The purchase consent
+ * must echo back exactly these `agreementKey`s — they vary by TLD and by whether
+ * WHOIS privacy is added, so they MUST be fetched per purchase, not hardcoded.
+ * Hardcoding 'DNRA' only covers gTLDs like .com/.net/.org; other TLDs reject the
+ * purchase with HTTP 400 when the consented keys don't match.
+ */
+export async function getDomainAgreements(
+  tld: string,
+  privacy: boolean,
+  forTransfer = false
+): Promise<DomainAgreement[]> {
+  const items = await gd<GdAgreement[]>(
+    'GET',
+    `/v1/domains/agreements?tlds=${encodeURIComponent(tld)}&privacy=${privacy}&forTransfer=${forTransfer}`
+  );
+  return items.map((a) => ({
+    agreementKey: a.agreementKey,
+    title: a.title ?? '',
+    url: a.url ?? '',
+  }));
+}
+
 // ─── Purchase ─────────────────────────────────────────────────────────────────
 
 export async function purchaseDomain(
@@ -205,6 +242,17 @@ export async function purchaseDomain(
   registrant: RegistrantContact,
   privacy: boolean
 ): Promise<{ orderId: string }> {
+  // Fetch and consent to exactly the agreements GoDaddy requires for THIS TLD
+  // (plus the privacy add-on) — they vary by TLD, so never hardcode the keys.
+  const tld = domain.split('.').slice(1).join('.');
+  const agreementKeys = (await getDomainAgreements(tld, privacy)).map((a) => a.agreementKey);
+  if (agreementKeys.length === 0) {
+    throw new GoDaddyError(
+      `GoDaddy returned no registration agreements for .${tld}; cannot purchase.`,
+      0
+    );
+  }
+
   const contact = {
     firstName: registrant.firstName,
     lastName: registrant.lastName,
@@ -228,7 +276,7 @@ export async function purchaseDomain(
     consent: {
       agreedAt: new Date().toISOString(),
       agreedBy: registrant.email,
-      agreementKeys: ['DNRA'],
+      agreementKeys,
     },
     contactAdmin: contact,
     contactBilling: contact,

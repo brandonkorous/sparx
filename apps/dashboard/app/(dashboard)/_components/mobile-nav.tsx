@@ -13,7 +13,7 @@ import {
   Text,
   Wordmark,
 } from '@sparx/ui';
-import { Home, Plus, Search, Settings } from 'lucide-react';
+import { Home, Plus, Search, Settings, Workflow } from 'lucide-react';
 import { getManifestForPath, moduleManifests } from '../_shell/registry';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
 import { FavoritesSection } from './favorites-section';
@@ -94,6 +94,19 @@ export function MobileNav({ pathname, enabledModules, favorites, recents }: Mobi
               </ModuleProvider>
             );
           })}
+          {/* Automations — platform capability, reachable with ≥1 module active
+              (docs/81 §1; docs/84 Slice G-UI). Mirrors the desktop rail tile. */}
+          {enabledModules.length > 0 && (
+            <SidebarItem
+              asChild
+              active={
+                pathname === '/automations' || (pathname?.startsWith('/automations/') ?? false)
+              }
+              icon={<Workflow className="h-4 w-4" />}
+            >
+              <Link href="/automations">Automations</Link>
+            </SidebarItem>
+          )}
           {hasInactiveModules && (
             <SidebarItem asChild icon={<Plus className="h-4 w-4" />}>
               <Link href="/settings/modules">Add a module</Link>

@@ -83,3 +83,13 @@ export {
   type AutomationRunWithSteps,
   type ListRunsFilter,
 } from './service/run-service';
+
+// ── MCP tool surface (docs/84 Slice H) ──
+// The AI authoring path. `automationMcpTools` is the array `services/api-mcp`
+// publishes; tools wrap the same service layer above (one service, three
+// transports). Subpath-free so it mirrors `@sparx/crm`'s `crmMcpTools` export.
+export {
+  automationMcpTools,
+  type AutomationMcpScope,
+  type McpToolDefinition as AutomationMcpToolDefinition,
+} from './mcp';

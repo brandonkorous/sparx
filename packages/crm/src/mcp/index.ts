@@ -15,3 +15,7 @@ export * from './write-tools';
 
 /** The full CRM tool set the MCP server publishes. */
 export const crmMcpTools = [...readTools, ...writeTools];
+
+// Invoicing (docs/87 §12) — a first-class module with its own scopes, so it ships
+// as a SEPARATE array (not merged into crmMcpTools).
+export { invoicingMcpTools, type InvoicingMcpScope, type InvoicingMcpTool } from './invoicing-tools';
