@@ -10,13 +10,16 @@ import { RecordingPublisher, setPublisher } from '../src/events.js';
 export interface TestTenant {
   tenantId: string;
   userId: string;
+  // The tenant's seeded PRIMARY property (docs/49) — the site the per-property
+  // sitebuilder services scope to by default.
+  propertyId: string;
   email: string;
   slug: string;
 }
 
 export interface TestContext {
   tenant: TestTenant;
-  ctx: { tenantId: string; userId: string };
+  ctx: { tenantId: string; userId: string; propertyId: string };
   publisher: RecordingPublisher;
 }
 
@@ -34,20 +37,26 @@ export async function createTestTenant(role = 'owner'): Promise<TestTenant> {
     },
   });
 
-  // users has FORCE RLS — write via a tenant-scoped raw exec.
-  await prisma.$transaction(async (tx) => {
+  // users + properties have FORCE RLS — write via a tenant-scoped raw exec. Every
+  // real tenant is born with a primary property (packages/auth sign-up); the
+  // harness seeds the same so the per-property services resolve a site.
+  const { userId, propertyId } = await prisma.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenant.id}'`);
-    await tx.user.create({
+    const user = await tx.user.create({
       data: { tenantId: tenant.id, email, name: `Test ${slug}`, role },
     });
+    const property = await tx.property.create({
+      data: {
+        tenantId: tenant.id,
+        slug: 'primary',
+        name: `Site Builder Test ${slug}`,
+        isPrimary: true,
+      },
+    });
+    return { userId: user.id, propertyId: property.id };
   });
 
-  const user = await prisma.$transaction(async (tx) => {
-    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenant.id}'`);
-    return tx.user.findFirstOrThrow({ where: { tenantId: tenant.id, email } });
-  });
-
-  return { tenantId: tenant.id, userId: user.id, email, slug };
+  return { tenantId: tenant.id, userId, propertyId, email, slug };
 }
 
 export async function dropTestTenant(tenantId: string): Promise<void> {
@@ -60,7 +69,7 @@ export async function makeTestContext(role = 'owner'): Promise<TestContext> {
   setPublisher(publisher);
   return {
     tenant,
-    ctx: { tenantId: tenant.tenantId, userId: tenant.userId },
+    ctx: { tenantId: tenant.tenantId, userId: tenant.userId, propertyId: tenant.propertyId },
     publisher,
   };
 }
@@ -70,10 +79,13 @@ export async function disposeTestContext(test: TestContext): Promise<void> {
   test.publisher.clear();
 }
 
-/** Reads the commerce StorefrontTheme row written through on publish. */
-export function readStorefrontTheme(tenantId: string) {
+/** Reads the commerce StorefrontTheme row written through on publish — now keyed
+ *  per (tenant, property) (docs/49 Phase 6). */
+export function readStorefrontTheme(tenantId: string, propertyId: string) {
   return prisma.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
-    return tx.storefrontTheme.findUnique({ where: { tenantId } });
+    return tx.storefrontTheme.findUnique({
+      where: { tenantId_propertyId: { tenantId, propertyId } },
+    });
   });
 }

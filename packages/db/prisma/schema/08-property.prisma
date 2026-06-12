@@ -61,6 +61,15 @@ model Property {
   builderLayouts     BuilderLayout[]
   builderAssignments BuilderPageAssignment[]
 
+  // Sitebuilder applied-theme trio, re-keyed per-property (docs/49 Phase 6). Each
+  // site keeps its own draft config + published version history + publish
+  // schedules, and its own write-through StorefrontTheme. The saved-theme LIBRARY
+  // (SiteTheme) + the legacy section tier stay tenant-wide and do NOT relate here.
+  siteConfig           SiteConfig?
+  siteVersions         SiteVersion[]
+  sitePublishSchedules SitePublishSchedule[]
+  storefrontTheme      StorefrontTheme?
+
   // Custom + purchased hostnames pointing at this site (docs/49 §5, docs/24).
   domains Domain[]
 

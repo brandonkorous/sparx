@@ -17,6 +17,7 @@ import { requireRole } from '@sparx/api-core/auth';
 import {
   requireSitebuilderModule,
   toSitebuilderContext,
+  toSitebuilderPropertyContext,
 } from '../../../lib/sitebuilder-context.js';
 
 void jwt; // keep the import — fastify-jwt type augmentation lives in plugins/auth.ts
@@ -36,14 +37,16 @@ const publishRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/sitebuilder/publish', async (request) => {
     requireRole(request, 'admin');
     await requireSitebuilderModule(request);
-    const version = await publishService.publishNow(toSitebuilderContext(request), request.body);
+    const ctx = await toSitebuilderPropertyContext(request);
+    const version = await publishService.publishNow(ctx, request.body);
     return ok(version);
   });
 
   app.get('/v1/sitebuilder/preview', async (request) => {
     requireRole(request, 'viewer');
     await requireSitebuilderModule(request);
-    const snapshot = await publishService.getDraftSnapshot(toSitebuilderContext(request));
+    const ctx = await toSitebuilderPropertyContext(request);
+    const snapshot = await publishService.getDraftSnapshot(ctx);
     return ok(snapshot);
   });
 
@@ -66,28 +69,32 @@ const publishRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireSitebuilderModule(request);
     const q = VersionsQuery.parse(request.query);
-    const { items, total } = await publishService.listVersions(toSitebuilderContext(request), q);
+    const ctx = await toSitebuilderPropertyContext(request);
+    const { items, total } = await publishService.listVersions(ctx, q);
     return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.post('/v1/sitebuilder/rollback', async (request) => {
     requireRole(request, 'admin');
     await requireSitebuilderModule(request);
-    const version = await publishService.rollback(toSitebuilderContext(request), request.body);
+    const ctx = await toSitebuilderPropertyContext(request);
+    const version = await publishService.rollback(ctx, request.body);
     return ok(version);
   });
 
   app.post('/v1/sitebuilder/schedule', async (request, reply) => {
     requireRole(request, 'admin');
     await requireSitebuilderModule(request);
-    const scheduled = await scheduleService.schedule(toSitebuilderContext(request), request.body);
+    const ctx = await toSitebuilderPropertyContext(request);
+    const scheduled = await scheduleService.schedule(ctx, request.body);
     return reply.code(201).send(ok(scheduled));
   });
 
   app.get('/v1/sitebuilder/schedules', async (request) => {
     requireRole(request, 'viewer');
     await requireSitebuilderModule(request);
-    const schedules = await scheduleService.listSchedules(toSitebuilderContext(request));
+    const ctx = await toSitebuilderPropertyContext(request);
+    const schedules = await scheduleService.listSchedules(ctx);
     return ok({ schedules });
   });
 

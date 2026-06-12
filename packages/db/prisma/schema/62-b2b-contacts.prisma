@@ -17,9 +17,9 @@
 // one row here matching their `customers.b2b_account_id`.
 
 model B2bAccountContact {
-  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String @map("tenant_id") @db.Uuid
-  accountId String @map("account_id") @db.Uuid
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  accountId  String @map("account_id") @db.Uuid
   customerId String @map("customer_id") @db.Uuid
 
   // Role: primary_contact | buyer | approver | viewer

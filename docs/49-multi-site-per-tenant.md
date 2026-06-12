@@ -1,10 +1,14 @@
 # Sparx Platform — Multi-Site per Tenant
 
-**Version:** 1.1 (Phases 1–5 built)
+**Version:** 1.3 (Phases 1–5 built; Phase 6a — per-site applied theme — built 2026-06-12; 6b/6c/7/8 pending)
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-05
+**Last Updated:** 2026-06-12
 
-> **Status: BUILT — Phases 1–4 shipped (2026-06-04); Phase 5 (Model B per-site catalog + content, search facet, make-primary subdomain-follow) built 2026-06-05. Remaining: per-site module_scope, billing metering, per-site StorefrontSettings/nav, explicit cross-site sharing.**
+> **Status: BUILT — Phases 1–4 shipped (2026-06-04); Phase 5 (Model B per-site catalog + content, search facet, make-primary subdomain-follow) built 2026-06-05.**
+>
+> **⚠️ CRITICAL CORRECTION (2026-06-12): per-site _application_ was only partially built.** Model A promised per-site theme + brand, but the theme/publish layer (`SiteConfig`→`SiteVersion.compiledTokens`→`StorefrontTheme`) was left **tenant-level** (the "sitebuilder is retiring" decision, §2/§4) — and that is exactly what the storefront reads its applied tokens from. Net effect today: **every site in a tenant shares one applied theme, and emails are tenant-wide.** That breaks the multi-site promise. The governing rule and the fix are now §3·A; the work is **Phases 6–8** (§10). Until they land, do NOT build the new-site create wizard ([86](86-wizard-layout-pattern.md)) — it cannot honestly give a site its own theme/emails.
+>
+> **Remaining (pre-correction list, now folded into Phases 6–8):** per-site module_scope, billing metering, per-site StorefrontSettings/nav, explicit cross-site sharing.
 > One tenant can run **more than one website** (e.g. a main brand site + a campaign microsite, a
 > wholesale site and a retail site over the same catalog, a publisher with several publications).
 >
@@ -149,6 +153,53 @@ silently — it is the single biggest conceptual change here.
 
 ---
 
+## 3·A. The per-site _application_ rule (2026-06-12 correction)
+
+The Model A split above was only **partially implemented**, and the gap is a **critical flaw**.
+Pages, layouts, and content were re-keyed per-property (Phase 1/5), but the **theme/publish layer
+was deliberately left tenant-level** (§2 scope-note, §4 — `sitebuilder_*` "retiring, not
+re-keyed"). That layer is exactly what the storefront reads its applied tokens from
+(`SiteVersion.compiledTokens` → the `StorefrontTheme` write-through). **Emails are tenant-wide
+too.** So today every site in a tenant renders one shared theme and one shared set of emails — the
+opposite of what "multi-site" promises.
+
+The governing rule, stated explicitly so it binds all future work:
+
+> **A theme, email, blueprint, or brand is a tenant-wide _library_ — browsable and selectable
+> across the whole tenant — but it only affects a site when it is _applied to that site_.
+> Selection is tenant-wide; application is per-property.**
+
+Pick from a shared shelf; mount it on the site you choose. Pages, layouts, and navigation are
+authored _on_ a site, so they are per-property by nature (and already are). `tenant_id` stays the
+only security boundary; `property_id` is application-tier scoping (§2) — **none of this adds RLS
+policies or a new GUC.**
+
+What "library" vs. "applied" means per artifact:
+
+| Artifact             | Tenant-wide **library** (browse / select)    | **Applied** / owned per-property                                                                                                                                                                                                                                                                  |
+| -------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Theme**            | `SiteTheme` (saved themes) stays tenant-wide | _which_ theme is applied + the published tokens — `SiteConfig` (draft), `SiteVersion` (published snapshot), `StorefrontTheme`/`StorefrontSettings` (write-through) → **per-property**                                                                                                             |
+| **Brand**            | `TenantBrand` = the tenant default           | the site's applied brand = `Property.brand_override` (already per-property, Phase 4)                                                                                                                                                                                                              |
+| **Email**            | (optional future shared template library)    | authored emails + broadcasts + the published email → **per-property** (`BuilderEmail`, `Broadcast`, `ScheduledSend`). The from-identity / sending domain stays tenant-wide for now (§9)                                                                                                           |
+| **Blueprint**        | the blueprint catalog stays tenant-wide      | the install + everything it provisions → **per-property** (the installer already scopes content/products/pages/layout and writes a per-site `brand_override` for secondary sites; only the install **route** still hardcodes the primary, and theme-apply must follow the per-property theme fix) |
+| **Pages/Layout/Nav** | —                                            | always per-property (already)                                                                                                                                                                                                                                                                     |
+
+This **corrects, not contradicts, §4's "leave `sitebuilder_*` single-site."** Whether or not the
+sitebuilder layer is eventually replaced by a Builder-native theme, the **applied theme must become
+per-property now**: the publish state (`SiteConfig`/`SiteVersion`) and the write-through
+(`StorefrontTheme`/`StorefrontSettings`) gain a `property_id`; the `SiteTheme` _library_ stays
+tenant-wide. The Builder layer already demonstrates the exact per-property pattern to copy
+(`builder_layouts` composite PK `(tenant_id, property_id)`; the public builder routes resolve
+`?property=` / `x-sparx-property-id`). Phases 6–8 (§10) carry this out.
+
+**Blueprint corollary.** Because the installer already scopes per-property (it writes a per-site
+`brand_override` for a secondary site — _"installing onto one site never rebrands its siblings"_ —
+and scopes content/products/pages/layout to the target), the only blockers to per-site blueprints
+are (a) the install **route** hardcoding the primary property, and (b) theme-apply being
+tenant-wide — both resolved by Phases 6 + 8. Per-site blueprints are then nearly free.
+
+---
+
 ## 4. Data model sketch
 
 A new `Site` entity, and a re-key of the presentation layer from `(tenant, …)` to `(site, …)`.
@@ -273,8 +324,13 @@ multi-site is purely additive from there.
 
 ## 9. Open questions / out of scope
 
-- **Per-site brand override** (§3) — the deliberate amendment to doc-34's "brand overridable by
-  none." Decide scope: full identity override, or presentation-only.
+- **⚠️ Per-site _applied_ theme + emails** — RESOLVED as the governing rule in §3·A and scheduled as
+  **Phases 6–8** (§10). The earlier "leave `sitebuilder_*` tenant-level" stance is superseded for
+  the _applied_ theme (the `SiteTheme` library stays tenant-wide; the publish state + write-through
+  go per-property). This was the critical flaw; it is no longer open.
+- **Per-site brand override** (§3) — ✅ shipped Phase 4 (`Property.brand_override`, presentation
+  identity: display name + brand colours + logo, merged over the tenant brand). The §3·A rule makes
+  it the canonical _applied_ brand for a site.
 - **Model B scoping** — ✅ BUILT 2026-06-05 (catalog + content) via per-site junction tables
   (EMPTY = all sites). Implemented as join tables rather than a nullable `site_id` column so an
   item can be on _several_ sites, not just one. Whether **pricing visibility** is per-site is still
@@ -291,8 +347,10 @@ multi-site is purely additive from there.
   `found` count) is site-correct. Admin/dashboard search stays unscoped (sees every product).
   `ensureSchemas` self-heals the additive field on the next indexer boot. Universal/⌘K search
   ([39-universal-search.md](39-universal-search.md)) is admin-facing, so it stays tenant-scoped.
-- **Email from-identity per site** — a per-site sending domain / from-address
-  ([13-email-platform-prd.md](13-email-platform-prd.md))? Defer.
+- **Email from-identity per site** — Phase 7 makes email **content** per-site (authored emails,
+  broadcasts, the published email), but the **from-identity** — a per-site sending domain /
+  from-address ([13-email-platform-prd.md](13-email-platform-prd.md)) — stays tenant-wide for now.
+  Per-site sending domain is still deferred (a Mailgun-domain-per-site concern, not a content one).
 - **Hard isolation** is explicitly **not** a multi-site feature — that's multi-workspace (§2).
 
 ---
@@ -306,6 +364,17 @@ multi-site is purely additive from there.
 | 3 ✅  | Dashboard **Sites** settings hub + in-builder **site switcher** (cookie → `x-sparx-property-id`); single-site tenants see nothing new.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Phase 2; doc 32 breadcrumb; [24](24-dashboard-shell.md)                           |
 | 4 ✅  | Per-site **brand override** (`Property.brand_override` JSON; presentation-only identity — display name + theme colours + logo; merged over the tenant brand in the public payload). Amends [34](34-platform-glossary.md)/[33](33-token-model-v2.md).                                                                                                                                                                                                                                                                                                                                                           | Phase 3                                                                           |
 | 5 ✅  | **Model B per-site scoping — BUILT (2026-06-05).** Per-site **catalog + content** via `commerce_product_properties` / `content_entry_properties` junctions (EMPTY = all sites, the default); storefront reads + **sitemap** + **Typesense `property_ids` facet** all site-scoped; dashboard **"Visible on sites"** control on the product + Pages + content-entry editors; **make-primary** now re-points the bare host (subdomain-follow). **Still deferred:** per-site `module_scope`, billing add-on metering, per-site StorefrontSettings/nav, explicit cross-site **sharing** modes (the §3 🔖 bookmark). | [17](17-billing-subscriptions.md), [39](39-universal-search.md)                   |
+
+**Phases 6–8 — the per-site _application_ correction (specced 2026-06-12).** These realise §3·A;
+same layout language as the table above. Build in order, deploy each small.
+
+| Phase | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Depends on                                    |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 6a ✅ | **Per-site _applied_ theme — BUILT (2026-06-12).** `property_id` on `SiteConfig` (composite PK `(tenant_id, property_id)`), `SiteVersion` (version numbers per `(tenant, property)`), `SitePublishSchedule`, and the write-through `StorefrontTheme`; backfilled each to the tenant's **primary** property (migration `20260809000000_sitebuilder_per_property`, RLS-loop backfill). `PropertyContext` threaded through `publishService`, `savedThemeService.apply`, `scheduleService`, `themeService` + the sitebuilder MCP (`toPropertyContext`, optional `propertyId` tool arg); `toSitebuilderPropertyContext` reads `x-sparx-property-id`. The scheduled-publish tick reads `propertyId` off the schedule row. `GET /v1/public/storefront/site` gained optional **`?property=`**; `apps/site` threads `propertySlug` (incl. per-site cache tag). Commerce `getTheme`/`updateTheme` + the public tenant payload read the active site's `StorefrontTheme`. `SiteTheme` _library_ stays tenant-wide. RLS unchanged. | Phase 5; DB Migrate pipeline                  |
+| 6b 🔜 | **Per-site `StorefrontSettings`** (currency, locale, checkout/auth policy, stock display). `property_id` on `commerce_storefront_settings` (composite PK) with **primary-fallback inheritance** (a site with no row inherits the primary's); thread the cart / checkout / content / search-projection readers + the dashboard settings route. `defaultWarehouseId` / `defaultDunningPolicy` stay effectively tenant-wide via the fallback. | Phase 6a                                      |
+| 6c 🔜 | **Per-site legal footer placements.** `property_id` (nullable) on `StorefrontDocPlacement`; the public footer/terms read filters by the resolved property (null = tenant-wide fallback) so Bob's site no longer shows Mary's legal links. | Phase 6a; [42](42-legal-consent.md)          |
+| 7 🔜  | **Per-site emails.** `property_id` on `BuilderEmail`, `Broadcast`, `ScheduledSend` (+ `EmailEvent`); thread through `emailService`/`broadcastService` + routes so the email builder + broadcasts scope to the active site. Transactional **automations stay tenant-wide rules**, but the **send resolves the property from the source event** (`order.property_id`, …) so the right site's brand renders; built-in transactional overrides go per-site with a tenant-wide fallback (`(tenant, property, key)` → `(tenant, key)`). `EmailSettings`/`SendingDomain` stay tenant-wide (per-site sending domain deferred, §9).                                                                                                                                                                    | Phase 6                                       |
+| 8 🔜  | **Per-site blueprint install + new-site wizard.** `/v1/blueprints/:key/install` accepts a target **`property_id`** (validated to the tenant; defaults to primary). Build the **New-site create wizard** ([86](86-wizard-layout-pattern.md) modal): blueprint → name + handle → domain → preview → publish, provisioning a site with its own theme, brand, pages, emails. **Replaces** the inline create form in Settings › Sites.                                                                                                                                                                                                                                                                                                                                                             | Phases 6–7; [86](86-wizard-layout-pattern.md) |
 
 ---
 

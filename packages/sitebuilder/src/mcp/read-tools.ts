@@ -4,11 +4,21 @@ import { z } from 'zod';
 import { TargetId, LayoutKey } from '@sparx/sitebuilder-schemas';
 import { themeService, sectionService, publishService, definitionService } from '../services/index';
 import type { AnyMcpTool } from './registry';
+import { toPropertyContext } from './context';
 
 const NoArgs = z.object({});
 const TargetArg = z.object({ targetId: TargetId, key: LayoutKey.default('default') });
 const SlugArg = z.object({ slug: z.string().min(1).max(56) });
+// Per-property tools (docs/49 Phase 6) accept an optional target site; omit for
+// the tenant's primary site.
+const propertyIdArg = z
+  .string()
+  .uuid()
+  .optional()
+  .describe('Target site (web property) id; omit for the tenant’s primary site.');
+const PropertyArg = z.object({ propertyId: propertyIdArg });
 const ListVersionsArgs = z.object({
+  propertyId: propertyIdArg,
   take: z.number().int().min(1).max(200).optional(),
   skip: z.number().int().min(0).optional(),
 });
@@ -28,9 +38,12 @@ export const readTools: AnyMcpTool[] = [
     description:
       'Get the current Site Builder draft config: selected theme, appearance policy (light/dark), and settings overlay.',
     scope: 'read:builder',
-    input: NoArgs,
+    input: PropertyArg,
     confirmation: false,
-    run: (ctx) => themeService.getConfig(ctx),
+    run: async (ctx, input) =>
+      themeService.getConfig(
+        await toPropertyContext(ctx, (input as z.infer<typeof PropertyArg>).propertyId)
+      ),
   },
   {
     name: 'get_sections',
@@ -50,17 +63,22 @@ export const readTools: AnyMcpTool[] = [
     scope: 'read:builder',
     input: ListVersionsArgs,
     confirmation: false,
-    run: (ctx, input) =>
-      publishService.listVersions(ctx, input as z.infer<typeof ListVersionsArgs>),
+    run: async (ctx, input) => {
+      const { propertyId, ...opts } = input as z.infer<typeof ListVersionsArgs>;
+      return publishService.listVersions(await toPropertyContext(ctx, propertyId), opts);
+    },
   },
   {
     name: 'get_published_site',
     description:
       'Get the currently-published storefront snapshot: theme, appearance policy, compiled tokens, sections, and layout.',
     scope: 'read:builder',
-    input: NoArgs,
+    input: PropertyArg,
     confirmation: false,
-    run: (ctx) => publishService.getPublishedSnapshot(ctx),
+    run: async (ctx, input) =>
+      publishService.getPublishedSnapshot(
+        await toPropertyContext(ctx, (input as z.infer<typeof PropertyArg>).propertyId)
+      ),
   },
   {
     name: 'list_custom_sections',

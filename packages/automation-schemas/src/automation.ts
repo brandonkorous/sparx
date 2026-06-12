@@ -38,3 +38,37 @@ export const CloneAutomationInput = z.object({
   name: z.string().min(1).max(255).optional(),
 });
 export type CloneAutomationInput = z.infer<typeof CloneAutomationInput>;
+
+// ─── Versioning (docs/84 Slice G-versioning) ─────────────────────────────────
+
+/**
+ * The staged, unpublished edit document held in the `automations.draft` JSONB
+ * column (null = no pending draft). Stored in the same COLUMN-FORM as the live
+ * row (trigger split into type + config), so publish is a straight copy and the
+ * dashboard parses it back with the same trigger/condition/action parsers — no
+ * drift. The JSON sub-parts stay `unknown` here exactly as they are on the wire
+ * DTO; they are validated by the canonical parsers when read.
+ */
+export interface AutomationDraft {
+  name: string;
+  description: string | null;
+  triggerType: string;
+  triggerConfig: unknown;
+  conditions: unknown;
+  actions: unknown;
+  maxDepth: number;
+}
+
+/** Publish the staged draft as the next live version. An optional one-line note
+ *  ("what changed") is recorded on the immutable snapshot. */
+export const PublishAutomationInput = z.object({
+  note: z.string().max(500).optional(),
+});
+export type PublishAutomationInput = z.infer<typeof PublishAutomationInput>;
+
+/** Restore a prior version — copies that snapshot back into the `draft` (the
+ *  tenant reviews, then publishes, which appends a NEW version). */
+export const RestoreAutomationVersionInput = z.object({
+  version: z.number().int().positive(),
+});
+export type RestoreAutomationVersionInput = z.infer<typeof RestoreAutomationVersionInput>;

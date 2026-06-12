@@ -58,13 +58,13 @@ model Customer {
   mergedInto  Customer?         @relation("CustomerMerge", fields: [mergedIntoCustomerId], references: [id], onDelete: SetNull)
   mergedFrom  Customer[]        @relation("CustomerMerge")
 
-  addresses      CustomerAddress[]
-  deals          Deal[]
-  activities     CrmActivity[]
-  tasks          Task[]
-  segmentMembers SegmentMember[]
-  orders         Order[]
-  quotes         Quote[]
+  addresses        CustomerAddress[]
+  deals            Deal[]
+  activities       CrmActivity[]
+  tasks            Task[]
+  segmentMembers   SegmentMember[]
+  orders           Order[]
+  quotes           Quote[]
   billingDocuments BillingDocument[]
 
   // Commerce module inverse relations

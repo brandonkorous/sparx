@@ -11,7 +11,7 @@ import { getTheme, isThemeKey, THEME_LIST, type ThemePreset } from '@sparx/site-
 
 import { writeAuditLog } from '../audit';
 import { publishSitebuilderEvent } from '../events';
-import { SitebuilderNotFoundError, type ServiceContext } from '../errors';
+import { SitebuilderNotFoundError, type PropertyContext } from '../errors';
 import { getOrCreateConfig } from './_config';
 
 // ── Static catalog (no tenant) ──────────────────────────────────────────────
@@ -26,8 +26,8 @@ export function getThemeSchema(themeKey: string): ThemePreset['settingsSchema'] 
 
 // ── Per-tenant config ───────────────────────────────────────────────────────
 
-export function getConfig(ctx: ServiceContext): Promise<SiteConfig> {
-  return withTenant(ctx, (tx) => getOrCreateConfig(tx, ctx.tenantId));
+export function getConfig(ctx: PropertyContext): Promise<SiteConfig> {
+  return withTenant(ctx, (tx) => getOrCreateConfig(tx, ctx.tenantId, ctx.propertyId));
 }
 
 export interface SelectThemeResolution {
@@ -40,7 +40,7 @@ export interface SelectThemeResolution {
 }
 
 export async function selectTheme(
-  ctx: ServiceContext,
+  ctx: PropertyContext,
   rawInput: unknown,
   resolution: SelectThemeResolution = {}
 ): Promise<SiteConfig> {
@@ -57,7 +57,7 @@ export async function selectTheme(
   }
 
   const updated = await withTenant(ctx, async (tx) => {
-    const config = await getOrCreateConfig(tx, ctx.tenantId);
+    const config = await getOrCreateConfig(tx, ctx.tenantId, ctx.propertyId);
 
     // Carry (or clear) the inline preset in draftSettings so the compile engine
     // applies it with no code preset. A code foundation clears any prior inline.
@@ -71,7 +71,7 @@ export async function selectTheme(
     }
 
     const next = await tx.siteConfig.update({
-      where: { tenantId: ctx.tenantId },
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: ctx.propertyId } },
       data: { themeKey: slug, draftSettings: draftSettings as Prisma.InputJsonValue },
     });
     await writeAuditLog({
@@ -81,7 +81,7 @@ export async function selectTheme(
       actorType: 'user',
       action: 'sitebuilder.theme.selected',
       entityType: 'SiteConfig',
-      entityId: ctx.tenantId,
+      entityId: ctx.propertyId,
       diff: { before: { themeKey: config.themeKey }, after: { themeKey: next.themeKey } },
     });
     return next;
@@ -97,15 +97,15 @@ export async function selectTheme(
   return updated;
 }
 
-export async function updateSettings(ctx: ServiceContext, rawInput: unknown): Promise<SiteConfig> {
+export async function updateSettings(ctx: PropertyContext, rawInput: unknown): Promise<SiteConfig> {
   const input = UpdateSettingsInput.parse(rawInput);
   return withTenant(ctx, async (tx) => {
-    const config = await getOrCreateConfig(tx, ctx.tenantId);
+    const config = await getOrCreateConfig(tx, ctx.tenantId, ctx.propertyId);
     if (input.settings === undefined && input.appearancePolicy === undefined) {
       return config;
     }
     return tx.siteConfig.update({
-      where: { tenantId: ctx.tenantId },
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: ctx.propertyId } },
       data: {
         ...(input.settings !== undefined ? { draftSettings: input.settings } : {}),
         ...(input.appearancePolicy !== undefined

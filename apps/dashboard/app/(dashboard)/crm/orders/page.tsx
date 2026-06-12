@@ -3,7 +3,7 @@ import { ShoppingCart, Plus } from 'lucide-react';
 import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
+import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
@@ -56,21 +56,9 @@ export default async function OrdersPage({ searchParams }: PageProps) {
   // the active site; `all` → the whole tenant; an id → that site.
   const siteParam = stringParam(params.site);
 
-  const [sites, activeCookieId] = await Promise.all([
-    listProperties().catch(() => [] as Property[]),
-    getActivePropertyId(),
-  ]);
-  const multiSite = sites.length > 1;
-  const activePropertyId = multiSite
-    ? (sites.find((s) => s.id === activeCookieId)?.id ??
-      sites.find((s) => s.isPrimary)?.id ??
-      sites[0]?.id)
-    : undefined;
-  const propertyFilter = !multiSite
-    ? undefined
-    : siteParam === 'all'
-      ? undefined
-      : (siteParam ?? activePropertyId);
+  const scope = await resolveSiteScope();
+  const { sites, multiSite, activePropertyId } = scope;
+  const propertyFilter = resolvePropertyFilter(scope, siteParam);
 
   // With a query, search via Typesense (typo-tolerant, matches order number +
   // customer name/email + item titles); without one, list straight from

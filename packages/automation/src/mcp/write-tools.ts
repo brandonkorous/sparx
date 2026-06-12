@@ -22,6 +22,7 @@ import {
   cloneAutomation,
   createAutomation,
   deleteAutomation,
+  publishAutomation,
   setAutomationStatus,
   updateAutomation,
 } from '../service/automation-service';
@@ -41,15 +42,27 @@ export const createAutomationTool: McpToolDefinition = {
 export const updateAutomationTool: McpToolDefinition = {
   name: 'update_automation',
   description:
-    'Update an existing automation (name / description / trigger / conditions / actions / status). Only user-origin rules are editable — a platform-managed LOCKED rule rejects this (AUTOMATION_LOCKED); clone_automation it first, then edit the copy.',
+    'Update an existing automation (name / description / trigger / conditions / actions / status) and publish the change live. Document edits are staged as a draft and immediately published as the next version (the dashboard offers an explicit draft → publish step; over MCP the edit goes live). Only user-origin rules are editable — a platform-managed LOCKED rule rejects this (AUTOMATION_LOCKED); clone_automation it first, then edit the copy.',
   scope: 'write:automations',
   confirmation: true,
   input: UpdateAutomationInput.extend({ automationId: z.string().uuid() }),
-  run: (ctx, input) => {
+  run: async (ctx, input) => {
     const { automationId, ...patch } = input as z.input<typeof UpdateAutomationInput> & {
       automationId: string;
     };
-    return updateAutomation(ctx, automationId, patch);
+    const editsDocument =
+      patch.name !== undefined ||
+      patch.description !== undefined ||
+      patch.trigger !== undefined ||
+      patch.conditions !== undefined ||
+      patch.actions !== undefined ||
+      patch.maxDepth !== undefined;
+    const staged = await updateAutomation(ctx, automationId, patch);
+    // AI edits go live immediately: stage the draft, then publish it as the next
+    // version. A status-only update doesn't publish (and must not promote a
+    // pending dashboard draft) — only publish when this call edited the document.
+    if (editsDocument && staged.draft) return publishAutomation(ctx, automationId);
+    return staged;
   },
 };
 

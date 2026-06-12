@@ -26,7 +26,7 @@ model ImportJob {
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   rows   ImportJobRow[]
 
   @@index([tenantId], map: "import_jobs_tenant_idx")

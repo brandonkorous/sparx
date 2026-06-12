@@ -1,0 +1,1181 @@
+/* /automations — the Automation editor (map + inspector).
+ *
+ * A sibling of the site/email Builder: a two-pane working surface where the LEFT
+ * pane is the flow "map" (the visual WHEN → ONLY IF → THEN pipeline you click to
+ * select and drag to reorder) and the RIGHT pane is the inspector (the selected
+ * node's properties). The chrome uses the dashboard design tokens (--color-* /
+ * --module-active) so it matches the app and follows light/dark + the platform
+ * accent (Sparx Indigo).
+ *
+ * Purpose-built editor controls (the spine, node cards, inspector cards) live
+ * here as semantic classes rather than re-skinned utilities — same approach as
+ * builder.css. Real form controls (Input / Select / Switch / Button) come from
+ * @sparx/ui. Class prefix: .ax-* (Automation eXperience), to stay clear of the
+ * Builder's .bx-*.
+ */
+
+/* ── Shell ─────────────────────────────────────────────────────────────── */
+
+/* Pinned to the dashboard content region (viewport minus the 48px header), so
+   the chrome stays put and only the map + inspector scroll — identical strategy
+   to .bx-shell. */
+/* Flex column (NOT grid): the mobile pane-switch is display:none on desktop, and
+   a removed grid child would mis-place the body into an `auto` row, leaving the
+   `1fr` row empty below it. Flex sizes the body by flex-grow with no such trap. */
+.ax-shell {
+  height: calc(100dvh - 48px);
+  max-height: calc(100dvh - 48px);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  overflow: hidden;
+}
+
+/* Editor toolbar — name, status, and the create/save actions. */
+.ax-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 48px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--color-border-default);
+  background: var(--color-bg-surface);
+}
+.ax-toolbar__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.ax-toolbar__home {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--module-active) 12%, transparent);
+  color: var(--module-active);
+}
+.ax-toolbar__home svg {
+  width: 17px;
+  height: 17px;
+}
+/* The automation name — a borderless inline field that reveals a border on hover/
+   focus (rename-in-place, like the builder's template rename). */
+.ax-toolbar__name {
+  min-width: 0;
+  max-width: 42vw;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 4px 8px;
+  margin-left: -2px;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+}
+.ax-toolbar__name::placeholder {
+  color: var(--color-text-tertiary);
+  font-weight: 500;
+}
+.ax-toolbar__name:hover {
+  border-color: var(--color-border-default);
+}
+.ax-toolbar__name:focus {
+  outline: none;
+  border-color: var(--module-active);
+}
+.ax-toolbar__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+.ax-savestate {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.ax-savestate svg {
+  width: 14px;
+  height: 14px;
+}
+.ax-savestate[data-state='error'] {
+  color: var(--color-text-danger, #dc2626);
+}
+
+/* Status pill in the toolbar (draft / active / paused / error). */
+.ax-statuspill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 650;
+  white-space: nowrap;
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-muted);
+}
+.ax-statuspill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.ax-statuspill[data-status='active'] {
+  color: var(--color-success);
+  border-color: color-mix(in srgb, var(--color-success) 32%, transparent);
+}
+.ax-statuspill[data-status='error'] {
+  color: var(--color-text-danger, #dc2626);
+  border-color: color-mix(in srgb, var(--color-text-danger, #dc2626) 32%, transparent);
+}
+
+/* Version pill — the live published version + an amber dot when there are
+   unpublished (draft or unsaved) changes. */
+.ax-verpill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 650;
+  white-space: nowrap;
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.ax-verpill[data-unpublished='true'] {
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 38%, transparent);
+}
+.ax-verpill__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-warning);
+}
+
+/* Inline validation message — sits in the toolbar, quiet but visible. */
+.ax-toolbar__error {
+  font-size: 12px;
+  color: var(--color-text-danger, #dc2626);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 30vw;
+}
+
+/* ── Mobile pane switch (hidden on lg) ─────────────────────────────────── */
+.ax-paneswitch {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+.ax-paneswitch__btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-default);
+  background: var(--color-bg-surface);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-family: inherit;
+}
+.ax-paneswitch__btn[data-on='true'] {
+  background: var(--module-active);
+  color: #fff;
+  border-color: var(--module-active);
+}
+
+/* ── Body / panes ──────────────────────────────────────────────────────── */
+.ax-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.ax-map {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-subtle);
+}
+.ax-map__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.ax-side {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-left: 1px solid var(--color-border-default);
+  background: var(--color-bg-surface);
+}
+.ax-side__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  padding: 8px 8px 8px 14px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+.ax-side__bar-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-text-muted);
+}
+/* "Done" — leaves history mode back to the inspector. */
+.ax-side__close {
+  border: none;
+  background: transparent;
+  color: var(--module-active);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 7px;
+}
+.ax-side__close:hover {
+  background: var(--color-bg-subtle);
+}
+.ax-side__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+@media (max-width: 1023px) {
+  .ax-map,
+  .ax-side {
+    height: 100%;
+  }
+  .ax-pane--hide {
+    display: none !important;
+  }
+}
+@media (min-width: 1024px) {
+  .ax-paneswitch {
+    display: none;
+  }
+  /* The body's height comes from flex (`.ax-body { flex: 1 }`); the inner grid
+     then splits it into the canvas + inspector columns. No height:100% here —
+     that would resolve against the whole shell and overflow past the toolbar. */
+  .ax-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--ax-side-w, 380px);
+    grid-template-rows: minmax(0, 1fr);
+    min-height: 0;
+  }
+  .ax-pane--hide,
+  .ax-pane--show {
+    display: flex !important;
+  }
+}
+
+/* ── Flow canvas (the map) ─────────────────────────────────────────────── */
+/* A zoom wrapper holds the scaled flow; transform-origin top-center so it grows
+   from the top as you zoom. The scroll lives on .ax-map__scroll (the parent), so
+   zooming enlarges the scrollable content naturally. */
+.ax-zoomwrap {
+  transform: scale(var(--ax-zoom, 1));
+  transform-origin: top center;
+  transition: transform 0.12s ease;
+  width: 100%;
+}
+/* The flow is a FIXED-WIDTH column centered in the (fill-the-height) canvas — the
+   gray pane spans the space, the step cards stay a consistent, readable width. */
+.ax-flow {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 26px 24px 96px;
+}
+.ax-flow__hint {
+  margin: 0 0 14px 56px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* Settings node — peer pinned atop the spine (selecting it shows name/description/
+   loop-guard), like the builder's home row. */
+.ax-settings {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  background: var(--color-bg-surface);
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+.ax-settings:hover {
+  border-color: color-mix(in srgb, var(--module-active) 40%, var(--color-border-default));
+}
+.ax-settings--on {
+  border-color: var(--module-active);
+  box-shadow: 0 0 0 1px var(--module-active);
+}
+.ax-settings__icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 8px;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+}
+.ax-settings__icon svg {
+  width: 16px;
+  height: 16px;
+}
+.ax-settings__titles {
+  min-width: 0;
+}
+.ax-settings__t {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ax-settings__s {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* A step = [rail with marker + spine line] [node card]. */
+.ax-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: 12px;
+}
+.ax-rail {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+/* The connecting spine: a vertical line centered in the rail column. Each step
+   draws its own full-height segment; the first trims the top to its marker
+   center, the last trims the bottom — so the line connects markers and stops. */
+.ax-rail::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--color-border-default);
+}
+.ax-step--first .ax-rail::before {
+  top: 22px;
+}
+.ax-step--last .ax-rail::before {
+  bottom: calc(100% - 22px);
+}
+.ax-marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-top: 5px;
+  border-radius: 10px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 650;
+  flex: none;
+}
+.ax-marker svg {
+  width: 16px;
+  height: 16px;
+}
+.ax-step--trigger .ax-marker {
+  background: color-mix(in srgb, var(--module-active) 12%, transparent);
+  border-color: color-mix(in srgb, var(--module-active) 30%, transparent);
+  color: var(--module-active);
+}
+/* Dashed plus marker that closes the spine at the end "add step" row. */
+.ax-marker--add {
+  border-style: dashed;
+  background: var(--color-bg-surface);
+  color: var(--color-text-tertiary);
+}
+
+/* Insert-between affordance — an ALWAYS-VISIBLE "+" centered on the spine in the
+   GAP before each action step (inserts a step at that position). The row OWNS a
+   roomy gap (`height`) and a negative `margin-top` absorbs the preceding card's
+   bottom margin so it isn't double-counted; the "+" sits centered with clearance
+   above AND below, its surface fill breaking the connecting line like a node. Its
+   own `::before` continues the spine through the wider gap. Combined with the end
+   "add step", a step can be inserted anywhere. Faded out during a reorder so it
+   doesn't sit static while the cards animate. */
+.ax-ins {
+  position: relative;
+  height: 42px;
+  margin-top: -21px;
+}
+.ax-ins::before {
+  content: '';
+  position: absolute;
+  left: 22px; /* center of the 44px rail column = on the spine */
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--color-border-default);
+}
+.ax-ins__btn {
+  position: absolute;
+  top: 50%;
+  left: 22px;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-default);
+  background: var(--color-bg-surface);
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  transition:
+    color 0.12s,
+    border-color 0.12s,
+    background 0.12s,
+    box-shadow 0.12s;
+}
+.ax-ins__btn svg {
+  width: 13px;
+  height: 13px;
+}
+.ax-ins__btn:hover {
+  color: var(--module-active);
+  border-color: var(--module-active);
+  background: color-mix(in srgb, var(--module-active) 8%, var(--color-bg-surface));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--module-active) 10%, transparent);
+}
+.ax-flow[data-dragging='true'] .ax-ins__btn {
+  opacity: 0;
+  pointer-events: none;
+}
+.ax-step--cond .ax-marker {
+  background: color-mix(in srgb, var(--color-warning) 14%, transparent);
+  border-color: color-mix(in srgb, var(--color-warning) 32%, transparent);
+  color: color-mix(in oklch, var(--color-warning) 60%, var(--color-text-primary));
+}
+
+.ax-node {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px 12px;
+  margin-bottom: 14px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  background: var(--color-bg-surface);
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.ax-node:hover {
+  border-color: color-mix(in srgb, var(--module-active) 40%, var(--color-border-default));
+}
+.ax-node--on {
+  border-color: var(--module-active);
+  box-shadow:
+    0 0 0 1px var(--module-active),
+    0 1px 2px rgba(16, 18, 33, 0.04),
+    0 4px 14px rgba(16, 18, 33, 0.05);
+}
+.ax-node--unavailable {
+  border-style: dashed;
+}
+.ax-node__body {
+  flex: 1;
+  min-width: 0;
+}
+.ax-node__title {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.ax-node__detail {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ax-node__detail code,
+.ax-mono {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11.5px;
+}
+.ax-node__cond {
+  margin-top: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+.ax-cond {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-subtle);
+  border-radius: 6px;
+  padding: 3px 7px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ax-cond__join {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-text-tertiary);
+  padding: 0 2px;
+}
+/* Drag grip — a VISUAL hint only; the whole card is the drag surface. */
+.ax-node__grip {
+  display: flex;
+  flex: none;
+  color: var(--color-text-tertiary);
+  opacity: 0;
+  margin: 1px -2px 0 0;
+  transition: opacity 0.12s;
+}
+.ax-node__grip svg {
+  width: 14px;
+  height: 14px;
+}
+.ax-node:hover .ax-node__grip {
+  opacity: 0.6;
+}
+.ax-step--draggable .ax-node {
+  cursor: grab;
+}
+.ax-step--draggable .ax-node:active {
+  cursor: grabbing;
+}
+
+/* DnD: the source slot while its card rides in the DragOverlay — a dashed
+   placeholder that holds the gap so the surrounding steps stay put. */
+.ax-step--ghost .ax-node {
+  background: color-mix(in srgb, var(--module-active) 6%, var(--color-bg-subtle));
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--module-active) 45%, var(--color-border-default));
+  box-shadow: none;
+  color: transparent;
+}
+.ax-step--ghost .ax-node * {
+  visibility: hidden;
+}
+/* The lifted card in the DragOverlay — picked up off the surface. */
+.ax-dragcard {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px 12px;
+  border: 1px solid var(--module-active);
+  border-radius: 12px;
+  background: var(--color-bg-surface);
+  box-shadow:
+    0 0 0 1px var(--module-active),
+    0 10px 30px rgba(16, 18, 33, 0.18);
+  cursor: grabbing;
+  font-family: inherit;
+  color: var(--color-text-primary);
+}
+.ax-dragcard .ax-node__grip {
+  opacity: 0.6;
+}
+
+/* Insert-between affordance: a hairline "+ Add step here" that reveals on hover. */
+.ax-insert {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: 12px;
+  margin: -8px 0 6px;
+  height: 16px;
+}
+.ax-insert__rail {
+  position: relative;
+}
+.ax-insert__rail::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--color-border-default);
+}
+.ax-insert__btn {
+  justify-self: start;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 9px 0 7px;
+  border-radius: 999px;
+  border: 1px dashed var(--color-border-default);
+  background: var(--color-bg-surface);
+  color: var(--color-text-tertiary);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.12s,
+    color 0.12s,
+    border-color 0.12s;
+}
+.ax-insert:hover .ax-insert__btn,
+.ax-insert__btn:focus-visible {
+  opacity: 1;
+}
+.ax-insert__btn:hover {
+  color: var(--module-active);
+  border-color: var(--module-active);
+}
+.ax-insert__btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* End "add step" — the prominent affordance after the last action. */
+.ax-addstep {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: 12px;
+}
+.ax-addstep__rail {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.ax-addstep__plus {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px dashed var(--color-border-default);
+  color: var(--color-text-tertiary);
+  background: var(--color-bg-surface);
+}
+.ax-addstep__plus svg {
+  width: 16px;
+  height: 16px;
+}
+.ax-addstep__btn {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px dashed var(--color-border-default);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.ax-addstep__btn:hover {
+  border-color: var(--module-active);
+  color: var(--module-active);
+}
+
+/* Empty canvas (no actions yet) — a gentle prompt under the trigger/conditions. */
+.ax-empty {
+  font-size: 13px;
+  color: var(--color-text-tertiary);
+}
+
+/* ── Zoom control (docked bottom-right of the map) ─────────────────────── */
+.ax-zoom {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-default);
+  background: var(--color-bg-surface);
+  box-shadow: 0 2px 10px rgba(16, 18, 33, 0.08);
+}
+.ax-zoom__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-family: inherit;
+}
+.ax-zoom__btn:hover {
+  background: var(--color-bg-subtle);
+  color: var(--module-active);
+}
+.ax-zoom__btn svg {
+  width: 15px;
+  height: 15px;
+}
+.ax-zoom__val {
+  min-width: 46px;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+.ax-zoom__val:hover {
+  color: var(--module-active);
+}
+
+/* ── Inspector ─────────────────────────────────────────────────────────── */
+.ax-ins-head {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-border-default);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  background: var(--color-bg-surface);
+}
+.ax-ins-head__icon {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--module-active) 12%, transparent);
+  color: var(--module-active);
+}
+.ax-ins-head__icon svg {
+  width: 17px;
+  height: 17px;
+}
+.ax-ins-head__titles {
+  min-width: 0;
+  flex: 1;
+}
+.ax-ins-head__titles h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.ax-ins-head__sub {
+  display: block;
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  margin-top: 1px;
+}
+
+.ax-ins-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: var(--color-bg-subtle);
+  min-height: 100%;
+}
+
+.ax-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: 12px;
+  overflow: hidden;
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+.ax-card[open] {
+  box-shadow:
+    0 1px 2px rgba(16, 18, 33, 0.04),
+    0 4px 14px rgba(16, 18, 33, 0.05);
+}
+.ax-card__head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 11px 12px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.ax-card__head::-webkit-details-marker {
+  display: none;
+}
+.ax-card__head:hover .ax-card__title {
+  color: var(--module-active);
+}
+.ax-card__icon {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+}
+.ax-card__icon svg {
+  width: 15px;
+  height: 15px;
+}
+.ax-card--muted .ax-card__icon {
+  background: var(--color-bg-muted, var(--color-bg-subtle));
+}
+.ax-card__titles {
+  flex: 1;
+  min-width: 0;
+}
+.ax-card__title {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: color 0.12s ease;
+}
+.ax-card__summary {
+  display: block;
+  margin-top: 1px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ax-card[open] .ax-card__summary {
+  display: none;
+}
+.ax-card__chev {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  color: var(--color-text-muted);
+  transition: transform 0.18s ease;
+}
+.ax-card[open] .ax-card__chev {
+  transform: rotate(180deg);
+}
+.ax-card__body {
+  padding: 3px 13px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.ax-card__caption {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+/* A labelled field row (matches the builder's .bx-field). */
+.ax-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ax-field__label {
+  font-size: 12px;
+  font-weight: 550;
+}
+.ax-field__req {
+  color: var(--color-text-danger, #dc2626);
+}
+.ax-field__hint {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* Segmented toggle (matches the builder's .bx-seg). */
+.ax-seg {
+  display: flex;
+  gap: 4px;
+  background: var(--color-bg-subtle);
+  padding: 3px;
+  border-radius: 8px;
+}
+.ax-seg__btn {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.ax-seg__btn svg {
+  width: 13px;
+  height: 13px;
+}
+.ax-seg__btn:hover {
+  color: var(--color-text-primary);
+}
+.ax-seg__btn[data-on='true'] {
+  background: var(--color-bg-surface);
+  color: var(--module-active);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* Unavailable-action notice inside the inspector. */
+.ax-ins-warn {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--color-warning-text, var(--color-warning));
+}
+
+/* Danger row (remove this step). */
+.ax-danger-row {
+  padding: 2px 0;
+}
+
+/* ── Version history panel (right pane in history mode) ─────────────────── */
+.ax-hist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--color-bg-subtle);
+  min-height: 100%;
+}
+
+/* Banner: unpublished changes + a quick discard. */
+.ax-hist__draft {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--color-warning) 35%, transparent);
+  background: color-mix(in srgb, var(--color-warning) 9%, var(--color-bg-surface));
+}
+.ax-hist__draft-text {
+  font-size: 12px;
+  font-weight: 550;
+  color: color-mix(in oklch, var(--color-warning) 55%, var(--color-text-primary));
+}
+.ax-hist__discard {
+  flex: none;
+  border: 1px solid color-mix(in srgb, var(--color-warning) 40%, transparent);
+  background: var(--color-bg-surface);
+  color: var(--color-warning);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: 7px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.ax-hist__discard:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+}
+.ax-hist__discard:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Loading / error / empty states. */
+.ax-hist__empty {
+  margin: 0;
+  padding: 14px 4px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.ax-hist__empty--error {
+  color: var(--color-text-danger, #dc2626);
+}
+.ax-hist__none {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 34px 16px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+.ax-hist__none svg {
+  width: 22px;
+  height: 22px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 4px;
+}
+.ax-hist__none p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+.ax-hist__none span {
+  font-size: 11.5px;
+}
+
+/* One version row. */
+.ax-hist__item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 11px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border-default);
+  background: var(--color-bg-surface);
+}
+.ax-hist__item[data-current='true'] {
+  border-color: color-mix(in srgb, var(--module-active) 40%, var(--color-border-default));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--module-active) 30%, transparent);
+}
+.ax-hist__ver {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: 34px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: 7px;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  font-size: 11.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.ax-hist__item[data-current='true'] .ax-hist__ver {
+  background: color-mix(in srgb, var(--module-active) 14%, transparent);
+  color: var(--module-active);
+}
+.ax-hist__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ax-hist__note {
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ax-hist__time {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+.ax-hist__cur {
+  flex: none;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--module-active);
+}
+.ax-hist__restore {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--color-border-default);
+  background: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: 7px;
+  padding: 5px 9px;
+  cursor: pointer;
+}
+.ax-hist__restore svg {
+  width: 12px;
+  height: 12px;
+}
+.ax-hist__restore:hover:not(:disabled) {
+  border-color: var(--module-active);
+  color: var(--module-active);
+}
+.ax-hist__restore:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

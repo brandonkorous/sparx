@@ -6,6 +6,13 @@
 import { cookies } from 'next/headers';
 import { api } from './api-rest-client';
 import { ACTIVE_PROPERTY_COOKIE } from './api-rest-client';
+import { resolveActiveProperty, toSiteScope, type SiteScope } from './site-scope';
+
+// Re-export the pure resolution helpers + scope type so server callers have a
+// single import site (`@/lib/sites`); client components import them straight
+// from `@/lib/site-scope` (this module pulls in next/headers).
+export { resolveActiveProperty, resolvePropertyFilter } from './site-scope';
+export type { SiteScope } from './site-scope';
 
 /** Per-site brand + presentation override (docs/49 §3, Slice B) — null = inherit
  *  the tenant brand or theme. Any absent/null field inherits. */
@@ -89,7 +96,18 @@ export async function getActiveProperty(): Promise<Property | null> {
     listProperties().catch(() => [] as Property[]),
     getActivePropertyId(),
   ]);
-  if (props.length === 0) return null;
-  const match = activeId ? props.find((p) => p.id === activeId) : undefined;
-  return match ?? props.find((p) => p.isPrimary) ?? props[0] ?? null;
+  return resolveActiveProperty(props, activeId) ?? null;
+}
+
+/** The dashboard's site scope for a server render: the tenant's site list plus
+ *  the resolved active property id (see SiteScope). One fetch + one resolution
+ *  shared by every list page, so the "which site" rule lives in exactly one
+ *  place. Fail-soft: a failed properties read yields an empty list (single-site
+ *  behavior). */
+export async function resolveSiteScope(): Promise<SiteScope> {
+  const [sites, cookieId] = await Promise.all([
+    listProperties().catch(() => [] as Property[]),
+    getActivePropertyId(),
+  ]);
+  return toSiteScope(sites, cookieId);
 }

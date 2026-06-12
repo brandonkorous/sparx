@@ -14,7 +14,7 @@ import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack, Text } f
 import { FileText } from 'lucide-react';
 
 import { api } from '@/lib/api-rest-client';
-import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
+import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ContentNewButton } from './content-new-button';
@@ -79,23 +79,13 @@ export default async function ContentListPage({ searchParams }: PageProps) {
   const siteParam = asString(sp.site);
 
   // Resolve the active site BEFORE the entries fetch so the list defaults to it.
-  const [prefs, types, sites, activeCookieId] = await Promise.all([
+  const [prefs, types, scope] = await Promise.all([
     getUserPreferences(),
     api.get<ApiContentType[]>('/v1/content/types'),
-    listProperties().catch(() => [] as Property[]),
-    getActivePropertyId(),
+    resolveSiteScope(),
   ]);
-  const multiSite = sites.length > 1;
-  const activePropertyId = multiSite
-    ? (sites.find((s) => s.id === activeCookieId)?.id ??
-      sites.find((s) => s.isPrimary)?.id ??
-      sites[0]?.id)
-    : undefined;
-  const propertyFilter = !multiSite
-    ? undefined
-    : siteParam === 'all'
-      ? undefined
-      : (siteParam ?? activePropertyId);
+  const { sites, multiSite, activePropertyId } = scope;
+  const propertyFilter = resolvePropertyFilter(scope, siteParam);
 
   const paged = await api.getPaged<ApiEntry[]>(
     `/v1/content/entries?${buildQuery({

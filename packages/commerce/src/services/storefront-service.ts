@@ -104,13 +104,18 @@ export async function updateSettings(ctx: ServiceContext, rawInput: unknown): Pr
   });
 }
 
-// Presentation-only theme overrides. Brand identity (primary/accent colour,
-// typography, logo, favicon) is owned by the tenant-level brand (docs/30 §6) and
-// is NOT stored here — those columns were removed in migration 20260610000200.
-export async function getTheme(ctx: ServiceContext): Promise<Record<string, string | null>> {
+// Presentation-only theme overrides, per web PROPERTY (docs/49 Phase 6) — each
+// site keeps its own write-through theme row. Brand identity (primary/accent
+// colour, typography, logo, favicon) is owned by the tenant-level brand
+// (docs/30 §6) and is NOT stored here — those columns were removed in migration
+// 20260610000200. `propertyId` is resolved at the transport (the active site).
+export async function getTheme(
+  ctx: ServiceContext,
+  propertyId: string
+): Promise<Record<string, string | null>> {
   return withTenant(ctx, async (tx) => {
     const row = await tx.storefrontTheme.findUnique({
-      where: { tenantId: ctx.tenantId },
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId } },
     });
     const empty: Record<string, string | null> = {};
     if (!row) return empty;
@@ -122,7 +127,11 @@ export async function getTheme(ctx: ServiceContext): Promise<Record<string, stri
   });
 }
 
-export async function updateTheme(ctx: ServiceContext, rawInput: unknown): Promise<void> {
+export async function updateTheme(
+  ctx: ServiceContext,
+  propertyId: string,
+  rawInput: unknown
+): Promise<void> {
   const input = UpdateStorefrontThemeInput.parse(rawInput);
 
   // Strip undefined keys so an upsert doesn't blow away an existing
@@ -135,8 +144,8 @@ export async function updateTheme(ctx: ServiceContext, rawInput: unknown): Promi
 
   await withTenant(ctx, async (tx) => {
     await tx.storefrontTheme.upsert({
-      where: { tenantId: ctx.tenantId },
-      create: { tenantId: ctx.tenantId, ...cleanTokens },
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId } },
+      create: { tenantId: ctx.tenantId, propertyId, ...cleanTokens },
       update: cleanTokens,
     });
 
@@ -147,7 +156,7 @@ export async function updateTheme(ctx: ServiceContext, rawInput: unknown): Promi
       actorType: ctx.userId ? 'user' : 'system',
       action: 'commerce.storefront.theme.updated',
       entityType: 'StorefrontTheme',
-      entityId: ctx.tenantId,
+      entityId: propertyId,
       diff: { after: cleanTokens },
     });
   });

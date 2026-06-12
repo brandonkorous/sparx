@@ -23,7 +23,7 @@ import { withTenant } from '@sparx/db';
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
 import { SitebuilderNotFoundError, SitebuilderValidationError } from '../errors';
-import { getOrCreateConfig } from './_config';
+import { getOrCreatePrimaryConfig } from './_config';
 import { loadCustomDefinitions } from './definition-service';
 import { findPageLayout, getOrCreatePageLayout } from './page-layout-service';
 
@@ -137,7 +137,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Se
   const input = CreateSectionInput.parse(rawInput);
 
   return withTenant(ctx, async (tx) => {
-    await getOrCreateConfig(tx, ctx.tenantId);
+    await getOrCreatePrimaryConfig(tx, ctx.tenantId);
     // Resolve config + target-safety against code sections AND the tenant's custom
     // section definitions (`custom:<slug>`), loaded once per write (docs/38 Phase C).
     const customDefs = await loadCustomDefinitions(tx);

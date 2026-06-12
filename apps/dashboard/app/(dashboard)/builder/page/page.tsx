@@ -5,7 +5,12 @@ import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 import { getBrand, getConfig, getSitePreviewData, getTenant } from '../_brand/lib/api';
 import { propertyOrigin } from '../_brand/lib/property';
 import { getActiveLayout, getBindingCatalog, listComponentsFull, listPages } from '../_lib/api';
-import { listProperties, getActivePropertyId, type Property } from '@/lib/sites';
+import {
+  listProperties,
+  getActivePropertyId,
+  resolveActiveProperty,
+  type Property,
+} from '@/lib/sites';
 import { BuilderApp } from '../_builder/builder-app';
 import '../builder.css';
 // The Surface RECIPE — @sparx/site-ui's `sf-*` component/color/variant classes,
@@ -133,13 +138,9 @@ export default async function BuilderPageRoute({ searchParams }: BuilderPageRout
   // active site, else the primary). Preview opens THIS site's draft: multi-site
   // made the storefront read-path property-scoped (docs/49), so the preview link
   // must name the property — without it the site falls back to the primary (or a
-  // stale dev cookie) and the page you're editing won't resolve. Mirrors
-  // getActiveProperty() in lib/sites.ts (cookie id → primary → first).
-  const activeProperty =
-    (activePropertyId ? properties.find((p) => p.id === activePropertyId) : undefined) ??
-    properties.find((p) => p.isPrimary) ??
-    properties[0] ??
-    null;
+  // stale dev cookie) and the page you're editing won't resolve. Shared rule
+  // (cookie id → primary → first), same as every list page + the breadcrumb.
+  const activeProperty = resolveActiveProperty(properties, activePropertyId) ?? null;
   const siteOrigin = tenantSlug ? propertyOrigin(tenantSlug, activeProperty) : undefined;
   const previewPropertySlug = activeProperty?.slug;
   // The active property's site-chrome data (brand identity + social), resolved like

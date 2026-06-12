@@ -56,14 +56,14 @@ model Tenant {
   domainPurchases   DomainPurchase[]
 
   // Auth + audit
-  users         User[]
-  auditLogs     AuditLog[]
+  users             User[]
+  auditLogs         AuditLog[]
   // Bulk-operation revert ledger (docs/69 B-3) — before-state for undoable
   // bulk mutations (price adjustment, …) retained for a 30-minute window.
-  bulkOpReverts BulkOpRevert[]
+  bulkOpReverts     BulkOpRevert[]
   // Web Push subscriptions for staff browser notifications (docs/69 A-6).
   pushSubscriptions PushSubscription[]
-  apiKeys       ApiKey[]
+  apiKeys           ApiKey[]
 
   // Marketplace (docs/60 §6) — the publisher identities this tenant owns when it
   // publishes blueprints/themes/components/integrations (Phase 5+). Sparx-core
@@ -151,13 +151,13 @@ model Tenant {
   serialUnits           SerialUnit[]
 
   // Commerce module — pricing + discounts
-  priceLists              PriceList[]
-  priceListEntries        PriceListEntry[]
-  bulkPriceTiers          BulkPriceTier[]
-  contractPrices          ContractPrice[]
-  markupRules             MarkupRule[]
-  markupRecomputeReviews  MarkupRecomputeReview[]
-  surchargeRules          SurchargeRule[]
+  priceLists             PriceList[]
+  priceListEntries       PriceListEntry[]
+  bulkPriceTiers         BulkPriceTier[]
+  contractPrices         ContractPrice[]
+  markupRules            MarkupRule[]
+  markupRecomputeReviews MarkupRecomputeReview[]
+  surchargeRules         SurchargeRule[]
 
   // Invoicing module (docs/87) — authored billing documents
   documentWorkflows        DocumentWorkflow[]
@@ -168,12 +168,12 @@ model Tenant {
   billingDocumentSnapshots BillingDocumentSnapshot[]
   billingDocumentPayments  BillingDocumentPayment[]
   billingDocumentTemplates BillingDocumentTemplate[]
-  discounts               Discount[]
-  discountUsages          DiscountUsage[]
-  giftCards               GiftCard[]
-  giftCardTransactions    GiftCardTransaction[]
-  storeCredits            StoreCredit[]
-  storeCreditTransactions StoreCreditTransaction[]
+  discounts                Discount[]
+  discountUsages           DiscountUsage[]
+  giftCards                GiftCard[]
+  giftCardTransactions     GiftCardTransaction[]
+  storeCredits             StoreCredit[]
+  storeCreditTransactions  StoreCreditTransaction[]
 
   // Commerce module — bundles + configurator
   bundles                Bundle[]
@@ -225,9 +225,11 @@ model Tenant {
   providerInstallations ProviderInstallation[]
   providerWebhookEvents ProviderWebhookEvent[]
 
-  // Commerce module — storefront defaults + theme
-  storefrontSettings StorefrontSettings?
-  storefrontTheme    StorefrontTheme?
+  // Commerce module — storefront defaults + theme. Per web PROPERTY (docs/49
+  // Phase 6): a tenant's sites each keep their own applied theme + settings, so
+  // these are arrays, not one-per-tenant.
+  storefrontSettings StorefrontSettings[]
+  storefrontThemes   StorefrontTheme[]
 
   // Customer-auth (Layer 2) — storefront shopper credentials/sessions (docs/27)
   customerIdentities     CustomerIdentity[]
@@ -235,8 +237,12 @@ model Tenant {
   customerAuthSessions   CustomerSession[]
   customerPasswordResets CustomerPasswordReset[]
 
-  // Sitebuilder module — theme/layout/page composition + publish history (docs/29)
-  siteConfig           SiteConfig?
+  // Sitebuilder module — theme/layout/page composition + publish history (docs/29).
+  // The applied-theme trio (config/versions/schedules) is per web PROPERTY
+  // (docs/49 Phase 6): each of a tenant's sites publishes its own theme, so
+  // siteConfigs is an array. The legacy section tier + the saved-theme LIBRARY
+  // stay tenant-wide.
+  siteConfigs          SiteConfig[]
   siteVersions         SiteVersion[]
   pageLayouts          PageLayout[]
   siteSections         SiteSection[]
@@ -317,6 +323,7 @@ model Tenant {
   automations        Automation[]
   automationRuns     AutomationRun[]
   automationRunSteps AutomationRunStep[]
+  automationVersions AutomationVersion[]
 
   @@map("tenants")
 }

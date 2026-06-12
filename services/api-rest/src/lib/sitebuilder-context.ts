@@ -6,14 +6,34 @@
 // that ctx — keeping routes vanishingly thin (one service, many transports).
 
 import type { FastifyRequest } from 'fastify';
-import type { ServiceContext } from '@sparx/sitebuilder';
+import type { PropertyContext, ServiceContext } from '@sparx/sitebuilder';
 import { isModuleEnabled } from '@sparx/auth';
 import { requireAuth } from '@sparx/api-core/auth';
 import { moduleDisabled } from '@sparx/api-core/errors';
+import { resolvePropertyId } from './property.js';
 
+// Tenant-wide sitebuilder ctx (NO property scope) — for the services that are NOT
+// per-property: the static theme catalog, the saved-theme LIBRARY CRUD, and the
+// legacy section tier. Sync — no property lookup.
 export function toSitebuilderContext(request: FastifyRequest): ServiceContext {
   const auth = requireAuth(request);
   return { tenantId: auth.tenantId, userId: auth.actorId };
+}
+
+// Async because the applied-theme lifecycle is now per-PROPERTY (docs/49 Phase 6):
+// the ctx carries the web property (site) being authored. The dashboard site
+// switcher sets `x-sparx-property-id`; absent → the tenant's primary site, so
+// single-site tenants are unaffected. Mirrors lib/builder-context.ts.
+export async function toSitebuilderPropertyContext(
+  request: FastifyRequest
+): Promise<PropertyContext> {
+  const auth = requireAuth(request);
+  const requested = request.headers['x-sparx-property-id'];
+  const propertyId = await resolvePropertyId(
+    auth.tenantId,
+    typeof requested === 'string' ? requested : null
+  );
+  return { tenantId: auth.tenantId, userId: auth.actorId, propertyId };
 }
 
 /** Throws MODULE_DISABLED (→ 404 envelope) if the caller's tenant doesn't have

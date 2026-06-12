@@ -3,7 +3,7 @@ import { PackageOpen, Plus } from 'lucide-react';
 import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
+import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { ProductsSelectionTable } from './_components/products-selection-table';
@@ -83,29 +83,19 @@ export default async function ProductsPage({ searchParams }: PageProps) {
 
   // Resolve the active site BEFORE the fetch so the list defaults to it (the
   // switch drives the catalog). prefs is needed later for the view toggle.
-  const [prefs, sites, activeCookieId, reversibleOps] = await Promise.all([
+  const [prefs, scope, reversibleOps] = await Promise.all([
     getUserPreferences(),
-    listProperties().catch(() => [] as Property[]),
-    getActivePropertyId(),
+    resolveSiteScope(),
     api
       .get<ReversibleOp[]>('/v1/commerce/products/bulk-price/reversible')
       .catch(() => [] as ReversibleOp[]),
   ]);
   // Most-recent bulk price op still inside its 30-minute undo window (B-3).
   const latestRevert = reversibleOps[0] ?? null;
-  const multiSite = sites.length > 1;
-  const activePropertyId = multiSite
-    ? (sites.find((s) => s.id === activeCookieId)?.id ??
-      sites.find((s) => s.isPrimary)?.id ??
-      sites[0]?.id)
-    : undefined;
+  const { sites, multiSite, activePropertyId } = scope;
   // Single-site tenants never filter (no behavior change). Multi-site: explicit
-  // param wins, `all` clears, absent follows the active site.
-  const propertyFilter = !multiSite
-    ? undefined
-    : siteParam === 'all'
-      ? undefined
-      : (siteParam ?? activePropertyId);
+  // `?site=` wins, `all` clears, absent follows the active site.
+  const propertyFilter = resolvePropertyFilter(scope, siteParam);
 
   // With a query, search via Typesense (typo-tolerant across title / handle /
   // vendor / SKU); without one, list straight from Postgres with the status

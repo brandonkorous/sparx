@@ -66,7 +66,7 @@ describe('sitebuilder publish lifecycle', () => {
     // Write-through: StorefrontTheme mirrors the compiled light *presentation*
     // tokens only — brand identity (colour/type/logo) is owned by TenantBrand
     // now (docs/30 §6), not this row.
-    const theme = await readStorefrontTheme(test.tenant.tenantId);
+    const theme = await readStorefrontTheme(test.tenant.tenantId, test.tenant.propertyId);
     expect(theme?.colorBackground).toBe(snap?.compiledTokens.light.colorBackground);
     expect(theme?.radiusBase).toBe(snap?.compiledTokens.light.radiusBase);
   });
@@ -78,7 +78,7 @@ describe('sitebuilder publish lifecycle', () => {
     expect(v2.versionNumber).toBe(2);
     // Write-through tracks the active version's compiled *presentation* tokens
     // (identity is brand-owned now, no longer mirrored here).
-    let theme = await readStorefrontTheme(test.tenant.tenantId);
+    let theme = await readStorefrontTheme(test.tenant.tenantId, test.tenant.propertyId);
     let snap = await publishService.getPublishedSnapshot(test.ctx);
     expect(theme?.colorBackground).toBe(snap?.compiledTokens.light.colorBackground); // apex
 
@@ -88,7 +88,7 @@ describe('sitebuilder publish lifecycle', () => {
     expect(v3.versionNumber).toBe(3);
     expect(v3.themeKey).toBe('industrial');
 
-    theme = await readStorefrontTheme(test.tenant.tenantId);
+    theme = await readStorefrontTheme(test.tenant.tenantId, test.tenant.propertyId);
     snap = await publishService.getPublishedSnapshot(test.ctx);
     expect(theme?.colorBackground).toBe(snap?.compiledTokens.light.colorBackground); // industrial
 

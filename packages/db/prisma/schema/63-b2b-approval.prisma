@@ -16,8 +16,8 @@
 // created active one wins. Only one rule fires per order.
 
 model PurchaseApprovalRule {
-  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String  @map("tenant_id") @db.Uuid
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String  @map("tenant_id") @db.Uuid
   // null = tenant-wide catch-all; set = account-specific.
   accountId String? @map("account_id") @db.Uuid
 
@@ -31,7 +31,7 @@ model PurchaseApprovalRule {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant           Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant           Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   account          B2BAccount? @relation(fields: [accountId], references: [id], onDelete: Cascade)
   requiredApprover User?       @relation("ApprovalRuleApprover", fields: [requiredApproverUserId], references: [id], onDelete: SetNull)
 

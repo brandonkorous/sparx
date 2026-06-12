@@ -1,0 +1,1206 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Automation editor — map + inspector mockup</title>
+    <style>
+      /* ──────────────────────────────────────────────────────────────────
+         Sparx design tokens (verbatim from packages/ui/src/tokens.css) so this
+         mockup reads exactly like the dashboard chrome. Platform module accent =
+         Sparx Indigo #6366F1 (the automations surface wraps ModuleProvider
+         module="platform"). Two worlds: the EDITOR CHROME uses --color-* tokens;
+         the node cards are the automation "content".
+         ────────────────────────────────────────────────────────────────── */
+      :root {
+        --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      }
+      [data-theme='light'] {
+        --color-bg-surface: #ffffff;
+        --color-bg-base: #fafafa;
+        --color-bg-subtle: #f4f4f5;
+        --color-bg-muted: #e4e4e7;
+        --color-border-default: #e5e5e5;
+        --color-border-focus: #6366f1;
+        --color-text-primary: #0a0a0a;
+        --color-text-secondary: #52525b;
+        --color-text-tertiary: #a1a1aa;
+        --color-text-muted: #71717a;
+        --color-success: #10b981;
+        --color-warning: #f59e0b;
+        --color-danger: #dc2626;
+        --module-active: #6366f1;
+        --shadow-card: 0 1px 2px rgba(16, 18, 33, 0.04), 0 4px 14px rgba(16, 18, 33, 0.05);
+      }
+      [data-theme='dark'] {
+        --color-bg-surface: #1a1a1a;
+        --color-bg-base: #121212;
+        --color-bg-subtle: #1f1f1f;
+        --color-bg-muted: #2a2a2a;
+        --color-border-default: #2a2a2a;
+        --color-border-focus: #818cf8;
+        --color-text-primary: #f0f0f0;
+        --color-text-secondary: #a1a1aa;
+        --color-text-tertiary: #52525b;
+        --color-text-muted: #8a8a93;
+        --color-success: #34d399;
+        --color-warning: #fbbf24;
+        --color-danger: #f87171;
+        --module-active: #818cf8;
+        --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.32);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      body {
+        font-family: var(--font-sans);
+        background: var(--color-bg-base);
+        color: var(--color-text-primary);
+        -webkit-font-smoothing: antialiased;
+        font-size: 14px;
+        letter-spacing: -0.006em;
+      }
+      .i {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+        flex: none;
+      }
+
+      /* ── Shell ─────────────────────────────────────────────────────────── */
+      .shell {
+        height: 100vh;
+        display: grid;
+        grid-template-rows: 48px minmax(0, 1fr);
+        background: var(--color-bg-surface);
+      }
+
+      /* simulated dashboard header strip (the real one is 48px; here just a hint) */
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        height: 48px;
+        padding: 0 14px;
+        border-bottom: 1px solid var(--color-border-default);
+        background: var(--color-bg-surface);
+      }
+      .toolbar__left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .toolbar__home {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--module-active) 12%, transparent);
+        color: var(--module-active);
+      }
+      .toolbar__home .i {
+        width: 17px;
+        height: 17px;
+      }
+      .toolbar__name {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        padding: 4px 8px;
+        margin-left: -2px;
+        cursor: text;
+        background: transparent;
+        color: inherit;
+        font-family: inherit;
+      }
+      .toolbar__name:hover {
+        border-color: var(--color-border-default);
+      }
+      .toolbar__name:focus {
+        outline: none;
+        border-color: var(--module-active);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        height: 22px;
+        padding: 0 9px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        font-weight: 650;
+        white-space: nowrap;
+      }
+      .pill--draft {
+        color: var(--color-text-muted);
+        border: 1px solid var(--color-border-default);
+      }
+      .pill--dot::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .toolbar__right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .savestate {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: var(--color-text-muted);
+        white-space: nowrap;
+      }
+      .savestate .i {
+        width: 14px;
+        height: 14px;
+        color: var(--color-success);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 32px;
+        padding: 0 13px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        border: 1px solid transparent;
+        white-space: nowrap;
+      }
+      .btn--ghost {
+        background: transparent;
+        color: var(--color-text-secondary);
+      }
+      .btn--ghost:hover {
+        background: var(--color-bg-subtle);
+        color: var(--color-text-primary);
+      }
+      .btn--solid {
+        background: var(--module-active);
+        color: #fff;
+      }
+      .btn--solid:hover {
+        filter: brightness(1.06);
+      }
+      .btn--soft {
+        background: color-mix(in srgb, var(--module-active) 13%, transparent);
+        color: color-mix(in oklch, var(--module-active) 60%, var(--color-text-primary));
+      }
+      .iconbtn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        border: 1px solid var(--color-border-default);
+        background: var(--color-bg-surface);
+        color: var(--color-text-muted);
+        cursor: pointer;
+      }
+      .iconbtn:hover {
+        color: var(--module-active);
+        border-color: var(--module-active);
+      }
+
+      /* ── Body: two panes (map + inspector) ─────────────────────────────── */
+      .body {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 380px;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .map {
+        position: relative;
+        min-height: 0;
+        overflow: auto;
+        background: var(--color-bg-subtle);
+      }
+      .side {
+        min-height: 0;
+        overflow: auto;
+        border-left: 1px solid var(--color-border-default);
+        background: var(--color-bg-surface);
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── Flow canvas (the map) ─────────────────────────────────────────── */
+      .flow {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 26px 24px 60px;
+      }
+      .flow__hint {
+        margin: 0 0 14px 56px;
+        font-size: 12px;
+        color: var(--color-text-muted);
+      }
+
+      /* settings node — peer pinned atop the spine, like the builder's home row */
+      .settings {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        text-align: left;
+        padding: 10px 14px;
+        margin-bottom: 6px;
+        border: 1px solid var(--color-border-default);
+        border-radius: 12px;
+        background: var(--color-bg-surface);
+        cursor: pointer;
+        font-family: inherit;
+        color: inherit;
+      }
+      .settings:hover {
+        border-color: color-mix(in srgb, var(--module-active) 40%, var(--color-border-default));
+      }
+      .settings.on {
+        border-color: var(--module-active);
+        box-shadow: 0 0 0 1px var(--module-active);
+      }
+      .settings__icon {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--color-bg-subtle);
+        color: var(--color-text-muted);
+        flex: none;
+      }
+      .settings__t {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .settings__s {
+        font-size: 12px;
+        color: var(--color-text-muted);
+      }
+
+      /* a step = [rail with marker + spine line] [node card] */
+      .step {
+        position: relative;
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        column-gap: 12px;
+      }
+      .rail {
+        position: relative;
+        display: flex;
+        justify-content: center;
+      }
+      /* the connecting spine: a line centered in the rail column. Each step draws
+         its own segment full-height; first trims the top half, last the bottom. */
+      .rail::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        transform: translateX(-50%);
+        background: var(--color-border-default);
+      }
+      .step:first-of-type .rail::before {
+        top: 22px;
+      }
+      .step--last .rail::before {
+        bottom: calc(100% - 22px);
+      }
+      .marker {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        margin-top: 5px;
+        border-radius: 10px;
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border-default);
+        color: var(--color-text-muted);
+        font-size: 13px;
+        font-weight: 650;
+        flex: none;
+      }
+      .marker .i {
+        width: 16px;
+        height: 16px;
+      }
+      .step--trigger .marker {
+        background: color-mix(in srgb, var(--module-active) 12%, transparent);
+        border-color: color-mix(in srgb, var(--module-active) 30%, transparent);
+        color: var(--module-active);
+      }
+      .step--cond .marker {
+        background: color-mix(in srgb, var(--color-warning) 14%, transparent);
+        border-color: color-mix(in srgb, var(--color-warning) 32%, transparent);
+        color: color-mix(in oklch, var(--color-warning) 60%, var(--color-text-primary));
+      }
+
+      .node {
+        width: 100%;
+        text-align: left;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 11px 12px 12px;
+        margin-bottom: 14px;
+        border: 1px solid var(--color-border-default);
+        border-radius: 12px;
+        background: var(--color-bg-surface);
+        cursor: pointer;
+        font-family: inherit;
+        color: inherit;
+        transition:
+          border-color 0.12s ease,
+          box-shadow 0.12s ease;
+      }
+      .node:hover {
+        border-color: color-mix(in srgb, var(--module-active) 40%, var(--color-border-default));
+      }
+      .node.on {
+        border-color: var(--module-active);
+        box-shadow:
+          0 0 0 1px var(--module-active),
+          var(--shadow-card);
+      }
+      .node__body {
+        flex: 1;
+        min-width: 0;
+      }
+      .node__title {
+        font-size: 13.5px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        line-height: 1.3;
+      }
+      .node__detail {
+        margin-top: 2px;
+        font-size: 12px;
+        color: var(--color-text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .node__detail code,
+      .mono {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+      }
+      .node__cond {
+        margin-top: 7px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .cond {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--color-text-secondary);
+        background: var(--color-bg-subtle);
+        border-radius: 6px;
+        padding: 3px 7px;
+        align-self: flex-start;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .cond__join {
+        font-family: var(--font-sans);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: var(--color-text-tertiary);
+        padding: 0 2px;
+      }
+      .node__grip {
+        color: var(--color-text-tertiary);
+        opacity: 0;
+        cursor: grab;
+        margin: 1px -2px 0 0;
+        transition: opacity 0.12s;
+      }
+      .node:hover .node__grip {
+        opacity: 0.65;
+      }
+
+      /* insert-between affordance: a hairline with a + that reveals on hover */
+      .insert {
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        column-gap: 12px;
+        margin: -8px 0 6px;
+        height: 16px;
+      }
+      .insert__rail {
+        position: relative;
+      }
+      .insert__rail::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        transform: translateX(-50%);
+        background: var(--color-border-default);
+      }
+      .insert__btn {
+        justify-self: start;
+        align-self: center;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 22px;
+        padding: 0 9px 0 7px;
+        border-radius: 999px;
+        border: 1px dashed var(--color-border-default);
+        background: var(--color-bg-surface);
+        color: var(--color-text-tertiary);
+        font-size: 11.5px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        opacity: 0;
+        transition:
+          opacity 0.12s,
+          color 0.12s,
+          border-color 0.12s;
+      }
+      .insert:hover .insert__btn,
+      .insert__btn:focus-visible {
+        opacity: 1;
+      }
+      .insert__btn:hover {
+        color: var(--module-active);
+        border-color: var(--module-active);
+      }
+      .insert__btn .i {
+        width: 13px;
+        height: 13px;
+      }
+
+      /* end "add step" — the prominent affordance after the last action */
+      .addstep {
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        column-gap: 12px;
+      }
+      .addstep__rail {
+        position: relative;
+        display: flex;
+        justify-content: center;
+      }
+      .addstep__plus {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 1px dashed var(--color-border-default);
+        color: var(--color-text-tertiary);
+        background: var(--color-bg-surface);
+      }
+      .addstep__btn {
+        align-self: center;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 11px 14px;
+        border: 1px dashed var(--color-border-default);
+        border-radius: 12px;
+        background: transparent;
+        color: var(--color-text-secondary);
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        text-align: left;
+      }
+      .addstep__btn:hover {
+        border-color: var(--module-active);
+        color: var(--module-active);
+      }
+
+      /* ── Inspector (right pane) ────────────────────────────────────────── */
+      .ins__bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex: none;
+        padding: 8px 8px 8px 14px;
+        border-bottom: 1px solid var(--color-border-default);
+      }
+      .ins__bar-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--color-text-muted);
+      }
+      .ins__panel {
+        display: none;
+      }
+      .ins__panel.show {
+        display: block;
+      }
+      .ins__head {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--color-border-default);
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .ins__head-icon {
+        width: 32px;
+        height: 32px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        border-radius: 9px;
+        background: color-mix(in srgb, var(--module-active) 12%, transparent);
+        color: var(--module-active);
+      }
+      .ins__head-icon .i {
+        width: 17px;
+        height: 17px;
+      }
+      .ins__head h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .ins__head-sub {
+        display: block;
+        font-size: 11.5px;
+        color: var(--color-text-muted);
+        margin-top: 1px;
+      }
+      .ins__stack {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+        background: var(--color-bg-subtle);
+        min-height: calc(100vh - 48px - 49px - 62px);
+      }
+
+      .card {
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border-default);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .card[open] {
+        box-shadow: var(--shadow-card);
+      }
+      .card__head {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 11px 12px;
+        cursor: pointer;
+        list-style: none;
+        user-select: none;
+      }
+      .card__head::-webkit-details-marker {
+        display: none;
+      }
+      .card__icon {
+        width: 28px;
+        height: 28px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--color-bg-subtle);
+        color: var(--color-text-muted);
+      }
+      .card__icon .i {
+        width: 15px;
+        height: 15px;
+      }
+      .card__titles {
+        flex: 1;
+        min-width: 0;
+      }
+      .card__title {
+        display: block;
+        font-size: 13.5px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .card__summary {
+        display: block;
+        margin-top: 1px;
+        font-size: 12px;
+        color: var(--color-text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .card[open] .card__summary {
+        display: none;
+      }
+      .card__chev {
+        width: 16px;
+        height: 16px;
+        flex: none;
+        color: var(--color-text-muted);
+        transition: transform 0.18s ease;
+      }
+      .card[open] .card__chev {
+        transform: rotate(180deg);
+      }
+      .card__body {
+        padding: 3px 13px 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .field__label {
+        font-size: 12px;
+        font-weight: 550;
+      }
+      .field__hint {
+        font-size: 11px;
+        color: var(--color-text-muted);
+        line-height: 1.4;
+      }
+      .control {
+        height: 34px;
+        border: 1px solid var(--color-border-default);
+        border-radius: 8px;
+        background: var(--color-bg-surface);
+        color: var(--color-text-primary);
+        font-size: 13px;
+        font-family: inherit;
+        padding: 0 10px;
+        width: 100%;
+      }
+      textarea.control {
+        height: auto;
+        padding: 8px 10px;
+        resize: vertical;
+        line-height: 1.5;
+      }
+      .control:focus {
+        outline: none;
+        border-color: var(--module-active);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--module-active) 18%, transparent);
+      }
+      .select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 9px center;
+        padding-right: 32px;
+      }
+      .seg {
+        display: flex;
+        gap: 4px;
+        background: var(--color-bg-subtle);
+        padding: 3px;
+        border-radius: 8px;
+      }
+      .seg__btn {
+        flex: 1;
+        padding: 5px 4px;
+        border-radius: 6px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .seg__btn.on {
+        background: var(--color-bg-surface);
+        color: var(--module-active);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+      .danger-row {
+        padding: 4px 0 2px;
+      }
+      .btn--danger {
+        background: transparent;
+        color: var(--color-danger);
+        border: 1px solid color-mix(in srgb, var(--color-danger) 35%, var(--color-border-default));
+        width: 100%;
+        justify-content: center;
+      }
+      .btn--danger:hover {
+        background: color-mix(in srgb, var(--color-danger) 8%, transparent);
+      }
+
+      /* theme switch (mockup-only chrome) */
+      .themebtn {
+        position: fixed;
+        right: 14px;
+        bottom: 14px;
+        z-index: 50;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        height: 34px;
+        padding: 0 13px;
+        border-radius: 999px;
+        border: 1px solid var(--color-border-default);
+        background: var(--color-bg-surface);
+        color: var(--color-text-secondary);
+        font-size: 12.5px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        box-shadow: var(--shadow-card);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- icon sprite (lucide paths) -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <symbol id="workflow" viewBox="0 0 24 24">
+        <rect width="8" height="8" x="3" y="3" rx="2" />
+        <path d="M7 11v4a2 2 0 0 0 2 2h4" />
+        <rect width="8" height="8" x="13" y="13" rx="2" />
+      </symbol>
+      <symbol id="zap" viewBox="0 0 24 24">
+        <path
+          d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"
+        />
+      </symbol>
+      <symbol id="filter" viewBox="0 0 24 24">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+      </symbol>
+      <symbol id="clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+      </symbol>
+      <symbol id="tag" viewBox="0 0 24 24">
+        <path
+          d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
+        />
+        <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+      </symbol>
+      <symbol id="plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14" /></symbol>
+      <symbol id="trash" viewBox="0 0 24 24">
+        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      </symbol>
+      <symbol id="chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" /></symbol>
+      <symbol id="sliders" viewBox="0 0 24 24">
+        <line x1="21" x2="14" y1="4" y2="4" /><line x1="10" x2="3" y1="4" y2="4" />
+        <line x1="21" x2="12" y1="12" y2="12" /><line x1="8" x2="3" y1="12" y2="12" />
+        <line x1="21" x2="16" y1="20" y2="20" /><line x1="12" x2="3" y1="20" y2="20" />
+        <line x1="14" x2="14" y1="2" y2="6" /><line x1="8" x2="8" y1="10" y2="14" />
+        <line x1="16" x2="16" y1="18" y2="22" />
+      </symbol>
+      <symbol id="grip" viewBox="0 0 24 24">
+        <circle cx="9" cy="6" r="1" fill="currentColor" stroke="none" />
+        <circle cx="9" cy="12" r="1" fill="currentColor" stroke="none" />
+        <circle cx="9" cy="18" r="1" fill="currentColor" stroke="none" />
+        <circle cx="15" cy="6" r="1" fill="currentColor" stroke="none" />
+        <circle cx="15" cy="12" r="1" fill="currentColor" stroke="none" />
+        <circle cx="15" cy="18" r="1" fill="currentColor" stroke="none" />
+      </symbol>
+      <symbol id="check" viewBox="0 0 24 24">
+        <path d="M21.801 10A10 10 0 1 1 17 3.335" /><path d="m9 11 3 3L22 4" />
+      </symbol>
+      <symbol id="code" viewBox="0 0 24 24">
+        <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+      </symbol>
+      <symbol id="moon" viewBox="0 0 24 24">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+      </symbol>
+      <symbol id="bell" viewBox="0 0 24 24">
+        <path d="M10.268 21a2 2 0 0 0 3.464 0" />
+        <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
+      </symbol>
+      <symbol id="shield" viewBox="0 0 24 24">
+        <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+      </symbol>
+    </svg>
+
+    <div class="shell">
+      <!-- editor toolbar -->
+      <div class="toolbar">
+        <div class="toolbar__left">
+          <span class="toolbar__home"><svg class="i"><use href="#workflow" /></svg></span>
+          <input class="toolbar__name" value="Fleet re-engagement" aria-label="Automation name" />
+          <span class="pill pill--draft pill--dot">Draft</span>
+        </div>
+        <div class="toolbar__right">
+          <span class="savestate"><svg class="i"><use href="#check" /></svg> All changes saved</span>
+          <button class="btn btn--ghost">Cancel</button>
+          <button class="btn btn--solid">Save automation</button>
+        </div>
+      </div>
+
+      <!-- two panes -->
+      <div class="body">
+        <!-- LEFT: flow canvas = the map -->
+        <div class="map">
+          <div class="flow">
+            <p class="flow__hint">Click any step to edit it on the right. Drag a “Then” step to reorder.</p>
+
+            <!-- settings (peer node) -->
+            <button class="settings" data-sel="settings" onclick="select(this)">
+              <span class="settings__icon"><svg class="i"><use href="#sliders" /></svg></span>
+              <span>
+                <span class="settings__t">Fleet re-engagement</span><br />
+                <span class="settings__s">Draft · loop-guard depth 3</span>
+              </span>
+            </button>
+
+            <!-- WHEN -->
+            <div class="step step--trigger">
+              <div class="rail"><div class="marker"><svg class="i"><use href="#zap" /></svg></div></div>
+              <button class="node" data-sel="trigger" onclick="select(this)">
+                <span class="node__body">
+                  <span class="node__title">When a customer is created</span>
+                  <span class="node__detail"><code>crm.customer.created</code></span>
+                </span>
+              </button>
+            </div>
+
+            <!-- ONLY IF -->
+            <div class="step step--cond">
+              <div class="rail"><div class="marker"><svg class="i"><use href="#filter" /></svg></div></div>
+              <button class="node" data-sel="cond" onclick="select(this)">
+                <span class="node__body">
+                  <span class="node__title">Only if all of these match</span>
+                  <span class="node__cond">
+                    <span class="cond">customer.type = fleet</span>
+                    <span><span class="cond__join">AND</span></span>
+                    <span class="cond">( totalSpent &gt; 1000 <span class="cond__join">OR</span> orders ≥ 5 )</span>
+                  </span>
+                </span>
+              </button>
+            </div>
+
+            <div class="insert"><div class="insert__rail"></div>
+              <button class="insert__btn"><svg class="i"><use href="#plus" /></svg> Add step here</button>
+            </div>
+
+            <!-- THEN 1 -->
+            <div class="step step--action">
+              <div class="rail"><div class="marker">1</div></div>
+              <button class="node" data-sel="a1" onclick="select(this)">
+                <span class="node__body">
+                  <span class="node__title">Wait 3 days</span>
+                  <span class="node__detail"><code>platform.wait</code></span>
+                </span>
+                <span class="node__grip" title="Drag to reorder"><svg class="i"><use href="#grip" /></svg></span>
+              </button>
+            </div>
+
+            <div class="insert"><div class="insert__rail"></div>
+              <button class="insert__btn"><svg class="i"><use href="#plus" /></svg> Add step here</button>
+            </div>
+
+            <!-- THEN 2 (selected by default) -->
+            <div class="step step--action step--last">
+              <div class="rail"><div class="marker">2</div></div>
+              <button class="node on" data-sel="a2" onclick="select(this)">
+                <span class="node__body">
+                  <span class="node__title">Add tag: fleet</span>
+                  <span class="node__detail"><code>crm.add_tag</code></span>
+                </span>
+                <span class="node__grip" title="Drag to reorder"><svg class="i"><use href="#grip" /></svg></span>
+              </button>
+            </div>
+
+            <!-- add step -->
+            <div class="addstep">
+              <div class="addstep__rail"><div class="addstep__plus"><svg class="i"><use href="#plus" /></svg></div></div>
+              <button class="addstep__btn">Add a step — an action or a wait</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: inspector -->
+        <aside class="side">
+          <div class="ins__bar"><span class="ins__bar-title">Properties</span></div>
+
+          <!-- panel: action (default shown) -->
+          <div class="ins__panel show" id="p-a2">
+            <header class="ins__head">
+              <span class="ins__head-icon"><svg class="i"><use href="#tag" /></svg></span>
+              <div>
+                <h3>Add tag</h3>
+                <span class="ins__head-sub">CRM action · step 2 of 2</span>
+              </div>
+            </header>
+            <div class="ins__stack">
+              <details class="card" open>
+                <summary class="card__head">
+                  <span class="card__icon"><svg class="i"><use href="#tag" /></svg></span>
+                  <span class="card__titles">
+                    <span class="card__title">Action</span>
+                    <span class="card__summary">CRM · Add tag</span>
+                  </span>
+                  <svg class="i card__chev"><use href="#chev" /></svg>
+                </summary>
+                <div class="card__body">
+                  <label class="field">
+                    <span class="field__label">Type</span>
+                    <select class="control select">
+                      <option>CRM · Add tag</option>
+                      <option>CRM · Remove tag</option>
+                      <option>Email · Notify staff</option>
+                      <option>Platform · Wait</option>
+                      <option>Platform · Stop</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span class="field__label">Edit as</span>
+                    <span class="seg">
+                      <button class="seg__btn on">Fields</button>
+                      <button class="seg__btn"><svg class="i" style="width:13px;height:13px;vertical-align:-2px"><use href="#code" /></svg> JSON</button>
+                    </span>
+                  </label>
+                </div>
+              </details>
+
+              <details class="card" open>
+                <summary class="card__head">
+                  <span class="card__icon"><svg class="i"><use href="#sliders" /></svg></span>
+                  <span class="card__titles">
+                    <span class="card__title">Configuration</span>
+                    <span class="card__summary">fleet</span>
+                  </span>
+                  <svg class="i card__chev"><use href="#chev" /></svg>
+                </summary>
+                <div class="card__body">
+                  <label class="field">
+                    <span class="field__label">Tags</span>
+                    <input class="control" value="fleet" />
+                    <span class="field__hint">Comma-separated. Applied to the customer that triggered the run.</span>
+                  </label>
+                </div>
+              </details>
+
+              <div class="danger-row">
+                <button class="btn btn--danger"><svg class="i"><use href="#trash" /></svg> Remove this step</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- panel: trigger -->
+          <div class="ins__panel" id="p-trigger">
+            <header class="ins__head">
+              <span class="ins__head-icon"><svg class="i"><use href="#zap" /></svg></span>
+              <div>
+                <h3>Trigger</h3>
+                <span class="ins__head-sub">What starts this automation</span>
+              </div>
+            </header>
+            <div class="ins__stack">
+              <details class="card" open>
+                <summary class="card__head">
+                  <span class="card__icon"><svg class="i"><use href="#zap" /></svg></span>
+                  <span class="card__titles">
+                    <span class="card__title">When</span>
+                    <span class="card__summary">On an event</span>
+                  </span>
+                  <svg class="i card__chev"><use href="#chev" /></svg>
+                </summary>
+                <div class="card__body">
+                  <label class="field">
+                    <span class="field__label">Kind</span>
+                    <span class="seg">
+                      <button class="seg__btn on">Event</button>
+                      <button class="seg__btn">Schedule</button>
+                    </span>
+                  </label>
+                  <label class="field">
+                    <span class="field__label">Event type</span>
+                    <input class="control mono" value="crm.customer.created" />
+                    <span class="field__hint">The bus event that fires this automation. Pick a suggestion or type any event type.</span>
+                  </label>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <!-- panel: conditions -->
+          <div class="ins__panel" id="p-cond">
+            <header class="ins__head">
+              <span class="ins__head-icon"><svg class="i"><use href="#filter" /></svg></span>
+              <div>
+                <h3>Conditions</h3>
+                <span class="ins__head-sub">Run only if these match</span>
+              </div>
+            </header>
+            <div class="ins__stack">
+              <details class="card" open>
+                <summary class="card__head">
+                  <span class="card__icon"><svg class="i"><use href="#filter" /></svg></span>
+                  <span class="card__titles">
+                    <span class="card__title">Filter</span>
+                    <span class="card__summary">All of · 2 conditions</span>
+                  </span>
+                  <svg class="i card__chev"><use href="#chev" /></svg>
+                </summary>
+                <div class="card__body">
+                  <label class="field">
+                    <span class="field__label">Match</span>
+                    <span class="seg">
+                      <button class="seg__btn on">All of</button>
+                      <button class="seg__btn">Any of</button>
+                    </span>
+                  </label>
+                  <div class="field">
+                    <span class="field__label">Conditions</span>
+                    <input class="control mono" value="customer.type = fleet" />
+                    <input class="control mono" value="( totalSpent > 1000 OR orders ≥ 5 )" style="margin-top:6px" />
+                    <span class="field__hint">Nested AND/OR groups supported up to 3 levels.</span>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <!-- panel: a1 (wait) -->
+          <div class="ins__panel" id="p-a1">
+            <header class="ins__head">
+              <span class="ins__head-icon"><svg class="i"><use href="#clock" /></svg></span>
+              <div>
+                <h3>Wait</h3>
+                <span class="ins__head-sub">Platform action · step 1 of 2</span>
+              </div>
+            </header>
+            <div class="ins__stack">
+              <details class="card" open>
+                <summary class="card__head">
+                  <span class="card__icon"><svg class="i"><use href="#clock" /></svg></span>
+                  <span class="card__titles">
+                    <span class="card__title">Configuration</span>
+                    <span class="card__summary">3 days</span>
+                  </span>
+                  <svg class="i card__chev"><use href="#chev" /></svg>
+                </summary>
+                <div class="card__body">
+                  <label class="field">
+                    <span class="field__label">Wait for</span>
+                    <input class="control" type="number" value="259200" />
+                    <span class="field__hint">Seconds before the next step runs (259200 = 3 days). The run parks durably and resumes on schedule.</span>
+                  </label>
+                </div>
+              </details>
+              <div class="danger-row">
+                <button class="btn btn--danger"><svg class="i"><use href="#trash" /></svg> Remove this step</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- panel: settings -->
+          <div class="ins__panel" id="p-settings">
+            <header class="ins__head">
+              <span class="ins__head-icon"><svg class="i"><use href="#sliders" /></svg></span>
+              <div>
+                <h3>Settings</h3>
+                <span class="ins__head-sub">Name, description & safeguards</span>
+              </div>
+            </header>
+            <div class="ins__stack">
+              <details class="card" open>
+                <summary class="card__head">
+                  <span class="card__icon"><svg class="i"><use href="#workflow" /></svg></span>
+                  <span class="card__titles">
+                    <span class="card__title">Details</span>
+                    <span class="card__summary">Fleet re-engagement</span>
+                  </span>
+                  <svg class="i card__chev"><use href="#chev" /></svg>
+                </summary>
+                <div class="card__body">
+                  <label class="field">
+                    <span class="field__label">Name</span>
+                    <input class="control" value="Fleet re-engagement" />
+                  </label>
+                  <label class="field">
+                    <span class="field__label">Description</span>
+                    <textarea class="control" rows="2">Re-engage new fleet customers a few days after signup.</textarea>
+                  </label>
+                </div>
+              </details>
+              <details class="card">
+                <summary class="card__head">
+                  <span class="card__icon"><svg class="i"><use href="#shield" /></svg></span>
+                  <span class="card__titles">
+                    <span class="card__title">Advanced</span>
+                    <span class="card__summary">Loop-guard depth 3</span>
+                  </span>
+                  <svg class="i card__chev"><use href="#chev" /></svg>
+                </summary>
+                <div class="card__body">
+                  <label class="field">
+                    <span class="field__label">Loop-guard depth</span>
+                    <input class="control" type="number" value="3" style="width:96px" />
+                    <span class="field__hint">How deep a rule → event → rule cascade may go before the engine stops it.</span>
+                  </label>
+                </div>
+              </details>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <button class="themebtn" onclick="toggleTheme()">
+      <svg class="i" style="width:15px;height:15px"><use href="#moon" /></svg> <span id="themelbl">Dark</span>
+    </button>
+
+    <script>
+      function select(el) {
+        document.querySelectorAll('.node.on, .settings.on').forEach((n) => n.classList.remove('on'));
+        el.classList.add('on');
+        const id = el.getAttribute('data-sel');
+        document.querySelectorAll('.ins__panel').forEach((p) => p.classList.remove('show'));
+        const panel = document.getElementById('p-' + id);
+        if (panel) panel.classList.add('show');
+      }
+      function toggleTheme() {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', next);
+        document.getElementById('themelbl').textContent = next === 'light' ? 'Dark' : 'Light';
+      }
+    </script>
+  </body>
+</html>

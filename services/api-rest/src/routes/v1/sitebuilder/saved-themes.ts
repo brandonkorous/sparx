@@ -19,6 +19,7 @@ import { requireRole } from '@sparx/api-core/auth';
 import {
   requireSitebuilderModule,
   toSitebuilderContext,
+  toSitebuilderPropertyContext,
 } from '../../../lib/sitebuilder-context.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
@@ -58,7 +59,9 @@ const savedThemeRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireSitebuilderModule(request);
     const { id } = IdParam.parse(request.params);
-    const result = await savedThemeService.apply(toSitebuilderContext(request), id);
+    // `apply` writes the active site's draft config (docs/49 Phase 6) — property
+    // context. The library CRUD above stays tenant-wide.
+    const result = await savedThemeService.apply(await toSitebuilderPropertyContext(request), id);
     return ok(result);
   });
 

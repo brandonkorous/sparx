@@ -9,7 +9,7 @@ export * from './events';
 export * as sitebuilderMcp from './mcp';
 export { sitebuilderMcpTools } from './mcp';
 export type { AnyMcpTool, McpScope, McpToolDefinition } from './mcp';
-export type { ServiceContext, NotFoundError, ValidationError } from './errors';
+export type { ServiceContext, PropertyContext, NotFoundError, ValidationError } from './errors';
 export {
   SitebuilderNotFoundError,
   SitebuilderValidationError,

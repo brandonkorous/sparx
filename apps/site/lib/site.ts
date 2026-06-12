@@ -104,19 +104,29 @@ interface ErrorEnvelope {
  */
 export async function getPublishedSite(
   tenantSlug: string,
-  sitePreviewToken?: string
+  sitePreviewToken?: string,
+  // The active web PROPERTY (site) slug (docs/49 Phase 6) — selects which site's
+  // published snapshot to serve. Omitted → the tenant's primary site.
+  propertySlug?: string
 ): Promise<PublishedSnapshot | null> {
   try {
+    const params = new URLSearchParams({ tenant: tenantSlug });
+    if (propertySlug) params.set('property', propertySlug);
     const res = await fetch(
-      `${BASE_URL}/v1/public/storefront/site?tenant=${encodeURIComponent(tenantSlug)}`,
+      `${BASE_URL}/v1/public/storefront/site?${params.toString()}`,
       sitePreviewToken
         ? { headers: { Authorization: `Preview ${sitePreviewToken}` }, cache: 'no-store' }
         : {
             // Site config changes on publish; the publish flow purges these tags
-            // (see app/api/revalidate — `site:<slug>` scope). Falls back to TTL.
+            // (see app/api/revalidate — `site:<slug>` scope). The property scopes the
+            // tag so one site's publish doesn't purge a sibling. Falls back to TTL.
             next: {
               revalidate: 300,
-              tags: ['sparx-storefront', `tenant:${tenantSlug}`, `site:${tenantSlug}`],
+              tags: [
+                'sparx-storefront',
+                `tenant:${tenantSlug}`,
+                `site:${tenantSlug}${propertySlug ? `:${propertySlug}` : ''}`,
+              ],
             },
           }
     );

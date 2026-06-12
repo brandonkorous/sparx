@@ -6,6 +6,14 @@ import { reportingService, storefrontService } from '@sparx/commerce';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
+import { resolvePropertyId } from '../../../lib/property.js';
+
+/** The active site (docs/49 Phase 6): the `x-sparx-property-id` the dashboard
+ *  switcher sets, else the tenant's primary. */
+function resolveRequestProperty(request: { headers: Record<string, unknown> }, tenantId: string) {
+  const requested = request.headers['x-sparx-property-id'];
+  return resolvePropertyId(tenantId, typeof requested === 'string' ? requested : null);
+}
 
 // Reporting endpoints accept ?from=&to= (ISO 8601) and default to the
 // last 30 days when both are omitted — matches the dashboard's "last
@@ -44,13 +52,17 @@ const storefrontRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/storefront/theme', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    return ok(await storefrontService.getTheme(toCommerceContext(request)));
+    const ctx = toCommerceContext(request);
+    const propertyId = await resolveRequestProperty(request, ctx.tenantId);
+    return ok(await storefrontService.getTheme(ctx, propertyId));
   });
 
   app.patch('/v1/commerce/storefront/theme', async (request) => {
     requireRole(request, 'admin');
     await requireCommerceModule(request);
-    await storefrontService.updateTheme(toCommerceContext(request), request.body);
+    const ctx = toCommerceContext(request);
+    const propertyId = await resolveRequestProperty(request, ctx.tenantId);
+    await storefrontService.updateTheme(ctx, propertyId, request.body);
     return ok({ updated: true });
   });
 

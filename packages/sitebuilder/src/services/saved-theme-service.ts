@@ -18,7 +18,7 @@ import type { Prisma, SiteTheme, TxClient } from '@sparx/db';
 import { withTenant } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
-import type { ServiceContext } from '../errors';
+import type { PropertyContext, ServiceContext } from '../errors';
 import { SitebuilderNotFoundError } from '../errors';
 import { getOrCreateConfig } from './_config';
 
@@ -172,16 +172,16 @@ export async function remove(ctx: ServiceContext, id: string): Promise<{ id: str
 // NOT publish — the tenant publishes or schedules afterward. The published
 // snapshot picks it up because publish reads the draft.
 export async function apply(
-  ctx: ServiceContext,
+  ctx: PropertyContext,
   id: string
 ): Promise<{ ok: true; themeKey: string }> {
   return withTenant(ctx, async (tx) => {
     const theme = await tx.siteTheme.findUnique({ where: { id } });
     if (!theme) throw new SitebuilderNotFoundError('SiteTheme', id);
-    const config = await getOrCreateConfig(tx, ctx.tenantId);
+    const config = await getOrCreateConfig(tx, ctx.tenantId, ctx.propertyId);
     const draft = (config.draftSettings ?? {}) as Record<string, unknown>;
     await tx.siteConfig.update({
-      where: { tenantId: ctx.tenantId },
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: ctx.propertyId } },
       data: {
         themeKey: theme.basePresetKey,
         // Record WHICH saved theme is applied (the pointer), alongside its

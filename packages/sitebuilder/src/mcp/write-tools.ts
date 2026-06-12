@@ -24,6 +24,15 @@ import {
   definitionService,
 } from '../services/index';
 import type { AnyMcpTool } from './registry';
+import { toPropertyContext } from './context';
+
+// Per-property tools (docs/49 Phase 6) accept an optional target site; omit for
+// the tenant's primary site.
+const propertyIdArg = z
+  .string()
+  .uuid()
+  .optional()
+  .describe('Target site (web property) id; omit for the tenant’s primary site.');
 
 const UpdateSectionTool = z.object({
   sectionId: Uuid,
@@ -42,20 +51,31 @@ const DeleteDefinitionTool = z.object({ slug: z.string().min(1).max(56) });
 export const writeTools: AnyMcpTool[] = [
   {
     name: 'select_theme',
-    description: 'Switch the storefront to a different theme (draft change — publish to go live).',
+    description:
+      'Switch a site to a different theme (draft change — publish to go live). Targets the tenant’s primary site unless `propertyId` is given.',
     scope: 'write:builder',
-    input: SelectThemeInput,
+    input: SelectThemeInput.extend({ propertyId: propertyIdArg }),
     confirmation: false,
-    run: (ctx, input) => themeService.selectTheme(ctx, input),
+    run: async (ctx, input) => {
+      const { propertyId, ...rest } = input as { propertyId?: string } & z.infer<
+        typeof SelectThemeInput
+      >;
+      return themeService.selectTheme(await toPropertyContext(ctx, propertyId), rest);
+    },
   },
   {
     name: 'update_site_settings',
     description:
-      'Update the draft theme settings (colors per light/dark, fonts, layout, custom CSS) and/or the appearance policy.',
+      'Update the draft theme settings (colors per light/dark, fonts, layout, custom CSS) and/or the appearance policy. Targets the tenant’s primary site unless `propertyId` is given.',
     scope: 'write:builder',
-    input: UpdateSettingsInput,
+    input: UpdateSettingsInput.extend({ propertyId: propertyIdArg }),
     confirmation: false,
-    run: (ctx, input) => themeService.updateSettings(ctx, input),
+    run: async (ctx, input) => {
+      const { propertyId, ...rest } = input as { propertyId?: string } & z.infer<
+        typeof UpdateSettingsInput
+      >;
+      return themeService.updateSettings(await toPropertyContext(ctx, propertyId), rest);
+    },
   },
   {
     name: 'add_section',
@@ -108,27 +128,45 @@ export const writeTools: AnyMcpTool[] = [
   },
   {
     name: 'publish_site',
-    description: 'Publish the current draft live to the storefront.',
+    description:
+      'Publish the current draft live to the storefront. Targets the tenant’s primary site unless `propertyId` is given.',
     scope: 'write:builder',
-    input: PublishInput,
+    input: PublishInput.extend({ propertyId: propertyIdArg }),
     confirmation: true,
-    run: (ctx, input) => publishService.publishNow(ctx, input),
+    run: async (ctx, input) => {
+      const { propertyId, ...rest } = input as { propertyId?: string } & z.infer<
+        typeof PublishInput
+      >;
+      return publishService.publishNow(await toPropertyContext(ctx, propertyId), rest);
+    },
   },
   {
     name: 'rollback_site',
-    description: 'Roll the storefront back to a prior published version (creates a new version).',
+    description:
+      'Roll a site back to a prior published version (creates a new version). Targets the tenant’s primary site unless `propertyId` is given.',
     scope: 'write:builder',
-    input: RollbackInput,
+    input: RollbackInput.extend({ propertyId: propertyIdArg }),
     confirmation: true,
-    run: (ctx, input) => publishService.rollback(ctx, input),
+    run: async (ctx, input) => {
+      const { propertyId, ...rest } = input as { propertyId?: string } & z.infer<
+        typeof RollbackInput
+      >;
+      return publishService.rollback(await toPropertyContext(ctx, propertyId), rest);
+    },
   },
   {
     name: 'schedule_publish',
-    description: 'Schedule the current draft to publish at a future time.',
+    description:
+      'Schedule the current draft to publish at a future time. Targets the tenant’s primary site unless `propertyId` is given.',
     scope: 'write:builder',
-    input: ScheduleInput,
+    input: ScheduleInput.extend({ propertyId: propertyIdArg }),
     confirmation: true,
-    run: (ctx, input) => scheduleService.schedule(ctx, input),
+    run: async (ctx, input) => {
+      const { propertyId, ...rest } = input as { propertyId?: string } & z.infer<
+        typeof ScheduleInput
+      >;
+      return scheduleService.schedule(await toPropertyContext(ctx, propertyId), rest);
+    },
   },
   {
     name: 'create_custom_section',

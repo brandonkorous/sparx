@@ -17,7 +17,7 @@ import { getPublishedBuilderHome, getPublishedBuilderStyles } from '@/lib/builde
 import { loadBuilderData } from '@/lib/builder-data';
 import { mediaUrl } from '@/lib/media';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
-import { resolveTenant } from '@/lib/tenant';
+import { resolveActivePropertySlug, resolveTenant } from '@/lib/tenant';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,7 +58,11 @@ export default async function StorefrontRoot({ searchParams }: RootPageProps) {
 
   // Site Builder home composition wins when the tenant has published one — or,
   // with a site-preview token, the current unsaved draft.
-  const snapshot = await getPublishedSite(tenant.slug, sp.sparxSitePreview);
+  const snapshot = await getPublishedSite(
+    tenant.slug,
+    sp.sparxSitePreview,
+    (await resolveActivePropertySlug()) ?? undefined
+  );
   const homeSections = sectionsForPage(snapshot, 'home');
   if (homeSections.length > 0) {
     const { defaultCurrency, defaultLocale } = tenant.storefront;

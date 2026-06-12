@@ -101,6 +101,23 @@ export default async function AutomationDetailPage({ params }: PageProps) {
           </Card>
         )}
 
+        {automation.draft && !automation.locked && (
+          <Card variant="module">
+            <CardContent className="flex flex-wrap items-center justify-between gap-3">
+              <Text size="sm">
+                This automation has <strong>unpublished changes</strong>. The live version (v
+                {automation.version}) keeps running until you publish.
+              </Text>
+              <Link
+                href={`/automations/${automation.id}/edit`}
+                className="text-sm font-semibold text-[var(--module-active)] hover:underline"
+              >
+                Review &amp; publish →
+              </Link>
+            </CardContent>
+          </Card>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle>Trigger</CardTitle>
@@ -170,6 +187,7 @@ export default async function AutomationDetailPage({ params }: PageProps) {
                       </Text>
                     </span>
                     <Text size="sm" variant="muted">
+                      {run.automationVersion != null ? `v${run.automationVersion} · ` : ''}
                       {run.actionsTotal} step{run.actionsTotal === 1 ? '' : 's'}
                     </Text>
                   </Link>

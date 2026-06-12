@@ -57,8 +57,8 @@ model ChatMessage {
   senderType String  @map("sender_type") @db.VarChar(10) // customer | staff | ai
   senderId   String? @map("sender_id") @db.Uuid // user id (staff) or customer id; null for anon/ai
 
-  body        String  @db.Text
-  attachments Json    @default("[]")
+  body        String @db.Text
+  attachments Json   @default("[]")
 
   aiGenerated  Boolean @default(false) @map("ai_generated")
   aiConfidence Float?  @map("ai_confidence")

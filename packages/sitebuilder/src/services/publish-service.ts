@@ -20,7 +20,7 @@ import {
 } from '@sparx/site-themes';
 
 import { publishSitebuilderEvent } from '../events';
-import type { ServiceContext } from '../errors';
+import type { PropertyContext } from '../errors';
 import { SitebuilderNotFoundError } from '../errors';
 import { getOrCreateConfig } from './_config';
 import { readAssignmentSnapshot } from './assignment-service';
@@ -34,14 +34,15 @@ import {
 } from './publish-internals';
 
 export async function publishNow(
-  ctx: ServiceContext,
+  ctx: PropertyContext,
   rawInput: unknown = {}
 ): Promise<SiteVersion> {
   const input = PublishInput.parse(rawInput);
   const version = await withTenant(ctx, async (tx) => {
-    await getOrCreateConfig(tx, ctx.tenantId);
+    await getOrCreateConfig(tx, ctx.tenantId, ctx.propertyId);
     return publishWithinTx(tx, {
       tenantId: ctx.tenantId,
+      propertyId: ctx.propertyId,
       userId: ctx.userId ?? null,
       note: input.note,
     });
@@ -62,38 +63,45 @@ export async function publishNow(
 }
 
 export function listVersions(
-  ctx: ServiceContext,
+  ctx: PropertyContext,
   opts: { take?: number; skip?: number } = {}
 ): Promise<{ items: SiteVersion[]; total: number }> {
   return withTenant(ctx, async (tx) => {
+    const where = { propertyId: ctx.propertyId };
     const [items, total] = await Promise.all([
       tx.siteVersion.findMany({
+        where,
         orderBy: { versionNumber: 'desc' },
         take: Math.min(opts.take ?? 50, 200),
         skip: opts.skip ?? 0,
       }),
-      tx.siteVersion.count(),
+      tx.siteVersion.count({ where }),
     ]);
     return { items, total };
   });
 }
 
-export async function getVersion(ctx: ServiceContext, versionId: string): Promise<SiteVersion> {
+export async function getVersion(ctx: PropertyContext, versionId: string): Promise<SiteVersion> {
+  // findFirst scoped to the active property — a version id from a sibling site
+  // (same tenant) is not addressable here.
   const version = await withTenant(ctx, (tx) =>
-    tx.siteVersion.findUnique({ where: { id: versionId } })
+    tx.siteVersion.findFirst({ where: { id: versionId, propertyId: ctx.propertyId } })
   );
   if (!version) throw new SitebuilderNotFoundError('SiteVersion', versionId);
   return version;
 }
 
-export async function rollback(ctx: ServiceContext, rawInput: unknown): Promise<SiteVersion> {
+export async function rollback(ctx: PropertyContext, rawInput: unknown): Promise<SiteVersion> {
   const input = RollbackInput.parse(rawInput);
   const version = await withTenant(ctx, async (tx) => {
-    const target = await tx.siteVersion.findUnique({ where: { id: input.versionId } });
+    const target = await tx.siteVersion.findFirst({
+      where: { id: input.versionId, propertyId: ctx.propertyId },
+    });
     if (!target) throw new SitebuilderNotFoundError('SiteVersion', input.versionId);
-    await materializeWithinTx(tx, ctx.tenantId, target);
+    await materializeWithinTx(tx, ctx.tenantId, ctx.propertyId, target);
     return publishWithinTx(tx, {
       tenantId: ctx.tenantId,
+      propertyId: ctx.propertyId,
       userId: ctx.userId ?? null,
       note: `Rollback to v${target.versionNumber}`,
     });
@@ -178,9 +186,13 @@ function readPresentation(settings: unknown): PresentationOverlayV2 | null {
 }
 
 /** The published snapshot for the storefront. Null when nothing is published. */
-export async function getPublishedSnapshot(ctx: ServiceContext): Promise<PublishedSnapshot | null> {
+export async function getPublishedSnapshot(
+  ctx: PropertyContext
+): Promise<PublishedSnapshot | null> {
   return withTenant(ctx, async (tx) => {
-    const config = await tx.siteConfig.findUnique({ where: { tenantId: ctx.tenantId } });
+    const config = await tx.siteConfig.findUnique({
+      where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: ctx.propertyId } },
+    });
     if (!config?.publishedVersionId) return null;
     const version = await tx.siteVersion.findUnique({ where: { id: config.publishedVersionId } });
     if (!version) return null;
@@ -202,9 +214,9 @@ export async function getPublishedSnapshot(ctx: ServiceContext): Promise<Publish
  * The current DRAFT assembled into the same snapshot shape — what the
  * customizer's live preview renders. Compiled on the fly (not yet a version).
  */
-export async function getDraftSnapshot(ctx: ServiceContext): Promise<PublishedSnapshot> {
+export async function getDraftSnapshot(ctx: PropertyContext): Promise<PublishedSnapshot> {
   return withTenant(ctx, async (tx) => {
-    const config = await getOrCreateConfig(tx, ctx.tenantId);
+    const config = await getOrCreateConfig(tx, ctx.tenantId, ctx.propertyId);
     const draft = await readDraft(tx);
     const settings = (config.draftSettings ?? {}) as {
       tokens?: { light?: Record<string, string>; dark?: Record<string, string> };

@@ -19,9 +19,22 @@ model Automation {
   triggerType   String @map("trigger_type") @db.VarChar(100)
   triggerConfig Json   @default("{}") @map("trigger_config")
 
-  // ConditionGroup ({ logic, conditions[] }) + the ordered action list.
+  // ConditionGroup ({ logic, conditions[] }) + the ordered action list. These
+  // columns ARE the currently-PUBLISHED (live) rule document — the engine, the
+  // ticks, and the SECURITY DEFINER scans all read them as-is. Versioning is
+  // purely additive: edits stage in `draft` and only land here on publish.
   conditions Json @default("{}")
   actions    Json @default("[]")
+
+  // Versioning (docs/84 Slice G-versioning) — Builder-style draft → publish +
+  // immutable history. `version` is the live published version number (1 on
+  // create = first publish); `draft` holds the staged, unpublished edit document
+  // (null = no pending draft) in the same column-form as the live columns, so
+  // publish is a straight copy. Snapshots live in `automation_versions`.
+  version     Int       @default(1)
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+  publishedBy String?   @map("published_by") @db.Uuid
+  draft       Json?
 
   // AI authoring provenance (docs/81 §4).
   aiGenerated Boolean @default(false) @map("ai_generated")
@@ -44,14 +57,48 @@ model Automation {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  clonedFromAuto Automation?     @relation("AutomationClone", fields: [clonedFrom], references: [id], onDelete: SetNull)
-  clones         Automation[]    @relation("AutomationClone")
+  tenant         Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  clonedFromAuto Automation?         @relation("AutomationClone", fields: [clonedFrom], references: [id], onDelete: SetNull)
+  clones         Automation[]        @relation("AutomationClone")
   runs           AutomationRun[]
+  versions       AutomationVersion[]
 
   @@index([tenantId, status, triggerType])
   @@index([tenantId, updatedAt(sort: Desc)])
   @@map("automations")
+}
+
+// Immutable published-version history (docs/84 Slice G-versioning). One row per
+// publish — a frozen snapshot of the authoring document at that version. The
+// History panel lists these; "Restore" copies a chosen snapshot back into the
+// automation's `draft` (the tenant then reviews + publishes, which appends a NEW
+// version). Append-only: rows are never updated or deleted (except by the
+// automation's cascade). Tenant-scoped → its own tenant_id + FORCE RLS.
+model AutomationVersion {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  automationId String @map("automation_id") @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+
+  version       Int
+  name          String  @db.VarChar(255)
+  description   String? @db.Text
+  triggerType   String  @map("trigger_type") @db.VarChar(100)
+  triggerConfig Json    @map("trigger_config")
+  conditions    Json
+  actions       Json
+  maxDepth      Int     @map("max_depth") @db.SmallInt
+  // Optional one-line publish note ("what changed").
+  note          String? @db.Text
+
+  publishedAt DateTime @default(now()) @map("published_at") @db.Timestamptz
+  publishedBy String?  @map("published_by") @db.Uuid
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  automation Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@unique([automationId, version], map: "automation_versions_automation_version_unique")
+  @@index([tenantId])
+  @@map("automation_versions")
 }
 
 model AutomationRun {
@@ -66,11 +113,15 @@ model AutomationRun {
   // Cascade depth for the loop-guard (docs/81 §7).
   causeDepth   Int    @default(0) @map("cause_depth") @db.SmallInt
 
-  status       String    @default("running") @db.VarChar(20) // running | waiting | completed | failed | skipped
-  cursorIndex  Int       @default(0) @map("cursor_index") // next action to run
-  resumeAt     DateTime? @map("resume_at") @db.Timestamptz // durable-delay wake time
-  actionsTotal Int       @map("actions_total")
-  errorMessage String?   @map("error_message") @db.Text
+  status            String    @default("running") @db.VarChar(20) // running | waiting | completed | failed | skipped
+  cursorIndex       Int       @default(0) @map("cursor_index") // next action to run
+  resumeAt          DateTime? @map("resume_at") @db.Timestamptz // durable-delay wake time
+  actionsTotal      Int       @map("actions_total")
+  errorMessage      String?   @map("error_message") @db.Text
+  // The published version that was live when this run was created (docs/84
+  // Slice G-versioning). Stamped for observability — "which version did this?".
+  // Nullable for runs created before versioning shipped.
+  automationVersion Int?      @map("automation_version")
 
   startedAt   DateTime  @default(now()) @map("started_at") @db.Timestamptz
   completedAt DateTime? @map("completed_at") @db.Timestamptz

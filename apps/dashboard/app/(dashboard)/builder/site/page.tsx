@@ -5,7 +5,12 @@ import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 import { getBrand, getConfig, getSitePreviewData, getTenant } from '../_brand/lib/api';
 import { propertyOrigin } from '../_brand/lib/property';
 import { listComponentsFull, listLayouts } from '../_lib/api';
-import { listProperties, getActivePropertyId, type Property } from '@/lib/sites';
+import {
+  listProperties,
+  getActivePropertyId,
+  resolveActiveProperty,
+  type Property,
+} from '@/lib/sites';
 import { SiteBuilderApp } from '../_builder/site-builder-app';
 import '../builder.css';
 // The Surface RECIPE — @sparx/site-ui's `sf-*` component/color/variant classes,
@@ -70,11 +75,7 @@ async function loadActiveProperty(): Promise<{
       listProperties().catch(() => [] as Property[]),
       getActivePropertyId(),
     ]);
-    const active =
-      (activePropertyId ? properties.find((p) => p.id === activePropertyId) : undefined) ??
-      properties.find((p) => p.isPrimary) ??
-      properties[0] ??
-      null;
+    const active = resolveActiveProperty(properties, activePropertyId) ?? null;
     return { tenantSlug, active };
   } catch {
     return { tenantSlug: null, active: null };

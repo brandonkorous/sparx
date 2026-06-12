@@ -1,8 +1,8 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.15
+**Version:** 1.17
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-06-12
 
 ---
 
@@ -16,7 +16,77 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** **Slice G-UI — DONE this session.** The dashboard automations surface
+> **▶ RESUME HERE:** **Slice G-versioning — DONE** (this session, uncommitted). Builder-style
+> **draft → publish + immutable history** for the rule engine, plus the live drag verification of the
+> G-UI v2 editor. **Key design (low-risk, additive): the existing automation columns REMAIN the
+> currently-PUBLISHED (live) document the engine/ticks/SECURITY-DEFINER-scans already read** — so
+> versioning touches NO execution path. Edits STAGE in a new `automations.draft` JSONB blob; "Publish"
+> copies it into the live columns, bumps `version`, appends an immutable `automation_versions`
+> snapshot, and clears the draft. Create auto-publishes v1 (every existing flow keeps working);
+> every later edit is a real draft→publish cycle.
+>
+> - **Data model (migration `20260808000000_automation_versioning`, applied to docker, 0 drift):**
+>   `automations` += `version`(default 1, DDL-default backfill — no RLS loop), `published_at/by`,
+>   `draft` JSONB. New `automation_versions` table (immutable snapshots, own `tenant_id` + ENABLE/FORCE
+>   RLS + `tenant_isolation`). `automation_runs` += `automation_version` (run-stamp). The
+>   `find_active_scheduled_automations()` SECURITY DEFINER fn DROP+CREATE'd to also return `version`.
+> - **Service (`@sparx/automation`):** `createAutomation`/`cloneAutomation` auto-publish v1 + snapshot;
+>   `updateAutomation` now STAGES document edits in `draft` (status still applies live; a status-only
+>   patch never fabricates a phantom draft); new `publishAutomation` / `discardDraft` /
+>   `restoreAutomationVersion` (→ stages a snapshot back as the draft; history stays append-only) /
+>   `listAutomationVersions` / `getAutomationVersion`; new `NoDraftError` + `AutomationVersionNotFoundError`.
+>   `upsertSystemAutomation` sets `version: 1` on create only (locked system rules have no history UI).
+> - **Engine run-stamp:** `handleTrigger` + `runScheduleTick` stamp `automationVersion` on run create.
+>   The engine still executes the LIVE columns (= published def) — mid-run republish behavior documented
+>   below.
+> - **REST (`/v1/automations/:id/`):** `GET versions` · `POST publish` · `POST restore` · `POST
+discard-draft`; `app.ts` maps `AUTOMATION_NO_DRAFT` (409) + `AutomationVersionNotFoundError` (404).
+> - **MCP:** `update_automation` auto-publishes a document edit (AI edits go live, preserving prior
+>   behavior); guarded so a status-only call never promotes a pending dashboard draft.
+> - **Dashboard:** edit page loads the DRAFT if present; editor toolbar gains a **version pill**
+>   (amber dot = unpublished), **Save draft** (stages) / **Publish** (promotes) / **History** (toggles
+>   the right pane to the version list — `history-panel.tsx`; Restore + Discard, both confirm-guarded).
+>   Detail page gains an "unpublished changes" banner + per-run `vN` stamp.
+> - **Verified:** automation 46/46 + automation-actions 15/15 + automation-worker 6/6 (docker);
+>   typecheck clean (`@sparx/automation`, `-schemas`, `api-rest`, `dashboard`); lint 0 errors; prettier ✓;
+>   migration 0-drift. ⚠ `api-mcp`/`sitebuilder` typecheck fails on PRE-EXISTING errors from ANOTHER
+>   agent's uncommitted multi-property `propertyId` schema work (08/47/49-\*.prisma) — unmasked by my
+>   `prisma generate`, NOT this slice (my only schema change is 71-automation + the 02-tenant relation).
+> - **Live drag verified (G-UI v2):** keyboard sensor (Space-lift → ArrowDown → Space-drop) AND
+>   trusted-mouse stepped drag both reorder correctly against the authed dashboard — DragOverlay floats
+>   the lifted card, `.ax-step--ghost` make-room placeholder, markers renumber, selection identity
+>   follows the card. (Playwright `dragTo` / synthetic PointerEvents do NOT drive dnd-kit — needs
+>   `page.mouse` stepped moves; recorded for future runs.)
+>
+> **⚠ Documented edge (no silent gap):** (1) the engine runs the LIVE published columns; a republish
+> WHILE a run is mid-flight (e.g. parked on a wait) means that run continues on the new def from its
+> cursor — acceptable (runs are short-lived; cursor past the new action count just completes early; the
+> stamped `automation_version` records what was live at creation). (2) NO history backfill for
+> pre-versioning automations — they read as `version 1` (DDL default) and start accumulating snapshots
+> on their NEXT publish (the History panel shows "No published versions yet" until then).
+>
+> **NEXT (still user-sequenced, unchanged):** (1) the **Default Builder-emails library + per-tenant
+> provisioning** (decision B — unblocks the email-driven CRM-sweep seeds; reconcile/retire the coded
+> `@sparx/email-platform` DEFAULT_AUTOMATIONS) and (2) **Slice I — Phase 5 external** (Zapier/Make/inbound
+> `webhook.received`). Commerce executors stay deferred (no product/variant resolver). The G-UI v2 +
+> versioning editor wants a **live click-through of the publish/restore flow** against a running stack
+> (backend is exhaustively unit/integration-tested; the UI is typecheck/lint-clean but not yet
+> click-tested live — dev was closed this session).
+>
+> ---
+>
+> **(prior)** **Slice G-UI v2 — the builder was REDESIGNED into a map + inspector editor**, a sibling of
+> the site/email Builder. `automation-editor.tsx`: a full-bleed two-pane shell — LEFT a **flow canvas**
+> ("map") rendering the rule as a vertical WHEN → ONLY IF → THEN spine of node cards, RIGHT an
+> **inspector** that edits the selected node, reusing `TriggerEditor` + `ConditionEditor`. **Top-notch
+> drag-and-drop** for action steps (dnd-kit `DragOverlay` lift + make-room + auto-scroll; whole-card
+> drag, 6px activation; keyboard Space-lift / Enter-select; live renumber), **insert-anywhere**, **canvas
+> zoom** (50–150%, ⌘/Ctrl-wheel, persisted; overlay outside the scaled wrapper + sortable transform ÷
+> zoom). New files under `.../automations/{_lib/flow.ts, _components/{flow-canvas,inspector,
+inspector-primitives,action-config-editor,node-icons,history-panel,automation-editor}.tsx,
+automation-editor.css}`. Now extended with the versioning toolbar/history above.
+>
+> **(prior)** **Slice G-UI — DONE.** The dashboard automations surface
 > (`apps/dashboard/.../automations/*`) is built: **list** (status-filter chips + per-row module tags +
 > run stats + inline enable/pause), **detail/review** (trigger + conditions + ordered actions, runs
 > preview), the full **builder** (event/schedule trigger editor, **nested AND/OR condition editor** —
@@ -545,7 +615,13 @@ current_setting('app.current_tenant_id')::uuid)`. That GUC name is **wrong** (`w
 > pipeline. **Not bundled into another agent's feature — it's a DB-layer correctness fix and a
 > new migration file, touching no other source.**
 
-### Slice G — Phase 3 dashboard UI ◐ (see docs/81 §8) — **REST API backend DONE**
+### Slice G — Phase 3 dashboard UI ☑ (see docs/81 §8) — **REST API + UI v2 + versioning DONE**
+
+> **G-versioning ☑** (this session) — Builder-style draft → publish + immutable history across data
+> model (migration `20260808000000`), service, engine run-stamp, REST (`versions`/`publish`/`restore`/
+> `discard-draft`), MCP (update auto-publishes), and the editor (version pill + Save/Publish/History +
+> detail banner). Full detail + the documented edges in the RESUME pointer at the top. Tests: automation
+> 46/46 · automation-actions 15/15 · automation-worker 6/6.
 
 **G-API — `/v1/automations` REST surface ☑** (the API-first spine; the dashboard UI + MCP are
 consumers of these). New `services/api-rest/src/routes/v1/automations/index.ts`:
@@ -576,6 +652,16 @@ consumers of these). New `services/api-rest/src/routes/v1/automations/index.ts`:
 at `apps/dashboard/.../automations/*`, a pure CONSUMER of the G-API REST surface (no api-rest/engine
 change). New `@sparx/automation-schemas` dashboard dep (canonical types + `triggerToColumns`/
 `triggerFromColumns` + the zod parsers → no vocab drift vs REST/MCP) + Dockerfile COPY.
+
+> **NOTE — the BUILDER below was redesigned in G-UI v2** (see RESUME). The "Builder" +
+> "Action-editor fidelity" bullets describe the original stacked-form builder (`automation-builder.tsx`
+>
+> - `action-editor.tsx`, now DELETED). It's now a **map + inspector** editor (`automation-editor.tsx` +
+>   `flow-canvas.tsx` + `inspector*.tsx` + `action-config-editor.tsx`): same authoring vocabulary, fidelity
+>   decisions, and validation — `TriggerEditor`/`ConditionEditor` reused verbatim, the action config logic
+>   moved into `action-config-editor.tsx` — but presented as a clickable WHEN→IF→THEN flow canvas with
+>   drag-to-reorder + insert-anywhere + zoom, edited via a right-hand inspector. The List / detail / runs /
+>   nav bullets are unchanged.
 
 - ☑ **Platform-level, full-page routes** — `/automations` (list), `/new`, `/[id]` (detail), `/[id]/edit`,
   `/[id]/runs`, `/[id]/runs/[runId]`. NOT a module manifest (`ModuleManifest.id` excludes `'platform'`)
@@ -987,3 +1073,27 @@ provisionDefaults` on `module.activated` for `email`; placed at the api-rest com
   pre-change HEAD files** (verified by reverting condition.ts/evaluate.ts and re-running) — a flaky
   `delaySeconds: 0` resume timing issue someone introduced when the suite grew 35→39, not this slice. Worth a
   separate look. Nothing committed.
+- **2026-06-11 (cont.)** — **G-UI v2: the builder is now a MAP + INSPECTOR editor (user-driven redesign).**
+  The user called the stacked-form builder dated ("looks like 2001 … a bunch of cards") and asked for a
+  proper pipeline editor that **matches the site/email Builder**. Explored the Builder shell (three-pane:
+  Layers + Canvas + Inspector, selection lifted into one object, no Context), then — because automations are
+  SHALLOW (trigger + conditions + a few actions, not a deep tree) — collapsed it to the **two panes the user
+  picked**: a flow canvas that IS the map + an inspector. Sequence of decisions (all the user's): considered a
+  Make-style 2D node canvas and TRUE fan-out (parallel branches) → user reasoned to **stay linear** (Zapier is
+  linear; the engine model is linear) but demand **top-notch drag-and-drop**; insert-anywhere + canvas zoom +
+  **versioning** added as requirements. Built: `automation-editor.css` (`.ax-*` chrome mirroring `.bx-*`),
+  `_lib/flow.ts` (node-id model + trigger/condition/action summaries + icon keys) + `node-icons.tsx`,
+  `flow-canvas.tsx` (the spine; **dnd-kit `DragOverlay`** whole-card reorder — 6px activation so click still
+  selects, Space-lift/Enter-select keyboard, auto-scroll, live renumber — + insert-above affordance on each
+  step + end add, new step lands SELECTED), `inspector-primitives.tsx` (Card/Field/PanelHead/Segmented =
+  `.bx-*` siblings), `action-config-editor.tsx` (the per-action type+config, extracted from the deleted
+  `action-editor.tsx`), `inspector.tsx` (selection-driven; reuses `TriggerEditor`/`ConditionEditor` verbatim),
+  `automation-editor.tsx` (shell: toolbar + 2-pane + all state + create/update submit + **zoom** 50–150% /
+  ⌘-wheel / persisted, overlay outside the scaled wrapper + sortable transform ÷ zoom). Pages `new` + `[id]/edit`
+  now render it full-bleed; **deleted** `automation-builder.tsx` + `action-editor.tsx`. A pixel-faithful
+  `mockups/automation-editor.html` was built FIRST and browser-verified (light+dark, real tokens) before the
+  React build, at the user's suggestion. **Verify:** dashboard typecheck ✓ + lint ✓ (0 errors; 10 pre-existing
+  warnings elsewhere) + prettier ✓ + **production build ✓** (all 6 `/automations/*` routes). Still on the same
+  G-API (create/update) — no api-rest/engine change. **Live drag/zoom _feel_ not yet run against the authed
+  app** (static gates + mockup only). Saved memory `feedback_no_self_imposed_limits` (user: "don't scope me
+  down — I make the rules"). Nothing committed. **NEXT (committed): versioning** (draft/publish + history).

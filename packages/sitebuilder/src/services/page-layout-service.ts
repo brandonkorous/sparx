@@ -25,7 +25,7 @@ import { withTenant } from '@sparx/db';
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
 import { SitebuilderNotFoundError, SitebuilderValidationError } from '../errors';
-import { getOrCreateConfig } from './_config';
+import { getOrCreatePrimaryConfig } from './_config';
 
 // The transport-facing view of a PageLayout (stable shape across REST/MCP/SA).
 export interface PageLayoutView {
@@ -116,7 +116,7 @@ export function materializeDefault(
 ): Promise<PageLayoutView> {
   const { targetId, key } = MaterializePageLayoutInput.parse(rawInput);
   return withTenant(ctx, async (tx) => {
-    await getOrCreateConfig(tx, ctx.tenantId);
+    await getOrCreatePrimaryConfig(tx, ctx.tenantId);
     const layout = await getOrCreatePageLayout(
       tx,
       ctx.tenantId,
@@ -217,7 +217,7 @@ export function instantiate(ctx: ServiceContext, rawInput: unknown): Promise<Pag
       );
     }
 
-    await getOrCreateConfig(tx, ctx.tenantId);
+    await getOrCreatePrimaryConfig(tx, ctx.tenantId);
     // Empty-trimmed-string fallbacks (a blank name/key falls back). The explicit
     // length guard keeps `??` semantics off the table — `??` would keep `''`.
     const trimmedName = input.name?.trim();

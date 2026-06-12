@@ -40,26 +40,26 @@ model Domain {
   isCanonical       Boolean   @default(false) @map("is_canonical")
 
   // Registrar columns — populated only for type='purchased' (docs/24 §7).
-  registrar          String?   @db.VarChar(50)
-  registrarOrderId   String?   @map("registrar_order_id") @db.VarChar(255)
-  registeredAt       DateTime? @map("registered_at") @db.Timestamptz
-  expiresAt          DateTime? @map("expires_at") @db.Timestamptz
-  autoRenew          Boolean   @default(true) @map("auto_renew")
-  whoisPrivacy       Boolean   @default(false) @map("whois_privacy")
-  renewalPriceCents  Int?      @map("renewal_price_cents")
+  registrar            String?   @db.VarChar(50)
+  registrarOrderId     String?   @map("registrar_order_id") @db.VarChar(255)
+  registeredAt         DateTime? @map("registered_at") @db.Timestamptz
+  expiresAt            DateTime? @map("expires_at") @db.Timestamptz
+  autoRenew            Boolean   @default(true) @map("auto_renew")
+  whoisPrivacy         Boolean   @default(false) @map("whois_privacy")
+  renewalPriceCents    Int?      @map("renewal_price_cents")
   // DKIM keypair generated at purchase time (docs/24 §3). Public key goes into
   // the DKIM TXT record; private key is kept for signing outbound email.
-  dkimPublicKey      String?   @map("dkim_public_key") @db.Text
-  dkimPrivateKey     String?   @map("dkim_private_key") @db.Text
+  dkimPublicKey        String?   @map("dkim_public_key") @db.Text
+  dkimPrivateKey       String?   @map("dkim_private_key") @db.Text
   // Renewal reminder thresholds already notified: '30d', '14d', '7d'. The
   // domain-worker's nightly cron checks this before sending to avoid duplicates.
-  renewalRemindersSent String[] @default([]) @map("renewal_reminders_sent")
+  renewalRemindersSent String[]  @default([]) @map("renewal_reminders_sent")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  property        Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property        Property         @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   domainPurchases DomainPurchase[]
 
   @@index([tenantId])
@@ -79,19 +79,19 @@ model DomainPurchase {
   // FQDN denormalised — survives the domain row being deleted after a transfer.
   domain   String @db.VarChar(255)
 
-  registrar              String  @default("godaddy") @db.VarChar(50)
-  registrarOrderId       String? @map("registrar_order_id") @db.VarChar(255)
+  registrar             String  @default("godaddy") @db.VarChar(50)
+  registrarOrderId      String? @map("registrar_order_id") @db.VarChar(255)
   // Null until Stripe billing is wired; set to a mock value during the stub phase.
-  stripePaymentIntentId  String? @map("stripe_payment_intent_id") @db.VarChar(255)
-  amountCents            Int     @map("amount_cents")
-  years                  Int     @default(1) @db.SmallInt
-  type                   String  @default("registration") @db.VarChar(20)
-  status                 String  @default("pending") @db.VarChar(20)
+  stripePaymentIntentId String? @map("stripe_payment_intent_id") @db.VarChar(255)
+  amountCents           Int     @map("amount_cents")
+  years                 Int     @default(1) @db.SmallInt
+  type                  String  @default("registration") @db.VarChar(20)
+  status                String  @default("pending") @db.VarChar(20)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   // Soft FK to domains — null if the domain row was removed post-transfer.
   domainRow Domain? @relation(fields: [domain], references: [host])
 

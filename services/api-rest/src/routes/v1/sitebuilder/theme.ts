@@ -13,7 +13,7 @@ import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import {
   requireSitebuilderModule,
-  toSitebuilderContext,
+  toSitebuilderPropertyContext,
 } from '../../../lib/sitebuilder-context.js';
 import { resolveThemePreset } from '../../../lib/marketplace/resolve.js';
 
@@ -27,14 +27,14 @@ const themeRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/sitebuilder/config', async (request) => {
     requireRole(request, 'viewer');
     await requireSitebuilderModule(request);
-    const config = await themeService.getConfig(toSitebuilderContext(request));
+    const config = await themeService.getConfig(await toSitebuilderPropertyContext(request));
     return ok(config);
   });
 
   app.put('/v1/sitebuilder/config/theme', async (request) => {
     requireRole(request, 'editor');
     await requireSitebuilderModule(request);
-    const ctx = toSitebuilderContext(request);
+    const ctx = await toSitebuilderPropertyContext(request);
     // The route owns marketplace resolution (artifact lives in storage, docs/85
     // §7); the service keeps validation + the code-foundation fallback.
     const config = await themeService.selectTheme(ctx, request.body, {
@@ -46,7 +46,10 @@ const themeRoutes: FastifyPluginAsync = (app) => {
   app.patch('/v1/sitebuilder/config/settings', async (request) => {
     requireRole(request, 'editor');
     await requireSitebuilderModule(request);
-    const config = await themeService.updateSettings(toSitebuilderContext(request), request.body);
+    const config = await themeService.updateSettings(
+      await toSitebuilderPropertyContext(request),
+      request.body
+    );
     return ok(config);
   });
 

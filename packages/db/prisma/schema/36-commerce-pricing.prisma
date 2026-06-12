@@ -128,30 +128,30 @@ model ContractPrice {
 //   flat          → dollars added to cost (15.00 = "+$15")
 //   matrix        → null; bands[] carries per-band {method,value}
 model MarkupRule {
-  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String  @map("tenant_id") @db.Uuid
-  name     String  @db.VarChar(255)
-  method   String  @db.VarChar(20) // percentage | multiplier | flat | margin_target | matrix
-  value    Decimal? @db.Decimal(12, 4)
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String   @map("tenant_id") @db.Uuid
+  name              String   @db.VarChar(255)
+  method            String   @db.VarChar(20) // percentage | multiplier | flat | margin_target | matrix
+  value             Decimal? @db.Decimal(12, 4)
   // Cost-band matrix (docs/48 §3.4): ordered [{ costMinCents, costMaxCents, method, value }];
   // first band whose range contains the cost wins. Empty for non-matrix methods.
-  bands    Json    @default("[]")
+  bands             Json     @default("[]")
   // Which cost to read (docs/48 §3.2). Phase 1 supports variant_cost + supplier_cost.
-  costBasis String @default("variant_cost") @map("cost_basis") @db.VarChar(20)
+  costBasis         String   @default("variant_cost") @map("cost_basis") @db.VarChar(20)
   // Rounding strategy (docs/48 §3.3): { strategy:'none'|'nearest'|'charm', precisionCents?, endingCents? }
-  rounding Json    @default("{}")
+  rounding          Json     @default("{}")
   // Floor — raise price if it violates either guard.
-  floorProfitCents Int?     @map("floor_profit_cents")
-  floorMargin      Decimal? @map("floor_margin") @db.Decimal(5, 2) // percent number, 30.00 = 30%
+  floorProfitCents  Int?     @map("floor_profit_cents")
+  floorMargin       Decimal? @map("floor_margin") @db.Decimal(5, 2) // percent number, 30.00 = 30%
   // Ceiling — cap the result. ceiling_src: none | compare_at | msrp | fixed.
-  ceilingSrc       String   @default("none") @map("ceiling_src") @db.VarChar(20)
-  ceilingValueCents Int?    @map("ceiling_value_cents")
+  ceilingSrc        String   @default("none") @map("ceiling_src") @db.VarChar(20)
+  ceilingValueCents Int?     @map("ceiling_value_cents")
   // Application point (docs/48 §3.5): catalog | document | both.
-  appliesTo String  @default("catalog") @map("applies_to") @db.VarChar(10)
+  appliesTo         String   @default("catalog") @map("applies_to") @db.VarChar(10)
   // Scope (docs/48 §3.5): { type:'all'|'collection'|'product_type'|'vendor'|'products', ids?, value? }.
-  scope    Json    @default("{}")
-  priority Int     @default(0)
-  isActive Boolean @default(true) @map("is_active")
+  scope             Json     @default("{}")
+  priority          Int      @default(0)
+  isActive          Boolean  @default(true) @map("is_active")
 
   // Cost-driven recompute (docs/48 §8). When a bound variant's cost moves, the
   // markup-recompute-worker re-derives the list price. `recomputeMode`:
@@ -166,9 +166,9 @@ model MarkupRule {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant           Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  variants         ProductVariant[]
-  recomputeReviews MarkupRecomputeReview[]
+  tenant                  Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variants                ProductVariant[]
+  recomputeReviews        MarkupRecomputeReview[]
   // Invoicing line types that default to this rule (docs/87 §5).
   billingLineTypeDefaults BillingDocumentLineType[] @relation("LineTypeDefaultMarkupRule")
 

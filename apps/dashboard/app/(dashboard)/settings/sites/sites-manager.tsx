@@ -20,6 +20,7 @@ import {
 } from '@sparx/ui';
 import { CheckCircle2, Globe, Plus, RefreshCw, Star, Trash2 } from 'lucide-react';
 import type { Domain, Property } from '@/lib/sites';
+import { resolveActiveProperty } from '@/lib/site-scope';
 import {
   connectDomain,
   createSite,
@@ -55,15 +56,9 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
   const [creating, setCreating] = React.useState(false);
   const [builderUpsell, setBuilderUpsell] = React.useState(false);
 
-  // The site the Builder is currently authoring: the cookie's id if it still
-  // names a property, else the primary (mirrors lib/sites.getActiveProperty).
-  const primary = properties.find((p) => p.isPrimary);
-  const effectiveActiveId =
-    (activePropertyId && properties.some((p) => p.id === activePropertyId)
-      ? activePropertyId
-      : undefined) ??
-    primary?.id ??
-    properties[0]?.id;
+  // The site the Builder is currently authoring (cookie id → primary → first) —
+  // the shared rule, same as the breadcrumb switcher + every list page.
+  const effectiveActiveId = resolveActiveProperty(properties, activePropertyId)?.id;
 
   const domainsByProperty = React.useMemo(() => {
     const map = new Map<string, Domain[]>();

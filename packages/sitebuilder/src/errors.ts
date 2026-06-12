@@ -7,6 +7,18 @@ import type { TenantContext } from '@sparx/db';
 
 export type ServiceContext = TenantContext;
 
+/**
+ * A ServiceContext scoped to a specific web PROPERTY (site). Required by the
+ * per-property sitebuilder services — the applied-theme draft/publish/schedule
+ * lifecycle (docs/49 Phase 6). `propertyId` is application-tier scoping, NOT a
+ * security boundary (tenant_id + RLS is). Tenant-wide services (the static theme
+ * catalog, the saved-theme LIBRARY CRUD, the legacy section tier) keep the base
+ * ServiceContext. Mirrors packages/builder/src/errors.ts.
+ */
+export interface PropertyContext extends TenantContext {
+  propertyId: string;
+}
+
 export class SitebuilderNotFoundError extends Error {
   readonly code = 'NOT_FOUND' as const;
   readonly entityType: string;

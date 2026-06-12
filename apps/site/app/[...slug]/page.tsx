@@ -4,7 +4,7 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { resolveTenant } from '@/lib/tenant';
+import { resolveActivePropertySlug, resolveTenant } from '@/lib/tenant';
 import { getPageBySlug } from '@/lib/content';
 import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
@@ -143,9 +143,10 @@ export default async function StorefrontPage({ params, searchParams }: SlugPageP
     );
   }
 
+  const activePropertySlug = (await resolveActivePropertySlug()) ?? undefined;
   const [page, snapshot] = await Promise.all([
     getPageBySlug(tenant.slug, slug, previewToken ? { previewToken } : {}),
-    getPublishedSite(tenant.slug, sp.sparxSitePreview),
+    getPublishedSite(tenant.slug, sp.sparxSitePreview, activePropertySlug),
   ]);
   const sections = sectionsForPage(snapshot, slug);
 

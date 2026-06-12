@@ -216,7 +216,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // — header/footer/announcement — in the editor preview, not just published.
   const hdrs = await headers();
   const sitePreviewToken = hdrs.get('x-sparx-site-preview') ?? undefined;
-  const snapshot = tenant ? await getPublishedSite(tenant.slug, sitePreviewToken) : null;
+  const snapshot = tenant
+    ? await getPublishedSite(tenant.slug, sitePreviewToken, activePropertySlug ?? undefined)
+    : null;
 
   // A published Builder layout (docs/45) is the chrome shell, and it WINS over
   // the legacy header/footer when present — the additive "Builder owns it, else

@@ -9,9 +9,9 @@ model B2BAccount {
   tenantId      String  @map("tenant_id") @db.Uuid
   assignedRepId String? @map("assigned_rep_id") @db.Uuid
 
-  companyName String  @map("company_name") @db.VarChar(255)
-  taxId       String? @map("tax_id") @db.VarChar(64)
-  website     String? @db.VarChar(2048)
+  companyName   String  @map("company_name") @db.VarChar(255)
+  taxId         String? @map("tax_id") @db.VarChar(64)
+  website       String? @db.VarChar(2048)
   // Legacy free-text tier name kept during the FK migration window.
   pricingTier   String? @map("pricing_tier") @db.VarChar(63)
   pricingTierId String? @map("pricing_tier_id") @db.Uuid
@@ -50,12 +50,12 @@ model B2BAccount {
   taxExemptions    TaxExemption[]
 
   // B2B module inverse relations
-  productOverrides   B2bAccountProductOverride[]
-  invoices           B2bInvoice[]
-  billingDocuments   BillingDocument[]
-  contacts           B2bAccountContact[]
-  approvalRules      PurchaseApprovalRule[]
-  appointments       ServiceAppointment[]
+  productOverrides B2bAccountProductOverride[]
+  invoices         B2bInvoice[]
+  billingDocuments BillingDocument[]
+  contacts         B2bAccountContact[]
+  approvalRules    PurchaseApprovalRule[]
+  appointments     ServiceAppointment[]
 
   @@index([tenantId, status])
   @@index([tenantId, assignedRepId])

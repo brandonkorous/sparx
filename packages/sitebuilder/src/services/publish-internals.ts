@@ -171,9 +171,14 @@ export async function readDefinitionsForSections(
   }));
 }
 
-async function nextVersionNumber(tx: TxClient, tenantId: string): Promise<number> {
+// Version numbers run per (tenant, PROPERTY) — each site has its own history.
+async function nextVersionNumber(
+  tx: TxClient,
+  tenantId: string,
+  propertyId: string
+): Promise<number> {
   const last = await tx.siteVersion.findFirst({
-    where: { tenantId },
+    where: { tenantId, propertyId },
     orderBy: { versionNumber: 'desc' },
     select: { versionNumber: true },
   });
@@ -182,18 +187,20 @@ async function nextVersionNumber(tx: TxClient, tenantId: string): Promise<number
 
 // Write-through: project the compiled LIGHT tokens onto the commerce-owned
 // StorefrontTheme row so the storefront's existing token read path keeps
-// working. Never adds columns — only sets the mapped subset.
+// working. Per-property (docs/49 Phase 6) — each site's publish writes its own
+// row. Never adds columns — only sets the mapped subset.
 async function writeThrough(
   tx: TxClient,
   tenantId: string,
+  propertyId: string,
   lightTokens: Record<string, string>
 ): Promise<void> {
   const columns = toStorefrontThemeColumns(
     lightTokens as Parameters<typeof toStorefrontThemeColumns>[0]
   );
   await tx.storefrontTheme.upsert({
-    where: { tenantId },
-    create: { tenantId, ...columns },
+    where: { tenantId_propertyId: { tenantId, propertyId } },
+    create: { tenantId, propertyId, ...columns },
     update: columns,
   });
 }
@@ -205,11 +212,13 @@ async function writeThrough(
  */
 export async function publishWithinTx(
   tx: TxClient,
-  args: { tenantId: string; userId: string | null; note?: string }
+  args: { tenantId: string; propertyId: string; userId: string | null; note?: string }
 ): Promise<SiteVersion> {
-  const { tenantId, userId, note } = args;
-  const config = await tx.siteConfig.findUnique({ where: { tenantId } });
-  if (!config) throw new SitebuilderNotFoundError('SiteConfig', tenantId);
+  const { tenantId, propertyId, userId, note } = args;
+  const config = await tx.siteConfig.findUnique({
+    where: { tenantId_propertyId: { tenantId, propertyId } },
+  });
+  if (!config) throw new SitebuilderNotFoundError('SiteConfig', `${tenantId}/${propertyId}`);
 
   const settings = (config.draftSettings ?? {}) as {
     tokens?: { light?: Record<string, string>; dark?: Record<string, string> };
@@ -226,11 +235,12 @@ export async function publishWithinTx(
   // Pin the custom-section definitions this draft references so the published
   // snapshot renders them deterministically (docs/38 Phase C).
   const definitions = await readDefinitionsForSections(tx, draft.sections);
-  const versionNumber = await nextVersionNumber(tx, tenantId);
+  const versionNumber = await nextVersionNumber(tx, tenantId, propertyId);
 
   const version = await tx.siteVersion.create({
     data: {
       tenantId,
+      propertyId,
       versionNumber,
       themeKey: config.themeKey,
       appearancePolicy: config.appearancePolicy,
@@ -245,11 +255,11 @@ export async function publishWithinTx(
   });
 
   await tx.siteConfig.update({
-    where: { tenantId },
+    where: { tenantId_propertyId: { tenantId, propertyId } },
     data: { publishedVersionId: version.id },
   });
 
-  await writeThrough(tx, tenantId, compiled.light);
+  await writeThrough(tx, tenantId, propertyId, compiled.light);
 
   await writeAuditLog({
     tx,
@@ -286,13 +296,14 @@ function resolveTargetKey(s: SectionSnapshot): { targetId: string; key: string; 
 export async function materializeWithinTx(
   tx: TxClient,
   tenantId: string,
+  propertyId: string,
   version: SiteVersion
 ): Promise<SiteConfig> {
   const sections = (version.sectionsSnapshot ?? []) as unknown as SectionSnapshot[];
   const layout = (version.layoutSnapshot ?? []) as unknown as LayoutSnapshot[];
 
   const config = await tx.siteConfig.update({
-    where: { tenantId },
+    where: { tenantId_propertyId: { tenantId, propertyId } },
     data: {
       themeKey: version.themeKey,
       appearancePolicy: version.appearancePolicy,

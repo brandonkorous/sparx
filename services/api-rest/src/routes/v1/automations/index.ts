@@ -17,6 +17,10 @@
 //   DELETE /v1/automations/:id              → delete
 //   POST   /v1/automations/:id/clone        → fork an editable copy
 //   POST   /v1/automations/:id/status       → set status (draft|active|paused)
+//   GET    /v1/automations/:id/versions     → published-version history
+//   POST   /v1/automations/:id/publish      → promote the staged draft → next version
+//   POST   /v1/automations/:id/restore      → restore a version into the draft
+//   POST   /v1/automations/:id/discard-draft→ throw away the staged draft
 //   GET    /v1/automations/:id/runs         → recent run history
 //   GET    /v1/automations/:id/runs/:runId  → one run + its steps (gate_log audit)
 
@@ -27,10 +31,14 @@ import {
   cloneAutomation,
   createAutomation,
   deleteAutomation,
+  discardDraft,
   getAutomation,
   getAutomationRun,
   listAutomationRuns,
   listAutomations,
+  listAutomationVersions,
+  publishAutomation,
+  restoreAutomationVersion,
   setAutomationStatus,
   updateAutomation,
   type ServiceCtx,
@@ -38,6 +46,8 @@ import {
 import {
   CloneAutomationInput,
   CreateAutomationInput,
+  PublishAutomationInput,
+  RestoreAutomationVersionInput,
   UpdateAutomationInput,
 } from '@sparx/automation-schemas';
 import { ok } from '@sparx/api-core/envelope';
@@ -119,6 +129,35 @@ const automationRoutes: FastifyPluginAsync = (app) => {
     const { id } = IdParam.parse(request.params);
     const { status } = StatusBody.parse(request.body);
     return ok(await setAutomationStatus(ctx, id, status));
+  });
+
+  // ── versioning (docs/84 Slice G-versioning) ──
+  app.get('/v1/automations/:id/versions', async (request) => {
+    const ctx = ctxFor(request, 'viewer');
+    const { id } = IdParam.parse(request.params);
+    // 404 the automation itself so an empty history isn't confused with a bad id.
+    if (!(await getAutomation(ctx, id))) throw new AutomationNotFoundError(id);
+    return ok(await listAutomationVersions(ctx, id));
+  });
+
+  app.post('/v1/automations/:id/publish', async (request) => {
+    const ctx = ctxFor(request, 'editor');
+    const { id } = IdParam.parse(request.params);
+    const { note } = PublishAutomationInput.parse(request.body ?? {});
+    return ok(await publishAutomation(ctx, id, { note }));
+  });
+
+  app.post('/v1/automations/:id/restore', async (request) => {
+    const ctx = ctxFor(request, 'editor');
+    const { id } = IdParam.parse(request.params);
+    const { version } = RestoreAutomationVersionInput.parse(request.body);
+    return ok(await restoreAutomationVersion(ctx, id, version));
+  });
+
+  app.post('/v1/automations/:id/discard-draft', async (request) => {
+    const ctx = ctxFor(request, 'editor');
+    const { id } = IdParam.parse(request.params);
+    return ok(await discardDraft(ctx, id));
   });
 
   app.get('/v1/automations/:id/runs', async (request) => {

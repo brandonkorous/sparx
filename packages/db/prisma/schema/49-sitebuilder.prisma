@@ -11,9 +11,17 @@
 // Tenant-scoped + FORCE RLS so a callsite that forgets withTenant() returns
 // nothing rather than leaking cross-tenant site config.
 
-// One row per tenant — the working draft + pointer to the live version.
+// One row per (tenant, PROPERTY) — each site's working draft + pointer to its
+// live version (docs/49 Phase 6). Pre-Phase-6 this was one row per tenant; the
+// migration adds property_id, backfills to the primary, and swaps the PK to the
+// composite (mirroring builder_layouts going per-property). property_id is NOT a
+// security boundary — tenant_id (the RLS GUC) is.
 model SiteConfig {
-  tenantId String @id @map("tenant_id") @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // A property has exactly one config, so property_id is globally unique (a
+  // property belongs to one tenant) — @unique makes the Property↔SiteConfig
+  // back-relation one-to-one.
+  propertyId String @unique @map("property_id") @db.Uuid
 
   themeKey         String @default("apex") @map("theme_key") @db.VarChar(63)
   // light-only | dark-only | auto | toggle
@@ -28,8 +36,10 @@ model SiteConfig {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant           Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property         Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   publishedVersion SiteVersion? @relation("PublishedVersion", fields: [publishedVersionId], references: [id], onDelete: SetNull)
 
+  @@id([tenantId, propertyId])
   @@map("sitebuilder_configs")
 }
 
@@ -38,8 +48,11 @@ model SiteConfig {
 // exact { light, dark } maps so a rollback re-writes StorefrontTheme
 // deterministically without recompiling.
 model SiteVersion {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) this version belongs to (docs/49 Phase 6). Version
+  // numbers run per (tenant, property); each site has its own publish history.
+  propertyId String @map("property_id") @db.Uuid
 
   versionNumber    Int    @map("version_number")
   themeKey         String @map("theme_key") @db.VarChar(63)
@@ -61,11 +74,12 @@ model SiteVersion {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
   tenant            Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property          Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   // Back-relation for SiteConfig.publishedVersion (the currently-live snapshot).
   publishedByConfig SiteConfig? @relation("PublishedVersion")
 
-  @@unique([tenantId, versionNumber])
-  @@index([tenantId, createdAt(sort: Desc)])
+  @@unique([tenantId, propertyId, versionNumber])
+  @@index([tenantId, propertyId, createdAt(sort: Desc)])
   @@map("sitebuilder_versions")
 }
 
@@ -151,8 +165,12 @@ model SiteLayoutBlock {
 // via a SECURITY DEFINER function and runs publish-service.publishNow per
 // due tenant.
 model SitePublishSchedule {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) this scheduled publish targets (docs/49 Phase 6). The
+  // cross-tenant scan stays keyed by (status, scheduled_at); the per-row publish
+  // reads property_id off the schedule to scope the snapshot to that site.
+  propertyId String @map("property_id") @db.Uuid
 
   scheduledAt DateTime @map("scheduled_at") @db.Timestamptz
   // pending | published | cancelled | failed
@@ -172,11 +190,15 @@ model SitePublishSchedule {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  theme  SiteTheme? @relation(fields: [themeId], references: [id], onDelete: SetNull)
+  tenant   Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  theme    SiteTheme? @relation(fields: [themeId], references: [id], onDelete: SetNull)
 
   @@index([status, scheduledAt])
-  @@index([tenantId, scheduledAt(sort: Desc)])
+  // Explicit name — the default (table + all three columns + _idx) exceeds
+  // Postgres's 63-char identifier limit and would truncate (drift risk; cf.
+  // builder_page_assignments_property_record_item_key).
+  @@index([tenantId, propertyId, scheduledAt(sort: Desc)], map: "sitebuilder_schedules_tenant_property_scheduled_idx")
   @@map("sitebuilder_publish_schedules")
 }
 

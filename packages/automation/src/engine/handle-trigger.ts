@@ -84,6 +84,7 @@ export async function handleTrigger(
             status: 'running',
             cursorIndex: 0,
             actionsTotal,
+            automationVersion: a.version,
           },
           update: {}, // already enqueued — at-least-once redelivery is a no-op
         });

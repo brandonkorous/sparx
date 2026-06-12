@@ -13,22 +13,23 @@ import { withTenant } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishSitebuilderEvent } from '../events';
-import type { ServiceContext } from '../errors';
+import type { PropertyContext, ServiceContext } from '../errors';
 import { SitebuilderNotFoundError } from '../errors';
 import { getOrCreateConfig } from './_config';
 import { publishWithinTx } from './publish-internals';
 import { applyThemeBrandWithinTx } from './saved-theme-service';
 
 export async function schedule(
-  ctx: ServiceContext,
+  ctx: PropertyContext,
   rawInput: unknown
 ): Promise<SitePublishSchedule> {
   const input = ScheduleInput.parse(rawInput);
   const created = await withTenant(ctx, async (tx) => {
-    await getOrCreateConfig(tx, ctx.tenantId);
+    await getOrCreateConfig(tx, ctx.tenantId, ctx.propertyId);
     const row = await tx.sitePublishSchedule.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: ctx.propertyId,
         scheduledAt: new Date(input.scheduledAt),
         status: 'pending',
         note: input.note ?? null,
@@ -59,9 +60,12 @@ export async function schedule(
   return created;
 }
 
-export function listSchedules(ctx: ServiceContext): Promise<SitePublishSchedule[]> {
+export function listSchedules(ctx: PropertyContext): Promise<SitePublishSchedule[]> {
   return withTenant(ctx, (tx) =>
-    tx.sitePublishSchedule.findMany({ orderBy: { scheduledAt: 'desc' } })
+    tx.sitePublishSchedule.findMany({
+      where: { propertyId: ctx.propertyId },
+      orderBy: { scheduledAt: 'desc' },
+    })
   );
 }
 
@@ -125,7 +129,10 @@ export async function processDueSchedule(
       const schedule = await tx.sitePublishSchedule.findUnique({ where: { id: scheduleId } });
       if (schedule?.status !== 'pending') return 'skipped';
 
-      const config = await getOrCreateConfig(tx, ctx.tenantId);
+      // The schedule carries its target site (docs/49 Phase 6) — publish scopes to
+      // that property, not the tenant's primary.
+      const propertyId = schedule.propertyId;
+      const config = await getOrCreateConfig(tx, ctx.tenantId, propertyId);
 
       // Seasonal/holiday swap (docs/36): if the schedule points at a saved theme,
       // apply it to the draft (theme_key + presentation) before snapshotting, so
@@ -135,7 +142,7 @@ export async function processDueSchedule(
         if (theme) {
           const draft = (config.draftSettings ?? {}) as Record<string, unknown>;
           await tx.siteConfig.update({
-            where: { tenantId: ctx.tenantId },
+            where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId } },
             data: {
               themeKey: theme.basePresetKey,
               draftSettings: {
@@ -153,6 +160,7 @@ export async function processDueSchedule(
 
       const version = await publishWithinTx(tx, {
         tenantId: ctx.tenantId,
+        propertyId,
         userId: null,
         note: schedule.note ?? `Scheduled publish ${schedule.scheduledAt.toISOString()}`,
       });

@@ -36,8 +36,15 @@ model StorefrontSettings {
 // logo_media_id/logo_dark_media_id/favicon_media_id) were removed in migration
 // 20260610000200 once every reader cut over to brand.
 
+// One row per (tenant, PROPERTY) — the sitebuilder publish write-through target,
+// now per-site (docs/49 Phase 6). Each site's publish compiles its own light
+// tokens here; the migration adds property_id, backfills to the primary, and
+// swaps the PK to the composite. property_id is NOT a security boundary.
 model StorefrontTheme {
-  tenantId String @id @map("tenant_id") @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  // One theme per property → property_id is globally unique, making the
+  // Property↔StorefrontTheme back-relation one-to-one.
+  propertyId String @unique @map("property_id") @db.Uuid
 
   colorBackground String? @map("color_background") @db.VarChar(7)
   colorMuted      String? @map("color_muted") @db.VarChar(7)
@@ -46,7 +53,9 @@ model StorefrontTheme {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
+  @@id([tenantId, propertyId])
   @@map("commerce_storefront_themes")
 }

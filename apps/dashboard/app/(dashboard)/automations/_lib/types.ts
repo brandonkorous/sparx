@@ -15,6 +15,19 @@ import type {
   StepStatus,
 } from '@sparx/automation-schemas';
 
+/** The staged, unpublished edit document (the `draft` JSONB column over the
+ *  wire). Same column-form as the live row, parsed back with the same
+ *  trigger/condition/action parsers. */
+export interface AutomationDraftDto {
+  name: string;
+  description: string | null;
+  triggerType: string;
+  triggerConfig: unknown;
+  conditions: unknown;
+  actions: unknown;
+  maxDepth: number;
+}
+
 export interface AutomationDto {
   id: string;
   tenantId: string;
@@ -31,12 +44,34 @@ export interface AutomationDto {
   locked: boolean;
   clonedFrom: string | null;
   maxDepth: number;
+  // Versioning (docs/84 Slice G-versioning).
+  version: number;
+  publishedAt: string | null;
+  publishedBy: string | null;
+  draft: AutomationDraftDto | null;
   runCount: number;
   errorCount: number;
   lastRunAt: string | null;
   lastErrorAt: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+/** One immutable published-version snapshot (the History panel row). */
+export interface AutomationVersionDto {
+  id: string;
+  automationId: string;
+  version: number;
+  name: string;
+  description: string | null;
+  triggerType: string;
+  triggerConfig: unknown;
+  conditions: unknown;
+  actions: unknown;
+  maxDepth: number;
+  note: string | null;
+  publishedAt: string;
+  publishedBy: string | null;
 }
 
 export interface RunDto {
@@ -50,6 +85,8 @@ export interface RunDto {
   errorMessage: string | null;
   triggerEvent: unknown;
   dedupeKey: string;
+  /** Published version that was live when this run was created (null pre-versioning). */
+  automationVersion: number | null;
   startedAt: string;
   completedAt: string | null;
 }

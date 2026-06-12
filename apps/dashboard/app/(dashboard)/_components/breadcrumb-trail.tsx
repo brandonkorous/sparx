@@ -29,6 +29,7 @@ import {
 import { Check, ChevronDown, Globe, LogOut, Settings as SettingsIcon } from 'lucide-react';
 import { findSectionByPath, getManifestForPath, moduleManifests } from '../_shell/registry';
 import type { Property } from '@/lib/sites';
+import { resolveActiveProperty } from '@/lib/site-scope';
 import { setActiveSite } from '../settings/sites/actions';
 
 // Workspace > Site > Module > Section > Page
@@ -74,19 +75,6 @@ export interface BreadcrumbTrailProps {
   activePropertyId?: string | null;
 }
 
-/** The active site for the switcher: the cookie's id if it still names one of
- *  the tenant's sites, else the primary (mirrors lib/sites.getActiveProperty). */
-function resolveActiveSite(
-  sites: Property[],
-  activePropertyId: string | null | undefined
-): Property | undefined {
-  const byCookie =
-    activePropertyId && sites.some((s) => s.id === activePropertyId)
-      ? sites.find((s) => s.id === activePropertyId)
-      : undefined;
-  return byCookie ?? sites.find((s) => s.isPrimary) ?? sites[0];
-}
-
 export function BreadcrumbTrail({
   tenantName,
   enabledModules,
@@ -103,7 +91,7 @@ export function BreadcrumbTrail({
   // (packages/auth sign-up), so this is effectively always shown. Even when the
   // primary's name echoes the workspace name, we keep the crumb: the duplicate
   // reads as "workspace → site", and it stays a live switcher.
-  const activeSite = sites.length > 0 ? resolveActiveSite(sites, activePropertyId) : undefined;
+  const activeSite = sites.length > 0 ? resolveActiveProperty(sites, activePropertyId) : undefined;
 
   const segments: TrailSegment[] = [{ kind: 'tenant', label: tenantName, href: '/' }];
   if (activeSite) {

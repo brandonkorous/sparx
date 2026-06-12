@@ -1,17 +1,16 @@
-// Edit an automation (docs/84 Slice G-UI). Full-page builder pre-filled from the
-// stored row (parsed back into the rich rule document via the canonical schema
-// parsers). Editor-gated; a LOCKED rule is bounced to its detail (the service
-// rejects edits — the path is "Duplicate to edit").
+// Edit an automation (docs/84 Slice G-UI). Full-bleed map + inspector editor,
+// pre-filled from the stored row (parsed back into the rich rule document via the
+// canonical schema parsers). Editor-gated; a LOCKED rule is bounced to its detail
+// (the service rejects edits — the path is "Duplicate to edit").
 
 import { notFound, redirect } from 'next/navigation';
-import { Workflow } from 'lucide-react';
 import { listEnabledModules, requireSession } from '@sparx/auth';
-import { Container, PageHeader, Stack } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import type { AutomationDto } from '../../_lib/types';
 import { parseActions, parseConditions, parseTrigger } from '../../_lib/presentation';
-import { AutomationBuilder, type BuilderInitial } from '../../_components/automation-builder';
+import { AutomationEditor, type EditorInitial } from '../../_components/automation-editor';
+import '../../automation-editor.css';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,29 +38,26 @@ export default async function EditAutomationPage({ params }: PageProps) {
 
   const enabledModules = await listEnabledModules(session.user.tenantId);
 
-  const initial: BuilderInitial = {
+  // Editing works on the DRAFT if one is staged (Builder-style draft → publish),
+  // else the live published document. The live def keeps running until publish.
+  const doc = automation.draft ?? automation;
+
+  const initial: EditorInitial = {
     id: automation.id,
-    name: automation.name,
-    description: automation.description,
-    trigger: parseTrigger(automation.triggerType, automation.triggerConfig) ?? {
+    name: doc.name,
+    description: doc.description,
+    status: automation.status,
+    version: automation.version,
+    publishedAt: automation.publishedAt,
+    hasDraft: automation.draft !== null,
+    trigger: parseTrigger(doc.triggerType, doc.triggerConfig) ?? {
       kind: 'event',
-      eventType: automation.triggerType,
+      eventType: doc.triggerType,
     },
-    conditions: parseConditions(automation.conditions),
-    actions: parseActions(automation.actions),
-    maxDepth: automation.maxDepth,
+    conditions: parseConditions(doc.conditions),
+    actions: parseActions(doc.actions),
+    maxDepth: doc.maxDepth,
   };
 
-  return (
-    <Container size="lg">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          icon={<Workflow className="h-5 w-5" />}
-          title={`Edit ${automation.name}`}
-          description="Changes take effect on the next trigger. Status is unchanged unless you set it."
-        />
-        <AutomationBuilder enabledModules={enabledModules} initial={initial} />
-      </Stack>
-    </Container>
-  );
+  return <AutomationEditor enabledModules={enabledModules} initial={initial} />;
 }

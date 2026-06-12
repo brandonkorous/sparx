@@ -343,11 +343,16 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       throw badRequest('Reserved tenant.');
     }
 
+    // The active site (docs/49 Phase 6): the StorefrontTheme write-through is now
+    // per-property, so resolve which site this payload reflects (the `?property=`
+    // slug, else the primary) and key the theme read by it.
+    const propertyId = await resolvePublicPropertyId(tenant.id, query.property ?? null);
+
     // Storefront theme + commerce defaults travel with the tenant payload so
-    // the storefront's root layout resolves everything in a single fetch.
-    // Both rows are one-per-tenant (tenantId PK); a missing row means the
-    // tenant hasn't customized, so we fall back to nulls/defaults that the
-    // storefront's token layer interprets as "use the default theme".
+    // the storefront's root layout resolves everything in a single fetch. The
+    // theme row is one-per-(tenant, property); settings stays one-per-tenant. A
+    // missing row means the site hasn't customized, so we fall back to
+    // nulls/defaults the storefront's token layer reads as "use the default theme".
     const [theme, storefront, brand, consent, propertyRow] = await withTenant(
       { tenantId: tenant.id },
       (tx) =>
@@ -356,7 +361,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
           // from the tenant brand below — those StorefrontTheme columns were removed
           // in migration 20260610000200 (docs/30 §6).
           tx.storefrontTheme.findUnique({
-            where: { tenantId: tenant.id },
+            where: { tenantId_propertyId: { tenantId: tenant.id, propertyId } },
             select: {
               colorBackground: true,
               colorMuted: true,

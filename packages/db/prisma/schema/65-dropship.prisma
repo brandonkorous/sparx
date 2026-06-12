@@ -7,24 +7,24 @@
 // DropshipOrder tracks the per-supplier fulfillment groups for a Sparx order.
 
 model DropshipSupplier {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String   @map("tenant_id") @db.Uuid
-  name       String   @db.VarChar(255)
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  name        String    @db.VarChar(255)
   // csv | dsers | spocket | faire | autods | custom
-  type       String   @db.VarChar(20)
+  type        String    @db.VarChar(20)
   // Encrypted credentials bag (API key, secret, etc.) — never log raw.
-  credentials Json    @default("{}")
+  credentials Json      @default("{}")
   // connecting | active | error | disconnected
-  status     String   @default("connecting") @db.VarChar(20)
-  lastSyncAt DateTime? @map("last_sync_at") @db.Timestamptz
+  status      String    @default("connecting") @db.VarChar(20)
+  lastSyncAt  DateTime? @map("last_sync_at") @db.Timestamptz
   // Serialized PricingRule JSON (applied at import time)
-  pricingRule Json?   @map("pricing_rule")
-  notes      String?  @db.Text
-  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
-  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz
+  pricingRule Json?     @map("pricing_rule")
+  notes       String?   @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant         Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   products       DropshipProduct[]
   dropshipOrders DropshipOrder[]
 
@@ -33,28 +33,28 @@ model DropshipSupplier {
 }
 
 model DropshipProduct {
-  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId          String   @map("tenant_id") @db.Uuid
-  supplierId        String   @map("supplier_id") @db.Uuid
-  supplierProductId String   @map("supplier_product_id") @db.VarChar(255)
+  id                String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String @map("tenant_id") @db.Uuid
+  supplierId        String @map("supplier_id") @db.Uuid
+  supplierProductId String @map("supplier_product_id") @db.VarChar(255)
 
-  title       String   @db.VarChar(255)
-  description String?  @db.Text
+  title       String  @db.VarChar(255)
+  description String? @db.Text
   // Normalized image URLs: string[]
-  images      Json     @default("[]")
+  images      Json    @default("[]")
   // Normalized variant array: NormalizedProductVariant[]
-  variants    Json     @default("[]")
+  variants    Json    @default("[]")
 
-  costPriceCents Int   @map("cost_price_cents")
-  msrpCents      Int?  @map("msrp_cents")
+  costPriceCents Int  @map("cost_price_cents")
+  msrpCents      Int? @map("msrp_cents")
 
   // Raw supplier payload retained for debugging / re-parsing.
   raw        Json     @default("{}")
   importedAt DateTime @default(now()) @map("imported_at") @db.Timestamptz
   updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  supplier DropshipSupplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  tenant   Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier DropshipSupplier      @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   links    DropshipProductLink[]
 
   @@unique([tenantId, supplierId, supplierProductId], map: "dropship_products_supplier_product_unique")
@@ -63,19 +63,19 @@ model DropshipProduct {
 }
 
 model DropshipProductLink {
-  id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId          String  @map("tenant_id") @db.Uuid
-  productId         String  @map("product_id") @db.Uuid
-  dropshipProductId String  @map("dropship_product_id") @db.Uuid
-  supplierSku       String  @map("supplier_sku") @db.VarChar(255)
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String   @map("tenant_id") @db.Uuid
+  productId         String   @map("product_id") @db.Uuid
+  dropshipProductId String   @map("dropship_product_id") @db.Uuid
+  supplierSku       String   @map("supplier_sku") @db.VarChar(255)
   // active | discontinued
-  status            String  @default("active") @db.VarChar(20)
+  status            String   @default("active") @db.VarChar(20)
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  product         Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
-  dropshipProduct DropshipProduct  @relation(fields: [dropshipProductId], references: [id], onDelete: Cascade)
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product         Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  dropshipProduct DropshipProduct @relation(fields: [dropshipProductId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, productId, dropshipProductId], map: "dropship_product_link_unique")
   @@index([tenantId, productId])
@@ -84,27 +84,27 @@ model DropshipProductLink {
 }
 
 model DropshipOrder {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId        String   @map("tenant_id") @db.Uuid
-  orderId         String   @map("order_id") @db.Uuid
-  supplierId      String   @map("supplier_id") @db.Uuid
-  supplierOrderId String?  @map("supplier_order_id") @db.VarChar(255)
+  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String  @map("tenant_id") @db.Uuid
+  orderId         String  @map("order_id") @db.Uuid
+  supplierId      String  @map("supplier_id") @db.Uuid
+  supplierOrderId String? @map("supplier_order_id") @db.VarChar(255)
 
   // pending | submitted | shipped | delivered | failed
-  status          String   @default("pending") @db.VarChar(20)
-  trackingNumber  String?  @map("tracking_number") @db.VarChar(255)
-  trackingUrl     String?  @map("tracking_url") @db.VarChar(2048)
-  errorMessage    String?  @map("error_message") @db.Text
+  status         String  @default("pending") @db.VarChar(20)
+  trackingNumber String? @map("tracking_number") @db.VarChar(255)
+  trackingUrl    String? @map("tracking_url") @db.VarChar(2048)
+  errorMessage   String? @map("error_message") @db.Text
 
   // Line items submitted to this supplier (subset of the order)
-  lineItems       Json     @default("[]") @map("line_items")
+  lineItems Json @default("[]") @map("line_items")
 
-  submittedAt     DateTime? @map("submitted_at") @db.Timestamptz
-  shippedAt       DateTime? @map("shipped_at") @db.Timestamptz
-  deliveredAt     DateTime? @map("delivered_at") @db.Timestamptz
+  submittedAt DateTime? @map("submitted_at") @db.Timestamptz
+  shippedAt   DateTime? @map("shipped_at") @db.Timestamptz
+  deliveredAt DateTime? @map("delivered_at") @db.Timestamptz
 
-  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant   Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   order    Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)

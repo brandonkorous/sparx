@@ -37,6 +37,7 @@ interface ScheduledAutomationRow {
   trigger_config: unknown;
   conditions: unknown;
   actions: unknown;
+  version: number;
 }
 
 export async function runScheduleTick(
@@ -50,7 +51,7 @@ export async function runScheduleTick(
   // FORCE RLS-bound `sparx_app` (no ambient bypass in prod, docs/16 §4). The
   // per-automation predicate scan + enqueue below stays withTenant-scoped.
   const rows = await db.$queryRaw<ScheduledAutomationRow[]>`
-    SELECT id, tenant_id, trigger_type, trigger_config, conditions, actions
+    SELECT id, tenant_id, trigger_type, trigger_config, conditions, actions, version
     FROM find_active_scheduled_automations()
   `;
   const autos = rows.map((r) => ({
@@ -60,6 +61,7 @@ export async function runScheduleTick(
     triggerConfig: r.trigger_config,
     conditions: r.conditions,
     actions: r.actions,
+    version: r.version,
   }));
 
   const result: ScheduleTickResult = { automations: 0, enqueued: 0 };
@@ -129,6 +131,7 @@ export async function runScheduleTick(
               status: 'running',
               cursorIndex: 0,
               actionsTotal,
+              automationVersion: a.version,
             },
           });
           result.enqueued += 1;

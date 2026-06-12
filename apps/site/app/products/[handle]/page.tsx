@@ -26,7 +26,7 @@ import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
 import { isSampleRequested, SAMPLE_PRODUCT, SAMPLE_PRODUCT_EXTRAS } from '@/lib/sample-data';
 import { getPublishedSite, resolveTemplateSections } from '@/lib/site';
-import { resolveTenant } from '@/lib/tenant';
+import { resolveActivePropertySlug, resolveTenant } from '@/lib/tenant';
 
 export const dynamic = 'force-dynamic';
 
@@ -113,7 +113,11 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   // default (parity). A site-preview token resolves the draft instead. In preview
   // only, `sparxLayoutKey` forces a specific alternate layout onto the canvas
   // (gated to the preview token — a public visitor can't pin a layout via query).
-  const snapshot = await getPublishedSite(tenant.slug, one(sp.sparxSitePreview));
+  const snapshot = await getPublishedSite(
+    tenant.slug,
+    one(sp.sparxSitePreview),
+    (await resolveActivePropertySlug()) ?? undefined
+  );
   const forcedKey = one(sp.sparxSitePreview) ? one(sp.sparxLayoutKey) : undefined;
   const sections = resolveTemplateSections(snapshot, 'commerce:product', product.id, forcedKey);
 

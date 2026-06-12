@@ -4,7 +4,7 @@ import { Users, Plus, UserPlus } from 'lucide-react';
 import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-import { getActivePropertyId, listProperties, type Property } from '@/lib/sites';
+import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
@@ -74,22 +74,9 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
   // company); without one, list straight from Postgres with the type facet +
   // sort. The search doc carries full_name (not first/last) and omits the DNC
   // flag + updated date, so those degrade gracefully on search-result rows.
-  const [prefs, sites, activeCookieId] = await Promise.all([
-    getUserPreferences(),
-    listProperties().catch(() => [] as Property[]),
-    getActivePropertyId(),
-  ]);
-  const multiSite = sites.length > 1;
-  const activePropertyId = multiSite
-    ? (sites.find((s) => s.id === activeCookieId)?.id ??
-      sites.find((s) => s.isPrimary)?.id ??
-      sites[0]?.id)
-    : undefined;
-  const propertyFilter = !multiSite
-    ? undefined
-    : siteParam === 'all'
-      ? undefined
-      : (siteParam ?? activePropertyId);
+  const [prefs, scope] = await Promise.all([getUserPreferences(), resolveSiteScope()]);
+  const { sites, multiSite, activePropertyId } = scope;
+  const propertyFilter = resolvePropertyFilter(scope, siteParam);
 
   let customers: CustomerListRow[];
   let total: number;

@@ -280,7 +280,8 @@ export async function installBlueprint(
     });
     result.theme = { id: theme.id, name: theme.name };
     if (blueprint.theme.apply) {
-      await savedThemeService.apply(ctx, theme.id);
+      // apply writes the target site's draft config (docs/49 Phase 6) → propCtx.
+      await savedThemeService.apply(propCtx, theme.id);
       await withTenant(ctx, (tx) =>
         savedThemeService.applyThemeBrandWithinTx(tx, tenantId, theme.brand)
       );
@@ -754,7 +755,7 @@ export async function goLiveInstall(ctxIn: InstallContext, installId: string): P
   // tokens, so the shipped theme goes live with the rest of the blueprint. Best-
   // effort: a theme that fails to publish shouldn't block the content go-live.
   await publishService
-    .publishNow(ctx, { note: `Blueprint go-live (${installId})` })
+    .publishNow(propCtx, { note: `Blueprint go-live (${installId})` })
     .catch((err) => logger.warn({ err, installId }, 'site theme publish failed'));
 
   await withTenant(ctx, (tx) =>

@@ -18,7 +18,7 @@ import type {
 } from '@sparx/automation-schemas';
 import type { ActionResult } from './_lib/rest-action';
 import { restAction } from './_lib/rest-action';
-import type { AutomationDto } from './_lib/types';
+import type { AutomationDto, AutomationVersionDto } from './_lib/types';
 
 export async function createAutomationAction(
   input: CreateAutomationInput
@@ -51,6 +51,53 @@ export async function setAutomationStatusAction(
     revalidatePath('/automations');
     revalidatePath(`/automations/${id}`);
     return { id: updated.id, status: updated.status };
+  });
+}
+
+// ─── Versioning (docs/84 Slice G-versioning) ─────────────────────────────────
+
+export async function publishAutomationAction(
+  id: string,
+  note?: string
+): Promise<ActionResult<{ id: string; version: number }>> {
+  return restAction(async () => {
+    const published = await api.post<AutomationDto>(
+      `/v1/automations/${id}/publish`,
+      note ? { note } : {}
+    );
+    revalidatePath('/automations');
+    revalidatePath(`/automations/${id}`);
+    return { id: published.id, version: published.version };
+  });
+}
+
+export async function discardDraftAction(id: string): Promise<ActionResult<{ id: string }>> {
+  return restAction(async () => {
+    const updated = await api.post<AutomationDto>(`/v1/automations/${id}/discard-draft`, {});
+    revalidatePath('/automations');
+    revalidatePath(`/automations/${id}`);
+    return { id: updated.id };
+  });
+}
+
+/** Restore a prior version into the draft; returns the restored draft document so
+ *  the editor can load it as the working state (the tenant then publishes). */
+export async function restoreAutomationVersionAction(
+  id: string,
+  version: number
+): Promise<ActionResult<AutomationDto>> {
+  return restAction(async () => {
+    const updated = await api.post<AutomationDto>(`/v1/automations/${id}/restore`, { version });
+    revalidatePath(`/automations/${id}`);
+    return updated;
+  });
+}
+
+export async function listAutomationVersionsAction(
+  id: string
+): Promise<ActionResult<AutomationVersionDto[]>> {
+  return restAction(async () => {
+    return api.get<AutomationVersionDto[]>(`/v1/automations/${id}/versions`);
   });
 }
 

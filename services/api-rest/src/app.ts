@@ -35,7 +35,12 @@ import {
   EmailProviderError,
   EmailValidationError,
 } from '@sparx/email-platform';
-import { AutomationNotFoundError, LockedAutomationError } from '@sparx/automation';
+import {
+  AutomationNotFoundError,
+  AutomationVersionNotFoundError,
+  LockedAutomationError,
+  NoDraftError,
+} from '@sparx/automation';
 import { createAuthPlugin } from '@sparx/api-core/auth';
 import { createErrorsPlugin, type ErrorEnvelope } from '@sparx/api-core/errors-plugin';
 import { env } from './env.js';
@@ -450,6 +455,36 @@ function automationErrorMapper(
       success: false,
       error: {
         code: 'AUTOMATION_LOCKED',
+        message: err.message,
+        details: { automationId: err.automationId },
+        request_id: requestId,
+      },
+    };
+    return reply.code(409).send(body);
+  }
+  if (err instanceof AutomationVersionNotFoundError) {
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'NOT_FOUND',
+        message: err.message,
+        details: {
+          entityType: 'AutomationVersion',
+          automationId: err.automationId,
+          version: err.version,
+        },
+        request_id: requestId,
+      },
+    };
+    return reply.code(404).send(body);
+  }
+  if (err instanceof NoDraftError) {
+    // Nothing staged to publish — a state conflict, distinct code so the
+    // dashboard can quietly no-op rather than surface a generic error.
+    const body: ErrorEnvelope = {
+      success: false,
+      error: {
+        code: 'AUTOMATION_NO_DRAFT',
         message: err.message,
         details: { automationId: err.automationId },
         request_id: requestId,

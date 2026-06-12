@@ -6,15 +6,15 @@
 // snapshot). Parts expected for the service are listed in partsLinked.
 
 model ServiceType {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId        String   @map("tenant_id") @db.Uuid
-  name            String   @db.VarChar(255)
-  description     String?  @db.Text
-  durationMinutes Int      @default(60) @map("duration_minutes")
-  color           String?  @db.VarChar(7) // hex color for calendar (#RRGGBB)
-  isActive        Boolean  @default(true) @map("is_active")
-  requiresVehicle Boolean  @default(false) @map("requires_vehicle")
-  notes           String?  @db.Text
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String    @map("tenant_id") @db.Uuid
+  name            String    @db.VarChar(255)
+  description     String?   @db.Text
+  durationMinutes Int       @default(60) @map("duration_minutes")
+  color           String?   @db.VarChar(7) // hex color for calendar (#RRGGBB)
+  isActive        Boolean   @default(true) @map("is_active")
+  requiresVehicle Boolean   @default(false) @map("requires_vehicle")
+  notes           String?   @db.Text
   createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
@@ -27,28 +27,28 @@ model ServiceType {
 }
 
 model ServiceAppointment {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId        String   @map("tenant_id") @db.Uuid
-  serviceTypeId   String   @map("service_type_id") @db.Uuid
-  b2bAccountId    String?  @map("b2b_account_id") @db.Uuid
-  customerId      String?  @map("customer_id") @db.Uuid
+  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String  @map("tenant_id") @db.Uuid
+  serviceTypeId String  @map("service_type_id") @db.Uuid
+  b2bAccountId  String? @map("b2b_account_id") @db.Uuid
+  customerId    String? @map("customer_id") @db.Uuid
 
   scheduledAt     DateTime @map("scheduled_at") @db.Timestamptz
   durationMinutes Int      @default(60) @map("duration_minutes")
 
   // requested | confirmed | in_progress | completed | cancelled
-  status          String   @default("requested") @db.VarChar(20)
+  status String @default("requested") @db.VarChar(20)
 
   // JSON snapshot of the vehicle at booking time:
   //   { year, make, model, vin?, licensePlate?, engineProfile? }
-  vehicleRef      Json?    @map("vehicle_ref")
+  vehicleRef Json? @map("vehicle_ref")
 
   // Array of parts expected for this appointment:
   //   [{ productId?, sku?, description, quantity }]
-  partsLinked     Json     @default("[]") @map("parts_linked")
+  partsLinked Json @default("[]") @map("parts_linked")
 
-  notes           String?  @db.Text // customer-visible notes
-  staffNotes      String?  @map("staff_notes") @db.Text
+  notes      String? @db.Text // customer-visible notes
+  staffNotes String? @map("staff_notes") @db.Text
 
   confirmedByUserId  String?   @map("confirmed_by_user_id") @db.Uuid
   confirmedAt        DateTime? @map("confirmed_at") @db.Timestamptz
@@ -60,11 +60,11 @@ model ServiceAppointment {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  serviceType   ServiceType @relation(fields: [serviceTypeId], references: [id])
-  b2bAccount    B2BAccount? @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
-  customer      Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  confirmedBy   User?       @relation("AppointmentConfirmedBy", fields: [confirmedByUserId], references: [id], onDelete: SetNull)
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  serviceType ServiceType @relation(fields: [serviceTypeId], references: [id])
+  b2bAccount  B2BAccount? @relation(fields: [b2bAccountId], references: [id], onDelete: SetNull)
+  customer    Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  confirmedBy User?       @relation("AppointmentConfirmedBy", fields: [confirmedByUserId], references: [id], onDelete: SetNull)
 
   @@index([tenantId, status])
   @@index([tenantId, scheduledAt])

@@ -11,9 +11,10 @@
 //
 // All reads/writes are tenant-scoped via `withTenant` (FORCE RLS).
 
-import type { Automation } from '@prisma/client';
+import type { Automation, AutomationVersion } from '@prisma/client';
 import {
   type Action,
+  type AutomationDraft,
   type CloneAutomationInput,
   type ConditionGroup,
   CreateAutomationInput as CreateSchema,
@@ -21,8 +22,7 @@ import {
   UpdateAutomationInput as UpdateSchema,
   triggerToColumns,
 } from '@sparx/automation-schemas';
-import type { Prisma } from '@sparx/db';
-import { withTenant } from '@sparx/db';
+import { Prisma, withTenant } from '@sparx/db';
 import type { z } from 'zod';
 
 /** The pre-parse (input) shapes — zod fills `conditions` / `maxDepth` defaults at
@@ -51,7 +51,73 @@ export class AutomationNotFoundError extends Error {
   }
 }
 
+/** Publish was requested but the automation has no staged draft. */
+export class NoDraftError extends Error {
+  readonly code = 'AUTOMATION_NO_DRAFT' as const;
+  constructor(public readonly automationId: string) {
+    super('this automation has no unpublished changes to publish');
+    Object.setPrototypeOf(this, NoDraftError.prototype);
+  }
+}
+
+/** Restore referenced a version that doesn't exist for this automation. */
+export class AutomationVersionNotFoundError extends Error {
+  readonly code = 'AUTOMATION_VERSION_NOT_FOUND' as const;
+  constructor(
+    public readonly automationId: string,
+    public readonly version: number
+  ) {
+    super(`automation ${automationId} has no version ${version}`);
+    Object.setPrototypeOf(this, AutomationVersionNotFoundError.prototype);
+  }
+}
+
 const json = (v: unknown): Prisma.InputJsonValue => v as Prisma.InputJsonValue;
+
+/** The live published document of an automation, in draft column-form (the shape
+ *  publish copies between `draft` and the live columns, and snapshots freeze). */
+function liveDocument(a: Automation): AutomationDraft {
+  return {
+    name: a.name,
+    description: a.description,
+    triggerType: a.triggerType,
+    triggerConfig: a.triggerConfig,
+    conditions: a.conditions,
+    actions: a.actions,
+    maxDepth: a.maxDepth,
+  };
+}
+
+/** Append an immutable history snapshot for a just-published version. Runs inside
+ *  the caller's `withTenant` tx so the snapshot + the live update commit as one. */
+function snapshotVersion(
+  tx: Prisma.TransactionClient,
+  args: {
+    automationId: string;
+    tenantId: string;
+    version: number;
+    doc: AutomationDraft;
+    note?: string | null;
+    publishedBy?: string | null;
+  }
+) {
+  return tx.automationVersion.create({
+    data: {
+      automationId: args.automationId,
+      tenantId: args.tenantId,
+      version: args.version,
+      name: args.doc.name,
+      description: args.doc.description ?? null,
+      triggerType: args.doc.triggerType,
+      triggerConfig: json(args.doc.triggerConfig),
+      conditions: json(args.doc.conditions),
+      actions: json(args.doc.actions),
+      maxDepth: args.doc.maxDepth,
+      note: args.note ?? null,
+      publishedBy: args.publishedBy ?? null,
+    },
+  });
+}
 
 export async function createAutomation(
   ctx: ServiceCtx,
@@ -59,8 +125,13 @@ export async function createAutomation(
 ): Promise<Automation> {
   const data = CreateSchema.parse(input);
   const { triggerType, triggerConfig } = triggerToColumns(data.trigger);
-  return withTenant({ tenantId: ctx.tenantId, userId: ctx.userId }, (tx) =>
-    tx.automation.create({
+  // Create = first publish (version 1). The authored document lands in the live
+  // columns AND a v1 snapshot, so the engine has a published def to run and the
+  // history starts at v1; every SUBSEQUENT edit stages in `draft` and lands on
+  // an explicit publish. The deployment `status` stays 'draft' (not firing) —
+  // the tenant flips it active separately.
+  return withTenant({ tenantId: ctx.tenantId, userId: ctx.userId }, async (tx) => {
+    const created = await tx.automation.create({
       data: {
         tenantId: ctx.tenantId,
         name: data.name,
@@ -73,11 +144,31 @@ export async function createAutomation(
         maxDepth: data.maxDepth,
         origin: 'user',
         locked: false,
+        version: 1,
+        publishedAt: new Date(),
+        publishedBy: ctx.userId ?? null,
       },
-    })
-  );
+    });
+    await snapshotVersion(tx, {
+      automationId: created.id,
+      tenantId: ctx.tenantId,
+      version: 1,
+      doc: liveDocument(created),
+      note: 'Created',
+      publishedBy: ctx.userId,
+    });
+    return created;
+  });
 }
 
+/**
+ * Edit an automation. Document edits (name / description / trigger / conditions /
+ * actions / maxDepth) STAGE in the `draft` — the live published version keeps
+ * running until `publishAutomation` promotes the draft (Builder-style draft →
+ * publish). A `status` transition is a deployment state, NOT part of the
+ * versioned document, so it applies to the live row immediately (and never, on
+ * its own, fabricates a phantom draft). A locked rule rejects any edit.
+ */
 export async function updateAutomation(
   ctx: ServiceCtx,
   id: string,
@@ -89,21 +180,146 @@ export async function updateAutomation(
     if (!existing) throw new AutomationNotFoundError(id);
     if (existing.locked) throw new LockedAutomationError(id);
 
+    const editsDocument =
+      data.name !== undefined ||
+      data.description !== undefined ||
+      data.trigger !== undefined ||
+      data.conditions !== undefined ||
+      data.actions !== undefined ||
+      data.maxDepth !== undefined;
+
     const patch: Prisma.AutomationUpdateInput = {};
-    if (data.name !== undefined) patch.name = data.name;
-    if (data.description !== undefined) patch.description = data.description ?? null;
-    if (data.trigger !== undefined) {
-      const { triggerType, triggerConfig } = triggerToColumns(data.trigger);
-      patch.triggerType = triggerType;
-      patch.triggerConfig = json(triggerConfig);
+
+    if (editsDocument) {
+      // Base = the current draft if one exists, else the live published doc, so
+      // successive edits accumulate into one draft.
+      const base = (existing.draft as AutomationDraft | null) ?? liveDocument(existing);
+      const next: AutomationDraft = { ...base };
+      if (data.name !== undefined) next.name = data.name;
+      if (data.description !== undefined) next.description = data.description ?? null;
+      if (data.trigger !== undefined) {
+        const { triggerType, triggerConfig } = triggerToColumns(data.trigger);
+        next.triggerType = triggerType;
+        next.triggerConfig = triggerConfig;
+      }
+      if (data.conditions !== undefined) next.conditions = data.conditions;
+      if (data.actions !== undefined) next.actions = data.actions;
+      if (data.maxDepth !== undefined) next.maxDepth = data.maxDepth;
+      patch.draft = json(next);
     }
-    if (data.conditions !== undefined) patch.conditions = json(data.conditions);
-    if (data.actions !== undefined) patch.actions = json(data.actions);
-    if (data.maxDepth !== undefined) patch.maxDepth = data.maxDepth;
+
     if (data.status !== undefined) patch.status = data.status;
 
     return tx.automation.update({ where: { id }, data: patch });
   });
+}
+
+/**
+ * Promote the staged draft to the next live version (docs/84 Slice G-versioning).
+ * Copies the draft into the live columns, bumps `version`, appends an immutable
+ * snapshot, and clears the draft. A locked rule rejects this; a rule with no
+ * draft throws `NoDraftError`. The deployment `status` is untouched — publishing
+ * makes the new DOCUMENT live, not the rule itself (the tenant activates
+ * separately).
+ */
+export async function publishAutomation(
+  ctx: ServiceCtx,
+  id: string,
+  opts: { note?: string } = {}
+): Promise<Automation> {
+  return withTenant({ tenantId: ctx.tenantId, userId: ctx.userId }, async (tx) => {
+    const existing = await tx.automation.findUnique({ where: { id } });
+    if (!existing) throw new AutomationNotFoundError(id);
+    if (existing.locked) throw new LockedAutomationError(id);
+    const draft = existing.draft as AutomationDraft | null;
+    if (!draft) throw new NoDraftError(id);
+
+    const version = existing.version + 1;
+    const updated = await tx.automation.update({
+      where: { id },
+      data: {
+        name: draft.name,
+        description: draft.description ?? null,
+        triggerType: draft.triggerType,
+        triggerConfig: json(draft.triggerConfig),
+        conditions: json(draft.conditions),
+        actions: json(draft.actions),
+        maxDepth: draft.maxDepth,
+        version,
+        publishedAt: new Date(),
+        publishedBy: ctx.userId ?? null,
+        draft: Prisma.DbNull,
+      },
+    });
+    await snapshotVersion(tx, {
+      automationId: id,
+      tenantId: ctx.tenantId,
+      version,
+      doc: liveDocument(updated),
+      note: opts.note ?? null,
+      publishedBy: ctx.userId,
+    });
+    return updated;
+  });
+}
+
+/** Throw away the staged draft — the live published version is untouched. */
+export async function discardDraft(ctx: ServiceCtx, id: string): Promise<Automation> {
+  return withTenant({ tenantId: ctx.tenantId, userId: ctx.userId }, async (tx) => {
+    const existing = await tx.automation.findUnique({ where: { id } });
+    if (!existing) throw new AutomationNotFoundError(id);
+    if (existing.locked) throw new LockedAutomationError(id);
+    return tx.automation.update({ where: { id }, data: { draft: Prisma.DbNull } });
+  });
+}
+
+/** Restore a prior version: copy its snapshot into the `draft`. The tenant then
+ *  reviews and publishes (appending a NEW version) — history stays append-only,
+ *  never rewound. A locked rule rejects this. */
+export async function restoreAutomationVersion(
+  ctx: ServiceCtx,
+  id: string,
+  version: number
+): Promise<Automation> {
+  return withTenant({ tenantId: ctx.tenantId, userId: ctx.userId }, async (tx) => {
+    const existing = await tx.automation.findUnique({ where: { id } });
+    if (!existing) throw new AutomationNotFoundError(id);
+    if (existing.locked) throw new LockedAutomationError(id);
+    const snap = await tx.automationVersion.findFirst({ where: { automationId: id, version } });
+    if (!snap) throw new AutomationVersionNotFoundError(id, version);
+
+    const draft: AutomationDraft = {
+      name: snap.name,
+      description: snap.description,
+      triggerType: snap.triggerType,
+      triggerConfig: snap.triggerConfig,
+      conditions: snap.conditions,
+      actions: snap.actions,
+      maxDepth: snap.maxDepth,
+    };
+    return tx.automation.update({ where: { id }, data: { draft: json(draft) } });
+  });
+}
+
+/** Published-version history, newest first. */
+export async function listAutomationVersions(
+  ctx: ServiceCtx,
+  id: string
+): Promise<AutomationVersion[]> {
+  return withTenant({ tenantId: ctx.tenantId }, (tx) =>
+    tx.automationVersion.findMany({ where: { automationId: id }, orderBy: { version: 'desc' } })
+  );
+}
+
+/** One historical snapshot (for preview / restore confirmation). */
+export async function getAutomationVersion(
+  ctx: ServiceCtx,
+  id: string,
+  version: number
+): Promise<AutomationVersion | null> {
+  return withTenant({ tenantId: ctx.tenantId }, (tx) =>
+    tx.automationVersion.findFirst({ where: { automationId: id, version } })
+  );
 }
 
 /** Tenant-facing status transition (active / paused / draft). A locked
@@ -133,7 +349,9 @@ export async function cloneAutomation(
   return withTenant({ tenantId: ctx.tenantId, userId: ctx.userId }, async (tx) => {
     const source = await tx.automation.findUnique({ where: { id } });
     if (!source) throw new AutomationNotFoundError(id);
-    return tx.automation.create({
+    // The copy starts its own version line at 1 from the source's LIVE published
+    // document (not the source's draft) + a fresh v1 snapshot.
+    const clone = await tx.automation.create({
       data: {
         tenantId: ctx.tenantId,
         name: input.name ?? `${source.name} (copy)`,
@@ -147,8 +365,20 @@ export async function cloneAutomation(
         origin: 'user',
         locked: false,
         clonedFrom: source.id,
+        version: 1,
+        publishedAt: new Date(),
+        publishedBy: ctx.userId ?? null,
       },
     });
+    await snapshotVersion(tx, {
+      automationId: clone.id,
+      tenantId: ctx.tenantId,
+      version: 1,
+      doc: liveDocument(clone),
+      note: `Duplicated from ${source.name}`,
+      publishedBy: ctx.userId,
+    });
+    return clone;
   });
 }
 
@@ -233,8 +463,19 @@ export async function upsertSystemAutomation(
     } as const;
 
     if (existing) {
+      // Idempotent re-seed: refresh the live document in place. Don't bump the
+      // version on every reconcile tick — system rules are platform-managed, not
+      // tenant-versioned (no History panel; `version` only feeds run-stamping).
       return tx.automation.update({ where: { id: existing.id }, data: common });
     }
-    return tx.automation.create({ data: { tenantId: ctx.tenantId, name: spec.name, ...common } });
+    return tx.automation.create({
+      data: {
+        tenantId: ctx.tenantId,
+        name: spec.name,
+        ...common,
+        version: 1,
+        publishedAt: new Date(),
+      },
+    });
   });
 }

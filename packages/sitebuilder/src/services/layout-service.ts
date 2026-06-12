@@ -11,7 +11,7 @@ import { withTenant } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
-import { getOrCreateConfig } from './_config';
+import { getOrCreatePrimaryConfig } from './_config';
 
 export function list(ctx: ServiceContext): Promise<SiteLayoutBlock[]> {
   return withTenant(ctx, (tx) => tx.siteLayoutBlock.findMany({ orderBy: { slot: 'asc' } }));
@@ -28,7 +28,7 @@ export async function upsert(ctx: ServiceContext, rawInput: unknown): Promise<Si
   const config = parseLayoutConfig(input.slot, input.config ?? {});
 
   return withTenant(ctx, async (tx) => {
-    await getOrCreateConfig(tx, ctx.tenantId);
+    await getOrCreatePrimaryConfig(tx, ctx.tenantId);
     const block = await tx.siteLayoutBlock.upsert({
       where: { tenantId_slot: { tenantId: ctx.tenantId, slot: input.slot } },
       create: {
