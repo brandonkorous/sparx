@@ -13,7 +13,12 @@ jobs:
   validate:
     name: Lint, typecheck, test
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # 30 (not 15) because the typecheck/test steps below run Turbo with a
+    # capped concurrency to stay under the hosted runner's RAM (see those
+    # steps). Fewer parallel tsc/vitest processes ⇒ longer wall-clock, so the
+    # old 15-min ceiling would itself fail the job. cancel-in-progress still
+    # kills superseded runs, so a high ceiling doesn't pile up stale runs.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -32,11 +37,22 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      # --concurrency=2 caps how many packages typecheck at once. The default
+      # (~10) spawns enough simultaneous `tsc` processes across the 63 workspace
+      # packages to exhaust the hosted runner's RAM; the OOM killer takes one
+      # out with exit 137 and the runner dies ("operation was canceled" with no
+      # actual TSxxxx errors). Two at a time keeps peak memory well under the
+      # ceiling while still using both runner cores. Local/pre-push runs are
+      # uncapped (dev machines have the headroom). Call turbo directly — piping
+      # the flag through `pnpm typecheck -- --concurrency=2` forwards it to tsc
+      # ("TS5023: Unknown compiler option"), not to turbo.
       - name: Typecheck
-        run: pnpm typecheck
+        run: pnpm exec turbo run typecheck --concurrency=2
 
+      # Same memory reasoning as Typecheck — vitest forks workers per package,
+      # so cap how many packages test in parallel.
       - name: Test
-        run: pnpm test
+        run: pnpm exec turbo run test --concurrency=2
 
       - name: Prettier
         run: pnpm format:check
