@@ -23,11 +23,23 @@ model Tenant {
   // touches it. The public tenant payload carries it so the storefront chrome
   // resolves real links. Moved here from TenantBrand.socials (docs/45 §3).
   socials          Json      @default("[]")
-  stripeCustomerId String?   @map("stripe_customer_id") @db.VarChar(255)
-  stripeAccountId  String?   @map("stripe_account_id") @db.VarChar(255)
-  trialEndsAt      DateTime? @map("trial_ends_at") @db.Timestamptz
-  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  // Platform billing (docs/67) — the WizeWorks subscription that charges this
+  // tenant per active module. `stripeCustomerId` + `trialEndsAt` already existed;
+  // the rest complete the picture. Reconciled from Stripe webhooks (the source of
+  // truth for subscription state). `stripeCustomerId` is unique — one platform
+  // customer per tenant. Tenants is non-RLS (the dispatch row), so the webhook can
+  // resolve a tenant from a Stripe customer id before any tenant context is set.
+  stripeCustomerId     String?   @unique @map("stripe_customer_id") @db.VarChar(255)
+  stripeAccountId      String?   @map("stripe_account_id") @db.VarChar(255)
+  stripeSubscriptionId String?   @map("stripe_subscription_id") @db.VarChar(255)
+  // trialing | active | past_due | canceled | unpaid | paused
+  subscriptionStatus   String?   @map("subscription_status") @db.VarChar(20)
+  currentPeriodEnd     DateTime? @map("current_period_end") @db.Timestamptz
+  cancelAtPeriodEnd    Boolean   @default(false) @map("cancel_at_period_end")
+  billingInterval      String    @default("monthly") @map("billing_interval") @db.VarChar(10)
+  trialEndsAt          DateTime? @map("trial_ends_at") @db.Timestamptz
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   // Marketing attribution (docs/80 §8.3) — L-PLAT acquisition snapshot, written
   // once at signup from the first-party attribution cookies. The tenants table is
@@ -324,6 +336,9 @@ model Tenant {
   automationRuns     AutomationRun[]
   automationRunSteps AutomationRunStep[]
   automationVersions AutomationVersion[]
+
+  // Platform billing (docs/67) — one Stripe subscription item per active module
+  billingSubscriptionItems BillingSubscriptionItem[]
 
   @@map("tenants")
 }

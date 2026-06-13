@@ -23,6 +23,7 @@ COPY packages/db ./packages/db
 COPY packages/dropship ./packages/dropship
 COPY packages/auth ./packages/auth
 COPY packages/modules ./packages/modules
+COPY packages/billing ./packages/billing
 COPY packages/email ./packages/email
 COPY packages/events ./packages/events
 COPY packages/automation-schemas ./packages/automation-schemas

@@ -1,0 +1,39 @@
+// Platform billing (docs/67) — WizeWorks charging tenants per active module.
+//
+// The billing model is one Stripe subscription per tenant with ONE item per
+// active module (add/remove mid-cycle, prorated). The tenant's Stripe customer +
+// subscription identity lives on the `tenants` row (it already carried
+// `stripe_customer_id` + `trial_ends_at`); this file adds only the per-module
+// item mapping. Stripe is the source of truth — webhooks reconcile both this
+// table and `tenants.settings.modules` against subscription state (docs/67 §6).
+//
+// Deliberate deviation from docs/67's `billing_customers` table: the tenant row
+// is non-RLS (the dispatch row) and already holds the customer id, so a separate
+// non-RLS customer table would just duplicate that identity. Subscription columns
+// were folded onto `tenants` instead; only the tenant-scoped item rows are new.
+
+// One row per (tenant, module) Stripe subscription item. Tenant-scoped, so this
+// is a normal RLS-ENABLE+FORCE table (the migration adds the policy). The webhook
+// resolves the tenant from the subscription's customer (via `tenants`) first, then
+// reconciles these rows under tenant context.
+model BillingSubscriptionItem {
+  id                       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                 String   @map("tenant_id") @db.Uuid
+  // The Stripe subscription item id (`si_…`) — unique across the platform.
+  stripeSubscriptionItemId String   @map("stripe_subscription_item_id") @db.VarChar(255)
+  // The module this item bills for (a ModuleSlug). One active item per module.
+  moduleKey                String   @map("module_key") @db.VarChar(50)
+  // The Stripe Price id (`price_…`) this item references — encodes module+interval.
+  stripePriceId            String   @map("stripe_price_id") @db.VarChar(255)
+  quantity                 Int      @default(1)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([stripeSubscriptionItemId], map: "billing_subscription_items_stripe_item_unique")
+  @@unique([tenantId, moduleKey], map: "billing_subscription_items_tenant_module_unique")
+  @@index([tenantId], map: "billing_subscription_items_tenant_idx")
+  @@map("billing_subscription_items")
+}

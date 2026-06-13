@@ -37,6 +37,7 @@ import {
   type ModuleSlug,
 } from '@sparx/auth';
 import { publishPlatformEvent } from '@sparx/crm';
+import { isBillingConfigured, syncModuleItems } from '@sparx/billing';
 import { computeBannerEnabled } from '../../lib/consent.js';
 import { env } from '../../env.js';
 import Stripe from 'stripe';
@@ -171,6 +172,32 @@ async function applyModuleWrites(
   for (const slug of MODULE_SLUGS) {
     if (beforeStates[slug].enabled !== afterStates[slug].enabled) {
       await announceModuleTransition(log, tenantId, actorId, slug, afterStates[slug].enabled);
+    }
+  }
+
+  // Keep the tenant's Stripe subscription items in lockstep with the new EXPLICIT
+  // module set (docs/67 §4). Only explicit purchases bill — a BUNDLED_FREE
+  // capability (invoicing via Commerce/B2B) has source 'bundled', no flag, and so
+  // never creates an item. Best-effort + guarded: a no-op until billing is
+  // configured, and a Stripe failure never blocks the toggle (the flag is already
+  // written; the webhook reconciles authoritative state).
+  if (isBillingConfigured()) {
+    try {
+      const explicitEnabled = MODULE_SLUGS.filter((s) => afterStates[s].source === 'explicit');
+      const t = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { email: true, name: true },
+      });
+      if (t) {
+        await syncModuleItems({
+          tenantId,
+          email: t.email,
+          name: t.name,
+          enabledModules: explicitEnabled,
+        });
+      }
+    } catch (err) {
+      log.error({ err }, 'billing: module item sync failed (non-fatal)');
     }
   }
 

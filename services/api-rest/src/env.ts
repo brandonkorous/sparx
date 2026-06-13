@@ -87,11 +87,15 @@ const EnvSchema = z
     // Connect OAuth. Per-tenant keys live in ProviderInstallation configs.
     // STRIPE_SECRET_KEY       — platform/connect account secret key
     // STRIPE_PUBLISHABLE_KEY  — returned to storefronts for Stripe.js init
-    // STRIPE_WEBHOOK_SECRET   — whsec_... from the Stripe dashboard or CLI
+    // STRIPE_WEBHOOK_SECRET   — whsec_... for the COMMERCE payment webhook
     // STRIPE_CLIENT_ID        — Connect OAuth client_id (ca_...)
+    // STRIPE_WEBHOOK_SECRET_BILLING — whsec_... for the PLATFORM billing webhook
+    //   (subscription/invoice events). Separate endpoint, separate signing secret
+    //   (docs/67 §6) so a commerce-webhook secret rotation can't break billing.
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_PUBLISHABLE_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
+    STRIPE_WEBHOOK_SECRET_BILLING: z.string().optional(),
     STRIPE_CLIENT_ID: z.string().optional(),
     // Media storage. When GCS_MEDIA_BUCKET is set we use Cloud Storage with
     // presigned PUT URLs; otherwise we fall back to a local-disk backend at

@@ -30,6 +30,7 @@
     "@sparx/auth": "workspace:*",
     "@sparx/automation": "workspace:*",
     "@sparx/automation-schemas": "workspace:*",
+    "@sparx/billing": "workspace:*",
     "@sparx/blueprints": "workspace:*",
     "@sparx/builder": "workspace:*",
     "@sparx/builder-schemas": "workspace:*",
