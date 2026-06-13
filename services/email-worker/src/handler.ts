@@ -28,13 +28,22 @@ import { brandService } from '@sparx/email-platform';
 
 const Variables = z.record(z.string(), z.string()).optional();
 
+// Fields every template send carries, independent of the template id. Spread
+// into each discriminated-union member so they stay in one place.
+//   propertyId (docs/49 Phase 7b): the site this send is on behalf of — drives
+//   per-site brand resolution in handle(). Absent/null → tenant-wide brand.
+const TemplateMeta = {
+  to: z.string().email(),
+  from: z.string().optional(),
+  replyTo: z.string().optional(),
+  variables: Variables,
+  propertyId: z.string().nullable().optional(),
+};
+
 const TemplateSendSchema = z.discriminatedUnion('template', [
   z.object({
     template: z.literal('password-reset'),
-    to: z.string().email(),
-    from: z.string().optional(),
-    replyTo: z.string().optional(),
-    variables: Variables,
+    ...TemplateMeta,
     props: z.object({
       name: z.string().optional(),
       resetUrl: z.string().url(),
@@ -45,10 +54,7 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
   }),
   z.object({
     template: z.literal('welcome-merchant'),
-    to: z.string().email(),
-    from: z.string().optional(),
-    replyTo: z.string().optional(),
-    variables: Variables,
+    ...TemplateMeta,
     props: z.object({
       name: z.string().optional(),
       storeName: z.string().min(1),
@@ -59,10 +65,7 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
   }),
   z.object({
     template: z.literal('domain-renewal-reminder'),
-    to: z.string().email(),
-    from: z.string().optional(),
-    replyTo: z.string().optional(),
-    variables: Variables,
+    ...TemplateMeta,
     props: z.object({
       domainName: z.string().min(1),
       daysUntilExpiry: z.number().int().positive(),
@@ -73,10 +76,7 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
   }),
   z.object({
     template: z.literal('order-confirmation'),
-    to: z.string().email(),
-    from: z.string().optional(),
-    replyTo: z.string().optional(),
-    variables: Variables,
+    ...TemplateMeta,
     props: z.object({
       customerName: z.string().min(1),
       orderNumber: z.string().min(1),
@@ -108,10 +108,7 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
   }),
   z.object({
     template: z.literal('shipping-confirmation'),
-    to: z.string().email(),
-    from: z.string().optional(),
-    replyTo: z.string().optional(),
-    variables: Variables,
+    ...TemplateMeta,
     props: z.object({
       customerName: z.string().min(1),
       orderNumber: z.string().min(1),
@@ -134,10 +131,7 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
   }),
   z.object({
     template: z.literal('chat-notification'),
-    to: z.string().email(),
-    from: z.string().optional(),
-    replyTo: z.string().optional(),
-    variables: Variables,
+    ...TemplateMeta,
     props: z.object({
       customerName: z.string().min(1),
       messageSnippet: z.string(),
@@ -206,12 +200,18 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
         templateId: data.templateId,
       };
     } else {
-      // Resolve the tenant's email brand so transactional mail renders in their
-      // storefront colors/logo. Null → Sparx defaults. Best-effort: a brand
-      // failure must not block delivery.
+      // Resolve the email brand so transactional mail renders in the right
+      // colors/logo. When the send carries a `propertyId` (docs/49 Phase 7b),
+      // resolve the SITE's brand (its `brand_override` merged over the tenant
+      // brand) so a template send on behalf of one site looks like that site;
+      // null → tenant brand, and a tenant with no brand → Sparx defaults.
+      // Best-effort: a brand failure must not block delivery.
       let brand = null;
       try {
-        brand = await brandService.resolveEmailBrand({ tenantId: event.tenantId });
+        brand = await brandService.resolveEmailBrand(
+          { tenantId: event.tenantId },
+          data.propertyId ?? null
+        );
       } catch (brandErr) {
         childLog.warn({ err: brandErr }, 'brand resolution failed — rendering with defaults');
       }

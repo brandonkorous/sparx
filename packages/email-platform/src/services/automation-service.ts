@@ -126,6 +126,20 @@ function resolveRecipient(data: Record<string, unknown>): string | undefined {
   return str(data.email) ?? str(data.customerEmail) ?? str(data.to) ?? str(data.recipient);
 }
 
+// The site the triggering event belongs to (docs/49 Phase 7b) — persisted on the
+// ScheduledSend so the dispatch tick resolves the SITE's brand at render. Probe
+// a top-level `propertyId` then a nested `order.propertyId`; absent → null (a
+// tenant-wide send → tenant brand). Dormant until trigger payloads carry a site.
+function resolveProperty(data: Record<string, unknown>): string | null {
+  const direct = str(data.propertyId);
+  if (direct) return direct;
+  const order = data.order;
+  if (order && typeof order === 'object') {
+    return str((order as Record<string, unknown>).propertyId) ?? null;
+  }
+  return null;
+}
+
 /**
  * Evaluate an inbound event against enabled automations and enqueue sends.
  * Returns how many ScheduledSend rows were created.
@@ -136,6 +150,7 @@ export async function evaluateTrigger(
 ): Promise<{ enqueued: number }> {
   const recipient = resolveRecipient(event.data);
   const customerId = str(event.data.customerId) ?? null;
+  const propertyId = resolveProperty(event.data);
 
   return withTenant(ctx, async (tx) => {
     const automations = await tx.emailAutomation.findMany({
@@ -172,6 +187,7 @@ export async function evaluateTrigger(
             automationId: automation.id,
             recipient,
             customerId,
+            propertyId,
             payload: {
               template: templateKey,
               props: event.data,

@@ -34,6 +34,20 @@ import { z } from 'zod';
 
 import { optionalBoolField, optionalEntityId, requireStringField } from './entity.js';
 
+// The site an automation send is on behalf of (docs/49 Phase 7b) — read from
+// the trigger entity's resolved fields so the eventual render uses that site's
+// brand. We probe the conventional carriers in priority order; absent → null (a
+// tenant-wide send → tenant brand). Lights up per-site automation branding the
+// moment a property-scoped trigger (e.g. an order stamped with its site) flows.
+function resolveSourceProperty(fields: Parameters<typeof optionalEntityId>[0]): string | null {
+  return (
+    optionalEntityId(fields, 'propertyId') ??
+    optionalEntityId(fields, 'order.propertyId') ??
+    optionalEntityId(fields, 'customer.propertyId') ??
+    null
+  );
+}
+
 // Body source for a campaign: a designed Builder email (rendered per-recipient at
 // dispatch) OR a coded template. Exactly one — modeled as a union so config can't
 // supply both/neither.
@@ -103,6 +117,7 @@ export function installEmailActions(): void {
         {
           recipient,
           customerId,
+          propertyId: resolveSourceProperty(effect.fields),
           scope: 'marketing',
           delaySeconds: cfg.delaySeconds,
           body,
@@ -128,6 +143,7 @@ export function installEmailActions(): void {
         { tenantId: ctx.tenantId, tx: ctx.tx },
         {
           recipient: cfg.to,
+          propertyId: resolveSourceProperty(effect.fields),
           scope: 'transactional',
           delaySeconds: cfg.delaySeconds,
           body,

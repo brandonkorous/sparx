@@ -160,9 +160,16 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             ...common,
           };
         } else {
-          // template → worker renders + brands. Unknown templates are acked by
-          // the worker until the component ships.
-          data = { template: payload.template, props: payload.props ?? {}, ...common };
+          // template → worker renders + brands. The site this send is on behalf
+          // of (docs/49 Phase 7b) rides along so the worker resolves the SITE's
+          // brand; null → tenant brand. Unknown templates are acked by the
+          // worker until the component ships.
+          data = {
+            template: payload.template,
+            props: payload.props ?? {},
+            ...(propertyId ? { propertyId } : {}),
+            ...common,
+          };
         }
 
         await publish(logger, 'email.send', row.tenant_id, null, data);

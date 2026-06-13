@@ -29,6 +29,12 @@ export interface EnqueueSendSpec {
   /** Soft reference to the CRM customer, when the send is customer-addressed. */
   customerId?: string | null;
   /**
+   * The site this send is on behalf of (docs/49 Phase 7b). Persisted on the
+   * ScheduledSend so the dispatch tick can resolve the SITE's brand at render.
+   * Null (the default) = a tenant-wide send → tenant brand.
+   */
+  propertyId?: string | null;
+  /**
    * Suppression scope. `marketing` is blocked by a marketing-scope OR an `all`
    * suppression; `transactional` only by an `all` suppression. Defaults to
    * `transactional` (the safe-to-send default for system/internal mail).
@@ -100,6 +106,7 @@ export async function enqueueSend(
           tenantId: ctx.tenantId,
           recipient,
           customerId: spec.customerId ?? null,
+          propertyId: spec.propertyId ?? null,
           payload: toPayload(spec),
           dueAt: new Date(Date.now() + (spec.delaySeconds ?? 0) * 1000),
           status: 'pending',
