@@ -61,16 +61,21 @@ const ALL_MODULES: readonly ModuleSlug[] = [
 //   time here (pure derivation — nothing is written).
 //
 // REQUIRES — the key cannot run without the listed modules, and those modules are
-//   SEPARATELY BILLED (B2B needs Commerce, which stays $49). This is NOT derived
+//   SEPARATELY BILLED (B2B needs Commerce at $49; Commerce, CMS, and Email each
+//   need Builder — the $10 site foundation they render on). This is NOT derived
 //   at read time: enabling the dependent must physically WRITE + bill the
 //   requirement, and disabling a requirement while its dependent is active is
 //   blocked. Enforced WRITE-side by the module-toggle handlers via the helpers
-//   below — deriving it here would grant unbilled access.
+//   below — deriving it here would grant unbilled access. Requirements compose
+//   transitively (`requiredModules('b2b')` pulls in Commerce AND Builder).
 export const BUNDLED_FREE: Partial<Record<ModuleSlug, readonly ModuleSlug[]>> = {
   invoicing: ['b2b', 'commerce'],
 };
 
 export const REQUIRES: Partial<Record<ModuleSlug, readonly ModuleSlug[]>> = {
+  commerce: ['builder'],
+  cms: ['builder'],
+  email: ['builder'],
   b2b: ['commerce'],
 };
 

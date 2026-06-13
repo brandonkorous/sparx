@@ -11,6 +11,7 @@ export {
   MODULE_BY_KEY,
   effectiveModuleOn,
   moduleLock,
+  lockReasonText,
   toggleModule,
   moduleBilled,
   moduleElsewhere,

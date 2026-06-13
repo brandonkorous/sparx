@@ -22,14 +22,21 @@ function settings(...enabled: ModuleSlug[]): unknown {
 }
 
 describe('requiredModules', () => {
-  it('returns the paid requirements that must be co-enabled', () => {
-    expect(requiredModules('b2b')).toEqual(['commerce']);
+  it('returns the paid requirements that must be co-enabled, transitively', () => {
+    // B2B → Commerce → Builder.
+    expect(requiredModules('b2b')).toEqual(['commerce', 'builder']);
+  });
+
+  it('pulls in Builder for the site-backed modules', () => {
+    expect(requiredModules('commerce')).toEqual(['builder']);
+    expect(requiredModules('cms')).toEqual(['builder']);
+    expect(requiredModules('email')).toEqual(['builder']);
   });
 
   it('is empty for modules with no requirements', () => {
-    expect(requiredModules('commerce')).toEqual([]);
+    expect(requiredModules('builder')).toEqual([]);
     expect(requiredModules('invoicing')).toEqual([]);
-    expect(requiredModules('cms')).toEqual([]);
+    expect(requiredModules('crm')).toEqual([]);
   });
 });
 
@@ -46,6 +53,15 @@ describe('blockingDependents', () => {
   it('never blocks a module nothing requires', () => {
     expect(blockingDependents('b2b', () => true)).toEqual([]);
     expect(blockingDependents('invoicing', () => true)).toEqual([]);
+  });
+
+  it('blocks disabling Builder while a site-backed module is on', () => {
+    // Commerce / CMS / Email each require Builder — can't turn Builder off first.
+    expect(blockingDependents('builder', (m) => m === 'commerce')).toEqual(['commerce']);
+    expect(blockingDependents('builder', (m) => m === 'cms' || m === 'email')).toEqual([
+      'cms',
+      'email',
+    ]);
   });
 });
 

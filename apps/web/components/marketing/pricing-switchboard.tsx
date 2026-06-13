@@ -195,41 +195,67 @@ const MODULES: Mod[] = [
 
 const DEFAULT_ON = new Set(['builder', 'commerce', 'cms']);
 
+// Dependency graph — mirrors the server (@sparx/modules). REQUIRES co-enables +
+// locks a separately-billed provider (Commerce/CMS/Email need Builder; B2B needs
+// Commerce, transitively Builder). BUNDLED_FREE makes a capability $0 while a
+// provider is on (Invoicing rides with Commerce/B2B).
+const REQUIRES: Record<string, string[]> = {
+  commerce: ['builder'],
+  cms: ['builder'],
+  email: ['builder'],
+  b2b: ['commerce'],
+};
+const BUNDLED_FREE: Record<string, string[]> = {
+  invoicing: ['b2b', 'commerce'],
+};
+const moduleName = (key: string): string => MODULES.find((x) => x.key === key)?.name ?? key;
+const activeBundlers = (on: Record<string, boolean>, key: string): string[] =>
+  (BUNDLED_FREE[key] ?? []).filter((p) => on[p]);
+const activeRequirers = (on: Record<string, boolean>, key: string): string[] =>
+  Object.keys(REQUIRES).filter((k) => (REQUIRES[k] ?? []).includes(key) && on[k]);
+const requiredKeys = (key: string): string[] => {
+  const out = new Set<string>();
+  const visit = (k: string): void => {
+    for (const dep of REQUIRES[k] ?? []) {
+      if (!out.has(dep)) {
+        out.add(dep);
+        visit(dep);
+      }
+    }
+  };
+  visit(key);
+  return [...out];
+};
+const joinNames = (slugs: string[]): string => {
+  const names = slugs.map(moduleName);
+  return names.length <= 1
+    ? (names[0] ?? '')
+    : `${names.slice(0, -1).join(', ')} & ${names.at(-1)}`;
+};
+const lockOfState = (on: Record<string, boolean>, key: string): 'included' | 'required' | null => {
+  if (activeBundlers(on, key).length > 0) return 'included';
+  if (activeRequirers(on, key).length > 0) return 'required';
+  return null;
+};
+
 export function PricingSwitchboard() {
   const [on, setOn] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(MODULES.map((m) => [m.key, DEFAULT_ON.has(m.key)]))
   );
   const [openKey, setOpenKey] = useState<string | null>(null);
 
-  // Dependency model — mirrors the server (@sparx/modules graph):
-  //   • B2B REQUIRES Commerce: turning B2B on co-enables Commerce (still $49),
-  //     and Commerce can't be turned off while B2B is on.
-  //   • Invoicing is BUNDLED_FREE with B2B/Commerce: on for $0 (Included) whenever
-  //     either provider is on; otherwise it's a $19 standalone add-on.
-  const providerOn = !!on.b2b || !!on.commerce;
-  const effectiveOn = (key: string): boolean => {
-    if (key === 'commerce') return !!on.commerce || !!on.b2b;
-    if (key === 'invoicing') return !!on.invoicing || providerOn;
-    return !!on[key];
-  };
-  const lockOf = (key: string): 'included' | 'required' | null => {
-    if (key === 'invoicing' && providerOn) return 'included';
-    if (key === 'commerce' && !!on.b2b) return 'required';
-    return null;
-  };
+  // Dependency model mirrors the server (@sparx/modules graph): Commerce/CMS/Email
+  // require Builder, B2B requires Commerce (and transitively Builder); a required
+  // provider is co-enabled, billed, and locked on. Invoicing is BUNDLED_FREE with
+  // Commerce/B2B — $0 ("Included") while either is on, else a $19 add-on.
+  const effectiveOn = (key: string): boolean =>
+    !!on[key] || activeBundlers(on, key).length > 0 || activeRequirers(on, key).length > 0;
+  const lockOf = (key: string): 'included' | 'required' | null => lockOfState(on, key);
   // The reason a row is locked, naming its providers — mirrors Settings → Modules.
-  const nameOf = (key: string): string => MODULES.find((x) => x.key === key)?.name ?? key;
   const reasonOf = (key: string): string | null => {
     const lock = lockOf(key);
-    if (lock === 'required') return `Required by ${nameOf('b2b')}`;
-    if (lock === 'included') {
-      const providers = ['b2b', 'commerce'].filter((k) => on[k]).map(nameOf);
-      const joined =
-        providers.length <= 1
-          ? (providers[0] ?? '')
-          : `${providers.slice(0, -1).join(', ')} & ${providers.at(-1)}`;
-      return `Included with ${joined}`;
-    }
+    if (lock === 'included') return `Included with ${joinNames(activeBundlers(on, key))}`;
+    if (lock === 'required') return `Required by ${joinNames(activeRequirers(on, key))}`;
     return null;
   };
   // Bundled invoicing contributes $0 to both the bill and the savings ledger —
@@ -239,10 +265,9 @@ export function PricingSwitchboard() {
 
   const toggle = (key: string): void =>
     setOn((s) => {
-      if (key === 'invoicing' && (s.b2b || s.commerce)) return s; // bundled — locked on
-      if (key === 'commerce' && s.b2b) return s; // required by B2B — locked on
+      if (lockOfState(s, key) !== null) return s; // bundled or required — locked on
       const next = { ...s, [key]: !s[key] };
-      if (key === 'b2b' && next.b2b) next.commerce = true; // auto-add the requirement
+      if (next[key]) for (const dep of requiredKeys(key)) next[dep] = true; // co-enable requirements
       return next;
     });
 
