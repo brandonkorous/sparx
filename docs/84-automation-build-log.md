@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.20
+**Version:** 1.21
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-12
 
@@ -84,13 +84,32 @@ b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` 
 >   **70/70**, email-sends **4/4**, new api-rest `email-data` integration **4/4** (invoice hydrate w/ computed
 >   overdueDays + items + payUrl; customer+tenant; selective load; snapshot fallback). NEW dep: automation-actions →
 >   `@sparx/builder-schemas` (zod-only; Dockerfile COPY added).
-> - **NEXT — Steps 3–6 (seeds + provisioning + dashboard + reconcile):** restructure seeds into the per-module
->   catalog and seed **all 23** (Step 4); add the `emailType|category` field on `send_campaign` + the DERIVED
->   CAN-SPAM/CASL gate chain (consent via `Customer.gdprConsent`, unsubscribe-node check, `EmailSettings.physicalAddress`)
->   - seed-config thresholds (vip/high-value) + `create_task` assignee fallback to owner; hook `module.activated` to
->     seed automations (the template-provision half is the parallel agent's); repoint the dashboard email-automations
->     page to a filtered unified list (Step 5); extend the nightly reconcile to cover all seeds + self-heal + full e2e
->     (Step 6). Step 1 + early Step 2 committed locally by the user.
+> - **Step 3 — the 9 no-email seeds COMPLETE** (this session). The per-module seed catalog is now real per-module
+>   files (`seeds/{crm,commerce,b2b,invoicing,chat}.ts`) wired into `SYSTEM_AUTOMATIONS`. The 9 that need NO email
+>   template (so they ship now, ahead of the template-provision join): **CRM** — `auto-tag-vip` (daily scan, drops
+>   out once tagged via `tags not_contains vip`), `new-lead-follow-up-task`, `deal-won-invoice-task`; **Commerce** —
+>   `high-value-order-alert` + `low-inventory-alert` (internal sends), `refund-crm-note`; **B2B** — `new-account-task`
+>   (+ the already-locked dunning); **Invoicing** — `estimate-approved-task` (user workflows,
+>   `workflowSlug != net-terms-ar`); **Chat** — `no-response-alert` (interval scan, 10-min threshold). Three
+>   cross-cutting executor extensions this required (docs/90 §3b): (a) **`create_task` dynamic assignee** — an
+>   `assigneeField` path → explicit id → **tenant-owner fallback** (`resolveTenantActor`, also the creator since
+>   `created_by` is NOT NULL); (b) **`send_internal` made platform-level** (`module: null` — fires without the email
+>   module) + **dynamic `to`/`toField`** with the same owner-email fallback + **subject-only body**; (c) **`{{token}}`
+>   interpolation in task titles / note bodies / internal subjects** via a shared `interpolateFields`. Thresholds (vip
+>   $1000 / high-value $500) are baked literals a tenant edits on the Managed copy; added `conversation.assignedToEmail`
+>   to the chat scanner. **Verify:** automation-actions **24/24** (new `seeds-no-email.test.ts` 6/6 — per-module install
+>   + idempotency + locked dunning + assignee-from-rep + **owner fallback** + platform-level internal send w/
+>   interpolated subject + threshold gating; `reconcile-seeds.test.ts` updated for the 2-seed B2B catalog); typecheck
+>   + lint + format clean.
+> - **NEXT — the 13 email seeds + compliance gate + provisioning + dashboard (Steps 4–6):** the email-SENDING seeds
+>   (welcome / win-back / abandoned-cart / post-purchase-review / b2b-account-approved / b2b-quote-received /
+>   b2b-quote-expiring / b2b-invoice-due / the 4 invoicing dunning / chat-satisfaction) wait on the **send-by-`key`
+>   join** — the seeded `email.send_campaign` references a provisioned `BuilderEmail` by `key`, resolved at dispatch
+>   via the email agent's `getPublishedByKey` (my `defer.builderEmailKey` branch). Then: the `emailType|category` field
+>   on `send_campaign` + the DERIVED CAN-SPAM/CASL gate chain (consent via `Customer.gdprConsent`, unsubscribe-node
+>   check, `EmailSettings.physicalAddress`); hook `module.activated` to seed automations (template-provision is the
+>   parallel agent's); repoint the dashboard email-automations page to a filtered unified list (Step 5); extend the
+>   nightly reconcile (Step 6). Steps 1–2 + early Step 3 committed locally by the user.
 >
 > ---
 >

@@ -27,9 +27,12 @@ import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { publish } from '@sparx/api-core/pubsub';
 import { requireBuilderModule, toBuilderTenantContext } from '../../../lib/builder-context.js';
+import { requireTenantProperty } from '../../../lib/property.js';
 import { emailDataResolver } from '../../../lib/email-data.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
+const PropertyParam = z.object({ propertyId: z.string().uuid() });
+const CustomizeBody = z.object({ key: z.string().min(1).max(63) });
 
 const builderEmailRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/emails', async (request) => {
@@ -43,6 +46,38 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const email = await emailService.create(toBuilderTenantContext(request), request.body);
+    return ok(email);
+  });
+
+  // ── Per-site email authoring (docs/49 Phase 7b, docs/91 §6) ──────────────────
+  // A SITE's view of the catalog: the tenant-wide rows (13 defaults + tenant
+  // custom emails) with each default REPLACED by this site's override when one
+  // exists, plus the site's own custom emails. `requireTenantProperty` fails
+  // closed (404) on a foreign/unknown property id — unlike the header-scoped
+  // resolvePropertyId, an explicit path target must never silently fall back to
+  // the primary site.
+  app.get('/v1/builder/emails/site/:propertyId', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const ctx = toBuilderTenantContext(request);
+    const { propertyId } = PropertyParam.parse(request.params);
+    await requireTenantProperty(ctx.tenantId, propertyId);
+    const emails = await emailService.listForProperty(ctx, propertyId);
+    return ok({ emails });
+  });
+
+  // "Customize for this site": fork a tenant-wide default into a per-site DRAFT
+  // override the site edits independently. Idempotent — a repeat returns the
+  // existing override. The tenant default keeps sending for the site until the
+  // override is published (getPublishedByKey's per-site fallback).
+  app.post('/v1/builder/emails/site/:propertyId/customize', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const ctx = toBuilderTenantContext(request);
+    const { propertyId } = PropertyParam.parse(request.params);
+    const { key } = CustomizeBody.parse(request.body);
+    await requireTenantProperty(ctx.tenantId, propertyId);
+    const email = await emailService.customizeForSite(ctx, key, propertyId);
     return ok(email);
   });
 

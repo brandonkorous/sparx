@@ -66,7 +66,7 @@ afterAll(async () => {
 });
 
 describe('reconcileSystemSeeds (backfill)', () => {
-  it('seeds the B2B dunning automation for a module-active tenant, skips an inactive one', async () => {
+  it('seeds the B2B automations for a module-active tenant, skips an inactive one', async () => {
     const activeTenant = await makeTenant({ b2bEnabled: true });
     const inactiveTenant = await makeTenant({ b2bEnabled: false });
 
@@ -77,12 +77,16 @@ describe('reconcileSystemSeeds (backfill)', () => {
 
     const summary = await reconcileSystemSeeds(appDb);
 
-    // The active tenant now holds exactly the Locked dunning automation.
+    // The active tenant now holds the B2B catalog (the Locked dunning ladder + the
+    // new-account onboarding task).
     const active = await systemAutomations(activeTenant);
-    expect(active).toHaveLength(1);
-    expect(active[0]!.name).toBe('B2B overdue escalation');
-    expect(active[0]!.locked).toBe(true);
-    expect(active[0]!.status).toBe('active');
+    expect(active.map((a) => a.name).sort()).toEqual([
+      'B2B overdue escalation',
+      'New B2B account onboarding task',
+    ]);
+    const dunning = active.find((a) => a.name === 'B2B overdue escalation');
+    expect(dunning?.locked).toBe(true);
+    expect(dunning?.status).toBe('active');
 
     // The b2b-inactive tenant is untouched.
     expect(await systemAutomations(inactiveTenant)).toHaveLength(0);
@@ -101,7 +105,8 @@ describe('reconcileSystemSeeds (backfill)', () => {
     await reconcileSystemSeeds(appDb);
     await reconcileSystemSeeds(appDb);
 
+    // The two B2B seeds, installed once — a second pass adds no duplicate.
     const rows = await systemAutomations(tenantId);
-    expect(rows).toHaveLength(1);
+    expect(rows).toHaveLength(2);
   });
 });

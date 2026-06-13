@@ -47,7 +47,14 @@ async function seedTenant(modules: string[]): Promise<{ tenantId: string; ownerE
   const ownerEmail = `${slug}-owner@sparx.test`;
   const settings = { modules: Object.fromEntries(modules.map((m) => [m, { enabled: true }])) };
   const tenant = await ownerDb.tenant.create({
-    data: { slug, name: slug, email: `${slug}@sparx.test`, plan: 'starter', status: 'active', settings },
+    data: {
+      slug,
+      name: slug,
+      email: `${slug}@sparx.test`,
+      plan: 'starter',
+      status: 'active',
+      settings,
+    },
     select: { id: true },
   });
   createdTenants.push(tenant.id);
@@ -59,7 +66,12 @@ async function seedTenant(modules: string[]): Promise<{ tenantId: string; ownerE
 
 async function seedOpenDeal(tenantId: string, assignedRepId: string | null): Promise<string> {
   const pipeline = await ownerDb.pipeline.create({
-    data: { tenantId, name: 'Sales', slug: `s-${crypto.randomBytes(3).toString('hex')}`, isDefault: true },
+    data: {
+      tenantId,
+      name: 'Sales',
+      slug: `s-${crypto.randomBytes(3).toString('hex')}`,
+      isDefault: true,
+    },
     select: { id: true },
   });
   const stage = await ownerDb.pipelineStage.create({
@@ -67,7 +79,14 @@ async function seedOpenDeal(tenantId: string, assignedRepId: string | null): Pro
     select: { id: true },
   });
   const deal = await ownerDb.deal.create({
-    data: { tenantId, pipelineId: pipeline.id, stageId: stage.id, title: 'Acme retrofit', value: 1000, assignedRepId },
+    data: {
+      tenantId,
+      pipelineId: pipeline.id,
+      stageId: stage.id,
+      title: 'Acme retrofit',
+      value: 1000,
+      assignedRepId,
+    },
     select: { id: true },
   });
   return deal.id;
@@ -124,7 +143,12 @@ describe('new-lead task — assignee resolution', () => {
   it('assigns the task to the deal’s rep', async () => {
     const { tenantId } = await seedTenant(['crm']);
     const rep = await ownerDb.user.create({
-      data: { tenantId, email: `rep-${crypto.randomBytes(3).toString('hex')}@sparx.test`, name: 'Rep', role: 'admin' },
+      data: {
+        tenantId,
+        email: `rep-${crypto.randomBytes(3).toString('hex')}@sparx.test`,
+        name: 'Rep',
+        role: 'admin',
+      },
       select: { id: true },
     });
     await seedSystemAutomations({ tenantId }, { module: 'crm' });
@@ -147,7 +171,7 @@ describe('new-lead task — assignee resolution', () => {
     await runAutomationTick(deps, appDb);
 
     const task = await ownerDb.task.findFirstOrThrow({ where: { tenantId, dealId } });
-    const owner = await ownerDb.user.findUniqueOrThrow({ where: { id: task.assignedToUserId! } });
+    const owner = await ownerDb.user.findUniqueOrThrow({ where: { id: task.assignedToUserId } });
     expect(owner.email).toBe(ownerEmail);
   });
 });
@@ -176,6 +200,11 @@ describe('high-value order alert — platform-level internal send', () => {
     await handleTrigger(evt('order.paid', tenantId, { orderId: order.id }), deps);
     await runAutomationTick(deps, appDb);
 
+    const run = await ownerDb.automationRun.findFirst({
+      where: { tenantId },
+      include: { steps: true },
+    });
+    expect(run?.status, JSON.stringify(run?.steps)).toBe('completed');
     const send = await ownerDb.scheduledSend.findFirst({ where: { tenantId } });
     expect(send?.recipient).toBe(ownerEmail);
     const payload = send?.payload as { raw?: { subject?: string } } | null;

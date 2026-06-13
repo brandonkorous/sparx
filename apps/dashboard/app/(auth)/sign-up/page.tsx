@@ -7,6 +7,7 @@ import posthog from 'posthog-js';
 import { ATTR_COOKIES, deserializeSnapshot } from '@sparx/attribution';
 import { Button, Checkbox, Heading, Input, Label, PasswordInput, Stack, Text } from '@sparx/ui';
 import { AuthScreen, RailPoints } from '../_components/auth-screen';
+import { SocialAuthSection } from '../_components/social-auth';
 
 const LEGAL_BASE = 'https://sparx.works/legal';
 import { signUpAction } from '../actions';
@@ -100,6 +101,8 @@ export default function SignUpPage() {
             Start a 14-day free trial. You&apos;ll name your workspace in the next step.
           </Text>
         </div>
+
+        <SocialAuthSection />
 
         <form onSubmit={onSubmit} noValidate>
           <Stack gap={4}>

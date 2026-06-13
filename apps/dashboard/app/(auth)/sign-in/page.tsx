@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Button, Heading, Input, Label, PasswordInput, Stack, Text } from '@sparx/ui';
 import { authClient } from '@sparx/auth/client';
 import { AuthScreen } from '../_components/auth-screen';
+import { SocialAuthSection } from '../_components/social-auth';
 
 export default function SignInPage() {
   const router = useRouter();
@@ -45,6 +46,8 @@ export default function SignInPage() {
           <Heading level={2}>Sign in</Heading>
           <Text variant="muted">Sign in to your Sparx workspace.</Text>
         </div>
+
+        <SocialAuthSection />
 
         <form onSubmit={onSubmit} noValidate>
           <Stack gap={4}>

@@ -6,6 +6,7 @@ import { startWebhookDeliveryLoop } from '@sparx/api-core/webhook-delivery';
 import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { createApp } from './app.js';
+import { registerEmailProvisioningConsumer } from './lib/email-provisioning.js';
 import { env } from './env.js';
 import { startScheduledPublishLoop } from './lib/scheduled-publish.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
@@ -31,6 +32,12 @@ async function main(): Promise<void> {
   // Subscriptions delegate to the in-memory bus the tee bridge wraps, so
   // ordering vs. installCrmPubSubBridge above doesn't matter.
   registerCrmConsumers();
+
+  // The Email module's activation consumer (docs/91 §7): on `module.activated`
+  // for `email`, materialize the tenant's 13 default Builder-email templates so
+  // they're send-ready by KEY. Kept here (not in @sparx/crm) so the CRM package
+  // never depends on @sparx/builder; subscribes to the same in-process bus.
+  registerEmailProvisioningConsumer();
 
   // Wrap the CRM publisher so every publishCrmEvent() also enqueues a
   // WebhookDelivery row per matching tenant subscription. Pre-warm the

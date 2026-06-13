@@ -84,21 +84,19 @@ const CampaignConfig = z.union([
   }),
 ]);
 
-const InternalConfig = z
-  .object({
-    // Recipient resolution, in priority order (docs/90 §3b): a field path on the
-    // trigger entity (e.g. a conversation's assigned-staff email), an explicit
-    // address, then the tenant's notify address (owner email → tenant contact).
-    toField: z.string().min(1).optional(),
-    to: z.string().email().optional(),
-    subject: z.string().min(1),
-    html: z.string().optional(),
-    text: z.string().optional(),
-    delaySeconds: z.number().int().min(0).optional(),
-  })
-  .refine((c) => c.html !== undefined || c.text !== undefined, {
-    message: 'email.send_internal needs an html or text body.',
-  });
+const InternalConfig = z.object({
+  // Recipient resolution, in priority order (docs/90 §3b): a field path on the
+  // trigger entity (e.g. a conversation's assigned-staff email), an explicit
+  // address, then the tenant's notify address (owner email → tenant contact).
+  toField: z.string().min(1).optional(),
+  to: z.string().email().optional(),
+  subject: z.string().min(1),
+  // Body is optional — a staff alert's subject IS the message. When neither html
+  // nor text is given, the text body defaults to the subject at execution.
+  html: z.string().optional(),
+  text: z.string().optional(),
+  delaySeconds: z.number().int().min(0).optional(),
+});
 
 let installed = false;
 
@@ -177,7 +175,9 @@ export function installEmailActions(): void {
       const fromField = cfg.toField ? optionalEntityId(effect.fields, cfg.toField) : undefined;
       const recipient = fromField ?? cfg.to ?? (await resolveTenantActor(ctx)).email;
       if (!recipient) {
-        throw new Error('email.send_internal: no recipient resolved and the tenant has no contact.');
+        throw new Error(
+          'email.send_internal: no recipient resolved and the tenant has no contact.'
+        );
       }
       // Internal mail is pre-rendered here, so its `{{token}}` merge fields resolve
       // now against the trigger's flat fields (docs/90 §3 internal alerts).
@@ -185,7 +185,9 @@ export function installEmailActions(): void {
         raw: {
           subject: interpolateFields(cfg.subject, effect.fields),
           html: interpolateFields(cfg.html ?? '', effect.fields),
-          text: interpolateFields(cfg.text ?? '', effect.fields),
+          // Default the text body to the subject so a subject-only alert still has
+          // a body (an internal notification's subject is its content).
+          text: interpolateFields(cfg.text ?? cfg.subject, effect.fields),
         },
       };
       const { enqueued, suppressed } = await enqueueSend(

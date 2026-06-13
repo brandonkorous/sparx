@@ -18,11 +18,7 @@ import {
 } from '@sparx/automation';
 
 import { B2B_NEW_ACCOUNT_TASK, B2B_OVERDUE_ESCALATION } from './b2b.js';
-import {
-  CRM_AUTO_TAG_VIP,
-  CRM_DEAL_WON_INVOICE_TASK,
-  CRM_NEW_LEAD_FOLLOW_UP_TASK,
-} from './crm.js';
+import { CRM_AUTO_TAG_VIP, CRM_DEAL_WON_INVOICE_TASK, CRM_NEW_LEAD_FOLLOW_UP_TASK } from './crm.js';
 import {
   COMMERCE_HIGH_VALUE_ORDER_ALERT,
   COMMERCE_LOW_INVENTORY_ALERT,

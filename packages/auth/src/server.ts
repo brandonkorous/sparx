@@ -3,6 +3,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
 import { authPrisma } from './prisma';
 import { publishAuthEmail } from './email-events';
+import { finalizeOAuthSignup, provisionTenantForOAuth } from './oauth-provisioning';
 
 // Sparx Better Auth server instance. One per process — same caching strategy
 // as @sparx/db's prisma client so dev HMR does not leak adapters.
@@ -20,6 +21,13 @@ declare global {
 }
 
 function createAuth() {
+  // Google OAuth is opt-in via env — the provider is only registered when both
+  // creds are present, so the social button stays inert until the OAuth app +
+  // Secret Manager values exist. Redirect URI in Google Console:
+  // `${BETTER_AUTH_URL}/api/auth/callback/google`.
+  const googleId = process.env.GOOGLE_CLIENT_ID;
+  const googleSecret = process.env.GOOGLE_CLIENT_SECRET;
+
   return betterAuth({
     appName: 'Sparx',
     baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3001',
@@ -98,6 +106,60 @@ function createAuth() {
           required: false,
           defaultValue: 'editor',
           input: false,
+        },
+      },
+    },
+
+    ...(googleId && googleSecret
+      ? {
+          socialProviders: {
+            google: { clientId: googleId, clientSecret: googleSecret },
+          },
+        }
+      : {}),
+
+    account: {
+      // Link a Google sign-in to an existing user when the verified email
+      // matches — so an email/password user who later clicks "Continue with
+      // Google" lands on their existing tenant instead of spawning a duplicate.
+      accountLinking: {
+        enabled: true,
+        trustedProviders: ['google'],
+      },
+    },
+
+    databaseHooks: {
+      user: {
+        create: {
+          // OAuth signups: Better Auth creates the user itself, but
+          // `User.tenantId` is required — mint a tenant here and inject the id.
+          // (Our email/password path uses signUpMerchant directly and never
+          // hits this hook; account-LINKING fires `account.create`, not
+          // `user.create`, so this only runs for genuinely new social users.)
+          before: async (user) => {
+            const extras = user as unknown as { tenantId?: string };
+            if (extras.tenantId) return;
+            const email = (user as { email?: string }).email;
+            if (!email) return;
+            const name = (user as { name?: string | null }).name ?? null;
+            const tenantId = await provisionTenantForOAuth({ email, name });
+            return { data: { ...user, tenantId, role: 'owner' } };
+          },
+          after: async (user) => {
+            const u = user as unknown as {
+              id: string;
+              tenantId?: string;
+              email?: string;
+              name?: string | null;
+            };
+            if (!u.tenantId || !u.email) return;
+            await finalizeOAuthSignup({
+              userId: u.id,
+              tenantId: u.tenantId,
+              email: u.email,
+              name: u.name ?? null,
+            });
+          },
         },
       },
     },
