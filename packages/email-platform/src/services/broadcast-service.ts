@@ -64,12 +64,19 @@ export async function get(ctx: ServiceContext, id: string): Promise<Broadcast> {
   return row;
 }
 
-export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Broadcast> {
+export async function create(
+  ctx: ServiceContext,
+  rawInput: unknown,
+  // The site this broadcast is sent on behalf of (docs/49 Phase 7) — the active
+  // site, resolved at the route. null = the tenant's primary brand.
+  propertyId: string | null = null
+): Promise<Broadcast> {
   const input = CreateBroadcastInput.parse(rawInput);
   const row = await withTenant(ctx, async (tx) => {
     const created = await tx.broadcast.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId,
         name: input.name,
         subject: input.subject,
         preheader: input.preheader ?? null,
@@ -200,7 +207,12 @@ async function enqueueAndMark(
   const personalized = treeIsEmailPersonalized(doc.tree);
   let body: { subject: string; html: string; text: string } | null = null;
   if (!personalized) {
-    const [data, brand] = await Promise.all([resolveEmailData(doc.tree), resolveEmailBrand(ctx)]);
+    // Render once, in THIS broadcast's site brand (docs/49 Phase 7) — the site's
+    // brand_override merged over the tenant brand; null property → primary brand.
+    const [data, brand] = await Promise.all([
+      resolveEmailData(doc.tree),
+      resolveEmailBrand(ctx, broadcast.propertyId),
+    ]);
     const rendered = await renderEmailTree(
       {
         tree: doc.tree,
@@ -245,6 +257,9 @@ async function enqueueAndMark(
       await tx.scheduledSend.createMany({
         data: recipients.map((r) => ({
           tenantId: ctx.tenantId,
+          // Carry the broadcast's site so the deferred (personalized) render at the
+          // dispatch tick brands per-site too (docs/49 Phase 7).
+          propertyId: broadcast.propertyId,
           broadcastId: id,
           recipient: r.email,
           customerId: r.customerId,

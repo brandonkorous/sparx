@@ -150,6 +150,11 @@ model EmailAutomation {
 model ScheduledSend {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) whose brand this send renders (docs/49 Phase 7) —
+  // copied from the broadcast, or resolved from the source event for an
+  // automation send. NULL = the tenant's primary brand. SetNull: a send outlives
+  // its site.
+  propertyId String? @map("property_id") @db.Uuid
 
   automationId String? @map("automation_id") @db.Uuid
   broadcastId  String? @map("broadcast_id") @db.Uuid
@@ -171,6 +176,7 @@ model ScheduledSend {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant     Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property   Property?        @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   automation EmailAutomation? @relation(fields: [automationId], references: [id], onDelete: SetNull)
   broadcast  Broadcast?       @relation(fields: [broadcastId], references: [id], onDelete: Cascade)
   template   EmailTemplate?   @relation(fields: [templateId], references: [id], onDelete: SetNull)
@@ -187,6 +193,11 @@ model ScheduledSend {
 model Broadcast {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) this broadcast is sent on behalf of (docs/49 Phase 7).
+  // NULL = the tenant's primary brand (the default + every pre-rollout row); a
+  // non-null value renders that site's brand (Property.brandOverride merged over
+  // the tenant brand). NOT a security boundary.
+  propertyId String? @map("property_id") @db.Uuid
 
   name           String  @db.VarChar(160)
   templateId     String? @map("template_id") @db.Uuid
@@ -215,6 +226,7 @@ model Broadcast {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property       Property?       @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   template       EmailTemplate?  @relation(fields: [templateId], references: [id], onDelete: SetNull)
   scheduledSends ScheduledSend[]
   events         EmailEvent[]
@@ -230,6 +242,10 @@ model Broadcast {
 model EmailEvent {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid
+  // The web PROPERTY (site) the send was on behalf of (docs/49 Phase 7), copied
+  // from the ScheduledSend/broadcast so analytics can break engagement down per
+  // site. NULL = tenant-wide / primary. SetNull: events outlive their site.
+  propertyId String? @map("property_id") @db.Uuid
 
   messageId     String?  @map("message_id") @db.VarChar(255)
   recipient     String   @db.VarChar(255)
@@ -245,6 +261,7 @@ model EmailEvent {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
   tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property  Property?  @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   broadcast Broadcast? @relation(fields: [broadcastId], references: [id], onDelete: SetNull)
 
   @@index([tenantId, broadcastId])

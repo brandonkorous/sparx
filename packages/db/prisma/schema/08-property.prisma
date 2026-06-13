@@ -75,6 +75,12 @@ model Property {
   // Per-site legal/footer doc placements (docs/49 Phase 6c); null-property
   // placements are tenant-wide and show on every site.
   docPlacements        StorefrontDocPlacement[]
+  // Per-site email sends (docs/49 Phase 7) — broadcasts, queued sends, and the
+  // engagement events they produce render/attribute against this site's brand.
+  // null-property rows fall back to the tenant's primary brand.
+  broadcasts           Broadcast[]
+  scheduledSends       ScheduledSend[]
+  emailEvents          EmailEvent[]
 
   // Custom + purchased hostnames pointing at this site (docs/49 §5, docs/24).
   domains Domain[]

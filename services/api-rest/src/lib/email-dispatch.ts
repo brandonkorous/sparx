@@ -95,6 +95,9 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
           return {
             to: send.recipient,
             customerId: send.customerId,
+            // The site this send is on behalf of (docs/49 Phase 7) — drives the
+            // per-site brand for the deferred render below.
+            propertyId: send.propertyId,
             payload,
             from: buildFrom(settings?.fromName ?? null, settings?.fromAddress ?? null),
             replyTo: settings?.replyTo ?? undefined,
@@ -103,7 +106,7 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
 
         if (!dispatch) continue;
 
-        const { payload, to, from, replyTo, customerId } = dispatch;
+        const { payload, to, from, replyTo, customerId, propertyId } = dispatch;
         const common = {
           to,
           from,
@@ -128,7 +131,7 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             email: to,
             customerId: customerId ?? undefined,
           });
-          const brand = (await brandService.resolveEmailBrand(tenantCtx)) ?? undefined;
+          const brand = (await brandService.resolveEmailBrand(tenantCtx, propertyId)) ?? undefined;
           const rendered = await renderEmailTree(
             {
               tree: doc.tree,

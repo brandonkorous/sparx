@@ -70,26 +70,68 @@ function tokensToBrand(
   };
 }
 
+// The per-site brand override (docs/49 §3, Property.brand_override) — the same
+// presentation-only identity overlay the storefront merges. Read loosely from the
+// JSON column; only the identity fields email cares about are picked. A site with
+// no override (or null fields) inherits the tenant brand field-by-field.
+interface BrandOverride {
+  businessName?: string | null;
+  colorPrimary?: string | null;
+  colorPrimaryForeground?: string | null;
+  colorAccent?: string | null;
+  fontHeading?: string | null;
+  fontBody?: string | null;
+  logoMediaId?: string | null;
+}
+
+function parseBrandOverride(value: unknown): BrandOverride | null {
+  return value && typeof value === 'object' ? value : null;
+}
+
 /**
- * Resolve the tenant's email brand, or `null` when the tenant has no brand
- * identity set (the caller then renders with @sparx/email's Sparx defaults).
+ * Resolve the email brand for a send, or `null` when there's no brand identity
+ * (the caller then renders with @sparx/email's Sparx defaults). When `propertyId`
+ * is given (docs/49 Phase 7), the site's `brand_override` is merged field-by-field
+ * OVER the tenant brand, so an email sent on behalf of a site renders that site's
+ * name / colours / fonts / logo — exactly the merge the storefront payload does.
  */
-export async function resolveEmailBrand(ctx: ServiceContext): Promise<BrandTokens | null> {
+export async function resolveEmailBrand(
+  ctx: ServiceContext,
+  propertyId?: string | null
+): Promise<BrandTokens | null> {
   return withTenant(ctx, async (tx) => {
-    const [brand, tenant] = await Promise.all([
+    const [brandRow, tenant, propertyRow] = await Promise.all([
       tx.tenantBrand.findUnique({ where: { tenantId: ctx.tenantId } }),
       tx.tenant.findUnique({ where: { id: ctx.tenantId }, select: { name: true, slug: true } }),
+      propertyId
+        ? tx.property.findUnique({ where: { id: propertyId }, select: { brandOverride: true } })
+        : Promise.resolve(null),
     ]);
 
-    // A tenant with no brand record → Sparx defaults (null signals "use
-    // @sparx/email's defaultBrand"). Guarding here also narrows `brand` to
-    // non-null for the rest of the function.
-    if (brand === null) return null;
+    const override = parseBrandOverride(propertyRow?.brandOverride);
+
+    // A tenant with no brand record AND no per-site override → Sparx defaults
+    // (null signals "use @sparx/email's defaultBrand").
+    if (brandRow === null && !override) return null;
+
+    // Merge the per-site override OVER the tenant brand, field-by-field — an
+    // absent/null override field inherits the tenant value. logoMediaId overrides
+    // the tenant's light logo. Identity-only (email never overrides shape/feel).
+    const brand = {
+      businessName: override?.businessName ?? brandRow?.businessName ?? null,
+      colorPrimary: override?.colorPrimary ?? brandRow?.colorPrimary ?? null,
+      colorPrimaryForeground:
+        override?.colorPrimaryForeground ?? brandRow?.colorPrimaryForeground ?? null,
+      colorAccent: override?.colorAccent ?? brandRow?.colorAccent ?? null,
+      fontHeading: override?.fontHeading ?? brandRow?.fontHeading ?? null,
+      fontBody: override?.fontBody ?? brandRow?.fontBody ?? null,
+      logoLightMediaId: override?.logoMediaId ?? brandRow?.logoLightMediaId ?? null,
+    };
 
     const slug = tenant?.slug ?? '';
     const storeName = brand.businessName ?? tenant?.name ?? undefined;
 
-    // Likewise a brand row with no identity tokens at all → defaults.
+    // A merged brand with no identity tokens at all → defaults.
     const hasIdentity = [
       brand.businessName,
       brand.colorPrimary,
@@ -101,9 +143,8 @@ export async function resolveEmailBrand(ctx: ServiceContext): Promise<BrandToken
     ].some(Boolean);
     if (!hasIdentity) return null;
 
-    // Overlay the brand's identity palette/typography over the default preset;
-    // unset tokens inherit the preset. Email uses the light palette only. Same
-    // brand→token mapping the storefront uses (shared in @sparx/site-themes).
+    // Overlay the (merged) brand's identity palette/typography over the default
+    // preset; unset tokens inherit the preset. Email uses the light palette only.
     const overlay = brandIdentityOverlay(brand);
     const compiled = compileTokens(DEFAULT_THEME_KEY, { light: overlay }).light;
     return tokensToBrand(compiled, {
