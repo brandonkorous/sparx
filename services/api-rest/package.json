@@ -53,7 +53,6 @@
     "@sparx/marketplace-schemas": "workspace:*",
     "@sparx/payments": "workspace:*",
     "@sparx/provider-shippo": "workspace:*",
-    "@sparx/provider-stripe": "workspace:*",
     "jose": "^6.0.10",
     "socket.io": "^4.8.1",
     "@socket.io/redis-adapter": "^8.3.0",

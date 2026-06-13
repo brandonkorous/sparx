@@ -12,7 +12,6 @@
 // shared payment reconciliation for Stripe-family providers. Always 200 on a valid
 // signature (Stripe stops retrying); 403 on a bad one.
 
-import type Stripe from 'stripe';
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
@@ -20,11 +19,6 @@ import { prisma, withTenant } from '@sparx/db';
 import { getSecretReader } from '@sparx/commerce';
 import { verifyInboundWebhook, WebhookVerificationError } from '@sparx/integration-framework';
 import { ApiError } from '@sparx/api-core/errors';
-
-import { dispatchStripePaymentEvent } from '../../../lib/stripe-payment-reconcile.js';
-
-// Provider slugs whose payment events flow through the shared Stripe reconciliation.
-const STRIPE_PAYMENT_SLUGS = new Set(['stripe', 'sparx-pay']);
 
 const PathParams = z.object({
   slug: z.string().min(1).max(63),
@@ -106,8 +100,10 @@ const providerWebhookRoutes: FastifyPluginAsync = async (app) => {
     }
 
     // Dedupe + persist. The unique (provider_slug, provider_event_id) makes a
-    // redelivery a no-op: a P2002 means we already recorded this event.
-    let novel = true;
+    // redelivery a no-op: a P2002 means we already recorded this event. This is the
+    // integration-framework's generic provider-webhook ingress (shipping / tax /
+    // dropship). Gateway PAYMENT events no longer flow here — they go through the
+    // dedicated /v1/public/webhooks/{sparx-pay,stripe-direct} endpoints (docs/94 §10).
     try {
       await withTenant({ tenantId: install.tenantId }, (tx) =>
         tx.providerWebhookEvent.create({
@@ -125,7 +121,6 @@ const providerWebhookRoutes: FastifyPluginAsync = async (app) => {
       );
     } catch (err) {
       if ((err as { code?: string }).code === 'P2002') {
-        novel = false;
         request.log.debug(
           { providerEventId: verified.providerEventId },
           'provider webhook: duplicate event — already recorded'
@@ -133,29 +128,6 @@ const providerWebhookRoutes: FastifyPluginAsync = async (app) => {
       } else {
         throw err;
       }
-    }
-
-    // Reconcile once (idempotent handlers; the storefront paid edge stays consistent
-    // with the merchant's own Stripe). Non-Stripe providers persist only for now.
-    if (novel && STRIPE_PAYMENT_SLUGS.has(install.providerSlug)) {
-      let status = 'processed';
-      let errorReason: string | null = null;
-      try {
-        await dispatchStripePaymentEvent(request.log, verified.rawPayload as Stripe.Event);
-      } catch (err) {
-        status = 'failed';
-        errorReason = err instanceof Error ? err.message.slice(0, 500) : 'unknown error';
-        request.log.error(
-          { err, slug, installationId, providerEventId: verified.providerEventId },
-          'provider webhook: reconciliation failed'
-        );
-      }
-      await withTenant({ tenantId: install.tenantId }, (tx) =>
-        tx.providerWebhookEvent.updateMany({
-          where: { providerSlug: install.providerSlug, providerEventId: verified.providerEventId },
-          data: { status, processedAt: new Date(), ...(errorReason ? { errorReason } : {}) },
-        })
-      );
     }
 
     await reply.code(200).send({ received: true });

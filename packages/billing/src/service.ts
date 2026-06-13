@@ -21,11 +21,8 @@ import { getBillingStripe, isBillingConfigured } from './client';
 import {
   MODULE_MONTHLY_CENTS,
   TRIAL_PERIOD_DAYS,
-  activeTotalCents,
   isBillableModule,
   priceIdFor,
-  transactionFeePriceId,
-  transactionFeeRate,
   type BillingInterval,
 } from './price-catalog';
 
@@ -122,13 +119,9 @@ export async function syncModuleItems(input: SubscriptionSyncInput): Promise<Bil
   //    until a priced module is enabled.
   if (!tenant.stripeSubscriptionId) {
     if (desired.length === 0) return { applied: true, stripeCustomerId: customerId };
-    // Ride the metered transaction-fee price alongside the module items so fee
-    // meter events invoice (docs/92 §3). Metered → no quantity; $0 when unused.
-    const feePriceId = transactionFeePriceId();
     const items: Stripe.SubscriptionCreateParams.Item[] = desired.map((d) => ({
       price: d.priceId,
     }));
-    if (feePriceId) items.push({ price: feePriceId });
     const sub = await stripe.subscriptions.create({
       customer: customerId,
       items,
@@ -143,23 +136,20 @@ export async function syncModuleItems(input: SubscriptionSyncInput): Promise<Bil
 
   // 3) Reconcile items against an existing subscription.
 
-  // 3a) Ensure the metered transaction-fee item rides on the subscription first
-  //     (docs/92 §3). It's the permanent anchor — so removing the last module item
-  //     below never hits Stripe's "can't delete the only item" — and the rail the
-  //     fee meter bills against. Not tracked in billing_subscription_items (it maps
-  //     to no module), so we check the live Stripe items, not local rows.
-  const feePriceId = transactionFeePriceId();
-  if (feePriceId) {
-    const liveItems = await stripe.subscriptionItems.list({
-      subscription: tenant.stripeSubscriptionId,
-      limit: 100,
+  // 3a) No billable modules left — cancel the subscription rather than try to delete
+  //     its last item (Stripe forbids removing the only item on a subscription). The
+  //     tenant keeps its Stripe customer + history; re-enabling a module later creates
+  //     a fresh subscription through the create path above.
+  if (desired.length === 0) {
+    await stripe.subscriptions.cancel(tenant.stripeSubscriptionId);
+    await withTenant({ tenantId: input.tenantId }, (tx) =>
+      tx.billingSubscriptionItem.deleteMany({ where: { tenantId: input.tenantId } })
+    );
+    await prisma.tenant.update({
+      where: { id: input.tenantId },
+      data: { stripeSubscriptionId: null },
     });
-    if (!liveItems.data.some((it) => it.price.id === feePriceId)) {
-      await stripe.subscriptionItems.create({
-        subscription: tenant.stripeSubscriptionId,
-        price: feePriceId,
-      });
-    }
+    return { applied: true, stripeCustomerId: customerId };
   }
 
   const existing = await withTenant({ tenantId: input.tenantId }, (tx) =>
@@ -389,69 +379,7 @@ export async function setSubscriptionStatus(
   });
 }
 
-export interface TransactionFeeInput {
-  tenantId: string;
-  /** The order's grand total in cents — the base the percentage fee applies to. */
-  orderTotalCents: number;
-  /** Stable id (the order id) reused as the Stripe meter-event identifier so a
-   *  duplicate send for the same order is deduped by Stripe, not double-billed. */
-  identifier?: string;
-}
-
-export interface TransactionFeeResult {
-  /** True iff a meter event was actually emitted to Stripe. */
-  metered: boolean;
-  /** The tier that applied: 0 | 0.003 | 0.005 (docs/17 §2, docs/67 §7). */
-  feeRate: number;
-  /** The rounded fee in cents (what was metered, or what would have been). */
-  feeCents: number;
-  /** Why metering did or didn't happen — for logs. */
-  reason: 'unconfigured' | 'no-customer' | 'zero-fee' | 'metered';
-}
-
-/**
- * Meter a transaction fee for one placed order (docs/67 §7). The rate comes from
- * the tenant's EXPLICIT billable-module mix (the cheapest applicable tier wins;
- * 0% once monthly spend clears $299). Best-effort + GUARDED: a no-op when Stripe
- * is unconfigured, when no tenant/customer exists, or when the computed fee is
- * zero — so it ships before the billing ops land and never blocks checkout. The
- * caller swallows; the fee is additive revenue, not part of the order's truth.
- */
-export async function recordTransactionFee(
-  input: TransactionFeeInput
-): Promise<TransactionFeeResult> {
-  const stripe = getBillingStripe();
-  if (!stripe) return { metered: false, feeRate: 0, feeCents: 0, reason: 'unconfigured' };
-
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: input.tenantId },
-    select: { stripeCustomerId: true, settings: true },
-  });
-
-  // Monthly spend + active capabilities drive the tier. Spend counts only what
-  // the tenant actually pays for (explicit billable flags) — bundled-free
-  // capabilities (invoicing via Commerce/B2B) don't raise the $299 threshold.
-  const states = deriveModuleStates(tenant?.settings);
-  const explicitBillable = (Object.keys(MODULE_MONTHLY_CENTS) as ModuleSlug[]).filter(
-    (m) => states[m].source === 'explicit'
-  );
-  const feeRate = transactionFeeRate({
-    monthlySpendCents: activeTotalCents(explicitBillable),
-    commerceActive: states.commerce.enabled,
-    crmActive: states.crm.enabled,
-  });
-  const feeCents = Math.round(input.orderTotalCents * feeRate);
-
-  if (feeCents <= 0)
-    return { metered: false, feeRate, feeCents: Math.max(feeCents, 0), reason: 'zero-fee' };
-  if (!tenant?.stripeCustomerId)
-    return { metered: false, feeRate, feeCents, reason: 'no-customer' };
-
-  await stripe.billing.meterEvents.create({
-    event_name: 'transaction_fee',
-    payload: { value: String(feeCents), stripe_customer_id: tenant.stripeCustomerId },
-    ...(input.identifier ? { identifier: `txfee_${input.identifier}` } : {}),
-  });
-
-  return { metered: true, feeRate, feeCents, reason: 'metered' };
-}
+// The platform transaction fee is no longer a metered subscription line. The only
+// platform-collected payment fee is Sparx Pay's flat 0.5%, taken at charge time via
+// Stripe `application_fee_amount` and recorded on payment_intents.platform_fee — see
+// @sparx/payments (docs/94 ADR §8). Everything else is $0 (modules, not tiers).

@@ -97,6 +97,14 @@ export interface EmailBuilderAppProps {
    *  a neutral label; `senderAddress` is omitted when no sending address is known. */
   senderName?: string;
   senderAddress?: string | null;
+  /** The tenant's light logo URL, shown in the canvas's send-chrome wordmark when
+   *  set — the email renders the logo (and only the logo) when the brand has one,
+   *  matching @sparx/email's EmailWordmark (docs/52). Absent ⇒ the name wordmark. */
+  senderLogoUrl?: string | null;
+  /** The tenant's REAL identity for the canvas merge-token preview (docs/93): the
+   *  store name resolves `{{tenant.name}}` to the actual store in every heading,
+   *  matching the send — not the generic "Acme Supply Co." sample. */
+  tenant?: { name?: string | null; storeUrl?: string | null; supportEmail?: string | null };
   /** The active web property when the tenant runs MORE THAN ONE site (docs/49
    *  Phase 7b) — present only in multi-site mode. Drives the "Customize for this
    *  site" fork + the override badge. Absent for single-site tenants, where the
@@ -109,6 +117,8 @@ export function EmailBuilderApp({
   bindingCatalog,
   senderName,
   senderAddress,
+  senderLogoUrl,
+  tenant,
   site,
 }: EmailBuilderAppProps) {
   const confirm = useConfirm();
@@ -510,6 +520,8 @@ export function EmailBuilderApp({
             subject: active.subject,
             senderName: senderName ?? 'Your store',
             senderAddress: senderAddress ?? null,
+            senderLogoUrl: senderLogoUrl ?? null,
+            tenant,
           }}
           settings={
             <EmailSettings

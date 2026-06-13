@@ -1,9 +1,9 @@
 // Behaviour tests for the billing service's decision logic. The service is tightly
 // coupled to Prisma + the platform Stripe client (true integration coverage needs a
 // test DB and runs in CI), so here we mock `@sparx/db` and `./client` to exercise
-// the logic that matters most locally: the transaction-fee money path, webhook
-// reconciliation of module flags, and the C2 fee-item attachment. `@sparx/modules`
-// (deriveModuleStates) and `./price-catalog` stay REAL — the math is the point.
+// the logic that matters most locally: subscription item reconciliation (create,
+// add/remove, cancel-on-empty) and webhook reconciliation of module flags.
+// `@sparx/modules` (deriveModuleStates) and `./price-catalog` stay REAL.
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -11,9 +11,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const h = vi.hoisted(() => {
   const stub = {
     value: null as null | {
-      billing: { meterEvents: { create: ReturnType<typeof vi.fn> } };
       customers: { create: ReturnType<typeof vi.fn> };
-      subscriptions: { create: ReturnType<typeof vi.fn> };
+      subscriptions: { create: ReturnType<typeof vi.fn>; cancel: ReturnType<typeof vi.fn> };
       subscriptionItems: {
         list: ReturnType<typeof vi.fn>;
         create: ReturnType<typeof vi.fn>;
@@ -53,13 +52,12 @@ vi.mock('@sparx/db', () => ({
     fn({ billingSubscriptionItem: h.txItems }),
 }));
 
-import { recordTransactionFee, reconcileFromSubscription, syncModuleItems } from './service';
+import { reconcileFromSubscription, syncModuleItems } from './service';
 
 type Subscription = Parameters<typeof reconcileFromSubscription>[0];
 
 function freshStripeStub() {
   return {
-    billing: { meterEvents: { create: vi.fn().mockResolvedValue({ id: 'mbe_1' }) } },
     customers: { create: vi.fn().mockResolvedValue({ id: 'cus_new' }) },
     subscriptions: {
       create: vi.fn().mockResolvedValue({
@@ -70,6 +68,7 @@ function freshStripeStub() {
         cancel_at_period_end: false,
         items: { data: [] },
       }),
+      cancel: vi.fn().mockResolvedValue({ id: 'sub_old', status: 'canceled' }),
     },
     subscriptionItems: {
       list: vi.fn().mockResolvedValue({ data: [] }),
@@ -87,79 +86,11 @@ beforeEach(() => {
 
 afterEach(() => {
   delete process.env.STRIPE_PRICE_COMMERCE_MONTHLY;
-  delete process.env.STRIPE_PRICE_TRANSACTION_FEE;
-});
-
-describe('recordTransactionFee', () => {
-  it('charges 0.5% with Commerce active below the $299 cap and meters the fee in cents', async () => {
-    h.tenantFindUnique.mockResolvedValue({
-      stripeCustomerId: 'cus_abc',
-      settings: { modules: { commerce: { enabled: true } } },
-    });
-    const r = await recordTransactionFee({
-      tenantId: 't1',
-      orderTotalCents: 100_00,
-      identifier: 'order_1',
-    });
-    expect(r).toMatchObject({ metered: true, feeRate: 0.005, feeCents: 50, reason: 'metered' });
-    expect(h.stub.value!.billing.meterEvents.create).toHaveBeenCalledWith({
-      event_name: 'transaction_fee',
-      payload: { value: '50', stripe_customer_id: 'cus_abc' },
-      identifier: 'txfee_order_1',
-    });
-  });
-
-  it('charges 0.3% when CRM is also active (cheapest applicable tier wins)', async () => {
-    h.tenantFindUnique.mockResolvedValue({
-      stripeCustomerId: 'cus_abc',
-      settings: { modules: { commerce: { enabled: true }, crm: { enabled: true } } },
-    });
-    const r = await recordTransactionFee({ tenantId: 't1', orderTotalCents: 100_00 });
-    expect(r).toMatchObject({ feeRate: 0.003, feeCents: 30, metered: true });
-  });
-
-  it('charges 0% once explicit monthly spend clears $299 — no meter event', async () => {
-    // commerce 49 + b2b 99 + crm 49 + ai 49 + email 29 = $275 … add cms 49 = $324 ≥ $299
-    h.tenantFindUnique.mockResolvedValue({
-      stripeCustomerId: 'cus_abc',
-      settings: {
-        modules: {
-          commerce: { enabled: true },
-          b2b: { enabled: true },
-          crm: { enabled: true },
-          ai: { enabled: true },
-          email: { enabled: true },
-          cms: { enabled: true },
-        },
-      },
-    });
-    const r = await recordTransactionFee({ tenantId: 't1', orderTotalCents: 100_00 });
-    expect(r).toMatchObject({ feeRate: 0, feeCents: 0, reason: 'zero-fee', metered: false });
-    expect(h.stub.value!.billing.meterEvents.create).not.toHaveBeenCalled();
-  });
-
-  it('does not meter when the tenant has no Stripe customer yet', async () => {
-    h.tenantFindUnique.mockResolvedValue({
-      stripeCustomerId: null,
-      settings: { modules: { commerce: { enabled: true } } },
-    });
-    const r = await recordTransactionFee({ tenantId: 't1', orderTotalCents: 100_00 });
-    expect(r).toMatchObject({ reason: 'no-customer', metered: false, feeCents: 50 });
-    expect(h.stub.value!.billing.meterEvents.create).not.toHaveBeenCalled();
-  });
-
-  it('is a guarded no-op when Stripe is unconfigured', async () => {
-    h.stub.value = null;
-    const r = await recordTransactionFee({ tenantId: 't1', orderTotalCents: 100_00 });
-    expect(r).toMatchObject({ reason: 'unconfigured', metered: false });
-    expect(h.tenantFindUnique).not.toHaveBeenCalled();
-  });
 });
 
 describe('syncModuleItems', () => {
-  it('attaches the metered transaction-fee item alongside module items when creating a subscription', async () => {
+  it('creates a subscription with one item per billable module (no transaction-fee line)', async () => {
     process.env.STRIPE_PRICE_COMMERCE_MONTHLY = 'price_commerce_m';
-    process.env.STRIPE_PRICE_TRANSACTION_FEE = 'price_txfee';
     h.tenantFindUnique.mockResolvedValue({
       id: 't1',
       stripeCustomerId: 'cus_abc',
@@ -177,7 +108,28 @@ describe('syncModuleItems', () => {
     const call = h.stub.value!.subscriptions.create.mock.calls[0];
     expect(call).toBeDefined();
     const createArg = call![0] as { items: { price: string }[] };
-    expect(createArg.items.map((i) => i.price)).toEqual(['price_commerce_m', 'price_txfee']);
+    // Exactly the module item — the Sparx Pay 0.5% fee is collected at charge time
+    // (application_fee_amount), never as a metered subscription line (docs/94 §8).
+    expect(createArg.items.map((i) => i.price)).toEqual(['price_commerce_m']);
+  });
+
+  it('cancels the subscription when the last billable module is disabled', async () => {
+    h.tenantFindUnique.mockResolvedValue({
+      id: 't1',
+      stripeCustomerId: 'cus_abc',
+      stripeSubscriptionId: 'sub_old',
+      billingInterval: 'monthly',
+    });
+
+    const r = await syncModuleItems({ tenantId: 't1', email: 'a@b.co', enabledModules: [] });
+
+    expect(r.applied).toBe(true);
+    expect(h.stub.value!.subscriptions.cancel).toHaveBeenCalledWith('sub_old');
+    expect(h.txItems.deleteMany).toHaveBeenCalled();
+    expect(h.tenantUpdate).toHaveBeenCalledWith({
+      where: { id: 't1' },
+      data: { stripeSubscriptionId: null },
+    });
   });
 });
 

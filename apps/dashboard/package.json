@@ -38,7 +38,6 @@
     "@sparx/provider-easypost": "workspace:*",
     "@sparx/provider-paypal": "workspace:*",
     "@sparx/provider-shippo": "workspace:*",
-    "@sparx/provider-stripe": "workspace:*",
     "@sparx/provider-taxjar": "workspace:*",
     "@sparx/section-template-react": "workspace:*",
     "@sparx/seo-audit": "workspace:*",

@@ -19,6 +19,7 @@ import type Stripe from 'stripe';
 import type { FastifyBaseLogger } from 'fastify';
 
 import { prisma, withTenant } from '@sparx/db';
+import { billingPaymentService } from '@sparx/crm';
 import { publish } from '@sparx/api-core/pubsub';
 import type { ParsedWebhookEvent } from '@sparx/payments';
 
@@ -39,7 +40,10 @@ export async function reconcilePaymentEvent(
   opts: ReconcileOptions
 ): Promise<void> {
   if (parsed.type === 'ignored') {
-    log.debug({ providerEventType: parsed.providerEventType }, 'payment webhook: ignored event type');
+    log.debug(
+      { providerEventType: parsed.providerEventType },
+      'payment webhook: ignored event type'
+    );
     return;
   }
 
@@ -55,7 +59,10 @@ export async function reconcilePaymentEvent(
   // Dedupe + audit: the unique (gateway_id, external_id) makes a redelivery a no-op.
   const novel = await recordEvent(tenantId, opts.gatewayId, parsed);
   if (!novel) {
-    log.debug({ externalId: parsed.externalId }, 'payment webhook: duplicate event — already recorded');
+    log.debug(
+      { externalId: parsed.externalId },
+      'payment webhook: duplicate event — already recorded'
+    );
     return;
   }
 
@@ -65,7 +72,12 @@ export async function reconcilePaymentEvent(
       await reconcileSparxPayAccount(object as unknown as Stripe.Account);
       break;
     case 'payment.succeeded':
-      await handleSucceeded(log, tenantId, opts.gatewayId, object as unknown as Stripe.PaymentIntent);
+      await handleSucceeded(
+        log,
+        tenantId,
+        opts.gatewayId,
+        object as unknown as Stripe.PaymentIntent
+      );
       break;
     case 'payment.failed':
       await handleFailed(log, tenantId, opts.gatewayId, object as unknown as Stripe.PaymentIntent);
@@ -77,7 +89,10 @@ export async function reconcilePaymentEvent(
     case 'dispute.closed':
       // No automated action yet — disputes are handled in the Stripe dashboard
       // (Sparx owns the dispute surface for Sparx Pay). Recorded above for audit.
-      log.info({ type: parsed.type, externalId: parsed.externalId }, 'payment webhook: dispute event recorded');
+      log.info(
+        { type: parsed.type, externalId: parsed.externalId },
+        'payment webhook: dispute event recorded'
+      );
       break;
   }
 
@@ -145,7 +160,11 @@ async function recordEvent(
   }
 }
 
-async function markProcessed(tenantId: string, gatewayId: string, externalId: string): Promise<void> {
+async function markProcessed(
+  tenantId: string,
+  gatewayId: string,
+  externalId: string
+): Promise<void> {
   await withTenant({ tenantId }, (tx) =>
     tx.paymentEvent.updateMany({
       where: { gatewayId, externalId },
@@ -171,7 +190,10 @@ async function handleSucceeded(
       select: { id: true, orderId: true, status: true },
     });
     // The ledger row (informational source of truth for "what Sparx earned").
-    await tx.paymentIntent.updateMany({ where: { externalId: intent.id }, data: { status: 'succeeded' } });
+    await tx.paymentIntent.updateMany({
+      where: { externalId: intent.id },
+      data: { status: 'succeeded' },
+    });
 
     if (!payment) return { kind: 'none' as const };
     if (payment.status === 'captured') return { kind: 'already' as const };
@@ -209,12 +231,29 @@ async function handleSucceeded(
 
   if (result.kind === 'already') return;
   if (result.kind === 'none') {
-    // No OrderPayment for this intent. An invoice payment-link intent (it carries
-    // metadata.invoiceId) is reconciled by the invoicing path; anything else is noise.
-    log.info(
-      { intentId: intent.id, invoiceId: intent.metadata?.invoiceId ?? null },
-      'payment webhook: succeeded intent has no order payment'
-    );
+    // No OrderPayment — an invoice payment-link intent carries metadata.invoiceId and
+    // is recorded against its BillingDocument (which fires crm.billing_document.paid on
+    // the balance-clearing edge). Anything else is noise. The PaymentEvent dedupe above
+    // makes this record-once even on redelivery.
+    const invoiceId = intent.metadata?.invoiceId;
+    if (invoiceId) {
+      try {
+        await billingPaymentService.recordPayment({ tenantId }, invoiceId, {
+          kind: 'payment',
+          method: 'card',
+          amount: amountCents / 100,
+          providerRef: intent.id,
+        });
+        log.info({ invoiceId, amountCents }, 'payment webhook: invoice paid via gateway');
+      } catch (err) {
+        log.error({ err, invoiceId }, 'payment webhook: invoice payment record failed');
+      }
+    } else {
+      log.info(
+        { intentId: intent.id },
+        'payment webhook: succeeded intent has no order or invoice'
+      );
+    }
     return;
   }
 
@@ -250,7 +289,10 @@ async function handleSucceeded(
         ref: { customerId: result.customerId, orderId: result.orderId },
       });
     } catch (err) {
-      log.error({ err, orderId: result.orderId }, 'payment webhook: order-confirmation send failed');
+      log.error(
+        { err, orderId: result.orderId },
+        'payment webhook: order-confirmation send failed'
+      );
     }
   }
 }
@@ -269,7 +311,10 @@ async function handleFailed(
     : null;
 
   const result = await withTenant({ tenantId }, async (tx) => {
-    await tx.paymentIntent.updateMany({ where: { externalId: intent.id }, data: { status: 'failed' } });
+    await tx.paymentIntent.updateMany({
+      where: { externalId: intent.id },
+      data: { status: 'failed' },
+    });
     const payment = await tx.orderPayment.findFirst({
       where: { processorRef: intent.id },
       select: { id: true, orderId: true, status: true },
@@ -303,7 +348,10 @@ async function handleRefunded(
 ): Promise<void> {
   const latestRefund = charge.refunds?.data?.[0];
   if (!latestRefund) {
-    log.warn({ chargeId: charge.id }, 'payment webhook: charge.refunded has no refund rows — skipping');
+    log.warn(
+      { chargeId: charge.id },
+      'payment webhook: charge.refunded has no refund rows — skipping'
+    );
     return;
   }
   const paymentIntentId = refString(charge.payment_intent);
@@ -316,7 +364,10 @@ async function handleRefunded(
         })
       : null;
     if (!payment) {
-      log.warn({ chargeId: charge.id, paymentIntentId }, 'payment webhook: no order payment for refunded charge');
+      log.warn(
+        { chargeId: charge.id, paymentIntentId },
+        'payment webhook: no order payment for refunded charge'
+      );
       return;
     }
     const { orderId } = payment;

@@ -25,7 +25,9 @@ import {
   billingPaymentService,
   billingRenderService,
 } from '@sparx/crm';
+import { GatewayNotFoundError, PaymentConfigError, paymentService } from '@sparx/payments';
 import { ok } from '@sparx/api-core/envelope';
+import { ApiError } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
 import { renderTenantInvoiceHtml, resolveInvoiceBrand } from '../../../lib/invoice-render.js';
@@ -33,6 +35,10 @@ import { renderTenantInvoiceHtml, resolveInvoiceBrand } from '../../../lib/invoi
 const PathId = z.object({ id: z.string().uuid() });
 const LinePathIds = z.object({ id: z.string().uuid(), lineId: z.string().uuid() });
 const SnapshotPathIds = z.object({ id: z.string().uuid(), snapshotId: z.string().uuid() });
+const PaymentLinkBody = z.object({
+  successUrl: z.string().url(),
+  expiresAt: z.string().datetime().optional(),
+});
 
 const documentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/invoicing/documents', async (request) => {
@@ -147,6 +153,58 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const { id } = PathId.parse(request.params);
     return ok(await billingPaymentService.listPayments(toInvoicingContext(request), id));
+  });
+
+  // Hosted pay-link for the outstanding balance (docs/94 ADR §8). Routes through
+  // PaymentService → the tenant's gateway (Sparx Pay = 0.5% fee; others = $0). The
+  // resulting payment_intent carries metadata.invoiceId, so the payment webhook records
+  // the payment against this document on success. Manual / unconfigured tenants get a
+  // clean validation error (they collect by hand instead).
+  app.post('/v1/invoicing/documents/:id/payment-link', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireInvoicingModule(request);
+    const { id } = PathId.parse(request.params);
+    const body = PaymentLinkBody.parse(request.body ?? {});
+    const ctx = toInvoicingContext(request);
+
+    const doc = await billingDocumentService.get(ctx, id);
+    const balanceCents = Math.round(Number(doc.balance) * 100);
+    if (balanceCents <= 0) {
+      throw new ApiError(
+        'VALIDATION_ERROR',
+        'This document has no outstanding balance to collect.'
+      );
+    }
+
+    let url: string | null;
+    try {
+      url = await paymentService.createPaymentLink({
+        tenantId: ctx.tenantId,
+        amount: balanceCents,
+        currency: doc.currency.toLowerCase(),
+        invoiceId: doc.id,
+        description: doc.number ? `Invoice ${doc.number}` : 'Invoice payment',
+        successUrl: body.successUrl,
+        ...(body.expiresAt ? { expiresAt: new Date(body.expiresAt) } : {}),
+      });
+    } catch (err) {
+      if (err instanceof PaymentConfigError || err instanceof GatewayNotFoundError) {
+        throw new ApiError(
+          'VALIDATION_ERROR',
+          'No payment gateway is configured. Set one up in Settings → Payments.'
+        );
+      }
+      throw err;
+    }
+    if (!url) {
+      throw new ApiError(
+        'VALIDATION_ERROR',
+        'The active payment gateway does not support hosted payment links.'
+      );
+    }
+
+    reply.code(201);
+    return ok({ url });
   });
 
   // ── PDF / print (§10) ────────────────────────────────────────────────────────

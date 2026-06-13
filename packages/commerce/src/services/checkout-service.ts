@@ -22,6 +22,13 @@ import {
   SubmitShippingInput,
   type SurchargePaymentMethod,
 } from '@sparx/commerce-schemas';
+import {
+  GatewayNotFoundError,
+  PaymentConfigError,
+  type PaymentGateway,
+  type PaymentIntentStatus,
+  paymentService,
+} from '@sparx/payments';
 import { withTenant } from '@sparx/db';
 import type { CheckoutSession, TxClient } from '@sparx/db';
 // purchaseApprovalRule not in generated types until migration 20260716000000 runs.
@@ -34,7 +41,6 @@ import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
 
 import * as discountService from './discount-service';
-import * as providerService from './provider-service';
 import * as surchargeService from './surcharge-service';
 
 function parseDueDays(paymentTerms: string | null | undefined): number {
@@ -288,11 +294,25 @@ export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Pro
 export interface CreatePaymentIntentResult {
   paymentRef: string;
   providerSlug: string;
-  installationId: string;
   clientSecret?: string;
   amountCents: number;
   currency: string;
-  status: 'requires_payment_method' | 'requires_confirmation' | 'processing' | 'succeeded';
+  status: PaymentIntentStatus;
+}
+
+/** Resolve the tenant's active payment gateway, or surface a clean validation error
+ *  when the tenant is on manual payments / has no gateway configured. */
+async function resolvePaymentGateway(tenantId: string): Promise<PaymentGateway> {
+  try {
+    return await paymentService.getGatewayForTenant(tenantId);
+  } catch (err) {
+    if (err instanceof PaymentConfigError || err instanceof GatewayNotFoundError) {
+      throw new CommerceValidationError(
+        'Online payments are not configured for this site. Set up a payment gateway in Settings → Payments.'
+      );
+    }
+    throw err;
+  }
 }
 
 export async function createPaymentIntent(
@@ -315,35 +335,29 @@ export async function createPaymentIntent(
     );
   }
 
-  // Stable order hash so the provider can spot tampering between
-  // intent creation + confirmation. Quick + deterministic; the worker
-  // re-derives it from the session and compares on webhook receipt.
-  const orderHash = `${session.cartId}:${session.totalCents}:${session.currency}`;
-
-  const intent = await providerService.runPaymentCreate(
-    ctx,
-    {
-      amountCents: session.totalCents,
-      currency: session.currency,
-      orderHash,
-      description: `Sparx order — checkout session ${session.id.slice(0, 8)}`,
-      metadata: {
-        sparx_checkout_session_id: session.id,
-        sparx_cart_id: session.cartId,
-        sparx_channel: session.channel,
-      },
+  // Resolve the tenant's active gateway (Sparx Pay / Stripe Direct) and open the
+  // intent through PaymentService. The gateway sets metadata.tenantId on the intent so
+  // the payment webhook can resolve the tenant; the platform fee (Sparx Pay only) is
+  // recorded on the payment_intents ledger. The intent id IS the paymentRef the
+  // webhook later reconciles against.
+  const gateway = await resolvePaymentGateway(ctx.tenantId);
+  const intent = await paymentService.createPaymentIntent({
+    tenantId: ctx.tenantId,
+    amount: session.totalCents,
+    currency: session.currency.toLowerCase(),
+    metadata: {
+      sparx_checkout_session_id: session.id,
+      sparx_cart_id: session.cartId,
+      sparx_channel: session.channel,
     },
-    {
-      ...(input.idempotencyKey ? { idempotencyKey: input.idempotencyKey } : {}),
-    }
-  );
+  });
 
   await withTenant(ctx, async (tx) => {
     await tx.checkoutSession.update({
       where: { id: session.id },
       data: {
-        paymentProviderSlug: intent.providerSlug,
-        paymentRef: intent.paymentRef,
+        paymentProviderSlug: gateway.id,
+        paymentRef: intent.id,
       },
     });
     await writeAuditLog({
@@ -355,15 +369,14 @@ export async function createPaymentIntent(
       entityType: 'CheckoutSession',
       entityId: session.id,
       diff: {
-        after: { paymentProviderSlug: intent.providerSlug, paymentRef: intent.paymentRef },
+        after: { paymentProviderSlug: gateway.id, paymentRef: intent.id },
       },
     });
   });
 
   return {
-    paymentRef: intent.paymentRef,
-    providerSlug: intent.providerSlug,
-    installationId: intent.installationId,
+    paymentRef: intent.id,
+    providerSlug: gateway.id,
     ...(intent.clientSecret ? { clientSecret: intent.clientSecret } : {}),
     amountCents: session.totalCents,
     currency: session.currency,
@@ -562,6 +575,29 @@ export async function complete(
         storeCreditAppliedCents: session.storeCreditAppliedCents,
       },
     });
+
+    // Card payments: open a PENDING OrderPayment keyed to the gateway intent so the
+    // payment webhook (payment.succeeded) can mark it captured + flip the order paid
+    // (docs/94 ADR §10). Net-terms / manual orders carry no paymentRef — they settle
+    // via the AR document or a hand-recorded payment, never a gateway intent. Also
+    // back-link the payment_intents ledger row (created order-less at intent time).
+    if (session.paymentRef && session.paymentProviderSlug) {
+      await tx.orderPayment.create({
+        data: {
+          tenantId: ctx.tenantId,
+          orderId: order.id,
+          processor: session.paymentProviderSlug,
+          processorRef: session.paymentRef,
+          amount: session.totalCents / 100,
+          currency: session.currency,
+          status: 'pending',
+        },
+      });
+      await tx.paymentIntent.updateMany({
+        where: { externalId: session.paymentRef },
+        data: { orderId: order.id },
+      });
+    }
 
     // B2B approval gate: if an active rule covers this account + amount, hold the
     // order for staff review instead of immediately placing it. The pending status

@@ -40,6 +40,7 @@
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",
     "@sparx/integration-framework": "workspace:*",
+    "@sparx/payments": "workspace:*",
     "@sparx/search": "workspace:*",
     "@sparx/ui": "workspace:*",
     "lucide-react": "^0.577.0",

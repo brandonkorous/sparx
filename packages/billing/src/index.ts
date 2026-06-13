@@ -9,9 +9,7 @@ export {
   TRIAL_PERIOD_DAYS,
   isBillableModule,
   priceIdFor,
-  transactionFeePriceId,
   activeTotalCents,
-  transactionFeeRate,
   type BillingInterval,
 } from './price-catalog';
 
@@ -23,10 +21,7 @@ export {
   getBillingState,
   reconcileFromSubscription,
   setSubscriptionStatus,
-  recordTransactionFee,
   moduleForPriceId,
   type SubscriptionSyncInput,
   type BillingResult,
-  type TransactionFeeInput,
-  type TransactionFeeResult,
 } from './service';

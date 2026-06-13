@@ -61,7 +61,6 @@ import redirectRoutes from './routes/v1/redirects/index.js';
 import authorRoutes from './routes/v1/authors/index.js';
 import taxonomyRoutes from './routes/v1/taxonomies/index.js';
 import webhookRoutes from './routes/v1/webhooks/subscriptions.js';
-import stripeWebhookRoutes from './routes/v1/webhooks/stripe.js';
 import stripeBillingWebhookRoutes from './routes/v1/webhooks/stripe-billing.js';
 import providerWebhookRoutes from './routes/v1/webhooks/providers.js';
 import paymentWebhookRoutes from './routes/v1/webhooks/payments.js';
@@ -561,8 +560,6 @@ export async function createApp(): Promise<FastifyInstance> {
         '/v1/openapi.json',
         '/v1/sitemap.xml',
         '/v1/public/',
-        // Stripe webhooks — verified by Stripe-Signature HMAC, not bearer.
-        '/v1/public/webhooks/stripe',
         // Local-mode media upload endpoints — issued by `presignPut` and
         // self-authorising via the in-URL object key. Skipping the Bearer
         // check here mirrors the GCS signed-URL contract.
@@ -595,7 +592,6 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(authorRoutes);
   await app.register(taxonomyRoutes);
   await app.register(webhookRoutes);
-  await app.register(stripeWebhookRoutes);
   await app.register(stripeBillingWebhookRoutes);
   await app.register(providerWebhookRoutes);
   await app.register(paymentWebhookRoutes);

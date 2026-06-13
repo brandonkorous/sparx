@@ -8,7 +8,6 @@
 
 import { setSecretReader, envSecretReader, mapSecretReader } from '@sparx/commerce';
 import { SecretNotFoundError, type SecretReader } from '@sparx/integration-framework';
-import { registerStripeProviders } from '@sparx/provider-stripe';
 import { registerShippoProviders } from '@sparx/provider-shippo';
 
 import { bootstrapPayments } from './payments-bootstrap.js';
@@ -20,15 +19,10 @@ export function bootstrapProviders(): void {
   booted = true;
 
   try {
-    registerStripeProviders();
+    registerShippoProviders();
   } catch (err) {
     // "Provider already registered" — fine, another caller beat us to
     // it (HMR, parallel test setup). Anything else is a real bug.
-    if (!(err instanceof Error) || !/already registered/i.test(err.message)) throw err;
-  }
-  try {
-    registerShippoProviders();
-  } catch (err) {
     if (!(err instanceof Error) || !/already registered/i.test(err.message)) throw err;
   }
 

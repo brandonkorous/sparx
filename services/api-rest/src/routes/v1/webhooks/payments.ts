@@ -33,9 +33,13 @@ function signature(headers: Record<string, unknown>): string {
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const paymentWebhookRoutes: FastifyPluginAsync = async (app) => {
   // Raw bytes for signature verification, scoped to this encapsulated plugin.
-  app.addContentTypeParser('application/json', { parseAs: 'buffer' }, (_req, body: Buffer, done) => {
-    done(null, body);
-  });
+  app.addContentTypeParser(
+    'application/json',
+    { parseAs: 'buffer' },
+    (_req, body: Buffer, done) => {
+      done(null, body);
+    }
+  );
 
   // ── Sparx Pay — the platform account's single webhook (destination charges). The
   //    tenant rides in payment_intent.metadata.tenantId / the connected account id.
@@ -45,7 +49,9 @@ const paymentWebhookRoutes: FastifyPluginAsync = async (app) => {
 
     if (!process.env.STRIPE_WEBHOOK_SECRET_SPARX_PAY?.trim()) {
       // Dev / pre-ops: no signing secret. Ack so Stripe (or a test) doesn't retry.
-      request.log.warn('STRIPE_WEBHOOK_SECRET_SPARX_PAY unset — sparx-pay webhook acknowledged without processing');
+      request.log.warn(
+        'STRIPE_WEBHOOK_SECRET_SPARX_PAY unset — sparx-pay webhook acknowledged without processing'
+      );
       await reply.code(200).send({ received: true });
       return;
     }
@@ -60,7 +66,10 @@ const paymentWebhookRoutes: FastifyPluginAsync = async (app) => {
     try {
       await reconcilePaymentEvent(request.log, parsed, { gatewayId: SPARX_PAY_ID });
     } catch (err) {
-      request.log.error({ err, externalId: parsed.externalId }, 'sparx-pay webhook: reconcile error');
+      request.log.error(
+        { err, externalId: parsed.externalId },
+        'sparx-pay webhook: reconcile error'
+      );
     }
     await reply.code(200).send({ received: true });
   });
@@ -88,7 +97,10 @@ const paymentWebhookRoutes: FastifyPluginAsync = async (app) => {
         fallbackTenantId: tenantId,
       });
     } catch (err) {
-      request.log.error({ err, tenantId, externalId: parsed.externalId }, 'stripe-direct webhook: reconcile error');
+      request.log.error(
+        { err, tenantId, externalId: parsed.externalId },
+        'stripe-direct webhook: reconcile error'
+      );
     }
     await reply.code(200).send({ received: true });
   });

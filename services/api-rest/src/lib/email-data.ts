@@ -234,11 +234,26 @@ async function resolveTenant(
   ctx: ServiceContext,
   tenant: { slug: string; name: string; email: string }
 ): Promise<Record<string, string>> {
-  const settings = await withTenant(ctx, (tx) =>
-    tx.emailSettings.findUnique({ where: { tenantId: ctx.tenantId }, select: { replyTo: true } })
-  );
+  const [settings, brand] = await Promise.all([
+    withTenant(ctx, (tx) =>
+      tx.emailSettings.findUnique({ where: { tenantId: ctx.tenantId }, select: { replyTo: true } })
+    ),
+    withTenant(ctx, (tx) =>
+      tx.tenantBrand.findUnique({
+        where: { tenantId: ctx.tenantId },
+        select: { businessName: true },
+      })
+    ),
+  ]);
+  // `{{tenant.name}}` is customer-facing copy ("Welcome to …", "thanks for shopping
+  // with …"), so it must be the STORE name — the brand business name the wordmark
+  // already uses (brand-service's `storeName`) — not the internal org/account name
+  // on the tenant row. Fall back to the tenant name when no business name is set
+  // (an empty string falls through too, hence the explicit length check).
+  const businessName = brand?.businessName?.trim() ?? '';
+  const storeName = businessName.length > 0 ? businessName : tenant.name;
   return {
-    name: tenant.name,
+    name: storeName,
     storeUrl: homeUrl(tenant.slug),
     supportEmail: settings?.replyTo ?? tenant.email,
   };

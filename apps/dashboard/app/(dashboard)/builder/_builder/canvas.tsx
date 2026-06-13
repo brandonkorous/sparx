@@ -18,9 +18,11 @@ import {
   REF_KEY,
   bindSlotKey,
   customKeyOf,
+  emailSampleData,
   expandComponentTree,
   isCustomType,
   readComponentRef,
+  sampleEmailText,
   type BindingCatalog,
   type ComponentDto,
 } from '@sparx/builder-schemas';
@@ -206,6 +208,13 @@ const VersionResolverContext = React.createContext<VersionResolver | null>(null)
 // recursion as a backstop even though the service rejects cycles at save.
 const CustomDepthContext = React.createContext(0);
 
+// Email-preview context. Non-null ⇒ this canvas previews an EMAIL: content leaves
+// paint the @sparx/email pixel scale (20px headings, 14px body, accent CTA) rather
+// than the site-ui hero scale, AND `{{merge.tokens}}` resolve against this SAMPLE
+// data — the real store name in `{{tenant.name}}`, generic placeholders for the
+// per-recipient rest (docs/93). Null ⇒ a page/site canvas. Set once by the Canvas.
+const EmailSampleContext = React.createContext<Record<string, unknown> | null>(null);
+
 // A `custom:<key>` placement (docs/53 P-B): resolve the tenant component, expand
 // its PINNED version (instance slots + binding overrides filled), and render the
 // result LOCKED inside a selectable wrapper — so the whole component reads as one
@@ -354,6 +363,11 @@ function CanvasNode({
   locked,
   outletSlot,
 }: NodeProps) {
+  // Email vs page/site — decides which scale a content leaf paints + which sample
+  // data its tokens resolve against (docs/93). Read before any early return so the
+  // hook order stays stable.
+  const emailSample = React.useContext(EmailSampleContext);
+  const emailMode = emailSample !== null;
   // A tenant-component placement expands to a live preview (docs/53 P-B) — handled
   // before the registry lookup, which has no entry for `custom:*` types.
   if (isCustomType(node.type)) {
@@ -502,6 +516,8 @@ function CanvasNode({
         value,
         cardinality: card,
         bound,
+        surface: emailMode ? 'email' : 'page',
+        emailSample: emailSample ?? undefined,
         children: kidNodes.length > 0 ? kidNodes : undefined,
       }) ?? null;
   }
@@ -581,7 +597,20 @@ function CanvasNode({
  *  Omitted ⇒ the bare canvas card (legacy look). */
 export type CanvasFrame =
   | { kind: 'browser'; origin: string; path: string | null }
-  | { kind: 'email'; subject: string; senderName: string; senderAddress: string | null }
+  | {
+      kind: 'email';
+      subject: string;
+      senderName: string;
+      senderAddress: string | null;
+      /** Tenant light logo URL. When set the wordmark renders the logo (and only
+       *  the logo), matching @sparx/email's EmailWordmark; absent ⇒ the name. */
+      senderLogoUrl?: string | null;
+      /** The tenant's REAL identity for resolving `{{merge.tokens}}` in the canvas
+       *  preview — the store name (`{{tenant.name}}`), store URL, support email —
+       *  so the body reads with the real store name instead of a placeholder
+       *  (docs/93). Per-recipient tokens (customer/order/…) stay generic samples. */
+      tenant?: { name?: string | null; storeUrl?: string | null; supportEmail?: string | null };
+    }
   | null;
 
 export interface CanvasProps {
@@ -645,6 +674,23 @@ export function Canvas({
     const el = scrollRef.current?.querySelector(`[data-node-id="${CSS.escape(selectedId)}"]`);
     el?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }, [selectedId]);
+  // Email preview sample data (docs/93): the real tenant identity merged over the
+  // generic placeholders, so `{{tenant.name}}` reads the store's real name in the
+  // canvas. Null on a page/site canvas. Keyed on the identity fields so the context
+  // value stays stable across renders (no needless subtree re-renders).
+  const emailTenant = frame?.kind === 'email' ? frame.tenant : undefined;
+  const emailSample = React.useMemo(
+    () =>
+      frame?.kind === 'email'
+        ? emailSampleData({
+            name: emailTenant?.name,
+            storeUrl: emailTenant?.storeUrl,
+            supportEmail: emailTenant?.supportEmail,
+          })
+        : null,
+    [frame?.kind, emailTenant?.name, emailTenant?.storeUrl, emailTenant?.supportEmail]
+  );
+
   // The editable page subtree — fully selectable. When framing, it's handed to
   // the locked chrome tree to render at the Outlet; otherwise it's the root.
   const page = (
@@ -679,6 +725,7 @@ export function Canvas({
       data-theme="light"
       style={frameKind === 'plain' && width ? { width, maxWidth: '100%' } : undefined}
       data-device={device}
+      data-surface={frame?.kind === 'email' ? 'email' : undefined}
       data-framed={chrome ? '' : undefined}
       // The canvas renders the REAL site-ui components for a faithful preview, but
       // it is a SELECTION surface, not a live page. Neutralize any link/button
@@ -693,7 +740,11 @@ export function Canvas({
       {frame?.kind === 'email' ? (
         <>
           <div className="bx-sendmark" aria-hidden>
-            {frame.senderName}
+            {frame.senderLogoUrl ? (
+              <img className="bx-sendmark__logo" src={frame.senderLogoUrl} alt={frame.senderName} />
+            ) : (
+              frame.senderName
+            )}
           </div>
           {page}
           <div className="bx-sendfoot" aria-hidden>
@@ -762,7 +813,14 @@ export function Canvas({
     framed = (
       <div className="bx-envelope">
         <div className="bx-envelope__head">
-          <div className="bx-envelope__subject">{frame.subject || 'No subject yet'}</div>
+          <div className="bx-envelope__subject">
+            {/* The inbox shows the RESOLVED subject — interpolate its merge tokens
+                against the sample data, like the body (the editable template stays
+                raw in the Message panel). */}
+            {frame.subject
+              ? sampleEmailText(frame.subject, emailSample ?? undefined)
+              : 'No subject yet'}
+          </div>
           <div className="bx-envelope__row">
             <span className="bx-envelope__avatar" aria-hidden>
               {initialOf(frame.senderName)}
@@ -786,21 +844,23 @@ export function Canvas({
   }
 
   return (
-    <VersionResolverContext.Provider value={resolveVersion ?? null}>
-      <div
-        className="bx-canvas-scroll"
-        data-frame={frameKind}
-        ref={scrollRef}
-        role="button"
-        tabIndex={-1}
-        aria-label="Clear selection"
-        onClick={() => onSelect(null)}
-        onKeyDown={(e) => {
-          if (e.key === 'Escape') onSelect(null);
-        }}
-      >
-        {framed}
-      </div>
-    </VersionResolverContext.Provider>
+    <EmailSampleContext.Provider value={emailSample}>
+      <VersionResolverContext.Provider value={resolveVersion ?? null}>
+        <div
+          className="bx-canvas-scroll"
+          data-frame={frameKind}
+          ref={scrollRef}
+          role="button"
+          tabIndex={-1}
+          aria-label="Clear selection"
+          onClick={() => onSelect(null)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') onSelect(null);
+          }}
+        >
+          {framed}
+        </div>
+      </VersionResolverContext.Provider>
+    </EmailSampleContext.Provider>
   );
 }

@@ -29,8 +29,7 @@ import {
 } from '@sparx/payments';
 
 // payments/{uuid}/sparx_pay/stripe_account_id — the non-secret connected account id.
-const SPARX_PAY_ACCOUNT_REF =
-  /^payments\/([0-9a-f-]{36})\/sparx_pay\/stripe_account_id$/i;
+const SPARX_PAY_ACCOUNT_REF = /^payments\/([0-9a-f-]{36})\/sparx_pay\/stripe_account_id$/i;
 // Any other payments/{uuid}/{gateway}/{name} — a genuine secret in Secret Manager.
 const PAYMENTS_SECRET_REF = /^payments\/([0-9a-f-]{36})\/([a-z0-9_]+)\/([a-z0-9_]+)$/i;
 

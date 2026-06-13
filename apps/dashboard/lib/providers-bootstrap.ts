@@ -10,7 +10,6 @@ import { registerAvalaraProviders } from '@sparx/provider-avalara';
 import { registerEasypostProviders } from '@sparx/provider-easypost';
 import { registerPaypalProviders } from '@sparx/provider-paypal';
 import { registerShippoProviders } from '@sparx/provider-shippo';
-import { registerStripeProviders } from '@sparx/provider-stripe';
 import { registerTaxjarProviders } from '@sparx/provider-taxjar';
 
 let registered = false;
@@ -20,7 +19,6 @@ export function ensureProvidersRegistered(): void {
   registered = true;
   // Each register*() throws if a slug is already taken — wrap so a
   // hot-reload double-import doesn't crash the route.
-  safeRegister(registerStripeProviders);
   safeRegister(registerShippoProviders);
   safeRegister(registerTaxjarProviders);
   safeRegister(registerEasypostProviders);

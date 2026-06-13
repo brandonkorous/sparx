@@ -109,6 +109,10 @@ export class StripeDirectGateway implements PaymentGateway {
     const stripe = await this.stripeFor(params.tenantId);
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      payment_intent_data: {
+        // Stamp the intent so the payment webhook can resolve the tenant + invoice.
+        metadata: { tenantId: params.tenantId, invoiceId: params.invoiceId },
+      },
       line_items: [
         {
           price_data: {

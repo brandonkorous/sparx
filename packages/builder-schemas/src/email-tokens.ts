@@ -172,12 +172,38 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
   },
 };
 
-/** Interpolate an authored string's merge tokens against the editor SAMPLE data
- *  (docs/93) — the canvas's "reads like a real email" gloss. A string with no
- *  `{{token}}` is returned unchanged, so it's a safe no-op for non-email content. */
-export function sampleEmailText(input: string): string {
+/** Interpolate an authored string's merge tokens against editor SAMPLE data
+ *  (docs/93) — the canvas's "reads like a real email" gloss. `data` defaults to the
+ *  generic placeholders; the canvas passes `emailSampleData(tenant)` so KNOWN
+ *  tenant values (the store's real name, etc.) resolve like the actual send instead
+ *  of "Acme Supply Co.". A string with no `{{token}}` is returned unchanged, so
+ *  it's a safe no-op for non-email content. */
+export function sampleEmailText(
+  input: string,
+  data: Record<string, unknown> = SAMPLE_EMAIL_DATA
+): string {
   if (!input.includes('{{')) return input;
-  return interpolateEmailTokens(input, (path) => resolvePath({ root: SAMPLE_EMAIL_DATA }, path));
+  return interpolateEmailTokens(input, (path) => resolvePath({ root: data }, path));
+}
+
+/** The editor sample data with the REAL tenant identity merged over the generic
+ *  placeholders. `{{tenant.name}}` / `storeUrl` / `supportEmail` are KNOWN fixed
+ *  values for the tenant, so the canvas resolves them like the send (the real store
+ *  name in every heading), while customer / order / cart / … stay generic samples —
+ *  those are genuinely per-recipient and unknown at authoring time. Undefined or
+ *  blank fields keep the sample, so a partial override never blanks a token. */
+export function emailSampleData(tenant?: {
+  name?: string | null;
+  storeUrl?: string | null;
+  supportEmail?: string | null;
+}): Record<string, unknown> {
+  if (!tenant) return SAMPLE_EMAIL_DATA;
+  const base = (SAMPLE_EMAIL_DATA.tenant ?? {}) as Record<string, unknown>;
+  const merged: Record<string, unknown> = { ...base };
+  if (tenant.name?.trim()) merged.name = tenant.name.trim();
+  if (tenant.storeUrl?.trim()) merged.storeUrl = tenant.storeUrl.trim();
+  if (tenant.supportEmail?.trim()) merged.supportEmail = tenant.supportEmail.trim();
+  return { ...SAMPLE_EMAIL_DATA, tenant: merged };
 }
 
 // ── Source collection (which DataSources a tree actually references) ───────────

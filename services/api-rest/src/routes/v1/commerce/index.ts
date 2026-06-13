@@ -12,7 +12,6 @@ import surchargeRoutes from './surcharge.js';
 import cartRoutes from './carts.js';
 import shippingRoutes from './shipping.js';
 import providerRoutes from './providers.js';
-import sparxPayRoutes from './sparx-pay.js';
 import paymentsRoutes from './payments.js';
 import reviewRoutes from './reviews.js';
 import fitmentRoutes from './fitment.js';
@@ -30,7 +29,6 @@ const commerceRoutes: FastifyPluginAsync = async (app) => {
   await app.register(cartRoutes);
   await app.register(shippingRoutes);
   await app.register(providerRoutes);
-  await app.register(sparxPayRoutes);
   await app.register(paymentsRoutes);
   await app.register(reviewRoutes);
   await app.register(fitmentRoutes);

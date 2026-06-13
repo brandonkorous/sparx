@@ -46,36 +46,10 @@ export function priceIdFor(module: ModuleSlug, interval: BillingInterval): strin
   return value;
 }
 
-/** Stripe Price ID for the metered transaction-fee price (docs/92 §3), from
- *  `STRIPE_PRICE_TRANSACTION_FEE`. This is a $0.01/unit usage-based price bound to
- *  the `transaction_fee` meter; `syncModuleItems` attaches it to every subscription
- *  so the meter events emitted by `recordTransactionFee` actually invoice. Undefined
- *  until the price is provisioned — callers skip the item, and metered events simply
- *  don't bill (no error). */
-export function transactionFeePriceId(): string | undefined {
-  const value = process.env.STRIPE_PRICE_TRANSACTION_FEE?.trim();
-  if (!value) return undefined;
-  return value;
-}
-
 /** Monthly-equivalent total (cents) for a set of active modules — reads our own
  *  list prices, never Stripe. Annual callers divide elsewhere (docs/67 §7). */
 export function activeTotalCents(modules: Iterable<ModuleSlug>): number {
   let sum = 0;
   for (const m of modules) sum += MODULE_MONTHLY_CENTS[m] ?? 0;
   return sum;
-}
-
-/** Transaction-fee rate from the active-module mix (docs/17 §2, docs/67 §7):
- *  0% once monthly spend ≥ $299, else 0.3% with CRM active, else 0.5% with
- *  Commerce active, else 0. Precedence matters — the cheapest applicable rate wins. */
-export function transactionFeeRate(args: {
-  monthlySpendCents: number;
-  commerceActive: boolean;
-  crmActive: boolean;
-}): number {
-  if (args.monthlySpendCents >= 299_00) return 0;
-  if (args.crmActive) return 0.003;
-  if (args.commerceActive) return 0.005;
-  return 0;
 }

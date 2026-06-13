@@ -1790,6 +1790,14 @@
 .bx-envelope .bx-canvas {
   flex: 0 0 auto;
 }
+/* The artifact body == the real email Container (docs/52 _layout): a white-ish
+   surface with the email's 32px padding all round, so wordmark · body · footer sit
+   inset exactly as the send does (the renderer pads the Container, so email has no
+   full-bleed). The tenant base surface with a white fallback when unthemed. */
+.bx-canvas[data-surface='email'] {
+  background: var(--sf-base-100, #fff);
+  padding: 32px;
+}
 
 /* Browser window — site/page · desktop. */
 .bx-browser {
@@ -2004,27 +2012,50 @@
 }
 
 /* The locked send chrome — wordmark header + legal footer the renderer supplies
-   on send (docs/52). They live INSIDE `.bx-canvas` so they inherit the tenant
-   brand vars (--bxc-*); they are plain divs, so they're never selectable nodes. */
+   on send (docs/52 _layout). They live INSIDE `.bx-canvas` (now 32px-padded in
+   email mode), so they inherit the tenant brand vars + sit inset like the real
+   Container. Plain divs — never selectable nodes. Geometry mirrors EmailLayout:
+   a left wordmark (22px / 500, tenant heading font, the "-0.03em" of EmailWordmark)
+   over a hairline divider, and a muted 12px footer under a matching divider. */
 .bx-sendmark {
-  text-align: center;
-  padding: 18px;
-  font-family: var(--bxc-font-head);
-  font-size: 18px;
-  letter-spacing: -0.01em;
-  color: var(--bxc-fg);
-  border-bottom: 1px solid var(--bxc-border);
+  text-align: left;
+  padding: 0 0 24px;
+  margin-bottom: 24px;
+  font-family: var(--sf-font-heading, 'Helvetica Neue', Helvetica, Arial, sans-serif);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--sf-base-content, #0f172a);
+  border-bottom: 1px solid var(--sf-border, #e2e8f0);
+}
+/* Tenant logo wordmark — geometry mirrors EmailWordmark's <Img> (height ~size×1.4
+   at the 22px default). The logo replaces the name text when the brand has one. */
+.bx-sendmark__logo {
+  display: block;
+  height: 31px;
+  max-height: 35px;
+  width: auto;
 }
 .bx-sendfoot {
-  text-align: center;
-  padding: 16px 22px 20px;
-  border-top: 1px solid var(--bxc-border);
-  font-size: 11px;
-  line-height: 1.7;
-  color: color-mix(in srgb, var(--bxc-fg) 50%, transparent);
+  text-align: left;
+  padding-top: 24px;
+  margin-top: 24px;
+  border-top: 1px solid var(--sf-border, #e2e8f0);
+  font-size: 12px;
+  line-height: 1.5;
+  color: #64748b;
 }
 .bx-sendfoot__links {
   text-decoration: underline;
+}
+
+/* A conditional email block (docs/93) — its content is shown only when its rule is
+   met at send. The canvas always renders the content (the gate applies at dispatch),
+   marked with a dashed rail so the author sees it's conditional. */
+.bx-node[data-bx-type='conditional_block'] > .bx-inner {
+  border-left: 2px dashed var(--sf-border, #e2e8f0);
+  padding-left: 12px;
 }
 
 /* The editor wraps every node in a `.bx-node` chrome div purely to carry

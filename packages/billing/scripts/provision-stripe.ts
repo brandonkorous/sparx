@@ -126,29 +126,6 @@ async function ensurePrice(stripe: Stripe, spec: PriceSpec): Promise<string> {
   return created.id;
 }
 
-/** Find-or-create the `transaction_fee` Billing Meter (docs/92 §3). */
-async function ensureMeter(stripe: Stripe): Promise<string> {
-  const meters = await stripe.billing.meters.list({ status: 'active', limit: 100 });
-  const existing = meters.data.find((m) => m.event_name === 'transaction_fee');
-  if (existing) {
-    log(`  meter   ✓ transaction_fee (${existing.id})`);
-    return existing.id;
-  }
-  if (DRY_RUN) {
-    log('  meter   + transaction_fee [dry-run]');
-    return 'mtr_dryrun_transaction_fee';
-  }
-  const created = await stripe.billing.meters.create({
-    display_name: 'Transaction Fees',
-    event_name: 'transaction_fee',
-    default_aggregation: { formula: 'sum' },
-    customer_mapping: { type: 'by_id', event_payload_key: 'stripe_customer_id' },
-    value_settings: { event_payload_key: 'value' },
-  });
-  log(`  meter   + transaction_fee (${created.id})`);
-  return created.id;
-}
-
 /** Find-or-create the customer-portal configuration (docs/92 §6, §C4). Marked with
  *  `sparx_managed` so re-runs find it. Without one, `/v1/billing/portal` errors.
  *  `subscription_update` is enabled over the module products (both intervals) so a
@@ -249,20 +226,7 @@ async function main(): Promise<void> {
     moduleProducts.push({ product, prices: [monthlyId, annualId] });
   }
 
-  // 2) Transaction-fee meter + $0.01 metered price (docs/92 §3).
-  log('\nTransaction fee:');
-  const meter = await ensureMeter(stripe);
-  const feeProduct = await ensureProduct(stripe, 'sparx_transaction_fee', 'Sparx Transaction Fees');
-  const feePrice = await ensurePrice(stripe, {
-    lookupKey: 'sparx_transaction_fee',
-    product: feeProduct,
-    unitAmount: 1, // $0.01/unit; we meter the fee in cents
-    interval: 'month',
-    metered: { meter },
-  });
-  envOut.STRIPE_PRICE_TRANSACTION_FEE = feePrice;
-
-  // 3) Managed hosting (enterprise, Phase 8).
+  // 2) Managed hosting (enterprise, Phase 8).
   log('\nManaged hosting:');
   const hostingProduct = await ensureProduct(
     stripe,
@@ -277,7 +241,7 @@ async function main(): Promise<void> {
   });
   envOut.STRIPE_PRICE_MANAGED_HOSTING_MONTHLY = hostingPrice;
 
-  // 4) Portal config + webhook.
+  // 3) Portal config + webhook.
   log('\nPortal & webhook:');
   await ensurePortalConfig(stripe, moduleProducts);
   if (apiUrl) {
@@ -286,7 +250,7 @@ async function main(): Promise<void> {
     log('  webhook ⤬ skipped — set SPARX_REST_URL to provision (e.g. https://api.sparx.works)');
   }
 
-  // 5) Env block.
+  // 4) Env block.
   log('\n─────────────────────────────────────────────────────────────');
   log('Secret Manager values (paste into the billing env):\n');
   for (const k of Object.keys(envOut).sort()) log(`${k}=${envOut[k]}`);

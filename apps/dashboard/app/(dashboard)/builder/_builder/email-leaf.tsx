@@ -1,0 +1,176 @@
+// Email-faithful leaf rendering for the Builder CANVAS (docs/52, docs/93).
+//
+// The page/site canvas renders leaves through @sparx/site-ui so the preview
+// matches the LIVE SITE. An email never renders through site-ui — it renders
+// through @sparx/email's table-based primitives at a FIXED pixel scale (20px
+// headings, 14px body, a single accent button). Reusing the site-ui
+// Heading/Text/Button for an email is the wrong yardstick: it paints the
+// storefront's hero sizes + the tenant's (often serif) heading font, so the email
+// canvas read "like crap" — oversized, nothing like an inbox message.
+//
+// These components reproduce the @sparx/email primitives as REAL DOM, driven by
+// the SAME `EMAIL_DESIGN` tokens the renderer inlines on send — so the SCALE
+// (sizes, weights, spacing, radius, the accent CTA) is an exact match. Brand-
+// derived values (text/accent color, fonts) read the tenant theme `.bx-canvas`
+// exposes as `--sf-*` vars; the EMAIL_DESIGN values are the inlined fallback when
+// no brand is compiled (matching @sparx/email's `defaultBrand`).
+//
+// CAVEAT: the true send resolves its brand via email-platform's brand-service —
+// the DEFAULT preset overlaid with the tenant's brand identity — whereas these
+// vars carry the tenant's SITE theme. They agree on identity-level brand (primary,
+// any brand-set fonts), but a tenant whose chosen SITE theme contributes a heading
+// font / hairline color the email default doesn't can see that one axis shift
+// between this preview and the send. Closing that needs the email canvas to be
+// themed from the resolved email brand (a separate, deliberate change).
+
+import * as React from 'react';
+import { EMAIL_DESIGN } from '@sparx/builder-schemas';
+
+const { typography, colors, spacing, radius } = EMAIL_DESIGN;
+
+// Tenant brand via the canvas theme vars, with the email default inlined as the
+// fallback. Foreground/accent/fonts are brand-derived (the email brand-service
+// maps them); muted is the fixed email token, exactly like the primitive.
+const FG = `var(--sf-base-content, ${colors.textPrimary})`;
+const FONT_HEADING = `var(--sf-font-heading, ${EMAIL_DESIGN.fontFamily})`;
+const FONT_BODY = `var(--sf-font-body, ${EMAIL_DESIGN.fontFamily})`;
+const PRIMARY = `var(--sf-primary, ${colors.brand})`;
+const PRIMARY_FG = `var(--sf-primary-content, ${colors.textInverse})`;
+const BORDER = `var(--sf-border, ${colors.border})`;
+
+/** A Heading at the email scale. The renderer collapses h2/h3 to the subheading
+ *  size — only h1 is the display heading — so mirror that here for an exact match. */
+export function EmailHeadingLeaf({
+  level,
+  children,
+}: {
+  level: 'h1' | 'h2' | 'h3';
+  children: React.ReactNode;
+}) {
+  const scale = level === 'h1' ? typography.heading : typography.subheading;
+  const Tag = level === 'h1' ? 'h1' : 'h2';
+  return (
+    <Tag style={{ ...scale, color: FG, fontFamily: FONT_HEADING, margin: `0 0 ${spacing.sm}px` }}>
+      {children}
+    </Tag>
+  );
+}
+
+/** body → paragraph; eyebrow/meta → the muted, smaller chrome (the renderer's
+ *  EmailParagraph vs EmailMuted split). */
+export function EmailTextLeaf({
+  variant,
+  children,
+}: {
+  variant: 'body' | 'eyebrow' | 'meta';
+  children: React.ReactNode;
+}) {
+  if (variant === 'body') {
+    return (
+      <p
+        style={{
+          ...typography.body,
+          color: FG,
+          fontFamily: FONT_BODY,
+          margin: `0 0 ${spacing.md}px`,
+        }}
+      >
+        {children}
+      </p>
+    );
+  }
+  return (
+    <p
+      style={{
+        ...typography.muted,
+        color: colors.textMuted,
+        fontFamily: FONT_BODY,
+        margin: `${spacing.md}px 0 0`,
+      }}
+    >
+      {children}
+    </p>
+  );
+}
+
+/** The accent button — the email's filled primary CTA (the canvas never fires its
+ *  action, so a styled span is enough, matching how other canvas buttons render). */
+export function EmailButtonLeaf({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      style={{
+        backgroundColor: PRIMARY,
+        color: PRIMARY_FG,
+        borderRadius: radius.button,
+        fontSize: typography.body.fontSize,
+        fontWeight: 500,
+        padding: '10px 18px',
+        textDecoration: 'none',
+        display: 'inline-block',
+        fontFamily: FONT_BODY,
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+/** A hairline rule at the email's rhythm (matches the primitive's color + margin). */
+export function EmailDividerLeaf() {
+  return (
+    <hr style={{ border: 0, borderTop: `1px solid ${BORDER}`, margin: `${spacing.lg}px 0` }} />
+  );
+}
+
+/** Authored rich text serialized to HTML, wrapped in the email body base so prose
+ *  inherits the email's font/size/color — headings keep the browser's own sizing,
+ *  exactly like the real send (no <style> block to lean on). */
+export function EmailProseLeaf({ html }: { html: string }) {
+  return (
+    <div
+      style={{ ...typography.body, color: FG, fontFamily: FONT_BODY }}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+}
+
+/** A resolved cell value as text — mirrors the renderer's `asText`. */
+function cellText(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  return '';
+}
+
+/** The order/cart/quote/invoice line-item table — name · qty · amount, a compact
+ *  three-column layout at the email body scale, mirroring @sparx/email's
+ *  `LineItemTable` (docs/93). Rows are the resolved collection; the canvas passes
+ *  representative sample rows when nothing is bound, so the structure always shows. */
+export function EmailLineItemsLeaf({ items }: { items: Record<string, unknown>[] }) {
+  const cell: React.CSSProperties = {
+    ...typography.body,
+    color: FG,
+    fontFamily: FONT_BODY,
+    padding: '8px 0',
+    verticalAlign: 'top',
+  };
+  return (
+    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <tbody>
+        {items.map((item, i) => {
+          const name = cellText(item.name) || cellText(item.description);
+          const qty = cellText(item.quantity);
+          const amount = cellText(item.lineTotal) || cellText(item.unitPrice);
+          return (
+            <tr key={i} style={{ borderBottom: `1px solid ${BORDER}` }}>
+              <td style={{ ...cell, textAlign: 'left' }}>{name}</td>
+              <td style={{ ...cell, textAlign: 'center', whiteSpace: 'nowrap' }}>
+                {qty ? `× ${qty}` : ''}
+              </td>
+              <td style={{ ...cell, textAlign: 'right', whiteSpace: 'nowrap' }}>{amount}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
