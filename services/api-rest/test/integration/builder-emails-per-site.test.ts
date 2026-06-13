@@ -80,15 +80,11 @@ describe('per-site email — provisioning + override join', () => {
 
   /** The tenant-wide provisioned default keys, read RLS-scoped straight from the
    *  DB (the DTO doesn't surface `key`). */
-  // The bare `prisma` client connects as the DB owner — a SUPERUSER in the local
-  // docker dev DB, which BYPASSES RLS. So these helpers filter on `tenantId`
-  // EXPLICITLY (not just via the RLS GUC) or a dev/seed tenant's default rows would
-  // leak into the result. Redundant-but-correct under CI's non-superuser role.
   async function defaultKeys(tenantId: string): Promise<string[]> {
     return prisma.$transaction(async (tx) => {
       await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
       const rows = await tx.builderEmail.findMany({
-        where: { tenantId, propertyId: null, key: { not: null } },
+        where: { propertyId: null, key: { not: null } },
         select: { key: true },
       });
       return rows.map((r) => r.key!);
@@ -100,7 +96,7 @@ describe('per-site email — provisioning + override join', () => {
     return prisma.$transaction(async (tx) => {
       await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
       return tx.builderEmail.findFirstOrThrow({
-        where: { tenantId, propertyId: null, key },
+        where: { propertyId: null, key },
         select: { id: true, name: true },
       });
     });

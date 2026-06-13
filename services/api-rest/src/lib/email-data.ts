@@ -124,7 +124,10 @@ function vehicleDescription(ref: unknown): string {
  *  tree binds (`order.shippingAddress.line1`, `.oneLine`, …). '' fields when absent. */
 function formatAddress(json: unknown): Record<string, string> {
   const a = (json && typeof json === 'object' ? json : {}) as Record<string, unknown>;
-  const s = (k: string): string => (typeof a[k] === 'string' ? (a[k] as string) : '');
+  const s = (k: string): string => {
+    const v = a[k];
+    return typeof v === 'string' ? v : '';
+  };
   const name = s('recipientName') || s('name');
   const cityRegion = [s('city'), s('region')].filter(Boolean).join(', ');
   const cityStateZip = [cityRegion, s('postalCode')].filter(Boolean).join(' ');

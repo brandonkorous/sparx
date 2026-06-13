@@ -51,14 +51,9 @@ async function makeEmailActiveTenant(): Promise<string> {
 }
 
 async function defaultKeyCount(tenantId: string): Promise<number> {
-  // Filter on tenantId EXPLICITLY (not just via the RLS GUC): the bare `prisma`
-  // client connects as the DB owner, which is a SUPERUSER in the local docker dev
-  // DB and so bypasses RLS — without the explicit predicate this would count every
-  // tenant's default rows (dev/seed tenants pollute the global count). CI's
-  // non-superuser role makes RLS redundant-but-correct here.
   return prisma.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
-    return tx.builderEmail.count({ where: { tenantId, propertyId: null, key: { not: null } } });
+    return tx.builderEmail.count({ where: { propertyId: null, key: { not: null } } });
   });
 }
 

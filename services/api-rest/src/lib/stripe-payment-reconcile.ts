@@ -164,7 +164,10 @@ async function handlePaymentSucceeded(
         ref: { customerId: order.customerId, orderId: payment.orderId },
       });
     } catch (err) {
-      log.error({ err, orderId: payment.orderId }, 'stripe webhook: order-confirmation send failed');
+      log.error(
+        { err, orderId: payment.orderId },
+        'stripe webhook: order-confirmation send failed'
+      );
     }
   }
 }

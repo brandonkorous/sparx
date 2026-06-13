@@ -36,6 +36,7 @@ connected account. `application_fee_amount` collects the Sparx platform
 fee automatically before the remainder transfers to the merchant.
 
 This means:
+
 - Sparx owns the charge and dispute surface
 - Sparx controls dispute responses — merchants don't handle Stripe disputes
 - Platform fee collection is automatic — no invoicing merchants for fees
@@ -57,12 +58,12 @@ None of them know or care which vendor is behind it.
 // packages/payments/src/gateway.ts
 
 export interface PaymentIntent {
-  id:           string
-  clientSecret: string    // for client-side confirmation
-  amount:       number    // in cents
-  currency:     string
-  status:       PaymentIntentStatus
-  metadata:     Record<string, string>
+  id: string;
+  clientSecret: string; // for client-side confirmation
+  amount: number; // in cents
+  currency: string;
+  status: PaymentIntentStatus;
+  metadata: Record<string, string>;
 }
 
 export type PaymentIntentStatus =
@@ -71,85 +72,89 @@ export type PaymentIntentStatus =
   | 'requires_action'
   | 'processing'
   | 'succeeded'
-  | 'canceled'
+  | 'canceled';
 
 export interface PaymentResult {
-  success:      boolean
-  chargeId?:    string
-  errorCode?:   string
-  errorMessage?: string
+  success: boolean;
+  chargeId?: string;
+  errorCode?: string;
+  errorMessage?: string;
 }
 
 export interface RefundResult {
-  success:      boolean
-  refundId?:    string
-  amount:       number
-  errorMessage?: string
+  success: boolean;
+  refundId?: string;
+  amount: number;
+  errorMessage?: string;
 }
 
 export interface WebhookEvent {
-  type:         string
-  payload:      unknown
-  rawBody:      Buffer
-  signature:    string
+  type: string;
+  payload: unknown;
+  rawBody: Buffer;
+  signature: string;
 }
 
 export interface PaymentGateway {
-  readonly id:   string   // 'sparx_pay' | 'stripe_direct' | 'paypal' |
-                          // 'square' | 'authorize_net' | 'custom'
-  readonly name: string   // Display name shown in dashboard
+  readonly id: string; // 'sparx_pay' | 'stripe_direct' | 'paypal' |
+  // 'square' | 'authorize_net' | 'custom'
+  readonly name: string; // Display name shown in dashboard
 
   // Core payment operations
-  createPaymentIntent(params: CreatePaymentIntentParams): Promise<PaymentIntent>
-  confirmPayment(intentId: string): Promise<PaymentResult>
-  capturePayment(intentId: string, amount?: number): Promise<PaymentResult>
-  cancelPayment(intentId: string): Promise<PaymentResult>
-  refund(params: RefundParams): Promise<RefundResult>
+  createPaymentIntent(params: CreatePaymentIntentParams): Promise<PaymentIntent>;
+  confirmPayment(intentId: string): Promise<PaymentResult>;
+  capturePayment(intentId: string, amount?: number): Promise<PaymentResult>;
+  cancelPayment(intentId: string): Promise<PaymentResult>;
+  refund(params: RefundParams): Promise<RefundResult>;
 
   // Invoice-specific — generate a hosted payment link
   // Returns null if gateway does not support hosted payment links
-  createPaymentLink(params: CreatePaymentLinkParams): Promise<string | null>
+  createPaymentLink(params: CreatePaymentLinkParams): Promise<string | null>;
 
   // Webhook handling
-  parseWebhook(event: WebhookEvent): Promise<ParsedWebhookEvent>
-  verifyWebhookSignature(body: Buffer, signature: string): boolean
+  parseWebhook(event: WebhookEvent): Promise<ParsedWebhookEvent>;
+  verifyWebhookSignature(body: Buffer, signature: string): boolean;
 }
 
 export interface CreatePaymentIntentParams {
-  tenantId:        string
-  amount:          number          // cents
-  currency:        string          // 'usd'
-  orderId?:        string
-  invoiceId?:      string
-  customerId?:     string
-  metadata?:       Record<string, string>
-  captureMethod?:  'automatic' | 'manual'
+  tenantId: string;
+  amount: number; // cents
+  currency: string; // 'usd'
+  orderId?: string;
+  invoiceId?: string;
+  customerId?: string;
+  metadata?: Record<string, string>;
+  captureMethod?: 'automatic' | 'manual';
 }
 
 export interface RefundParams {
-  tenantId:        string
-  chargeId:        string
-  amount?:         number          // partial refund if specified
-  reason?:         'duplicate' | 'fraudulent' | 'requested_by_customer'
-  metadata?:       Record<string, string>
+  tenantId: string;
+  chargeId: string;
+  amount?: number; // partial refund if specified
+  reason?: 'duplicate' | 'fraudulent' | 'requested_by_customer';
+  metadata?: Record<string, string>;
 }
 
 export interface CreatePaymentLinkParams {
-  tenantId:        string
-  amount:          number
-  currency:        string
-  invoiceId:       string
-  description:     string
-  expiresAt?:      Date
-  successUrl:      string
+  tenantId: string;
+  amount: number;
+  currency: string;
+  invoiceId: string;
+  description: string;
+  expiresAt?: Date;
+  successUrl: string;
 }
 
 export interface ParsedWebhookEvent {
-  type:            'payment.succeeded' | 'payment.failed' |
-                   'payment.refunded' | 'dispute.created' |
-                   'dispute.closed' | 'account.updated'
-  tenantId?:       string
-  payload:         unknown
+  type:
+    | 'payment.succeeded'
+    | 'payment.failed'
+    | 'payment.refunded'
+    | 'dispute.created'
+    | 'dispute.closed'
+    | 'account.updated';
+  tenantId?: string;
+  payload: unknown;
 }
 ```
 
@@ -161,31 +166,31 @@ export interface ParsedWebhookEvent {
 // packages/payments/src/registry.ts
 
 class GatewayRegistry {
-  private gateways = new Map<string, PaymentGateway>()
+  private gateways = new Map<string, PaymentGateway>();
 
   register(gateway: PaymentGateway): void {
-    this.gateways.set(gateway.id, gateway)
+    this.gateways.set(gateway.id, gateway);
   }
 
   get(gatewayId: string): PaymentGateway {
-    const gateway = this.gateways.get(gatewayId)
-    if (!gateway) throw new Error(`Payment gateway not found: ${gatewayId}`)
-    return gateway
+    const gateway = this.gateways.get(gatewayId);
+    if (!gateway) throw new Error(`Payment gateway not found: ${gatewayId}`);
+    return gateway;
   }
 
   list(): PaymentGateway[] {
-    return Array.from(this.gateways.values())
+    return Array.from(this.gateways.values());
   }
 }
 
-export const gatewayRegistry = new GatewayRegistry()
+export const gatewayRegistry = new GatewayRegistry();
 
 // Registration at startup
-import { SparxPayGateway }     from './gateways/sparx-pay'
-import { StripeDirectGateway } from './gateways/stripe-direct'
+import { SparxPayGateway } from './gateways/sparx-pay';
+import { StripeDirectGateway } from './gateways/stripe-direct';
 
-gatewayRegistry.register(new SparxPayGateway())
-gatewayRegistry.register(new StripeDirectGateway())
+gatewayRegistry.register(new SparxPayGateway());
+gatewayRegistry.register(new StripeDirectGateway());
 // Future: PayPalGateway, SquareGateway, etc.
 ```
 
@@ -199,13 +204,13 @@ settings. Resolved by the payment service on every transaction.
 ```typescript
 // Tenant payment config — stored in DB
 interface TenantPaymentConfig {
-  tenantId:         string
-  gatewayId:        string    // 'sparx_pay' | 'stripe_direct' | etc.
-  sparxPayEnabled:  boolean   // true if gatewayId = 'sparx_pay'
+  tenantId: string;
+  gatewayId: string; // 'sparx_pay' | 'stripe_direct' | etc.
+  sparxPayEnabled: boolean; // true if gatewayId = 'sparx_pay'
 
   // Gateway-specific credentials — stored in Secret Manager
   // Never in the DB directly
-  credentialsRef:   string    // Secret Manager reference key
+  credentialsRef: string; // Secret Manager reference key
 }
 
 // Secret Manager key pattern per gateway:
@@ -223,37 +228,38 @@ Payment service resolves the gateway at transaction time:
 export class PaymentService {
   async getGatewayForTenant(tenantId: string): Promise<PaymentGateway> {
     const config = await db.tenantPaymentConfig.findUnique({
-      where: { tenantId }
-    })
-    if (!config) throw new Error(`No payment config for tenant ${tenantId}`)
-    return gatewayRegistry.get(config.gatewayId)
+      where: { tenantId },
+    });
+    if (!config) throw new Error(`No payment config for tenant ${tenantId}`);
+    return gatewayRegistry.get(config.gatewayId);
   }
 
   async createPaymentIntent(params: CreatePaymentIntentParams) {
-    const gateway = await this.getGatewayForTenant(params.tenantId)
-    const intent  = await gateway.createPaymentIntent(params)
+    const gateway = await this.getGatewayForTenant(params.tenantId);
+    const intent = await gateway.createPaymentIntent(params);
 
     // Apply platform fee only if Sparx Pay
     // (fee collection happens in Stripe via application_fee_amount —
     //  this is informational for our records)
-    const platformFee = gateway.id === 'sparx_pay'
-      ? Math.round(params.amount * 0.005)  // 0.5%
-      : 0
+    const platformFee =
+      gateway.id === 'sparx_pay'
+        ? Math.round(params.amount * 0.005) // 0.5%
+        : 0;
 
     await db.paymentIntent.create({
       data: {
-        tenantId:       params.tenantId,
-        gatewayId:      gateway.id,
-        externalId:     intent.id,
-        amount:         params.amount,
+        tenantId: params.tenantId,
+        gatewayId: gateway.id,
+        externalId: intent.id,
+        amount: params.amount,
         platformFee,
-        orderId:        params.orderId,
-        invoiceId:      params.invoiceId,
-        status:         'pending',
-      }
-    })
+        orderId: params.orderId,
+        invoiceId: params.invoiceId,
+        status: 'pending',
+      },
+    });
 
-    return intent
+    return intent;
   }
 }
 ```
@@ -265,102 +271,102 @@ export class PaymentService {
 ```typescript
 // packages/payments/src/gateways/sparx-pay.ts
 
-import Stripe from 'stripe'
+import Stripe from 'stripe';
 
 export class SparxPayGateway implements PaymentGateway {
-  readonly id   = 'sparx_pay'
-  readonly name = 'Sparx Pay'
+  readonly id = 'sparx_pay';
+  readonly name = 'Sparx Pay';
 
-  private platform: Stripe
+  private platform: Stripe;
 
   constructor() {
     this.platform = new Stripe(process.env.STRIPE_PLATFORM_SECRET_KEY!, {
       apiVersion: '2024-06-20',
-    })
+    });
   }
 
   async createPaymentIntent(params: CreatePaymentIntentParams) {
-    const merchantAccountId = await this.getMerchantAccountId(params.tenantId)
-    const platformFee = Math.round(params.amount * 0.005)  // 0.5%
+    const merchantAccountId = await this.getMerchantAccountId(params.tenantId);
+    const platformFee = Math.round(params.amount * 0.005); // 0.5%
 
     const intent = await this.platform.paymentIntents.create({
-      amount:          params.amount,
-      currency:        params.currency,
-      on_behalf_of:    merchantAccountId,
+      amount: params.amount,
+      currency: params.currency,
+      on_behalf_of: merchantAccountId,
       transfer_data: {
-        destination:   merchantAccountId,
+        destination: merchantAccountId,
       },
       application_fee_amount: platformFee,
       metadata: {
-        tenantId:    params.tenantId,
-        orderId:     params.orderId    ?? '',
-        invoiceId:   params.invoiceId  ?? '',
-        customerId:  params.customerId ?? '',
+        tenantId: params.tenantId,
+        orderId: params.orderId ?? '',
+        invoiceId: params.invoiceId ?? '',
+        customerId: params.customerId ?? '',
         ...params.metadata,
       },
-    })
+    });
 
     return {
-      id:           intent.id,
+      id: intent.id,
       clientSecret: intent.client_secret!,
-      amount:       intent.amount,
-      currency:     intent.currency,
-      status:       intent.status as PaymentIntentStatus,
-      metadata:     intent.metadata as Record<string, string>,
-    }
+      amount: intent.amount,
+      currency: intent.currency,
+      status: intent.status as PaymentIntentStatus,
+      metadata: intent.metadata as Record<string, string>,
+    };
   }
 
   async createPaymentLink(params: CreatePaymentLinkParams): Promise<string> {
-    const merchantAccountId = await this.getMerchantAccountId(params.tenantId)
-    const platformFee = Math.round(params.amount * 0.005)
+    const merchantAccountId = await this.getMerchantAccountId(params.tenantId);
+    const platformFee = Math.round(params.amount * 0.005);
 
     const session = await this.platform.checkout.sessions.create({
-      mode:                'payment',
-      on_behalf_of:        merchantAccountId,
+      mode: 'payment',
+      on_behalf_of: merchantAccountId,
       application_fee_amount: platformFee,
       transfer_data: {
-        destination:       merchantAccountId,
+        destination: merchantAccountId,
       },
-      line_items: [{
-        price_data: {
-          currency:     params.currency,
-          unit_amount:  params.amount,
-          product_data: { name: params.description },
+      line_items: [
+        {
+          price_data: {
+            currency: params.currency,
+            unit_amount: params.amount,
+            product_data: { name: params.description },
+          },
+          quantity: 1,
         },
-        quantity: 1,
-      }],
-      success_url:   params.successUrl,
-      expires_at:    params.expiresAt
-        ? Math.floor(params.expiresAt.getTime() / 1000)
-        : undefined,
+      ],
+      success_url: params.successUrl,
+      expires_at: params.expiresAt ? Math.floor(params.expiresAt.getTime() / 1000) : undefined,
       metadata: {
-        tenantId:  params.tenantId,
+        tenantId: params.tenantId,
         invoiceId: params.invoiceId,
       },
-    })
+    });
 
-    return session.url!
+    return session.url!;
   }
 
   async refund(params: RefundParams): Promise<RefundResult> {
     try {
       const refund = await this.platform.refunds.create({
-        charge:   params.chargeId,
-        amount:   params.amount,
-        reason:   params.reason,
+        charge: params.chargeId,
+        amount: params.amount,
+        reason: params.reason,
         metadata: params.metadata ?? {},
-      })
+      });
       return {
-        success:  true,
+        success: true,
         refundId: refund.id,
-        amount:   refund.amount,
-      }
+        amount: refund.amount,
+      };
     } catch (err: any) {
       return {
-        success:      false,
-        amount:       params.amount ?? 0,
+        success: false,
+        amount: params.amount ?? 0,
         errorMessage: err.message,
-      }
+      };
     }
   }
 
@@ -370,19 +376,17 @@ export class SparxPayGateway implements PaymentGateway {
         body,
         signature,
         process.env.STRIPE_PLATFORM_WEBHOOK_SECRET!
-      )
-      return true
+      );
+      return true;
     } catch {
-      return false
+      return false;
     }
   }
 
   private async getMerchantAccountId(tenantId: string): Promise<string> {
-    const creds = await secretManager.get(
-      `payments/${tenantId}/sparx_pay/stripe_account_id`
-    )
-    if (!creds) throw new Error(`No Sparx Pay account for tenant ${tenantId}`)
-    return creds
+    const creds = await secretManager.get(`payments/${tenantId}/sparx_pay/stripe_account_id`);
+    if (!creds) throw new Error(`No Sparx Pay account for tenant ${tenantId}`);
+    return creds;
   }
 }
 ```
@@ -398,64 +402,64 @@ Sparx is not in the payment flow. No platform fee collected.
 // packages/payments/src/gateways/stripe-direct.ts
 
 export class StripeDirectGateway implements PaymentGateway {
-  readonly id   = 'stripe_direct'
-  readonly name = 'Stripe (your account)'
+  readonly id = 'stripe_direct';
+  readonly name = 'Stripe (your account)';
 
   async createPaymentIntent(params: CreatePaymentIntentParams) {
-    const stripe = await this.getStripeForTenant(params.tenantId)
+    const stripe = await this.getStripeForTenant(params.tenantId);
 
     const intent = await stripe.paymentIntents.create({
-      amount:   params.amount,
+      amount: params.amount,
       currency: params.currency,
       // No on_behalf_of — this IS the merchant's account
       // No application_fee_amount — Sparx takes no fee
       metadata: {
-        tenantId:   params.tenantId,
-        orderId:    params.orderId   ?? '',
-        invoiceId:  params.invoiceId ?? '',
+        tenantId: params.tenantId,
+        orderId: params.orderId ?? '',
+        invoiceId: params.invoiceId ?? '',
         ...params.metadata,
       },
-    })
+    });
 
     return {
-      id:           intent.id,
+      id: intent.id,
       clientSecret: intent.client_secret!,
-      amount:       intent.amount,
-      currency:     intent.currency,
-      status:       intent.status as PaymentIntentStatus,
-      metadata:     intent.metadata as Record<string, string>,
-    }
+      amount: intent.amount,
+      currency: intent.currency,
+      status: intent.status as PaymentIntentStatus,
+      metadata: intent.metadata as Record<string, string>,
+    };
   }
 
   async createPaymentLink(params: CreatePaymentLinkParams): Promise<string> {
-    const stripe = await this.getStripeForTenant(params.tenantId)
+    const stripe = await this.getStripeForTenant(params.tenantId);
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      line_items: [{
-        price_data: {
-          currency:     params.currency,
-          unit_amount:  params.amount,
-          product_data: { name: params.description },
+      line_items: [
+        {
+          price_data: {
+            currency: params.currency,
+            unit_amount: params.amount,
+            product_data: { name: params.description },
+          },
+          quantity: 1,
         },
-        quantity: 1,
-      }],
+      ],
       success_url: params.successUrl,
       metadata: {
-        tenantId:  params.tenantId,
+        tenantId: params.tenantId,
         invoiceId: params.invoiceId,
       },
-    })
+    });
 
-    return session.url!
+    return session.url!;
   }
 
   private async getStripeForTenant(tenantId: string): Promise<Stripe> {
-    const secretKey = await secretManager.get(
-      `payments/${tenantId}/stripe_direct/secret_key`
-    )
-    if (!secretKey) throw new Error(`No Stripe Direct config for tenant ${tenantId}`)
-    return new Stripe(secretKey, { apiVersion: '2024-06-20' })
+    const secretKey = await secretManager.get(`payments/${tenantId}/stripe_direct/secret_key`);
+    if (!secretKey) throw new Error(`No Stripe Direct config for tenant ${tenantId}`);
+    return new Stripe(secretKey, { apiVersion: '2024-06-20' });
   }
 }
 ```
@@ -523,6 +527,7 @@ Option C: Skip for now
 
 Connect Express (not Custom or Standard) is the right Stripe Connect
 tier for Sparx Pay:
+
 - Express: Stripe hosts the onboarding UI, Sparx has moderate control
 - Custom: Sparx builds the entire onboarding UI, maximum control
 - Standard: merchant manages their own full Stripe account

@@ -71,18 +71,18 @@ the merchant doesn't edit **structure/copy**, not that it's unbranded.
 
 ### 1.1 Per-template disposition
 
-| Template | Audience | Sender today | Disposition |
-| --- | --- | --- | --- |
-| `order-confirmation` | tenant → customer | Stripe webhook + `stripe-payment-reconcile` | **→ Builder** (`order-confirmation` key) |
-| `shipping-confirmation` | tenant → customer | fulfillment flow | **→ Builder** (`shipping-confirmation` key) |
-| `appointment-confirmation` | tenant → customer | `v1/b2b/scheduling` | **→ Builder** (`appointment-confirmation` key) |
-| `appointment-reminder` | tenant → customer | `v1/b2b/scheduling` | **→ Builder** (`appointment-reminder` key) |
-| `appointment-cancelled` | tenant → customer | `v1/b2b/scheduling` | **→ Builder** (`appointment-cancelled` key) |
-| `welcome-merchant` | Sparx → merchant | Better Auth (`@sparx/auth`) | **Stays coded** (platform onboarding) |
-| `email-verification` | Sparx → dashboard user | Better Auth (`@sparx/auth`) | **Stays coded** (auth) |
-| `password-reset` | dashboard user **and** storefront customer | Better Auth + `public/account` | **Stays coded** (auth infra — §1.2) |
-| `domain-renewal-reminder` | Sparx → merchant | `domain-worker` cron | **Stays coded** (platform/account) |
-| `chat-notification` | Sparx-system → owner/admin **staff** | `lib/chat/notify` | **Stays coded** (operational; links to the dashboard) |
+| Template                   | Audience                                   | Sender today                                | Disposition                                           |
+| -------------------------- | ------------------------------------------ | ------------------------------------------- | ----------------------------------------------------- |
+| `order-confirmation`       | tenant → customer                          | Stripe webhook + `stripe-payment-reconcile` | **→ Builder** (`order-confirmation` key)              |
+| `shipping-confirmation`    | tenant → customer                          | fulfillment flow                            | **→ Builder** (`shipping-confirmation` key)           |
+| `appointment-confirmation` | tenant → customer                          | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-confirmation` key)        |
+| `appointment-reminder`     | tenant → customer                          | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-reminder` key)            |
+| `appointment-cancelled`    | tenant → customer                          | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-cancelled` key)           |
+| `welcome-merchant`         | Sparx → merchant                           | Better Auth (`@sparx/auth`)                 | **Stays coded** (platform onboarding)                 |
+| `email-verification`       | Sparx → dashboard user                     | Better Auth (`@sparx/auth`)                 | **Stays coded** (auth)                                |
+| `password-reset`           | dashboard user **and** storefront customer | Better Auth + `public/account`              | **Stays coded** (auth infra — §1.2)                   |
+| `domain-renewal-reminder`  | Sparx → merchant                           | `domain-worker` cron                        | **Stays coded** (platform/account)                    |
+| `chat-notification`        | Sparx-system → owner/admin **staff**       | `lib/chat/notify`                           | **Stays coded** (operational; links to the dashboard) |
 
 The customer-facing chat email (`chat-satisfaction`) is already a Builder default —
 `chat-notification` above is the **staff** alert, a different email.
@@ -153,11 +153,11 @@ an **auth** email becomes Builder-authored (§8) — out of scope here.
 invoice / b2bAccount / loyalty / commerce.product / promotion / cms.*`. The moved
 templates need:
 
-| New source root | Fields | Source |
-| --- | --- | --- |
-| `order.shippingAddress` | name, line1, line2, city, region, postalCode, country | extend `resolveOrder` (already loads the order) |
-| `shipping.*` | `carrier`, `trackingNumber`, `trackingUrl`, `estimatedDelivery`, `address.*` | new resolver over the order's latest `Fulfillment` |
-| `appointment.*` | `service`, `startAt` (date + time labels), `location`, `rescheduleUrl`, `cancelUrl` | new resolver over the scheduling entity |
+| New source root         | Fields                                                                              | Source                                             |
+| ----------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `order.shippingAddress` | name, line1, line2, city, region, postalCode, country                               | extend `resolveOrder` (already loads the order)    |
+| `shipping.*`            | `carrier`, `trackingNumber`, `trackingUrl`, `estimatedDelivery`, `address.*`        | new resolver over the order's latest `Fulfillment` |
+| `appointment.*`         | `service`, `startAt` (date + time labels), `location`, `rescheduleUrl`, `cancelUrl` | new resolver over the scheduling entity            |
 
 These follow the existing resolver idiom exactly: entity-scoped, selected by
 `collectEmailSourceKeys` so a tree that doesn't reference them costs nothing, every
@@ -174,13 +174,13 @@ and the reconcile back-fill pick them up automatically (they iterate the array),
 each is per-site overridable via the same `(tenant, property, key)` model. Count
 goes **13 → 18**.
 
-| key | type | category | binds |
-| --- | --- | --- | --- |
-| `order-confirmation` | transactional | order | `customer`, `order.items` (`line_item_table`), `order.total`, `order.shippingAddress` |
-| `shipping-confirmation` | transactional | order | `customer`, `order.number`, `shipping.carrier/trackingNumber/trackingUrl/estimatedDelivery` |
-| `appointment-confirmation` | transactional | scheduling | `customer`, `appointment.service/startAt/location` |
-| `appointment-reminder` | transactional | scheduling | `customer`, `appointment.service/startAt/location` |
-| `appointment-cancelled` | transactional | scheduling | `customer`, `appointment.service/startAt`, `appointment.rescheduleUrl` |
+| key                        | type          | category   | binds                                                                                       |
+| -------------------------- | ------------- | ---------- | ------------------------------------------------------------------------------------------- |
+| `order-confirmation`       | transactional | order      | `customer`, `order.items` (`line_item_table`), `order.total`, `order.shippingAddress`       |
+| `shipping-confirmation`    | transactional | order      | `customer`, `order.number`, `shipping.carrier/trackingNumber/trackingUrl/estimatedDelivery` |
+| `appointment-confirmation` | transactional | scheduling | `customer`, `appointment.service/startAt/location`                                          |
+| `appointment-reminder`     | transactional | scheduling | `customer`, `appointment.service/startAt/location`                                          |
+| `appointment-cancelled`    | transactional | scheduling | `customer`, `appointment.service/startAt`, `appointment.rescheduleUrl`                      |
 
 All five are transactional (no `unsubscribe_link`/`physical_address`) — they're
 triggered by an action the customer took, so the CAN-SPAM marketing gate doesn't
@@ -193,6 +193,7 @@ apply.
 Once the five senders route through `sendTenantEmailByKey`:
 
 **Remove the moved coded templates**
+
 - Delete the 5 components + exports from `@sparx/email`
   ([packages/email/src/templates/index.ts](../packages/email/src/templates/index.ts)).
 - Delete their 5 arms from `TemplateSendSchema`
@@ -202,6 +203,7 @@ Once the five senders route through `sendTenantEmailByKey`:
   `email-verification`, `domain-renewal-reminder`, `chat-notification`).
 
 **Delete `/email/templates`**
+
 - Page + dashboard nav entry:
   [apps/dashboard/app/(dashboard)/email/templates/](<../apps/dashboard/app/(dashboard)/email/templates/>).
 - Routes: `/v1/email/templates` (+ `/builtin/:key`, `/preview`, `/test-send`)
@@ -214,7 +216,7 @@ Once the five senders route through `sendTenantEmailByKey`:
   prod users → no data to migrate, but the migration must still go through the DB
   Migrate workflow (hand-authored SQL), never a laptop.
 
-**Re-home what's left.** The two surviving *customizable* coded emails
+**Re-home what's left.** The two surviving _customizable_ coded emails
 (`welcome-merchant`, `password-reset`) lose their subject/slot override UI. That is
 intentional — they are platform/auth infrastructure, not tenant content. If a
 subject tweak is ever wanted, it belongs in a small **Settings → Email**
@@ -225,12 +227,12 @@ not built here.
 
 ## 6. Migration of the senders
 
-| Sender | File | Change |
-| --- | --- | --- |
-| Stripe payment captured | [webhooks/stripe.ts](../services/api-rest/src/routes/v1/webhooks/stripe.ts#L216) | replace `publish('email.send', {template:'order-confirmation'})` with `sendTenantEmailByKey('order-confirmation', { ref:{ orderId } })` |
-| Payment reconcile | [lib/stripe-payment-reconcile.ts](../services/api-rest/src/lib/stripe-payment-reconcile.ts) | same |
-| Shipping confirmation | fulfillment flow (`order.fulfilled`) | `sendTenantEmailByKey('shipping-confirmation', { ref:{ orderId, fulfillmentId } })` |
-| Appointment ×3 | [v1/b2b/scheduling.ts](../services/api-rest/src/routes/v1/b2b/scheduling.ts) | `sendTenantEmailByKey('appointment-*', { ref:{ appointmentId } })` |
+| Sender                  | File                                                                                        | Change                                                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Stripe payment captured | [webhooks/stripe.ts](../services/api-rest/src/routes/v1/webhooks/stripe.ts#L216)            | replace `publish('email.send', {template:'order-confirmation'})` with `sendTenantEmailByKey('order-confirmation', { ref:{ orderId } })` |
+| Payment reconcile       | [lib/stripe-payment-reconcile.ts](../services/api-rest/src/lib/stripe-payment-reconcile.ts) | same                                                                                                                                    |
+| Shipping confirmation   | fulfillment flow (`order.fulfilled`)                                                        | `sendTenantEmailByKey('shipping-confirmation', { ref:{ orderId, fulfillmentId } })`                                                     |
+| Appointment ×3          | [v1/b2b/scheduling.ts](../services/api-rest/src/routes/v1/b2b/scheduling.ts)                | `sendTenantEmailByKey('appointment-*', { ref:{ appointmentId } })`                                                                      |
 
 Each carries `propertyId` where the originating entity has one, so per-site brand +
 per-site overrides apply (docs/49 Phase 7b). All five live in **api-rest**, which
@@ -240,15 +242,15 @@ already has the Builder + resolver — no service gains a new heavy dependency.
 
 ## 7. Build plan (slices)
 
-| Slice | Scope | Gate |
-| --- | --- | --- |
-| **S0** | This doc | — |
-| **S1** | `sendTenantEmailByKey` primitive + code-shipped fallback in by-key resolution | unit: fallback to shipped tree when no row |
-| **S2** | Resolver: `order.shippingAddress`, `shipping.*`, `appointment.*` + new refs | unit per source root |
-| **S3** | Author the 5 default trees; `DEFAULT_EMAIL_TEMPLATES` 13 → 18; provisioning/reconcile auto-cover | default-emails test asserts 18 keys + tree validity |
-| **S4** | Migrate the 5 senders to the primitive | integration: each sender emits `kind:'raw'` with resolved data |
-| **S5** | Retire the 5 coded templates + worker schema arms | typecheck/worker tests green |
-| **S6** | Delete `/email/templates` (page, routes, builtins, `EmailTemplate` audit + drop migration, nav) | typecheck + route tests; DB migration via pipeline |
+| Slice  | Scope                                                                                            | Gate                                                           |
+| ------ | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| **S0** | This doc                                                                                         | —                                                              |
+| **S1** | `sendTenantEmailByKey` primitive + code-shipped fallback in by-key resolution                    | unit: fallback to shipped tree when no row                     |
+| **S2** | Resolver: `order.shippingAddress`, `shipping.*`, `appointment.*` + new refs                      | unit per source root                                           |
+| **S3** | Author the 5 default trees; `DEFAULT_EMAIL_TEMPLATES` 13 → 18; provisioning/reconcile auto-cover | default-emails test asserts 18 keys + tree validity            |
+| **S4** | Migrate the 5 senders to the primitive                                                           | integration: each sender emits `kind:'raw'` with resolved data |
+| **S5** | Retire the 5 coded templates + worker schema arms                                                | typecheck/worker tests green                                   |
+| **S6** | Delete `/email/templates` (page, routes, builtins, `EmailTemplate` audit + drop migration, nav)  | typecheck + route tests; DB migration via pipeline             |
 
 S1–S5 are additive and independently shippable (deploy-early). S6 is the
 subtractive finish; it lands only after S4 proves the senders are migrated, so there

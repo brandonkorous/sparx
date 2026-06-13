@@ -171,7 +171,10 @@ export async function sendTenantEmailByKey(
   const ctx = { tenantId };
   const doc = await emailService.getPublishedByKey(ctx, args.key, args.propertyId ?? null);
   if (!doc) {
-    logger.warn({ tenantId, key: args.key }, 'tenant-email: no published tree or default — skipped');
+    logger.warn(
+      { tenantId, key: args.key },
+      'tenant-email: no published tree or default — skipped'
+    );
     return { sent: false, reason: 'no-template' };
   }
 
