@@ -332,11 +332,7 @@ export const EMAIL_SOURCES: DataSource[] = [
     module: 'site',
     cardinality: 'object',
     recordType: 'site',
-    fields: [
-      text('name', 'Name'),
-      text('url', 'URL'),
-      text('supportEmail', 'Support email'),
-    ],
+    fields: [text('name', 'Name'), text('url', 'URL'), text('supportEmail', 'Support email')],
   },
   {
     key: 'order',
