@@ -12,6 +12,7 @@
 
 import {
   CreateEmailInput,
+  DEFAULT_EMAIL_TEMPLATES,
   ReorderEmailsInput,
   STARTER_EMAILS,
   UpdateEmailInput,
@@ -46,6 +47,19 @@ function toDto(row: BuilderEmail): BuilderEmailDto {
 
 const asJson = (tree: BuilderNode): Prisma.InputJsonValue =>
   tree as unknown as Prisma.InputJsonValue;
+
+/** The send/preview projection (PublishedEmailDto) of a row, or null when it has
+ *  no published snapshot. Shared by getPublishedById / getPublishedByKey. */
+function toPublished(row: BuilderEmail): PublishedEmailDto | null {
+  if (row.publishedTree == null) return null;
+  return {
+    name: row.name,
+    subject: row.subject,
+    preheader: row.preheader,
+    tree: row.publishedTree as unknown as BuilderNode,
+    publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
+  };
+}
 
 // Preheader stores null (not '') when blank, so a cleared field is genuinely
 // absent rather than an empty preview line.
@@ -234,14 +248,167 @@ export function getPublishedById(
 ): Promise<PublishedEmailDto | null> {
   return withTenant(ctx, async (tx) => {
     const row = await tx.builderEmail.findUnique({ where: { id } });
-    if (row?.publishedTree == null) return null;
-    return {
-      name: row.name,
-      subject: row.subject,
-      preheader: row.preheader,
-      tree: row.publishedTree as unknown as BuilderNode,
-      publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
-    };
+    return row ? toPublished(row) : null;
+  });
+}
+
+/**
+ * Resolve a built-in email by KEY for a send (docs/91 §6). The override join:
+ * a PUBLISHED per-site row `(tenant, property, key)` wins; else the PUBLISHED
+ * tenant-wide default `(tenant, null, key)`; else null. An unpublished site fork
+ * deliberately falls back to the tenant default rather than blocking the send —
+ * the override only takes effect once the site publishes it.
+ *
+ * This is the dispatch-time resolution point the automation send-by-key path
+ * calls (the `builderEmailKey` defer branch), with the per-site fallback baked in.
+ */
+export function getPublishedByKey(
+  ctx: ServiceContext,
+  key: string,
+  propertyId?: string | null
+): Promise<PublishedEmailDto | null> {
+  return withTenant(ctx, async (tx) => {
+    if (propertyId) {
+      const override = await tx.builderEmail.findFirst({ where: { key, propertyId } });
+      const published = override && toPublished(override);
+      if (published) return published;
+    }
+    const base = await tx.builderEmail.findFirst({ where: { key, propertyId: null } });
+    return base ? toPublished(base) : null;
+  });
+}
+
+/**
+ * Provision the tenant's default email templates (docs/91) — the 13 keyed,
+ * tenant-wide (`property_id = null`) Builder emails that back the platform
+ * automations. Published immediately (draft == published) so they're send-ready.
+ * Idempotent: only the keys not already present are created (the
+ * `(tenant, key) WHERE property_id IS NULL` partial unique is the backstop), so a
+ * re-activation or duplicate `module.activated(email)` event is a safe no-op. Runs
+ * alongside the automation module's own seed of the automation rows — different
+ * tables, same event.
+ */
+export function provisionDefaultEmails(ctx: ServiceContext): Promise<{ provisioned: number }> {
+  return withTenant(ctx, async (tx) => {
+    const existing = await tx.builderEmail.findMany({
+      where: { propertyId: null, key: { not: null } },
+      select: { key: true },
+    });
+    const have = new Set(existing.map((e) => e.key));
+    const missing = DEFAULT_EMAIL_TEMPLATES.filter((t) => !have.has(t.key));
+    if (missing.length === 0) return { provisioned: 0 };
+
+    const last = await tx.builderEmail.findFirst({
+      orderBy: { position: 'desc' },
+      select: { position: true },
+    });
+    let position = last ? last.position : -1;
+    const now = new Date();
+    for (const t of missing) {
+      position += 1;
+      await tx.builderEmail.create({
+        data: {
+          tenantId: ctx.tenantId,
+          propertyId: null,
+          key: t.key,
+          name: t.name,
+          subject: t.subject,
+          preheader: t.preheader,
+          draftTree: asJson(t.tree),
+          publishedTree: asJson(t.tree),
+          publishedAt: now,
+          position,
+        },
+      });
+    }
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'system',
+      action: 'builder.emails.provisioned',
+      entityType: 'BuilderEmail',
+      entityId: null,
+      diff: { after: { count: missing.length, keys: missing.map((m) => m.key) } },
+    });
+    return { provisioned: missing.length };
+  });
+}
+
+/**
+ * List the emails a SITE authors (docs/49 Phase 7b): the tenant-wide rows (the 13
+ * defaults + any tenant-level custom email) with each default **replaced by this
+ * site's override** when one exists, plus the site's own custom emails. The
+ * editor edits each row by its own id; only this list + the fork are
+ * property-aware. `propertyId` null falls back to the tenant-wide view.
+ */
+export function listForProperty(
+  ctx: ServiceContext,
+  propertyId: string | null
+): Promise<BuilderEmailDto[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.builderEmail.findMany({
+      where: propertyId ? { OR: [{ propertyId: null }, { propertyId }] } : { propertyId: null },
+      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+    });
+    // Keys this site has overridden — the tenant-wide default with that key is
+    // hidden in favour of the site row.
+    const overriddenKeys = new Set(
+      rows.filter((r) => r.propertyId === propertyId && r.key != null).map((r) => r.key)
+    );
+    const visible = rows.filter((r) => {
+      if (r.propertyId === propertyId) return true; // this site's own rows
+      return !(r.key != null && overriddenKeys.has(r.key)); // hide overridden defaults
+    });
+    return visible.map(toDto);
+  });
+}
+
+/**
+ * Fork a tenant-wide default into a per-site override (docs/49 Phase 7b — the
+ * "Customize for this site" action). Copies the default's published look into a
+ * new `(tenant, property, key)` draft the site edits independently; it stays draft
+ * (the tenant default keeps sending for the site, via getPublishedByKey's
+ * fallback) until the site publishes it. Idempotent — re-forking returns the
+ * existing override rather than tripping the per-site partial unique.
+ */
+export function customizeForSite(
+  ctx: ServiceContext,
+  key: string,
+  propertyId: string
+): Promise<BuilderEmailDto> {
+  return withTenant(ctx, async (tx) => {
+    const existing = await tx.builderEmail.findFirst({ where: { key, propertyId } });
+    if (existing) return toDto(existing);
+    const base = await tx.builderEmail.findFirst({ where: { key, propertyId: null } });
+    if (!base) throw new BuilderNotFoundError('BuilderEmail', `default ${key}`);
+    const last = await tx.builderEmail.findFirst({
+      orderBy: { position: 'desc' },
+      select: { position: true },
+    });
+    const created = await tx.builderEmail.create({
+      data: {
+        tenantId: ctx.tenantId,
+        propertyId,
+        key,
+        name: base.name,
+        subject: base.subject,
+        preheader: base.preheader,
+        draftTree: (base.publishedTree ?? base.draftTree) as Prisma.InputJsonValue,
+        position: last ? last.position + 1 : 0,
+      },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'builder.email.site_override_created',
+      entityType: 'BuilderEmail',
+      entityId: created.id,
+      diff: { after: { key, propertyId } },
+    });
+    return toDto(created);
   });
 }
 

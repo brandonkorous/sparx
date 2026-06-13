@@ -171,6 +171,23 @@ model BuilderEmail {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid
 
+  // The site this email belongs to (docs/49 Phase 7b / docs/91 §6). NULL =
+  // tenant-wide: the 13 provisioned defaults and any tenant-level custom email. A
+  // non-null row is a per-SITE override (or per-site custom email). The override
+  // join is (tenant, property, key) → (tenant, key): a site fork wins, else the
+  // tenant-wide default. SetNull on delete so a removed site's overrides fall back
+  // to the tenant-wide row instead of vanishing mid-flight. NOT a security
+  // boundary (tenant_id is); property scoping is application-tier (docs/49 §2).
+  propertyId String? @map("property_id") @db.Uuid
+
+  // Built-in identity (docs/91). One of the provisioned default keys
+  // (welcome-customer, abandoned-cart, …) for a default or its per-site override;
+  // NULL for a tenant-authored custom email. Two PARTIAL UNIQUE indexes (hand-SQL
+  // in the migration, Prisma can't express the predicate) enforce one tenant-wide
+  // default per key and one per-site override per key; custom emails (key NULL)
+  // are unconstrained.
+  key String? @db.VarChar(63)
+
   name      String  @db.VarChar(255)
   // The email subject line. Stored '' when blank (not null) — always present.
   subject   String  @default("") @db.VarChar(255)
@@ -189,9 +206,13 @@ model BuilderEmail {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
 
   @@index([tenantId, position])
+  // The override-resolution reads — (tenant, key, property=null) and
+  // (tenant, key, property=X) — are served by the two PARTIAL UNIQUE indexes
+  // hand-added in the migration (Prisma can't express their WHERE predicate).
   @@map("builder_emails")
 }
 
