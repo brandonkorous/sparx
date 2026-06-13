@@ -16,6 +16,10 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
 COPY packages/events ./packages/events
+# @sparx/commerce's checkout-service/return-service import @sparx/payments at
+# module load; payments' only workspace dep is @sparx/db (above). Without it the
+# image builds but crashes at runtime with ERR_MODULE_NOT_FOUND on '@sparx/payments'.
+COPY packages/payments ./packages/payments
 COPY packages/commerce ./packages/commerce
 # @sparx/commerce-schemas (pure markup engine) is a dep of both @sparx/commerce
 # and now @sparx/crm (quote-line markup, docs/48 §5).

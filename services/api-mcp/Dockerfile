@@ -40,6 +40,11 @@ COPY packages/commerce-schemas ./packages/commerce-schemas
 # it crashlooped api-mcp with ERR_MODULE_NOT_FOUND. (@sparx/commerce's other dep
 # @sparx/ui is NOT copied — the MCP code path never loads it.)
 COPY packages/integration-framework ./packages/integration-framework
+# @sparx/commerce's checkout-service/return-service import @sparx/payments (the
+# gateway SDK) at module load — the commerce MCP tools pull them in — so payments
+# must be in the image. Its only workspace dep is @sparx/db (above). Omitting it
+# crashlooped api-mcp with ERR_MODULE_NOT_FOUND on '@sparx/payments'.
+COPY packages/payments ./packages/payments
 COPY packages/commerce ./packages/commerce
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/crm ./packages/crm
