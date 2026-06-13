@@ -7,7 +7,16 @@
 // can't supply (e.g. a customer tag on a deal-only event). We throw a clear
 // message so the run records a `failed` step (loud), never a silent no-op.
 
-import type { ResolvedFields } from '@sparx/automation';
+import { interpolateEmailTokens } from '@sparx/builder-schemas';
+import type { ResolvedFields, TenantCtx } from '@sparx/automation';
+
+/** Interpolate `{{dotted.path}}` merge tokens in an authored string (a task title,
+ *  a note body, an internal-alert subject) against the trigger's flat resolved
+ *  fields, whose keys ARE the dotted paths. Shares the email merge grammar
+ *  (`{{ path ?? "fallback" }}`) so a token reads identically everywhere. */
+export function interpolateFields(input: string, fields: ResolvedFields): string {
+  return input.includes('{{') ? interpolateEmailTokens(input, (path) => fields[path]) : input;
+}
 
 /** Read a REQUIRED non-empty string field, throwing a clear config error if the
  *  trigger entity didn't resolve it. Used for ids AND for other required string
@@ -39,4 +48,32 @@ export function optionalEntityId(fields: ResolvedFields, key: string): string | 
 export function optionalBoolField(fields: ResolvedFields, key: string): boolean | undefined {
   const value = fields[key];
   return typeof value === 'boolean' ? value : undefined;
+}
+
+/** The tenant's default actor — the owner user, who system automations assign tasks
+ *  to and notify when a seed names no explicit recipient (docs/90 §3b: the
+ *  `create_task` assignee + the staff-alert `to` both fall back to the owner). A
+ *  system automation has no acting user, so this is also the task CREATOR (the
+ *  `created_by_id` NOT-NULL). Resolves the owner, then any staff user, then the
+ *  tenant's contact email (userId null only if the tenant has no users at all).
+ *  Reads through `ctx.tx`, so it's RLS-scoped to this tenant. */
+export async function resolveTenantActor(
+  ctx: TenantCtx
+): Promise<{ userId: string | null; email: string | null }> {
+  const owner = await ctx.tx.user.findFirst({
+    where: { role: 'owner' },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true, email: true },
+  });
+  if (owner) return { userId: owner.id, email: owner.email };
+  const anyUser = await ctx.tx.user.findFirst({
+    orderBy: { createdAt: 'asc' },
+    select: { id: true, email: true },
+  });
+  if (anyUser) return { userId: anyUser.id, email: anyUser.email };
+  const tenant = await ctx.tx.tenant.findUnique({
+    where: { id: ctx.tenantId },
+    select: { email: true },
+  });
+  return { userId: null, email: tenant?.email ?? null };
 }

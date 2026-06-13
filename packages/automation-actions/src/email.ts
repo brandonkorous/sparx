@@ -33,7 +33,13 @@ import { enqueueSend, type ScheduledSendBody } from '@sparx/email-sends';
 import { interpolateEmailTokens } from '@sparx/builder-schemas';
 import { z } from 'zod';
 
-import { optionalBoolField, optionalEntityId, requireStringField } from './entity.js';
+import {
+  interpolateFields,
+  optionalBoolField,
+  optionalEntityId,
+  requireStringField,
+  resolveTenantActor,
+} from './entity.js';
 
 /** The entity ids a designed (Builder) email resolves its DataSources against at
  *  dispatch (docs/91 §3), read from the trigger's resolved fields. */
@@ -46,14 +52,6 @@ function entityRefsFromFields(fields: EffectInput['fields']): Record<string, str
     billingDocumentId: optionalEntityId(fields, 'invoice.id') ?? null,
     b2bAccountId: optionalEntityId(fields, 'b2bAccount.id') ?? null,
   };
-}
-
-/** Interpolate `{{dotted.path}}` tokens in an internal-alert string against the
- *  trigger's flat resolved fields (whose keys ARE the dotted paths). Internal mail
- *  is pre-rendered at enqueue, so its subject/body merge here rather than at the
- *  deferred render. */
-function interpInternal(input: string, fields: EffectInput['fields']): string {
-  return input.includes('{{') ? interpolateEmailTokens(input, (path) => fields[path]) : input;
 }
 
 // The site an automation send is on behalf of (docs/49 Phase 7b) — read from
@@ -89,7 +87,11 @@ const CampaignConfig = z.union([
 
 const InternalConfig = z
   .object({
-    to: z.string().email(),
+    // Recipient resolution, in priority order (docs/90 §3b): a field path on the
+    // trigger entity (e.g. a conversation's assigned-staff email), an explicit
+    // address, then the tenant's notify address (owner email → tenant contact).
+    toField: z.string().min(1).optional(),
+    to: z.string().email().optional(),
     subject: z.string().min(1),
     html: z.string().optional(),
     text: z.string().optional(),

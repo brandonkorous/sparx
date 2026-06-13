@@ -18,7 +18,12 @@ import type { ActionOutput, EffectInput, TenantCtx } from '@sparx/automation';
 import { registerAction } from '@sparx/automation';
 import { z } from 'zod';
 
-import { optionalEntityId, requireEntityId } from './entity.js';
+import {
+  interpolateFields,
+  optionalEntityId,
+  requireEntityId,
+  resolveTenantActor,
+} from './entity.js';
 
 const MS_PER_DAY = 86_400_000;
 
@@ -45,9 +50,13 @@ const CreateTaskConfig = z.object({
   // run that parked on an earlier wait still dates the task from when it runs.
   dueInDays: z.number().int().min(0).optional(),
   priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
-  // createdByUserId is NOT NULL and a system automation has no actor, so the
-  // assignee doubles as the creator. Required for that reason.
-  assignedToUserId: z.string().uuid(),
+  // Assignee resolution, in priority order (docs/90 §3b): a field path on the
+  // trigger entity (e.g. `deal.assignedRepId`), an explicit user id, then the
+  // tenant owner (the fallback — a system seed can't know a tenant's user ids).
+  // `createdByUserId` is NOT NULL and a system automation has no actor, so the
+  // resolved assignee doubles as the creator.
+  assigneeField: z.string().min(1).optional(),
+  assignedToUserId: z.string().uuid().optional(),
 });
 
 const MoveStageConfig = z.object({
@@ -103,7 +112,12 @@ export function installCrmActions(): void {
       const customerId = requireEntityId(effect.fields, 'customer.id', 'crm.add_note');
       const activity = await activityService.record(
         { tenantId: ctx.tenantId, tx: ctx.tx },
-        { customerId, type: 'note', description: cfg.note, actorType: 'system' }
+        {
+          customerId,
+          type: 'note',
+          description: interpolateFields(cfg.note, effect.fields),
+          actorType: 'system',
+        }
       );
       return { activityId: activity.id };
     },
@@ -133,21 +147,31 @@ export function installCrmActions(): void {
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = CreateTaskConfig.parse(effect.config);
       // Anchor the task to whichever entity the trigger carried (both optional —
-      // a task can stand alone). The assignee is also the creator (see schema).
+      // a task can stand alone). Resolve the assignee: the trigger entity's owner
+      // field → an explicit id → the tenant owner. The assignee is also the creator.
       const customerId = optionalEntityId(effect.fields, 'customer.id');
       const dealId = optionalEntityId(effect.fields, 'deal.id');
+      const fromField = cfg.assigneeField
+        ? optionalEntityId(effect.fields, cfg.assigneeField)
+        : undefined;
+      const assignee = fromField ?? cfg.assignedToUserId ?? (await resolveTenantActor(ctx)).userId;
+      if (!assignee) {
+        throw new Error('crm.create_task: no assignee resolved and the tenant has no users.');
+      }
       const dueAt =
         cfg.dueInDays !== undefined
           ? new Date(Date.now() + cfg.dueInDays * MS_PER_DAY).toISOString()
           : undefined;
       const task = await taskService.create(
-        { tenantId: ctx.tenantId, userId: cfg.assignedToUserId, tx: ctx.tx },
+        { tenantId: ctx.tenantId, userId: assignee, tx: ctx.tx },
         {
-          title: cfg.title,
-          description: cfg.description,
+          title: interpolateFields(cfg.title, effect.fields),
+          description: cfg.description
+            ? interpolateFields(cfg.description, effect.fields)
+            : undefined,
           dueAt,
           priority: cfg.priority,
-          assignedToUserId: cfg.assignedToUserId,
+          assignedToUserId: assignee,
           customerId,
           dealId,
         }
