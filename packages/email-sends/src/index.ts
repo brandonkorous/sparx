@@ -17,11 +17,33 @@
 
 import { withTenant, type Prisma, type TenantContext } from '@sparx/db';
 
+/**
+ * A `defer` body references a published Builder email, rendered per-recipient at
+ * dispatch (docs/52 §6, docs/91 §6). The email is named EITHER by its row `id`
+ * (a tenant broadcast targeting one specific email) OR by its built-in `key` (a
+ * system automation referencing a provisioned default — `getPublishedByKey`
+ * resolves the per-site override → tenant default at dispatch). Exactly one of
+ * `builderEmailId` / `builderEmailKey`.
+ *
+ * `subject`/`preheader` are an OPTIONAL override — when omitted (the key path),
+ * dispatch uses the resolved email's own (tenant-editable) subject/preheader.
+ * `emailType` is the declared intent (docs/91 §8): it drives the suppression
+ * scope and the compliance gate (a `marketing` send whose tree lacks an
+ * unsubscribe node is refused). Absent ⇒ marketing-ness is inferred from the tree.
+ */
+export interface DeferBody {
+  builderEmailId?: string;
+  builderEmailKey?: string;
+  subject?: string;
+  preheader?: string;
+  emailType?: 'transactional' | 'marketing';
+}
+
 /** One of the three body sources the email-dispatch tick understands. */
 export type ScheduledSendBody =
   | { template: string; props?: Record<string, unknown> }
   | { raw: { subject: string; html: string; text: string; templateId?: string } }
-  | { defer: { builderEmailId: string; subject: string; preheader?: string } };
+  | { defer: DeferBody };
 
 export interface EnqueueSendSpec {
   /** Destination address (a customer's email, or a staff inbox for internal). */

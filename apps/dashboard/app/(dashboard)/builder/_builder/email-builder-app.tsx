@@ -16,8 +16,19 @@
 // email render (table HTML) + preview/test-send land in Phase 2.
 
 import * as React from 'react';
-import { Eye, Monitor, Pencil, Plus, Save, Smartphone, Tablet, Trash2, Upload } from 'lucide-react';
-import { Button, Input, ModuleProvider, NativeSelect, useConfirm } from '@sparx/ui';
+import {
+  Eye,
+  Monitor,
+  Pencil,
+  Plus,
+  Save,
+  Smartphone,
+  SplitSquareHorizontal,
+  Tablet,
+  Trash2,
+  Upload,
+} from 'lucide-react';
+import { Badge, Button, Input, ModuleProvider, NativeSelect, useConfirm } from '@sparx/ui';
 import { parseEmailImport, toEmailDocument } from '@sparx/builder-schemas';
 import type { BindingCatalog, BuilderEmailDto } from '@sparx/builder-schemas';
 
@@ -29,6 +40,7 @@ import { ImportExportControls } from './import-export-controls';
 import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
 import {
   createEmail,
+  customizeEmailForSite,
   deleteEmail,
   publishEmail,
   renameEmail,
@@ -37,17 +49,29 @@ import {
   setEmailSubject,
 } from '../_lib/actions';
 
-// A loaded email reduced to the editor's working shape.
+// A loaded email reduced to the editor's working shape. `key` + `scope` drive the
+// per-site affordances (docs/49 Phase 7b): a tenant default with a key can be
+// forked for the active site; a `scope: 'site'` row is already an override.
 interface EmailItem {
   id: string;
   name: string;
   subject: string;
   preheader: string | null;
   tree: BuilderEmailDto['tree'];
+  key: string | null;
+  scope: 'tenant' | 'site';
 }
 
 function toItem(e: BuilderEmailDto): EmailItem {
-  return { id: e.id, name: e.name, subject: e.subject, preheader: e.preheader, tree: e.tree };
+  return {
+    id: e.id,
+    name: e.name,
+    subject: e.subject,
+    preheader: e.preheader,
+    tree: e.tree,
+    key: e.key,
+    scope: e.scope,
+  };
 }
 
 const DEVICES: { id: Device; label: string; icon: typeof Monitor }[] = [
@@ -73,6 +97,11 @@ export interface EmailBuilderAppProps {
    *  a neutral label; `senderAddress` is omitted when no sending address is known. */
   senderName?: string;
   senderAddress?: string | null;
+  /** The active web property when the tenant runs MORE THAN ONE site (docs/49
+   *  Phase 7b) — present only in multi-site mode. Drives the "Customize for this
+   *  site" fork + the override badge. Absent for single-site tenants, where the
+   *  catalog is purely tenant-wide and these affordances never show. */
+  site?: { propertyId: string; name: string };
 }
 
 export function EmailBuilderApp({
@@ -80,6 +109,7 @@ export function EmailBuilderApp({
   bindingCatalog,
   senderName,
   senderAddress,
+  site,
 }: EmailBuilderAppProps) {
   const confirm = useConfirm();
   // Emails load from the server (listOrSeed seeds the starter set on first use)
@@ -174,6 +204,28 @@ export function EmailBuilderApp({
     const res = await publishEmail(active.id);
     setBusy(false);
     editor.setSaveStatus(res.ok ? 'saved' : 'error');
+  };
+
+  // "Customize for this site" (docs/49 Phase 7b): fork the active tenant default
+  // into a per-site override the active site edits on its own. The override
+  // REPLACES the default in this site's list (same slot), so swap it in place and
+  // open it. Only valid on a keyed tenant default while a site is active.
+  const canCustomizeForSite = !!site && active?.scope === 'tenant' && !!active.key;
+  const onCustomizeForSite = async () => {
+    if (!site || active?.scope !== 'tenant' || !active.key) return;
+    setBusy(true);
+    await editor.flushSave();
+    const res = await customizeEmailForSite(site.propertyId, active.key);
+    setBusy(false);
+    if (!res.ok || !res.data) {
+      editor.setSaveStatus('error');
+      return;
+    }
+    const override = res.data;
+    const replacedId = active.id;
+    setItems((es) => es.map((e) => (e.id === replacedId ? toItem(override) : e)));
+    setActiveId(override.id);
+    editor.setSelectedId(null);
   };
 
   // Open the true-HTML preview (the real table-based email, in the tenant brand).
@@ -352,6 +404,32 @@ export function EmailBuilderApp({
             >
               <Trash2 aria-hidden />
             </button>
+            {/* Per-site status for the selected email (multi-site only, docs/49
+                Phase 7b): a site override is badged; a shared keyed default offers
+                the fork; a tenant-wide custom is labelled "All sites". */}
+            {site ? (
+              active.scope === 'site' ? (
+                <Badge color="primary" variant="soft" size="sm" className="ml-1">
+                  Only on {site.name}
+                </Badge>
+              ) : canCustomizeForSite ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="ml-1"
+                  leftIcon={<SplitSquareHorizontal className="h-3.5 w-3.5" />}
+                  disabled={busy || renaming}
+                  title={`Create a version of this email just for ${site.name}`}
+                  onClick={() => void onCustomizeForSite()}
+                >
+                  Customize for this site
+                </Button>
+              ) : (
+                <Badge color="neutral" variant="soft" size="sm" className="ml-1">
+                  All sites
+                </Badge>
+              )
+            ) : null}
           </div>
           <div className="bx-toolbar__devices">
             {DEVICES.map((d) => {

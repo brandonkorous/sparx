@@ -16,6 +16,7 @@ import { broadcastService } from '@sparx/email-platform';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
+import { requireVerifiedEmail } from '../../../lib/verified-email-guard.js';
 import { emailDataResolver } from '../../../lib/email-data.js';
 import { resolvePropertyId } from '../../../lib/property.js';
 
@@ -78,6 +79,7 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/email/broadcasts/:id/send', async (request) => {
     requireRole(request, 'editor');
     await requireEmailModule(request);
+    await requireVerifiedEmail(request);
     const { id } = IdParam.parse(request.params);
     const ctx = toEmailContext(request);
     // The broadcast body is a published Builder email (docs/52); emailDataResolver
@@ -89,6 +91,7 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/email/broadcasts/:id/schedule', async (request) => {
     requireRole(request, 'editor');
     await requireEmailModule(request);
+    await requireVerifiedEmail(request);
     const { id } = IdParam.parse(request.params);
     const ctx = toEmailContext(request);
     return ok(await broadcastService.schedule(ctx, id, request.body, emailDataResolver(ctx)));

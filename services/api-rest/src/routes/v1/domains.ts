@@ -34,6 +34,7 @@ import { prisma, withTenant } from '@sparx/db';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound, conflict, validationError, badRequest, forbidden } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
+import { requireVerifiedEmail } from '../../lib/verified-email-guard.js';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import type { DomainPurchasedPayload } from '@sparx/events';
 import {
@@ -354,6 +355,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
   //   7. Return { domain, orderId, expiresAt, purchase }
   app.post('/v1/domains/purchase', async (request) => {
     const auth = requireRole(request, 'editor');
+    await requireVerifiedEmail(request);
 
     // 0. Checkout gate. A domain registration bills the Sparx reseller account the
     //    instant GoDaddy is called (ICANN: no trial, no reversal), so buying is

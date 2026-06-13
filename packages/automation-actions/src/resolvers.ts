@@ -420,6 +420,47 @@ export function installEntityResolvers(): void {
     }));
   });
 
+  // Quote expiry (interval scan). Submitted (awaiting-decision) quotes whose
+  // `validUntil` falls within the next 48h — the b2b-quote-expiring nudge fans out
+  // over these. The interval cadence's once-per-entity dedupe fires a single
+  // reminder as a quote enters the window; a quote that's accepted/declined/expired
+  // leaves the `submitted` set and stops matching.
+  registerScanner('quote', async (ctx: TenantCtx): Promise<ScannedRow[]> => {
+    const now = Date.now();
+    const horizon = new Date(now + 48 * 3_600_000);
+    const rows = await ctx.tx.quote.findMany({
+      where: {
+        status: 'submitted',
+        validUntil: { not: null, gt: new Date(now), lte: horizon },
+      },
+      select: {
+        id: true,
+        quoteNumber: true,
+        status: true,
+        total: true,
+        currency: true,
+        validUntil: true,
+        customerId: true,
+        b2bAccountId: true,
+      },
+      take: 5_000,
+    });
+    return Promise.all(
+      rows.map(async (q) => ({
+        id: q.id,
+        fields: {
+          'quote.id': q.id,
+          'quote.number': q.quoteNumber,
+          'quote.status': q.status,
+          'quote.total': num(q.total),
+          'quote.currency': q.currency,
+          'quote.validUntil': q.validUntil,
+          ...(await resolveContact(ctx, { customerId: q.customerId, b2bAccountId: q.b2bAccountId })),
+        },
+      }))
+    );
+  });
+
   // Billing-document due/overdue (daily scan). Every open net-terms document with a
   // due date; the seed predicates select the exact window (`daysUntilDue == 3`,
   // `overdueDays == 7/14/30`) and partition user invoices vs B2B AR by `workflowSlug`.

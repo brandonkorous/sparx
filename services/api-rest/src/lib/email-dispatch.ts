@@ -36,9 +36,19 @@ interface SendPayload {
   automationKey?: string | null;
   /** Pre-rendered broadcast body — delivered as-is by the worker. */
   raw?: { subject: string; html: string; text: string; templateId?: string };
-  /** Per-recipient deferred render (docs/52 §6): reload the published Builder
-   *  email tree by `builderEmailId`, resolve THIS recipient's data, render here. */
-  defer?: { builderEmailId: string; subject: string; preheader?: string };
+  /** Per-recipient deferred render (docs/52 §6, docs/91 §6): reload the published
+   *  Builder email tree — by row `builderEmailId` (a tenant broadcast) OR built-in
+   *  `builderEmailKey` (a system automation; resolves the per-site override →
+   *  tenant default) — resolve THIS recipient's data, render here. `subject`/
+   *  `preheader` are optional overrides (the key path falls back to the resolved
+   *  email's own); `emailType` is the declared intent for the compliance gate. */
+  defer?: {
+    builderEmailId?: string;
+    builderEmailKey?: string;
+    subject?: string;
+    preheader?: string;
+    emailType?: 'transactional' | 'marketing';
+  };
   /** Extra Mailgun user variables (broadcast_id, automation_key, campaign). */
   variables?: Record<string, string>;
 }
@@ -64,6 +74,14 @@ function treeHasNodeType(node: BuilderNode, type: string): boolean {
   if (node.type === type) return true;
   for (const child of node.children ?? []) if (treeHasNodeType(child, type)) return true;
   return false;
+}
+
+/** Record a terminal failure on a send the tick already marked 'sent' (an
+ *  unpublished template, a compliance refusal). RLS-scoped via withTenant. */
+async function markSendFailed(tenantId: string, sendId: string, reason: string): Promise<void> {
+  await withTenant({ tenantId }, (tx) =>
+    tx.scheduledSend.update({ where: { id: sendId }, data: { status: 'failed', lastError: reason } })
+  );
 }
 
 export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<TickResult> {
@@ -134,17 +152,53 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
         };
 
         let data: Record<string, unknown>;
-        if (payload.defer?.builderEmailId) {
+        if (payload.defer) {
           // Designed (Builder) email, personalized: reload the published tree,
           // resolve THIS recipient's data, and render here at dispatch (docs/52 §6,
-          // docs/91 §3). Entity refs name the exact entity the automation fired on;
-          // the snapshot is the scalar fallback for a since-deleted entity.
+          // docs/91 §3, §6). The email is named by row id (a tenant broadcast) OR
+          // built-in key (a system automation — getPublishedByKey resolves the
+          // per-site override → tenant default). Entity refs name the exact entity
+          // the automation fired on; the snapshot is the scalar fallback for a
+          // since-deleted entity.
           const tenantCtx = { tenantId: row.tenant_id };
-          const doc = await emailService.getPublishedById(tenantCtx, payload.defer.builderEmailId);
+          const doc = payload.defer.builderEmailKey
+            ? await emailService.getPublishedByKey(
+                tenantCtx,
+                payload.defer.builderEmailKey,
+                propertyId
+              )
+            : payload.defer.builderEmailId
+              ? await emailService.getPublishedById(tenantCtx, payload.defer.builderEmailId)
+              : null;
           if (!doc) {
+            const which = payload.defer.builderEmailKey
+              ? { builderEmailKey: payload.defer.builderEmailKey }
+              : { builderEmailId: payload.defer.builderEmailId };
             logger.warn(
-              { sendId: row.id, builderEmailId: payload.defer.builderEmailId },
-              'email-dispatch: designed email no longer published — skipping recipient'
+              { sendId: row.id, ...which },
+              'email-dispatch: designed email not published — marking failed'
+            );
+            await markSendFailed(row.tenant_id, row.id, 'designed email not published');
+            continue;
+          }
+          // Compliance gate (docs/91 §8 / docs/90 §5): a send whose DECLARED intent
+          // is marketing must carry an unsubscribe node — refuse (recorded on the
+          // send) otherwise. CAN-SPAM/CASL: no marketing mail without a working
+          // opt-out. With no declared intent (the legacy broadcast id path)
+          // marketing-ness is inferred from the tree, so there is nothing to refuse.
+          const treeHasUnsub = treeHasNodeType(doc.tree, 'unsubscribe_link');
+          const marketing = payload.defer.emailType
+            ? payload.defer.emailType === 'marketing'
+            : treeHasUnsub;
+          if (marketing && !treeHasUnsub) {
+            logger.warn(
+              { sendId: row.id, builderEmailKey: payload.defer.builderEmailKey },
+              'email-dispatch: marketing email missing unsubscribe node — refused (compliance)'
+            );
+            await markSendFailed(
+              row.tenant_id,
+              row.id,
+              'compliance: a marketing email must contain an unsubscribe link'
             );
             continue;
           }
@@ -158,8 +212,10 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             billingDocumentId: strOrNull(refs.billingDocumentId),
             b2bAccountId: strOrNull(refs.b2bAccountId),
           };
-          const subject = payload.defer.subject;
-          const preheader = payload.defer.preheader ?? null;
+          // subject/preheader: the send's optional override, else the resolved
+          // email's own (tenant-editable) values — the key path supplies none.
+          const subject = payload.defer.subject ?? doc.subject;
+          const preheader = payload.defer.preheader ?? doc.preheader ?? null;
           // Resolve only the sources the tree (and the subject/preheader) reference,
           // then overlay the trigger-time snapshot as a scalar fallback.
           const emailData = applyEntitySnapshot(
@@ -170,9 +226,8 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
           const finalSubject = interpolateEmailTokens(subject, resolveToken);
           const finalPreheader =
             preheader != null ? interpolateEmailTokens(preheader, resolveToken) : undefined;
-          // Marketing iff the tree carries an unsubscribe node (docs/91 §8): supply
-          // the one-click URL + the List-Unsubscribe header; render the address node.
-          const marketing = treeHasNodeType(doc.tree, 'unsubscribe_link');
+          // A marketing send supplies the one-click URL + List-Unsubscribe header;
+          // the address node renders the tenant's postal address.
           const unsubUrl = marketing ? unsubscribeUrl(row.tenant_id, to) : undefined;
           const brand = (await brandService.resolveEmailBrand(tenantCtx, propertyId)) ?? undefined;
           const rendered = await renderEmailTree(

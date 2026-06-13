@@ -28,6 +28,7 @@ import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { publish } from '@sparx/api-core/pubsub';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
+import { requireVerifiedEmail } from '../../lib/verified-email-guard.js';
 import { badRequest, conflict, forbidden, notFound } from '@sparx/api-core/errors';
 import {
   invalidateModuleCache,
@@ -807,6 +808,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/tenant/onboarding/stripe/connect-url', async (request, reply) => {
     const auth = requireRole(request, 'owner');
+    await requireVerifiedEmail(request);
 
     if (!env.STRIPE_CLIENT_ID) {
       throw badRequest('Stripe Connect is not configured on this platform.');
@@ -840,6 +842,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
 
   app.post('/v1/tenant/onboarding/stripe/exchange', async (request, reply) => {
     const auth = requireRole(request, 'owner');
+    await requireVerifiedEmail(request);
 
     if (!env.STRIPE_SECRET_KEY) {
       throw badRequest('Stripe is not configured on this platform.');

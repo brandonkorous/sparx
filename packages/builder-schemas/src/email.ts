@@ -23,6 +23,15 @@ export interface BuilderEmailDto {
   published: boolean;
   publishedAt: string | null;
   position: number;
+  /** The built-in identity for a provisioned default (docs/91) — `welcome-customer`,
+   *  … — or null for a tenant/site custom email. The per-site "Customize for this
+   *  site" fork is keyed by it. */
+  key: string | null;
+  /** Whether this row is a tenant-wide email (the 13 defaults + tenant customs) or
+   *  a per-site override/custom (docs/49 Phase 7b). `'tenant'` everywhere the row
+   *  has no property; `'site'` once a site forks it. Lets the editor badge an
+   *  override and offer the fork only on a shared default. */
+  scope: 'tenant' | 'site';
   createdAt: string;
   updatedAt: string;
 }

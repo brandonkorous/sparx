@@ -40,6 +40,9 @@ function toDto(row: BuilderEmail): BuilderEmailDto {
     published: row.publishedTree != null,
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
+    key: row.key,
+    // property_id present ⇒ a per-site override/custom; absent ⇒ tenant-wide.
+    scope: row.propertyId ? 'site' : 'tenant',
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };

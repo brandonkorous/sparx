@@ -57,6 +57,17 @@ export async function listEmails(): Promise<BuilderEmailDto[]> {
   return emails;
 }
 
+// A SITE's view of the email catalog (docs/49 Phase 7b): the tenant-wide rows
+// with each default REPLACED by this site's override when one exists, plus the
+// site's own custom emails. Used by the email editor when the tenant runs more
+// than one site — the active site comes from the breadcrumb switcher.
+export async function listEmailsForProperty(propertyId: string): Promise<BuilderEmailDto[]> {
+  const { emails } = await api.get<{ emails: BuilderEmailDto[] }>(
+    `/v1/builder/emails/site/${propertyId}`
+  );
+  return emails;
+}
+
 // The tenant's custom components WITH their latest version trees (docs/53 P-B) —
 // what the editor needs to expand `custom:*` placements live on the canvas and to
 // offer them in the Add palette. `?include=tree` returns the tree-bearing DTOs.

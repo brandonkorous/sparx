@@ -67,10 +67,22 @@ function resolveSourceProperty(fields: Parameters<typeof optionalEntityId>[0]): 
   );
 }
 
-// Body source for a campaign: a designed Builder email (rendered per-recipient at
-// dispatch) OR a coded template. Exactly one — modeled as a union so config can't
-// supply both/neither.
+// Body source for a campaign: a built-in default by KEY (the system-seed path —
+// resolved to the tenant's provisioned/overridden tree at dispatch), a designed
+// Builder email by id (a tenant broadcast), OR a coded template. Exactly one —
+// modeled as a union so config can't supply more than one.
 const CampaignConfig = z.union([
+  // System-seed path (docs/91 §6): reference a provisioned default by `key`.
+  // `emailType` is the declared intent — it drives the suppression scope AND the
+  // dispatch compliance gate (docs/91 §8). subject/preheader are optional
+  // overrides; omitted ⇒ the tenant-editable template's own values are used.
+  z.object({
+    builderEmailKey: z.string().min(1),
+    emailType: z.enum(['transactional', 'marketing']),
+    subject: z.string().min(1).optional(),
+    preheader: z.string().optional(),
+    delaySeconds: z.number().int().min(0).optional(),
+  }),
   z.object({
     builderEmailId: z.string().uuid(),
     subject: z.string().min(1),
@@ -115,23 +127,49 @@ export function installEmailActions(): void {
       const cfg = CampaignConfig.parse(effect.config);
       const recipient = requireStringField(effect.fields, 'customer.email', 'email.send_campaign');
 
-      // Defense in depth: skip a contact the CRM flagged do-not-contact, even
-      // before the email suppression list is consulted in enqueueSend.
-      if (optionalBoolField(effect.fields, 'customer.doNotContact') === true) {
+      // A built-in (`builderEmailKey`) declares its intent; a designed/coded send
+      // is marketing by default (the legacy broadcast contract). The scope drives
+      // which suppression entries block the send: a `transactional` campaign (a
+      // welcome, an invoice reminder, a dunning notice) must NOT be withheld by a
+      // marketing-scope unsubscribe — only an `all` suppression stops it.
+      const emailType = 'emailType' in cfg ? cfg.emailType : 'marketing';
+      const scope = emailType === 'marketing' ? 'marketing' : 'transactional';
+
+      // Defense in depth: skip a contact the CRM flagged do-not-contact — but only
+      // for MARKETING. A do-not-contact flag is a marketing opt-out; an operational
+      // transactional email (invoice, account approval) still sends. The email
+      // suppression list (scoped, in enqueueSend) is the second gate.
+      if (scope === 'marketing' && optionalBoolField(effect.fields, 'customer.doNotContact') === true) {
         return { recipient, enqueued: false, skipped: 'do_not_contact' };
       }
 
       const customerId = optionalEntityId(effect.fields, 'customer.id') ?? null;
-      const isDesigned = 'builderEmailId' in cfg;
-      const body: ScheduledSendBody = isDesigned
-        ? {
-            defer: {
-              builderEmailId: cfg.builderEmailId,
-              subject: cfg.subject,
-              preheader: cfg.preheader,
-            },
-          }
-        : { template: cfg.template, props: cfg.props };
+      // A designed send (`builderEmailKey` | `builderEmailId`) renders a Builder
+      // tree per-recipient at dispatch; a `template` send is a coded component.
+      const isDesigned = 'builderEmailKey' in cfg || 'builderEmailId' in cfg;
+      let body: ScheduledSendBody;
+      if ('builderEmailKey' in cfg) {
+        body = {
+          defer: {
+            builderEmailKey: cfg.builderEmailKey,
+            emailType: cfg.emailType,
+            // Optional overrides; omitted ⇒ dispatch uses the resolved template's
+            // own (tenant-editable) subject/preheader.
+            ...(cfg.subject ? { subject: cfg.subject } : {}),
+            ...(cfg.preheader ? { preheader: cfg.preheader } : {}),
+          },
+        };
+      } else if ('builderEmailId' in cfg) {
+        body = {
+          defer: {
+            builderEmailId: cfg.builderEmailId,
+            subject: cfg.subject,
+            preheader: cfg.preheader,
+          },
+        };
+      } else {
+        body = { template: cfg.template, props: cfg.props };
+      }
 
       const { enqueued, suppressed } = await enqueueSend(
         { tenantId: ctx.tenantId, tx: ctx.tx },
@@ -139,7 +177,7 @@ export function installEmailActions(): void {
           recipient,
           customerId,
           propertyId: resolveSourceProperty(effect.fields),
-          scope: 'marketing',
+          scope,
           delaySeconds: cfg.delaySeconds,
           body,
           variables: { source: 'automation' },

@@ -98,9 +98,9 @@ b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` 
 >   interpolation in task titles / note bodies / internal subjects** via a shared `interpolateFields`. Thresholds (vip
 >   $1000 / high-value $500) are baked literals a tenant edits on the Managed copy; added `conversation.assignedToEmail`
 >   to the chat scanner. **Verify:** automation-actions **24/24** (new `seeds-no-email.test.ts` 6/6 — per-module install
->   + idempotency + locked dunning + assignee-from-rep + **owner fallback** + platform-level internal send w/
->   interpolated subject + threshold gating; `reconcile-seeds.test.ts` updated for the 2-seed B2B catalog); typecheck
->   + lint + format clean.
+>   - idempotency + locked dunning + assignee-from-rep + **owner fallback** + platform-level internal send w/
+>     interpolated subject + threshold gating; `reconcile-seeds.test.ts` updated for the 2-seed B2B catalog); typecheck
+>   - lint + format clean.
 > - **NEXT — the 13 email seeds + compliance gate + provisioning + dashboard (Steps 4–6):** the email-SENDING seeds
 >   (welcome / win-back / abandoned-cart / post-purchase-review / b2b-account-approved / b2b-quote-received /
 >   b2b-quote-expiring / b2b-invoice-due / the 4 invoicing dunning / chat-satisfaction) wait on the **send-by-`key`

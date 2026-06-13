@@ -19,6 +19,7 @@ import {
   toSitebuilderContext,
   toSitebuilderPropertyContext,
 } from '../../../lib/sitebuilder-context.js';
+import { requireVerifiedEmail } from '../../../lib/verified-email-guard.js';
 
 void jwt; // keep the import — fastify-jwt type augmentation lives in plugins/auth.ts
 
@@ -37,6 +38,7 @@ const publishRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/sitebuilder/publish', async (request) => {
     requireRole(request, 'admin');
     await requireSitebuilderModule(request);
+    await requireVerifiedEmail(request);
     const ctx = await toSitebuilderPropertyContext(request);
     const version = await publishService.publishNow(ctx, request.body);
     return ok(version);
@@ -77,6 +79,7 @@ const publishRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/sitebuilder/rollback', async (request) => {
     requireRole(request, 'admin');
     await requireSitebuilderModule(request);
+    await requireVerifiedEmail(request);
     const ctx = await toSitebuilderPropertyContext(request);
     const version = await publishService.rollback(ctx, request.body);
     return ok(version);
@@ -85,6 +88,7 @@ const publishRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/sitebuilder/schedule', async (request, reply) => {
     requireRole(request, 'admin');
     await requireSitebuilderModule(request);
+    await requireVerifiedEmail(request);
     const ctx = await toSitebuilderPropertyContext(request);
     const scheduled = await scheduleService.schedule(ctx, request.body);
     return reply.code(201).send(ok(scheduled));

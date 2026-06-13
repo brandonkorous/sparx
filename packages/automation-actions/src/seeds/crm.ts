@@ -1,8 +1,9 @@
 // CRM system-automation seeds (docs/90 §3b). The Managed defaults that ship on CRM
 // activation. All editable by the tenant (origin=system, locked=false) — they own
-// them the moment they're seeded. The email-sending CRM seeds (welcome, win-back)
-// land once the default Builder-email templates are provisioned + the send-by-key
-// join exists; these three are the no-email CRM defaults (tag + tasks).
+// them the moment they're seeded. Three no-email defaults (tag + tasks) plus the
+// two email-sending CRM defaults (welcome, win-back) that reference a provisioned
+// Builder-email template by `key`; the `email.send_campaign` action's `module:
+// 'email'` gate holds those sends until the email module is active (docs/90 §4).
 
 import type { SystemAutomationSpec } from '@sparx/automation';
 
@@ -77,6 +78,63 @@ export const CRM_DEAL_WON_INVOICE_TASK: SystemAutomationSpec = {
         assigneeField: 'deal.assignedRepId',
         dueInDays: 1,
       },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+/** Send the welcome email the moment a customer record is created (a signup, a
+ *  first order, a newsletter subscribe). Transactional — it isn't withheld by a
+ *  marketing opt-out, and reaches every new customer with an address. */
+export const CRM_WELCOME_NEW_CUSTOMER: SystemAutomationSpec = {
+  name: 'Welcome new customers',
+  description: 'Sends the welcome email when a new customer is created.',
+  trigger: { kind: 'event', eventType: 'crm.customer.created' },
+  conditions: {
+    logic: 'AND',
+    conditions: [{ field: 'customer.email', operator: 'is_set' }],
+  },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'welcome-customer', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+/** Win back a customer who has ordered before but has gone quiet for 90+ days. A
+ *  daily-grain INTERVAL scan (once-per-entity dedupe) so a lapsed customer gets a
+ *  SINGLE nudge as they cross the threshold, not one every day they stay inactive.
+ *  Marketing — it respects the unsubscribe/do-not-contact gates. */
+export const CRM_WIN_BACK_INACTIVE: SystemAutomationSpec = {
+  name: 'Win back inactive customers',
+  description:
+    'Emails a customer who has ordered before but hasn’t in 90 days. Edit the window or the message on this automation.',
+  trigger: {
+    kind: 'schedule',
+    // Daily-grain interval: fires at 00:00 UTC, deduped once per customer so a
+    // long-inactive customer is nudged exactly once (not every day they qualify).
+    schedule: { cadence: 'interval', everyMinutes: 1440 },
+    predicate: {
+      entity: 'customer',
+      where: {
+        logic: 'AND',
+        conditions: [
+          { field: 'customer.daysSinceLastOrder', operator: 'gte', value: 90 },
+          { field: 'customer.orderCount', operator: 'gt', value: 0 },
+          { field: 'customer.email', operator: 'is_set' },
+        ],
+      },
+    },
+  },
+  conditions: { logic: 'AND', conditions: [] },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'win-back', emailType: 'marketing' },
     },
   ],
   locked: false,

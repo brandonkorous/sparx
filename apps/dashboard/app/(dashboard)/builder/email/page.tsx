@@ -3,7 +3,8 @@ import type { BindingCatalog, BuilderEmailDto } from '@sparx/builder-schemas';
 import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
 import { getBrand, getConfig, getTenant } from '../_brand/lib/api';
-import { getEmailBindingCatalog, listEmails } from '../_lib/api';
+import { getEmailBindingCatalog, listEmails, listEmailsForProperty } from '../_lib/api';
+import { resolveSiteScope } from '@/lib/sites';
 import { EmailBuilderApp } from '../_builder/email-builder-app';
 import '../builder.css';
 // The Surface RECIPE — same canvas-scoped sheet the page/site editors load, so a
@@ -40,14 +41,21 @@ async function canvasThemeCss(): Promise<string> {
   }
 }
 
-// The tenant's emails (the list endpoint seeds the curated starter set on first
-// load). Defensive: a failed read yields [] so the route shows a recoverable
-// message rather than 500.
-async function loadEmails(): Promise<BuilderEmailDto[]> {
+// The emails the editor opens. For a single-site tenant (or when the site list
+// can't be read) this is the tenant-wide catalog (listOrSeed seeds the curated
+// starter set on first load). For a MULTI-site tenant it's the ACTIVE site's view
+// (docs/49 Phase 7b) — the tenant defaults with this site's overrides swapped in —
+// so switching sites in the breadcrumb re-scopes the editor. Defensive: any failed
+// read falls back to the tenant-wide list, then to [] (a recoverable message).
+async function loadEmails(propertyId: string | undefined): Promise<BuilderEmailDto[]> {
   try {
-    return await listEmails();
+    return propertyId ? await listEmailsForProperty(propertyId) : await listEmails();
   } catch {
-    return [];
+    try {
+      return await listEmails();
+    } catch {
+      return [];
+    }
   }
 }
 
@@ -78,9 +86,18 @@ async function loadSender(): Promise<{ name: string; address: string | null }> {
 }
 
 export default async function BuilderEmailRoute() {
+  // The active site (docs/49): a multi-site tenant authors ONE site at a time
+  // (the breadcrumb switcher's cookie); a single-site tenant gets `undefined` and
+  // the tenant-wide catalog, unchanged. `multiSite` gates the per-site editor
+  // affordances (the "Customize for this site" fork + the override badge).
+  const scope = await resolveSiteScope().catch(() => null);
+  const activePropertyId = scope?.activePropertyId;
+  const activeSite =
+    scope && activePropertyId ? scope.sites.find((s) => s.id === activePropertyId) : undefined;
+
   const [themeCss, emails, catalog, sender] = await Promise.all([
     canvasThemeCss(),
-    loadEmails(),
+    loadEmails(activePropertyId),
     loadCatalog(),
     loadSender(),
   ]);
@@ -101,6 +118,11 @@ export default async function BuilderEmailRoute() {
         bindingCatalog={catalog}
         senderName={sender.name}
         senderAddress={sender.address}
+        site={
+          activePropertyId && activeSite
+            ? { propertyId: activePropertyId, name: activeSite.name }
+            : undefined
+        }
       />
     </>
   );

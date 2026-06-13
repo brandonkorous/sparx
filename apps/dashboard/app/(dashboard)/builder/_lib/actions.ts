@@ -254,6 +254,21 @@ export async function publishEmail(id: string): Promise<ActionResult<BuilderEmai
   );
 }
 
+/** "Customize for this site" (docs/49 Phase 7b): fork a tenant-wide default into
+ *  a per-site DRAFT override the active site edits independently. Idempotent — a
+ *  repeat returns the existing override. The tenant default keeps sending for the
+ *  site until the override is published (getPublishedByKey's per-site fallback).
+ *  No revalidate — the editor swaps to the returned override in place. */
+export async function customizeEmailForSite(
+  propertyId: string,
+  key: string
+): Promise<ActionResult<BuilderEmailDto>> {
+  return run(
+    () => api.post<BuilderEmailDto>(`/v1/builder/emails/site/${propertyId}/customize`, { key }),
+    false
+  );
+}
+
 /** Render the email's DRAFT body to inlined HTML for the editor preview iframe
  *  (docs/52 Phase 2). No revalidate — a stateless render. */
 export async function previewEmail(
