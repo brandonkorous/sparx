@@ -1,6 +1,10 @@
 -- Payment gateway abstraction (docs/94 ADR §11). The tenant→shopper payment surface,
 -- distinct from platform module billing (73-billing). All tenant-scoped + RLS.
 
+-- Sparx Pay connected account id is now unique on the non-RLS tenants root row so the
+-- public payment webhook can resolve a tenant from a connected account id (docs/94 §6).
+CREATE UNIQUE INDEX "tenants_stripe_account_id_key" ON "tenants"("stripe_account_id");
+
 -- CreateTable
 CREATE TABLE "tenant_payment_configs" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),

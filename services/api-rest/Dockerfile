@@ -39,7 +39,6 @@ COPY packages/legal-templates ./packages/legal-templates
 COPY packages/search ./packages/search
 COPY packages/seo-audit ./packages/seo-audit
 COPY packages/commerce ./packages/commerce
-COPY packages/provider-stripe ./packages/provider-stripe
 COPY packages/provider-shippo ./packages/provider-shippo
 COPY packages/customer-auth ./packages/customer-auth
 COPY packages/site-themes ./packages/site-themes
@@ -53,6 +52,7 @@ COPY packages/marketplace-schemas ./packages/marketplace-schemas
 COPY packages/cms-editor ./packages/cms-editor
 COPY packages/email-platform ./packages/email-platform
 COPY packages/godaddy ./packages/godaddy
+COPY packages/payments ./packages/payments
 COPY services/api-rest ./services/api-rest
 
 # First-party marketplace bundles (docs/85). Read at ingest time by

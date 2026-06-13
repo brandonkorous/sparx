@@ -14,6 +14,7 @@
 
 import * as React from 'react';
 import {
+  Building2,
   DollarSign,
   Fingerprint,
   GalleryHorizontal,
@@ -25,6 +26,7 @@ import {
   LayoutGrid,
   LayoutTemplate,
   Mail,
+  MailX,
   MapPin,
   Menu,
   MessagesSquare,
@@ -40,9 +42,11 @@ import {
   ShoppingBag,
   ShoppingCart,
   Sparkles,
+  Split,
   Square,
   SquareDashed,
   SunMoon,
+  Table,
   Tag,
   Type,
   type LucideIcon,
@@ -52,7 +56,12 @@ import {
 // searchable list) lives with the picker; here we only need the renderer.
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 
-import { coerceNavLinks, readClassGroup, setClassGroup } from '@sparx/builder-schemas';
+import {
+  coerceNavLinks,
+  readClassGroup,
+  sampleEmailText,
+  setClassGroup,
+} from '@sparx/builder-schemas';
 // The canvas renders the SAME @sparx/site-ui components the live site does, so
 // the preview is faithful instead of a `bx-*` approximation (docs/62 / docs/23
 // §17). The remaining `bx-*` are editor chrome (selection, palette) + the media
@@ -92,6 +101,17 @@ import {
   type LayoutStyle,
 } from './model';
 import { COLOR_CONTROL, VARIANT_CONTROL } from './class-controls';
+// Email-faithful leaf rendering (docs/93): on the email surface a Heading/Text/
+// Button/Divider/Prose paints the @sparx/email pixel scale instead of the site-ui
+// hero typography, so the canvas reads like the actual send.
+import {
+  EmailButtonLeaf,
+  EmailDividerLeaf,
+  EmailHeadingLeaf,
+  EmailLineItemsLeaf,
+  EmailProseLeaf,
+  EmailTextLeaf,
+} from './email-leaf';
 
 export type NodeKind = 'container' | 'leaf';
 /** Composition axis (docs/23 §17) — orthogonal to `kind`/`group`/bindable.
@@ -155,6 +175,14 @@ export interface LeafRenderArgs {
   value: unknown;
   cardinality: Cardinality;
   bound: boolean;
+  /** The editor surface this node renders on. A leaf paints differently for an
+   *  `email` (the @sparx/email pixel scale, docs/93) than for a page/site (the
+   *  @sparx/site-ui hero scale). `page` for everything that isn't an email. */
+  surface: EditorSurface;
+  /** Editor SAMPLE data for resolving `{{merge.tokens}}` in the canvas (docs/93).
+   *  The email surface passes `emailSampleData(realTenant)` so `{{tenant.name}}`
+   *  reads the store's real name; undefined ⇒ the generic placeholders. */
+  emailSample?: Record<string, unknown>;
   /** Pre-rendered child nodes, for a leaf that `acceptsChildren` (Button → an
    *  inline Icon). Undefined for leaves with no children. The leaf decides where
    *  they sit relative to its own content (Button renders them after the label). */
@@ -311,6 +339,14 @@ function Placeholder({ label, ratio }: { label: string; ratio?: string }) {
   );
 }
 
+// Representative rows shown when a `line_item_table` isn't bound to a real
+// collection in the canvas — so the email's items table always previews its
+// structure (docs/93), like the FAQ / FeatureGrid placeholders.
+const SAMPLE_LINE_ITEMS: Record<string, unknown>[] = [
+  { name: 'Single-origin beans — Lot 7', quantity: '2', lineTotal: '$36.00' },
+  { name: 'Pour-over filters (100 ct)', quantity: '1', lineTotal: '$12.00' },
+];
+
 // ── The registry ─────────────────────────────────────────────────────────────
 
 const DEFS: ComponentDef[] = [
@@ -423,7 +459,7 @@ const DEFS: ComponentDef[] = [
       { key: 'text', label: 'Heading text', control: 'text', placeholder: 'Heading text' },
     ],
     defaults: { props: { level: 'h2', text: 'Heading' } },
-    renderLeaf: ({ node, value, bound }) => {
+    renderLeaf: ({ node, value, bound, surface, emailSample }) => {
       // Same site-ui Heading the live site renders; bare (node.class rides the
       // canvas wrapper, since Heading isn't leafStylesByClass).
       const level = ((node.props.level as string) ?? 'h2') as 'h1' | 'h2' | 'h3';
@@ -431,8 +467,14 @@ const DEFS: ComponentDef[] = [
       // Graceful empty (mirrors the live renderer): a bound heading whose value
       // resolves empty falls back to its authored static text, not a bare dash, so
       // preview == production for a hero on a site with no records yet.
-      const fallback = firstString(node.props.text, 'Heading');
+      // Interpolate any `{{merge.token}}` against editor SAMPLE data (docs/93) so an
+      // email heading reads "Welcome to <real store name>" in the canvas, not raw
+      // braces. A no-op for site copy (no tokens); the real send resolves live data.
+      const fallback = sampleEmailText(firstString(node.props.text, 'Heading'), emailSample);
       const text = bound ? firstString(value, fallback) : fallback;
+      // On email, paint the @sparx/email heading scale (20px / 16px), not the
+      // site's hero size (docs/93).
+      if (surface === 'email') return <EmailHeadingLeaf level={level}>{text}</EmailHeadingLeaf>;
       return (
         <Heading level={level} size={size}>
           {text}
@@ -462,12 +504,14 @@ const DEFS: ComponentDef[] = [
       { key: 'text', label: 'Text', control: 'textarea', placeholder: 'Type some text…' },
     ],
     defaults: { props: { variant: 'body', text: 'Some text' } },
-    renderLeaf: ({ node, value, bound }) => {
+    renderLeaf: ({ node, value, bound, surface, emailSample }) => {
       const variant = ((node.props.variant as string) ?? 'body') as 'body' | 'eyebrow' | 'meta';
       // Graceful empty (mirrors the live renderer): bound-but-empty falls back to
       // the authored static text rather than a bare dash.
-      const fallback = firstString(node.props.text, 'Some text');
+      const fallback = sampleEmailText(firstString(node.props.text, 'Some text'), emailSample);
       const text = bound ? firstString(value, fallback) : fallback;
+      // On email, body → 14px paragraph, eyebrow/meta → 12px muted (docs/93).
+      if (surface === 'email') return <EmailTextLeaf variant={variant}>{text}</EmailTextLeaf>;
       return <Text variant={variant}>{text}</Text>;
     },
   },
@@ -493,9 +537,11 @@ const DEFS: ComponentDef[] = [
     accepts: ['scalar'],
     props: [{ key: 'doc', label: 'Content', control: 'richtext' }],
     defaults: { props: { doc: EMPTY_PROSE_DOC } },
-    renderLeaf: ({ node, value, bound }) => {
+    renderLeaf: ({ node, value, bound, surface }) => {
+      const email = surface === 'email';
       // Bound to a CMS richtext field → preview data is a representative string.
       if (bound && typeof value === 'string') {
+        if (email) return <EmailTextLeaf variant="body">{value}</EmailTextLeaf>;
         return (
           <div className="bx-prose">
             <Text variant="body">{value}</Text>
@@ -503,18 +549,20 @@ const DEFS: ComponentDef[] = [
         );
       }
       // Authored → serialize the doc to HTML and preview it (the same audited
-      // path the email + site renderers use), styled by `.sparx-content`.
+      // path the email + site renderers use). On site it's styled by
+      // `.sparx-content`; on email it inherits the email body base (docs/93).
       const html = node.props.doc ? renderDocToHtml(node.props.doc) : '';
       if (html) {
+        if (email) return <EmailProseLeaf html={html} />;
         return (
           <div className="bx-prose sparx-content" dangerouslySetInnerHTML={{ __html: html }} />
         );
       }
+      const empty = 'Rich body content renders here — paragraphs, headings, lists, quotes, links.';
+      if (email) return <EmailTextLeaf variant="body">{empty}</EmailTextLeaf>;
       return (
         <div className="bx-prose">
-          <Text variant="body">
-            Rich body content renders here — paragraphs, headings, lists, quotes, links.
-          </Text>
+          <Text variant="body">{empty}</Text>
         </div>
       );
     },
@@ -586,8 +634,20 @@ const DEFS: ComponentDef[] = [
     // A Button can nest an Icon (icon + label) without becoming a full container
     // (docs/47). The dropped Icon renders inline AFTER the label via `children`.
     acceptsChildren: true,
-    renderLeaf: ({ node, value, bound, children }) => {
-      const label = bound ? firstString(value, 'Button') : firstString(node.props.label, 'Button');
+    renderLeaf: ({ node, value, bound, children, surface, emailSample }) => {
+      const label = bound
+        ? firstString(value, 'Button')
+        : sampleEmailText(firstString(node.props.label, 'Button'), emailSample);
+      // On email, the filled accent CTA at the @sparx/email scale (docs/93) — the
+      // recipe `sf-*` classes are a storefront concern that doesn't apply to email.
+      if (surface === 'email') {
+        return (
+          <EmailButtonLeaf>
+            {label}
+            {children}
+          </EmailButtonLeaf>
+        );
+      }
       // Authored with the Surface recipe → render the REAL button so the
       // inspector's Color / Variant / size paint live against the canvas-scoped
       // @sparx/site-ui sheet (docs/47). Legacy buttons (no recipe class — e.g.
@@ -679,7 +739,7 @@ const DEFS: ComponentDef[] = [
     accepts: [],
     props: [],
     defaults: {},
-    renderLeaf: () => <Divider />,
+    renderLeaf: ({ surface }) => (surface === 'email' ? <EmailDividerLeaf /> : <Divider />),
   },
   {
     type: 'Video',
@@ -1359,6 +1419,86 @@ const DEFS: ComponentDef[] = [
     // preview (no document/cookie writes) so it stays placeable + selectable while
     // composing, and never flips the dashboard's own theme.
     renderLeaf: () => <ThemeToggle inert />,
+  },
+
+  // ---- Email automation nodes (docs/93) ----
+  // DEFINED + gate-checked by the automation module; PLACED in the default email
+  // trees (order/cart/invoice + marketing compliance footers). They render only on
+  // the email surface and aren't in the palette (EMAIL_TYPES) — authors don't add
+  // them, but they must PREVIEW faithfully so a transactional email isn't blank
+  // where its items table / unsubscribe line belongs. `surfaces: ['email']` keeps
+  // them out of the page/site palettes; absence from EMAIL_TYPES keeps them out of
+  // the email palette too, while `getDef` still resolves them for rendering.
+  {
+    type: 'line_item_table',
+    label: 'Line items',
+    kind: 'leaf',
+    group: 'data',
+    icon: Table,
+    bindable: true,
+    accepts: ['array', 'empty'],
+    surfaces: ['email'],
+    props: [],
+    defaults: {},
+    // Always representative rows in the canvas: the table is bound to a commerce
+    // collection (order/cart/quote/invoice.items) the send resolves per-recipient,
+    // but the editor's generic preview data isn't line-item-shaped (it'd misalign
+    // name/qty/amount). Sample rows show the real structure; the binding still
+    // drives the actual send (mirrors the FAQ / FeatureGrid placeholder approach).
+    renderLeaf: () => <EmailLineItemsLeaf items={SAMPLE_LINE_ITEMS} />,
+  },
+  {
+    // A block shown only when its `when` path is truthy at send (an optional credit
+    // line, a quote expiry, dunning consequences). A container so its children edit
+    // + render inline; the canvas always shows them (the gate applies at dispatch),
+    // with a dashed rail marking it as conditional.
+    type: 'conditional_block',
+    label: 'Conditional',
+    kind: 'container',
+    group: 'layout',
+    icon: Split,
+    bindable: false,
+    accepts: ['empty'],
+    surfaces: ['email'],
+    props: [],
+    defaults: { layout: { direction: 'stack', gap: 'md' } },
+    chromeClass: 'bx-conditional',
+  },
+  {
+    type: 'unsubscribe_link',
+    label: 'Unsubscribe',
+    kind: 'leaf',
+    group: 'data',
+    icon: MailX,
+    bindable: false,
+    accepts: [],
+    surfaces: ['email'],
+    props: [],
+    defaults: {},
+    // The marketing one-click unsubscribe line (the real URL resolves at dispatch).
+    renderLeaf: () => (
+      <EmailTextLeaf variant="meta">
+        You’re receiving this because you opted in.{' '}
+        <span style={{ textDecoration: 'underline' }}>Unsubscribe</span>
+      </EmailTextLeaf>
+    ),
+  },
+  {
+    type: 'physical_address',
+    label: 'Mailing address',
+    kind: 'leaf',
+    group: 'data',
+    icon: Building2,
+    bindable: false,
+    accepts: [],
+    surfaces: ['email'],
+    props: [],
+    defaults: {},
+    // The tenant's CAN-SPAM postal address (EmailSettings.physicalAddress at send);
+    // a representative line in the canvas so the slot is visible.
+    renderLeaf: () => (
+      <EmailTextLeaf variant="meta">123 Example St, Springfield, IL 62704</EmailTextLeaf>
+    ),
   },
 ];
 

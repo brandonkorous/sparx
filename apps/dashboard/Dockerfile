@@ -35,7 +35,6 @@ COPY packages/provider-avalara/package.json packages/provider-avalara/
 COPY packages/provider-easypost/package.json packages/provider-easypost/
 COPY packages/provider-paypal/package.json packages/provider-paypal/
 COPY packages/provider-shippo/package.json packages/provider-shippo/
-COPY packages/provider-stripe/package.json packages/provider-stripe/
 COPY packages/provider-taxjar/package.json packages/provider-taxjar/
 COPY packages/search/package.json packages/search/
 COPY packages/seo-audit/package.json packages/seo-audit/
@@ -79,7 +78,6 @@ COPY packages/provider-avalara packages/provider-avalara
 COPY packages/provider-easypost packages/provider-easypost
 COPY packages/provider-paypal packages/provider-paypal
 COPY packages/provider-shippo packages/provider-shippo
-COPY packages/provider-stripe packages/provider-stripe
 COPY packages/provider-taxjar packages/provider-taxjar
 COPY packages/search packages/search
 COPY packages/seo-audit packages/seo-audit

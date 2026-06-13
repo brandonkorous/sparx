@@ -10,6 +10,7 @@ import {
   Settings as SettingsIcon,
   Shield,
   Users,
+  Wallet,
 } from 'lucide-react';
 
 // The settings surface, in one place. Settings is not a module (no manifest, no
@@ -70,6 +71,14 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
     description: 'Subscription, invoices, payment method.',
     icon: CreditCard,
     href: '/settings/billing',
+    ready: true,
+  },
+  {
+    id: 'payments',
+    label: 'Payments',
+    description: 'Accept payments with Sparx Pay or your own processor.',
+    icon: Wallet,
+    href: '/settings/payments',
     ready: true,
   },
   {

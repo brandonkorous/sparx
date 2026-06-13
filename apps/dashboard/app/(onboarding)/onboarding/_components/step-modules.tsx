@@ -5,9 +5,9 @@ import { Badge, Switch, Text, cn } from '@sparx/ui';
 import { ChevronDown } from 'lucide-react';
 import {
   ONBOARDING_MODULES,
-  MODULE_BY_KEY,
   effectiveModuleOn,
   moduleLock,
+  lockReasonText,
   toggleModule,
   type OnboardingModule,
 } from '../_lib/modules';
@@ -19,27 +19,9 @@ import {
 //
 // Locked rows mirror Settings → Modules: a BUNDLED_FREE capability (Invoicing via
 // Commerce/B2B) drops its switch entirely and reads "Included"; a required
-// dependency (Commerce while B2B is on) keeps its on-but-locked switch. Both carry
-// a colored pill naming WHY they're on.
+// dependency (Commerce while B2B is on, or Builder while a site-backed module is
+// on) keeps its on-but-locked switch. Both carry a colored pill naming WHY.
 type Lock = 'included' | 'required' | null;
-
-/** Human reason a row is locked, naming the providers from the live selection. */
-function lockReason(value: Record<string, boolean>, lock: Lock): string | null {
-  if (lock === 'required') return `Required by ${MODULE_BY_KEY.b2b?.name ?? 'B2B'}`;
-  if (lock === 'included') {
-    const providers = ['b2b', 'commerce']
-      .filter((k) => value[k])
-      .map((k) => MODULE_BY_KEY[k]?.name ?? k);
-    return `Included with ${joinNames(providers)}`;
-  }
-  return null;
-}
-
-function joinNames(names: string[]): string {
-  return names.length <= 1
-    ? (names[0] ?? '')
-    : `${names.slice(0, -1).join(', ')} & ${names.at(-1)}`;
-}
 
 export function StepModules({
   value,
@@ -72,7 +54,7 @@ export function StepModules({
               module={m}
               on={effectiveModuleOn(value, m.key)}
               lock={lock}
-              caption={lockReason(value, lock)}
+              caption={lockReasonText(value, m.key)}
               open={openKey === m.key}
               isLast={i === ONBOARDING_MODULES.length - 1}
               onToggle={() => toggle(m.key)}

@@ -30,7 +30,12 @@ model Tenant {
   // customer per tenant. Tenants is non-RLS (the dispatch row), so the webhook can
   // resolve a tenant from a Stripe customer id before any tenant context is set.
   stripeCustomerId     String?   @unique @map("stripe_customer_id") @db.VarChar(255)
-  stripeAccountId      String?   @map("stripe_account_id") @db.VarChar(255)
+  // Sparx Pay (docs/94 ADR §6) — the tenant's Stripe Connect EXPRESS connected
+  // account (`acct_…`), the destination of every Sparx Pay charge. A non-secret
+  // identifier kept on this non-RLS root row (like `stripeCustomerId`) so the public
+  // payment webhook can resolve a tenant from the account id with no tenant context.
+  // Unique — one connected account per tenant, one tenant per account.
+  stripeAccountId      String?   @unique @map("stripe_account_id") @db.VarChar(255)
   stripeSubscriptionId String?   @map("stripe_subscription_id") @db.VarChar(255)
   // trialing | active | past_due | canceled | unpaid | paused
   subscriptionStatus   String?   @map("subscription_status") @db.VarChar(20)

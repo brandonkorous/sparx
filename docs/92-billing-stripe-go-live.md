@@ -1,19 +1,34 @@
 # Sparx Platform — Stripe Integration Map & Go-Live Tracker
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-12
+**Last Updated:** 2026-06-13
 
 ---
 
+> **⚠️ Superseded for COMMERCE payments (Part B) and the transaction fee.**
+> The commerce payment architecture in this doc — `@sparx/provider-stripe`, the
+> per-installation webhook B-G1, the Sparx Pay Connect onboarding B-G2.1 — has been
+> **rebuilt** as the vendor-agnostic `@sparx/payments` gateway. See
+> [docs/94-ADR-payment-gateway.md](94-ADR-payment-gateway.md), the authority for
+> everything tenant→shopper.
+>
+> The **Phase 7 tiered transaction fee** — `recordTransactionFee`, `meterOrderFee`, and
+> the `transaction_fee` meter — has been **removed**. There are no tiers, only modules,
+> so the only platform payment fee is **Sparx Pay's flat 0.5%**, collected at charge
+> time via Stripe `application_fee_amount` and recorded on `payment_intents.platform_fee`
+> (docs/94 §8).
+>
+> **Part A below — platform module billing (`@sparx/billing`) — remains current**, minus
+> the fee rows.
+
 ## Purpose
 
-The single source of truth for **everything Stripe** across the platform — both
-integrations, what's built, what's left, and the exact ops to go live. It evaluates
-the Phase 7 transaction-fee work against Stripe's real metered-billing mechanics,
-inventories every Stripe object we need, maps what the connected account has today,
-and sequences the remaining code + ops into checklists with live progress indicators.
-When an item lands, flip its box here.
+The single source of truth for **Part A platform module billing** (`@sparx/billing`,
+WizeWorks→tenant) — what's built, what's left, and the exact ops to go live. It
+inventories every Stripe object we need, maps what the connected account has today, and
+sequences the remaining code + ops into checklists. When an item lands, flip its box
+here. (Commerce payments — Part B — now live in docs/94.)
 
 **Connected account at evaluation time:** `acct_1TgMUkCP0shAXvn5` — _Sparx sandbox_
 (test mode). Empty: 0 products, 0 prices, 0 billing-portal configurations.
@@ -28,18 +43,18 @@ Status legend: ✅ done · 🟡 partial (built with a known gap) · ⬜ not star
 The platform talks to Stripe in **two completely separate ways**. They share no keys,
 no account, and no code path — conflating them is the classic footgun.
 
-| Dimension      | **A · Platform billing**                            | **B · Commerce payments**                                                           |
-| -------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Who pays whom  | tenant → **WizeWorks** (us)                         | shopper → **tenant**                                                                |
-| Stripe account | one platform account (`STRIPE_SECRET_KEY`)          | the **tenant's own** account (bring-your-own keys)                                  |
-| Code           | `@sparx/billing`                                    | `@sparx/provider-stripe` (integration framework)                                    |
-| What           | per-module subscriptions + the transaction fee      | card / Apple Pay / Link at storefront checkout, Stripe Tax, subscriptions           |
-| API version    | `2024-11-20.acacia`                                 | `2024-11-20.acacia` (per-install overridable)                                       |
-| Webhook        | `…/v1/public/webhooks/stripe/billing`               | `…/v1/webhooks/providers/{slug}/:installationId`                                    |
-| Status         | engine built; **not yet provisioned/live** (Part A) | BYO-keys built & wired + webhook ingress (B-G1); **Sparx Pay Connect gap** (Part B) |
+| Dimension      | **A · Platform billing**                            | **B · Commerce payments** (now docs/94)                                                  |
+| -------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Who pays whom  | tenant → **WizeWorks** (us)                         | shopper → **tenant**                                                                     |
+| Stripe account | one platform account (`STRIPE_SECRET_KEY`)          | Sparx Pay = platform account (Connect destination charges); Stripe Direct = tenant's own |
+| Code           | `@sparx/billing`                                    | `@sparx/payments` (gateway abstraction — docs/94)                                        |
+| What           | per-module subscriptions                            | Sparx Pay / Stripe Direct at checkout + invoice pay-links + B2B card                     |
+| API version    | `2024-11-20.acacia`                                 | `2024-11-20.acacia`                                                                      |
+| Webhook        | `…/v1/public/webhooks/stripe/billing`               | `…/v1/public/webhooks/{sparx-pay,stripe-direct}`                                         |
+| Status         | engine built; **not yet provisioned/live** (Part A) | re-architected on `@sparx/payments` — see docs/94                                        |
 
-The two intersect at exactly one point — **how the platform collects its transaction
-fee** — see Part B §B4.
+Platform fee: the only payment fee is **Sparx Pay's flat 0.5%**, taken at charge time
+via `application_fee_amount` (docs/94 §8). There is no metered transaction fee.
 
 ---
 
@@ -47,25 +62,29 @@ fee** — see Part B §B4.
 
 ## 1. Status dashboard
 
-| Area                                           | Status | Note                                                                                                    |
-| ---------------------------------------------- | :----: | ------------------------------------------------------------------------------------------------------- |
-| Billing engine (`@sparx/billing`)              |   ✅   | Customer/subscription sync, webhook reconcile, portal, state read — built                               |
-| Phase 7 fee **metering code**                  |   ✅   | `recordTransactionFee` emits correct meter events at both `order.placed` sites                          |
-| Phase 7 fee **actually billable**              |   🟡   | Code done (C2); now blocked only on provisioning the meter + metered price (§3)                         |
-| Module Products + Prices in Stripe             |   ⬜   | 10 products, ~19 prices — none exist yet (§4)                                                           |
-| `transaction_fee` Meter + metered price        |   ⬜   | None — required for fees to land on invoices (§3)                                                       |
-| Billing **webhook endpoint** + secret          |   ⬜   | None — subscription/invoice events won't reach us (§6)                                                  |
-| Billing **portal configuration**               |   ⬜   | None — `POST /v1/billing/portal` will error until one exists (§6)                                       |
-| Secret Manager values                          |  🔧⬜  | `STRIPE_SECRET_KEY`, price IDs, webhook secret (§7)                                                     |
-| DB migration `20260813000000_platform_billing` |   ⬜   | Author-complete; not yet applied via DB Migrate workflow                                                |
-| `syncModuleItems` adds the fee item            |   ✅   | C2 — fee item now rides every subscription (create + reconcile paths)                                   |
-| Phase 3 trial banner / choose-plan             |   ✅   | C4 — trial/past-due/cancel banner; plan+interval switch via portal `subscription_update`                |
-| Phase 8 enterprise provisioning                |   ✅   | C5 — Enterprise dashboard card + `settings.billing.planType` flag + runbook (§10)                       |
-| Stripe-flow behaviour tests                    |   ✅   | C6 — `service.behavior.test.ts` mocks Stripe+DB: fee tiers, reconcile flags, fee-item attach (17 tests) |
+| Area                                           | Status | Note                                                                                                                             |
+| ---------------------------------------------- | :----: | -------------------------------------------------------------------------------------------------------------------------------- |
+| Billing engine (`@sparx/billing`)              |   ✅   | Customer/subscription sync, webhook reconcile, portal, state read — built                                                        |
+| ~~Phase 7 transaction fee~~                    |   ❌   | **REMOVED** — no tiers, only modules. Sparx Pay's flat 0.5% (charge-time `application_fee`) is the only payment fee (docs/94 §8) |
+| Module Products + Prices in Stripe             |   ⬜   | 10 products, ~19 prices — none exist yet (§4)                                                                                    |
+| Billing **webhook endpoint** + secret          |   ⬜   | None — subscription/invoice events won't reach us (§6)                                                                           |
+| Billing **portal configuration**               |   ⬜   | None — `POST /v1/billing/portal` will error until one exists (§6)                                                                |
+| Secret Manager values                          |  🔧⬜  | `STRIPE_SECRET_KEY`, price IDs, webhook secret (§7)                                                                              |
+| DB migration `20260813000000_platform_billing` |   ⬜   | Author-complete; not yet applied via DB Migrate workflow                                                                         |
+| `syncModuleItems` cancel-on-empty              |   ✅   | One item per billable module; cancels the subscription when the last module is disabled (no fee anchor)                          |
+| Phase 3 trial banner / choose-plan             |   ✅   | C4 — trial/past-due/cancel banner; plan+interval switch via portal `subscription_update`                                         |
+| Phase 8 enterprise provisioning                |   ✅   | C5 — Enterprise dashboard card + `settings.billing.planType` flag + runbook (§10)                                                |
+| Stripe-flow behaviour tests                    |   ✅   | `service.behavior.test.ts` mocks Stripe+DB: subscription create, cancel-on-empty, reconcile flags                                |
 
 ---
 
-## 2. Phase 7 evaluation — transaction-fee metering
+## 2. Phase 7 evaluation — transaction-fee metering · ❌ REMOVED
+
+> This section is **historical**. The tiered transaction fee was removed (no tiers,
+> only modules). The only payment fee is now Sparx Pay's flat 0.5% via
+> `application_fee_amount` (docs/94 §8). `recordTransactionFee`, `meterOrderFee`, the
+> `transaction_fee` meter, and the fee subscription item no longer exist. The original
+> evaluation is preserved below for context.
 
 **What was built** (this session, present on `feat/invoicing-standalone-pricing-and-aging`):
 

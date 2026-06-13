@@ -1,6 +1,6 @@
 # One Tenant Email System — collapse coded templates into the Builder
 
-**Version:** 1.0 (design — migration not yet built)
+**Version:** 1.1 (**BUILT** — S1–S6 landed 2026-06-12; deviations + status in §7)
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-12
 
@@ -240,21 +240,44 @@ already has the Builder + resolver — no service gains a new heavy dependency.
 
 ---
 
-## 7. Build plan (slices)
+## 7. Build plan (slices) — ALL BUILT 2026-06-12
 
-| Slice  | Scope                                                                                            | Gate                                                           |
-| ------ | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
-| **S0** | This doc                                                                                         | —                                                              |
-| **S1** | `sendTenantEmailByKey` primitive + code-shipped fallback in by-key resolution                    | unit: fallback to shipped tree when no row                     |
-| **S2** | Resolver: `order.shippingAddress`, `shipping.*`, `appointment.*` + new refs                      | unit per source root                                           |
-| **S3** | Author the 5 default trees; `DEFAULT_EMAIL_TEMPLATES` 13 → 18; provisioning/reconcile auto-cover | default-emails test asserts 18 keys + tree validity            |
-| **S4** | Migrate the 5 senders to the primitive                                                           | integration: each sender emits `kind:'raw'` with resolved data |
-| **S5** | Retire the 5 coded templates + worker schema arms                                                | typecheck/worker tests green                                   |
-| **S6** | Delete `/email/templates` (page, routes, builtins, `EmailTemplate` audit + drop migration, nav)  | typecheck + route tests; DB migration via pipeline             |
+| Slice  | Scope                                                                                                         | Status                                                                                                                                                                                                                                                                                                 |
+| ------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **S0** | This doc                                                                                                      | ✅                                                                                                                                                                                                                                                                                                     |
+| **S1** | `sendTenantEmailByKey` primitive + code-shipped fallback in `getPublishedByKey`                               | ✅ [tenant-email.ts]; fallback lives IN `getPublishedByKey` so the automation path heals too                                                                                                                                                                                                           |
+| **S2** | Resolver: `order.shippingAddress`/`statusUrl`, `shipping.*`, `appointment.*` + `fulfillment/appointment` refs | ✅ [email-data.ts] + `shipping`/`appointment` added to `EMAIL_SOURCES` (binding.ts)                                                                                                                                                                                                                    |
+| **S3** | Author the 5 default trees; `DEFAULT_EMAIL_TEMPLATES` 13 → 18                                                 | ✅ unit asserts 18 keys + tree validity                                                                                                                                                                                                                                                                |
+| **S4** | Migrate the senders                                                                                           | ✅ — but only **3 live senders** existed: `order-confirmation` (stripe-payment-reconcile), `appointment-confirmation`/`-cancelled` (b2b/scheduling). `shipping-confirmation` + `appointment-reminder` had **no caller** (reminder cron unbuilt), so their trees ship ready but nothing sends them yet. |
+| **S5** | Retire the 5 coded templates + worker schema arms                                                             | ✅ removed from `@sparx/email` (5 components), `send.tsx` union, worker `TemplateSendSchema` (only order/shipping arms existed), `events` `EmailSendPayload` union                                                                                                                                     |
+| **S6** | Delete `/email/templates` + drop `EmailTemplate`                                                              | ✅ page/routes/`templateService`/`BUILTIN_TEMPLATES`/manifest nav gone; model + the dead `Broadcast.template_id`/`ScheduledSend.template_id` FK columns dropped (migration `20260818000000_drop_email_templates`, applied to docker, drift-clean)                                                      |
 
-S1–S5 are additive and independently shippable (deploy-early). S6 is the
-subtractive finish; it lands only after S4 proves the senders are migrated, so there
-is never a window where a tenant email has no renderer.
+**Deviations from the plan:**
+
+- **Fallback placement (S1).** The code-shipped fallback was put INSIDE
+  `emailService.getPublishedByKey` rather than only in the new primitive, so the
+  existing automation send-by-key path (`email-dispatch.ts`) self-heals too — a
+  tenant missing a default row renders the shipped tree instead of failing.
+- **`chat-notification` stays coded (§1.1 refinement).** Confirmed it targets
+  owner/admin **staff** and links to the dashboard — operational, not a customer
+  email — so it stayed coded alongside the platform/auth set.
+- **Two trees have no sender yet (S4).** `shipping-confirmation` +
+  `appointment-reminder` are authored + provisioned but inert until a fulfillment
+  email + a reminder cron are wired. Not a gap in this migration — those callers
+  never existed.
+- **Test caveat.** `email-provisioning-reconcile` + `builder-emails-per-site`
+  count-assertions pass on CI/prod (RLS-enforced) but fail under the **local docker
+  superuser** (`sparx_owner` bypasses RLS, and `provisionDefaultEmails`'s
+  "already-provisioned?" check trusts RLS), with dev tenants present. Left as
+  authored — fixing would mean adding explicit `tenant_id` predicates against the
+  file's RLS-trust convention, or wiping dev data.
+
+**Canvas follow-up (not in this doc's scope, tracked separately).** The Email
+Builder _canvas_ is a WYSIWYG approximation that rendered merge tokens raw and used
+site heading sizes. Partly addressed: `sampleEmailText` (builder-schemas) now
+interpolates `{{tokens}}` against editor SAMPLE data in the canvas Heading/Text/
+Button so it reads like a real email. The heading-SIZE mismatch (site hero sizes vs
+the email's 20px) is still open.
 
 ---
 

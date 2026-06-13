@@ -136,6 +136,9 @@ export class SparxPayGateway implements PaymentGateway {
         application_fee_amount: sparxPayFeeCents(params.amount),
         on_behalf_of: destination,
         transfer_data: { destination },
+        // Stamp the intent (not just the session) so the payment webhook can resolve
+        // the tenant + invoice from payment_intent.succeeded.
+        metadata: { tenantId: params.tenantId, invoiceId: params.invoiceId },
       },
       line_items: [
         {

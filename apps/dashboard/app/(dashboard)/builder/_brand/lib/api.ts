@@ -59,7 +59,7 @@ const PUBLIC_API_URL =
 // asset — including external-URL assets that have no transcoded variants (which
 // the authed `resolveMediaUrl` returns null for). An absolute http(s) ref is
 // passed straight through. Returns null for an empty id.
-function publicMediaUrl(assetId: string | null, tenantSlug: string): string | null {
+export function publicMediaUrl(assetId: string | null, tenantSlug: string): string | null {
   if (!assetId) return null;
   if (/^https?:\/\//i.test(assetId)) return assetId;
   return `${PUBLIC_API_URL}/v1/public/media/${encodeURIComponent(assetId)}?tenant=${encodeURIComponent(

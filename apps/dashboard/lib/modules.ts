@@ -206,40 +206,92 @@ export const MODULE_BY_KEY: Record<string, SwitchboardModule> = Object.fromEntri
   SWITCHBOARD_MODULES.map((m) => [m.key, m])
 );
 
-// ── Module dependency rules (mirror the server @sparx/modules graph + the public
-// pricing switchboard) ───────────────────────────────────────────────────────
-//   • B2B REQUIRES Commerce — co-enabled (still billed), Commerce locked-on.
-//   • Invoicing is BUNDLED_FREE with B2B/Commerce — Included ($0) while either is
-//     on, otherwise a $19 standalone add-on.
+// ── Module dependency rules (mirror the server @sparx/modules graph) ──────────
+//   REQUIRES — a key needs these providers; each is SEPARATELY BILLED and locks
+//     ON while the key is on. Commerce/CMS/Email need Builder (the $10 site
+//     foundation); B2B needs Commerce. Requirements compose transitively
+//     (B2B → Commerce → Builder).
+//   BUNDLED_FREE — a key is on free ($0, "Included") whenever a provider is on;
+//     Invoicing rides along with Commerce/B2B, else it's a $19 add-on.
+const REQUIRES: Record<string, string[]> = {
+  commerce: ['builder'],
+  cms: ['builder'],
+  email: ['builder'],
+  b2b: ['commerce'],
+};
+const BUNDLED_FREE: Record<string, string[]> = {
+  invoicing: ['b2b', 'commerce'],
+};
+
+/** Providers that bundle `key` free and are currently on. */
+function activeBundlers(modules: Record<string, boolean>, key: string): string[] {
+  return (BUNDLED_FREE[key] ?? []).filter((p) => modules[p]);
+}
+
+/** Enabled modules that REQUIRE `key` (so it's locked on). */
+function activeRequirers(modules: Record<string, boolean>, key: string): string[] {
+  return Object.keys(REQUIRES).filter((k) => (REQUIRES[k] ?? []).includes(key) && modules[k]);
+}
+
+/** Transitive paid requirements pulled on when `key` is enabled. */
+function requiredKeys(key: string): string[] {
+  const out = new Set<string>();
+  const visit = (k: string): void => {
+    for (const dep of REQUIRES[k] ?? []) {
+      if (!out.has(dep)) {
+        out.add(dep);
+        visit(dep);
+      }
+    }
+  };
+  visit(key);
+  return [...out];
+}
+
+function joinNames(slugs: string[]): string {
+  const names = slugs.map((s) => MODULE_BY_KEY[s]?.name ?? s);
+  return names.length <= 1
+    ? (names[0] ?? '')
+    : `${names.slice(0, -1).join(', ')} & ${names.at(-1)}`;
+}
 
 /** A module's effective on-state once the dependency graph is applied. */
 export function effectiveModuleOn(modules: Record<string, boolean>, key: string): boolean {
-  if (key === 'commerce') return Boolean(modules.commerce) || Boolean(modules.b2b);
-  if (key === 'invoicing')
-    return Boolean(modules.invoicing) || Boolean(modules.b2b) || Boolean(modules.commerce);
-  return Boolean(modules[key]);
+  return (
+    Boolean(modules[key]) ||
+    activeBundlers(modules, key).length > 0 ||
+    activeRequirers(modules, key).length > 0
+  );
 }
 
-/** Why a module's toggle is locked on, if it is. */
+/** Why a module's toggle is locked on, if it is — bundled ("Included") wins. */
 export function moduleLock(
   modules: Record<string, boolean>,
   key: string
 ): 'included' | 'required' | null {
-  if (key === 'invoicing' && (modules.b2b || modules.commerce)) return 'included';
-  if (key === 'commerce' && modules.b2b) return 'required';
+  if (activeBundlers(modules, key).length > 0) return 'included';
+  if (activeRequirers(modules, key).length > 0) return 'required';
   return null;
 }
 
-/** Apply a toggle through the dependency graph: locked rows ignore the click,
- *  enabling B2B co-enables Commerce. */
+/** The "Included with …" / "Required by …" caption for a locked row, or null. */
+export function lockReasonText(modules: Record<string, boolean>, key: string): string | null {
+  const lock = moduleLock(modules, key);
+  if (lock === 'included') return `Included with ${joinNames(activeBundlers(modules, key))}`;
+  if (lock === 'required') return `Required by ${joinNames(activeRequirers(modules, key))}`;
+  return null;
+}
+
+/** Apply a toggle through the dependency graph: locked rows ignore the click;
+ *  enabling a module co-enables its transitive paid requirements (enabling
+ *  Commerce pulls Builder on; enabling B2B pulls Commerce AND Builder on). */
 export function toggleModule(
   modules: Record<string, boolean>,
   key: string
 ): Record<string, boolean> {
-  if (key === 'invoicing' && (modules.b2b || modules.commerce)) return modules;
-  if (key === 'commerce' && modules.b2b) return modules;
+  if (moduleLock(modules, key) !== null) return modules;
   const next = { ...modules, [key]: !modules[key] };
-  if (key === 'b2b' && next.b2b) next.commerce = true;
+  if (next[key]) for (const dep of requiredKeys(key)) next[dep] = true;
   return next;
 }
 

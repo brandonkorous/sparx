@@ -29,7 +29,6 @@ import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 
 import { assertCartToken, publicCommerceContext } from '../../../lib/public-commerce-context.js';
-import { meterOrderFee } from '../../../lib/transaction-fee.js';
 
 const SessionParam = z.object({ sessionId: z.string().uuid() });
 
@@ -283,13 +282,6 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
       sessionId,
       idempotencyKey: body.idempotencyKey ?? randomUUID(),
     });
-
-    // Meter the platform transaction fee — only for a freshly-placed order that
-    // wasn't held for B2B approval (the approval route meters on approval). The
-    // `freshlyPlaced` gate makes an idempotent retry a no-op. Best-effort.
-    if (result.freshlyPlaced && !result.pendingApproval) {
-      await meterOrderFee({ tenantId, orderId: result.orderId, log: request.log });
-    }
 
     return ok(result);
   });

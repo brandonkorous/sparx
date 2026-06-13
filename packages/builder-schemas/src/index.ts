@@ -10,6 +10,7 @@ export * from './page';
 export * from './layout';
 export * from './email';
 export * from './email-tokens';
+export * from './email-design';
 export * from './component';
 export * from './starters';
 export * from './default-emails';

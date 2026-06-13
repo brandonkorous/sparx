@@ -12,6 +12,7 @@ import {
   RecordReturnInspectionInput,
   type ReturnStatus,
 } from '@sparx/commerce-schemas';
+import { GatewayNotFoundError, PaymentConfigError, paymentService } from '@sparx/payments';
 import { withTenant } from '@sparx/db';
 import type { Prisma, ReturnLineItem, ReturnRequest, TxClient } from '@sparx/db';
 
@@ -396,14 +397,54 @@ export async function issueRefund(
 ): Promise<{ refundId: string }> {
   const input = IssueReturnRefundInput.parse(rawInput);
 
-  let refundId = '';
-  await withTenant(ctx, async (tx) => {
+  // Resolve the original captured payment BEFORE committing — an original-payment
+  // refund settles through the gateway first, so a gateway failure leaves the return in
+  // its prior state (staff can retry) instead of marking it refunded without the money
+  // moving. Store-credit refunds never touch a gateway.
+  const chargeRef = await withTenant(ctx, async (tx) => {
     const ret = await assertReturnWritable(tx, input.returnId);
     if (ret.status !== 'inspected' && ret.status !== 'received') {
       throw new CommerceConflictError(
         `Cannot issue refund from status "${ret.status}"; expected "inspected" or "received"`
       );
     }
+    if (input.asStoreCredit) return null;
+    const payment = await tx.orderPayment.findFirst({
+      where: { orderId: ret.orderId, status: 'captured' },
+      orderBy: { capturedAt: 'desc' },
+      select: { processorRef: true },
+    });
+    return payment?.processorRef ?? null;
+  });
+
+  // Settle through the tenant's gateway (Sparx Pay / Stripe Direct). The charge.refunded
+  // webhook later reconciles the order's payment status; this just triggers the refund.
+  if (chargeRef) {
+    let result;
+    try {
+      result = await paymentService.refund({
+        tenantId: ctx.tenantId,
+        chargeId: chargeRef,
+        amount: input.refundAmountCents,
+      });
+    } catch (err) {
+      if (err instanceof PaymentConfigError || err instanceof GatewayNotFoundError) {
+        throw new CommerceValidationError(
+          'No payment gateway is configured to settle this refund. Refund the customer manually or issue store credit.'
+        );
+      }
+      throw err;
+    }
+    if (!result.success) {
+      throw new CommerceValidationError(
+        `Refund failed at the payment gateway: ${result.errorMessage ?? 'unknown error'}`
+      );
+    }
+  }
+
+  let refundId = '';
+  await withTenant(ctx, async (tx) => {
+    const ret = await assertReturnWritable(tx, input.returnId);
     const issuedAs = input.asStoreCredit ? 'store_credit' : 'original_payment';
     await tx.returnRequest.update({
       where: { id: ret.id },
@@ -415,9 +456,6 @@ export async function issueRefund(
         refundIssuedAs: issuedAs,
       },
     });
-    // Provider-driven refund settlement (Stripe.refund / store-credit
-    // grant) lands with the provider bridge. The record above is the
-    // commerce-side state-machine commit.
     refundId = ret.id;
     await writeAuditLog({
       tx,
