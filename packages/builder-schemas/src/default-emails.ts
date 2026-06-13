@@ -1,5 +1,5 @@
-// The 13 default email templates Sparx provisions on email-module activation
-// (docs/91). Unlike the single `welcome` STARTER_EMAIL (seeded on first list),
+// The default email templates Sparx provisions on email-module activation
+// (docs/91 + docs/93). Unlike the single `welcome` STARTER_EMAIL (seeded on first list),
 // these are KEYED defaults that back the platform's transactional + marketing
 // automations and are per-site overridable (docs/49 Phase 7b). Each is a
 // Builder-authored node-tree — tenant-owned and fully editable once provisioned,
@@ -228,6 +228,65 @@ const chatSatisfaction = (): BuilderNode =>
     button('Rate your chat', '{{tenant.storeUrl}}'),
   ]);
 
+// ── Commerce + scheduling trees (docs/93 — folded in from coded templates) ───
+
+const orderConfirmation = (): BuilderNode =>
+  body([
+    heading('Your order is confirmed'),
+    para(
+      'Thanks for your order, {{customer.firstName ?? "there"}} — we’re getting it ready. Here’s a summary of order {{order.number}}:'
+    ),
+    lineItems('order.items'),
+    para('Total: {{order.total}}'),
+    conditional('order.shippingAddress.oneLine', [
+      para('Shipping to: {{order.shippingAddress.oneLine}}'),
+    ]),
+    button('View your order', '{{order.statusUrl}}'),
+  ]);
+
+const shippingConfirmation = (): BuilderNode =>
+  body([
+    heading('Your order is on its way'),
+    para('Good news, {{customer.firstName ?? "there"}} — order {{order.number}} has shipped.'),
+    para('Carrier: {{shipping.carrier}} · Tracking: {{shipping.trackingNumber}}'),
+    conditional('shipping.trackingNumber', [
+      button('Track your package', '{{shipping.trackingUrl}}'),
+    ]),
+    lineItems('order.items'),
+  ]);
+
+const appointmentConfirmation = (): BuilderNode =>
+  body([
+    heading('Your appointment is confirmed'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your {{appointment.service}} is booked for {{appointment.when}}.'
+    ),
+    conditional('appointment.vehicle', [para('Vehicle: {{appointment.vehicle}}')]),
+    button('Manage appointment', '{{appointment.manageUrl}}'),
+  ]);
+
+const appointmentReminder = (): BuilderNode =>
+  body([
+    heading('A reminder about your upcoming appointment'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — a reminder that your {{appointment.service}} is coming up on {{appointment.when}}.'
+    ),
+    conditional('appointment.vehicle', [para('Vehicle: {{appointment.vehicle}}')]),
+    button('Manage appointment', '{{appointment.manageUrl}}'),
+  ]);
+
+const appointmentCancelled = (): BuilderNode =>
+  body([
+    heading('Your appointment was cancelled'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your {{appointment.service}} scheduled for {{appointment.when}} has been cancelled.'
+    ),
+    conditional('appointment.cancellationReason', [
+      para('Reason: {{appointment.cancellationReason}}'),
+    ]),
+    button('Book another time', '{{appointment.manageUrl}}'),
+  ]);
+
 // ── The registry ─────────────────────────────────────────────────────────────
 
 export type EmailTemplateType = 'transactional' | 'marketing';
@@ -249,8 +308,10 @@ export interface DefaultEmailTemplate {
   tree: BuilderNode;
 }
 
-/** The 13 default email templates (docs/91 §4). Built once at module load so the
- *  node id sequence is stable across reads (cf. STARTER_PAGES). */
+/** The default email templates (docs/91 §4 + docs/93 §4) — the original 13 plus the
+ *  commerce/scheduling emails folded in from coded templates so every tenant→customer
+ *  email is Builder-authored. Built once at module load so the node id sequence is
+ *  stable across reads (cf. STARTER_PAGES). */
 export const DEFAULT_EMAIL_TEMPLATES: DefaultEmailTemplate[] = [
   {
     key: 'welcome-customer',
@@ -394,6 +455,61 @@ export const DEFAULT_EMAIL_TEMPLATES: DefaultEmailTemplate[] = [
     sources: ['customer', 'tenant'],
     refs: ['customerId'],
     tree: chatSatisfaction(),
+  },
+  {
+    key: 'order-confirmation',
+    name: 'Order confirmation',
+    type: 'transactional',
+    category: 'order',
+    subject: 'Your order {{order.number}} is confirmed',
+    preheader: 'Thanks for your order — here are the details.',
+    sources: ['customer', 'order', 'tenant'],
+    refs: ['customerId', 'orderId'],
+    tree: orderConfirmation(),
+  },
+  {
+    key: 'shipping-confirmation',
+    name: 'Shipping confirmation',
+    type: 'transactional',
+    category: 'order',
+    subject: 'Your order {{order.number}} has shipped',
+    preheader: 'It’s on the way — track your package.',
+    sources: ['customer', 'order', 'shipping', 'tenant'],
+    refs: ['customerId', 'orderId', 'fulfillmentId'],
+    tree: shippingConfirmation(),
+  },
+  {
+    key: 'appointment-confirmation',
+    name: 'Appointment confirmation',
+    type: 'transactional',
+    category: 'scheduling',
+    subject: 'Your appointment is confirmed',
+    preheader: '{{appointment.service}} on {{appointment.when}}.',
+    sources: ['customer', 'appointment', 'tenant'],
+    refs: ['customerId', 'appointmentId'],
+    tree: appointmentConfirmation(),
+  },
+  {
+    key: 'appointment-reminder',
+    name: 'Appointment reminder',
+    type: 'transactional',
+    category: 'scheduling',
+    subject: 'Reminder: your appointment on {{appointment.date}}',
+    preheader: '{{appointment.service}} on {{appointment.when}}.',
+    sources: ['customer', 'appointment', 'tenant'],
+    refs: ['customerId', 'appointmentId'],
+    tree: appointmentReminder(),
+  },
+  {
+    key: 'appointment-cancelled',
+    name: 'Appointment cancelled',
+    type: 'transactional',
+    category: 'scheduling',
+    subject: 'Your appointment was cancelled',
+    preheader: 'About your {{appointment.service}}.',
+    sources: ['customer', 'appointment', 'tenant'],
+    refs: ['customerId', 'appointmentId'],
+    tree: appointmentCancelled(),
   },
 ];
 

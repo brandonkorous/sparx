@@ -17,15 +17,15 @@
 // resolves the tenant from the subscription's customer (via `tenants`) first, then
 // reconciles these rows under tenant context.
 model BillingSubscriptionItem {
-  id                       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId                 String   @map("tenant_id") @db.Uuid
+  id                       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                 String @map("tenant_id") @db.Uuid
   // The Stripe subscription item id (`si_…`) — unique across the platform.
-  stripeSubscriptionItemId String   @map("stripe_subscription_item_id") @db.VarChar(255)
+  stripeSubscriptionItemId String @map("stripe_subscription_item_id") @db.VarChar(255)
   // The module this item bills for (a ModuleSlug). One active item per module.
-  moduleKey                String   @map("module_key") @db.VarChar(50)
+  moduleKey                String @map("module_key") @db.VarChar(50)
   // The Stripe Price id (`price_…`) this item references — encodes module+interval.
-  stripePriceId            String   @map("stripe_price_id") @db.VarChar(255)
-  quantity                 Int      @default(1)
+  stripePriceId            String @map("stripe_price_id") @db.VarChar(255)
+  quantity                 Int    @default(1)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz

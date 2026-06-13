@@ -112,6 +112,7 @@ module "pubsub" {
     # them via its Cloud Run PUSH subscriptions in serverless.tf; topic-only
     # here (empty list = no idle pull subscription).
     "order.created"          = []
+    "order.paid"             = []
     "order.cancelled"        = []
     "order.payment.recorded" = []
     "order.fulfilled"        = []

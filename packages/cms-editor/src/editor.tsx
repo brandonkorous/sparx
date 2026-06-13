@@ -53,6 +53,13 @@ export interface ContentBlockEditorProps {
   className?: string;
   ariaLabel?: string;
   /**
+   * Minimum height of the editing surface as any CSS length (e.g. `'28rem'`,
+   * `'50vh'`). Sets the `--cms-editor-min-h` custom property consumed by
+   * `editor.css`; defaults to 18rem. Use a larger value where the body is the
+   * primary field (e.g. an article's content in the creation wizard).
+   */
+  minHeight?: string;
+  /**
    * DOM id forwarded to the contenteditable surface. Lets a sibling
    * <Label htmlFor> click-focus into the editor and screen-readers walk
    * aria-labelledby/describedby references back to a visible label.
@@ -179,6 +186,7 @@ export function ContentBlockEditor({
   disabled,
   className,
   ariaLabel = 'Content editor',
+  minHeight,
   id,
   referenceSearch,
   pickImage,
@@ -200,29 +208,11 @@ export function ContentBlockEditor({
       attributes: {
         'aria-label': ariaLabel,
         ...(id ? { id } : {}),
-        class: cn(
-          'min-h-[14rem] w-full px-3 py-2 text-sm text-[var(--color-text-primary)]',
-          'focus:outline-none',
-          'prose-headings:font-medium prose-headings:text-[var(--color-text-primary)]',
-          '[&_h2]:mt-4 [&_h3]:mt-3 [&_p]:my-2',
-          '[&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5',
-          '[&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5',
-          '[&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--color-border-default)] [&_blockquote]:pl-3 [&_blockquote]:text-[var(--color-text-secondary)]',
-          '[&_code]:rounded [&_code]:bg-[var(--color-bg-subtle)] [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs',
-          '[&_pre]:my-2 [&_pre]:rounded-md [&_pre]:bg-[var(--color-bg-subtle)] [&_pre]:p-3 [&_pre]:text-xs',
-          '[&_figure]:my-3 [&_figure]:overflow-hidden [&_figure]:rounded-md',
-          '[&_figure_img]:h-auto [&_figure_img]:max-w-full',
-          '[&_figcaption]:mt-1 [&_figcaption]:text-center [&_figcaption]:text-xs [&_figcaption]:text-[var(--color-text-tertiary)]',
-          '[&_table]:my-3 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm',
-          '[&_th]:bg-[var(--color-bg-subtle)] [&_th]:px-2 [&_th]:py-1 [&_th]:text-left [&_th]:font-medium',
-          '[&_td]:border [&_td]:border-[var(--color-border-default)] [&_td]:px-2 [&_td]:py-1 [&_th]:border [&_th]:border-[var(--color-border-default)]',
-          '[&_aside.sparx-callout]:my-3 [&_aside.sparx-callout]:rounded-md [&_aside.sparx-callout]:border-l-4 [&_aside.sparx-callout]:px-3 [&_aside.sparx-callout]:py-2',
-          '[&_aside.sparx-callout--info]:border-[var(--color-info-border)] [&_aside.sparx-callout--info]:bg-[var(--color-info-bg)]',
-          '[&_aside.sparx-callout--success]:border-[var(--color-success-border)] [&_aside.sparx-callout--success]:bg-[var(--color-success-bg)]',
-          '[&_aside.sparx-callout--warning]:border-[var(--color-warning-border)] [&_aside.sparx-callout--warning]:bg-[var(--color-warning-bg)]',
-          '[&_aside.sparx-callout--danger]:border-[var(--color-danger-border)] [&_aside.sparx-callout--danger]:bg-[var(--color-danger-bg)]',
-          '[&_.sparx-reference]:rounded [&_.sparx-reference]:bg-[var(--color-info-bg)] [&_.sparx-reference]:px-1.5 [&_.sparx-reference]:py-0.5 [&_.sparx-reference]:text-[var(--module-active)]'
-        ),
+        // Appearance lives in editor.css (`.sparx-content-editor`) so it ships
+        // with the package and never depends on the consuming app's Tailwind
+        // `@source` scanning. Min-height is driven by the --cms-editor-min-h
+        // custom property set on the wrapper below.
+        class: 'sparx-content-editor',
       },
     },
   });
@@ -333,6 +323,7 @@ export function ContentBlockEditor({
         disabled && 'cursor-not-allowed opacity-50',
         className
       )}
+      style={minHeight ? ({ '--cms-editor-min-h': minHeight } as React.CSSProperties) : undefined}
     >
       <div
         role="toolbar"

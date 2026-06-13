@@ -100,6 +100,24 @@ describe('deriveModuleStates — enabled + source', () => {
     expect(s.invoicing.includedBy).toEqual(['b2b', 'commerce']);
   });
 
+  it('bundling WINS over a standalone purchase — invoicing bought first, then a provider', () => {
+    // Regression: a tenant who enabled `invoicing` standalone and LATER turned on
+    // Commerce must stop being charged. Before the precedence fix this stayed
+    // `explicit` (still billed, UI showed "+ $19" instead of "Included").
+    const s = deriveModuleStates(settings('invoicing', 'commerce'));
+    expect(s.invoicing).toEqual({ enabled: true, source: 'bundled', includedBy: ['commerce'] });
+  });
+
+  it('preserves the standalone flag so invoicing re-bills once the provider is gone', () => {
+    // The flag set in the bundled case above survives — removing the provider
+    // re-surfaces invoicing as an explicit (billable) purchase, not off.
+    expect(deriveModuleStates(settings('invoicing')).invoicing).toEqual({
+      enabled: true,
+      source: 'explicit',
+      includedBy: [],
+    });
+  });
+
   it('marks an unprovided module off', () => {
     const s = deriveModuleStates(settings('cms'));
     expect(s.invoicing).toEqual({ enabled: false, source: 'off', includedBy: [] });

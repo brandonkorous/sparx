@@ -9,6 +9,7 @@ export {
   TRIAL_PERIOD_DAYS,
   isBillableModule,
   priceIdFor,
+  transactionFeePriceId,
   activeTotalCents,
   transactionFeeRate,
   type BillingInterval,

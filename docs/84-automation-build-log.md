@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.22
+**Version:** 1.24
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-12
 
@@ -22,10 +22,16 @@ Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/bl
 > Locked B2B dunning), **13 Builder-email default templates** wired by `key` via `getPublishedByKey` + the **CAN-SPAM
 > compliance gate** (marketing-without-unsubscribe refused at dispatch; scope derived from `emailType`, never stored —
 > Step 4), the dashboard email-automations page replaced by a **filtered view of the unified list** (Step 5), and the
-> reconcile + e2e verification green (Step 6). Full spec in [docs/90](90-ADR-automation-migration.md). **Remaining (not
-> automation-module work):** the user commits Steps 4–6; the **email agent** adds the nightly template-provisioning
-> reconcile (docs/91 §7); optional CASL express-consent gate on `Customer.gdprConsent` (docs/42). See the Steps 4–6
-> entry below for the full verify tally.
+> reconcile + e2e verification green (Step 6). The two flagged follow-ons are now also resolved: the **nightly
+> template-provisioning reconcile** is BUILT (an api-rest in-process loop — see the §6 addendum below), and the **CASL
+> express-consent gate was decided AGAINST** — the platform keeps its CAN-SPAM opt-out posture (unsubscribe node +
+> `List-Unsubscribe` + physical address + `doNotContact` + suppression), not a stricter opt-in gate that would suppress
+> marketing to all transaction-only customers. A post-migration audit also found + fixed the one inert seed
+> (`high-value-order-alert`): `order.paid` was a declared event with no publisher/topic/tee — now published from both
+> paid paths (best-effort, deploy-safe) + a TF topic. Full spec in [docs/90](90-ADR-automation-migration.md).
+> **Remaining:** the user's local commit + (when ready) the platform-apply for the new `order.paid` Pub/Sub topic
+> (the code is deploy-safe without it; the seed fires once the topic lands). See the Steps 4–6 entry below for the
+> full verify tally.
 >
 > - **Step 1a — legacy delete DONE** (this session): removed `@sparx/email-platform` `DEFAULT_AUTOMATIONS` +
 >   `automationService` (`evaluateTrigger`/`provisionDefaults`/`list`/`get`/`update`) + `schemas/automations` +
@@ -143,13 +149,42 @@ b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` 
 >   `failed` compliance, marketing-with-unsub → sent, unknown key → `failed` not-published; per-site **2/2**;
 >   email-data **3/3**); automation-worker **6/6** (reconcile backfill now asserts the full 6-seed B2B catalog +
 >   locked dunning); typecheck (email-sends/automation-actions/api-rest/dashboard) + lint + format all clean.
-> - **NEXT — commit + the open compliance refinement.** Slice K (docs/90) is functionally COMPLETE: legacy deleted
->   (Step 1), 23 seeds installed per-module + gated (Steps 3–4), send-by-key + CAN-SPAM gate live (Step 4), dashboard
->   repointed (Step 5), reconcile + e2e green (Step 6). Remaining: (1) **user commits** Steps 4–6 locally (Steps 1–3
->   already committed); (2) the **email agent** adds the nightly **template-provisioning** reconcile (docs/91 §7) so a
->   tenant that missed `module.activated(email)` self-heals its 13 defaults; (3) optional — the **CASL express-consent
->   gate** on `Customer.gdprConsent` once that JSON shape is pinned (docs/42). No automation-module work blocks the
->   slice.
+> - **Step 6 addendum — template-provisioning reconcile BUILT** (this session). The automation-seed reconcile is in
+>   the lean automation-worker; the TEMPLATE reconcile needs `@sparx/builder`'s `emailService.provisionDefaultEmails`,
+>   so it lives in **api-rest** as an in-process loop — `reconcileEmailProvisioning` + `startEmailProvisioningReconcileLoop`
+>   in [email-provisioning.ts](../services/api-rest/src/lib/email-provisioning.ts), wired into the bootstrap next to
+>   `startEmailDispatchLoop` (advisory key `4242_4246`, 6h cadence, idempotent — provisions only missing keys). It
+>   reuses the same `find_tenants_with_active_module('email')` SECURITY DEFINER scan the seed reconcile uses. No new
+>   infra (no Cloud Scheduler / TF — the api-rest process already runs the dispatch loop). **Verify:** new
+>   `email-provisioning-reconcile.test.ts` **2/2** (an email-active tenant that skipped activation → 13 provisioned;
+>   second pass adds nothing) + api-rest typecheck/lint/format clean.
+> - **Consent policy DECISION (docs/90 §5 / docs/91 §8) — keep CAN-SPAM opt-out, no CASL opt-in gate.** The mechanism
+>   was trivial (`Customer.gdprConsent.scope ⊇ 'marketing'`, gate `send_campaign` like the `doNotContact` skip), but a
+>   strict opt-in gate would suppress win-back / abandoned-cart / post-purchase-review to every transaction-only
+>   customer (a large reach cut). The platform is already CAN-SPAM-compliant via the shipped gate (unsubscribe node +
+>   `List-Unsubscribe` header + physical address) plus `doNotContact` + the marketing-scope suppression list, so the
+>   opt-out posture stands. Re-open only if a CASL/GDPR jurisdiction requirement lands (then a per-tenant toggle, not a
+>   blanket gate).
+> - **Post-migration audit — the `order.paid` trigger gap FIXED** (this session). A full sweep of all 23 seeds'
+>   triggers (do they actually FIRE in prod, not just in tests) found 22 wired end-to-end — CRM events tee via the
+>   CRM bus, `order.fulfilled`/`order.refunded` are in the platform-bus `ORDER_TEE_TOPICS` allow-list, `inventory.low`
+>   tees via `@sparx/events`' publisher, and every scan seed needs no event — but **`high-value-order-alert` was
+>   inert**: `order.paid` was a declared `EventType` that was never finished — no publisher (the Stripe webhook sets
+>   `paymentStatus:'paid'` + publishes `payment.captured`; `recordPayment` publishes `order.payment.recorded`; neither
+>   emits `order.paid`), no Pub/Sub topic, and absent from the tee allow-list. Fixed in four parts: **(1)** TF topic
+>   `"order.paid" = []` in [main.tf](../terraform/envs/prod/main.tf); **(2)** the Stripe webhook publishes `order.paid`
+>   after capture (api-core `publish`, tees to the fan-in; **best-effort try/catch** so a not-yet-provisioned topic
+>   never blocks the order-confirmation email — the code deploy is DECOUPLED from the TF apply); **(3)**
+>   `recomputeOrderPaymentRollup` now returns the unpaid→paid edge and `recordPayment` publishes `order.paid` once on
+>   that edge (the manual/B2B path; the platform-bus tee is already best-effort); **(4)** `order.paid` added to
+>   `ORDER_TEE_TOPICS`. **Deploy note:** code is safe to ship in any order, but the seed only fires once the TF topic
+>   is applied (platform-apply). **Verify:** crm `order-lifecycle.test.ts` **8/8** (now asserts `recordPayment`
+>   publishes `order.paid` on full payment) + crm/api-rest typecheck/lint/format clean.
+> - **NEXT — commit + (when ready) apply the order.paid topic.** Slice K (docs/90) is COMPLETE end to end: legacy
+>   deleted (Step 1), 23 seeds per-module + gated and ALL firing (Steps 3–4 + the order.paid fix), send-by-key +
+>   CAN-SPAM gate (Step 4), dashboard repointed (Step 5), seed + template reconcile + e2e green (Step 6), consent
+>   posture decided. Open items: the user's local commit, and the platform-apply for the new `order.paid` Pub/Sub
+>   topic (the code is already deploy-safe without it). Nothing blocks the slice.
 >
 > ---
 >

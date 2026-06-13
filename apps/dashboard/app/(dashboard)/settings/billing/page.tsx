@@ -19,6 +19,8 @@ import {
 
 import { getBillingState } from './actions';
 import { ManageBillingButton } from './_components/manage-billing-button';
+import { TrialStatusBanner } from './_components/trial-status-banner';
+import { EnterprisePlanCard } from './_components/enterprise-plan-card';
 
 export const dynamic = 'force-dynamic';
 
@@ -75,102 +77,111 @@ export default async function BillingSettingsPage() {
           description="Pay only for the modules you activate. Manage your payment method, switch monthly or annual, download invoices, and cancel anytime through the secure Stripe portal."
         />
 
-        {!state.configured || !state.billingActive ? (
-          <Card>
-            <CardContent>
-              <Stack gap={1} className="py-1">
-                <Text weight="medium">
-                  {state.configured
-                    ? 'No active subscription yet'
-                    : 'Billing isn’t switched on for this workspace yet'}
-                </Text>
-                <Text size="sm" variant="muted">
-                  Modules activate freely for now — you won’t be charged until billing goes live.
-                  The plan below is what you’ll pay then, based on the modules you have on today.
-                </Text>
-              </Stack>
-            </CardContent>
-          </Card>
-        ) : null}
+        <TrialStatusBanner state={state} canManage={canManage} />
 
-        <Card>
-          <CardHeader>
-            <Stack direction="row" align="center" gap={3} className="justify-between">
-              <CardTitle>Your plan</CardTitle>
-              {status ? (
-                <Badge color={STATUS_BADGE[status] ?? 'outline'} variant="soft">
-                  {status.replace('_', ' ')}
-                  {state.cancelAtPeriodEnd ? ' · cancels at period end' : ''}
-                </Badge>
-              ) : null}
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <Stack gap={5}>
-              <Stack direction="row" align="center" gap={2} className="items-baseline">
-                <Text className="text-5xl font-medium tracking-tight">
-                  {money(state.planTotalCents)}
-                </Text>
-                <Text size="lg" variant="muted">
-                  {intervalLabel}
-                </Text>
-              </Stack>
+        {state.planType === 'enterprise' ? (
+          <EnterprisePlanCard canManage={canManage} billingActive={state.billingActive} />
+        ) : (
+          <>
+            {!state.configured || !state.billingActive ? (
+              <Card>
+                <CardContent>
+                  <Stack gap={1} className="py-1">
+                    <Text weight="medium">
+                      {state.configured
+                        ? 'No active subscription yet'
+                        : 'Billing isn’t switched on for this workspace yet'}
+                    </Text>
+                    <Text size="sm" variant="muted">
+                      Modules activate freely for now — you won’t be charged until billing goes
+                      live. The plan below is what you’ll pay then, based on the modules you have on
+                      today.
+                    </Text>
+                  </Stack>
+                </CardContent>
+              </Card>
+            ) : null}
 
-              {trialEnds && status === 'trialing' ? (
-                <Text size="sm" variant="muted">
-                  Free trial ends {trialEnds}.
-                </Text>
-              ) : nextBilling ? (
-                <Text size="sm" variant="muted">
-                  Next billing date {nextBilling}.
-                </Text>
-              ) : null}
+            <Card>
+              <CardHeader>
+                <Stack direction="row" align="center" gap={3} className="justify-between">
+                  <CardTitle>Your plan</CardTitle>
+                  {status ? (
+                    <Badge color={STATUS_BADGE[status] ?? 'outline'} variant="soft">
+                      {status.replace('_', ' ')}
+                      {state.cancelAtPeriodEnd ? ' · cancels at period end' : ''}
+                    </Badge>
+                  ) : null}
+                </Stack>
+              </CardHeader>
+              <CardContent>
+                <Stack gap={5}>
+                  <Stack direction="row" align="center" gap={2} className="items-baseline">
+                    <Text className="text-5xl font-medium tracking-tight">
+                      {money(state.planTotalCents)}
+                    </Text>
+                    <Text size="lg" variant="muted">
+                      {intervalLabel}
+                    </Text>
+                  </Stack>
 
-              <Stack gap={2}>
-                {state.planModules.length === 0 ? (
-                  <Text size="sm" variant="muted">
-                    No billable modules active. Turn one on from Settings → Modules.
-                  </Text>
-                ) : (
-                  state.planModules.map((m) => (
-                    <Stack
-                      key={m.moduleKey}
-                      direction="row"
-                      align="center"
-                      className="justify-between border-b border-[var(--color-border-subtle)] pb-2 last:border-0"
-                    >
-                      <Text size="sm">{MODULE_LABELS[m.moduleKey] ?? m.moduleKey}</Text>
-                      <Text size="sm" weight="medium" className="tabular-nums">
-                        {money(m.monthlyCents)}
-                        {intervalLabel}
-                      </Text>
-                    </Stack>
-                  ))
-                )}
-              </Stack>
-
-              <Text size="xs" variant="muted">
-                Invoicing is included free with Commerce or B2B, so it never appears as a line item.
-                One invoice covers everything.
-              </Text>
-
-              {canManage ? (
-                <div>
-                  <ManageBillingButton disabled={!state.configured || !state.billingActive} />
-                  {!state.billingActive ? (
-                    <Text size="xs" variant="muted" className="mt-2">
-                      The portal opens once a subscription exists.
+                  {trialEnds && status === 'trialing' ? (
+                    <Text size="sm" variant="muted">
+                      Free trial ends {trialEnds}.
+                    </Text>
+                  ) : nextBilling ? (
+                    <Text size="sm" variant="muted">
+                      Next billing date {nextBilling}.
                     </Text>
                   ) : null}
-                </div>
-              ) : (
-                <Text size="sm" variant="muted">
-                  Only owners and admins can manage billing.
-                </Text>
-              )}
-            </Stack>
-          </CardContent>
-        </Card>
+
+                  <Stack gap={2}>
+                    {state.planModules.length === 0 ? (
+                      <Text size="sm" variant="muted">
+                        No billable modules active. Turn one on from Settings → Modules.
+                      </Text>
+                    ) : (
+                      state.planModules.map((m) => (
+                        <Stack
+                          key={m.moduleKey}
+                          direction="row"
+                          align="center"
+                          className="justify-between border-b border-[var(--color-border-subtle)] pb-2 last:border-0"
+                        >
+                          <Text size="sm">{MODULE_LABELS[m.moduleKey] ?? m.moduleKey}</Text>
+                          <Text size="sm" weight="medium" className="tabular-nums">
+                            {money(m.monthlyCents)}
+                            {intervalLabel}
+                          </Text>
+                        </Stack>
+                      ))
+                    )}
+                  </Stack>
+
+                  <Text size="xs" variant="muted">
+                    Invoicing is included free with Commerce or B2B, so it never appears as a line
+                    item. One invoice covers everything.
+                  </Text>
+
+                  {canManage ? (
+                    <div>
+                      <ManageBillingButton disabled={!state.configured || !state.billingActive} />
+                      {!state.billingActive ? (
+                        <Text size="xs" variant="muted" className="mt-2">
+                          The portal opens once a subscription exists.
+                        </Text>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <Text size="sm" variant="muted">
+                      Only owners and admins can manage billing.
+                    </Text>
+                  )}
+                </Stack>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </Stack>
     </Container>
   );

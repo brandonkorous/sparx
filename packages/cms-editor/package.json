@@ -21,6 +21,7 @@
       "types": "./src/editor.tsx",
       "default": "./src/editor.tsx"
     },
+    "./editor.css": "./src/editor.css",
     "./manifest": {
       "types": "./src/manifest.ts",
       "default": "./src/manifest.ts"

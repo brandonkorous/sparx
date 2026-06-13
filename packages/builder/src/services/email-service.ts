@@ -17,6 +17,7 @@ import {
   STARTER_EMAILS,
   UpdateEmailInput,
   blankEmailTree,
+  getDefaultEmailTemplate,
   type BuilderEmailDto,
   type BuilderNode,
   type PublishedEmailDto,
@@ -68,6 +69,24 @@ function toPublished(row: BuilderEmail): PublishedEmailDto | null {
 // absent rather than an empty preview line.
 const emptyToNull = (v: string | null | undefined): string | null =>
   v != null && v.length > 0 ? v : null;
+
+/** The code-shipped fallback for a keyed default (docs/93 §2): a tenant that
+ *  predates provisioning — or whose default row was dropped — still renders the
+ *  default tree shipped in `@sparx/builder-schemas`, so a transactional send never
+ *  has "no renderer". The 6-hour provisioning reconcile then back-fills the real
+ *  row (which the tenant can edit). Only the keyed defaults have a fallback; an
+ *  unknown key returns null. `publishedAt: null` marks it as not-yet-materialized. */
+function defaultPublished(key: string): PublishedEmailDto | null {
+  const def = getDefaultEmailTemplate(key);
+  if (!def) return null;
+  return {
+    name: def.name,
+    subject: def.subject,
+    preheader: def.preheader,
+    tree: def.tree,
+    publishedAt: null,
+  };
+}
 
 /** List the tenant's emails. On first use (zero rows) seed the curated starter
  *  set — the lazy-materialization idiom (cf. pageService.listOrSeed). Idempotent:
@@ -262,8 +281,11 @@ export function getPublishedById(
  * deliberately falls back to the tenant default rather than blocking the send —
  * the override only takes effect once the site publishes it.
  *
- * This is the dispatch-time resolution point the automation send-by-key path
- * calls (the `builderEmailKey` defer branch), with the per-site fallback baked in.
+ * This is the dispatch-time resolution point the automation send-by-key path AND
+ * the direct send-by-key primitive (docs/93 §2, `sendTenantEmailByKey`) call, with
+ * the per-site fallback baked in. When no published row exists for a keyed default,
+ * the code-shipped tree (`defaultPublished`) is the last resort so a transactional
+ * send never lacks a renderer; an unknown key still returns null.
  */
 export function getPublishedByKey(
   ctx: ServiceContext,
@@ -277,7 +299,9 @@ export function getPublishedByKey(
       if (published) return published;
     }
     const base = await tx.builderEmail.findFirst({ where: { key, propertyId: null } });
-    return base ? toPublished(base) : null;
+    const published = base && toPublished(base);
+    if (published) return published;
+    return defaultPublished(key);
   });
 }
 

@@ -25,31 +25,6 @@ import {
   type DomainRenewalReminderEmailProps,
 } from './templates/domain-renewal-reminder';
 import {
-  OrderConfirmationEmail,
-  orderConfirmationSubject,
-  type OrderConfirmationEmailProps,
-} from './templates/order-confirmation';
-import {
-  ShippingConfirmationEmail,
-  shippingConfirmationSubject,
-  type ShippingConfirmationEmailProps,
-} from './templates/shipping-confirmation';
-import {
-  AppointmentConfirmationEmail,
-  appointmentConfirmationSubject,
-  type AppointmentConfirmationEmailProps,
-} from './templates/appointment-confirmation';
-import {
-  AppointmentReminderEmail,
-  appointmentReminderSubject,
-  type AppointmentReminderEmailProps,
-} from './templates/appointment-reminder';
-import {
-  AppointmentCancelledEmail,
-  appointmentCancelledSubject,
-  type AppointmentCancelledEmailProps,
-} from './templates/appointment-cancelled';
-import {
   ChatNotificationEmail,
   chatNotificationSubject,
   type ChatNotificationEmailProps,
@@ -73,16 +48,14 @@ function defaultFrom(): string {
   return process.env[DEFAULT_FROM_ENV] ?? FALLBACK_FROM;
 }
 
+// Platform + auth/operational templates only (docs/93). Tenant→customer emails
+// (order/shipping/appointment confirmations) are Builder-authored node-trees,
+// rendered by key at dispatch — not coded React Email components.
 export type TemplateId =
   | 'password-reset'
   | 'welcome-merchant'
   | 'email-verification'
   | 'domain-renewal-reminder'
-  | 'order-confirmation'
-  | 'shipping-confirmation'
-  | 'appointment-confirmation'
-  | 'appointment-reminder'
-  | 'appointment-cancelled'
   | 'chat-notification';
 
 export type TemplateSend =
@@ -111,41 +84,6 @@ export type TemplateSend =
       template: 'domain-renewal-reminder';
       to: string;
       props: DomainRenewalReminderEmailProps;
-      from?: string;
-      replyTo?: string;
-    }
-  | {
-      template: 'order-confirmation';
-      to: string;
-      props: OrderConfirmationEmailProps;
-      from?: string;
-      replyTo?: string;
-    }
-  | {
-      template: 'shipping-confirmation';
-      to: string;
-      props: ShippingConfirmationEmailProps;
-      from?: string;
-      replyTo?: string;
-    }
-  | {
-      template: 'appointment-confirmation';
-      to: string;
-      props: AppointmentConfirmationEmailProps;
-      from?: string;
-      replyTo?: string;
-    }
-  | {
-      template: 'appointment-reminder';
-      to: string;
-      props: AppointmentReminderEmailProps;
-      from?: string;
-      replyTo?: string;
-    }
-  | {
-      template: 'appointment-cancelled';
-      to: string;
-      props: AppointmentCancelledEmailProps;
       from?: string;
       replyTo?: string;
     }
@@ -244,86 +182,6 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'domain-renewal-reminder',
-      };
-    }
-    case 'order-confirmation': {
-      const element = wrap(<OrderConfirmationEmail {...input.props} />);
-      const [html, text] = await Promise.all([
-        render(element),
-        render(element, { plainText: true }),
-      ]);
-      return {
-        from: input.from ?? defaultFrom(),
-        to: input.to,
-        replyTo: input.replyTo,
-        subject: orderConfirmationSubject(input.props.orderNumber),
-        html,
-        text,
-        templateId: 'order-confirmation',
-      };
-    }
-    case 'shipping-confirmation': {
-      const element = wrap(<ShippingConfirmationEmail {...input.props} />);
-      const [html, text] = await Promise.all([
-        render(element),
-        render(element, { plainText: true }),
-      ]);
-      return {
-        from: input.from ?? defaultFrom(),
-        to: input.to,
-        replyTo: input.replyTo,
-        subject: shippingConfirmationSubject(input.props.orderNumber),
-        html,
-        text,
-        templateId: 'shipping-confirmation',
-      };
-    }
-    case 'appointment-confirmation': {
-      const element = wrap(<AppointmentConfirmationEmail {...input.props} />);
-      const [html, text] = await Promise.all([
-        render(element),
-        render(element, { plainText: true }),
-      ]);
-      return {
-        from: input.from ?? defaultFrom(),
-        to: input.to,
-        replyTo: input.replyTo,
-        subject: appointmentConfirmationSubject(input.props.serviceTypeName),
-        html,
-        text,
-        templateId: 'appointment-confirmation',
-      };
-    }
-    case 'appointment-reminder': {
-      const element = wrap(<AppointmentReminderEmail {...input.props} />);
-      const [html, text] = await Promise.all([
-        render(element),
-        render(element, { plainText: true }),
-      ]);
-      return {
-        from: input.from ?? defaultFrom(),
-        to: input.to,
-        replyTo: input.replyTo,
-        subject: appointmentReminderSubject(input.props.serviceTypeName),
-        html,
-        text,
-        templateId: 'appointment-reminder',
-      };
-    }
-    case 'appointment-cancelled': {
-      const element = wrap(<AppointmentCancelledEmail {...input.props} />);
-      const [html, text] = await Promise.all([
-        render(element),
-        render(element, { plainText: true }),
-      ]);
-      return {
-        from: input.from ?? defaultFrom(),
-        to: input.to,
-        replyTo: input.replyTo,
-        subject: appointmentCancelledSubject(input.props.serviceTypeName),
-        html,
-        text,
-        templateId: 'appointment-cancelled',
       };
     }
     case 'chat-notification': {

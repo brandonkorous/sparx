@@ -217,6 +217,21 @@ export function PricingSwitchboard() {
     if (key === 'commerce' && !!on.b2b) return 'required';
     return null;
   };
+  // The reason a row is locked, naming its providers — mirrors Settings → Modules.
+  const nameOf = (key: string): string => MODULES.find((x) => x.key === key)?.name ?? key;
+  const reasonOf = (key: string): string | null => {
+    const lock = lockOf(key);
+    if (lock === 'required') return `Required by ${nameOf('b2b')}`;
+    if (lock === 'included') {
+      const providers = ['b2b', 'commerce'].filter((k) => on[k]).map(nameOf);
+      const joined =
+        providers.length <= 1
+          ? (providers[0] ?? '')
+          : `${providers.slice(0, -1).join(', ')} & ${providers.at(-1)}`;
+      return `Included with ${joined}`;
+    }
+    return null;
+  };
   // Bundled invoicing contributes $0 to both the bill and the savings ledger —
   // it's a free rider, not part of the comparison.
   const billed = (m: Mod): number => (lockOf(m.key) === 'included' ? 0 : m.price);
@@ -266,6 +281,7 @@ export function PricingSwitchboard() {
           {MODULES.map((m, i) => {
             const isOn = effectiveOn(m.key);
             const lock = lockOf(m.key);
+            const reason = reasonOf(m.key);
             const isOpen = openKey === m.key;
             const firstAddon = !!m.addon && (i === 0 || !MODULES[i - 1]?.addon);
             return (
@@ -351,6 +367,27 @@ export function PricingSwitchboard() {
                       >
                         {m.desc}
                       </span>
+                      {reason ? (
+                        <span
+                          style={{
+                            alignSelf: 'flex-start',
+                            marginTop: '4px',
+                            padding: '2px 8px',
+                            borderRadius: 9999,
+                            fontFamily: 'var(--font-sans)',
+                            fontSize: '11px',
+                            fontWeight: 500,
+                            lineHeight: '16px',
+                            backgroundColor:
+                              lock === 'included'
+                                ? 'var(--color-success-tint)'
+                                : 'var(--color-bg-muted, #f1f1f3)',
+                            color: lock === 'included' ? '#065F46' : 'var(--color-text-secondary)',
+                          }}
+                        >
+                          {reason}
+                        </span>
+                      ) : null}
                     </div>
                     <span
                       style={{
@@ -370,42 +407,48 @@ export function PricingSwitchboard() {
                     >
                       {lock === 'included' ? 'Included' : `+ $${m.price}`}
                     </span>
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={isOn}
-                      aria-disabled={lock ? true : undefined}
-                      aria-label={m.name}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggle(m.key);
-                      }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: isOn ? 'flex-end' : 'flex-start',
-                        width: 44,
-                        height: 26,
-                        borderRadius: 9999,
-                        padding: '0 3px',
-                        border: 'none',
-                        background: isOn ? m.color : '#e4e4e7',
-                        cursor: lock ? 'not-allowed' : 'pointer',
-                        opacity: lock ? 0.55 : 1,
-                        flexShrink: 0,
-                        transition: 'background 0.15s ease',
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: 20,
-                          height: 20,
-                          borderRadius: 9999,
-                          backgroundColor: '#fff',
-                          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.18)',
+                    {lock === 'included' ? (
+                      // Bundled — nothing to toggle. Hold the switch's width so the
+                      // price column stays aligned with the rows above and below.
+                      <span style={{ width: 44, flexShrink: 0 }} aria-hidden />
+                    ) : (
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={isOn}
+                        aria-disabled={lock ? true : undefined}
+                        aria-label={m.name}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggle(m.key);
                         }}
-                      />
-                    </button>
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: isOn ? 'flex-end' : 'flex-start',
+                          width: 44,
+                          height: 26,
+                          borderRadius: 9999,
+                          padding: '0 3px',
+                          border: 'none',
+                          background: isOn ? m.color : '#e4e4e7',
+                          cursor: lock ? 'not-allowed' : 'pointer',
+                          opacity: lock ? 0.55 : 1,
+                          flexShrink: 0,
+                          transition: 'background 0.15s ease',
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: 9999,
+                            backgroundColor: '#fff',
+                            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.18)',
+                          }}
+                        />
+                      </button>
+                    )}
                   </div>
 
                   {isOpen ? (

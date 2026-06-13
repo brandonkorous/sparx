@@ -8,13 +8,13 @@
 // way to see how much surface the platform exposes per tenant.
 
 model Tenant {
-  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  slug             String    @unique @db.VarChar(63)
-  name             String    @db.VarChar(255)
-  email            String    @db.VarChar(255)
-  plan             String    @default("starter") @db.VarChar(50)
-  status           String    @default("active") @db.VarChar(20)
-  settings         Json      @default("{}")
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug                 String    @unique @db.VarChar(63)
+  name                 String    @db.VarChar(255)
+  email                String    @db.VarChar(255)
+  plan                 String    @default("starter") @db.VarChar(50)
+  status               String    @default("active") @db.VarChar(20)
+  settings             Json      @default("{}")
   // Site-wide social links — an ORDERED array of { platform, url } (the same
   // shape the storefront `site.social` binding renders): `platform` is a known
   // key (instagram, x, …) for icon mapping, or a free-text label for an "Other"
@@ -22,7 +22,7 @@ model Tenant {
   // /settings/general, theme-independent — switching the storefront theme never
   // touches it. The public tenant payload carries it so the storefront chrome
   // resolves real links. Moved here from TenantBrand.socials (docs/45 §3).
-  socials          Json      @default("[]")
+  socials              Json      @default("[]")
   // Platform billing (docs/67) — the WizeWorks subscription that charges this
   // tenant per active module. `stripeCustomerId` + `trialEndsAt` already existed;
   // the rest complete the picture. Reconciled from Stripe webhooks (the source of
@@ -283,7 +283,6 @@ model Tenant {
   // Email platform — management surface (docs/13)
   emailSettings       EmailSettings?
   sendingDomains      SendingDomain[]
-  emailTemplates      EmailTemplate[]
   emailScheduledSends ScheduledSend[]
   broadcasts          Broadcast[]
   emailEvents         EmailEvent[]
@@ -338,6 +337,11 @@ model Tenant {
 
   // Platform billing (docs/67) — one Stripe subscription item per active module
   billingSubscriptionItems BillingSubscriptionItem[]
+
+  // Payment gateway abstraction (docs/94) — tenant→shopper payments
+  paymentConfig  TenantPaymentConfig?
+  paymentIntents PaymentIntent[]
+  paymentEvents  PaymentEvent[]
 
   @@map("tenants")
 }

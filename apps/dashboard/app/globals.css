@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 @import '@sparx/ui/tokens.css';
+/* The content editor ships its own surface styles as real CSS (not Tailwind
+   utilities) so they don't depend on this app scanning that package's source.
+   See packages/cms-editor/src/editor.css. */
+@import '@sparx/cms-editor/editor.css';
 
 /* Tell Tailwind to scan @sparx/ui sources so utility classes used inside the
    component library are emitted in this app's CSS bundle. */

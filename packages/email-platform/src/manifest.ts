@@ -16,7 +16,6 @@ export const emailManifest: ModuleManifest = {
   // (module-section-nav.tsx); sections list only the sub-surfaces.
   sections: [
     { id: 'broadcasts', label: 'Broadcasts', icon: Send, href: '/email/broadcasts' },
-    { id: 'templates', label: 'Templates', icon: LayoutTemplate, href: '/email/templates' },
     { id: 'suppressions', label: 'Suppressions', icon: ShieldOff, href: '/email/suppressions' },
     { id: 'domains', label: 'Sending domains', icon: Globe, href: '/email/domains' },
     { id: 'settings', label: 'Settings', icon: Settings, href: '/email/settings' },
@@ -28,8 +27,8 @@ export const emailManifest: ModuleManifest = {
       icon: Send,
       href: '/email/broadcasts/new',
     },
-    // Marketing emails are designed in the Email Builder (docs/52); built-in
-    // transactional templates are customized in place, never created.
+    // All tenant→customer emails — marketing and transactional — are designed in
+    // the Email Builder (docs/52, docs/93).
     {
       id: 'email.design',
       label: 'Design email',

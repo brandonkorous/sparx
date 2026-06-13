@@ -29,7 +29,7 @@ export async function listForOrder(ctx: ServiceContext, orderId: string): Promis
 export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Promise<OrderPayment> {
   const input = RecordPaymentInput.parse(rawInput);
 
-  const payment = await withTenant(ctx, async (tx) => {
+  const { payment, becamePaid } = await withTenant(ctx, async (tx) => {
     const order = await tx.order.findUnique({ where: { id: input.orderId } });
     if (!order) throw new CrmNotFoundError('Order', input.orderId);
     if (order.status === 'cancelled' || order.status === 'refunded') {
@@ -57,7 +57,7 @@ export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Pro
       },
     });
 
-    await recomputeOrderPaymentRollup(tx, ctx.tenantId, input.orderId);
+    const becamePaid = await recomputeOrderPaymentRollup(tx, ctx.tenantId, input.orderId);
 
     await writeAuditLog({
       tx,
@@ -70,7 +70,7 @@ export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Pro
       diff: { after: { amount: created.amount.toString(), status: created.status } },
     });
 
-    return created;
+    return { payment: created, becamePaid };
   });
 
   await publishPlatformEvent({
@@ -86,6 +86,20 @@ export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Pro
       status: payment.status,
     },
   });
+
+  // When this capture completed the order's balance, announce it's fully paid —
+  // the signal the high-value-order automation (and any paid-order consumer)
+  // listens for. Fires once (the unpaid→paid edge); `order.paid` tees to the
+  // automation fan-in via the platform-bus ORDER_TEE_TOPICS allow-list.
+  if (becamePaid) {
+    await publishPlatformEvent({
+      id: crypto.randomUUID(),
+      topic: 'order.paid',
+      tenantId: ctx.tenantId,
+      occurredAt: new Date(),
+      payload: { orderId: payment.orderId },
+    });
+  }
 
   return payment;
 }
@@ -124,12 +138,15 @@ export async function voidPayment(ctx: ServiceContext, rawInput: unknown): Promi
 
 /** Re-derive order.amountPaid / paymentStatus / paidAt from the current
  *  set of captured payments minus refunds. Called from every path that
- *  mutates a payment or a refund. */
+ *  mutates a payment or a refund. Returns whether this recompute completed the
+ *  order's balance (the unpaid→paid edge) so the caller can publish `order.paid`
+ *  exactly once — detected here, the single chokepoint, so every payment path
+ *  observes the transition identically. */
 export async function recomputeOrderPaymentRollup(
   tx: Prisma.TransactionClient,
   tenantId: string,
   orderId: string
-): Promise<void> {
+): Promise<boolean> {
   const payments = await tx.orderPayment.findMany({
     where: { tenantId, orderId, status: 'captured' },
   });
@@ -137,7 +154,7 @@ export async function recomputeOrderPaymentRollup(
     where: { tenantId, orderId, status: 'completed' },
   });
   const order = await tx.order.findUnique({ where: { id: orderId } });
-  if (!order) return;
+  if (!order) return false;
 
   const captured = payments.reduce((acc, p) => acc + Number(p.amount), 0);
   const refunded = refunds.reduce((acc, r) => acc + Number(r.amount), 0);
@@ -149,13 +166,18 @@ export async function recomputeOrderPaymentRollup(
   else if (amountPaid >= total && total > 0) paymentStatus = 'paid';
   else if (amountPaid > 0) paymentStatus = 'partially_paid';
 
+  // The unpaid→paid edge: the order had no paidAt and is now fully paid.
+  const becamePaid = paymentStatus === 'paid' && order.paidAt === null;
+
   await tx.order.update({
     where: { id: orderId },
     data: {
       amountPaid,
       refundTotal: refunded,
       paymentStatus,
-      paidAt: paymentStatus === 'paid' && order.paidAt === null ? new Date() : order.paidAt,
+      paidAt: becamePaid ? new Date() : order.paidAt,
     },
   });
+
+  return becamePaid;
 }

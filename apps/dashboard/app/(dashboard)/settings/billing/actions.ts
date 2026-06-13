@@ -23,6 +23,7 @@ export interface BillingState {
   billingInterval: 'monthly' | 'annual';
   planModules: BillingPlanModule[];
   planTotalCents: number;
+  planType: 'standard' | 'enterprise';
 }
 
 export async function getBillingState(): Promise<BillingState> {

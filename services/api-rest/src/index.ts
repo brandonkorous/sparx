@@ -6,7 +6,10 @@ import { startWebhookDeliveryLoop } from '@sparx/api-core/webhook-delivery';
 import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { createApp } from './app.js';
-import { registerEmailProvisioningConsumer } from './lib/email-provisioning.js';
+import {
+  registerEmailProvisioningConsumer,
+  startEmailProvisioningReconcileLoop,
+} from './lib/email-provisioning.js';
 import { env } from './env.js';
 import { startScheduledPublishLoop } from './lib/scheduled-publish.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
@@ -67,6 +70,11 @@ async function main(): Promise<void> {
   // via its own advisory lock — see lib/email-dispatch.ts.
   const stopEmailDispatch = startEmailDispatchLoop(app.log);
 
+  // Background pass that back-fills the 13 default Builder-email templates for any
+  // email-active tenant that missed `module.activated` (docs/90 §6, docs/91 §7).
+  // Singleton across pods via its own advisory lock — see lib/email-provisioning.ts.
+  const stopEmailProvisioningReconcile = startEmailProvisioningReconcileLoop(app.log);
+
   // Live Chat WebSocket server (docs/56, docs/69 A-2). Attaches socket.io to the
   // Fastify HTTP server at /ws/chat; uses the Redis adapter when REDIS_URL is
   // set (multi-replica fan-out) and the in-memory adapter otherwise.
@@ -78,6 +86,7 @@ async function main(): Promise<void> {
     stopSitebuilderPublish();
     stopWebhookDelivery();
     stopEmailDispatch();
+    stopEmailProvisioningReconcile();
     void chatWs.close().catch((err: unknown) => {
       app.log.error({ err }, 'chat websocket close failed');
     });

@@ -157,7 +157,6 @@ export type {
   // Email platform
   EmailSettings,
   SendingDomain,
-  EmailTemplate,
   ScheduledSend,
   Broadcast,
   EmailEvent,

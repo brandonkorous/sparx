@@ -10,7 +10,12 @@
 import type Stripe from 'stripe';
 
 import { prisma, withTenant, type Prisma } from '@sparx/db';
-import { deriveModuleStates, invalidateModuleCache, type ModuleSlug } from '@sparx/modules';
+import {
+  BUNDLED_FREE,
+  deriveModuleStates,
+  invalidateModuleCache,
+  type ModuleSlug,
+} from '@sparx/modules';
 
 import { getBillingStripe, isBillingConfigured } from './client';
 import {
@@ -19,6 +24,7 @@ import {
   activeTotalCents,
   isBillableModule,
   priceIdFor,
+  transactionFeePriceId,
   transactionFeeRate,
   type BillingInterval,
 } from './price-catalog';
@@ -116,9 +122,16 @@ export async function syncModuleItems(input: SubscriptionSyncInput): Promise<Bil
   //    until a priced module is enabled.
   if (!tenant.stripeSubscriptionId) {
     if (desired.length === 0) return { applied: true, stripeCustomerId: customerId };
+    // Ride the metered transaction-fee price alongside the module items so fee
+    // meter events invoice (docs/92 §3). Metered → no quantity; $0 when unused.
+    const feePriceId = transactionFeePriceId();
+    const items: Stripe.SubscriptionCreateParams.Item[] = desired.map((d) => ({
+      price: d.priceId,
+    }));
+    if (feePriceId) items.push({ price: feePriceId });
     const sub = await stripe.subscriptions.create({
       customer: customerId,
-      items: desired.map((d) => ({ price: d.priceId })),
+      items,
       trial_period_days: TRIAL_PERIOD_DAYS,
       trial_settings: { end_behavior: { missing_payment_method: 'cancel' } },
       collection_method: 'charge_automatically',
@@ -129,6 +142,26 @@ export async function syncModuleItems(input: SubscriptionSyncInput): Promise<Bil
   }
 
   // 3) Reconcile items against an existing subscription.
+
+  // 3a) Ensure the metered transaction-fee item rides on the subscription first
+  //     (docs/92 §3). It's the permanent anchor — so removing the last module item
+  //     below never hits Stripe's "can't delete the only item" — and the rail the
+  //     fee meter bills against. Not tracked in billing_subscription_items (it maps
+  //     to no module), so we check the live Stripe items, not local rows.
+  const feePriceId = transactionFeePriceId();
+  if (feePriceId) {
+    const liveItems = await stripe.subscriptionItems.list({
+      subscription: tenant.stripeSubscriptionId,
+      limit: 100,
+    });
+    if (!liveItems.data.some((it) => it.price.id === feePriceId)) {
+      await stripe.subscriptionItems.create({
+        subscription: tenant.stripeSubscriptionId,
+        price: feePriceId,
+      });
+    }
+  }
+
   const existing = await withTenant({ tenantId: input.tenantId }, (tx) =>
     tx.billingSubscriptionItem.findMany({ where: { tenantId: input.tenantId } })
   );
@@ -210,6 +243,11 @@ export interface BillingStateView {
    *  they never appear here. */
   planModules: { moduleKey: string; monthlyCents: number }[];
   planTotalCents: number;
+  /** 'enterprise' for manually-provisioned tenants (Gillett Diesel, docs/92 §C5):
+   *  custom-priced subscription, managed hosting, changes via support — the UI
+   *  hides self-serve plan editing. Flagged in `settings.billing.planType`; the
+   *  per-module breakdown above is informational only for these tenants. */
+  planType: 'standard' | 'enterprise';
 }
 
 /** A read-only snapshot for the billing settings UI. Never calls Stripe — the
@@ -235,6 +273,10 @@ export async function getBillingState(tenantId: string): Promise<BillingStateVie
     .filter((m) => states[m].source === 'explicit')
     .map((m) => ({ moduleKey: m, monthlyCents: MODULE_MONTHLY_CENTS[m] ?? 0 }));
 
+  const billingSettings = (tenant?.settings as { billing?: { planType?: string } } | null)?.billing;
+  const planType: 'standard' | 'enterprise' =
+    billingSettings?.planType === 'enterprise' ? 'enterprise' : 'standard';
+
   return {
     configured: isBillingConfigured(),
     billingActive: Boolean(tenant?.stripeSubscriptionId),
@@ -245,6 +287,7 @@ export async function getBillingState(tenantId: string): Promise<BillingStateVie
     billingInterval: interval(tenant?.billingInterval),
     planModules,
     planTotalCents: planModules.reduce((s, m) => s + m.monthlyCents, 0),
+    planType,
   };
 }
 
@@ -307,6 +350,15 @@ export async function reconcileFromSubscription(sub: Stripe.Subscription): Promi
   const modules = { ...((settings.modules as Record<string, unknown> | undefined) ?? {}) };
   let changed = false;
   for (const m of Object.keys(MODULE_MONTHLY_CENTS) as ModuleSlug[]) {
+    // A bundled-free capability (invoicing while Commerce/B2B is on) intentionally
+    // carries NO Stripe item — its missing item must NOT clear the tenant's flag,
+    // or a standalone purchase would be erased the moment a provider is enabled.
+    // Leave it untouched; it re-bills off its own flag once the provider is gone.
+    const bundledNow = (BUNDLED_FREE[m] ?? []).some((p) => {
+      const providerSlot = modules[p] as Record<string, unknown> | undefined;
+      return providerSlot?.enabled === true;
+    });
+    if (bundledNow) continue;
     const slot = (modules[m] as Record<string, unknown> | undefined) ?? {};
     const shouldEnable = !canceled && itemModules.has(m);
     if ((slot.enabled === true) !== shouldEnable) {
