@@ -94,6 +94,7 @@ export const SCHEDULE_CADENCES = [
   { value: 'daily', label: 'Daily' },
   { value: 'weekly', label: 'Weekly' },
   { value: 'monthly', label: 'Monthly' },
+  { value: 'interval', label: 'Every N minutes' },
   { value: 'once', label: 'Once' },
 ] as const;
 

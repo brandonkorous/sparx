@@ -376,7 +376,17 @@ export async function createPaymentIntent(
 export async function complete(
   ctx: ServiceContext,
   rawInput: unknown
-): Promise<{ orderId: string; orderNumber: string }> {
+): Promise<{
+  orderId: string;
+  orderNumber: string;
+  /** True only when THIS call created the order; false on an idempotent replay.
+   *  Callers gate one-shot side effects (transaction-fee metering) on it so a
+   *  retried completion never double-bills. */
+  freshlyPlaced: boolean;
+  /** True when the order is held for B2B approval — `order.placed` (and fee
+   *  metering) is deferred to the approval route. */
+  pendingApproval: boolean;
+}> {
   const input = CompleteCheckoutInput.parse(rawInput);
 
   // Idempotency: if a session has already been completed with this key,
@@ -394,7 +404,13 @@ export async function complete(
         select: { id: true, orderNumber: true },
       })
     );
-    if (order) return { orderId: order.id, orderNumber: order.orderNumber };
+    if (order)
+      return {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        freshlyPlaced: false,
+        pendingApproval: false,
+      };
   }
 
   // Load the session + cart in a single transaction so we have a
@@ -712,7 +728,7 @@ export async function complete(
     });
   }
 
-  return result;
+  return { ...result, freshlyPlaced: true };
 }
 
 // ─── expire ──────────────────────────────────────────────────────────

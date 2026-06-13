@@ -3,7 +3,6 @@
 import { z } from 'zod';
 
 import * as analyticsService from '../services/analytics-service';
-import * as automationService from '../services/automation-service';
 import * as broadcastService from '../services/broadcast-service';
 import * as suppressionService from '../services/suppression-service';
 import type { McpToolDefinition } from './registry';
@@ -16,15 +15,6 @@ export const getEmailStats: McpToolDefinition = {
   confirmation: false,
   input: z.object({ days: z.number().int().min(1).max(365).optional() }),
   run: (ctx, input) => analyticsService.overview(ctx, (input as { days?: number }).days ?? 30),
-};
-
-export const getAutomationList: McpToolDefinition = {
-  name: 'get_automation_list',
-  description: 'List the tenant’s email automations with their trigger, delay, and enabled state.',
-  scope: 'read:email',
-  confirmation: false,
-  input: z.object({}),
-  run: (ctx) => automationService.list(ctx),
 };
 
 export const listBroadcasts: McpToolDefinition = {
@@ -52,7 +42,6 @@ export const getUnsubscribedCustomers: McpToolDefinition = {
 
 export const readTools: McpToolDefinition[] = [
   getEmailStats,
-  getAutomationList,
   listBroadcasts,
   getUnsubscribedCustomers,
 ];

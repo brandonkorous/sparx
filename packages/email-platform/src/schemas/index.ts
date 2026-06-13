@@ -9,5 +9,4 @@ export * from './settings';
 export * from './domains';
 export * from './suppressions';
 export * from './templates';
-export * from './automations';
 export * from './broadcasts';

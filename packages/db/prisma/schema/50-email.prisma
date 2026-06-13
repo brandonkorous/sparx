@@ -96,51 +96,13 @@ model EmailTemplate {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  automations    EmailAutomation[]
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   broadcasts     Broadcast[]
   scheduledSends ScheduledSend[]
 
   @@unique([tenantId, key])
   @@index([tenantId, kind, status])
   @@map("email_templates")
-}
-
-// An automation rule. Default rows (PRD §4) are seeded per tenant on module
-// activation (keyed by `key`); tenants add custom ones with key = null.
-model EmailAutomation {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
-
-  key          String? @db.VarChar(63) // builtin automation id; null for custom
-  name         String  @db.VarChar(160)
-  // The event that fires this automation (order.created, cart.abandoned,
-  // crm.customer.inactive, quote.created, b2b.account.approved, ...).
-  triggerEvent String  @map("trigger_event") @db.VarChar(63)
-  conditions   Json    @default("{}")
-  // Delay between trigger and send; 0 = immediate. Drives ScheduledSend.dueAt.
-  delaySeconds Int     @default(0) @map("delay_seconds")
-
-  templateId String? @map("template_id") @db.Uuid
-
-  enabled             Boolean @default(true)
-  canDisable          Boolean @default(true) @map("can_disable")
-  // null = no cap; otherwise min seconds between sends of this automation to
-  // the same recipient (frequency cap, PRD §6).
-  frequencyCapSeconds Int?    @map("frequency_cap_seconds")
-  // active | archived
-  status              String  @default("active") @db.VarChar(20)
-
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
-
-  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  template       EmailTemplate?  @relation(fields: [templateId], references: [id], onDelete: SetNull)
-  scheduledSends ScheduledSend[]
-
-  @@unique([tenantId, key])
-  @@index([tenantId, triggerEvent, enabled])
-  @@map("email_automations")
 }
 
 // The dispatch queue — drives delayed automation sends and scheduled/batched
@@ -156,9 +118,8 @@ model ScheduledSend {
   // its site.
   propertyId String? @map("property_id") @db.Uuid
 
-  automationId String? @map("automation_id") @db.Uuid
-  broadcastId  String? @map("broadcast_id") @db.Uuid
-  templateId   String? @map("template_id") @db.Uuid
+  broadcastId String? @map("broadcast_id") @db.Uuid
+  templateId  String? @map("template_id") @db.Uuid
 
   recipient  String  @db.VarChar(255)
   customerId String? @map("customer_id") @db.Uuid // soft reference (no FK)
@@ -175,11 +136,10 @@ model ScheduledSend {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant     Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  property   Property?        @relation(fields: [propertyId], references: [id], onDelete: SetNull)
-  automation EmailAutomation? @relation(fields: [automationId], references: [id], onDelete: SetNull)
-  broadcast  Broadcast?       @relation(fields: [broadcastId], references: [id], onDelete: Cascade)
-  template   EmailTemplate?   @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property  Property?      @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  broadcast Broadcast?     @relation(fields: [broadcastId], references: [id], onDelete: Cascade)
+  template  EmailTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
   @@unique([tenantId, dedupeKey])
   @@index([status, dueAt])

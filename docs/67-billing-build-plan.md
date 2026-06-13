@@ -1,8 +1,8 @@
 # Sparx Platform — Billing Build Plan
 
-**Version:** 1.0
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-09
+**Last Updated:** 2026-06-12
 
 ---
 
@@ -15,6 +15,90 @@ The billing model is modular: each module is a Stripe subscription item. Tenants
 **Spec:** [docs/17-billing-subscriptions.md](17-billing-subscriptions.md)
 **Dependency:** Requires [Tier 1 Feature 1 Phase 1](65-tier1-build-plan.md) (Stripe client + Secret Manager keys) to already exist. Stripe Connect for tenant payments (Tier 1 Feature 2 Phase 1) is separate from platform billing — this doc covers WizeWorks charging tenants, not tenants charging their customers.
 **Build constraints (CLAUDE.md):** production-complete, module-gated via `requireModule`, event-driven, RLS on all tenant tables, conventional commits, no Co-Authored-By.
+
+---
+
+## Build Status (2026-06-12) — what's done & what's outstanding
+
+The billing **engine is built code-side and merged**, guarded so every Stripe call
+is a no-op until the prod ops below land (dev/test flip module flags with **no
+Stripe configured**). The remaining work splits into **manual ops (yours)** and
+**deferred code sub-slices**. Don't lose these — nothing here charges money until
+the manual ops are done.
+
+### ✅ Built (validated: typecheck + lint + 8 unit tests)
+
+- **`@sparx/billing` package** — `price-catalog.ts` (module list prices in
+  `MODULE_MONTHLY_CENTS` + `transactionFeeRate`), `client.ts`
+  (`isBillingConfigured()` over the single platform Stripe account), `service.ts`
+  (`syncModuleItems`, `createPortalSession`, `getBillingState`,
+  `reconcileFromSubscription`, `setSubscriptionStatus`).
+- **DB** — subscription columns folded onto the (non-RLS) `tenants` row, which
+  already held `stripe_customer_id` + `trial_ends_at`; new RLS-FORCE
+  `billing_subscription_items` table. Schema + migration
+  `20260813000000_platform_billing` (hand-authored; **not yet applied** — see ops).
+  - **Deviation from §2:** no separate `billing_customers` table — the tenant
+    dispatch row already carries the customer identity, so a second non-RLS table
+    would just duplicate it. The webhook resolves a tenant from a Stripe customer
+    id via `tenants.stripe_customer_id` (now `@unique`).
+- **Module-toggle → Stripe sync** — `applyModuleWrites` (tenant.ts) best-effort
+  syncs one item per **explicit** module; bundled-free invoicing (via
+  Commerce/B2B) is never billed. Guarded + non-fatal (the webhook is authoritative).
+- **Billing webhook** — `POST /v1/public/webhooks/stripe/billing` (own signing
+  secret, separate from the commerce payment webhook).
+- **API + UI** — `GET /v1/billing`, `POST /v1/billing/portal`; `/settings/billing`
+  dashboard page (plan derived from active modules + status + Stripe portal door);
+  settings-nav `billing` entry flipped `ready: true`.
+- **Wiring** — api-rest Dockerfile COPY for `@sparx/billing`;
+  `STRIPE_WEBHOOK_SECRET_BILLING` added to env.
+- **Phase 7 — transaction-fee metering** (§7) — `recordTransactionFee()` in
+  `@sparx/billing` computes the tier from the tenant's **explicit** billable-module
+  mix (0.5% Commerce / 0.3% with CRM / 0% once monthly spend ≥ $299) and emits a
+  `transaction_fee` meter event keyed by `stripe_customer_id`. Wired at **both**
+  `order.placed` emit sites via the `meterOrderFee` api-rest helper: storefront
+  checkout completion (gated on a new `freshlyPlaced` flag so an idempotent retry
+  never double-bills) and the B2B approval queue (the placement moment for a held
+  order). Best-effort + guarded; the order id rides along as the Stripe meter-event
+  `identifier` for a second, server-side 24h dedupe.
+
+### ⛏️ Outstanding — manual ops (required before billing can charge)
+
+- [ ] **Stripe Dashboard:** create one **Product + Price** per module (monthly +
+      annual) — §1.
+- [ ] **Secret Manager:** set `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET_BILLING`,
+      and `STRIPE_PRICE_<MODULE>_MONTHLY` / `_ANNUAL` for every billable module.
+      Billable modules + monthly prices (source of truth:
+      `packages/billing/src/price-catalog.ts`): builder 10, commerce 49, cms 49,
+      crm 49, email 29, b2b 99, ai 49, dropship 29, invoicing 19, chat 19.
+- [ ] **Register the billing webhook** endpoint in Stripe
+      (`…/v1/public/webhooks/stripe/billing`) for: `customer.subscription.created`,
+      `…updated`, `…deleted`, `customer.subscription.trial_will_end`,
+      `invoice.payment_succeeded`, `invoice.payment_failed`.
+- [ ] **Apply the migration** via the **DB Migrate workflow** (push to `main`) —
+      Cloud SQL is private-IP, so `20260813000000_platform_billing` cannot be
+      applied locally.
+- [ ] **Create the `transaction_fee` Billing Meter** in the Stripe Dashboard
+      (event name `transaction_fee`, customer mapping `stripe_customer_id`, value
+      key `value`) and attach a metered Price so fees land on each tenant's invoice.
+      The code emits meter events the moment the meter exists; until then
+      `meterEvents.create` no-ops (guarded — Stripe is unconfigured) or, once
+      `STRIPE_SECRET_KEY` is set but the meter isn't, the call is caught non-fatally.
+
+### ⛏️ Outstanding — deferred code sub-slices (each its own scope)
+
+- [ ] **Phase 3 — trial-ending banner + choose-plan screen.** The Stripe Customer
+      Portal already covers module/card/cancel management, so this is a
+      nice-to-have: a day-12 dashboard banner reading `trialEndsAt`, optionally a
+      `/settings/billing/choose-plan` toggle UI.
+- [ ] **Phase 8 — enterprise provisioning.** Manual data op (Gillett Diesel):
+      create the customer + custom-priced subscription + managed-hosting item, set
+      `plan` enterprise. Runbook, not a build.
+- [ ] **Integration tests** for the Stripe-dependent flows (`syncModuleItems`,
+      `reconcileFromSubscription`) — guarded no-ops without Stripe configured, so
+      only the pure math is unit-tested today.
+
+> The per-phase sections below are the original plan. Where a phase is built, the
+> status above is authoritative; the phase text remains as the design reference.
 
 ---
 

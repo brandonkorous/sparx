@@ -1,12 +1,5 @@
 import Link from 'next/link';
-import {
-  Globe,
-  LayoutTemplate,
-  Send,
-  Settings as SettingsIcon,
-  ShieldOff,
-  Workflow,
-} from 'lucide-react';
+import { Globe, LayoutTemplate, Send, Settings as SettingsIcon, ShieldOff } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -37,12 +30,6 @@ const SURFACES = [
     icon: Send,
     title: 'Broadcasts',
     description: 'Compose a segment-targeted campaign, preview it, and schedule or send.',
-  },
-  {
-    href: '/email/automations',
-    icon: Workflow,
-    title: 'Automations',
-    description: 'Order, cart-abandon, win-back, and B2B flows triggered by platform events.',
   },
   {
     href: '/email/templates',

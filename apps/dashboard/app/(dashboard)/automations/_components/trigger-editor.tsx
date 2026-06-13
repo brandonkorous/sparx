@@ -45,7 +45,7 @@ function hhmmToMinute(hhmm: string): number {
 }
 
 function atMinuteOf(schedule: ScheduleSpec): number {
-  return schedule.cadence === 'once' ? 0 : schedule.atMinuteUtc;
+  return schedule.cadence === 'once' || schedule.cadence === 'interval' ? 0 : schedule.atMinuteUtc;
 }
 
 interface Props {
@@ -78,6 +78,9 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
         break;
       case 'monthly':
         schedule = { cadence: 'monthly', dayOfMonth: 1, atMinuteUtc: at };
+        break;
+      case 'interval':
+        schedule = { cadence: 'interval', everyMinutes: 60 };
         break;
       case 'once':
         schedule = { cadence: 'once', at: '' };
@@ -205,6 +208,23 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
                     patchSchedule({ at: e.target.value ? `${e.target.value}:00.000Z` : '' })
                   }
                   className="w-56"
+                />
+              </div>
+            ) : value.schedule.cadence === 'interval' ? (
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="schedule-every">Every (minutes)</Label>
+                <Input
+                  id="schedule-every"
+                  type="number"
+                  min={1}
+                  max={1440}
+                  value={value.schedule.everyMinutes}
+                  onChange={(e) =>
+                    patchSchedule({
+                      everyMinutes: Math.min(1440, Math.max(1, Number(e.target.value) || 1)),
+                    })
+                  }
+                  className="w-28"
                 />
               </div>
             ) : (

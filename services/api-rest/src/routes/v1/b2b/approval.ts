@@ -23,6 +23,7 @@ import { notFound } from '@sparx/api-core/errors';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { b2bArService } from '@sparx/crm';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
+import { meterOrderFee } from '../../../lib/transaction-fee.js';
 import { env } from '../../../env.js';
 
 // purchaseApprovalRule is a new model added by migration 20260716000000.
@@ -386,6 +387,11 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
       { orderId, orderNumber: result.order.orderNumber },
       pubLogger
     );
+
+    // Approval is the placement moment for a held order — meter its platform
+    // transaction fee now (the storefront path defers metering here). The
+    // pending_approval guard above means this runs exactly once per order.
+    await meterOrderFee({ tenantId: ctx.tenantId, orderId, log: request.log });
 
     return reply.send(ok(result.order));
   });

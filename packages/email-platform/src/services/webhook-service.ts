@@ -142,6 +142,7 @@ export async function ingest(eventData: MailgunEventData): Promise<IngestResult>
   const broadcastId = typeof vars.broadcast_id === 'string' ? vars.broadcast_id : null;
   const automationKey = typeof vars.automation_key === 'string' ? vars.automation_key : null;
   const customerId = typeof vars.customer_id === 'string' ? vars.customer_id : null;
+  const propertyVar = typeof vars.property_id === 'string' ? vars.property_id : null;
   const messageId = eventData.message?.headers?.['message-id'] ?? null;
   const occurredAt = eventData.timestamp ? new Date(eventData.timestamp * 1000) : new Date();
   const reason =
@@ -151,9 +152,31 @@ export async function ingest(eventData: MailgunEventData): Promise<IngestResult>
     null;
 
   await withTenant({ tenantId }, async (tx) => {
+    // Per-site attribution (docs/49 Phase 7): the worker stamps `property_id` on
+    // every per-site send so engagement analytics break down per site. Verify it
+    // still resolves — RLS scopes findUnique to this tenant, and the FK would
+    // abort the whole ingest if the site was deleted between send and event.
+    // Older sends predate the stamp; fall back to the broadcast's site (FK-SetNull
+    // keeps that valid even after a site delete). NULL = tenant-wide / primary.
+    let propertyId: string | null = null;
+    if (propertyVar) {
+      const prop = await tx.property.findUnique({
+        where: { id: propertyVar },
+        select: { id: true },
+      });
+      propertyId = prop?.id ?? null;
+    } else if (broadcastId) {
+      const bc = await tx.broadcast.findUnique({
+        where: { id: broadcastId },
+        select: { propertyId: true },
+      });
+      propertyId = bc?.propertyId ?? null;
+    }
+
     await tx.emailEvent.create({
       data: {
         tenantId,
+        propertyId,
         type,
         recipient,
         messageId,

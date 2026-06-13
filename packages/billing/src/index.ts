@@ -22,7 +22,10 @@ export {
   getBillingState,
   reconcileFromSubscription,
   setSubscriptionStatus,
+  recordTransactionFee,
   moduleForPriceId,
   type SubscriptionSyncInput,
   type BillingResult,
+  type TransactionFeeInput,
+  type TransactionFeeResult,
 } from './service';

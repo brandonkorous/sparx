@@ -42,7 +42,8 @@ export function isBillableModule(module: ModuleSlug): boolean {
 export function priceIdFor(module: ModuleSlug, interval: BillingInterval): string | undefined {
   const key = `STRIPE_PRICE_${module.toUpperCase()}_${interval.toUpperCase()}`;
   const value = process.env[key]?.trim();
-  return value ? value : undefined;
+  if (!value) return undefined;
+  return value;
 }
 
 /** Monthly-equivalent total (cents) for a set of active modules — reads our own

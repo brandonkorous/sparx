@@ -5,7 +5,7 @@
 // @sparx/ui/shell, icons from lucide-react, nothing else.
 
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Globe, LayoutTemplate, Send, Settings, ShieldOff, Workflow } from 'lucide-react';
+import { Globe, LayoutTemplate, Send, Settings, ShieldOff } from 'lucide-react';
 
 export const emailManifest: ModuleManifest = {
   id: 'email',
@@ -16,7 +16,6 @@ export const emailManifest: ModuleManifest = {
   // (module-section-nav.tsx); sections list only the sub-surfaces.
   sections: [
     { id: 'broadcasts', label: 'Broadcasts', icon: Send, href: '/email/broadcasts' },
-    { id: 'automations', label: 'Automations', icon: Workflow, href: '/email/automations' },
     { id: 'templates', label: 'Templates', icon: LayoutTemplate, href: '/email/templates' },
     { id: 'suppressions', label: 'Suppressions', icon: ShieldOff, href: '/email/suppressions' },
     { id: 'domains', label: 'Sending domains', icon: Globe, href: '/email/domains' },
@@ -40,12 +39,6 @@ export const emailManifest: ModuleManifest = {
   ],
   entityTypes: [
     { id: 'broadcast', label: 'Broadcast', routePrefix: '/email/broadcasts', hasDetailView: true },
-    {
-      id: 'automation',
-      label: 'Automation',
-      routePrefix: '/email/automations',
-      hasDetailView: true,
-    },
     { id: 'sending-domain', label: 'Sending domain', routePrefix: '/email/domains' },
   ],
 };

@@ -70,7 +70,7 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
     description: 'Subscription, invoices, payment method.',
     icon: CreditCard,
     href: '/settings/billing',
-    ready: false,
+    ready: true,
   },
   {
     id: 'sites',

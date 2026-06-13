@@ -27,7 +27,7 @@ import { createTenant, dropTenant } from '../helpers';
 
 /** Read a field off the staged draft JSON blob (typed loosely on the Prisma row). */
 function draftField<T = string>(draft: unknown, key: string): T {
-  return (draft as Record<string, T>)[key];
+  return (draft as Record<string, T>)[key] as T;
 }
 
 const eventTrigger: Trigger = { kind: 'event', eventType: 'order.placed' };

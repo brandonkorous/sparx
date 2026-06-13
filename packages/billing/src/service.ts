@@ -9,15 +9,17 @@
 
 import type Stripe from 'stripe';
 
-import { prisma, withTenant } from '@sparx/db';
+import { prisma, withTenant, type Prisma } from '@sparx/db';
 import { deriveModuleStates, invalidateModuleCache, type ModuleSlug } from '@sparx/modules';
 
 import { getBillingStripe, isBillingConfigured } from './client';
 import {
   MODULE_MONTHLY_CENTS,
   TRIAL_PERIOD_DAYS,
+  activeTotalCents,
   isBillableModule,
   priceIdFor,
+  transactionFeeRate,
   type BillingInterval,
 } from './price-catalog';
 
@@ -315,7 +317,7 @@ export async function reconcileFromSubscription(sub: Stripe.Subscription): Promi
   if (changed) {
     await prisma.tenant.update({
       where: { id: tenant.id },
-      data: { settings: { ...settings, modules } as object },
+      data: { settings: { ...settings, modules } as Prisma.InputJsonValue },
     });
     invalidateModuleCache(tenant.id);
   }
@@ -333,4 +335,71 @@ export async function setSubscriptionStatus(
     where: { stripeCustomerId },
     data: { subscriptionStatus: status },
   });
+}
+
+export interface TransactionFeeInput {
+  tenantId: string;
+  /** The order's grand total in cents — the base the percentage fee applies to. */
+  orderTotalCents: number;
+  /** Stable id (the order id) reused as the Stripe meter-event identifier so a
+   *  duplicate send for the same order is deduped by Stripe, not double-billed. */
+  identifier?: string;
+}
+
+export interface TransactionFeeResult {
+  /** True iff a meter event was actually emitted to Stripe. */
+  metered: boolean;
+  /** The tier that applied: 0 | 0.003 | 0.005 (docs/17 §2, docs/67 §7). */
+  feeRate: number;
+  /** The rounded fee in cents (what was metered, or what would have been). */
+  feeCents: number;
+  /** Why metering did or didn't happen — for logs. */
+  reason: 'unconfigured' | 'no-customer' | 'zero-fee' | 'metered';
+}
+
+/**
+ * Meter a transaction fee for one placed order (docs/67 §7). The rate comes from
+ * the tenant's EXPLICIT billable-module mix (the cheapest applicable tier wins;
+ * 0% once monthly spend clears $299). Best-effort + GUARDED: a no-op when Stripe
+ * is unconfigured, when no tenant/customer exists, or when the computed fee is
+ * zero — so it ships before the billing ops land and never blocks checkout. The
+ * caller swallows; the fee is additive revenue, not part of the order's truth.
+ */
+export async function recordTransactionFee(
+  input: TransactionFeeInput
+): Promise<TransactionFeeResult> {
+  const stripe = getBillingStripe();
+  if (!stripe) return { metered: false, feeRate: 0, feeCents: 0, reason: 'unconfigured' };
+
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: input.tenantId },
+    select: { stripeCustomerId: true, settings: true },
+  });
+
+  // Monthly spend + active capabilities drive the tier. Spend counts only what
+  // the tenant actually pays for (explicit billable flags) — bundled-free
+  // capabilities (invoicing via Commerce/B2B) don't raise the $299 threshold.
+  const states = deriveModuleStates(tenant?.settings);
+  const explicitBillable = (Object.keys(MODULE_MONTHLY_CENTS) as ModuleSlug[]).filter(
+    (m) => states[m].source === 'explicit'
+  );
+  const feeRate = transactionFeeRate({
+    monthlySpendCents: activeTotalCents(explicitBillable),
+    commerceActive: states.commerce.enabled,
+    crmActive: states.crm.enabled,
+  });
+  const feeCents = Math.round(input.orderTotalCents * feeRate);
+
+  if (feeCents <= 0)
+    return { metered: false, feeRate, feeCents: Math.max(feeCents, 0), reason: 'zero-fee' };
+  if (!tenant?.stripeCustomerId)
+    return { metered: false, feeRate, feeCents, reason: 'no-customer' };
+
+  await stripe.billing.meterEvents.create({
+    event_name: 'transaction_fee',
+    payload: { value: String(feeCents), stripe_customer_id: tenant.stripeCustomerId },
+    ...(input.identifier ? { identifier: `txfee_${input.identifier}` } : {}),
+  });
+
+  return { metered: true, feeRate, feeCents, reason: 'metered' };
 }

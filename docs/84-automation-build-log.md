@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.17
+**Version:** 1.18
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-12
 
@@ -16,7 +16,43 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** **Slice G-versioning — DONE** (this session, uncommitted). Builder-style
+> **▶ RESUME HERE:** **Slice K (docs/90 ADR — automation migration) — IN PROGRESS.** Migrate ALL baked-in
+> workflows onto the unified engine + a Builder-email **DataSource** layer, and HARD-DELETE the legacy
+> email-platform automation system (zero users → no incremental, no soft-deprecation). Full spec in
+> [docs/90](90-ADR-automation-migration.md); live task list in the session todos. Target = **23 system
+> automations** (per-module, Managed except the one Locked B2B dunning) + **13 Builder-email default templates**
+> (+ 3 raw `send_internal` internal alerts) + full **CAN-SPAM/CASL compliance gate chain** (derived from
+> `emailType`, never stored).
+>
+> - **Step 1a — legacy delete DONE** (this session): removed `@sparx/email-platform` `DEFAULT_AUTOMATIONS` +
+>   `automationService` (`evaluateTrigger`/`provisionDefaults`/`list`/`get`/`update`) + `schemas/automations` +
+>   the 3 email-automation MCP tools (`get_automation_list`/`pause_automation`/`resume_automation`) + the
+>   `/v1/email/automations` REST + `/v1/email/bootstrap` + `/internal/email/trigger` route + the api-rest
+>   `email-module-activation` consumer + the dashboard `/email/automations` page & manifest section. Migration
+>   `20260814000000_drop_email_automations` dropped the `email_automations` table + the
+>   `email_scheduled_sends.automation_id` FK/column (ScheduledSend STAYS — it's the shared dispatch queue the
+>   unified `enqueueSend` writes). Applied to docker; table+column confirmed gone; client regenerated. **Verify:**
+>   typecheck **8/8** (db/email-platform/email-sends/api-rest/api-mcp/dashboard), api-mcp **12/12**, email-sends ok.
+> - **Key schema deltas found during mapping** (vs the ADR): `Deal` owner is `assignedRepId` (not `ownerId`);
+>   consent lives in `Customer.gdprConsent` JSON (no `marketingOptIn` col) → the compliance gate reads that;
+>   `BillingDocument` has NO `workflow.origin` → partition user-vs-system invoices by `workflow.slug`;
+>   `EmailSettings.physicalAddress` ALREADY EXISTS (CAN-SPAM address, no new column); B2B email reached via the
+>   primary-contact→Customer relation; `Cart` has no `status` col (infer abandonment via `abandonedAt`/`recoveredAt`
+>   null + items + `updatedAt` age + no checkout session). Events NOT yet published (must add): `b2b.account.approved`,
+>   `chat.conversation.resolved`, `chat.conversation.unresponded`; seed triggers rename to real names
+>   `crm.quote.submitted` + `crm.b2b_account.created`. Rich transactional receipts (order/shipping) stay INLINE
+>   (commerce stripe webhook) — NOT engine workflows.
+> - **NEXT (Step 1 cont.):** entity DataSource resolver registry (order/quote/billingDocument/deal/b2bAccount/
+>   customer/product/tenant) → cart/chat/billing scanners + the missing publishers → Step 2 (Builder email
+>   DataSource schema: `line_item_table` + `conditional_block` nodes + `ScheduledSend.entitySnapshot`/`entityRefs`
+>   + dispatch resolution + `{{token}}` interpolation incl. `send_internal` + `?? fallback`) → Step 2 contract +
+>   reference template (handoff spec ALREADY given to a parallel template agent for the other 12) → Step 4
+>   (compliance gates + 23 seeds) → Step 5 (dashboard repoint to filtered unified list) → Step 6 (reconcile + e2e).
+>   Nothing committed.
+>
+> ---
+>
+> **(prior)** **Slice G-versioning — DONE** (this session, uncommitted). Builder-style
 > **draft → publish + immutable history** for the rule engine, plus the live drag verification of the
 > G-UI v2 editor. **Key design (low-risk, additive): the existing automation columns REMAIN the
 > currently-PUBLISHED (live) document the engine/ticks/SECURITY-DEFINER-scans already read** — so

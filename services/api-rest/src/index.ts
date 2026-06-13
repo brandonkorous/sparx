@@ -7,7 +7,6 @@ import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers 
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { createApp } from './app.js';
 import { env } from './env.js';
-import { registerEmailModuleActivationConsumer } from './lib/email-module-activation.js';
 import { startScheduledPublishLoop } from './lib/scheduled-publish.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
@@ -32,11 +31,6 @@ async function main(): Promise<void> {
   // Subscriptions delegate to the in-memory bus the tee bridge wraps, so
   // ordering vs. installCrmPubSubBridge above doesn't matter.
   registerCrmConsumers();
-
-  // Seed default email automations when the Email module activates (docs/82
-  // Slice E4). Same in-process platform bus the CRM consumers use; the toggle
-  // route (routes/v1/tenant.ts) publishes `module.activated` to it.
-  registerEmailModuleActivationConsumer();
 
   // Wrap the CRM publisher so every publishCrmEvent() also enqueues a
   // WebhookDelivery row per matching tenant subscription. Pre-warm the

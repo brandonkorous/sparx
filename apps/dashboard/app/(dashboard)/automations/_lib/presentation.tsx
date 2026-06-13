@@ -88,6 +88,8 @@ export function humanizeSchedule(schedule: ScheduleSpec): string {
     }
     case 'monthly':
       return `Monthly on day ${schedule.dayOfMonth} at ${minuteToHHMM(schedule.atMinuteUtc)} UTC`;
+    case 'interval':
+      return `Every ${schedule.everyMinutes} min`;
     case 'once':
       return `Once at ${formatTimestamp(schedule.at)}`;
   }

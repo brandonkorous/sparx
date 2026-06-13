@@ -99,22 +99,30 @@ async function hydrateDeal(ctx: TenantCtx, dealId: string): Promise<ResolvedFiel
       probability: true,
       stageId: true,
       pipelineId: true,
+      assignedRepId: true,
       closedAt: true,
       closedReason: true,
       expectedCloseDate: true,
       tags: true,
       customerId: true,
+      // stageType (open | won | lost) drives the won/open conditions on the
+      // new-lead-task + deal-closed-won-task seeds (the stage id alone can't).
+      stage: { select: { stageType: true } },
     },
   });
   if (!d) return {};
   const fields: ResolvedFields = {
     'deal.id': d.id,
     'deal.title': d.title,
+    // Alias for templated copy (`{{deal.name}}`); `deal.title` stays for conditions.
+    'deal.name': d.title,
     'deal.value': num(d.value),
     'deal.currency': d.currency,
     'deal.probability': num(d.probability),
     'deal.stageId': d.stageId,
+    'deal.stageType': d.stage.stageType,
     'deal.pipelineId': d.pipelineId,
+    'deal.assignedRepId': d.assignedRepId,
     'deal.isClosed': d.closedAt !== null,
     'deal.closedReason': d.closedReason,
     'deal.expectedCloseDate': d.expectedCloseDate,
@@ -139,6 +147,7 @@ async function hydrateOrder(ctx: TenantCtx, orderId: string): Promise<ResolvedFi
       channel: true,
       total: true,
       subtotal: true,
+      refundTotal: true,
       currency: true,
       placedAt: true,
       customerId: true,
@@ -153,6 +162,7 @@ async function hydrateOrder(ctx: TenantCtx, orderId: string): Promise<ResolvedFi
     'order.channel': o.channel,
     'order.total': num(o.total),
     'order.subtotal': num(o.subtotal),
+    'order.refundTotal': num(o.refundTotal),
     'order.currency': o.currency,
     'order.placedAt': o.placedAt,
   };
@@ -168,7 +178,7 @@ const CUSTOMER_EVENTS = [
   'crm.customer.subscribed',
   'crm.segment.entered',
 ];
-const DEAL_EVENTS = ['crm.deal.created', 'crm.deal.updated'];
+const DEAL_EVENTS = ['crm.deal.created', 'crm.deal.updated', 'crm.deal.stage_changed'];
 const ORDER_EVENTS = [
   'order.placed',
   'order.paid',

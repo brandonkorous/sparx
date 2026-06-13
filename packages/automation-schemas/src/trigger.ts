@@ -30,6 +30,15 @@ export const ScheduleSpec = z.discriminatedUnion('cadence', [
     dayOfMonth: z.number().int().min(1).max(28), // capped at 28 to dodge month-length edges
     atMinuteUtc: MinuteOfDayUtc.default(0),
   }),
+  // Sub-daily recurring scan — fires every `everyMinutes` (on UTC minute
+  // boundaries) and dedupes ONCE PER ENTITY (not per calendar window), so a
+  // transient row (a cold cart, an unresponded chat) triggers a single run rather
+  // than re-firing every interval it stays in the scan window. The daily/weekly/
+  // monthly cadences can't express "nudge ~2h after a cart goes cold".
+  z.object({
+    cadence: z.literal('interval'),
+    everyMinutes: z.number().int().min(1).max(1440),
+  }),
   z.object({ cadence: z.literal('once'), at: z.string().datetime() }),
 ]);
 export type ScheduleSpec = z.infer<typeof ScheduleSpec>;

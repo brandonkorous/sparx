@@ -163,6 +163,10 @@ function isScheduleDue(schedule: ScheduleSpec, now: Date): boolean {
       return (
         now.getUTCDate() === schedule.dayOfMonth && minuteOfDayUtc(now) >= schedule.atMinuteUtc
       );
+    case 'interval':
+      // Due on each `everyMinutes` boundary of the UTC day (the worker ticks every
+      // minute). everyMinutes that don't divide 1440 still fire ~every N minutes.
+      return minuteOfDayUtc(now) % schedule.everyMinutes === 0;
     case 'once':
       return now.getTime() >= new Date(schedule.at).getTime();
     default:
@@ -174,5 +178,10 @@ function isScheduleDue(schedule: ScheduleSpec, now: Date): boolean {
  *  cadenced schedules fire at most once on their calendar date. */
 function scheduleWindowKey(schedule: ScheduleSpec, now: Date): string {
   if (schedule.cadence === 'once') return `once:${schedule.at}`;
+  // An interval scan dedupes ONCE PER ENTITY (stable key, not date-bucketed): a
+  // transient row fires a single run and never re-fires each interval while it
+  // remains in the scan window. The per-automation + per-row parts of the dedupe
+  // key still namespace it.
+  if (schedule.cadence === 'interval') return 'interval';
   return now.toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
 }

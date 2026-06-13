@@ -31,6 +31,7 @@ import {
   WizardFrame,
   WizardStep,
   cn,
+  useConfirm,
   type WizardStepDef,
 } from '@sparx/ui';
 import { ArrowRight, Check, ExternalLink, Globe, PencilRuler } from 'lucide-react';
@@ -96,6 +97,7 @@ export function NewSiteWizard({
   zoneSuffix,
   onCreated,
 }: NewSiteWizardProps) {
+  const confirm = useConfirm();
   const [step, setStep] = React.useState(0);
   // undefined = nothing chosen yet (Continue stays disabled); BLANK = empty site;
   // else a blueprint key.
@@ -140,10 +142,45 @@ export function NewSiteWizard({
     if (done) onCreated();
   }
 
+  // Has the user entered anything worth protecting from an accidental dismiss?
+  // A created site is no longer "in progress" — closing it just dismisses the
+  // success panel, so a done wizard is never dirty.
+  const isDirty = !done && (choice !== undefined || name.trim() !== '' || slug.trim() !== '');
+
+  // Ask before throwing away unsaved progress (docs/86; destructive-actions-confirm).
+  function confirmDiscard(): Promise<boolean> {
+    return confirm({
+      title: 'Discard this site?',
+      description:
+        'You haven’t created this site yet — your starting point and details will be lost.',
+      confirmLabel: 'Discard',
+      cancelLabel: 'Keep editing',
+      tone: 'danger',
+    });
+  }
+
+  // Radix backdrop-click / Esc guard (sync). Never drop a create mid-flight, and
+  // block-then-ask when there's entered detail to lose — closing only on confirm.
   function requestClose(): boolean {
-    // Never drop a create mid-flight.
     if (submitting) return false;
-    return true;
+    if (!isDirty) return true;
+    void confirmDiscard().then((ok) => {
+      if (ok) close();
+    });
+    return false;
+  }
+
+  // Footer Cancel / Close — same guard, for the explicit button (it bypasses the
+  // Radix dismiss path, so it has to consult the guard itself).
+  function onCancelClick() {
+    if (submitting) return;
+    if (!isDirty) {
+      close();
+      return;
+    }
+    void confirmDiscard().then((ok) => {
+      if (ok) close();
+    });
   }
 
   function onNameChange(value: string) {
@@ -485,7 +522,7 @@ export function NewSiteWizard({
           ) : (
             <button
               type="button"
-              onClick={close}
+              onClick={onCancelClick}
               className="text-white/70 underline-offset-2 hover:underline"
             >
               {done ? 'Close' : 'Cancel'}

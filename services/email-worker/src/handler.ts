@@ -154,6 +154,10 @@ const RawSendSchema = z.object({
   text: z.string(),
   templateId: z.string().optional(),
   variables: Variables,
+  // The site this pre-rendered send is on behalf of (docs/49 Phase 7). The body
+  // is already branded (rendered at dispatch); this only rides along so the
+  // worker stamps property_id for per-site analytics attribution.
+  propertyId: z.string().nullable().optional(),
 });
 
 const EmailSendEvent = z.object({
@@ -219,10 +223,17 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
     }
 
     // Stamp tenant_id (+ any caller variables: broadcast_id, automation_key) so
-    // the webhook receiver can attribute delivery/engagement events.
+    // the webhook receiver can attribute delivery/engagement events. property_id
+    // (docs/49 Phase 7) joins the engagement back to the SITE the send was on
+    // behalf of, so EmailEvent analytics break down per site; absent → tenant-wide.
+    const propertyId = data.propertyId ?? null;
     const result = await getEmailProvider().send({
       ...rendered,
-      variables: { ...data.variables, tenant_id: event.tenantId },
+      variables: {
+        ...data.variables,
+        tenant_id: event.tenantId,
+        ...(propertyId ? { property_id: propertyId } : {}),
+      },
     });
     return {
       status: 'sent',

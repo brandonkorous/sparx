@@ -72,8 +72,6 @@ describe('enqueueSend', () => {
     const row = rows[0]!;
     expect(row.recipient).toBe('Ada@Example.com');
     expect(row.status).toBe('pending');
-    // Engine sends are not tied to an EmailAutomation row.
-    expect(row.automationId).toBeNull();
     expect(row.payload).toEqual({
       template: 'welcome',
       props: { name: 'Ada' },

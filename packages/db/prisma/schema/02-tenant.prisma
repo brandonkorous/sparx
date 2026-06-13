@@ -284,7 +284,6 @@ model Tenant {
   emailSettings       EmailSettings?
   sendingDomains      SendingDomain[]
   emailTemplates      EmailTemplate[]
-  emailAutomations    EmailAutomation[]
   emailScheduledSends ScheduledSend[]
   broadcasts          Broadcast[]
   emailEvents         EmailEvent[]

@@ -147,6 +147,9 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             subject: rendered.subject,
             html: rendered.html,
             text: rendered.text,
+            // Carry the site through so the worker stamps property_id for per-site
+            // analytics (docs/49 Phase 7); the body is already site-branded above.
+            ...(propertyId ? { propertyId } : {}),
             ...common,
           };
         } else if (payload.raw) {
@@ -157,6 +160,9 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             html: payload.raw.html,
             text: payload.raw.text,
             ...(payload.raw.templateId ? { templateId: payload.raw.templateId } : {}),
+            // The broadcast's site → property_id stamp for per-site analytics
+            // (docs/49 Phase 7). The body was already branded at compose time.
+            ...(propertyId ? { propertyId } : {}),
             ...common,
           };
         } else {

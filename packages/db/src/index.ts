@@ -158,7 +158,6 @@ export type {
   EmailSettings,
   SendingDomain,
   EmailTemplate,
-  EmailAutomation,
   ScheduledSend,
   Broadcast,
   EmailEvent,
