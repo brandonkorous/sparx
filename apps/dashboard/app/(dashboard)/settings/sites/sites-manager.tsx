@@ -1,7 +1,6 @@
 ﻿'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Badge,
@@ -23,7 +22,6 @@ import type { Domain, Property } from '@/lib/sites';
 import { resolveActiveProperty } from '@/lib/site-scope';
 import {
   connectDomain,
-  createSite,
   deleteDomain,
   deleteSite,
   makeSitePrimary,
@@ -34,11 +32,16 @@ import {
   verifyDomain,
   type ActionResult,
 } from './actions';
+import { NewSiteWizard, type SiteBlueprintOption } from './new-site-wizard';
 
 export interface SitesManagerProps {
   properties: Property[];
   domains: Domain[];
   activePropertyId: string | null;
+  /** Blueprint catalog for the New-site wizard's starting-point gallery. */
+  blueprints: SiteBlueprintOption[];
+  /** `<tenant-slug>.sparx.zone` — the wizard previews `<handle>.<suffix>`. */
+  zoneSuffix: string;
 }
 
 // The status of a custom domain → a Badge color. Subdomains are always live.
@@ -49,12 +52,17 @@ function statusColor(status: string): 'success' | 'warning' | 'danger' | 'neutra
   return 'neutral';
 }
 
-export function SitesManager({ properties, domains, activePropertyId }: SitesManagerProps) {
+export function SitesManager({
+  properties,
+  domains,
+  activePropertyId,
+  blueprints,
+  zoneSuffix,
+}: SitesManagerProps) {
   const router = useRouter();
   const confirm = useConfirm();
   const [pending, startTransition] = React.useTransition();
-  const [creating, setCreating] = React.useState(false);
-  const [builderUpsell, setBuilderUpsell] = React.useState(false);
+  const [wizardOpen, setWizardOpen] = React.useState(false);
 
   // The site the Builder is currently authoring (cookie id → primary → first) —
   // the shared rule, same as the breadcrumb switcher + every list page.
@@ -86,26 +94,6 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
     },
     [router]
   );
-
-  const onCreate = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const fd = new FormData(form);
-    startTransition(async () => {
-      const res = await createSite(fd);
-      if (res.ok) {
-        toast.success("Site created — you're now editing it.");
-        form.reset();
-        setCreating(false);
-        router.refresh();
-      } else if (res.paymentRequired) {
-        setCreating(false);
-        setBuilderUpsell(true);
-      } else {
-        toast.error(res.error ?? 'Something went wrong.');
-      }
-    });
-  };
 
   const onConnect = (e: React.FormEvent<HTMLFormElement>, propertyId: string) => {
     e.preventDefault();
@@ -148,66 +136,28 @@ export function SitesManager({ properties, domains, activePropertyId }: SitesMan
 
   return (
     <Stack gap={6}>
-      {/* Create a site */}
+      {/* Create a site — the guided wizard (docs/49 Phase 8b). */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-4">
-          <CardTitle>Your sites</CardTitle>
-          {!creating && !builderUpsell && (
-            <Button color="primary" variant="soft" onClick={() => setCreating(true)}>
-              <Plus className="size-4" /> New site
-            </Button>
-          )}
-        </CardHeader>
-        {creating && (
-          <CardContent>
-            <form onSubmit={onCreate} className="flex flex-col gap-3 sm:flex-row sm:items-end">
-              <div className="flex-1">
-                <Label htmlFor="new-site-name">Site name</Label>
-                <Input id="new-site-name" name="name" placeholder="Wholesale Portal" required />
-              </div>
-              <div className="flex-1">
-                <Label htmlFor="new-site-slug">URL handle (optional)</Label>
-                <Input id="new-site-slug" name="slug" placeholder="wholesale" />
-              </div>
-              <div className="flex gap-2">
-                <Button type="submit" color="primary" disabled={pending}>
-                  Create
-                </Button>
-                <Button type="button" variant="ghost" onClick={() => setCreating(false)}>
-                  Cancel
-                </Button>
-              </div>
-            </form>
-            <Text size="sm" variant="muted" className="mt-2">
-              A new site gets its own <Code>handle.yourstore.sparx.zone</Code> address instantly.
-              Connect your own domain below once it&apos;s created.
+          <Stack gap={1}>
+            <CardTitle>Your sites</CardTitle>
+            <Text size="sm" variant="muted">
+              Spin up another site — blank or from a blueprint — over this shared back office.
             </Text>
-          </CardContent>
-        )}
-        {builderUpsell && (
-          <CardContent>
-            <Stack gap={3} className="rounded-md border border-[var(--border)] p-4">
-              <Stack gap={1}>
-                <Text size="sm" weight="medium">
-                  Builder module required
-                </Text>
-                <Text size="sm" variant="muted">
-                  Each plan includes one site. Additional sites are available with the Builder
-                  module — activate it to create as many properties as you need.
-                </Text>
-              </Stack>
-              <div className="flex flex-wrap gap-2">
-                <Button asChild color="primary" size="sm" variant="soft">
-                  <Link href="/settings/modules">Activate Builder</Link>
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => setBuilderUpsell(false)}>
-                  Dismiss
-                </Button>
-              </div>
-            </Stack>
-          </CardContent>
-        )}
+          </Stack>
+          <Button color="primary" variant="soft" onClick={() => setWizardOpen(true)}>
+            <Plus className="size-4" /> New site
+          </Button>
+        </CardHeader>
       </Card>
+
+      <NewSiteWizard
+        open={wizardOpen}
+        onOpenChange={setWizardOpen}
+        blueprints={blueprints}
+        zoneSuffix={zoneSuffix}
+        onCreated={() => router.refresh()}
+      />
 
       {/* Per-site cards */}
       {properties.map((property) => {

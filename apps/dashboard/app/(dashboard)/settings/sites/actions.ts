@@ -83,6 +83,128 @@ export async function createSite(formData: FormData): Promise<ActionResult> {
   return { ok: true };
 }
 
+// ── New-site wizard (docs/49 Phase 8b) ─────────────────────────────────────
+// One guided flow that provisions a whole site: create the Property, optionally
+// install a blueprint INTO it (the new site — not the active one, hence the
+// explicit `property_id` target the 8a route accepts), optionally go live, and
+// switch the dashboard to author it. A blank choice creates an empty site.
+
+const NewSiteSchema = z.object({
+  name: z.string().min(1, 'Site name is required.').max(255),
+  slug: z
+    .string()
+    .max(63)
+    .optional()
+    .transform((s) => (s?.trim() ? s.trim() : undefined)),
+  /** A blueprint to install into the new site, or null/absent for a blank site. */
+  blueprintKey: z
+    .string()
+    .min(1)
+    .max(63)
+    .nullable()
+    .optional()
+    .transform((k) => k ?? null),
+  /** Publish the blueprint's drafts immediately (go live). Default true; ignored
+   *  for a blank site (nothing to publish). */
+  publish: z.boolean().optional(),
+});
+
+export interface NewSiteResult {
+  ok: boolean;
+  error?: string;
+  paymentRequired?: { module: string };
+  /** The created site (present even when a later install step fails, so the UI
+   *  can still route the user to it rather than stranding an unseen site). */
+  site?: { id: string; slug: string; name: string };
+  /** The blueprint install row (when a blueprint was chosen). */
+  installId?: string;
+  /** Whether the blueprint was published (went live) as part of the flow. */
+  live?: boolean;
+  /** The new site's canonical address, for the success screen. */
+  host?: string | null;
+}
+
+/** Provision a new site end-to-end: create → (install blueprint into it) → (go
+ *  live) → switch to it. Each later step is best-effort about NOT losing the
+ *  created site — a blueprint that fails to install still leaves a usable site. */
+export async function createSiteWithBlueprint(input: {
+  name: string;
+  slug?: string;
+  blueprintKey?: string | null;
+  publish?: boolean;
+}): Promise<NewSiteResult> {
+  const parsed = NewSiteSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid input.' };
+  }
+  const { name, slug, blueprintKey, publish } = parsed.data;
+
+  // 1. Create the property (api-rest 402s if a 2nd+ site needs the Builder module).
+  let site: Property;
+  try {
+    site = await api.post<Property>('/v1/properties', { name, ...(slug ? { slug } : {}) });
+  } catch (err) {
+    return fail(err);
+  }
+
+  // 2. Author the new site next, so "Open in Builder" / the next load lands on it.
+  (await cookies()).set(ACTIVE_PROPERTY_COOKIE, site.id, {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 365,
+  });
+
+  // 3. Optional blueprint → install INTO the new site (explicit target), then go live.
+  let installId: string | undefined;
+  let live = false;
+  if (blueprintKey) {
+    try {
+      const installed = await api.post<{ install_id: string; counts: Record<string, number> }>(
+        `/v1/blueprints/${encodeURIComponent(blueprintKey)}/install`,
+        { property_id: site.id }
+      );
+      installId = installed.install_id;
+      if (publish !== false) {
+        await api.post(`/v1/blueprints/installs/${encodeURIComponent(installId)}/go-live`);
+        live = true;
+      }
+    } catch (err) {
+      // The site exists; surface the install failure but keep the site so the
+      // user can open it in the Builder rather than chase an invisible half-state.
+      revalidateSiteScopes();
+      const e = err as ApiRestError;
+      return {
+        ok: false,
+        error: `“${site.name}” was created, but the blueprint didn’t install: ${
+          e.message ?? 'unknown error'
+        }. Open it in the Builder, or install a blueprint from the Marketplace.`,
+        site: { id: site.id, slug: site.slug, name: site.name },
+        installId,
+      };
+    }
+  }
+
+  // 4. Resolve the new site's canonical address for the success screen (non-fatal).
+  let host: string | null = null;
+  try {
+    const domains = await api.get<Domain[]>('/v1/domains');
+    const mine = domains.filter((d) => d.propertyId === site.id);
+    host = (mine.find((d) => d.isCanonical) ?? mine[0])?.host ?? null;
+  } catch {
+    // Fall through — the success screen falls back to the handle.
+  }
+
+  revalidateSiteScopes();
+  return {
+    ok: true,
+    site: { id: site.id, slug: site.slug, name: site.name },
+    installId,
+    live,
+    host,
+  };
+}
+
 /** Delete a site (refused for the primary by api-rest). Removes its pages,
  *  layouts, domains, and per-site catalog/content scope; shared back office is
  *  untouched. */
