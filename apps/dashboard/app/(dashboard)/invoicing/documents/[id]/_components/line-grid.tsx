@@ -1,11 +1,15 @@
 'use client';
 
 // The structured line composer (docs/87 §6) — NOT a canvas. Each line is a typed
-// charge: a line type (which carries pricing + tax behavior), description, qty,
-// unit price, an optional cost basis (so margin shows), and a per-line taxable
-// flag. Edits commit to the server per field (on blur / change) and refresh so the
-// document's totals + AR status recompute. A locked stage (final/paid) freezes the
-// grid to read-only.
+// charge: a line type (which carries pricing + tax behavior), description, qty, and
+// a price. How the price is set depends on the line type's PRICING MODE:
+//   • catalog / flat / labor → a manual unit price (+ optional cost so margin shows)
+//   • markup / pass_through  → a cost basis + a markup (a saved rule or an ad-hoc
+//     markup), priced LIVE off the same pure engine as catalog/quote markup
+//     (docs/48 §5) and snapshotted on the line so the price is reproducible.
+// Edits commit to the server per field (on blur / change) — markup is committed as
+// a unit via an Apply button, since cost + rule must travel together. A locked
+// stage (final/paid) freezes the grid to read-only.
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
@@ -24,9 +28,41 @@ import {
   Text,
   useConfirm,
 } from '@sparx/ui';
+import {
+  applyMarkupRule,
+  type BandMethod,
+  type LineMarkupInput,
+  type MarkupRuleSpec,
+} from '@sparx/commerce-schemas';
 
 import { addLineAction, removeLineAction, updateLineAction } from '../../../document-actions';
 import { formatMoney } from '../../../_components/format';
+
+// A document-applicable markup rule (GET /v1/markup-rules, appliesTo document|both),
+// reduced to the fields the pure engine needs to price a line (docs/48 §5).
+export interface MarkupRuleSummary {
+  id: string;
+  name: string;
+  method: MarkupRuleSpec['method'];
+  value: number | null;
+  bands: MarkupRuleSpec['bands'];
+  rounding: MarkupRuleSpec['rounding'];
+  floorProfitCents: number | null;
+  floorMargin: number | null;
+  ceilingSrc: MarkupRuleSpec['ceilingSrc'];
+  ceilingValueCents: number | null;
+}
+
+// The markup snapshot already on a line (its current cost-derived price), enough
+// to seed the editor when re-pricing.
+interface LineMarkupView {
+  ruleId: string | null;
+  ruleName: string | null;
+  method: string;
+  value: number | null; // engine units
+  marginPct: number;
+  costBasisValueCents: number;
+}
 
 interface LineRow {
   id: string;
@@ -37,7 +73,7 @@ interface LineRow {
   costCents: number | null;
   taxable: boolean;
   lineTotal: number;
-  markup: { ruleName: string | null; marginPct: number } | null;
+  markup: LineMarkupView | null;
 }
 interface LineTypeOption {
   id: string;
@@ -53,12 +89,247 @@ interface LineGridProps {
   locked: boolean;
   lines: LineRow[];
   lineTypes: LineTypeOption[];
+  /** Document-applicable markup rules for the markup/pass_through line picker.
+   *  Empty when Commerce is disabled — those lines then price by ad-hoc markup. */
+  markupRules: MarkupRuleSummary[];
 }
 
 const SELECT_CLASS =
   'flex h-9 w-full rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2 text-sm text-[var(--color-text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]';
 
-export function LineGrid({ documentId, currency, locked, lines, lineTypes }: LineGridProps) {
+const ADHOC = 'adhoc';
+const PASSTHROUGH = 'passthrough';
+
+// Per ad-hoc method: the input label + how the typed value maps to (and from) the
+// engine's unitless `value` (percentage / margin_target are entered as percents).
+const METHOD_META: Record<
+  BandMethod,
+  { label: string; toEngine: (n: number) => number; fromEngine: (n: number) => number }
+> = {
+  percentage: { label: 'Markup %', toEngine: (n) => n / 100, fromEngine: (n) => n * 100 },
+  margin_target: { label: 'Target margin %', toEngine: (n) => n / 100, fromEngine: (n) => n * 100 },
+  multiplier: { label: 'Multiplier ×', toEngine: (n) => n, fromEngine: (n) => n },
+  flat: { label: 'Add fixed $', toEngine: (n) => n, fromEngine: (n) => n },
+};
+
+function ruleToSpec(r: MarkupRuleSummary): MarkupRuleSpec {
+  return {
+    method: r.method,
+    value: r.value,
+    bands: r.bands ?? [],
+    rounding: r.rounding ?? null,
+    floorProfitCents: r.floorProfitCents,
+    floorMargin: r.floorMargin,
+    ceilingSrc: r.ceilingSrc,
+    ceilingValueCents: r.ceilingValueCents,
+  };
+}
+
+function isMarkupMode(mode: string | undefined): boolean {
+  return mode === 'markup' || mode === 'pass_through';
+}
+
+// ── Markup editor state + resolution ──────────────────────────────────────────
+
+interface MarkupState {
+  cost: string; // dollars
+  source: string; // a rule id, ADHOC, or PASSTHROUGH (pass_through only)
+  method: BandMethod;
+  value: string; // ad-hoc value in display units
+}
+
+interface ResolvedMarkup {
+  preview: { priceCents: number; marginPct: number; markupPct: number } | null;
+  // The body fields to send (explicitCostCents always; markup omitted for a
+  // pass-through-at-cost line). Null when the inputs aren't yet priceable.
+  payload: { explicitCostCents: number; markup?: LineMarkupInput } | null;
+  error: string | null;
+}
+
+function freshMarkupState(rules: MarkupRuleSummary[], pricingMode: string): MarkupState {
+  return {
+    cost: '',
+    source: pricingMode === 'pass_through' ? PASSTHROUGH : (rules[0]?.id ?? ADHOC),
+    method: 'percentage',
+    value: '',
+  };
+}
+
+// Validate the ad-hoc value against the same bounds LineMarkupInput enforces, so
+// the live preview never shows a nonsensical price the server would reject.
+function adhocEngineValue(method: BandMethod, raw: string): number | null {
+  const n = parseFloat(raw);
+  if (!raw.trim() || Number.isNaN(n)) return null;
+  const v = METHOD_META[method].toEngine(n);
+  if (method === 'margin_target' && (v <= 0 || v >= 1)) return null;
+  if (method === 'multiplier' && v <= 0) return null;
+  if ((method === 'percentage' || method === 'flat') && v < 0) return null;
+  return v;
+}
+
+function resolveMarkup(
+  st: MarkupState,
+  rules: MarkupRuleSummary[],
+  pricingMode: string
+): ResolvedMarkup {
+  const costNum = parseFloat(st.cost);
+  if (!st.cost.trim() || Number.isNaN(costNum) || costNum < 0) {
+    return { preview: null, payload: null, error: 'Enter a cost to price this line.' };
+  }
+  const costCents = Math.round(costNum * 100);
+
+  // Pass-through at cost: no markup, price == cost.
+  if (pricingMode === 'pass_through' && st.source === PASSTHROUGH) {
+    return {
+      preview: { priceCents: costCents, marginPct: 0, markupPct: 0 },
+      payload: { explicitCostCents: costCents },
+      error: null,
+    };
+  }
+
+  let spec: MarkupRuleSpec;
+  let markup: LineMarkupInput;
+  if (st.source !== ADHOC) {
+    const rule = rules.find((r) => r.id === st.source);
+    if (!rule) return { preview: null, payload: null, error: 'Pick a markup rule.' };
+    spec = ruleToSpec(rule);
+    markup = { kind: 'rule', ruleId: rule.id };
+  } else {
+    const engineValue = adhocEngineValue(st.method, st.value);
+    if (engineValue == null) {
+      return { preview: null, payload: null, error: 'Enter a valid markup value.' };
+    }
+    spec = { method: st.method, value: engineValue };
+    markup = { kind: 'adhoc', method: st.method, value: engineValue };
+  }
+
+  const result = applyMarkupRule(costCents, spec);
+  return {
+    preview: {
+      priceCents: result.priceCents,
+      marginPct: result.marginPct,
+      markupPct: result.markupPct,
+    },
+    payload: { explicitCostCents: costCents, markup },
+    error: null,
+  };
+}
+
+// The shared markup inputs (cost · source · ad-hoc method+value) + a live preview.
+function MarkupFields({
+  state,
+  rules,
+  pricingMode,
+  resolved,
+  disabled,
+  onChange,
+  currency,
+}: {
+  state: MarkupState;
+  rules: MarkupRuleSummary[];
+  pricingMode: string;
+  resolved: ResolvedMarkup;
+  disabled: boolean;
+  onChange: (next: Partial<MarkupState>) => void;
+  currency: string;
+}) {
+  return (
+    <Stack gap={2} className="min-w-[16rem]">
+      <Stack direction="row" gap={2} align="end" wrap>
+        <Stack gap={1}>
+          <Label className="text-xs">Cost</Label>
+          <Input
+            type="number"
+            min="0"
+            step="0.01"
+            className="w-28 text-right"
+            aria-label="Line cost"
+            value={state.cost}
+            disabled={disabled}
+            onChange={(e) => onChange({ cost: e.target.value })}
+            placeholder="0.00"
+          />
+        </Stack>
+        <Stack gap={1}>
+          <Label className="text-xs">Markup</Label>
+          <select
+            aria-label="Markup source"
+            className={`${SELECT_CLASS} w-44`}
+            value={state.source}
+            disabled={disabled}
+            onChange={(e) => onChange({ source: e.target.value })}
+          >
+            {pricingMode === 'pass_through' && (
+              <option value={PASSTHROUGH}>Pass through at cost</option>
+            )}
+            {rules.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
+            <option value={ADHOC}>Ad-hoc markup…</option>
+          </select>
+        </Stack>
+      </Stack>
+
+      {state.source === ADHOC && (
+        <Stack direction="row" gap={2} align="end" wrap>
+          <Stack gap={1}>
+            <Label className="text-xs">Method</Label>
+            <select
+              aria-label="Markup method"
+              className={`${SELECT_CLASS} w-40`}
+              value={state.method}
+              disabled={disabled}
+              onChange={(e) => onChange({ method: e.target.value as BandMethod })}
+            >
+              <option value="percentage">Markup %</option>
+              <option value="margin_target">Target margin %</option>
+              <option value="multiplier">Multiplier ×</option>
+              <option value="flat">Add fixed $</option>
+            </select>
+          </Stack>
+          <Stack gap={1}>
+            <Label className="text-xs">{METHOD_META[state.method].label}</Label>
+            <Input
+              type="number"
+              step="0.01"
+              className="w-28 text-right"
+              aria-label="Markup value"
+              value={state.value}
+              disabled={disabled}
+              onChange={(e) => onChange({ value: e.target.value })}
+            />
+          </Stack>
+        </Stack>
+      )}
+
+      {resolved.preview ? (
+        <Stack direction="row" gap={2} align="center" wrap>
+          <Badge color="module" variant="soft">
+            {formatMoney(resolved.preview.priceCents / 100, currency)} / unit
+          </Badge>
+          <Text size="xs" variant="muted">
+            {resolved.preview.marginPct}% margin · {resolved.preview.markupPct}% markup
+          </Text>
+        </Stack>
+      ) : (
+        <Text size="xs" variant="muted">
+          {resolved.error ?? 'Enter a cost to preview the price.'}
+        </Text>
+      )}
+    </Stack>
+  );
+}
+
+export function LineGrid({
+  documentId,
+  currency,
+  locked,
+  lines,
+  lineTypes,
+  markupRules,
+}: LineGridProps) {
   return (
     <Card>
       <CardHeader>
@@ -99,10 +370,18 @@ export function LineGrid({ documentId, currency, locked, lines, lineTypes }: Lin
               locked={locked}
               line={line}
               lineTypes={lineTypes}
+              markupRules={markupRules}
             />
           ))}
 
-          {!locked && <AddLineRow documentId={documentId} lineTypes={lineTypes} />}
+          {!locked && (
+            <AddLineRow
+              documentId={documentId}
+              lineTypes={lineTypes}
+              markupRules={markupRules}
+              currency={currency}
+            />
+          )}
         </Stack>
       </CardContent>
     </Card>
@@ -117,12 +396,14 @@ function EditableLineRow({
   locked,
   line,
   lineTypes,
+  markupRules,
 }: {
   documentId: string;
   currency: string;
   locked: boolean;
   line: LineRow;
   lineTypes: LineTypeOption[];
+  markupRules: MarkupRuleSummary[];
 }) {
   const router = useRouter();
   const confirm = useConfirm();
@@ -130,6 +411,14 @@ function EditableLineRow({
   const [error, setError] = React.useState<string | null>(null);
 
   const currentType = lineTypes.find((t) => t.id === line.lineTypeId);
+  const pricingMode = currentType?.pricingMode ?? 'flat';
+  const markupMode = isMarkupMode(pricingMode);
+
+  // Markup editor state, seeded from the line's current cost + applied markup.
+  const [markupState, setMarkupState] = React.useState<MarkupState>(() =>
+    seedMarkupState(line, markupRules, pricingMode)
+  );
+  const resolved = resolveMarkup(markupState, markupRules, pricingMode);
 
   function commit(patch: Record<string, unknown>) {
     startTransition(async () => {
@@ -141,6 +430,14 @@ function EditableLineRow({
       }
       router.refresh();
     });
+  }
+
+  function applyMarkup() {
+    if (!resolved.payload) {
+      setError(resolved.error);
+      return;
+    }
+    commit(resolved.payload);
   }
 
   async function remove() {
@@ -187,7 +484,7 @@ function EditableLineRow({
           <select
             aria-label="Line type"
             className={SELECT_CLASS}
-            defaultValue={line.lineTypeId ?? ''}
+            value={line.lineTypeId ?? ''}
             disabled={pending}
             onChange={(e) => {
               const t = lineTypes.find((x) => x.id === e.target.value);
@@ -228,21 +525,28 @@ function EditableLineRow({
             }}
           />
         </div>
-        <div className="col-span-4 md:col-span-2">
-          <Input
-            aria-label="Unit price"
-            type="number"
-            min="0"
-            step="0.01"
-            className="text-right"
-            defaultValue={line.unitPrice}
-            disabled={pending}
-            onBlur={(e) => {
-              const v = Math.max(0, Number(e.target.value) || 0);
-              if (v !== line.unitPrice) commit({ unitPrice: v });
-            }}
-          />
-        </div>
+        {markupMode ? (
+          <div className="col-span-8 text-right text-sm tabular-nums md:col-span-2">
+            {formatMoney(line.unitPrice, currency)}
+            <span className="ml-1 text-xs text-[var(--color-text-muted)]">/ unit</span>
+          </div>
+        ) : (
+          <div className="col-span-4 md:col-span-2">
+            <Input
+              aria-label="Unit price"
+              type="number"
+              min="0"
+              step="0.01"
+              className="text-right"
+              defaultValue={line.unitPrice}
+              disabled={pending}
+              onBlur={(e) => {
+                const v = Math.max(0, Number(e.target.value) || 0);
+                if (v !== line.unitPrice) commit({ unitPrice: v });
+              }}
+            />
+          </div>
+        )}
         <div className="col-span-3 text-right text-sm font-medium tabular-nums md:col-span-2">
           {formatMoney(line.lineTotal, currency)}
         </div>
@@ -261,6 +565,30 @@ function EditableLineRow({
         </div>
       </div>
 
+      {markupMode && (
+        <Stack direction="row" gap={3} align="end" wrap className="mt-2 px-1">
+          <MarkupFields
+            state={markupState}
+            rules={markupRules}
+            pricingMode={pricingMode}
+            resolved={resolved}
+            disabled={pending}
+            currency={currency}
+            onChange={(next) => setMarkupState((s) => ({ ...s, ...next }))}
+          />
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            color="module"
+            disabled={pending || !resolved.payload}
+            onClick={applyMarkup}
+          >
+            Apply markup
+          </Button>
+        </Stack>
+      )}
+
       <Stack direction="row" align="center" gap={3} className="mt-2 px-1" wrap>
         <label className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
           <input
@@ -273,7 +601,8 @@ function EditableLineRow({
         </label>
         {line.markup && (
           <Badge color="module" variant="soft" className="text-xs">
-            {line.markup.ruleName ?? 'Markup'} · {line.markup.marginPct}% margin
+            {line.markup.ruleName ?? 'Ad-hoc markup'} · {line.markup.marginPct}% margin · cost{' '}
+            {formatMoney(line.markup.costBasisValueCents / 100, currency)}
           </Badge>
         )}
         {error && (
@@ -286,14 +615,46 @@ function EditableLineRow({
   );
 }
 
+// Seed the markup editor from a line's current cost + applied markup snapshot.
+function seedMarkupState(
+  line: LineRow,
+  rules: MarkupRuleSummary[],
+  pricingMode: string
+): MarkupState {
+  const base = freshMarkupState(rules, pricingMode);
+  const cost =
+    line.costCents != null
+      ? String(line.costCents / 100)
+      : line.markup
+        ? String(line.markup.costBasisValueCents / 100)
+        : '';
+  if (!line.markup) return { ...base, cost };
+  if (line.markup.ruleId && rules.some((r) => r.id === line.markup?.ruleId)) {
+    return { ...base, cost, source: line.markup.ruleId };
+  }
+  // Ad-hoc (or a rule that's since been deleted) → seed the ad-hoc inputs.
+  const method = (['percentage', 'margin_target', 'multiplier', 'flat'] as BandMethod[]).includes(
+    line.markup.method as BandMethod
+  )
+    ? (line.markup.method as BandMethod)
+    : 'percentage';
+  const value =
+    line.markup.value != null ? String(METHOD_META[method].fromEngine(line.markup.value)) : '';
+  return { cost, source: ADHOC, method, value };
+}
+
 // ── Add a line ────────────────────────────────────────────────────────────────
 
 function AddLineRow({
   documentId,
   lineTypes,
+  markupRules,
+  currency,
 }: {
   documentId: string;
   lineTypes: LineTypeOption[];
+  markupRules: MarkupRuleSummary[];
+  currency: string;
 }) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
@@ -306,11 +667,29 @@ function AddLineRow({
   const [unitPrice, setUnitPrice] = React.useState('0');
   const [cost, setCost] = React.useState('');
 
+  const selectedType = lineTypes.find((t) => t.key === lineTypeKey);
+  const pricingMode = selectedType?.pricingMode ?? 'flat';
+  const markupMode = isMarkupMode(pricingMode);
+
+  const [markupState, setMarkupState] = React.useState<MarkupState>(() =>
+    freshMarkupState(markupRules, pricingMode)
+  );
+  const resolved = resolveMarkup(markupState, markupRules, pricingMode);
+
+  // Re-seed the markup editor when switching into a different markup mode so the
+  // pass-through-at-cost default tracks the selected line type.
+  function onTypeChange(nextKey: string) {
+    setLineTypeKey(nextKey);
+    const nextMode = lineTypes.find((t) => t.key === nextKey)?.pricingMode ?? 'flat';
+    if (isMarkupMode(nextMode)) setMarkupState(freshMarkupState(markupRules, nextMode));
+  }
+
   function reset() {
     setDescription('');
     setQuantity('1');
     setUnitPrice('0');
     setCost('');
+    setMarkupState(freshMarkupState(markupRules, pricingMode));
   }
 
   function add() {
@@ -318,16 +697,30 @@ function AddLineRow({
       setError('Add a description.');
       return;
     }
-    const costNum = cost.trim() ? Number(cost) : null;
-    const input = {
+    const common = {
       lineTypeKey: lineTypeKey || undefined,
       description: description.trim(),
       quantity: Math.max(0.001, Number(quantity) || 1),
-      unitPrice: Math.max(0, Number(unitPrice) || 0),
-      ...(costNum != null && Number.isFinite(costNum)
-        ? { explicitCostCents: Math.round(costNum * 100) }
-        : {}),
     };
+
+    let input: Record<string, unknown>;
+    if (markupMode) {
+      if (!resolved.payload) {
+        setError(resolved.error ?? 'Enter the markup details.');
+        return;
+      }
+      input = { ...common, ...resolved.payload };
+    } else {
+      const costNum = cost.trim() ? Number(cost) : null;
+      input = {
+        ...common,
+        unitPrice: Math.max(0, Number(unitPrice) || 0),
+        ...(costNum != null && Number.isFinite(costNum)
+          ? { explicitCostCents: Math.round(costNum * 100) }
+          : {}),
+      };
+    }
+
     startTransition(async () => {
       setError(null);
       const res = await addLineAction(documentId, input);
@@ -349,7 +742,7 @@ function AddLineRow({
             className={SELECT_CLASS}
             value={lineTypeKey}
             disabled={pending}
-            onChange={(e) => setLineTypeKey(e.target.value)}
+            onChange={(e) => onTypeChange(e.target.value)}
           >
             {lineTypes.map((t) => (
               <option key={t.id} value={t.key}>
@@ -379,31 +772,49 @@ function AddLineRow({
             onChange={(e) => setQuantity(e.target.value)}
           />
         </div>
-        <div className="col-span-4 md:col-span-2">
-          <Label className="text-xs">Unit price</Label>
-          <Input
-            type="number"
-            min="0"
-            step="0.01"
-            className="text-right"
-            value={unitPrice}
-            disabled={pending}
-            onChange={(e) => setUnitPrice(e.target.value)}
-          />
-        </div>
-        <div className="col-span-3 md:col-span-2">
-          <Label className="text-xs">Cost (opt.)</Label>
-          <Input
-            type="number"
-            min="0"
-            step="0.01"
-            className="text-right"
-            value={cost}
-            disabled={pending}
-            onChange={(e) => setCost(e.target.value)}
-            placeholder="—"
-          />
-        </div>
+
+        {markupMode ? (
+          <div className="col-span-9 md:col-span-4">
+            <MarkupFields
+              state={markupState}
+              rules={markupRules}
+              pricingMode={pricingMode}
+              resolved={resolved}
+              disabled={pending}
+              currency={currency}
+              onChange={(next) => setMarkupState((s) => ({ ...s, ...next }))}
+            />
+          </div>
+        ) : (
+          <>
+            <div className="col-span-4 md:col-span-2">
+              <Label className="text-xs">Unit price</Label>
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                className="text-right"
+                value={unitPrice}
+                disabled={pending}
+                onChange={(e) => setUnitPrice(e.target.value)}
+              />
+            </div>
+            <div className="col-span-3 md:col-span-2">
+              <Label className="text-xs">Cost (opt.)</Label>
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                className="text-right"
+                value={cost}
+                disabled={pending}
+                onChange={(e) => setCost(e.target.value)}
+                placeholder="—"
+              />
+            </div>
+          </>
+        )}
+
         <div className="col-span-2 flex justify-end md:col-span-1">
           <Button
             type="button"

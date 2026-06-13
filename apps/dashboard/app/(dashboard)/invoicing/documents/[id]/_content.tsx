@@ -18,15 +18,22 @@ import { api, type ApiRestError } from '@/lib/api-rest-client';
 
 import { AR_STATUS_VARIANT, formatMoney } from '../../_components/format';
 import { StageBar } from './_components/stage-bar';
-import { LineGrid } from './_components/line-grid';
+import { LineGrid, type MarkupRuleSummary } from './_components/line-grid';
 import { PaymentsPanel } from './_components/payments-panel';
 
 interface LineMarkupSnapshot {
+  ruleId: string | null;
   ruleName: string | null;
+  method: string;
+  value: number | null;
   marginPct: number;
   markupPct: number;
   costBasisValueCents: number;
 }
+
+// GET /v1/markup-rules returns every rule with `appliesTo`; we keep the
+// document-applicable ones for the line-grid markup picker.
+type MarkupRuleApi = MarkupRuleSummary & { appliesTo: string };
 interface DocumentLine {
   id: string;
   lineTypeId: string | null;
@@ -124,11 +131,17 @@ export async function DocumentEditorContent({ id }: Props) {
     throw err;
   }
 
-  const [workflows, lineTypes, payments, snapshots] = await Promise.all([
+  const [workflows, lineTypes, payments, snapshots, markupRules] = await Promise.all([
     api.get<Workflow[]>('/v1/invoicing/workflows'),
     api.get<LineType[]>('/v1/invoicing/line-types'),
     api.get<PaymentRow[]>(`/v1/invoicing/documents/${id}/payments`).catch(() => []),
     api.get<SnapshotRow[]>(`/v1/invoicing/documents/${id}/snapshots`).catch(() => []),
+    // Document-applicable markup rules for the line picker. Commerce may be off
+    // (404) on a services-only tenant — degrade to ad-hoc markup only.
+    api
+      .get<MarkupRuleApi[]>('/v1/markup-rules?is_active=true')
+      .then((rules) => rules.filter((r) => r.appliesTo === 'document' || r.appliesTo === 'both'))
+      .catch(() => [] as MarkupRuleApi[]),
   ]);
 
   const workflow = workflows.find((w) => w.id === doc.workflowId);
@@ -231,7 +244,14 @@ export async function DocumentEditorContent({ id }: Props) {
           taxable: l.taxable,
           lineTotal: Number(l.lineTotal),
           markup: l.appliedMarkup
-            ? { ruleName: l.appliedMarkup.ruleName, marginPct: l.appliedMarkup.marginPct }
+            ? {
+                ruleId: l.appliedMarkup.ruleId,
+                ruleName: l.appliedMarkup.ruleName,
+                method: l.appliedMarkup.method,
+                value: l.appliedMarkup.value,
+                marginPct: l.appliedMarkup.marginPct,
+                costBasisValueCents: l.appliedMarkup.costBasisValueCents,
+              }
             : null,
         }))}
         lineTypes={lineTypes
@@ -243,6 +263,7 @@ export async function DocumentEditorContent({ id }: Props) {
             pricingMode: t.pricingMode,
             defaultTaxable: t.defaultTaxable,
           }))}
+        markupRules={markupRules}
       />
 
       <div className="grid gap-4 md:grid-cols-3">
