@@ -231,6 +231,7 @@ const CONVERSATION_SELECT = {
   id: true,
   status: true,
   assignedToId: true,
+  assignedTo: { select: { email: true } },
   visitorName: true,
   visitorEmail: true,
   customerId: true,
@@ -241,6 +242,7 @@ interface ConversationLike {
   id: string;
   status: string;
   assignedToId: string | null;
+  assignedTo: { email: string | null } | null;
   visitorName: string | null;
   visitorEmail: string | null;
   customerId: string | null;
@@ -248,12 +250,14 @@ interface ConversationLike {
 }
 
 /** Conversation fields + its addressable contact (a linked Customer, else the
- *  anonymous visitor's captured name/email). */
+ *  anonymous visitor's captured name/email). `assignedToEmail` lets a staff alert
+ *  reach the assigned agent (else it falls back to the tenant notify address). */
 function conversationFields(c: ConversationLike): ResolvedFields {
   const fields: ResolvedFields = {
     'conversation.id': c.id,
     'conversation.status': c.status,
     'conversation.assignedToId': c.assignedToId,
+    'conversation.assignedToEmail': c.assignedTo?.email ?? null,
   };
   if (c.customer) {
     Object.assign(fields, contactFields(c.customer));

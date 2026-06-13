@@ -34,3 +34,24 @@ export const B2B_OVERDUE_ESCALATION: SystemAutomationSpec = {
   locked: true,
   status: 'active',
 };
+
+/** Open an onboarding task when a new B2B account is created. Assigned to the
+ *  account's rep, falling back to the tenant owner. Managed (no email). */
+export const B2B_NEW_ACCOUNT_TASK: SystemAutomationSpec = {
+  name: 'New B2B account onboarding task',
+  description: 'Opens an onboarding task, due tomorrow, when a B2B account is created.',
+  trigger: { kind: 'event', eventType: 'crm.b2b_account.created' },
+  conditions: { logic: 'AND', conditions: [] },
+  actions: [
+    {
+      type: 'crm.create_task',
+      config: {
+        title: 'Onboard new B2B account — {{b2bAccount.companyName}}',
+        assigneeField: 'b2bAccount.assignedRepId',
+        dueInDays: 1,
+      },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};

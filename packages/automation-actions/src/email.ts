@@ -30,7 +30,6 @@ import {
   type TenantCtx,
 } from '@sparx/automation';
 import { enqueueSend, type ScheduledSendBody } from '@sparx/email-sends';
-import { interpolateEmailTokens } from '@sparx/builder-schemas';
 import { z } from 'zod';
 
 import {
@@ -162,25 +161,37 @@ export function installEmailActions(): void {
 
   registerAction({
     type: 'email.send_internal',
-    module: 'email',
+    // Platform-level: an internal staff alert is a transactional notification, not
+    // a marketing capability, so it is NOT gated on the email module (docs/90 §3b —
+    // "no email module required"). It rides the platform transactional send path the
+    // same way OTP does; only the global tenant-active + kill-switch gates apply.
+    module: null,
     gates: [],
     manifestNote:
-      'external effect: enqueues a transactional ScheduledSend to a configured staff address; module-active + kill-switch gates apply',
+      'external effect: enqueues a transactional ScheduledSend to a staff address (platform-level — no email-module gate; tenant-active + kill-switch apply)',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = InternalConfig.parse(effect.config);
+      // Recipient: a trigger-field email → an explicit address → the tenant notify
+      // address (owner email → tenant contact). A staff alert with no resolvable
+      // recipient is a config error — fail loud rather than send to nobody.
+      const fromField = cfg.toField ? optionalEntityId(effect.fields, cfg.toField) : undefined;
+      const recipient = fromField ?? cfg.to ?? (await resolveTenantActor(ctx)).email;
+      if (!recipient) {
+        throw new Error('email.send_internal: no recipient resolved and the tenant has no contact.');
+      }
       // Internal mail is pre-rendered here, so its `{{token}}` merge fields resolve
       // now against the trigger's flat fields (docs/90 §3 internal alerts).
       const body: ScheduledSendBody = {
         raw: {
-          subject: interpInternal(cfg.subject, effect.fields),
-          html: interpInternal(cfg.html ?? '', effect.fields),
-          text: interpInternal(cfg.text ?? '', effect.fields),
+          subject: interpolateFields(cfg.subject, effect.fields),
+          html: interpolateFields(cfg.html ?? '', effect.fields),
+          text: interpolateFields(cfg.text ?? '', effect.fields),
         },
       };
       const { enqueued, suppressed } = await enqueueSend(
         { tenantId: ctx.tenantId, tx: ctx.tx },
         {
-          recipient: cfg.to,
+          recipient,
           propertyId: resolveSourceProperty(effect.fields),
           scope: 'transactional',
           delaySeconds: cfg.delaySeconds,

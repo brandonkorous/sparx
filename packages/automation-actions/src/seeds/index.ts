@@ -17,7 +17,19 @@ import {
   type SystemAutomationSpec,
 } from '@sparx/automation';
 
-import { B2B_OVERDUE_ESCALATION } from './b2b.js';
+import { B2B_NEW_ACCOUNT_TASK, B2B_OVERDUE_ESCALATION } from './b2b.js';
+import {
+  CRM_AUTO_TAG_VIP,
+  CRM_DEAL_WON_INVOICE_TASK,
+  CRM_NEW_LEAD_FOLLOW_UP_TASK,
+} from './crm.js';
+import {
+  COMMERCE_HIGH_VALUE_ORDER_ALERT,
+  COMMERCE_LOW_INVENTORY_ALERT,
+  COMMERCE_REFUND_CRM_NOTE,
+} from './commerce.js';
+import { INVOICING_ESTIMATE_APPROVED_TASK } from './invoicing.js';
+import { CHAT_NO_RESPONSE_ALERT } from './chat.js';
 
 /** A seed plus the module whose activation installs it. `module: null` ⇒ always
  *  seeded (platform-level, no owning module). */
@@ -26,9 +38,30 @@ export interface SystemAutomationSeed {
   spec: SystemAutomationSpec;
 }
 
-/** Every platform-seeded system automation. Append here as behaviors land. */
+/**
+ * Every platform-seeded system automation, grouped by owning module. Append here
+ * as behaviors land. The email-SENDING seeds (welcome / win-back / abandoned-cart /
+ * the dunning ladder / quote + account notifications / chat survey) seed once the
+ * default Builder-email templates are provisioned and the send-by-key join exists
+ * (docs/90 Step 4) — the entries below are the no-email defaults (tags, tasks,
+ * notes, internal staff alerts) plus the already-locked B2B dunning.
+ */
 export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
+  // CRM
+  { module: 'crm', spec: CRM_AUTO_TAG_VIP },
+  { module: 'crm', spec: CRM_NEW_LEAD_FOLLOW_UP_TASK },
+  { module: 'crm', spec: CRM_DEAL_WON_INVOICE_TASK },
+  // Commerce
+  { module: 'commerce', spec: COMMERCE_HIGH_VALUE_ORDER_ALERT },
+  { module: 'commerce', spec: COMMERCE_LOW_INVENTORY_ALERT },
+  { module: 'commerce', spec: COMMERCE_REFUND_CRM_NOTE },
+  // B2B
   { module: 'b2b', spec: B2B_OVERDUE_ESCALATION },
+  { module: 'b2b', spec: B2B_NEW_ACCOUNT_TASK },
+  // Invoicing
+  { module: 'invoicing', spec: INVOICING_ESTIMATE_APPROVED_TASK },
+  // Chat
+  { module: 'chat', spec: CHAT_NO_RESPONSE_ALERT },
 ];
 
 /**
