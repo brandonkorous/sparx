@@ -48,6 +48,14 @@ export async function generateUniqueTenantSlug(db: TenantSlugLookup): Promise<st
   return `${randomFriendlySlug()}-${Date.now().toString(36).slice(-4)}`;
 }
 
+// A readable placeholder workspace name from the person's first name —
+// "Brandon's workspace". The user renames it (and the generated slug) in the
+// onboarding Workspace step. Shared by the email/password and Google paths.
+export function workspaceNameFor(personName: string | null | undefined): string {
+  const first = (personName ?? '').trim().split(/\s+/)[0];
+  return `${first && first.length > 0 ? first : 'My'}'s workspace`;
+}
+
 export interface ProvisionTenantInput {
   /** Pre-generated, confirmed-unique slug (see generateUniqueTenantSlug). */
   slug: string;

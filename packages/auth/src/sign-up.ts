@@ -4,6 +4,7 @@ import { auth } from './server';
 import {
   provisionTenant,
   generateUniqueTenantSlug,
+  workspaceNameFor,
   type SignUpAcquisition,
 } from './provision-tenant';
 
@@ -46,16 +47,6 @@ export class SignUpError extends Error {
     super(message);
     this.name = 'SignUpError';
   }
-}
-
-// A readable placeholder workspace name from the person's first name —
-// "Brandon's workspace". The user renames it (and the generated slug) in the
-// onboarding Workspace step, by which point they know what they're building.
-function workspaceNameFor(personName: string): string {
-  // Caller guarantees a non-empty trimmed name, so [0] is always a real token;
-  // ?? only guards the TS `string | undefined` index type.
-  const first = personName.trim().split(/\s+/)[0] ?? 'My';
-  return `${first}'s workspace`;
 }
 
 export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUpMerchantResult> {
