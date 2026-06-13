@@ -158,6 +158,23 @@ const MODULES: Mod[] = [
     replaces: 'a dropshipping app like Spocket',
   },
   {
+    key: 'invoicing',
+    name: 'Invoicing',
+    desc: 'Estimates, invoices, AR',
+    price: 19,
+    elsewhere: 30,
+    color: 'var(--module-invoicing)',
+    long: 'Author estimates, work orders, and invoices line by line — parts marked up, labor by the hour, deposits and partial payments — through stages you name. Tracks balances and AR aging, and prints on your brand. Included free with Commerce or B2B.',
+    feats: [
+      'Estimate → invoice workflows you name',
+      'Parts, labor, sublet & flat-fee lines',
+      'Deposits, partial payments, AR aging',
+      'Branded, printable documents',
+    ],
+    replaces: 'a billing tool like FreshBooks',
+    addon: true,
+  },
+  {
     key: 'chat',
     name: 'Live Chat',
     desc: 'Widget, AI replies, inbox',
@@ -184,9 +201,39 @@ export function PricingSwitchboard() {
   );
   const [openKey, setOpenKey] = useState<string | null>(null);
 
-  const active = MODULES.filter((m) => on[m.key]);
-  const total = active.reduce((s, m) => s + m.price, 0);
-  const elsewhere = active.reduce((s, m) => s + m.elsewhere, 0);
+  // Dependency model — mirrors the server (@sparx/modules graph):
+  //   • B2B REQUIRES Commerce: turning B2B on co-enables Commerce (still $49),
+  //     and Commerce can't be turned off while B2B is on.
+  //   • Invoicing is BUNDLED_FREE with B2B/Commerce: on for $0 (Included) whenever
+  //     either provider is on; otherwise it's a $19 standalone add-on.
+  const providerOn = !!on.b2b || !!on.commerce;
+  const effectiveOn = (key: string): boolean => {
+    if (key === 'commerce') return !!on.commerce || !!on.b2b;
+    if (key === 'invoicing') return !!on.invoicing || providerOn;
+    return !!on[key];
+  };
+  const lockOf = (key: string): 'included' | 'required' | null => {
+    if (key === 'invoicing' && providerOn) return 'included';
+    if (key === 'commerce' && !!on.b2b) return 'required';
+    return null;
+  };
+  // Bundled invoicing contributes $0 to both the bill and the savings ledger —
+  // it's a free rider, not part of the comparison.
+  const billed = (m: Mod): number => (lockOf(m.key) === 'included' ? 0 : m.price);
+  const elsewhereOf = (m: Mod): number => (lockOf(m.key) === 'included' ? 0 : m.elsewhere);
+
+  const toggle = (key: string): void =>
+    setOn((s) => {
+      if (key === 'invoicing' && (s.b2b || s.commerce)) return s; // bundled — locked on
+      if (key === 'commerce' && s.b2b) return s; // required by B2B — locked on
+      const next = { ...s, [key]: !s[key] };
+      if (key === 'b2b' && next.b2b) next.commerce = true; // auto-add the requirement
+      return next;
+    });
+
+  const active = MODULES.filter((m) => effectiveOn(m.key));
+  const total = active.reduce((s, m) => s + billed(m), 0);
+  const elsewhere = active.reduce((s, m) => s + elsewhereOf(m), 0);
   const save = Math.max(0, elsewhere - total);
 
   return (
@@ -217,7 +264,8 @@ export function PricingSwitchboard() {
 
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {MODULES.map((m, i) => {
-            const isOn = on[m.key];
+            const isOn = effectiveOn(m.key);
+            const lock = lockOf(m.key);
             const isOpen = openKey === m.key;
             const firstAddon = !!m.addon && (i === 0 || !MODULES[i - 1]?.addon);
             return (
@@ -308,23 +356,29 @@ export function PricingSwitchboard() {
                       style={{
                         fontFamily: 'var(--font-sans)',
                         fontWeight: isOn ? 500 : 400,
-                        fontSize: '15px',
+                        fontSize: lock === 'included' ? '13px' : '15px',
                         width: '78px',
                         flexShrink: 0,
                         textAlign: 'right',
-                        color: isOn ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                        color:
+                          lock === 'included'
+                            ? 'var(--color-success-text, #065F46)'
+                            : isOn
+                              ? 'var(--color-text-primary)'
+                              : 'var(--color-text-tertiary)',
                       }}
                     >
-                      + ${m.price}
+                      {lock === 'included' ? 'Included' : `+ $${m.price}`}
                     </span>
                     <button
                       type="button"
                       role="switch"
                       aria-checked={isOn}
+                      aria-disabled={lock ? true : undefined}
                       aria-label={m.name}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setOn((s) => ({ ...s, [m.key]: !s[m.key] }));
+                        toggle(m.key);
                       }}
                       style={{
                         display: 'flex',
@@ -336,7 +390,8 @@ export function PricingSwitchboard() {
                         padding: '0 3px',
                         border: 'none',
                         background: isOn ? m.color : '#e4e4e7',
-                        cursor: 'pointer',
+                        cursor: lock ? 'not-allowed' : 'pointer',
+                        opacity: lock ? 0.55 : 1,
                         flexShrink: 0,
                         transition: 'background 0.15s ease',
                       }}
@@ -562,10 +617,13 @@ export function PricingSwitchboard() {
                     fontFamily: 'var(--font-sans)',
                     fontWeight: 500,
                     fontSize: '14px',
-                    color: 'var(--color-text-primary)',
+                    color:
+                      lockOf(m.key) === 'included'
+                        ? 'var(--color-success-text, #065F46)'
+                        : 'var(--color-text-primary)',
                   }}
                 >
-                  ${m.price}
+                  {lockOf(m.key) === 'included' ? 'Included' : `$${m.price}`}
                 </span>
               </div>
             ))

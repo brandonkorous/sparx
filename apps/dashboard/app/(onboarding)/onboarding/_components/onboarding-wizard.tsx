@@ -17,7 +17,14 @@ import {
   selectTemplateAction,
   startFromScratchAction,
 } from '../_lib/actions';
-import { ONBOARDING_MODULES, isSellingSelected } from '../_lib/modules';
+import {
+  ONBOARDING_MODULES,
+  isSellingSelected,
+  effectiveModuleOn,
+  moduleLock,
+  moduleBilled,
+  moduleElsewhere,
+} from '../_lib/modules';
 import type {
   OnboardingStepKey,
   PendingDomain,
@@ -186,13 +193,16 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
   const prevKey = order[Math.max(idx - 1, 0)] ?? 'modules';
 
   // ── Plan math ───────────────────────────────────────────────────────────────
-  const activeModules = ONBOARDING_MODULES.filter((m) => modules[m.key]);
-  const total = activeModules.reduce((s, m) => s + m.price, 0);
-  const elsewhere = activeModules.reduce((s, m) => s + m.elsewhere, 0);
+  // Effective state applies the dependency graph (Commerce co-enabled by B2B,
+  // Invoicing bundled free with either); bundled capabilities bill $0.
+  const activeModules = ONBOARDING_MODULES.filter((m) => effectiveModuleOn(modules, m.key));
+  const total = activeModules.reduce((s, m) => s + moduleBilled(modules, m), 0);
+  const elsewhere = activeModules.reduce((s, m) => s + moduleElsewhere(modules, m), 0);
   const planItems = activeModules.map((m) => ({
     key: m.key,
     name: m.name,
-    price: m.price,
+    price: moduleBilled(modules, m),
+    included: moduleLock(modules, m.key) === 'included',
     colorVar: m.colorVar,
   }));
 

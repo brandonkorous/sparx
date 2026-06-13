@@ -20,6 +20,9 @@ export interface SummaryPlanItem {
   key: string;
   name: string;
   price: number;
+  /** A bundled capability (e.g. Invoicing with Commerce/B2B) — shown "Included"
+   *  rather than a price, and contributes $0 to the total. */
+  included?: boolean;
   /** Token var for the module's dot color, e.g. `var(--module-builder)`. */
   colorVar: string;
 }
@@ -117,8 +120,12 @@ export function SummaryCard({
                   {m.name}
                 </Text>
               </span>
-              <Text size="sm" weight="medium">
-                ${m.price}
+              <Text
+                size="sm"
+                weight="medium"
+                className={m.included ? 'text-[var(--color-success-text)]' : undefined}
+              >
+                {m.included ? 'Included' : `$${m.price}`}
               </Text>
             </div>
           ))

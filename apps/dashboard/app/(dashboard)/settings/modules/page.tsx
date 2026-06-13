@@ -70,7 +70,9 @@ const LABELS: Record<string, string> = Object.fromEntries(MODULES.map((m) => [m.
 
 function joinLabels(slugs: ModuleSlug[]): string {
   const names = slugs.map((s) => LABELS[s] ?? s);
-  return names.length <= 1 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} & ${names.at(-1)}`;
+  return names.length <= 1
+    ? (names[0] ?? '')
+    : `${names.slice(0, -1).join(', ')} & ${names.at(-1)}`;
 }
 
 export default async function ModulesSettingsPage() {

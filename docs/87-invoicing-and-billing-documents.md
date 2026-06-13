@@ -1,8 +1,8 @@
 # Sparx Platform — Invoicing & Billing Documents
 
-**Version:** 0.2 (built — Phases 1–8 shipped)
+**Version:** 0.3 (built — Phases 1–8 shipped; standalone $19 pricing + auto-enable wired)
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-06-12
 
 > **Status: design doc.** Captures the architecture for the **authored billing document** —
 > a human-built estimate / work order / invoice / ticket that moves through a tenant-configured
@@ -308,13 +308,37 @@ a fulfillment task"). New `billing_document.*` types register in `EventType` + t
 
 ---
 
-## 14. Module gating
+## 14. Module gating & pricing
 
-A **new `invoicing` module** ([feedback: modules, not plans] — gate by module flag, never a plan
-tier). The slug must be added to **every** hardcoded module list (api-rest `MODULE_SLUGS` activation
-gate, dashboard module catalog, marketing pages, etc. — the ~8-place footgun in
+A **standalone `invoicing` module** ([feedback: modules, not plans] — gate by module flag, never a
+plan tier). The slug must be added to **every** hardcoded module list (api-rest `MODULE_SLUGS`
+activation gate, dashboard module catalog, marketing pages, etc. — the ~8-place footgun in
 [feedback: module slug stale lists]) or activation fails validation. A disabled module 404s, runs no
 workers, stores no rows.
+
+**Invoicing owns the billing surface; other modules consume it.** B2B is _about_ wholesale
+(pricing, contacts, quotes, fleet, net terms); it _uses_ invoicing to implement billing. So invoicing
+is the canonical owner of the `BillingDocument` substrate and the `/v1/invoicing/*` namespace
+(including AR aging at `GET /v1/invoicing/aging`); the B2B and Commerce dashboards **pull** that data
+into their own surfaces.
+
+**Pricing — $19/mo standalone, bundled free with Commerce or B2B** (decided 2026-06-12):
+
+- A tenant with **neither** Commerce nor B2B pays **$19/mo** for invoicing — the service-business
+  case (contractor, repair shop, salon, consultant) that quotes and bills without a storefront.
+- **Commerce or B2B activates the full invoicing surface for $0.** This is the `@sparx/modules`
+  **`BUNDLED_FREE`** graph (`invoicing ⇐ [b2b, commerce]`): `isModuleEnabled('invoicing')` is derived
+  true whenever a provider is on, so the existing `requireInvoicingModule` gate "just passes" for those
+  tenants with no OR-checks. The standalone `invoicing` flag is only ever **written** on a real $19
+  purchase, so a billing reconciliation never charges the bundled case. The dashboard shows invoicing
+  as **"Included"** (locked-on) for B2B/Commerce tenants.
+- Because a bundled tenant never fires `module.activated('invoicing')` (no flag write), the activation
+  handlers announce on **derived-state transitions**: enabling B2B/Commerce announces invoicing
+  _available_ so its seed consumer (default workflows + line-type registry) still runs. Idempotent;
+  availability events are never billed.
+- The related **`b2b ⇒ commerce`** dependency (a _paid_ requirement, not a free bundle) is enforced
+  by the same machinery (`@sparx/modules` **`REQUIRES`**): enabling B2B writes + bills Commerce, and
+  disabling Commerce while B2B is on is blocked. See [17-billing-subscriptions.md](17-billing-subscriptions.md) §2.
 
 Naming for users: the **module** is "Invoicing"; the **document label** is the tenant's per workflow.
 
@@ -334,11 +358,12 @@ balances from **both** during the overlap.
 
 1. A **system `net-terms-ar` workflow** (`Invoice → Paid`; the Invoice stage is `final` + numbered +
    locked + snapshot-on-enter) is the convergence target. It is NOT a user-facing default seeded on
-   `invoicing` activation — it is **lazily ensured by the B2B flow itself** (`b2bArService`), because
-   `billing_documents` is a **shared AR substrate** the way `customers` is shared across CRM /
-   Commerce / B2B. The order-derived AR path is therefore gated on the **`b2b`** module, not
-   `invoicing`; the `invoicing` module gates only the authoring _surface_ (dashboard editor, workflow
-   / template CRUD, MCP authoring tools).
+   `invoicing` activation — it is **lazily ensured by the B2B flow itself** (`b2bArService`). The
+   order-derived AR write path keys off the **`b2b`** module (it composes into the B2B order/approval
+   transaction without probing the invoicing flag). Note this composes cleanly with the §14 pricing
+   model: because invoicing is **`BUNDLED_FREE` with B2B/Commerce**, a B2B tenant _also_ has the full
+   invoicing surface enabled (at $0) — so "B2B gets AR" and "B2B gets invoicing authoring free" are the
+   same fact, just reached by two mechanisms (write-path module check + read-time derivation).
 2. A backfill migration (`20260807000000_b2b_invoices_to_billing_documents`) maps each `B2bInvoice` →
    a finalised `BillingDocument` (one synthetic line carrying the amount; a payment row when paid;
    `written_off` → `void`), preserving `invoice_number`, status, `dueAt` and payments via an RLS-safe
@@ -371,10 +396,12 @@ balances from **both** during the overlap.
 Phase 1 is shippable on its own (config surface, no documents yet) — consistent with "deploy early,
 deploy small."
 
-> **Status (2026-06-11): Phases 1–8 are all shipped.** The remaining work is the contract half of
-> the §15 migration (drop the read-only `b2b_invoices` table next release) plus the deferred
-> follow-ons (visual template-builder canvas; markup-rule picker in the line grid; `invoicing` in
-> `ONBOARDING_MODULES` + the marketing pricing switchboard).
+> **Status (2026-06-12): Phases 1–8 shipped; pricing + auto-enable wired.** `invoicing` is now a
+> standalone **$19/mo** add-on (`BUNDLED_FREE` with Commerce/B2B), live in `ONBOARDING_MODULES`, the
+> marketing pricing switchboard, the dashboard module settings, and `capabilities.ts`; AR aging is
+> exposed at `GET /v1/invoicing/aging`. The remaining work is the contract half of the §15 migration
+> (drop the read-only `b2b_invoices` table next release) plus the deferred follow-ons (visual
+> template-builder canvas; markup-rule picker in the line grid).
 
 ---
 

@@ -23,6 +23,9 @@ interface ModuleToggleRowProps {
   description: string;
   initialEnabled: boolean;
   disabled?: boolean;
+  // Set when the module is on but can't be toggled here: a bundled capability
+  // (Included with a provider) or a required dependency of an enabled module.
+  lockedReason?: string;
 }
 
 export function ModuleToggleRow({
@@ -31,6 +34,7 @@ export function ModuleToggleRow({
   description,
   initialEnabled,
   disabled,
+  lockedReason,
 }: ModuleToggleRowProps) {
   const [enabled, setEnabled] = React.useState(initialEnabled);
   const [pending, startTransition] = React.useTransition();
@@ -70,6 +74,8 @@ export function ModuleToggleRow({
     });
   }
 
+  const lockedKind = lockedReason?.startsWith('Required') ? 'Required' : 'Included';
+
   return (
     <Stack
       direction="row"
@@ -80,7 +86,11 @@ export function ModuleToggleRow({
       <Stack gap={1} className="flex-1">
         <Stack direction="row" align="center" gap={2}>
           <Text weight="medium">{label}</Text>
-          {enabled ? (
+          {lockedReason ? (
+            <Badge color="success" variant="soft">
+              {lockedKind}
+            </Badge>
+          ) : enabled ? (
             <Badge color="success">Active</Badge>
           ) : (
             <Badge variant="outline">Inactive</Badge>
@@ -89,23 +99,30 @@ export function ModuleToggleRow({
         <Text size="sm" variant="muted">
           {description}
         </Text>
+        {lockedReason && (
+          <Text size="xs" variant="muted">
+            {lockedReason}
+          </Text>
+        )}
         {error && (
           <Text size="xs" variant="danger" role="alert">
             {error}
           </Text>
         )}
       </Stack>
-      <Button
-        type="button"
-        color={enabled ? 'neutral' : 'module'}
-        variant={enabled ? 'outline' : 'solid'}
-        size="sm"
-        onClick={onToggle}
-        disabled={disabled === true || pending}
-        loading={pending}
-      >
-        {enabled ? 'Deactivate' : 'Activate'}
-      </Button>
+      {lockedReason ? null : (
+        <Button
+          type="button"
+          color={enabled ? 'neutral' : 'module'}
+          variant={enabled ? 'outline' : 'solid'}
+          size="sm"
+          onClick={onToggle}
+          disabled={disabled === true || pending}
+          loading={pending}
+        >
+          {enabled ? 'Deactivate' : 'Activate'}
+        </Button>
+      )}
     </Stack>
   );
 }

@@ -157,6 +157,23 @@ export const ONBOARDING_MODULES: OnboardingModule[] = [
     replaces: 'a dropshipping app like Spocket',
   },
   {
+    key: 'invoicing',
+    name: 'Invoicing',
+    desc: 'Estimates, invoices, AR',
+    price: 19,
+    elsewhere: 30,
+    colorVar: 'var(--module-invoicing)',
+    long: 'Author estimates, work orders, and invoices line by line — parts marked up, labor by the hour, deposits and partial payments — through stages you name. Tracks balances and AR aging, and prints on your brand. Included free with Commerce or B2B.',
+    feats: [
+      'Estimate → invoice workflows you name',
+      'Parts, labor, sublet & flat-fee lines',
+      'Deposits, partial payments, AR aging',
+      'Branded, printable documents',
+    ],
+    replaces: 'a billing tool like FreshBooks',
+    addon: true,
+  },
+  {
     key: 'chat',
     name: 'Live Chat',
     desc: 'Widget, AI replies, inbox',
@@ -194,4 +211,52 @@ export const SELLING_MODULE_KEYS = ['commerce', 'b2b', 'dropship'];
 
 export function isSellingSelected(modules: Record<string, boolean>): boolean {
   return SELLING_MODULE_KEYS.some((k) => modules[k]);
+}
+
+// ── Module dependency rules (mirror the server @sparx/modules graph + the public
+// pricing switchboard) ───────────────────────────────────────────────────────
+//   • B2B REQUIRES Commerce — co-enabled (still billed), Commerce locked-on.
+//   • Invoicing is BUNDLED_FREE with B2B/Commerce — Included ($0) while either is
+//     on, otherwise a $19 standalone add-on.
+
+/** A module's effective on-state once the dependency graph is applied. */
+export function effectiveModuleOn(modules: Record<string, boolean>, key: string): boolean {
+  if (key === 'commerce') return Boolean(modules.commerce) || Boolean(modules.b2b);
+  if (key === 'invoicing')
+    return Boolean(modules.invoicing) || Boolean(modules.b2b) || Boolean(modules.commerce);
+  return Boolean(modules[key]);
+}
+
+/** Why a module's toggle is locked on, if it is. */
+export function moduleLock(
+  modules: Record<string, boolean>,
+  key: string
+): 'included' | 'required' | null {
+  if (key === 'invoicing' && (modules.b2b || modules.commerce)) return 'included';
+  if (key === 'commerce' && modules.b2b) return 'required';
+  return null;
+}
+
+/** Apply a toggle through the dependency graph: locked rows ignore the click,
+ *  enabling B2B co-enables Commerce. */
+export function toggleModule(
+  modules: Record<string, boolean>,
+  key: string
+): Record<string, boolean> {
+  if (key === 'invoicing' && (modules.b2b || modules.commerce)) return modules;
+  if (key === 'commerce' && modules.b2b) return modules;
+  const next = { ...modules, [key]: !modules[key] };
+  if (key === 'b2b' && next.b2b) next.commerce = true;
+  return next;
+}
+
+/** Monthly charge for a module given the graph — a bundled capability is $0. */
+export function moduleBilled(modules: Record<string, boolean>, m: OnboardingModule): number {
+  return moduleLock(modules, m.key) === 'included' ? 0 : m.price;
+}
+
+/** Replaced-cost contribution to the savings ledger — bundled capabilities are a
+ *  free rider, so they contribute $0 (no double-count). */
+export function moduleElsewhere(modules: Record<string, boolean>, m: OnboardingModule): number {
+  return moduleLock(modules, m.key) === 'included' ? 0 : m.elsewhere;
 }

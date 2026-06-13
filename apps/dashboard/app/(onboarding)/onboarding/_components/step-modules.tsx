@@ -3,7 +3,13 @@
 import * as React from 'react';
 import { Switch, Text, cn } from '@sparx/ui';
 import { ChevronDown } from 'lucide-react';
-import { ONBOARDING_MODULES, type OnboardingModule } from '../_lib/modules';
+import {
+  ONBOARDING_MODULES,
+  effectiveModuleOn,
+  moduleLock,
+  toggleModule,
+  type OnboardingModule,
+} from '../_lib/modules';
 
 // Step 1 — Modules (work pane). The switchboard from the public pricing page: each
 // module is one toggle, expandable for detail. The running plan + price + Continue
@@ -19,7 +25,7 @@ export function StepModules({
   const [openKey, setOpenKey] = React.useState<string | null>(null);
 
   function toggle(key: string) {
-    onChange({ ...value, [key]: !value[key] });
+    onChange(toggleModule(value, key));
   }
 
   return (
@@ -37,7 +43,8 @@ export function StepModules({
             )}
             <ModuleRow
               module={m}
-              on={Boolean(value[m.key])}
+              on={effectiveModuleOn(value, m.key)}
+              lock={moduleLock(value, m.key)}
               open={openKey === m.key}
               isLast={i === ONBOARDING_MODULES.length - 1}
               onToggle={() => toggle(m.key)}
@@ -53,6 +60,7 @@ export function StepModules({
 function ModuleRow({
   module: m,
   on,
+  lock,
   open,
   isLast,
   onToggle,
@@ -60,6 +68,7 @@ function ModuleRow({
 }: {
   module: OnboardingModule;
   on: boolean;
+  lock: 'included' | 'required' | null;
   open: boolean;
   isLast: boolean;
   onToggle: () => void;
@@ -91,14 +100,22 @@ function ModuleRow({
         <span
           className={cn(
             'w-16 shrink-0 text-right text-sm',
-            on
-              ? 'font-medium text-[var(--color-text-primary)]'
-              : 'text-[var(--color-text-tertiary)]'
+            lock === 'included'
+              ? 'font-medium text-[var(--color-success-text)]'
+              : on
+                ? 'font-medium text-[var(--color-text-primary)]'
+                : 'text-[var(--color-text-tertiary)]'
           )}
         >
-          + ${m.price}
+          {lock === 'included' ? 'Included' : `+ $${m.price}`}
         </span>
-        <Switch checked={on} onCheckedChange={onToggle} color={m.key} aria-label={m.name} />
+        <Switch
+          checked={on}
+          onCheckedChange={onToggle}
+          disabled={lock !== null}
+          color={m.key}
+          aria-label={m.name}
+        />
       </div>
 
       {open && (
