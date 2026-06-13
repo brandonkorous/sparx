@@ -85,18 +85,25 @@ export interface AgingReport {
 
 /** AR aging report (docs/87 §8): open billing documents bucketed by days past
  *  due. Lives on the invoicing surface but is the canonical AR view that B2B /
- *  Commerce dashboards pull from. Optionally scoped to one B2B account. Reads
- *  only `unpaid | partial | overdue` documents — `paid`/`void` carry no balance. */
+ *  Commerce dashboards pull from. Scope it to one B2B account (`b2bAccountId`) or
+ *  to all B2B AR (`b2bOnly`, e.g. the B2B Invoices page) — otherwise it spans every
+ *  open document. Reads only `unpaid | partial | overdue` — `paid`/`void` carry no
+ *  balance. */
 export async function aging(
   ctx: ServiceContext,
-  filter: { b2bAccountId?: string } = {}
+  filter: { b2bAccountId?: string; b2bOnly?: boolean } = {}
 ): Promise<AgingReport> {
+  const scope: Prisma.BillingDocumentWhereInput = filter.b2bAccountId
+    ? { b2bAccountId: filter.b2bAccountId }
+    : filter.b2bOnly
+      ? { b2bAccountId: { not: null } }
+      : {};
   return withTenant(ctx, async (tx) => {
     const rows = await tx.billingDocument.findMany({
       where: {
         deletedAt: null,
         status: { in: ['unpaid', 'partial', 'overdue'] },
-        ...(filter.b2bAccountId ? { b2bAccountId: filter.b2bAccountId } : {}),
+        ...scope,
       },
       select: { balance: true, dueAt: true },
     });

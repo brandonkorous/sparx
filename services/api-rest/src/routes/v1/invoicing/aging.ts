@@ -15,14 +15,24 @@ import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
 
-const AgingQuery = z.object({ b2bAccountId: z.string().uuid().optional() });
+const AgingQuery = z.object({
+  b2bAccountId: z.string().uuid().optional(),
+  // `b2b` restricts the report to AR with a B2B account (the B2B Invoices view);
+  // omit for the full cross-document aging.
+  scope: z.enum(['b2b']).optional(),
+});
 
 const agingRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/invoicing/aging', async (request) => {
     requireRole(request, 'viewer');
     await requireInvoicingModule(request);
-    const { b2bAccountId } = AgingQuery.parse(request.query);
-    return ok(await billingDocumentService.aging(toInvoicingContext(request), { b2bAccountId }));
+    const { b2bAccountId, scope } = AgingQuery.parse(request.query);
+    return ok(
+      await billingDocumentService.aging(toInvoicingContext(request), {
+        b2bAccountId,
+        b2bOnly: scope === 'b2b',
+      })
+    );
   });
 
   return Promise.resolve();

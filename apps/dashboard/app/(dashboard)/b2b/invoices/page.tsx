@@ -19,6 +19,7 @@ import Link from 'next/link';
 
 import { api } from '@/lib/api-rest-client';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ArAgingSummary, type AgingReport } from './_components/ar-aging-summary';
 
 export const dynamic = 'force-dynamic';
 
@@ -75,9 +76,14 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
   if (status) query.set('status', status);
   if (accountId) query.set('account_id', accountId);
 
-  const { data: invoices, meta } = await api.getPaged<InvoiceRow[]>(
-    `/v1/b2b/invoices?${query.toString()}`
-  );
+  // Pull the canonical AR aging report (owned by invoicing, scoped to B2B) into
+  // this view alongside the invoice list. It sums ALL open B2B AR server-side —
+  // not just the loaded page — so the buckets are accurate. Supplementary, so a
+  // failure never breaks the list.
+  const [{ data: invoices, meta }, aging] = await Promise.all([
+    api.getPaged<InvoiceRow[]>(`/v1/b2b/invoices?${query.toString()}`),
+    api.get<AgingReport>('/v1/invoicing/aging?scope=b2b').catch(() => null),
+  ]);
   const total = (meta?.total as number | undefined) ?? invoices.length;
 
   const overdueCount = invoices.filter((i) => i.status === 'overdue').length;
@@ -109,6 +115,8 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
             )
           }
         />
+
+        {aging ? <ArAgingSummary aging={aging} /> : null}
 
         <ListToolbar
           searchPlaceholder="Search by invoice # or account…"
