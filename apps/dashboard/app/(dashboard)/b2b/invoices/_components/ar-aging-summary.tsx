@@ -52,7 +52,7 @@ export function ArAgingSummary({ aging }: { aging: AgingReport }) {
                 <Text
                   size="lg"
                   weight="medium"
-                  className={pastDue ? 'tabular-nums text-[var(--color-danger)]' : 'tabular-nums'}
+                  className={pastDue ? 'text-[var(--color-danger)] tabular-nums' : 'tabular-nums'}
                 >
                   {money(b.balance)}
                 </Text>

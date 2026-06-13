@@ -76,6 +76,7 @@ need to be pixel-perfect at launch — they need to be functional and
 editable. Merchants will customize them. Ship working, not beautiful.
 
 Provisioning logic:
+
 - Runs on email module activation event
 - Idempotent — if templates already exist for a tenant, skip
 - Reconcile runs nightly to backfill any tenant that missed activation
@@ -84,6 +85,7 @@ Provisioning logic:
 ### 3b. Per-Module Automation Catalog
 
 Restructure seeds into the per-module catalog format. Each seed declares:
+
 - `module` — which module's activation installs it
 - `requires` — additional modules that must be active for email sends
   to fire (not for the automation to seed — see Section 4)

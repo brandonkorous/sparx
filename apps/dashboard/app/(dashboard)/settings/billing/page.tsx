@@ -85,8 +85,8 @@ export default async function BillingSettingsPage() {
                     : 'Billing isn’t switched on for this workspace yet'}
                 </Text>
                 <Text size="sm" variant="muted">
-                  Modules activate freely for now — you won’t be charged until billing goes live. The
-                  plan below is what you’ll pay then, based on the modules you have on today.
+                  Modules activate freely for now — you won’t be charged until billing goes live.
+                  The plan below is what you’ll pay then, based on the modules you have on today.
                 </Text>
               </Stack>
             </CardContent>

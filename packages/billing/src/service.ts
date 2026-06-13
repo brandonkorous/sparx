@@ -57,7 +57,10 @@ export function moduleForPriceId(priceId: string): ModuleSlug | null {
 
 /** The billable modules from a set that also have a configured price id for the
  *  given interval — the items we can actually put on a Stripe subscription. */
-function billablePriced(modules: ModuleSlug[], iv: BillingInterval): { module: ModuleSlug; priceId: string }[] {
+function billablePriced(
+  modules: ModuleSlug[],
+  iv: BillingInterval
+): { module: ModuleSlug; priceId: string }[] {
   const out: { module: ModuleSlug; priceId: string }[] = [];
   for (const m of modules) {
     if (!isBillableModule(m)) continue;
@@ -293,7 +296,9 @@ export async function reconcileFromSubscription(sub: Stripe.Subscription): Promi
 
   // Reconcile billable-module flags to the subscription's items.
   const itemModules = new Set(
-    sub.items.data.map((i) => moduleForPriceId(i.price.id)).filter((m): m is ModuleSlug => m !== null)
+    sub.items.data
+      .map((i) => moduleForPriceId(i.price.id))
+      .filter((m): m is ModuleSlug => m !== null)
   );
   const canceled = sub.status === 'canceled' || sub.status === 'incomplete_expired';
   const settings = (tenant.settings as Record<string, unknown> | null) ?? {};

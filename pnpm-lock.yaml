@@ -1789,6 +1789,9 @@ importers:
       '@sparx/automation-schemas':
         specifier: workspace:*
         version: link:../../packages/automation-schemas
+      '@sparx/billing':
+        specifier: workspace:*
+        version: link:../../packages/billing
       '@sparx/blueprints':
         specifier: workspace:*
         version: link:../../packages/blueprints

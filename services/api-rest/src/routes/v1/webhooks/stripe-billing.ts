@@ -104,7 +104,10 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
           event.type === 'invoice.payment_failed' ? 'past_due' : 'active'
         );
       }
-      log.info({ eventType: event.type, customerId }, 'stripe billing webhook: invoice status synced');
+      log.info(
+        { eventType: event.type, customerId },
+        'stripe billing webhook: invoice status synced'
+      );
       break;
     }
     default:
