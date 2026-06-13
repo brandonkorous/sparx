@@ -29,7 +29,13 @@ import { ok } from '@sparx/api-core/envelope';
 import { publish } from '@sparx/api-core/pubsub';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { badRequest, conflict, forbidden, notFound } from '@sparx/api-core/errors';
-import { invalidateModuleCache, type ModuleSlug } from '@sparx/auth';
+import {
+  invalidateModuleCache,
+  requiredModules,
+  blockingDependents,
+  deriveModuleStates,
+  type ModuleSlug,
+} from '@sparx/auth';
 import { publishPlatformEvent } from '@sparx/crm';
 import { computeBannerEnabled } from '../../lib/consent.js';
 import { env } from '../../env.js';
@@ -119,6 +125,77 @@ async function announceModuleTransition(
     occurredAt: new Date(),
     payload: data,
   });
+}
+
+// Persist a batch of explicit module-flag writes (one read-modify-write), drop
+// the tenant's module cache, and announce activation transitions.
+//
+// Two subtleties this centralizes:
+//   • Whole-tenant cache flush, not per-slug: BUNDLED_FREE capabilities (e.g.
+//     `invoicing`) are DERIVED from provider flags, so toggling `b2b`/`commerce`
+//     changes `invoicing`'s gate result even though no invoicing flag was written.
+//   • Announce on DERIVED-state transitions, not raw writes: enabling B2B makes
+//     `invoicing` available with no invoicing flag of its own, and its seeding
+//     consumer (default workflows + line types) must still run. Billing keys off
+//     EXPLICIT flags (deriveModuleStates → source 'explicit'), never these
+//     availability events, so a bundled capability is announced but not charged.
+//
+// Returns the effective settings blob (next when anything changed, else the
+// original) so callers can shape their response without a re-read.
+async function applyModuleWrites(
+  log: FastifyBaseLogger,
+  tenantId: string,
+  actorId: string | null,
+  beforeSettings: unknown,
+  writes: Map<ModuleSlug, boolean>
+): Promise<unknown> {
+  if (writes.size === 0) return beforeSettings;
+
+  const currentSettings = (beforeSettings as Record<string, unknown> | null) ?? {};
+  const currentModules = (currentSettings.modules as Record<string, unknown> | undefined) ?? {};
+  const nextModules: Record<string, unknown> = { ...currentModules };
+  for (const [slug, enabled] of writes) {
+    const slot = (currentModules[slug] as Record<string, unknown> | undefined) ?? {};
+    nextModules[slug] = { ...slot, enabled };
+  }
+  const nextSettings = { ...currentSettings, modules: nextModules };
+
+  await prisma.tenant.update({
+    where: { id: tenantId },
+    data: { settings: nextSettings as Prisma.InputJsonValue },
+  });
+  invalidateModuleCache(tenantId);
+
+  const beforeStates = deriveModuleStates(beforeSettings);
+  const afterStates = deriveModuleStates(nextSettings);
+  for (const slug of MODULE_SLUGS) {
+    if (beforeStates[slug].enabled !== afterStates[slug].enabled) {
+      await announceModuleTransition(log, tenantId, actorId, slug, afterStates[slug].enabled);
+    }
+  }
+
+  return nextSettings;
+}
+
+// Shape one module's row for GET/PUT responses: enabled + WHY, so the dashboard
+// can lock + label a bundled/required toggle instead of letting it be flipped.
+function moduleRow(
+  slug: ModuleSlug,
+  states: ReturnType<typeof deriveModuleStates>
+): {
+  slug: ModuleSlug;
+  enabled: boolean;
+  source: string;
+  includedBy: ModuleSlug[];
+  requiredBy: ModuleSlug[];
+} {
+  return {
+    slug,
+    enabled: states[slug].enabled,
+    source: states[slug].source,
+    includedBy: states[slug].includedBy,
+    requiredBy: blockingDependents(slug, (m) => states[m].enabled),
+  };
 }
 
 // A single social link (a SITE setting, not brand identity — docs/45 §3).
@@ -471,8 +548,12 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       where: { id: auth.tenantId },
       select: { settings: true },
     });
-    const flags = readModuleFlags(row?.settings);
-    return ok(MODULE_SLUGS.map((slug) => ({ slug, enabled: flags[slug] === true })));
+    // Enriched rows: `enabled` honors the BUNDLED_FREE graph (invoicing is on for
+    // any B2B/Commerce tenant), and `source`/`includedBy`/`requiredBy` let the UI
+    // lock + label a bundled or required toggle. Extra fields are additive — older
+    // `{ slug, enabled }` consumers keep working.
+    const states = deriveModuleStates(row?.settings);
+    return ok(MODULE_SLUGS.map((slug) => moduleRow(slug, states)));
   });
 
   app.patch('/v1/tenant/modules/:slug', async (request) => {
@@ -486,38 +567,34 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     });
     if (!before) throw notFound('Tenant', auth.tenantId);
 
-    const wasEnabled = readModuleFlags(before.settings)[slug] === true;
-    const currentSettings = (before.settings as Record<string, unknown> | null) ?? {};
-    const currentModules = (currentSettings.modules as Record<string, unknown> | undefined) ?? {};
-    const currentSlot = (currentModules[slug] as Record<string, unknown> | undefined) ?? {};
-    const nextSettings = {
-      ...currentSettings,
-      modules: {
-        ...currentModules,
-        [slug]: { ...currentSlot, enabled },
-      },
-    } as Prisma.InputJsonValue;
+    const target = slug as ModuleSlug;
+    const currentFlags = readModuleFlags(before.settings);
+    const writes = new Map<ModuleSlug, boolean>();
 
-    await prisma.tenant.update({
-      where: { id: auth.tenantId },
-      data: { settings: nextSettings },
-    });
-    invalidateModuleCache(auth.tenantId, slug as ModuleSlug);
-
-    // Seed (or tear-down-acknowledge) downstream consumers only on a real
-    // transition — see announceModuleTransition. Post-commit + post-invalidate
-    // so the consumers read the new flag state.
-    if (wasEnabled !== enabled) {
-      await announceModuleTransition(
-        request.log,
-        auth.tenantId,
-        auth.actorId,
-        slug as ModuleSlug,
-        enabled
-      );
+    if (enabled) {
+      // Turn it on, and auto-enable every PAID requirement (each is separately
+      // billed — e.g. enabling B2B also activates Commerce at $49). REQUIRES is
+      // not derived, so these flags are physically written here.
+      for (const m of [target, ...requiredModules(target)]) {
+        if (currentFlags[m] !== true) writes.set(m, true);
+      }
+    } else {
+      // Block teardown of a module another ENABLED module still requires (you
+      // must disable B2B before you can disable Commerce).
+      const blockers = blockingDependents(target, (m) => currentFlags[m] === true);
+      if (blockers.length) {
+        throw conflict(
+          `Turn off ${blockers.join(' and ')} first — ${
+            blockers.length > 1 ? 'they require' : 'it requires'
+          } ${target}.`,
+          'module'
+        );
+      }
+      if (currentFlags[target] === true) writes.set(target, false);
     }
 
-    return ok({ slug, enabled });
+    await applyModuleWrites(request.log, auth.tenantId, auth.actorId, before.settings, writes);
+    return ok({ slug: target, enabled });
   });
 
   // Bulk-set module flags in ONE read-modify-write — the onboarding Modules step
@@ -541,44 +618,38 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     });
     if (!before) throw notFound('Tenant', auth.tenantId);
 
-    const currentSettings = (before.settings as Record<string, unknown> | null) ?? {};
-    const currentModules = (currentSettings.modules as Record<string, unknown> | undefined) ?? {};
     const currentFlags = readModuleFlags(before.settings);
-
-    const nextModules: Record<string, unknown> = { ...currentModules };
-    const changed: string[] = [];
-    for (const [slug, enabled] of entries) {
-      if (currentFlags[slug] !== enabled) changed.push(slug);
-      const slot = (currentModules[slug] as Record<string, unknown> | undefined) ?? {};
-      nextModules[slug] = { ...slot, enabled };
+    // Desired explicit state = current ⊕ request.
+    const desired: Record<string, boolean> = { ...currentFlags };
+    for (const [slug, enabled] of entries) desired[slug] = enabled;
+    // Enforce REQUIRES by fixing FORWARD: anything left on forces its paid
+    // requirements on too. Onboarding flips the whole switchboard at once, so we
+    // auto-add (Commerce when B2B is picked) rather than reject — you can never
+    // land in a B2B-on / Commerce-off state. The per-slug PATCH is the surface
+    // that *blocks* an explicit teardown.
+    for (const slug of MODULE_SLUGS) {
+      if (desired[slug]) {
+        for (const dep of requiredModules(slug)) desired[dep] = true;
+      }
     }
 
-    const nextSettings = {
-      ...currentSettings,
-      modules: nextModules,
-    } as Prisma.InputJsonValue;
-
-    await prisma.tenant.update({
-      where: { id: auth.tenantId },
-      data: { settings: nextSettings },
-    });
-    // Invalidate the gate cache, then announce each transition so the activated
-    // modules seed themselves (CRM pipeline/segments, email automations, system
-    // automations) — the onboarding Modules step flips several at once and each
-    // gets its own activation event.
-    for (const slug of changed) {
-      invalidateModuleCache(auth.tenantId, slug as ModuleSlug);
-      await announceModuleTransition(
-        request.log,
-        auth.tenantId,
-        auth.actorId,
-        slug as ModuleSlug,
-        modules[slug] === true
-      );
+    const writes = new Map<ModuleSlug, boolean>();
+    for (const slug of MODULE_SLUGS) {
+      if ((currentFlags[slug] === true) !== (desired[slug] === true)) {
+        writes.set(slug, desired[slug] === true);
+      }
     }
 
-    const flags = readModuleFlags(nextSettings);
-    return ok(MODULE_SLUGS.map((slug) => ({ slug, enabled: flags[slug] === true })));
+    const effective = await applyModuleWrites(
+      request.log,
+      auth.tenantId,
+      auth.actorId,
+      before.settings,
+      writes
+    );
+
+    const states = deriveModuleStates(effective);
+    return ok(MODULE_SLUGS.map((slug) => moduleRow(slug, states)));
   });
 
   app.get('/v1/tenant/onboarding', async (request) => {

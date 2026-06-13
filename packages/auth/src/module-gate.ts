@@ -20,6 +20,15 @@ export {
   ModuleDisabledError,
   moduleDisabledEnvelope,
   type ModuleSlug,
+  // Dependency graph (BUNDLED_FREE / REQUIRES) + write-side helpers — the module
+  // toggle handlers auto-enable paid requirements and block their teardown.
+  BUNDLED_FREE,
+  REQUIRES,
+  requiredModules,
+  blockingDependents,
+  isModuleFlagOn,
+  deriveModuleStates,
+  type ModuleEnabledSource,
 } from '@sparx/modules';
 
 /** Throws ModuleDisabledError if the session's tenant doesn't have the given

@@ -18,7 +18,13 @@ import { writeAuditLog } from '../audit';
 import { publishCrmEvent, type CrmTopic } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
-import { aggregatePayments, deriveDocumentStatus } from './billing-ar';
+import {
+  aggregatePayments,
+  deriveDocumentStatus,
+  bucketAging,
+  AGING_BUCKETS,
+  type AgingBucketKey,
+} from './billing-ar';
 import { applyStageEntryEffects } from './billing-document-stage-service';
 import { computeBillingTotals } from './billing-totals';
 
@@ -60,6 +66,57 @@ export async function list(
       tx.billingDocument.count({ where }),
     ]);
     return { items, total };
+  });
+}
+
+export interface AgingBucketOut {
+  key: AgingBucketKey;
+  label: string;
+  count: number;
+  balance: number;
+}
+
+export interface AgingReport {
+  asOf: string;
+  buckets: AgingBucketOut[];
+  totalOutstanding: number;
+  totalCount: number;
+}
+
+/** AR aging report (docs/87 §8): open billing documents bucketed by days past
+ *  due. Lives on the invoicing surface but is the canonical AR view that B2B /
+ *  Commerce dashboards pull from. Optionally scoped to one B2B account. Reads
+ *  only `unpaid | partial | overdue` documents — `paid`/`void` carry no balance. */
+export async function aging(
+  ctx: ServiceContext,
+  filter: { b2bAccountId?: string } = {}
+): Promise<AgingReport> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.billingDocument.findMany({
+      where: {
+        deletedAt: null,
+        status: { in: ['unpaid', 'partial', 'overdue'] },
+        ...(filter.b2bAccountId ? { b2bAccountId: filter.b2bAccountId } : {}),
+      },
+      select: { balance: true, dueAt: true },
+    });
+    const now = new Date();
+    const grouped = bucketAging(
+      rows.map((r) => ({ balance: Number(r.balance), dueAt: r.dueAt })),
+      now
+    );
+    const buckets: AgingBucketOut[] = AGING_BUCKETS.map(({ key, label }) => ({
+      key,
+      label,
+      count: grouped[key].count,
+      balance: grouped[key].balance,
+    }));
+    return {
+      asOf: now.toISOString(),
+      buckets,
+      totalOutstanding: Math.round(buckets.reduce((s, b) => s + b.balance, 0) * 100) / 100,
+      totalCount: buckets.reduce((s, b) => s + b.count, 0),
+    };
   });
 }
 

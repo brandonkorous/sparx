@@ -18,6 +18,13 @@ export {
   moduleDisabledEnvelope,
   ModuleDisabledError,
   type ModuleSlug,
+  BUNDLED_FREE,
+  REQUIRES,
+  requiredModules,
+  blockingDependents,
+  isModuleFlagOn,
+  deriveModuleStates,
+  type ModuleEnabledSource,
 } from './module-gate';
 export {
   issueApiKey,

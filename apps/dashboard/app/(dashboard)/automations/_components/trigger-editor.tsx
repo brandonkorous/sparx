@@ -22,8 +22,7 @@ import {
 import type { ConditionGroup, ScheduleSpec, Trigger } from '@sparx/automation-schemas';
 import { DAYS_OF_WEEK, SCAN_ENTITIES, SCHEDULE_CADENCES, TRIGGER_EVENTS } from '../_lib/catalog';
 import { ConditionEditor } from './condition-editor';
-
-const EVENT_DATALIST_ID = 'automation-trigger-events';
+import { Combobox } from './combobox';
 
 const EMPTY_WHERE: ConditionGroup = { logic: 'AND', conditions: [] };
 
@@ -119,20 +118,14 @@ export function TriggerEditor({ value, onChange, enabledModules }: Props) {
       {value.kind === 'event' ? (
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="trigger-event-type">Event type</Label>
-          <datalist id={EVENT_DATALIST_ID}>
-            {eventSuggestions.map((e) => (
-              <option key={e.eventType} value={e.eventType}>
-                {e.label}
-              </option>
-            ))}
-          </datalist>
-          <Input
+          <Combobox
             id="trigger-event-type"
-            list={EVENT_DATALIST_ID}
             value={value.eventType}
             placeholder="crm.customer.created"
-            onChange={(e) => onChange({ kind: 'event', eventType: e.target.value })}
-            className="max-w-md font-mono text-sm"
+            searchPlaceholder="Search or type an event…"
+            customHint="Use this exact event type"
+            options={eventSuggestions.map((e) => ({ value: e.eventType, label: e.label }))}
+            onChange={(eventType) => onChange({ kind: 'event', eventType })}
           />
           <p className="text-xs text-[var(--color-text-tertiary)]">
             The bus event that fires this automation. Pick a suggestion or type any event type.

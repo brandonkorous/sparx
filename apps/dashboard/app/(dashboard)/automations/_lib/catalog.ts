@@ -52,7 +52,7 @@ export interface TriggerEventDef {
 }
 
 /** Curated event suggestions, grouped by owning module. Free text is allowed —
- *  the builder offers these via a datalist, it does not constrain to them. */
+ *  the builder offers these via a combobox, it does not constrain to them. */
 export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   { eventType: 'crm.customer.created', label: 'Customer created', module: 'crm' },
   { eventType: 'crm.customer.updated', label: 'Customer updated', module: 'crm' },

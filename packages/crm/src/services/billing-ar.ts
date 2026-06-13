@@ -63,6 +63,60 @@ export function netTermsDays(paymentTerms: string | null | undefined): number {
   return match ? Number(match[1]) : 0;
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// AR aging — bucket open balances by how far past due they are (docs/87 §8).
+// Pure so the bucketing rules are unit-testable independent of the DB query.
+// ─────────────────────────────────────────────────────────────────────────
+
+export type AgingBucketKey = 'current' | 'd1_30' | 'd31_60' | 'd61_90' | 'd90_plus';
+
+export const AGING_BUCKETS: { key: AgingBucketKey; label: string }[] = [
+  { key: 'current', label: 'Current' },
+  { key: 'd1_30', label: '1–30 days' },
+  { key: 'd31_60', label: '31–60 days' },
+  { key: 'd61_90', label: '61–90 days' },
+  { key: 'd90_plus', label: '90+ days' },
+];
+
+export interface AgingInputRow {
+  balance: number;
+  dueAt: Date | null;
+}
+
+/** Bucket open balances by days past `dueAt`. A row with no `dueAt` (a pay-now
+ *  retail document, not on terms) counts as `current`; a non-positive balance is
+ *  skipped. `current` also holds anything not yet past due. */
+export function bucketAging(
+  rows: AgingInputRow[],
+  now: Date
+): Record<AgingBucketKey, { count: number; balance: number }> {
+  const out: Record<AgingBucketKey, { count: number; balance: number }> = {
+    current: { count: 0, balance: 0 },
+    d1_30: { count: 0, balance: 0 },
+    d31_60: { count: 0, balance: 0 },
+    d61_90: { count: 0, balance: 0 },
+    d90_plus: { count: 0, balance: 0 },
+  };
+  const DAY = 86_400_000;
+  for (const r of rows) {
+    if (r.balance <= 0) continue;
+    const daysPast = r.dueAt ? Math.floor((now.getTime() - r.dueAt.getTime()) / DAY) : 0;
+    const key: AgingBucketKey =
+      daysPast <= 0
+        ? 'current'
+        : daysPast <= 30
+          ? 'd1_30'
+          : daysPast <= 60
+            ? 'd31_60'
+            : daysPast <= 90
+              ? 'd61_90'
+              : 'd90_plus';
+    out[key].count += 1;
+    out[key].balance = round2(out[key].balance + r.balance);
+  }
+  return out;
+}
+
 function round2(n: number): number {
   return Math.round(n * 100) / 100;
 }

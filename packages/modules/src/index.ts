@@ -45,6 +45,104 @@ const ALL_MODULES: readonly ModuleSlug[] = [
   'ai',
 ];
 
+// ── Module dependency graph ──────────────────────────────────────────────────
+//
+// Two relationships, and they BILL DIFFERENTLY, so they are deliberately NOT the
+// same map. Conflating them would either give a paid module away free or charge
+// for a bundled one.
+//
+// BUNDLED_FREE — the key is a capability PROVIDED FREE by any listed module. It is
+//   active (and never separately billed) whenever a provider is active, even if
+//   its own flag was never written. `invoicing` rides along free with `b2b` /
+//   `commerce`: B2B/Commerce tenants get the full invoicing surface at $0, while a
+//   tenant with neither pays for the standalone `invoicing` module. Because the
+//   bundled case never sets the `invoicing` flag, a billing reconciliation that
+//   maps set flags → subscription items never charges for it. Resolved at READ
+//   time here (pure derivation — nothing is written).
+//
+// REQUIRES — the key cannot run without the listed modules, and those modules are
+//   SEPARATELY BILLED (B2B needs Commerce, which stays $49). This is NOT derived
+//   at read time: enabling the dependent must physically WRITE + bill the
+//   requirement, and disabling a requirement while its dependent is active is
+//   blocked. Enforced WRITE-side by the module-toggle handlers via the helpers
+//   below — deriving it here would grant unbilled access.
+export const BUNDLED_FREE: Partial<Record<ModuleSlug, readonly ModuleSlug[]>> = {
+  invoicing: ['b2b', 'commerce'],
+};
+
+export const REQUIRES: Partial<Record<ModuleSlug, readonly ModuleSlug[]>> = {
+  b2b: ['commerce'],
+};
+
+/** The transitive set of modules that must be enabled (and billed) for `module`
+ *  to run. The toggle handler turns these on when `module` is enabled. */
+export function requiredModules(module: ModuleSlug): ModuleSlug[] {
+  const out = new Set<ModuleSlug>();
+  const visit = (m: ModuleSlug): void => {
+    for (const dep of REQUIRES[m] ?? []) {
+      if (!out.has(dep)) {
+        out.add(dep);
+        visit(dep);
+      }
+    }
+  };
+  visit(module);
+  return [...out];
+}
+
+/** Enabled modules that REQUIRE `module` — disabling `module` while any of these
+ *  is still on must be blocked. `isOn` probes the prospective flag state. */
+export function blockingDependents(
+  module: ModuleSlug,
+  isOn: (m: ModuleSlug) => boolean
+): ModuleSlug[] {
+  const blockers: ModuleSlug[] = [];
+  for (const dependent of Object.keys(REQUIRES) as ModuleSlug[]) {
+    if ((REQUIRES[dependent] ?? []).includes(module) && isOn(dependent)) {
+      blockers.push(dependent);
+    }
+  }
+  return blockers;
+}
+
+/** Whether `module` is on for these settings, honoring the BUNDLED_FREE graph:
+ *  on when its own flag is set OR any module that provides it free is set.
+ *  REQUIRES is intentionally NOT derived here (see the graph note). */
+export function isModuleFlagOn(settings: unknown, module: ModuleSlug): boolean {
+  if (readModuleFlag(settings, module)) return true;
+  for (const provider of BUNDLED_FREE[module] ?? []) {
+    if (readModuleFlag(settings, provider)) return true;
+  }
+  return false;
+}
+
+/** Source of a module's enabled state, for UIs that must distinguish a real
+ *  purchase from a bundled / required one (to lock the toggle + label it). */
+export type ModuleEnabledSource = 'explicit' | 'bundled' | 'off';
+
+/** Derive every module's enabled state + WHY, in one settings read. `bundled`
+ *  means on only because a BUNDLED_FREE provider is active (the toggle should be
+ *  shown as "Included" and locked). */
+export function deriveModuleStates(
+  settings: unknown
+): Record<ModuleSlug, { enabled: boolean; source: ModuleEnabledSource; includedBy: ModuleSlug[] }> {
+  const out = {} as Record<
+    ModuleSlug,
+    { enabled: boolean; source: ModuleEnabledSource; includedBy: ModuleSlug[] }
+  >;
+  for (const m of ALL_MODULES) {
+    if (readModuleFlag(settings, m)) {
+      out[m] = { enabled: true, source: 'explicit', includedBy: [] };
+      continue;
+    }
+    const includedBy = (BUNDLED_FREE[m] ?? []).filter((p) => readModuleFlag(settings, p));
+    out[m] = includedBy.length
+      ? { enabled: true, source: 'bundled', includedBy }
+      : { enabled: false, source: 'off', includedBy: [] };
+  }
+  return out;
+}
+
 export class ModuleDisabledError extends Error {
   readonly code = 'MODULE_DISABLED' as const;
   readonly module: ModuleSlug;
@@ -101,8 +199,10 @@ export async function isModuleEnabled(tenantId: string, module: ModuleSlug): Pro
 
   // Default-deny: an unset flag means the module is not active. This mirrors the
   // production billing model — modules opt in via Stripe subscription. Dev/test
-  // enables modules explicitly via the seed.
-  const enabled = readModuleFlag(tenant?.settings, module);
+  // enables modules explicitly via the seed. `isModuleFlagOn` also honors the
+  // BUNDLED_FREE graph (e.g. `invoicing` is on for any B2B/Commerce tenant), so
+  // the existing per-module gates "just pass" for bundled capabilities.
+  const enabled = isModuleFlagOn(tenant?.settings, module);
 
   cache.set(key, { enabled, expiresAt: Date.now() + TTL_MS });
   return enabled;
@@ -117,7 +217,9 @@ export async function listEnabledModules(tenantId: string): Promise<ModuleSlug[]
     where: { id: tenantId },
     select: { settings: true },
   });
-  return ALL_MODULES.filter((m) => readModuleFlag(tenant?.settings, m));
+  // Includes BUNDLED_FREE capabilities (invoicing rides along with B2B/Commerce)
+  // so the sidebar / breadcrumb switcher surface them for those tenants.
+  return ALL_MODULES.filter((m) => isModuleFlagOn(tenant?.settings, m));
 }
 
 function readModuleFlag(settings: unknown, module: ModuleSlug): boolean {

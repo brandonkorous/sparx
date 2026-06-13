@@ -8,11 +8,10 @@
 // rejects deeper trees). Reused for a scheduled trigger's predicate `where`.
 //
 // Condition fields + values are open (`field: string`, `value: unknown`), so the
-// field input offers curated suggestions via a datalist but accepts free text,
-// and values are lightly coerced (true/false → boolean, numeric → number) so a
-// natural entry like `customer.totalSpent ≥ 100` stores a real number.
+// field input is a <Combobox> offering curated suggestions while accepting free
+// text, and values are lightly coerced (true/false → boolean, numeric → number)
+// so a natural entry like `customer.totalSpent ≥ 100` stores a real number.
 
-import * as React from 'react';
 import {
   Button,
   Input,
@@ -38,6 +37,9 @@ import {
   operatorDef,
   primitiveText,
 } from '../_lib/catalog';
+import { Combobox } from './combobox';
+
+const FIELD_OPTIONS = COMMON_CONDITION_FIELDS.map((f) => ({ value: f }));
 
 function coerceScalar(raw: string): unknown {
   const s = raw.trim();
@@ -70,12 +72,10 @@ function ConditionRow({
   condition,
   onChange,
   onRemove,
-  listId,
 }: {
   condition: Condition;
   onChange: (next: Condition) => void;
   onRemove: () => void;
-  listId: string;
 }) {
   const def = operatorDef(condition.operator);
 
@@ -86,12 +86,14 @@ function ConditionRow({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Input
-        list={listId}
+      <Combobox
         value={condition.field}
+        onChange={(field) => onChange({ ...condition, field })}
+        options={FIELD_OPTIONS}
         placeholder="customer.type"
-        onChange={(e) => onChange({ ...condition, field: e.target.value })}
-        className="w-56 font-mono text-sm"
+        searchPlaceholder="Search or type a field…"
+        customHint="Use this exact field"
+        triggerClassName="w-56"
         aria-label="Field"
       />
       <Select
@@ -146,8 +148,6 @@ interface Props {
   depth?: number;
   /** Present on a nested sub-group → renders a remove control. */
   onRemove?: () => void;
-  /** Shared datalist id for field suggestions (created once at the root). */
-  fieldListId?: string;
 }
 
 export function ConditionEditor({
@@ -156,10 +156,7 @@ export function ConditionEditor({
   label = 'conditions',
   depth = 1,
   onRemove,
-  fieldListId,
 }: Props) {
-  const reactId = React.useId();
-  const listId = fieldListId ?? `cond-fields-${reactId}`;
   const isRoot = depth === 1;
   const canNest = depth < MAX_CONDITION_DEPTH;
 
@@ -194,14 +191,6 @@ export function ConditionEditor({
           : 'flex flex-col gap-3 rounded-md border-l-2 border-[var(--module-active)] bg-[var(--color-bg-subtle)] p-3'
       }
     >
-      {isRoot && (
-        <datalist id={listId}>
-          {COMMON_CONDITION_FIELDS.map((f) => (
-            <option key={f} value={f} />
-          ))}
-        </datalist>
-      )}
-
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Label className="text-sm">Match</Label>
@@ -244,7 +233,6 @@ export function ConditionEditor({
                 key={i}
                 depth={depth + 1}
                 label={label}
-                fieldListId={listId}
                 value={node}
                 onChange={(next) => updateNode(i, next)}
                 onRemove={() => removeNode(i)}
@@ -253,7 +241,6 @@ export function ConditionEditor({
               <ConditionRow
                 key={i}
                 condition={node as Condition}
-                listId={listId}
                 onChange={(next) => updateNode(i, next)}
                 onRemove={() => removeNode(i)}
               />

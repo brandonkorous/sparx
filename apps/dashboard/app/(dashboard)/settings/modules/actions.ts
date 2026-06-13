@@ -30,6 +30,7 @@ const VALID_SLUGS: ReadonlySet<ModuleSlug> = new Set([
   'crm',
   'email',
   'b2b',
+  'invoicing',
   'dropship',
   'inventory',
   'chat',
@@ -65,6 +66,14 @@ export async function setModuleEnabledAction(
 export interface ModuleState {
   slug: ModuleSlug;
   enabled: boolean;
+  // Why it's on: 'explicit' = purchased/toggled; 'bundled' = derived free from a
+  // provider module (invoicing rides along with B2B/Commerce); 'off'.
+  source: 'explicit' | 'bundled' | 'off';
+  // Providers that bundle this capability free (set when source === 'bundled').
+  includedBy: ModuleSlug[];
+  // Enabled modules that REQUIRE this one — non-empty means the toggle is locked
+  // on (you must disable the dependent first, e.g. Commerce while B2B is on).
+  requiredBy: ModuleSlug[];
 }
 
 export async function listModuleStateForCurrentTenant(): Promise<ModuleState[]> {
