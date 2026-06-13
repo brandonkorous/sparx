@@ -30,6 +30,9 @@ COPY packages/crm/package.json packages/crm/
 COPY packages/crm-schemas/package.json packages/crm-schemas/
 COPY packages/commerce/package.json packages/commerce/
 COPY packages/commerce-schemas/package.json packages/commerce-schemas/
+# @sparx/payments is a dep of @sparx/commerce (checkout/return services); its only
+# workspace dep is @sparx/db (above). Needed for the filtered install to resolve.
+COPY packages/payments/package.json packages/payments/
 COPY packages/integration-framework/package.json packages/integration-framework/
 COPY packages/provider-avalara/package.json packages/provider-avalara/
 COPY packages/provider-easypost/package.json packages/provider-easypost/
@@ -73,6 +76,7 @@ COPY packages/crm packages/crm
 COPY packages/crm-schemas packages/crm-schemas
 COPY packages/commerce packages/commerce
 COPY packages/commerce-schemas packages/commerce-schemas
+COPY packages/payments packages/payments
 COPY packages/integration-framework packages/integration-framework
 COPY packages/provider-avalara packages/provider-avalara
 COPY packages/provider-easypost packages/provider-easypost
