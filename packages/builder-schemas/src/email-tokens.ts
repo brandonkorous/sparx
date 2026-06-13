@@ -14,7 +14,7 @@
 // Pure functions + types (no zod, no DB, no React) — client + server safe, like
 // the rest of `binding.ts` / `runtime.ts`.
 
-import { bindingSourceKey } from './runtime';
+import { bindingSourceKey, resolvePath } from './runtime';
 import type { BuilderNode } from './node';
 
 /** The grammar: `{{ <path> [?? <fallback>] }}`. Global; constructed per use so
@@ -80,6 +80,104 @@ export function interpolateEmailTokens(input: string, resolve: (path: string) =>
     const text = asText(resolve(path));
     return text !== '' ? text : (fallback ?? '');
   });
+}
+
+// ── Editor sample data (docs/93) ──────────────────────────────────────────────
+//
+// The Email Builder CANVAS shows authored copy with its merge tokens still raw
+// (`Welcome to {{tenant.name}}`), which reads as broken. These representative
+// sample values let the canvas interpolate tokens to plausible text — so the editor
+// reads like a real email — without any tenant data fetch. The REAL send resolves
+// the same tokens against live `DataSources` (resolveEmailData); this is preview
+// gloss only, keyed to the docs/91 §3 vocabulary + the EMAIL_SOURCES fields.
+
+export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
+  tenant: { name: 'Acme Supply Co.', storeUrl: '#', supportEmail: 'help@acme.example' },
+  customer: {
+    firstName: 'Alex',
+    lastName: 'Rivera',
+    fullName: 'Alex Rivera',
+    email: 'alex@example.com',
+    company: 'Rivera & Co.',
+  },
+  recipient: { firstName: 'Alex', lastName: 'Rivera', email: 'alex@example.com' },
+  order: {
+    number: '1042',
+    status: 'paid',
+    total: '$84.00',
+    subtotal: '$78.00',
+    placedAt: 'Jun 12, 2026',
+    reviewUrl: '#',
+    statusUrl: '#',
+    shippingAddress: {
+      name: 'Alex Rivera',
+      line1: '128 Maple Ave',
+      city: 'Springfield',
+      region: 'IL',
+      postalCode: '62704',
+      country: 'US',
+      cityStateZip: 'Springfield, IL 62704',
+      oneLine: 'Alex Rivera, 128 Maple Ave, Springfield, IL 62704, US',
+    },
+  },
+  shipping: {
+    status: 'shipped',
+    carrier: 'UPS',
+    service: 'Ground',
+    trackingNumber: '1Z999AA10123456784',
+    trackingUrl: '#',
+    shippedAt: 'Jun 13, 2026',
+  },
+  appointment: {
+    service: 'Oil Change',
+    date: 'Jun 14, 2026',
+    time: '2:30 PM',
+    when: 'Jun 14, 2026 at 2:30 PM',
+    duration: '60 min',
+    status: 'confirmed',
+    vehicle: '2019 Ford F-250',
+    cancellationReason: '',
+    manageUrl: '#',
+  },
+  cart: { total: '$48.00', itemCount: '2', recoveryUrl: '#' },
+  quote: {
+    number: 'Q-204',
+    status: 'submitted',
+    total: '$1,250.00',
+    validUntil: 'Jun 30, 2026',
+    reviewUrl: '#',
+  },
+  invoice: {
+    number: 'INV-204',
+    total: '$1,250.00',
+    balance: '$1,250.00',
+    dueDate: 'Jun 30, 2026',
+    daysUntilDue: '5',
+    overdueDays: '0',
+    payUrl: '#',
+  },
+  b2bAccount: {
+    companyName: 'Rivera & Co.',
+    status: 'approved',
+    paymentTerms: 'Net 30',
+    creditLimit: '$10,000.00',
+    portalUrl: '#',
+  },
+  loyalty: { pointsLabel: '$15.00', tierName: 'Store credit' },
+  promotion: {
+    title: 'Summer Sale',
+    body: '20% off this week',
+    ctaLabel: 'Shop now',
+    ctaHref: '#',
+  },
+};
+
+/** Interpolate an authored string's merge tokens against the editor SAMPLE data
+ *  (docs/93) — the canvas's "reads like a real email" gloss. A string with no
+ *  `{{token}}` is returned unchanged, so it's a safe no-op for non-email content. */
+export function sampleEmailText(input: string): string {
+  if (!input.includes('{{')) return input;
+  return interpolateEmailTokens(input, (path) => resolvePath({ root: SAMPLE_EMAIL_DATA }, path));
 }
 
 // ── Source collection (which DataSources a tree actually references) ───────────

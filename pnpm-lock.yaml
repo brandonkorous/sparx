@@ -1899,6 +1899,9 @@ importers:
       '@sparx/marketplace-schemas':
         specifier: workspace:*
         version: link:../../packages/marketplace-schemas
+      '@sparx/payments':
+        specifier: workspace:*
+        version: link:../../packages/payments
       '@sparx/provider-shippo':
         specifier: workspace:*
         version: link:../../packages/provider-shippo

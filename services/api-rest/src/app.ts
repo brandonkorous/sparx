@@ -64,6 +64,7 @@ import webhookRoutes from './routes/v1/webhooks/subscriptions.js';
 import stripeWebhookRoutes from './routes/v1/webhooks/stripe.js';
 import stripeBillingWebhookRoutes from './routes/v1/webhooks/stripe-billing.js';
 import providerWebhookRoutes from './routes/v1/webhooks/providers.js';
+import paymentWebhookRoutes from './routes/v1/webhooks/payments.js';
 import sitemapRoutes from './routes/v1/sitemap.js';
 import rssRoutes from './routes/v1/rss.js';
 import publicContentRoutes from './routes/v1/public/content.js';
@@ -597,6 +598,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(stripeWebhookRoutes);
   await app.register(stripeBillingWebhookRoutes);
   await app.register(providerWebhookRoutes);
+  await app.register(paymentWebhookRoutes);
   await app.register(sitemapRoutes);
   await app.register(rssRoutes);
   await app.register(publicContentRoutes);

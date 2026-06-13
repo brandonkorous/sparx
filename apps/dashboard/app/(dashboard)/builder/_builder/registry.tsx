@@ -52,7 +52,12 @@ import {
 // searchable list) lives with the picker; here we only need the renderer.
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 
-import { coerceNavLinks, readClassGroup, setClassGroup } from '@sparx/builder-schemas';
+import {
+  coerceNavLinks,
+  readClassGroup,
+  sampleEmailText,
+  setClassGroup,
+} from '@sparx/builder-schemas';
 // The canvas renders the SAME @sparx/site-ui components the live site does, so
 // the preview is faithful instead of a `bx-*` approximation (docs/62 / docs/23
 // §17). The remaining `bx-*` are editor chrome (selection, palette) + the media
@@ -431,7 +436,10 @@ const DEFS: ComponentDef[] = [
       // Graceful empty (mirrors the live renderer): a bound heading whose value
       // resolves empty falls back to its authored static text, not a bare dash, so
       // preview == production for a hero on a site with no records yet.
-      const fallback = firstString(node.props.text, 'Heading');
+      // Interpolate any `{{merge.token}}` against editor SAMPLE data (docs/93) so an
+      // email heading reads "Welcome to Acme Supply Co." in the canvas, not raw
+      // braces. A no-op for site copy (no tokens); the real send resolves live data.
+      const fallback = sampleEmailText(firstString(node.props.text, 'Heading'));
       const text = bound ? firstString(value, fallback) : fallback;
       return (
         <Heading level={level} size={size}>
@@ -466,7 +474,7 @@ const DEFS: ComponentDef[] = [
       const variant = ((node.props.variant as string) ?? 'body') as 'body' | 'eyebrow' | 'meta';
       // Graceful empty (mirrors the live renderer): bound-but-empty falls back to
       // the authored static text rather than a bare dash.
-      const fallback = firstString(node.props.text, 'Some text');
+      const fallback = sampleEmailText(firstString(node.props.text, 'Some text'));
       const text = bound ? firstString(value, fallback) : fallback;
       return <Text variant={variant}>{text}</Text>;
     },
@@ -587,7 +595,9 @@ const DEFS: ComponentDef[] = [
     // (docs/47). The dropped Icon renders inline AFTER the label via `children`.
     acceptsChildren: true,
     renderLeaf: ({ node, value, bound, children }) => {
-      const label = bound ? firstString(value, 'Button') : firstString(node.props.label, 'Button');
+      const label = bound
+        ? firstString(value, 'Button')
+        : sampleEmailText(firstString(node.props.label, 'Button'));
       // Authored with the Surface recipe → render the REAL button so the
       // inspector's Color / Variant / size paint live against the canvas-scoped
       // @sparx/site-ui sheet (docs/47). Legacy buttons (no recipe class — e.g.

@@ -53,6 +53,7 @@ COPY packages/marketplace-schemas ./packages/marketplace-schemas
 COPY packages/cms-editor ./packages/cms-editor
 COPY packages/email-platform ./packages/email-platform
 COPY packages/godaddy ./packages/godaddy
+COPY packages/payments ./packages/payments
 COPY services/api-rest ./services/api-rest
 
 # First-party marketplace bundles (docs/85). Read at ingest time by

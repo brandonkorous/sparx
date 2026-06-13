@@ -11,6 +11,8 @@ import { SecretNotFoundError, type SecretReader } from '@sparx/integration-frame
 import { registerStripeProviders } from '@sparx/provider-stripe';
 import { registerShippoProviders } from '@sparx/provider-shippo';
 
+import { bootstrapPayments } from './payments-bootstrap.js';
+
 let booted = false;
 
 export function bootstrapProviders(): void {
@@ -31,6 +33,9 @@ export function bootstrapProviders(): void {
   }
 
   setSecretReader(buildSecretReader());
+
+  // The go-forward payment surface (@sparx/payments gateways + secret reader).
+  bootstrapPayments();
 }
 
 /** env: refs hit process.env directly. projects/… refs hit Google Secret
