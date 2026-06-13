@@ -18,13 +18,26 @@ function siteCard(page: Page, name: string): Locator {
   return page.locator('[data-testid="site-card"]').filter({ hasText: name });
 }
 
-/** Create a secondary site and wait for the toast confirming success. */
+/** Create a secondary site through the New-site wizard (docs/49 Phase 8b), taking
+ *  the blank-site path so the helper is deterministic (no blueprint dependency),
+ *  and wait for the new card to appear. */
 async function createSecondary(page: Page, name: string, slug: string): Promise<void> {
   await page.getByRole('button', { name: 'New site' }).click();
+  // Step 1 — starting point: a blank site.
+  await page.getByRole('button', { name: /Blank site/ }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  // Step 2 — name & address.
   await page.getByLabel('Site name').fill(name);
-  await page.getByLabel('URL handle (optional)').fill(slug);
-  await page.getByRole('button', { name: 'Create', exact: true }).click();
-  await expect(page.getByText('Site created')).toBeVisible({ timeout: 15_000 });
+  await page.getByLabel('URL handle').fill(slug);
+  await page.getByRole('button', { name: 'Continue' }).click();
+  // Step 3 — review & create.
+  await page.getByRole('button', { name: 'Create site' }).click();
+  // Success panel, then close → the new card appears on the refreshed page.
+  await expect(page.getByRole('heading', { name: new RegExp(name) })).toBeVisible({
+    timeout: 15_000,
+  });
+  await page.getByRole('button', { name: 'Done' }).click();
+  await expect(siteCard(page, name)).toBeVisible({ timeout: 15_000 });
 }
 
 /** Delete a secondary site via the AlertDialog confirm.

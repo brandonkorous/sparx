@@ -407,7 +407,9 @@ export function NewSiteWizard({
         supporting: result.ok
           ? result.live
             ? 'Your new site is live. Keep editing it anytime in the Builder.'
-            : 'Your new site is set up as drafts. Review and go live when you’re ready.'
+            : result.installId
+              ? 'Your new site is set up as drafts. Review and go live when you’re ready.'
+              : 'Your blank site is ready. Open it in the Builder to start designing.'
           : (error ?? 'The site was created, but the blueprint didn’t finish installing.'),
       }}
     >

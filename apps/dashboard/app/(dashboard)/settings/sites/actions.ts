@@ -49,40 +49,6 @@ export async function setActiveSite(propertyId: string): Promise<ActionResult> {
   return { ok: true };
 }
 
-const CreateSiteSchema = z.object({
-  name: z.string().min(1, 'Site name is required.').max(255),
-  slug: z
-    .string()
-    .max(63)
-    .optional()
-    .transform((s) => (s?.trim() ? s.trim() : undefined)),
-});
-
-/** Create an additional site and switch to it (so the next Builder load opens
- *  the new, empty site ready to author). */
-export async function createSite(formData: FormData): Promise<ActionResult> {
-  const parsed = CreateSiteSchema.safeParse({
-    name: formData.get('name'),
-    slug: formData.get('slug') ?? undefined,
-  });
-  if (!parsed.success) {
-    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid input.' };
-  }
-  try {
-    const created = await api.post<Property>('/v1/properties', parsed.data);
-    (await cookies()).set(ACTIVE_PROPERTY_COOKIE, created.id, {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 365,
-    });
-  } catch (err) {
-    return fail(err);
-  }
-  revalidateSiteScopes();
-  return { ok: true };
-}
-
 // ── New-site wizard (docs/49 Phase 8b) ─────────────────────────────────────
 // One guided flow that provisions a whole site: create the Property, optionally
 // install a blueprint INTO it (the new site — not the active one, hence the
