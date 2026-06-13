@@ -87,7 +87,7 @@ describe('per-site email — provisioning + override join', () => {
         where: { propertyId: null, key: { not: null } },
         select: { key: true },
       });
-      return rows.map((r) => r.key as string);
+      return rows.map((r) => r.key!);
     });
   }
 
