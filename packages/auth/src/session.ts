@@ -14,6 +14,9 @@ export interface SparxSession {
   user: {
     id: string;
     email: string;
+    /** Better Auth standard field. Verify-but-don't-block: sign-in never gates
+     *  on this, but sensitive actions + the dashboard nudge banner read it. */
+    emailVerified: boolean;
     name?: string | null;
     image?: string | null;
     tenantId: string;

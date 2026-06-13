@@ -140,6 +140,9 @@ importers:
       '@sparx/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@sparx/web-chrome':
+        specifier: workspace:*
+        version: link:../../packages/web-chrome
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -286,6 +289,9 @@ importers:
       '@sparx/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@sparx/web-chrome':
+        specifier: workspace:*
+        version: link:../../packages/web-chrome
       geist:
         specifier: ^1.3.1
         version: 1.7.1(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))
@@ -482,6 +488,9 @@ importers:
       '@sparx/automation-schemas':
         specifier: workspace:*
         version: link:../automation-schemas
+      '@sparx/builder-schemas':
+        specifier: workspace:*
+        version: link:../builder-schemas
       '@sparx/crm':
         specifier: workspace:*
         version: link:../crm
@@ -1598,6 +1607,28 @@ importers:
       vitest:
         specifier: ^4.1.7
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
+  packages/web-chrome:
+    dependencies:
+      '@sparx/ui':
+        specifier: workspace:*
+        version: link:../ui
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.15
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.3(@types/react@19.2.15)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.6(react@19.2.6)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
 
   services/api-graphql:
     dependencies:

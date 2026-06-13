@@ -30,9 +30,31 @@ import {
   type TenantCtx,
 } from '@sparx/automation';
 import { enqueueSend, type ScheduledSendBody } from '@sparx/email-sends';
+import { interpolateEmailTokens } from '@sparx/builder-schemas';
 import { z } from 'zod';
 
 import { optionalBoolField, optionalEntityId, requireStringField } from './entity.js';
+
+/** The entity ids a designed (Builder) email resolves its DataSources against at
+ *  dispatch (docs/91 §3), read from the trigger's resolved fields. */
+function entityRefsFromFields(fields: EffectInput['fields']): Record<string, string | null> {
+  return {
+    customerId: optionalEntityId(fields, 'customer.id') ?? null,
+    orderId: optionalEntityId(fields, 'order.id') ?? null,
+    cartId: optionalEntityId(fields, 'cart.id') ?? null,
+    quoteId: optionalEntityId(fields, 'quote.id') ?? null,
+    billingDocumentId: optionalEntityId(fields, 'invoice.id') ?? null,
+    b2bAccountId: optionalEntityId(fields, 'b2bAccount.id') ?? null,
+  };
+}
+
+/** Interpolate `{{dotted.path}}` tokens in an internal-alert string against the
+ *  trigger's flat resolved fields (whose keys ARE the dotted paths). Internal mail
+ *  is pre-rendered at enqueue, so its subject/body merge here rather than at the
+ *  deferred render. */
+function interpInternal(input: string, fields: EffectInput['fields']): string {
+  return input.includes('{{') ? interpolateEmailTokens(input, (path) => fields[path]) : input;
+}
 
 // The site an automation send is on behalf of (docs/49 Phase 7b) — read from
 // the trigger entity's resolved fields so the eventual render uses that site's
@@ -101,16 +123,16 @@ export function installEmailActions(): void {
       }
 
       const customerId = optionalEntityId(effect.fields, 'customer.id') ?? null;
-      const body: ScheduledSendBody =
-        'builderEmailId' in cfg
-          ? {
-              defer: {
-                builderEmailId: cfg.builderEmailId,
-                subject: cfg.subject,
-                preheader: cfg.preheader,
-              },
-            }
-          : { template: cfg.template, props: cfg.props };
+      const isDesigned = 'builderEmailId' in cfg;
+      const body: ScheduledSendBody = isDesigned
+        ? {
+            defer: {
+              builderEmailId: cfg.builderEmailId,
+              subject: cfg.subject,
+              preheader: cfg.preheader,
+            },
+          }
+        : { template: cfg.template, props: cfg.props };
 
       const { enqueued, suppressed } = await enqueueSend(
         { tenantId: ctx.tenantId, tx: ctx.tx },
@@ -122,6 +144,14 @@ export function installEmailActions(): void {
           delaySeconds: cfg.delaySeconds,
           body,
           variables: { source: 'automation' },
+          // A designed email resolves its DataSources from the firing entity at
+          // dispatch (docs/91 §3); carry the refs + the trigger-time snapshot.
+          ...(isDesigned
+            ? {
+                entityRefs: entityRefsFromFields(effect.fields),
+                entitySnapshot: effect.fields,
+              }
+            : {}),
         }
       );
       return { recipient, enqueued, suppressed };
@@ -136,8 +166,14 @@ export function installEmailActions(): void {
       'external effect: enqueues a transactional ScheduledSend to a configured staff address; module-active + kill-switch gates apply',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = InternalConfig.parse(effect.config);
+      // Internal mail is pre-rendered here, so its `{{token}}` merge fields resolve
+      // now against the trigger's flat fields (docs/90 §3 internal alerts).
       const body: ScheduledSendBody = {
-        raw: { subject: cfg.subject, html: cfg.html ?? '', text: cfg.text ?? '' },
+        raw: {
+          subject: interpInternal(cfg.subject, effect.fields),
+          html: interpInternal(cfg.html ?? '', effect.fields),
+          text: interpInternal(cfg.text ?? '', effect.fields),
+        },
       };
       const { enqueued, suppressed } = await enqueueSend(
         { tenantId: ctx.tenantId, tx: ctx.tx },

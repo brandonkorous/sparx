@@ -1,7 +1,9 @@
+import { redirect } from 'next/navigation';
 import { listEnabledModules, requireSession } from '@sparx/auth';
 import { api } from '@/lib/api-rest-client';
 import { listProperties, getActivePropertyId, type Property } from '@/lib/sites';
 import { DashboardShell } from './_components/dashboard-shell';
+import { EmailVerificationBanner } from './_components/email-verification-banner';
 import { getUserPreferences } from './_shell/preferences';
 import { listFavorites, listRecents } from './_shell/service';
 
@@ -23,6 +25,18 @@ export default async function DashboardLayout({
   detail: React.ReactNode;
 }) {
   const { user } = await requireSession();
+
+  // Mandatory onboarding: a tenant that hasn't finished setup is always routed
+  // to the wizard before it can reach any dashboard page. `finishedAt` is set
+  // when the wizard finishes (or the user explicitly bows out). Fail OPEN on a
+  // read error so an API hiccup can never lock anyone out or cause a loop — the
+  // (onboarding) group has its own layout, so it's exempt from this guard.
+  const onboarding = await api
+    .get<{ finishedAt: string | null }>('/v1/tenant/onboarding')
+    .catch(() => null);
+  if (onboarding && !onboarding.finishedAt) {
+    redirect('/onboarding');
+  }
 
   const ctx = { userId: user.id, tenantId: user.tenantId };
 
@@ -53,6 +67,7 @@ export default async function DashboardLayout({
       preferences={preferences}
       detail={detail}
     >
+      {!user.emailVerified && <EmailVerificationBanner email={user.email} />}
       {children}
     </DashboardShell>
   );

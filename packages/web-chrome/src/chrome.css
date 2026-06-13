@@ -1,0 +1,85 @@
+/**
+ * @sparx/web-chrome — site-header styles.
+ *
+ * The `mkt-*` classes the shared <SiteHeader> needs. On the marketing site these
+ * also exist in apps/web's marketing.css (harmless duplication); the dashboard
+ * imports THIS file so the same header renders correctly there too. Token vars
+ * (--color-*, --font-*, --radius-md) come from @sparx/ui's tokens.css, which both
+ * apps load globally.
+ */
+
+/* ── RESPONSIVE VISIBILITY ───────────────────────────────────── */
+
+.mkt-hide-on-mobile {
+  display: initial;
+}
+@media (max-width: 640px) {
+  .mkt-hide-on-mobile {
+    display: none !important;
+  }
+}
+
+.mkt-hide-on-tablet {
+  display: initial;
+}
+@media (max-width: 1024px) {
+  .mkt-hide-on-tablet {
+    display: none !important;
+  }
+}
+
+.mkt-tablet-down-only-flex {
+  display: none !important;
+}
+@media (max-width: 1024px) {
+  .mkt-tablet-down-only-flex {
+    display: flex !important;
+  }
+}
+
+/* ── NAV LINKS ───────────────────────────────────────────────── */
+
+.mkt-navlink {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.mkt-navlink:hover {
+  color: var(--color-text-primary);
+}
+.mkt-navlink-trigger {
+  height: auto;
+  padding: 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+/* A single module row inside the megamenu panel. */
+.mkt-mm-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.12s ease;
+}
+.mkt-mm-item:hover {
+  background-color: var(--color-bg-page);
+}
+
+/* The mobile drawer pops out from the top, full-width, when open. */
+.mkt-mobile-drawer {
+  position: fixed;
+  inset: 64px 0 0 0;
+  background-color: var(--color-bg-page);
+  border-top: 1px solid var(--color-border-default);
+  padding: 24px var(--gutter-page, clamp(20px, 5vw, 64px));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 49;
+}

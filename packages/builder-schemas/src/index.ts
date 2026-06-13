@@ -9,6 +9,7 @@ export * from './class-utils';
 export * from './page';
 export * from './layout';
 export * from './email';
+export * from './email-tokens';
 export * from './component';
 export * from './starters';
 export * from './default-emails';

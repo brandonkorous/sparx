@@ -6,6 +6,7 @@ import { Column, Img, Row, Section } from '@react-email/components';
 import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 import {
   cardinalityOf,
+  interpolateEmailTokens,
   resolvePath,
   type BuilderNode,
   type DataSources,
@@ -16,6 +17,7 @@ import {
   EmailButton,
   EmailDivider,
   EmailHeading,
+  EmailLink,
   EmailMuted,
   EmailParagraph,
   spacing,
@@ -46,6 +48,19 @@ function defaultFrom(): string {
 }
 
 const CONTAINERS = new Set(['Section', 'Stack', 'Grid', 'Card']);
+
+/** Compliance context resolved per-recipient at dispatch (docs/91 §8): the
+ *  one-click unsubscribe URL the `unsubscribe_link` node renders + feeds into the
+ *  `List-Unsubscribe` header, and the CAN-SPAM physical address the
+ *  `physical_address` node renders (`EmailSettings.physicalAddress`). Empty in a
+ *  static preview — the unsubscribe link then points at '#' and the address node
+ *  renders nothing. Provided once at the tree root (parallel to BrandProvider) so
+ *  the two leaf nodes read it without prop-drilling. */
+export interface EmailComplianceContext {
+  unsubscribeUrl?: string;
+  physicalAddress?: string;
+}
+const ComplianceContext = React.createContext<EmailComplianceContext>({});
 
 type EmailDirection = 'stack' | 'row' | 'grid';
 type EmailSurface = 'none' | 'muted' | 'inverse' | 'brand';
@@ -163,29 +178,93 @@ function isProseDoc(value: unknown): boolean {
   );
 }
 
+/** Whether a `conditional_block`'s resolved `when` value counts as "present" —
+ *  an empty string / 0 / false / empty array / null all read as hidden, so an
+ *  optional credit line, quote expiry, or dunning note only renders when its
+ *  field actually carries a value. */
+function truthyWhen(value: unknown): boolean {
+  if (value == null) return false;
+  if (typeof value === 'string') return value.trim() !== '';
+  if (typeof value === 'number') return value !== 0;
+  if (typeof value === 'boolean') return value;
+  if (Array.isArray(value)) return value.length > 0;
+  return true;
+}
+
+/** A line-item table over a resolved collection (`order/cart/quote/invoice.items`).
+ *  Each item carries `name`/`description` · `quantity` · `unitPrice` · `lineTotal`
+ *  (already display-formatted strings from the resolver). Compact three-column
+ *  table — item · qty · amount — which renders cleanly at the ~560px email width.
+ *  Renders nothing for an empty/absent collection. */
+function LineItemTable({
+  items,
+  brand,
+}: {
+  items: unknown;
+  brand: BrandTokens;
+}): React.ReactElement | null {
+  const rows = Array.isArray(items) ? (items as Record<string, unknown>[]) : [];
+  if (rows.length === 0) return null;
+  const cellBase: React.CSSProperties = {
+    ...typography.body,
+    fontFamily: brand.fontBody,
+    color: brand.foreground,
+    padding: '8px 0',
+    verticalAlign: 'top',
+  };
+  return (
+    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <tbody>
+        {rows.map((item, i) => {
+          const name = asText(item.name) || asText(item.description);
+          const qty = asText(item.quantity);
+          const amount = asText(item.lineTotal) || asText(item.unitPrice);
+          return (
+            <tr key={i} style={{ borderBottom: `1px solid ${brand.border}` }}>
+              <td style={{ ...cellBase, textAlign: 'left' }}>{name}</td>
+              <td style={{ ...cellBase, textAlign: 'center', whiteSpace: 'nowrap' }}>
+                {qty ? `× ${qty}` : ''}
+              </td>
+              <td style={{ ...cellBase, textAlign: 'right', whiteSpace: 'nowrap' }}>{amount}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
 // ── Leaf rendering ─────────────────────────────────────────────────────────
 
 function Leaf({
   node,
   value,
   bound,
+  scope,
 }: {
   node: BuilderNode;
   value: unknown;
   bound: boolean;
+  scope: Scope;
 }): React.ReactElement | null {
   const p = node.props;
   const brand = useBrand();
+  const compliance = React.useContext(ComplianceContext);
+  // Interpolate `{{source.field}}` merge tokens in a static string prop against
+  // the current scope (docs/91 §3). A bound value is real data and never re-
+  // interpolated; only author-written copy/links carry tokens.
+  const interp = (s: string): string =>
+    s.includes('{{') ? interpolateEmailTokens(s, (path) => resolvePath(scope, path)) : s;
   switch (node.type) {
     case 'Heading': {
       const level = str(p, 'level') || 'h2';
-      const text = (bound ? asText(value) : '') || str(p, 'text');
+      const text = (bound ? asText(value) : '') || interp(str(p, 'text'));
       if (!text) return null;
       return <EmailHeading level={level === 'h1' ? 1 : 2}>{text}</EmailHeading>;
     }
     case 'Text': {
       const variant = str(p, 'variant') || 'body';
-      const text = (bound ? asText(value) : '') || str(p, 'text');
+      const text = (bound ? asText(value) : '') || interp(str(p, 'text'));
       if (!text) return null;
       // Eyebrow / meta read as the muted, smaller chrome; body is a paragraph.
       return variant === 'body' ? (
@@ -215,8 +294,8 @@ function Leaf({
       );
     }
     case 'Button': {
-      const label = ((bound ? asText(value) : '') || str(p, 'label') || 'Button').trim();
-      const href = str(p, 'href') || '#';
+      const label = ((bound ? asText(value) : '') || interp(str(p, 'label')) || 'Button').trim();
+      const href = interp(str(p, 'href')) || '#';
       return <EmailButton href={href}>{label}</EmailButton>;
     }
     case 'Divider':
@@ -227,16 +306,37 @@ function Leaf({
       // product / cart / post image resolved per item. A bound value (URL string,
       // `{ url }` asset, or images array) wins over the static src.
       const boundSrc = bound ? asImageUrl(value) : '';
-      const src = boundSrc || str(p, 'src');
+      const src = boundSrc || interp(str(p, 'src'));
       if (!src) return null;
       return (
         <Img
           src={src}
-          alt={str(p, 'alt')}
+          alt={interp(str(p, 'alt'))}
           width="100%"
           style={{ borderRadius: 8, margin: '0 auto' }}
         />
       );
+    }
+    case 'line_item_table':
+      // A bound collection (order/cart/quote/invoice.items). `value` is the
+      // resolved array; the component renders nothing when it's empty/absent.
+      return <LineItemTable items={value} brand={brand} />;
+    case 'unsubscribe_link': {
+      // Marketing compliance (docs/91 §8). The real one-click URL arrives via the
+      // compliance context at dispatch; '#' in a static preview.
+      const href = compliance.unsubscribeUrl ?? '#';
+      return (
+        <EmailMuted>
+          You’re receiving this because you opted in. <EmailLink href={href}>Unsubscribe</EmailLink>
+        </EmailMuted>
+      );
+    }
+    case 'physical_address': {
+      // The tenant's CAN-SPAM postal address (EmailSettings.physicalAddress). No
+      // address configured → nothing rendered (the gate, not the node, enforces
+      // presence for marketing sends).
+      const addr = compliance.physicalAddress;
+      return addr ? <EmailMuted>{addr}</EmailMuted> : null;
     }
     default:
       return null;
@@ -253,12 +353,36 @@ function EmailNode({
   scope: Scope;
 }): React.ReactElement | null {
   const brand = useBrand();
+
+  // A conditional block renders its children only when `props.when` resolves
+  // truthy (docs/91 §3) — an optional credit line, quote expiry, dunning note.
+  // It carries no binding (the gate is the `when` path), so it's handled before
+  // the container/leaf split.
+  if (node.type === 'conditional_block') {
+    const when = typeof node.props.when === 'string' ? node.props.when : '';
+    const show = when === '' ? true : truthyWhen(resolvePath(scope, when));
+    if (!show) return null;
+    const kids = node.children ?? [];
+    return (
+      <>
+        {kids.map((child, i) => (
+          <div
+            key={`${child.id}-${i}`}
+            style={i < kids.length - 1 ? { marginBottom: spacing.md } : undefined}
+          >
+            <EmailNode node={child} scope={scope} />
+          </div>
+        ))}
+      </>
+    );
+  }
+
   const isContainer = CONTAINERS.has(node.type);
   const bound = Boolean(node.binding);
   const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
 
   if (!isContainer) {
-    return <Leaf node={node} value={value} bound={bound} />;
+    return <Leaf node={node} value={value} bound={bound} scope={scope} />;
   }
 
   const kids = node.children ?? [];
@@ -352,6 +476,10 @@ export interface RenderEmailTreeInput {
   /** Resolved data sources for bound nodes. Omit for a static render (bound
    *  leaves then fall back to their props; the Phase-1 case). */
   data?: DataSources;
+  /** Per-recipient compliance values (docs/91 §8) — the one-click unsubscribe URL
+   *  and the tenant's physical address — read by the `unsubscribe_link` /
+   *  `physical_address` nodes. Omit for a static preview. */
+  compliance?: EmailComplianceContext;
 }
 
 export interface RenderEmailTreeOptions {
@@ -362,15 +490,17 @@ export interface RenderEmailTreeOptions {
  *  and callers that embed the tree. The branded frame (wordmark header + legal
  *  footer) wraps the body; the author composes only the body tree. */
 export function composeEmailTree(
-  input: Pick<RenderEmailTreeInput, 'tree' | 'subject' | 'preheader' | 'data'>,
+  input: Pick<RenderEmailTreeInput, 'tree' | 'subject' | 'preheader' | 'data' | 'compliance'>,
   opts: RenderEmailTreeOptions = {}
 ): React.ReactElement {
   const scope: Scope = { root: input.data ?? {} };
   return (
     <BrandProvider brand={opts.brand}>
-      <EmailLayout preview={input.preheader ?? input.subject}>
-        <EmailNode node={input.tree} scope={scope} />
-      </EmailLayout>
+      <ComplianceContext.Provider value={input.compliance ?? {}}>
+        <EmailLayout preview={input.preheader ?? input.subject}>
+          <EmailNode node={input.tree} scope={scope} />
+        </EmailLayout>
+      </ComplianceContext.Provider>
     </BrandProvider>
   );
 }

@@ -1,24 +1,8 @@
-import { Container, Stack, Text, Wordmark } from '@sparx/ui';
-import Link from 'next/link';
+import '@sparx/web-chrome/chrome.css';
 
-// Auth pages sit outside the (dashboard) route group so they don't pick up
-// the Sidebar + topbar chrome. A simple centered layout with the wordmark.
+// Auth pages render their own full-screen split-panel chrome (see AuthScreen),
+// so the layout only loads the shared site-header styles. The (auth) group sits
+// outside (dashboard), so there's no sidebar/topbar here.
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex min-h-screen flex-col bg-[var(--color-bg-subtle)]">
-      <header className="flex items-center justify-between border-b border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-6 py-4">
-        <Link href="/">
-          <Wordmark icon />
-        </Link>
-        <Text size="sm" variant="muted">
-          Sign in
-        </Text>
-      </header>
-      <main className="flex flex-1 items-center justify-center px-4 py-12">
-        <Container size="sm">
-          <Stack gap={6}>{children}</Stack>
-        </Container>
-      </main>
-    </div>
-  );
+  return <>{children}</>;
 }

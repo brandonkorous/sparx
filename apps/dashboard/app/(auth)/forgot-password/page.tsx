@@ -2,20 +2,9 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Heading, Input, Label, Stack, Text } from '@sparx/ui';
 import { authClient } from '@sparx/auth/client';
+import { AuthScreen } from '../_components/auth-screen';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = React.useState('');
@@ -28,36 +17,37 @@ export default function ForgotPasswordPage() {
     setError(null);
     setSubmitting(true);
 
-    const result = await authClient.requestPasswordReset({
+    await authClient.requestPasswordReset({
       email,
       redirectTo: '/reset-password',
     });
 
     setSubmitting(false);
-
-    if (result.error) {
-      // Don't leak existence of the account — show the same success state.
-      // Real error logging happens server-side.
-    }
+    // Don't leak whether the account exists — always show the same success
+    // state. Real error logging happens server-side.
     setSubmitted(true);
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <Heading level={2}>Reset your password</Heading>
-        <CardDescription>
-          Enter the email tied to your account and we&apos;ll send you a reset link.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <AuthScreen
+      lede={{
+        title: 'Reset your password.',
+        blurb: "We'll email you a secure link to choose a new one.",
+      }}
+    >
+      <Stack gap={6}>
+        <div>
+          <Heading level={2}>Reset your password</Heading>
+          <Text variant="muted">
+            Enter the email tied to your account and we&apos;ll send you a reset link.
+          </Text>
+        </div>
+
         {submitted ? (
-          <Stack gap={3}>
-            <Text size="sm">
-              If an account exists for <strong>{email}</strong>, you&apos;ll get an email within a
-              minute. Check your spam folder if you don&apos;t see it.
-            </Text>
-          </Stack>
+          <Text size="sm">
+            If an account exists for <strong>{email}</strong>, you&apos;ll get an email within a
+            minute. Check your spam folder if you don&apos;t see it.
+          </Text>
         ) : (
           <form onSubmit={onSubmit} noValidate>
             <Stack gap={4}>
@@ -86,12 +76,11 @@ export default function ForgotPasswordPage() {
             </Stack>
           </form>
         )}
-      </CardContent>
-      <CardFooter>
+
         <Button color="primary" variant="link" size="sm" asChild>
           <Link href="/sign-in">Back to sign in</Link>
         </Button>
-      </CardFooter>
-    </Card>
+      </Stack>
+    </AuthScreen>
   );
 }

@@ -32,6 +32,12 @@ export { useMediaQuery } from './hooks/use-media-query';
 // ── Brand ────────────────────────────────────────────────
 export { Wordmark, type WordmarkProps } from './components/brand/wordmark';
 export { SparxMark, type SparxMarkProps } from './components/brand/sparx-mark';
+export {
+  BrandRail,
+  RailWordmark,
+  RAIL_BG,
+  type BrandRailProps,
+} from './components/brand/brand-rail';
 
 // ── Primitives ────────────────────────────────────────────
 export { Spinner, type SpinnerProps } from './components/primitives/spinner';
@@ -74,6 +80,7 @@ export { Stack, type StackProps } from './components/layout/stack';
 export { Grid, type GridProps } from './components/layout/grid';
 export { Container, containerVariants, type ContainerProps } from './components/layout/container';
 export { PageHeader, type PageHeaderProps } from './components/layout/page-header';
+export { AuthFrame, type AuthFrameProps } from './components/layout/auth-frame';
 export { ScrollArea, ScrollBar } from './components/layout/scroll-area';
 export {
   SidebarAppShell,
@@ -84,6 +91,7 @@ export {
 
 // ── Form ──────────────────────────────────────────────────
 export { Input, inputVariants, type InputProps } from './components/form/input';
+export { PasswordInput, type PasswordInputProps } from './components/form/password-input';
 export {
   NativeSelect,
   nativeSelectVariants,

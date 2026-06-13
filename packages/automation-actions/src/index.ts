@@ -11,6 +11,7 @@
 export { installCrmActions } from './crm.js';
 export { installB2bActions } from './b2b.js';
 export { installEmailActions } from './email.js';
+export { installEntityResolvers } from './resolvers.js';
 export { seedSystemAutomations, SYSTEM_AUTOMATIONS } from './seeds/index.js';
 export {
   reconcileSystemSeeds,
@@ -21,11 +22,13 @@ export {
 import { installB2bActions } from './b2b.js';
 import { installCrmActions } from './crm.js';
 import { installEmailActions } from './email.js';
+import { installEntityResolvers } from './resolvers.js';
 
-/** Register every module action executor + scanner (idempotent). */
+/** Register every module action executor + entity resolver/scanner (idempotent). */
 export function installModuleActions(): void {
   installCrmActions();
   installB2bActions();
   installEmailActions();
+  installEntityResolvers();
   // installCommerceActions(); — Slice F (commerce.*)
 }

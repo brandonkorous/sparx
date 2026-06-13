@@ -15,6 +15,11 @@ import {
   type WelcomeMerchantEmailProps,
 } from './templates/welcome-merchant';
 import {
+  EmailVerificationEmail,
+  emailVerificationSubject,
+  type EmailVerificationEmailProps,
+} from './templates/email-verification';
+import {
   DomainRenewalReminderEmail,
   domainRenewalReminderSubject,
   type DomainRenewalReminderEmailProps,
@@ -71,6 +76,7 @@ function defaultFrom(): string {
 export type TemplateId =
   | 'password-reset'
   | 'welcome-merchant'
+  | 'email-verification'
   | 'domain-renewal-reminder'
   | 'order-confirmation'
   | 'shipping-confirmation'
@@ -91,6 +97,13 @@ export type TemplateSend =
       template: 'welcome-merchant';
       to: string;
       props: WelcomeMerchantEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'email-verification';
+      to: string;
+      props: EmailVerificationEmailProps;
       from?: string;
       replyTo?: string;
     }
@@ -199,6 +212,22 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'welcome-merchant',
+      };
+    }
+    case 'email-verification': {
+      const element = wrap(<EmailVerificationEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: emailVerificationSubject,
+        html,
+        text,
+        templateId: 'email-verification',
       };
     }
     case 'domain-renewal-reminder': {

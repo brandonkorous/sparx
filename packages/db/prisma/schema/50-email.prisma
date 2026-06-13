@@ -125,6 +125,16 @@ model ScheduledSend {
   customerId String? @map("customer_id") @db.Uuid // soft reference (no FK)
   payload    Json    @default("{}") // template props / merge variables
 
+  // Builder-email personalization (docs/91 §3). An automation send carries the
+  // entity ids it fired on so the dispatch tick re-resolves the live entity into
+  // the email's DataSources (`{ customerId, orderId, cartId, quoteId,
+  // billingDocumentId, b2bAccountId }`); `entitySnapshot` is the automation's flat,
+  // trigger-time resolved field map (`{ "invoice.number": "INV-9", … }`) used as a
+  // scalar fallback when a live entity no longer resolves. Both null for a coded
+  // template or a pre-rendered broadcast. (migration 20260815000000)
+  entityRefs     Json? @map("entity_refs")
+  entitySnapshot Json? @map("entity_snapshot")
+
   dueAt     DateTime  @map("due_at") @db.Timestamptz
   // pending | sent | cancelled | failed
   status    String    @default("pending") @db.VarChar(20)

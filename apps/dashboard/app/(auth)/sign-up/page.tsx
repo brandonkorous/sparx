@@ -5,20 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import posthog from 'posthog-js';
 import { ATTR_COOKIES, deserializeSnapshot } from '@sparx/attribution';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  Checkbox,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Checkbox, Heading, Input, Label, PasswordInput, Stack, Text } from '@sparx/ui';
+import { AuthScreen, RailPoints } from '../_components/auth-screen';
 
 const LEGAL_BASE = 'https://sparx.works/legal';
 import { signUpAction } from '../actions';
@@ -55,6 +43,19 @@ export default function SignUpPage() {
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const pw = formData.get('password');
+    const cf = formData.get('confirmPassword');
+    const password = typeof pw === 'string' ? pw : '';
+    const confirm = typeof cf === 'string' ? cf : '';
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+    if (password !== confirm) {
+      setError('Passwords do not match.');
+      return;
+    }
     setError(null);
 
     startTransition(async () => {
@@ -77,14 +78,29 @@ export default function SignUpPage() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <Heading level={2}>Create your Sparx account</Heading>
-        <CardDescription>
-          Start a 14-day free trial — no card required. You can add modules from billing anytime.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <AuthScreen
+      lede={{
+        title: 'Build it your way — content, commerce, or both.',
+        blurb: 'Switch on only the modules you need. A complete, themed site in minutes.',
+      }}
+      aside={
+        <RailPoints
+          points={[
+            'Free for 14 days — no card required.',
+            'Start from a complete blueprint, not a blank page.',
+            'Add or drop modules anytime; you only pay for what you use.',
+          ]}
+        />
+      }
+    >
+      <Stack gap={6}>
+        <div>
+          <Heading level={2}>Create your account</Heading>
+          <Text variant="muted">
+            Start a 14-day free trial. You&apos;ll name your workspace in the next step.
+          </Text>
+        </div>
+
         <form onSubmit={onSubmit} noValidate>
           <Stack gap={4}>
             <Stack gap={2}>
@@ -92,25 +108,14 @@ export default function SignUpPage() {
               <Input id="name" name="name" autoComplete="name" required />
             </Stack>
             <Stack gap={2}>
-              <Label htmlFor="storeName">Store name</Label>
-              <Input
-                id="storeName"
-                name="storeName"
-                autoComplete="organization"
-                placeholder="Acme Diesel"
-                required
-              />
-            </Stack>
-            <Stack gap={2}>
               <Label htmlFor="email">Work email</Label>
               <Input id="email" name="email" type="email" autoComplete="email" required />
             </Stack>
             <Stack gap={2}>
               <Label htmlFor="password">Password</Label>
-              <Input
+              <PasswordInput
                 id="password"
                 name="password"
-                type="password"
                 autoComplete="new-password"
                 minLength={8}
                 required
@@ -118,6 +123,16 @@ export default function SignUpPage() {
               <Text size="xs" variant="muted">
                 At least 8 characters.
               </Text>
+            </Stack>
+            <Stack gap={2}>
+              <Label htmlFor="confirmPassword">Confirm password</Label>
+              <PasswordInput
+                id="confirmPassword"
+                name="confirmPassword"
+                autoComplete="new-password"
+                minLength={8}
+                required
+              />
             </Stack>
 
             <div className="flex items-start gap-2">
@@ -171,8 +186,7 @@ export default function SignUpPage() {
             </Button>
           </Stack>
         </form>
-      </CardContent>
-      <CardFooter>
+
         <Stack direction="row" align="center" gap={1}>
           <Text size="sm" variant="muted">
             Already have an account?
@@ -181,7 +195,7 @@ export default function SignUpPage() {
             <Link href="/sign-in">Sign in</Link>
           </Button>
         </Stack>
-      </CardFooter>
-    </Card>
+      </Stack>
+    </AuthScreen>
   );
 }

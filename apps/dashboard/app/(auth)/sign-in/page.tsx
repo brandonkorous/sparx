@@ -3,20 +3,9 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  Heading,
-  Input,
-  Label,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Button, Heading, Input, Label, PasswordInput, Stack, Text } from '@sparx/ui';
 import { authClient } from '@sparx/auth/client';
+import { AuthScreen } from '../_components/auth-screen';
 
 export default function SignInPage() {
   const router = useRouter();
@@ -38,17 +27,25 @@ export default function SignInPage() {
       return;
     }
 
+    // Land on '/'. The dashboard guard routes to /onboarding if setup isn't
+    // finished, or to the dashboard if it is.
     router.push('/');
     router.refresh();
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <Heading level={2}>Sign in</Heading>
-        <CardDescription>Welcome back. Sign in to your account.</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <AuthScreen
+      lede={{
+        title: 'Welcome back.',
+        blurb: 'Sign in to pick up right where you left off.',
+      }}
+    >
+      <Stack gap={6}>
+        <div>
+          <Heading level={2}>Sign in</Heading>
+          <Text variant="muted">Sign in to your Sparx workspace.</Text>
+        </div>
+
         <form onSubmit={onSubmit} noValidate>
           <Stack gap={4}>
             <Stack gap={2}>
@@ -72,10 +69,9 @@ export default function SignInPage() {
                   </Text>
                 </Link>
               </Stack>
-              <Input
+              <PasswordInput
                 id="password"
                 name="password"
-                type="password"
                 autoComplete="current-password"
                 required
                 value={password}
@@ -94,8 +90,7 @@ export default function SignInPage() {
             </Button>
           </Stack>
         </form>
-      </CardContent>
-      <CardFooter>
+
         <Stack direction="row" align="center" gap={1}>
           <Text size="sm" variant="muted">
             New here?
@@ -104,7 +99,7 @@ export default function SignInPage() {
             <Link href="/sign-up">Create an account</Link>
           </Button>
         </Stack>
-      </CardFooter>
-    </Card>
+      </Stack>
+    </AuthScreen>
   );
 }

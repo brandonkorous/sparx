@@ -1,5 +1,5 @@
 import { NavigationMenuLink } from '@sparx/ui';
-import { Dot, getModuleColor, type MarketingModule } from './primitives';
+import { getModuleColor, type MarketingModule } from './module-colors';
 
 // Source of truth for the Modules megamenu (desktop) and the mobile drawer
 // accordion. Grouped the way the platform reads: what you publish, what you
@@ -48,12 +48,32 @@ export const MODULE_NAV: ModuleNavItem[] = MODULE_GROUPS.flatMap((g) => g.items)
 const SANS = 'var(--font-sans)';
 const MONO = 'var(--font-mono)';
 
+// Small colored bullet for the megamenu swatches. Bespoke marketing chrome.
+function Dot({ color, size = 8 }: { color: string; size?: number }) {
+  return (
+    <span
+      aria-hidden
+      style={{
+        display: 'inline-block',
+        width: size,
+        height: size,
+        borderRadius: 9999,
+        backgroundColor: color,
+        flexShrink: 0,
+      }}
+    />
+  );
+}
+
 /**
- * The Modules megamenu panel — rendered inside a NavigationMenuContent.
- * Owns its own chrome (surface, border, shadow) and styling in the marketing
- * register; the @sparx/ui NavigationMenu primitive supplies only the behavior.
+ * The Modules megamenu panel — rendered inside a NavigationMenuContent. Owns its
+ * own chrome (surface, border, shadow) in the marketing register; the @sparx/ui
+ * NavigationMenu primitive supplies only the behavior.
+ *
+ * `linkBase` prefixes the marketing routes so the same panel works on the
+ * marketing site (relative, '') and on the dashboard auth pages (absolute origin).
  */
-export function ModulesMegaContent() {
+export function ModulesMegaContent({ linkBase = '' }: { linkBase?: string }) {
   return (
     <div
       style={{
@@ -91,7 +111,11 @@ export function ModulesMegaContent() {
             {group.items.map((m) => {
               const c = getModuleColor(m.module);
               return (
-                <NavigationMenuLink key={m.module} href={m.href} className="mkt-mm-item">
+                <NavigationMenuLink
+                  key={m.module}
+                  href={`${linkBase}${m.href}`}
+                  className="mkt-mm-item"
+                >
                   <span
                     style={{
                       display: 'inline-flex',
@@ -151,7 +175,7 @@ export function ModulesMegaContent() {
           One platform. Activate only what you need.
         </span>
         <NavigationMenuLink
-          href="/platform"
+          href={`${linkBase}/platform`}
           style={{
             fontFamily: SANS,
             fontWeight: 500,

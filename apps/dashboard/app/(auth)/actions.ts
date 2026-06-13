@@ -23,10 +23,9 @@ export async function signUpAction(formData: FormData): Promise<SignUpFormState>
   const email = readField('email');
   const password = readField('password');
   const name = readField('name');
-  const storeName = readField('storeName');
   const agreed = formData.get('agreeLegal') === 'on' || formData.get('agreeLegal') === 'true';
 
-  if (!email || !password || !name || !storeName) {
+  if (!email || !password || !name) {
     return { ok: false, error: 'All fields are required.' };
   }
   if (password.length < 8) {
@@ -69,7 +68,6 @@ export async function signUpAction(formData: FormData): Promise<SignUpFormState>
       email,
       password,
       name,
-      storeName,
       ipAddress,
       userAgent,
       acquisition,

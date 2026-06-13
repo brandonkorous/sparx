@@ -241,6 +241,7 @@ export interface EmailSendPayload {
   template:
     | 'password-reset'
     | 'welcome-merchant'
+    | 'email-verification'
     | 'domain-renewal-reminder'
     | 'order-confirmation'
     | 'shipping-confirmation'

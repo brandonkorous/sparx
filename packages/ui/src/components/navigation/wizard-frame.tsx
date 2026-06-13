@@ -7,6 +7,7 @@ import { cn } from '../../utils/cn';
 import { Button } from '../primitives/button';
 import { Heading } from '../primitives/heading';
 import { Text } from '../primitives/text';
+import { RAIL_BG, RailWordmark } from '../brand/brand-rail';
 
 // WizardFrame — the platform's one layout language for guided, multi-step flows
 // (docs/86). A persistent two-pane frame: a left RAIL that never moves (brand +
@@ -83,30 +84,9 @@ interface WizardContextValue {
 
 const WizardContext = React.createContext<WizardContextValue>({ variant: 'page' });
 
-// Strong, flat shade of the active module color for the rail. Darkening the 500
-// shade lands on the module's "strong" shade (indigo → ~#4f46e5) and lifts
-// white-on-rail contrast above AA. Still a single flat color — no gradient.
-const RAIL_BG = 'color-mix(in oklab, var(--module-active) 86%, #000)';
-
 // ── Rail ─────────────────────────────────────────────────────────────────────
-
-function RailWordmark() {
-  return (
-    <span
-      style={{
-        fontFamily: "var(--font-wordmark, 'Inter', system-ui, sans-serif)",
-        fontWeight: 700,
-        letterSpacing: '-0.03em',
-        fontSize: 20,
-        lineHeight: 1,
-        color: '#fff',
-      }}
-    >
-      Spar
-      <span style={{ color: 'color-mix(in oklab, #fff 55%, var(--module-active))' }}>x</span>
-    </span>
-  );
-}
+// RAIL_BG + RailWordmark are shared with the auth split-panel via ../brand/brand-rail
+// so the colored rail has one source of truth across guided surfaces.
 
 interface RailProps {
   compact?: boolean;

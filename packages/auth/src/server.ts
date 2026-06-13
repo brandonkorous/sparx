@@ -55,6 +55,31 @@ function createAuth() {
       },
     },
 
+    // Verify-but-don't-block (docs: auth pages redesign Slice 2). We keep
+    // `requireEmailVerification: false` above so a fresh signup is auto-signed-in
+    // and lands in onboarding immediately (the "live in 5 minutes" goal). The
+    // verification email is still sent (triggered explicitly after signUpMerchant,
+    // since our signup bypasses Better Auth's own signUpEmail), a banner nudges in
+    // the dashboard, and sensitive actions gate on `emailVerified`. Same platform
+    // path as password-reset: publish `email.send`, email-worker renders + relays.
+    emailVerification: {
+      autoSignInAfterVerification: true,
+      sendVerificationEmail: async ({ user, url }) => {
+        const extras = user as unknown as { tenantId?: string };
+        await publishAuthEmail({
+          tenantId: extras.tenantId ?? '',
+          actorId: user.id,
+          template: 'email-verification',
+          to: user.email,
+          props: {
+            name: user.name ?? undefined,
+            verifyUrl: url,
+            expiresInMinutes: 60,
+          },
+        });
+      },
+    },
+
     session: {
       expiresIn: 60 * 60 * 24 * 30,
       updateAge: 60 * 60 * 24,

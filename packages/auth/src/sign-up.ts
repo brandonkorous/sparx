@@ -1,33 +1,28 @@
-import type { AttributionSnapshot } from '@sparx/attribution';
 import { LEGAL_DOC_VERSIONS, ONBOARDING_LEGAL_DOCS } from '@sparx/legal';
-import type { Prisma } from '@prisma/client';
 import { authPrisma } from './prisma';
 import { auth } from './server';
+import {
+  provisionTenant,
+  generateUniqueTenantSlug,
+  type SignUpAcquisition,
+} from './provision-tenant';
 
-// Tenant self-service signup. Better Auth's stock `signUpEmail` assumes
-// one user = one account. Sparx needs each new tenant to also get a Tenant
-// row, so we do the two writes ourselves and let Better Auth handle session
-// creation via signIn afterwards.
-//
-// This is the v0 path; richer onboarding (plan picker, store template,
-// invitation flow) per docs/15 will replace this.
+// Tenant self-service signup. Better Auth's stock `signUpEmail` assumes one
+// user = one account. Sparx needs each new tenant to also get a Tenant row (+
+// primary property + `<slug>.sparx.zone` subdomain), so we do those writes
+// ourselves via provisionTenant() and let Better Auth handle session creation
+// via signIn afterwards. The same provisionTenant() backs the Google OAuth path,
+// so both account-creation paths land a tenant the onboarding wizard can refine.
 
-/** First-party acquisition attribution read at signup (docs/80 §6.1 / L-PLAT). */
-export interface SignUpAcquisition {
-  /** Denormalized from first-touch — the acquisition model for L-PLAT (docs/80 §9). */
-  channel: string | null;
-  source: string | null;
-  campaign: string | null;
-  /** Full snapshots retained for later model recompute (docs/80 §8.3). */
-  firstTouch: AttributionSnapshot | null;
-  lastTouch: AttributionSnapshot | null;
-}
+// Re-exported for callers that built an acquisition snapshot before the type
+// moved into provision-tenant.
+export type { SignUpAcquisition };
 
 export interface SignUpMerchantInput {
   email: string;
   password: string;
+  /** The person's name. The tenant gets a derived placeholder display name. */
   name: string;
-  storeName: string;
   /** Captured from the sign-up request for the legal-acceptance record
    *  (docs/42 §6). Null when unavailable (e.g. a non-HTTP caller). */
   ipAddress?: string | null;
@@ -53,33 +48,28 @@ export class SignUpError extends Error {
   }
 }
 
-function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 63);
+// A readable placeholder workspace name from the person's first name —
+// "Brandon's workspace". The user renames it (and the generated slug) in the
+// onboarding Workspace step, by which point they know what they're building.
+function workspaceNameFor(personName: string): string {
+  // Caller guarantees a non-empty trimmed name, so [0] is always a real token;
+  // ?? only guards the TS `string | undefined` index type.
+  const first = personName.trim().split(/\s+/)[0] ?? 'My';
+  return `${first}'s workspace`;
 }
 
 export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUpMerchantResult> {
   const email = input.email.trim().toLowerCase();
-  const slug = slugify(input.storeName);
+  const name = input.name.trim();
 
-  if (!slug) {
-    throw new SignUpError('INVALID_INPUT', 'Store name must contain letters or numbers.');
-  }
-
-  const existingTenantSlug = await authPrisma.tenant.findUnique({ where: { slug } });
-  if (existingTenantSlug) {
-    throw new SignUpError('SLUG_TAKEN', `Store URL "${slug}" is already taken.`);
+  if (!name) {
+    throw new SignUpError('INVALID_INPUT', 'Your name is required.');
   }
 
   // Email must be globally unique — Better Auth's sign-in queries by email
   // alone, so duplicates produce ambiguous lookups (and historically caused
-  // "Invalid password hash" failures when sign-in matched an older row with
-  // a stale hash format). The DB also enforces this via the unique
-  // constraint on users.email, but pre-checking gives the caller a clean
-  // typed error instead of a P2002.
+  // "Invalid password hash" failures matching an older row). The DB also
+  // enforces this; pre-checking gives the caller a clean typed error.
   const existingUser = await authPrisma.user.findFirst({
     where: { email },
     select: { id: true },
@@ -88,80 +78,32 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
     throw new SignUpError('EMAIL_TAKEN', 'An account with that email already exists.');
   }
 
+  // Generated friendly slug + derived display name — the user personalizes both
+  // in the onboarding Workspace step. No store name is asked for at signup.
+  const slug = await generateUniqueTenantSlug(authPrisma);
+  const tenantName = workspaceNameFor(name);
+
   // Better Auth's password hasher (scrypt by default; configurable to Argon2).
-  // Going through $context keeps us aligned with whatever the auth instance
-  // is configured to use — no risk of mismatched hashes at sign-in time.
+  // Going through $context keeps us aligned with whatever the auth instance is
+  // configured to use — no risk of mismatched hashes at sign-in time.
   const ctx = await auth.$context;
   const passwordHash = await ctx.password.hash(input.password);
 
   try {
-    const acq = input.acquisition;
     const { userId, tenantId } = await authPrisma.$transaction(async (tx) => {
-      const tenant = await tx.tenant.create({
-        data: {
-          name: input.storeName,
-          slug,
-          email,
-          // Attribution (docs/80 §8.3) — written once at signup. Denormalized
-          // channel/source/campaign drive the acquisition report; the full
-          // snapshots are retained for model recompute.
-          ...(acq && {
-            acquisitionChannel: acq.channel,
-            acquisitionSource: acq.source,
-            acquisitionCampaign: acq.campaign,
-            acquiredAt: new Date(),
-            ...(acq.firstTouch && {
-              acquisitionFirstTouch: acq.firstTouch as unknown as Prisma.InputJsonValue,
-            }),
-            ...(acq.lastTouch && {
-              acquisitionLastTouch: acq.lastTouch as unknown as Prisma.InputJsonValue,
-            }),
-          }),
-        },
-      });
-
-      // Set the tenant GUC for the rest of this tx so the FORCE-RLS `properties`
-      // insert below passes its WITH CHECK. authPrisma connects as sparx_owner,
-      // which IS subject to FORCE RLS — without this the property write fails in
-      // prod (it's transaction-local, so it never leaks past this commit).
-      await tx.$executeRaw`SELECT set_config('app.tenant_id', ${tenant.id}::text, true)`;
-
-      // Every tenant is born with exactly one PRIMARY web property (docs/49) +
-      // its always-on `<slug>.sparx.zone` subdomain, so the Builder render path
-      // and host→property resolution have a site to resolve to from day one.
-      // (Existing tenants were backfilled by 20260626000000_properties /
-      // 20260629000000_domains.) `domains` is non-RLS; the GUC is harmless to it.
-      // The primary site's display NAME is "Default" — a tenant is a workspace
-      // that HAS sites, so the seeded site reads as the default one rather than
-      // echoing the workspace name in the breadcrumb. The host is unaffected:
-      // the primary keeps the bare `<slug>.sparx.zone` (slug 'primary' is
-      // reserved and never appears in the host — see mintZoneHost).
-      const property = await tx.property.create({
-        data: {
-          tenantId: tenant.id,
-          slug: 'primary',
-          name: 'Default',
-          isPrimary: true,
-        },
-      });
-      const zone = process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone';
-      await tx.domain.create({
-        data: {
-          tenantId: tenant.id,
-          propertyId: property.id,
-          host: `${slug}.${zone}`,
-          type: 'subdomain',
-          status: 'active',
-          isCanonical: true,
-        },
+      const provisioned = await provisionTenant(tx, {
+        slug,
+        name: tenantName,
+        email,
+        acquisition: input.acquisition ?? null,
       });
 
       const user = await tx.user.create({
         data: {
           email,
-          name: input.name,
+          name,
           emailVerified: false,
-          tenantId: tenant.id,
+          tenantId: provisioned.tenantId,
           role: 'owner',
         },
       });
@@ -181,7 +123,7 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
       // handled post-onboarding, so it's not in ONBOARDING_LEGAL_DOCS.
       await tx.platformLegalAcceptance.createMany({
         data: ONBOARDING_LEGAL_DOCS.map((docType) => ({
-          tenantId: tenant.id,
+          tenantId: provisioned.tenantId,
           userId: user.id,
           docType,
           docVersion: LEGAL_DOC_VERSIONS[docType].version,
@@ -190,13 +132,13 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
         })),
       });
 
-      return { userId: user.id, tenantId: tenant.id };
+      return { userId: user.id, tenantId: provisioned.tenantId };
     });
 
-    // Welcome email is fire-and-forget via Pub/Sub — email-worker pulls
-    // the event and handles the Postal POST. Publishing is ~10–50ms
-    // (single Google API call); a Pub/Sub outage must never roll back
-    // an otherwise successful sign-up, so we log + swallow.
+    // Welcome email is fire-and-forget via Pub/Sub — email-worker pulls the
+    // event and handles the send. A Pub/Sub outage must never roll back an
+    // otherwise successful sign-up, so we log + swallow. Greets the person; the
+    // workspace name is still the placeholder at this point.
     try {
       const dashboardUrl =
         (process.env.BETTER_AUTH_URL ?? 'http://localhost:3001').replace(/\/$/, '') + '/welcome';
@@ -207,15 +149,15 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
         template: 'welcome-merchant',
         to: email,
         props: {
-          name: input.name,
-          storeName: input.storeName,
+          name,
+          storeName: tenantName,
           dashboardUrl,
         },
       });
     } catch (err) {
-      // Structured stdout JSON — GKE Cloud Logging parses `severity` + the
-      // rest as labels, so this is greppable in Logs Explorer without
-      // dragging pino into the Next.js server bundle for one log line.
+      // Structured stdout JSON — GKE Cloud Logging parses `severity` + the rest
+      // as labels, so this is greppable in Logs Explorer without dragging pino
+      // into the Next.js server bundle for one log line.
       process.stderr.write(
         JSON.stringify({
           severity: 'ERROR',
@@ -228,12 +170,34 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
       );
     }
 
+    // Verification email — verify-but-don't-block (Slice 2). Our signup bypasses
+    // Better Auth's own signUpEmail (we write the rows + provision the tenant
+    // ourselves), so `sendOnSignUp` never fires; trigger it explicitly here. The
+    // `emailVerification.sendVerificationEmail` callback publishes the `email.send`
+    // event. Fire-and-forget: a hiccup must not roll back an otherwise good signup
+    // (the user can resend from the dashboard banner).
+    try {
+      await auth.api.sendVerificationEmail({
+        body: { email, callbackURL: '/verify-email' },
+      });
+    } catch (err) {
+      process.stderr.write(
+        JSON.stringify({
+          severity: 'ERROR',
+          source: 'auth.sign-up',
+          message: 'verification email trigger failed',
+          tenantId,
+          userId,
+          err: err instanceof Error ? { name: err.name, message: err.message } : String(err),
+        }) + '\n'
+      );
+    }
+
     // tenant.created → legal-seed worker seeds starter legal pages + footer
-    // placements (docs/42 §3). Fire-and-forget, same swallow ethos as above:
-    // a missing topic or Pub/Sub outage must never roll back sign-up.
+    // placements (docs/42 §3). Fire-and-forget, same swallow ethos as above.
     try {
       const { publishTenantCreated } = await import('./tenant-events');
-      await publishTenantCreated({ tenantId, actorId: userId, slug, name: input.storeName });
+      await publishTenantCreated({ tenantId, actorId: userId, slug, name: tenantName });
     } catch (err) {
       process.stderr.write(
         JSON.stringify({
@@ -260,7 +224,9 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
         throw new SignUpError('EMAIL_TAKEN', 'An account with that email already exists.');
       }
       if (target.includes('slug')) {
-        throw new SignUpError('SLUG_TAKEN', `Store URL "${slug}" is already taken.`);
+        // Astronomically rare (the slug was just confirmed free) — a concurrent
+        // signup grabbed the same generated slug between check and insert.
+        throw new SignUpError('SLUG_TAKEN', 'Please try again.');
       }
     }
     throw err;

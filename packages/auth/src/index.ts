@@ -8,7 +8,14 @@ export {
   SignUpError,
   type SignUpMerchantInput,
   type SignUpMerchantResult,
+  type SignUpAcquisition,
 } from './sign-up';
+export {
+  provisionTenant,
+  generateUniqueTenantSlug,
+  type ProvisionTenantInput,
+} from './provision-tenant';
+export { randomFriendlySlug } from './friendly-slug';
 export { getSession, requireSession, type SparxSession } from './session';
 export {
   isModuleEnabled,

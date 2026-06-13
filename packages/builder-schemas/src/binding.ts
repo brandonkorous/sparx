@@ -248,17 +248,38 @@ export const SITE_CATALOG: BindingCatalog = { sources: SITE_SOURCES };
 // the page catalog; they're merged in when the data-aware palette lands (Phase 4),
 // so this constant carries only the code-defined sources.
 
-const CUSTOMER_FIELDS: FieldSchema[] = [
-  { key: 'firstName', label: 'First name', kind: 'text', cardinality: 'scalar' },
-  { key: 'lastName', label: 'Last name', kind: 'text', cardinality: 'scalar' },
-  { key: 'email', label: 'Email', kind: 'text', cardinality: 'scalar' },
-];
+const text = (key: string, label: string): FieldSchema => ({
+  key,
+  label,
+  kind: 'text',
+  cardinality: 'scalar',
+});
 
-const ORDER_FIELDS: FieldSchema[] = [
-  { key: 'numberLabel', label: 'Order number', kind: 'text', cardinality: 'scalar' },
-  { key: 'statusLabel', label: 'Status', kind: 'text', cardinality: 'scalar' },
-  { key: 'totalLabel', label: 'Total', kind: 'text', cardinality: 'scalar' },
-  { key: 'dateLabel', label: 'Date', kind: 'text', cardinality: 'scalar' },
+// The line-item columns a `line_item_table` binds (order/cart/quote/invoice.items).
+// All display-ready strings (qty/price already formatted by the resolver). `name`
+// and `description` co-exist so one column set serves both vocabularies (orders use
+// `name`, invoices use `description`).
+const LINE_ITEM_FIELDS: FieldSchema[] = [
+  text('name', 'Name'),
+  text('description', 'Description'),
+  text('quantity', 'Quantity'),
+  text('unitPrice', 'Unit price'),
+  text('lineTotal', 'Line total'),
+];
+const lineItems = (): FieldSchema => ({
+  key: 'items',
+  label: 'Line items',
+  kind: 'list',
+  cardinality: 'array',
+  fields: LINE_ITEM_FIELDS,
+});
+
+const CUSTOMER_FIELDS: FieldSchema[] = [
+  text('firstName', 'First name'),
+  text('lastName', 'Last name'),
+  text('fullName', 'Full name'),
+  text('email', 'Email'),
+  text('company', 'Company'),
 ];
 
 // Email products are DISPLAY-ready (price already a currency string, an image
@@ -266,39 +287,133 @@ const ORDER_FIELDS: FieldSchema[] = [
 // `price` is a raw number for interactive commerce components. Email leaves bind
 // to plain text/image, so the resolver hands back exactly what renders.
 const EMAIL_PRODUCT_FIELDS: FieldSchema[] = [
-  { key: 'title', label: 'Title', kind: 'text', cardinality: 'scalar' },
-  { key: 'priceLabel', label: 'Price', kind: 'text', cardinality: 'scalar' },
+  text('title', 'Title'),
+  text('priceLabel', 'Price'),
   { key: 'imageUrl', label: 'Image', kind: 'image', cardinality: 'scalar' },
-  { key: 'url', label: 'Link', kind: 'text', cardinality: 'scalar' },
+  text('url', 'Link'),
 ];
 
+// The bindable email sources, in the docs/91 §3 vocabulary. Entity-scoped sources
+// (customer/order/cart/quote/invoice/b2bAccount) resolve from the send's entity
+// refs at dispatch; per-send sources (tenant/commerce.product/promotion) resolve
+// once. Every `*Url` field resolves to a real storefront route at dispatch.
 export const EMAIL_SOURCES: DataSource[] = [
   {
-    key: 'recipient',
-    label: 'Recipient',
+    key: 'customer',
+    label: 'Customer',
     module: 'crm',
     cardinality: 'object',
     recordType: 'customer',
     fields: CUSTOMER_FIELDS,
   },
   {
+    // Historical alias of `customer` (firstName/lastName/email) — kept so an
+    // existing tree that bound `recipient.*` still resolves.
+    key: 'recipient',
+    label: 'Recipient',
+    module: 'crm',
+    cardinality: 'object',
+    recordType: 'customer',
+    fields: [
+      text('firstName', 'First name'),
+      text('lastName', 'Last name'),
+      text('email', 'Email'),
+    ],
+  },
+  {
+    key: 'tenant',
+    label: 'Store',
+    module: 'site',
+    cardinality: 'object',
+    recordType: 'tenant',
+    fields: [
+      text('name', 'Name'),
+      text('storeUrl', 'Store URL'),
+      text('supportEmail', 'Support email'),
+    ],
+  },
+  {
     key: 'order',
-    label: 'Recent order',
+    label: 'Order',
     module: 'commerce',
     cardinality: 'object',
     recordType: 'order',
-    fields: ORDER_FIELDS,
+    fields: [
+      text('number', 'Order number'),
+      text('status', 'Status'),
+      text('total', 'Total'),
+      text('subtotal', 'Subtotal'),
+      text('placedAt', 'Date'),
+      text('reviewUrl', 'Review link'),
+      lineItems(),
+    ],
   },
   {
     key: 'cart',
-    label: 'Abandoned cart',
+    label: 'Cart',
     module: 'commerce',
-    cardinality: 'array',
-    recordType: 'cartLine',
+    cardinality: 'object',
+    recordType: 'cart',
     fields: [
-      { key: 'title', label: 'Title', kind: 'text', cardinality: 'scalar' },
-      { key: 'priceLabel', label: 'Price', kind: 'text', cardinality: 'scalar' },
-      { key: 'imageUrl', label: 'Image', kind: 'image', cardinality: 'scalar' },
+      text('total', 'Total'),
+      text('itemCount', 'Item count'),
+      text('recoveryUrl', 'Recovery link'),
+      {
+        key: 'items',
+        label: 'Line items',
+        kind: 'list',
+        cardinality: 'array',
+        fields: [
+          ...LINE_ITEM_FIELDS,
+          { key: 'imageUrl', label: 'Image', kind: 'image', cardinality: 'scalar' },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'quote',
+    label: 'Quote',
+    module: 'crm',
+    cardinality: 'object',
+    recordType: 'quote',
+    fields: [
+      text('number', 'Quote number'),
+      text('status', 'Status'),
+      text('total', 'Total'),
+      text('validUntil', 'Valid until'),
+      text('reviewUrl', 'Review link'),
+      lineItems(),
+    ],
+  },
+  {
+    key: 'invoice',
+    label: 'Invoice',
+    module: 'crm',
+    cardinality: 'object',
+    recordType: 'invoice',
+    fields: [
+      text('number', 'Invoice number'),
+      text('total', 'Total'),
+      text('balance', 'Balance due'),
+      text('dueDate', 'Due date'),
+      text('daysUntilDue', 'Days until due'),
+      text('overdueDays', 'Days overdue'),
+      text('payUrl', 'Pay link'),
+      lineItems(),
+    ],
+  },
+  {
+    key: 'b2bAccount',
+    label: 'B2B account',
+    module: 'crm',
+    cardinality: 'object',
+    recordType: 'b2bAccount',
+    fields: [
+      text('companyName', 'Company name'),
+      text('status', 'Status'),
+      text('paymentTerms', 'Payment terms'),
+      text('creditLimit', 'Credit limit'),
+      text('portalUrl', 'Portal link'),
     ],
   },
   {
@@ -307,10 +422,7 @@ export const EMAIL_SOURCES: DataSource[] = [
     module: 'crm',
     cardinality: 'object',
     recordType: 'loyalty',
-    fields: [
-      { key: 'pointsLabel', label: 'Balance', kind: 'text', cardinality: 'scalar' },
-      { key: 'tierName', label: 'Tier', kind: 'text', cardinality: 'scalar' },
-    ],
+    fields: [text('pointsLabel', 'Balance'), text('tierName', 'Tier')],
   },
   {
     key: 'commerce.product',
@@ -327,10 +439,10 @@ export const EMAIL_SOURCES: DataSource[] = [
     cardinality: 'object',
     recordType: 'promotion',
     fields: [
-      { key: 'title', label: 'Title', kind: 'text', cardinality: 'scalar' },
-      { key: 'body', label: 'Body', kind: 'text', cardinality: 'scalar' },
-      { key: 'ctaLabel', label: 'CTA label', kind: 'text', cardinality: 'scalar' },
-      { key: 'ctaHref', label: 'CTA link', kind: 'text', cardinality: 'scalar' },
+      text('title', 'Title'),
+      text('body', 'Body'),
+      text('ctaLabel', 'CTA label'),
+      text('ctaHref', 'CTA link'),
     ],
   },
 ];
@@ -351,8 +463,12 @@ export const EMAIL_CATALOG: BindingCatalog = { sources: EMAIL_SOURCES };
 
 export const EMAIL_PERSONALIZED_ROOTS: readonly string[] = [
   'recipient',
+  'customer',
   'order',
   'cart',
+  'quote',
+  'invoice',
+  'b2bAccount',
   'loyalty',
 ];
 

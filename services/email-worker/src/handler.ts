@@ -64,6 +64,17 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
     }),
   }),
   z.object({
+    template: z.literal('email-verification'),
+    ...TemplateMeta,
+    props: z.object({
+      name: z.string().optional(),
+      verifyUrl: z.string().url(),
+      expiresInMinutes: z.number().int().positive().optional(),
+      intro: z.string().optional(),
+      outro: z.string().optional(),
+    }),
+  }),
+  z.object({
     template: z.literal('domain-renewal-reminder'),
     ...TemplateMeta,
     props: z.object({

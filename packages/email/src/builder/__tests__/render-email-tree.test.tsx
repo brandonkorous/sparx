@@ -163,4 +163,174 @@ describe('renderEmailTree', () => {
     const out = await renderEmailTree({ tree, subject: 'Hi', to: 'x@y.com' }, { brand });
     expect(out.html).toContain('Only this shows.');
   });
+
+  it('interpolates {{token}} merge fields (with ?? fallback) in copy + links', async () => {
+    const tree: BuilderNode = {
+      id: 'root',
+      type: 'Section',
+      class: 'flex flex-col',
+      props: {},
+      children: [
+        node('Heading', { props: { level: 'h1', text: 'Invoice {{invoice.number}}' } }),
+        node('Text', {
+          props: {
+            variant: 'body',
+            text: 'Hi {{customer.firstName ?? "there"}}, balance {{invoice.balance}}.',
+          },
+        }),
+        node('Button', { props: { label: 'Pay now', href: '{{invoice.payUrl}}' } }),
+      ],
+    };
+    const out = await renderEmailTree(
+      {
+        tree,
+        subject: 'Due',
+        to: 'x@y.com',
+        data: {
+          invoice: { number: 'INV-9', balance: '$500.00', payUrl: 'https://shop.test/pay/9' },
+          customer: {}, // firstName missing → fallback
+        },
+      },
+      { brand }
+    );
+    expect(out.html).toContain('Invoice INV-9');
+    expect(out.html).toContain('Hi there, balance $500.00.');
+    expect(out.html).toContain('https://shop.test/pay/9');
+  });
+
+  it('renders a line_item_table over a bound collection, empty → nothing', async () => {
+    const tree: BuilderNode = {
+      id: 'root',
+      type: 'Section',
+      class: 'flex flex-col',
+      props: {},
+      children: [
+        { id: 'lit', type: 'line_item_table', props: {}, binding: { path: 'invoice.items' } },
+        node('Text', { props: { variant: 'body', text: 'After table' } }),
+      ],
+    };
+    const out = await renderEmailTree(
+      {
+        tree,
+        subject: 'X',
+        to: 'x@y.com',
+        data: {
+          invoice: {
+            items: [
+              { description: 'Widget', quantity: 2, unitPrice: '$10.00', lineTotal: '$20.00' },
+              { name: 'Gadget', quantity: 1, lineTotal: '$5.00' },
+            ],
+          },
+        },
+      },
+      { brand }
+    );
+    expect(out.html).toContain('Widget');
+    expect(out.html).toContain('× 2');
+    expect(out.html).toContain('$20.00');
+    expect(out.html).toContain('Gadget');
+
+    // Absent collection → the table renders nothing but the page still composes.
+    const empty = await renderEmailTree(
+      { tree, subject: 'X', to: 'x@y.com', data: { invoice: { items: [] } } },
+      { brand }
+    );
+    expect(empty.html).toContain('After table');
+    expect(empty.html).not.toContain('× 2');
+  });
+
+  it('shows/hides a conditional_block on its when path', async () => {
+    const tree: BuilderNode = {
+      id: 'root',
+      type: 'Section',
+      class: 'flex flex-col',
+      props: {},
+      children: [
+        {
+          id: 'cond',
+          type: 'conditional_block',
+          props: { when: 'b2bAccount.creditLimit' },
+          children: [
+            node('Text', {
+              props: { variant: 'body', text: 'Credit line {{b2bAccount.creditLimit}}' },
+            }),
+          ],
+        },
+      ],
+    };
+    const shown = await renderEmailTree(
+      { tree, subject: 'X', to: 'x@y.com', data: { b2bAccount: { creditLimit: '$5,000' } } },
+      { brand }
+    );
+    expect(shown.html).toContain('Credit line $5,000');
+
+    // Empty value → block hidden entirely.
+    const hidden = await renderEmailTree(
+      { tree, subject: 'X', to: 'x@y.com', data: { b2bAccount: { creditLimit: '' } } },
+      { brand }
+    );
+    expect(hidden.html).not.toContain('Credit line');
+  });
+
+  it('renders unsubscribe_link + physical_address from the compliance context', async () => {
+    const tree: BuilderNode = {
+      id: 'root',
+      type: 'Section',
+      class: 'flex flex-col',
+      props: {},
+      children: [
+        { id: 'u', type: 'unsubscribe_link', props: {} },
+        { id: 'a', type: 'physical_address', props: {} },
+      ],
+    };
+    const out = await renderEmailTree(
+      {
+        tree,
+        subject: 'X',
+        to: 'x@y.com',
+        compliance: {
+          unsubscribeUrl: 'https://api.test/v1/public/email/unsubscribe?t=abc',
+          physicalAddress: '123 Main St, Visalia, CA',
+        },
+      },
+      { brand }
+    );
+    expect(out.html).toContain('Unsubscribe');
+    expect(out.html).toContain('https://api.test/v1/public/email/unsubscribe?t=abc');
+    expect(out.html).toContain('123 Main St, Visalia, CA');
+
+    // Without compliance values: the address node renders nothing, the link → '#'.
+    const bare = await renderEmailTree({ tree, subject: 'X', to: 'x@y.com' }, { brand });
+    expect(bare.html).not.toContain('123 Main St');
+  });
+
+  it('composes a real default template end-to-end (invoicing-overdue)', async () => {
+    const { getDefaultEmailTemplate } = await import('@sparx/builder-schemas');
+    const tpl = getDefaultEmailTemplate('invoicing-overdue')!;
+    const out = await renderEmailTree(
+      {
+        tree: tpl.tree,
+        subject: tpl.subject,
+        preheader: tpl.preheader,
+        to: 'x@y.com',
+        data: {
+          invoice: {
+            number: 'INV-42',
+            balance: '$1,200.00',
+            dueDate: 'Jun 1, 2026',
+            overdueDays: 12,
+            payUrl: 'https://shop.test/pay/42',
+          },
+          tenant: { name: 'Acme Diesel' },
+          customer: { firstName: 'Sam' },
+        },
+      },
+      { brand }
+    );
+    expect(out.html).toContain('past due');
+    expect(out.html).toContain('INV-42');
+    expect(out.html).toContain('$1,200.00');
+    expect(out.html).toContain('12 days overdue');
+    expect(out.html).toContain('https://shop.test/pay/42');
+  });
 });

@@ -16,7 +16,9 @@ import { publish } from '@sparx/api-core/pubsub';
 import { renderEmailTree } from '@sparx/email';
 import { emailService } from '@sparx/builder';
 import { brandService } from '@sparx/email-platform';
-import { resolveEmailData } from './email-data.js';
+import { interpolateEmailTokens, resolvePath, type BuilderNode } from '@sparx/builder-schemas';
+import { applyEntitySnapshot, resolveEmailData, type EmailRecipientRef } from './email-data.js';
+import { unsubscribeUrl } from './email-unsubscribe.js';
 
 const EMAIL_DISPATCH_LOCK_KEY = 4242_4244;
 const DEFAULT_INTERVAL_MS = 60_000;
@@ -50,6 +52,18 @@ export interface TickResult {
 function buildFrom(fromName: string | null, fromAddress: string | null): string {
   if (!fromAddress) return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;
   return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
+}
+
+function strOrNull(v: unknown): string | null {
+  return typeof v === 'string' && v.length > 0 ? v : null;
+}
+
+/** Does the tree contain a node of `type` (depth-first)? Used to detect the
+ *  `unsubscribe_link` node that marks a tree as marketing (docs/91 §8). */
+function treeHasNodeType(node: BuilderNode, type: string): boolean {
+  if (node.type === type) return true;
+  for (const child of node.children ?? []) if (treeHasNodeType(child, type)) return true;
+  return false;
 }
 
 export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<TickResult> {
@@ -98,6 +112,11 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             // The site this send is on behalf of (docs/49 Phase 7) — drives the
             // per-site brand for the deferred render below.
             propertyId: send.propertyId,
+            // Entity refs + trigger-time snapshot for a designed (Builder) email
+            // (docs/91 §3); physical address for the compliance footer node.
+            entityRefs: send.entityRefs,
+            entitySnapshot: send.entitySnapshot,
+            physicalAddress: settings?.physicalAddress ?? null,
             payload,
             from: buildFrom(settings?.fromName ?? null, settings?.fromAddress ?? null),
             replyTo: settings?.replyTo ?? undefined,
@@ -117,7 +136,9 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
         let data: Record<string, unknown>;
         if (payload.defer?.builderEmailId) {
           // Designed (Builder) email, personalized: reload the published tree,
-          // resolve THIS recipient's data, and render here at dispatch (docs/52 §6).
+          // resolve THIS recipient's data, and render here at dispatch (docs/52 §6,
+          // docs/91 §3). Entity refs name the exact entity the automation fired on;
+          // the snapshot is the scalar fallback for a since-deleted entity.
           const tenantCtx = { tenantId: row.tenant_id };
           const doc = await emailService.getPublishedById(tenantCtx, payload.defer.builderEmailId);
           if (!doc) {
@@ -127,18 +148,44 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             );
             continue;
           }
-          const emailData = await resolveEmailData(tenantCtx, doc.tree, {
+          const refs = (dispatch.entityRefs as Record<string, unknown> | null) ?? {};
+          const ref: EmailRecipientRef = {
             email: to,
-            customerId: customerId ?? undefined,
-          });
+            customerId: customerId ?? strOrNull(refs.customerId),
+            orderId: strOrNull(refs.orderId),
+            cartId: strOrNull(refs.cartId),
+            quoteId: strOrNull(refs.quoteId),
+            billingDocumentId: strOrNull(refs.billingDocumentId),
+            b2bAccountId: strOrNull(refs.b2bAccountId),
+          };
+          const subject = payload.defer.subject;
+          const preheader = payload.defer.preheader ?? null;
+          // Resolve only the sources the tree (and the subject/preheader) reference,
+          // then overlay the trigger-time snapshot as a scalar fallback.
+          const emailData = applyEntitySnapshot(
+            await resolveEmailData(tenantCtx, doc.tree, ref, [subject, preheader ?? '']),
+            dispatch.entitySnapshot as Record<string, unknown> | null
+          );
+          const resolveToken = (path: string): unknown => resolvePath({ root: emailData }, path);
+          const finalSubject = interpolateEmailTokens(subject, resolveToken);
+          const finalPreheader =
+            preheader != null ? interpolateEmailTokens(preheader, resolveToken) : undefined;
+          // Marketing iff the tree carries an unsubscribe node (docs/91 §8): supply
+          // the one-click URL + the List-Unsubscribe header; render the address node.
+          const marketing = treeHasNodeType(doc.tree, 'unsubscribe_link');
+          const unsubUrl = marketing ? unsubscribeUrl(row.tenant_id, to) : undefined;
           const brand = (await brandService.resolveEmailBrand(tenantCtx, propertyId)) ?? undefined;
           const rendered = await renderEmailTree(
             {
               tree: doc.tree,
-              subject: payload.defer.subject,
-              preheader: payload.defer.preheader,
+              subject: finalSubject,
+              preheader: finalPreheader,
               to,
               data: emailData,
+              compliance: {
+                physicalAddress: dispatch.physicalAddress ?? undefined,
+                unsubscribeUrl: unsubUrl,
+              },
             },
             { brand }
           );
@@ -150,6 +197,14 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             // Carry the site through so the worker stamps property_id for per-site
             // analytics (docs/49 Phase 7); the body is already site-branded above.
             ...(propertyId ? { propertyId } : {}),
+            ...(unsubUrl
+              ? {
+                  headers: {
+                    'List-Unsubscribe': `<${unsubUrl}>`,
+                    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+                  },
+                }
+              : {}),
             ...common,
           };
         } else if (payload.raw) {

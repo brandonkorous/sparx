@@ -10,6 +10,12 @@ export {
   type WelcomeMerchantEmailProps,
 } from './welcome-merchant';
 
+export {
+  EmailVerificationEmail,
+  emailVerificationSubject,
+  type EmailVerificationEmailProps,
+} from './email-verification';
+
 export { EmailLayout } from './_layout';
 
 export {

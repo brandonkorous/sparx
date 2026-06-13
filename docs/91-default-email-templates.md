@@ -1,6 +1,6 @@
 # Default Email Templates & Per-Site Email
 
-**Version:** 1.1 (13 trees BUILT as `DEFAULT_EMAIL_TEMPLATES`; division confirmed — 4 nodes + resolver + `*Url` + compliance gate are the automation module's; final node JSON pending the reference template)
+**Version:** 1.2 (13 trees BUILT as `DEFAULT_EMAIL_TEMPLATES`; **the automation module's half is DELIVERED** — the 4 node types render, the resolver reaches the full §3 vocabulary, every `*Url` resolves, the one-click unsubscribe is live; the provisional `node()` shapes are FINAL as authored, so provisioning is unblocked)
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-12
 
@@ -404,15 +404,22 @@ node it defines). Recorded here for the template side. Three pieces:
 | Step | Work                                                                                                       | Owner / blocked on                             |
 | ---- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | 1 ✅ | All 13 trees authored — `DEFAULT_EMAIL_TEMPLATES` in `@sparx/builder-schemas` (`default-emails.ts` + test) | mine — **done**                                |
-| 2    | Resolver/`DataSource` reaches the §3 vocabulary (`quote`/`invoice`/`b2bAccount` + every `*Url`)            | automation module                              |
-| 3    | The 4 node types + the `invoicing-overdue` reference template + exact node-JSON shapes                     | automation module                              |
+| 2 ✅ | Resolver/`DataSource` reaches the §3 vocabulary (`quote`/`invoice`/`b2bAccount` + every `*Url`)            | automation module — **done**                   |
+| 3 ✅ | The 4 node types render + `{{token}}` interpolation + the `invoicing-overdue` reference (e2e-verified)      | automation module — **done**                   |
 | 4    | `BuilderEmail.property_id` + `key` migration (§6) + partial uniques                                        | mine — **unblocked** (no shared table, see §0) |
 | 5    | `emailService.getPublishedByKey` + per-site authoring scope + "Customize for this site"                    | mine — after step 4                            |
-| 6    | Finalize the 4 provisional node shapes against the reference template + provision on activation (§7)       | mine — after step 3                            |
-| 7    | Wire `DEFAULT_AUTOMATIONS` to the provisioned trees by `key` (§7)                                          | automation module (engine) + mine (templates)  |
+| 6    | Provision the 13 trees on activation (§7) — the provisional shapes are already FINAL (see below)           | mine — **unblocked** (node JSON delivered)      |
+| 7    | Wire `DEFAULT_AUTOMATIONS` to the provisioned trees by `key` (§7) — send-by-`key` join                     | automation module (engine) + mine (templates)  |
 
-Step 1 is done. Steps 4–5 (the per-site `BuilderEmail` table + authoring) are mine
-and **need nothing from the hand-off** — the automation module's node work lives in
-the node registry + `renderEmailTree`, not the `BuilderEmail` Prisma model, so there's
-no racing migration. Only step 6's _final node JSON_ waits on the reference template;
-the trees themselves already compose and pass their tests.
+**Steps 2–3 delivered 2026-06-12** (automation module): `renderEmailTree` renders all
+four node types and interpolates `{{ source.path ?? "fallback" }}`; `resolveEmailData`
+resolves the full §3 vocabulary from the send's `entityRefs` with `items[]` collections
+and real `*Url` routes; the one-click unsubscribe endpoint + `List-Unsubscribe` header
+are live. **The provisional `node()` shapes in `default-emails.ts`** —
+`lineItems(bind)` → `binding.path`, `conditional(when, kids)` → `props.when` + children,
+`unsubscribeLink()` / `physicalAddress()` → bare nodes — **are final as authored**: the
+renderer consumes them verbatim (verified by rendering the real `invoicing-overdue` tree
+end-to-end). So steps 4–6 are all unblocked; **bundle them as one per-site slice**. The
+only remaining cross-agent step is **7 (send-by-`key`)**: the seeded `email.send_campaign`
+references a template by `key`, and the dispatch resolves `key (+ propertyId) → tree` via
+`getPublishedByKey` (a `defer.builderEmailKey` branch I add once that method lands).

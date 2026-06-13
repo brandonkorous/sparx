@@ -52,6 +52,15 @@ export interface EnqueueSendSpec {
   body: ScheduledSendBody;
   /** Extra Mailgun user-variables threaded onto the eventual send. */
   variables?: Record<string, string>;
+  /**
+   * For a `defer` (Builder email) send: the entity ids the deferred render
+   * resolves the email's DataSources against (docs/91 §3) — `{ customerId,
+   * orderId, cartId, quoteId, billingDocumentId, b2bAccountId }`.
+   */
+  entityRefs?: Record<string, string | null> | null;
+  /** The automation's flat, trigger-time resolved field map — a scalar fallback at
+   *  render when a live entity no longer resolves. */
+  entitySnapshot?: Record<string, unknown> | null;
 }
 
 export interface EnqueueResult {
@@ -111,6 +120,10 @@ export async function enqueueSend(
           dueAt: new Date(Date.now() + (spec.delaySeconds ?? 0) * 1000),
           status: 'pending',
           dedupeKey: spec.dedupeKey ?? null,
+          ...(spec.entityRefs ? { entityRefs: spec.entityRefs } : {}),
+          ...(spec.entitySnapshot
+            ? { entitySnapshot: spec.entitySnapshot as Prisma.InputJsonValue }
+            : {}),
         },
       ],
       skipDuplicates: true,

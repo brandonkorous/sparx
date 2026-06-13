@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.18
+**Version:** 1.20
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-12
 
@@ -42,13 +42,55 @@ Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/bl
 >   `chat.conversation.resolved`, `chat.conversation.unresponded`; seed triggers rename to real names
 >   `crm.quote.submitted` + `crm.b2b_account.created`. Rich transactional receipts (order/shipping) stay INLINE
 >   (commerce stripe webhook) — NOT engine workflows.
-> - **NEXT (Step 1 cont.):** entity DataSource resolver registry (order/quote/billingDocument/deal/b2bAccount/
->   customer/product/tenant) → cart/chat/billing scanners + the missing publishers → Step 2 (Builder email
->   DataSource schema: `line_item_table` + `conditional_block` nodes + `ScheduledSend.entitySnapshot`/`entityRefs`
->   + dispatch resolution + `{{token}}` interpolation incl. `send_internal` + `?? fallback`) → Step 2 contract +
->   reference template (handoff spec ALREADY given to a parallel template agent for the other 12) → Step 4
->   (compliance gates + 23 seeds) → Step 5 (dashboard repoint to filtered unified list) → Step 6 (reconcile + e2e).
->   Nothing committed.
+> - **Step 1b — trigger substrate COMPLETE** (this session): (a) **`interval` schedule cadence** added to the
+>   engine — sub-daily, fires on UTC minute boundaries, dedupes ONCE PER ENTITY (stable window key) so a
+>   transient row (cold cart / unresponded chat) triggers a single run; wired through schema + tick + dashboard
+>   editor + summaries. (b) **Built-in resolver additions** (`crm.deal.stage_changed`, `deal.stageType`/
+>   `assignedRepId`/`name`, `order.refundTotal`). (c) **Module resolvers + scanners** in a new
+>   `automation-actions/src/resolvers.ts` — quote / billing_document / b2b-account-event / product resolvers +
+>   a shared `resolveContact` (customer directly OR via B2B primary contact) + **cart**, **conversation**
+>   (dual: open-unresponded AND recently-resolved), **billing_document** (computed `daysUntilDue`/`overdueDays`,
+>   `workflowSlug` partition) scanners. (d) **NO new event publishers needed** — `b2b-account-approved` →
+>   existing `crm.b2b_account.created`; `chat-satisfaction` → resolved-conversation scan; `chat-unresponded` →
+>   scan (cart `recoveredAt:null` excludes purchased carts — checkout-service stamps it). **Verify:** typecheck
+>   clean across automation/-schemas/-actions/events/dashboard; new `scanners.test.ts` **3/3** on docker (interval
+>   once-per-entity dedupe + billing scanner resolves due-in-3 fields + excludes paid). `@sparx/automation` suite
+>   45/46 (the 1 = the documented pre-existing durable-wait flake).
+> - **Step 2 — Builder email DataSource layer COMPLETE** (this session). The keystone that unblocks the parallel
+>   template agent. (a) **Pure token layer** `builder-schemas/email-tokens.ts` — `{{ source.path ?? "fallback" }}`
+>   parse/interpolate + `collectEmailPaths`/`collectEmailSourceKeys` (walks bindings AND token strings AND a
+>   `conditional_block`'s `props.when`) so the resolver loads exactly the referenced sources. (b) **Renderer**
+>   (`renderEmailTree`): the 4 new node types — `line_item_table` (bound collection → 3-col table), `conditional_block`
+>   (`props.when` truthy gate over children), `unsubscribe_link` + `physical_address` (read a new `ComplianceContext`)
+>   — plus `{{token}}` interpolation in every string prop (heading/text/button label+href/image). (c) **Migration**
+>   `20260815000000_scheduled_send_entity_refs` — `ScheduledSend.entity_refs` + `entity_snapshot` (applied to docker).
+>   (d) **`resolveEmailData` rewritten to the docs/91 §3 vocabulary** — `customer/tenant/order/cart/quote/invoice/
+b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` (the exact entity the automation
+>   fired on, else recipient's most-recent for a broadcast), with `items[]` line collections + every `*Url`
+>   (storeUrl/recoveryUrl/reviewUrl/payUrl/portalUrl) → real storefront routes. `applyEntitySnapshot` overlays the
+>   flat trigger-time fields as a scalar fallback for a since-deleted entity. (e) **Dispatch tick** — builds the ref
+>   from `entityRefs`, resolves data (incl. subject/preheader source-collection), interpolates subject + preheader,
+>   sets the `ComplianceContext` (physical address + a real one-click unsubscribe URL) and the `List-Unsubscribe` /
+>   `List-Unsubscribe-Post` headers when the tree carries an unsubscribe node. (f) **Executor** — `email.send_campaign`
+>   stamps `entityRefs` + `entitySnapshot` on a designed send; `email.send_internal` interpolates its `{{token}}`s
+>   inline against the trigger fields. (g) **Public one-click unsubscribe** — `email-unsubscribe.ts` (HMAC-signed
+>   `(tenant,email)` token) + `GET/POST /v1/public/email/unsubscribe` → `marketing`-scope `EmailSuppression` (what
+>   `enqueueSend` checks). (h) **`EMAIL_SOURCES`** (binding.ts) realigned to the §3 vocabulary. **Coordination
+>   delivered to the template agent:** their provisional `node()` shapes are FINAL as authored (renderer consumes
+>   them verbatim) → they can bundle the per-site `BuilderEmail` migration + `getPublishedByKey` + provisioning now.
+>   Open joint step: send-by-KEY (my `defer.builderEmailKey` branch ↔ their `getPublishedByKey`, per-site fallback).
+>   **Verify:** typecheck clean (builder-schemas/email/email-sends/automation-actions/api-rest); tests —
+>   email-tokens **10/10**, render-email-tree **10/10** (incl. real `invoicing-overdue` e2e), builder-schemas
+>   **70/70**, email-sends **4/4**, new api-rest `email-data` integration **4/4** (invoice hydrate w/ computed
+>   overdueDays + items + payUrl; customer+tenant; selective load; snapshot fallback). NEW dep: automation-actions →
+>   `@sparx/builder-schemas` (zod-only; Dockerfile COPY added).
+> - **NEXT — Steps 3–6 (seeds + provisioning + dashboard + reconcile):** restructure seeds into the per-module
+>   catalog and seed **all 23** (Step 4); add the `emailType|category` field on `send_campaign` + the DERIVED
+>   CAN-SPAM/CASL gate chain (consent via `Customer.gdprConsent`, unsubscribe-node check, `EmailSettings.physicalAddress`)
+>   - seed-config thresholds (vip/high-value) + `create_task` assignee fallback to owner; hook `module.activated` to
+>     seed automations (the template-provision half is the parallel agent's); repoint the dashboard email-automations
+>     page to a filtered unified list (Step 5); extend the nightly reconcile to cover all seeds + self-heal + full e2e
+>     (Step 6). Step 1 + early Step 2 committed locally by the user.
 >
 > ---
 >

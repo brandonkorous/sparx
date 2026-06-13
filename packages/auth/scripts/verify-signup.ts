@@ -15,16 +15,14 @@ import { signUpMerchant, SignUpError } from '../src/sign-up';
 
 const email = `verify-${Date.now()}@example.test`;
 const password = 'verification-password';
-const storeName = `Verify Store ${Date.now()}`;
 
 async function main() {
-  console.log(`Signing up ${email} (store "${storeName}")…`);
+  console.log(`Signing up ${email}…`);
 
   const result = await signUpMerchant({
     email,
     password,
     name: 'Verification Tester',
-    storeName,
   });
 
   console.log('  ↳ tenantId:', result.tenantId);
