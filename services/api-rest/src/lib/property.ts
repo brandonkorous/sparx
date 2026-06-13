@@ -63,6 +63,20 @@ export async function resolvePropertyId(
   return resolvePrimaryPropertyId(tenantId);
 }
 
+/** Validate that `propertyId` names one of the tenant's OWN properties, returning
+ *  it; 404 otherwise. For an EXPLICIT target — e.g. the `property_id` in a
+ *  blueprint-install body (docs/49 Phase 8) where the caller named a specific site
+ *  — a silent fall-back to the primary (as `resolvePropertyId` does for a header)
+ *  would quietly install into the wrong site and hide the mistake. RLS scopes the
+ *  lookup, so a foreign-tenant id is indistinguishable from a non-existent one. */
+export async function requireTenantProperty(tenantId: string, propertyId: string): Promise<string> {
+  const row = await withTenant({ tenantId }, (tx) =>
+    tx.property.findUnique({ where: { id: propertyId }, select: { id: true } })
+  );
+  if (!row) throw notFound('Property', propertyId);
+  return row.id;
+}
+
 /** Storefront-side resolution: by stable property SLUG (the host→property mapping
  *  in Phase 2 passes it as `?property=`), else the tenant's primary. Keeps the
  *  public Builder reads single-site today (no `property` param → primary) while

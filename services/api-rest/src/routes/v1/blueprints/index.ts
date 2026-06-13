@@ -2,15 +2,19 @@
 //
 //   GET  /v1/blueprints                      → catalog (+ this site's install state)
 //   GET  /v1/blueprints/:key                 → one blueprint (summary + contents)
-//   POST /v1/blueprints/:key/install         → install into the ACTIVE property (draft)
+//   POST /v1/blueprints/:key/install         → install into a target property (draft)
 //   GET  /v1/blueprints/installs             → this tenant's installs
 //   GET  /v1/blueprints/installs/:id         → one install (id map + counts)
 //   POST /v1/blueprints/installs/:id/go-live → publish everything the install created
 //
 // Install/go-live are admin-only (they enable modules + mutate many surfaces).
-// The property a template installs into is the ACTIVE one (the site switcher's
-// `x-sparx-property-id`, else the tenant's primary) — same resolution the Builder
-// uses (docs/54 §5).
+// The property a template installs into (docs/49 Phase 8) is, in priority order:
+// an explicit `property_id` in the install body (validated to the tenant — the
+// New-site wizard installs into the site it just created, which isn't the active
+// one yet), else the ACTIVE site (the switcher's `x-sparx-property-id`), else the
+// tenant's primary. The installer writes the tenant brand for the primary and a
+// per-site `brand_override` for a secondary, so installing onto one site never
+// rebrands its siblings (superseding the docs/54 D6 "always primary" rule).
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -27,7 +31,7 @@ import {
   type Blueprint,
 } from '@sparx/blueprints';
 
-import { resolvePrimaryPropertyId } from '../../../lib/property.js';
+import { requireTenantProperty, resolvePropertyId } from '../../../lib/property.js';
 import { readArtifact } from '../../../lib/marketplace/artifacts.js';
 import {
   findInstall,
@@ -39,6 +43,16 @@ import {
 
 const KeyParam = z.object({ key: z.string().min(1).max(63) });
 const IdParam = z.object({ id: z.string().uuid() });
+// Install target (docs/49 Phase 8): an explicit site to install into. Optional —
+// absent falls back to the active site (header) then primary. The body itself is
+// optional (a bare POST still installs into the active/primary site).
+const InstallBody = z.object({ property_id: z.string().uuid().optional() }).default({});
+
+/** The site switcher's active-property header, when present. */
+function activePropertyHeader(headers: Record<string, unknown>): string | null {
+  const h = headers['x-sparx-property-id'];
+  return typeof h === 'string' && h.length > 0 ? h : null;
+}
 
 // Resolve a blueprint manifest DATA-FIRST (docs/85 §7): the source of truth is the
 // compiled artifact in object storage (`marketplace/blueprints/<slug>/<version>.json`),
@@ -124,9 +138,14 @@ function serializeInstallDetail(row: InstallRow) {
 const blueprintRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/blueprints', async (request) => {
     const auth = requireRole(request, 'viewer');
-    // Install state is tenant-level: blueprints always install into the PRIMARY
-    // property (docs/54 D6), so the catalog reads its rows, not the active site's.
-    const propertyId = await resolvePrimaryPropertyId(auth.tenantId);
+    // Per-site install state (docs/49 Phase 8): a blueprint installs into a
+    // specific site, so the catalog reads the ACTIVE site's install rows (the
+    // switcher's header, else primary) — a secondary site shows ITS own
+    // installed/available badges, not the primary's.
+    const propertyId = await resolvePropertyId(
+      auth.tenantId,
+      activePropertyHeader(request.headers)
+    );
     const [rows, installs] = await Promise.all([
       // DATA-first (docs/85): the catalog is the thin marketplace rows, so
       // bundle-ingested blueprints show up here alongside the legacy code ones.
@@ -236,9 +255,14 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/blueprints/:key/install', async (request) => {
     const auth = requireRole(request, 'admin');
     const { key } = KeyParam.parse(request.params);
+    const { property_id } = InstallBody.parse(request.body ?? {});
     const bp = await resolveBlueprint(auth.tenantId, key);
     if (!bp) throw notFound('Blueprint', key);
-    const propertyId = await resolvePrimaryPropertyId(auth.tenantId);
+    // Explicit body target wins (validated, 404 on miss — the wizard installs into
+    // the site it just created); else the active site (header → primary).
+    const propertyId = property_id
+      ? await requireTenantProperty(auth.tenantId, property_id)
+      : await resolvePropertyId(auth.tenantId, activePropertyHeader(request.headers));
     const existing = await findInstall(auth.tenantId, propertyId, key);
     if (existing) {
       // One install row per (tenant, property, blueprint). A clean re-install is an
