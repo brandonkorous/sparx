@@ -116,7 +116,7 @@ const HEIGHT_CLASS: Record<NonNullable<BoxStyle['height']>, string> = {
   auto: '',
   sm: 'min-h-[25vh]',
   md: 'min-h-[50vh]',
-  lg: 'min-h-[75vh]',
+  lg: 'h-[75vh]',
   xl: 'min-h-[90vh]',
   full: 'min-h-screen',
 };

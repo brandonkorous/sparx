@@ -191,7 +191,7 @@ export default {
           {
             id: 'bp-48',
             type: 'Section',
-            class: 'w-full flex items-center justify-center min-h-[75vh] text-white',
+            class: 'w-full flex items-center justify-center h-[75vh] text-white',
             props: {
               bgImage: 'https://picsum.photos/seed/fitness-studio-hero/2000/1100',
               bgOverlay: 'dark',

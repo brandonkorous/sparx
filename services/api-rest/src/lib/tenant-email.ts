@@ -90,9 +90,17 @@ export async function renderBuilderEmailDoc(
     args.preheaderOverride !== undefined ? args.preheaderOverride : (args.doc.preheader ?? null);
 
   // Resolve only the sources the tree (+ subject/preheader) reference, then overlay
-  // the trigger-time snapshot as a scalar fallback (no-op for direct sends).
+  // the trigger-time snapshot as a scalar fallback (no-op for direct sends). The
+  // propertyId scopes `{{tenant.name}}` to the active site (docs/49 Phase 7) — the
+  // SAME site whose brand this render uses below — so body copy and chrome agree.
   const emailData = applyEntitySnapshot(
-    await resolveEmailData(ctx, args.doc.tree, args.ref, [subject, preheader ?? '']),
+    await resolveEmailData(
+      ctx,
+      args.doc.tree,
+      args.ref,
+      [subject, preheader ?? ''],
+      args.propertyId
+    ),
     args.snapshot ?? null
   );
   const resolveToken = (path: string): unknown => resolvePath({ root: emailData }, path);

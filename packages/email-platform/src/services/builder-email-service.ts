@@ -29,11 +29,16 @@ function buildFrom(fromName: string | null, fromAddress: string | null): string 
 /** Resolve a Builder email tree's bound DataSources (docs/52 §7). Injected by the
  *  caller (api-rest's emailDataResolver, which has @sparx/commerce) so this package
  *  stays commerce-free. `recipient` is absent for the render-once path (preview /
- *  non-personalized broadcast), where per-recipient sources resolve empty. Defined
- *  here (the render module) and reused by broadcast-service. */
+ *  non-personalized broadcast), where per-recipient sources resolve empty.
+ *  `propertyId` scopes per-site sources (today: `{{tenant.name}}`) to the active
+ *  site (docs/49 Phase 7) — passed by callers that learn the site at call time (the
+ *  broadcast render-once path passes `broadcast.propertyId`); preview/test-send bind
+ *  it into the resolver instead, so they call with just the tree. Defined here (the
+ *  render module) and reused by broadcast-service. */
 export type ResolveEmailData = (
   tree: BuilderNode,
-  recipient?: { email: string; customerId?: string | null }
+  recipient?: { email: string; customerId?: string | null },
+  propertyId?: string | null
 ) => Promise<DataSources>;
 
 // No-resolver default: static data only (bound nodes fall back to their props /
@@ -55,16 +60,24 @@ export interface RenderedPreview {
 }
 
 /** Render a Builder email to inlined HTML + plain text for the editor preview.
- *  Resolves the tenant brand so the preview matches what ships. The injected
- *  `resolveData` resolves the tree's bound sources (products/promotion/posts) so
- *  the preview shows real data; per-recipient sources resolve empty here (no
- *  recipient), exactly like the section preview. */
+ *  Resolves the brand so the preview matches what ships. `propertyId` scopes the
+ *  brand to the active site (docs/49 Phase 7): when the editor is authoring a
+ *  per-site email, the preview paints THAT site's name / colours / fonts / logo —
+ *  the same `resolveEmailBrand(ctx, propertyId)` merge the real send uses — so the
+ *  preview can't diverge from the canvas. Absent → the tenant brand (single-site).
+ *  The injected `resolveData` resolves the tree's bound sources
+ *  (products/promotion/posts) so the preview shows real data; per-recipient sources
+ *  resolve empty here (no recipient), exactly like the section preview. */
 export async function renderPreview(
   ctx: ServiceContext,
   doc: BuilderEmailDoc,
-  resolveData: ResolveEmailData = noEmailDataResolver
+  resolveData: ResolveEmailData = noEmailDataResolver,
+  propertyId?: string | null
 ): Promise<RenderedPreview> {
-  const [brand, data] = await Promise.all([resolveEmailBrand(ctx), resolveData(doc.tree)]);
+  const [brand, data] = await Promise.all([
+    resolveEmailBrand(ctx, propertyId),
+    resolveData(doc.tree),
+  ]);
   const rendered = await renderEmailTree(
     {
       tree: doc.tree,
@@ -94,16 +107,20 @@ export interface PreparedTestSend {
  *  event so the email-worker delivers it through the configured provider; the
  *  worker is the single email egress path, and direct sends are an OTP-only escape
  *  hatch (CLAUDE.md). The recipient's own data is resolved (the test address as the
- *  recipient) so a personalized email smoke-tests the per-recipient render too. */
+ *  recipient) so a personalized email smoke-tests the per-recipient render too.
+ *  `propertyId` scopes the brand to the active site (docs/49 Phase 7) so the test
+ *  copy is branded EXACTLY as a real send for that site — matching the preview +
+ *  canvas. Absent → the tenant brand (single-site). */
 export async function prepareTestSend(
   ctx: ServiceContext,
   doc: BuilderEmailDoc,
   rawInput: unknown,
-  resolveData: ResolveEmailData = noEmailDataResolver
+  resolveData: ResolveEmailData = noEmailDataResolver,
+  propertyId?: string | null
 ): Promise<PreparedTestSend> {
   const { to } = TestSendInput.parse(rawInput);
   const [brand, settings, data] = await Promise.all([
-    resolveEmailBrand(ctx),
+    resolveEmailBrand(ctx, propertyId),
     getSettings(ctx),
     resolveData(doc.tree, { email: to }),
   ]);

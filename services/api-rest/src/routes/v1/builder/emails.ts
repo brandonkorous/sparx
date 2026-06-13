@@ -26,7 +26,11 @@ import { builderEmailService } from '@sparx/email-platform';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { publish } from '@sparx/api-core/pubsub';
-import { requireBuilderModule, toBuilderTenantContext } from '../../../lib/builder-context.js';
+import {
+  requireBuilderModule,
+  toBuilderContext,
+  toBuilderTenantContext,
+} from '../../../lib/builder-context.js';
 import { requireTenantProperty } from '../../../lib/property.js';
 import { emailDataResolver } from '../../../lib/email-data.js';
 
@@ -122,17 +126,22 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
 
   // Render the DRAFT body to inlined HTML + plain text for the editor preview.
   // `emailService.get` returns the draft tree (and throws a mapped 404 if the
-  // email doesn't exist); builderEmailService resolves the brand + renders.
+  // email doesn't exist); builderEmailService resolves the brand + renders. We use
+  // the per-PROPERTY ctx (the active site from the `x-sparx-property-id` header)
+  // and pass its propertyId so the preview paints the SAME per-site brand the real
+  // send does (docs/49 Phase 7) — emails themselves stay tenant-wide, only the
+  // brand resolution is site-scoped, matching the editor canvas.
   app.get('/v1/builder/emails/:id/preview', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
-    const ctx = toBuilderTenantContext(request);
+    const ctx = await toBuilderContext(request);
     const { id } = IdParam.parse(request.params);
     const email = await emailService.get(ctx, id);
     const preview = await builderEmailService.renderPreview(
       ctx,
       { tree: email.tree, subject: email.subject, preheader: email.preheader },
-      emailDataResolver(ctx)
+      emailDataResolver(ctx, ctx.propertyId),
+      ctx.propertyId
     );
     return ok(preview);
   });
@@ -144,14 +153,17 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/builder/emails/:id/test-send', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
-    const ctx = toBuilderTenantContext(request);
+    // Per-PROPERTY ctx (active site) so the test copy is branded EXACTLY as a real
+    // send for that site — the same per-site brand as the preview + canvas (docs/49).
+    const ctx = await toBuilderContext(request);
     const { id } = IdParam.parse(request.params);
     const email = await emailService.get(ctx, id);
     const prepared = await builderEmailService.prepareTestSend(
       ctx,
       { tree: email.tree, subject: email.subject, preheader: email.preheader },
       request.body,
-      emailDataResolver(ctx)
+      emailDataResolver(ctx, ctx.propertyId),
+      ctx.propertyId
     );
     await publish(request.log, 'email.send', ctx.tenantId, null, {
       kind: 'raw',

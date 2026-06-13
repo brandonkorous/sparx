@@ -137,6 +137,49 @@ describe('resolveEmailData — invoice template', () => {
     expect(String((data.tenant as Record<string, unknown>).name)).toContain('Test test-');
   });
 
+  it('resolves {{tenant.name}} to the active site name when a property overrides businessName (docs/49)', async () => {
+    // A multi-site tenant authoring a site whose brand_override sets a per-site
+    // business name — the same per-site identity the wordmark/footer brand uses.
+    const propertyId = await withTenant({ tenantId: fixture.tenantId }, (tx) =>
+      tx.property
+        .create({
+          data: {
+            tenantId: fixture.tenantId,
+            slug: `site-${crypto.randomBytes(3).toString('hex')}`,
+            name: 'Override Site',
+            isPrimary: false,
+            brandOverride: { businessName: 'Driftwood Supply Co.' },
+          },
+          select: { id: true },
+        })
+        .then((p) => p.id)
+    );
+    const tree = {
+      id: 'root',
+      type: 'Section',
+      props: {},
+      children: [{ id: 'h', type: 'Heading', props: { text: 'Welcome to {{tenant.name}}' } }],
+    };
+
+    // With the site's propertyId, the per-site name wins — body copy reads the site,
+    // matching the per-site brand chrome (and the canvas/preview).
+    const scoped = await resolveEmailData(
+      { tenantId: fixture.tenantId },
+      tree,
+      { email: 'ar@buyer.test' },
+      [],
+      propertyId
+    );
+    expect(String((scoped.tenant as Record<string, unknown>).name)).toBe('Driftwood Supply Co.');
+
+    // Without a propertyId, it falls back to the tenant identity (the org name here,
+    // since the fixture has no tenant brand business name) — single-site unchanged.
+    const unscoped = await resolveEmailData({ tenantId: fixture.tenantId }, tree, {
+      email: 'ar@buyer.test',
+    });
+    expect(String((unscoped.tenant as Record<string, unknown>).name)).toContain('Test test-');
+  });
+
   it('only loads the sources the tree references (no order/cart for an invoice email)', async () => {
     const tpl = getDefaultEmailTemplate('invoicing-overdue')!;
     const data = await resolveEmailData({ tenantId: fixture.tenantId }, tpl.tree, {

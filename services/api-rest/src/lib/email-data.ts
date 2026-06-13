@@ -24,6 +24,8 @@ import { discountService, productService } from '@sparx/commerce';
 import { collectEmailSourceKeys, type BuilderNode, type DataSources } from '@sparx/builder-schemas';
 import type { ServiceContext } from '@sparx/email-platform';
 
+import { parseBrandOverride } from './property-brand.js';
+
 /** The entity ids a send resolves against (docs/91 §3) — the automation's
  *  `entityRefs`, or just `{ customerId }` for a customer-addressed broadcast.
  *  `email` is the literal recipient (always present). */
@@ -232,9 +234,10 @@ async function resolveCustomer(
 
 async function resolveTenant(
   ctx: ServiceContext,
-  tenant: { slug: string; name: string; email: string }
+  tenant: { slug: string; name: string; email: string },
+  propertyId?: string | null
 ): Promise<Record<string, string>> {
-  const [settings, brand] = await Promise.all([
+  const [settings, brand, property] = await Promise.all([
     withTenant(ctx, (tx) =>
       tx.emailSettings.findUnique({ where: { tenantId: ctx.tenantId }, select: { replyTo: true } })
     ),
@@ -244,14 +247,24 @@ async function resolveTenant(
         select: { businessName: true },
       })
     ),
+    propertyId
+      ? withTenant(ctx, (tx) =>
+          tx.property.findUnique({ where: { id: propertyId }, select: { brandOverride: true } })
+        )
+      : Promise.resolve(null),
   ]);
   // `{{tenant.name}}` is customer-facing copy ("Welcome to …", "thanks for shopping
   // with …"), so it must be the STORE name — the brand business name the wordmark
   // already uses (brand-service's `storeName`) — not the internal org/account name
-  // on the tenant row. Fall back to the tenant name when no business name is set
-  // (an empty string falls through too, hence the explicit length check).
+  // on the tenant row. On a multi-site tenant it is the ACTIVE site's name when the
+  // site overrides `businessName` (docs/49 Phase 7) — the SAME per-site name the
+  // wordmark/footer brand resolves — so a per-site email reads the site name in
+  // body copy too, not just the chrome. Falls back: site name → tenant brand name →
+  // org name (an empty string falls through, hence the explicit length checks).
+  const siteName = parseBrandOverride(property?.brandOverride)?.businessName?.trim() ?? '';
   const businessName = brand?.businessName?.trim() ?? '';
-  const storeName = businessName.length > 0 ? businessName : tenant.name;
+  const storeName =
+    siteName.length > 0 ? siteName : businessName.length > 0 ? businessName : tenant.name;
   return {
     name: storeName,
     storeUrl: homeUrl(tenant.slug),
@@ -681,7 +694,8 @@ export async function resolveEmailData(
   ctx: ServiceContext,
   tree: BuilderNode,
   ref?: EmailRecipientRef,
-  extraStrings: string[] = []
+  extraStrings: string[] = [],
+  propertyId?: string | null
 ): Promise<DataSources> {
   const keys = collectEmailSourceKeys(tree, extraStrings);
   if (keys.size === 0) return {};
@@ -700,7 +714,7 @@ export async function resolveEmailData(
     tasks.push(resolveRecipient(ctx, ref).then((v) => void (out.recipient = v)));
   }
   if (keys.has('tenant')) {
-    tasks.push(resolveTenant(ctx, tenant).then((v) => void (out.tenant = v)));
+    tasks.push(resolveTenant(ctx, tenant, propertyId).then((v) => void (out.tenant = v)));
   }
   if (keys.has('order')) {
     tasks.push(resolveOrder(ctx, ref, slug).then((v) => void (out.order = v)));
@@ -783,12 +797,18 @@ export function applyEntitySnapshot(
 }
 
 /** A `resolveEmailData` callback bound to a request's context — what the broadcast
- *  send path and the dispatch tick inject so @sparx/email-platform resolves email
- *  data without a @sparx/commerce dependency (docs/52 §6). */
-export function emailDataResolver(ctx: ServiceContext) {
+ *  send path, the dispatch tick, and the editor preview inject so
+ *  @sparx/email-platform resolves email data without a @sparx/commerce dependency
+ *  (docs/52 §6). `boundPropertyId` scopes `{{tenant.name}}` to the active site for
+ *  callers that know the site at injection time (preview/test-send pass
+ *  `ctx.propertyId`); a per-call `propertyId` lets a caller that learns the site
+ *  later override it (the broadcast send path passes `broadcast.propertyId`). Absent
+ *  → tenant-level, unchanged for single-site tenants. */
+export function emailDataResolver(ctx: ServiceContext, boundPropertyId?: string | null) {
   return (
     tree: BuilderNode,
     ref?: EmailRecipientRef,
-    extraStrings?: string[]
-  ): Promise<DataSources> => resolveEmailData(ctx, tree, ref, extraStrings);
+    propertyId?: string | null
+  ): Promise<DataSources> =>
+    resolveEmailData(ctx, tree, ref, undefined, propertyId ?? boundPropertyId);
 }

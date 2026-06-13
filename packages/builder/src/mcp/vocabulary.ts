@@ -197,7 +197,7 @@ export const BUILDER_STYLE_GUIDE = {
         'justify-between',
       ],
       grid: ['grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4'],
-      sizing: ['w-full', 'max-w-site', 'min-h-screen', 'min-h-[50vh]', 'min-h-[75vh]'],
+      sizing: ['w-full', 'max-w-site', 'min-h-screen', 'min-h-[50vh]', 'h-[75vh]'],
       centeredColumn:
         'mx-auto w-full max-w-site — the centered content column inside a full-bleed (w-full) band. This pairing is the core page rhythm.',
     },
@@ -277,8 +277,7 @@ export const BUILDER_STYLE_GUIDE = {
       name: 'Full-bleed hero with a centered column',
       tree: {
         type: 'Section',
-        class:
-          'w-full bg-neutral text-neutral-content min-h-[75vh] flex items-center justify-center',
+        class: 'w-full bg-neutral text-neutral-content h-[75vh] flex items-center justify-center',
         props: {},
         children: [
           {

@@ -209,8 +209,9 @@ async function enqueueAndMark(
   if (!personalized) {
     // Render once, in THIS broadcast's site brand (docs/49 Phase 7) — the site's
     // brand_override merged over the tenant brand; null property → primary brand.
+    // The same propertyId scopes `{{tenant.name}}` so body copy matches the brand.
     const [data, brand] = await Promise.all([
-      resolveEmailData(doc.tree),
+      resolveEmailData(doc.tree, undefined, broadcast.propertyId),
       resolveEmailBrand(ctx, broadcast.propertyId),
     ]);
     const rendered = await renderEmailTree(
