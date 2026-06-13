@@ -1,0 +1,76 @@
+import { describe, expect, it } from 'vitest';
+
+import { DEFAULT_EMAIL_TEMPLATES, getDefaultEmailTemplate } from './default-emails';
+import { BuilderNodeSchema, type BuilderNode } from './node';
+
+// Walk a tree, yielding every node (depth-first).
+function* walk(node: BuilderNode): Generator<BuilderNode> {
+  yield node;
+  for (const child of node.children ?? []) yield* walk(child);
+}
+
+const types = (root: BuilderNode): string[] => [...walk(root)].map((nd) => nd.type);
+
+describe('DEFAULT_EMAIL_TEMPLATES', () => {
+  it('ships exactly the 13 documented templates with unique keys', () => {
+    const keys = DEFAULT_EMAIL_TEMPLATES.map((t) => t.key);
+    expect(keys).toHaveLength(13);
+    expect(new Set(keys).size).toBe(13);
+    expect(keys).toEqual(
+      expect.arrayContaining([
+        'welcome-customer',
+        'win-back',
+        'abandoned-cart',
+        'post-purchase-review',
+        'b2b-account-approved',
+        'b2b-quote-received',
+        'b2b-invoice-due',
+        'b2b-quote-expiring',
+        'invoicing-reminder',
+        'invoicing-overdue',
+        'invoicing-overdue-2',
+        'invoicing-overdue-final',
+        'chat-satisfaction',
+      ])
+    );
+  });
+
+  it('every tree is a valid BuilderNode with unique node ids', () => {
+    for (const t of DEFAULT_EMAIL_TEMPLATES) {
+      expect(() => BuilderNodeSchema.parse(t.tree), t.key).not.toThrow();
+      const ids = [...walk(t.tree)].map((nd) => nd.id);
+      expect(new Set(ids).size, `${t.key} ids unique`).toBe(ids.length);
+      // The body root is a Section; the renderer wraps it in the branded frame.
+      expect(t.tree.type).toBe('Section');
+    }
+  });
+
+  it('marketing templates carry the compliance pair; transactional carry neither', () => {
+    for (const t of DEFAULT_EMAIL_TEMPLATES) {
+      const nodeTypes = types(t.tree);
+      const hasUnsub = nodeTypes.includes('unsubscribe_link');
+      const hasAddr = nodeTypes.includes('physical_address');
+      if (t.type === 'marketing') {
+        expect(hasUnsub, `${t.key} unsubscribe`).toBe(true);
+        expect(hasAddr, `${t.key} address`).toBe(true);
+      } else {
+        expect(hasUnsub, `${t.key} no unsubscribe`).toBe(false);
+        expect(hasAddr, `${t.key} no address`).toBe(false);
+      }
+    }
+  });
+
+  it('subjects and preheaders are present on every template', () => {
+    for (const t of DEFAULT_EMAIL_TEMPLATES) {
+      expect(t.subject.length, t.key).toBeGreaterThan(0);
+      expect(t.preheader.length, t.key).toBeGreaterThan(0);
+      expect(t.sources.length, t.key).toBeGreaterThan(0);
+    }
+  });
+
+  it('getDefaultEmailTemplate looks up by key', () => {
+    expect(getDefaultEmailTemplate('welcome-customer')?.type).toBe('transactional');
+    expect(getDefaultEmailTemplate('abandoned-cart')?.type).toBe('marketing');
+    expect(getDefaultEmailTemplate('nope')).toBeUndefined();
+  });
+});

@@ -1,6 +1,6 @@
 # Default Email Templates & Per-Site Email
 
-**Version:** 1.0 (design — content/structure final; node JSON + schema pending the automation-module node contract)
+**Version:** 1.1 (13 trees BUILT as `DEFAULT_EMAIL_TEMPLATES`; division confirmed — 4 nodes + resolver + `*Url` + compliance gate are the automation module's; final node JSON pending the reference template)
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-12
 
@@ -26,19 +26,27 @@
 
 This work spans two agents. The split is firm:
 
-| Owned by the **automation module** (hand-off pending)                                                               | Owned **here** (this doc)                                                                            |
-| ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| The node-tree **JSON shapes**: `DataSource` declaration, the new `line_item_table` and `conditional_block` nodes    | The **content + structure** of all 13 templates (§4) — final, design against it now                  |
-| The **reference template** published from "Step 2"                                                                  | The **per-site email model**: `BuilderEmail.property_id` + `key`, override resolution (§6)           |
-| The **merge-field resolver / `DataSource`** that exposes the vocabulary (§3) and resolves `*Url` tokens at dispatch | **Provisioning** the 13 defaults on email activation + the `DEFAULT_AUTOMATIONS` reconciliation (§7) |
-|                                                                                                                     | The **compliance gate**: marketing must carry unsubscribe + address nodes (§8)                       |
+**Division confirmed 2026-06-12** (the automation agent's Q1/Q2): all four node
+types, the resolver/`DataSource` + every `*Url` token, and the compliance gate are
+the automation module's; this doc owns the trees' content/structure, the per-site
+email model, provisioning, and the reconciliation. The agent builds **zero** trees;
+this side builds **zero** node types and **zero** resolver.
 
-**Sequencing.** Content/structure (§4) is final now — design against it. The final
-**node JSON** for each template is materialized against the automation agent's node
-contract when it lands ("a couple steps out"). Until then we do **not** emit node
-trees, and we do **not** mutate `BuilderEmail`'s schema in parallel — §6/§7/§8 are
-specced here and built once the contract + the shared `BuilderEmail` change are
-confirmed, so the two agents don't collide on the same tables.
+| Owned by the **automation module**                                                                                                                          | Owned **here** (this doc)                                                                                    |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| All **four** node types — `line_item_table`, `conditional_block`, `unsubscribe_link`, `physical_address` — defined + rendered + gate-checked (their Step 2) | The **content + structure** of all 13 templates (§4) — final; trees authored now (`DEFAULT_EMAIL_TEMPLATES`) |
+| The **reference template** (`invoicing-overdue`) + the exact node-JSON shapes, handed over when Step 2 lands                                                | The **per-site email model**: `BuilderEmail.property_id` + `key`, override resolution (§6)                   |
+| The **merge-field resolver / `DataSource`** (§3) + every `*Url` token (incl. the new `order.reviewUrl`), resolved at dispatch                               | **Provisioning** the 13 defaults on email activation + the `DEFAULT_AUTOMATIONS` reconciliation (§7)         |
+| The **compliance gate** (their Step 4) — checks for the `unsubscribe_link` node it owns                                                                     | **Placing** `unsubscribe_link` + `physical_address` in the 3 marketing trees so they pass the gate           |
+
+**Sequencing.** The 13 trees are **authored now** (§4 / `DEFAULT_EMAIL_TEMPLATES`),
+against the published field vocabulary + node palette — the four new node types are
+placed with **provisional** `props`/`binding`, finalized against the
+`invoicing-overdue` reference template when Step 2 lands. The `BuilderEmail` _table_
+change (§6) is **mine alone** — the automation agent's node work lives in
+`@sparx/builder-schemas`' node registry + `renderEmailTree`, not the `BuilderEmail`
+Prisma model — so there is **no shared-table collision**; §6/§7 are unblocked and
+sequence only behind the node-JSON finalization (so provisioned trees ship final).
 
 **Current-state map** (verified 2026-06-12): `BuilderEmail`
 ([packages/db/prisma/schema/51-builder.prisma](../packages/db/prisma/schema/51-builder.prisma))
@@ -105,19 +113,21 @@ explicit. **Current** = state of `resolveEmailData` today; the resolver must rea
 | ---------------------- | -------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | `customer`             | `firstName lastName fullName email company`                    | —                                                             | partial — `firstName/lastName/email` only (no `fullName`, `company`)                  |
 | `tenant`               | `name storeUrl supportEmail`                                   | —                                                             | missing — `storeUrl` derived per-send; no `name`/`supportEmail` source                |
-| `order`                | `number total subtotal status placedAt`                        | `order.items[]`: `name quantity unitPrice lineTotal`          | partial — labels only (`statusLabel`/`totalLabel`); no raw values, no `items[]`       |
+| `order`                | `number total subtotal status placedAt reviewUrl`              | `order.items[]`: `name quantity unitPrice lineTotal`          | partial — labels only (`statusLabel`/`totalLabel`); no raw values, no `items[]`       |
 | `cart`                 | `total itemCount recoveryUrl`                                  | `cart.items[]`: `name quantity unitPrice lineTotal`           | partial — `items[]` (title/priceLabel/imageUrl); no `total`/`itemCount`/`recoveryUrl` |
 | `quote`                | `number total status validUntil reviewUrl`                     | `quote.items[]`: `name quantity unitPrice lineTotal`          | **missing**                                                                           |
 | `invoice` (billingDoc) | `number total balance dueDate daysUntilDue overdueDays payUrl` | `invoice.items[]`: `description quantity unitPrice lineTotal` | **missing**                                                                           |
 | `b2bAccount`           | `companyName paymentTerms creditLimit status portalUrl`        | —                                                             | **missing**                                                                           |
 
-The `*Url` tokens (`storeUrl`, `recoveryUrl`, `payUrl`, `reviewUrl`, `portalUrl`)
-are resolved **at dispatch** by the resolver — this is what makes the CTAs work.
+Every `*Url` token (`storeUrl`, `recoveryUrl`, `payUrl`, `reviewUrl`, `portalUrl`)
+is owned by the automation module and resolved to a **real working link at
+dispatch** — use them freely; that's what makes the CTAs work.
 
-> **One gap to flag to the automation agent:** template #4 (`post-purchase-review`)
-> needs a review destination, but `order` has no `reviewUrl`. Either add
-> `order.reviewUrl` to the vocabulary, or the review CTA falls back to
-> `{{tenant.storeUrl}}`. Marked inline in §4.
+> **Resolved (2026-06-12):** `order.reviewUrl` is **in the vocabulary** — the
+> resolver maps it to the first purchased product's PDP (`{storeUrl}/products/{handle}`,
+> where the review UI lives), falling back to `storeUrl` only when the order has no
+> resolvable product. So template #4's CTA uses `{{order.reviewUrl}}` directly (no
+> storeUrl fallback in the tree).
 
 ---
 
@@ -163,7 +173,7 @@ Subjects/preheaders carry merge tokens.
 - heading: "How was your order?"
 - paragraph: "Thanks for shopping with {{tenant.name}}, {{customer.firstName ?? "there"}}. We'd love to hear what you thought of order {{order.number}}:"
 - [line_item_table] `order.items`
-- button: "Leave a review" → `{{order.reviewUrl}}` _(needs `order.reviewUrl` added to the vocabulary; else falls back to `{{tenant.storeUrl}}` — see §3)_
+- button: "Leave a review" → `{{order.reviewUrl}}` _(resolver maps it to the first product's PDP — see §3)_
 - [unsubscribe + address]
 
 ### 5. `b2b-account-approved` · transactional · _notification_
@@ -254,20 +264,25 @@ Subjects/preheaders carry merge tokens.
 
 ## 5. Node-type dependency
 
-Existing nodes cover most blocks: `Heading`, `Text`/`Prose` (paragraphs), `Button`
-(CTAs), `Section`/`Stack` (layout). The blocks that need the **automation agent's new
-nodes**:
+Existing nodes cover most blocks: `Heading`, `Text` (paragraphs + amount lines),
+`Button` (CTAs), `Section`/`Stack` (layout) — all rendered today. The trees
+(`DEFAULT_EMAIL_TEMPLATES`) **place** four new node types that the automation module
+owns end-to-end (defines in the node registry, renders in `renderEmailTree`,
+gate-checks):
 
-| Block            | Node                | Status                                                     |
-| ---------------- | ------------------- | ---------------------------------------------------------- |
-| line item tables | `line_item_table`   | greenfield — automation agent's contract                   |
-| conditional copy | `conditional_block` | greenfield — automation agent's contract                   |
-| unsubscribe link | `unsubscribe_link`  | greenfield — built here (§8) or theirs; decide at hand-off |
-| physical address | `physical_address`  | greenfield — renders `EmailSettings.physicalAddress` (§8)  |
+| Block            | Node `type`         | Bound to / purpose                                     |
+| ---------------- | ------------------- | ------------------------------------------------------ |
+| line item tables | `line_item_table`   | binds `order/cart/quote/invoice.items`                 |
+| conditional copy | `conditional_block` | `props.when` — credit line, quote expiry, dunning copy |
+| unsubscribe link | `unsubscribe_link`  | marketing-only; feeds `List-Unsubscribe` at dispatch   |
+| physical address | `physical_address`  | renders `EmailSettings.physicalAddress`                |
 
-Materialization waits on `line_item_table` + `conditional_block` JSON shapes. The
-unsubscribe/address nodes are compliance-owned (§8) — flagged at hand-off so we don't
-both build them.
+The trees author these **now** with provisional `props`/`binding` (the `node()`
+helpers `lineItems`/`conditional`/`unsubscribeLink`/`physicalAddress` in
+`default-emails.ts`); the renderer returns `null` for an unknown `type` until the
+module ships it, so the existing-node content renders cleanly in the meantime. The
+exact `props` JSON is finalized in one place (those four helpers) against the
+`invoicing-overdue` reference template.
 
 ---
 
@@ -359,43 +374,45 @@ per-site fallback. Mapping of the existing 10 automations to the 13 templates:
 
 ---
 
-## 8. Compliance gate (CAN-SPAM)
+## 8. Compliance gate (CAN-SPAM) — automation module's (their Step 4)
 
-Greenfield. Three pieces:
+The gate is **owned by the automation module** (it checks for the `unsubscribe_link`
+node it defines). Recorded here for the template side. Three pieces:
 
 1. **Template rule (send-time gate).** A **marketing** send (scope `marketing`)
    whose published tree contains no `unsubscribe_link` node is **refused** (a clear
    error, recorded on the send) — you cannot send marketing mail without an
-   unsubscribe. A **transactional** send must not contain one. Enforced where the
-   tree is resolved at dispatch, before `renderEmailTree`.
-2. **`unsubscribe_link` + `physical_address` nodes.** The unsubscribe node renders a
-   working one-click link (and feeds the `List-Unsubscribe` header, below); the
-   address node renders `EmailSettings.physicalAddress`
-   ([packages/db/prisma/schema/50-email.prisma](../packages/db/prisma/schema/50-email.prisma)),
-   which exists but is not yet surfaced anywhere.
-3. **`List-Unsubscribe` header.** The worker/provider sets `List-Unsubscribe` +
-   `List-Unsubscribe-Post` for marketing sends (one-click unsubscribe). Independent
-   of the tree; pairs with the existing Mailgun `unsubscribed` → `EmailSuppression`
-   webhook path.
+   unsubscribe. A **transactional** send must not contain one.
+2. **`unsubscribe_link` + `physical_address` nodes** (their node registry +
+   renderer). The unsubscribe node renders a working one-click link (and feeds the
+   `List-Unsubscribe` header); the address node renders `EmailSettings.physicalAddress`
+   ([packages/db/prisma/schema/50-email.prisma](../packages/db/prisma/schema/50-email.prisma)).
+3. **`List-Unsubscribe` header** for marketing sends, pairing with the existing
+   Mailgun `unsubscribed` → `EmailSuppression` webhook path.
 
-The 13 templates already place `[unsubscribe + address]` in exactly the four
-marketing ones (#2, #3, #4) — _(#2/#3/#4; #1 and #5–#13 are transactional and carry
-neither)_ so they pass the gate by construction.
+**The template side (mine) is satisfied by construction:** the 3 marketing templates
+(`win-back`, `abandoned-cart`, `post-purchase-review`) each place an `unsubscribe_link`
+
+- `physical_address` node; the 10 transactional ones carry neither. The
+  `default-emails.test.ts` asserts exactly this, so the trees pass the gate the moment
+  it lands.
 
 ---
 
 ## 9. Build sequence
 
-| Step | Work                                                                                             | Blocked on                                   |
-| ---- | ------------------------------------------------------------------------------------------------ | -------------------------------------------- |
-| 1 ✅ | Content/structure of all 13 templates (§4) + per-site model (§6) + reconciliation (§7)           | — (this doc)                                 |
-| 2    | Resolver/`DataSource` reaches the §3 target vocabulary (`quote`/`invoice`/`b2bAccount` + `*Url`) | automation agent (resolver contract)         |
-| 3    | `line_item_table` + `conditional_block` node JSON shapes + reference template                    | automation agent (node contract)             |
-| 4    | `BuilderEmail.property_id` + `key` migration (§6) + partial uniques                              | step 3 (coordinate the shared schema change) |
-| 5    | `emailService.getPublishedByKey` + per-site authoring scope + "Customize for this site"          | step 4                                       |
-| 6    | Materialize the 13 node trees against the contract + provision on activation (§7)                | steps 3–5                                    |
-| 7    | Compliance gate + `unsubscribe_link`/`physical_address` nodes + `List-Unsubscribe` (§8)          | step 3 (node shapes)                         |
+| Step | Work                                                                                                       | Owner / blocked on                             |
+| ---- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 1 ✅ | All 13 trees authored — `DEFAULT_EMAIL_TEMPLATES` in `@sparx/builder-schemas` (`default-emails.ts` + test) | mine — **done**                                |
+| 2    | Resolver/`DataSource` reaches the §3 vocabulary (`quote`/`invoice`/`b2bAccount` + every `*Url`)            | automation module                              |
+| 3    | The 4 node types + the `invoicing-overdue` reference template + exact node-JSON shapes                     | automation module                              |
+| 4    | `BuilderEmail.property_id` + `key` migration (§6) + partial uniques                                        | mine — **unblocked** (no shared table, see §0) |
+| 5    | `emailService.getPublishedByKey` + per-site authoring scope + "Customize for this site"                    | mine — after step 4                            |
+| 6    | Finalize the 4 provisional node shapes against the reference template + provision on activation (§7)       | mine — after step 3                            |
+| 7    | Wire `DEFAULT_AUTOMATIONS` to the provisioned trees by `key` (§7)                                          | automation module (engine) + mine (templates)  |
 
-Steps 4–7 are mine; step 1 is done (this doc); steps 2–3 are the hand-off. Step 4's
-migration is the one shared mutation — sequenced **after** the node contract so the
-two agents touch `BuilderEmail` once, together, not in racing migrations.
+Step 1 is done. Steps 4–5 (the per-site `BuilderEmail` table + authoring) are mine
+and **need nothing from the hand-off** — the automation module's node work lives in
+the node registry + `renderEmailTree`, not the `BuilderEmail` Prisma model, so there's
+no racing migration. Only step 6's _final node JSON_ waits on the reference template;
+the trees themselves already compose and pass their tests.

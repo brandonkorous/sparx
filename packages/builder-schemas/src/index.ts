@@ -11,6 +11,7 @@ export * from './layout';
 export * from './email';
 export * from './component';
 export * from './starters';
+export * from './default-emails';
 export * from './binding';
 export * from './nav';
 export * from './runtime';
