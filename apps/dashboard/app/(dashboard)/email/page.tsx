@@ -1,12 +1,5 @@
 import Link from 'next/link';
-import {
-  Globe,
-  LayoutTemplate,
-  Send,
-  Settings as SettingsIcon,
-  ShieldOff,
-  Workflow,
-} from 'lucide-react';
+import { Globe, Send, Settings as SettingsIcon, ShieldOff, Workflow } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -47,12 +40,6 @@ const SURFACES = [
     title: 'Automations',
     description:
       'Welcome, cart-recovery, win-back, dunning, and B2B email flows triggered by events.',
-  },
-  {
-    href: '/email/templates',
-    icon: LayoutTemplate,
-    title: 'Templates',
-    description: 'Branded transactional + marketing templates with live preview and test send.',
   },
   {
     href: '/email/domains',

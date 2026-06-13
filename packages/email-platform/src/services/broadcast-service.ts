@@ -10,7 +10,7 @@
 // joined by the broadcast_id variable the webhook stamps back.
 
 import { withTenant } from '@sparx/db';
-import type { Broadcast, EmailTemplate } from '@sparx/db';
+import type { Broadcast } from '@sparx/db';
 import { renderEmailTree } from '@sparx/email';
 import { treeIsEmailPersonalized, type BuilderNode } from '@sparx/builder-schemas';
 
@@ -376,6 +376,3 @@ export async function stats(ctx: ServiceContext, id: string): Promise<BroadcastS
   }
   return base;
 }
-
-// Re-export so callers don't need the EmailTemplate type to type a list row.
-export type { EmailTemplate };

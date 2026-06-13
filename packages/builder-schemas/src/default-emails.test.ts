@@ -12,10 +12,10 @@ function* walk(node: BuilderNode): Generator<BuilderNode> {
 const types = (root: BuilderNode): string[] => [...walk(root)].map((nd) => nd.type);
 
 describe('DEFAULT_EMAIL_TEMPLATES', () => {
-  it('ships exactly the 13 documented templates with unique keys', () => {
+  it('ships exactly the 18 documented templates with unique keys', () => {
     const keys = DEFAULT_EMAIL_TEMPLATES.map((t) => t.key);
-    expect(keys).toHaveLength(13);
-    expect(new Set(keys).size).toBe(13);
+    expect(keys).toHaveLength(18);
+    expect(new Set(keys).size).toBe(18);
     expect(keys).toEqual(
       expect.arrayContaining([
         'welcome-customer',
@@ -31,6 +31,12 @@ describe('DEFAULT_EMAIL_TEMPLATES', () => {
         'invoicing-overdue-2',
         'invoicing-overdue-final',
         'chat-satisfaction',
+        // docs/93 — folded in from coded templates
+        'order-confirmation',
+        'shipping-confirmation',
+        'appointment-confirmation',
+        'appointment-reminder',
+        'appointment-cancelled',
       ])
     );
   });

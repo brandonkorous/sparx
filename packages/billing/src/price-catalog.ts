@@ -46,6 +46,18 @@ export function priceIdFor(module: ModuleSlug, interval: BillingInterval): strin
   return value;
 }
 
+/** Stripe Price ID for the metered transaction-fee price (docs/92 §3), from
+ *  `STRIPE_PRICE_TRANSACTION_FEE`. This is a $0.01/unit usage-based price bound to
+ *  the `transaction_fee` meter; `syncModuleItems` attaches it to every subscription
+ *  so the meter events emitted by `recordTransactionFee` actually invoice. Undefined
+ *  until the price is provisioned — callers skip the item, and metered events simply
+ *  don't bill (no error). */
+export function transactionFeePriceId(): string | undefined {
+  const value = process.env.STRIPE_PRICE_TRANSACTION_FEE?.trim();
+  if (!value) return undefined;
+  return value;
+}
+
 /** Monthly-equivalent total (cents) for a set of active modules — reads our own
  *  list prices, never Stripe. Annual callers divide elsewhere (docs/67 §7). */
 export function activeTotalCents(modules: Iterable<ModuleSlug>): number {

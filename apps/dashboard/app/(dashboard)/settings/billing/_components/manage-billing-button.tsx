@@ -9,7 +9,18 @@ import { Button, toast } from '@sparx/ui';
 
 import { openBillingPortal } from '../actions';
 
-export function ManageBillingButton({ disabled }: { disabled?: boolean }) {
+export function ManageBillingButton({
+  disabled,
+  label = 'Manage billing',
+  variant = 'solid',
+  size,
+}: {
+  disabled?: boolean;
+  /** Override the button copy (e.g. "Update payment method" on a banner). */
+  label?: string;
+  variant?: 'solid' | 'soft' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+}) {
   const [pending, startTransition] = React.useTransition();
 
   function onClick(): void {
@@ -28,12 +39,13 @@ export function ManageBillingButton({ disabled }: { disabled?: boolean }) {
     <Button
       type="button"
       color="module"
-      variant="solid"
+      variant={variant}
+      {...(size ? { size } : {})}
       onClick={onClick}
       disabled={disabled === true || pending}
       loading={pending}
     >
-      Manage billing
+      {label}
     </Button>
   );
 }

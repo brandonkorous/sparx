@@ -346,6 +346,13 @@
   --c-hover: color-mix(in oklch, var(--module-b2b) 86%, var(--color-text-primary));
   --c-tint: color-mix(in oklch, var(--module-b2b) 14%, transparent);
 }
+.sx-c-invoicing {
+  --c-bg: var(--module-invoicing);
+  --c-fg: #ffffff;
+  --c-ink: color-mix(in oklch, var(--module-invoicing) 58%, var(--color-text-primary));
+  --c-hover: color-mix(in oklch, var(--module-invoicing) 86%, var(--color-text-primary));
+  --c-tint: color-mix(in oklch, var(--module-invoicing) 14%, transparent);
+}
 .sx-c-ai {
   --c-bg: var(--module-ai);
   --c-fg: #ffffff;

@@ -40,6 +40,7 @@ describe('order lifecycle', () => {
     const bus = resetPlatformBusForTesting();
     const topics = [
       'order.created',
+      'order.paid',
       'order.cancelled',
       'order.payment.recorded',
       'order.refunded',
@@ -129,12 +130,13 @@ describe('order lifecycle', () => {
     expect(afterDeliver.status).toBe('delivered');
     expect(afterDeliver.deliveredAt).not.toBeNull();
 
-    // Platform events: order.created, order.payment.recorded, order.fulfilled, order.delivered
+    // Platform events: order.created, order.payment.recorded, order.paid (the
+    // capture completed the balance), order.fulfilled, order.delivered.
     // Drain the bus to be sure async subscribers ran.
     await getPlatformBus().drain();
     const topics = platformEvents.map((e) => e.topic);
     expect(topics).toEqual(
-      expect.arrayContaining(['order.created', 'order.fulfilled', 'order.delivered'])
+      expect.arrayContaining(['order.created', 'order.paid', 'order.fulfilled', 'order.delivered'])
     );
   });
 

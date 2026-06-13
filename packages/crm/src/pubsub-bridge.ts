@@ -249,10 +249,14 @@ class PubSubTeePlatformBus implements PlatformEventBus {
   }
 }
 
-// Order topics the indexer cares about. Other platform topics (email.*, etc.)
-// stay in-process only — teeing them would publish to topics nothing reads.
+// Order topics teed off the platform bus. The indexer cares about most of these;
+// `order.paid` is teed for the AUTOMATION fan-in (the high-value-order seed) —
+// the per-topic publish is harmless (nothing subscribes the `order.paid` topic,
+// but the fan-in tee is the point). Other platform topics (email.*, etc.) stay
+// in-process only — teeing them would publish to topics nothing reads.
 const ORDER_TEE_TOPICS: ReadonlySet<string> = new Set([
   'order.created',
+  'order.paid',
   'order.cancelled',
   'order.payment.recorded',
   'order.fulfilled',

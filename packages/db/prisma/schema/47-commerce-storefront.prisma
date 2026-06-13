@@ -10,7 +10,7 @@
 // code defaults), so adding a site never silently resets currency/locale. The
 // migration adds property_id, backfills to the primary, and swaps the PK.
 model StorefrontSettings {
-  tenantId String @map("tenant_id") @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
   // One settings row per property → property_id is globally unique, making the
   // Property↔StorefrontSettings back-relation one-to-one.
   propertyId String @unique @map("property_id") @db.Uuid

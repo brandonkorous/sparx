@@ -122,16 +122,16 @@ describe('per-site email — provisioning + override join', () => {
     return res.json().data.emails as EmailDto[];
   }
 
-  it('activating email provisions the 13 keyed defaults (published, idempotent)', async () => {
+  it('activating email provisions the 18 keyed defaults (published, idempotent)', async () => {
     const { tenantId, token } = await setupTenant();
     try {
       const keys = await defaultKeys(tenantId);
-      expect(keys.length).toBe(13);
-      expect(new Set(keys).size).toBe(13); // distinct
+      expect(keys.length).toBe(18);
+      expect(new Set(keys).size).toBe(18); // distinct
 
       // Surfaced through the tenant-wide catalog, every one published (send-ready).
       const emails = await listTenant(token);
-      expect(emails.length).toBe(13);
+      expect(emails.length).toBe(18);
       expect(emails.every((e) => e.published)).toBe(true);
 
       // Re-activation is a safe no-op — no duplicate rows.
@@ -149,7 +149,7 @@ describe('per-site email — provisioning + override join', () => {
         payload: { enabled: true },
       });
       invalidateModuleCache();
-      expect((await defaultKeys(tenantId)).length).toBe(13);
+      expect((await defaultKeys(tenantId)).length).toBe(18);
     } finally {
       await dropTestTenant(tenantId);
     }
@@ -164,7 +164,7 @@ describe('per-site email — provisioning + override join', () => {
 
       // Before forking, the site sees the tenant default itself.
       const before = await listSite(token, propertyId);
-      expect(before.length).toBe(13);
+      expect(before.length).toBe(18);
       expect(before.some((e) => e.id === base.id)).toBe(true);
 
       // Fork → a NEW per-site draft override (distinct id, not yet published).
@@ -182,7 +182,7 @@ describe('per-site email — provisioning + override join', () => {
       // The site list now shows the override IN PLACE OF the default — same count,
       // the default's id gone, the override's id present under the same name.
       const after = await listSite(token, propertyId);
-      expect(after.length).toBe(13);
+      expect(after.length).toBe(18);
       expect(after.some((e) => e.id === base.id)).toBe(false);
       const row = after.find((e) => e.name === base.name);
       expect(row?.id).toBe(override.id);
@@ -200,7 +200,7 @@ describe('per-site email — provisioning + override join', () => {
       });
       expect(again.statusCode).toBe(200);
       expect((again.json().data as EmailDto).id).toBe(override.id);
-      expect((await listSite(token, propertyId)).length).toBe(13);
+      expect((await listSite(token, propertyId)).length).toBe(18);
     } finally {
       await dropTestTenant(tenantId);
     }

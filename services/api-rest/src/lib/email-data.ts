@@ -35,6 +35,10 @@ export interface EmailRecipientRef {
   quoteId?: string | null;
   billingDocumentId?: string | null;
   b2bAccountId?: string | null;
+  /** The fulfillment a shipping-confirmation send is about (docs/93 §3). */
+  fulfillmentId?: string | null;
+  /** The service appointment an appointment-* send is about (docs/93 §3). */
+  appointmentId?: string | null;
 }
 
 // Public api-rest origin for media URLs (GET /v1/public/media/:id) — REST-specific
@@ -97,6 +101,50 @@ function dateLabel(d: Date | null | undefined): string {
   return d
     ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : '';
+}
+
+/** A clock time — `2:30 PM`. */
+function timeLabel(d: Date | null | undefined): string {
+  return d ? d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '';
+}
+
+/** A fleet-vehicle one-liner from an appointment's `vehicleRef` JSON snapshot
+ *  (mirrors the scheduling route's `buildVehicleDescription`). */
+function vehicleDescription(ref: unknown): string {
+  if (!ref || typeof ref !== 'object') return '';
+  const v = ref as Record<string, unknown>;
+  const parts: string[] = [];
+  if (typeof v.year === 'number') parts.push(String(v.year));
+  if (typeof v.make === 'string') parts.push(v.make);
+  if (typeof v.model === 'string') parts.push(v.model);
+  return parts.join(' ');
+}
+
+/** A frozen order address snapshot (CustomerAddress shape) → a flat string map the
+ *  tree binds (`order.shippingAddress.line1`, `.oneLine`, …). '' fields when absent. */
+function formatAddress(json: unknown): Record<string, string> {
+  const a = (json && typeof json === 'object' ? json : {}) as Record<string, unknown>;
+  const s = (k: string): string => {
+    const v = a[k];
+    return typeof v === 'string' ? v : '';
+  };
+  const name = s('recipientName') || s('name');
+  const cityRegion = [s('city'), s('region')].filter(Boolean).join(', ');
+  const cityStateZip = [cityRegion, s('postalCode')].filter(Boolean).join(' ');
+  const oneLine = [name, s('line1'), s('line2'), cityStateZip, s('country')]
+    .filter(Boolean)
+    .join(', ');
+  return {
+    name,
+    line1: s('line1'),
+    line2: s('line2'),
+    city: s('city'),
+    region: s('region'),
+    postalCode: s('postalCode'),
+    country: s('country'),
+    cityStateZip,
+    oneLine,
+  };
 }
 
 const MS_PER_DAY = 86_400_000;
@@ -219,6 +267,7 @@ async function resolveOrder(
         total: true,
         subtotal: true,
         placedAt: true,
+        shippingAddress: true,
         items: {
           orderBy: { createdAt: 'asc' },
           select: {
@@ -238,6 +287,8 @@ async function resolveOrder(
   // falling back to the store root when no item resolves a product (docs/91 §3).
   const firstHandle = order.items.find((i) => i.product?.handle)?.product?.handle ?? '';
   const reviewUrl = firstHandle ? storefrontUrl(slug, `/products/${firstHandle}`) : homeUrl(slug);
+  // statusUrl → the customer's order detail (order-confirmation CTA, docs/93 §4).
+  const statusUrl = storefrontUrl(slug, '/account/orders');
   return {
     number: order.orderNumber,
     status: order.status,
@@ -245,12 +296,96 @@ async function resolveOrder(
     subtotal: money(order.subtotal),
     placedAt: dateLabel(order.placedAt),
     reviewUrl,
+    statusUrl,
+    shippingAddress: formatAddress(order.shippingAddress),
     items: order.items.map((i) => ({
       name: firstText(i.name, i.description),
       quantity: qty(i.quantity),
       unitPrice: money(i.unitPrice),
       lineTotal: money(i.lineTotal),
     })),
+  };
+}
+
+// ── shipping (latest fulfillment of an order) ────────────────────────────────
+
+async function resolveShipping(
+  ctx: ServiceContext,
+  ref: EmailRecipientRef | undefined,
+  slug: string
+): Promise<Record<string, unknown>> {
+  const where = ref?.fulfillmentId
+    ? { id: ref.fulfillmentId }
+    : ref?.orderId
+      ? { orderId: ref.orderId }
+      : null;
+  if (!where) return {};
+  const f = await withTenant(ctx, (tx) =>
+    tx.orderFulfillment.findFirst({
+      where,
+      orderBy: [{ shippedAt: 'desc' }, { createdAt: 'desc' }],
+      select: {
+        status: true,
+        carrier: true,
+        service: true,
+        trackingNumber: true,
+        trackingUrl: true,
+        shippedAt: true,
+      },
+    })
+  );
+  if (!f) return {};
+  return {
+    status: f.status,
+    carrier: f.carrier ?? '',
+    service: f.service ?? '',
+    trackingNumber: f.trackingNumber ?? '',
+    // The carrier's tracking page when known; else the customer's order detail so
+    // the CTA always resolves to something useful (docs/93 §3).
+    trackingUrl: f.trackingUrl ?? storefrontUrl(slug, '/account/orders'),
+    shippedAt: dateLabel(f.shippedAt),
+  };
+}
+
+// ── appointment (B2B service scheduling) ─────────────────────────────────────
+
+async function resolveAppointment(
+  ctx: ServiceContext,
+  ref: EmailRecipientRef | undefined,
+  slug: string
+): Promise<Record<string, unknown>> {
+  if (!ref?.appointmentId) return {};
+  const appt = await withTenant(ctx, (tx) =>
+    tx.serviceAppointment.findUnique({
+      where: { id: ref.appointmentId! },
+      select: {
+        scheduledAt: true,
+        durationMinutes: true,
+        status: true,
+        vehicleRef: true,
+        cancellationReason: true,
+        b2bAccountId: true,
+        serviceType: { select: { name: true } },
+      },
+    })
+  );
+  if (!appt) return {};
+  const date = dateLabel(appt.scheduledAt);
+  const time = timeLabel(appt.scheduledAt);
+  return {
+    service: appt.serviceType?.name ?? '',
+    date,
+    time,
+    when: date && time ? `${date} at ${time}` : date || time,
+    duration: appt.durationMinutes ? `${appt.durationMinutes} min` : '',
+    status: appt.status,
+    vehicle: vehicleDescription(appt.vehicleRef),
+    cancellationReason: appt.cancellationReason ?? '',
+    // Where the customer manages/reschedules — their B2B portal appointments, else
+    // their account home.
+    manageUrl: appt.b2bAccountId
+      ? storefrontUrl(slug, `/account/b2b/${appt.b2bAccountId}/appointments`)
+      : storefrontUrl(slug, '/account'),
   };
 }
 
@@ -554,6 +689,12 @@ export async function resolveEmailData(
   }
   if (keys.has('order')) {
     tasks.push(resolveOrder(ctx, ref, slug).then((v) => void (out.order = v)));
+  }
+  if (keys.has('shipping')) {
+    tasks.push(resolveShipping(ctx, ref, slug).then((v) => void (out.shipping = v)));
+  }
+  if (keys.has('appointment')) {
+    tasks.push(resolveAppointment(ctx, ref, slug).then((v) => void (out.appointment = v)));
   }
   if (keys.has('cart')) {
     tasks.push(resolveCart(ctx, ref, slug).then((v) => void (out.cart = v)));

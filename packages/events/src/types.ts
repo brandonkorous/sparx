@@ -237,17 +237,14 @@ export interface EmailSendPayload {
   to: string;
   cc?: string;
   bcc?: string;
-  /** Must match a registered template id in @sparx/email's TemplateSend. */
+  /** Must match a registered template id in @sparx/email's TemplateSend. Tenant→
+   *  customer emails (order/shipping/appointment) are Builder-authored and rendered
+   *  by key (docs/93), so they are NOT template ids here. */
   template:
     | 'password-reset'
     | 'welcome-merchant'
     | 'email-verification'
-    | 'domain-renewal-reminder'
-    | 'order-confirmation'
-    | 'shipping-confirmation'
-    | 'appointment-confirmation'
-    | 'appointment-reminder'
-    | 'appointment-cancelled';
+    | 'domain-renewal-reminder';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */

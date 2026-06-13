@@ -32,6 +32,7 @@ export const MODULE_COLOR_KEYS = [
   'crm',
   'email',
   'b2b',
+  'invoicing',
   'ai',
   'dropship',
   'chat',

@@ -1,31 +1,9 @@
 // Shared view types for the Email dashboard module — shapes returned by the
 // /v1/email/* api-rest endpoints (the unwrapped `data` of each envelope).
-
-export interface BuiltinTemplateView {
-  source: 'builtin';
-  key: string;
-  name: string;
-  kind: string;
-  description: string;
-  variables: string[];
-  supportsSlots: boolean;
-  subject: string;
-  intro: string | null;
-  outro: string | null;
-  customized: boolean;
-}
-
-// Marketing emails are authored in the Email Builder (docs/52, /builder/email);
-// this surface owns built-in transactional templates only (docs/52 §8).
-export interface TemplateListResponse {
-  builtins: BuiltinTemplateView[];
-}
-
-export interface RenderedPreview {
-  subject: string;
-  html: string;
-  text: string;
-}
+//
+// The built-in transactional template surface (BuiltinTemplateView / the
+// /email/templates page) was removed in docs/93 — every tenant→customer email is
+// authored in the Email Builder (/builder/email).
 
 export interface AutomationRow {
   id: string;

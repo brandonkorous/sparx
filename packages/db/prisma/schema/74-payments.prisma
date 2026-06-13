@@ -1,0 +1,73 @@
+// Payment gateway abstraction (docs/94 ADR §11). The tenant→shopper payment surface:
+// which gateway a tenant uses, the intents it creates, and the normalized webhook
+// events it receives. Distinct from platform module billing (73-billing) which is
+// WizeWorks→tenant. All tenant-scoped + RLS.
+
+/// Which payment gateway a tenant uses + its onboarding state. One per tenant.
+/// Gateway credentials never live here — only a Secret Manager reference does.
+model TenantPaymentConfig {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String    @unique @map("tenant_id") @db.Uuid
+  gatewayId      String    @default("sparx_pay") @map("gateway_id") @db.VarChar(50)
+  // ^ sparx_pay | stripe_direct | paypal | square | custom
+  isActive       Boolean   @default(false) @map("is_active")
+  // ^ false until onboarding completes (charges enabled)
+  credentialsRef String?   @map("credentials_ref") @db.VarChar(255)
+  // ^ Secret Manager key: payments/{tenantId}/{gateway_id}/...
+  onboardedAt    DateTime? @map("onboarded_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_payment_configs")
+}
+
+/// A payment intent created through a gateway. `platformFee` records the Sparx cut
+/// (0 unless Sparx Pay); for Sparx Pay it's collected in Stripe via
+/// application_fee_amount — this row is our own ledger.
+model PaymentIntent {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String  @map("tenant_id") @db.Uuid
+  gatewayId    String  @map("gateway_id") @db.VarChar(50)
+  externalId   String  @map("external_id") @db.VarChar(255) // the gateway's own intent id
+  amount       Int // cents
+  currency     String  @default("usd") @db.Char(3)
+  platformFee  Int     @default(0) @map("platform_fee") // cents; 0 unless sparx_pay
+  status       String  @default("pending") @db.VarChar(50)
+  orderId      String? @map("order_id") @db.Uuid
+  billingDocId String? @map("billing_doc_id") @db.Uuid
+  customerId   String? @map("customer_id") @db.Uuid
+  metadata     Json    @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([gatewayId, externalId], map: "payment_intents_external_unique")
+  @@index([tenantId, status])
+  @@index([tenantId, orderId])
+  @@map("payment_intents")
+}
+
+/// A normalized gateway webhook event (dedupe + audit). The unique on
+/// (gateway_id, external_id) makes redelivery idempotent.
+model PaymentEvent {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  gatewayId   String    @map("gateway_id") @db.VarChar(50)
+  externalId  String    @map("external_id") @db.VarChar(255) // the gateway's event id
+  eventType   String    @map("event_type") @db.VarChar(100) // normalized: payment.succeeded, etc.
+  payload     Json
+  processedAt DateTime? @map("processed_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([gatewayId, externalId], map: "payment_events_idempotency")
+  @@index([tenantId, eventType])
+  @@map("payment_events")
+}

@@ -39,8 +39,8 @@ export default async function NewContentEntryPage({ searchParams }: PageProps) {
   let preselectedType: TypeSchema | undefined;
 
   try {
-    const res = await api.get<{ items: TypeSummary[] }>('/v1/content/types?take=200');
-    types = res.items ?? [];
+    // The endpoint returns a bare array (envelope `data`), not `{ items }`.
+    types = await api.get<TypeSummary[]>('/v1/content/types');
   } catch {
     notFound();
   }

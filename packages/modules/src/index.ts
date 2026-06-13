@@ -121,8 +121,16 @@ export function isModuleFlagOn(settings: unknown, module: ModuleSlug): boolean {
 export type ModuleEnabledSource = 'explicit' | 'bundled' | 'off';
 
 /** Derive every module's enabled state + WHY, in one settings read. `bundled`
- *  means on only because a BUNDLED_FREE provider is active (the toggle should be
- *  shown as "Included" and locked). */
+ *  means on because a BUNDLED_FREE provider is active (the toggle should be shown
+ *  as "Included" and locked).
+ *
+ *  Bundling takes PRECEDENCE over a standalone purchase: if a provider that
+ *  bundles a capability free is active, the capability is `bundled` even when the
+ *  tenant's own flag is also set — so a tenant who bought `invoicing` standalone
+ *  and later turned on Commerce/B2B stops being charged for it (source flips
+ *  explicit → bundled, which drops it from the billable set). The standalone flag
+ *  is preserved, not cleared, so removing the provider re-surfaces it as
+ *  `explicit` and billing resumes. */
 export function deriveModuleStates(
   settings: unknown
 ): Record<ModuleSlug, { enabled: boolean; source: ModuleEnabledSource; includedBy: ModuleSlug[] }> {
@@ -131,13 +139,13 @@ export function deriveModuleStates(
     { enabled: boolean; source: ModuleEnabledSource; includedBy: ModuleSlug[] }
   >;
   for (const m of ALL_MODULES) {
-    if (readModuleFlag(settings, m)) {
-      out[m] = { enabled: true, source: 'explicit', includedBy: [] };
+    const includedBy = (BUNDLED_FREE[m] ?? []).filter((p) => readModuleFlag(settings, p));
+    if (includedBy.length) {
+      out[m] = { enabled: true, source: 'bundled', includedBy };
       continue;
     }
-    const includedBy = (BUNDLED_FREE[m] ?? []).filter((p) => readModuleFlag(settings, p));
-    out[m] = includedBy.length
-      ? { enabled: true, source: 'bundled', includedBy }
+    out[m] = readModuleFlag(settings, m)
+      ? { enabled: true, source: 'explicit', includedBy: [] }
       : { enabled: false, source: 'off', includedBy: [] };
   }
   return out;

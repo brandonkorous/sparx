@@ -17,6 +17,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
+    "provision-stripe": "tsx scripts/provision-stripe.ts",
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {

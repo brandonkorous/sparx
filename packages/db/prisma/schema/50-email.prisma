@@ -68,50 +68,19 @@ model SendingDomain {
   @@map("email_sending_domains")
 }
 
-// A template record. `source` discriminates the render path:
-//   builtin   → renders via a code-defined @sparx/email React component keyed
-//               by `key`; `body` holds only the tenant's slot + branding
-//               overrides (intro/outro rich text), never structure.
-//   authored  → tenant-authored marketing body; `body` is a CMS TipTap doc
-//               now (serialized to email-safe HTML), a reorderable section
-//               list once the shared SECTION_REGISTRY ships (plan P9).
-model EmailTemplate {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
-
-  source String  @default("authored") @db.VarChar(20) // builtin | authored
-  key    String? @db.VarChar(63) // builtin id (e.g. order-confirmed); null when authored
-  kind   String  @default("marketing") @db.VarChar(20) // transactional | marketing
-
-  name      String  @db.VarChar(160)
-  subject   String? @db.VarChar(255)
-  preheader String? @db.VarChar(255)
-  body      Json    @default("{}")
-  // draft | active | archived
-  status    String  @default("draft") @db.VarChar(20)
-  version   Int     @default(1)
-
-  createdById String? @map("created_by_id") @db.Uuid
-
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
-
-  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  broadcasts     Broadcast[]
-  scheduledSends ScheduledSend[]
-
-  @@unique([tenantId, key])
-  @@index([tenantId, kind, status])
-  @@map("email_templates")
-}
+// NOTE: the legacy `EmailTemplate` model (the built-in transactional override
+// surface + the retired authored-section marketing body) was removed in docs/93.
+// Every tenant→customer email is now a Builder-authored node tree (BuilderEmail,
+// rendered by key at dispatch); platform/auth emails are coded @sparx/email
+// components. Broadcasts reference a published Builder email via `builderEmailId`.
 
 // The dispatch queue — drives delayed automation sends and scheduled/batched
 // broadcast sends. The in-process due-scan tick (services/api-rest) finds rows
 // via find_due_scheduled_sends() and publishes email.send when dueAt passes.
 // dedupeKey enforces frequency caps + idempotency.
 model ScheduledSend {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
   // The web PROPERTY (site) whose brand this send renders (docs/49 Phase 7) —
   // copied from the broadcast, or resolved from the source event for an
   // automation send. NULL = the tenant's primary brand. SetNull: a send outlives
@@ -119,7 +88,6 @@ model ScheduledSend {
   propertyId String? @map("property_id") @db.Uuid
 
   broadcastId String? @map("broadcast_id") @db.Uuid
-  templateId  String? @map("template_id") @db.Uuid
 
   recipient  String  @db.VarChar(255)
   customerId String? @map("customer_id") @db.Uuid // soft reference (no FK)
@@ -146,10 +114,9 @@ model ScheduledSend {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  property  Property?      @relation(fields: [propertyId], references: [id], onDelete: SetNull)
-  broadcast Broadcast?     @relation(fields: [broadcastId], references: [id], onDelete: Cascade)
-  template  EmailTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property  Property?  @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  broadcast Broadcast? @relation(fields: [broadcastId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, dedupeKey])
   @@index([status, dueAt])
@@ -161,8 +128,8 @@ model ScheduledSend {
 // is the Mailgun o:tag that joins EmailEvent rows back to this broadcast for
 // analytics.
 model Broadcast {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
   // The web PROPERTY (site) this broadcast is sent on behalf of (docs/49 Phase 7).
   // NULL = the tenant's primary brand (the default + every pre-rollout row); a
   // non-null value renders that site's brand (Property.brandOverride merged over
@@ -170,12 +137,11 @@ model Broadcast {
   propertyId String? @map("property_id") @db.Uuid
 
   name           String  @db.VarChar(160)
-  templateId     String? @map("template_id") @db.Uuid
   // A published Builder email used as the body (docs/52). Soft reference (no FK,
-  // like segmentId) — the Builder module owns the row. The body source is exactly
-  // one of templateId (legacy section list) or builderEmailId (the node tree).
+  // like segmentId) — the Builder module owns the row. The legacy section-list body
+  // source (templateId → EmailTemplate) was removed in docs/93.
   builderEmailId String? @map("builder_email_id") @db.Uuid
-  body           Json    @default("{}") // inline body when not using a template
+  body           Json    @default("{}") // inline body when not using a Builder email
   subject        String  @db.VarChar(255)
   preheader      String? @db.VarChar(255)
 
@@ -197,7 +163,6 @@ model Broadcast {
 
   tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   property       Property?       @relation(fields: [propertyId], references: [id], onDelete: SetNull)
-  template       EmailTemplate?  @relation(fields: [templateId], references: [id], onDelete: SetNull)
   scheduledSends ScheduledSend[]
   events         EmailEvent[]
 
@@ -210,8 +175,8 @@ model Broadcast {
 // accepted/failed markers). The source of truth for analytics and the feed
 // the CRM email-events consumer mirrors into CrmActivity.
 model EmailEvent {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
   // The web PROPERTY (site) the send was on behalf of (docs/49 Phase 7), copied
   // from the ScheduledSend/broadcast so analytics can break engagement down per
   // site. NULL = tenant-wide / primary. SetNull: events outlive their site.

@@ -29,6 +29,7 @@ import { requireRole } from '@sparx/api-core/auth';
 import { notFound, badRequest } from '@sparx/api-core/errors';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
+import { sendTenantEmailByKey } from '../../../lib/tenant-email.js';
 import { env } from '../../../env.js';
 
 const pubLogger: PublisherLogger = {
@@ -431,7 +432,7 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     const body = ConfirmBody.parse(request.body);
 
-    const { apptView, customerEmail, serviceTypeName } = await withTenant(ctx, async (tx) => {
+    const { apptView, customerEmail } = await withTenant(ctx, async (tx) => {
       const existing = await tx.serviceAppointment.findFirst({
         where: { id, tenantId: ctx.tenantId },
         select: { id: true, status: true },
@@ -455,7 +456,6 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
       return {
         apptView: toApptView(updated),
         customerEmail: updated.customer?.email ?? null,
-        serviceTypeName: updated.serviceType?.name ?? '',
       };
     });
 
@@ -468,28 +468,23 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
       pubLogger
     );
 
-    // Publish confirmation email via Pub/Sub → email-worker.
+    // Confirmation email — the tenant's Builder-authored `appointment-confirmation`
+    // tree, rendered by key at dispatch (docs/93). Best-effort: a send failure must
+    // not fail the confirm action.
     if (customerEmail) {
-      await publishEvent(
-        publisher,
-        'email.send',
-        ctx.tenantId,
-        ctx.userId ?? null,
-        {
+      try {
+        await sendTenantEmailByKey(request.log, ctx.tenantId, {
+          key: 'appointment-confirmation',
           to: customerEmail,
-          template: 'appointment-confirmation',
-          props: {
-            customerName: apptView.customerName ?? customerEmail,
-            serviceTypeName,
-            scheduledAt: apptView.scheduledAt,
-            durationMinutes: apptView.durationMinutes,
-            vehicleDescription: apptView.vehicleRef
-              ? buildVehicleDescription(apptView.vehicleRef as Record<string, unknown>)
-              : undefined,
+          ref: {
+            customerId: apptView.customerId,
+            appointmentId: id,
+            b2bAccountId: apptView.b2bAccountId,
           },
-        },
-        pubLogger
-      );
+        });
+      } catch (err) {
+        request.log.error({ err, appointmentId: id }, 'appointment-confirmation send failed');
+      }
     }
 
     return reply.send(ok(apptView));
@@ -537,7 +532,7 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     const body = CancelBody.parse(request.body);
 
-    const { apptView, customerEmail, serviceTypeName } = await withTenant(ctx, async (tx) => {
+    const { apptView, customerEmail } = await withTenant(ctx, async (tx) => {
       const existing = await tx.serviceAppointment.findFirst({
         where: { id, tenantId: ctx.tenantId },
         select: { id: true, status: true },
@@ -560,7 +555,6 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
       return {
         apptView: toApptView(updated),
         customerEmail: updated.customer?.email ?? null,
-        serviceTypeName: updated.serviceType?.name ?? '',
       };
     });
 
@@ -573,37 +567,26 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
       pubLogger
     );
 
+    // Cancellation email — the tenant's Builder-authored `appointment-cancelled`
+    // tree, rendered by key at dispatch (docs/93). Best-effort.
     if (customerEmail) {
-      await publishEvent(
-        publisher,
-        'email.send',
-        ctx.tenantId,
-        ctx.userId ?? null,
-        {
+      try {
+        await sendTenantEmailByKey(request.log, ctx.tenantId, {
+          key: 'appointment-cancelled',
           to: customerEmail,
-          template: 'appointment-cancelled',
-          props: {
-            customerName: apptView.customerName ?? customerEmail,
-            serviceTypeName,
-            scheduledAt: apptView.scheduledAt,
-            cancellationReason: body.reason ?? undefined,
+          ref: {
+            customerId: apptView.customerId,
+            appointmentId: id,
+            b2bAccountId: apptView.b2bAccountId,
           },
-        },
-        pubLogger
-      );
+        });
+      } catch (err) {
+        request.log.error({ err, appointmentId: id }, 'appointment-cancelled send failed');
+      }
     }
 
     return reply.send(ok(apptView));
   });
 };
-
-function buildVehicleDescription(ref: Record<string, unknown>): string {
-  const parts: string[] = [];
-  if (typeof ref.year === 'number') parts.push(String(ref.year));
-  if (typeof ref.make === 'string') parts.push(ref.make);
-  if (typeof ref.model === 'string') parts.push(ref.model);
-  if (typeof ref.vin === 'string') parts.push(`VIN: ${ref.vin}`);
-  return parts.join(' ');
-}
 
 export default b2bSchedulingRoutes;

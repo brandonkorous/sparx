@@ -13,16 +13,12 @@
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
-import { renderEmailTree } from '@sparx/email';
 import { emailService } from '@sparx/builder';
-import { brandService } from '@sparx/email-platform';
-import { interpolateEmailTokens, resolvePath, type BuilderNode } from '@sparx/builder-schemas';
-import { applyEntitySnapshot, resolveEmailData, type EmailRecipientRef } from './email-data.js';
-import { unsubscribeUrl } from './email-unsubscribe.js';
+import type { EmailRecipientRef } from './email-data.js';
+import { buildFrom, renderBuilderEmailDoc, treeHasNodeType } from './tenant-email.js';
 
 const EMAIL_DISPATCH_LOCK_KEY = 4242_4244;
 const DEFAULT_INTERVAL_MS = 60_000;
-const FALLBACK_FROM = 'Sparx <noreply@sparx.email>';
 
 interface DueSend {
   id: string;
@@ -59,21 +55,8 @@ export interface TickResult {
   errors: number;
 }
 
-function buildFrom(fromName: string | null, fromAddress: string | null): string {
-  if (!fromAddress) return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;
-  return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
-}
-
 function strOrNull(v: unknown): string | null {
   return typeof v === 'string' && v.length > 0 ? v : null;
-}
-
-/** Does the tree contain a node of `type` (depth-first)? Used to detect the
- *  `unsubscribe_link` node that marks a tree as marketing (docs/91 §8). */
-function treeHasNodeType(node: BuilderNode, type: string): boolean {
-  if (node.type === type) return true;
-  for (const child of node.children ?? []) if (treeHasNodeType(child, type)) return true;
-  return false;
 }
 
 /** Record a terminal failure on a send the tick already marked 'sent' (an
@@ -215,56 +198,22 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             billingDocumentId: strOrNull(refs.billingDocumentId),
             b2bAccountId: strOrNull(refs.b2bAccountId),
           };
-          // subject/preheader: the send's optional override, else the resolved
-          // email's own (tenant-editable) values — the key path supplies none.
-          const subject = payload.defer.subject ?? doc.subject;
-          const preheader = payload.defer.preheader ?? doc.preheader ?? null;
-          // Resolve only the sources the tree (and the subject/preheader) reference,
-          // then overlay the trigger-time snapshot as a scalar fallback.
-          const emailData = applyEntitySnapshot(
-            await resolveEmailData(tenantCtx, doc.tree, ref, [subject, preheader ?? '']),
-            dispatch.entitySnapshot as Record<string, unknown> | null
-          );
-          const resolveToken = (path: string): unknown => resolvePath({ root: emailData }, path);
-          const finalSubject = interpolateEmailTokens(subject, resolveToken);
-          const finalPreheader =
-            preheader != null ? interpolateEmailTokens(preheader, resolveToken) : undefined;
-          // A marketing send supplies the one-click URL + List-Unsubscribe header;
-          // the address node renders the tenant's postal address.
-          const unsubUrl = marketing ? unsubscribeUrl(row.tenant_id, to) : undefined;
-          const brand = (await brandService.resolveEmailBrand(tenantCtx, propertyId)) ?? undefined;
-          const rendered = await renderEmailTree(
-            {
-              tree: doc.tree,
-              subject: finalSubject,
-              preheader: finalPreheader,
-              to,
-              data: emailData,
-              compliance: {
-                physicalAddress: dispatch.physicalAddress ?? undefined,
-                unsubscribeUrl: unsubUrl,
-              },
-            },
-            { brand }
-          );
-          data = {
-            kind: 'raw',
-            subject: rendered.subject,
-            html: rendered.html,
-            text: rendered.text,
-            // Carry the site through so the worker stamps property_id for per-site
-            // analytics (docs/49 Phase 7); the body is already site-branded above.
-            ...(propertyId ? { propertyId } : {}),
-            ...(unsubUrl
-              ? {
-                  headers: {
-                    'List-Unsubscribe': `<${unsubUrl}>`,
-                    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-                  },
-                }
-              : {}),
-            ...common,
-          };
+          // Render via the shared core (docs/93 §2): resolve this recipient's data
+          // (overlaying the trigger-time snapshot), interpolate the subject/preheader
+          // — the send's optional override, else the email's own (tenant-editable)
+          // values, none on the key path — and render to a branded raw payload.
+          const raw = await renderBuilderEmailDoc(tenantCtx, {
+            doc,
+            to,
+            propertyId,
+            ref,
+            marketing,
+            physicalAddress: dispatch.physicalAddress,
+            snapshot: dispatch.entitySnapshot as Record<string, unknown> | null,
+            subjectOverride: payload.defer.subject,
+            preheaderOverride: payload.defer.preheader,
+          });
+          data = { ...raw, ...common };
         } else if (payload.raw) {
           // Pre-rendered (broadcast) → delivered as-is.
           data = {
