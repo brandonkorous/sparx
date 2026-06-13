@@ -1,8 +1,8 @@
 # 52 · Email Builder
 
-Version: 0.4.0
+Version: 0.6.0
 Author: Brandon Korous
-Last Updated: 2026-06-04
+Last Updated: 2026-06-13
 
 The Email Builder is the third Builder surface — `/builder/email` — alongside
 `/builder/page` and `/builder/site`. It edits an email as **one self-contained
@@ -26,10 +26,19 @@ tree**, closest to `/builder/page`'s catalog model:
 
 - A tenant keeps a **catalog** of email documents (`BuilderEmail`), each with the
   same draft → publish lifecycle as a page.
-- There is **no `Outlet`, no "active" selection, no layout tier**. The branded
-  frame (wordmark header + legal footer) is fixed chrome supplied by the renderer
-  (`EmailLayout`), not an author-edited layout — the author edits only the body
-  tree. (Making the frame author-editable is a later option, not Phase 1.)
+- There is **no `Outlet`, no "active" selection, no layout tier**. The **legal
+  footer** (the "Sent with Sparx" line + the marketing compliance nodes) is fixed
+  chrome supplied by the renderer (`EmailLayout`). The **wordmark header**, however,
+  is now an **author-editable, pinned node** (`email_wordmark`, v0.5.0) — the first
+  child of every email's body tree, seeded by `body()` and self-healed onto legacy
+  trees by `normalizeEmailTree`. It's selectable + editable (treatment: logo + name
+  lockup / logo / name · alignment · size) but never added, removed, or moved (the
+  registry def's `pinned` flag gates the Layers remove/drag, `onMove` keeps siblings
+  below it, and the canvas omits the old `.bx-sendmark` chrome). Its CONTENT (logo +
+  store name) resolves from the brand at render — tracking the tenant brand + per-
+  site override (docs/49 Phase 7) — so the node persists only the treatment.
+  `EmailLayout` no longer auto-adds the header (`header={false}` from the Builder
+  renderer); the coded Sparx→merchant templates keep it (`header` defaults true).
 
 ## 2. The two models, and the decision
 
@@ -155,6 +164,36 @@ record (object) CMS sources are dropped, an email has no in-scope single record.
 Shapes are fixed; the **data** is produced at send/preview by `resolveEmailData`
 (§6), which resolves only the sources a tree binds.
 
+### 7.1 Merge tags & discoverability (v0.6.0)
+
+An author personalizes copy by typing `{{token}}` merge fields directly into string
+props (a heading's text, a button's label/link, the subject/preheader) — the grammar
+is `{{ path ?? "fallback" }}` ([docs/91](91-default-email-templates.md) §2). The
+**merge-tag vocabulary is the binding catalog flattened**: every OBJECT source's
+text fields become a `{{source.field}}` token (`merge-tags.ts`,
+`emailMergeTags()`). Array sources (products, posts, line items) are _iterated_ via
+a repeater binding, so they never appear as flat tokens.
+
+This one list drives **three** consumers so they never drift:
+
+- **Inline `{{` autocomplete** — `TokenInput` / `TokenTextarea` (dashboard
+  `_builder/token-field.tsx`) wrap the plain text fields; typing `{{` pops a ranked,
+  grouped menu (label + live sample). The menu is portaled to `<body>` (the inspector
+  ScrollArea would clip it). Email surface only — page/site renderers don't
+  interpolate `{{}}`.
+- **"Merge tags" reference panel** — a searchable, click-to-copy modal off the email
+  toolbar (`merge-tags-panel.tsx`).
+- **MCP `list_merge_tags`** (`read:email`) — returns every tag (path, label, sample,
+  per-recipient vs per-send scope) + the fallback syntax, so an agent authoring an
+  email knows the vocabulary.
+
+**Namespace — `site.*` is canonical (v0.6.0).** The site identity source is keyed
+`site` (`{{site.name}}`, `{{site.url}}`, `{{site.supportEmail}}`). The historical
+`tenant.*` namespace (and its `siteUrl`/`storeUrl` URL aliases) **still resolves** —
+`resolveEmailData` emits the identity under both `site` and `tenant` roots, the
+editor sample data carries both, and the shipped defaults were migrated to `site.*`.
+So an email authored before the rename keeps working; new copy reads `{{site.name}}`.
+
 ## 8. Migration & sunset of `@sparx/email-sections` — _done (2026-06-04)_
 
 The section model is **retired**. How it landed (it diverged from the original
@@ -249,5 +288,7 @@ Transactional code builtins are untouched throughout.
   api-mcp, email-worker, api-graphql, dashboard) per the workspace-wiring rule. The
   index re-exports the Builder renderer, which loads `@sparx/cms-editor/serialize` at
   import time, so a missing COPY crashes the service at boot — not at build.
-- **Branded frame stays fixed chrome** in Phase 1 — the legal footer (physical
-  address + unsubscribe) is not author-removable.
+- **The legal footer stays fixed chrome** — the "Sent with Sparx" line + the
+  marketing compliance nodes (physical address + unsubscribe) are not author-
+  removable. The **wordmark header** graduated to an author-editable pinned node in
+  v0.5.0 (§1); only the footer remains renderer-owned.

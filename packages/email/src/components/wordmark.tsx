@@ -2,50 +2,84 @@ import * as React from 'react';
 import { Img } from '@react-email/components';
 import { useBrand } from './brand';
 
-// EmailWordmark — the email header brand mark. Resolves from the active brand:
-//   • a tenant logo (when brand.logoUrl is set) → renders the image,
-//   • a tenant store/site name → renders it in the brand foreground,
-//   • the Sparx default → the "Spar<x>" wordmark with the accent "x".
+// EmailWordmark — the email header brand mark (docs/52 §1). Now an author-editable
+// node (`email_wordmark`) at the top of the body tree rather than fixed frame
+// chrome, it resolves its CONTENT from the active brand and its TREATMENT from the
+// node's props:
+//   • 'lockup' (default) — the logo AND the store name side by side: the brand
+//     lockup, parity with the site header's <Wordmark> (packages/site-ui),
+//   • 'logo'             — the logo alone (for logos that already bake in the name),
+//   • 'name'             — the store/site name alone (the "Spar<x>" mark when the
+//                          brand is the Sparx fallback).
+// Each treatment DEGRADES gracefully when its part is missing (logo with no logo →
+// name; lockup with only one part → that part; neither → the Sparx default).
 //
-// Mail clients strip <style> blocks and don't honour CSS variables, so every
-// value is inlined. Brand colors/fonts come from the BrandContext.
+// Mail clients strip <style> blocks and don't honour CSS variables, so every value
+// is inlined; brand colors/fonts come from the BrandContext.
+
+export type WordmarkTreatment = 'lockup' | 'logo' | 'name';
 
 export interface EmailWordmarkProps {
-  /** Font size in px (logo height scales from this). Default 22. */
+  /** Logo height + name font scale from this px size. Default 22. */
   size?: number;
+  /** What the header shows; see the file header. Default the brand lockup. */
+  treatment?: WordmarkTreatment;
+  /** Horizontal alignment. Default left. */
+  align?: 'left' | 'center';
 }
 
-export function EmailWordmark({ size = 22 }: EmailWordmarkProps) {
+export function EmailWordmark({
+  size = 22,
+  treatment = 'lockup',
+  align = 'left',
+}: EmailWordmarkProps) {
   const brand = useBrand();
+  const logoUrl = brand.logoUrl;
+  const hasLogo = Boolean(logoUrl);
+  const hasName = Boolean(brand.storeName) && brand.storeName !== 'Sparx';
 
-  if (brand.logoUrl) {
-    return (
-      <Img
-        src={brand.logoUrl}
-        alt={brand.storeName ?? 'Logo'}
-        height={Math.round(size * 1.4)}
-        style={{ display: 'block', maxHeight: Math.round(size * 1.6), width: 'auto' }}
-      />
-    );
-  }
+  // Which parts the treatment asks for, then a name fallback so the header is never
+  // empty (a logo-only treatment with no logo, etc. → the name / Sparx default).
+  const wantLogo = treatment !== 'name' && hasLogo;
+  const wantName = treatment !== 'logo' && hasName;
+  const showLogo = wantLogo;
+  const showName = wantName || !wantLogo;
 
-  const wordmarkStyle: React.CSSProperties = {
+  const nameStyle: React.CSSProperties = {
     fontFamily: brand.fontHeading,
     fontSize: size,
     fontWeight: 500,
     letterSpacing: '-0.03em',
     lineHeight: 1,
     color: brand.foreground,
+    verticalAlign: 'middle',
   };
 
-  // Tenant store/site name (anything other than the Sparx default) renders plain.
-  if (brand.storeName && brand.storeName !== 'Sparx') {
-    return <span style={wordmarkStyle}>{brand.storeName}</span>;
-  }
-
-  return (
-    <span style={wordmarkStyle}>
+  const nameNode = hasName ? (
+    <span style={nameStyle}>{brand.storeName}</span>
+  ) : (
+    <span style={nameStyle}>
       Spar<span style={{ color: brand.primary }}>x</span>
     </span>
+  );
+
+  return (
+    <div style={{ textAlign: align }}>
+      {showLogo && logoUrl ? (
+        <Img
+          src={logoUrl}
+          alt={brand.storeName ?? 'Logo'}
+          height={Math.round(size * 1.4)}
+          style={{
+            display: 'inline-block',
+            verticalAlign: 'middle',
+            width: 'auto',
+            maxHeight: Math.round(size * 1.6),
+            ...(showName ? { marginRight: 8 } : {}),
+          }}
+        />
+      ) : null}
+      {showName ? nameNode : null}
+    </div>
   );
 }

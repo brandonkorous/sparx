@@ -16,7 +16,7 @@
 //     fired on), falling back to the recipient's most-recent for a broadcast.
 //   · per-send      — tenant / commerce.product / promotion / cms.<type>: resolved
 //     once.
-// Every `*Url` token (storeUrl / recoveryUrl / reviewUrl / payUrl / portalUrl)
+// Every `*Url` token (site.url / recoveryUrl / reviewUrl / payUrl / portalUrl)
 // resolves to a real storefront route so the CTAs work (docs/91 §1).
 
 import { withTenant } from '@sparx/db';
@@ -253,7 +253,7 @@ async function resolveTenant(
         )
       : Promise.resolve(null),
   ]);
-  // `{{tenant.name}}` is customer-facing copy ("Welcome to …", "thanks for shopping
+  // `{{site.name}}` is customer-facing copy ("Welcome to …", "thanks for shopping
   // with …"), so it must be the STORE name — the brand business name the wordmark
   // already uses (brand-service's `storeName`) — not the internal org/account name
   // on the tenant row. On a multi-site tenant it is the ACTIVE site's name when the
@@ -265,9 +265,16 @@ async function resolveTenant(
   const businessName = brand?.businessName?.trim() ?? '';
   const storeName =
     siteName.length > 0 ? siteName : businessName.length > 0 ? businessName : tenant.name;
+  // `url` is the canonical field (`{{site.url}}`); `siteUrl` + `storeUrl` are
+  // back-compat aliases (the store→site, then `tenant.*`→`site.*` renames) so an
+  // email authored before either rename (an existing `{{tenant.siteUrl}}` /
+  // `{{tenant.storeUrl}}` button) still resolves to the same URL.
+  const home = homeUrl(tenant.slug);
   return {
     name: storeName,
-    storeUrl: homeUrl(tenant.slug),
+    url: home,
+    siteUrl: home,
+    storeUrl: home,
     supportEmail: settings?.replyTo ?? tenant.email,
   };
 }
@@ -713,8 +720,16 @@ export async function resolveEmailData(
   if (keys.has('recipient')) {
     tasks.push(resolveRecipient(ctx, ref).then((v) => void (out.recipient = v)));
   }
-  if (keys.has('tenant')) {
-    tasks.push(resolveTenant(ctx, tenant, propertyId).then((v) => void (out.tenant = v)));
+  // Site identity is one resolve, emitted under BOTH the canonical `site` root and
+  // the historical `tenant` alias, so `{{site.name}}` and a legacy `{{tenant.name}}`
+  // both resolve regardless of which namespace a given tree was authored against.
+  if (keys.has('site') || keys.has('tenant')) {
+    tasks.push(
+      resolveTenant(ctx, tenant, propertyId).then((v) => {
+        out.site = v;
+        out.tenant = v;
+      })
+    );
   }
   if (keys.has('order')) {
     tasks.push(resolveOrder(ctx, ref, slug).then((v) => void (out.order = v)));

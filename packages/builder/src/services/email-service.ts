@@ -18,6 +18,7 @@ import {
   UpdateEmailInput,
   blankEmailTree,
   getDefaultEmailTemplate,
+  normalizeEmailTree,
   type BuilderEmailDto,
   type BuilderNode,
   type PublishedEmailDto,
@@ -37,7 +38,10 @@ function toDto(row: BuilderEmail): BuilderEmailDto {
     subject: row.subject,
     preheader: row.preheader,
     // Stored validated on write; the editor depends on a well-formed tree.
-    tree: row.draftTree as unknown as BuilderNode,
+    // Normalized so the editor always receives the pinned wordmark header as the
+    // first node (docs/52 §1) — legacy rows authored before it get it injected, and
+    // the next save persists it. Idempotent for already-normalized trees.
+    tree: normalizeEmailTree(row.draftTree as unknown as BuilderNode),
     published: row.publishedTree != null,
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
@@ -60,7 +64,7 @@ function toPublished(row: BuilderEmail): PublishedEmailDto | null {
     name: row.name,
     subject: row.subject,
     preheader: row.preheader,
-    tree: row.publishedTree as unknown as BuilderNode,
+    tree: normalizeEmailTree(row.publishedTree as unknown as BuilderNode),
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
   };
 }
@@ -83,7 +87,7 @@ function defaultPublished(key: string): PublishedEmailDto | null {
     name: def.name,
     subject: def.subject,
     preheader: def.preheader,
-    tree: def.tree,
+    tree: normalizeEmailTree(def.tree),
     publishedAt: null,
   };
 }
@@ -450,7 +454,7 @@ export function getDraftById(ctx: ServiceContext, id: string): Promise<Published
       name: row.name,
       subject: row.subject,
       preheader: row.preheader,
-      tree: row.draftTree as unknown as BuilderNode,
+      tree: normalizeEmailTree(row.draftTree as unknown as BuilderNode),
       publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     };
   });

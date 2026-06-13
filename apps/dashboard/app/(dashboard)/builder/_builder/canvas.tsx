@@ -215,6 +215,14 @@ const CustomDepthContext = React.createContext(0);
 // per-recipient rest (docs/93). Null ⇒ a page/site canvas. Set once by the Canvas.
 const EmailSampleContext = React.createContext<Record<string, unknown> | null>(null);
 
+// The email surface's resolved brand identity — the tenant/site logo URL + store
+// name (docs/52 §1) — for the `email_wordmark` header leaf to paint. Non-null only
+// on an email canvas; the Canvas sets it from the frame's sender identity.
+const EmailBrandContext = React.createContext<{
+  logoUrl?: string | null;
+  name?: string | null;
+} | null>(null);
+
 // A `custom:<key>` placement (docs/53 P-B): resolve the tenant component, expand
 // its PINNED version (instance slots + binding overrides filled), and render the
 // result LOCKED inside a selectable wrapper — so the whole component reads as one
@@ -368,6 +376,8 @@ function CanvasNode({
   // hook order stays stable.
   const emailSample = React.useContext(EmailSampleContext);
   const emailMode = emailSample !== null;
+  // The resolved email brand (logo + store name) for the wordmark header leaf.
+  const emailBrand = React.useContext(EmailBrandContext);
   // A tenant-component placement expands to a live preview (docs/53 P-B) — handled
   // before the registry lookup, which has no entry for `custom:*` types.
   if (isCustomType(node.type)) {
@@ -518,6 +528,7 @@ function CanvasNode({
         bound,
         surface: emailMode ? 'email' : 'page',
         emailSample: emailSample ?? undefined,
+        emailBrand: emailBrand ?? undefined,
         children: kidNodes.length > 0 ? kidNodes : undefined,
       }) ?? null;
   }
@@ -609,7 +620,7 @@ export type CanvasFrame =
        *  preview — the store name (`{{tenant.name}}`), store URL, support email —
        *  so the body reads with the real store name instead of a placeholder
        *  (docs/93). Per-recipient tokens (customer/order/…) stay generic samples. */
-      tenant?: { name?: string | null; storeUrl?: string | null; supportEmail?: string | null };
+      tenant?: { name?: string | null; siteUrl?: string | null; supportEmail?: string | null };
     }
   | null;
 
@@ -684,11 +695,19 @@ export function Canvas({
       frame?.kind === 'email'
         ? emailSampleData({
             name: emailTenant?.name,
-            storeUrl: emailTenant?.storeUrl,
+            siteUrl: emailTenant?.siteUrl,
             supportEmail: emailTenant?.supportEmail,
           })
         : null,
-    [frame?.kind, emailTenant?.name, emailTenant?.storeUrl, emailTenant?.supportEmail]
+    [frame?.kind, emailTenant?.name, emailTenant?.siteUrl, emailTenant?.supportEmail]
+  );
+  // The email brand (logo + store name) the wordmark header leaf paints (docs/52 §1).
+  // From the frame's sender identity; null on a page/site canvas. Stable-keyed.
+  const senderLogoUrl = frame?.kind === 'email' ? (frame.senderLogoUrl ?? null) : null;
+  const senderName = frame?.kind === 'email' ? frame.senderName : null;
+  const emailBrand = React.useMemo(
+    () => (frame?.kind === 'email' ? { logoUrl: senderLogoUrl, name: senderName } : null),
+    [frame?.kind, senderLogoUrl, senderName]
   );
 
   // The editable page subtree — fully selectable. When framing, it's handed to
@@ -739,13 +758,9 @@ export function Canvas({
     >
       {frame?.kind === 'email' ? (
         <>
-          <div className="bx-sendmark" aria-hidden>
-            {frame.senderLogoUrl ? (
-              <img className="bx-sendmark__logo" src={frame.senderLogoUrl} alt={frame.senderName} />
-            ) : (
-              frame.senderName
-            )}
-          </div>
+          {/* The wordmark HEADER is now the first node of the tree (an editable,
+              pinned `email_wordmark`), so it renders inside {page} — not as fixed
+              chrome (docs/52 §1). The legal footer stays chrome. */}
           {page}
           <div className="bx-sendfoot" aria-hidden>
             {frame.senderName} · sent with Sparx
@@ -845,22 +860,24 @@ export function Canvas({
 
   return (
     <EmailSampleContext.Provider value={emailSample}>
-      <VersionResolverContext.Provider value={resolveVersion ?? null}>
-        <div
-          className="bx-canvas-scroll"
-          data-frame={frameKind}
-          ref={scrollRef}
-          role="button"
-          tabIndex={-1}
-          aria-label="Clear selection"
-          onClick={() => onSelect(null)}
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') onSelect(null);
-          }}
-        >
-          {framed}
-        </div>
-      </VersionResolverContext.Provider>
+      <EmailBrandContext.Provider value={emailBrand}>
+        <VersionResolverContext.Provider value={resolveVersion ?? null}>
+          <div
+            className="bx-canvas-scroll"
+            data-frame={frameKind}
+            ref={scrollRef}
+            role="button"
+            tabIndex={-1}
+            aria-label="Clear selection"
+            onClick={() => onSelect(null)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') onSelect(null);
+            }}
+          >
+            {framed}
+          </div>
+        </VersionResolverContext.Provider>
+      </EmailBrandContext.Provider>
     </EmailSampleContext.Provider>
   );
 }

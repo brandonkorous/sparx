@@ -7,6 +7,7 @@ import { renderDocToHtml } from '@sparx/cms-editor/serialize';
 import {
   cardinalityOf,
   interpolateEmailTokens,
+  normalizeEmailTree,
   resolvePath,
   type BuilderNode,
   type DataSources,
@@ -20,6 +21,7 @@ import {
   EmailLink,
   EmailMuted,
   EmailParagraph,
+  EmailWordmark,
   spacing,
   typography,
   useBrand,
@@ -43,6 +45,10 @@ import type { SendableEmail } from '../types';
 // renderer emits inline styles rather than the classes themselves.
 
 const FALLBACK_FROM = 'Sparx <noreply@sparx.email>';
+
+// Header wordmark size token → px (logo height + name font scale from this). Mirrors
+// the canvas leaf's mapping so the editor preview and the send agree.
+const WORDMARK_SIZE_PX: Record<string, number> = { sm: 18, md: 22, lg: 28 };
 function defaultFrom(): string {
   return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;
 }
@@ -338,6 +344,20 @@ function Leaf({
       const addr = compliance.physicalAddress;
       return addr ? <EmailMuted>{addr}</EmailMuted> : null;
     }
+    case 'email_wordmark': {
+      // The author-editable header (docs/52 §1): the brand wordmark + a divider, the
+      // header that used to be fixed EmailLayout chrome. CONTENT (logo + store name)
+      // comes from the brand context; the node carries only the TREATMENT/align/size.
+      const treatment = (str(p, 'treatment') || 'lockup') as 'lockup' | 'logo' | 'name';
+      const align = (str(p, 'align') || 'left') as 'left' | 'center';
+      const sizePx = WORDMARK_SIZE_PX[str(p, 'size')] ?? 22;
+      return (
+        <>
+          <EmailWordmark treatment={treatment} align={align} size={sizePx} />
+          <EmailDivider />
+        </>
+      );
+    }
     default:
       return null;
   }
@@ -494,11 +514,16 @@ export function composeEmailTree(
   opts: RenderEmailTreeOptions = {}
 ): React.ReactElement {
   const scope: Scope = { root: input.data ?? {} };
+  // The header is now the first node of the tree (an `email_wordmark`), so the
+  // layout no longer adds its own — `header={false}`. Normalize as a safety net: an
+  // un-normalized tree (a legacy email that hasn't been re-saved) gets the wordmark
+  // injected so every send still carries a header (docs/52 §1).
+  const tree = normalizeEmailTree(input.tree);
   return (
     <BrandProvider brand={opts.brand}>
       <ComplianceContext.Provider value={input.compliance ?? {}}>
-        <EmailLayout preview={input.preheader ?? input.subject}>
-          <EmailNode node={input.tree} scope={scope} />
+        <EmailLayout preview={input.preheader ?? input.subject} header={false}>
+          <EmailNode node={tree} scope={scope} />
         </EmailLayout>
       </ComplianceContext.Provider>
     </BrandProvider>

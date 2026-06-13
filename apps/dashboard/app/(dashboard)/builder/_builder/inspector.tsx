@@ -56,11 +56,13 @@ import {
   readComponentRef,
   type BindingCatalog,
   type ComponentDto,
+  type MergeTag,
   type NavLink,
   type PropSpec as ComponentPropSpec,
 } from '@sparx/builder-schemas';
 
 import { CREATABLE_KINDS, type CreatableType } from './field-kinds';
+import { TokenInput, TokenTextarea } from './token-field';
 
 import { SeoScoreChip } from '@/components/seo/seo-score';
 
@@ -1761,11 +1763,15 @@ function PropsFields({
   node,
   onProp,
   slotEditor,
+  tokens,
 }: {
   node: BuilderNode;
   onProp: (key: string, value: unknown) => void;
   /** When set (component editor), text props gain a "Make a field" affordance. */
   slotEditor?: SlotEditor;
+  /** Merge tags for inline `{{` autocomplete (email surface only). Absent ⇒ plain
+   *  text controls. */
+  tokens?: MergeTag[];
 }) {
   const def = getDef(node.type)!;
   if (def.props.length === 0) return null;
@@ -1833,12 +1839,22 @@ function PropsFields({
         if (spec.control === 'textarea') {
           return (
             <Field key={spec.key} label={spec.label}>
-              <Textarea
-                rows={3}
-                value={(value as string) ?? ''}
-                placeholder={spec.placeholder}
-                onChange={(e) => onProp(spec.key, e.target.value)}
-              />
+              {tokens ? (
+                <TokenTextarea
+                  rows={3}
+                  value={(value as string) ?? ''}
+                  placeholder={spec.placeholder}
+                  tags={tokens}
+                  onValueChange={(v) => onProp(spec.key, v)}
+                />
+              ) : (
+                <Textarea
+                  rows={3}
+                  value={(value as string) ?? ''}
+                  placeholder={spec.placeholder}
+                  onChange={(e) => onProp(spec.key, e.target.value)}
+                />
+              )}
               {makeField}
             </Field>
           );
@@ -1885,11 +1901,20 @@ function PropsFields({
         }
         return (
           <Field key={spec.key} label={spec.label}>
-            <Input
-              value={(value as string) ?? ''}
-              placeholder={spec.placeholder}
-              onChange={(e) => onProp(spec.key, e.target.value)}
-            />
+            {tokens ? (
+              <TokenInput
+                value={(value as string) ?? ''}
+                placeholder={spec.placeholder}
+                tags={tokens}
+                onValueChange={(v) => onProp(spec.key, v)}
+              />
+            ) : (
+              <Input
+                value={(value as string) ?? ''}
+                placeholder={spec.placeholder}
+                onChange={(e) => onProp(spec.key, e.target.value)}
+              />
+            )}
             {makeField}
           </Field>
         );
@@ -2133,12 +2158,15 @@ export function EmailSettings({
   name,
   subject,
   preheader,
+  tokens,
   onSubject,
   onPreheader,
 }: {
   name: string;
   subject: string;
   preheader: string | null;
+  /** Merge tags for the subject/preview `{{` autocomplete (docs/52 §7). */
+  tokens?: MergeTag[];
   onSubject: (value: string) => void;
   onPreheader: (value: string) => void;
 }) {
@@ -2157,30 +2185,59 @@ export function EmailSettings({
           title="Message"
           caption="Your wordmark header and the legal footer wrap this body automatically. You compose the content; the branded frame is added on send."
         >
-          <Field label="Subject" hint="The subject line shown in the inbox.">
-            <Input
-              value={subjectDraft}
-              placeholder="e.g. Welcome to the shop"
-              aria-label="Email subject"
-              onChange={(e) => setSubjectDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') e.currentTarget.blur();
-              }}
-              onBlur={() => subjectDraft !== subject && onSubject(subjectDraft)}
-            />
+          <Field
+            label="Subject"
+            hint="The subject line shown in the inbox. Type {{ to insert a merge tag like {{site.name}}."
+          >
+            {tokens ? (
+              <TokenInput
+                value={subjectDraft}
+                placeholder="e.g. Welcome to {{site.name}}"
+                aria-label="Email subject"
+                tags={tokens}
+                onValueChange={setSubjectDraft}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.currentTarget.blur();
+                }}
+                onBlur={() => subjectDraft !== subject && onSubject(subjectDraft)}
+              />
+            ) : (
+              <Input
+                value={subjectDraft}
+                placeholder="e.g. Welcome to the shop"
+                aria-label="Email subject"
+                onChange={(e) => setSubjectDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.currentTarget.blur();
+                }}
+                onBlur={() => subjectDraft !== subject && onSubject(subjectDraft)}
+              />
+            )}
           </Field>
           <Field
             label="Preview text"
             hint="The short teaser shown after the subject in most inboxes. Optional."
           >
-            <Textarea
-              rows={2}
-              value={preheaderDraft}
-              placeholder="A short teaser shown next to the subject"
-              aria-label="Email preheader"
-              onChange={(e) => setPreheaderDraft(e.target.value)}
-              onBlur={() => preheaderDraft !== (preheader ?? '') && onPreheader(preheaderDraft)}
-            />
+            {tokens ? (
+              <TokenTextarea
+                rows={2}
+                value={preheaderDraft}
+                placeholder="A short teaser shown next to the subject"
+                aria-label="Email preheader"
+                tags={tokens}
+                onValueChange={setPreheaderDraft}
+                onBlur={() => preheaderDraft !== (preheader ?? '') && onPreheader(preheaderDraft)}
+              />
+            ) : (
+              <Textarea
+                rows={2}
+                value={preheaderDraft}
+                placeholder="A short teaser shown next to the subject"
+                aria-label="Email preheader"
+                onChange={(e) => setPreheaderDraft(e.target.value)}
+                onBlur={() => preheaderDraft !== (preheader ?? '') && onPreheader(preheaderDraft)}
+              />
+            )}
           </Field>
         </Card>
       </div>
@@ -2455,6 +2512,8 @@ export interface InspectorProps {
   /** Slot authoring (docs/53 P-D) — present only in the component editor: lets a
    *  node's text prop become a configurable field. */
   slotEditor?: SlotEditor;
+  /** Merge tags for inline `{{` autocomplete in text props (email surface only). */
+  tokens?: MergeTag[];
   /** Clear the selection — returns the inspector to the `settings` panel (page /
    *  site settings). Powers the "‹ Page settings" back control. */
   onBack: () => void;
@@ -2476,6 +2535,7 @@ export function Inspector({
   onAddField,
   onSaveAsComponent,
   slotEditor,
+  tokens,
   onBack,
   onName,
   onClass,
@@ -2557,7 +2617,7 @@ export function Inspector({
         {/* Content first — what the block SAYS and where it comes from. */}
         {hasContent ? (
           <Card icon={Type} title="Content" summary={contentSummary(node, def)}>
-            <PropsFields node={node} onProp={onProp} slotEditor={slotEditor} />
+            <PropsFields node={node} onProp={onProp} slotEditor={slotEditor} tokens={tokens} />
             <DataSource
               node={node}
               catalog={catalog}

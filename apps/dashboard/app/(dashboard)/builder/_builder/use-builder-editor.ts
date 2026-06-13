@@ -274,6 +274,10 @@ export function useBuilderEditor({
     if (!tree) return;
     const node = findNode(tree, id);
     if (!node) return;
+    // A pinned node (the email_wordmark header, docs/52 §1) is present by
+    // construction — never removed. The Layers panel hides its delete control, but
+    // guard here too so no transport can drop it.
+    if (getDef(node.type)?.pinned) return;
     const ckey = customKeyOf(node.type);
     const label =
       node.name ??
@@ -298,9 +302,17 @@ export function useBuilderEditor({
   };
 
   // Re-parent / reorder. moveNode is a no-op for illegal moves (root / cycle), so
-  // a bad drop just leaves the tree untouched.
+  // a bad drop just leaves the tree untouched. A leading PINNED child (the
+  // email_wordmark header, docs/52 §1) keeps its slot: a drop targeting index 0 of a
+  // parent whose first child is pinned is bumped below it, so nothing lands above
+  // the header.
   const onMove = (dragId: string, parentId: string, index: number) =>
-    updateTree((t) => moveNode(t, dragId, parentId, index));
+    updateTree((t) => {
+      const parent = findNode(t, parentId);
+      const firstChild = parent?.children?.[0];
+      const leadPinned = Boolean(firstChild && getDef(firstChild.type)?.pinned);
+      return moveNode(t, dragId, parentId, leadPinned && index < 1 ? 1 : index);
+    });
 
   // Change the selected node's type. Same-kind targets keep children where the new
   // type can hold them; the one lossy case (a leaf target that can't nest) is

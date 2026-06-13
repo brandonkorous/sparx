@@ -321,14 +321,20 @@ export const EMAIL_SOURCES: DataSource[] = [
     ],
   },
   {
-    key: 'tenant',
-    label: 'Store',
+    // The site identity (the tenant's customer-facing brand) — `{{site.name}}`,
+    // `{{site.url}}`. The CANONICAL namespace is `site.*`; the historical `tenant.*`
+    // (with a `siteUrl`/`storeUrl` URL field) still resolves via the back-compat
+    // aliases the resolver + sample emit, so an email authored before the rename
+    // keeps working. Single-segment key, so `bindingSourceKey('site.name')` is
+    // `site` (distinct catalog from the page builder's `site.identity`).
+    key: 'site',
+    label: 'Site',
     module: 'site',
     cardinality: 'object',
-    recordType: 'tenant',
+    recordType: 'site',
     fields: [
       text('name', 'Name'),
-      text('storeUrl', 'Store URL'),
+      text('url', 'URL'),
       text('supportEmail', 'Support email'),
     ],
   },

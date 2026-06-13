@@ -122,6 +122,74 @@ export function EmailDividerLeaf() {
   );
 }
 
+// Header wordmark size token → px (logo height + name font scale from this). Mirrors
+// @sparx/email's render-email-tree mapping so the canvas preview and the send agree.
+const WORDMARK_SIZE_PX: Record<string, number> = { sm: 18, md: 22, lg: 28 };
+
+/** The editable email HEADER (docs/52 §1) at the email scale — the brand wordmark
+ *  the merchant edits in /builder/email, mirroring @sparx/email's `EmailWordmark` +
+ *  the trailing divider. CONTENT (logo + store name) comes from the active brand
+ *  (the canvas frame's sender identity, threaded as `emailBrand`); the node carries
+ *  only the TREATMENT/align/size. Each treatment degrades gracefully (logo with no
+ *  logo → name; lockup with one part → that part). */
+export function EmailWordmarkLeaf({
+  treatment = 'lockup',
+  align = 'left',
+  size = 'md',
+  logoUrl,
+  name,
+}: {
+  treatment?: 'lockup' | 'logo' | 'name';
+  align?: 'left' | 'center';
+  size?: 'sm' | 'md' | 'lg';
+  logoUrl?: string | null;
+  name?: string | null;
+}) {
+  const px = WORDMARK_SIZE_PX[size] ?? 22;
+  const hasLogo = Boolean(logoUrl);
+  const hasName = Boolean(name);
+  const wantLogo = treatment !== 'name' && hasLogo;
+  const wantName = treatment !== 'logo' && hasName;
+  const showLogo = wantLogo;
+  const showName = wantName || !wantLogo;
+  return (
+    <>
+      <div style={{ textAlign: align }}>
+        {showLogo && logoUrl ? (
+          <img
+            src={logoUrl}
+            alt={name ?? ''}
+            style={{
+              display: 'inline-block',
+              verticalAlign: 'middle',
+              height: Math.round(px * 1.4),
+              maxHeight: Math.round(px * 1.6),
+              width: 'auto',
+              ...(showName ? { marginRight: 8 } : {}),
+            }}
+          />
+        ) : null}
+        {showName ? (
+          <span
+            style={{
+              fontFamily: FONT_HEADING,
+              fontSize: px,
+              fontWeight: 500,
+              letterSpacing: '-0.03em',
+              lineHeight: 1,
+              color: FG,
+              verticalAlign: 'middle',
+            }}
+          >
+            {name}
+          </span>
+        ) : null}
+      </div>
+      <EmailDividerLeaf />
+    </>
+  );
+}
+
 /** Authored rich text serialized to HTML, wrapped in the email body base so prose
  *  inherits the email's font/size/color — headings keep the browser's own sizing,
  *  exactly like the real send (no <style> block to lean on). */

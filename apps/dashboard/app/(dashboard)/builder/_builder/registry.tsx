@@ -45,6 +45,7 @@ import {
   Split,
   Square,
   SquareDashed,
+  Stamp,
   SunMoon,
   Table,
   Tag,
@@ -111,6 +112,7 @@ import {
   EmailLineItemsLeaf,
   EmailProseLeaf,
   EmailTextLeaf,
+  EmailWordmarkLeaf,
 } from './email-leaf';
 
 export type NodeKind = 'container' | 'leaf';
@@ -183,6 +185,10 @@ export interface LeafRenderArgs {
    *  The email surface passes `emailSampleData(realTenant)` so `{{tenant.name}}`
    *  reads the store's real name; undefined ⇒ the generic placeholders. */
   emailSample?: Record<string, unknown>;
+  /** The email surface's resolved brand identity — the tenant/site logo URL + store
+   *  name (docs/52 §1). The `email_wordmark` header leaf paints its CONTENT from this
+   *  (the node carries only the treatment); undefined on a page/site surface. */
+  emailBrand?: { logoUrl?: string | null; name?: string | null };
   /** Pre-rendered child nodes, for a leaf that `acceptsChildren` (Button → an
    *  inline Icon). Undefined for leaves with no children. The leaf decides where
    *  they sit relative to its own content (Button renders them after the label). */
@@ -246,6 +252,11 @@ export interface ComponentDef {
   acceptsChildren?: boolean;
   /** Extra chrome class for containers (e.g. Card border). */
   chromeClass?: string;
+  /** A PINNED node — present by construction, not added/removed/moved by the author
+   *  (e.g. the email_wordmark header, docs/52 §1). The Layers panel hides its remove
+   *  control and won't drag it; the editor's onRemove no-ops it; projectDrop keeps
+   *  siblings from landing above it. Still selectable + editable (its props). */
+  pinned?: boolean;
   /** Leaf whose authored `node.class` styles the ELEMENT itself, not the box
    *  wrapper (docs/47 §7 — e.g. Button → the `<span>`/`<a>`). When set, the canvas
    *  renders `node.class` on the leaf (so the recipe paints it) and suppresses it
@@ -1429,6 +1440,69 @@ const DEFS: ComponentDef[] = [
   // where its items table / unsubscribe line belongs. `surfaces: ['email']` keeps
   // them out of the page/site palettes; absence from EMAIL_TYPES keeps them out of
   // the email palette too, while `getDef` still resolves them for rendering.
+  {
+    // The editable email HEADER (docs/52 §1) — the brand wordmark that used to be
+    // fixed renderer chrome (EmailLayout). PINNED: seeded as the first node of every
+    // email, selectable + editable (treatment / align / size) but never added,
+    // removed, or moved by the author; absent from EMAIL_TYPES, so there's exactly
+    // one. Its CONTENT (logo + store name) resolves from the brand at render
+    // (`emailBrand`) — so it tracks the tenant brand + per-site override — while the
+    // node persists only the TREATMENT. The legal footer stays fixed renderer chrome.
+    type: 'email_wordmark',
+    label: 'Header',
+    kind: 'leaf',
+    group: 'content',
+    // A brand-mark glyph (a LEAF), not the container-looking PanelTop: in the Layers
+    // tree the header is a SIBLING of the body content (the rendered email has them
+    // flat inside one container), so its icon must not imply it wraps them.
+    icon: Stamp,
+    bindable: false,
+    accepts: [],
+    surfaces: ['email'],
+    pinned: true,
+    props: [
+      {
+        key: 'treatment',
+        label: 'Show',
+        control: 'buttongroup',
+        options: [
+          { value: 'lockup', label: 'Logo + name' },
+          { value: 'logo', label: 'Logo' },
+          { value: 'name', label: 'Name' },
+        ],
+      },
+      {
+        key: 'align',
+        label: 'Alignment',
+        control: 'buttongroup',
+        options: [
+          { value: 'left', label: 'Left' },
+          { value: 'center', label: 'Center' },
+        ],
+      },
+      {
+        key: 'size',
+        label: 'Size',
+        control: 'select',
+        options: [
+          { value: 'sm', label: 'Small' },
+          { value: 'md', label: 'Medium' },
+          { value: 'lg', label: 'Large' },
+        ],
+      },
+    ],
+    defaults: { props: { treatment: 'lockup', align: 'left', size: 'md' } },
+    // CONTENT from the brand (emailBrand); the node carries only the treatment.
+    renderLeaf: ({ node, emailBrand }) => (
+      <EmailWordmarkLeaf
+        treatment={(node.props.treatment as 'lockup' | 'logo' | 'name') ?? 'lockup'}
+        align={(node.props.align as 'left' | 'center') ?? 'left'}
+        size={(node.props.size as 'sm' | 'md' | 'lg') ?? 'md'}
+        logoUrl={emailBrand?.logoUrl}
+        name={emailBrand?.name}
+      />
+    ),
+  },
   {
     type: 'line_item_table',
     label: 'Line items',

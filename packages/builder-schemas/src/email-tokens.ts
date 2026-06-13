@@ -91,8 +91,24 @@ export function interpolateEmailTokens(input: string, resolve: (path: string) =>
 // the same tokens against live `DataSources` (resolveEmailData); this is preview
 // gloss only, keyed to the docs/91 §3 vocabulary + the EMAIL_SOURCES fields.
 
+// The site identity sample, carrying EVERY alias of the URL field + emitted under
+// both root keys below. `url` is the canonical token (`{{site.url}}`); `siteUrl`
+// and `storeUrl` are back-compat aliases (the store→site, then site.* renames) so a
+// `{{tenant.siteUrl}}` / `{{tenant.storeUrl}}` authored before the rename still
+// resolves on the canvas.
+const IDENTITY_SAMPLE = {
+  name: 'Acme Supply Co.',
+  url: '#',
+  siteUrl: '#',
+  storeUrl: '#',
+  supportEmail: 'help@acme.example',
+};
+
 export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
-  tenant: { name: 'Acme Supply Co.', storeUrl: '#', supportEmail: 'help@acme.example' },
+  // The canonical `site` root + the historical `tenant` alias point at the SAME
+  // identity, so `{{site.name}}` and a legacy `{{tenant.name}}` both resolve.
+  site: IDENTITY_SAMPLE,
+  tenant: IDENTITY_SAMPLE,
   customer: {
     firstName: 'Alex',
     lastName: 'Rivera',
@@ -186,24 +202,34 @@ export function sampleEmailText(
   return interpolateEmailTokens(input, (path) => resolvePath({ root: data }, path));
 }
 
-/** The editor sample data with the REAL tenant identity merged over the generic
- *  placeholders. `{{tenant.name}}` / `storeUrl` / `supportEmail` are KNOWN fixed
- *  values for the tenant, so the canvas resolves them like the send (the real store
- *  name in every heading), while customer / order / cart / … stay generic samples —
- *  those are genuinely per-recipient and unknown at authoring time. Undefined or
- *  blank fields keep the sample, so a partial override never blanks a token. */
+/** The editor sample data with the REAL site identity merged over the generic
+ *  placeholders. `{{site.name}}` / `url` / `supportEmail` are KNOWN fixed values for
+ *  the tenant, so the canvas resolves them like the send (the real site name in
+ *  every heading), while customer / order / cart / … stay generic samples — those
+ *  are genuinely per-recipient and unknown at authoring time. Undefined or blank
+ *  fields keep the sample, so a partial override never blanks a token. The merged
+ *  identity is emitted under BOTH the canonical `site` root and the `tenant` alias,
+ *  and the URL is written to every alias (`url`/`siteUrl`/`storeUrl`) so a legacy
+ *  token resolves to the same value. The `siteUrl` PARAM name is kept (callers pass
+ *  the tenant's home URL) even though the canonical token is now `{{site.url}}`. */
 export function emailSampleData(tenant?: {
   name?: string | null;
-  storeUrl?: string | null;
+  siteUrl?: string | null;
   supportEmail?: string | null;
 }): Record<string, unknown> {
   if (!tenant) return SAMPLE_EMAIL_DATA;
-  const base = (SAMPLE_EMAIL_DATA.tenant ?? {}) as Record<string, unknown>;
-  const merged: Record<string, unknown> = { ...base };
+  const merged: Record<string, unknown> = { ...IDENTITY_SAMPLE };
   if (tenant.name?.trim()) merged.name = tenant.name.trim();
-  if (tenant.storeUrl?.trim()) merged.storeUrl = tenant.storeUrl.trim();
+  // One URL, written to every alias so `{{site.url}}`, `{{tenant.siteUrl}}`, and the
+  // older `{{tenant.storeUrl}}` all agree.
+  if (tenant.siteUrl?.trim()) {
+    const url = tenant.siteUrl.trim();
+    merged.url = url;
+    merged.siteUrl = url;
+    merged.storeUrl = url;
+  }
   if (tenant.supportEmail?.trim()) merged.supportEmail = tenant.supportEmail.trim();
-  return { ...SAMPLE_EMAIL_DATA, tenant: merged };
+  return { ...SAMPLE_EMAIL_DATA, site: merged, tenant: merged };
 }
 
 // ── Source collection (which DataSources a tree actually references) ───────────

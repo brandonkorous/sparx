@@ -426,7 +426,7 @@ export const STARTER_EMAILS: StarterEmail[] = [
   {
     key: 'welcome',
     name: 'Welcome',
-    subject: 'Welcome to {{store}} 👋',
+    subject: 'Welcome to {{site.name}} 👋',
     preheader: "You're in — here's how to get started.",
     tree: welcomeEmailTree(),
   },

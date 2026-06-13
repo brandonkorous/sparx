@@ -634,6 +634,14 @@
   font-size: 12.5px;
   color: var(--color-text-primary);
 }
+/* The whole row is the drag handle (no grip icon), so signal it with a grab
+   cursor; a plain click still selects (4px PointerSensor activation distance). */
+.bx-layer--draggable {
+  cursor: grab;
+}
+.bx-layer--dragging {
+  cursor: grabbing;
+}
 .bx-layer__caret {
   display: flex;
   flex: none;
@@ -2667,4 +2675,193 @@
 .bx-bind__addactions {
   display: flex;
   gap: 6px;
+}
+
+/* ── Merge-tag inline autocomplete (token-field.tsx) ────────────────────────
+   The `{{`-triggered dropdown over a text/textarea field. The menu is PORTALED to
+   <body> with fixed positioning (the inspector ScrollArea would clip an inline
+   absolute child), so it's a top-level element styled here. */
+.bx-tokenfield {
+  position: relative;
+  display: block;
+}
+.bx-tokenmenu {
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-border-default);
+  border-radius: 8px;
+  background: var(--color-bg-surface);
+  box-shadow: 0 12px 32px -8px rgb(0 0 0 / 0.25);
+}
+.bx-tokenmenu__list {
+  overflow-y: auto;
+  padding: 4px;
+}
+.bx-tokenmenu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  text-align: left;
+  cursor: pointer;
+}
+.bx-tokenmenu__item[data-active='true'] {
+  background: var(--color-bg-muted);
+}
+.bx-tokenmenu__token {
+  flex-shrink: 0;
+  font-family: var(--bx-mono);
+  font-size: 12px;
+  color: var(--module-active);
+  white-space: nowrap;
+}
+.bx-tokenmenu__meta {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bx-tokenmenu__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.bx-tokenmenu__sample {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+}
+.bx-tokenmenu__foot {
+  border-top: 1px solid var(--color-border-default);
+  padding: 5px 8px;
+  font-size: 10.5px;
+  color: var(--color-text-tertiary);
+}
+
+/* ── Merge-tag reference panel (merge-tags-panel.tsx) ───────────────────────
+   The searchable "Merge tags" modal — grouped tokens with a friendly label +
+   sample; clicking a row copies the token. */
+.bx-tagref {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bx-tagref__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: var(--color-bg-surface);
+}
+.bx-tagref__search svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--color-text-tertiary);
+}
+.bx-tagref__searchinput {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 9px 0;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  outline: none;
+}
+.bx-tagref__scroll {
+  display: flex;
+  max-height: 52vh;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.bx-tagref__group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bx-tagref__grouphead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 4px;
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--color-text-secondary);
+}
+.bx-tagref__scope {
+  font-size: 10px;
+  font-weight: 550;
+  color: var(--color-text-tertiary);
+}
+.bx-tagref__row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  border-radius: 7px;
+  background: none;
+  padding: 7px 8px;
+  text-align: left;
+  cursor: pointer;
+}
+.bx-tagref__row:hover {
+  background: var(--color-bg-muted);
+}
+.bx-tagref__token {
+  flex-shrink: 0;
+  font-family: var(--bx-mono);
+  font-size: 12px;
+  color: var(--module-active);
+  white-space: nowrap;
+}
+.bx-tagref__rowmeta {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bx-tagref__field {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.bx-tagref__sample {
+  overflow: hidden;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bx-tagref__copy {
+  flex-shrink: 0;
+  color: var(--color-text-tertiary);
+  opacity: 0;
+}
+.bx-tagref__row:hover .bx-tagref__copy {
+  opacity: 1;
+}
+.bx-tagref__copy svg {
+  width: 14px;
+  height: 14px;
+}
+.bx-tagref__empty {
+  padding: 16px 4px;
+  font-size: 13px;
+  color: var(--color-text-muted);
 }

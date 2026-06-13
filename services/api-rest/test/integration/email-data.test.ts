@@ -125,7 +125,10 @@ describe('resolveEmailData — invoice template', () => {
       type: 'Section',
       props: {},
       children: [
-        { id: 'h', type: 'Heading', props: { text: 'Welcome to {{tenant.name}}' } },
+        // Canonical `{{site.*}}` + the legacy `{{tenant.*}}` alias in the SAME tree —
+        // the resolver hydrates identity under both roots (docs/52 §7 back-compat).
+        { id: 'h', type: 'Heading', props: { text: 'Welcome to {{site.name}}' } },
+        { id: 'h2', type: 'Heading', props: { text: 'Visit {{tenant.siteUrl}}' } },
         { id: 'p', type: 'Text', props: { text: 'Hi {{customer.firstName ?? "there"}}' } },
       ],
     };
@@ -134,7 +137,12 @@ describe('resolveEmailData — invoice template', () => {
       customerId,
     });
     expect((data.customer as Record<string, unknown>).firstName).toBe('Sam');
+    // Both roots resolve to the same identity; `url` is canonical, `siteUrl` an alias.
+    expect(String((data.site as Record<string, unknown>).name)).toContain('Test test-');
     expect(String((data.tenant as Record<string, unknown>).name)).toContain('Test test-');
+    expect((data.site as Record<string, unknown>).url).toBe(
+      (data.tenant as Record<string, unknown>).siteUrl
+    );
   });
 
   it('resolves {{tenant.name}} to the active site name when a property overrides businessName (docs/49)', async () => {

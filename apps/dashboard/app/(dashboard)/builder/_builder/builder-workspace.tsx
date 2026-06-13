@@ -13,7 +13,7 @@
 import * as React from 'react';
 import { Layers, PanelRightClose, PanelRightOpen, Plus, Table2 } from 'lucide-react';
 import { ScrollArea, cn, useMediaQuery } from '@sparx/ui';
-import type { BindingCatalog, BuilderNode, ComponentDto } from '@sparx/builder-schemas';
+import type { BindingCatalog, BuilderNode, ComponentDto, MergeTag } from '@sparx/builder-schemas';
 
 import type { BuilderEditor } from './use-builder-editor';
 import type { EditorSurface } from './registry';
@@ -59,6 +59,9 @@ export interface BuilderWorkspaceProps {
   /** Slot authoring (docs/53 P-D) — present only in the component editor: a node's
    *  text prop can be turned into a configurable field. */
   slotEditor?: SlotEditor;
+  /** Merge tags for the inspector's inline `{{` autocomplete (email surface only).
+   *  Omitted on page/site, whose renderers don't interpolate `{{token}}`. */
+  tokens?: MergeTag[];
 }
 
 // ── Chrome layout prefs (desktop) ───────────────────────────────────────────
@@ -195,6 +198,7 @@ export function BuilderWorkspace({
   onAddField,
   onSaveAsComponent,
   slotEditor,
+  tokens,
 }: BuilderWorkspaceProps) {
   // The Fields tab only exists when this surface supplies a panel. If the rail is
   // parked on 'fields' and the panel goes away (e.g. you switch to a singleton
@@ -380,6 +384,7 @@ export function BuilderWorkspace({
                   onAddField={onAddField}
                   onSaveAsComponent={onSaveAsComponent}
                   slotEditor={slotEditor}
+                  tokens={tokens}
                   onBack={() => editor.setSelectedId(null)}
                   onName={editor.onName}
                   onClass={editor.onClass}

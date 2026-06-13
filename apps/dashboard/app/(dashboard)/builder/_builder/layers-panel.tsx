@@ -19,7 +19,6 @@ import {
   ChevronRight,
   ChevronsDownUp,
   ChevronsUpDown,
-  GripVertical,
   SlidersHorizontal,
   X,
 } from 'lucide-react';
@@ -130,7 +129,11 @@ function Row({
   const { node } = flat;
   const def = getDef(node.type);
   const custom = isCustomType(node.type);
-  const sortable = useSortable({ id: node.id, disabled: !draggable });
+  // A pinned node (the email_wordmark header, docs/52 §1) is present by
+  // construction: still selectable + editable, but it can't be dragged or removed.
+  const pinned = Boolean(def?.pinned);
+  const canDrag = draggable && !pinned;
+  const sortable = useSortable({ id: node.id, disabled: !canDrag });
   if (!def && !custom) return null;
   // A `custom:*` placement (docs/53 P-B) has no registry def — label it from the
   // resolved component (or its key) and use a generic component glyph.
@@ -150,8 +153,18 @@ function Row({
   return (
     <div
       ref={sortable.setNodeRef}
+      // The WHOLE row is the drag target (no separate grip handle) — the house
+      // pattern (drag the card, not a handle). A 4px PointerSensor activation
+      // distance keeps a plain click selecting; the caret + remove buttons
+      // stopPropagation on pointerdown so they never start a drag. Disabled rows
+      // (root, pinned header — docs/52 §1) get no-op listeners. Dropping the grip
+      // ALSO removes the ~13px column it reserved on every row, which was the real
+      // cause of the tree reading as over-indented.
+      {...(canDrag ? sortable.attributes : {})}
+      {...(canDrag ? (sortable.listeners ?? {}) : {})}
       className={cn(
         'bx-layer',
+        canDrag && 'bx-layer--draggable',
         node.id === selectedId && 'bx-layer--on',
         sortable.isDragging && 'bx-layer--dragging'
       )}
@@ -185,16 +198,6 @@ function Row({
       ) : (
         <span className="bx-layer__caret bx-layer__caret--spacer" aria-hidden />
       )}
-      {draggable ? (
-        <span
-          className="bx-layer__grip"
-          aria-hidden
-          {...sortable.attributes}
-          {...(sortable.listeners ?? {})}
-        >
-          <GripVertical />
-        </span>
-      ) : null}
       <Icon className="bx-layer__icon" aria-hidden />
       <span className="bx-layer__name">{label}</span>
       {custom ? <span className="bx-layer__component">component</span> : null}
@@ -205,7 +208,7 @@ function Row({
         </span>
       ) : null}
       {bind?.repeats ? <span className="bx-layer__repeat">↻</span> : null}
-      {draggable ? (
+      {canDrag ? (
         <button
           type="button"
           className="bx-layer__remove"
@@ -393,6 +396,9 @@ export function LayersPanel({
         aria-pressed={selectedId === null}
         onClick={() => onSelect(null)}
       >
+        {/* Reserve the same caret column the tree rows carry, so this home row's
+            icon lines up with the ROOT row's icon (both top-level peers). */}
+        <span className="bx-layer__caret bx-layer__caret--spacer" aria-hidden />
         <SlidersHorizontal className="bx-layer__icon" aria-hidden />
         <span className="bx-layer__name">{homeLabel} settings</span>
       </button>

@@ -1,8 +1,8 @@
 # Default Email Templates & Per-Site Email
 
-**Version:** 1.2 (13 trees BUILT as `DEFAULT_EMAIL_TEMPLATES`; **the automation module's half is DELIVERED** — the 4 node types render, the resolver reaches the full §3 vocabulary, every `*Url` resolves, the one-click unsubscribe is live; the provisional `node()` shapes are FINAL as authored, so provisioning is unblocked)
+**Version:** 1.4 (13 trees BUILT as `DEFAULT_EMAIL_TEMPLATES`; **the automation module's half is DELIVERED** — the 4 node types render, the resolver reaches the full §3 vocabulary, every `*Url` resolves, the one-click unsubscribe is live; the provisional `node()` shapes are FINAL as authored, so provisioning is unblocked. v1.4: the tenant identity source is now keyed **`site`** — the canonical tokens are `{{site.name}}` / `{{site.url}}`; `resolveEmailData` + the sample emit the identity under both `site` and `tenant` roots and keep `siteUrl`/`storeUrl` as URL aliases, so every pre-rename `{{tenant.*}}` still resolves. Shipped defaults migrated to `site.*`. Merge tags are now discoverable: inline `{{` autocomplete + a "Merge tags" panel + the MCP `list_merge_tags` tool — see [docs/52](52-email-builder.md) §7.1)
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-12
+**Last Updated:** 2026-06-13
 
 > **Scope.** Two coupled bodies of work:
 >
@@ -112,22 +112,22 @@ explicit. **Current** = state of `resolveEmailData` today; the resolver must rea
 | DataSource             | Scalar fields                                                  | Collection (for `line_item_table`)                            | Current resolver state                                                                |
 | ---------------------- | -------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | `customer`             | `firstName lastName fullName email company`                    | —                                                             | partial — `firstName/lastName/email` only (no `fullName`, `company`)                  |
-| `tenant`               | `name storeUrl supportEmail`                                   | —                                                             | missing — `storeUrl` derived per-send; no `name`/`supportEmail` source                |
+| `site` (was `tenant`)  | `name url supportEmail`                                        | —                                                             | resolved — per-site `name`, `url` per-send; `tenant.*` aliased for back-compat        |
 | `order`                | `number total subtotal status placedAt reviewUrl`              | `order.items[]`: `name quantity unitPrice lineTotal`          | partial — labels only (`statusLabel`/`totalLabel`); no raw values, no `items[]`       |
 | `cart`                 | `total itemCount recoveryUrl`                                  | `cart.items[]`: `name quantity unitPrice lineTotal`           | partial — `items[]` (title/priceLabel/imageUrl); no `total`/`itemCount`/`recoveryUrl` |
 | `quote`                | `number total status validUntil reviewUrl`                     | `quote.items[]`: `name quantity unitPrice lineTotal`          | **missing**                                                                           |
 | `invoice` (billingDoc) | `number total balance dueDate daysUntilDue overdueDays payUrl` | `invoice.items[]`: `description quantity unitPrice lineTotal` | **missing**                                                                           |
 | `b2bAccount`           | `companyName paymentTerms creditLimit status portalUrl`        | —                                                             | **missing**                                                                           |
 
-Every `*Url` token (`storeUrl`, `recoveryUrl`, `payUrl`, `reviewUrl`, `portalUrl`)
+Every `*Url` token (`siteUrl`, `recoveryUrl`, `payUrl`, `reviewUrl`, `portalUrl`)
 is owned by the automation module and resolved to a **real working link at
 dispatch** — use them freely; that's what makes the CTAs work.
 
 > **Resolved (2026-06-12):** `order.reviewUrl` is **in the vocabulary** — the
-> resolver maps it to the first purchased product's PDP (`{storeUrl}/products/{handle}`,
-> where the review UI lives), falling back to `storeUrl` only when the order has no
+> resolver maps it to the first purchased product's PDP (`{siteUrl}/products/{handle}`,
+> where the review UI lives), falling back to `siteUrl` only when the order has no
 > resolvable product. So template #4's CTA uses `{{order.reviewUrl}}` directly (no
-> storeUrl fallback in the tree).
+> siteUrl fallback in the tree).
 
 ---
 
@@ -141,18 +141,18 @@ Subjects/preheaders carry merge tokens.
 ### 1. `welcome-customer` · transactional · _welcome_
 
 - **Sources:** `customer`, `tenant` · **refs:** `customerId`
-- **Subject:** `Welcome to {{tenant.name}}` · **Preheader:** `Thanks for joining — here's what's next.`
-- heading: "Welcome to {{tenant.name}}"
+- **Subject:** `Welcome to {{site.name}}` · **Preheader:** `Thanks for joining — here's what's next.`
+- heading: "Welcome to {{site.name}}"
 - paragraph: "Hi {{customer.firstName ?? "there"}} — thanks for creating an account. You're all set: browse the latest, track your orders, and check out faster every time."
-- button: "Start shopping" → `{{tenant.storeUrl}}`
+- button: "Start shopping" → `{{site.url}}`
 
 ### 2. `win-back` · marketing · _win-back_
 
 - **Sources:** `customer`, `tenant` · **refs:** `customerId`
 - **Subject:** `We miss you, {{customer.firstName ?? "friend"}}` · **Preheader:** `Come back and see what's new.`
 - heading: "It's been a while"
-- paragraph: "We haven't seen you at {{tenant.name}} in a bit, {{customer.firstName ?? "there"}}. There's plenty new since your last visit — come take a look."
-- button: "See what's new" → `{{tenant.storeUrl}}`
+- paragraph: "We haven't seen you at {{site.name}} in a bit, {{customer.firstName ?? "there"}}. There's plenty new since your last visit — come take a look."
+- button: "See what's new" → `{{site.url}}`
 - [unsubscribe + address]
 
 ### 3. `abandoned-cart` · marketing · _cart-recovery_
@@ -160,7 +160,7 @@ Subjects/preheaders carry merge tokens.
 - **Sources:** `customer`, `cart`, `tenant` · **refs:** `customerId`, `cartId`
 - **Subject:** `You left something behind` · **Preheader:** `Your cart is still here.`
 - heading: "Still thinking it over?"
-- paragraph: "Your cart is saved and ready whenever you are. Here's what you left at {{tenant.name}}:"
+- paragraph: "Your cart is saved and ready whenever you are. Here's what you left at {{site.name}}:"
 - [line_item_table] `cart.items`
 - text (total): "Total: {{cart.total}}"
 - button: "Complete your order" → `{{cart.recoveryUrl}}`
@@ -171,7 +171,7 @@ Subjects/preheaders carry merge tokens.
 - **Sources:** `customer`, `order`, `tenant` · **refs:** `customerId`, `orderId`
 - **Subject:** `How did we do?` · **Preheader:** `Tell us about order {{order.number}}.`
 - heading: "How was your order?"
-- paragraph: "Thanks for shopping with {{tenant.name}}, {{customer.firstName ?? "there"}}. We'd love to hear what you thought of order {{order.number}}:"
+- paragraph: "Thanks for shopping with {{site.name}}, {{customer.firstName ?? "there"}}. We'd love to hear what you thought of order {{order.number}}:"
 - [line_item_table] `order.items`
 - button: "Leave a review" → `{{order.reviewUrl}}` _(resolver maps it to the first product's PDP — see §3)_
 - [unsubscribe + address]
@@ -181,7 +181,7 @@ Subjects/preheaders carry merge tokens.
 - **Sources:** `customer`, `b2bAccount`, `tenant` · **refs:** `customerId`, `b2bAccountId`
 - **Subject:** `Your account is approved` · **Preheader:** `{{b2bAccount.companyName}} is ready to order.`
 - heading: "You're approved"
-- paragraph: "Good news — {{b2bAccount.companyName}} has been approved for a wholesale account with {{tenant.name}}. You can sign in and order at your account pricing now."
+- paragraph: "Good news — {{b2bAccount.companyName}} has been approved for a wholesale account with {{site.name}}. You can sign in and order at your account pricing now."
 - [conditional_block] _if `b2bAccount.creditLimit` set_ → text: "Your credit line is {{b2bAccount.creditLimit}} on {{b2bAccount.paymentTerms}} terms."
 - button: "Go to your portal" → `{{b2bAccount.portalUrl}}`
 
@@ -257,8 +257,8 @@ Subjects/preheaders carry merge tokens.
 - **Sources:** `customer`, `tenant` · **refs:** `customerId`
 - **Subject:** `How was your experience?` · **Preheader:** `Tell us how we did.`
 - heading: "How did we do?"
-- paragraph: "Thanks for chatting with {{tenant.name}}, {{customer.firstName ?? "there"}}. We'd love a quick word on how the conversation went."
-- button: "Rate your chat" → `{{tenant.storeUrl}}` _(or a dedicated survey URL when one exists)_
+- paragraph: "Thanks for chatting with {{site.name}}, {{customer.firstName ?? "there"}}. We'd love a quick word on how the conversation went."
+- button: "Rate your chat" → `{{site.url}}` _(or a dedicated survey URL when one exists)_
 
 ---
 

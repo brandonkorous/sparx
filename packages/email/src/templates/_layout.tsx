@@ -16,9 +16,15 @@ interface EmailLayoutProps {
   children: React.ReactNode;
   /** Brief tagline rendered in the footer. */
   footerNote?: string;
+  /** Render the built-in wordmark header (wordmark + divider). Default `true` — the
+   *  CODED templates (welcome-merchant, password-reset, chat-notification) rely on
+   *  it. The Builder email renderer passes `false`: its tree carries an author-
+   *  editable `email_wordmark` node as the first body element instead (docs/52 §1),
+   *  so the header is part of what the merchant edits in /builder/email. */
+  header?: boolean;
 }
 
-export function EmailLayout({ preview, children, footerNote }: EmailLayoutProps) {
+export function EmailLayout({ preview, children, footerNote, header = true }: EmailLayoutProps) {
   const brand = useBrand();
   return (
     <Html lang="en">
@@ -42,11 +48,15 @@ export function EmailLayout({ preview, children, footerNote }: EmailLayoutProps)
             padding: `${spacing.xl}px`,
           }}
         >
-          <Section>
-            <EmailWordmark />
-          </Section>
+          {header ? (
+            <>
+              <Section>
+                <EmailWordmark />
+              </Section>
 
-          <EmailDivider />
+              <EmailDivider />
+            </>
+          ) : null}
 
           {children}
 

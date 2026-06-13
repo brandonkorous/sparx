@@ -49,13 +49,54 @@ function node(
 
 // ── Body composition helpers (existing node palette) ─────────────────────────
 
-/** The email body root — a stacked Section. The branded frame is the renderer's. */
+/** The pinned email HEADER node type (docs/52 §1). The wordmark moved OUT of the
+ *  renderer's fixed frame INTO the body tree so the author can edit it in
+ *  /builder/email — it's the first child of every email, not deletable/draggable
+ *  (the registry def marks it `pinned`), and not in the palette (there's only one).
+ *  Its LOGO + store name are resolved from the brand at render (never stored on the
+ *  node), so it keeps tracking the tenant brand + per-site override; the node holds
+ *  only the TREATMENT. The legal footer stays fixed renderer chrome. */
+export const EMAIL_WORDMARK_TYPE = 'email_wordmark';
+
+/** A newly-seeded header: the brand lockup (logo + name), left, medium. */
+const DEFAULT_WORDMARK_PROPS = { treatment: 'lockup', align: 'left', size: 'md' } as const;
+
+const wordmark = (): BuilderNode =>
+  node(EMAIL_WORDMARK_TYPE, { props: { ...DEFAULT_WORDMARK_PROPS } });
+
+/** The email body root — a stacked Section led by the pinned wordmark header. The
+ *  legal footer is still the renderer's; the header is now the first body node. */
 function body(children: BuilderNode[]): BuilderNode {
   return node('Section', {
     box: { name: 'Email body', padding: 'none', contentWidth: 'full' },
     layout: { direction: 'stack', gap: 'md' },
-    children,
+    children: [wordmark(), ...children],
   });
+}
+
+/** Ensure an email body tree leads with its pinned wordmark header (docs/52 §1).
+ *  Idempotent — a tree that already starts with an `email_wordmark` is returned
+ *  unchanged. Legacy trees authored before the header was editable get one injected
+ *  with the default lockup treatment, so EVERY email — old or new — renders + edits
+ *  the header consistently and the renderer never needs to add frame chrome. Called
+ *  on the editor read path (so the author sees + saves it) and in the renderer (a
+ *  safety net for any un-normalized tree that reaches a send). */
+export function normalizeEmailTree(tree: BuilderNode): BuilderNode {
+  const children = tree.children ?? [];
+  const headers = children.filter((c) => c.type === EMAIL_WORDMARK_TYPE);
+  // Already correct — exactly one header, and it leads. The common path.
+  if (headers.length === 1 && children[0]?.type === EMAIL_WORDMARK_TYPE) return tree;
+  // Self-heal: keep the FIRST existing header (preserving the author's treatment),
+  // drop any duplicates, and hoist it to the front; inject a default when absent.
+  // So the header is always present, single, and first — no matter how the tree
+  // was edited (docs/52 §1).
+  const rest = children.filter((c) => c.type !== EMAIL_WORDMARK_TYPE);
+  const header: BuilderNode = headers[0] ?? {
+    id: 'email-wordmark',
+    type: EMAIL_WORDMARK_TYPE,
+    props: { ...DEFAULT_WORDMARK_PROPS },
+  };
+  return { ...tree, children: [header, ...rest] };
 }
 
 const heading = (text: string): BuilderNode => node('Heading', { props: { level: 'h1', text } });
@@ -95,27 +136,27 @@ const complianceFooter = (): BuilderNode[] => [
 
 const welcomeCustomer = (): BuilderNode =>
   body([
-    heading('Welcome to {{tenant.name}}'),
+    heading('Welcome to {{site.name}}'),
     para(
       'Hi {{customer.firstName ?? "there"}} — thanks for creating an account. You’re all set: browse the latest, track your orders, and check out faster every time.'
     ),
-    button('Start shopping', '{{tenant.storeUrl}}'),
+    button('Start shopping', '{{site.url}}'),
   ]);
 
 const winBack = (): BuilderNode =>
   body([
     heading('It’s been a while'),
     para(
-      'We haven’t seen you at {{tenant.name}} in a bit, {{customer.firstName ?? "there"}}. There’s plenty new since your last visit — come take a look.'
+      'We haven’t seen you at {{site.name}} in a bit, {{customer.firstName ?? "there"}}. There’s plenty new since your last visit — come take a look.'
     ),
-    button('See what’s new', '{{tenant.storeUrl}}'),
+    button('See what’s new', '{{site.url}}'),
     ...complianceFooter(),
   ]);
 
 const abandonedCart = (): BuilderNode =>
   body([
     heading('Still thinking it over?'),
-    para('Your cart is saved and ready whenever you are. Here’s what you left at {{tenant.name}}:'),
+    para('Your cart is saved and ready whenever you are. Here’s what you left at {{site.name}}:'),
     lineItems('cart.items'),
     para('Total: {{cart.total}}'),
     button('Complete your order', '{{cart.recoveryUrl}}'),
@@ -126,7 +167,7 @@ const postPurchaseReview = (): BuilderNode =>
   body([
     heading('How was your order?'),
     para(
-      'Thanks for shopping with {{tenant.name}}, {{customer.firstName ?? "there"}}. We’d love to hear what you thought of order {{order.number}}:'
+      'Thanks for shopping with {{site.name}}, {{customer.firstName ?? "there"}}. We’d love to hear what you thought of order {{order.number}}:'
     ),
     lineItems('order.items'),
     button('Leave a review', '{{order.reviewUrl}}'),
@@ -137,7 +178,7 @@ const b2bAccountApproved = (): BuilderNode =>
   body([
     heading('You’re approved'),
     para(
-      'Good news — {{b2bAccount.companyName}} has been approved for a wholesale account with {{tenant.name}}. You can sign in and order at your account pricing now.'
+      'Good news — {{b2bAccount.companyName}} has been approved for a wholesale account with {{site.name}}. You can sign in and order at your account pricing now.'
     ),
     conditional('b2bAccount.creditLimit', [
       para('Your credit line is {{b2bAccount.creditLimit}} on {{b2bAccount.paymentTerms}} terms.'),
@@ -223,9 +264,9 @@ const chatSatisfaction = (): BuilderNode =>
   body([
     heading('How did we do?'),
     para(
-      'Thanks for chatting with {{tenant.name}}, {{customer.firstName ?? "there"}}. We’d love a quick word on how the conversation went.'
+      'Thanks for chatting with {{site.name}}, {{customer.firstName ?? "there"}}. We’d love a quick word on how the conversation went.'
     ),
-    button('Rate your chat', '{{tenant.storeUrl}}'),
+    button('Rate your chat', '{{site.url}}'),
   ]);
 
 // ── Commerce + scheduling trees (docs/93 — folded in from coded templates) ───
@@ -318,7 +359,7 @@ export const DEFAULT_EMAIL_TEMPLATES: DefaultEmailTemplate[] = [
     name: 'Welcome',
     type: 'transactional',
     category: 'welcome',
-    subject: 'Welcome to {{tenant.name}}',
+    subject: 'Welcome to {{site.name}}',
     preheader: 'Thanks for joining — here’s what’s next.',
     sources: ['customer', 'tenant'],
     refs: ['customerId'],

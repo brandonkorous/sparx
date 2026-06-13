@@ -17,6 +17,7 @@
 
 import * as React from 'react';
 import {
+  Braces,
   Eye,
   Monitor,
   Pencil,
@@ -29,12 +30,13 @@ import {
   Upload,
 } from 'lucide-react';
 import { Badge, Button, Input, ModuleProvider, NativeSelect, useConfirm } from '@sparx/ui';
-import { parseEmailImport, toEmailDocument } from '@sparx/builder-schemas';
+import { emailMergeTags, parseEmailImport, toEmailDocument } from '@sparx/builder-schemas';
 import type { BindingCatalog, BuilderEmailDto } from '@sparx/builder-schemas';
 
 import { type Device } from './model';
 import { EmailSettings } from './inspector';
 import { EmailPreviewModal } from './email-preview-modal';
+import { MergeTagsPanel } from './merge-tags-panel';
 import { BuilderWorkspace } from './builder-workspace';
 import { ImportExportControls } from './import-export-controls';
 import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
@@ -102,9 +104,9 @@ export interface EmailBuilderAppProps {
    *  matching @sparx/email's EmailWordmark (docs/52). Absent ⇒ the name wordmark. */
   senderLogoUrl?: string | null;
   /** The tenant's REAL identity for the canvas merge-token preview (docs/93): the
-   *  store name resolves `{{tenant.name}}` to the actual store in every heading,
+   *  site name resolves `{{tenant.name}}` to the actual site in every heading,
    *  matching the send — not the generic "Acme Supply Co." sample. */
-  tenant?: { name?: string | null; storeUrl?: string | null; supportEmail?: string | null };
+  tenant?: { name?: string | null; siteUrl?: string | null; supportEmail?: string | null };
   /** The active web property when the tenant runs MORE THAN ONE site (docs/49
    *  Phase 7b) — present only in multi-site mode. Drives the "Customize for this
    *  site" fork + the override badge. Absent for single-site tenants, where the
@@ -138,6 +140,13 @@ export function EmailBuilderApp({
 
   const active = items.find((e) => e.id === activeId) ?? items[0] ?? null;
   const tree = active?.tree ?? null;
+
+  // The email's merge-tag vocabulary (docs/52 §7) — the inline `{{` autocomplete in
+  // every text field + the "Merge tags" reference panel. Constant for the email
+  // surface (the per-tenant catalog only adds iterated CMS collections, not flat
+  // tokens), so it's computed once.
+  const tokens = React.useMemo(() => emailMergeTags(), []);
+  const [tagsOpen, setTagsOpen] = React.useState(false);
 
   // The shared editing brain. `save` persists the active email's body tree;
   // `onTreeChange` writes the optimistic tree back into this component's state.
@@ -468,6 +477,16 @@ export function EmailBuilderApp({
             <Button
               size="sm"
               variant="ghost"
+              leftIcon={<Braces className="h-3.5 w-3.5" />}
+              disabled={busy}
+              title="Browse the merge tags you can drop into this email"
+              onClick={() => setTagsOpen(true)}
+            >
+              Merge tags
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
               leftIcon={<Eye className="h-3.5 w-3.5" />}
               disabled={busy}
               title="Preview the real email + send yourself a test"
@@ -523,11 +542,13 @@ export function EmailBuilderApp({
             senderLogoUrl: senderLogoUrl ?? null,
             tenant,
           }}
+          tokens={tokens}
           settings={
             <EmailSettings
               name={active.name}
               subject={active.subject}
               preheader={active.preheader}
+              tokens={tokens}
               onSubject={onSubject}
               onPreheader={onPreheader}
             />
@@ -535,6 +556,7 @@ export function EmailBuilderApp({
         />
 
         <EmailPreviewModal emailId={active.id} open={previewOpen} onOpenChange={setPreviewOpen} />
+        <MergeTagsPanel tags={tokens} open={tagsOpen} onOpenChange={setTagsOpen} />
       </div>
     </ModuleProvider>
   );

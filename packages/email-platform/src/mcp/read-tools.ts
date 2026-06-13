@@ -1,6 +1,7 @@
 // Read-only email MCP tools. Scope: 'read:email'. No confirmation.
 
 import { z } from 'zod';
+import { emailMergeTags } from '@sparx/builder-schemas';
 
 import * as analyticsService from '../services/analytics-service';
 import * as broadcastService from '../services/broadcast-service';
@@ -40,8 +41,24 @@ export const getUnsubscribedCustomers: McpToolDefinition = {
   run: (ctx, input) => suppressionService.list(ctx, input),
 };
 
+export const listMergeTags: McpToolDefinition = {
+  name: 'list_merge_tags',
+  description:
+    'List the merge tags (personalization tokens) usable in Builder emails — e.g. {{site.name}}, {{customer.firstName}}, {{order.total}}. Drop a token into any subject, heading, button, or text block and it resolves to the recipient’s real data when the email sends. Each tag carries a friendly label, a sample value, and a scope (per-recipient vs same-for-all). Tokens support an inline fallback: {{ customer.firstName ?? "there" }}.',
+  scope: 'read:email',
+  confirmation: false,
+  input: z.object({}),
+  // Pure catalog — tenant-independent, so neither ctx nor input is read.
+  run: () =>
+    Promise.resolve({
+      syntax: '{{ path }} or {{ path ?? "fallback" }}',
+      tags: emailMergeTags(),
+    }),
+};
+
 export const readTools: McpToolDefinition[] = [
   getEmailStats,
   listBroadcasts,
   getUnsubscribedCustomers,
+  listMergeTags,
 ];
