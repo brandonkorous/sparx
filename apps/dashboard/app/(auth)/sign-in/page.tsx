@@ -38,7 +38,7 @@ export default function SignInPage() {
     <AuthScreen
       lede={{
         title: 'Welcome back.',
-        blurb: 'Sign in to pick up right where you left off.',
+        blurb: 'Your sites, orders, and customers are right where you left them.',
       }}
     >
       <Stack gap={6}>

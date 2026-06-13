@@ -20,7 +20,6 @@ FROM base AS builder
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY apps/dashboard/package.json apps/dashboard/
 COPY packages/ui/package.json packages/ui/
-COPY packages/web-chrome/package.json packages/web-chrome/
 COPY packages/auth/package.json packages/auth/
 COPY packages/modules/package.json packages/modules/
 COPY packages/legal/package.json packages/legal/
@@ -65,7 +64,6 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 
 # Source for every workspace dep + the app itself.
 COPY packages/ui packages/ui
-COPY packages/web-chrome packages/web-chrome
 COPY packages/auth packages/auth
 COPY packages/modules packages/modules
 COPY packages/legal packages/legal

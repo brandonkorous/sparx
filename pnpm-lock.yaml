@@ -140,9 +140,6 @@ importers:
       '@sparx/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@sparx/web-chrome':
-        specifier: workspace:*
-        version: link:../../packages/web-chrome
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)

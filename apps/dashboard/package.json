@@ -47,7 +47,6 @@
     "@sparx/site-themes": "workspace:*",
     "@sparx/site-ui": "workspace:*",
     "@sparx/ui": "workspace:*",
-    "@sparx/web-chrome": "workspace:*",
     "@tanstack/react-table": "^8.21.3",
     "better-auth": "^1.6.11",
     "jose": "^6.1.0",

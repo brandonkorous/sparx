@@ -186,10 +186,14 @@ describe('automation-worker HTTP surface', () => {
     const summary = (await res.json()) as { tenantsSeeded: number };
     expect(summary.tenantsSeeded).toBeGreaterThanOrEqual(1);
 
-    const seeded = await ownerDb.automation.findFirst({
+    // The full B2B catalog is backfilled — the locked dunning ladder among it.
+    const seeded = await ownerDb.automation.findMany({
       where: { tenantId: tenant.id, origin: 'system' },
+      select: { name: true, locked: true },
     });
-    expect(seeded?.name).toBe('B2B overdue escalation');
+    expect(seeded).toHaveLength(6);
+    const dunning = seeded.find((a) => a.name === 'B2B overdue escalation');
+    expect(dunning?.locked).toBe(true);
   });
 
   it('push with a non-trigger payload acks (204) without enqueuing', async () => {

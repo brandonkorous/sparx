@@ -455,7 +455,10 @@ export function installEntityResolvers(): void {
           'quote.total': num(q.total),
           'quote.currency': q.currency,
           'quote.validUntil': q.validUntil,
-          ...(await resolveContact(ctx, { customerId: q.customerId, b2bAccountId: q.b2bAccountId })),
+          ...(await resolveContact(ctx, {
+            customerId: q.customerId,
+            b2bAccountId: q.b2bAccountId,
+          })),
         },
       }))
     );

@@ -7,6 +7,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { Mail } from 'lucide-react';
 import { Button, Card, CardContent, Stack, Switch, Text, toast } from '@sparx/ui';
 import type { AutomationStatus } from '@sparx/automation-schemas';
 import type { AutomationDto } from '../_lib/types';
@@ -15,6 +16,7 @@ import {
   ModuleTags,
   OriginBadge,
   formatTimestamp,
+  hasEmailAction,
   parseActions,
   summarizeTrigger,
 } from '../_lib/presentation';
@@ -33,12 +35,24 @@ const TABS: { key: FilterKey; label: string }[] = [
 export function AutomationList({
   automations,
   canWrite,
+  initialEmailOnly = false,
 }: {
   automations: AutomationDto[];
   canWrite: boolean;
+  /** Start narrowed to email automations (the email surface's deep link,
+   *  `/automations?focus=email`) — docs/90 Step 5. */
+  initialEmailOnly?: boolean;
 }) {
   const [filter, setFilter] = React.useState<FilterKey>('all');
+  const [emailOnly, setEmailOnly] = React.useState(initialEmailOnly);
   const [pending, startTransition] = React.useTransition();
+
+  // Precompute the email-action membership once (parse actions per row).
+  const emailIds = React.useMemo(
+    () =>
+      new Set(automations.filter((a) => hasEmailAction(parseActions(a.actions))).map((a) => a.id)),
+    [automations]
+  );
 
   const counts: Record<FilterKey, number> = {
     all: automations.length,
@@ -49,7 +63,9 @@ export function AutomationList({
   };
   for (const a of automations) counts[a.status] = (counts[a.status] ?? 0) + 1;
 
-  const rows = filter === 'all' ? automations : automations.filter((a) => a.status === filter);
+  const rows = automations.filter(
+    (a) => (filter === 'all' || a.status === filter) && (!emailOnly || emailIds.has(a.id))
+  );
 
   function toggle(a: AutomationDto, next: boolean) {
     startTransition(async () => {
@@ -61,7 +77,7 @@ export function AutomationList({
 
   return (
     <Stack gap={4}>
-      <Stack direction="row" gap={2} wrap>
+      <Stack direction="row" align="center" gap={2} wrap>
         {TABS.map((t) => (
           <Button
             key={t.key}
@@ -74,11 +90,26 @@ export function AutomationList({
             {t.label} · {counts[t.key]}
           </Button>
         ))}
+        {/* Action-type filter (a second axis): narrow to rules that send email —
+            the unified replacement for the old standalone Email Automations page. */}
+        <span className="mx-1 h-4 w-px bg-[var(--color-border-default)]" aria-hidden />
+        <Button
+          type="button"
+          size="sm"
+          variant={emailOnly ? 'soft' : 'ghost'}
+          color={emailOnly ? 'module' : 'neutral'}
+          leftIcon={<Mail className="h-4 w-4" />}
+          onClick={() => setEmailOnly((v) => !v)}
+          aria-pressed={emailOnly}
+        >
+          Email · {emailIds.size}
+        </Button>
       </Stack>
 
       {rows.length === 0 ? (
         <Text size="sm" variant="muted">
-          No {filter === 'all' ? '' : filter} automations.
+          No {emailOnly ? 'email ' : ''}
+          {filter === 'all' ? '' : `${filter} `}automations.
         </Text>
       ) : (
         <Stack gap={3}>

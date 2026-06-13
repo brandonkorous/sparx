@@ -31,8 +31,8 @@ export default function ForgotPasswordPage() {
   return (
     <AuthScreen
       lede={{
-        title: 'Reset your password.',
-        blurb: "We'll email you a secure link to choose a new one.",
+        title: "Let's get you back in.",
+        blurb: "Enter your email and we'll send a secure link to set a new password.",
       }}
     >
       <Stack gap={6}>

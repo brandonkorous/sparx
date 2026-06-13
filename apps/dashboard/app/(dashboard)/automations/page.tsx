@@ -19,8 +19,12 @@ import { AutomationList } from './_components/automation-list';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AutomationsPage() {
-  const session = await requireSession();
+export default async function AutomationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ focus?: string }>;
+}) {
+  const [{ focus }, session] = await Promise.all([searchParams, requireSession()]);
   const [enabledModules, automations] = await Promise.all([
     listEnabledModules(session.user.tenantId),
     api.get<AutomationDto[]>('/v1/automations'),
@@ -28,6 +32,9 @@ export default async function AutomationsPage() {
 
   const role = session.user.role;
   const canWrite = role === 'owner' || role === 'admin' || role === 'editor';
+  // The email surface deep-links here (`?focus=email`) to land on the email-only
+  // view — the unified replacement for the standalone Email Automations page.
+  const emailFocus = focus === 'email';
 
   if (enabledModules.length === 0) {
     return (
@@ -92,7 +99,11 @@ export default async function AutomationsPage() {
             />
           </Card>
         ) : (
-          <AutomationList automations={automations} canWrite={canWrite} />
+          <AutomationList
+            automations={automations}
+            canWrite={canWrite}
+            initialEmailOnly={emailFocus}
+          />
         )}
       </Stack>
     </Container>

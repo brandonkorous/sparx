@@ -80,7 +80,10 @@ function treeHasNodeType(node: BuilderNode, type: string): boolean {
  *  unpublished template, a compliance refusal). RLS-scoped via withTenant. */
 async function markSendFailed(tenantId: string, sendId: string, reason: string): Promise<void> {
   await withTenant({ tenantId }, (tx) =>
-    tx.scheduledSend.update({ where: { id: sendId }, data: { status: 'failed', lastError: reason } })
+    tx.scheduledSend.update({
+      where: { id: sendId },
+      data: { status: 'failed', lastError: reason },
+    })
   );
 }
 

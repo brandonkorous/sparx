@@ -81,15 +81,16 @@ export default function SignUpPage() {
   return (
     <AuthScreen
       lede={{
-        title: 'Build it your way — content, commerce, or both.',
-        blurb: 'Switch on only the modules you need. A complete, themed site in minutes.',
+        title: 'Everything you need to go live.',
+        blurb:
+          'Content, commerce, CRM, and email — switch on the modules you use and launch a complete, themed site in minutes.',
       }}
       aside={
         <RailPoints
           points={[
             'Free for 14 days — no card required.',
-            'Start from a complete blueprint, not a blank page.',
-            'Add or drop modules anytime; you only pay for what you use.',
+            'Start from a designed blueprint, not a blank page.',
+            'Add or drop modules anytime; pay only for what you use.',
           ]}
         />
       }

@@ -1,8 +1,8 @@
-// Chat system-automation seeds (docs/90 §3b). The satisfaction-survey seed (email)
-// lands with the template provisioning; this is the no-email default — a staff
-// alert when a conversation goes unanswered. The `conversation` scanner already
-// returns open conversations with no staff reply; the predicate adds the 10-minute
-// threshold, and the interval cadence's once-per-entity dedupe fires a single alert.
+// Chat system-automation seeds (docs/90 §3b). Two defaults over the shared
+// `conversation` scanner, partitioned by `conversation.status`: a no-email staff
+// alert when an OPEN conversation goes unanswered, and a customer satisfaction
+// survey after a conversation is RESOLVED. Both use the interval cadence so each
+// conversation triggers exactly once (once-per-entity dedupe).
 
 import type { SystemAutomationSpec } from '@sparx/automation';
 
@@ -35,6 +35,43 @@ export const CHAT_NO_RESPONSE_ALERT: SystemAutomationSpec = {
       config: {
         toField: 'conversation.assignedToEmail',
         subject: 'Unresponded chat — {{customer.fullName ?? "Anonymous"}}',
+      },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+/** Ask for feedback after a conversation is resolved. The `conversation` scanner
+ *  returns recently-resolved conversations; the predicate keeps only those with an
+ *  emailable contact (an anonymous visitor with no captured email is skipped), and
+ *  the 10-minute send delay lets the conversation settle first (docs/90 —
+ *  `wait(10m)`). Transactional — a post-support survey, not marketing. */
+export const CHAT_SATISFACTION_SURVEY: SystemAutomationSpec = {
+  name: 'Chat satisfaction survey',
+  description: 'Emails the customer a short survey ten minutes after a chat is resolved.',
+  trigger: {
+    kind: 'schedule',
+    schedule: { cadence: 'interval', everyMinutes: 5 },
+    predicate: {
+      entity: 'conversation',
+      where: {
+        logic: 'AND',
+        conditions: [
+          { field: 'conversation.status', operator: 'eq', value: 'resolved' },
+          { field: 'customer.email', operator: 'is_set' },
+        ],
+      },
+    },
+  },
+  conditions: { logic: 'AND', conditions: [] },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: {
+        builderEmailKey: 'chat-satisfaction',
+        emailType: 'transactional',
+        delaySeconds: 600,
       },
     },
   ],

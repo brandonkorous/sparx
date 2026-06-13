@@ -139,7 +139,10 @@ export function installEmailActions(): void {
       // for MARKETING. A do-not-contact flag is a marketing opt-out; an operational
       // transactional email (invoice, account approval) still sends. The email
       // suppression list (scoped, in enqueueSend) is the second gate.
-      if (scope === 'marketing' && optionalBoolField(effect.fields, 'customer.doNotContact') === true) {
+      if (
+        scope === 'marketing' &&
+        optionalBoolField(effect.fields, 'customer.doNotContact') === true
+      ) {
         return { recipient, enqueued: false, skipped: 'do_not_contact' };
       }
 

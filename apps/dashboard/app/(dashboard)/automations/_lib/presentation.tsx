@@ -59,6 +59,16 @@ export function parseActions(actions: unknown): Action[] {
   return parsed;
 }
 
+/** The action types that send email — the basis of the "Email" filter (docs/90
+ *  Step 5): the email-automations view is the unified list narrowed to rules that
+ *  send mail, not a separate page. */
+const EMAIL_ACTION_TYPES = new Set(['email.send_campaign', 'email.send_internal']);
+
+/** Does this automation send email (any send_campaign / send_internal action)? */
+export function hasEmailAction(actions: readonly { type: string }[]): boolean {
+  return actions.some((a) => EMAIL_ACTION_TYPES.has(a.type));
+}
+
 // ─── time + schedule formatting (deterministic, hydration-safe) ──────────────
 
 const pad = (n: number) => String(n).padStart(2, '0');

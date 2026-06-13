@@ -1,6 +1,6 @@
 # Sparx Platform — Automation Feature Build Log
 
-**Version:** 1.21
+**Version:** 1.22
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-12
 
@@ -16,13 +16,16 @@ The **living build state** for the Automation feature. The design lives in
 
 Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/blocked
 
-> **▶ RESUME HERE:** **Slice K (docs/90 ADR — automation migration) — IN PROGRESS.** Migrate ALL baked-in
-> workflows onto the unified engine + a Builder-email **DataSource** layer, and HARD-DELETE the legacy
-> email-platform automation system (zero users → no incremental, no soft-deprecation). Full spec in
-> [docs/90](90-ADR-automation-migration.md); live task list in the session todos. Target = **23 system
-> automations** (per-module, Managed except the one Locked B2B dunning) + **13 Builder-email default templates**
-> (+ 3 raw `send_internal` internal alerts) + full **CAN-SPAM/CASL compliance gate chain** (derived from
-> `emailType`, never stored).
+> **▶ RESUME HERE:** **Slice K (docs/90 ADR — automation migration) — COMPLETE (pending commit).** All six steps
+> done: legacy email-platform automation HARD-DELETED (Step 1), the trigger substrate + Builder-email **DataSource**
+> layer built (Steps 1b–2), all **23 per-module system automations** seeded + gated (Steps 3–4, Managed except the one
+> Locked B2B dunning), **13 Builder-email default templates** wired by `key` via `getPublishedByKey` + the **CAN-SPAM
+> compliance gate** (marketing-without-unsubscribe refused at dispatch; scope derived from `emailType`, never stored —
+> Step 4), the dashboard email-automations page replaced by a **filtered view of the unified list** (Step 5), and the
+> reconcile + e2e verification green (Step 6). Full spec in [docs/90](90-ADR-automation-migration.md). **Remaining (not
+> automation-module work):** the user commits Steps 4–6; the **email agent** adds the nightly template-provisioning
+> reconcile (docs/91 §7); optional CASL express-consent gate on `Customer.gdprConsent` (docs/42). See the Steps 4–6
+> entry below for the full verify tally.
 >
 > - **Step 1a — legacy delete DONE** (this session): removed `@sparx/email-platform` `DEFAULT_AUTOMATIONS` +
 >   `automationService` (`evaluateTrigger`/`provisionDefaults`/`list`/`get`/`update`) + `schemas/automations` +
@@ -101,15 +104,52 @@ b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` 
 >   - idempotency + locked dunning + assignee-from-rep + **owner fallback** + platform-level internal send w/
 >     interpolated subject + threshold gating; `reconcile-seeds.test.ts` updated for the 2-seed B2B catalog); typecheck
 >   - lint + format clean.
-> - **NEXT — the 13 email seeds + compliance gate + provisioning + dashboard (Steps 4–6):** the email-SENDING seeds
->   (welcome / win-back / abandoned-cart / post-purchase-review / b2b-account-approved / b2b-quote-received /
->   b2b-quote-expiring / b2b-invoice-due / the 4 invoicing dunning / chat-satisfaction) wait on the **send-by-`key`
->   join** — the seeded `email.send_campaign` references a provisioned `BuilderEmail` by `key`, resolved at dispatch
->   via the email agent's `getPublishedByKey` (my `defer.builderEmailKey` branch). Then: the `emailType|category` field
->   on `send_campaign` + the DERIVED CAN-SPAM/CASL gate chain (consent via `Customer.gdprConsent`, unsubscribe-node
->   check, `EmailSettings.physicalAddress`); hook `module.activated` to seed automations (template-provision is the
->   parallel agent's); repoint the dashboard email-automations page to a filtered unified list (Step 5); extend the
->   nightly reconcile (Step 6). Steps 1–2 + early Step 3 committed locally by the user.
+> - **Steps 4–6 — the 13 email seeds + send-by-key + compliance gate + dashboard COMPLETE** (this session). The
+>   email agent's half had landed (`getPublishedByKey`, all 13 `DEFAULT_EMAIL_TEMPLATES` with `key`/`type`/`sources`/
+>   `refs`, `provisionDefaultEmails`, the per-site override join), so the join unblocked. **(a) Send-by-key plumbing:**
+>   `ScheduledSendBody.defer` (`@sparx/email-sends`) gained `builderEmailKey` + `emailType` + optional `subject`/
+>   `preheader`; `email.send_campaign` got a 3rd config variant (`builderEmailKey` + `emailType`) whose **scope is
+>   derived from `emailType`** (transactional sends — welcome, invoice, dunning — are NOT withheld by a marketing
+>   unsubscribe; only `marketing` is), and the do-not-contact skip is now **marketing-only**. **(b) Dispatch
+>   resolution + compliance gate** (`api-rest/email-dispatch.ts`): the `defer` branch resolves the tree by **key**
+>   via `emailService.getPublishedByKey(ctx, key, propertyId)` (per-site override → tenant default) OR by id (the
+>   legacy broadcast path); subject/preheader fall back to the resolved (tenant-editable) template; the **CAN-SPAM
+>   gate** refuses a send whose declared `emailType` is `marketing` but whose tree carries no `unsubscribe_link` node
+>   (`status='failed'`, recorded reason), and an unknown key → `failed` (not published). The consent half
+>   (`Customer.gdprConsent`) is the existing `doNotContact`/suppression posture; a CASL express-consent gate keyed on
+>   the `gdprConsent` JSON shape is the one remaining compliance refinement (its JSON contract is docs/42 territory —
+>   flagged, not guessed). **(c) Quote scanner** added (`resolvers.ts`) — `submitted` quotes inside the 48h window —
+>   for `b2b-quote-expiring`. **(d) The 13 email seeds** across `seeds/{crm,commerce,b2b,invoicing,chat}.ts`, each an
+>   `email.send_campaign(builderEmailKey, emailType)`: welcome (event) + win-back (interval, once-per-entity);
+>   abandoned-cart (interval, +2h delay) + post-purchase-review (event, +3d); b2b-account-approved + b2b-quote-received
+>   (events) + b2b-invoice-due (daily, `daysUntilDue==3`, net-terms-ar) + b2b-quote-expiring (interval); the 4 invoicing
+>   dunning (daily exact-day windows `daysUntilDue==3` / `overdueDays==7/14/30`, user workflows); chat-satisfaction
+>   (interval, +10m). `SYSTEM_AUTOMATIONS` is now **23** (the full docs/90 §3b catalog — the ADR's "29" in §9 is a
+>   miscount; the §3b list enumerates 23). Cadence discipline: **daily** for exact-day windows (fire once), **interval**
+>   (once-per-entity) for sticky windows (win-back ≥90d, cart, quote-expiring, chat-resolved). **(e) Step 3 wiring was
+>   already live** — the automation-worker's `ingest('module.activated')` → `seedSystemAutomations({module})` is
+>   data-driven off `SYSTEM_AUTOMATIONS`, so the new seeds flow through with no change; same for `reconcileSystemSeeds`
+>   (Step 6). The email seeds seed on their PURPOSE module; the `email.send_campaign` action's `module: 'email'` global
+>   gate holds the SEND until email activates (the gated run-step is the docs/90 §4 conversion nudge). **(f) Step 5
+>   dashboard:** the standalone email-automations page (deleted in Step 1) is replaced by a **filtered view of the
+>   unified Automations list** — an "Email" filter chip (`hasEmailAction` = any `send_campaign`/`send_internal`) +
+>   `/automations?focus=email` deep-link from a new **Automations surface card** on the Email overview. **(g) Template
+>   reconcile is the email agent's lane** (docs/91 §7) — `provisionDefaultEmails` fires only on `module.activated(email)`
+>   today; the nightly backfill for tenants that missed activation needs `@sparx/builder` (absent from the lean
+>   automation-worker) so it belongs in api-rest, theirs to add. **Verify:** automation-actions **27/27** (new
+>   `seeds-email.test.ts` 3/3 — welcome enqueues `defer.builderEmailKey` w/ entityRefs + transactional emailType, email
+>   module gate records `gated`, transactional ignores a marketing unsubscribe while marketing honors it); api-rest
+>   email **8/8** (new `email-dispatch-send-by-key.test.ts` — transactional key → sent, marketing-without-unsub →
+>   `failed` compliance, marketing-with-unsub → sent, unknown key → `failed` not-published; per-site **2/2**;
+>   email-data **3/3**); automation-worker **6/6** (reconcile backfill now asserts the full 6-seed B2B catalog +
+>   locked dunning); typecheck (email-sends/automation-actions/api-rest/dashboard) + lint + format all clean.
+> - **NEXT — commit + the open compliance refinement.** Slice K (docs/90) is functionally COMPLETE: legacy deleted
+>   (Step 1), 23 seeds installed per-module + gated (Steps 3–4), send-by-key + CAN-SPAM gate live (Step 4), dashboard
+>   repointed (Step 5), reconcile + e2e green (Step 6). Remaining: (1) **user commits** Steps 4–6 locally (Steps 1–3
+>   already committed); (2) the **email agent** adds the nightly **template-provisioning** reconcile (docs/91 §7) so a
+>   tenant that missed `module.activated(email)` self-heals its 13 defaults; (3) optional — the **CASL express-consent
+>   gate** on `Customer.gdprConsent` once that JSON shape is pinned (docs/42). No automation-module work blocks the
+>   slice.
 >
 > ---
 >

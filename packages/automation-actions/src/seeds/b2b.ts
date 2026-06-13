@@ -55,3 +55,111 @@ export const B2B_NEW_ACCOUNT_TASK: SystemAutomationSpec = {
   locked: false,
   status: 'active',
 };
+
+/** Welcome a B2B account the moment it's created — in the self-serve model account
+ *  creation IS the "approved" moment (docs/90; the resolver triggers this off
+ *  `crm.b2b_account.created`). Addressed to the account's primary contact.
+ *  Transactional. */
+export const B2B_ACCOUNT_APPROVED: SystemAutomationSpec = {
+  name: 'B2B account approved',
+  description: 'Emails the account’s primary contact when a B2B account is approved.',
+  trigger: { kind: 'event', eventType: 'crm.b2b_account.created' },
+  conditions: {
+    logic: 'AND',
+    conditions: [{ field: 'customer.email', operator: 'is_set' }],
+  },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'b2b-account-approved', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+/** Send the quote to the customer when it's submitted for their decision.
+ *  Transactional. */
+export const B2B_QUOTE_RECEIVED: SystemAutomationSpec = {
+  name: 'B2B quote received',
+  description: 'Emails the customer their quote details when a quote is submitted.',
+  trigger: { kind: 'event', eventType: 'crm.quote.submitted' },
+  conditions: {
+    logic: 'AND',
+    conditions: [{ field: 'customer.email', operator: 'is_set' }],
+  },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'b2b-quote-received', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+/** Remind a B2B account three days before a net-terms AR invoice is due. A daily
+ *  scan; the exact-day window (`daysUntilDue == 3`) fires it once. Partitioned to
+ *  the B2B AR substrate (`net-terms-ar`) so it doesn't overlap the standalone
+ *  invoicing reminder. Transactional. */
+export const B2B_INVOICE_DUE_NUDGE: SystemAutomationSpec = {
+  name: 'B2B invoice due reminder',
+  description: 'Emails the account three days before a net-terms invoice is due.',
+  trigger: {
+    kind: 'schedule',
+    schedule: { cadence: 'daily', atMinuteUtc: 0 },
+    predicate: {
+      entity: 'billing_document',
+      where: {
+        logic: 'AND',
+        conditions: [
+          { field: 'invoice.daysUntilDue', operator: 'eq', value: 3 },
+          { field: 'invoice.status', operator: 'eq', value: 'unpaid' },
+          { field: 'invoice.workflowSlug', operator: 'eq', value: 'net-terms-ar' },
+          { field: 'customer.email', operator: 'is_set' },
+        ],
+      },
+    },
+  },
+  conditions: { logic: 'AND', conditions: [] },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'b2b-invoice-due', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+/** Nudge the customer when a submitted quote is within 48h of expiring. A
+ *  daily-grain INTERVAL scan over the `quote` scanner (which returns submitted
+ *  quotes inside the 48h window) — once-per-entity dedupe sends a single reminder.
+ *  Transactional. */
+export const B2B_QUOTE_EXPIRING: SystemAutomationSpec = {
+  name: 'B2B quote expiring',
+  description: 'Emails the customer when a submitted quote is within 48 hours of expiring.',
+  trigger: {
+    kind: 'schedule',
+    schedule: { cadence: 'interval', everyMinutes: 1440 },
+    predicate: {
+      entity: 'quote',
+      where: {
+        logic: 'AND',
+        conditions: [
+          { field: 'quote.status', operator: 'eq', value: 'submitted' },
+          { field: 'customer.email', operator: 'is_set' },
+        ],
+      },
+    },
+  },
+  conditions: { logic: 'AND', conditions: [] },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'b2b-quote-expiring', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};

@@ -1,5 +1,12 @@
 import Link from 'next/link';
-import { Globe, LayoutTemplate, Send, Settings as SettingsIcon, ShieldOff } from 'lucide-react';
+import {
+  Globe,
+  LayoutTemplate,
+  Send,
+  Settings as SettingsIcon,
+  ShieldOff,
+  Workflow,
+} from 'lucide-react';
 import {
   Badge,
   Button,
@@ -30,6 +37,16 @@ const SURFACES = [
     icon: Send,
     title: 'Broadcasts',
     description: 'Compose a segment-targeted campaign, preview it, and schedule or send.',
+  },
+  {
+    // The email-automations view is the unified Automations list narrowed to
+    // rules that send mail (docs/90 Step 5) — welcome, cart-recovery, win-back,
+    // dunning, and the B2B notifications, all editable alongside every other rule.
+    href: '/automations?focus=email',
+    icon: Workflow,
+    title: 'Automations',
+    description:
+      'Welcome, cart-recovery, win-back, dunning, and B2B email flows triggered by events.',
   },
   {
     href: '/email/templates',
