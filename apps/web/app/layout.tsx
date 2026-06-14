@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Inter } from 'next/font/google';
+import { ChunkReloadGuard } from '@sparx/ui';
 import { PostHogProvider } from '../components/posthog-provider';
 import { AttributionCapture } from '../components/attribution-capture';
 import { ConsentBanner } from '../components/consent-banner';
@@ -124,6 +125,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body>
         <PostHogProvider>
+          {/* Silently recover a tab whose chunks were purged by a deploy. No
+              visible "refresh" prompt on marketing pages — that's dashboard-only. */}
+          <ChunkReloadGuard />
           <AttributionCapture />
           <script
             type="application/ld+json"

@@ -35,6 +35,7 @@ import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/buil
 import { loadSiteData } from '@/lib/builder-data';
 import { ConsentManager } from '@/components/consent/consent-manager';
 import { ChatWidget } from '@sparx/chat-widget';
+import { ChunkReloadGuard } from '@sparx/ui';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import { resolveActivePropertySlug, resolveSite, type SiteTheme } from '@/lib/site-context';
@@ -410,6 +411,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ) : null}
       </head>
       <body className="st-body">
+        {/* Silently recover a shopper's tab whose chunks were purged by a deploy.
+            Deliberately no visible "refresh" toast on customer-facing pages. */}
+        <ChunkReloadGuard />
         <PreviewBridge />
         <RevealController />
         <MotionController />
