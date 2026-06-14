@@ -94,7 +94,8 @@ const RAIL: Record<StepKey, { title: string; blurb: string; context?: string }> 
   },
   inventory: {
     title: 'Stock & shipping',
-    blurb: 'Track stock per warehouse, set a reorder point, and give us the shipping weight & size.',
+    blurb:
+      'Track stock per warehouse, set a reorder point, and give us the shipping weight & size.',
     context: 'Skip any of this — you can manage inventory anytime from the product.',
   },
   review: {

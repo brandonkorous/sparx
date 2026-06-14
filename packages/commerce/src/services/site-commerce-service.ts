@@ -136,9 +136,7 @@ export async function updateSettings(
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
       actorType: ctx.userId ? 'user' : 'system',
-      action: before
-        ? 'commerce.site.settings.updated'
-        : 'commerce.site.settings.created',
+      action: before ? 'commerce.site.settings.updated' : 'commerce.site.settings.created',
       entityType: 'CommerceSiteSettings',
       entityId: propertyId,
       diff: { before: before as Record<string, unknown> | null, after: input },

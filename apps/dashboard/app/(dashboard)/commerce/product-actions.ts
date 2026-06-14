@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { api } from '@/lib/api-rest-client';
+import { listProperties } from '@/lib/sites';
 import type { ActionResult } from './_action-helpers';
 import { restAction } from './_rest-action';
 import type {
@@ -10,6 +11,21 @@ import type {
   BulkPricePreview,
   PriceAdjustment,
 } from './products/_lib/bulk-price-types';
+
+export interface SiteOption {
+  id: string;
+  name: string;
+  isPrimary: boolean;
+}
+
+// The tenant's web properties for the product wizard's visibility control
+// (docs/49 §3 Model B: empty propertyIds = visible on all sites).
+export async function listSitesAction(): Promise<ActionResult<SiteOption[]>> {
+  return restAction(async () => {
+    const props = await listProperties();
+    return props.map((p) => ({ id: p.id, name: p.name, isPrimary: p.isPrimary }));
+  });
+}
 
 export async function createProductAction(
   input: unknown

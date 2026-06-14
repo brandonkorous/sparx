@@ -247,7 +247,9 @@ async function main(): Promise<void> {
       DATABASE_URL: migrationUrl,
     });
   } else {
-    console.log('[migrate] RUN_BACKFILL!=true, skipping Builder class + sf-→st- + Property.name backfills.');
+    console.log(
+      '[migrate] RUN_BACKFILL!=true, skipping Builder class + sf-→st- + Property.name backfills.'
+    );
   }
 
   console.log('[migrate] done.');
