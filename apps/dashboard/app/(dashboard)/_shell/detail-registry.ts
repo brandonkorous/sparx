@@ -29,6 +29,7 @@ export const CREATE_SENTINEL = 'new';
 // open an empty drawer. Kept in sync with `createComponents` by hand (the slot
 // is server-only; this set is client-safe).
 const CREATE_VIEW_TYPES = new Set<string>([
+  'category',
   'collection',
   // Product creation is the multi-step WizardFrame flow (docs/86). It opts INTO
   // the drawer/modal overlay so the user's `defaultDetailView` preference picks

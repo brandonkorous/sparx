@@ -8,6 +8,16 @@
 //   • ALTER TABLE ... FORCE  ROW LEVEL SECURITY    (per CLAUDE.md hand-edit rule)
 //   • CREATE POLICY ... ON ...                     (tenant_isolation policy)
 //
+// It ALSO asserts that the EFFECTIVE (last-defined) policy on every table reads
+// its tenant GUC through the missing-safe `current_tenant_id()` helper — never a
+// raw `current_setting('app.<x>')`, which throws `unrecognized configuration
+// parameter` (SQLSTATE 42704) when the GUC is unset (e.g. during FK-validation
+// scans run by the non-superuser `sparx_owner`). This is the bug class fixed by
+// 20260801000000_fix_b2b_import_rls_guc and 20260821120000_fix_dropship_inventory
+// _scheduling_rls_guc. Because a later migration can drop+recreate a policy in the
+// corrected form, the check is last-definition-wins: a historical raw policy that
+// a later migration supersedes is fine.
+//
 // Junction tables (no `tenant_id` column, e.g. commerce_category_products)
 // are skipped — tenant scoping rides through their FK parents via
 // ON DELETE CASCADE.
@@ -97,6 +107,19 @@ interface AuditFinding {
   missing: string[];
 }
 
+// The unsafe form: a raw `current_setting('app.<name>')` with NO missing_ok
+// second arg — it THROWS (42704) on an unset GUC instead of returning NULL.
+// The safe forms never match: the `current_tenant_id()` / `current_user_id()`
+// helpers don't contain a literal `current_setting('app.…')`, and the explicit
+// `current_setting('app.tenant_id', true)` has `, true` before the close paren.
+const UNSAFE_GUC_RE = /current_setting\(\s*'app\.[a-z_]+'\s*\)/i;
+
+// The effective (last-defined) policy form per table.
+interface PolicyForm {
+  migration: string;
+  unsafe: boolean;
+}
+
 function main(): void {
   const migrations = fs
     .readdirSync(MIGRATIONS_DIR)
@@ -105,6 +128,8 @@ function main(): void {
 
   const tables: TableDef[] = [];
   const rlsByTable = new Map<string, RlsState>();
+  // Last-definition-wins: the form of the most recent CREATE POLICY per table.
+  const policyForm = new Map<string, PolicyForm>();
 
   for (const m of migrations) {
     const sqlPath = path.join(MIGRATIONS_DIR, m, 'migration.sql');
@@ -141,13 +166,20 @@ function main(): void {
       state.hasForce = true;
       rlsByTable.set(t, state);
     }
-    const policyRe = /CREATE POLICY\s+"?[a-z_][a-z0-9_]*"?\s+ON\s+"?([a-z_][a-z0-9_]*)"?/gi;
+    // Capture the full statement body (to the terminating `;`) so we can
+    // inspect its USING / WITH CHECK expression for the unsafe GUC form.
+    const policyRe =
+      /CREATE POLICY\s+"?[a-z_][a-z0-9_]*"?\s+ON\s+"?([a-z_][a-z0-9_]*)"?([\s\S]*?);/gi;
     let pm: RegExpExecArray | null;
     while ((pm = policyRe.exec(sql)) !== null) {
       const t = pm[1]!;
+      const body = pm[2] ?? '';
       const state = rlsByTable.get(t) ?? { hasEnable: false, hasForce: false, hasPolicy: false };
       state.hasPolicy = true;
       rlsByTable.set(t, state);
+      // Last write wins: a later migration recreating the policy in the safe
+      // form clears an earlier raw one.
+      policyForm.set(t, { migration: m, unsafe: UNSAFE_GUC_RE.test(body) });
     }
   }
 
@@ -180,6 +212,12 @@ function main(): void {
     }
   }
 
+  // Effective-policy form check: flag any table whose last-defined policy still
+  // reads its tenant GUC through a raw `current_setting('app.<x>')`.
+  const unsafeGuc = [...policyForm.entries()]
+    .filter(([, form]) => form.unsafe)
+    .map(([table, form]) => ({ table, migration: form.migration }));
+
   const totalTenantTables = [...tablesByName.values()].filter(
     (t) => t.hasTenantId && !SHARED_REFERENCE_TABLES.has(t.name)
   ).length;
@@ -188,19 +226,39 @@ function main(): void {
   console.log(`  ENABLE-only by design: ${ENABLE_ONLY_TABLES.size}`);
   console.log(`  Shared reference (no RLS): ${SHARED_REFERENCE_TABLES.size}`);
 
-  if (findings.length === 0) {
-    console.log('\nOK — every tenant-scoped table has the required RLS clauses.');
+  if (findings.length === 0 && unsafeGuc.length === 0) {
+    console.log(
+      '\nOK — every tenant-scoped table has the required RLS clauses, and every policy reads its GUC via current_tenant_id().'
+    );
     process.exit(0);
   }
 
-  console.error(`\nFAIL — ${findings.length} table(s) missing RLS clauses:\n`);
-  for (const f of findings) {
-    console.error(`  ${f.table}  (introduced in ${f.migration})`);
-    for (const m of f.missing) console.error(`    - missing: ${m}`);
+  if (findings.length > 0) {
+    console.error(`\nFAIL — ${findings.length} table(s) missing RLS clauses:\n`);
+    for (const f of findings) {
+      console.error(`  ${f.table}  (introduced in ${f.migration})`);
+      for (const m of f.missing) console.error(`    - missing: ${m}`);
+    }
+    console.error(
+      '\nFix: hand-edit the relevant migration SQL to add the missing clauses (Prisma will not generate them).'
+    );
   }
-  console.error(
-    '\nFix: hand-edit the relevant migration SQL to add the missing clauses (Prisma will not generate them).'
-  );
+
+  if (unsafeGuc.length > 0) {
+    console.error(
+      `\nFAIL — ${unsafeGuc.length} table(s) whose effective policy uses a raw current_setting('app.…') GUC:\n`
+    );
+    for (const f of unsafeGuc) {
+      console.error(`  ${f.table}  (last defined in ${f.migration})`);
+    }
+    console.error(
+      "\nFix: add a later migration that DROPs + recreates each policy with the\n" +
+        "missing-safe helper — USING (tenant_id = current_tenant_id()) — which\n" +
+        "returns NULL on an unset GUC instead of throwing 42704 under FORCE RLS.\n" +
+        '(See 20260801000000_fix_b2b_import_rls_guc for the canonical pattern.)'
+    );
+  }
+
   process.exit(1);
 }
 

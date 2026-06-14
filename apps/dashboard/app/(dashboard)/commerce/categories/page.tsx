@@ -15,7 +15,8 @@ import {
 
 import { api } from '@/lib/api-rest-client';
 
-import { CategoriesEditor, NewCategoryForm } from './_components/categories-editor';
+import { EntityCreateButton } from '../../_components/entity-create-button';
+import { CategoriesEditor } from './_components/categories-editor';
 
 interface CategoryTreeNode {
   id: string;
@@ -71,6 +72,16 @@ export default async function CategoriesPage() {
               path (<code>/category/&lt;handle&gt;</code>).
             </>
           }
+          actions={
+            <EntityCreateButton
+              entityType="category"
+              newHref="/commerce/categories/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
+          }
         />
 
         <Card>
@@ -89,22 +100,20 @@ export default async function CategoriesPage() {
                 icon={<FolderTree className="h-5 w-5" />}
                 title="No categories yet"
                 description="Start with a few top-level categories that match how shoppers browse your site."
+                action={
+                  <EntityCreateButton
+                    entityType="category"
+                    newHref="/commerce/categories/new"
+                    color="module"
+                    leftIcon={<Plus className="h-4 w-4" />}
+                  >
+                    New
+                  </EntityCreateButton>
+                }
               />
             ) : (
               <CategoriesEditor tree={tree} />
             )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <Stack direction="row" align="center" gap={2}>
-              <Plus className="h-4 w-4 text-[var(--module-active)]" />
-              <Heading level={3}>New category</Heading>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            <NewCategoryForm tree={tree} />
           </CardContent>
         </Card>
       </Stack>

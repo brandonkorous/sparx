@@ -17,7 +17,6 @@ import {
 } from '@sparx/ui';
 
 import {
-  createCategoryAction,
   deleteCategoryAction,
   reparentCategoryAction,
   updateCategoryAction,
@@ -55,117 +54,6 @@ export function CategoriesEditor({ tree }: TreeProps) {
         <TreeNode key={node.id} node={node} all={flat} />
       ))}
     </Stack>
-  );
-}
-
-interface NewFormProps {
-  tree: CategoryNode[];
-}
-
-export function NewCategoryForm({ tree }: NewFormProps) {
-  const router = useRouter();
-  const [pending, startTransition] = React.useTransition();
-  const [error, setError] = React.useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
-
-  const flat = React.useMemo(() => flattenTree(tree), [tree]);
-
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    setFieldErrors({});
-
-    const form = new FormData(e.currentTarget);
-    const name = stringField(form.get('name')).trim();
-    const handle = stringField(form.get('handle')).trim();
-    const description = stringField(form.get('description')).trim();
-    const parentId = stringField(form.get('parentId'));
-    const featured = form.get('featured') === 'on';
-
-    if (!name) {
-      setFieldErrors({ name: 'Name is required.' });
-      return;
-    }
-
-    const payload = {
-      name,
-      ...(handle ? { handle } : {}),
-      ...(description ? { description } : {}),
-      ...(parentId ? { parentId } : {}),
-      featured,
-    };
-
-    startTransition(async () => {
-      const result = await createCategoryAction(payload);
-      if (!result.ok) {
-        if (result.error.code === 'VALIDATION_ERROR' && result.error.details?.length) {
-          const fe: Record<string, string> = {};
-          for (const d of result.error.details) fe[d.field] = d.message;
-          setFieldErrors(fe);
-        }
-        setError(result.error.message);
-        return;
-      }
-      (e.target as HTMLFormElement).reset();
-      router.refresh();
-    });
-  }
-
-  return (
-    <form onSubmit={onSubmit} noValidate>
-      <Stack gap={3}>
-        <Stack direction="row" gap={3}>
-          <Stack gap={1} className="flex-1">
-            <Label htmlFor="new-name">Name</Label>
-            <Input id="new-name" name="name" required placeholder="Engine parts" />
-            {fieldErrors.name && (
-              <Text size="xs" variant="danger">
-                {fieldErrors.name}
-              </Text>
-            )}
-          </Stack>
-          <Stack gap={1} className="flex-1">
-            <Label htmlFor="new-handle">Handle (optional)</Label>
-            <Input id="new-handle" name="handle" placeholder="auto-derived from name" />
-            {fieldErrors.handle && (
-              <Text size="xs" variant="danger">
-                {fieldErrors.handle}
-              </Text>
-            )}
-          </Stack>
-        </Stack>
-        <Stack gap={1}>
-          <Label htmlFor="new-parent">Parent</Label>
-          <NativeSelect id="new-parent" name="parentId" defaultValue="">
-            <option value="">— Top level —</option>
-            {flat.map((n) => (
-              <option key={n.id} value={n.id}>
-                {indent(n.depth)}
-                {n.name}
-              </option>
-            ))}
-          </NativeSelect>
-        </Stack>
-        <Stack gap={1}>
-          <Label htmlFor="new-desc">Description</Label>
-          <Textarea id="new-desc" name="description" rows={2} />
-        </Stack>
-        <Stack direction="row" align="center" gap={2}>
-          <input type="checkbox" id="new-featured" name="featured" className="h-4 w-4" />
-          <Label htmlFor="new-featured">Featured</Label>
-        </Stack>
-        {error && (
-          <Text size="sm" variant="danger" role="alert" aria-live="polite">
-            {error}
-          </Text>
-        )}
-        <Stack direction="row" justify="end">
-          <Button type="submit" color="module" disabled={pending} loading={pending}>
-            Create category
-          </Button>
-        </Stack>
-      </Stack>
-    </form>
   );
 }
 

@@ -10,6 +10,8 @@ import { loadPipelineOptions } from '../crm/customers/new/pipeline-options';
 import { B2bAccountWizard } from '../b2b/accounts/new/b2b-account-wizard';
 import { ContentEntryWizard } from '../cms/content/new/content-entry-wizard';
 import { loadAuthorOptions } from '../cms/content/new/author-options';
+import { CategoryCreateForm } from '../commerce/categories/_components/category-create-form';
+import { loadCategoryParents } from '../commerce/categories/_components/category-parent-options';
 import { CollectionCreateForm } from '../commerce/collections/_components/collection-create-form';
 import { WarehouseCreateForm } from '../commerce/warehouses/_components/warehouse-create-form';
 import { PriceListCreateForm } from '../commerce/pricing/_components/price-list-create-form';
@@ -117,6 +119,7 @@ const detailModules: Record<string, SparxModule> = {
   segment: 'crm',
   // Commerce
   product: 'commerce',
+  category: 'commerce',
   collection: 'commerce',
   warehouse: 'commerce',
   review: 'commerce',
@@ -175,6 +178,14 @@ async function CustomerCreateOverlay() {
   );
 }
 
+// Category create needs the existing tree to seed its parent picker, so a thin
+// server wrapper loads + flattens it (the documented pattern for create
+// overlays needing server data).
+async function CategoryCreateOverlay() {
+  const parents = await loadCategoryParents();
+  return <CategoryCreateForm surface="overlay" parents={parents} />;
+}
+
 async function ContentEntryCreateOverlay() {
   let types: ContentTypeSummary[] = [];
   try {
@@ -187,6 +198,7 @@ async function ContentEntryCreateOverlay() {
 }
 
 const createComponents: Record<string, React.ComponentType> = {
+  category: CategoryCreateOverlay,
   collection: () => <CollectionCreateForm surface="overlay" />,
   // Product create is the multi-step WizardFrame, rendered as its `inline`
   // variant so the surrounding drawer/modal chrome owns the overlay shell. It's
