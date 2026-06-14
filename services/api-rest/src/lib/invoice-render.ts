@@ -41,6 +41,7 @@ export async function resolveInvoiceBrand(ctx: ServiceContext): Promise<BillingR
     ),
   ]);
   // The business/legal name of the issuing tenant — never the site name.
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `||` is intended: an empty trimmed name must fall through to the next source, which `??` would not do.
   const businessName = tenantBrand?.businessName?.trim() || tenant?.name?.trim() || undefined;
   const nameField = businessName ? { businessName } : {};
   if (!brand) return nameField;

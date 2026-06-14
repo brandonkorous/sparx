@@ -71,12 +71,13 @@ interface WarehouseOption {
   name: string;
 }
 
-type StepKey = 'basics' | 'pricing' | 'inventory' | 'review';
+type StepKey = 'basics' | 'pricing' | 'inventory' | 'organization' | 'review';
 
 const ALL_STEPS: Record<StepKey, WizardStepDef> = {
   basics: { key: 'basics', label: 'Basics', sublabel: 'Name & type' },
   pricing: { key: 'pricing', label: 'Pricing', sublabel: 'Price & tax' },
   inventory: { key: 'inventory', label: 'Inventory', sublabel: 'Stock & shipping' },
+  organization: { key: 'organization', label: 'Organize', sublabel: 'Collections & sites' },
   review: { key: 'review', label: 'Review', sublabel: 'Confirm & publish' },
 };
 
