@@ -132,8 +132,8 @@ export function CategoryCreateForm({ surface, parents }: CategoryCreateFormProps
           <CardHeader>
             <Heading level={3}>Basics</Heading>
             <CardDescription>
-              Storefront URLs follow the category&apos;s path (
-              <code>/category/&lt;handle&gt;</code>).
+              Storefront URLs follow the category&apos;s path (<code>/category/&lt;handle&gt;</code>
+              ).
             </CardDescription>
           </CardHeader>
           <CardContent>
