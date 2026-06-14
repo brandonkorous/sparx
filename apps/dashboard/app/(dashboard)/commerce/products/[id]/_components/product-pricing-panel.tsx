@@ -158,10 +158,12 @@ export function ProductPricingPanel({
                     <TableCell className="text-right tabular-nums">
                       {money(v.priceCents, v.currency)}
                     </TableCell>
-                    <TableCell className="text-right tabular-nums text-[var(--color-text-muted)]">
-                      {v.compareAtPriceCents !== null ? money(v.compareAtPriceCents, v.currency) : '—'}
+                    <TableCell className="text-right text-[var(--color-text-muted)] tabular-nums">
+                      {v.compareAtPriceCents !== null
+                        ? money(v.compareAtPriceCents, v.currency)
+                        : '—'}
                     </TableCell>
-                    <TableCell className="text-right tabular-nums text-[var(--color-text-muted)]">
+                    <TableCell className="text-right text-[var(--color-text-muted)] tabular-nums">
                       {v.costCents !== null ? money(v.costCents, v.currency) : '—'}
                     </TableCell>
                     <TableCell className="text-right">
@@ -197,7 +199,8 @@ export function ProductPricingPanel({
           </Table>
 
           <Text size="xs" variant="muted">
-            Price lists, bulk-quantity tiers, and B2B contract pricing are coming in a later release.
+            Price lists, bulk-quantity tiers, and B2B contract pricing are coming in a later
+            release.
           </Text>
         </Stack>
       </CardContent>

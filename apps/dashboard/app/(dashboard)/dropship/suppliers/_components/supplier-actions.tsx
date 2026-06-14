@@ -81,7 +81,8 @@ export function SupplierActions({ supplier, sites, vendors }: Props) {
         // the catalog already updated. Already-imported products are refreshed
         // individually via Re-sync on Dropship → Products.
         toast.success('Catalog refresh queued', {
-          description: 'Fetching the latest products from this supplier — refresh shortly to see them.',
+          description:
+            'Fetching the latest products from this supplier — refresh shortly to see them.',
         });
         router.refresh();
       }

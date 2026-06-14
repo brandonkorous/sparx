@@ -221,34 +221,34 @@ export async function ProductDetailContent({ id }: Props) {
     images,
     supplierName,
   ] = await Promise.all([
-      api.get<OptionRow[]>(`/v1/commerce/products/${id}/variants/options`),
-      api.get<VariantRow[]>(`/v1/commerce/products/${id}/variants?include_archived=true`),
-      api.get<ProductFitmentRow[]>(`/v1/commerce/products/${id}/fitment`),
-      api.get<FitmentDomainRow[]>('/v1/commerce/fitment/domains'),
-      api.get<WarehouseRow[]>('/v1/commerce/warehouses'),
-      // Multi-site (docs/49 §3): the "Visible on sites" control. Defensive — a
-      // failed read just hides the control (single-site behavior).
-      listProperties().catch(() => [] as Property[]),
-      // Catalog markup rules for the per-variant "Price by rule" control (docs/48).
-      api.get<MarkupRuleSummary[]>('/v1/markup-rules').catch(() => [] as MarkupRuleSummary[]),
-      // Tenant slug for the Media tab's public-media redirect URLs (works for
-      // both stored uploads and hot-linked dropship images).
-      api.get<{ slug: string }>('/v1/tenant'),
-      // Product images — drives the Media tab's count badge and seeds the gallery
-      // so it paints without a client round-trip.
-      api
-        .get<ProductImageRow[]>(`/v1/commerce/products/${id}/images`)
-        .catch(() => [] as ProductImageRow[]),
-      // Dropship supplier name for the Pricing tab's "Priced by" label. Defensive
-      // — a non-dropship product, a disabled dropship module, or a deleted
-      // supplier all degrade to the generic "Vendor" label.
-      dropshipSupplierId
-        ? api
-            .get<{ name: string }>(`/v1/dropship/suppliers/${dropshipSupplierId}`)
-            .then((s) => s.name)
-            .catch(() => null)
-        : Promise.resolve(null),
-    ]);
+    api.get<OptionRow[]>(`/v1/commerce/products/${id}/variants/options`),
+    api.get<VariantRow[]>(`/v1/commerce/products/${id}/variants?include_archived=true`),
+    api.get<ProductFitmentRow[]>(`/v1/commerce/products/${id}/fitment`),
+    api.get<FitmentDomainRow[]>('/v1/commerce/fitment/domains'),
+    api.get<WarehouseRow[]>('/v1/commerce/warehouses'),
+    // Multi-site (docs/49 §3): the "Visible on sites" control. Defensive — a
+    // failed read just hides the control (single-site behavior).
+    listProperties().catch(() => [] as Property[]),
+    // Catalog markup rules for the per-variant "Price by rule" control (docs/48).
+    api.get<MarkupRuleSummary[]>('/v1/markup-rules').catch(() => [] as MarkupRuleSummary[]),
+    // Tenant slug for the Media tab's public-media redirect URLs (works for
+    // both stored uploads and hot-linked dropship images).
+    api.get<{ slug: string }>('/v1/tenant'),
+    // Product images — drives the Media tab's count badge and seeds the gallery
+    // so it paints without a client round-trip.
+    api
+      .get<ProductImageRow[]>(`/v1/commerce/products/${id}/images`)
+      .catch(() => [] as ProductImageRow[]),
+    // Dropship supplier name for the Pricing tab's "Priced by" label. Defensive
+    // — a non-dropship product, a disabled dropship module, or a deleted
+    // supplier all degrade to the generic "Vendor" label.
+    dropshipSupplierId
+      ? api
+          .get<{ name: string }>(`/v1/dropship/suppliers/${dropshipSupplierId}`)
+          .then((s) => s.name)
+          .catch(() => null)
+      : Promise.resolve(null),
+  ]);
 
   // Only catalog-applying, active rules can price a variant inline.
   const markupRules = markupRulesRaw

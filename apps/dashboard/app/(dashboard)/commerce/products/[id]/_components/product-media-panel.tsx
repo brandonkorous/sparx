@@ -182,7 +182,12 @@ export function ProductMediaPanel({
       </CardHeader>
       <CardContent>
         {loading ? (
-          <Stack direction="row" align="center" gap={2} className="py-8 text-[var(--color-text-muted)]">
+          <Stack
+            direction="row"
+            align="center"
+            gap={2}
+            className="py-8 text-[var(--color-text-muted)]"
+          >
             <Spinner className="h-4 w-4" /> Loading photos…
           </Stack>
         ) : (
