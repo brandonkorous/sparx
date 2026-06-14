@@ -137,8 +137,8 @@ export async function updateSettings(
       actorId: ctx.userId ?? null,
       actorType: ctx.userId ? 'user' : 'system',
       action: before
-        ? 'commerce.storefront.settings.updated'
-        : 'commerce.storefront.settings.created',
+        ? 'commerce.site.settings.updated'
+        : 'commerce.site.settings.created',
       entityType: 'CommerceSiteSettings',
       entityId: propertyId,
       diff: { before: before as Record<string, unknown> | null, after: input },
@@ -196,7 +196,7 @@ export async function updateTheme(
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
       actorType: ctx.userId ? 'user' : 'system',
-      action: 'commerce.storefront.theme.updated',
+      action: 'commerce.site.theme.updated',
       entityType: 'CommerceSiteTheme',
       entityId: propertyId,
       diff: { after: cleanTokens },

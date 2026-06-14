@@ -22,6 +22,8 @@ on:
       - 'packages/db/sql/**'
       - 'packages/db/scripts/run-migrations.ts'
       - 'packages/db/scripts/backfill-builder-class.ts'
+      - 'packages/db/scripts/backfill-sf-to-st.ts'
+      - 'packages/db/scripts/backfill-property-name.ts'
       - 'packages/db/Dockerfile'
       - 'k8s/sparx-prod/db-migrate-job.yaml'
       - '.github/workflows/db-migrate.yml'
@@ -34,7 +36,7 @@ on:
         type: choice
         options: ['false', 'true']
       run_backfill:
-        description: 'Run the Builder box→class backfill (docs/61) — rewrites persisted page/layout/component trees to the class-only model. Idempotent.'
+        description: 'Run the backfills — box→class (docs/61), sf-→st- CSS-prefix normalization (store→site, docs/34 §5), and Property.name fill + brand_override.businessName strip (tenant↔site, docs/49). All idempotent.'
         required: false
         default: 'false'
         type: choice

@@ -192,7 +192,7 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     colorVar: 'var(--module-chat)',
     long: 'A themed chat widget on every page, an AI first responder that answers product and policy questions from your own catalog, and a staff inbox for everything it escalates. Leads from sparx.market route here too.',
     feats: [
-      'Storefront widget in your theme',
+      'Site widget in your theme',
       'AI answers from your own catalog',
       'Staff inbox — assign, reply, resolve',
       'Web-push + email notifications',

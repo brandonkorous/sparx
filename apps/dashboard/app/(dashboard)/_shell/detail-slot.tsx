@@ -3,7 +3,6 @@ import * as React from 'react';
 import { ModuleProvider, type SparxModule } from '@sparx/ui';
 import { CREATE_SENTINEL, parseDetailToken } from './detail-registry';
 import { CollectionCreateForm } from '../commerce/collections/_components/collection-create-form';
-import { ProductCreateForm } from '../commerce/products/_components/product-create-form';
 import { WarehouseCreateForm } from '../commerce/warehouses/_components/warehouse-create-form';
 import { PriceListCreateForm } from '../commerce/pricing/_components/price-list-create-form';
 import { CustomerCreateForm } from '../crm/customers/_components/customer-create-form';
@@ -145,7 +144,8 @@ const detailModules: Record<string, SparxModule> = {
 // all self-contained, so they register directly.
 const createComponents: Record<string, React.ComponentType> = {
   collection: () => <CollectionCreateForm surface="overlay" />,
-  product: () => <ProductCreateForm surface="overlay" />,
+  // product create is the full-screen WizardFrame at /commerce/products/new
+  // (see detail-registry CREATE_VIEW_TYPES) — no drawer/modal overlay form.
   warehouse: () => <WarehouseCreateForm surface="overlay" />,
   'price-list': () => <PriceListCreateForm surface="overlay" />,
   customer: () => <CustomerCreateForm surface="overlay" />,

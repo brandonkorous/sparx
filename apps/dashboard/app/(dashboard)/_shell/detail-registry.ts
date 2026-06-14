@@ -30,7 +30,9 @@ export const CREATE_SENTINEL = 'new';
 // is server-only; this set is client-safe).
 const CREATE_VIEW_TYPES = new Set<string>([
   'collection',
-  'product',
+  // 'product' intentionally omitted: product creation is the full-screen
+  // WizardFrame flow at /commerce/products/new, not a drawer/modal overlay.
+  // Without an entry here, EntityCreateButton falls back to that full-page route.
   'warehouse',
   'price-list',
   'customer',

@@ -226,8 +226,28 @@ async function main(): Promise<void> {
       ...baseEnv,
       DATABASE_URL: migrationUrl,
     });
+    // Then normalize the CSS prefix on those class strings: `sf-` → `st-`
+    // (store→site rename, docs/34 §5). Runs AFTER box→class so it catches any
+    // `sf-` the class backfill just emitted; idempotent, so a tree already on
+    // `st-` passes through untouched.
+    console.log('[migrate] running Builder sf-→st- prefix backfill…');
+    await run('pnpm', ['exec', 'tsx', 'scripts/backfill-sf-to-st.ts', '--apply'], {
+      ...baseEnv,
+      DATABASE_URL: migrationUrl,
+    });
+    // Independently, make every site's customer-facing name live on
+    // `Property.name` (tenant↔site clarity, docs/49): fill a placeholder/'Default'
+    // name from brand_override.businessName → tenant_brands.business_name, and
+    // strip the deprecated `brand_override.businessName` key. Never clobbers a
+    // real name; idempotent. Order vs. the builder backfills is irrelevant — it
+    // touches `properties`, not builder trees.
+    console.log('[migrate] running Property.name backfill…');
+    await run('pnpm', ['exec', 'tsx', 'scripts/backfill-property-name.ts', '--apply'], {
+      ...baseEnv,
+      DATABASE_URL: migrationUrl,
+    });
   } else {
-    console.log('[migrate] RUN_BACKFILL!=true, skipping Builder class backfill.');
+    console.log('[migrate] RUN_BACKFILL!=true, skipping Builder class + sf-→st- + Property.name backfills.');
   }
 
   console.log('[migrate] done.');

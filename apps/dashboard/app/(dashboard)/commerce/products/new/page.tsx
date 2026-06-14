@@ -1,23 +1,11 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
+import { ProductWizard } from '../_components/product-wizard';
 
-import { ProductCreateForm } from '../_components/product-create-form';
-
-// Full-page surface for creating a product. The form body lives in the
-// surface-aware `ProductCreateForm` (§13.1) so the SAME component renders here
-// (`surface="page"`) and inside the `@detail` drawer/modal overlay
-// (`surface="overlay"`). This route is what `fullPage` / `newTab` detail-view
-// preferences, deep links, and the overlay's "maximize" button resolve to.
+// Full-page surface for creating a product. The comprehensive WizardFrame flow
+// (docs/68, docs/86) owns the viewport as a full-screen overlay — it creates a
+// draft on the first step and walks the merchant through its relations. The
+// "New product" affordance routes here (the entity has no overlay create form,
+// so EntityCreateButton falls back to this route).
 
 export default function NewProductPage() {
-  return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          title="New product"
-          description="Create the catalog row first; add variants, options, media, pricing, and fitment from the product detail tabs. Anything not set here can be edited later — the only required field is the title."
-        />
-        <ProductCreateForm surface="page" />
-      </Stack>
-    </Container>
-  );
+  return <ProductWizard />;
 }
