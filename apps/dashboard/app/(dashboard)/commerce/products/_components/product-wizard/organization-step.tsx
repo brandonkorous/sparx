@@ -140,22 +140,27 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
               <Text size="sm" weight="medium">
                 Visible on
               </Text>
-              <label className="flex items-center gap-2">
-                <Checkbox checked={allSites} onCheckedChange={(v) => setAllSites(v === true)} />
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  checked={allSites}
+                  onCheckedChange={(v) => setAllSites(v === true)}
+                  aria-label="All sites"
+                />
                 <span className="text-sm">All sites</span>
-              </label>
+              </div>
               {!allSites &&
                 sites.map((s) => (
-                  <label key={s.id} className="flex items-center gap-2 pl-6">
+                  <div key={s.id} className="flex items-center gap-2 pl-6">
                     <Checkbox
                       checked={siteIds.has(s.id)}
                       onCheckedChange={() => setSiteIds((set) => toggle(set, s.id))}
+                      aria-label={s.name}
                     />
                     <span className="text-sm">
                       {s.name}
                       {s.isPrimary ? ' · primary' : ''}
                     </span>
-                  </label>
+                  </div>
                 ))}
             </div>
           )}
@@ -194,13 +199,17 @@ function PickerSection({
       ) : (
         <div className="grid max-h-56 grid-cols-1 gap-1.5 overflow-y-auto sm:grid-cols-2">
           {items.map((it) => (
-            <label
+            <div
               key={it.id}
               className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-[var(--color-bg-subtle)]"
             >
-              <Checkbox checked={selected.has(it.id)} onCheckedChange={() => onToggle(it.id)} />
+              <Checkbox
+                checked={selected.has(it.id)}
+                onCheckedChange={() => onToggle(it.id)}
+                aria-label={it.label}
+              />
               <span className="truncate text-sm">{it.label}</span>
-            </label>
+            </div>
           ))}
         </div>
       )}
