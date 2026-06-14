@@ -14,7 +14,7 @@ Adding one means an engineer touches five places and ships a deploy:
 1. **Zod schema** — the config contract ([sections/hero.ts](../packages/sitebuilder-schemas/src/sections/hero.ts) `HeroConfig`)
 2. **`SectionField[]`** — the editor form spec (`heroFields`)
 3. **Register** in `SECTION_REGISTRY` ([section-registry.ts](../packages/sitebuilder-schemas/src/section-registry.ts))
-4. **React renderer** in [apps/site/components/sections/](../apps/site/components/sections/)
+4. **React renderer** in [apps/site/components/sections/](../apps/site/components/sections)
 5. **`switch` case** in [section-renderer.tsx](../apps/site/components/section-renderer.tsx)
 
 This document specifies how we let **tenants and agencies add their own components without a deploy** — and

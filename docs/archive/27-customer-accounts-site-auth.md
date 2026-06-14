@@ -10,7 +10,7 @@
 
 This document specifies **Layer 2 authentication** — accounts for the _shoppers_ who buy
 from a tenant's site. It is deliberately separate from **Layer 1** (tenant staff
-auth, [docs/16-auth-security.md](16-auth-security.md)), which uses Better Auth and lives in
+auth, [docs/16-auth-security.md](../16-auth-security.md)), which uses Better Auth and lives in
 `packages/auth`.
 
 A shopper who registers at `acme.sparx.zone` is a customer of **Acme**, not of Sparx. They
@@ -35,7 +35,7 @@ tenant's store. The same person can hold a separate account at `bravo.sparx.zone
 - Social / OAuth login (Google, Apple). The schema leaves room (see §4) but no providers ship.
 - Customer MFA / passkeys.
 - B2B buyer accounts with approval chains, net-terms gating, multi-seat org buyers — these are
-  Layer 2½ and belong to the B2B module ([docs/10-b2b-wholesale-prd.md](10-b2b-wholesale-prd.md)).
+  Layer 2½ and belong to the B2B module ([docs/10-b2b-wholesale-prd.md](../10-b2b-wholesale-prd.md)).
 - Wishlist persistence tied to the account (the table exists; wiring it to the account UI is a
   follow-up slice, not a blocker).
 
@@ -49,7 +49,7 @@ instance." We are **not** doing that, and the reason is structural, not stylisti
 Better Auth keys credential sign-in on a **globally unique email**. Staff auth leans on this
 hard: `users.email` carries a global `@unique`, and `signUpMerchant` provisions a fresh tenant
 per registration so the compound `(tenantId, email)` never actually mattered
-([docs/16 §1](16-auth-security.md), `packages/db/prisma/schema/03-auth.prisma`). Sign-in does
+([docs/16 §1](../16-auth-security.md), `packages/db/prisma/schema/03-auth.prisma`). Sign-in does
 `findOne({ email })` with no tenant in the predicate.
 
 For shoppers that assumption is **wrong**: the same email must be able to register at two
@@ -63,7 +63,7 @@ are worse than the alternative.
 
 **For a shopper, the tenant is known _before_ authentication.** It is the site's
 hostname (`acme.sparx.zone`, or `?tenant=acme` in dev), resolved at the edge in
-[apps/site/middleware.ts](../apps/site/middleware.ts) and carried to `api-rest` as
+[apps/site/middleware.ts](../../apps/site/middleware.ts) and carried to `api-rest` as
 the `?tenant=<slug>` param the public commerce surface already uses. Staff sign-in can't do
 this — a staff member types only an email, and the tenant is _discovered_ from their user row.
 A shopper's tenant is ambient context.
@@ -122,7 +122,7 @@ Two cookies coexist on the site origin, never colliding with staff auth (which l
 | `sparx_customer_session` | this doc | authenticated shopper session         | httpOnly, SameSite=Lax, Secure, Path=/ |
 
 The proxy already relays `Set-Cookie` and `cookie` in both directions
-([apps/site/app/api/sparx/[...path]/route.ts](../apps/site/app/api/sparx/%5B...path%5D/route.ts)),
+([apps/site/app/api/sparx/[...path]/route.ts](../../apps/site/app/api/sparx/%5B...path%5D/route.ts)),
 so no proxy change is needed beyond ensuring the customer cookie name is forwarded.
 
 ---
@@ -294,7 +294,7 @@ here; reset is a link, not a code.)
 ## 6. `api-rest` public account routes
 
 New file `services/api-rest/src/routes/v1/public/account.ts`, registered in
-[app.ts](../services/api-rest/src/routes/v1/public/) alongside `publicCartRoutes` /
+[app.ts](../../services/api-rest/src/routes/v1/public) alongside `publicCartRoutes` /
 `publicCheckoutRoutes`. All routes resolve the tenant via the existing
 `publicCommerceContext(request)` helper and gate on the Site module.
 

@@ -350,7 +350,7 @@ exists even though nothing reads it.
   moves CMS → Builder.
 - [16-cms-navigation.prisma](../packages/db/prisma/schema/16-cms-navigation.prisma) —
   mark the tables retired (and remove on the final drop migration).
-- [49-multi-site-per-tenant.md](49-multi-site-per-tenant.md) — per-site nav is
+- [49-multi-site-per-tenant.md](archive/49-multi-site-per-tenant.md) — per-site nav is
   delivered via Builder layouts (not a `navigation_menus.property_id`); update the
   "per-site SiteSettings/nav still shared" caveat.
 - [00-README.md](00-README.md) — index entry.

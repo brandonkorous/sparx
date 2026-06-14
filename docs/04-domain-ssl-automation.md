@@ -16,7 +16,7 @@ Every WizeWorks tenant gets a live HTTPS site the moment they sign up — no con
 
 Every host now resolves to a tenant **AND a specific web property (site)** — a
 tenant can run multiple sites over one back office
-([49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)). Each site has its
+([49-multi-site-per-tenant.md](archive/49-multi-site-per-tenant.md)). Each site has its
 own stable `<tenant>-<slug>.sparx.zone` subdomain and/or its own connected custom
 domain; the bare `<tenant>.sparx.zone` is a primary **alias** that follows the
 primary site. The host→site mapping lives in the **non-RLS `domains` dispatch

@@ -26,7 +26,7 @@ and the affected doc is amended in the phase that lands the change:
 - [docs/40 — Composition model](40-sitebuilder-composition-model.md): unchanged in spirit;
   this doc names where the "typed schema keystone" is owned (the content type) and adds that
   it is **authored from the builder**.
-- [docs/41 — Builder page model](41-builder-page-model.md) / [docs/44 — Site render](44-builder-site-render.md):
+- [docs/41 — Builder page model](archive/41-builder-page-model.md) / [docs/44 — Site render](archive/44-builder-site-render.md):
   the `BuilderPage.record_type` **magic string** is replaced by a first-class link from a
   content type to its template, with a per-entry override.
 - The legacy `Page` model ([10-cms-pages.prisma](../packages/db/prisma/schema/10-cms-pages.prisma))
@@ -113,7 +113,7 @@ with page-first ergonomics.
 ### 4.4 Pages — routes that resolve record → template
 
 - A request for `/blog/<slug>` resolves the entry, picks its template (entry → type → fallback),
-  binds the record in, and renders the tree (the per-record router, [docs/44](44-builder-site-render.md) §3 B).
+  binds the record in, and renders the tree (the per-record router, [docs/44](archive/44-builder-site-render.md) §3 B).
 - Singleton routed pages (an About page) are the degenerate case: one entry, one template.
 
 ---
@@ -169,7 +169,7 @@ A template attaches to content by **identity**, not a hand-typed string.
 Commerce/CRM sources (`commerce.product`, …) are **not** content types; they keep their
 code-defined target identifiers. The unification is: a template's **target** is either a
 content type (by id) or a code-defined domain source — exactly the two cases the binding
-catalog already exposes ([docs/43](43-builder-binding-schema.md)).
+catalog already exposes ([docs/43](archive/43-builder-binding-schema.md)).
 
 ---
 

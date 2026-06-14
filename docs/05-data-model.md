@@ -15,7 +15,7 @@
 - JSON/JSONB for flexible metadata and settings without schema migrations
 - All foreign keys indexed
 - **Multi-site:** a tenant owns one-or-more **Properties** (sites) over one back
-  office ([49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)). `property_id`
+  office ([49-multi-site-per-tenant.md](archive/49-multi-site-per-tenant.md)). `property_id`
   is **application-tier scoping, never an RLS boundary** (`tenant_id` stays the
   only one). Presentation rows (`builder_pages`/`builder_layouts`/`builder_page_assignments`)
   carry `property_id`; catalog/content scope **per-site via junction tables**
@@ -75,7 +75,7 @@ Tenant (the legal entity — a business, or an individual; billing/ownership onl
 A tenant is the **legal entity** — a business, or an individual if not a business.
 `name` is its **legal/org name**, used for billing and account admin only; it is
 **never** rendered to a customer or sent in a customer email (the customer-facing
-name is the site's `properties.name` — see [49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)).
+name is the site's `properties.name` — see [49-multi-site-per-tenant.md](archive/49-multi-site-per-tenant.md)).
 A tenant is conceptually the holder of a **tax id** (`tax_id` — documented here as a
 tenant attribute; not yet captured/stored).
 

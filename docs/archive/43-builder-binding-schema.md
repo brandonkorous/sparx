@@ -4,12 +4,12 @@ Version: 1.0
 Author: Brandon Korous
 Last Updated: 2026-06-02
 
-> The composition model ([40](40-sitebuilder-composition-model.md)) calls a typed,
+> The composition model ([40](../40-sitebuilder-composition-model.md)) calls a typed,
 > introspectable schema "the keystone that powers it all." This doc defines that
 > schema for the Builder — the contract that tells the editor **what a page can
 > bind to** — and how it's derived from each module's real data. It builds on the
 > persistence slice ([41](41-builder-page-model.md)); it does NOT touch the legal
-> work in [42](42-legal-and-consent.md).
+> work in [42](../42-legal-and-consent.md).
 
 ## 1. The problem
 

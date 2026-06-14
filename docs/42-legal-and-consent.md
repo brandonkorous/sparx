@@ -360,7 +360,7 @@ cookie-policy page (L1) that the consent preference center (L2) links to.
 - **Proxy single-Set-Cookie.** The site `/api/sparx` proxy relays only one
   `Set-Cookie`; the consent cookie is therefore set client-side (like `sparx_theme`),
   never by the API. The consent write endpoint records the row but does not set the cookie.
-- **[27-customer-accounts-site-auth.md](27-customer-accounts-site-auth.md)
+- **[27-customer-accounts-site-auth.md](archive/27-customer-accounts-site-auth.md)
   cart-cookie drift.** That doc describes an httpOnly `sparx_cart` cookie; the live code
   uses localStorage. Categorize the localStorage keys as functional storage; reconcile
   the doc separately.

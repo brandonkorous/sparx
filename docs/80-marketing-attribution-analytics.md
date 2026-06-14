@@ -469,7 +469,7 @@ touches a module, RLS on every tenant table, event-driven, conventional commits.
 
 [05 Data Model](05-data-model.md) · [07 MCP](07-mcp-server-spec.md) · [11 CRM](11-crm-prd.md) ·
 [16 Auth & Security](16-auth-security.md) · [17 Billing](17-billing-subscriptions.md) ·
-[27 Customer Accounts & Site Auth](27-customer-accounts-site-auth.md) ·
+[27 Customer Accounts & Site Auth](archive/27-customer-accounts-site-auth.md) ·
 [42 Legal & Consent](42-legal-and-consent.md) · [50 SEO/AIO](50-seo-aio-discoverability.md) ·
 [60 Marketplace](60-marketplace.md) · [63 External Data Connections](63-external-data-connections.md) ·
 [67 Billing Build Plan](67-billing-build-plan.md)

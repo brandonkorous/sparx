@@ -362,7 +362,7 @@ The catalog is **publisher-owned from row one** — Sparx, tenants, and third-pa
 
 ## 13. Responsive
 
-Non-negotiable for platform UI _and_ the public site ([docs/59](59-responsive-rendering.md) ethos).
+Non-negotiable for platform UI _and_ the public site ([docs/59](archive/59-responsive-rendering.md) ethos).
 Browse collapses to a single column; the facet rail becomes a **Filters** sheet behind a button;
 featured strips horizontal-scroll on every width; the detail two-column stacks. No desktop-only states,
 on either surface.

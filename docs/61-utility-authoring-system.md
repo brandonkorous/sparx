@@ -5,7 +5,7 @@
 **Last Updated:** 2026-06-07
 
 > This doc **executes** the class-first model ([47](47-class-first-authoring-model.md)) and
-> **finishes** the unification [46](46-site-ui-component-library.md) and [59](59-responsive-rendering.md)
+> **finishes** the unification [46](46-site-ui-component-library.md) and [59](archive/59-responsive-rendering.md)
 > started. It retires the freeform `box` for good, makes a **tokenized utility layer** the styling
 > surface, and surfaces that layer to non-developers as a **structured property panel**. Where this
 > doc and 40/46/47/59 disagree on the styling/render model, **this doc wins**; the affected sections
@@ -51,7 +51,7 @@ bridge or a dual-render path — those are what made the current system fragile 
 coexisting). Instead:
 
 - **Delete** the `box`→CSS engines in _both_ renderers, the `bx-*` classes, and the device-derived JS
-  responsive layer ([59](59-responsive-rendering.md)).
+  responsive layer ([59](archive/59-responsive-rendering.md)).
 - **Delete** `box` and `layout` from the node schema.
 - **Re-seed** the shipped starters, blueprints, and reference pages (Tesla, product PDP) onto the new
   class model so the platform's own demos work. There is no tenant data to migrate.
@@ -69,7 +69,7 @@ coexisting). Instead:
 - **`props`** — per-instance, non-class data: leaf config (`heading.level`, `button.label`,
   `image.src`, embed URLs), and the component machinery (`$ref`, `$prop`, `$bind`). (We keep the name
   `props` rather than 47's `data` — same concept, far less churn across the component system.)
-- **`binding`** — unchanged ([43](43-builder-binding-schema.md)).
+- **`binding`** — unchanged ([43](archive/43-builder-binding-schema.md)).
 - **`children`** — unchanged.
 
 **`box`/`layout` are removed.** Every old field decomposes into class utilities or `props`:
@@ -284,7 +284,7 @@ The render layer ships **one self-contained stylesheet block** (`SCROLL_MOTION_C
   per tenant.
 - The hidden initial state is **gated on `html.st-anim-ready`**, set by a tiny before-paint script **only
   when motion is allowed**, so JS-off _or_ reduced-motion never hides content (the proven
-  [reveal](59-responsive-rendering.md) gate, generalized off the deprecated section path):
+  [reveal](archive/59-responsive-rendering.md) gate, generalized off the deprecated section path):
 
   ```css
   html.st-anim-ready .st-reveal:not(.st-in) {
@@ -554,5 +554,5 @@ the renderer already applies `node.class` verbatim). Decisions made during execu
   `data`); the utility layer is Tailwind-native, not the `st-*` _dialect_, at the author surface.
 - **[46](46-site-ui-component-library.md) §7** — the migration is no longer "on hold"; it lands in
   Phase 2 as the render-unification keystone.
-- **[59](59-responsive-rendering.md)** — auto-collapse + device-derived JS are replaced by explicit
+- **[59](archive/59-responsive-rendering.md)** — auto-collapse + device-derived JS are replaced by explicit
   container-query authoring; the doc's "single source of truth" responsive rules are retired.

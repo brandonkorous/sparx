@@ -74,7 +74,7 @@ that sandbox exists.
 
 ## 4. The package contract
 
-The canonical templates live in [`marketplace-templates/`](../marketplace-templates/)
+The canonical templates live in [`marketplace-templates/`](../marketplace-templates)
 — one folder per category, each the exact, allow-listed shape a submission takes.
 
 ```
@@ -299,6 +299,6 @@ private bundles/artifacts, public CDN media only • RLS-scoped catalog writes
 ## 14. Dogfood
 
 The 10 themes, 10 components, and 10 blueprints already planned are **submission #1**:
-authored to the [`marketplace-templates/`](../marketplace-templates/) contract,
+authored to the [`marketplace-templates/`](../marketplace-templates) contract,
 validated by the Phase-1 pipeline, and published as first-party. They are how we prove
 the contract before opening third-party intake.

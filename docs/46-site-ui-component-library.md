@@ -5,7 +5,7 @@ Author: Brandon Korous
 Last Updated: 2026-06-03
 
 > The Builder composition model ([40](40-sitebuilder-composition-model.md)) walks a
-> node tree; the site render path ([44](44-builder-site-render.md)) turns a
+> node tree; the site render path ([44](archive/44-builder-site-render.md)) turns a
 > published tree into live markup; the editor canvas previews the same tree inside the
 > dashboard. Today the **leaf and container visuals** in those two render paths are written
 > **twice** — once as `.bx-*` CSS in the editor canvas, once as inline styles in the

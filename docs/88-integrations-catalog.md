@@ -32,7 +32,7 @@ spec:
 - Provider runtime + install flow → `@sparx/integration-framework` + the marketplace install flow
   ([docs/60](60-marketplace.md) §6, §10).
 - Dropship suppliers → [docs/14](14-dropship-integration-prd.md).
-- Domain registrar → [docs/24](24-domain-purchase-management.md).
+- Domain registrar → [docs/24](archive/24-domain-purchase-management.md).
 - TikTok Shop → [docs/27](27-tiktok-shop-integration.md). Social channels → [docs/71](71-social-commerce-channels.md).
 - ERP/WMS inventory sync → [docs/28](28-inventory-sync-integration.md).
 - External data connections (`ext.*`) → [docs/63](63-external-data-connections.md).
@@ -137,7 +137,7 @@ built · ⬜ not started.
 | Workflow trigger     | Inbound webhook → `webhook.received`                  | 6 inbound               | [81](81-automation-module.md) §10 / [82](82-event-bus-unification.md) | 📄                                                    |
 | Data source          | `ext.*` REST/GraphQL/SQL                              | 5 data                  | [63](63-external-data-connections.md)                                 | 📄 capstone, deferred                                 |
 | Identity             | Social SSO                                            | 7 identity              | [16](16-auth-security.md)                                             | ⬜ (`identity` reserved in `ProviderKind`)            |
-| Registrar            | GoDaddy reseller                                      | 8 registrar             | [24](24-domain-purchase-management.md)                                | ✅ partial (lookup unwired in onboarding)             |
+| Registrar            | GoDaddy reseller                                      | 8 registrar             | [24](archive/24-domain-purchase-management.md)                        | ✅ partial (lookup unwired in onboarding)             |
 | Email infra          | Mailgun                                               | (platform)              | [13](13-email-platform-prd.md)                                        | ✅                                                    |
 | Business formation   | (formation API)                                       | 4 connector             | [74](74-business-formation-integration.md)                            | 📄                                                    |
 

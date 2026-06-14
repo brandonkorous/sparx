@@ -4,7 +4,7 @@
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-04
 
-> Build-ready spec for **Phase 1** of [49-multi-site-per-tenant.md](../49-multi-site-per-tenant.md).
+> Build-ready spec for **Phase 1** of [49-multi-site-per-tenant.md](../archive/49-multi-site-per-tenant.md).
 > Design rationale, the two-axes argument, and the full phase map live in doc 49 — read it
 > first. This document only captures the **locked decisions** and the **exact deltas** for the
 > first structural slice.

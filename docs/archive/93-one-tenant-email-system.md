@@ -24,7 +24,7 @@ After docs/91, a tenant's email lives in **three** places at once:
 
 1. **Coded React Email templates** — rendered in the lean `email-worker` via
    `renderTemplate()` from a discriminated union keyed by `template`
-   ([services/email-worker/src/handler.ts](../services/email-worker/src/handler.ts)).
+   ([services/email-worker/src/handler.ts](../../services/email-worker/src/handler.ts)).
    Eleven templates: `password-reset`, `welcome-merchant`, `email-verification`,
    `domain-renewal-reminder`, `order-confirmation`, `shipping-confirmation`,
    `chat-notification`, `appointment-confirmation`, `appointment-reminder`,
@@ -44,8 +44,8 @@ tenant authors, and **keeps** the genuinely-different platform/auth emails coded
 
 There is **no synchronous blocker.** All of these — including password reset — are
 already published as async `email.send` events
-([packages/auth/src/email-events.ts](../packages/auth/src/email-events.ts),
-[services/api-rest/src/routes/v1/public/account.ts](../services/api-rest/src/routes/v1/public/account.ts#L314)).
+([packages/auth/src/email-events.ts](../../packages/auth/src/email-events.ts),
+[services/api-rest/src/routes/v1/public/account.ts](../../services/api-rest/src/routes/v1/public/account.ts#L314)).
 The only truly synchronous email would be OTP/2FA, which does not exist yet (§8).
 
 ---
@@ -66,7 +66,7 @@ The only truly synchronous email would be OTP/2FA, which does not exist yet (§8
 
 Brand still applies to coded emails — `brandService.resolveEmailBrand` already
 inlines the tenant's (or site's) logo + colors at render
-([handler.ts:226](../services/email-worker/src/handler.ts#L226)). "Stays coded" means
+([handler.ts:226](../../services/email-worker/src/handler.ts#L226)). "Stays coded" means
 the merchant doesn't edit **structure/copy**, not that it's unbranded.
 
 ### 1.1 Per-template disposition
@@ -90,7 +90,7 @@ The customer-facing chat email (`chat-satisfaction`) is already a Builder defaul
 ### 1.2 The one carve-out: site customer password reset
 
 The site customer reset
-([account.ts:331](../services/api-rest/src/routes/v1/public/account.ts#L331))
+([account.ts:331](../../services/api-rest/src/routes/v1/public/account.ts#L331))
 **reuses the same `password-reset` coded template** as the dashboard. It is a
 tenant→customer email, so by the audience test alone it would move to the Builder —
 but it carries a one-shot security token (`resetUrl`) and an enumeration-safe
@@ -106,8 +106,8 @@ beyond logo/colors, §8 sketches a gated path; we do **not** build it now.
 
 The Builder path already exists; the migration **generalizes it**. Today the
 automation dispatcher resolves a `BuilderEmail` by `key`, renders it, and emits a
-`kind:'raw'` send ([services/api-rest/src/lib/email-dispatch.ts](../services/api-rest/src/lib/email-dispatch.ts),
-[email-data.ts](../services/api-rest/src/lib/email-data.ts)). We lift that into one
+`kind:'raw'` send ([services/api-rest/src/lib/email-dispatch.ts](../../services/api-rest/src/lib/email-dispatch.ts),
+[email-data.ts](../../services/api-rest/src/lib/email-data.ts)). We lift that into one
 reusable primitive that **any** direct sender can call.
 
 ```
@@ -133,14 +133,14 @@ already do). This is the established split (docs/52 §6), not a new dependency.
 templates: if a tenant predates provisioning or dropped its row, the send still
 renders from the `DEFAULT_EMAIL_TEMPLATES` tree in `@sparx/builder-schemas`. The
 6-hour provisioning reconcile
-([services/api-rest/src/lib/email-provisioning.ts](../services/api-rest/src/lib/email-provisioning.ts))
+([services/api-rest/src/lib/email-provisioning.ts](../../services/api-rest/src/lib/email-provisioning.ts))
 back-fills the row so the tenant can then edit it.
 
 ### 2.1 No new safety gate is needed for the moved emails
 
 The five moved templates are **not** credential-bearing. Their CTAs degrade
 gracefully — every `*Url` already falls back to the store root when an entity
-doesn't resolve ([email-data.ts](../services/api-rest/src/lib/email-data.ts), `homeUrl`).
+doesn't resolve ([email-data.ts](../../services/api-rest/src/lib/email-data.ts), `homeUrl`).
 The CAN-SPAM marketing gate (docs/91 §8) continues to apply unchanged to the
 marketing trees. A required-token gate is reserved for the hypothetical future where
 an **auth** email becomes Builder-authored (§8) — out of scope here.
@@ -195,9 +195,9 @@ Once the five senders route through `sendTenantEmailByKey`:
 **Remove the moved coded templates**
 
 - Delete the 5 components + exports from `@sparx/email`
-  ([packages/email/src/templates/index.ts](../packages/email/src/templates/index.ts)).
+  ([packages/email/src/templates/index.ts](../../packages/email/src/templates/index.ts)).
 - Delete their 5 arms from `TemplateSendSchema`
-  ([handler.ts:43](../services/email-worker/src/handler.ts#L43)) and the matching
+  ([handler.ts:43](../../services/email-worker/src/handler.ts#L43)) and the matching
   `TemplateSend` union in `@sparx/email`. The worker keeps **`kind:'raw'`** + the
   5 surviving coded templates (`password-reset`, `welcome-merchant`,
   `email-verification`, `domain-renewal-reminder`, `chat-notification`).
@@ -205,12 +205,12 @@ Once the five senders route through `sendTenantEmailByKey`:
 **Delete `/email/templates`**
 
 - Page + dashboard nav entry:
-  [apps/dashboard/app/(dashboard)/email/templates/](<../apps/dashboard/app/(dashboard)/email/templates/>).
+  [apps/dashboard/app/(dashboard)/email/templates/](<../%3C../apps/dashboard/app/(dashboard)/email/templates/%3E>).
 - Routes: `/v1/email/templates` (+ `/builtin/:key`, `/preview`, `/test-send`)
-  ([services/api-rest/src/routes/v1/email/templates.ts](../services/api-rest/src/routes/v1/email/templates.ts)).
+  ([services/api-rest/src/routes/v1/email/templates.ts](../../services/api-rest/src/routes/v1/email/templates.ts)).
 - `templateService` builtin surface + `BUILTIN_TEMPLATES`
-  ([packages/email-platform/src/builtin-templates.ts](../packages/email-platform/src/builtin-templates.ts),
-  [services/template-service.ts](../packages/email-platform/src/services/template-service.ts)).
+  ([packages/email-platform/src/builtin-templates.ts](../../packages/email-platform/src/builtin-templates.ts),
+  [services/template-service.ts](../../packages/email-platform/src/services/template-service.ts)).
 - **Audit `EmailTemplate` (`source='builtin'`)** before dropping the model: confirm
   no other reader, then drop the override rows/table in a pipeline migration. Zero
   prod users → no data to migrate, but the migration must still go through the DB
@@ -227,12 +227,12 @@ not built here.
 
 ## 6. Migration of the senders
 
-| Sender                  | File                                                                                        | Change                                                                                                                                  |
-| ----------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Stripe payment captured | [webhooks/stripe.ts](../services/api-rest/src/routes/v1/webhooks/stripe.ts#L216)            | replace `publish('email.send', {template:'order-confirmation'})` with `sendTenantEmailByKey('order-confirmation', { ref:{ orderId } })` |
-| Payment reconcile       | [lib/stripe-payment-reconcile.ts](../services/api-rest/src/lib/stripe-payment-reconcile.ts) | same                                                                                                                                    |
-| Shipping confirmation   | fulfillment flow (`order.fulfilled`)                                                        | `sendTenantEmailByKey('shipping-confirmation', { ref:{ orderId, fulfillmentId } })`                                                     |
-| Appointment ×3          | [v1/b2b/scheduling.ts](../services/api-rest/src/routes/v1/b2b/scheduling.ts)                | `sendTenantEmailByKey('appointment-*', { ref:{ appointmentId } })`                                                                      |
+| Sender                  | File                                                                                           | Change                                                                                                                                  |
+| ----------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Stripe payment captured | [webhooks/stripe.ts](../../services/api-rest/src/routes/v1/webhooks/stripe.ts#L216)            | replace `publish('email.send', {template:'order-confirmation'})` with `sendTenantEmailByKey('order-confirmation', { ref:{ orderId } })` |
+| Payment reconcile       | [lib/stripe-payment-reconcile.ts](../../services/api-rest/src/lib/stripe-payment-reconcile.ts) | same                                                                                                                                    |
+| Shipping confirmation   | fulfillment flow (`order.fulfilled`)                                                           | `sendTenantEmailByKey('shipping-confirmation', { ref:{ orderId, fulfillmentId } })`                                                     |
+| Appointment ×3          | [v1/b2b/scheduling.ts](../../services/api-rest/src/routes/v1/b2b/scheduling.ts)                | `sendTenantEmailByKey('appointment-*', { ref:{ appointmentId } })`                                                                      |
 
 Each carries `propertyId` where the originating entity has one, so per-site brand +
 per-site overrides apply (docs/49 Phase 7b). All five live in **api-rest**, which

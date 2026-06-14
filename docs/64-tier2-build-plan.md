@@ -25,7 +25,7 @@ This doc is the sequenced build plan for the four Tier 2 modules: Domain Purchas
 
 ## Module 1 — Domain Purchase (docs/24)
 
-**Spec:** [docs/24-domain-purchase-management.md](24-domain-purchase-management.md)
+**Spec:** [docs/24-domain-purchase-management.md](archive/24-domain-purchase-management.md)
 **Existing foundation:** `services/api-rest/src/routes/v1/domains.ts` handles connect/verify. The `domains` table is live (non-RLS dispatch table). GoDaddy OTE environment available at `api.ote-godaddy.com`.
 **Stripe dependency:** Domain purchase requires a Stripe PaymentIntent. For now, implement the full flow but skip the charge — return a mock `payment_intent_id` so the rest of the flow (GoDaddy purchase → DNS config → DB record) can be tested end-to-end. Wire Stripe when billing lands.
 

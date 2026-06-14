@@ -26,9 +26,9 @@ The dropship stack is **built and live** (docs/64 Ph1–Ph5). The pieces:
 
 | Layer     | Where                                                                 | What                                                                                                      |
 | --------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| Adapters  | [`@sparx/dropship`](../packages/dropship/)                            | `SupplierAdapter` interface + `createAdapter()` registry + `applyPricingRule()` + the `VENDOR_CATALOG`    |
+| Adapters  | [`@sparx/dropship`](../packages/dropship)                             | `SupplierAdapter` interface + `createAdapter()` registry + `applyPricingRule()` + the `VENDOR_CATALOG`    |
 | Data      | [65-dropship.prisma](../packages/db/prisma/schema/65-dropship.prisma) | `DropshipSupplier`, `DropshipProduct`, `DropshipProductLink`, `DropshipOrder`, `DropshipSupplierProperty` |
-| API       | [v1/dropship](../services/api-rest/src/routes/v1/dropship/)           | `suppliers` (connect/configure/sync/catalog/import) + `orders` + `analytics` + `vendors`                  |
+| API       | [v1/dropship](../services/api-rest/src/routes/v1/dropship)            | `suppliers` (connect/configure/sync/catalog/import) + `orders` + `analytics` + `vendors`                  |
 | Dashboard | [(dashboard)/dropship](<../apps/dashboard/app/(dashboard)/dropship/>) | Suppliers, products, analytics; the vendor picker + per-vendor connect form                               |
 
 > **One dropship abstraction, not two.** `@sparx/integration-framework` also declares a

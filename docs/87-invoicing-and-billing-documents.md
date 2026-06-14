@@ -224,7 +224,7 @@ There is **no invoice PDF today** (the quote "PDF" is print-styled HTML —
 [b2b/quotes.ts](../services/api-rest/src/routes/v1/b2b/quotes.ts)). The document **body** is authored
 as a structured line grid (§6 / Phase 6), never a canvas — but the document's **printed presentation
 is a builder-authored node tree**, the same machinery as the **Email Builder**
-([52](52-email-builder.md), [project: Email Builder]). Layout is exactly where the builder paradigm
+([52](archive/52-email-builder.md), [project: Email Builder]). Layout is exactly where the builder paradigm
 earns its keep; financial data is not.
 
 - **Default renderer (Phase 5):** a document → branded output using the tenant's brand tokens
@@ -298,10 +298,10 @@ RLS policies + any partial uniques are hand-SQL ([db CLAUDE.md](../packages/db/C
 
 ## 13. Events
 
-Publish on the platform bus ([@sparx/events](../packages/events/), [03](03-infrastructure-deployment.md)):
+Publish on the platform bus ([@sparx/events](../packages/events), [03](03-infrastructure-deployment.md)):
 `billing_document.created`, `.stage_changed`, `.finalized`, `.paid`, `.voided`. These feed
 notifications (email/SMS to the customer when an estimate is ready), margin reporting, and — naturally
-— the **automation engine** ([81-automation.md](81-automation.md)): a stage transition is exactly the
+— the **automation engine** ([81-automation.md](81-automation-module.md)): a stage transition is exactly the
 kind of event a tenant rule gates ("when a Repair Order reaches Approved, email the customer + create
 a fulfillment task"). New `billing_document.*` types register in `EventType` + the Terraform topic map
 ([module-slug / event footgun]).

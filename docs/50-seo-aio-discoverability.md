@@ -67,7 +67,7 @@ new redirects take effect within the cache TTL (revalidation worker wiring is fu
 
 ### 2.3 Builder-page SEO — schema → inspector → render
 
-Builder singleton pages (the primary authoring surface, [44](44-builder-site-render.md)) emitted
+Builder singleton pages (the primary authoring surface, [44](archive/44-builder-site-render.md)) emitted
 only `name · tenant`. They now carry real SEO, end to end:
 
 - **Schema** (`51-builder.prisma`, migration `20260624000000_builder_page_seo`): five additive,

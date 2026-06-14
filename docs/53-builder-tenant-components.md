@@ -25,7 +25,7 @@ It descends from and refines:
 - [docs/40 — Composition model](40-sitebuilder-composition-model.md): the node tree, the
   box/layout/props shape, per-node binding + cardinality. A tenant component is a saved,
   parameterized **subtree** of that model.
-- [docs/47 — Class-first authoring](47-class-first-authoring.md): components store
+- [docs/47 — Class-first authoring](47-class-first-authoring-model.md): components store
   brand-governed `class` strings, not arbitrary CSS.
 - [docs/38 — Extensible sections](38-sitebuilder-extensible-sections.md): the **legacy
   `/sitebuilder` tier** already shipped a full declarative custom-section system

@@ -44,7 +44,7 @@ dependency, while segment 1's switch/create depends on auth machinery that is
 > axis** — switching workspaces means switching tenants.
 >
 > A **Site** model does exist on a different axis: a single tenant can run
-> multiple web **Properties** (sites) over one back office ([49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)).
+> multiple web **Properties** (sites) over one back office ([49-multi-site-per-tenant.md](archive/49-multi-site-per-tenant.md)).
 > That's the **Site** breadcrumb segment (`Workspace › Site › Module › Section`),
 > not a second workspace — sites share the tenant's RLS, data, and login; only
 > presentation + host differ. See §3.x for the shipped Site segment.

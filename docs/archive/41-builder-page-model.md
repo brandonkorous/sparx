@@ -4,7 +4,7 @@ Version: 1.0
 Author: Brandon Korous
 Last Updated: 2026-06-02
 
-> Implements the composition model ([40-sitebuilder-composition-model.md](40-sitebuilder-composition-model.md))
+> Implements the composition model ([40-sitebuilder-composition-model.md](../40-sitebuilder-composition-model.md))
 > as a persisted, multi-page editor. Doc 40 is the _what_ (a website is a tree of
 > nodes; binding cardinality drives single/scope/iterate; a typed schema is the
 > keystone). This doc is the _how it's stored and saved_ — the first backend slice

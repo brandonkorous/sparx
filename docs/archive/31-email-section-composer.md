@@ -17,9 +17,9 @@
 
 The Email module ships a working **send pipeline** (`email.send` → `email-worker` → Mailgun) and a
 management surface (templates, automations, broadcasts, domains, suppressions, analytics, settings
-— [docs/13-email-platform-prd.md](13-email-platform-prd.md)). Authored email bodies are today a
+— [docs/13-email-platform-prd.md](../13-email-platform-prd.md)). Authored email bodies are today a
 single **rich-text region** (a CMS TipTap `CmsDoc` serialized to HTML). That was always the interim
-([docs/13](13-email-platform-prd.md) P4; the original plan's P9 deferred the composer until the
+([docs/13](../13-email-platform-prd.md) P4; the original plan's P9 deferred the composer until the
 shared section system existed).
 
 This document is the **build contract** for replacing that single region with a **section
@@ -28,7 +28,7 @@ rich text, image, button, _featured products_, _latest blog posts_, _abandoned c
 for you_, etc. — each configured in a docked inspector beside a live, branded preview.
 
 It is the **email-surface counterpart to the Site Builder redesign**
-([docs/30-sitebuilder-redesign.md](30-sitebuilder-redesign.md)). It deliberately shares that doc's
+([docs/30-sitebuilder-redesign.md](../30-sitebuilder-redesign.md)). It deliberately shares that doc's
 UX language (structure rail · live canvas · docked inspector · drag-reorder · sample-item preview)
 and its brand model (§6 of doc 30: brand is a tenant-level source of truth that consumers read and
 never override). Where the Site Builder composes a **page** bound to a sample item, the Email
@@ -209,7 +209,7 @@ the whole message per recipient when any block is personalized.
 ### 7.2 Data resolution layer
 
 A `section-data` resolver in `@sparx/email-platform` (server-side; reads Commerce/CMS/CRM through
-their service layers — never new schema, per [docs/02](02-architecture-overview.md)):
+their service layers — never new schema, per [docs/02](../02-architecture-overview.md)):
 
 ```ts
 resolveSectionData(ctx, section, recipient?): Promise<SectionData>
@@ -254,7 +254,7 @@ eventual shared section kernel (§12) absorbs both. It does **not** import siteb
 ## 9. The dashboard composer
 
 A full-bleed workspace (§3) with three regions, all built from `@sparx/ui` (no raw Tailwind in
-feature code, per [docs/23](23-frontend-component-architecture.md)).
+feature code, per [docs/23](../23-frontend-component-architecture.md)).
 
 ### 9.1 Palette (left)
 
@@ -283,7 +283,7 @@ endpoint). The default is a synthetic sample recipient so the canvas is never em
 
 ### 9.4 Replacing the current editor
 
-The single-`ContentBlockEditor` authored form ([apps/dashboard/.../email/templates/\_components/authored-form.tsx](<../apps/dashboard/app/(dashboard)/email/templates/_components/authored-form.tsx>))
+The single-`ContentBlockEditor` authored form ([apps/dashboard/.../email/templates/\_components/authored-form.tsx](<../%3C../apps/dashboard/app/(dashboard)/email/templates/_components/authored-form.tsx%3E>))
 is replaced by the composer. The TipTap editor survives **inside** the `rich-text` section's
 inspector. A template's detail page links into the full-bleed designer.
 

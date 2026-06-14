@@ -108,7 +108,7 @@ All billing handled via Stripe:
 - **Additional sites** as a recurring per-site add-on line item — the tenant's
   **primary** web property is included in the base plan; each **additional** site
   (`properties` rows where `is_primary = false`) is one add-on, same shape as a
-  module item ([49-multi-site-per-tenant.md §7](49-multi-site-per-tenant.md)).
+  module item ([49-multi-site-per-tenant.md §7](archive/49-multi-site-per-tenant.md)).
   Metering/gating is deferred — create-site is open until the billing build wires
   this item; the Sites settings page is where the count surfaces.
 - Transaction fees calculated via Stripe Connect (when applicable)

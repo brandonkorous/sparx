@@ -190,18 +190,24 @@ URL-sync wrapper (`_components/list-pager.tsx`), `parsePageParams` helper (`lib/
   `commerce/products`, `crm/orders`, `crm/customers`, `b2b/accounts`, `b2b/appointments`,
   `b2b/approval-queue`, `b2b/invoices`, `b2b/quotes`, `crm/b2b`, `crm/quotes`, `dropship/suppliers`,
   `inventory/sources`. Typecheck + lint clean.
-- **🔜 Phase 2 (NOT done — needs api-rest + service changes first).** Each route's list endpoint must
-  add a `skip` param and/or a `count(*)` (same WHERE as the list) returning `paged(items, { total })`,
-  then wire the page like Phase 1. Buckets:
-  - _skip but no `total`_: `cms/content`, `commerce/inventory`, `commerce/categories` (add count).
-  - _`total` but no `skip`_: `email/suppressions`, `b2b/pricing-tiers` (add skip).
-  - _flat (neither)_: `inventory/locations`, `commerce/{collections, carts, checkout-sessions, qa,
-returns, reviews, subscriptions, discounts, gift-cards, bundles, configurator, tax, warehouses,
-providers, shipping, pricing, account-credit}`, `cms/{authors, types, redirects, taxonomy}`,
-    `email/{broadcasts, domains}`, `b2b/service-types`, `invoicing` + `invoicing/templates`,
-    `crm/{pipelines, segments, tasks}`, `builder/blueprints`, `dropship/products`.
-  - Many are small/low-cardinality (tax, warehouses, service-types, templates, locations, authors,
-    redirects, domains, pipelines, segments) where paging is low-value but worth it for consistency.
+- **✅ Phase 2 DONE (2026-06-14)** — added `skip` + `count(*)` (same WHERE) returning
+  `paged(items, { total })` to each route/service, then wired the page. ~33 more endpoints across
+  commerce (`collections, discounts, reviews, subscriptions, carts, checkout-sessions, qa, returns,
+bundles, configurator, warehouses, inventory, account-credit, tax, shipping, pricing`),
+  `cms/{content, types, authors, redirects, taxonomy}`, `email/{broadcasts, domains, suppressions}`,
+  `b2b/{pricing-tiers, service-types}`, `inventory/locations`, `invoicing` + `invoicing/templates`,
+  `crm/{pipelines, segments, tasks}`, `builder/blueprints`. Service `list()` methods that changed
+  array→`{items,total}` had every caller fixed (routes, GraphQL resolvers, MCP read-tools); full-list
+  "picker" callers pass `?take=250` to keep their all-rows behavior. All packages typecheck + lint
+  clean.
+- **⏭️ Skipped by design (grouped, no flat list):** `commerce/providers` (registry grouped by kind —
+  offset paging would split a kind's installs across pages) and `dropship/products` (grouped by
+  supplier; no `/v1/dropship/products` flat endpoint exists — Ph3 TODO). Forcing paging would break
+  their grouped rendering.
+- **Note — aggregate badges:** two pages whose header badge was a whole-dataset aggregate a page
+  slice can't reproduce now report counts instead: `commerce/warehouses` (was active/inactive split),
+  `commerce/account-credit` (was summed outstanding $). Dedicated aggregate endpoints could restore
+  those figures later if wanted.
 - **Rejected alternatives:** cursor/"Load more" (loses shareable page links, the X-of-N count, and
   clean cross-page selection) — keep keyset as a _scale escape hatch_ if a specific table gets huge.
 

@@ -8,7 +8,7 @@ Last Updated: 2026-06-03
 > **tree of nested layouts**: a layout owns **zones**, one of which — the content
 > outlet — swaps per route, while the rest (header / footer / sidebar) are
 > **chrome** that persists across navigation. The page editor
-> ([41](41-builder-page-model.md), [44](44-builder-site-render.md)) edits
+> ([41](archive/41-builder-page-model.md), [44](archive/44-builder-site-render.md)) edits
 > the content outlet's tree. This doc covers the OTHER half: the **site layout**
 > — the chrome that wraps every page — edited with the same editor, and rendered
 > around every published page on the site.
@@ -124,7 +124,7 @@ published tree (or no layout is active), today's chrome renders unchanged. The
 public read (`getPublished`) resolves `WHERE is_active` then returns
 `publishedTree`, so swapping which layout is live is a single _make active_ away —
 no page touches it. This mirrors the page render path's "Builder owns its slug,
-else fall through" ([44](44-builder-site-render.md) §2.5): the new system
+else fall through" ([44](archive/44-builder-site-render.md) §2.5): the new system
 takes over only what a tenant has actually published **and** activated.
 
 ## 3. The site-scope catalog (`SITE_SOURCES`)

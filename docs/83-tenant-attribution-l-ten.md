@@ -79,7 +79,7 @@ medium · campaign · friendly_name · created_by · created_at`. RLS on tenant-
 - [ ] Event payloads (docs/80 §8.5): add an `attribution` block to `customer.created`,
       `customer.subscribed`, `order.created`; add `attribution.touch.recorded`.
       **Footgun:** a new `crm.*`-class event must publish on BOTH buses to reach a consumer
-      ([CRM two-bus delivery](../packages/crm/) / memory `reference_crm_two_bus_delivery`).
+      ([CRM two-bus delivery](../packages/crm) / memory `reference_crm_two_bus_delivery`).
 
 ### 3.4 Conversion stitching
 

@@ -104,12 +104,12 @@ same classes against the same compiled sheet — makes _preview == production_ f
 
 The clean line that makes everything else fall into place:
 
-| Concern                                                  | Owner                  | Form                                           |
-| -------------------------------------------------------- | ---------------------- | ---------------------------------------------- |
-| **Structure** — nesting, parent/child, which node        | the **tree**           | node graph                                     |
-| **Data binding** — single / scope / iterate, cardinality | the **tree** (binding) | `binding` ([43](43-builder-binding-schema.md)) |
-| **Styling** — surface, rhythm, treatment, color          | the **class string**   | `navbar bg-base-100 shadow-sm`                 |
-| **Per-instance data** — image URL, computed value        | **inline / data**      | `style`/`props` set by the engine              |
+| Concern                                                  | Owner                  | Form                                                   |
+| -------------------------------------------------------- | ---------------------- | ------------------------------------------------------ |
+| **Structure** — nesting, parent/child, which node        | the **tree**           | node graph                                             |
+| **Data binding** — single / scope / iterate, cardinality | the **tree** (binding) | `binding` ([43](archive/43-builder-binding-schema.md)) |
+| **Styling** — surface, rhythm, treatment, color          | the **class string**   | `navbar bg-base-100 shadow-sm`                         |
+| **Per-instance data** — image URL, computed value        | **inline / data**      | `style`/`props` set by the engine                      |
 
 A class cannot express "iterate this subtree once per product in a bound array," nor the
 parent/child nesting — that stays the tree's job. So we are **not deleting the tree**; we are
@@ -314,7 +314,7 @@ started for leaves, now extended to box/section archetypes.
   on the same role-var recipe and `--st-*` palette; the brand designer gains archetype governance.
 - **Feeds [38](38-sitebuilder-extensible-sections.md).** Tenant-defined component types become a
   natural extension of the archetype vocabulary + the per-tenant compile.
-- **Touches [44](44-builder-site-render.md) / [45](45-builder-site-layout.md).** Both
+- **Touches [44](archive/44-builder-site-render.md) / [45](45-builder-site-layout.md).** Both
   renderers emit the class string and load the compiled sheet; the box→CSS engine remains for
   Tier-2 and for per-instance data.
 

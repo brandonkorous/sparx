@@ -7,8 +7,8 @@ Last Updated: 2026-06-13
 The Email Builder is the third Builder surface — `/builder/email` — alongside
 `/builder/page` and `/builder/site`. It edits an email as **one self-contained
 node tree** (no site/page split) using the same composition model, editor brain,
-and palette as the website builder ([docs/40](40-sitebuilder-composition-model.md),
-[docs/41](41-builder-page-model.md), [docs/45](45-builder-site-layout.md)). It
+and palette as the website builder ([docs/40](../40-sitebuilder-composition-model.md),
+[docs/41](41-builder-page-model.md), [docs/45](../45-builder-site-layout.md)). It
 **supersedes the flat section-list composer** ([docs/31](31-email-section-composer.md),
 `@sparx/email-sections`) the way `/builder` superseded `/sitebuilder`: the
 node-tree becomes the one email authoring model, and the section model is
@@ -58,7 +58,7 @@ out of scope for the section retirement.
 ## 3. The one hard part: the renderer
 
 Editor reuse is cheap (§4). The renderer is the real work. The site renderer
-([apps/site/components/builder-renderer.tsx](../apps/site/components/builder-renderer.tsx))
+([apps/site/components/builder-renderer.tsx](../../apps/site/components/builder-renderer.tsx))
 emits `<div>` + flexbox + `--st-*` CSS variables — which mail clients won't render.
 The Email Builder needs a **parallel renderer that walks the same `BuilderNode`
 tree but emits table-based React Email components with inline styles**, reusing
@@ -76,7 +76,7 @@ model:
   `align` (→ `text-align`), and `layout` `direction`/`gap`/`columns` (stack = block
   children; row/grid = `<Row>`/`<Column>` at fixed column widths).
 - **Leaves** map to the existing brand-aware email primitives
-  ([packages/email/src/components/primitives.tsx](../packages/email/src/components/primitives.tsx)):
+  ([packages/email/src/components/primitives.tsx](../../packages/email/src/components/primitives.tsx)):
   `Heading→EmailHeading`, `Text→EmailParagraph`, `Button→EmailButton`,
   `Divider→EmailDivider`, `Spacer→EmailSpacer`, `Image→<Img>`.
 
@@ -87,7 +87,7 @@ templates do.
 ## 4. Editor surface reuse
 
 The editor is fully surface-parameterized: `EditorSurface = 'page' | 'site'`
-([registry.tsx](<../apps/dashboard/app/(dashboard)/builder/_builder/registry.tsx>)),
+([registry.tsx](<../%3C../apps/dashboard/app/(dashboard)/builder/_builder/registry.tsx%3E>)),
 one shared `useBuilderEditor` brain + `BuilderWorkspace` body, one `registry`
 palette filtered per surface. The Email Builder adds:
 
@@ -108,7 +108,7 @@ palette filtered per surface. The Email Builder adds:
 ## 5. Persistence (mirrors BuilderPage)
 
 New Prisma model `BuilderEmail` in
-[51-builder.prisma](../packages/db/prisma/schema/51-builder.prisma), tenant-scoped
+[51-builder.prisma](../../packages/db/prisma/schema/51-builder.prisma), tenant-scoped
 
 - FORCE RLS (hand-added in the migration, like every `builder_*` table):
 
@@ -145,7 +145,7 @@ the per-send data (products/promotion/posts) is resolved once and the same body
 fans out. Per-recipient emails **defer**: `treeIsEmailPersonalized(tree)` (true when
 any node binds `recipient`/`order`/`cart`/`loyalty`) makes `enqueueAndMark` write a
 `defer.builderEmailId` payload instead of a rendered body; the email-dispatch tick
-([services/api-rest/src/lib/email-dispatch.ts](../services/api-rest/src/lib/email-dispatch.ts))
+([services/api-rest/src/lib/email-dispatch.ts](../../services/api-rest/src/lib/email-dispatch.ts))
 reloads the published tree, resolves THIS recipient's data via the injected
 `resolveEmailData`, and renders per recipient — exactly the branch the section
 `defer.templateId` path already takes. `@sparx/email-platform` stays commerce-free:
@@ -168,7 +168,7 @@ Shapes are fixed; the **data** is produced at send/preview by `resolveEmailData`
 
 An author personalizes copy by typing `{{token}}` merge fields directly into string
 props (a heading's text, a button's label/link, the subject/preheader) — the grammar
-is `{{ path ?? "fallback" }}` ([docs/91](91-default-email-templates.md) §2). The
+is `{{ path ?? "fallback" }}` ([docs/91](../91-default-email-templates.md) §2). The
 **merge-tag vocabulary is the binding catalog flattened**: every OBJECT source's
 text fields become a `{{source.field}}` token (`merge-tags.ts`,
 `emailMergeTags()`). Array sources (products, posts, line items) are _iterated_ via
@@ -240,7 +240,7 @@ Transactional code builtins are untouched throughout.
   branch; worker raw path; composer picks a Builder email; send to a segment.
   **Deployable.**
 - **Phase 4 — Data-aware. _(Built 2026-06-04.)_** The email `DataSources` resolver
-  ([services/api-rest/src/lib/email-data.ts](../services/api-rest/src/lib/email-data.ts),
+  ([services/api-rest/src/lib/email-data.ts](../../services/api-rest/src/lib/email-data.ts),
   `resolveEmailData`/`emailDataResolver`) reads commerce + CRM + CMS and resolves
   only the sources a tree binds (`bindingSourceKey` over its paths). The editor
   receives the real `EMAIL_CATALOG` (`/v1/builder/email-binding-schema` =
@@ -266,14 +266,14 @@ Transactional code builtins are untouched throughout.
   gap — free-form prose authored IN the Builder, the one thing the retired authored
   editor did. The `Prose` node gains an authored `doc` prop (a TipTap/CMS document)
   edited via a new `richtext` inspector control wrapping
-  [`ContentBlockEditor`](../packages/cms-editor/src/editor.tsx) — the same editor CMS
+  [`ContentBlockEditor`](../../packages/cms-editor/src/editor.tsx) — the same editor CMS
   pages use. The email renderer's `Prose` leaf serializes the doc to sanitised,
-  inline-safe HTML through [`@sparx/cms-editor/serialize`](../packages/cms-editor/src/serialize.ts)
+  inline-safe HTML through [`@sparx/cms-editor/serialize`](../../packages/cms-editor/src/serialize.ts)
   (the audited path — a hostile `javascript:` link is stripped) and inlines it under
   the email's base typography; the canvas previews the same HTML, and `Prose` joins
   `EMAIL_TYPES`. `@sparx/email` gains a `@sparx/cms-editor` dependency (the React-free
   `/serialize` subpath only) — so every image carrying `@sparx/email` must also COPY
-  `packages/cms-editor` ([api-graphql](../services/api-graphql/Dockerfile) was the
+  `packages/cms-editor` ([api-graphql](../../services/api-graphql/Dockerfile) was the
   one gap, now fixed); `@sparx/ui` (cms-editor's only workspace dep) stays a dangling,
   unused symlink, exactly as in api-rest. Migration-free. **Deployable.**
 

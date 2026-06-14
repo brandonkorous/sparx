@@ -32,7 +32,7 @@ It builds on:
   the starter seeding onboarding already does.
 - [docs/51 — Content Architecture](51-content-architecture.md): content types own their
   schema; entries are polymorphic rows validated against it. A Blueprint seeds both.
-- [docs/52 — Email Builder](52-email-builder.md): an email is one self-contained node tree.
+- [docs/52 — Email Builder](archive/52-email-builder.md): an email is one self-contained node tree.
   A Blueprint ships these as builder emails.
 - [docs/53 — Builder Tenant Components](53-builder-tenant-components.md): the closest
   existing analog. The "system component → **Copy** → tenant-owned versioned row" pattern,
@@ -40,7 +40,7 @@ It builds on:
   template may include" requirement.
 - [docs/40 — Composition model](40-sitebuilder-composition-model.md): pages, layouts,
   emails, and components are all node trees of the same shape.
-- [docs/49 — Multi-site per tenant](49-multi-site-per-tenant.md): pages and layouts are
+- [docs/49 — Multi-site per tenant](archive/49-multi-site-per-tenant.md): pages and layouts are
   per-**property**. A Blueprint installs into one property (the tenant's primary by default).
 
 ---

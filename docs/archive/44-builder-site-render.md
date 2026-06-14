@@ -4,7 +4,7 @@ Version: 1.0
 Author: Brandon Korous
 Last Updated: 2026-06-02
 
-> The Builder ([40](40-sitebuilder-composition-model.md)) lets a tenant compose a
+> The Builder ([40](../40-sitebuilder-composition-model.md)) lets a tenant compose a
 > page as a node tree; persistence ([41](41-builder-page-model.md)) stores it;
 > the keystone ([43](43-builder-binding-schema.md)) tells the editor what it can
 > bind to. This doc closes the loop: a **published** Builder page actually SERVES

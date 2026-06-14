@@ -199,7 +199,7 @@ API (tenant context from Better Auth JWT or host lookup)
 ```
 
 The host lookup resolves to a **tenant AND a web property (site)** — a tenant can
-run multiple sites over one back office ([49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)).
+run multiple sites over one back office ([49-multi-site-per-tenant.md](archive/49-multi-site-per-tenant.md)).
 The `domains` table is a **non-RLS dispatch table** (resolution runs before a
 tenant is known; globally-unique `host` is the cross-tenant guard); the bare
 `<tenant>.sparx.zone` is a primary **alias** that follows the primary site, while
