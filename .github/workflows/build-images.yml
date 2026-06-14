@@ -107,7 +107,7 @@ jobs:
             echo "app_version=${GITHUB_SHA::12}" >> $GITHUB_OUTPUT
           fi
 
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
         if: steps.dockerfile.outputs.path != ''
 
       - name: Build & push
