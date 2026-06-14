@@ -22,6 +22,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogCancel,
+  toast,
 } from '@sparx/ui';
 import { MoreHorizontal, RefreshCw, Edit2, Trash2 } from 'lucide-react';
 import { syncSupplier, deleteSupplier } from '../_lib/actions';
@@ -74,7 +75,14 @@ export function SupplierActions({ supplier, sites, vendors }: Props) {
       const { error } = await syncSupplier(supplier.id);
       if (error) {
         setSyncError(error);
+        toast.error('Catalog refresh failed', { description: error });
       } else {
+        // The sync runs async on a worker — confirm it's queued rather than imply
+        // the catalog already updated. Already-imported products are refreshed
+        // individually via Re-sync on Dropship → Products.
+        toast.success('Catalog refresh queued', {
+          description: 'Fetching the latest products from this supplier — refresh shortly to see them.',
+        });
         router.refresh();
       }
     });
@@ -105,7 +113,7 @@ export function SupplierActions({ supplier, sites, vendors }: Props) {
           <DropdownMenuContent align="end">
             <DropdownMenuItem onSelect={handleSync} disabled={syncing}>
               <RefreshCw className="mr-2 h-4 w-4" />
-              {syncing ? 'Queuing sync…' : 'Sync catalog'}
+              {syncing ? 'Queuing refresh…' : 'Refresh catalog'}
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setEditOpen(true)}>
               <Edit2 className="mr-2 h-4 w-4" />

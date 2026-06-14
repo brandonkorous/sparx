@@ -18,9 +18,13 @@ import {
 import { api, type ApiRestError } from '@/lib/api-rest-client';
 import { listProperties, type Property } from '@/lib/sites';
 
+import type { ProductImageRow } from '../../variant-actions';
+
 import { FitmentPanel } from './_components/fitment-panel';
 import { InventoryPanel } from './_components/inventory-panel';
 import { ProductEditForm } from './_components/product-edit-form';
+import { ProductMediaPanel } from './_components/product-media-panel';
+import { ProductPricingPanel } from './_components/product-pricing-panel';
 import { ProductStatusBar } from './_components/product-status-bar';
 import { VariantsPanel } from './_components/variants-panel';
 
@@ -198,8 +202,25 @@ export async function ProductDetailContent({ id }: Props) {
     throw err;
   }
 
-  const [options, variants, fitments, domains, warehouses, sites, markupRulesRaw] =
-    await Promise.all([
+  // Dropship-imported products stamp the source supplier in metadata. Used to
+  // label vendor-priced variants on the Pricing tab with the real supplier name.
+  const dropshipSupplierId =
+    typeof product.metadata?.dropshipSupplierId === 'string'
+      ? product.metadata.dropshipSupplierId
+      : null;
+
+  const [
+    options,
+    variants,
+    fitments,
+    domains,
+    warehouses,
+    sites,
+    markupRulesRaw,
+    tenant,
+    images,
+    supplierName,
+  ] = await Promise.all([
       api.get<OptionRow[]>(`/v1/commerce/products/${id}/variants/options`),
       api.get<VariantRow[]>(`/v1/commerce/products/${id}/variants?include_archived=true`),
       api.get<ProductFitmentRow[]>(`/v1/commerce/products/${id}/fitment`),
@@ -210,6 +231,23 @@ export async function ProductDetailContent({ id }: Props) {
       listProperties().catch(() => [] as Property[]),
       // Catalog markup rules for the per-variant "Price by rule" control (docs/48).
       api.get<MarkupRuleSummary[]>('/v1/markup-rules').catch(() => [] as MarkupRuleSummary[]),
+      // Tenant slug for the Media tab's public-media redirect URLs (works for
+      // both stored uploads and hot-linked dropship images).
+      api.get<{ slug: string }>('/v1/tenant'),
+      // Product images — drives the Media tab's count badge and seeds the gallery
+      // so it paints without a client round-trip.
+      api
+        .get<ProductImageRow[]>(`/v1/commerce/products/${id}/images`)
+        .catch(() => [] as ProductImageRow[]),
+      // Dropship supplier name for the Pricing tab's "Priced by" label. Defensive
+      // — a non-dropship product, a disabled dropship module, or a deleted
+      // supplier all degrade to the generic "Vendor" label.
+      dropshipSupplierId
+        ? api
+            .get<{ name: string }>(`/v1/dropship/suppliers/${dropshipSupplierId}`)
+            .then((s) => s.name)
+            .catch(() => null)
+        : Promise.resolve(null),
     ]);
 
   // Only catalog-applying, active rules can price a variant inline.
@@ -277,7 +315,14 @@ export async function ProductDetailContent({ id }: Props) {
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="media">Media</TabsTrigger>
+          <TabsTrigger value="media">
+            Media
+            {images.length > 0 && (
+              <Badge variant="outline" className="ml-2 text-xs">
+                {images.length}
+              </Badge>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="pricing">Pricing</TabsTrigger>
           <TabsTrigger value="inventory">Inventory</TabsTrigger>
           <TabsTrigger value="fitment">Fitment</TabsTrigger>
@@ -306,16 +351,18 @@ export async function ProductDetailContent({ id }: Props) {
         </TabsContent>
 
         <TabsContent value="media">
-          <PhaseStub
-            title="Media — Phase 1.2"
-            description="Image gallery, 360 spin, video, swap+sort, alt text. Reuses the CMS media picker."
+          <ProductMediaPanel
+            productId={product.id}
+            tenantSlug={tenant.slug}
+            initialImages={images}
           />
         </TabsContent>
 
         <TabsContent value="pricing">
-          <PhaseStub
-            title="Pricing — Phase 3"
-            description="Price lists, bulk-quantity tiers, contract prices for B2B accounts, automatic discount eligibility preview."
+          <ProductPricingPanel
+            variants={variants}
+            markupRules={markupRules}
+            supplierName={supplierName}
           />
         </TabsContent>
 

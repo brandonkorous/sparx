@@ -1,15 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { ExternalLink } from 'lucide-react';
+import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { ExternalLink, RefreshCw } from 'lucide-react';
 import {
   SelectionList,
   type SelectionCard,
   type SelectionColumn,
   Badge,
+  Button,
   Stack,
   Text,
+  toast,
 } from '@sparx/ui';
+
+import { resyncSupplierProduct } from '../../suppliers/_lib/catalog-actions';
 
 // Client wrapper for the dropship products list. SelectionList takes render
 // functions (columns/card) that can't cross the server→client boundary, so the
@@ -145,50 +151,102 @@ function statusCell(p: DropshipProduct) {
   );
 }
 
-const columns: SelectionColumn<DropshipProduct>[] = [
-  { header: 'Product', cell: productCell },
-  { header: 'Supplier ID', cell: supplierIdCell },
-  { header: 'Cost', cell: costCell },
-  { header: 'MSRP', cell: msrpCell },
-  { header: 'Margin', cell: marginCell },
-  { header: 'Status', cell: statusCell },
-];
+// Per-row "Re-sync": re-pulls this imported product from the supplier — refreshes
+// availability (always orderable) and BACKFILLS the supplier's images onto the
+// commerce product when it has none. This is the discoverable home for the action
+// that was previously buried on the supplier catalog page; the supplier-level
+// "Refresh catalog" only re-fetches the browsable list, it doesn't touch an
+// already-imported product.
+function ResyncButton({ supplierId, productId }: { supplierId: string; productId: string }) {
+  const [resyncing, startResync] = useTransition();
+  const router = useRouter();
+  return (
+    <Button
+      color="neutral"
+      variant="ghost"
+      size="sm"
+      disabled={resyncing}
+      onClick={() =>
+        startResync(async () => {
+          const { imagesAdded, error } = await resyncSupplierProduct(supplierId, productId);
+          if (error) {
+            toast.error('Re-sync failed', { description: error });
+            return;
+          }
+          toast.success('Re-synced from supplier', {
+            description:
+              imagesAdded && imagesAdded > 0
+                ? `Updated availability and added ${imagesAdded} image${imagesAdded === 1 ? '' : 's'}.`
+                : 'Updated availability from the supplier.',
+          });
+          router.refresh();
+        })
+      }
+    >
+      <RefreshCw className={`mr-1 h-4 w-4 ${resyncing ? 'animate-spin' : ''}`} />
+      {resyncing ? 'Re-syncing…' : 'Re-sync'}
+    </Button>
+  );
+}
 
-const card: SelectionCard<DropshipProduct> = {
-  title: (p) => <Text className="truncate font-medium">{p.title}</Text>,
-  subtitle: (p) =>
-    p.links[0] ? (
-      <Link
-        href={`/commerce/products/${p.links[0].productId}`}
-        className="text-xs text-[var(--color-muted-foreground)] hover:underline"
-      >
-        View in catalog →
-      </Link>
-    ) : (
-      <span className="font-mono text-xs text-[var(--color-muted-foreground)]">
-        {p.supplierProductId}
-      </span>
-    ),
-  badge: statusCell,
-  body: (p) => (
-    <>
-      <Stack direction="row" align="center" justify="between" gap={2}>
-        <Text size="sm" variant="muted">
-          {costCell(p)} cost
-        </Text>
-        {marginCell(p)}
-      </Stack>
-      <Stack direction="row" align="center" justify="between" gap={2}>
-        <Text size="xs" className="text-[var(--color-muted-foreground)]">
-          MSRP {p.msrpCents ? formatCents(p.msrpCents) : '—'}
-        </Text>
+// Columns/card are built per supplier group so the Re-sync action can close over
+// the group's supplier id (SelectionList cell renderers only receive the row).
+function makeColumns(supplierId: string): SelectionColumn<DropshipProduct>[] {
+  return [
+    { header: 'Product', cell: productCell },
+    { header: 'Supplier ID', cell: supplierIdCell },
+    { header: 'Cost', cell: costCell },
+    { header: 'MSRP', cell: msrpCell },
+    { header: 'Margin', cell: marginCell },
+    { header: 'Status', cell: statusCell },
+    {
+      header: 'Sync',
+      align: 'right',
+      cell: (p) => <ResyncButton supplierId={supplierId} productId={p.id} />,
+    },
+  ];
+}
+
+function makeCard(supplierId: string): SelectionCard<DropshipProduct> {
+  return {
+    title: (p) => <Text className="truncate font-medium">{p.title}</Text>,
+    subtitle: (p) =>
+      p.links[0] ? (
+        <Link
+          href={`/commerce/products/${p.links[0].productId}`}
+          className="text-xs text-[var(--color-muted-foreground)] hover:underline"
+        >
+          View in catalog →
+        </Link>
+      ) : (
         <span className="font-mono text-xs text-[var(--color-muted-foreground)]">
           {p.supplierProductId}
         </span>
-      </Stack>
-    </>
-  ),
-};
+      ),
+    badge: statusCell,
+    body: (p) => (
+      <>
+        <Stack direction="row" align="center" justify="between" gap={2}>
+          <Text size="sm" variant="muted">
+            {costCell(p)} cost
+          </Text>
+          {marginCell(p)}
+        </Stack>
+        <Stack direction="row" align="center" justify="between" gap={2}>
+          <Text size="xs" className="text-[var(--color-muted-foreground)]">
+            MSRP {p.msrpCents ? formatCents(p.msrpCents) : '—'}
+          </Text>
+          <span className="font-mono text-xs text-[var(--color-muted-foreground)]">
+            {p.supplierProductId}
+          </span>
+        </Stack>
+        <Stack direction="row" justify="end">
+          <ResyncButton supplierId={supplierId} productId={p.id} />
+        </Stack>
+      </>
+    ),
+  };
+}
 
 export function DropshipProductsList({ groups, view }: DropshipProductsListProps) {
   return (
@@ -212,8 +270,8 @@ export function DropshipProductsList({ groups, view }: DropshipProductsListProps
             view={view}
             getId={(p) => p.id}
             selectable={false}
-            columns={columns}
-            card={card}
+            columns={makeColumns(supplier.id)}
+            card={makeCard(supplier.id)}
           />
         </Stack>
       ))}
