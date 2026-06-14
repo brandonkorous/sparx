@@ -63,27 +63,37 @@ export interface BundleDetail extends BundleRow {
   components: BundleComponentRow[];
 }
 
-export async function listBundles(ctx: ServiceContext): Promise<BundleRow[]> {
+export async function listBundles(
+  ctx: ServiceContext,
+  filter: { take?: number; skip?: number } = {}
+): Promise<{ items: BundleRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const rows = await tx.bundle.findMany({
-      include: {
-        bundleProduct: { select: { title: true } },
-        _count: { select: { components: true } },
-      },
-      orderBy: { updatedAt: 'desc' },
-      take: 200,
-    });
-    return rows.map((r) => ({
-      id: r.id,
-      bundleProductId: r.bundleProductId,
-      bundleProductTitle: r.bundleProduct.title,
-      pricingMode: r.pricingMode,
-      fixedPriceCents: r.fixedPriceCents,
-      percentOffSum: r.percentOffSum,
-      inventoryMode: r.inventoryMode,
-      componentCount: r._count.components,
-      updatedAt: r.updatedAt.toISOString(),
-    }));
+    const [rows, total] = await Promise.all([
+      tx.bundle.findMany({
+        include: {
+          bundleProduct: { select: { title: true } },
+          _count: { select: { components: true } },
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.bundle.count(),
+    ]);
+    return {
+      items: rows.map((r) => ({
+        id: r.id,
+        bundleProductId: r.bundleProductId,
+        bundleProductTitle: r.bundleProduct.title,
+        pricingMode: r.pricingMode,
+        fixedPriceCents: r.fixedPriceCents,
+        percentOffSum: r.percentOffSum,
+        inventoryMode: r.inventoryMode,
+        componentCount: r._count.components,
+        updatedAt: r.updatedAt.toISOString(),
+      })),
+      total,
+    };
   });
 }
 
@@ -332,19 +342,24 @@ export async function listTemplatesForProduct(
 
 export async function listAllTemplates(
   ctx: ServiceContext,
-  filter: { status?: string } = {}
-): Promise<ConfigurationTemplateRow[]> {
+  filter: { status?: string; take?: number; skip?: number } = {}
+): Promise<{ items: ConfigurationTemplateRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const rows = await tx.configurationTemplate.findMany({
-      where: { ...(filter.status ? { status: filter.status } : {}) },
-      include: {
-        product: { select: { title: true } },
-        _count: { select: { options: true, rules: true, addOns: true } },
-      },
-      orderBy: { updatedAt: 'desc' },
-      take: 200,
-    });
-    return rows.map(serializeTemplateRow);
+    const where = { ...(filter.status ? { status: filter.status } : {}) };
+    const [rows, total] = await Promise.all([
+      tx.configurationTemplate.findMany({
+        where,
+        include: {
+          product: { select: { title: true } },
+          _count: { select: { options: true, rules: true, addOns: true } },
+        },
+        orderBy: { updatedAt: 'desc' },
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.configurationTemplate.count({ where }),
+    ]);
+    return { items: rows.map(serializeTemplateRow), total };
   });
 }
 

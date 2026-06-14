@@ -21,6 +21,11 @@ import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
 const PathId = z.object({ id: z.string().uuid() });
 const PathIdOid = z.object({ id: z.string().uuid(), oid: z.string().uuid() });
 
+const ListTiersQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
 const TierBody = z.object({
   name: z.string().min(1).max(127),
   description: z.string().max(2000).optional(),
@@ -81,16 +86,26 @@ const b2bPricingTierRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireB2bModule(request);
     const ctx = toB2bContext(request);
+    const q = ListTiersQuery.parse(request.query);
+    const take = Math.min(q.take ?? 50, 250);
+    const skip = q.skip ?? 0;
 
-    const tiers = await withTenant(ctx, (tx) =>
-      tx.b2bPricingTier.findMany({
-        where: { tenantId: ctx.tenantId, deletedAt: null },
-        orderBy: { name: 'asc' },
-        include: { _count: { select: { accounts: true } } },
-      })
-    );
+    const where = { tenantId: ctx.tenantId, deletedAt: null };
+    const { tiers, total } = await withTenant(ctx, async (tx) => {
+      const [tiers, total] = await Promise.all([
+        tx.b2bPricingTier.findMany({
+          where,
+          orderBy: { name: 'asc' },
+          include: { _count: { select: { accounts: true } } },
+          take,
+          skip,
+        }),
+        tx.b2bPricingTier.count({ where }),
+      ]);
+      return { tiers, total };
+    });
 
-    return paged(tiers.map(toTierView), { total: tiers.length });
+    return paged(tiers.map(toTierView), { total, per_page: q.take ?? 50 });
   });
 
   app.post('/v1/b2b/pricing-tiers', async (request, reply) => {

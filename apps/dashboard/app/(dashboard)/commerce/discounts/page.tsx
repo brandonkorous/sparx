@@ -6,6 +6,8 @@ import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { DiscountsImportExport } from './_components/discounts-import-export';
 import { DiscountsList, type DiscountRow } from './_components/discounts-list';
@@ -24,19 +26,19 @@ const STATUS_OPTIONS = [
 
 export default async function DiscountsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status);
   const q = stringParam(params.q);
 
-  const query = new URLSearchParams();
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status) query.set('status', status);
   if (q) query.set('q', q);
 
-  const [prefs, discounts] = await Promise.all([
+  const [prefs, { data: discounts, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<DiscountRow[]>(
-      `/v1/commerce/discounts${query.toString() ? `?${query.toString()}` : ''}`
-    ),
+    api.getPaged<DiscountRow[]>(`/v1/commerce/discounts?${query.toString()}`),
   ]);
+  const total = (meta?.total as number | undefined) ?? discounts.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -48,7 +50,7 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
           title="Discounts"
           badge={
             <Badge color="module">
-              {discounts.length} discount{discounts.length === 1 ? '' : 's'}
+              {total} discount{total === 1 ? '' : 's'}
             </Badge>
           }
           description="Codes activate when a shopper enters them; automatic discounts apply silently when their conditions match. Stacking rules govern combining with subscribe-and-save and loyalty."
@@ -100,6 +102,8 @@ export default async function DiscountsPage({ searchParams }: PageProps) {
             <DiscountsList discounts={discounts} view={view} />
           </>
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

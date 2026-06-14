@@ -74,7 +74,7 @@ export async function MenuDetailContent({ id: location }: Props) {
   let entryChoices: ApiEntrySummary[] = [];
   try {
     entryChoices = await api.get<ApiEntrySummary[]>(
-      '/v1/content/entries?status=published&limit=200'
+      '/v1/content/entries?status=published&take=200'
     );
   } catch {
     entryChoices = [];

@@ -76,8 +76,11 @@ export default async function BuilderOverviewPage() {
   // plain CTA if the catalog read fails.
   let teaser: { count: number; names: string[] } | null = null;
   try {
-    const { blueprints } = await api.get<{ blueprints: { name: string }[] }>('/v1/blueprints');
-    teaser = { count: blueprints.length, names: blueprints.slice(0, 4).map((b) => b.name) };
+    // Paginated catalog: data = the array, meta.total = the full count. The
+    // teaser shows the total and the first few names off the first page.
+    const { data: blueprints, meta } = await api.getPaged<{ name: string }[]>('/v1/blueprints');
+    const count = (meta?.total as number | undefined) ?? blueprints.length;
+    teaser = { count, names: blueprints.slice(0, 4).map((b) => b.name) };
   } catch {
     teaser = null;
   }

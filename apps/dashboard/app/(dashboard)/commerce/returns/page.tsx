@@ -14,17 +14,14 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ReturnsList, type ReturnStatus, type ReturnSummary } from './_components/returns-list';
 
 export const dynamic = 'force-dynamic';
-
-interface ReturnsListResponse {
-  items: ReturnSummary[];
-  total: number;
-}
 
 const STATUS_OPTIONS = [
   { value: 'requested', label: 'New' },
@@ -41,18 +38,23 @@ const STATUS_OPTIONS = [
 export default async function ReturnsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; view?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { status: statusParam, view: viewParam } = await searchParams;
+  const params = await searchParams;
+  const statusParam = stringParam(params.status);
+  const viewParam = stringParam(params.view);
   const status = isStatus(statusParam) ? statusParam : undefined;
+  const { skip, take } = parsePageParams(params);
 
   const query = new URLSearchParams();
   if (status) query.set('status', status);
-  query.set('take', '100');
-  const [prefs, { items, total }] = await Promise.all([
+  query.set('take', String(take));
+  query.set('skip', String(skip));
+  const [prefs, { data: items, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<ReturnsListResponse>(`/v1/commerce/returns?${query.toString()}`),
+    api.getPaged<ReturnSummary[]>(`/v1/commerce/returns?${query.toString()}`),
   ]);
+  const total = (meta?.total as number | undefined) ?? items.length;
 
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -99,9 +101,17 @@ export default async function ReturnsPage({
             <ReturnsList rows={items} view={view} />
           </Stack>
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }
 
 function labelForStatus(s: ReturnStatus): string {

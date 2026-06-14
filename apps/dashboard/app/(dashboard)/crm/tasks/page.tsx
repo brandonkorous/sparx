@@ -17,6 +17,8 @@ import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { TasksList } from './_components/tasks-list';
 import type { TaskCard } from './_components/task-row';
@@ -52,16 +54,21 @@ interface PageProps {
 export default async function TasksPage({ searchParams }: PageProps) {
   const session = await requireSession();
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const scope = stringParam(params.scope) === 'all' ? 'all' : 'me';
 
   const mine = scope === 'me' ? `&assigned_to_user_id=${session.user.id}` : '';
   const overdueQuery = scope === 'me' ? `?user_id=${session.user.id}` : '';
-  const [prefs, openTasks, overdueTasks, completedTasks] = await Promise.all([
-    getUserPreferences(),
-    api.get<TaskListItem[]>(`/v1/crm/tasks?status=open&take=100${mine}`),
-    api.get<TaskListItem[]>(`/v1/crm/tasks/overdue${overdueQuery}`),
-    api.get<TaskListItem[]>(`/v1/crm/tasks?status=completed&take=25${mine}`),
-  ]);
+  // Only the "open" list grows, so it's the one that paginates; the overdue and
+  // completed sub-lists stay capped helper queries (their `take` caps unchanged).
+  const [prefs, { data: openTasks, meta: openMeta }, overdueTasks, completedTasks] =
+    await Promise.all([
+      getUserPreferences(),
+      api.getPaged<TaskListItem[]>(`/v1/crm/tasks?status=open&take=${take}&skip=${skip}${mine}`),
+      api.get<TaskListItem[]>(`/v1/crm/tasks/overdue${overdueQuery}`),
+      api.get<TaskListItem[]>(`/v1/crm/tasks?status=completed&take=25${mine}`),
+    ]);
+  const openTotal = (openMeta?.total as number | undefined) ?? openTasks.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -73,7 +80,7 @@ export default async function TasksPage({ searchParams }: PageProps) {
           title="Tasks"
           badge={
             <>
-              <Badge color="module">{openTasks.length} open</Badge>
+              <Badge color="module">{openTotal} open</Badge>
               {overdueTasks.length > 0 && (
                 <Badge color="danger">{overdueTasks.length} overdue</Badge>
               )}
@@ -119,7 +126,7 @@ export default async function TasksPage({ searchParams }: PageProps) {
             <CardTitle>
               <Stack direction="row" align="center" gap={2}>
                 <Calendar className="h-4 w-4" /> Open
-                <Badge variant="outline">{openTasks.length}</Badge>
+                <Badge variant="outline">{openTotal}</Badge>
               </Stack>
             </CardTitle>
           </CardHeader>
@@ -145,6 +152,10 @@ export default async function TasksPage({ searchParams }: PageProps) {
             </CardContent>
           </Card>
         )}
+
+        {/* Paginates the OPEN list only — the overdue/completed groups above are
+            capped helper queries, so the pager total reflects open tasks. */}
+        <ListPager total={openTotal} />
       </Stack>
     </Container>
   );

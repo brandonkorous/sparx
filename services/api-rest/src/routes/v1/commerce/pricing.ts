@@ -3,7 +3,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { discountService, pricingService } from '@sparx/commerce';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 
@@ -11,20 +11,36 @@ const PathId = z.object({ id: z.string().uuid() });
 const EntryParam = z.object({ entryId: z.string().uuid() });
 const TierParam = z.object({ tierId: z.string().uuid() });
 
+const ListDiscountsQuery = z.object({
+  status: z.string().optional(),
+  q: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
+const ListPriceListsQuery = z.object({
+  status: z.string().optional(),
+  channel: z.string().optional(),
+  b2b_account_id: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const pricingRoutes: FastifyPluginAsync = async (app) => {
   // Price lists
   app.get('/v1/commerce/price-lists', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    return ok(
-      await pricingService.listPriceLists(toCommerceContext(request), {
-        ...(q?.status ? { status: q.status } : {}),
-        ...(q?.channel ? { channel: q.channel } : {}),
-        ...(q?.b2b_account_id ? { b2bAccountId: q.b2b_account_id } : {}),
-      })
-    );
+    const q = ListPriceListsQuery.parse(request.query);
+    const { items, total } = await pricingService.listPriceLists(toCommerceContext(request), {
+      ...(q.status ? { status: q.status } : {}),
+      ...(q.channel ? { channel: q.channel } : {}),
+      ...(q.b2b_account_id ? { b2bAccountId: q.b2b_account_id } : {}),
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/commerce/price-lists/:id', async (request) => {
@@ -130,13 +146,14 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/discounts', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    return ok(
-      await discountService.listDiscounts(toCommerceContext(request), {
-        ...(q?.status ? { status: q.status } : {}),
-        ...(q?.q ? { q: q.q } : {}),
-      })
-    );
+    const q = ListDiscountsQuery.parse(request.query);
+    const { items, total } = await discountService.listDiscounts(toCommerceContext(request), {
+      ...(q.status ? { status: q.status } : {}),
+      ...(q.q ? { q: q.q } : {}),
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.post('/v1/commerce/discounts', async (request, reply) => {

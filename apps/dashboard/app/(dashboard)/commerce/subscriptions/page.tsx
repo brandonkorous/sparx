@@ -5,6 +5,8 @@ import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sp
 import { api } from '@/lib/api-rest-client';
 
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { SubscriptionsList, type SubscriptionSummary } from './_components/subscriptions-list';
 
@@ -20,27 +22,25 @@ const STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Cancelled' },
 ];
 
-interface SubscriptionsListResponse {
-  items: SubscriptionSummary[];
-  total: number;
-}
-
 export default async function SubscriptionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; view?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { status: statusParam, view: viewParam } = await searchParams;
+  const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
+  const statusParam = stringParam(params.status);
+  const viewParam = stringParam(params.view);
   const status = isStatus(statusParam) ? statusParam : undefined;
 
-  const query = new URLSearchParams();
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status) query.set('status', status);
-  query.set('take', '100');
 
-  const [prefs, { items, total }] = await Promise.all([
+  const [prefs, { data: items, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<SubscriptionsListResponse>(`/v1/commerce/subscriptions?${query.toString()}`),
+    api.getPaged<SubscriptionSummary[]>(`/v1/commerce/subscriptions?${query.toString()}`),
   ]);
+  const total = (meta?.total as number | undefined) ?? items.length;
 
   const mrrCents = items.reduce((sum, s) => sum + s.monthlyRecurringRevenueCents, 0);
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
@@ -89,9 +89,17 @@ export default async function SubscriptionsPage({
             <SubscriptionsList items={items} view={view} />
           </>
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }
 
 function labelForStatus(s: SubscriptionStatus): string {

@@ -6,8 +6,10 @@
 
 import { Badge, Container, PageHeader, Stack } from '@sparx/ui';
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { RedirectsList } from './redirects-list';
 
 export const dynamic = 'force-dynamic';
@@ -27,11 +29,15 @@ interface PageProps {
 
 export default async function RedirectsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
-  const [prefs, redirects] = await Promise.all([
+  const [prefs, { data: redirects, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<ApiRedirect[]>('/v1/redirects'),
+    api.getPaged<ApiRedirect[]>(
+      `/v1/redirects?${new URLSearchParams({ take: String(take), skip: String(skip) }).toString()}`
+    ),
   ]);
+  const total = (meta?.total as number | undefined) ?? redirects.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -40,11 +46,12 @@ export default async function RedirectsPage({ searchParams }: PageProps) {
       <Stack gap={6} className="py-10">
         <PageHeader
           title="Redirects"
-          badge={<Badge variant="outline">{redirects.length}</Badge>}
+          badge={<Badge variant="outline">{total}</Badge>}
           description="Forward old URLs to new ones. Loops and chains over 8 hops are rejected at insert."
         />
         <ListToolbar searchable={false} enableViewToggle />
         <RedirectsList rows={redirects} view={view} />
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

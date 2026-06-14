@@ -70,7 +70,8 @@ export const dynamic = 'force-dynamic';
 export default async function ReportsPage() {
   const [snapshot, pipelines, winLoss, acquisition] = await Promise.all([
     api.get<TenantSnapshot>('/v1/crm/reports/snapshot'),
-    api.get<PipelineLite[]>('/v1/crm/pipelines'),
+    // List paginates (default 50); reports need every pipeline — max page.
+    api.get<PipelineLite[]>('/v1/crm/pipelines?take=250'),
     api.get<WinLossRow[]>('/v1/crm/reports/win-loss'),
     api.get<AcquisitionPoint[]>('/v1/crm/reports/acquisition?months=12'),
   ]);

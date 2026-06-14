@@ -58,7 +58,12 @@ export function Pager({
   onPageSizeChange,
   className,
 }: PagerProps) {
-  if (pageCount <= 1) return null;
+  // Always render for any non-empty list so the result count + rows-per-page
+  // control live in a predictable, discoverable place — never appearing or
+  // vanishing as the row count crosses a page boundary. An empty list is owned
+  // by the page's EmptyState. On a single page the prev/next/number nav simply
+  // disables rather than disappearing.
+  if (total === 0) return null;
 
   const start = (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, total);

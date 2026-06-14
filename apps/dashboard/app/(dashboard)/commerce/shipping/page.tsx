@@ -3,6 +3,7 @@ import { Truck } from 'lucide-react';
 import { Badge, Container, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ShippingLists } from './_components/shipping-lists';
@@ -46,14 +47,39 @@ interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
+// Independent pager query keys per section so zones + profiles page separately
+// (each pair matches the keys handed to that section's <ListPager> in
+// ShippingLists). Kept here so the server fetch window and the client pager stay
+// in lockstep.
+const ZONE_KEYS = { pageKey: 'zp', perPageKey: 'zpp' };
+const PROFILE_KEYS = { pageKey: 'pp', perPageKey: 'ppp' };
+
 export default async function ShippingPage({ searchParams }: PageProps) {
   const params = await searchParams;
 
-  const [prefs, zones, profiles] = await Promise.all([
+  const zoneWindow = parsePageParams(params, undefined, ZONE_KEYS);
+  const profileWindow = parsePageParams(params, undefined, PROFILE_KEYS);
+
+  const [prefs, zonesPage, profilesPage] = await Promise.all([
     getUserPreferences(),
-    api.get<ShippingZoneRow[]>('/v1/commerce/shipping/zones'),
-    api.get<ShippingProfileRow[]>('/v1/commerce/shipping/profiles'),
+    api.getPaged<ShippingZoneRow[]>(
+      `/v1/commerce/shipping/zones?${new URLSearchParams({
+        take: String(zoneWindow.take),
+        skip: String(zoneWindow.skip),
+      }).toString()}`
+    ),
+    api.getPaged<ShippingProfileRow[]>(
+      `/v1/commerce/shipping/profiles?${new URLSearchParams({
+        take: String(profileWindow.take),
+        skip: String(profileWindow.skip),
+      }).toString()}`
+    ),
   ]);
+
+  const zones = zonesPage.data;
+  const profiles = profilesPage.data;
+  const zoneTotal = (zonesPage.meta?.total as number | undefined) ?? zones.length;
+  const profileTotal = (profilesPage.meta?.total as number | undefined) ?? profiles.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -65,8 +91,8 @@ export default async function ShippingPage({ searchParams }: PageProps) {
           title="Shipping"
           badge={
             <Badge color="module">
-              {zones.length} zone{zones.length === 1 ? '' : 's'} · {profiles.length} profile
-              {profiles.length === 1 ? '' : 's'}
+              {zoneTotal} zone{zoneTotal === 1 ? '' : 's'} · {profileTotal} profile
+              {profileTotal === 1 ? '' : 's'}
             </Badge>
           }
           description="Zones map ship-to addresses (by country, region, postal range) to the rates a merchant offers there. Profiles group products that share carrier eligibility (standard goods, hazmat, freight). Real-time provider rates layer on top once you install a carrier from Commerce → Providers; the manual rates here serve as the fallback."
@@ -74,7 +100,15 @@ export default async function ShippingPage({ searchParams }: PageProps) {
 
         <ListToolbar enableViewToggle searchable={false} />
 
-        <ShippingLists zones={zones} profiles={profiles} view={view} />
+        <ShippingLists
+          zones={zones}
+          profiles={profiles}
+          view={view}
+          zoneTotal={zoneTotal}
+          profileTotal={profileTotal}
+          zonePagerKeys={ZONE_KEYS}
+          profilePagerKeys={PROFILE_KEYS}
+        />
       </Stack>
     </Container>
   );

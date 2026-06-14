@@ -28,8 +28,10 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { BlueprintsList, type BlueprintListItem } from './_components/blueprints-list';
 
 export const dynamic = 'force-dynamic';
@@ -67,18 +69,22 @@ interface PageProps {
 
 export default async function BuilderBlueprintsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
   const [session, prefs, catalog] = await Promise.all([
     requireSession(),
     getUserPreferences(),
-    api.get<{ blueprints: ApiBlueprintCard[]; property_id: string }>('/v1/blueprints'),
+    api.getPaged<ApiBlueprintCard[]>(
+      `/v1/blueprints?${new URLSearchParams({ take: String(take), skip: String(skip) }).toString()}`
+    ),
   ]);
+  const total = (catalog.meta?.total as number | undefined) ?? catalog.data.length;
 
   const canInstall = session.user.role === 'owner' || session.user.role === 'admin';
   // Installed-only — the full catalog lives in the Marketplace (/marketplace).
   // /v1/blueprints (the install engine, docs/54) is snake_case; map the install
   // overlay onto the marketplace shape the card actions consume.
-  const installed: BlueprintListItem[] = catalog.blueprints
+  const installed: BlueprintListItem[] = catalog.data
     .filter((bp) => bp.install !== null)
     .map((bp) => ({
       key: bp.key,
@@ -143,6 +149,8 @@ export default async function BuilderBlueprintsPage({ searchParams }: PageProps)
           ) : (
             <BlueprintsList rows={installed} view={view} canInstall={canInstall} />
           )}
+
+          <ListPager total={total} />
         </Stack>
       </Container>
     </ModuleProvider>

@@ -11,11 +11,12 @@ export interface CollectionOption {
 }
 
 // Lightweight collection list for pickers (e.g. the product creation wizard's
-// Organization step). The list endpoint paginates as `{ items, total }`.
+// Organization step). The list endpoint returns a paged envelope: the rows are
+// the `data` array, with the count in `meta.total`.
 export async function listCollectionsAction(): Promise<ActionResult<CollectionOption[]>> {
   return restAction(async () => {
-    const res = await api.get<{ items: CollectionOption[] }>('/v1/commerce/collections?take=200');
-    return res.items.map((c) => ({ id: c.id, name: c.name }));
+    const { data } = await api.getPaged<CollectionOption[]>('/v1/commerce/collections?take=200');
+    return data.map((c) => ({ id: c.id, name: c.name }));
   });
 }
 

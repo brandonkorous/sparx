@@ -16,12 +16,17 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withRequestTenant } from '@sparx/api-core/db';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { conflict, notFound } from '@sparx/api-core/errors';
 import { slugify } from '@sparx/api-core/slug';
 
 const KeyParams = z.object({ key: z.string().min(1).max(63) });
+
+const ListQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 const TermPath = z.object({
   key: z.string().min(1).max(63),
   id: z.string().uuid(),
@@ -63,13 +68,19 @@ const UpdateTerm = z.object({
 const taxonomyRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/taxonomies', async (request) => {
     requireRole(request, 'viewer');
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.taxonomy.findMany({
-        orderBy: { name: 'asc' },
-        include: { _count: { select: { terms: true } } },
-      })
+    const q = ListQuery.parse(request.query);
+    const [rows, total] = await withRequestTenant(request, (tx) =>
+      Promise.all([
+        tx.taxonomy.findMany({
+          orderBy: { name: 'asc' },
+          include: { _count: { select: { terms: true } } },
+          take: Math.min(q.take ?? 50, 250),
+          skip: q.skip ?? 0,
+        }),
+        tx.taxonomy.count(),
+      ])
     );
-    return ok(
+    return paged(
       rows.map((t) => ({
         id: t.id,
         key: t.key,
@@ -79,7 +90,8 @@ const taxonomyRoutes: FastifyPluginAsync = (app) => {
         term_count: t._count.terms,
         created_at: t.createdAt.toISOString(),
         updated_at: t.updatedAt.toISOString(),
-      }))
+      })),
+      { total, per_page: q.take ?? 50 }
     );
   });
 

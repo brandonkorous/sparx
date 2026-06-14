@@ -21,7 +21,7 @@ export const metadata = { title: 'Bulk pricing — Commerce' };
 export default async function BulkPricingPage() {
   const [rules, collectionList] = await Promise.all([
     api.get<BulkRule[]>('/v1/markup-rules'),
-    api.get<{ items: CollectionOption[] }>('/v1/commerce/collections?take=100'),
+    api.getPaged<CollectionOption[]>('/v1/commerce/collections?take=100'),
   ]);
 
   // Only catalog-applicable rules can reprice the catalog; document-only rules
@@ -50,7 +50,7 @@ export default async function BulkPricingPage() {
           </a>
           .
         </Text>
-        <BulkPricingTool rules={catalogRules} collections={collectionList.items} />
+        <BulkPricingTool rules={catalogRules} collections={collectionList.data} />
       </Stack>
     </Container>
   );

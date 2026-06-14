@@ -20,7 +20,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
 import { withTenant } from '@sparx/db';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { conflict, notFound } from '@sparx/api-core/errors';
 import {
@@ -43,6 +43,10 @@ import {
 
 const KeyParam = z.object({ key: z.string().min(1).max(63) });
 const IdParam = z.object({ id: z.string().uuid() });
+const ListQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 // Install target (docs/49 Phase 8): an explicit site to install into. Optional —
 // absent falls back to the active site (header) then primary. The body itself is
 // optional (a bare POST still installs into the active/primary site).
@@ -138,6 +142,9 @@ function serializeInstallDetail(row: InstallRow) {
 const blueprintRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/blueprints', async (request) => {
     const auth = requireRole(request, 'viewer');
+    const q = ListQuery.parse(request.query);
+    const take = Math.min(q.take ?? 50, 250);
+    const skip = q.skip ?? 0;
     // Per-site install state (docs/49 Phase 8): a blueprint installs into a
     // specific site, so the catalog reads the ACTIVE site's install rows (the
     // switcher's header, else primary) — a secondary site shows ITS own
@@ -146,13 +153,16 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       auth.tenantId,
       activePropertyHeader(request.headers)
     );
-    const [rows, installs] = await Promise.all([
+    const where = { status: 'published', visibility: 'public' } as const;
+    const [rows, catalogTotal, installs] = await Promise.all([
       // DATA-first (docs/85): the catalog is the thin marketplace rows, so
       // bundle-ingested blueprints show up here alongside the legacy code ones.
       withTenant({ tenantId: auth.tenantId }, (tx) =>
         tx.marketplaceBlueprint.findMany({
-          where: { status: 'published', visibility: 'public' },
+          where,
           orderBy: { sortWeight: 'desc' },
+          take,
+          skip,
           select: {
             slug: true,
             name: true,
@@ -166,6 +176,7 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
           },
         })
       ),
+      withTenant({ tenantId: auth.tenantId }, (tx) => tx.marketplaceBlueprint.count({ where })),
       withTenant({ tenantId: auth.tenantId }, (tx) =>
         tx.tenantBlueprintInstall.findMany({
           where: { propertyId },
@@ -189,30 +200,37 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
         : null;
     };
 
-    const blueprints =
-      rows.length > 0
-        ? rows.map((r) => {
-            const media = Array.isArray(r.media) ? (r.media as { url?: string }[]) : [];
-            return {
-              key: r.slug,
-              name: r.name,
-              summary: r.tagline ?? r.description ?? '',
-              vertical: r.vertical,
-              version: r.version,
-              requiredModules: r.requiredModules,
-              ...(media[0]?.url ? { preview: media[0].url } : {}),
-              contents: (r.contents ?? {}) as Record<string, unknown>,
-              install: installState(r.slug, r.version),
-            };
-          })
-        : // Fallback to the in-code registry only when the catalog table is empty
-          // (a fresh dev DB before the seed/ingest has run).
-          listBlueprints().map((bp) => ({
-            ...toSummary(bp),
-            contents: summarizeContents(bp),
-            install: installState(bp.key, bp.version),
-          }));
-    return ok({ blueprints, property_id: propertyId });
+    // Fallback to the in-code registry only when the catalog table is genuinely
+    // empty (a fresh dev DB before the seed/ingest has run) — NOT merely when a
+    // paginated page lands past the last row, which would wrongly resurrect the
+    // legacy list on page 2+.
+    const usingFallback = catalogTotal === 0;
+    const fallbackAll = usingFallback ? listBlueprints() : [];
+    const total = usingFallback ? fallbackAll.length : catalogTotal;
+
+    const blueprints = usingFallback
+      ? fallbackAll.slice(skip, skip + take).map((bp) => ({
+          ...toSummary(bp),
+          contents: summarizeContents(bp),
+          install: installState(bp.key, bp.version),
+        }))
+      : rows.map((r) => {
+          const media = Array.isArray(r.media) ? (r.media as { url?: string }[]) : [];
+          return {
+            key: r.slug,
+            name: r.name,
+            summary: r.tagline ?? r.description ?? '',
+            vertical: r.vertical,
+            version: r.version,
+            requiredModules: r.requiredModules,
+            ...(media[0]?.url ? { preview: media[0].url } : {}),
+            contents: (r.contents ?? {}) as Record<string, unknown>,
+            install: installState(r.slug, r.version),
+          };
+        });
+    // `property_id` rides in the meta alongside the pagination fields so the
+    // dashboard still gets the active site's id while the list paginates.
+    return paged(blueprints, { total, per_page: take, property_id: propertyId });
   });
 
   app.get('/v1/blueprints/:key', async (request) => {

@@ -26,13 +26,21 @@ function firstParam(v: string | string[] | undefined): string | undefined {
  * Resolve `?page=` / `?per_page=` from a page's searchParams into a fetch
  * window. Page is clamped to ≥1; an out-of-range or non-listed page size falls
  * back to `defaultPerPage`.
+ *
+ * Pages that render MULTIPLE independently-paged sections (e.g. Shipping's
+ * zones + profiles) pass custom `pageKey` / `perPageKey` so each section reads
+ * its own query params — these must match the keys handed to that section's
+ * `<ListPager pageKey=… perPageKey=… />`.
  */
 export function parsePageParams(
   params: Record<string, string | string[] | undefined>,
-  defaultPerPage: number = DEFAULT_PAGE_SIZE
+  defaultPerPage: number = DEFAULT_PAGE_SIZE,
+  keys: { pageKey?: string; perPageKey?: string } = {}
 ): PageWindow {
-  const page = Math.max(1, Math.floor(Number(firstParam(params.page)) || 1));
-  const rawPerPage = Math.floor(Number(firstParam(params.per_page)) || defaultPerPage);
+  const pageKey = keys.pageKey ?? 'page';
+  const perPageKey = keys.perPageKey ?? 'per_page';
+  const page = Math.max(1, Math.floor(Number(firstParam(params[pageKey])) || 1));
+  const rawPerPage = Math.floor(Number(firstParam(params[perPageKey])) || defaultPerPage);
   const perPage = PAGE_SIZE_OPTIONS.includes(rawPerPage) ? rawPerPage : defaultPerPage;
   return { page, perPage, skip: (page - 1) * perPage, take: perPage };
 }

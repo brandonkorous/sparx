@@ -36,7 +36,8 @@ export default async function NewDealPage({ searchParams }: PageProps) {
   const sp = await searchParams;
 
   const [pipelines, customers] = await Promise.all([
-    api.get<PipelineWithStages[]>('/v1/crm/pipelines'),
+    // List paginates (default 50); the deal-create picker needs every pipeline.
+    api.get<PipelineWithStages[]>('/v1/crm/pipelines?take=250'),
     api
       .getPaged<CustomerLite[]>('/v1/crm/customers?take=200&sort_by=updatedAt')
       .then((r) => r.data),

@@ -36,7 +36,7 @@ export async function TaxonomyDetailContent({ id: key }: Props) {
   let terms: ApiTerm[];
   try {
     [taxonomy, terms] = await Promise.all([
-      api.get<ApiTaxonomy[]>(`/v1/taxonomies`).then((rows) => {
+      api.get<ApiTaxonomy[]>(`/v1/taxonomies?take=250`).then((rows) => {
         const found = rows.find((r) => r.key === key);
         if (!found) throw Object.assign(new Error('not found'), { status: 404 });
         return found;

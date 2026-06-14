@@ -10,8 +10,10 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { EmailShell } from '../_components/email-shell';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { AddSuppressionForm } from './_components/add-suppression-form';
 import { SuppressionsList } from './_components/suppressions-list';
@@ -25,9 +27,15 @@ interface PageProps {
 
 export default async function SuppressionsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const [prefs, { data: items, meta }] = await Promise.all([
     getUserPreferences(),
-    api.getPaged<SuppressionRow[]>('/v1/email/suppressions'),
+    api.getPaged<SuppressionRow[]>(
+      `/v1/email/suppressions?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
   ]);
   const total = typeof meta?.total === 'number' ? meta.total : items.length;
 
@@ -70,6 +78,8 @@ export default async function SuppressionsPage({ searchParams }: PageProps) {
       ) : (
         <SuppressionsList rows={items} view={view} />
       )}
+
+      <ListPager total={total} />
     </EmailShell>
   );
 }

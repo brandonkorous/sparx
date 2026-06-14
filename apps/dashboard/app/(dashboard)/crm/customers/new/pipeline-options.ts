@@ -25,7 +25,9 @@ interface RawPipeline {
 
 export async function loadPipelineOptions(): Promise<PipelineOption[]> {
   try {
-    const rows = await api.get<RawPipeline[]>('/v1/crm/pipelines');
+    // The list endpoint paginates (default 50); a picker needs every pipeline,
+    // so request the max page.
+    const rows = await api.get<RawPipeline[]>('/v1/crm/pipelines?take=250');
     return rows.map((p) => ({
       id: p.id,
       name: p.name,

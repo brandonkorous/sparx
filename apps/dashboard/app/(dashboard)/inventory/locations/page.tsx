@@ -5,6 +5,8 @@ import { api } from '@/lib/api-rest-client';
 import { Text } from '@sparx/ui';
 
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { LocationsList, type StockLocation } from './_components/locations-list';
 
@@ -16,10 +18,17 @@ interface PageProps {
 
 export default async function StockLocationsPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const [prefs, locations] = await Promise.all([
+  const { skip, take } = parsePageParams(params);
+  const [prefs, { data: locations, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<StockLocation[]>('/v1/inventory/locations'),
+    api.getPaged<StockLocation[]>(
+      `/v1/inventory/locations?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
   ]);
+  const total = (meta?.total as number | undefined) ?? locations.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -43,6 +52,10 @@ export default async function StockLocationsPage({ searchParams }: PageProps) {
           <LocationsList rows={locations} view={view} />
         </div>
       )}
+
+      <div className="mt-6">
+        <ListPager total={total} />
+      </div>
     </div>
   );
 }

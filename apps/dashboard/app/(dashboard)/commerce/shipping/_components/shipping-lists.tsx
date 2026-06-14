@@ -19,6 +19,7 @@ import {
 } from '@sparx/ui';
 
 import { EntityRowLink } from '../../../_components/entity-row-link';
+import { ListPager } from '../../../_components/list-pager';
 
 // Client wrapper for the Shipping overview. SelectionList takes render functions
 // (columns/card), which can't cross the server→client boundary, so the server
@@ -57,13 +58,30 @@ interface ShippingProfileRow {
   updatedAt: string;
 }
 
+interface PagerKeys {
+  pageKey: string;
+  perPageKey: string;
+}
+
 interface ShippingListsProps {
   zones: ShippingZoneRow[];
   profiles: ShippingProfileRow[];
   view: 'table' | 'card';
+  zoneTotal: number;
+  profileTotal: number;
+  zonePagerKeys: PagerKeys;
+  profilePagerKeys: PagerKeys;
 }
 
-export function ShippingLists({ zones, profiles, view }: ShippingListsProps) {
+export function ShippingLists({
+  zones,
+  profiles,
+  view,
+  zoneTotal,
+  profileTotal,
+  zonePagerKeys,
+  profilePagerKeys,
+}: ShippingListsProps) {
   return (
     <>
       <Card>
@@ -111,6 +129,11 @@ export function ShippingLists({ zones, profiles, view }: ShippingListsProps) {
               card={zoneCard}
             />
           )}
+          <ListPager
+            total={zoneTotal}
+            pageKey={zonePagerKeys.pageKey}
+            perPageKey={zonePagerKeys.perPageKey}
+          />
         </CardContent>
       </Card>
 
@@ -159,6 +182,11 @@ export function ShippingLists({ zones, profiles, view }: ShippingListsProps) {
               card={profileCard}
             />
           )}
+          <ListPager
+            total={profileTotal}
+            pageKey={profilePagerKeys.pageKey}
+            perPageKey={profilePagerKeys.perPageKey}
+          />
         </CardContent>
       </Card>
     </>

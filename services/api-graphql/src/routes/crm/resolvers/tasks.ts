@@ -17,7 +17,9 @@ export const taskQueryResolvers = {
   crmTasks: async (_p: unknown, args: ListArgs, ctx: GqlContext) => {
     requireRole(ctx.request, 'viewer');
     await requireCrmModule(ctx.request);
-    return taskService.list(toCrmContext(ctx.request), args);
+    // The GraphQL `crmTasks` field is a plain `[CrmTask!]!`; the service now
+    // returns `{ items, total }` for offset pagination, so unwrap to the list.
+    return (await taskService.list(toCrmContext(ctx.request), args)).items;
   },
 
   crmTask: async (_p: unknown, args: { id: string }, ctx: GqlContext) => {

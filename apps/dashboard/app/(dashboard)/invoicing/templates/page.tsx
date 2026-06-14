@@ -5,6 +5,8 @@ import { Container, PageHeader, Stack, Text } from '@sparx/ui';
 import { api } from '@/lib/api-rest-client';
 
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { TemplatesList, type TemplateRow } from './_components/templates-list';
 
@@ -16,11 +18,18 @@ interface PageProps {
 
 export default async function InvoicingTemplatesPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   // listOrSeed lazily materializes the built-in default on first visit.
-  const [prefs, templates] = await Promise.all([
+  const [prefs, { data: templates, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<TemplateRow[]>('/v1/invoicing/templates'),
+    api.getPaged<TemplateRow[]>(
+      `/v1/invoicing/templates?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
   ]);
+  const total = (meta?.total as number | undefined) ?? templates.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -42,6 +51,8 @@ export default async function InvoicingTemplatesPage({ searchParams }: PageProps
           builders). The visual template editor is coming; today the default ships ready to publish,
           and you can preview any template against sample data.
         </Text>
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

@@ -178,7 +178,7 @@ async function CustomerCreateOverlay() {
 async function ContentEntryCreateOverlay() {
   let types: ContentTypeSummary[] = [];
   try {
-    types = await api.get<ContentTypeSummary[]>('/v1/content/types');
+    types = await api.get<ContentTypeSummary[]>('/v1/content/types?take=250');
   } catch {
     types = [];
   }

@@ -2,7 +2,9 @@ import { Globe } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, EmptyState } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { EmailShell } from '../_components/email-shell';
 import { AddDomainForm } from './_components/add-domain-form';
@@ -17,11 +19,18 @@ interface PageProps {
 
 export default async function DomainsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
-  const [prefs, domains] = await Promise.all([
+  const [prefs, { data: domains, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<SendingDomainRow[]>('/v1/email/domains'),
+    api.getPaged<SendingDomainRow[]>(
+      `/v1/email/domains?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
   ]);
+  const total = (meta?.total as number | undefined) ?? domains.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -55,6 +64,7 @@ export default async function DomainsPage({ searchParams }: PageProps) {
         <>
           <ListToolbar searchable={false} enableViewToggle />
           <DomainsList rows={domains} view={view} />
+          <ListPager total={total} />
         </>
       )}
     </EmailShell>

@@ -637,11 +637,13 @@ async function resolveProducts(
 
 async function resolvePromotion(ctx: ServiceContext): Promise<Record<string, string>> {
   const now = Date.now();
-  const active = (await discountService.listDiscounts(ctx, { status: 'active' })).find((d) => {
-    const startOk = !d.startAt || new Date(d.startAt).getTime() <= now;
-    const endOk = !d.endAt || new Date(d.endAt).getTime() >= now;
-    return startOk && endOk;
-  });
+  const active = (await discountService.listDiscounts(ctx, { status: 'active' })).items.find(
+    (d) => {
+      const startOk = !d.startAt || new Date(d.startAt).getTime() <= now;
+      const endOk = !d.endAt || new Date(d.endAt).getTime() >= now;
+      return startOk && endOk;
+    }
+  );
   if (!active) return { title: '', body: '', ctaLabel: '', ctaHref: '' };
   return {
     title: active.name ?? '',

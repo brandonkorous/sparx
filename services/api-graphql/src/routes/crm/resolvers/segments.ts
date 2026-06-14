@@ -9,7 +9,9 @@ export const segmentQueryResolvers = {
   segments: async (_p: unknown, args: { includeArchived?: boolean }, ctx: GqlContext) => {
     requireRole(ctx.request, 'viewer');
     await requireCrmModule(ctx.request);
-    return segmentService.list(toCrmContext(ctx.request), args);
+    // The GraphQL `segments` field is a plain `[Segment!]!`; the service now
+    // returns `{ items, total }` for offset pagination, so unwrap to the list.
+    return (await segmentService.list(toCrmContext(ctx.request), args)).items;
   },
 
   segment: async (_p: unknown, args: { id: string }, ctx: GqlContext) => {

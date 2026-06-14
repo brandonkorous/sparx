@@ -54,14 +54,21 @@ export interface TaxExemptionRow {
 
 // ─── Zones ───────────────────────────────────────────────────────────
 
-export async function listZones(ctx: ServiceContext): Promise<TaxZoneRow[]> {
+export async function listZones(
+  ctx: ServiceContext,
+  filter: { take?: number; skip?: number } = {}
+): Promise<{ items: TaxZoneRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const rows = await tx.taxZone.findMany({
-      include: { _count: { select: { rates: true } } },
-      orderBy: [{ country: 'asc' }, { region: 'asc' }],
-      take: 500,
-    });
-    return rows.map(serializeZone);
+    const [rows, total] = await Promise.all([
+      tx.taxZone.findMany({
+        include: { _count: { select: { rates: true } } },
+        orderBy: [{ country: 'asc' }, { region: 'asc' }],
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.taxZone.count(),
+    ]);
+    return { items: rows.map(serializeZone), total };
   });
 }
 

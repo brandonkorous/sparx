@@ -6,6 +6,8 @@ import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { RecomputeButton } from './_components/recompute-button';
 import { SegmentsList, type SegmentListRow } from './_components/segments-list';
@@ -45,14 +47,16 @@ interface PageProps {
 
 export default async function SegmentsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const archived = parseArchived(stringParam(params.archived));
 
-  const [prefs, fetched] = await Promise.all([
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
+  if (archived !== 'active') query.set('include_archived', 'true');
+  const [prefs, { data: fetched, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<SegmentRow[]>(
-      `/v1/crm/segments${archived !== 'active' ? '?include_archived=true' : ''}`
-    ),
+    api.getPaged<SegmentRow[]>(`/v1/crm/segments?${query.toString()}`),
   ]);
+  const total = (meta?.total as number | undefined) ?? fetched.length;
 
   // `archived` narrows the all-inclusive fetch to just archived rows.
   const visible = archived === 'archived' ? fetched.filter((s) => s.archivedAt) : fetched;
@@ -134,6 +138,8 @@ export default async function SegmentsPage({ searchParams }: PageProps) {
         ) : (
           <SegmentsList segments={segments} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

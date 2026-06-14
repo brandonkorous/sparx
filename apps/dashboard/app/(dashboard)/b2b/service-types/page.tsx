@@ -3,8 +3,10 @@ import { Calendar } from 'lucide-react';
 import { Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { ServiceTypesList } from './_components/service-types-list';
 import { NewServiceTypeButton } from './_components/new-service-type-button';
 
@@ -34,12 +36,19 @@ function stringParam(v: string | string[] | undefined): string | undefined {
 
 export default async function ServiceTypesPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
   const [prefs, result] = await Promise.all([
     getUserPreferences(),
-    api.get<{ types: ServiceType[] }>('/v1/b2b/service-types'),
+    api.getPaged<ServiceType[]>(
+      `/v1/b2b/service-types?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
   ]);
-  const types = result.types ?? [];
+  const types = result.data;
+  const total = (result.meta?.total as number | undefined) ?? types.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -67,6 +76,8 @@ export default async function ServiceTypesPage({ searchParams }: PageProps) {
         ) : (
           <ServiceTypesList types={types} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

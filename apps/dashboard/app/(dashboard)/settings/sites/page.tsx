@@ -57,8 +57,10 @@ export default async function SitesSettingsPage() {
     listDomains().catch(() => [] as Domain[]),
     getActivePropertyId(),
     api
-      .get<{ blueprints: CatalogBlueprint[] }>('/v1/blueprints')
-      .then((r) => r.blueprints)
+      // Paginated catalog (data = array, meta carries total); the new-site picker
+      // needs the whole catalog, so request the max page.
+      .getPaged<CatalogBlueprint[]>('/v1/blueprints?take=250')
+      .then((r) => r.data)
       .catch(() => [] as CatalogBlueprint[]),
     api.get<{ slug: string }>('/v1/tenant').catch(() => ({ slug: 'your-store' })),
   ]);

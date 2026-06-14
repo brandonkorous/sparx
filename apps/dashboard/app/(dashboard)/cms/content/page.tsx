@@ -1,7 +1,7 @@
 // Unified content list — every content-type ENTRY in one place (docs/51:
 // content items are entries of a content type; the schemas/models live at
 // /cms/types). Standard list surface (docs/34 §7): URL-driven search + Type
-// and Status facets + Table/Cards toggle + cursor "Load more". Rows open in the
+// and Status facets + Table/Cards toggle + offset pagination (ListPager). Rows open in the
 // user's preferred detail surface via EntityRowLink — `page` entries keep their
 // bespoke editor (/cms/[id]); every other type opens the generic content-entry
 // editor. The CMS module gate runs in layout.tsx.
@@ -10,12 +10,14 @@
 // single type. A content type links to its items as /cms/content?type=<key>.
 
 import Link from 'next/link';
-import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
+import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 import { FileText } from 'lucide-react';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ContentNewButton } from './content-new-button';
 import { ContentSelectionTable } from './_components/content-selection-table';
@@ -68,10 +70,10 @@ interface PageProps {
 
 export default async function ContentListPage({ searchParams }: PageProps) {
   const sp = await searchParams;
+  const { skip, take } = parsePageParams(sp, PAGE_SIZE);
   const type = asString(sp.type);
   const status = asString(sp.status);
   const q = asString(sp.q);
-  const cursor = asString(sp.cursor);
   const viewParam = asString(sp.view);
   // Model B (docs/49 §3): which site's content to show. Like the catalog, the
   // list follows the global site switcher — absent `?site=` → the ACTIVE site;
@@ -81,7 +83,7 @@ export default async function ContentListPage({ searchParams }: PageProps) {
   // Resolve the active site BEFORE the entries fetch so the list defaults to it.
   const [prefs, types, scope] = await Promise.all([
     getUserPreferences(),
-    api.get<ApiContentType[]>('/v1/content/types'),
+    api.get<ApiContentType[]>('/v1/content/types?take=250'),
     resolveSiteScope(),
   ]);
   const { sites, multiSite, activePropertyId } = scope;
@@ -89,16 +91,16 @@ export default async function ContentListPage({ searchParams }: PageProps) {
 
   const paged = await api.getPaged<ApiEntry[]>(
     `/v1/content/entries?${buildQuery({
-      limit: String(PAGE_SIZE),
+      take: String(take),
+      skip: String(skip),
       ...(type && type !== 'all' ? { type } : {}),
       ...(status && status !== 'all' ? { status } : {}),
       ...(q ? { q } : {}),
       ...(propertyFilter ? { property: propertyFilter } : {}),
-      ...(cursor ? { cursor } : {}),
     })}`
   );
   const entries = paged.data;
-  const nextCursor = typeof paged.meta?.next_cursor === 'string' ? paged.meta.next_cursor : null;
+  const total = (paged.meta?.total as number | undefined) ?? entries.length;
   // `?view=` overrides; absent → the user's saved default (docs/34 §7.2).
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -124,19 +126,8 @@ export default async function ContentListPage({ searchParams }: PageProps) {
   // redundant noise — hide it.
   const showType = !(type && type !== 'all');
 
-  const baseParams: Record<string, string | undefined> = {
-    ...(type && type !== 'all' ? { type } : {}),
-    ...(status && status !== 'all' ? { status } : {}),
-    ...(q ? { q } : {}),
-    ...(siteParam ? { site: siteParam } : {}),
-    ...(viewParam ? { view: viewParam } : {}),
-  };
-  const nextHref = nextCursor
-    ? `/cms/content?${buildQuery({ ...baseParams, cursor: nextCursor })}`
-    : null;
   const isFiltered =
     Boolean(type && type !== 'all') || Boolean(status && status !== 'all') || Boolean(q);
-  const isPaged = Boolean(cursor);
 
   return (
     <Container size="full">
@@ -145,7 +136,7 @@ export default async function ContentListPage({ searchParams }: PageProps) {
           className="mb-0"
           icon={<FileText className="h-5 w-5" />}
           title="Content"
-          badge={<Badge variant="outline">{entries.length}</Badge>}
+          badge={<Badge variant="outline">{total}</Badge>}
           description="Every page, post, and entry across your content types."
           actions={
             <ContentNewButton
@@ -198,26 +189,7 @@ export default async function ContentListPage({ searchParams }: PageProps) {
           />
         )}
 
-        {(nextHref !== null || isPaged) && (
-          <Stack direction="row" align="center" justify="between">
-            {isPaged ? (
-              <Button asChild variant="ghost" size="sm">
-                <Link href={`/cms/content?${buildQuery(baseParams)}`}>← First page</Link>
-              </Button>
-            ) : (
-              <span />
-            )}
-            {nextHref ? (
-              <Button asChild color="module" variant="outline" size="sm">
-                <Link href={nextHref}>Load more →</Link>
-              </Button>
-            ) : (
-              <Text size="xs" variant="muted">
-                End of list.
-              </Text>
-            )}
-          </Stack>
-        )}
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

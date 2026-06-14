@@ -6,8 +6,10 @@
 import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
 import { Users } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { AuthorCreateForm } from './author-create-form';
 import { AuthorsList, type AuthorListItem } from './_components/authors-list';
 
@@ -19,11 +21,15 @@ interface PageProps {
 
 export default async function AuthorsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
-  const [prefs, authors] = await Promise.all([
+  const [prefs, { data: authors, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<AuthorListItem[]>('/v1/authors'),
+    api.getPaged<AuthorListItem[]>(
+      `/v1/authors?${new URLSearchParams({ take: String(take), skip: String(skip) }).toString()}`
+    ),
   ]);
+  const total = (meta?.total as number | undefined) ?? authors.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -32,7 +38,7 @@ export default async function AuthorsPage({ searchParams }: PageProps) {
       <Stack gap={6} className="py-10">
         <PageHeader
           title="Authors"
-          badge={<Badge variant="outline">{authors.length}</Badge>}
+          badge={<Badge variant="outline">{total}</Badge>}
           description="Bylines for blog posts and editorial entries. An author is independent from a staff user — a user can write under multiple pen names, an author can outlive a user row."
         />
 
@@ -56,6 +62,8 @@ export default async function AuthorsPage({ searchParams }: PageProps) {
             <AuthorsList rows={authors} view={view} />
           </>
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

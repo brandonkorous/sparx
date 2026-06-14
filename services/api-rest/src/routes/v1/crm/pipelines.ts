@@ -12,7 +12,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { pipelineService } from '@sparx/crm';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
 
@@ -23,6 +23,8 @@ const StagePathIds = z.object({
 });
 const ListQuery = z.object({
   include_archived: z.coerce.boolean().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
 });
 
 const pipelineRoutes: FastifyPluginAsync = (app) => {
@@ -30,10 +32,12 @@ const pipelineRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
-    const rows = await pipelineService.list(toCrmContext(request), {
+    const { items, total } = await pipelineService.list(toCrmContext(request), {
       includeArchived: q.include_archived,
+      take: q.take,
+      skip: q.skip,
     });
-    return ok(rows);
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/crm/pipelines/:id', async (request) => {

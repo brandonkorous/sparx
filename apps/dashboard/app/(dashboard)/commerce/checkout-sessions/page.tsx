@@ -14,7 +14,9 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import {
   CheckoutSessionsList,
@@ -34,14 +36,19 @@ const STEP_OPTIONS = [
 export default async function CheckoutSessionsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ step?: string; view?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { step, view: viewParam } = await searchParams;
-  const qs = step ? `?step=${encodeURIComponent(step)}&take=200` : '?take=200';
-  const [prefs, sessions] = await Promise.all([
+  const params = await searchParams;
+  const step = stringParam(params.step);
+  const viewParam = stringParam(params.view);
+  const { skip, take } = parsePageParams(params);
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
+  if (step) query.set('step', step);
+  const [prefs, { data: sessions, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<CheckoutSessionRow[]>(`/v1/commerce/checkout-sessions${qs}`),
+    api.getPaged<CheckoutSessionRow[]>(`/v1/commerce/checkout-sessions?${query.toString()}`),
   ]);
+  const total = (meta?.total as number | undefined) ?? sessions.length;
 
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -51,7 +58,7 @@ export default async function CheckoutSessionsPage({
         <PageHeader
           icon={<CreditCard className="h-5 w-5" />}
           title="Checkout sessions"
-          badge={<Badge color="module">{sessions.length} in-flight</Badge>}
+          badge={<Badge color="module">{total} in-flight</Badge>}
           description="Read-only diagnostic. The state machine advances cart_review → contact → shipping → payment → review → completed. Sessions stuck in a non-terminal step are auto-expired on TTL by the worker; staff can manually expire a session from the API if needed."
         />
 
@@ -90,9 +97,17 @@ export default async function CheckoutSessionsPage({
             <CheckoutSessionsList rows={sessions} view={view} />
           </Stack>
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }
 
 function labelForStep(s: string): string {

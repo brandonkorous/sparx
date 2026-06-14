@@ -3,12 +3,17 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { shippingService, taxService } from '@sparx/commerce';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ZoneParam = z.object({ zoneId: z.string().uuid() });
+
+const ListQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const shippingRoutes: FastifyPluginAsync = async (app) => {
@@ -16,7 +21,12 @@ const shippingRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/shipping/zones', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    return ok(await shippingService.listZones(toCommerceContext(request)));
+    const q = ListQuery.parse(request.query);
+    const { items, total } = await shippingService.listZones(toCommerceContext(request), {
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/commerce/shipping/zones/:id', async (request) => {
@@ -53,7 +63,12 @@ const shippingRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/shipping/profiles', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    return ok(await shippingService.listProfiles(toCommerceContext(request)));
+    const q = ListQuery.parse(request.query);
+    const { items, total } = await shippingService.listProfiles(toCommerceContext(request), {
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/commerce/shipping/profiles/:id', async (request) => {
@@ -114,7 +129,12 @@ const shippingRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/tax/zones', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    return ok(await taxService.listZones(toCommerceContext(request)));
+    const q = ListQuery.parse(request.query);
+    const { items, total } = await taxService.listZones(toCommerceContext(request), {
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/commerce/tax/zones/:id', async (request) => {

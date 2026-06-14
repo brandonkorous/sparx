@@ -14,12 +14,30 @@ import { requireEmailModule, toEmailContext } from '../../../lib/email-context.j
 
 const PathId = z.object({ id: z.string().uuid() });
 
+// The dashboard list pages page with `take`/`skip` (docs/34 §7); the
+// suppression service speaks `limit`/`offset`, so map them here. The other
+// filters (scope/q) are validated by the service's own ListSuppressionsQuery.
+const ListSuppressionsPageQuery = z.object({
+  scope: z.string().optional(),
+  q: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
 const emailSuppressionRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/email/suppressions', async (request) => {
     requireRole(request, 'viewer');
     await requireEmailModule(request);
-    const { items, total } = await suppressionService.list(toEmailContext(request), request.query);
-    return paged(items, { total });
+    const q = ListSuppressionsPageQuery.parse(request.query);
+    // The service's ListSuppressionsQuery is `.strict()` and speaks limit/offset,
+    // so hand it only the keys it knows.
+    const { items, total } = await suppressionService.list(toEmailContext(request), {
+      ...(q.scope ? { scope: q.scope } : {}),
+      ...(q.q ? { q: q.q } : {}),
+      ...(q.take !== undefined ? { limit: q.take } : {}),
+      ...(q.skip !== undefined ? { offset: q.skip } : {}),
+    });
+    return paged(items, { total, per_page: q.take ?? 100 });
   });
 
   app.post('/v1/email/suppressions', async (request, reply) => {

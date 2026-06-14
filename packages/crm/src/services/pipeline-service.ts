@@ -27,15 +27,22 @@ import { CrmNotFoundError } from '../errors';
 
 export async function list(
   ctx: ServiceContext,
-  args: { includeArchived?: boolean } = {}
-): Promise<(Pipeline & { stages: PipelineStage[] })[]> {
-  return withTenant(ctx, (tx) =>
-    tx.pipeline.findMany({
-      where: args.includeArchived ? {} : { archivedAt: null },
-      orderBy: [{ isDefault: 'desc' }, { sortOrder: 'asc' }, { createdAt: 'asc' }],
-      include: { stages: { orderBy: { sortOrder: 'asc' } } },
-    })
-  );
+  args: { includeArchived?: boolean; take?: number; skip?: number } = {}
+): Promise<{ items: (Pipeline & { stages: PipelineStage[] })[]; total: number }> {
+  return withTenant(ctx, async (tx) => {
+    const where = args.includeArchived ? {} : { archivedAt: null };
+    const [items, total] = await Promise.all([
+      tx.pipeline.findMany({
+        where,
+        orderBy: [{ isDefault: 'desc' }, { sortOrder: 'asc' }, { createdAt: 'asc' }],
+        include: { stages: { orderBy: { sortOrder: 'asc' } } },
+        take: Math.min(args.take ?? 50, 250),
+        skip: args.skip ?? 0,
+      }),
+      tx.pipeline.count({ where }),
+    ]);
+    return { items, total };
+  });
 }
 
 export async function get(

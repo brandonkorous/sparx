@@ -55,8 +55,14 @@ export interface PriceListRow {
 
 export async function listPriceLists(
   ctx: ServiceContext,
-  filter: { status?: string; channel?: string; b2bAccountId?: string } = {}
-): Promise<PriceListRow[]> {
+  filter: {
+    status?: string;
+    channel?: string;
+    b2bAccountId?: string;
+    take?: number;
+    skip?: number;
+  } = {}
+): Promise<{ items: PriceListRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.PriceListWhereInput = {
       deletedAt: null,
@@ -64,13 +70,17 @@ export async function listPriceLists(
       ...(filter.channel ? { channel: filter.channel } : {}),
       ...(filter.b2bAccountId ? { b2bAccountId: filter.b2bAccountId } : {}),
     };
-    const rows = await tx.priceList.findMany({
-      where,
-      include: { _count: { select: { entries: true } } },
-      orderBy: [{ priority: 'desc' }, { updatedAt: 'desc' }],
-      take: 200,
-    });
-    return rows.map(serializePriceList);
+    const [rows, total] = await Promise.all([
+      tx.priceList.findMany({
+        where,
+        include: { _count: { select: { entries: true } } },
+        orderBy: [{ priority: 'desc' }, { updatedAt: 'desc' }],
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.priceList.count({ where }),
+    ]);
+    return { items: rows.map(serializePriceList), total };
   });
 }
 

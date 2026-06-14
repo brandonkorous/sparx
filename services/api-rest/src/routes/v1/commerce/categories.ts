@@ -3,13 +3,21 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { categoryService, collectionService } from '@sparx/commerce';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const PathId = z.object({ id: z.string().uuid() });
+
+const ListCollectionsQuery = z.object({
+  q: z.string().optional(),
+  type: z.enum(['manual', 'rules']).optional(),
+  include_archived: z.coerce.boolean().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const categoryRoutes: FastifyPluginAsync = async (app) => {
@@ -75,15 +83,14 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/collections', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    const filter = {
-      q: q?.q,
-      type: q?.type as never,
-      includeArchived: q?.include_archived === 'true',
-      take: q?.take ? Number(q.take) : undefined,
-      skip: q?.skip ? Number(q.skip) : undefined,
-    };
-    return ok(await collectionService.list(toCommerceContext(request), filter));
+    const q = ListCollectionsQuery.parse(request.query);
+    const { items, total } = await collectionService.list(toCommerceContext(request), {
+      q: q.q,
+      type: q.type,
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/commerce/collections/:id', async (request) => {

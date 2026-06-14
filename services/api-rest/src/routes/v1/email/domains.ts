@@ -10,18 +10,27 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { domainService } from '@sparx/email-platform';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
+const ListDomainsQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
 const emailDomainRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/email/domains', async (request) => {
     requireRole(request, 'viewer');
     await requireEmailModule(request);
-    const rows = await domainService.list(toEmailContext(request));
-    return ok(rows);
+    const q = ListDomainsQuery.parse(request.query);
+    const { items, total } = await domainService.list(toEmailContext(request), {
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/email/domains/:id', async (request) => {

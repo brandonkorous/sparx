@@ -24,22 +24,32 @@ export interface ListTasksFilter {
   status?: 'open' | 'completed' | 'cancelled';
   dueBefore?: Date;
   take?: number;
+  skip?: number;
 }
 
-export async function list(ctx: ServiceContext, filter: ListTasksFilter = {}): Promise<Task[]> {
-  return withTenant(ctx, (tx) =>
-    tx.task.findMany({
-      where: {
-        ...(filter.assignedToUserId ? { assignedToUserId: filter.assignedToUserId } : {}),
-        ...(filter.customerId ? { customerId: filter.customerId } : {}),
-        ...(filter.dealId ? { dealId: filter.dealId } : {}),
-        ...(filter.status ? { status: filter.status } : {}),
-        ...(filter.dueBefore ? { dueAt: { lte: filter.dueBefore } } : {}),
-      },
-      orderBy: [{ status: 'asc' }, { dueAt: 'asc' }],
-      take: Math.min(filter.take ?? 50, 250),
-    })
-  );
+export async function list(
+  ctx: ServiceContext,
+  filter: ListTasksFilter = {}
+): Promise<{ items: Task[]; total: number }> {
+  return withTenant(ctx, async (tx) => {
+    const where = {
+      ...(filter.assignedToUserId ? { assignedToUserId: filter.assignedToUserId } : {}),
+      ...(filter.customerId ? { customerId: filter.customerId } : {}),
+      ...(filter.dealId ? { dealId: filter.dealId } : {}),
+      ...(filter.status ? { status: filter.status } : {}),
+      ...(filter.dueBefore ? { dueAt: { lte: filter.dueBefore } } : {}),
+    };
+    const [items, total] = await Promise.all([
+      tx.task.findMany({
+        where,
+        orderBy: [{ status: 'asc' }, { dueAt: 'asc' }],
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.task.count({ where }),
+    ]);
+    return { items, total };
+  });
 }
 
 export async function get(ctx: ServiceContext, taskId: string): Promise<Task> {

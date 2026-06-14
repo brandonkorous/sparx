@@ -3,8 +3,10 @@ import { Package2, Plus } from 'lucide-react';
 import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { BundlesList, type BundleRow } from './_components/bundles-list';
 
@@ -20,11 +22,18 @@ interface PageProps {
 
 export default async function BundlesPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
-  const [prefs, bundles] = await Promise.all([
+  const [prefs, { data: bundles, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<BundleRow[]>('/v1/commerce/bundles'),
+    api.getPaged<BundleRow[]>(
+      `/v1/commerce/bundles?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
   ]);
+  const total = (meta?.total as number | undefined) ?? bundles.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -34,7 +43,7 @@ export default async function BundlesPage({ searchParams }: PageProps) {
         <PageHeader
           icon={<Package2 className="h-5 w-5" />}
           title="Bundles"
-          badge={<Badge color="module">{bundles.length}</Badge>}
+          badge={<Badge color="module">{total}</Badge>}
           description="A bundle is a wrapper product that resolves to a fixed set of component variants. Use the Configurator instead when components are user-selectable."
           actions={
             <EntityCreateButton
@@ -71,6 +80,8 @@ export default async function BundlesPage({ searchParams }: PageProps) {
         ) : (
           <BundlesList bundles={bundles} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

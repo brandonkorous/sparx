@@ -9,7 +9,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { configuratorService, fitmentService } from '@sparx/commerce';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 
@@ -19,6 +19,17 @@ const CategoryParam = z.object({ categoryId: z.string().uuid() });
 const ItemParam = z.object({ itemId: z.string().uuid() });
 const ProductIdParam = z.object({ productId: z.string().uuid() });
 const FitmentParam = z.object({ fitmentId: z.string().uuid() });
+
+const ListBundlesQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
+const ListTemplatesQuery = z.object({
+  status: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const fitmentRoutes: FastifyPluginAsync = async (app) => {
@@ -140,7 +151,12 @@ const fitmentRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/bundles', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    return ok(await configuratorService.listBundles(toCommerceContext(request)));
+    const q = ListBundlesQuery.parse(request.query);
+    const { items, total } = await configuratorService.listBundles(toCommerceContext(request), {
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/commerce/bundles/:id', async (request) => {
@@ -180,12 +196,16 @@ const fitmentRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/configurator-templates', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    return ok(
-      await configuratorService.listAllTemplates(toCommerceContext(request), {
-        ...(q?.status ? { status: q.status } : {}),
-      })
+    const q = ListTemplatesQuery.parse(request.query);
+    const { items, total } = await configuratorService.listAllTemplates(
+      toCommerceContext(request),
+      {
+        ...(q.status ? { status: q.status } : {}),
+        take: q.take,
+        skip: q.skip,
+      }
     );
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/commerce/configurator-templates/:id', async (request) => {

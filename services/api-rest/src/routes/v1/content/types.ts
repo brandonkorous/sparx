@@ -20,7 +20,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import type { Prisma } from '@sparx/db';
 import { z } from 'zod';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { conflict, notFound } from '@sparx/api-core/errors';
@@ -32,6 +32,11 @@ import { publish } from '@sparx/api-core/pubsub';
 type Json = Prisma.InputJsonValue;
 
 const KeyParams = z.object({ key: z.string().min(1).max(63) });
+
+const ListQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 
 const KeySchema = z
   .string()
@@ -79,14 +84,23 @@ function dedupeByKey<T extends { key: string }>(rows: T[]): T[] {
 const contentTypeRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/content/types', async (request) => {
     requireAuth(request);
+    const q = ListQuery.parse(request.query);
     const rows = await withRequestTenant(request, (tx) =>
       tx.contentType.findMany({
         orderBy: [{ isBuiltIn: 'asc' }, { key: 'asc' }],
       })
     );
     // A tenant fork (is_built_in=false) shadows the platform built-in of the
-    // same key — list the fork, drop the shadowed built-in.
-    return ok(dedupeByKey(rows).map(serializeContentType));
+    // same key — list the fork, drop the shadowed built-in. Dedup runs BEFORE
+    // paging so `total` and the window both reflect the post-dedup set (a
+    // shadowed built-in must not inflate the count or consume a page slot). The
+    // type catalog is a small, bounded set, so in-memory paging is correct.
+    const deduped = dedupeByKey(rows);
+    const total = deduped.length;
+    const skip = q.skip ?? 0;
+    const take = Math.min(q.take ?? 50, 250);
+    const window = deduped.slice(skip, skip + take);
+    return paged(window.map(serializeContentType), { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/content/types/:key', async (request) => {

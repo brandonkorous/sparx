@@ -13,7 +13,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withRequestTenant } from '@sparx/api-core/db';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { conflict, notFound } from '@sparx/api-core/errors';
 import { writeAudit } from '@sparx/api-core/audit';
@@ -32,6 +32,11 @@ const CreateBody = z.object({
 
 const BulkBody = z.object({
   rows: z.array(CreateBody).min(1).max(5000),
+});
+
+const ListQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
 });
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -55,10 +60,18 @@ async function assertNoChain(tx: TxClient, fromPath: string, toPath: string): Pr
 const redirectRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/redirects', async (request) => {
     requireRole(request, 'viewer');
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.redirect.findMany({ orderBy: { fromPath: 'asc' }, take: 1000 })
+    const q = ListQuery.parse(request.query);
+    const [rows, total] = await withRequestTenant(request, (tx) =>
+      Promise.all([
+        tx.redirect.findMany({
+          orderBy: { fromPath: 'asc' },
+          take: Math.min(q.take ?? 50, 250),
+          skip: q.skip ?? 0,
+        }),
+        tx.redirect.count(),
+      ])
     );
-    return ok(rows);
+    return paged(rows, { total, per_page: q.take ?? 50 });
   });
 
   app.post('/v1/redirects', async (request, reply) => {

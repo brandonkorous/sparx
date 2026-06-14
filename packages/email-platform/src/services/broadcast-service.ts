@@ -52,10 +52,24 @@ async function loadPublishedBuilderEmail(
   };
 }
 
-export async function list(ctx: ServiceContext): Promise<Broadcast[]> {
-  return withTenant(ctx, (tx) =>
-    tx.broadcast.findMany({ orderBy: { createdAt: 'desc' }, take: 200 })
-  );
+export interface ListBroadcastsQuery {
+  take?: number;
+  skip?: number;
+}
+
+export async function list(
+  ctx: ServiceContext,
+  query: ListBroadcastsQuery = {}
+): Promise<{ items: Broadcast[]; total: number }> {
+  const take = Math.min(query.take ?? 50, 250);
+  const skip = query.skip ?? 0;
+  return withTenant(ctx, async (tx) => {
+    const [items, total] = await Promise.all([
+      tx.broadcast.findMany({ orderBy: { createdAt: 'desc' }, take, skip }),
+      tx.broadcast.count(),
+    ]);
+    return { items, total };
+  });
 }
 
 export async function get(ctx: ServiceContext, id: string): Promise<Broadcast> {

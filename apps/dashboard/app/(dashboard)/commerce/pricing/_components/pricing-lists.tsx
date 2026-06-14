@@ -18,6 +18,7 @@ import { DollarSign, Plus } from 'lucide-react';
 
 import { EntityCreateButton } from '../../../_components/entity-create-button';
 import { EntityRowLink } from '../../../_components/entity-row-link';
+import { ListPager } from '../../../_components/list-pager';
 
 // Client wrapper for the Pricing overview. SelectionList takes render functions
 // (columns/card), which can't cross the server→client boundary, so the server
@@ -63,9 +64,11 @@ interface PricingListsProps {
   priceLists: PriceListRow[];
   bulkTiers: BulkPriceTierRow[];
   view: 'table' | 'card';
+  /** Total price-list count (the only paged section); bulk tiers stay un-paged. */
+  priceListTotal: number;
 }
 
-export function PricingLists({ priceLists, bulkTiers, view }: PricingListsProps) {
+export function PricingLists({ priceLists, bulkTiers, view, priceListTotal }: PricingListsProps) {
   return (
     <>
       <Card>
@@ -107,6 +110,7 @@ export function PricingLists({ priceLists, bulkTiers, view }: PricingListsProps)
               card={priceListCard}
             />
           )}
+          <ListPager total={priceListTotal} />
         </CardContent>
       </Card>
 

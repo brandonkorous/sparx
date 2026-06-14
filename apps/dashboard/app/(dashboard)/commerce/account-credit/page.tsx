@@ -14,14 +14,14 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { GrantAccountCreditForm } from './_components/grant-account-credit-form';
 import { AccountCreditList, type AccountCreditRow } from './_components/account-credit-list';
 
 export const dynamic = 'force-dynamic';
-
-const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
 interface CrmCustomerRow {
   id: string;
@@ -36,14 +36,21 @@ interface PageProps {
 
 export default async function AccountCreditPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
-  const [prefs, balances, customersPaged] = await Promise.all([
+  const [prefs, balancesPaged, customersPaged] = await Promise.all([
     getUserPreferences(),
-    api.get<AccountCreditRow[]>('/v1/commerce/account-credit?take=100'),
+    api.getPaged<AccountCreditRow[]>(
+      `/v1/commerce/account-credit?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
     api.getPaged<CrmCustomerRow[]>('/v1/crm/customers?take=200'),
   ]);
+  const balances = balancesPaged.data;
+  const total = (balancesPaged.meta?.total as number | undefined) ?? balances.length;
 
-  const outstandingCents = balances.reduce((acc, b) => acc + b.balanceCents, 0);
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   const recentCustomers = customersPaged.data.map((c) => {
@@ -59,7 +66,9 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
           icon={<CircleDollarSign className="h-5 w-5" />}
           title="Account credit"
           badge={
-            <Badge color="module">{moneyFmt.format(outstandingCents / 100)} outstanding</Badge>
+            <Badge color="module">
+              {total} balance{total === 1 ? '' : 's'}
+            </Badge>
           }
           description="Per-customer credit balance — accrues from refunds, loyalty conversions, or manual grants. Spent at checkout via the pricing pipeline."
         />
@@ -87,13 +96,15 @@ export default async function AccountCreditPage({ searchParams }: PageProps) {
           <Card padding="none">
             <EmptyState
               icon={<CircleDollarSign className="h-5 w-5" />}
-              title="No account credit issued yet"
+              title={total === 0 ? 'No account credit issued yet' : 'No balances on this page'}
               description="Grant credit above or have it auto-issued from a refund."
             />
           </Card>
         ) : (
           <AccountCreditList balances={balances} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

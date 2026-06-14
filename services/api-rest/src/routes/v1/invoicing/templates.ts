@@ -17,7 +17,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { billingRenderService, billingTemplateService, type BillingRenderData } from '@sparx/crm';
 import type { BuilderNode } from '@sparx/builder-schemas';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
 import { resolveInvoiceBrand } from '../../../lib/invoice-render.js';
@@ -25,6 +25,14 @@ import { renderInvoiceTree } from '../../../lib/invoice-tree-render.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PreviewQuery = z.object({ documentId: z.string().uuid().optional() });
+
+// Offset pagination for the template catalog. `listOrSeed` returns the full set
+// (and lazily seeds the built-in default on first use); the window is applied here
+// so the seed-on-first-use contract other callers depend on stays unchanged.
+const ListTemplatesQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 
 // Sample render data for the editor preview when no real document is supplied —
 // representative of a typical estimate so the author sees every section populated.
@@ -75,7 +83,16 @@ const templateRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/invoicing/templates', async (request) => {
     requireRole(request, 'viewer');
     await requireInvoicingModule(request);
-    return ok(await billingTemplateService.listOrSeed(toInvoicingContext(request)));
+    const q = ListTemplatesQuery.parse(request.query);
+    const all = await billingTemplateService.listOrSeed(toInvoicingContext(request));
+    const total = all.length;
+    const skip = q.skip ?? 0;
+    // Window only when asked — an un-paged caller still gets the whole set.
+    const items =
+      q.take !== undefined || q.skip !== undefined
+        ? all.slice(skip, skip + (q.take ?? total))
+        : all;
+    return paged(items, { total, skip, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/invoicing/templates/:id', async (request) => {

@@ -10,6 +10,9 @@
 // Edits commit to the server per field (on blur / change) — markup is committed as
 // a unit via an Apply button, since cost + rule must travel together. A locked
 // stage (final/paid) freezes the grid to read-only.
+//
+// The markup pricing primitives (the cost→price engine + its editor) live in
+// ../../_lib/markup so the create wizard prices an identical line the identical way.
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
@@ -28,30 +31,24 @@ import {
   Text,
   useConfirm,
 } from '@sparx/ui';
-import {
-  applyMarkupRule,
-  type BandMethod,
-  type LineMarkupInput,
-  type MarkupRuleSpec,
-} from '@sparx/commerce-schemas';
+import { type BandMethod } from '@sparx/commerce-schemas';
 
 import { addLineAction, removeLineAction, updateLineAction } from '../../../document-actions';
 import { formatMoney } from '../../../_components/format';
+import {
+  ADHOC,
+  freshMarkupState,
+  isMarkupMode,
+  MarkupFields,
+  METHOD_META,
+  type MarkupRuleSummary,
+  type MarkupState,
+  resolveMarkup,
+  SELECT_CLASS,
+} from '../../_lib/markup';
 
-// A document-applicable markup rule (GET /v1/markup-rules, appliesTo document|both),
-// reduced to the fields the pure engine needs to price a line (docs/48 §5).
-export interface MarkupRuleSummary {
-  id: string;
-  name: string;
-  method: MarkupRuleSpec['method'];
-  value: number | null;
-  bands: MarkupRuleSpec['bands'];
-  rounding: MarkupRuleSpec['rounding'];
-  floorProfitCents: number | null;
-  floorMargin: number | null;
-  ceilingSrc: MarkupRuleSpec['ceilingSrc'];
-  ceilingValueCents: number | null;
-}
+// Re-exported for the document editor page, which imports this type from here.
+export type { MarkupRuleSummary } from '../../_lib/markup';
 
 // The markup snapshot already on a line (its current cost-derived price), enough
 // to seed the editor when re-pricing.
@@ -92,234 +89,6 @@ interface LineGridProps {
   /** Document-applicable markup rules for the markup/pass_through line picker.
    *  Empty when Commerce is disabled — those lines then price by ad-hoc markup. */
   markupRules: MarkupRuleSummary[];
-}
-
-const SELECT_CLASS =
-  'flex h-9 w-full rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-2 text-sm text-[var(--color-text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)]';
-
-const ADHOC = 'adhoc';
-const PASSTHROUGH = 'passthrough';
-
-// Per ad-hoc method: the input label + how the typed value maps to (and from) the
-// engine's unitless `value` (percentage / margin_target are entered as percents).
-const METHOD_META: Record<
-  BandMethod,
-  { label: string; toEngine: (n: number) => number; fromEngine: (n: number) => number }
-> = {
-  percentage: { label: 'Markup %', toEngine: (n) => n / 100, fromEngine: (n) => n * 100 },
-  margin_target: { label: 'Target margin %', toEngine: (n) => n / 100, fromEngine: (n) => n * 100 },
-  multiplier: { label: 'Multiplier ×', toEngine: (n) => n, fromEngine: (n) => n },
-  flat: { label: 'Add fixed $', toEngine: (n) => n, fromEngine: (n) => n },
-};
-
-function ruleToSpec(r: MarkupRuleSummary): MarkupRuleSpec {
-  return {
-    method: r.method,
-    value: r.value,
-    bands: r.bands ?? [],
-    rounding: r.rounding ?? null,
-    floorProfitCents: r.floorProfitCents,
-    floorMargin: r.floorMargin,
-    ceilingSrc: r.ceilingSrc,
-    ceilingValueCents: r.ceilingValueCents,
-  };
-}
-
-function isMarkupMode(mode: string | undefined): boolean {
-  return mode === 'markup' || mode === 'pass_through';
-}
-
-// ── Markup editor state + resolution ──────────────────────────────────────────
-
-interface MarkupState {
-  cost: string; // dollars
-  source: string; // a rule id, ADHOC, or PASSTHROUGH (pass_through only)
-  method: BandMethod;
-  value: string; // ad-hoc value in display units
-}
-
-interface ResolvedMarkup {
-  preview: { priceCents: number; marginPct: number; markupPct: number } | null;
-  // The body fields to send (explicitCostCents always; markup omitted for a
-  // pass-through-at-cost line). Null when the inputs aren't yet priceable.
-  payload: { explicitCostCents: number; markup?: LineMarkupInput } | null;
-  error: string | null;
-}
-
-function freshMarkupState(rules: MarkupRuleSummary[], pricingMode: string): MarkupState {
-  return {
-    cost: '',
-    source: pricingMode === 'pass_through' ? PASSTHROUGH : (rules[0]?.id ?? ADHOC),
-    method: 'percentage',
-    value: '',
-  };
-}
-
-// Validate the ad-hoc value against the same bounds LineMarkupInput enforces, so
-// the live preview never shows a nonsensical price the server would reject.
-function adhocEngineValue(method: BandMethod, raw: string): number | null {
-  const n = parseFloat(raw);
-  if (!raw.trim() || Number.isNaN(n)) return null;
-  const v = METHOD_META[method].toEngine(n);
-  if (method === 'margin_target' && (v <= 0 || v >= 1)) return null;
-  if (method === 'multiplier' && v <= 0) return null;
-  if ((method === 'percentage' || method === 'flat') && v < 0) return null;
-  return v;
-}
-
-function resolveMarkup(
-  st: MarkupState,
-  rules: MarkupRuleSummary[],
-  pricingMode: string
-): ResolvedMarkup {
-  const costNum = parseFloat(st.cost);
-  if (!st.cost.trim() || Number.isNaN(costNum) || costNum < 0) {
-    return { preview: null, payload: null, error: 'Enter a cost to price this line.' };
-  }
-  const costCents = Math.round(costNum * 100);
-
-  // Pass-through at cost: no markup, price == cost.
-  if (pricingMode === 'pass_through' && st.source === PASSTHROUGH) {
-    return {
-      preview: { priceCents: costCents, marginPct: 0, markupPct: 0 },
-      payload: { explicitCostCents: costCents },
-      error: null,
-    };
-  }
-
-  let spec: MarkupRuleSpec;
-  let markup: LineMarkupInput;
-  if (st.source !== ADHOC) {
-    const rule = rules.find((r) => r.id === st.source);
-    if (!rule) return { preview: null, payload: null, error: 'Pick a markup rule.' };
-    spec = ruleToSpec(rule);
-    markup = { kind: 'rule', ruleId: rule.id };
-  } else {
-    const engineValue = adhocEngineValue(st.method, st.value);
-    if (engineValue == null) {
-      return { preview: null, payload: null, error: 'Enter a valid markup value.' };
-    }
-    spec = { method: st.method, value: engineValue };
-    markup = { kind: 'adhoc', method: st.method, value: engineValue };
-  }
-
-  const result = applyMarkupRule(costCents, spec);
-  return {
-    preview: {
-      priceCents: result.priceCents,
-      marginPct: result.marginPct,
-      markupPct: result.markupPct,
-    },
-    payload: { explicitCostCents: costCents, markup },
-    error: null,
-  };
-}
-
-// The shared markup inputs (cost · source · ad-hoc method+value) + a live preview.
-function MarkupFields({
-  state,
-  rules,
-  pricingMode,
-  resolved,
-  disabled,
-  onChange,
-  currency,
-}: {
-  state: MarkupState;
-  rules: MarkupRuleSummary[];
-  pricingMode: string;
-  resolved: ResolvedMarkup;
-  disabled: boolean;
-  onChange: (next: Partial<MarkupState>) => void;
-  currency: string;
-}) {
-  return (
-    <Stack gap={2} className="min-w-[16rem]">
-      <Stack direction="row" gap={2} align="end" wrap>
-        <Stack gap={1}>
-          <Label className="text-xs">Cost</Label>
-          <Input
-            type="number"
-            min="0"
-            step="0.01"
-            className="w-28 text-right"
-            aria-label="Line cost"
-            value={state.cost}
-            disabled={disabled}
-            onChange={(e) => onChange({ cost: e.target.value })}
-            placeholder="0.00"
-          />
-        </Stack>
-        <Stack gap={1}>
-          <Label className="text-xs">Markup</Label>
-          <select
-            aria-label="Markup source"
-            className={`${SELECT_CLASS} w-44`}
-            value={state.source}
-            disabled={disabled}
-            onChange={(e) => onChange({ source: e.target.value })}
-          >
-            {pricingMode === 'pass_through' && (
-              <option value={PASSTHROUGH}>Pass through at cost</option>
-            )}
-            {rules.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-            <option value={ADHOC}>Ad-hoc markup…</option>
-          </select>
-        </Stack>
-      </Stack>
-
-      {state.source === ADHOC && (
-        <Stack direction="row" gap={2} align="end" wrap>
-          <Stack gap={1}>
-            <Label className="text-xs">Method</Label>
-            <select
-              aria-label="Markup method"
-              className={`${SELECT_CLASS} w-40`}
-              value={state.method}
-              disabled={disabled}
-              onChange={(e) => onChange({ method: e.target.value as BandMethod })}
-            >
-              <option value="percentage">Markup %</option>
-              <option value="margin_target">Target margin %</option>
-              <option value="multiplier">Multiplier ×</option>
-              <option value="flat">Add fixed $</option>
-            </select>
-          </Stack>
-          <Stack gap={1}>
-            <Label className="text-xs">{METHOD_META[state.method].label}</Label>
-            <Input
-              type="number"
-              step="0.01"
-              className="w-28 text-right"
-              aria-label="Markup value"
-              value={state.value}
-              disabled={disabled}
-              onChange={(e) => onChange({ value: e.target.value })}
-            />
-          </Stack>
-        </Stack>
-      )}
-
-      {resolved.preview ? (
-        <Stack direction="row" gap={2} align="center" wrap>
-          <Badge color="module" variant="soft">
-            {formatMoney(resolved.preview.priceCents / 100, currency)} / unit
-          </Badge>
-          <Text size="xs" variant="muted">
-            {resolved.preview.marginPct}% margin · {resolved.preview.markupPct}% markup
-          </Text>
-        </Stack>
-      ) : (
-        <Text size="xs" variant="muted">
-          {resolved.error ?? 'Enter a cost to preview the price.'}
-        </Text>
-      )}
-    </Stack>
-  );
 }
 
 export function LineGrid({

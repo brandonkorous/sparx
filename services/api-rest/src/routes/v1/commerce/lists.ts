@@ -11,13 +11,49 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withRequestTenant } from '@sparx/api-core/db';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
 import { requireCommerceModule } from '../../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const WarehouseParam = z.object({ warehouseId: z.string().uuid() });
+
+const EnrichedLevelsQuery = z.object({
+  low_stock_only: z.coerce.boolean().optional(),
+  take: z.coerce.number().int().min(1).max(1000).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
+const AccountCreditQuery = z.object({
+  min_balance_cents: z.coerce.number().int().optional(),
+  take: z.coerce.number().int().min(1).max(500).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
+const ListCartsQuery = z.object({
+  filter: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
+const ListCheckoutSessionsQuery = z.object({
+  step: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
+const ListQuestionsQuery = z.object({
+  status: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
+const ListReviewsQuery = z.object({
+  status: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const commerceListRoutes: FastifyPluginAsync = async (app) => {
@@ -68,35 +104,40 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const { warehouseId } = WarehouseParam.parse(request.params);
-    const q = request.query as Record<string, string | undefined>;
-    const take = q?.take ? Math.min(Number(q.take), 1000) : 200;
-    const skip = q?.skip ? Number(q.skip) : 0;
-    const lowStockOnly = q?.low_stock_only === 'true';
+    const q = EnrichedLevelsQuery.parse(request.query);
+    const take = Math.min(q.take ?? 200, 1000);
+    const skip = q.skip ?? 0;
+    const lowStockOnly = q.low_stock_only === true;
+    const where = { warehouseId };
 
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.inventoryLevel.findMany({
-        where: { warehouseId },
-        orderBy: [{ updatedAt: 'desc' }],
-        take,
-        skip,
-        select: {
-          variantId: true,
-          warehouseId: true,
-          onHand: true,
-          allocated: true,
-          reorderPoint: true,
-          reorderQuantity: true,
-          updatedAt: true,
-          variant: {
-            select: {
-              sku: true,
-              title: true,
-              product: { select: { id: true, title: true, handle: true } },
+    const { rows, total } = await withRequestTenant(request, async (tx) => {
+      const [rows, total] = await Promise.all([
+        tx.inventoryLevel.findMany({
+          where,
+          orderBy: [{ updatedAt: 'desc' }],
+          take,
+          skip,
+          select: {
+            variantId: true,
+            warehouseId: true,
+            onHand: true,
+            allocated: true,
+            reorderPoint: true,
+            reorderQuantity: true,
+            updatedAt: true,
+            variant: {
+              select: {
+                sku: true,
+                title: true,
+                product: { select: { id: true, title: true, handle: true } },
+              },
             },
           },
-        },
-      })
-    );
+        }),
+        tx.inventoryLevel.count({ where }),
+      ]);
+      return { rows, total };
+    });
     const enriched = rows.map((r) => ({
       variantId: r.variantId,
       warehouseId: r.warehouseId,
@@ -113,10 +154,12 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
       productHandle: r.variant.product.handle,
     }));
     // Filter in-process for low-stock since Prisma can't compare two columns.
+    // The low-stock toggle narrows the current page in place; `total` reflects
+    // the un-narrowed level count for the warehouse (the main paginated list).
     const filtered = lowStockOnly
       ? enriched.filter((r) => r.reorderPoint !== null && r.onHand <= (r.reorderPoint ?? 0))
       : enriched;
-    return ok(filtered);
+    return paged(filtered, { total, per_page: take });
   });
 
   // ── Active recalls ────────────────────────────────────────────────
@@ -161,28 +204,35 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/account-credit', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    const take = q?.take ? Math.min(Number(q.take), 500) : 100;
-    const minBalance = q?.min_balance_cents ? Number(q.min_balance_cents) : 1;
+    const q = AccountCreditQuery.parse(request.query);
+    const take = Math.min(q.take ?? 100, 500);
+    const skip = q.skip ?? 0;
+    const minBalance = q.min_balance_cents ?? 1;
+    const where = { balanceCents: { gte: minBalance } };
 
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.accountCredit.findMany({
-        where: { balanceCents: { gte: minBalance } },
-        orderBy: { balanceCents: 'desc' },
-        take,
-        select: {
-          id: true,
-          customerId: true,
-          balanceCents: true,
-          currency: true,
-          updatedAt: true,
-          customer: {
-            select: { id: true, firstName: true, lastName: true, email: true, company: true },
+    const { rows, total } = await withRequestTenant(request, async (tx) => {
+      const [rows, total] = await Promise.all([
+        tx.accountCredit.findMany({
+          where,
+          orderBy: { balanceCents: 'desc' },
+          take,
+          skip,
+          select: {
+            id: true,
+            customerId: true,
+            balanceCents: true,
+            currency: true,
+            updatedAt: true,
+            customer: {
+              select: { id: true, firstName: true, lastName: true, email: true, company: true },
+            },
           },
-        },
-      })
-    );
-    return ok(
+        }),
+        tx.accountCredit.count({ where }),
+      ]);
+      return { rows, total };
+    });
+    return paged(
       rows.map((r) => ({
         id: r.id,
         customerId: r.customerId,
@@ -198,7 +248,8 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
               company: r.customer.company,
             }
           : null,
-      }))
+      })),
+      { total, per_page: take }
     );
   });
 
@@ -206,9 +257,10 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/carts', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    const take = q?.take ? Math.min(Number(q.take), 500) : 100;
-    const filter = q?.filter ?? 'active';
+    const q = ListCartsQuery.parse(request.query);
+    const take = q.take ?? 100;
+    const skip = q.skip ?? 0;
+    const filter = q.filter ?? 'active';
     const where =
       filter === 'abandoned'
         ? { abandonedAt: { not: null }, recoveredAt: null }
@@ -216,31 +268,36 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
           ? { recoveredAt: { not: null } }
           : { abandonedAt: null, recoveredAt: null };
 
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.cart.findMany({
-        where,
-        orderBy: { updatedAt: 'desc' },
-        take,
-        select: {
-          id: true,
-          channel: true,
-          currency: true,
-          customerId: true,
-          guestToken: true,
-          subtotalCents: true,
-          totalCents: true,
-          abandonedAt: true,
-          recoveredAt: true,
-          expiresAt: true,
-          updatedAt: true,
-          customer: {
-            select: { id: true, firstName: true, lastName: true, email: true, company: true },
+    const { rows, total } = await withRequestTenant(request, async (tx) => {
+      const [rows, total] = await Promise.all([
+        tx.cart.findMany({
+          where,
+          orderBy: { updatedAt: 'desc' },
+          take,
+          skip,
+          select: {
+            id: true,
+            channel: true,
+            currency: true,
+            customerId: true,
+            guestToken: true,
+            subtotalCents: true,
+            totalCents: true,
+            abandonedAt: true,
+            recoveredAt: true,
+            expiresAt: true,
+            updatedAt: true,
+            customer: {
+              select: { id: true, firstName: true, lastName: true, email: true, company: true },
+            },
+            _count: { select: { items: true } },
           },
-          _count: { select: { items: true } },
-        },
-      })
-    );
-    return ok(
+        }),
+        tx.cart.count({ where }),
+      ]);
+      return { rows, total };
+    });
+    return paged(
       rows.map((r) => ({
         id: r.id,
         channel: r.channel,
@@ -263,7 +320,8 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
               company: r.customer.company,
             }
           : null,
-      }))
+      })),
+      { total, per_page: take }
     );
   });
 
@@ -271,36 +329,44 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/checkout-sessions', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    const take = q?.take ? Math.min(Number(q.take), 500) : 100;
+    const q = ListCheckoutSessionsQuery.parse(request.query);
+    const take = q.take ?? 100;
+    const skip = q.skip ?? 0;
+    const where = { ...(q.step ? { step: q.step } : {}) };
 
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.checkoutSession.findMany({
-        where: { ...(q?.step ? { step: q.step } : {}) },
-        orderBy: { updatedAt: 'desc' },
-        take,
-        select: {
-          id: true,
-          step: true,
-          channel: true,
-          currency: true,
-          customerId: true,
-          customerEmail: true,
-          subtotalCents: true,
-          totalCents: true,
-          expiresAt: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      })
-    );
-    return ok(
+    const { rows, total } = await withRequestTenant(request, async (tx) => {
+      const [rows, total] = await Promise.all([
+        tx.checkoutSession.findMany({
+          where,
+          orderBy: { updatedAt: 'desc' },
+          take,
+          skip,
+          select: {
+            id: true,
+            step: true,
+            channel: true,
+            currency: true,
+            customerId: true,
+            customerEmail: true,
+            subtotalCents: true,
+            totalCents: true,
+            expiresAt: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        }),
+        tx.checkoutSession.count({ where }),
+      ]);
+      return { rows, total };
+    });
+    return paged(
       rows.map((r) => ({
         ...r,
         expiresAt: r.expiresAt.toISOString(),
         createdAt: r.createdAt.toISOString(),
         updatedAt: r.updatedAt.toISOString(),
-      }))
+      })),
+      { total, per_page: take }
     );
   });
 
@@ -308,29 +374,34 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/reviews', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    const take = q?.take ? Math.min(Number(q.take), 500) : 100;
+    const q = ListReviewsQuery.parse(request.query);
+    const where = { ...(q.status ? { status: q.status } : {}) };
 
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.productReview.findMany({
-        where: { ...(q?.status ? { status: q.status } : {}) },
-        orderBy: { createdAt: 'desc' },
-        take,
-        select: {
-          id: true,
-          productId: true,
-          rating: true,
-          title: true,
-          body: true,
-          status: true,
-          orderId: true,
-          createdAt: true,
-          customer: { select: { id: true, firstName: true, lastName: true, email: true } },
-          product: { select: { id: true, title: true, handle: true } },
-        },
-      })
-    );
-    return ok(
+    const { rows, total } = await withRequestTenant(request, async (tx) => {
+      const [rows, total] = await Promise.all([
+        tx.productReview.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          take: q.take ?? 50,
+          skip: q.skip ?? 0,
+          select: {
+            id: true,
+            productId: true,
+            rating: true,
+            title: true,
+            body: true,
+            status: true,
+            orderId: true,
+            createdAt: true,
+            customer: { select: { id: true, firstName: true, lastName: true, email: true } },
+            product: { select: { id: true, title: true, handle: true } },
+          },
+        }),
+        tx.productReview.count({ where }),
+      ]);
+      return { rows, total };
+    });
+    return paged(
       rows.map((r) => ({
         id: r.id,
         productId: r.productId,
@@ -350,7 +421,8 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
               email: r.customer.email,
             }
           : null,
-      }))
+      })),
+      { total, per_page: q.take ?? 50 }
     );
   });
 
@@ -358,26 +430,33 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/questions', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    const take = q?.take ? Math.min(Number(q.take), 500) : 100;
+    const q = ListQuestionsQuery.parse(request.query);
+    const take = q.take ?? 100;
+    const skip = q.skip ?? 0;
+    const where = { ...(q.status ? { status: q.status } : {}) };
 
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.productQuestion.findMany({
-        where: { ...(q?.status ? { status: q.status } : {}) },
-        orderBy: { createdAt: 'desc' },
-        take,
-        select: {
-          id: true,
-          productId: true,
-          body: true,
-          status: true,
-          createdAt: true,
-          customer: { select: { id: true, firstName: true, lastName: true, email: true } },
-          product: { select: { id: true, title: true, handle: true } },
-        },
-      })
-    );
-    return ok(
+    const { rows, total } = await withRequestTenant(request, async (tx) => {
+      const [rows, total] = await Promise.all([
+        tx.productQuestion.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          take,
+          skip,
+          select: {
+            id: true,
+            productId: true,
+            body: true,
+            status: true,
+            createdAt: true,
+            customer: { select: { id: true, firstName: true, lastName: true, email: true } },
+            product: { select: { id: true, title: true, handle: true } },
+          },
+        }),
+        tx.productQuestion.count({ where }),
+      ]);
+      return { rows, total };
+    });
+    return paged(
       rows.map((r) => ({
         id: r.id,
         productId: r.productId,
@@ -394,7 +473,8 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
               email: r.customer.email,
             }
           : null,
-      }))
+      })),
+      { total, per_page: take }
     );
   });
 

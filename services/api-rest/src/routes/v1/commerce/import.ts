@@ -228,7 +228,7 @@ const importExportRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
 
     const ctx = toCommerceContext(request);
-    const discounts = await discountService.listDiscounts(ctx);
+    const { items: discounts } = await discountService.listDiscounts(ctx, { take: 250 });
 
     const rows = discounts.map((d) => ({
       code: d.code ?? '',

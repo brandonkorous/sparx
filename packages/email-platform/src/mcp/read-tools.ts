@@ -24,7 +24,7 @@ export const listBroadcasts: McpToolDefinition = {
   scope: 'read:email',
   confirmation: false,
   input: z.object({}),
-  run: (ctx) => broadcastService.list(ctx),
+  run: async (ctx) => (await broadcastService.list(ctx)).items,
 };
 
 export const getUnsubscribedCustomers: McpToolDefinition = {

@@ -143,7 +143,8 @@ export const getTasks: McpToolDefinition = {
     status: z.enum(['open', 'completed', 'cancelled']).optional(),
     take: z.number().int().min(1).max(100).optional().default(25),
   }),
-  run: (ctx, input) => taskService.list(ctx, input as Parameters<typeof taskService.list>[1]),
+  run: async (ctx, input) =>
+    (await taskService.list(ctx, input as Parameters<typeof taskService.list>[1])).items,
 };
 
 export const getTodayTasks: McpToolDefinition = {
@@ -164,7 +165,8 @@ export const getSegments: McpToolDefinition = {
   input: z.object({
     includeArchived: z.boolean().optional().default(false),
   }),
-  run: (ctx, input) => segmentService.list(ctx, input as Parameters<typeof segmentService.list>[1]),
+  run: async (ctx, input) =>
+    (await segmentService.list(ctx, input as Parameters<typeof segmentService.list>[1])).items,
 };
 
 export const getSegmentMembers: McpToolDefinition = {

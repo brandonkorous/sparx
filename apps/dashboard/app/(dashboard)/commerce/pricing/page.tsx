@@ -3,6 +3,7 @@ import { DollarSign, Plus } from 'lucide-react';
 import { Badge, Container, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
 import { getUserPreferences } from '../../_shell/preferences';
@@ -48,13 +49,23 @@ interface PageProps {
 
 export default async function PricingPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  // Only the PRIMARY section (price lists) is paged; bulk tiers stay a small,
+  // un-paged fetch.
+  const { skip, take } = parsePageParams(params);
 
-  const [prefs, priceLists, bulkTiers] = await Promise.all([
+  const [prefs, priceListsPage, bulkTiers] = await Promise.all([
     getUserPreferences(),
-    api.get<PriceListRow[]>('/v1/commerce/price-lists'),
+    api.getPaged<PriceListRow[]>(
+      `/v1/commerce/price-lists?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
     api.get<BulkPriceTierRow[]>('/v1/commerce/bulk-tiers'),
   ]);
 
+  const priceLists = priceListsPage.data;
+  const priceListTotal = (priceListsPage.meta?.total as number | undefined) ?? priceLists.length;
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
@@ -63,7 +74,7 @@ export default async function PricingPage({ searchParams }: PageProps) {
         <PageHeader
           icon={<DollarSign className="h-5 w-5" />}
           title="Pricing"
-          badge={<Badge color="module">{priceLists.length} price lists</Badge>}
+          badge={<Badge color="module">{priceListTotal} price lists</Badge>}
           description="Resolution order: B2B contract price → price list → bulk tier → variant base. Discounts apply on top via the Discounts page."
           actions={
             <EntityCreateButton
@@ -79,7 +90,12 @@ export default async function PricingPage({ searchParams }: PageProps) {
 
         <ListToolbar enableViewToggle searchable={false} />
 
-        <PricingLists priceLists={priceLists} bulkTiers={bulkTiers} view={view} />
+        <PricingLists
+          priceLists={priceLists}
+          bulkTiers={bulkTiers}
+          view={view}
+          priceListTotal={priceListTotal}
+        />
       </Stack>
     </Container>
   );

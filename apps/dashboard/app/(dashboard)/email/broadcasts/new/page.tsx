@@ -16,7 +16,8 @@ interface BuilderEmailListItem {
 
 export default async function NewBroadcastPage() {
   const [segments, builderEmails] = await Promise.all([
-    api.get<SegmentOption[]>('/v1/crm/segments').catch(() => [] as SegmentOption[]),
+    // List paginates (default 50); broadcast targeting needs every segment.
+    api.get<SegmentOption[]>('/v1/crm/segments?take=250').catch(() => [] as SegmentOption[]),
     api
       .get<{ emails: BuilderEmailListItem[] }>('/v1/builder/emails')
       .then((r) => r.emails)

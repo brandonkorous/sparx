@@ -5,14 +5,11 @@ import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui
 import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { CollectionsSelectionTable } from './_components/collections-selection-table';
 import type { CollectionSummary } from './_components/collections-selection-table';
-
-interface CollectionListResponse {
-  items: CollectionSummary[];
-  total: number;
-}
 
 // Collections — the merchandising surface ("Featured", "New for Spring",
 // "Diesel Service Specials"). Two flavors: manual (hand-curated product
@@ -32,17 +29,19 @@ const TYPE_OPTIONS = [
 
 export default async function CollectionsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const typeFilter = stringParam(params.type);
   const q = stringParam(params.q);
 
-  const query = new URLSearchParams({ take: '100' });
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (typeFilter === 'manual' || typeFilter === 'rules') query.set('type', typeFilter);
   if (q) query.set('q', q);
 
-  const [{ items, total }, prefs] = await Promise.all([
-    api.get<CollectionListResponse>(`/v1/commerce/collections?${query.toString()}`),
+  const [{ data: items, meta }, prefs] = await Promise.all([
+    api.getPaged<CollectionSummary[]>(`/v1/commerce/collections?${query.toString()}`),
     getUserPreferences(),
   ]);
+  const total = (meta?.total as number | undefined) ?? items.length;
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
@@ -102,6 +101,8 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
         ) : (
           <CollectionsSelectionTable collections={items} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

@@ -20,9 +20,9 @@ export const metadata = { title: 'Markup rules — Commerce' };
 export default async function MarkupRulesPage() {
   const [rules, collectionList] = await Promise.all([
     api.get<MarkupRuleRow[]>('/v1/markup-rules'),
-    api.get<{ items: CollectionOption[] }>('/v1/commerce/collections?take=100'),
+    api.getPaged<CollectionOption[]>('/v1/commerce/collections?take=100'),
   ]);
-  const collections = collectionList.items;
+  const collections = collectionList.data;
 
   return (
     <Container size="full">

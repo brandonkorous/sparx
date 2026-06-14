@@ -26,7 +26,7 @@ import {
   billingRenderService,
 } from '@sparx/crm';
 import { GatewayNotFoundError, PaymentConfigError, paymentService } from '@sparx/payments';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { ApiError } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
@@ -34,6 +34,19 @@ import { renderTenantInvoiceHtml, resolveInvoiceBrand } from '../../../lib/invoi
 
 const PathId = z.object({ id: z.string().uuid() });
 const LinePathIds = z.object({ id: z.string().uuid(), lineId: z.string().uuid() });
+
+// Offset pagination + the passthrough filters the service understands. `take`/`skip`
+// match the platform list convention; they map onto the service's `limit`/`offset`.
+const ListDocumentsQuery = z.object({
+  workflowId: z.string().uuid().optional(),
+  stageId: z.string().uuid().optional(),
+  customerId: z.string().uuid().optional(),
+  b2bAccountId: z.string().uuid().optional(),
+  status: z.string().max(20).optional(),
+  includeDeleted: z.coerce.boolean().optional(),
+  take: z.coerce.number().int().min(1).max(200).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 const SnapshotPathIds = z.object({ id: z.string().uuid(), snapshotId: z.string().uuid() });
 const PaymentLinkBody = z.object({
   successUrl: z.string().url(),
@@ -44,7 +57,19 @@ const documentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/invoicing/documents', async (request) => {
     requireRole(request, 'viewer');
     await requireInvoicingModule(request);
-    return ok(await billingDocumentService.list(toInvoicingContext(request), request.query));
+    const q = ListDocumentsQuery.parse(request.query);
+    const { items, total } = await billingDocumentService.list(toInvoicingContext(request), {
+      workflowId: q.workflowId,
+      stageId: q.stageId,
+      customerId: q.customerId,
+      b2bAccountId: q.b2bAccountId,
+      status: q.status,
+      includeDeleted: q.includeDeleted,
+      // The service speaks limit/offset; `default(50)`/`default(0)` apply when omitted.
+      ...(q.take !== undefined ? { limit: q.take } : {}),
+      ...(q.skip !== undefined ? { offset: q.skip } : {}),
+    });
+    return paged(items, { total, skip: q.skip ?? 0, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/invoicing/documents/:id', async (request) => {

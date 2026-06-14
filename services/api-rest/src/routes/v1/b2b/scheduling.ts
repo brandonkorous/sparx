@@ -109,6 +109,11 @@ const ListAppointmentsQuery = z.object({
   skip: z.coerce.number().int().min(0).default(0),
 });
 
+const ListServiceTypesQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
 // ── View helpers ──────────────────────────────────────────────────────────────
 
 function toTypeView(t: {
@@ -211,15 +216,20 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
     await requireB2bModule(request);
     requireRole(request, 'viewer');
     const ctx = toB2bContext(request);
+    const q = ListServiceTypesQuery.parse(request.query);
+    const take = Math.min(q.take ?? 50, 250);
+    const skip = q.skip ?? 0;
 
-    const types = await withTenant(ctx, (tx) =>
-      tx.serviceType.findMany({
-        where: { tenantId: ctx.tenantId, deletedAt: null },
-        orderBy: { name: 'asc' },
-      })
-    );
+    const where = { tenantId: ctx.tenantId, deletedAt: null };
+    const { types, total } = await withTenant(ctx, async (tx) => {
+      const [types, total] = await Promise.all([
+        tx.serviceType.findMany({ where, orderBy: { name: 'asc' }, take, skip }),
+        tx.serviceType.count({ where }),
+      ]);
+      return { types, total };
+    });
 
-    return ok({ types: types.map(toTypeView) });
+    return paged(types.map(toTypeView), { total, per_page: q.take ?? 50 });
   });
 
   app.post('/v1/b2b/service-types', async (request, reply) => {

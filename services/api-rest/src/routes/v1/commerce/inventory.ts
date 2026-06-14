@@ -3,7 +3,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { inventoryService } from '@sparx/commerce';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 
@@ -11,18 +11,25 @@ const PathId = z.object({ id: z.string().uuid() });
 const VariantParam = z.object({ variantId: z.string().uuid() });
 const WarehouseParam = z.object({ warehouseId: z.string().uuid() });
 
+const ListWarehousesQuery = z.object({
+  include_archived: z.coerce.boolean().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const inventoryRoutes: FastifyPluginAsync = async (app) => {
   // Warehouses
   app.get('/v1/commerce/warehouses', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    return ok(
-      await inventoryService.listWarehouses(toCommerceContext(request), {
-        includeInactive: q?.include_archived === 'true',
-      })
-    );
+    const q = ListWarehousesQuery.parse(request.query);
+    const { items, total } = await inventoryService.listWarehouses(toCommerceContext(request), {
+      includeInactive: q.include_archived === true,
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/commerce/warehouses/:id', async (request) => {

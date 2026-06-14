@@ -11,7 +11,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { taskService } from '@sparx/crm';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole, requireAuth } from '@sparx/api-core/auth';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
 
@@ -24,6 +24,7 @@ const ListQuery = z.object({
   status: z.enum(['open', 'completed', 'cancelled']).optional(),
   due_before: z.string().datetime().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
 });
 
 const OverdueQuery = z.object({ user_id: z.string().uuid().optional() });
@@ -33,15 +34,16 @@ const taskRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
-    const rows = await taskService.list(toCrmContext(request), {
+    const { items, total } = await taskService.list(toCrmContext(request), {
       assignedToUserId: q.assigned_to_user_id,
       customerId: q.customer_id,
       dealId: q.deal_id,
       status: q.status,
       dueBefore: q.due_before ? new Date(q.due_before) : undefined,
       take: q.take,
+      skip: q.skip,
     });
-    return ok(rows);
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/crm/tasks/overdue', async (request) => {

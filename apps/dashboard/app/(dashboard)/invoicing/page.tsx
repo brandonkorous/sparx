@@ -6,6 +6,8 @@ import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../_components/entity-create-button';
 import { ListToolbar } from '../_components/list-toolbar';
+import { ListPager } from '../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../_shell/preferences';
 import { DocumentsList } from './_components/documents-list';
 
@@ -48,20 +50,22 @@ const STATUS_OPTIONS = [
 
 export default async function InvoicingDocumentsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status);
   const workflowId = stringParam(params.workflowId);
 
-  const query = new URLSearchParams({ limit: '100' });
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status) query.set('status', status);
   if (workflowId) query.set('workflowId', workflowId);
 
   // The list returns { items, total }; workflows give us the stage label per row
   // (the document's customer-facing noun — Estimate / Invoice / Work Order).
-  const [{ items, total }, workflows, prefs] = await Promise.all([
-    api.get<{ items: DocumentRow[]; total: number }>(`/v1/invoicing/documents?${query.toString()}`),
+  const [{ data: items, meta }, workflows, prefs] = await Promise.all([
+    api.getPaged<DocumentRow[]>(`/v1/invoicing/documents?${query.toString()}`),
     api.get<WorkflowLite[]>('/v1/invoicing/workflows'),
     getUserPreferences(),
   ]);
+  const total = (meta?.total as number | undefined) ?? items.length;
 
   const stageLabels: Record<string, string> = {};
   for (const w of workflows) for (const s of w.stages) stageLabels[s.id] = s.customerLabel;
@@ -114,6 +118,8 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
         ) : (
           <DocumentsList items={items} view={view} stageLabels={stageLabels} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

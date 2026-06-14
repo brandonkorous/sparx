@@ -3,7 +3,9 @@ import { Settings2 } from 'lucide-react';
 import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ConfiguratorList, type ConfigurationTemplateRow } from './_components/configurator-list';
 
@@ -20,11 +22,18 @@ interface PageProps {
 
 export default async function ConfiguratorPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
-  const [prefs, templates] = await Promise.all([
+  const [prefs, { data: templates, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<ConfigurationTemplateRow[]>('/v1/commerce/configurator-templates?take=200'),
+    api.getPaged<ConfigurationTemplateRow[]>(
+      `/v1/commerce/configurator-templates?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
   ]);
+  const total = (meta?.total as number | undefined) ?? templates.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -34,7 +43,7 @@ export default async function ConfiguratorPage({ searchParams }: PageProps) {
         <PageHeader
           icon={<Settings2 className="h-5 w-5" />}
           title="Configurator"
-          badge={<Badge color="module">{templates.length}</Badge>}
+          badge={<Badge color="module">{total}</Badge>}
           description="Templates drive any configurable product — play structures, beauty gift sets, custom auto parts, configurable dogfood crates. Each template is a set of options + rules + add-ons; the resolver turns a user's selections into a cart line."
         />
 
@@ -51,6 +60,8 @@ export default async function ConfiguratorPage({ searchParams }: PageProps) {
         ) : (
           <ConfiguratorList templates={templates} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

@@ -3,8 +3,10 @@ import { DollarSign } from 'lucide-react';
 import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { TierCreateButton } from './_components/tier-create-button';
 import { PricingTiersList, type PricingTierRow } from './_components/pricing-tiers-list';
 
@@ -16,12 +18,19 @@ interface PageProps {
 
 export default async function PricingTiersPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
   const [prefs, paged] = await Promise.all([
     getUserPreferences(),
-    api.getPaged<PricingTierRow[]>('/v1/b2b/pricing-tiers'),
+    api.getPaged<PricingTierRow[]>(
+      `/v1/b2b/pricing-tiers?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
   ]);
   const tiers = paged.data;
+  const total = (paged.meta?.total as number | undefined) ?? tiers.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -33,7 +42,7 @@ export default async function PricingTiersPage({ searchParams }: PageProps) {
           title="Pricing tiers"
           badge={
             <Badge color="module">
-              {tiers.length} tier{tiers.length === 1 ? '' : 's'}
+              {total} tier{total === 1 ? '' : 's'}
             </Badge>
           }
           description="Named discount structures applied to B2B accounts. Product-level overrides take precedence over tier discounts."
@@ -54,6 +63,8 @@ export default async function PricingTiersPage({ searchParams }: PageProps) {
         ) : (
           <PricingTiersList rows={tiers} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

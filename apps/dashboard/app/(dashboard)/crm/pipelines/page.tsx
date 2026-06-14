@@ -6,6 +6,8 @@ import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { PipelinesList, type PipelineRow } from './_components/pipelines-list';
 
@@ -32,14 +34,16 @@ interface PageProps {
 
 export default async function PipelinesPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const archived = parseArchived(stringParam(params.archived));
 
-  const [prefs, fetched] = await Promise.all([
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
+  if (archived !== 'active') query.set('include_archived', 'true');
+  const [prefs, { data: fetched, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<PipelineRow[]>(
-      `/v1/crm/pipelines${archived !== 'active' ? '?include_archived=true' : ''}`
-    ),
+    api.getPaged<PipelineRow[]>(`/v1/crm/pipelines?${query.toString()}`),
   ]);
+  const total = (meta?.total as number | undefined) ?? fetched.length;
 
   // `archived` narrows the all-inclusive fetch to just archived rows.
   const pipelines = archived === 'archived' ? fetched.filter((p) => p.archivedAt) : fetched;
@@ -92,6 +96,8 @@ export default async function PipelinesPage({ searchParams }: PageProps) {
         ) : (
           <PipelinesList pipelines={pipelines} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

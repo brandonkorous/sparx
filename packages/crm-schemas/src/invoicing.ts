@@ -188,8 +188,13 @@ export const ListBillingDocumentsInput = z.object({
   b2bAccountId: z.string().uuid().optional(),
   status: z.string().max(20).optional(),
   includeDeleted: z.boolean().optional(),
-  limit: z.number().int().min(1).max(200).default(50),
-  offset: z.number().int().min(0).default(0),
+  // `z.coerce.number()` (not `z.number()`) so HTTP query strings — the dashboard
+  // hits `/v1/invoicing/documents?limit=100`, and the route pipes `request.query`
+  // straight in — coerce instead of 422-ing on `expected number, received string`.
+  // Coercion is a no-op on the real numbers the invoicing MCP tool passes, so this
+  // single funnel stays correct for both callers (docs/87 §2).
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
 });
 export type ListBillingDocumentsInput = z.infer<typeof ListBillingDocumentsInput>;
 

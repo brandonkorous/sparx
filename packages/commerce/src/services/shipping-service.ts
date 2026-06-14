@@ -60,14 +60,21 @@ export interface ShippingRateRow {
 
 // ─── Zones ───────────────────────────────────────────────────────────
 
-export async function listZones(ctx: ServiceContext): Promise<ShippingZoneRow[]> {
+export async function listZones(
+  ctx: ServiceContext,
+  filter: { take?: number; skip?: number } = {}
+): Promise<{ items: ShippingZoneRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const rows = await tx.shippingZone.findMany({
-      include: { _count: { select: { rates: true } } },
-      orderBy: [{ priority: 'desc' }, { name: 'asc' }],
-      take: 250,
-    });
-    return rows.map(serializeZone);
+    const [rows, total] = await Promise.all([
+      tx.shippingZone.findMany({
+        include: { _count: { select: { rates: true } } },
+        orderBy: [{ priority: 'desc' }, { name: 'asc' }],
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.shippingZone.count(),
+    ]);
+    return { items: rows.map(serializeZone), total };
   });
 }
 
@@ -158,18 +165,25 @@ export async function deleteZone(ctx: ServiceContext, id: string): Promise<void>
 
 // ─── Profiles ────────────────────────────────────────────────────────
 
-export async function listProfiles(ctx: ServiceContext): Promise<ShippingProfileRow[]> {
+export async function listProfiles(
+  ctx: ServiceContext,
+  filter: { take?: number; skip?: number } = {}
+): Promise<{ items: ShippingProfileRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const rows = await tx.shippingProfile.findMany({
-      include: {
-        _count: {
-          select: { productLinks: true, variantLinks: true, collectionLinks: true },
+    const [rows, total] = await Promise.all([
+      tx.shippingProfile.findMany({
+        include: {
+          _count: {
+            select: { productLinks: true, variantLinks: true, collectionLinks: true },
+          },
         },
-      },
-      orderBy: { name: 'asc' },
-      take: 250,
-    });
-    return rows.map(serializeProfile);
+        orderBy: { name: 'asc' },
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.shippingProfile.count(),
+    ]);
+    return { items: rows.map(serializeProfile), total };
   });
 }
 

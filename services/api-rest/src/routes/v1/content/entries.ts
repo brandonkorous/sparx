@@ -1,6 +1,6 @@
 // Content entries CRUD + list.
 //
-//   GET    /v1/content/entries                 → list (filterable, cursor-paged)
+//   GET    /v1/content/entries                 → list (filterable, offset-paged)
 //   POST   /v1/content/entries                 → create draft
 //   GET    /v1/content/entries/:id             → fetch one
 //   PATCH  /v1/content/entries/:id             → update; creates autosave revision
@@ -90,8 +90,8 @@ const ListQuery = z.object({
   // VISIBLE on it (global + scoped-here), matching that site's storefront. The
   // dashboard content list defaults this to the active site; omitted → all.
   property: z.string().uuid().optional(),
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(250).default(50),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
 });
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -130,20 +130,20 @@ const entryRoutes: FastifyPluginAsync = (app) => {
       ...(q.property ? contentSiteVisibilityWhere(q.property) : {}),
     };
 
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.contentEntry.findMany({
-        where,
-        orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
-        take: q.limit + 1,
-        ...(q.cursor ? { cursor: { id: q.cursor }, skip: 1 } : {}),
-      })
+    const take = Math.min(q.take ?? 50, 250);
+    const [rows, total] = await withRequestTenant(request, (tx) =>
+      Promise.all([
+        tx.contentEntry.findMany({
+          where,
+          orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+          take,
+          skip: q.skip ?? 0,
+        }),
+        tx.contentEntry.count({ where }),
+      ])
     );
 
-    const hasMore = rows.length > q.limit;
-    const page = hasMore ? rows.slice(0, q.limit) : rows;
-    const nextCursor = hasMore ? (page[page.length - 1]?.id ?? null) : null;
-
-    return paged(page.map(serializeEntry), { per_page: q.limit, next_cursor: nextCursor });
+    return paged(rows.map(serializeEntry), { total, per_page: q.take ?? 50 });
   });
 
   // ──────────────────────────────────────────────────────────────────────

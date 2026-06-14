@@ -18,7 +18,11 @@ import { requireRole } from '@sparx/api-core/auth';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
-const ListQuery = z.object({ include_archived: z.coerce.boolean().optional() });
+const ListQuery = z.object({
+  include_archived: z.coerce.boolean().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 const MembersQuery = z.object({
   limit: z.coerce.number().int().min(1).max(1000).optional(),
   offset: z.coerce.number().int().min(0).optional(),
@@ -29,10 +33,12 @@ const segmentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
-    const rows = await segmentService.list(toCrmContext(request), {
+    const { items, total } = await segmentService.list(toCrmContext(request), {
       includeArchived: q.include_archived,
+      take: q.take,
+      skip: q.skip,
     });
-    return ok(rows);
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/crm/segments/:id', async (request) => {

@@ -11,8 +11,10 @@
 import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 import { Database, Plus } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ContentTypesList } from './_components/content-types-list';
 
@@ -45,12 +47,22 @@ function stringParam(v: string | string[] | undefined): string | undefined {
 
 export default async function ContentTypesPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
-  const [prefs, types, entries] = await Promise.all([
+  const [prefs, { data: types, meta }, entries] = await Promise.all([
     getUserPreferences(),
-    api.get<ApiContentType[]>('/v1/content/types'),
-    api.get<ApiEntry[]>('/v1/content/entries?limit=250'),
+    api.getPaged<ApiContentType[]>(
+      `/v1/content/types?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
+    // Per-type entry counts: a bounded sample of recent entries (the column is an
+    // at-a-glance count, not an exact total). Switched from the retired `limit`
+    // param to `take` when entries moved to offset pagination.
+    api.get<ApiEntry[]>('/v1/content/entries?take=250'),
   ]);
+  const total = (meta?.total as number | undefined) ?? types.length;
 
   const counts: Record<string, number> = {};
   for (const e of entries) counts[e.type_key] = (counts[e.type_key] ?? 0) + 1;
@@ -63,7 +75,7 @@ export default async function ContentTypesPage({ searchParams }: PageProps) {
         <PageHeader
           icon={<Database className="h-5 w-5" />}
           title="Content types"
-          badge={<Badge variant="outline">{types.length}</Badge>}
+          badge={<Badge variant="outline">{total}</Badge>}
           description="The authoring shapes behind your content — pages, posts, FAQs, and any custom type. Click a type to see its items, or open its schema to edit the fields."
           actions={
             <EntityCreateButton
@@ -100,6 +112,8 @@ export default async function ContentTypesPage({ searchParams }: PageProps) {
         ) : (
           <ContentTypesList types={types} counts={counts} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

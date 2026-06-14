@@ -32,6 +32,11 @@ const UpdateLocationBody = z.object({
   active: z.boolean().optional(),
 });
 
+const ListLocationsQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
 const LevelsQuery = z.object({
   take: z.coerce.number().int().min(1).max(500).default(100),
   skip: z.coerce.number().int().min(0).default(0),
@@ -45,15 +50,22 @@ const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
     await requireInventoryModule(request);
     requireRole(request, 'admin');
     const { tenantId } = toInventoryContext(request);
+    const q = ListLocationsQuery.parse(request.query);
 
-    const locations = await withTenant({ tenantId }, async (tx) => {
-      return tx.stockLocation.findMany({
-        where: { tenantId, active: true },
-        orderBy: [{ isDefault: 'desc' }, { name: 'asc' }],
-      });
+    const where = { tenantId, active: true };
+    const [locations, total] = await withTenant({ tenantId }, async (tx) => {
+      return Promise.all([
+        tx.stockLocation.findMany({
+          where,
+          orderBy: [{ isDefault: 'desc' }, { name: 'asc' }],
+          take: q.take,
+          skip: q.skip,
+        }),
+        tx.stockLocation.count({ where }),
+      ]);
     });
 
-    return reply.send(ok(locations));
+    return reply.send(paged(locations, { total, skip: q.skip, per_page: q.take ?? 50 }));
   });
 
   // ── Create ───────────────────────────────────────────────────────────────────

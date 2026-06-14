@@ -61,8 +61,8 @@ export interface DiscountRow {
 
 export async function listDiscounts(
   ctx: ServiceContext,
-  filter: { status?: string; q?: string } = {}
-): Promise<DiscountRow[]> {
+  filter: { status?: string; q?: string; take?: number; skip?: number } = {}
+): Promise<{ items: DiscountRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.DiscountWhereInput = {
       deletedAt: null,
@@ -76,12 +76,16 @@ export async function listDiscounts(
           }
         : {}),
     };
-    const rows = await tx.discount.findMany({
-      where,
-      orderBy: [{ priority: 'desc' }, { updatedAt: 'desc' }],
-      take: 200,
-    });
-    return rows.map(serializeDiscount);
+    const [rows, total] = await Promise.all([
+      tx.discount.findMany({
+        where,
+        orderBy: [{ priority: 'desc' }, { updatedAt: 'desc' }],
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.discount.count({ where }),
+    ]);
+    return { items: rows.map(serializeDiscount), total };
   });
 }
 

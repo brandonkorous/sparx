@@ -54,7 +54,9 @@ export default async function OnboardingPage({
   const [tenant, state, catalog, moduleList, properties] = await Promise.all([
     api.get<{ name: string; slug: string }>('/v1/tenant'),
     api.get<OnboardingStateDto>('/v1/tenant/onboarding'),
-    api.get<{ blueprints: BlueprintDto[] }>('/v1/blueprints'),
+    // The catalog is paginated (data = array, meta carries total); the onboarding
+    // gallery needs the WHOLE catalog, so request the max page.
+    api.getPaged<BlueprintDto[]>('/v1/blueprints?take=250'),
     api.get<{ slug: string; enabled: boolean }[]>('/v1/tenant/modules'),
     listProperties().catch(() => []),
   ]);
@@ -62,7 +64,7 @@ export default async function OnboardingPage({
   // First-run gallery shows ONLY blueprints that already have a real preview
   // screenshot — a polished showcase, never a placeholder. (Capturing the
   // remaining previews is a separate, tracked effort, intentionally not done here.)
-  const blueprints: WizardBlueprint[] = catalog.blueprints
+  const blueprints: WizardBlueprint[] = catalog.data
     .filter((b) => Boolean(b.preview))
     .map((b) => ({
       key: b.key,

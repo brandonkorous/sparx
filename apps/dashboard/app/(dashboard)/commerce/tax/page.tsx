@@ -17,7 +17,9 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { TaxZonesList, type TaxZoneRow } from './_components/tax-zones-list';
 
@@ -29,13 +31,20 @@ interface PageProps {
 
 export default async function TaxPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
-  const [prefs, zones] = await Promise.all([
+  const [prefs, zonesPage] = await Promise.all([
     getUserPreferences(),
-    api.get<TaxZoneRow[]>('/v1/commerce/tax/zones'),
+    api.getPaged<TaxZoneRow[]>(
+      `/v1/commerce/tax/zones?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
   ]);
 
-  const activeZones = zones.filter((z) => z.isActive);
+  const zones = zonesPage.data;
+  const total = (zonesPage.meta?.total as number | undefined) ?? zones.length;
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
@@ -46,7 +55,7 @@ export default async function TaxPage({ searchParams }: PageProps) {
           title="Tax"
           badge={
             <Badge color="module">
-              {activeZones.length} active zone{activeZones.length === 1 ? '' : 's'}
+              {total} zone{total === 1 ? '' : 's'}
             </Badge>
           }
           description="Register a tax zone for every jurisdiction where the merchant has nexus. Manual rates below run when no TaxProvider (Stripe Tax, TaxJar, Avalara) is installed; the provider wins as soon as one is connected from Commerce → Providers. B2B exemption certificates attach per customer or per B2B account."
@@ -88,6 +97,8 @@ export default async function TaxPage({ searchParams }: PageProps) {
         ) : (
           <TaxZonesList zones={zones} view={view} />
         )}
+
+        <ListPager total={total} />
 
         <Card>
           <CardHeader>

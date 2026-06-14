@@ -14,8 +14,10 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { QaList, type DisplayRow } from './_components/qa-list';
 
@@ -65,15 +67,21 @@ function authorLabel(row: QuestionListRow): string {
 export default async function QaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; view?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { status: statusParam, view: viewParam } = await searchParams;
+  const params = await searchParams;
+  const statusParam = stringParam(params.status);
+  const viewParam = stringParam(params.view);
+  const { skip, take } = parsePageParams(params);
 
   const prefs = await getUserPreferences();
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   let rows: DisplayRow[] = [];
+  let total: number;
   if (statusParam === undefined) {
+    // Pending moderation queue — its own (non-paginated) endpoint; the pager is
+    // hidden for this view since the queue is the full pending set.
     const list = await api.get<QuestionListRow[]>('/v1/commerce/questions/pending');
     rows = list.map((q) => ({
       id: q.id,
@@ -85,9 +93,13 @@ export default async function QaPage({
       productTitle: q.productTitle ?? null,
       answerCount: Array.isArray(q.answers) ? q.answers.length : null,
     }));
+    total = rows.length;
   } else {
-    const qs = statusParam === 'all' ? '?take=250' : `?status=${statusParam}&take=250`;
-    const list = await api.get<QuestionListRow[]>(`/v1/commerce/questions${qs}`);
+    const query = new URLSearchParams({ take: String(take), skip: String(skip) });
+    if (statusParam !== 'all') query.set('status', statusParam);
+    const { data: list, meta } = await api.getPaged<QuestionListRow[]>(
+      `/v1/commerce/questions?${query.toString()}`
+    );
     rows = list.map((q) => ({
       id: q.id,
       productId: q.productId,
@@ -98,6 +110,7 @@ export default async function QaPage({
       productTitle: q.productTitle ?? null,
       answerCount: null,
     }));
+    total = (meta?.total as number | undefined) ?? rows.length;
   }
 
   return (
@@ -106,7 +119,7 @@ export default async function QaPage({
         <PageHeader
           icon={<HelpCircle className="h-5 w-5" />}
           title="Questions & answers"
-          badge={<Badge color="module">{rows.length} shown</Badge>}
+          badge={<Badge color="module">{total} shown</Badge>}
           description="Customer questions are moderated before they reach the storefront. Answering with the staff badge marks the response as official; community answers can land too once the question is published."
         />
 
@@ -143,9 +156,19 @@ export default async function QaPage({
             <QaList rows={rows} view={view} />
           </Stack>
         )}
+
+        {/* The pending queue is the full pending set (its own endpoint), so the
+            pager only applies to the status-filtered list. */}
+        {statusParam !== undefined ? <ListPager total={total} /> : null}
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }
 
 function labelFor(s: string | undefined): string {

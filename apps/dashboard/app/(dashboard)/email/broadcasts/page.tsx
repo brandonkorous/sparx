@@ -2,8 +2,10 @@ import { Plus, Send } from 'lucide-react';
 import { EmptyState } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { EmailShell } from '../_components/email-shell';
 import type { BroadcastRow } from '../_lib/types';
@@ -17,11 +19,18 @@ interface PageProps {
 
 export default async function BroadcastsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
 
-  const [prefs, broadcasts] = await Promise.all([
+  const [prefs, { data: broadcasts, meta }] = await Promise.all([
     getUserPreferences(),
-    api.get<BroadcastRow[]>('/v1/email/broadcasts'),
+    api.getPaged<BroadcastRow[]>(
+      `/v1/email/broadcasts?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
   ]);
+  const total = (meta?.total as number | undefined) ?? broadcasts.length;
 
   const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -54,6 +63,8 @@ export default async function BroadcastsPage({ searchParams }: PageProps) {
       ) : (
         <BroadcastsList rows={broadcasts} view={view} />
       )}
+
+      <ListPager total={total} />
     </EmailShell>
   );
 }

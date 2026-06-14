@@ -41,12 +41,28 @@ async function provider<T>(fn: () => Promise<T>): Promise<T> {
   }
 }
 
-export async function list(ctx: ServiceContext): Promise<SendingDomain[]> {
-  return withTenant(ctx, (tx) =>
-    tx.sendingDomain.findMany({
-      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
-    })
-  );
+export interface ListDomainsQuery {
+  take?: number;
+  skip?: number;
+}
+
+export async function list(
+  ctx: ServiceContext,
+  query: ListDomainsQuery = {}
+): Promise<{ items: SendingDomain[]; total: number }> {
+  const take = Math.min(query.take ?? 50, 250);
+  const skip = query.skip ?? 0;
+  return withTenant(ctx, async (tx) => {
+    const [items, total] = await Promise.all([
+      tx.sendingDomain.findMany({
+        orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
+        take,
+        skip,
+      }),
+      tx.sendingDomain.count(),
+    ]);
+    return { items, total };
+  });
 }
 
 export async function get(ctx: ServiceContext, id: string): Promise<SendingDomain> {

@@ -23,8 +23,10 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { parsePageParams } from '@/lib/pagination';
 
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
 import { getUserPreferences } from '../../_shell/preferences';
 import { InventoryList } from './_components/inventory-list';
 import type { InventoryRow } from './_components/inventory-row-editor';
@@ -99,6 +101,7 @@ function pickString(value: string | string[] | undefined): string | undefined {
 
 export default async function InventoryPage({ searchParams }: PageProps) {
   const params = (await searchParams) ?? {};
+  const { skip, take } = parsePageParams(params);
   const warehouseFilter = pickString(params.warehouse);
   const lowStockOnly = pickString(params.low) === '1';
 
@@ -107,18 +110,26 @@ export default async function InventoryPage({ searchParams }: PageProps) {
 
   const [prefs, warehouses, lowStock] = await Promise.all([
     getUserPreferences(),
-    api.get<WarehouseRow[]>('/v1/commerce/warehouses'),
+    api.get<WarehouseRow[]>('/v1/commerce/warehouses?take=250'),
     api.get<LowStockRow[]>(`/v1/commerce/inventory/low-stock?${lowStockQuery.toString()}`),
   ]);
 
   const activeWarehouse = warehouseFilter ? warehouses.find((w) => w.id === warehouseFilter) : null;
   const fallbackWarehouse = activeWarehouse ?? warehouses[0] ?? null;
 
-  const gridItems: EnrichedLevelRow[] = fallbackWarehouse
-    ? await api.get<EnrichedLevelRow[]>(
-        `/v1/commerce/inventory/levels/warehouse/${fallbackWarehouse.id}/enriched?take=200${lowStockOnly ? '&low_stock_only=true' : ''}`
-      )
-    : [];
+  // Main stock list — paginated. The "Reorder watch" panel above is a separate
+  // helper fetch (low-stock) that stays un-paginated.
+  let gridItems: EnrichedLevelRow[] = [];
+  let gridTotal = 0;
+  if (fallbackWarehouse) {
+    const enrichedQuery = new URLSearchParams({ take: String(take), skip: String(skip) });
+    if (lowStockOnly) enrichedQuery.set('low_stock_only', 'true');
+    const { data, meta } = await api.getPaged<EnrichedLevelRow[]>(
+      `/v1/commerce/inventory/levels/warehouse/${fallbackWarehouse.id}/enriched?${enrichedQuery.toString()}`
+    );
+    gridItems = data;
+    gridTotal = (meta?.total as number | undefined) ?? data.length;
+  }
   const warehouseCode = fallbackWarehouse?.code ?? '';
   const gridRows: InventoryRow[] = gridItems.map((r) => ({
     variantId: r.variantId,
@@ -256,6 +267,8 @@ export default async function InventoryPage({ searchParams }: PageProps) {
             </Stack>
           </>
         )}
+
+        <ListPager total={gridTotal} />
       </Stack>
     </Container>
   );

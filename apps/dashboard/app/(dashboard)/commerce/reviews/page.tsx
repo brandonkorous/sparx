@@ -5,6 +5,8 @@ import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sp
 import { api } from '@/lib/api-rest-client';
 
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { ReviewsList, type ReviewListRow } from './_components/reviews-list';
 
@@ -41,12 +43,19 @@ function labelFor(f: Filter): string {
 export default async function ReviewsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; productId?: string; view?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { status: statusParam, productId, view: viewParam } = await searchParams;
+  const params = await searchParams;
+  const statusParam = stringParam(params.status);
+  const productId = stringParam(params.productId);
+  const viewParam = stringParam(params.view);
   const filter = parseFilter(statusParam);
+  const pageWindow = parsePageParams(params);
 
-  const [prefs, rows] = await Promise.all([getUserPreferences(), fetchRows(filter, productId)]);
+  const [prefs, { rows, total, paged }] = await Promise.all([
+    getUserPreferences(),
+    fetchRows(filter, productId, pageWindow),
+  ]);
 
   const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
@@ -56,7 +65,7 @@ export default async function ReviewsPage({
         <PageHeader
           icon={<Star className="h-5 w-5" />}
           title="Reviews"
-          badge={<Badge color="module">{rows.length} shown</Badge>}
+          badge={<Badge color="module">{total} shown</Badge>}
           description={
             <>
               Verified-purchase reviews auto-approve. Anonymous + non-verified land here for
@@ -89,23 +98,52 @@ export default async function ReviewsPage({
             <ReviewsList rows={rows} view={view} />
           </>
         )}
+
+        {paged ? <ListPager total={total} /> : null}
       </Stack>
     </Container>
   );
 }
 
-async function fetchRows(filter: Filter, productId?: string): Promise<ReviewListRow[]> {
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
+}
+
+interface FetchedReviews {
+  rows: ReviewListRow[];
+  total: number;
+  // The tenant-wide list is the only offset-paged branch; the moderation
+  // queue + product-scoped views are special-purpose (capped / per-product)
+  // and don't carry a page window.
+  paged: boolean;
+}
+
+async function fetchRows(
+  filter: Filter,
+  productId: string | undefined,
+  window: { skip: number; take: number }
+): Promise<FetchedReviews> {
   if (filter.kind === 'queue') {
-    return api.get<ReviewListRow[]>('/v1/commerce/reviews/pending');
+    const rows = await api.get<ReviewListRow[]>('/v1/commerce/reviews/pending');
+    return { rows, total: rows.length, paged: false };
   }
   if (productId) {
     const params = new URLSearchParams({ take: '250' });
     if (filter.kind === 'status') params.set('status', filter.status);
-    return api.get<ReviewListRow[]>(
+    const { items } = await api.get<{ items: ReviewListRow[]; total: number }>(
       `/v1/commerce/products/${productId}/reviews?${params.toString()}`
     );
+    return { rows: items, total: items.length, paged: false };
   }
-  const params = new URLSearchParams({ take: '250' });
+  const params = new URLSearchParams({
+    take: String(window.take),
+    skip: String(window.skip),
+  });
   if (filter.kind === 'status') params.set('status', filter.status);
-  return api.get<ReviewListRow[]>(`/v1/commerce/reviews?${params.toString()}`);
+  const { data, meta } = await api.getPaged<ReviewListRow[]>(
+    `/v1/commerce/reviews?${params.toString()}`
+  );
+  return { rows: data, total: (meta?.total as number | undefined) ?? data.length, paged: true };
 }

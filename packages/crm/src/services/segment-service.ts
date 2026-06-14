@@ -20,14 +20,21 @@ import { CrmNotFoundError } from '../errors';
 
 export async function list(
   ctx: ServiceContext,
-  args: { includeArchived?: boolean } = {}
-): Promise<Segment[]> {
-  return withTenant(ctx, (tx) =>
-    tx.segment.findMany({
-      where: args.includeArchived ? {} : { archivedAt: null },
-      orderBy: [{ isBuiltIn: 'desc' }, { name: 'asc' }],
-    })
-  );
+  args: { includeArchived?: boolean; take?: number; skip?: number } = {}
+): Promise<{ items: Segment[]; total: number }> {
+  return withTenant(ctx, async (tx) => {
+    const where = args.includeArchived ? {} : { archivedAt: null };
+    const [items, total] = await Promise.all([
+      tx.segment.findMany({
+        where,
+        orderBy: [{ isBuiltIn: 'desc' }, { name: 'asc' }],
+        take: Math.min(args.take ?? 50, 250),
+        skip: args.skip ?? 0,
+      }),
+      tx.segment.count({ where }),
+    ]);
+    return { items, total };
+  });
 }
 
 export async function get(ctx: ServiceContext, segmentId: string): Promise<Segment> {

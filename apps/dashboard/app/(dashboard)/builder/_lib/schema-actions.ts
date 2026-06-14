@@ -71,10 +71,13 @@ export async function countTypeEntries(
   key: string
 ): Promise<ActionResult<{ count: number; capped: boolean }>> {
   return run(async () => {
-    const { data } = await api.getPaged<unknown[]>(
-      `/v1/content/entries?type=${encodeURIComponent(key)}&limit=250`
+    const { data, meta } = await api.getPaged<unknown[]>(
+      `/v1/content/entries?type=${encodeURIComponent(key)}&take=250`
     );
-    const count = Array.isArray(data) ? data.length : 0;
+    // The list now returns an exact `meta.total`; fall back to the fetched
+    // window length if it's ever absent. `capped` still reads as "250+".
+    const fetched = Array.isArray(data) ? data.length : 0;
+    const count = (meta?.total as number | undefined) ?? fetched;
     return { count, capped: count >= 250 };
   }, false);
 }

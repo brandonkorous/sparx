@@ -4,12 +4,24 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { providerService, returnService, subscriptionService } from '@sparx/commerce';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const SlugParam = z.object({ slug: z.string().min(1).max(128) });
+
+const ListReturnsQuery = z.object({
+  status: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
+const ListSubscriptionsQuery = z.object({
+  status: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const providerRoutes: FastifyPluginAsync = async (app) => {
@@ -90,13 +102,13 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/returns', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    return ok(
-      await returnService.list(toCommerceContext(request), {
-        status: q?.status as never,
-        take: q?.take ? Number(q.take) : undefined,
-      })
-    );
+    const q = ListReturnsQuery.parse(request.query);
+    const { items, total } = await returnService.list(toCommerceContext(request), {
+      status: q.status as never,
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/commerce/returns/:id', async (request) => {
@@ -155,13 +167,13 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/subscriptions', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    return ok(
-      await subscriptionService.list(toCommerceContext(request), {
-        status: q?.status as never,
-        take: q?.take ? Number(q.take) : undefined,
-      })
-    );
+    const q = ListSubscriptionsQuery.parse(request.query);
+    const { items, total } = await subscriptionService.list(toCommerceContext(request), {
+      status: q.status as never,
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/commerce/subscriptions/:id', async (request) => {

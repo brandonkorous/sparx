@@ -58,7 +58,9 @@ export class CmsApi {
   // ── content types ──────────────────────────────────────────────────────
 
   listTypes() {
-    return this.client.request<ContentTypeMeta[]>({ path: '/v1/content/types' });
+    // The type catalog is a small, bounded set; request the max page so the
+    // full list returns despite the route's offset-pagination default (50).
+    return this.client.request<ContentTypeMeta[]>({ path: '/v1/content/types?take=250' });
   }
 
   getType(key: string) {

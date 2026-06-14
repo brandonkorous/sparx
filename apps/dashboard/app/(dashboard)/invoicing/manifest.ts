@@ -6,7 +6,7 @@
 // the layout's <ModuleGate> enforces it. See docs/24-dashboard-shell.md §3.
 
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { FileText, LayoutTemplate, Plus, ReceiptText } from 'lucide-react';
+import { FileText, GitBranch, LayoutTemplate, Plus, ReceiptText } from 'lucide-react';
 
 export const invoicingManifest: ModuleManifest = {
   id: 'invoicing',
@@ -15,6 +15,12 @@ export const invoicingManifest: ModuleManifest = {
   routePrefix: '/invoicing',
   sections: [
     { id: 'documents', label: 'Documents', icon: FileText, href: '/invoicing' },
+    {
+      id: 'workflows',
+      label: 'Workflows',
+      icon: GitBranch,
+      href: '/invoicing/workflows',
+    },
     {
       id: 'templates',
       label: 'Print templates',

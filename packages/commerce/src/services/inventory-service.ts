@@ -64,17 +64,23 @@ export interface WarehouseRow {
 
 export async function listWarehouses(
   ctx: ServiceContext,
-  filter: { includeInactive?: boolean } = {}
-): Promise<WarehouseRow[]> {
+  filter: { includeInactive?: boolean; take?: number; skip?: number } = {}
+): Promise<{ items: WarehouseRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
-    const rows = await tx.warehouse.findMany({
-      where: {
-        deletedAt: null,
-        ...(filter.includeInactive ? {} : { isActive: true }),
-      },
-      orderBy: [{ isActive: 'desc' }, { code: 'asc' }],
-    });
-    return rows.map(serializeWarehouse);
+    const where = {
+      deletedAt: null,
+      ...(filter.includeInactive ? {} : { isActive: true }),
+    };
+    const [rows, total] = await Promise.all([
+      tx.warehouse.findMany({
+        where,
+        orderBy: [{ isActive: 'desc' }, { code: 'asc' }],
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.warehouse.count({ where }),
+    ]);
+    return { items: rows.map(serializeWarehouse), total };
   });
 }
 

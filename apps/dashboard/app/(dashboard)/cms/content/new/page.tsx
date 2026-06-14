@@ -45,7 +45,9 @@ export default async function NewContentEntryPage({ searchParams }: PageProps) {
 
   try {
     // The endpoint returns a bare array (envelope `data`), not `{ items }`.
-    types = await api.get<TypeSummary[]>('/v1/content/types');
+    // Request the max page so the full type catalog returns despite the route's
+    // offset-pagination default (50).
+    types = await api.get<TypeSummary[]>('/v1/content/types?take=250');
   } catch {
     notFound();
   }

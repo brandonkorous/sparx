@@ -18,7 +18,7 @@ interface WireAuthor {
 
 export async function loadAuthorOptions(): Promise<AuthorOption[]> {
   try {
-    const rows = await api.get<WireAuthor[]>('/v1/authors');
+    const rows = await api.get<WireAuthor[]>('/v1/authors?take=250');
     return rows.map((a) => ({ id: a.id, displayName: a.display_name }));
   } catch {
     return [];

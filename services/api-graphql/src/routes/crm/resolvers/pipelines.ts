@@ -9,7 +9,9 @@ export const pipelineQueryResolvers = {
   pipelines: async (_p: unknown, args: { includeArchived?: boolean }, ctx: GqlContext) => {
     requireRole(ctx.request, 'viewer');
     await requireCrmModule(ctx.request);
-    return pipelineService.list(toCrmContext(ctx.request), args);
+    // The GraphQL `pipelines` field is a plain `[Pipeline!]!`; the service now
+    // returns `{ items, total }` for offset pagination, so unwrap to the list.
+    return (await pipelineService.list(toCrmContext(ctx.request), args)).items;
   },
 
   pipeline: async (_p: unknown, args: { id: string }, ctx: GqlContext) => {

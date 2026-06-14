@@ -13,7 +13,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { broadcastService } from '@sparx/email-platform';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
 import { requireVerifiedEmail } from '../../../lib/verified-email-guard.js';
@@ -23,11 +23,21 @@ import { resolvePropertyId } from '../../../lib/property.js';
 const IdParam = z.object({ id: z.string().uuid() });
 const EstimateQuery = z.object({ segment_id: z.string().uuid().optional() });
 
+const ListBroadcastsQuery = z.object({
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+});
+
 const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/email/broadcasts', async (request) => {
     requireRole(request, 'viewer');
     await requireEmailModule(request);
-    return ok(await broadcastService.list(toEmailContext(request)));
+    const q = ListBroadcastsQuery.parse(request.query);
+    const { items, total } = await broadcastService.list(toEmailContext(request), {
+      take: q.take,
+      skip: q.skip,
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.get('/v1/email/broadcasts/estimate', async (request) => {
