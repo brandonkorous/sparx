@@ -10,7 +10,7 @@
 
 Tier 4 covers two parallel tracks that ship together to close the gap between "working platform" and "polished product":
 
-**Track A — Live Chat module** ([docs/56](56-live-chat-module.md)): a new first-party customer communication module — storefront widget, AI-first responses, merchant inbox. New module, new package, new WebSocket surface.
+**Track A — Live Chat module** ([docs/56](56-live-chat-module.md)): a new first-party customer communication module — site widget, AI-first responses, merchant inbox. New module, new package, new WebSocket surface.
 
 **Track B — Wizards, Import/Export & Bulk Ops** ([docs/68](68-wizards-import-export-bulk.md)): UX-layer improvements across all existing list views — multi-step creation wizards for complex entities, CSV import/export, and a fleet-level bulk action bar.
 
@@ -37,7 +37,7 @@ CREATE TABLE chat_conversations (
   customer_id     UUID REFERENCES customers(id),
   status          VARCHAR(20) NOT NULL DEFAULT 'open',
   assigned_to     UUID REFERENCES staff_members(id),
-  source          VARCHAR(20) NOT NULL DEFAULT 'storefront',
+  source          VARCHAR(20) NOT NULL DEFAULT 'site',
   subject         VARCHAR(255),
   last_message_at TIMESTAMPTZ,
   resolved_at     TIMESTAMPTZ,
@@ -124,7 +124,7 @@ All `/v1/chat/*` routes gated by `requireModule('chat')`. Public routes are on t
 
 ### Phase A-2 — WebSocket server + Redis routing
 
-**Goal:** real-time message delivery between storefront widget and dashboard inbox.
+**Goal:** real-time message delivery between site widget and dashboard inbox.
 
 **socket.io setup** in `apps/api-rest/src/websocket/`:
 
@@ -145,7 +145,7 @@ All `/v1/chat/*` routes gated by `requireModule('chat')`. Public routes are on t
 
 ### Phase A-3 — AI handler
 
-**Goal:** AI auto-responds to storefront messages; escalates when not confident.
+**Goal:** AI auto-responds to site messages; escalates when not confident.
 
 Location: `apps/api-rest/src/services/chat-ai.ts`
 
@@ -175,9 +175,9 @@ const response = await anthropic.messages.create({
 
 ---
 
-### Phase A-4 — `@sparx/chat-widget` package + storefront integration
+### Phase A-4 — `@sparx/chat-widget` package + site integration
 
-**Goal:** floating chat bubble on every storefront page when module is active.
+**Goal:** floating chat bubble on every site page when module is active.
 
 New package: `packages/chat-widget/` with the standard package scaffold (`package.json`, `tsconfig.json`, `src/index.ts`).
 
@@ -193,7 +193,7 @@ export function ChatWidget({ tenantId, config, customer }: ChatWidgetProps) {
 }
 ```
 
-Widget is injected into the tenant site layout (`apps/storefront/src/app/layout.tsx`) when `tenant.settings.modules.chat?.enabled`:
+Widget is injected into the tenant site layout (`apps/site/src/app/layout.tsx`) when `tenant.settings.modules.chat?.enabled`:
 
 ```tsx
 {
@@ -203,7 +203,7 @@ Widget is injected into the tenant site layout (`apps/storefront/src/app/layout.
 }
 ```
 
-Widget follows `@sparx/site-ui` design tokens for colors (uses `--sf-accent` for the bubble, overridden by `config.primaryColor`). No custom CSS-in-JS — Tailwind utility classes only.
+Widget follows `@sparx/site-ui` design tokens for colors (uses `--st-accent` for the bubble, overridden by `config.primaryColor`). No custom CSS-in-JS — Tailwind utility classes only.
 
 **Widget states:**
 
@@ -462,7 +462,7 @@ Entry point has a dropdown split: "Quick add" / "Full profile"
 - **Full profile wizard** (3 steps):
   1. **Identity** — Name, Email, Phone, Company (optional), Tags
   2. **Address** — Billing address, Shipping address (or "same as billing")
-  3. **Notes** — Internal notes, Source (manual/import/storefront/b2b), "Create customer" button
+  3. **Notes** — Internal notes, Source (manual/import/site/b2b), "Create customer" button
 
 ---
 
@@ -491,7 +491,7 @@ Entry point has a dropdown split: "Quick add" / "Full profile"
 | A-1   | Chat    | DB schema + REST API                     | None                              |
 | A-2   | Chat    | WebSocket + Redis routing                | A-1                               |
 | A-3   | Chat    | AI handler                               | A-1, A-2                          |
-| A-4   | Chat    | `@sparx/chat-widget` + storefront        | A-1, A-2                          |
+| A-4   | Chat    | `@sparx/chat-widget` + site              | A-1, A-2                          |
 | A-5   | Chat    | Dashboard inbox UI                       | A-1, A-2, A-3                     |
 | A-6   | Chat    | Notifications + sparx.market             | A-5                               |
 | B-1   | Wizards | Product wizard                           | None                              |

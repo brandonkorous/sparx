@@ -229,7 +229,7 @@ How a surcharge differs from product markup:
 | `value`           | e.g. `3.0` (% ) — **configurable**, default 3% for the card-fee preset        |
 | `basis`           | `subtotal` \| `subtotal_plus_shipping` \| `total` — what the % is computed on |
 | `payment_methods` | which methods trigger it, e.g. `["card"]`; exclude ACH/check/net-terms        |
-| `applies_to`      | `checkout` (storefront), `invoice` (B2B), or `both`                           |
+| `applies_to`      | `checkout` (site), `invoice` (B2B), or `both`                                 |
 | `label`           | customer-facing line label                                                    |
 | `cap`             | optional maximum $ amount                                                     |
 | `is_active`       | per-tenant on/off; platform default is **off**                                |

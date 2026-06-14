@@ -30,25 +30,25 @@ export interface StackProps {
 }
 
 const GAP_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-stack--gap-xs',
-  sm: 'sf-stack--gap-sm',
-  md: 'sf-stack--gap-md',
-  lg: 'sf-stack--gap-lg',
-  xl: 'sf-stack--gap-xl',
+  xs: 'st-stack--gap-xs',
+  sm: 'st-stack--gap-sm',
+  md: 'st-stack--gap-md',
+  lg: 'st-stack--gap-lg',
+  xl: 'st-stack--gap-xl',
 };
 const ALIGN_CLASS: Record<StackAlign, string> = {
-  start: 'sf-stack--align-start',
-  center: 'sf-stack--align-center',
-  end: 'sf-stack--align-end',
-  stretch: 'sf-stack--align-stretch',
-  baseline: 'sf-stack--align-baseline',
+  start: 'st-stack--align-start',
+  center: 'st-stack--align-center',
+  end: 'st-stack--align-end',
+  stretch: 'st-stack--align-stretch',
+  baseline: 'st-stack--align-baseline',
 };
 const JUSTIFY_CLASS: Record<StackJustify, string> = {
-  start: 'sf-stack--justify-start',
-  center: 'sf-stack--justify-center',
-  end: 'sf-stack--justify-end',
-  between: 'sf-stack--justify-between',
-  around: 'sf-stack--justify-around',
+  start: 'st-stack--justify-start',
+  center: 'st-stack--justify-center',
+  end: 'st-stack--justify-end',
+  between: 'st-stack--justify-between',
+  around: 'st-stack--justify-around',
 };
 
 export function Stack({
@@ -67,12 +67,12 @@ export function Stack({
   return (
     <Tag
       className={cx(
-        'sf-stack',
-        direction === 'horizontal' ? 'sf-stack--horizontal' : 'sf-stack--vertical',
+        'st-stack',
+        direction === 'horizontal' ? 'st-stack--horizontal' : 'st-stack--vertical',
         GAP_CLASS[gap],
         align && ALIGN_CLASS[align],
         justify && JUSTIFY_CLASS[justify],
-        wrap && 'sf-stack--wrap',
+        wrap && 'st-stack--wrap',
         className
       )}
       style={style}

@@ -47,7 +47,7 @@ cross-cutting platform that every module shares.
 | 7   | Invoicing               | `invoicing` | Estimates → work orders → invoices, billing documents | 🔨 In build |
 | 8   | Dropship                | `dropship`  | Supplier sync, margin math, order routing             | ✅ Live     |
 | 9   | Inventory               | `inventory` | Multi-warehouse stock, reservations, adjustments      | ✅ Live     |
-| 10  | Live Chat               | `chat`      | AI-first storefront chat + staff inbox                | ✅ Live     |
+| 10  | Live Chat               | `chat`      | AI-first site chat + staff inbox                      | ✅ Live     |
 | 11  | AI / MCP                | `ai`        | First-class MCP server for Claude, ChatGPT, Copilot   | ✅ Live     |
 
 Cross-cutting platform (§12–§23) ships regardless of which modules a tenant runs:
@@ -90,7 +90,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Brand & Theme editor** — `builder/_brand`; resolves via `publishNow` → compiled tokens.
 - ✅ **Token-based color system** — semantic palette + `-content` pairs, never hardcoded.
 - ✅ **Font selection** — heading/body from a Google Fonts catalog.
-- ✅ **Light / dark appearance policy** — both token sets compiled; storefront selects.
+- ✅ **Light / dark appearance policy** — both token sets compiled; site selects.
 - ✅ **Theme toggle node** — live auto-hides unless `appearancePolicy==='toggle'`.
 - ✅ **Per-tenant CSS compilation** — class-set extraction → content-hashed stylesheet.
 - ✅ **Per-site brand override** — property-level brand shadows the tenant brand.
@@ -280,7 +280,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Dunning ladder** — pre-due/due/overdue reminders, credit-hold @14d, suspend @30d (configurable).
 - ✅ **Approval workflows** — spend caps, manager approval over threshold, pending-approval state.
 - ✅ **Service scheduling** — service types, bookable appointments, fleet-vehicle snapshot, parts, reminders.
-- 🔨 **B2B buyer portal** — separate login, order/invoice/quote/appointment history (`apps/b2b-portal` + storefront `/account/b2b`).
+- 🔨 **B2B buyer portal** — separate login, order/invoice/quote/appointment history (`apps/b2b-portal` + site `/account/b2b`).
 
 ---
 
@@ -325,7 +325,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 
 ## 10. Live Chat
 
-- ✅ **Storefront chat widget** — floating bubble, history, anonymous/identified, pre-chat form, configurable greeting/hours/color/position.
+- ✅ **Site chat widget** — floating bubble, history, anonymous/identified, pre-chat form, configurable greeting/hours/color/position.
 - ✅ **AI-first response** — Haiku grounds on product/policy/order data (DB, not Typesense); confidence-gated handoff.
 - ✅ **Staff inbox** — two-panel, filters, assignment, unread badges, typing/read receipts over WebSocket.
 - ✅ **Quick replies** — canned responses with `/shortcut` autocomplete.
@@ -364,7 +364,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Dashboard list search** — per-entity, Typesense-backed.
 - ✅ **⌘K command palette** — global dashboard search across collections.
 - ✅ **Scoped browser keys** — search-only keys for browser-direct querying.
-- ✅ **Storefront search** — public faceted product search.
+- ✅ **Site search** — public faceted product search.
 - 🔨 **Universal `entities` collection** — one collection + projector registry + `search.entity.changed`; Ph1 (5 projectors + `/v1/search/all` + ⌘K) built; write-site + CMS projectors pending.
 
 ### SEO / AIO discoverability
@@ -416,7 +416,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Per-site brand override** — businessName/colors/logo merged over tenant brand.
 - ✅ **Per-site orders, carts & customer memberships** — origin-site tagging; memberships per property.
 - 🗺️ **Per-site module scope** — disable a module on one site (field exists; enforcement deferred).
-- 🗺️ **Per-site StorefrontSettings** — currency/policies/pricing visibility per site.
+- 🗺️ **Per-site SiteSettings** — currency/policies/pricing visibility per site.
 
 ---
 
@@ -514,7 +514,7 @@ The node-tree authoring system behind sites, pages, layouts, and email. One mode
 - ✅ **Attribution taxonomy + classifier** — controlled vocabulary, deterministic channel mapping.
 - ✅ **UTM link builder CLI** — taxonomy-validated tracked URLs.
 - ✅ **Acquisition report** — internal cross-tenant `/internal/acquisition/summary` (shared-secret).
-- 🗺️ **Tenant-level capture (L-TEN)** — storefront mirror of L-PLAT, consent-gated.
+- 🗺️ **Tenant-level capture (L-TEN)** — site mirror of L-PLAT, consent-gated.
 - 🗺️ **Identity stitching** — visitor → customer → order snapshotting.
 - 🗺️ **Attribution models** — first/last/multi-touch (linear, position, time-decay).
 - 🗺️ **Tenant channel reporting + MCP attribution tools.**

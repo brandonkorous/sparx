@@ -38,11 +38,11 @@ export default function B2bAccountPage() {
 
   if (error)
     return (
-      <div className="sf-alert sf-alert--error" role="alert">
+      <div className="st-alert st-alert--error" role="alert">
         {error}
       </div>
     );
-  if (!summary) return <div className="sf-skeleton" style={{ height: 300 }} />;
+  if (!summary) return <div className="st-skeleton" style={{ height: 300 }} />;
 
   const { account, invoiceSummary, recentOrders } = summary;
   const overdueAmount = invoiceSummary.overdueCents + invoiceSummary.unpaidCents;
@@ -51,16 +51,16 @@ export default function B2bAccountPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h1 className="sf-h2" style={{ marginBottom: '0.25rem' }}>
+          <h1 className="st-h2" style={{ marginBottom: '0.25rem' }}>
             {account.companyName}
           </h1>
-          <p className="sf-muted" style={{ fontSize: '0.9rem' }}>
+          <p className="st-muted" style={{ fontSize: '0.9rem' }}>
             {account.role.replace('_', ' ')}
             {account.paymentTerms ? ` · ${account.paymentTerms.toUpperCase()}` : ''}
           </p>
         </div>
         {account.status !== 'active' && (
-          <span className="sf-badge" data-status={account.status}>
+          <span className="st-badge" data-status={account.status}>
             {account.status.replace('_', ' ')}
           </span>
         )}
@@ -74,34 +74,34 @@ export default function B2bAccountPage() {
           gap: '0.75rem',
         }}
       >
-        <div className="sf-card" style={{ padding: '1rem' }}>
-          <div className="sf-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
+        <div className="st-card" style={{ padding: '1rem' }}>
+          <div className="st-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
             Credit limit
           </div>
           <strong style={{ fontSize: '1.1rem' }}>${account.creditLimit.toLocaleString()}</strong>
         </div>
-        <div className="sf-card" style={{ padding: '1rem' }}>
-          <div className="sf-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
+        <div className="st-card" style={{ padding: '1rem' }}>
+          <div className="st-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
             Credit used
           </div>
           <strong style={{ fontSize: '1.1rem' }}>${account.creditUsed.toLocaleString()}</strong>
         </div>
-        <div className="sf-card" style={{ padding: '1rem' }}>
-          <div className="sf-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
+        <div className="st-card" style={{ padding: '1rem' }}>
+          <div className="st-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
             Available
           </div>
           <strong
             style={{
               fontSize: '1.1rem',
-              color: account.creditAvailable > 0 ? 'var(--sf-success)' : 'var(--sf-danger)',
+              color: account.creditAvailable > 0 ? 'var(--st-success)' : 'var(--st-danger)',
             }}
           >
             ${account.creditAvailable.toLocaleString()}
           </strong>
         </div>
         {account.discountPercent > 0 && (
-          <div className="sf-card" style={{ padding: '1rem' }}>
-            <div className="sf-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
+          <div className="st-card" style={{ padding: '1rem' }}>
+            <div className="st-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
               Your discount
             </div>
             <strong style={{ fontSize: '1.1rem' }}>{account.discountPercent}%</strong>
@@ -111,7 +111,7 @@ export default function B2bAccountPage() {
 
       {/* Invoice alerts */}
       {(invoiceSummary.overdueCount > 0 || invoiceSummary.unpaidCount > 0) && (
-        <div className="sf-alert sf-alert--warning">
+        <div className="st-alert st-alert--warning">
           <strong>
             {invoiceSummary.overdueCount > 0
               ? `${invoiceSummary.overdueCount} overdue ${invoiceSummary.overdueCount === 1 ? 'invoice' : 'invoices'}`
@@ -125,21 +125,21 @@ export default function B2bAccountPage() {
 
       {/* Quick links */}
       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-        <Link href={`/account/b2b/${accountId}/invoices`} className="sf-btn sf-btn--outline">
+        <Link href={`/account/b2b/${accountId}/invoices`} className="st-btn st-btn--outline">
           Invoices
           {invoiceSummary.unpaidCount + invoiceSummary.overdueCount > 0 && (
-            <span className="sf-badge sf-badge--danger" style={{ marginLeft: '0.5rem' }}>
+            <span className="st-badge st-badge--danger" style={{ marginLeft: '0.5rem' }}>
               {invoiceSummary.unpaidCount + invoiceSummary.overdueCount}
             </span>
           )}
         </Link>
-        <Link href={`/account/b2b/${accountId}/orders`} className="sf-btn sf-btn--outline">
+        <Link href={`/account/b2b/${accountId}/orders`} className="st-btn st-btn--outline">
           Orders
         </Link>
-        <Link href={`/account/b2b/${accountId}/quotes`} className="sf-btn sf-btn--outline">
+        <Link href={`/account/b2b/${accountId}/quotes`} className="st-btn st-btn--outline">
           Quotes
         </Link>
-        <Link href={`/account/b2b/${accountId}/appointments`} className="sf-btn sf-btn--outline">
+        <Link href={`/account/b2b/${accountId}/appointments`} className="st-btn st-btn--outline">
           Appointments
         </Link>
       </div>
@@ -147,14 +147,14 @@ export default function B2bAccountPage() {
       {/* Recent orders */}
       {recentOrders.length > 0 && (
         <div>
-          <h2 className="sf-h4" style={{ marginBottom: '0.75rem' }}>
+          <h2 className="st-h4" style={{ marginBottom: '0.75rem' }}>
             Recent orders
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {recentOrders.map((o) => (
               <div
                 key={o.id}
-                className="sf-card"
+                className="st-card"
                 style={{
                   padding: '0.75rem 1rem',
                   display: 'flex',
@@ -165,12 +165,12 @@ export default function B2bAccountPage() {
               >
                 <div>
                   <strong>#{o.orderNumber}</strong>
-                  <span className="sf-muted" style={{ fontSize: '0.85rem', marginLeft: '0.5rem' }}>
+                  <span className="st-muted" style={{ fontSize: '0.85rem', marginLeft: '0.5rem' }}>
                     {formatDate(o.createdAt)}
                   </span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span className="sf-badge" data-status={o.status}>
+                  <span className="st-badge" data-status={o.status}>
                     {o.status}
                   </span>
                   <strong>{formatMoney(o.totalCents, o.currency)}</strong>
@@ -179,7 +179,7 @@ export default function B2bAccountPage() {
             ))}
           </div>
           <div style={{ marginTop: '0.75rem' }}>
-            <Link href={`/account/b2b/${accountId}/orders`} className="sf-link">
+            <Link href={`/account/b2b/${accountId}/orders`} className="st-link">
               View all orders →
             </Link>
           </div>

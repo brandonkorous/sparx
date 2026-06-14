@@ -94,14 +94,14 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
       product.id
     );
     if (builderTemplate) {
-      const currency = tenant.storefront.defaultCurrency;
+      const currency = tenant.commerce.defaultCurrency;
       const data = await loadBuilderData(tenant.slug, builderTemplate.tree, {
         key: 'product',
         value: productToBuilderRecord(product, tenant.slug, currency),
       });
       // Render the builder tree BARE — exactly like the catch-all page route
       // ([...slug]). The template owns its own width (full-bleed hero sections,
-      // contained content), so no `sf-container` wrapper or breadcrumbs: those
+      // contained content), so no `st-container` wrapper or breadcrumbs: those
       // would cap every section at the content max-width and sit under the
       // overlay header. The site chrome (header/footer) still frames it via the
       // root layout's Outlet.
@@ -156,7 +156,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
     fitmentDomainsBySlug = Object.fromEntries(fitmentDomains.map((d) => [d.slug, d]));
   }
 
-  const { defaultCurrency: currency, defaultLocale: locale, showStockBelow } = tenant.storefront;
+  const { defaultCurrency: currency, defaultLocale: locale, showStockBelow } = tenant.commerce;
 
   const primaryImage = mediaUrl(product.images[0]?.mediaAssetId ?? null, tenant.slug);
   const productJsonLd = {
@@ -187,7 +187,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   };
 
   return (
-    <div className="sf-container">
+    <div className="st-container">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}

@@ -91,7 +91,7 @@ container → an `array` source or a `list` field.
   builder must know what types exist to offer them), maps them, and concatenates the
   code-defined Commerce/CRM sources.
 - **api-rest** — `GET /v1/builder/binding-schema` → `bindingService.getSchema`. Gated
-  on the `storefront` flag like the rest of `/v1/builder/*`.
+  on the `site` flag like the rest of `/v1/builder/*`.
 
 ## 5. Phasing
 
@@ -102,5 +102,5 @@ container → an `array` source or a `list` field.
   from `sources`/fields, and the canvas preview renders typed **placeholder** values
   derived from the schema (`buildPreviewData(sources)`), replacing `BIND_PATHS` /
   `ITEM_PATHS` / `SAMPLE_DATA`. Real sample records (vs. placeholders) come later.
-- **Later:** component↔kind binding gates; the storefront render path resolving real
+- **Later:** component↔kind binding gates; the site render path resolving real
   records ([41](41-builder-page-model.md) deferred item).

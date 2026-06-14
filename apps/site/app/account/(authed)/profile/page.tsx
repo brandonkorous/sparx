@@ -44,19 +44,19 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <h1 className="sf-h2" style={{ marginBottom: '1.25rem' }}>
+      <h1 className="st-h2" style={{ marginBottom: '1.25rem' }}>
         Profile
       </h1>
-      <form onSubmit={submit} className="sf-form">
-        <label className="sf-field">
+      <form onSubmit={submit} className="st-form">
+        <label className="st-field">
           <span>Email</span>
-          <input className="sf-input" value={customer?.email ?? ''} disabled readOnly />
+          <input className="st-input" value={customer?.email ?? ''} disabled readOnly />
         </label>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <label className="sf-field" style={{ flex: 1 }}>
+          <label className="st-field" style={{ flex: 1 }}>
             <span>First name</span>
             <input
-              className="sf-input"
+              className="st-input"
               autoComplete="given-name"
               value={firstName}
               onChange={(e) => {
@@ -65,10 +65,10 @@ export default function ProfilePage() {
               }}
             />
           </label>
-          <label className="sf-field" style={{ flex: 1 }}>
+          <label className="st-field" style={{ flex: 1 }}>
             <span>Last name</span>
             <input
-              className="sf-input"
+              className="st-input"
               autoComplete="family-name"
               value={lastName}
               onChange={(e) => {
@@ -78,10 +78,10 @@ export default function ProfilePage() {
             />
           </label>
         </div>
-        <label className="sf-field">
+        <label className="st-field">
           <span>Phone</span>
           <input
-            className="sf-input"
+            className="st-input"
             type="tel"
             autoComplete="tel"
             value={phone}
@@ -92,16 +92,16 @@ export default function ProfilePage() {
           />
         </label>
         {error ? (
-          <div className="sf-alert sf-alert--error" role="alert">
+          <div className="st-alert st-alert--error" role="alert">
             {error}
           </div>
         ) : null}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button type="submit" className="sf-btn sf-btn--primary" disabled={state === 'busy'}>
+          <button type="submit" className="st-btn st-btn--primary" disabled={state === 'busy'}>
             {state === 'busy' ? 'Saving…' : 'Save changes'}
           </button>
           {state === 'saved' ? (
-            <span className="sf-muted" role="status">
+            <span className="st-muted" role="status">
               Saved.
             </span>
           ) : null}

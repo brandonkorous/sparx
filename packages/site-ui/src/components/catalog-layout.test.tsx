@@ -19,10 +19,10 @@ describe('Hero', () => {
         Hi
       </Hero>
     );
-    const el = container.querySelector<HTMLElement>('.sf-hero')!;
-    expect(el).toHaveClass('sf-hero--align-start');
+    const el = container.querySelector<HTMLElement>('.st-hero')!;
+    expect(el).toHaveClass('st-hero--align-start');
     expect(el.style.backgroundImage).toContain('h.jpg');
-    expect(container.querySelector('.sf-hero__content')).toHaveTextContent('Hi');
+    expect(container.querySelector('.st-hero__content')).toHaveTextContent('Hi');
   });
 });
 
@@ -35,8 +35,8 @@ describe('Footer', () => {
         </Footer.Column>
       </Footer>
     );
-    expect(container.querySelector('.sf-footer')).toHaveClass('sf-footer--center');
-    expect(screen.getByText('Shop')).toHaveClass('sf-footer__title');
+    expect(container.querySelector('.st-footer')).toHaveClass('st-footer--center');
+    expect(screen.getByText('Shop')).toHaveClass('st-footer__title');
   });
 });
 
@@ -49,9 +49,9 @@ describe('Navbar', () => {
         <Navbar.End>R</Navbar.End>
       </Navbar>
     );
-    expect(container.querySelector('.sf-navbar__start')).toHaveTextContent('L');
-    expect(container.querySelector('.sf-navbar__center')).toHaveTextContent('C');
-    expect(container.querySelector('.sf-navbar__end')).toHaveTextContent('R');
+    expect(container.querySelector('.st-navbar__start')).toHaveTextContent('L');
+    expect(container.querySelector('.st-navbar__center')).toHaveTextContent('C');
+    expect(container.querySelector('.st-navbar__end')).toHaveTextContent('R');
   });
 });
 
@@ -65,12 +65,12 @@ describe('Menu', () => {
         <Menu.Item disabled>Soon</Menu.Item>
       </Menu>
     );
-    expect(container.querySelector('.sf-menu')).toHaveClass(
-      'sf-menu--horizontal',
-      'sf-menu--sz-lg'
+    expect(container.querySelector('.st-menu')).toHaveClass(
+      'st-menu--horizontal',
+      'st-menu--sz-lg'
     );
-    expect(screen.getByRole('link', { name: 'Home' })).toHaveClass('sf-menu__item--active');
-    expect(screen.getByText('Soon')).toHaveClass('sf-menu__item--disabled');
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveClass('st-menu__item--active');
+    expect(screen.getByText('Soon')).toHaveClass('st-menu__item--disabled');
   });
 });
 
@@ -84,8 +84,8 @@ describe('Dock', () => {
       </Dock>
     );
     const item = screen.getByRole('link');
-    expect(item).toHaveClass('sf-dock__item', 'sf-dock__item--active');
-    expect(screen.getByText('Home')).toHaveClass('sf-dock__label');
+    expect(item).toHaveClass('st-dock__item', 'st-dock__item--active');
+    expect(screen.getByText('Home')).toHaveClass('st-dock__label');
   });
 });
 
@@ -97,7 +97,7 @@ describe('List', () => {
         <List.Row>b</List.Row>
       </List>
     );
-    expect(container.querySelectorAll('.sf-list__row')).toHaveLength(2);
+    expect(container.querySelectorAll('.st-list__row')).toHaveLength(2);
   });
 });
 
@@ -112,11 +112,11 @@ describe('Table', () => {
         </tbody>
       </Table>
     );
-    expect(container.querySelector('.sf-table-wrap')).toBeInTheDocument();
-    expect(container.querySelector('.sf-table')).toHaveClass(
-      'sf-table--zebra',
-      'sf-table--pin-rows',
-      'sf-table--sz-sm'
+    expect(container.querySelector('.st-table-wrap')).toBeInTheDocument();
+    expect(container.querySelector('.st-table')).toHaveClass(
+      'st-table--zebra',
+      'st-table--pin-rows',
+      'st-table--sz-sm'
     );
   });
 });
@@ -129,8 +129,8 @@ describe('Indicator', () => {
         <button>Inbox</button>
       </Indicator>
     );
-    expect(container.querySelector('.sf-indicator__item')).toHaveClass(
-      'sf-indicator__item--bottom-start'
+    expect(container.querySelector('.st-indicator__item')).toHaveClass(
+      'st-indicator__item--bottom-start'
     );
   });
 });
@@ -143,7 +143,7 @@ describe('Join', () => {
         <button>b</button>
       </Join>
     );
-    expect(container.querySelector('.sf-join')).toHaveClass('sf-join--vertical');
+    expect(container.querySelector('.st-join')).toHaveClass('st-join--vertical');
   });
 });
 
@@ -154,7 +154,7 @@ describe('Mask', () => {
         <img src="/x.jpg" alt="" />
       </Mask>
     );
-    expect(container.querySelector('.sf-mask')).toHaveClass('sf-mask--hexagon');
+    expect(container.querySelector('.st-mask')).toHaveClass('st-mask--hexagon');
   });
 });
 
@@ -165,9 +165,9 @@ describe('Toast', () => {
         <div>hi</div>
       </Toast>
     );
-    expect(container.querySelector('.sf-toast')).toHaveClass(
-      'sf-toast--h-center',
-      'sf-toast--v-top'
+    expect(container.querySelector('.st-toast')).toHaveClass(
+      'st-toast--h-center',
+      'st-toast--v-top'
     );
   });
 });

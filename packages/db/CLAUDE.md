@@ -21,3 +21,7 @@ Prisma does not generate RLS or `current_tenant_id()` — hand-edit the migratio
 - Tenant-scoped tables: `ENABLE` + `FORCE` RLS + a `tenant_isolation` policy.
 - Auth tables (`users`, `sessions`, `accounts`): `ENABLE`-only, **not** `FORCE`.
 - **Backfilling a FORCE-RLS table inside a migration** must loop tenants and `set_config('app.tenant_id', …)` per tenant — `sparx_owner` is a **non-superuser** in prod and sees 0 rows otherwise. This passes locally (superuser) but fails in prod with a `23502` not-null violation. (See memory `feedback_sparx_db_rls_pattern`.)
+
+## Tenant vs. Site/Property naming
+
+`Tenant.name` = the tenant's **legal/org name** — billing/ownership only, **never** rendered to a customer or sent in a customer email. `Property.name` = the **customer-facing site name** that storefront chrome/title/OG and email wordmark/footer/`{{site.name}}` read (a tenant HAS sites; the primary site's name is seeded from the tenant name at provisioning, but render/send paths read the site, never the tenant — docs/49). `tenant_brands.business_name` is **deprecated as a name source** (kept only for brand/document rendering like invoices). The active→primary site name resolves via `resolveActivePropertyName` (api-rest `lib/property.ts`).

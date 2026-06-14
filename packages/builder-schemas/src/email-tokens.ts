@@ -92,8 +92,10 @@ export function interpolateEmailTokens(input: string, resolve: (path: string) =>
 // gloss only, keyed to the docs/91 §3 vocabulary + the EMAIL_SOURCES fields.
 
 // The site identity sample, carrying EVERY alias of the URL field + emitted under
-// both root keys below. `url` is the canonical token (`{{site.url}}`); `siteUrl`
-// and `storeUrl` are back-compat aliases (the store→site, then site.* renames) so a
+// both root keys below. `name` is the SITE (property) name the real send resolves
+// (Property.name — the active site, else the primary; docs/49), NEVER the tenant's
+// legal/org name. `url` is the canonical token (`{{site.url}}`); `siteUrl` and
+// `storeUrl` are back-compat aliases (the store→site, then site.* renames) so a
 // `{{tenant.siteUrl}}` / `{{tenant.storeUrl}}` authored before the rename still
 // resolves on the canvas.
 const IDENTITY_SAMPLE = {
@@ -179,7 +181,7 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     creditLimit: '$10,000.00',
     portalUrl: '#',
   },
-  loyalty: { pointsLabel: '$15.00', tierName: 'Store credit' },
+  loyalty: { pointsLabel: '$15.00', tierName: 'Account credit' },
   promotion: {
     title: 'Summer Sale',
     body: '20% off this week',

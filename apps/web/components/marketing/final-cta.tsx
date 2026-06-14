@@ -58,7 +58,7 @@ export function FinalCta() {
             }}
           >
             <Button size="xl" variant="solid">
-              Start your store →
+              Start your site →
             </Button>
             <Button
               size="xl"

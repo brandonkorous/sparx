@@ -3,7 +3,7 @@
 // a code-side `@sparx/site-themes` preset carries, but resolvable at runtime
 // without a deploy. It travels two paths after a tenant applies it:
 //   • `v1` light/dark token maps → the v1 publish snapshot (SiteVersion.compiledTokens
-//     + the StorefrontTheme write-through).
+//     + the CommerceSiteTheme write-through).
 //   • `v2` ThemePresetV2 → the read-time v2 recompile (publish-service.overlayBrand),
 //     layered with the tenant's brand + presentation overlay.
 // On apply, the whole `DataThemePreset` is stashed in SiteConfig.draftSettings

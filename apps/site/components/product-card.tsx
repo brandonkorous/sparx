@@ -1,5 +1,5 @@
 // Product tile for the PLP, collections, search, and "related" rails.
-// Token-driven via the .sf-card classes in site.css so tenant theme
+// Token-driven via the .st-card classes in site.css so tenant theme
 // overrides flow through automatically.
 
 import Image from 'next/image';
@@ -30,10 +30,10 @@ export function ProductCard({
     product.compareAtCents > product.priceMinCents;
 
   return (
-    <Link href={`/products/${product.handle}`} className="sf-card">
-      <div className="sf-card__media">
-        {onSale ? <span className="sf-badge sf-badge--sale">Sale</span> : null}
-        {!product.inStock ? <span className="sf-badge sf-badge--out">Sold out</span> : null}
+    <Link href={`/products/${product.handle}`} className="st-card">
+      <div className="st-card__media">
+        {onSale ? <span className="st-badge st-badge--sale">Sale</span> : null}
+        {!product.inStock ? <span className="st-badge st-badge--out">Sold out</span> : null}
         {img ? (
           <Image
             src={img}
@@ -43,14 +43,14 @@ export function ProductCard({
             style={{ objectFit: 'cover' }}
           />
         ) : (
-          <div className="sf-card__media sf-card__media--empty" aria-hidden="true">
+          <div className="st-card__media st-card__media--empty" aria-hidden="true">
             <span style={{ fontSize: '2rem' }}>◳</span>
           </div>
         )}
       </div>
-      <div className="sf-card__body">
-        {product.vendor ? <span className="sf-card__vendor">{product.vendor}</span> : null}
-        <span className="sf-card__title">{product.title}</span>
+      <div className="st-card__body">
+        {product.vendor ? <span className="st-card__vendor">{product.vendor}</span> : null}
+        <span className="st-card__title">{product.title}</span>
         {product.reviewCount > 0 && product.averageRating != null ? (
           <RatingStars rating={product.averageRating} count={product.reviewCount} compact />
         ) : null}
@@ -82,10 +82,10 @@ function PriceLine({
   const range = formatPriceRange(min, max, currency, locale);
   if (!range) return null;
   return (
-    <span className="sf-card__price">
+    <span className="st-card__price">
       {range}
       {compareAt != null ? (
-        <span className="sf-card__compare">{formatMoney(compareAt, currency, locale)}</span>
+        <span className="st-card__compare">{formatMoney(compareAt, currency, locale)}</span>
       ) : null}
     </span>
   );

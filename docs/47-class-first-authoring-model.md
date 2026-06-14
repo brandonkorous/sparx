@@ -62,7 +62,7 @@ every page is reassembled from raw axes.
 
 ### 1.1 Today's renderer already emits uncontrolled CSS
 
-The reflex objection to "let authoring touch CSS" is multi-tenant safety. But the storefront
+The reflex objection to "let authoring touch CSS" is multi-tenant safety. But the site
 renderer ([`builder-renderer.tsx`](../apps/site/components/builder-renderer.tsx)) **already
 emits arbitrary inline CSS on every node** from its box→CSS compiler:
 
@@ -95,7 +95,7 @@ to own **structure and data binding**. The freeform `box` becomes the **escape h
 default. Component classes ship once in `@sparx/site-ui`; the small per-tenant set of utility
 classes a tenant actually used is compiled into a `tenant.css` at publish time (and a `temp.css`
 on save for live preview). This collapses "box on everything," makes consistency the system's
-guarantee rather than the author's chore, and — because the editor and the storefront emit the
+guarantee rather than the author's chore, and — because the editor and the site emit the
 same classes against the same compiled sheet — makes _preview == production_ fall out for free.
 
 ---
@@ -155,7 +155,7 @@ never magic without an escape hatch."
 | --------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------ | --------------------------------- |
 | **1 — Archetypes** _(default)_    | Pick a brand-governed component ("Hero", "Feature Card", "Stat Row") | Named `site-ui` component classes                                                 | Can't break things — coherent by construction    | All tenants                       |
 | **2 — Box axes** _(advanced)_     | The existing box/layout axes                                         | Closed enums, token-backed scales                                                 | Bounded; the engine's inline compiler            | All tenants                       |
-| **3 — Token utilities** _(power)_ | A class field on the node                                            | **Safelisted** utilities mapped to `--sf-*` (`bg-base-100`, `gap-6`, `shadow-md`) | Allowlisted vocabulary; compiled per tenant (§5) | Power users                       |
+| **3 — Token utilities** _(power)_ | A class field on the node                                            | **Safelisted** utilities mapped to `--st-*` (`bg-base-100`, `gap-6`, `shadow-md`) | Allowlisted vocabulary; compiled per tenant (§5) | Power users                       |
 | **4 — Raw CSS** _(expert)_        | A scoped CSS block                                                   | Arbitrary CSS                                                                     | **Scoped + sanitized + security-reviewed** (§6)  | Gated to a Code / Enterprise tier |
 
 Tiers 1–2 are the "easy, safe, default" path and serve >95% of authoring. Tier 3 is the
@@ -166,7 +166,7 @@ node never _needs_ to descend; it descends only when the tier above can't expres
 
 For "I need more control than the scale" (a one-off `vh`/`px`/color), the cheapest safe answer is
 **not** a free-text class field — it is an _advanced value-override panel_ that writes a scoped
-`--sf-*` override or an inline `style`. This is what the box→CSS engine already does. It
+`--st-*` override or an inline `style`. This is what the box→CSS engine already does. It
 **sidesteps the compile pipeline entirely** (you set a value, you don't generate a class) and is
 safe by construction. Reserve Tier 3/4 free-text for users who specifically want utility/CSS
 muscle memory.
@@ -184,7 +184,7 @@ tenant's tree as the content source** and compile on the events that already exi
 
 | Layer                                                       | What                                         | When built                                                                 | Scope                                  |
 | ----------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------- |
-| **Token theme** (`--sf-*`)                                  | One stylesheet, runtime CSS vars             | per request (compiled by `@sparx/site-themes`, [33](33-token-model-v2.md)) | themes infinite tenants from one sheet |
+| **Token theme** (`--st-*`)                                  | One stylesheet, runtime CSS vars             | per request (compiled by `@sparx/site-themes`, [33](33-token-model-v2.md)) | themes infinite tenants from one sheet |
 | **Component library** (`site-ui` semantic CSS + archetypes) | `navbar`, `hero`, `card-feature`, the recipe | once, at **platform** build                                                | shipped to every tenant                |
 | **Per-tenant utility delta** (`tenant.css`)                 | Only the utilities a tenant actually typed   | on **save** (`temp.css`) and **publish** (`tenant.css`)                    | small static diff, one tenant          |
 
@@ -198,7 +198,7 @@ the shipped archetype/recipe CSS, generated from that one tenant's pages.
    runtime concatenations (`bg-${x}`), so they are statically extractable. Arbitrary values
    (`top-[37px]`) extract and compile through this too — no safelist needed for them.
 2. **Compile** that class set with a **tenant-flavored Tailwind theme** whose color utilities
-   (`bg-base-100`, `text-base-content`, `bg-primary`) resolve to `--sf-*`, isolated from the
+   (`bg-base-100`, `text-base-content`, `bg-primary`) resolve to `--st-*`, isolated from the
    dashboard's Tailwind (which maps the same utility names to the _admin_ `--color-*` palette).
    This is what keeps us from contradicting doc 46 §3.1's rejection of Tailwind for the library:
    the **library** stays hand-authored semantic CSS; only the **per-tenant author delta** is
@@ -216,14 +216,14 @@ in the hot path.
 ### 5.3 Authoring the library: `@apply` over a tenant-flavored theme
 
 Surface components are **not** hand-authored raw CSS. Each semantic class is composed from Tailwind
-utilities with `@apply`, against a **Surface Tailwind theme** whose tokens map to `--sf-*` — so
+utilities with `@apply`, against a **Surface Tailwind theme** whose tokens map to `--st-*` — so
 `rounded` / `border` / `shadow` / spacing / color utilities all resolve to tenant-themeable vars,
 never baked values:
 
 ```css
 @layer components {
   .card {
-    @apply rounded border shadow-sm; /* static utilities → --sf-* vars via the Surface theme */
+    @apply rounded border shadow-sm; /* static utilities → --st-* vars via the Surface theme */
     border-color: var(--c-bg); /* color axis: role var (or @apply border-[color:var(--c-bg)]) */
   }
 }
@@ -237,7 +237,7 @@ Two rules make this work:
 2. **The color × variant axis is a role var, not an interpolated class.** You cannot
    `@apply border-{color}` — Tailwind needs concrete utility names, and a class-per-color is the
    cartesian explosion the recipe exists to avoid. So fixed styling → `@apply`; the dynamic color
-   flows through `var(--c-*)`, set by the `.sf-c-{color}` class the color selector writes. One
+   flows through `var(--c-*)`, set by the `.st-c-{color}` class the color selector writes. One
    component rule serves every color.
 
 Components live in `@layer components`; utilities win over them in the cascade — exactly the override
@@ -259,7 +259,7 @@ authored data to executable strings.** The tiers respect it:
 - **Tier 3** is bounded by an **allowlist** of utilities. The allowlist exists to block
   weaponizable utilities even though they're "just classes": `fixed inset-0 z-[9999]`
   (clickjacking overlay), arbitrary-`url()` values (exfiltration / external loads). Layout,
-  spacing, radius, shadow, and `--sf-*`-mapped color utilities are allowed; positioning,
+  spacing, radius, shadow, and `--st-*`-mapped color utilities are allowed; positioning,
   z-index escalation, and external-URL arbitrary values are not.
 - **Tier 4** raw CSS is the only surface that needs real machinery: every selector **scoped** to
   the node (selector-prefix compile, `@scope`, or a shadow boundary so it can't reach global
@@ -280,7 +280,7 @@ The class vocabulary is not a free-for-all — it is **owned by the tenant's bra
 Token Model v2's "brand owns identity + shape + rhythm" ([33](33-token-model-v2.md)) one rung up:
 the brand now also governs **component archetypes**.
 
-- **Tokens** (existing) — color palette, radius, spacing, type. The `--sf-*` layer.
+- **Tokens** (existing) — color palette, radius, spacing, type. The `--st-*` layer.
 - **Archetypes** (new) — what `card-feature`, `hero`, `navbar` _look like_ for this tenant, set
   once. Changing the archetype restyles every instance across every page.
 - **Utility allowlist** (new) — which Tier-3 utilities are exposed, mapped to the token scale.
@@ -293,8 +293,8 @@ the lower tiers being available when needed.
 
 ## 8. Preview == production, for free
 
-Both the editor canvas and the storefront emit the **same class strings** and load the **same
-compiled `tenant.css`** (the canvas via `temp.css`, the storefront via the published
+Both the editor canvas and the site emit the **same class strings** and load the **same
+compiled `tenant.css`** (the canvas via `temp.css`, the site via the published
 `tenant.css`). They cannot drift, because the styling is the same artifact rather than two
 re-implementations — finishing the parity goal `@sparx/site-ui` ([46](46-site-ui-component-library.md))
 started for leaves, now extended to box/section archetypes.
@@ -306,15 +306,15 @@ started for leaves, now extended to box/section archetypes.
 - **Descends from [40](40-sitebuilder-composition-model.md).** This is Tier 2 (data-aware,
   brand-governed components) made real, with the box demoted to Tier-1 escape hatch. Where 40's
   structural model and this doc agree, this doc specifies the _authoring surface_ 40 left open.
-- **Extends [46](46-site-ui-component-library.md).** 46 chose semantic CSS keyed on `--sf-*` and
+- **Extends [46](46-site-ui-component-library.md).** 46 chose semantic CSS keyed on `--st-*` and
   set the "treatment → class, data → inline" division. 47 makes the class the _primary_ surface,
   adds **box/section archetypes** to the library (not just leaves), and adds the per-tenant
   compile. 46 §3.1's rejection of Tailwind-for-the-library is preserved (§5.2).
 - **Extends [35](35-ui-variant-system.md) / [33](33-token-model-v2.md).** The archetypes compose
-  on the same role-var recipe and `--sf-*` palette; the brand designer gains archetype governance.
+  on the same role-var recipe and `--st-*` palette; the brand designer gains archetype governance.
 - **Feeds [38](38-sitebuilder-extensible-sections.md).** Tenant-defined component types become a
   natural extension of the archetype vocabulary + the per-tenant compile.
-- **Touches [44](44-builder-storefront-render.md) / [45](45-builder-site-layout.md).** Both
+- **Touches [44](44-builder-site-render.md) / [45](45-builder-site-layout.md).** Both
   renderers emit the class string and load the compiled sheet; the box→CSS engine remains for
   Tier-2 and for per-instance data.
 
@@ -352,7 +352,7 @@ migration.
   contained Section archetype that re-homes the old outer/inner box pattern.
 - **B2 Controls & primitives:** Button, Badge, etc. on the five-axis recipe + parts.
 - **B3 Radix components on semantic classes:** Dialog, Dropdown, Tabs, Accordion, Tooltip, Select —
-  Radix behavior, `sf-` classes (not utilities).
+  Radix behavior, `st-` classes (not utilities).
 
 **Phase C — Control registry + editor.** The color / size / variant **selectors** (each owns a
 mutually-exclusive class group, e.g. `btn-{color}`) — the structured inspector that replaces the
@@ -360,7 +360,7 @@ box's editing role. "Add component" presents archetypes; the freeform box drops 
 affordance; the value-override panel (§4.1) handles one-offs.
 
 **Phase D — Per-tenant compile.** Tree-shake → `temp.css` (save) + atomic content-hashed
-`tenant.css` (publish), tenant-flavored Tailwind theme → `--sf-*`; wire into the publish/Pub-Sub flow.
+`tenant.css` (publish), tenant-flavored Tailwind theme → `--st-*`; wire into the publish/Pub-Sub flow.
 
 **Phase E — Free-text tiers.** Tier-3 allowlisted utility input; then Tier-4 scoped + sanitized raw
 CSS, gated to a Code/Enterprise tier.

@@ -8,10 +8,10 @@
 
 ## 1. Overview
 
-Sparx Live Chat is a built-in customer communication module. Merchants get a branded chat widget on their storefront and a unified inbox in the dashboard — no Intercom, no Zendesk, no Crisp required. The AI layer handles common questions instantly; humans handle the rest.
+Sparx Live Chat is a built-in customer communication module. Merchants get a branded chat widget on their site and a unified inbox in the dashboard — no Intercom, no Zendesk, no Crisp required. The AI layer handles common questions instantly; humans handle the rest.
 
 **Module:** Chat · +$19/mo  
-**Surfaces:** Storefront widget, merchant dashboard inbox, sparx.market product pages
+**Surfaces:** Site widget, merchant dashboard inbox, sparx.market product pages
 
 ---
 
@@ -23,15 +23,15 @@ Every Sparx tenant currently solves customer support themselves. Options are:
 - Pay Intercom/Zendesk ($100–300/mo)
 - Cobble together Facebook Messenger
 
-A native chat widget that works out of the box — on their sparx.zone storefront and custom domain — is a retention feature. For sparx.market specifically, chat is essential: a shopper looking at a diesel injector has questions. A "Chat with Gillett Diesel" button is the difference between a bounce and a sale.
+A native chat widget that works out of the box — on their sparx.zone site and custom domain — is a retention feature. For sparx.market specifically, chat is essential: a shopper looking at a diesel injector has questions. A "Chat with Gillett Diesel" button is the difference between a bounce and a sale.
 
 ---
 
 ## 3. Three Surfaces
 
-### Surface 1 — Storefront Widget
+### Surface 1 — Site Widget
 
-Floating chat bubble on tenant's storefront (sparx.zone or custom domain). Shopper opens conversation → tenant responds from dashboard inbox. Conversation history saved in CRM.
+Floating chat bubble on tenant's site (sparx.zone or custom domain). Shopper opens conversation → tenant responds from dashboard inbox. Conversation history saved in CRM.
 
 ### Surface 2 — Merchant Dashboard Inbox
 
@@ -94,7 +94,7 @@ Redis pub/sub     — route messages to correct tenant dashboard
                     already in stack
 
 React chat widget — @sparx/chat-widget package
-                    embeds on storefront via Next.js component
+                    embeds on site via Next.js component
 
 AI layer          — Anthropic API (claude-haiku-4-5)
                     reads product data, fitment, policies
@@ -113,8 +113,8 @@ CREATE TABLE chat_conversations (
   status          VARCHAR(20) DEFAULT 'open',
   -- open | assigned | resolved | spam
   assigned_to     UUID REFERENCES staff_members(id),
-  source          VARCHAR(20) DEFAULT 'storefront',
-  -- storefront | sparx_market | b2b_portal
+  source          VARCHAR(20) DEFAULT 'site',
+  -- site | sparx_market | b2b_portal
   subject         VARCHAR(255),
   last_message_at TIMESTAMPTZ,
   resolved_at     TIMESTAMPTZ,
@@ -144,7 +144,7 @@ CREATE TABLE chat_quick_replies (
 );
 ```
 
-RLS: `chat_conversations`, `chat_messages`, `chat_quick_replies` — all three get `ENABLE ROW LEVEL SECURITY` + `FORCE ROW LEVEL SECURITY` with the standard `tenant_isolation` policy. The `chat_conversations` table is also readable by the customer-auth session (scoped to that customer's `customer_id`) so the storefront widget can fetch conversation history without going through the tenant's API key.
+RLS: `chat_conversations`, `chat_messages`, `chat_quick_replies` — all three get `ENABLE ROW LEVEL SECURITY` + `FORCE ROW LEVEL SECURITY` with the standard `tenant_isolation` policy. The `chat_conversations` table is also readable by the customer-auth session (scoped to that customer's `customer_id`) so the site widget can fetch conversation history without going through the tenant's API key.
 
 ---
 
@@ -192,7 +192,7 @@ WebSocket: /ws/chat/:conversationId       Real-time message stream
 Public (no API key, customer-scoped):
 
 ```
-POST   /v1/public/chat/conversations       Start conversation from storefront
+POST   /v1/public/chat/conversations       Start conversation from site
 POST   /v1/public/chat/conversations/:id/messages  Customer sends message
 ```
 
@@ -238,7 +238,7 @@ A message is marked `read_at = NOW()` when the recipient's browser receives it o
 
 ---
 
-## 10. Storefront Widget
+## 10. Site Widget
 
 The `@sparx/chat-widget` package exports a single React component:
 
@@ -338,7 +338,7 @@ Add to `PRICE_CATALOG` in `packages/billing/src/price-catalog.ts` and create the
 - [ ] Private API endpoints (`/v1/chat/*`) — tenant API key scoped
 - [ ] AI handler — Anthropic Haiku integration with Typesense product context
 - [ ] `@sparx/chat-widget` package: floating bubble, message thread, pre-chat form
-- [ ] Storefront integration: widget injected in site layout when module active
+- [ ] Site integration: widget injected in site layout when module active
 - [ ] Widget configuration UI (Settings → Chat) — follows settings page archetype
 - [ ] Dashboard inbox UI — two-panel, conversation list + thread view
 - [ ] Customer context sidebar (orders, LTV, history from CRM)

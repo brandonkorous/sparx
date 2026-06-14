@@ -20,20 +20,20 @@ This deliberate separation is a core Sparx differentiator — tenants pay for wh
 
 **Content publishers:**
 
-- Blog or editorial site (activate Storefront + CMS = $98/mo)
+- Blog or editorial site (activate Site + CMS = $98/mo)
 - Documentation site for a SaaS product
 - Portfolio or agency site
 - Resource library
 
-**Headless CMS (API-only, no Storefront):**
+**Headless CMS (API-only, no Site):**
 
 - Development teams querying Sparx CMS API to render content in their own frontend
-- CMS module only ($49/mo) — no Storefront required
+- CMS module only ($49/mo) — no Site required
 - Full REST + GraphQL access to all content
 
 **Commerce + Content:**
 
-- Product catalog + blog + landing pages (Storefront + Commerce + CMS)
+- Product catalog + blog + landing pages (Site + Commerce + CMS)
 - Standard e-commerce site with content marketing strategy
 
 ---
@@ -196,4 +196,4 @@ The `@sparx/site-sdk` NPM package includes typed helpers for all content types.
 
 ## 10. Content Localization (Pro+)
 
-Multiple languages with language variants per page/post. Language switcher on storefront. hreflang tags auto-generated. URL structure: subdirectory (`/fr/about`) or subdomain (`fr.theirdomain.com`). Separate SEO fields per language variant.
+Multiple languages with language variants per page/post. Language switcher on site. hreflang tags auto-generated. URL structure: subdirectory (`/fr/about`) or subdomain (`fr.theirdomain.com`). Separate SEO fields per language variant.

@@ -421,7 +421,7 @@ export const EMAIL_SOURCES: DataSource[] = [
   },
   {
     key: 'loyalty',
-    label: 'Loyalty / store credit',
+    label: 'Loyalty / account credit',
     module: 'crm',
     cardinality: 'object',
     recordType: 'loyalty',

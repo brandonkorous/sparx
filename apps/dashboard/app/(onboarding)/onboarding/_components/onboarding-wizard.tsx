@@ -131,7 +131,7 @@ const HEAD: Partial<Record<OnboardingStepKey, { title: string; supporting: strin
   payments: {
     title: 'Get paid',
     supporting:
-      "Connect your Stripe account so your store can take customer payments. Your site can go live now and you can connect this whenever you're ready — checkout stays off until then.",
+      "Connect your Stripe account so your site can take customer payments. Your site can go live now and you can connect this whenever you're ready — checkout stays off until then.",
   },
   // launch renders its own hero in the body.
 };

@@ -20,7 +20,6 @@ const TestSendBody = z.object({
   to: z.string().email(),
   template: z.enum(['welcome-merchant', 'password-reset']),
   userName: z.string().min(1).max(255).optional(),
-  storeName: z.string().min(1).max(255).optional(),
   dashboardUrl: z.string().url().optional(),
   resetUrl: z.string().url().optional(),
   expiresInMinutes: z
@@ -44,7 +43,6 @@ const emailTestRoutes: FastifyPluginAsync = async (app) => {
         to: input.to,
         props: {
           name: input.userName,
-          storeName: input.storeName ?? 'Your Sparx store',
           dashboardUrl:
             input.dashboardUrl ??
             (process.env.BETTER_AUTH_URL ?? 'http://localhost:3001').replace(/\/$/, '') +

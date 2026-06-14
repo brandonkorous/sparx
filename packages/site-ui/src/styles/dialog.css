@@ -1,14 +1,14 @@
 /* Surface Dialog (Modal) — overlay + panel styling Radix's portal (docs/47 §11 B3).
- * Appearance is `sf-*` + tokens. `placement` positions the panel. */
+ * Appearance is `st-*` + tokens. `placement` positions the panel. */
 
-.sf-dialog__overlay {
+.st-dialog__overlay {
   position: fixed;
   inset: 0;
   z-index: 60;
   background: color-mix(in srgb, #000 50%, transparent);
-  animation: sf-overlay-in 0.15s ease;
+  animation: st-overlay-in 0.15s ease;
 }
-.sf-dialog {
+.st-dialog {
   position: fixed;
   left: 50%;
   z-index: 61;
@@ -17,38 +17,38 @@
   max-height: calc(100vh - 2rem);
   overflow: auto;
   padding: 1.5rem;
-  background: var(--sf-base-100, #fff);
-  color: var(--sf-base-content, #23211c);
-  border-radius: var(--sf-radius-box, 1rem);
-  box-shadow: var(--sf-shadow-lg, 0 20px 50px rgba(0, 0, 0, 0.28));
-  animation: sf-pop-in 0.15s ease;
+  background: var(--st-base-100, #fff);
+  color: var(--st-base-content, #23211c);
+  border-radius: var(--st-radius-box, 1rem);
+  box-shadow: var(--st-shadow-lg, 0 20px 50px rgba(0, 0, 0, 0.28));
+  animation: st-pop-in 0.15s ease;
 }
-.sf-dialog--center {
+.st-dialog--center {
   top: 50%;
   transform: translate(-50%, -50%);
 }
-.sf-dialog--top {
+.st-dialog--top {
   top: 2rem;
   transform: translateX(-50%);
 }
-.sf-dialog--bottom {
+.st-dialog--bottom {
   bottom: 2rem;
   transform: translateX(-50%);
 }
-.sf-dialog__title {
+.st-dialog__title {
   margin: 0 0 0.5rem;
-  font-family: var(--sf-font-heading, inherit);
+  font-family: var(--st-font-heading, inherit);
   font-size: 1.25rem;
   font-weight: 600;
 }
-.sf-dialog__desc {
+.st-dialog__desc {
   margin: 0 0 1rem;
   color: var(
-    --sf-text-secondary,
-    color-mix(in oklab, var(--sf-base-content, #23211c) 70%, transparent)
+    --st-text-secondary,
+    color-mix(in oklab, var(--st-base-content, #23211c) 70%, transparent)
   );
 }
-@keyframes sf-overlay-in {
+@keyframes st-overlay-in {
   from {
     opacity: 0;
   }
@@ -57,8 +57,8 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sf-dialog,
-  .sf-dialog__overlay {
+  .st-dialog,
+  .st-dialog__overlay {
     animation: none;
   }
 }

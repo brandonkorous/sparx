@@ -1,39 +1,39 @@
 /* Surface Kbd — keyboard key cap (docs/46 §5.2). Structural; bordered neutral key. */
 
-.sf-kbd {
+.st-kbd {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--sf-font-fallback, ui-monospace, monospace);
+  font-family: var(--st-font-fallback, ui-monospace, monospace);
   font-weight: 600;
   line-height: 1;
-  color: var(--sf-base-content, #23211c);
-  background: var(--sf-base-200, #f4f1e8);
-  border: 1px solid var(--sf-border, #e3dfd2);
+  color: var(--st-base-content, #23211c);
+  background: var(--st-base-200, #f4f1e8);
+  border: 1px solid var(--st-border, #e3dfd2);
   border-bottom-width: 2px;
-  border-radius: var(--sf-radius-selector, 0.25rem);
+  border-radius: var(--st-radius-selector, 0.25rem);
 }
-.sf-kbd--sz-xs {
+.st-kbd--sz-xs {
   min-width: 1.25rem;
   padding: 0.05rem 0.3rem;
   font-size: 0.65rem;
 }
-.sf-kbd--sz-sm {
+.st-kbd--sz-sm {
   min-width: 1.5rem;
   padding: 0.1rem 0.35rem;
   font-size: 0.75rem;
 }
-.sf-kbd--sz-md {
+.st-kbd--sz-md {
   min-width: 1.75rem;
   padding: 0.15rem 0.45rem;
   font-size: 0.85rem;
 }
-.sf-kbd--sz-lg {
+.st-kbd--sz-lg {
   min-width: 2.1rem;
   padding: 0.2rem 0.55rem;
   font-size: 1rem;
 }
-.sf-kbd--sz-xl {
+.st-kbd--sz-xl {
   min-width: 2.5rem;
   padding: 0.3rem 0.7rem;
   font-size: 1.15rem;

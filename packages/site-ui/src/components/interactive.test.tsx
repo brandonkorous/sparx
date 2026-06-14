@@ -10,7 +10,7 @@ import { DropdownMenu } from './dropdown-menu';
 import { Popover } from './popover';
 
 describe('Accordion', () => {
-  it('applies sf- classes and shows the open item content', () => {
+  it('applies st- classes and shows the open item content', () => {
     const { container } = render(
       <Accordion type="single" collapsible defaultValue="a" icon="plus">
         <Accordion.Item value="a">
@@ -23,8 +23,8 @@ describe('Accordion', () => {
         </Accordion.Item>
       </Accordion>
     );
-    expect(container.querySelector('.sf-accordion')).toHaveClass('sf-accordion--plus');
-    expect(screen.getByText('Section A').closest('.sf-accordion__trigger')).toHaveAttribute(
+    expect(container.querySelector('.st-accordion')).toHaveClass('st-accordion--plus');
+    expect(screen.getByText('Section A').closest('.st-accordion__trigger')).toHaveAttribute(
       'data-state',
       'open'
     );
@@ -33,14 +33,14 @@ describe('Accordion', () => {
 });
 
 describe('Collapse', () => {
-  it('renders open content with sf- classes', () => {
+  it('renders open content with st- classes', () => {
     const { container } = render(
       <Collapse defaultOpen>
         <Collapse.Trigger>Toggle</Collapse.Trigger>
         <Collapse.Content>Hidden body</Collapse.Content>
       </Collapse>
     );
-    expect(container.querySelector('.sf-collapse')).toBeInTheDocument();
+    expect(container.querySelector('.st-collapse')).toBeInTheDocument();
     expect(screen.getByText('Hidden body')).toBeInTheDocument();
   });
 });
@@ -57,7 +57,7 @@ describe('Tabs', () => {
         <Tabs.Panel value="b">Panel B</Tabs.Panel>
       </Tabs>
     );
-    expect(container.querySelector('.sf-tabs')).toHaveClass('sf-tabs--box', 'sf-c-accent');
+    expect(container.querySelector('.st-tabs')).toHaveClass('st-tabs--box', 'st-c-accent');
     expect(screen.getByRole('tab', { name: 'A' })).toHaveAttribute('data-state', 'active');
     expect(screen.getByText('Panel A')).toBeInTheDocument();
   });
@@ -72,7 +72,7 @@ describe('Tooltip', () => {
     );
     const tip = await screen.findAllByText('Helpful hint');
     expect(tip.length).toBeGreaterThan(0);
-    expect(tip.some((el) => el.classList.contains('sf-tooltip'))).toBe(true);
+    expect(tip.some((el) => el.classList.contains('st-tooltip'))).toBe(true);
   });
 });
 
@@ -87,8 +87,8 @@ describe('Dialog', () => {
         </Dialog.Content>
       </Dialog>
     );
-    expect(screen.getByRole('dialog')).toHaveClass('sf-dialog', 'sf-dialog--top');
-    expect(screen.getByText('Confirm')).toHaveClass('sf-dialog__title');
+    expect(screen.getByRole('dialog')).toHaveClass('st-dialog', 'st-dialog--top');
+    expect(screen.getByText('Confirm')).toHaveClass('st-dialog__title');
   });
 });
 
@@ -102,8 +102,8 @@ describe('Drawer', () => {
         </Drawer.Content>
       </Drawer>
     );
-    expect(screen.getByRole('dialog')).toHaveClass('sf-drawer', 'sf-drawer--left');
-    expect(screen.getByText('Menu')).toHaveClass('sf-drawer__title');
+    expect(screen.getByRole('dialog')).toHaveClass('st-drawer', 'st-drawer--left');
+    expect(screen.getByText('Menu')).toHaveClass('st-drawer__title');
   });
 });
 
@@ -121,7 +121,7 @@ describe('DropdownMenu', () => {
       </DropdownMenu>
     );
     const edit = await screen.findByText('Edit');
-    expect(edit).toHaveClass('sf-dropdown__item');
+    expect(edit).toHaveClass('st-dropdown__item');
   });
 });
 
@@ -134,6 +134,6 @@ describe('Popover', () => {
       </Popover>
     );
     const body = await screen.findByText('Popover body');
-    expect(body.closest('.sf-popover')).toBeInTheDocument();
+    expect(body.closest('.st-popover')).toBeInTheDocument();
   });
 });

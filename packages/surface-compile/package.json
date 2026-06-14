@@ -2,7 +2,7 @@
   "name": "@sparx/surface-compile",
   "version": "0.0.0",
   "private": true,
-  "description": "Surface per-tenant CSS compile (docs/47 §5): tree-shake authored class literals from a Builder node tree and compile them through a tenant-flavored Tailwind theme whose utilities resolve to --sf-* tokens. Server-side only — isolates the heavy Tailwind/lightningcss dependency to the publish path.",
+  "description": "Surface per-tenant CSS compile (docs/47 §5): tree-shake authored class literals from a Builder node tree and compile them through a tenant-flavored Tailwind theme whose utilities resolve to --st-* tokens. Server-side only — isolates the heavy Tailwind/lightningcss dependency to the publish path.",
   "type": "module",
   "exports": {
     ".": {

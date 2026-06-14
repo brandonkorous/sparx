@@ -197,16 +197,16 @@ export function BuilderVariantPicker() {
       {f.product.options.map((opt) => {
         const isSwatch = opt.displayType === 'swatch' || opt.values.some((v) => v.swatchHex);
         return (
-          <div key={opt.id} className="sf-option">
-            <span className="sf-option__label">
+          <div key={opt.id} className="st-option">
+            <span className="st-option__label">
               {opt.name}
               {f.selected[opt.id] ? (
-                <span className="sf-muted" style={{ fontWeight: 400, marginLeft: '0.4rem' }}>
+                <span className="st-muted" style={{ fontWeight: 400, marginLeft: '0.4rem' }}>
                   {opt.values.find((v) => v.id === f.selected[opt.id])?.value}
                 </span>
               ) : null}
             </span>
-            <div className="sf-option__values">
+            <div className="st-option__values">
               {opt.values.map((val) => {
                 const isSelected = f.selected[opt.id] === val.id;
                 const disabled = !f.valueAvailable[val.id];
@@ -214,7 +214,7 @@ export function BuilderVariantPicker() {
                   <button
                     key={val.id}
                     type="button"
-                    className="sf-swatch"
+                    className="st-swatch"
                     style={{ background: val.swatchHex }}
                     aria-pressed={isSelected}
                     aria-label={val.value}
@@ -225,7 +225,7 @@ export function BuilderVariantPicker() {
                   <button
                     key={val.id}
                     type="button"
-                    className="sf-chip"
+                    className="st-chip"
                     aria-pressed={isSelected}
                     disabled={disabled}
                     onClick={() => f.selectValue(opt.id, val.id)}
@@ -247,7 +247,7 @@ export function BuilderQuantity() {
   const f = useProductForm();
   if (!f) return null;
   return (
-    <div className="sf-qty">
+    <div className="st-qty">
       <button
         type="button"
         aria-label="Decrease quantity"
@@ -284,7 +284,7 @@ export function BuilderAddToCart({ label }: { label?: string }) {
   return (
     <button
       type="button"
-      className="sf-btn sf-btn--primary sf-btn--lg"
+      className="st-btn st-btn--primary st-btn--lg"
       style={{ minWidth: '200px' }}
       disabled={!f.resolvedVariant || !f.inStock || f.adding}
       onClick={() => void f.addToCart()}
@@ -300,11 +300,11 @@ function BuyBoxInner() {
   const f = useProductForm();
   if (!f) return null;
   return (
-    <div className="bx-buybox sf-pdp__info">
-      <div className="sf-pdp__price">
+    <div className="bx-buybox st-pdp__info">
+      <div className="st-pdp__price">
         {moneyOf(f.priceCents, f.product.currency)}
         {f.onSale && f.compareAtCents != null ? (
-          <span className="sf-card__compare" style={{ fontSize: '1rem' }}>
+          <span className="st-card__compare" style={{ fontSize: '1rem' }}>
             {moneyOf(f.compareAtCents, f.product.currency)}
           </span>
         ) : null}
@@ -315,7 +315,7 @@ function BuyBoxInner() {
         <BuilderAddToCart />
       </div>
       {f.resolvedVariant?.sku ? (
-        <span className="sf-muted" style={{ fontSize: '0.82rem' }}>
+        <span className="st-muted" style={{ fontSize: '0.82rem' }}>
           SKU: {f.resolvedVariant.sku}
         </span>
       ) : null}

@@ -56,21 +56,21 @@ export default function B2bQuotesPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-        <Link href={`/account/b2b/${accountId}`} className="sf-link" style={{ fontSize: '0.9rem' }}>
+        <Link href={`/account/b2b/${accountId}`} className="st-link" style={{ fontSize: '0.9rem' }}>
           ← Back
         </Link>
-        <h1 className="sf-h2">Quotes</h1>
+        <h1 className="st-h2">Quotes</h1>
       </div>
 
       {error ? (
-        <div className="sf-alert sf-alert--error" role="alert">
+        <div className="st-alert st-alert--error" role="alert">
           {error}
         </div>
       ) : quotes === null ? (
-        <div className="sf-skeleton" style={{ height: 200 }} />
+        <div className="st-skeleton" style={{ height: 200 }} />
       ) : quotes.length === 0 ? (
-        <div className="sf-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="sf-muted">No quotes found on this account.</p>
+        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
+          <p className="st-muted">No quotes found on this account.</p>
         </div>
       ) : (
         <>
@@ -78,7 +78,7 @@ export default function B2bQuotesPage() {
             {quotes.map((q) => (
               <div
                 key={q.id}
-                className="sf-card"
+                className="st-card"
                 style={{
                   padding: '0.875rem 1rem',
                   display: 'flex',
@@ -89,12 +89,12 @@ export default function B2bQuotesPage() {
               >
                 <div>
                   <strong>{q.quoteNumber}</strong>
-                  <div className="sf-muted" style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}>
+                  <div className="st-muted" style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}>
                     Valid until {formatDate(q.validUntil)}
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span className="sf-badge" {...quoteStatusProps(q.status)}>
+                  <span className="st-badge" {...quoteStatusProps(q.status)}>
                     {q.status}
                   </span>
                   <strong style={{ whiteSpace: 'nowrap' }}>
@@ -109,18 +109,18 @@ export default function B2bQuotesPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
               <button
                 type="button"
-                className="sf-btn sf-btn--outline"
+                className="st-btn st-btn--outline"
                 disabled={skip === 0}
                 onClick={() => setSkip(Math.max(0, skip - PAGE_SIZE))}
               >
                 Previous
               </button>
-              <span className="sf-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
+              <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
                 {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
               <button
                 type="button"
-                className="sf-btn sf-btn--outline"
+                className="st-btn st-btn--outline"
                 disabled={skip + PAGE_SIZE >= total}
                 onClick={() => setSkip(skip + PAGE_SIZE)}
               >

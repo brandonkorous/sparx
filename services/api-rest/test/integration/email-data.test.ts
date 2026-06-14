@@ -145,9 +145,11 @@ describe('resolveEmailData — invoice template', () => {
     );
   });
 
-  it('resolves {{tenant.name}} to the active site name when a property overrides businessName (docs/49)', async () => {
-    // A multi-site tenant authoring a site whose brand_override sets a per-site
-    // business name — the same per-site identity the wordmark/footer brand uses.
+  it('resolves {{site.name}}/{{tenant.name}} to the active Property.name, never the tenant or brand businessName (docs/49)', async () => {
+    // A multi-site tenant authoring a specific site. The customer-facing name is the
+    // SITE's `Property.name` ('Override Site') — NOT the tenant's org name and NOT
+    // the brand_override businessName (kept here only to prove the name no longer
+    // comes from it).
     const propertyId = await withTenant({ tenantId: fixture.tenantId }, (tx) =>
       tx.property
         .create({
@@ -166,11 +168,15 @@ describe('resolveEmailData — invoice template', () => {
       id: 'root',
       type: 'Section',
       props: {},
-      children: [{ id: 'h', type: 'Heading', props: { text: 'Welcome to {{tenant.name}}' } }],
+      children: [
+        { id: 'h', type: 'Heading', props: { text: 'Welcome to {{site.name}}' } },
+        { id: 'h2', type: 'Heading', props: { text: 'From {{tenant.name}}' } },
+      ],
     };
 
-    // With the site's propertyId, the per-site name wins — body copy reads the site,
-    // matching the per-site brand chrome (and the canvas/preview).
+    // With the site's propertyId, the site's Property.name wins under BOTH the
+    // canonical `site` root and the legacy `tenant` alias — body copy reads the site
+    // name, matching the per-site wordmark/footer chrome (and the canvas/preview).
     const scoped = await resolveEmailData(
       { tenantId: fixture.tenantId },
       tree,
@@ -178,10 +184,13 @@ describe('resolveEmailData — invoice template', () => {
       [],
       propertyId
     );
-    expect(String((scoped.tenant as Record<string, unknown>).name)).toBe('Driftwood Supply Co.');
+    expect(String((scoped.site as Record<string, unknown>).name)).toBe('Override Site');
+    expect(String((scoped.tenant as Record<string, unknown>).name)).toBe('Override Site');
 
-    // Without a propertyId, it falls back to the tenant identity (the org name here,
-    // since the fixture has no tenant brand business name) — single-site unchanged.
+    // Without a propertyId and no primary property in this bare fixture, the resolver
+    // returns no site name and falls through to the defensive org-name guard. In
+    // PRODUCTION a primary property always exists (seeded at provisioning), so this
+    // tail is unreachable there — it only guards a never-blank token.
     const unscoped = await resolveEmailData({ tenantId: fixture.tenantId }, tree, {
       email: 'ar@buyer.test',
     });

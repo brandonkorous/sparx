@@ -103,10 +103,10 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
         perPage: requestedPerPage,
       }
     : await listCollectionProducts(tenant.slug, handle, page, requestedPerPage);
-  const { defaultCurrency: currency, defaultLocale: locale } = tenant.storefront;
+  const { defaultCurrency: currency, defaultLocale: locale } = tenant.commerce;
 
   return (
-    <div className="sf-container">
+    <div className="st-container">
       <Breadcrumbs
         items={[
           { label: 'Home', href: '/' },

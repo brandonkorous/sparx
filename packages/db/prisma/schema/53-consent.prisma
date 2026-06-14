@@ -1,7 +1,7 @@
 // Cookie consent — per-tenant config + append-only consent log. docs/42 §4.
 //
 // Config lives in its own 1:1-per-tenant table (NOT Tenant.settings, NOT the
-// Commerce-owned StorefrontSettings) because consent applies to content-only
+// Commerce-owned CommerceSiteSettings) because consent applies to content-only
 // tenants too and must never sit behind the Commerce module gate. The
 // `bannerEnabled` flag is DERIVED in code (mode != off AND a non-essential
 // category is active) — not stored.

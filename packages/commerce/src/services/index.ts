@@ -38,7 +38,7 @@ export * as returnService from './return-service';
 export * as reviewService from './review-service';
 
 // Phase 8 — storefront defaults + theme
-export * as storefrontService from './storefront-service';
+export * as commerceSiteService from './site-commerce-service';
 
 // Phase 9 — reporting + dashboard home metrics
 export * as reportingService from './reporting-service';

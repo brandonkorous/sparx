@@ -40,6 +40,18 @@ const TemplateMeta = {
   propertyId: z.string().nullable().optional(),
 };
 
+// Back-compat: `storeName` was renamed to `siteName` (store→site rename).
+// In-flight Pub/Sub messages published before the rename still carry
+// `storeName`; map it to `siteName` before validation so they don't dead-letter.
+// Safe to remove once no legacy messages remain in any subscription backlog.
+const withLegacySiteName = (v: unknown) => {
+  if (v && typeof v === 'object' && !('siteName' in v) && 'storeName' in v) {
+    const { storeName, ...rest } = v as Record<string, unknown>;
+    return { ...rest, siteName: storeName };
+  }
+  return v;
+};
+
 const TemplateSendSchema = z.discriminatedUnion('template', [
   z.object({
     template: z.literal('password-reset'),
@@ -55,9 +67,12 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
   z.object({
     template: z.literal('welcome-merchant'),
     ...TemplateMeta,
+    // A platform signup email — carries NO site/tenant name (docs/49). `siteName` is
+    // accepted-but-ignored only so any in-flight legacy message still validates; the
+    // template no longer renders it. Drop once no legacy messages remain.
     props: z.object({
       name: z.string().optional(),
-      storeName: z.string().min(1),
+      siteName: z.string().optional(),
       dashboardUrl: z.string().url(),
       intro: z.string().optional(),
       outro: z.string().optional(),
@@ -88,12 +103,15 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
   z.object({
     template: z.literal('chat-notification'),
     ...TemplateMeta,
-    props: z.object({
-      customerName: z.string().min(1),
-      messageSnippet: z.string(),
-      conversationUrl: z.string().url(),
-      storeName: z.string().optional(),
-    }),
+    props: z.preprocess(
+      withLegacySiteName,
+      z.object({
+        customerName: z.string().min(1),
+        messageSnippet: z.string(),
+        conversationUrl: z.string().url(),
+        siteName: z.string().optional(),
+      })
+    ),
   }),
 ]);
 

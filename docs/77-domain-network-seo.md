@@ -21,11 +21,11 @@ Sparx operates a purposeful network of domains. Each domain has one job and link
 | status.sparx.works | Status page                                            | GKE LB          |
 | sparx.email        | Postal sending infrastructure + Email module marketing | GKE LB / Postal |
 
-### Merchant Storefront Domains
+### Merchant Site Domains
 
 | Domain         | Purpose                                                |
 | -------------- | ------------------------------------------------------ |
-| \*.sparx.zone  | All merchant storefronts (wildcard, one DNS record)    |
+| \*.sparx.zone  | All merchant sites (wildcard, one DNS record)          |
 | [merchant].com | Custom merchant domains (CNAME → customers.sparx.zone) |
 
 ### Marketplace Domains
@@ -179,7 +179,7 @@ All domains managed in Cloudflare. Two zone types:
 
 Benefits: DDoS protection, WAF, CDN caching for static content, performance.
 
-**Storefront zones (grey cloud — DNS only, not proxied):**
+**Site zones (grey cloud — DNS only, not proxied):**
 
 - sparx.zone (wildcard), customers.sparx.zone
 - NOT proxied because Caddy handles SSL via Let's Encrypt on-demand TLS. Cloudflare proxying interferes with ACME challenges on custom merchant domains.
@@ -224,13 +224,13 @@ When a merchant adds a custom domain:
 
 ## 8. "Powered by Sparx" Footer Link
 
-Every merchant storefront on sparx.zone displays a subtle footer link:
+Every merchant site on sparx.zone displays a subtle footer link:
 
 ```
 Powered by Sparx ↗  (links to sparx.works)
 ```
 
-This is opt-out on Pro+ plans (merchant can remove it). Default on all plans. This link appears on potentially thousands of merchant storefronts, building sparx.works domain authority passively at scale.
+This is opt-out on Pro+ plans (merchant can remove it). Default on all plans. This link appears on potentially thousands of merchant sites, building sparx.works domain authority passively at scale.
 
 ---
 

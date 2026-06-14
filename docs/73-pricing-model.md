@@ -30,7 +30,7 @@ Build free. No card. No clock. Pay when you go live.
 Every merchant can build their entire store — products, content, email templates, theme, everything — before paying a cent. No time limit. No 14-day countdown.
 
 **What "going live" means:**
-Publishing their storefront to their sparx.zone URL or a custom domain. Everything before that — building, designing, adding products, drafting content — is free with no time limit.
+Publishing their site to their sparx.zone URL or a custom domain. Everything before that — building, designing, adding products, drafting content — is free with no time limit.
 
 **The payment moment:**
 When a merchant clicks "Publish" or "Go Live," they're prompted to add a payment method. The billing cycle starts the day they publish. Nothing before that.
@@ -51,7 +51,7 @@ When a merchant clicks "Publish" or "Go Live," they're prompted to add a payment
 
 Includes:
 
-- One live storefront on sparx.zone subdomain
+- One live site on sparx.zone subdomain
 - Full theme customizer
 - Unlimited pages (published via CMS)
 - Custom domain + SSL

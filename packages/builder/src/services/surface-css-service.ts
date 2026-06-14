@@ -4,7 +4,7 @@
 // across ALL of a tenant's PUBLISHED Builder trees — every published page plus
 // the active published layout chrome — and compiles them, through the
 // tenant-flavored Tailwind theme, into the `tenant.css` the storefront loads
-// after its `--sf-*` token block.
+// after its `--st-*` token block.
 //
 // Compiling a few hundred classes is milliseconds, but it must never sit in the
 // hot path (docs/47 §5.3). So the output is cached per (tenant, class-set hash):
@@ -36,7 +36,7 @@ import type { PropertyContext } from '../errors';
 // every tenant (not compiled from their classes) and rides this same stylesheet
 // so the live site receives it through the existing HTTP path with no extra
 // dependency, and so does the editor canvas. Prepended (not passed through the
-// Tailwind compiler) so its custom `sf-reveal`/`@keyframes` rules are never
+// Tailwind compiler) so its custom `st-reveal`/`@keyframes` rules are never
 // tree-shaken or mangled.
 const RENDER_LAYER_CSS = REDUCED_MOTION_CSS + SCROLL_MOTION_CSS;
 
@@ -164,7 +164,7 @@ export const CompilePreviewInput = z.object({
 
 /**
  * Compile an editor-supplied class set for canvas preview. Stateless — a pure
- * function of the class list (the `--sf-*` tokens resolve in the browser), so it
+ * function of the class list (the `--st-*` tokens resolve in the browser), so it
  * needs no tenant context. Non-minified for speed + readability; the Tailwind
  * compiler is process-memoized, so repeat calls only pay the candidate build.
  */

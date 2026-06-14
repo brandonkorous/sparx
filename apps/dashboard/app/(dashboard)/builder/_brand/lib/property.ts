@@ -4,7 +4,7 @@ import 'server-only';
 // preview iframes in the Builder editors.
 //
 // Tenant sites run at <slug>.sparx.zone in prod (the same convention the CMS
-// preview link uses). `SPARX_STOREFRONT_URL` is a LOCAL-DEV override — set it
+// preview link uses). `SPARX_SITE_URL` is a LOCAL-DEV override — set it
 // when the site app runs somewhere other than the default dev port. In local dev
 // (NODE_ENV !== 'production') we otherwise point the preview at the local site
 // automatically, so the editor reflects DRAFT changes BEFORE publishing without
@@ -21,7 +21,7 @@ export function propertyOrigin(
   tenantSlug: string,
   property?: { slug: string; isPrimary: boolean } | null
 ): string {
-  const devOverride = process.env.SPARX_STOREFRONT_URL;
+  const devOverride = process.env.SPARX_SITE_URL ?? process.env.SPARX_STOREFRONT_URL;
   if (devOverride) return devOverride;
   if (process.env.NODE_ENV !== 'production') return DEV_PROPERTY_URL;
   // Multi-site (docs/49): a SECONDARY site lives at <property>.<tenant>.sparx.zone;

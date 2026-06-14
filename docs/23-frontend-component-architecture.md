@@ -101,7 +101,7 @@ This file is the single source of truth. Imported once in each app's root layout
   --sparx-primary-tint: #eef2ff;
 
   /* ── MODULE COLORS ─────────────────────────────────────── */
-  --module-storefront: #6366f1;
+  --module-site: #6366f1;
   --module-commerce: #f97316;
   --module-cms: #14b8a6;
   --module-crm: #06b6d4;
@@ -399,7 +399,7 @@ The `ModuleProvider` shifts CSS variables for its entire subtree. Components tha
 import React, { createContext, useContext, useMemo } from 'react'
 
 export type SparxModule =
-  | 'storefront'
+  | 'site'
   | 'commerce'
   | 'cms'
   | 'crm'
@@ -414,7 +414,7 @@ const MODULE_COLORS: Record<SparxModule, {
   tint: string
   text: string
 }> = {
-  storefront: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA' },
+  site: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA' },
   commerce:   { color: '#F97316', tint: '#FFF7ED', text: '#C2410C' },
   cms:        { color: '#14B8A6', tint: '#F0FDFA', text: '#0F766E' },
   crm:        { color: '#06B6D4', tint: '#ECFEFF', text: '#0E7490' },
@@ -797,7 +797,7 @@ npx shadcn@latest add dropdown-menu context-menu
 
 ## 13. Responsive Design
 
-**Every Sparx UI is mobile-first. A surface that doesn't work on a phone is a bug, not a "later" item.** The marketing site, the tenant dashboard, and the storefronts all have to render and remain usable from 320px up to 2560px wide. This is binding for any new feature or page.
+**Every Sparx UI is mobile-first. A surface that doesn't work on a phone is a bug, not a "later" item.** The marketing site, the tenant dashboard, and the sites all have to render and remain usable from 320px up to 2560px wide. This is binding for any new feature or page.
 
 ### Breakpoints
 

@@ -51,12 +51,12 @@ export async function seedLegalPages(tenantId: string, logger: Logger): Promise<
 
       // The footer placement — find-or-create (avoids relying on a compound
       // unique selector that includes the nullable entry_id column).
-      const existingPlacement = await tx.storefrontDocPlacement.findFirst({
+      const existingPlacement = await tx.siteDocPlacement.findFirst({
         where: { placement: 'footer', sourceKind: 'cms_entry', entryId },
         select: { id: true },
       });
       if (!existingPlacement) {
-        await tx.storefrontDocPlacement.create({
+        await tx.siteDocPlacement.create({
           data: {
             tenantId,
             placement: 'footer',

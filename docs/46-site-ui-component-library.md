@@ -5,7 +5,7 @@ Author: Brandon Korous
 Last Updated: 2026-06-03
 
 > The Builder composition model ([40](40-sitebuilder-composition-model.md)) walks a
-> node tree; the site render path ([44](44-builder-storefront-render.md)) turns a
+> node tree; the site render path ([44](44-builder-site-render.md)) turns a
 > published tree into live markup; the editor canvas previews the same tree inside the
 > dashboard. Today the **leaf and container visuals** in those two render paths are written
 > **twice** — once as `.bx-*` CSS in the editor canvas, once as inline styles in the
@@ -22,7 +22,7 @@ A Builder primitive — say a CTA button or a photo panel — exists in two plac
 | Surface           | Where                                                                          | How it's styled                              |
 | ----------------- | ------------------------------------------------------------------------------ | -------------------------------------------- |
 | **Editor canvas** | `apps/dashboard/app/(dashboard)/builder/_builder/registry.tsx` + `builder.css` | `.bx-btn`, `.bx-btn--primary`, … (`--bxc-*`) |
-| **Live site**     | `apps/site/components/builder-renderer.tsx`                                    | inline `style={buttonStyle(...)}` (`--sf-*`) |
+| **Live site**     | `apps/site/components/builder-renderer.tsx`                                    | inline `style={buttonStyle(...)}` (`--st-*`) |
 
 Two implementations of one thing. The canvas knows `primary | soft | link`; the site
 (after the Tesla work) knows `primary | soft | dark | glass | link`. They already disagree.
@@ -31,7 +31,7 @@ reference landing page so the preview **exactly matches** production — is stru
 impossible while the preview and production are different code.
 
 **`@sparx/site-ui` collapses both into one set of components**, themed entirely by the tenant
-`--sf-*` tokens. The site renderer and the editor canvas both render these components.
+`--st-*` tokens. The site renderer and the editor canvas both render these components.
 The preview cannot drift from production because they are the same code.
 
 ---
@@ -43,7 +43,7 @@ Two component libraries, cleanly split by **whose brand they wear**:
 | Library                     | Theme tokens                                          | Wears the brand of    | Consumers                                                   |
 | --------------------------- | ----------------------------------------------------- | --------------------- | ----------------------------------------------------------- |
 | `@sparx/ui` (`packages/ui`) | `--color-*`, `--module-active`, `--sparx-*`           | **Sparx** (the admin) | `apps/dashboard`, marketing `apps/web`                      |
-| `@sparx/site-ui` (this doc) | `--sf-*` (Token Model v2, [33](33-token-model-v2.md)) | **the tenant**        | `apps/site` chrome, the Builder renderer, the editor canvas |
+| `@sparx/site-ui` (this doc) | `--st-*` (Token Model v2, [33](33-token-model-v2.md)) | **the tenant**        | `apps/site` chrome, the Builder renderer, the editor canvas |
 
 They never overlap. `@sparx/ui` is the operator's tools, in Sparx Indigo. `@sparx/site-ui` is
 the tenant's published site, in the tenant's brand. The dashboard chrome around the Builder
@@ -57,8 +57,8 @@ Heading, Text, Image, Divider, PriceTag, NavMenu, Logo, SocialLinks, plus the Te
 additions (Carousel, Video, Map, Stat). The engine maps box/layout semantics to style; the
 components own the **treatment** (variants, surfaces, type scale).
 
-**The hard rule.** No component hardcodes a color. Every value resolves to a `--sf-*` token, or
-to a **documented fallback** baked into the `var()` call (`var(--sf-primary, #3f6b52)`) for the
+**The hard rule.** No component hardcodes a color. Every value resolves to a `--st-*` token, or
+to a **documented fallback** baked into the `var()` call (`var(--st-primary, #3f6b52)`) for the
 handful of cases where the producer doesn't emit the token yet (§4). This is the same discipline
 `@sparx/ui` follows with `--color-*`.
 
@@ -66,7 +66,7 @@ handful of cases where the producer doesn't emit the token yet (§4). This is th
 
 ## 3. Decisions
 
-### 3.1 Styling mechanism — self-contained semantic CSS keyed on `--sf-*` (NOT Tailwind utilities, NOT inline styles)
+### 3.1 Styling mechanism — self-contained semantic CSS keyed on `--st-*` (NOT Tailwind utilities, NOT inline styles)
 
 This is the load-bearing decision. Three candidates were on the table:
 
@@ -74,15 +74,15 @@ This is the load-bearing decision. Three candidates were on the table:
    _every_ consumer's Tailwind build to scan `packages/site-ui/**` into its `content`, and the
    dashboard's Tailwind theme maps utilities like `bg-primary` to the **admin** palette
    (`--color-*`), not the tenant's. We'd be reduced to arbitrary-value classes
-   (`bg-[var(--sf-primary)]`) everywhere — Tailwind buying us nothing while adding a build
+   (`bg-[var(--st-primary)]`) everywhere — Tailwind buying us nothing while adding a build
    coupling and a real risk of the canvas resolving the wrong palette.
 2. **Inline styles** (what the site renderer does today). Self-contained and FOUC-free,
    but inline styles **cannot express `:hover` / `:focus-visible` / `:disabled`** — a real
    component library needs interaction states. (The current site buttons have none.)
-3. **Self-contained semantic CSS, authored once against `--sf-*`, shipped as a stylesheet.**
+3. **Self-contained semantic CSS, authored once against `--st-*`, shipped as a stylesheet.**
    ✅ **Chosen.**
 
-`site-ui` components emit **semantic class names** (`sf-btn sf-btn--primary`) and ship a single
+`site-ui` components emit **semantic class names** (`st-btn st-btn--primary`) and ship a single
 token-driven stylesheet (`@sparx/site-ui/styles.css`). This is exactly the established pattern in
 this repo — `site.css` and `builder.css` are both plain token-driven CSS, and `@sparx/ui`
 already ships `tokens.css`. It gives us:
@@ -102,7 +102,7 @@ box→CSS layer. Components own the former; the engine owns the latter. They com
 > **Amended by [47](47-class-first-authoring-model.md) §5.3 (2026-06-02).** This decision rejected
 > _shipping unresolved Tailwind utilities_ — still correct. But `site-ui` is being grown into the
 > **Surface** system, which authors its semantic classes with `@apply` over a tenant-flavored
-> Tailwind theme (utilities → `--sf-*` vars) and **compiles to plain CSS at its own build**. So
+> Tailwind theme (utilities → `--st-*` vars) and **compiles to plain CSS at its own build**. So
 > consumers still receive a static, token-driven stylesheet and the coupling rejected here never
 > occurs; only the _authoring source_ is Tailwind, not the shipped output. The dynamic color × variant
 > axis stays a role var (`var(--c-*)`), since `@apply` cannot interpolate a `{color}`.
@@ -124,9 +124,9 @@ mirrors `@sparx/ui`'s selective-`'use client'` discipline ([23](23-frontend-comp
 
 ### 3.3 No canonical token ownership — `site-ui` _consumes_, `site-themes` _produces_
 
-`@sparx/site-themes` is the single producer of `--sf-*` (`buildThemeCssV2` /
+`@sparx/site-themes` is the single producer of `--st-*` (`buildThemeCssV2` /
 `compileThemeForTenant`, [33](33-token-model-v2.md)). `site-ui` never emits a canonical token
-file — that would create a competing source of truth. It only **reads** `--sf-*`, with inline
+file — that would create a competing source of truth. It only **reads** `--st-*`, with inline
 fallbacks for graceful degradation. The token contract `site-ui` depends on is enumerated in §4.
 
 ### 3.4 Package shape mirrors `@sparx/ui`
@@ -137,10 +137,10 @@ package, same as `@sparx/ui`). React/`react-dom`/`tailwindcss` are **peer** deps
 app owns the single React copy. The package ships **no Tailwind config** — it doesn't author
 utilities (§3.1).
 
-### 3.5 Class-name prefix: `sf-`
+### 3.5 Class-name prefix: `st-`
 
-All `site-ui` classes are prefixed `sf-` (e.g. `sf-btn`, `sf-c-primary`, `sf-v-solid`,
-`sf-carousel__slide`), matching the `--sf-*` token namespace and clearly distinct from the editor
+All `site-ui` classes are prefixed `st-` (e.g. `st-btn`, `st-c-primary`, `st-v-solid`,
+`st-carousel__slide`), matching the `--st-*` token namespace and clearly distinct from the editor
 chrome's `bx-*` and `@sparx/ui`'s Tailwind output. The legacy `.bx-*` canvas classes are retired
 during migration (§7).
 
@@ -148,61 +148,61 @@ during migration (§7).
 
 **This is load-bearing and applies to every color-bearing component, not just Button** (docs/35).
 There is no flat `variant: primary | soft | …` enum anywhere — `primary` is a **color**, `soft` is a
-**treatment**. site-ui ships the `--sf-*` analog of `@sparx/ui`'s `_recipes/variants.ts`
+**treatment**. site-ui ships the `--st-*` analog of `@sparx/ui`'s `_recipes/variants.ts`
 ([packages/site-ui/src/components/\_recipes/variants.ts](../packages/site-ui/src/components/_recipes/variants.ts)
 \+ [styles/recipes.css](../packages/site-ui/src/styles/recipes.css)):
 
-- **`color` axis** — a `.sf-c-{color}` role-var class (the `--sf-*` analog of tokens.css `.sx-c-*`)
-  that maps the five role vars `--c-bg / --c-fg / --c-ink / --c-hover / --c-tint` from `--sf-*`
+- **`color` axis** — a `.st-c-{color}` role-var class (the `--st-*` analog of tokens.css `.sx-c-*`)
+  that maps the five role vars `--c-bg / --c-fg / --c-ink / --c-hover / --c-tint` from `--st-*`
   (oklch mixes toward the readable ink, mirroring `@sparx/ui`). Slots: `primary, secondary, accent,
 neutral, info, success, warning, danger` **+ `surface`** (base-100 fill / base-content ink — the
   light-glass / chrome case). Any string is accepted (`color="brand-mint"`) once a matching
-  `.sf-c-*` rule exists.
+  `.st-c-*` rule exists.
 - **`variant` axis** — treatments authored **once** in CSS against the `--c-*` role vars:
   `solid · soft · outline · dashed · ghost · link · glass`. `color × variant` composes through the
   role vars — **no cartesian product, no codegen**. `chipTreatmentVariants` is the reduced subset
   (solid/soft/outline/dashed) for chips/badges.
 - **`size` axis** — the shared `sm | md | lg` scale; what each step means dimensionally is the
-  component's own CSS (e.g. `.sf-btn--sz-md`).
+  component's own CSS (e.g. `.st-btn--sz-md`).
 
 Every color-bearing component is a **thin consumer**: it emits
-`cx('sf-{component}', colorClass(color), treatmentVariants[variant], sizeClass(size))`. `recipes.css`
-is imported **last** so a treatment's resets (e.g. `.sf-v-link` → `padding:0`) win over size classes.
+`cx('st-{component}', colorClass(color), treatmentVariants[variant], sizeClass(size))`. `recipes.css`
+is imported **last** so a treatment's resets (e.g. `.st-v-link` → `padding:0`) win over size classes.
 
 ---
 
-## 4. The token contract (`--sf-*` `site-ui` consumes)
+## 4. The token contract (`--st-*` `site-ui` consumes)
 
 These are produced by `@sparx/site-themes` (`colorVars` + `sharedVars` in
 `packages/site-themes/src/v2/css.ts`) and declared as fallbacks in `apps/site/app/site.css`.
 Every `site-ui` class reads from this set:
 
-**Color** — `--sf-base-100/200/300`, `--sf-base-content`, `--sf-primary` (+ `-content`, `-hover`,
-`-active`, `-tint`), `--sf-secondary` (+ `-content`), `--sf-accent` (+ `-content`, `-tint`),
-`--sf-neutral` (+ `-content`), `--sf-info/success/warning/danger` (+ `-content`), `--sf-border`.
-Text tiers: `--sf-text-secondary`, `--sf-text-muted`, `--sf-text-tertiary`.
+**Color** — `--st-base-100/200/300`, `--st-base-content`, `--st-primary` (+ `-content`, `-hover`,
+`-active`, `-tint`), `--st-secondary` (+ `-content`), `--st-accent` (+ `-content`, `-tint`),
+`--st-neutral` (+ `-content`), `--st-info/success/warning/danger` (+ `-content`), `--st-border`.
+Text tiers: `--st-text-secondary`, `--st-text-muted`, `--st-text-tertiary`.
 
-**Shape** — `--sf-radius-selector`, `--sf-radius-field`, `--sf-radius-box`, `--sf-border-width`.
+**Shape** — `--st-radius-selector`, `--st-radius-field`, `--st-radius-box`, `--st-border-width`.
 
-**Type** — `--sf-font-heading`, `--sf-font-body`, `--sf-font-fallback`.
+**Type** — `--st-font-heading`, `--st-font-body`, `--st-font-fallback`.
 
-**Rhythm / layout** — `--sf-space-base`, `--sf-space-{1..24}`, `--sf-container` (alias `--sf-max`).
+**Rhythm / layout** — `--st-space-base`, `--st-space-{1..24}`, `--st-container` (alias `--st-max`).
 
-**Effect** — `--sf-shadow-sm/md/lg`, `--sf-depth`.
+**Effect** — `--st-shadow-sm/md/lg`, `--st-depth`.
 
 ### 4.1 Overlay/scrim tokens — SUPERSEDED by the recipe (glass × surface/neutral)
 
-> **Superseded 2026-06-02.** An earlier pass added `--sf-overlay-dark/-content/-light/-content` to
+> **Superseded 2026-06-02.** An earlier pass added `--st-overlay-dark/-content/-light/-content` to
 > the producer for flat `dark`/`glass` buttons. With the four-axis recipe (§3.6) those CTAs are now
 > **compositions** — `glass × neutral` (frosted dark) and `glass × surface` (frosted light) — so the
 > standalone overlay tokens were **removed** from the producer as redundant. The `glass` treatment
 > frosts `--c-bg` at ~82% over transparent + backdrop-blur; the Carousel arrows dogfood the same
-> `glass × surface`. Recorded here for history; no consumer reads `--sf-overlay-*`.
+> `glass × surface`. Recorded here for history; no consumer reads `--st-overlay-*`.
 
 <details><summary>Original (pre-recipe) proposal — kept for the record</summary>
 
 The `dark` and `glass` button variants the team-lead shipped are **legibility scrims over arbitrary
-photos**, not tenant-brand colors — a tenant's `--sf-primary` over a busy hero photo is often
+photos**, not tenant-brand colors — a tenant's `--st-primary` over a busy hero photo is often
 illegible, so these are deliberately a frosted near-black / near-white. To honor "no hardcoded
 color" while staying faithful to the shipped look, `site-ui` reads them through **dedicated tokens
 now emitted by the v2 producer** (`sharedVars` in `packages/site-themes/src/v2/css.ts`), with
@@ -211,10 +211,10 @@ degradation:
 
 | Token                        | Fallback (matches `builder-renderer.tsx`) | Meaning                     |
 | ---------------------------- | ----------------------------------------- | --------------------------- |
-| `--sf-overlay-dark`          | `rgba(23, 26, 35, 0.78)`                  | frosted dark scrim surface  |
-| `--sf-overlay-dark-content`  | `#ffffff`                                 | text on the dark scrim      |
-| `--sf-overlay-light`         | `rgba(255, 255, 255, 0.86)`               | frosted light scrim surface |
-| `--sf-overlay-light-content` | `#171a23`                                 | text on the light scrim     |
+| `--st-overlay-dark`          | `rgba(23, 26, 35, 0.78)`                  | frosted dark scrim surface  |
+| `--st-overlay-dark-content`  | `#ffffff`                                 | text on the dark scrim      |
+| `--st-overlay-light`         | `rgba(255, 255, 255, 0.86)`               | frosted light scrim surface |
+| `--st-overlay-light-content` | `#171a23`                                 | text on the light scrim     |
 
 These are mode-independent constants in `sharedVars` (a scrim is a fixed legibility veil, not a
 per-mode color). Scoped to the four button scrims for now; the box-background photo scrim (the
@@ -233,14 +233,14 @@ SSR-safe** — no event handlers in the base components (interactivity arrives v
 thin client wrapper), so they render in both the server site and the client canvas.
 
 > **Status: the full first wave is now BUILT** greenfield in `packages/site-ui` (gate green;
-> migration still on hold per §7). Each component below emits `sf-*` classes against the §4 tokens
+> migration still on hold per §7). Each component below emits `st-*` classes against the §4 tokens
 > and ships a CSS partial aggregated into `styles.css`.
 
 ### 5.1 `Button` — the reference consumer of the recipe (§3.6, §6)
 
 ```ts
 interface ButtonProps {
-  color?: ColorKey | (string & {}); // default 'primary' — sf-c-{color}
+  color?: ColorKey | (string & {}); // default 'primary' — st-c-{color}
   variant?: TreatmentKey; // solid|soft|outline|dashed|ghost|link|glass — default 'solid'
   size?: SizeKey; // sm|md|lg — default 'md'
   href?: string; // present → <a>, absent → <button>
@@ -256,7 +256,7 @@ interface ButtonProps {
 }
 ```
 
-Emits `cx('sf-btn', colorClass(color), treatmentVariants[variant], 'sf-btn--sz-' + size, className)`.
+Emits `cx('st-btn', colorClass(color), treatmentVariants[variant], 'st-btn--sz-' + size, className)`.
 The old flat scrim CTAs are compositions: **Order Now = `glass` × `neutral`**, **Learn More =
 `glass` × `surface`**.
 
@@ -291,7 +291,7 @@ exported so the renderer can dedupe onto them at migration.
 ### 5.3 Core-library expansion — Tier 1–3 (2026-06-02)
 
 The first wave harvested the renderer's leaves; this wave fills out the **core library** so
-Surface is a complete component set, not a starter. Everything below ships the same way: `sf-*`
+Surface is a complete component set, not a starter. Everything below ships the same way: `st-*`
 classes against the §4 tokens, a CSS partial aggregated into `styles.css` (recipes.css last), and a
 vitest per component. Server by default; none needed `'use client'`. Built priority-ordered:
 
@@ -301,7 +301,7 @@ box "magic."
 | Component   | Boundary | Axes / key props                                                     | Notes                                                                                                                                         |
 | ----------- | -------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Section`   | server   | `surface` (color recipe) · `contentWidth` full/contained · `padding` | The keystone: full-bleed band + contained inner; background via `photoPanelStyle` (+ `overlay`/`tone`). Re-homes the outer/inner box pattern. |
-| `Container` | server   | `width` sm/md/lg/full                                                | `lg` reads `--sf-container`.                                                                                                                  |
+| `Container` | server   | `width` sm/md/lg/full                                                | `lg` reads `--st-container`.                                                                                                                  |
 | `Grid`      | server   | `cols` 1–6 · `gap` · `responsive`                                    | Mobile-first: single column below `md`; `responsive={false}` holds the count.                                                                 |
 | `Stack`     | server   | `direction` · `gap` · `align` · `justify` · `wrap`                   | One-dimensional flex flow.                                                                                                                    |
 
@@ -332,9 +332,9 @@ up in the **focus ring** (`--c-bg`) and the **invalid** state (danger role).
 
 | Component              | Boundary | Axes / key props                                     | Notes                                                                 |
 | ---------------------- | -------- | ---------------------------------------------------- | --------------------------------------------------------------------- |
-| `Input`                | server   | `color` × `size`, `variant` default/ghost, `invalid` | Shared `.sf-input` base.                                              |
-| `Textarea`             | server   | same                                                 | `.sf-input` + `.sf-textarea` (min-height, vertical resize).           |
-| `NativeSelect`         | server   | same + children options                              | `.sf-input` + chevron via a `currentColor` mask (no hardcoded color). |
+| `Input`                | server   | `color` × `size`, `variant` default/ghost, `invalid` | Shared `.st-input` base.                                              |
+| `Textarea`             | server   | same                                                 | `.st-input` + `.st-textarea` (min-height, vertical resize).           |
+| `NativeSelect`         | server   | same + children options                              | `.st-input` + chevron via a `currentColor` mask (no hardcoded color). |
 | `Checkbox`             | server   | `color` × `size`                                     | `appearance:none`; checked fill `--c-bg`, masked tick `--c-fg`.       |
 | `Radio` / `RadioGroup` | server   | `color` × `size`; group `orientation`                | Inner dot `--c-bg`; group is a `role="radiogroup"` layout wrapper.    |
 | `Switch`               | server   | `color` × `size`                                     | Track + sliding knob; `role="switch"`; checked track `--c-bg`.        |
@@ -347,7 +347,7 @@ Two boundary notes:
 
 - **Tier 4 wraps Radix, styled entirely by Surface.** The interactive primitives use
   `@radix-ui/react-*` for behavior only (focus, keyboard, portalling, `data-state`); **no Radix
-  class convention is adopted** — every part carries an `sf-*` class and is themed by `--sf-*` +
+  class convention is adopted** — every part carries an `st-*` class and is themed by `--st-*` +
   the role-var recipe, with interaction styling keyed off Radix's `data-state`/`data-highlighted`
   attributes. This is a deliberate **dependency decision** (team-lead chose Radix over the
   hand-authored approach `@sparx/ui` uses); the new runtime deps are `react-accordion`,
@@ -395,16 +395,16 @@ attribute value, so it extends cleanly.
 The first/reference consumer of the recipe (§3.6), proving the whole contract end to end:
 
 - **Server component** (no `'use client'`) — emits `<a>`/`<button>` + classes; no client runtime.
-- **Themed only by `--sf-*`** — Button owns nothing but base layout + the `sm/md/lg` padding scale
-  in `styles/button.css`; all color/treatment comes from the shared `.sf-c-*` / `.sf-v-*` recipe.
+- **Themed only by `--st-*`** — Button owns nothing but base layout + the `sm/md/lg` padding scale
+  in `styles/button.css`; all color/treatment comes from the shared `.st-c-*` / `.st-v-*` recipe.
   No hardcoded color. (The focus ring picks up the active `--c-bg`.)
-- **Renders identically in both contexts.** The site defines `--sf-*` globally (via
-  `site.css`); the editor canvas defines a compiled `--sf-*` block scoped to `.bx-canvas`
-  (today aliased to `--bxc-*`; see `builder.css`). Because `.sf-c-primary` reads `--sf-primary`
+- **Renders identically in both contexts.** The site defines `--st-*` globally (via
+  `site.css`); the editor canvas defines a compiled `--st-*` block scoped to `.bx-canvas`
+  (today aliased to `--bxc-*`; see `builder.css`). Because `.st-c-primary` reads `--st-primary`
   directly, the **same button** picks up the tenant brand in the site and the same compiled
   brand in the canvas — no per-context code.
 
-`vitest` asserts each axis (color → `sf-c-*`, variant → `sf-v-*`, size → `sf-btn--sz-*`), the
+`vitest` asserts each axis (color → `st-c-*`, variant → `st-v-*`, size → `st-btn--sz-*`), the
 runtime-custom color, the `glass × neutral` / `glass × surface` compositions, and the `href`→`<a>` /
 no-`href`→`<button>` polymorphism; a recipe test covers `colorClass`, `treatmentVariants`, and the
 `chipTreatmentVariants` subset.
@@ -423,7 +423,7 @@ coordinated pass **after the team-lead's Tesla primitives land**, executed rough
    `builder-renderer.tsx` with `site-ui` components, leaf by leaf. The box/layout engine and
    binding resolution are untouched — only the leaf/container _visuals_ move.
 3. **Point the editor canvas at `site-ui`.** Replace the `.bx-*` leaf rendering in `registry.tsx`
-   with the same `site-ui` components. The canvas already compiles `--sf-*` onto `.bx-canvas`, so
+   with the same `site-ui` components. The canvas already compiles `--st-*` onto `.bx-canvas`, so
    the components theme correctly. The `--bxc-*` aliases become a thin compatibility shim and are
    then deleted from `builder.css`; the leaf `.bx-*` rules go with them.
 4. **Verify parity.** With both paths on `site-ui`, the canvas preview and the published page are
@@ -461,8 +461,8 @@ packages/site-ui/
       embed.ts            # youtubeEmbed / mapEmbed (server-safe)
       photo-panel.ts      # photoPanelStyle() — the PhotoPanel helper
     styles.css            # aggregate: @imports partials, then recipes.css LAST
-    styles/               # one CSS partial per component, all --sf-* keyed
-      recipes.css         # THE FOUNDATION: .sf-c-{color} + .sf-v-{variant} (§3.6)
+    styles/               # one CSS partial per component, all --st-* keyed
+      recipes.css         # THE FOUNDATION: .st-c-{color} + .st-v-{variant} (§3.6)
       button.css carousel.css divider.css embed-frame.css heading.css
       image.css logo.css nav-menu.css price-tag.css social-links.css stat.css text.css
     components/           # one file per component (+ co-located *.test.tsx)
@@ -482,7 +482,7 @@ of duplicated style injection and the server renderer carries no CSS-in-JS runti
 
 1. **Four-axis recipe is the foundation (§3.6) — for ALL color-bearing elements.** No flat
    `variant` enum anywhere; every such component composes `color × variant (× size)` off the shared
-   `.sf-c-*` / `.sf-v-*` recipe. Button is the first/reference consumer. (Corrected from an earlier
+   `.st-c-*` / `.st-v-*` recipe. Button is the first/reference consumer. (Corrected from an earlier
    flat-`variant` Button.) Audit of the built set: only Button is color-bearing; `Text`/`Heading`
    variants are typographic roles (same split as `@sparx/ui`), the rest are structural — nothing
    else needed conversion.
@@ -491,7 +491,7 @@ of duplicated style injection and the server renderer carries no CSS-in-JS runti
 3. **Button interactivity (§6) — server base.** Base `Button` stays server/presentational;
    interactive CTAs get a thin `'use client'` wrapper later.
 4. **Overlay tokens (§4.1) — SUPERSEDED.** The dark/glass scrim pair became `glass × neutral` /
-   `glass × surface`; the standalone `--sf-overlay-*` producer tokens were removed.
+   `glass × surface`; the standalone `--st-overlay-*` producer tokens were removed.
 
 ---
 
@@ -501,16 +501,16 @@ of duplicated style injection and the server renderer carries no CSS-in-JS runti
 - [x] Scaffold `packages/site-ui` (§8).
 - [x] **Variant recipe** (`_recipes/variants.ts` + `recipes.css`) — the four-axis foundation (§3.6).
 - [x] `Button` reworked to four-axis `color × variant × size` as the reference consumer (§5.1, §6).
-- [x] Full first-wave inventory built greenfield (§5); `--sf-overlay-*` removed (§4.1, superseded).
+- [x] Full first-wave inventory built greenfield (§5); `--st-overlay-*` removed (§4.1, superseded).
 - [x] Gate green: site-ui **51 tests**, site-themes **55 tests**, tsc/eslint/prettier clean.
 - [x] **Core-library expansion built (§5.3)** — Tier 1 layout (Section/Container/Grid/Stack), Tier 2
       color-bearing (Badge/Tag/Alert/Callout/Avatar/Label), Tier 2b structural
       (Skeleton/Spinner/Progress/Breadcrumb/Pagination), Tier 3 forms
       (Input/Textarea/NativeSelect/Checkbox/Radio+RadioGroup/Switch/Field). Exported, partials
       imported (recipes.css last), **98 tests**, tsc/eslint clean, `dist/styles.css` compiles
-      (plain CSS, `--sf-*` preserved, no preflight).
+      (plain CSS, `--st-*` preserved, no preflight).
 - [x] **Tier 4 interactive built (§5.4)** — Accordion/Collapse/Tabs/Tooltip/Dialog/Drawer/
-      DropdownMenu/Popover on `@radix-ui/react-*` (behavior only) wrapped in `sf-*` classes; the
+      DropdownMenu/Popover on `@radix-ui/react-*` (behavior only) wrapped in `st-*` classes; the
       team-lead chose Radix over hand-authoring. Client islands; jsdom polyfilled for tests.
 - [x] **Full daisyUI-class catalog built (§5.4)** — color-bearing (Link/Status/Steps/RadialProgress/
       ChatBubble/Range/Rating/FAB/Filter/FileInput) + structural (Kbd/Hero/Footer/Navbar/Menu/Dock/
@@ -518,7 +518,7 @@ of duplicated style injection and the server renderer carries no CSS-in-JS runti
       Calendar/Validator/ThemeController + Browser/Code/Phone/Window mockups). ThemeController drives
       `data-theme` light/dark/system (one active brand), not a multi-named-theme picker.
 - [x] Gate green for the whole library: **142 tests** across 16 files, tsc/eslint clean,
-      `dist/styles.css` compiles (~101 KB plain CSS, `--sf-*` preserved, `@apply` fully resolved, no
+      `dist/styles.css` compiles (~101 KB plain CSS, `--st-*` preserved, `@apply` fully resolved, no
       preflight).
 - [ ] **Button migration PULLED FORWARD** — team-lead wires `builder-renderer.tsx` + the editor
       canvas at `<Button>` and adds the `styles.css` imports (site-ui delivers; lead wires).

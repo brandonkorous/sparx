@@ -104,11 +104,11 @@ export type EventType =
   | 'provider.installed'
   | 'provider.uninstalled'
   | 'provider.health_changed'
-  // Gift cards + store credit
+  // Gift cards + account credit
   | 'giftcard.issued'
   | 'giftcard.redeemed'
-  | 'storecredit.granted'
-  | 'storecredit.spent'
+  | 'accountcredit.granted'
+  | 'accountcredit.spent'
   // Configurator
   | 'configuration.requested'
   | 'configuration.quoted'

@@ -55,7 +55,7 @@ const METHOD_OPTIONS = [
   { value: 'check', label: 'Check' },
   { value: 'ach', label: 'ACH' },
   { value: 'wire', label: 'Wire' },
-  { value: 'store_credit', label: 'Store credit' },
+  { value: 'account_credit', label: 'Account credit' },
   { value: 'other', label: 'Other' },
 ];
 const KIND_LABEL: Record<string, string> = {

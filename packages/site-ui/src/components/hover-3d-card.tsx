@@ -19,8 +19,8 @@ export function Hover3DCard({
   children,
 }: Hover3DCardProps): React.ReactElement {
   return (
-    <div className={cx('sf-card3d', className)} style={style} id={id}>
-      <div className="sf-card3d__inner">{children}</div>
+    <div className={cx('st-card3d', className)} style={style} id={id}>
+      <div className="st-card3d__inner">{children}</div>
     </div>
   );
 }

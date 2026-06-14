@@ -30,6 +30,8 @@
     "db:down": "docker compose -f docker-compose.yml down",
     "db:rls-audit": "tsx scripts/rls-audit.ts",
     "db:backfill:builder-class": "tsx scripts/backfill-builder-class.ts",
+    "db:backfill:sf-to-st": "tsx scripts/backfill-sf-to-st.ts",
+    "db:backfill:property-name": "tsx scripts/backfill-property-name.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf .turbo dist *.tsbuildinfo"

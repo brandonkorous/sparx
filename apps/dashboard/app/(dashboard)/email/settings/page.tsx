@@ -22,8 +22,7 @@ export default async function EmailSettingsPage() {
           <CardTitle>Sender identity</CardTitle>
           <CardDescription>
             These defaults apply to every transactional and marketing email unless a specific
-            template or broadcast overrides them. Brand styling is inherited from your storefront
-            theme.
+            template or broadcast overrides them. Brand styling is inherited from your site theme.
           </CardDescription>
         </CardHeader>
         <CardContent>

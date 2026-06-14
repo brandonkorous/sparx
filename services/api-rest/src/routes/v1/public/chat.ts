@@ -30,7 +30,9 @@ const StartInput = z.object({
   visitorName: z.string().max(255).optional(),
   visitorEmail: z.string().email().max(255).optional(),
   subject: z.string().max(255).optional(),
-  source: z.enum(['storefront', 'sparx_market']).optional(),
+  // 'storefront' is the pre-rename legacy alias of 'site' (store→site); tolerated
+  // so old cached widgets keep working, normalized to 'site' before storage.
+  source: z.enum(['site', 'sparx_market', 'storefront']).optional(),
   message: z.string().min(1).max(8000),
 });
 
@@ -57,7 +59,7 @@ const publicChatRoutes: FastifyPluginAsync = (app) => {
     const visitorToken = conversationService.generateVisitorToken();
     const { conversation } = await conversationService.create(ctx, {
       subject: input.subject,
-      source: input.source ?? 'storefront',
+      source: input.source === 'storefront' ? 'site' : (input.source ?? 'site'),
       visitorName: input.visitorName,
       visitorEmail: input.visitorEmail,
       visitorToken,

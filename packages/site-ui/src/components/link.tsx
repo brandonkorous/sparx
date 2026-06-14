@@ -25,7 +25,7 @@ export function Link({
   return (
     <a
       {...rest}
-      className={cx('sf-link', colorClass(color), `sf-link--ul-${underline}`, className)}
+      className={cx('st-link', colorClass(color), `st-link--ul-${underline}`, className)}
     >
       {children}
     </a>

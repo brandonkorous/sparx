@@ -19,7 +19,7 @@ export interface ListRowProps {
 
 function ListRoot({ className, style, id, children }: ListProps): React.ReactElement {
   return (
-    <ul className={cx('sf-list', className)} style={style} id={id}>
+    <ul className={cx('st-list', className)} style={style} id={id}>
       {children}
     </ul>
   );
@@ -28,7 +28,7 @@ ListRoot.displayName = 'List';
 
 function ListRow({ className, style, children }: ListRowProps): React.ReactElement {
   return (
-    <li className={cx('sf-list__row', className)} style={style}>
+    <li className={cx('st-list__row', className)} style={style}>
       {children}
     </li>
   );

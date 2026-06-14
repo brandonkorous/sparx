@@ -305,7 +305,7 @@ function ModuleCta({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
         </p>
         <div className="mkt-cluster" style={{ gap: '12px' }}>
           <Button size="xl" variant="solid">
-            Start your store →
+            Start your site →
           </Button>
           <Button
             size="xl"

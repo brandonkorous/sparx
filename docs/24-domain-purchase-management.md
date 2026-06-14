@@ -16,7 +16,7 @@ A purchased or connected domain attaches to a **specific web property (site)** o
 the tenant, not just the tenant — a tenant can run multiple sites over one back
 office ([49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)). The host→site
 mapping is the **non-RLS `domains` dispatch table** (one row per host, FK to its
-property; globally-unique `host`); the same row drives both storefront routing and
+property; globally-unique `host`); the same row drives both site routing and
 Caddy's on-demand-TLS authorization.
 
 **Why GoDaddy Reseller (not Cloudflare Registrar):** WizeWorks has held a GoDaddy reseller account for 20 years. Wholesale pricing established, account standing proven, full TLD catalog, API access already in good standing. Build against it immediately.
@@ -46,9 +46,9 @@ After clicking **Purchase & Connect**:
 - ✅ SSL certificate issued
 - ✅ Email authentication active
 
-> Your store is now live at: `https://acmeparts.com`
+> Your site is now live at: `https://acmeparts.com`
 
-Total time from click to live HTTPS store: **under 60 seconds**.
+Total time from click to live HTTPS site: **under 60 seconds**.
 
 ---
 
@@ -111,7 +111,7 @@ GoDaddy DNS propagates in seconds for newly registered domains (GoDaddy controls
 5. Pub/Sub: `domain.purchased` event → domain worker → validates DNS → marks `verified`
 6. Caddy on-demand TLS: cert issued on first HTTPS request
 7. Domain status: `active`, `ssl_status: provisioned`
-8. **Total:** ~30–60 seconds from purchase to live HTTPS store
+8. **Total:** ~30–60 seconds from purchase to live HTTPS site
 
 ---
 

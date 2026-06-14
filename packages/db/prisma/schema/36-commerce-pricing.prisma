@@ -3,7 +3,7 @@
 //
 // Resolution order (pricingService.resolve):
 //   contract_price (B2B) → price_list → bulk_tier → variant.priceCents
-// Then layered: discounts → gift cards → store credit.
+// Then layered: discounts → gift cards → account credit.
 
 model PriceList {
   id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid

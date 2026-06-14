@@ -68,7 +68,7 @@ export function Permanence() {
             }}
           >
             <Button size="xl" variant="solid">
-              Launch your store →
+              Launch your site →
             </Button>
             <Button
               size="xl"

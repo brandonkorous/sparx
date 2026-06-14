@@ -6,16 +6,20 @@
 // The storefront theme APPLIES brand as its foundation and layers presentation
 // tokens on top, but cannot redefine identity (brand color = brand color,
 // everywhere). Email reads it directly for its BrandTokens (replacing the old
-// EmailSettings.brandingOverride). Commerce's StorefrontTheme logo/favicon/
+// EmailSettings.brandingOverride). Commerce's CommerceSiteTheme logo/favicon/
 // palette source from here rather than being independently editable identity.
 //
 // Media ids (logo/favicon) are plain UUID soft references — no FK to MediaAsset
-// — mirroring StorefrontTheme, so brand stays decoupled from the CMS media
+// — mirroring CommerceSiteTheme, so brand stays decoupled from the CMS media
 // table being present. PK = tenantId (one brand per tenant).
 
 model TenantBrand {
   tenantId String @id @map("tenant_id") @db.Uuid
 
+  // DEPRECATED as a NAME source. The customer-facing site name is `Property.name`
+  // (docs/49) — storefront chrome/title/OG and email wordmark/footer/`{{site.name}}`
+  // all read that, never this. businessName survives only as the tenant's brand/
+  // legal name for documents (e.g. invoice rendering) + as a brand-identity signal.
   businessName String? @map("business_name") @db.VarChar(255)
   tagline      String? @db.VarChar(255)
 

@@ -38,11 +38,11 @@ export function SbLink({
 // A CTA's style maps to a storefront button variant — never a hand-built button
 // (brand rule). Unknown/missing style falls back to the primary solid button.
 const CTA_CLASS: Record<string, string> = {
-  solid: 'sf-btn sf-btn--primary',
-  light: 'sf-btn sf-btn--light',
-  dark: 'sf-btn sf-btn--dark',
-  ghost: 'sf-btn sf-btn--ghost',
-  link: 'sf-btn sf-btn--link',
+  solid: 'st-btn st-btn--primary',
+  light: 'st-btn st-btn--light',
+  dark: 'st-btn st-btn--dark',
+  ghost: 'st-btn st-btn--ghost',
+  link: 'st-btn st-btn--link',
 };
 
 /** A row of up to two CTA buttons. Empty/invalid CTAs are dropped; renders
@@ -59,13 +59,13 @@ export function SbCtaRow({
 }) {
   const items = (ctas ?? []).filter((c) => c?.label && c?.url);
   if (items.length === 0) return null;
-  const rowCls = ['sf-cta-row', layout === 'stacked' ? 'sf-cta-row--stacked' : '']
+  const rowCls = ['st-cta-row', layout === 'stacked' ? 'st-cta-row--stacked' : '']
     .filter(Boolean)
     .join(' ');
   return (
     <div className={rowCls}>
       {items.map((c, i) => {
-        const cls = [CTA_CLASS[c.style] ?? CTA_CLASS.solid, size === 'lg' ? 'sf-btn--lg' : '']
+        const cls = [CTA_CLASS[c.style] ?? CTA_CLASS.solid, size === 'lg' ? 'st-btn--lg' : '']
           .filter(Boolean)
           .join(' ');
         return <SbLink key={i} url={c.url} label={c.label} className={cls} />;

@@ -110,7 +110,7 @@ The `CrmTabs` sub-nav is at the top of every top-level CRM page. Confirm every t
 ### Dashboard — Settings surface for the CRM
 
 26. `/settings/modules` — module activation
-    - All 8 modules listed (Storefront, Commerce, CMS, CRM, Email, B2B, Dropship, AI)
+    - All 8 modules listed (Site, Commerce, CMS, CRM, Email, B2B, Dropship, AI)
     - Owner can flip each toggle; non-owner sees toggles disabled with the help text
     - Activating CRM: confirm the **default pipeline** + the **4 built-in segments** appear in `/crm/pipelines` and `/crm/segments` within a second (bootstrap runs in-process from the action)
     - Deactivating CRM: confirm `/crm` re-renders ModuleStub immediately (local cache invalidated) and api-rest follows within 60s

@@ -114,7 +114,7 @@ export async function start(
         shippingTotalCents: cart.shippingTotalCents,
         taxTotalCents: cart.taxTotalCents,
         giftCardAppliedCents: cart.giftCardAppliedCents,
-        storeCreditAppliedCents: cart.storeCreditAppliedCents,
+        accountCreditAppliedCents: cart.accountCreditAppliedCents,
         totalCents: cart.totalCents,
         expiresAt,
       },
@@ -572,7 +572,7 @@ export async function complete(
         paymentTermsRequested: session.paymentTermsRequested,
         subtotalCents: session.subtotalCents,
         giftCardAppliedCents: session.giftCardAppliedCents,
-        storeCreditAppliedCents: session.storeCreditAppliedCents,
+        accountCreditAppliedCents: session.accountCreditAppliedCents,
       },
     });
 
@@ -939,7 +939,7 @@ function serializeSession(
       taxTotalCents: row.taxTotalCents,
       surchargeTotalCents: surcharge.surchargeTotalCents,
       giftCardAppliedCents: row.giftCardAppliedCents,
-      storeCreditAppliedCents: row.storeCreditAppliedCents,
+      accountCreditAppliedCents: row.accountCreditAppliedCents,
       totalCents: surcharge.totalCents,
     },
     expiresAt: row.expiresAt.toISOString(),

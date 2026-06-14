@@ -2,22 +2,22 @@
  * from the shared recipe; this file adds the left accent bar (always the active
  * `--c-bg`) and the icon/title/body layout. Authored with @apply. */
 
-.sf-callout {
+.st-callout {
   @apply flex items-start gap-3 p-4 text-sm;
-  border-radius: var(--sf-radius-box, 1rem);
-  border-left: 4px solid var(--c-bg, var(--sf-border));
+  border-radius: var(--st-radius-box, 1rem);
+  border-left: 4px solid var(--c-bg, var(--st-border));
 }
-.sf-callout__icon {
+.st-callout__icon {
   @apply flex shrink-0 items-center justify-center;
   width: 1.25rem;
   height: 1.25rem;
 }
-.sf-callout__content {
+.st-callout__content {
   @apply min-w-0 flex-1;
 }
-.sf-callout__title {
+.st-callout__title {
   @apply mb-1 font-semibold;
 }
-.sf-callout__body {
+.st-callout__body {
   @apply leading-relaxed;
 }

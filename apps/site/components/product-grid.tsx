@@ -28,7 +28,7 @@ export function ProductGrid({ products, tenantSlug, currency, locale, empty }: P
     );
   }
   return (
-    <div className="sf-grid">
+    <div className="st-grid">
       {products.map((product) => (
         <ProductCard
           key={product.id}

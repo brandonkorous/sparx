@@ -91,7 +91,7 @@ export default async function SeoOverviewPage({ searchParams }: PageProps) {
               description={
                 typeFilter
                   ? 'Clear the filter, or run a scan to score every page, product, and collection.'
-                  : 'Run a scan to score every page, product, and collection across your storefront.'
+                  : 'Run a scan to score every page, product, and collection across your site.'
               }
               action={!typeFilter && canScan ? <RescanButton size="md" /> : undefined}
             />

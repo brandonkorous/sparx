@@ -8,17 +8,17 @@ Last Updated: 2026-06-03
 > **tree of nested layouts**: a layout owns **zones**, one of which — the content
 > outlet — swaps per route, while the rest (header / footer / sidebar) are
 > **chrome** that persists across navigation. The page editor
-> ([41](41-builder-page-model.md), [44](44-builder-storefront-render.md)) edits
+> ([41](41-builder-page-model.md), [44](44-builder-site-render.md)) edits
 > the content outlet's tree. This doc covers the OTHER half: the **site layout**
 > — the chrome that wraps every page — edited with the same editor, and rendered
-> around every published page on the storefront.
+> around every published page on the site.
 
 ## 1. The problem
 
 The page editor composes what fills the content outlet for one route. Nothing yet
 lets a tenant compose the **shell** around it: the header (logo + nav + cart), the
 footer (links + social + legal), and where the page content sits. Today the
-storefront renders `SiteHeader`/`SiteFooter` from the **legacy** site-builder
+site renders `SiteHeader`/`SiteFooter` from the **legacy** site-builder
 snapshot (`SiteLayoutBlock` + `NavigationMenu` + `TenantBrand`). We want the new
 Builder to own that chrome too — with the same single-screen editor — without
 rebuilding the navigation and brand data that already exists.
@@ -31,7 +31,7 @@ We need:
    layers / palette as `/builder/page`.
 3. **Real site data to bind to** — nav, brand identity, social — sourced from the
    data that already exists, not a parallel store.
-4. **Storefront render** — every published page renders **inside** the published
+4. **Site render** — every published page renders **inside** the published
    site layout, with the page dropped at the outlet.
 
 ## 2. Decisions
@@ -40,7 +40,7 @@ We need:
 A site layout is the same recursive node model the page editor already produces.
 The one new idea is an **`Outlet`** node — a non-bindable leaf marking the content
 outlet. In the editor it renders a labeled "Page content" placeholder; on the
-storefront it renders the routed page. **At most one Outlet per layout** (a tree
+site it renders the routed page. **At most one Outlet per layout** (a tree
 with zero outlets can't host pages; two is ambiguous). Everything above/around the
 Outlet is chrome.
 
@@ -66,7 +66,7 @@ tenant keeps **many** layouts. The starter header · outlet · footer is seeded 
 the first (active) layout on first load. Two columns extend `BuilderPage`'s shape:
 
 - **`isActive`** — exactly one layout per tenant is the **live** chrome the
-  storefront serves. Enforced at the DB by a **partial unique index** on
+  site serves. Enforced at the DB by a **partial unique index** on
   `(tenant_id) WHERE is_active` (the canonical race-safe Postgres idiom; Prisma
   can't express the predicate, so it lives in the migration SQL alongside the RLS
   policies). `setActive(id)` clears the prior active and sets the new one inside
@@ -76,7 +76,7 @@ the first (active) layout on first load. Two columns extend `BuilderPage`'s shap
 **Publish and activate are separate**: publishing a layout snapshots its
 draft → published — a layout can be **published-but-idle**. A distinct _make
 active_ flips which **published** layout is live (activating an unpublished draft
-is refused — the storefront serves the active layout's _published_ tree). Deleting
+is refused — the site serves the active layout's _published_ tree). Deleting
 the live layout is refused; make another active first.
 
 This is the **named layouts** capability the v1 doc deferred
@@ -116,7 +116,7 @@ A `surfaces?: ('page' | 'site')[]` field on each registry entry scopes the palet
 `Outlet`/`NavMenu`/`Logo`/`SocialLinks` are `site`-only; per-record data leaves
 (`PriceTag`, `Signup`) are `page`-only; the primitives are both. Default = both.
 
-**2.6 Render: the ACTIVE published Builder layout wins (additive).** The storefront
+**2.6 Render: the ACTIVE published Builder layout wins (additive).** The site
 root layout fetches the tenant's **active** Builder layout and renders its
 **published** tree as the chrome — the routed page is dropped at the `Outlet` — and
 the legacy `SiteHeader`/`SiteFooter` are skipped. If the active layout has no
@@ -124,7 +124,7 @@ published tree (or no layout is active), today's chrome renders unchanged. The
 public read (`getPublished`) resolves `WHERE is_active` then returns
 `publishedTree`, so swapping which layout is live is a single _make active_ away —
 no page touches it. This mirrors the page render path's "Builder owns its slug,
-else fall through" ([44](44-builder-storefront-render.md) §2.5): the new system
+else fall through" ([44](44-builder-site-render.md) §2.5): the new system
 takes over only what a tenant has actually published **and** activated.
 
 ## 3. The site-scope catalog (`SITE_SOURCES`)
@@ -145,7 +145,7 @@ gives the canvas placeholder nav/identity so chrome previews before publish.
 
 ## 4. Render data (`loadSiteData`)
 
-The storefront's analogue of `loadBuilderData` for the chrome:
+The site's analogue of `loadBuilderData` for the chrome:
 
 - `site.identity` ← `{ name, tagline, logo: { url } }` from the resolved tenant +
   brand (logo via `mediaUrl(logoMediaId)`).
@@ -156,7 +156,7 @@ The storefront's analogue of `loadBuilderData` for the chrome:
   `{ platform, url }[]`. Theme-independent: switching themes never changes it.
 
 A failed fetch degrades a source to empty (the chrome renders without it) rather
-than 500-ing the whole storefront — same defensive posture as the page loader.
+than 500-ing the whole site — same defensive posture as the page loader.
 
 ## 5. Slicing
 
@@ -171,7 +171,7 @@ than 500-ing the whole storefront — same defensive posture as the page loader.
   layout; canvas renders the `Outlet` placeholder + chrome components against the
   site catalog; autosave + publish.
 - **S2 — render.** `loadSiteData` + a site-aware render that wraps the page at the
-  `Outlet`; the storefront root layout prefers a published Builder layout over the
+  `Outlet`; the site root layout prefers a published Builder layout over the
   legacy chrome; chrome leaves (`NavMenu`/`Logo`/`SocialLinks`) render real markup.
 
 ## 6. Relationship to the legacy site builder
@@ -180,7 +180,7 @@ The legacy `/sitebuilder` chrome (`SiteLayoutBlock` header/footer/announcement +
 `SiteVersion` snapshot) stays the **fallback** until a tenant publishes a Builder
 layout. Both read the same underlying `NavigationMenu`/`TenantBrand`, so switching
 a tenant over is a presentation change, not a data migration. When `/sitebuilder`
-is eventually retired (its module is `storefront`), its chrome rendering goes with
+is eventually retired (its module is `site`), its chrome rendering goes with
 it and the Builder layout becomes the only path. No data is duplicated in the
 interim.
 

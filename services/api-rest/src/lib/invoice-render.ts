@@ -35,7 +35,7 @@ export async function resolveInvoiceBrand(ctx: ServiceContext): Promise<BillingR
     fontHeading: brand.fontHeading,
     fontBody: brand.fontBody,
     ...(brand.logoUrl ? { logoUrl: brand.logoUrl } : {}),
-    ...(brand.storeName ? { businessName: brand.storeName } : {}),
+    ...(brand.siteName ? { businessName: brand.siteName } : {}),
   };
 }
 

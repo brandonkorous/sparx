@@ -93,17 +93,17 @@ export default async function SearchPage({
   const siteHits = (await siteSearch).filter((h) => h.type !== 'product');
 
   const totalPages = Math.max(1, Math.ceil(result.total / result.perPage));
-  const { defaultCurrency: currency, defaultLocale: locale } = tenant.storefront;
+  const { defaultCurrency: currency, defaultLocale: locale } = tenant.commerce;
 
   return (
-    <div className="sf-container" style={{ paddingBlock: '2rem' }}>
-      <h1 className="sf-h1" style={{ marginBottom: '1.25rem' }}>
+    <div className="st-container" style={{ paddingBlock: '2rem' }}>
+      <h1 className="st-h1" style={{ marginBottom: '1.25rem' }}>
         Search
       </h1>
 
-      <form action="/search" role="search" className="sf-search" style={{ maxWidth: '560px' }}>
+      <form action="/search" role="search" className="st-search" style={{ maxWidth: '560px' }}>
         <svg
-          className="sf-search__icon"
+          className="st-search__icon"
           width="18"
           height="18"
           viewBox="0 0 24 24"
@@ -153,7 +153,7 @@ export default async function SearchPage({
           description="Type a product name, brand, or part number above."
         />
       ) : (
-        <div className="sf-plp" style={{ marginTop: '1.5rem' }}>
+        <div className="st-plp" style={{ marginTop: '1.5rem' }}>
           <aside>
             <SearchFacets
               action="/search"
@@ -173,8 +173,8 @@ export default async function SearchPage({
             />
           </aside>
           <div>
-            <div className="sf-toolbar">
-              <span className="sf-toolbar__count">
+            <div className="st-toolbar">
+              <span className="st-toolbar__count">
                 {result.total} {result.total === 1 ? 'result' : 'results'}
                 {q ? ` for “${q}”` : ''}
               </span>

@@ -1,6 +1,6 @@
 // Progress — a determinate or indeterminate progress bar (docs/46 §3.6). Its fill
 // is a color, so per the recipe rule it carries the `color` axis (off the shared
-// `.sf-c-*` role var → fill = `--c-bg`), plus a `size` (height) scale. Omit
+// `.st-c-*` role var → fill = `--c-bg`), plus a `size` (height) scale. Omit
 // `value` for an indeterminate (animated) bar. SERVER component; `role=progressbar`
 // with the ARIA value attributes for assistive tech.
 //
@@ -30,11 +30,11 @@ export interface ProgressProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-progress--sz-xs',
-  sm: 'sf-progress--sz-sm',
-  md: 'sf-progress--sz-md',
-  lg: 'sf-progress--sz-lg',
-  xl: 'sf-progress--sz-xl',
+  xs: 'st-progress--sz-xs',
+  sm: 'st-progress--sz-sm',
+  md: 'st-progress--sz-md',
+  lg: 'st-progress--sz-lg',
+  xl: 'st-progress--sz-xl',
 };
 
 export function Progress({
@@ -57,16 +57,16 @@ export function Progress({
       aria-valuemax={max}
       aria-valuenow={indeterminate ? undefined : value}
       className={cx(
-        'sf-progress',
+        'st-progress',
         colorClass(color),
         SIZE_CLASS[size],
-        indeterminate && 'sf-progress--indeterminate',
+        indeterminate && 'st-progress--indeterminate',
         className
       )}
       style={style}
       id={id}
     >
-      <div className="sf-progress__fill" style={indeterminate ? undefined : { width: `${pct}%` }} />
+      <div className="st-progress__fill" style={indeterminate ? undefined : { width: `${pct}%` }} />
     </div>
   );
 }

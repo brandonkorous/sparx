@@ -11,7 +11,7 @@ Last Updated: 2026-06-05
 ## Goal
 
 When a user switches the active web **property/site** in the dashboard (the bookmarks-bar
-site switcher), the **entire** dashboard + storefront context should shift to that site:
+site switcher), the **entire** dashboard + site context should shift to that site:
 catalog, content, theme, navigation, settings — not just the Builder. Today only _part_ of
 the context is property-scoped. Close the gap.
 
@@ -33,7 +33,7 @@ the context is property-scoped. Close the gap.
   (`packages/builder/src/services/page-service.ts`, `layout-service`, `component-service`).
   Public reads `/v1/public/builder/{page,collection,layout,home,styles}` all accept
   `?property=` (`services/api-rest/src/routes/v1/public/builder.ts`).
-- **Storefront rendering** — home `/`, named pages, chrome, and brand identity now resolve
+- **Site rendering** — home `/`, named pages, chrome, and brand identity now resolve
   per-property (see "Changed this session" below). `apps/site/lib/tenant.ts`
   (`resolveSiteRoute`/`resolveActivePropertySlug`) threads `?property=` into every
   per-property Builder read; dev fallback is `?tenant=&?property=` via `apps/site/proxy.ts`.
@@ -54,21 +54,21 @@ the context is property-scoped. Close the gap.
    (`services/api-rest/src/lib/property-brand.ts`). The complete token set + fonts come from
    the tenant-wide saved theme / `sitebuilder_config` (keyed by `tenant_id`) and the legacy
    site snapshot. Make the full theme per-property.
-3. **Legacy site snapshot is tenant-wide.** `GET /v1/public/storefront/site` takes NO
+3. **Legacy site snapshot is tenant-wide.** `GET /v1/public/site/site` takes NO
    `property` param; it drives `compiledTokens`/`themeKey`/`appearancePolicy`, the legacy
    home sections, and the chrome fallback. Read in `apps/site/lib/site.ts`
    (`getPublishedSite`) by `app/page.tsx`, `app/[...slug]/page.tsx`, and `app/layout.tsx`.
    Either make it property-scoped (publish per-property snapshots + `?property=`) or retire
    it in favor of the per-property BuilderPage system.
 4. **Other modules** — CRM, Email, B2B, SEO, Settings — are entirely tenant-wide; switching
-   sites changes nothing. Decide which are genuinely per-site (nav, storefront settings,
+   sites changes nothing. Decide which are genuinely per-site (nav, site settings,
    redirects, SEO) vs. tenant-wide (CRM, billing), and scope accordingly.
 5. **Billing/metering per site** (docs/49 remaining) — out of scope for the visible bug but
    on the multi-site roadmap.
 
 ## Two open design decisions to make first
 
-- **First-class "home" page.** Today the storefront home = the published _slugless singleton_
+- **First-class "home" page.** Today the site home = the published _slugless singleton_
   (lowest position) per property. The starter seed creates `Home — Landing` (slugless) AND
   `About` (also slugless — a smell). Consider an explicit `isHome` flag on `BuilderPage`
   instead of the slug-null convention, so a site's `/` is unambiguous.
@@ -77,7 +77,7 @@ the context is property-scoped. Close the gap.
   for the home and chrome. Decide whether to consolidate onto BuilderPages (per-property,
   cleaner) and migrate/retire the legacy snapshot.
 
-## Changed THIS session (storefront per-property slice — already merged into working tree)
+## Changed THIS session (site per-property slice — already merged into working tree)
 
 Coordinate with / build on these; don't revert them:
 
@@ -109,6 +109,6 @@ Coordinate with / build on these; don't revert them:
 
 On one tenant with two sites (primary "Tesla", secondary "Driftwood"):
 switching the dashboard site switcher to Driftwood should show only Driftwood's catalog,
-content, theme, nav, and settings; the storefront for each property renders fully isolated
+content, theme, nav, and settings; the site for each property renders fully isolated
 (verified today: primary `/`=Tesla, personal `/`=Driftwood). No record authored on one site
 should appear on the other unless explicitly scoped to both.

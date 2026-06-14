@@ -1,4 +1,4 @@
-// Commerce — Discounts, gift cards, store credit.
+// Commerce — Discounts, gift cards, account credit.
 // Pricing pipeline applies these after the base / price-list / bulk-tier
 // resolution from 36-commerce-pricing. Stacking is governed per
 // discount; `usage` row enforces total + per-customer limits.
@@ -121,7 +121,7 @@ model GiftCardTransaction {
 // Per-customer credit balance. Single row per (tenant, customer,
 // currency); transactions write deltas that the service sums + caches.
 
-model StoreCredit {
+model AccountCredit {
   id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId     String    @map("tenant_id") @db.Uuid
   customerId   String    @map("customer_id") @db.Uuid
@@ -134,16 +134,16 @@ model StoreCredit {
 
   tenant       Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer     Customer                 @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  transactions StoreCreditTransaction[]
+  transactions AccountCreditTransaction[]
 
-  @@unique([tenantId, customerId, currency], map: "store_credit_unique")
-  @@map("commerce_store_credit")
+  @@unique([tenantId, customerId, currency], map: "account_credit_unique")
+  @@map("commerce_account_credit")
 }
 
-model StoreCreditTransaction {
+model AccountCreditTransaction {
   id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String  @map("tenant_id") @db.Uuid
-  storeCreditId String  @map("store_credit_id") @db.Uuid
+  accountCreditId String  @map("account_credit_id") @db.Uuid
   deltaCents    Int     @map("delta_cents")
   reason        String  @db.VarChar(20)
   // ^ grant | refund | spend | adjust | expire | loyalty_conversion
@@ -155,8 +155,8 @@ model StoreCreditTransaction {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
   tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  storeCredit StoreCredit @relation(fields: [storeCreditId], references: [id], onDelete: Cascade)
+  accountCredit AccountCredit @relation(fields: [accountCreditId], references: [id], onDelete: Cascade)
 
-  @@index([tenantId, storeCreditId, createdAt(sort: Desc)])
-  @@map("commerce_store_credit_transactions")
+  @@index([tenantId, accountCreditId, createdAt(sort: Desc)])
+  @@map("commerce_account_credit_transactions")
 }

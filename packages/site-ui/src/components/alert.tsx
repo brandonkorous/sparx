@@ -48,10 +48,10 @@ function AlertRoot({
     <div
       role={role}
       className={cx(
-        'sf-alert',
+        'st-alert',
         colorClass(color),
         chipTreatmentVariants[variant],
-        vertical && 'sf-alert--vertical',
+        vertical && 'st-alert--vertical',
         className
       )}
       style={style}
@@ -65,7 +65,7 @@ AlertRoot.displayName = 'Alert';
 
 function AlertIcon({ className, style, children }: AlertSlotProps): React.ReactElement {
   return (
-    <span className={cx('sf-alert__icon', className)} style={style} aria-hidden="true">
+    <span className={cx('st-alert__icon', className)} style={style} aria-hidden="true">
       {children}
     </span>
   );
@@ -74,7 +74,7 @@ AlertIcon.displayName = 'AlertIcon';
 
 function AlertTitle({ className, style, children }: AlertSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-alert__title', className)} style={style}>
+    <div className={cx('st-alert__title', className)} style={style}>
       {children}
     </div>
   );
@@ -83,7 +83,7 @@ AlertTitle.displayName = 'AlertTitle';
 
 function AlertBody({ className, style, children }: AlertSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-alert__body', className)} style={style}>
+    <div className={cx('st-alert__body', className)} style={style}>
       {children}
     </div>
   );

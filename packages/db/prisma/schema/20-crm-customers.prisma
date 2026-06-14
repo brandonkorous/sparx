@@ -70,7 +70,7 @@ model Customer {
   // Commerce module inverse relations
   carts            Cart[]
   checkoutSessions CheckoutSession[]
-  storeCredits     StoreCredit[]
+  accountCredits     AccountCredit[]
   subscriptions    Subscription[]
   reviews          ProductReview[]
   productQuestions ProductQuestion[]

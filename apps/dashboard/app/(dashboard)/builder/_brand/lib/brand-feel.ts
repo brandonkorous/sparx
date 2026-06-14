@@ -103,7 +103,7 @@ export function resolveFeel(tokens: BrandTokens): ResolvedFeel {
 }
 
 // A box-shadow expressing the depth multiplier (mirrors the storefront's
-// --sf-shadow-md scaling so the board reads like the real card shadow).
+// --st-shadow-md scaling so the board reads like the real card shadow).
 export function depthShadow(depth: number): string | undefined {
   if (depth <= 0) return undefined;
   return `0 4px 12px -2px rgb(0 0 0 / ${0.08 * depth}), 0 2px 6px -2px rgb(0 0 0 / ${0.05 * depth})`;

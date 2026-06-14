@@ -1,4 +1,4 @@
-// Discounts, gift cards, store credit. The pricing pipeline applies these
+// Discounts, gift cards, account credit. The pricing pipeline applies these
 // after the base/price-list/bulk-tier resolution from ./pricing.ts.
 
 import { z } from 'zod';
@@ -113,9 +113,9 @@ export const AdjustGiftCardInput = z.object({
 });
 export type AdjustGiftCardInput = z.infer<typeof AdjustGiftCardInput>;
 
-// ─── Store credit ─────────────────────────────────────────────────────
+// ─── Account credit ─────────────────────────────────────────────────────
 
-export const StoreCreditReason = z.enum([
+export const AccountCreditReason = z.enum([
   'grant',
   'refund',
   'spend',
@@ -123,21 +123,21 @@ export const StoreCreditReason = z.enum([
   'expire',
   'loyalty_conversion',
 ]);
-export type StoreCreditReason = z.infer<typeof StoreCreditReason>;
+export type AccountCreditReason = z.infer<typeof AccountCreditReason>;
 
-export const GrantStoreCreditInput = z.object({
+export const GrantAccountCreditInput = z.object({
   customerId: Uuid,
   amountCents: MoneyCents.refine((v) => v > 0, 'Grant amount must be positive'),
   currency: Currency,
-  reason: StoreCreditReason.default('grant'),
+  reason: AccountCreditReason.default('grant'),
   note: z.string().max(2000).optional(),
   expiresAt: z.string().datetime().optional(),
 });
-export type GrantStoreCreditInput = z.infer<typeof GrantStoreCreditInput>;
+export type GrantAccountCreditInput = z.infer<typeof GrantAccountCreditInput>;
 
-export const SpendStoreCreditInput = z.object({
+export const SpendAccountCreditInput = z.object({
   customerId: Uuid,
   cartId: Uuid,
   amountCents: MoneyCents.refine((v) => v > 0, 'Spend amount must be positive'),
 });
-export type SpendStoreCreditInput = z.infer<typeof SpendStoreCreditInput>;
+export type SpendAccountCreditInput = z.infer<typeof SpendAccountCreditInput>;

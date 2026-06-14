@@ -2,15 +2,15 @@
  * (not @apply) so the size axis can drive font-size and the color axis can read
  * the recipe ink with a fallback (@apply can't express `var(--x, fallback)`).
  *
- * SIZE: the glyph is an `<svg>` sized at 1em, so a bare `.sf-icon` (no size class)
+ * SIZE: the glyph is an `<svg>` sized at 1em, so a bare `.st-icon` (no size class)
  * inherits its context's font-size — an icon inside a Button matches the label by
  * default instead of forcing the button taller. The shared --sz- steps (which set
  * font-size here) are the explicit override the Advanced "Size" control writes, and
  * scale the glyph just as on a Button. COLOR: reads the recipe `--c-ink` set by
- * `.sf-c-*`, so the "Color" control tints it; with no color picked it falls back to
+ * `.st-c-*`, so the "Color" control tints it; with no color picked it falls back to
  * currentColor (inherits the surrounding text color). */
 
-.sf-icon {
+.st-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -20,30 +20,30 @@
      like a solid button) INHERITS down to the glyph, which would tint it the ink
      instead of the wrapper's actual text (a solid button's white --c-fg). Reset
      --c-ink to currentColor here — a direct declaration beats the inherited value
-     — so a bare icon matches the wrapper's text. A `.sf-c-*` placed ON the icon
+     — so a bare icon matches the wrapper's text. A `.st-c-*` placed ON the icon
      re-sets --c-ink (recipes.css imports after icon.css, same layer → it wins),
      so the icon's own Color control still overrides this. */
   --c-ink: currentColor;
   color: var(--c-ink);
 }
-.sf-icon > svg {
+.st-icon > svg {
   display: block;
   width: 1em;
   height: 1em;
 }
 
-.sf-icon--sz-xs {
+.st-icon--sz-xs {
   font-size: 1rem;
 }
-.sf-icon--sz-sm {
+.st-icon--sz-sm {
   font-size: 1.25rem;
 }
-.sf-icon--sz-md {
+.st-icon--sz-md {
   font-size: 1.75rem;
 }
-.sf-icon--sz-lg {
+.st-icon--sz-lg {
   font-size: 2.5rem;
 }
-.sf-icon--sz-xl {
+.st-icon--sz-xl {
   font-size: 3.5rem;
 }

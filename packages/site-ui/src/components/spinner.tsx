@@ -22,17 +22,17 @@ export interface SpinnerProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-spinner--sz-xs',
-  sm: 'sf-spinner--sz-sm',
-  md: 'sf-spinner--sz-md',
-  lg: 'sf-spinner--sz-lg',
-  xl: 'sf-spinner--sz-xl',
+  xs: 'st-spinner--sz-xs',
+  sm: 'st-spinner--sz-sm',
+  md: 'st-spinner--sz-md',
+  lg: 'st-spinner--sz-lg',
+  xl: 'st-spinner--sz-xl',
 };
 const KIND_CLASS: Record<SpinnerKind, string> = {
-  spinner: 'sf-spinner--spinner',
-  ring: 'sf-spinner--ring',
-  dots: 'sf-spinner--dots',
-  bars: 'sf-spinner--bars',
+  spinner: 'st-spinner--spinner',
+  ring: 'st-spinner--ring',
+  dots: 'st-spinner--dots',
+  bars: 'st-spinner--bars',
 };
 
 export function Spinner({
@@ -47,7 +47,7 @@ export function Spinner({
     <span
       role="status"
       aria-live="polite"
-      className={cx('sf-spinner', KIND_CLASS[kind], SIZE_CLASS[size], className)}
+      className={cx('st-spinner', KIND_CLASS[kind], SIZE_CLASS[size], className)}
       style={style}
       id={id}
     >
@@ -55,12 +55,12 @@ export function Spinner({
         ? Array.from({ length: 3 }, (_, i) => (
             <span
               key={i}
-              className={kind === 'dots' ? 'sf-spinner__dot' : 'sf-spinner__bar'}
+              className={kind === 'dots' ? 'st-spinner__dot' : 'st-spinner__bar'}
               aria-hidden="true"
             />
           ))
         : null}
-      <span className="sf-spinner__label">{label}</span>
+      <span className="st-spinner__label">{label}</span>
     </span>
   );
 }

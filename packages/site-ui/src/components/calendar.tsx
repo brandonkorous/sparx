@@ -51,25 +51,25 @@ export function Calendar({
   const headers = Array.from({ length: 7 }, (_, i) => WEEKDAYS[(i + weekStartsOn) % 7]);
 
   return (
-    <div className={cx('sf-calendar', className)} style={style} id={id}>
-      <div className="sf-calendar__grid" role="grid">
+    <div className={cx('st-calendar', className)} style={style} id={id}>
+      <div className="st-calendar__grid" role="grid">
         {headers.map((h) => (
-          <div key={h} className="sf-calendar__weekday" role="columnheader">
+          <div key={h} className="st-calendar__weekday" role="columnheader">
             {h}
           </div>
         ))}
         {cells.map((day, i) =>
           day == null ? (
-            <div key={`b-${i}`} className="sf-calendar__cell sf-calendar__cell--blank" />
+            <div key={`b-${i}`} className="st-calendar__cell st-calendar__cell--blank" />
           ) : (
             <div
               key={day}
               role="gridcell"
               aria-selected={day === selected || undefined}
               className={cx(
-                'sf-calendar__cell',
-                day === today && 'sf-calendar__cell--today',
-                day === selected && 'sf-calendar__cell--selected'
+                'st-calendar__cell',
+                day === today && 'st-calendar__cell--today',
+                day === selected && 'st-calendar__cell--selected'
               )}
             >
               {day}

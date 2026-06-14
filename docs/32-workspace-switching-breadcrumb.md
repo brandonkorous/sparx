@@ -254,9 +254,9 @@ listed so the menu's "Manage workspaces" destination has a known endpoint.
    a "home/default workspace" pointer, or drop it entirely once
    `activeOrganizationId` is authoritative? (Leaning: keep as the default-on-login
    workspace.)
-2. **Custom-domain / storefront resolution** — domain → tenant lookup
+2. **Custom-domain / site resolution** — domain → tenant lookup
    ([02 §routing](02-architecture-overview.md)) is independent of the dashboard
-   active-org, but confirm switching in the dashboard never affects storefront
+   active-org, but confirm switching in the dashboard never affects site
    tenant resolution.
 3. **Billing on create** — does adding a second workspace start a new subscription
    immediately, or a trial? (Doc 17.)

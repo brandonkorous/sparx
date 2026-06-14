@@ -58,9 +58,9 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
   }
 
   return (
-    <div className="sf-container--prose" style={{ paddingBlock: '2.5rem' }}>
+    <div className="st-container--prose" style={{ paddingBlock: '2.5rem' }}>
       <div
-        className="sf-tabs"
+        className="st-tabs"
         role="tablist"
         aria-label="Account"
         style={{ marginBottom: '1.5rem' }}
@@ -69,7 +69,7 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
           type="button"
           role="tab"
           aria-selected={mode === 'signin'}
-          className={['sf-tab', mode === 'signin' && 'is-active'].filter(Boolean).join(' ')}
+          className={['st-tab', mode === 'signin' && 'is-active'].filter(Boolean).join(' ')}
           onClick={() => switchMode('signin')}
         >
           Sign in
@@ -78,38 +78,38 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
           type="button"
           role="tab"
           aria-selected={mode === 'register'}
-          className={['sf-tab', mode === 'register' && 'is-active'].filter(Boolean).join(' ')}
+          className={['st-tab', mode === 'register' && 'is-active'].filter(Boolean).join(' ')}
           onClick={() => switchMode('register')}
         >
           Create account
         </button>
       </div>
 
-      <h1 className="sf-h2" style={{ marginBottom: '0.5rem' }}>
+      <h1 className="st-h2" style={{ marginBottom: '0.5rem' }}>
         {mode === 'signin' ? 'Welcome back' : 'Create your account'}
       </h1>
-      <p className="sf-muted" style={{ marginBottom: '1.5rem' }}>
+      <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
         {mode === 'signin'
           ? 'Sign in to track orders and check out faster.'
           : 'Save your details for a faster checkout next time.'}
       </p>
 
-      <form onSubmit={submit} className="sf-form">
+      <form onSubmit={submit} className="st-form">
         {mode === 'register' ? (
           <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <label className="sf-field" style={{ flex: 1 }}>
+            <label className="st-field" style={{ flex: 1 }}>
               <span>First name</span>
               <input
-                className="sf-input"
+                className="st-input"
                 autoComplete="given-name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
               />
             </label>
-            <label className="sf-field" style={{ flex: 1 }}>
+            <label className="st-field" style={{ flex: 1 }}>
               <span>Last name</span>
               <input
-                className="sf-input"
+                className="st-input"
                 autoComplete="family-name"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
@@ -118,10 +118,10 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
           </div>
         ) : null}
 
-        <label className="sf-field">
+        <label className="st-field">
           <span>Email</span>
           <input
-            className="sf-input"
+            className="st-input"
             type="email"
             required
             autoComplete="email"
@@ -130,10 +130,10 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
           />
         </label>
 
-        <label className="sf-field">
+        <label className="st-field">
           <span>Password</span>
           <input
-            className="sf-input"
+            className="st-input"
             type="password"
             required
             minLength={mode === 'register' ? 8 : undefined}
@@ -142,13 +142,13 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
             onChange={(e) => setPassword(e.target.value)}
           />
           {mode === 'register' ? (
-            <span className="sf-muted" style={{ fontSize: '0.8rem' }}>
+            <span className="st-muted" style={{ fontSize: '0.8rem' }}>
               At least 8 characters.
             </span>
           ) : (
             <Link
               href="/account/forgot"
-              className="sf-muted"
+              className="st-muted"
               style={{ fontSize: '0.8rem', alignSelf: 'flex-start' }}
             >
               Forgot your password?
@@ -157,12 +157,12 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
         </label>
 
         {error ? (
-          <div className="sf-alert sf-alert--error" role="alert">
+          <div className="st-alert st-alert--error" role="alert">
             {error}
           </div>
         ) : null}
 
-        <button type="submit" className="sf-btn sf-btn--primary sf-btn--lg" disabled={busy}>
+        <button type="submit" className="st-btn st-btn--primary st-btn--lg" disabled={busy}>
           {busy
             ? mode === 'signin'
               ? 'Signing in…'

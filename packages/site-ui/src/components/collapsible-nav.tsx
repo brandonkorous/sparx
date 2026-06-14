@@ -6,7 +6,7 @@
 // Composed from the existing `NavMenu` + `Drawer` primitives — no forked
 // drawer, no bespoke link list.
 //
-// The inline↔hamburger swap is driven by the nearest `sf-frame` container query
+// The inline↔hamburger swap is driven by the nearest `st-frame` container query
 // (the Builder render frame — `.bx-render` live, `.bx-canvas` in the editor), so
 // it collapses at the simulated device width in the canvas preview, not only at
 // the real viewport (docs/61 §7, collapsible-nav.css).
@@ -81,40 +81,40 @@ export function CollapsibleNav({
   if (items.length === 0) return null;
 
   return (
-    <div className={cx('sf-collapsenav', className)}>
+    <div className={cx('st-collapsenav', className)}>
       {/* Wide screens: inline row links (hidden below the breakpoint). */}
-      <NavMenu items={items} orientation="row" className="sf-collapsenav__inline" />
+      <NavMenu items={items} orientation="row" className="st-collapsenav__inline" />
 
       {/* Narrow screens: hamburger opens the same links in a drawer. */}
       <Drawer open={open} onOpenChange={setOpen}>
         <Drawer.Trigger
-          className="sf-collapsenav__toggle"
+          className="st-collapsenav__toggle"
           aria-label={`Open ${label.toLowerCase()} menu`}
         >
           <HamburgerIcon />
         </Drawer.Trigger>
         <DrawerContent
           side={side}
-          className="sf-collapsenav__panel"
+          className="st-collapsenav__panel"
           aria-label={label}
           aria-describedby={undefined}
         >
-          <div className="sf-collapsenav__head">
-            <DrawerTitle className="sf-collapsenav__title">{drawerTitle}</DrawerTitle>
-            <Drawer.Close className="sf-collapsenav__toggle" aria-label="Close menu">
+          <div className="st-collapsenav__head">
+            <DrawerTitle className="st-collapsenav__title">{drawerTitle}</DrawerTitle>
+            <Drawer.Close className="st-collapsenav__toggle" aria-label="Close menu">
               <CloseIcon />
             </Drawer.Close>
           </div>
           {/* Close on any link activation (SPA nav doesn't unmount the drawer). */}
           <div
-            className="sf-collapsenav__links"
+            className="st-collapsenav__links"
             onClickCapture={(e) => {
               if ((e.target as HTMLElement).closest('a')) setOpen(false);
             }}
           >
             <NavMenu items={items} orientation="stack" />
           </div>
-          {children ? <div className="sf-collapsenav__foot">{children}</div> : null}
+          {children ? <div className="st-collapsenav__foot">{children}</div> : null}
         </DrawerContent>
       </Drawer>
     </div>

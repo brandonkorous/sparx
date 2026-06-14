@@ -1,7 +1,7 @@
 // publishService — the draft → publish → rollback lifecycle.
 //
 // publishNow snapshots the draft into an immutable SiteVersion and write-throughs
-// the compiled light tokens to StorefrontTheme (all in one transaction; the
+// the compiled light tokens to CommerceSiteTheme (all in one transaction; the
 // event fires only after commit). rollback restores a prior version's snapshot
 // into the draft and republishes it as a new version. getPublishedSnapshot is
 // the read the storefront's public endpoint consumes.

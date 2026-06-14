@@ -10,7 +10,7 @@
 
 TikTok Shop is a mandatory channel integration for a modern commerce platform. The platform generated over $33 billion in gross merchandise value in 2024 with over 1.6 billion active users — users who discover, evaluate, and purchase products entirely within the app, often in a single session.
 
-Sparx integrates with TikTok Shop via the TikTok Shop Open Platform API as an ISV (Independent Software Vendor) partner. Merchants connect their TikTok Shop account via OAuth from the Sparx dashboard. Product catalogs sync bidirectionally, TikTok Shop orders appear in Sparx order management, inventory stays in sync in real time, and revenue data flows into Sparx analytics alongside storefront and B2B channels.
+Sparx integrates with TikTok Shop via the TikTok Shop Open Platform API as an ISV (Independent Software Vendor) partner. Merchants connect their TikTok Shop account via OAuth from the Sparx dashboard. Product catalogs sync bidirectionally, TikTok Shop orders appear in Sparx order management, inventory stays in sync in real time, and revenue data flows into Sparx analytics alongside site and B2B channels.
 
 This is a Channel integration — part of the Commerce module, no additional module fee. Merchants who sell on TikTok Shop have higher GMV and stronger platform retention.
 
@@ -200,7 +200,7 @@ fastify.post('/api/channels/tiktok/webhooks/orders', async (req) => {
     })),
   });
 
-  // Decrement inventory (same pool as storefront)
+  // Decrement inventory (same pool as site)
   await inventoryService.decrementForOrder(tenantId, order_line_items);
 });
 ```
@@ -260,14 +260,14 @@ pubsub.subscribe('inventory.updated', async (event) => {
 
 ## 8. Analytics Consolidation
 
-TikTok Shop revenue surfaces in the Sparx analytics dashboard as a channel alongside storefront and B2B.
+TikTok Shop revenue surfaces in the Sparx analytics dashboard as a channel alongside site and B2B.
 
 ```typescript
 // GET /v1/analytics/revenue?breakdown=channel
 {
   "period": "this_month",
   "channels": {
-    "storefront": { "revenue": 48200, "orders": 156 },
+    "site": { "revenue": 48200, "orders": 156 },
     "tiktok_shop": { "revenue": 12800, "orders": 89 },
     "b2b": { "revenue": 31400, "orders": 24 }
   },
@@ -293,9 +293,9 @@ get_channel_comparison({ period: 'this_month' })
 
 Example AI interaction:
 
-> "How does my TikTok Shop revenue compare to my storefront this month?"
+> "How does my TikTok Shop revenue compare to my site this month?"
 > → get_channel_comparison({ period: 'this_month' })
-> → "TikTok Shop: $12,800 (89 orders). Storefront: $48,200 (156 orders). TikTok is 13.8% of total revenue."
+> → "TikTok Shop: $12,800 (89 orders). Site: $48,200 (156 orders). TikTok is 13.8% of total revenue."
 
 ---
 
@@ -386,7 +386,7 @@ All TikTok API calls go through a rate-limit-aware client with automatic backoff
 - [ ] Implement token refresh worker
 - [ ] Add `tiktokEnabled` boolean and `tiktokProductId` to product schema
 - [ ] Add `tiktokSkuId` to product_variants schema
-- [ ] Add `source` field to orders schema ('storefront' | 'tiktok_shop' | 'b2b' | etc.)
+- [ ] Add `source` field to orders schema ('site' | 'tiktok_shop' | 'b2b' | etc.)
 - [ ] Add `externalId` and `externalStatus` to orders schema
 - [ ] Add TikTok connection table (tenantId, shopId, accessToken, refreshToken, expiresAt)
 - [ ] Implement pushProductToTikTok (Pub/Sub consumer)

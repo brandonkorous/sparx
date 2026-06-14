@@ -1,41 +1,41 @@
 /* Surface HoverGallery — main image + thumbnail strip (docs/46 §5.2). */
 
-.sf-hovergallery {
+.st-hovergallery {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-.sf-hovergallery__main {
+.st-hovergallery__main {
   width: 100%;
   overflow: hidden;
-  border-radius: var(--sf-radius-box, 1rem);
+  border-radius: var(--st-radius-box, 1rem);
   aspect-ratio: 4 / 3;
 }
-.sf-hovergallery__img {
+.st-hovergallery__img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.sf-hovergallery__thumbs {
+.st-hovergallery__thumbs {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
-.sf-hovergallery__thumb {
+.st-hovergallery__thumb {
   width: 3.5rem;
   height: 3.5rem;
   padding: 0;
   border: 2px solid transparent;
-  border-radius: var(--sf-radius-field, 0.5rem);
+  border-radius: var(--st-radius-field, 0.5rem);
   overflow: hidden;
   cursor: pointer;
   background: none;
 }
-.sf-hovergallery__thumb--on {
-  border-color: var(--sf-primary, #3f6b52);
+.st-hovergallery__thumb--on {
+  border-color: var(--st-primary, #3f6b52);
 }
-.sf-hovergallery__thumb-img {
+.st-hovergallery__thumb-img {
   display: block;
   width: 100%;
   height: 100%;

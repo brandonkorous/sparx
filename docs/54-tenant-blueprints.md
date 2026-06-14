@@ -384,7 +384,7 @@ Concrete contents that prove every slice end-to-end:
   (welcome) — both draft.
 
 Acceptance: install into a fresh tenant → all artifacts present and draft → brand/theme
-visibly consistent across site preview _and_ email preview → tenant publishes → storefront
+visibly consistent across site preview _and_ email preview → tenant publishes → site
 renders the themed home/PDP/blog and the product add-to-cart works.
 
 ---

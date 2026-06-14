@@ -41,7 +41,7 @@ const MODULE_DOTS = [
 ] as const;
 
 const METRICS = [
-  { value: '5 min', subtitle: 'to a live store' },
+  { value: '5 min', subtitle: 'to a live site' },
   { value: '$10', valueSuffix: '/mo', subtitle: 'starting price' },
   { value: '1', valueSuffix: ' bill', subtitle: 'replaces 4–6 tools' },
   { value: 'MCP', valueSpark: true, subtitle: 'native AI access' },
@@ -98,7 +98,7 @@ export function Hero() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div className="mkt-cluster" style={{ gap: '12px' }}>
               <Button size="lg" style={{ backgroundColor: ON, color: ON_CTA_TEXT }}>
-                Launch your store
+                Launch your site
               </Button>
               <Button
                 size="lg"

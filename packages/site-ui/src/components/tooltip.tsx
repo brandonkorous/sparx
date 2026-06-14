@@ -1,7 +1,7 @@
 'use client';
 
 // Tooltip — Radix behavior, Surface appearance (docs/47 §11 B3). Radix
-// (@radix-ui/react-tooltip) owns hover/focus + positioning; styling is `sf-*`.
+// (@radix-ui/react-tooltip) owns hover/focus + positioning; styling is `st-*`.
 // `color` themes the bubble off the role var (`--c-bg` fill / `--c-fg` text);
 // `side` places it. The trigger is `children` (rendered `asChild`). A Provider is
 // included per-instance for self-containment.
@@ -44,12 +44,12 @@ export function Tooltip({
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
           <TooltipPrimitive.Content
-            className={cx('sf-tooltip', colorClass(color), className)}
+            className={cx('st-tooltip', colorClass(color), className)}
             side={side}
             sideOffset={6}
           >
             {content}
-            <TooltipPrimitive.Arrow className="sf-tooltip__arrow" />
+            <TooltipPrimitive.Arrow className="st-tooltip__arrow" />
           </TooltipPrimitive.Content>
         </TooltipPrimitive.Portal>
       </TooltipPrimitive.Root>

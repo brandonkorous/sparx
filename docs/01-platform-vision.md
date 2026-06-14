@@ -22,7 +22,7 @@ Sparx is a modular content and commerce operating system. You activate only the 
 
 **The modules:**
 
-- **Storefront** — Site builder, themes, pages, live in 5 minutes
+- **Site** — Site builder, themes, pages, live in 5 minutes
 - **Commerce** — Products, cart, checkout, orders, payments
 - **CMS** — Content editor, blog, media library, SEO (standalone — no shop required)
 - **CRM** — Customer intelligence, pipeline, activity log, automation
@@ -31,7 +31,7 @@ Sparx is a modular content and commerce operating system. You activate only the 
 - **AI/MCP** — Native MCP server; Claude, ChatGPT, and Copilot speak your business data
 - **Dropship** — Supplier connectors, catalog sync, automated order routing
 
-Each module is independently activatable. A publisher running a content site pays for Storefront + CMS. A wholesale distributor pays for Commerce + B2B + CRM. A dropship entrepreneur pays for Commerce + Dropship.
+Each module is independently activatable. A publisher running a content site pays for Site + CMS. A wholesale distributor pays for Commerce + B2B + CRM. A dropship entrepreneur pays for Commerce + Dropship.
 
 And Sparx is built to _last_, not just to launch. Generate your site with AI if you want — Sparx is MCP-native, so you can. But Sparx is where a site **lives** afterward: you maintain and enhance it yourself in a visual, no-code editor, with full code available as an option and never a requirement (the four-tier escape ladder, [doc 47](47-class-first-authoring-model.md)). **AI to start; Sparx to last.**
 
@@ -80,7 +80,7 @@ Building product businesses without inventory. Need supplier sync, margin calcul
 
 | Module        | Price               |
 | ------------- | ------------------- |
-| Storefront    | $49/mo              |
+| Site          | $49/mo              |
 | Commerce      | +$49/mo             |
 | CMS           | $49/mo (standalone) |
 | CRM           | +$49/mo             |
@@ -93,9 +93,9 @@ Building product businesses without inventory. Need supplier sync, margin calcul
 
 | Bundle         | Modules                                               | Price   |
 | -------------- | ----------------------------------------------------- | ------- |
-| **Starter**    | Storefront + Commerce                                 | $79/mo  |
-| **Content**    | Storefront + CMS                                      | $79/mo  |
-| **Growth**     | Storefront + Commerce + CRM + Email                   | $149/mo |
+| **Starter**    | Site + Commerce                                       | $79/mo  |
+| **Content**    | Site + CMS                                            | $79/mo  |
+| **Growth**     | Site + Commerce + CRM + Email                         | $149/mo |
 | **Pro**        | All modules except B2B                                | $299/mo |
 | **Business**   | All modules                                           | $449/mo |
 | **Enterprise** | All modules + custom frontend + managed hosting + SLA | Custom  |
@@ -131,7 +131,7 @@ These two promises are one arc, not a tension: _fast to start, permanent to keep
 Sparx owns a portfolio of domains creating independent SEO acquisition channels:
 
 - **sparx.works** — Primary brand and platform home (dashboard, API, MCP, marketing)
-- **sparx.zone** — Tenant storefronts (`acme.sparx.zone` + custom-domain CNAME target). Shopify-style split keeps tenant reputation/cookies/SEO isolated from the platform brand.
+- **sparx.zone** — Tenant sites (`acme.sparx.zone` + custom-domain CNAME target). Shopify-style split keeps tenant reputation/cookies/SEO isolated from the platform brand.
 - **sparxcms.com** — CMS module acquisition ("headless CMS for small business")
 - **sparxcrm.com** — CRM module acquisition ("CRM built for commerce")
 - **sparxemail.com** — Email module acquisition ("email marketing built in")

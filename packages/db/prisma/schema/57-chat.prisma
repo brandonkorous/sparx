@@ -14,7 +14,7 @@ model ChatConversation {
   assignedToId String? @map("assigned_to") @db.Uuid
 
   status  String  @default("open") @db.VarChar(20) // open | pending | resolved | spam
-  source  String  @default("storefront") @db.VarChar(20) // storefront | sparx_market | dashboard
+  source  String  @default("site") @db.VarChar(20) // site | sparx_market | dashboard
   subject String? @db.VarChar(255)
 
   // Captured by the pre-chat form for an anonymous visitor (customer_id null).

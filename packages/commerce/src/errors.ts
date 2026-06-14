@@ -53,7 +53,7 @@ export class CommerceOutOfStockError extends Error {
   }
 }
 
-// Pricing pipeline rejected a discount/gift-card/store-credit application
+// Pricing pipeline rejected a discount/gift-card/account-credit application
 // because a precondition was unmet. The pricing trace explains why.
 export class CommercePricingError extends Error {
   readonly code = 'PRICING_ERROR' as const;

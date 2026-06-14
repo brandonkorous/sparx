@@ -8,15 +8,15 @@ import type { RichTextConfig } from '@sparx/sitebuilder-schemas';
 export function RichTextSection({ config }: { config: RichTextConfig }) {
   if (!config.heading && !config.html) return null;
   const containerClass =
-    config.width === 'narrow' ? 'sf-container sf-container--prose' : 'sf-container';
+    config.width === 'narrow' ? 'st-container st-container--prose' : 'st-container';
 
   return (
-    <section className={`${containerClass} sf-section`}>
-      <div className="sf-sb-richtext" data-align={config.align}>
-        {config.heading ? <h2 className="sf-h2">{config.heading}</h2> : null}
+    <section className={`${containerClass} st-section`}>
+      <div className="st-sb-richtext" data-align={config.align}>
+        {config.heading ? <h2 className="st-h2">{config.heading}</h2> : null}
         {/* config.html is sanitized at publish time (docs/29 §5). */}
         {config.html ? (
-          <div className="sf-prose" dangerouslySetInnerHTML={{ __html: config.html }} />
+          <div className="st-prose" dangerouslySetInnerHTML={{ __html: config.html }} />
         ) : null}
       </div>
     </section>

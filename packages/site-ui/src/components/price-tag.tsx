@@ -17,7 +17,7 @@ export interface PriceTagProps {
 export function PriceTag({ amount, currency = '$', className, style }: PriceTagProps) {
   if (amount == null || !Number.isFinite(amount)) return null;
   return (
-    <span className={cx('sf-price', className)} style={style}>
+    <span className={cx('st-price', className)} style={style}>
       {`${currency}${amount.toFixed(2)}`}
     </span>
   );

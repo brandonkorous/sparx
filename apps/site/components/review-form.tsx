@@ -54,7 +54,7 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
   if (state === 'done') {
     return (
       <div
-        className="sf-alert"
+        className="st-alert"
         style={{ background: 'var(--color-success-tint)', color: 'var(--color-success-text)' }}
       >
         Thanks for your review! It’ll appear once it’s approved.
@@ -64,18 +64,18 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
 
   if (!open) {
     return (
-      <button type="button" className="sf-btn sf-btn--secondary" onClick={() => setOpen(true)}>
+      <button type="button" className="st-btn st-btn--secondary" onClick={() => setOpen(true)}>
         Write a review
       </button>
     );
   }
 
   return (
-    <form onSubmit={submit} className="sf-form">
-      <label className="sf-field">
+    <form onSubmit={submit} className="st-form">
+      <label className="st-field">
         <span>Rating</span>
         <select
-          className="sf-input"
+          className="st-input"
           value={rating}
           onChange={(e) => setRating(Number(e.target.value))}
         >
@@ -87,19 +87,19 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
         </select>
       </label>
       <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <label className="sf-field" style={{ flex: 1 }}>
+        <label className="st-field" style={{ flex: 1 }}>
           <span>Name</span>
           <input
-            className="sf-input"
+            className="st-input"
             required
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
           />
         </label>
-        <label className="sf-field" style={{ flex: 1 }}>
+        <label className="st-field" style={{ flex: 1 }}>
           <span>Email</span>
           <input
-            className="sf-input"
+            className="st-input"
             type="email"
             required
             value={authorEmail}
@@ -107,14 +107,14 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
           />
         </label>
       </div>
-      <label className="sf-field">
+      <label className="st-field">
         <span>Title (optional)</span>
-        <input className="sf-input" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <input className="st-input" value={title} onChange={(e) => setTitle(e.target.value)} />
       </label>
-      <label className="sf-field">
+      <label className="st-field">
         <span>Review</span>
         <textarea
-          className="sf-input"
+          className="st-input"
           required
           rows={4}
           value={body}
@@ -122,15 +122,15 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
         />
       </label>
       {error ? (
-        <div className="sf-alert sf-alert--error" role="alert">
+        <div className="st-alert st-alert--error" role="alert">
           {error}
         </div>
       ) : null}
       <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <button type="button" className="sf-btn sf-btn--ghost" onClick={() => setOpen(false)}>
+        <button type="button" className="st-btn st-btn--ghost" onClick={() => setOpen(false)}>
           Cancel
         </button>
-        <button type="submit" className="sf-btn sf-btn--primary" disabled={state === 'busy'}>
+        <button type="submit" className="st-btn st-btn--primary" disabled={state === 'busy'}>
           {state === 'busy' ? 'Submitting…' : 'Submit review'}
         </button>
       </div>

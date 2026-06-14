@@ -1,22 +1,22 @@
 /* Surface Popover — panel styling Radix's portal (docs/47 §11 B3). Appearance is
- * `sf-*` + tokens; the arrow inherits the surface fill. */
+ * `st-*` + tokens; the arrow inherits the surface fill. */
 
-.sf-popover {
+.st-popover {
   max-width: 20rem;
   padding: 1rem;
-  background: var(--sf-base-100, #fff);
-  color: var(--sf-base-content, #23211c);
-  border: 1px solid var(--sf-border, #e3dfd2);
-  border-radius: var(--sf-radius-box, 0.75rem);
-  box-shadow: var(--sf-shadow-md, 0 8px 24px rgba(0, 0, 0, 0.16));
+  background: var(--st-base-100, #fff);
+  color: var(--st-base-content, #23211c);
+  border: 1px solid var(--st-border, #e3dfd2);
+  border-radius: var(--st-radius-box, 0.75rem);
+  box-shadow: var(--st-shadow-md, 0 8px 24px rgba(0, 0, 0, 0.16));
   z-index: 50;
-  animation: sf-pop-in 0.12s ease;
+  animation: st-pop-in 0.12s ease;
 }
-.sf-popover__arrow {
-  fill: var(--sf-base-100, #fff);
+.st-popover__arrow {
+  fill: var(--st-base-100, #fff);
 }
 @media (prefers-reduced-motion: reduce) {
-  .sf-popover {
+  .st-popover {
     animation: none;
   }
 }

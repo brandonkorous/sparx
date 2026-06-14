@@ -3,51 +3,51 @@
  * sibling combinator fill the star and every one visually before it. The star is a
  * `currentColor`-style mask. */
 
-.sf-rating {
-  --sf-star-size: 1.25rem;
+.st-rating {
+  --st-star-size: 1.25rem;
   display: inline-flex;
   gap: 0.125rem;
 }
-.sf-rating--interactive {
+.st-rating--interactive {
   flex-direction: row-reverse;
   justify-content: flex-end;
 }
-.sf-rating--sz-xs {
-  --sf-star-size: 0.85rem;
+.st-rating--sz-xs {
+  --st-star-size: 0.85rem;
 }
-.sf-rating--sz-sm {
-  --sf-star-size: 1rem;
+.st-rating--sz-sm {
+  --st-star-size: 1rem;
 }
-.sf-rating--sz-md {
-  --sf-star-size: 1.25rem;
+.st-rating--sz-md {
+  --st-star-size: 1.25rem;
 }
-.sf-rating--sz-lg {
-  --sf-star-size: 1.6rem;
+.st-rating--sz-lg {
+  --st-star-size: 1.6rem;
 }
-.sf-rating--sz-xl {
-  --sf-star-size: 2rem;
+.st-rating--sz-xl {
+  --st-star-size: 2rem;
 }
 
-.sf-rating__star {
+.st-rating__star {
   display: block;
-  width: var(--sf-star-size);
-  height: var(--sf-star-size);
-  background: var(--sf-base-300, #e6e1d3);
+  width: var(--st-star-size);
+  height: var(--st-star-size);
+  background: var(--st-base-300, #e6e1d3);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 2l2.9 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 7.1-1.01z'/%3E%3C/svg%3E")
     center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 2l2.9 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 7.1-1.01z'/%3E%3C/svg%3E")
     center / contain no-repeat;
 }
-.sf-rating__star--on {
-  background: var(--c-bg, var(--sf-warning, #d97706));
+.st-rating__star--on {
+  background: var(--c-bg, var(--st-warning, #d97706));
 }
 
 /* Interactive fill — radios are visually hidden; the label's star reacts. */
-.sf-rating__item {
+.st-rating__item {
   display: inline-flex;
   cursor: pointer;
 }
-.sf-rating__input {
+.st-rating__input {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -57,13 +57,13 @@
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
-.sf-rating__item:hover .sf-rating__star,
-.sf-rating__item:hover ~ .sf-rating__item .sf-rating__star,
-.sf-rating__item:has(.sf-rating__input:checked) .sf-rating__star,
-.sf-rating__item:has(.sf-rating__input:checked) ~ .sf-rating__item .sf-rating__star {
-  background: var(--c-bg, var(--sf-warning, #d97706));
+.st-rating__item:hover .st-rating__star,
+.st-rating__item:hover ~ .st-rating__item .st-rating__star,
+.st-rating__item:has(.st-rating__input:checked) .st-rating__star,
+.st-rating__item:has(.st-rating__input:checked) ~ .st-rating__item .st-rating__star {
+  background: var(--c-bg, var(--st-warning, #d97706));
 }
-.sf-rating__input:focus-visible + .sf-rating__star {
-  outline: 2px solid var(--c-bg, var(--sf-warning, #d97706));
+.st-rating__input:focus-visible + .st-rating__star {
+  outline: 2px solid var(--c-bg, var(--st-warning, #d97706));
   outline-offset: 2px;
 }

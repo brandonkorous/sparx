@@ -15,7 +15,7 @@ const EnvSchema = z.object({
   // The storefront's on-demand revalidation endpoint + its shared secret.
   // The storefront serves every tenant (host-multiplexed) from one deployment,
   // so this is a single internal URL; the tenant is carried in the POST body.
-  STOREFRONT_REVALIDATE_URL: z
+  SITE_REVALIDATE_URL: z
     .string()
     .url()
     .default('http://storefront.sparx-prod.svc.cluster.local/api/revalidate'),

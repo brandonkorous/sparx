@@ -40,7 +40,7 @@ test.describe('Sign-up page', () => {
     await page.goto('/sign-up');
     await expect(page.getByRole('heading', { name: 'Create your Sparx account' })).toBeVisible();
     await expect(page.getByLabel('Your name')).toBeVisible();
-    await expect(page.getByLabel('Store name')).toBeVisible();
+    await expect(page.getByLabel('Site name')).toBeVisible();
     await expect(page.getByLabel('Work email')).toBeVisible();
     await expect(page.getByLabel('Password')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Create account' })).toBeVisible();

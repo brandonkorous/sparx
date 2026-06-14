@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { compileTokens, getTheme, toStorefrontThemeColumns } from './compile';
+import { compileTokens, getTheme, toCommerceSiteThemeColumns } from './compile';
 import { THEME_LIST } from './presets';
 import { tokensToCssVars } from './tokens';
 
@@ -28,9 +28,9 @@ describe('compileTokens', () => {
     expect(getTheme('does-not-exist').key).toBe('apex');
   });
 
-  it('projects light PRESENTATION tokens onto StorefrontTheme columns for write-through', () => {
+  it('projects light PRESENTATION tokens onto CommerceSiteTheme columns for write-through', () => {
     const { light } = compileTokens('industrial');
-    const cols = toStorefrontThemeColumns(light);
+    const cols = toCommerceSiteThemeColumns(light);
     // Presentation tokens are written through.
     expect(cols.colorBackground).toBe(light.colorBackground);
     expect(cols.colorMuted).toBe(light.colorMuted);
@@ -45,13 +45,13 @@ describe('compileTokens', () => {
 });
 
 describe('tokensToCssVars', () => {
-  it('maps tokens to --sf-* custom properties with font fallbacks', () => {
+  it('maps tokens to --st-* custom properties with font fallbacks', () => {
     const { light } = compileTokens('apex');
     const vars = tokensToCssVars(light);
-    expect(vars['--sf-primary']).toBe('#4f46e5');
-    expect(vars['--sf-font-body']).toContain("'Inter'");
+    expect(vars['--st-primary']).toBe('#4f46e5');
+    expect(vars['--st-font-body']).toContain("'Inter'");
     // Named container width compiles to a CSS length.
-    expect(vars['--sf-container']).toBe('72rem');
+    expect(vars['--st-container']).toBe('72rem');
   });
 });
 

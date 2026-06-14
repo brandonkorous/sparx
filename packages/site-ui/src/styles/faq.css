@@ -1,12 +1,12 @@
 /* FAQ — stacked question/answer pairs (docs/51 §7). */
 
-.sf-faq {
+.st-faq {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   width: 100%;
 }
-.sf-faq__item {
+.st-faq__item {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

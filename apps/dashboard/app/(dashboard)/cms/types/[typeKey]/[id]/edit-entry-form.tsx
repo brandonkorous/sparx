@@ -70,7 +70,7 @@ import {
 const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
 const AUTOSAVE_DEBOUNCE_MS = 600;
 
-function storefrontOrigin(tenantSlug: string | null): string {
+function siteOrigin(tenantSlug: string | null): string {
   if (tenantSlug) return `https://${tenantSlug}.${ZONE_DOMAIN}`;
   return process.env.NEXT_PUBLIC_MARKETING_URL ?? 'https://sparx.works';
 }
@@ -139,7 +139,7 @@ export function EditEntryForm({
 }: EditEntryFormProps) {
   const router = useRouter();
   const routable = Boolean(urlPattern);
-  const previewOrigin = storefrontOrigin(tenantSlug);
+  const previewOrigin = siteOrigin(tenantSlug);
   const multiSite = sites.length > 1;
 
   const [error, setError] = React.useState<string | null>(null);

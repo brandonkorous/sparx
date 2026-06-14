@@ -9,10 +9,10 @@
 // PRIMARY site's settings at read time (services resolve property → primary →
 // code defaults), so adding a site never silently resets currency/locale. The
 // migration adds property_id, backfills to the primary, and swaps the PK.
-model StorefrontSettings {
+model CommerceSiteSettings {
   tenantId   String @map("tenant_id") @db.Uuid
   // One settings row per property → property_id is globally unique, making the
-  // Property↔StorefrontSettings back-relation one-to-one.
+  // Property↔CommerceSiteSettings back-relation one-to-one.
   propertyId String @unique @map("property_id") @db.Uuid
 
   defaultCurrency         String  @default("USD") @map("default_currency") @db.VarChar(3)
@@ -35,7 +35,7 @@ model StorefrontSettings {
   property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@id([tenantId, propertyId])
-  @@map("commerce_storefront_settings")
+  @@map("commerce_site_settings")
 }
 
 // PRESENTATION-only token overrides applied on top of @sparx/ui's storefront
@@ -50,10 +50,10 @@ model StorefrontSettings {
 // now per-site (docs/49 Phase 6). Each site's publish compiles its own light
 // tokens here; the migration adds property_id, backfills to the primary, and
 // swaps the PK to the composite. property_id is NOT a security boundary.
-model StorefrontTheme {
+model CommerceSiteTheme {
   tenantId   String @map("tenant_id") @db.Uuid
   // One theme per property → property_id is globally unique, making the
-  // Property↔StorefrontTheme back-relation one-to-one.
+  // Property↔CommerceSiteTheme back-relation one-to-one.
   propertyId String @unique @map("property_id") @db.Uuid
 
   colorBackground String? @map("color_background") @db.VarChar(7)
@@ -67,5 +67,5 @@ model StorefrontTheme {
   property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@id([tenantId, propertyId])
-  @@map("commerce_storefront_themes")
+  @@map("commerce_site_themes")
 }

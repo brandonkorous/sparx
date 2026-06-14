@@ -1,7 +1,7 @@
 // Compile a candidate class list into CSS through the Surface theme (docs/47 §5).
 //
 // Wraps @tailwindcss/node's programmatic compiler. `compile()` parses the static
-// Surface theme entrypoint ONCE (it's tenant-independent — only the `--sf-*`
+// Surface theme entrypoint ONCE (it's tenant-independent — only the `--st-*`
 // references vary at runtime, in the browser), then `build(candidates)` emits the
 // rules for whatever class set we hand it. Candidates Tailwind doesn't recognize
 // simply produce nothing, so an unknown/typo'd author class can't break a build.

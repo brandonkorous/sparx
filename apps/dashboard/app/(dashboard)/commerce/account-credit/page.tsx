@@ -22,13 +22,13 @@ import {
 
 import { api } from '@/lib/api-rest-client';
 
-import { GrantStoreCreditForm } from './_components/grant-store-credit-form';
+import { GrantAccountCreditForm } from './_components/grant-account-credit-form';
 
 export const dynamic = 'force-dynamic';
 
 const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
-interface StoreCreditCustomer {
+interface AccountCreditCustomer {
   id: string;
   firstName: string | null;
   lastName: string | null;
@@ -36,13 +36,13 @@ interface StoreCreditCustomer {
   company: string | null;
 }
 
-interface StoreCreditRow {
+interface AccountCreditRow {
   id: string;
   customerId: string;
   balanceCents: number;
   currency: string;
   updatedAt: string;
-  customer: StoreCreditCustomer | null;
+  customer: AccountCreditCustomer | null;
 }
 
 interface CrmCustomerRow {
@@ -52,15 +52,15 @@ interface CrmCustomerRow {
   email: string | null;
 }
 
-function customerName(c: StoreCreditCustomer | null): string | null {
+function customerName(c: AccountCreditCustomer | null): string | null {
   if (!c) return null;
   const full = `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim();
   return full !== '' ? full : (c.company ?? c.email ?? null);
 }
 
-export default async function StoreCreditPage() {
+export default async function AccountCreditPage() {
   const [balances, customersPaged] = await Promise.all([
-    api.get<StoreCreditRow[]>('/v1/commerce/store-credit?take=100'),
+    api.get<AccountCreditRow[]>('/v1/commerce/account-credit?take=100'),
     api.getPaged<CrmCustomerRow[]>('/v1/crm/customers?take=200'),
   ]);
 
@@ -77,7 +77,7 @@ export default async function StoreCreditPage() {
       <Stack gap={6} className="py-10">
         <PageHeader
           icon={<CircleDollarSign className="h-5 w-5" />}
-          title="Store credit"
+          title="Account credit"
           badge={
             <Badge color="module">{moneyFmt.format(outstandingCents / 100)} outstanding</Badge>
           }
@@ -95,7 +95,7 @@ export default async function StoreCreditPage() {
             </Stack>
           </CardHeader>
           <CardContent>
-            <GrantStoreCreditForm customers={recentCustomers} />
+            <GrantAccountCreditForm customers={recentCustomers} />
           </CardContent>
         </Card>
 
@@ -107,7 +107,7 @@ export default async function StoreCreditPage() {
             {balances.length === 0 ? (
               <EmptyState
                 icon={<CircleDollarSign className="h-5 w-5" />}
-                title="No store credit issued yet"
+                title="No account credit issued yet"
                 description="Grant credit above or have it auto-issued from a refund."
               />
             ) : (

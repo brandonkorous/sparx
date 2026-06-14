@@ -38,10 +38,10 @@ export function FAB({
   ...aria
 }: FABProps): React.ReactElement {
   const label = aria['aria-label'];
-  const mainClass = cx('sf-fab__main', colorClass(color), 'sf-v-solid');
+  const mainClass = cx('st-fab__main', colorClass(color), 'st-v-solid');
   return (
-    <div className={cx('sf-fab', `sf-fab--${placement}`, className)} style={style} id={id}>
-      {actions ? <div className="sf-fab__actions">{actions}</div> : null}
+    <div className={cx('st-fab', `st-fab--${placement}`, className)} style={style} id={id}>
+      {actions ? <div className="st-fab__actions">{actions}</div> : null}
       {href ? (
         <a href={href} className={mainClass} aria-label={label}>
           {children}

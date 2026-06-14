@@ -25,7 +25,7 @@ interface RootPageProps {
   searchParams?: Promise<{ sparxPreview?: string; sparxSitePreview?: string }>;
 }
 
-export default async function StorefrontRoot({ searchParams }: RootPageProps) {
+export default async function SiteRoot({ searchParams }: RootPageProps) {
   const tenant = await resolveTenant();
   if (!tenant) notFound();
 
@@ -65,7 +65,7 @@ export default async function StorefrontRoot({ searchParams }: RootPageProps) {
   );
   const homeSections = sectionsForPage(snapshot, 'home');
   if (homeSections.length > 0) {
-    const { defaultCurrency, defaultLocale } = tenant.storefront;
+    const { defaultCurrency, defaultLocale } = tenant.commerce;
     return (
       <SectionRenderer
         sections={homeSections}
@@ -86,25 +86,25 @@ export default async function StorefrontRoot({ searchParams }: RootPageProps) {
   const featuredCollections = collections.filter((c) => c.featured).slice(0, 3);
   const collectionShelf =
     featuredCollections.length > 0 ? featuredCollections : collections.slice(0, 3);
-  const { defaultCurrency: currency, defaultLocale: locale } = tenant.storefront;
+  const { defaultCurrency: currency, defaultLocale: locale } = tenant.commerce;
 
   return (
     <>
       {cmsHome ? <PageView entry={cmsHome} /> : null}
 
       {!cmsHome ? (
-        <section className="sf-container">
-          <div className="sf-hero">
-            <span className="sf-eyebrow">Welcome to {tenant.name}</span>
-            <h1 className="sf-hero__title">Gear built to perform, priced to move.</h1>
-            <p className="sf-hero__sub">
+        <section className="st-container">
+          <div className="st-hero">
+            <span className="st-eyebrow">Welcome to {tenant.name}</span>
+            <h1 className="st-hero__title">Gear built to perform, priced to move.</h1>
+            <p className="st-hero__sub">
               Browse the full catalog, find exactly what fits, and check out in seconds.
             </p>
-            <div className="sf-hero__cta">
-              <Link href="/products" className="sf-btn sf-btn--primary sf-btn--lg">
+            <div className="st-hero__cta">
+              <Link href="/products" className="st-btn st-btn--primary st-btn--lg">
                 Shop all products
               </Link>
-              <Link href="/collections" className="sf-btn sf-btn--secondary sf-btn--lg">
+              <Link href="/collections" className="st-btn st-btn--secondary st-btn--lg">
                 Browse collections
               </Link>
             </div>
@@ -113,19 +113,19 @@ export default async function StorefrontRoot({ searchParams }: RootPageProps) {
       ) : null}
 
       {collectionShelf.length > 0 ? (
-        <section className="sf-container sf-section">
-          <div className="sf-section__head">
-            <h2 className="sf-h2">Shop by collection</h2>
-            <Link href="/collections" className="sf-section__link">
+        <section className="st-container st-section">
+          <div className="st-section__head">
+            <h2 className="st-h2">Shop by collection</h2>
+            <Link href="/collections" className="st-section__link">
               View all →
             </Link>
           </div>
-          <div className="sf-grid">
+          <div className="st-grid">
             {collectionShelf.map((c) => {
               const hero = mediaUrl(c.heroMediaId, tenant.slug);
               return (
-                <Link key={c.id} href={`/collections/${c.handle}`} className="sf-card">
-                  <div className="sf-card__media">
+                <Link key={c.id} href={`/collections/${c.handle}`} className="st-card">
+                  <div className="st-card__media">
                     {hero ? (
                       <Image
                         src={hero}
@@ -135,14 +135,14 @@ export default async function StorefrontRoot({ searchParams }: RootPageProps) {
                         style={{ objectFit: 'cover' }}
                       />
                     ) : (
-                      <div className="sf-card__media sf-card__media--empty" aria-hidden="true">
+                      <div className="st-card__media st-card__media--empty" aria-hidden="true">
                         <span style={{ fontSize: '2rem' }}>❖</span>
                       </div>
                     )}
                   </div>
-                  <div className="sf-card__body">
-                    <span className="sf-card__title">{c.name}</span>
-                    {c.description ? <span className="sf-muted">{c.description}</span> : null}
+                  <div className="st-card__body">
+                    <span className="st-card__title">{c.name}</span>
+                    {c.description ? <span className="st-muted">{c.description}</span> : null}
                   </div>
                 </Link>
               );
@@ -152,14 +152,14 @@ export default async function StorefrontRoot({ searchParams }: RootPageProps) {
       ) : null}
 
       {fresh.items.length > 0 ? (
-        <section className="sf-container sf-section">
-          <div className="sf-section__head">
-            <h2 className="sf-h2">New arrivals</h2>
-            <Link href="/products?sort=newest" className="sf-section__link">
+        <section className="st-container st-section">
+          <div className="st-section__head">
+            <h2 className="st-h2">New arrivals</h2>
+            <Link href="/products?sort=newest" className="st-section__link">
               Shop all →
             </Link>
           </div>
-          <div className="sf-grid">
+          <div className="st-grid">
             {fresh.items.map((p) => (
               <ProductCard
                 key={p.id}

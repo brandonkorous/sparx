@@ -13,20 +13,20 @@ describe('Input', () => {
     render(<Input name="email" placeholder="you@test" size="lg" />);
     const el = screen.getByPlaceholderText('you@test');
     expect(el.tagName).toBe('INPUT');
-    expect(el).toHaveClass('sf-input', 'sf-c-primary', 'sf-input--sz-lg');
+    expect(el).toHaveClass('st-input', 'st-c-primary', 'st-input--sz-lg');
     expect(el).toHaveAttribute('name', 'email');
   });
 
   it('maps the ghost treatment and the invalid (danger) state', () => {
     render(<Input variant="ghost" invalid aria-label="x" />);
     const el = screen.getByLabelText('x');
-    expect(el).toHaveClass('sf-fv-ghost', 'sf-input--invalid');
+    expect(el).toHaveClass('st-fv-ghost', 'st-input--invalid');
     expect(el).toHaveAttribute('aria-invalid', 'true');
   });
 
   it('defaults to the outline treatment', () => {
     render(<Input aria-label="y" />);
-    expect(screen.getByLabelText('y')).toHaveClass('sf-fv-outline');
+    expect(screen.getByLabelText('y')).toHaveClass('st-fv-outline');
   });
 });
 
@@ -35,7 +35,7 @@ describe('Textarea', () => {
     render(<Textarea aria-label="bio" rows={5} />);
     const el = screen.getByLabelText('bio');
     expect(el.tagName).toBe('TEXTAREA');
-    expect(el).toHaveClass('sf-input', 'sf-textarea');
+    expect(el).toHaveClass('st-input', 'st-textarea');
     expect(el).toHaveAttribute('rows', '5');
   });
 });
@@ -50,8 +50,8 @@ describe('NativeSelect', () => {
     );
     const select = screen.getByLabelText('qty');
     expect(select.tagName).toBe('SELECT');
-    expect(select).toHaveClass('sf-input', 'sf-select', 'sf-input--invalid');
-    expect(container.querySelector('.sf-select__chevron')).toBeInTheDocument();
+    expect(select).toHaveClass('st-input', 'st-select', 'st-input--invalid');
+    expect(container.querySelector('.st-select__chevron')).toBeInTheDocument();
     expect(screen.getByRole('option', { name: '2' })).toBeInTheDocument();
   });
 });
@@ -61,7 +61,7 @@ describe('Checkbox / Radio / Switch', () => {
     render(<Checkbox color="success" size="lg" aria-label="agree" />);
     const el = screen.getByLabelText('agree');
     expect(el).toHaveAttribute('type', 'checkbox');
-    expect(el).toHaveClass('sf-checkbox', 'sf-c-success', 'sf-checkbox--sz-lg');
+    expect(el).toHaveClass('st-checkbox', 'st-c-success', 'st-checkbox--sz-lg');
   });
 
   it('renders radios inside a radiogroup', () => {
@@ -72,16 +72,16 @@ describe('Checkbox / Radio / Switch', () => {
       </RadioGroup>
     );
     const group = screen.getByRole('radiogroup', { name: 'size' });
-    expect(group).toHaveClass('sf-radio-group', 'sf-radio-group--horizontal');
+    expect(group).toHaveClass('st-radio-group', 'st-radio-group--horizontal');
     const radios = screen.getAllByRole('radio');
     expect(radios).toHaveLength(2);
-    expect(radios[0]).toHaveClass('sf-radio', 'sf-c-primary');
+    expect(radios[0]).toHaveClass('st-radio', 'st-c-primary');
   });
 
   it('renders a switch with role=switch', () => {
     render(<Switch color="accent" aria-label="notifications" />);
     const el = screen.getByRole('switch', { name: 'notifications' });
-    expect(el).toHaveClass('sf-switch', 'sf-c-accent');
+    expect(el).toHaveClass('st-switch', 'st-c-accent');
   });
 });
 
@@ -94,7 +94,7 @@ describe('Field', () => {
     );
     const label = screen.getByText('Email').closest('label');
     expect(label).toHaveAttribute('for', 'email');
-    expect(screen.getByText('We never share it.')).toHaveClass('sf-field__hint');
+    expect(screen.getByText('We never share it.')).toHaveClass('st-field__hint');
   });
 
   it('shows the error instead of the hint when present', () => {
@@ -103,7 +103,7 @@ describe('Field', () => {
         <Input id="email" invalid />
       </Field>
     );
-    expect(screen.getByText('Required')).toHaveClass('sf-field__error');
-    expect(container.querySelector('.sf-field__hint')).toBeNull();
+    expect(screen.getByText('Required')).toHaveClass('st-field__error');
+    expect(container.querySelector('.st-field__hint')).toBeNull();
   });
 });

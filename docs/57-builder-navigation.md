@@ -14,7 +14,7 @@
 > **What shipped (2026-06-05):**
 >
 > - **Authoring (P1):** a shared `coerceNavLinks` normalizer
->   (`packages/builder-schemas/src/nav.ts`); the storefront renderer + editor
+>   (`packages/builder-schemas/src/nav.ts`); the site renderer + editor
 >   preview read node-owned `props.links`; a `navlinks` inspector control (label /
 >   href / new-tab, add / remove / reorder); `site-ui` `NavMenu` honours
 >   `openInNewTab`; the starter site layout seeds default node-owned links;
@@ -22,7 +22,7 @@
 >   binding). Unit-tested (`nav.test.ts`).
 > - **Migration (P2):** `20260706_nav_into_builder` converts every existing
 >   CMS-menu-bound `NavMenu` node in `builder_layouts`/`builder_pages` trees
->   (draft + published) into node-owned `props.links`, mirroring the storefront's
+>   (draft + published) into node-owned `props.links`, mirroring the site's
 >   exact resolution (top-level items, `external_url` else `/<slug>` for a
 >   published non-deleted entry, else dropped; `open_in_new_tab` carried). Recursive
 >   `jsonb` rewrite, looped per tenant with `set_config('app.tenant_id')` for
@@ -64,7 +64,7 @@ regardless of which modules it runs.** The clinching case:
 > behind a module they don't pay for. Chrome can't depend on an _optional_ module.
 
 The right home is the **Builder** — the site presentation layer that **every**
-site has by definition (storefront, CMS-only, commerce-only, B2B — all author their
+site has by definition (site, CMS-only, commerce-only, B2B — all author their
 site in `/builder`). Re-homing nav there also makes it **per-site for free**:
 Builder layouts already carry `property_id` (docs/49 Phase 1B), so a per-site nav is
 just a per-site layout, which already exists.
@@ -78,7 +78,7 @@ construction.
 
 ## 2. Where navigation lives today — two structures
 
-Navigation reaches the storefront through **two** different structures, and that
+Navigation reaches the site through **two** different structures, and that
 split is the problem:
 
 ### 2.1 The CMS menu (data + authoring) — CMS-owned, tenant-wide, module-gated
@@ -239,7 +239,7 @@ is automatic.
 
 ---
 
-## 5. Storefront render — read the node, drop the CMS hop
+## 5. Site render — read the node, drop the CMS hop
 
 - `case 'NavMenu'` ([builder-renderer.tsx](../apps/site/components/builder-renderer.tsx))
   renders from `props.links` (structured), keeping the legacy string/bound fallbacks
@@ -320,7 +320,7 @@ exists even though nothing reads it.
 | Phase  | Scope                                                                                                                                                                                                                                               | Notes                                                                                                            |
 | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | **P1** | The `NavMenu` node owns structured links: `NavLink[]` prop shape, the `navlinks` inspector control (label/href/new-tab, add/remove/reorder), renderer reads `props.links` (legacy string/bound fallbacks kept). Starter layout seeds default links. | No migration yet; no retirement. New + manually-edited navs are Builder-owned. Gate-green, shippable on its own. |
-| **P2** | Storefront stops resolving `site.primaryNav`/`site.footerNav`; `loadSiteData` keeps identity/social. Data migration: CMS menus → `NavMenu` nodes on each tenant's primary active layout.                                                            | DB Migrate pipeline (tenant-loop backfill). After this, the live site renders node-owned nav.                    |
+| **P2** | Site stops resolving `site.primaryNav`/`site.footerNav`; `loadSiteData` keeps identity/social. Data migration: CMS menus → `NavMenu` nodes on each tenant's primary active layout.                                                                  | DB Migrate pipeline (tenant-loop backfill). After this, the live site renders node-owned nav.                    |
 | **P3** | Retire `/cms/navigation`, the nav routes, the binding sources, the apps/site helpers; drop the tables in a final migration after a prod soak.                                                                                                       | Removal only — no behavior change if P2 verified.                                                                |
 
 ---
@@ -328,8 +328,8 @@ exists even though nothing reads it.
 ## 10. Open questions / out of scope
 
 - **Dropdown nesting** — the data model carries `children`, but P1 renders flat
-  (matching today's storefront `NavMenu`). One-level dropdowns are a fast follow:
-  storefront `NavMenu` + `MobileNav` gain a nested render.
+  (matching today's site `NavMenu`). One-level dropdowns are a fast follow:
+  site `NavMenu` + `MobileNav` gain a nested render.
 - **Target picker** — typing an href is P1. A page/collection/product picker is a
   shared follow-on with the `Button.href` picker (build once, use in both).
 - **Per-link visibility / auth-gated links** (e.g. "Account" only when signed in) —
@@ -352,5 +352,5 @@ exists even though nothing reads it.
   mark the tables retired (and remove on the final drop migration).
 - [49-multi-site-per-tenant.md](49-multi-site-per-tenant.md) — per-site nav is
   delivered via Builder layouts (not a `navigation_menus.property_id`); update the
-  "per-site StorefrontSettings/nav still shared" caveat.
+  "per-site SiteSettings/nav still shared" caveat.
 - [00-README.md](00-README.md) — index entry.

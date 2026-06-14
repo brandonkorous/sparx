@@ -2,7 +2,7 @@
 
 // Popover — Radix behavior, Surface appearance (docs/47 §11 B3). Radix
 // (@radix-ui/react-popover) owns the trigger/positioning/dismiss; styling is
-// `sf-*`. Compound parts (Trigger/Content/Close) attach + export.
+// `st-*`. Compound parts (Trigger/Content/Close) attach + export.
 
 import * as React from 'react';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
@@ -24,12 +24,12 @@ function PopoverContent({
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
-        className={cx('sf-popover', className)}
+        className={cx('st-popover', className)}
         sideOffset={sideOffset}
         {...props}
       >
         {children}
-        <PopoverPrimitive.Arrow className="sf-popover__arrow" />
+        <PopoverPrimitive.Arrow className="st-popover__arrow" />
       </PopoverPrimitive.Content>
     </PopoverPrimitive.Portal>
   );

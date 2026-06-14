@@ -99,7 +99,7 @@ export async function finalizeOAuthSignup(input: {
         actorId: input.userId,
         template: 'welcome-merchant',
         to: input.email,
-        props: { name: input.name ?? undefined, storeName: tenant.name, dashboardUrl },
+        props: { name: input.name ?? undefined, dashboardUrl },
       });
     }
   } catch (err) {

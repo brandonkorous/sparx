@@ -16,10 +16,10 @@ export interface StatProps {
 
 export function Stat({ value, label, caption, className, style }: StatProps) {
   return (
-    <div className={cx('sf-stat', className)} style={style}>
-      <span className="sf-stat__value">{value}</span>
-      {label ? <span className="sf-stat__label">{label}</span> : null}
-      {caption ? <span className="sf-stat__caption">{caption}</span> : null}
+    <div className={cx('st-stat', className)} style={style}>
+      <span className="st-stat__value">{value}</span>
+      {label ? <span className="st-stat__label">{label}</span> : null}
+      {caption ? <span className="st-stat__caption">{caption}</span> : null}
     </div>
   );
 }

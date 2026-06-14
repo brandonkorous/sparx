@@ -252,7 +252,7 @@ Merchant can configure:
 
 ## 9. B2B Portal
 
-B2B customers access a dedicated portal (separate from the retail storefront) that shows:
+B2B customers access a dedicated portal (separate from the retail site) that shows:
 
 - Account dashboard (credit balance, recent orders, outstanding invoices)
 - Order history with invoice downloads
@@ -279,7 +279,7 @@ For businesses like Gillett Diesel that offer repair/service in addition to part
 
 - Service types configured by merchant (e.g. "Dyno Tune", "Injector Rebuild", "Turbo Service")
 - Each service type has: duration, capacity per day, pricing, resource requirements
-- Customers book appointments from portal or storefront
+- Customers book appointments from portal or site
 - Appointment linked to B2B account (for fleet management)
 - Parts from order can be linked to service appointment
 - Service history recorded per vehicle in fleet profile

@@ -26,7 +26,7 @@ Core tenets:
 
 ```
 CLIENT LAYER
-  Tenant Storefront (Next.js, theme-driven, multi-tenant)
+  Tenant Site (Next.js, theme-driven, multi-tenant)
   Admin Dashboard (Next.js)
   B2B Portal (Next.js)
   Custom Frontends (headless API consumers — Enterprise)
@@ -193,7 +193,7 @@ Cloudflare (DNS proxy, WAF, DDoS)
     ↓
 Caddy (on-demand TLS — issues Let's Encrypt cert automatically)
     ↓ Looks up host in domains table → resolves tenant + SITE (property)
-Next.js storefront (reads tenant_id + property_id, loads theme, renders)
+Next.js site (reads tenant_id + property_id, loads theme, renders)
     ↓
 API (tenant context from Better Auth JWT or host lookup)
 ```
@@ -229,13 +229,13 @@ Bounces/complaints → Postal webhook → Sparx suppression list
 
 ## 8. Scalability Targets
 
-| Metric                     | Target                    |
-| -------------------------- | ------------------------- |
-| Storefront page load (p95) | < 200ms                   |
-| API response time (p95)    | < 100ms                   |
-| Concurrent tenants         | 10,000+                   |
-| Orders per second (peak)   | 1,000+                    |
-| Email delivery             | < 30 seconds              |
-| Domain SSL provisioning    | < 5 minutes               |
-| Uptime SLA                 | 99.9% (99.99% Enterprise) |
-| Email deliverability       | > 98% inbox placement     |
+| Metric                   | Target                    |
+| ------------------------ | ------------------------- |
+| Site page load (p95)     | < 200ms                   |
+| API response time (p95)  | < 100ms                   |
+| Concurrent tenants       | 10,000+                   |
+| Orders per second (peak) | 1,000+                    |
+| Email delivery           | < 30 seconds              |
+| Domain SSL provisioning  | < 5 minutes               |
+| Uptime SLA               | 99.9% (99.99% Enterprise) |
+| Email deliverability     | > 98% inbox placement     |

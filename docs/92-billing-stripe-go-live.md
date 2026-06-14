@@ -95,7 +95,7 @@ via `application_fee_amount` (docs/94 §8). There is no metered transaction fee.
   `stripe.billing.meterEvents.create({ event_name: 'transaction_fee', payload: { value, stripe_customer_id }, identifier: 'txfee_<orderId>' })`.
 - `meterOrderFee()` helper in `services/api-rest/src/lib/transaction-fee.ts` — resolves
   the order's grand total and calls the engine, guarded + best-effort.
-- Wired at **both** `order.placed` emit sites: storefront checkout `/complete`
+- Wired at **both** `order.placed` emit sites: site checkout `/complete`
   (gated on a new `freshlyPlaced` flag so an idempotent retry never double-bills) and
   the B2B approval queue `/approve`.
 
@@ -295,7 +295,7 @@ To provision one:
 # Part B — Commerce payments (tenants charge their shoppers)
 
 A second, fully separate Stripe surface: each **tenant** connects **their own**
-Stripe to accept their shoppers' payments at storefront checkout. This is a provider
+Stripe to accept their shoppers' payments at site checkout. This is a provider
 in the integration framework ([docs/88](88-integrations-catalog.md)), not platform
 infrastructure — it never touches `STRIPE_SECRET_KEY`.
 
@@ -326,7 +326,7 @@ Capability kinds: `payment`, `tax`, `subscription_billing`.
 | Sparx Pay managed Connect onboarding                                | `sparx-branded.ts`                                          | ⬜ **marketed but not implemented** (§B3)                                                                                         |
 
 **Net:** a tenant who pastes their own Stripe keys can take live card payments at
-checkout today (the storefront confirms client-side and finalizes on `/complete`,
+checkout today (the site confirms client-side and finalizes on `/complete`,
 so the happy path doesn't depend on inbound webhooks). The two ⬜ rows are the gaps.
 
 ## B3. Gaps
@@ -396,5 +396,5 @@ rail the order used.
 | B-V    | Verify `tax.ts` / `subscription.ts` behaviour end-to-end against a sandbox install                                                             |   ⬜   |
 
 > Part B is **out of scope for the billing go-live** (Part A). It's captured here so
-> "all Stripe" lives in one map; sequence it after Part A unless storefront payments
+> "all Stripe" lives in one map; sequence it after Part A unless site payments
 > need the webhook ingress sooner.

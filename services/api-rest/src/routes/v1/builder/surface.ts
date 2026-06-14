@@ -4,7 +4,7 @@
 //                                        into CSS for the canvas (the `temp.css`)
 //
 // Auth'd + module-gated like the rest of /v1/builder. Stateless: the compile is a
-// pure function of the posted class list (no tenant data — the `--sf-*` tokens
+// pure function of the posted class list (no tenant data — the `--st-*` tokens
 // resolve in the browser), so it needs no tenant context, only the editor role.
 // The request body is validated by the service-layer Zod schema (the established
 // route ↔ service boundary), so api-rest keeps no @sparx/builder-schemas dep.

@@ -111,14 +111,14 @@ The builder already has two tree consumers; a tenant component touches only thes
    renders a clear placeholder, never a crash.
 2. **Publish.** `page-service.publish` copies `draftTree → publishedTree`. We wrap that copy
    with an **expand pass**: every `custom:<key>` node is replaced by its pinned version’s tree
-   with instance props merged, producing a tree of **pure primitives**. The storefront
+   with instance props merged, producing a tree of **pure primitives**. The site
    renderer (`apps/site`) therefore needs **no change** — published artifacts never contain
    `custom:*` nodes.
 
-**Why publish-expand, not live-ref on the storefront:** nothing in the builder is “live”
+**Why publish-expand, not live-ref on the site:** nothing in the builder is “live”
 without a publish — `publishedTree` is the artifact. Pinning controls _which version_ the
 editor/publish expands; re-pinning + republish pushes an upgrade live. This keeps the
-storefront read path untouched and makes published pages fully deterministic.
+site read path untouched and makes published pages fully deterministic.
 
 ---
 
@@ -146,7 +146,7 @@ authored against a `$bind:<key>` sentinel on a node’s `binding.path` (the bind
 `$prop` slot). Each placement maps the slot to a real data path under `props.$ref.bindings`,
 and the expander substitutes it (no override ⇒ the binding is dropped and the node falls back
 to static). Encoding the slot in the path string keeps the `BuilderNode` schema — and the
-storefront renderer — untouched: published trees only ever carry concrete `{ path }` bindings.
+site renderer — untouched: published trees only ever carry concrete `{ path }` bindings.
 The slot list is **derived from the tree** (`collectBindingSlots`), so there’s no second spec
 to persist (and no migration). A component placed inside an iterating scope still resolves its
 remaining (non-slot) bindings against that scope, since the expansion is inlined in place.
@@ -226,7 +226,7 @@ migration-free after P-A).
   components"); insertion adds a pinned `custom:<key>` reference (`makeCustomNode`); the canvas
   expands the latest version for a live, selectable-as-one-unit preview (`expandComponentTree`);
   **publish expansion** (`expandTreeForPublish` in page + layout `publish` → concrete nodes via
-  the pinned version) so the storefront renderer never sees a `custom:*` type; **delete-impact**
+  the pinned version) so the site renderer never sees a `custom:*` type; **delete-impact**
   (`usages` where-used scan blocks delete + the detail "Used on" panel). Layers/inspector label
   - handle custom nodes.
 - **P-C — Author from canvas ✅:** "Save as component" (inspector → `copyComponent` + replace

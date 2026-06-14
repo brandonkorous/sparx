@@ -1,12 +1,12 @@
-# Handoff — Phase 7: Storefront rendering of the Site Builder snapshot
+# Handoff — Phase 7: Site rendering of the Site Builder snapshot
 
-**To:** the storefront agent (owns `apps/site`)
+**To:** the site agent (owns `apps/site`)
 **From:** the Site Builder build (owns `packages/sitebuilder*`, `packages/site-themes`, `services/api-rest/.../sitebuilder/*`)
 **Status of the backend you depend on:** DONE + green. The public read endpoint, the
 compiled-token contract, the section registry, and the dashboard live-preview transport are
 all built, tested, and stable. Nothing below is speculative — it's the shipped contract.
 
-Your job is to make a published Site Builder config actually render on the storefront:
+Your job is to make a published Site Builder config actually render on the site:
 themed tokens (light **and** dark), composed sections, and config-driven header/footer.
 Today `apps/site` has a single hardcoded design and ignores all of this.
 
@@ -15,14 +15,14 @@ Today `apps/site` has a single hardcoded design and ignores all of this.
 ## 1. The data contract — one endpoint
 
 ```
-GET /v1/public/storefront/site?tenant=<slug>
+GET /v1/public/site/site?tenant=<slug>
 ```
 
 - Unauthenticated, read-only, returns **only the published** snapshot.
-- `tenant` is the storefront subdomain slug (resolve it from the request host upstream, same
+- `tenant` is the site subdomain slug (resolve it from the request host upstream, same
   way the existing public commerce endpoints do — see `resolveTenantId` in
   `services/api-rest/src/routes/v1/lib/public-commerce-context.ts`).
-- 404 (`MODULE_DISABLED`) when the `storefront` module is off for that tenant — render your
+- 404 (`MODULE_DISABLED`) when the `site` module is off for that tenant — render your
   existing fallback, don't crash.
 - Returns `null` when nothing has been published yet → **keep the current commerce homepage
   as the empty-store fallback.** Do not show a blank page.
@@ -72,25 +72,25 @@ stay in lockstep:
 ```ts
 import { tokensToCss } from '@sparx/site-themes';
 
-const lightBody = tokensToCss(snapshot.compiledTokens.light); // "--sf-primary:#…;--sf-bg:#…;…"
+const lightBody = tokensToCss(snapshot.compiledTokens.light); // "--st-primary:#…;--st-bg:#…;…"
 const darkBody = tokensToCss(snapshot.compiledTokens.dark);
 ```
 
-Inject two blocks in the storefront `<head>` / root layout:
+Inject two blocks in the site `<head>` / root layout:
 
 ```css
 :root { <lightBody> }
 [data-theme="dark"] { <darkBody> }
 ```
 
-The light set maps onto the same `--sf-*` / `--color-*` variables the current
+The light set maps onto the same `--st-*` / `--color-*` variables the current
 `apps/site/lib/theme.ts` `themeToCss()` already emits (that path stays working via
-publish write-through to `StorefrontTheme`). The **new** work is the `[data-theme="dark"]`
+publish write-through to `SiteTheme`). The **new** work is the `[data-theme="dark"]`
 block — add a `darkThemeToCss()` companion in `lib/theme.ts` (or just call `tokensToCss` on
 the dark map; prefer the shared helper).
 
 `TOKEN_CSS_VARS` in `packages/site-themes/src/tokens.ts` is the authoritative list of
-which `--sf-*` vars each token drives — read it, don't guess.
+which `--st-*` vars each token drives — read it, don't guess.
 
 ### Appearance policy → which theme is active (no-flash)
 
@@ -112,7 +112,7 @@ correct on the next request. Render it in the header **only** when
 ## 3. Sections — render against the registry
 
 The 7 section types and their config schemas live in `@sparx/sitebuilder-schemas`
-(`SECTION_REGISTRY`, `SECTION_TYPES`). Build one storefront component per type under
+(`SECTION_REGISTRY`, `SECTION_TYPES`). Build one site component per type under
 `apps/site/components/sections/*` plus a `section-renderer.tsx` that maps
 `sectionType → component`:
 
@@ -133,8 +133,8 @@ The 7 section types and their config schemas live in `@sparx/sitebuilder-schemas
 - `featured-products` / `collection-grid` need live catalog data — fetch products/collections
   through the existing public commerce read path; the section `config` carries the selector
   (collection id, limit, etc.), not the products themselves.
-- **Brand rule:** storefront section components are themeable via `--sf-*` tokens only — no
-  raw Tailwind color classes in `apps/site`. Follow the existing storefront component
+- **Brand rule:** site section components are themeable via `--st-*` tokens only — no
+  raw Tailwind color classes in `apps/site`. Follow the existing site component
   conventions.
 
 `SectionRenderer` consumes `sections` for the relevant `pageKey`:
@@ -153,9 +153,9 @@ The 7 section types and their config schemas live in `@sparx/sitebuilder-schemas
 - Each block has a `slot`, a nullable `navigationMenuId`, and a `config`.
 - `navigationMenuId` is a **reference** into a `NavigationMenu` (now Site-Builder-owned, but
   the `/v1/navigation/*` read path is unchanged and module-neutral) — resolve the menu + its
-  items through that existing nav read path (the storefront already has a way to read menus; it
-  just isn't wired into the layout yet — this is the wiring gap to close). The storefront
-  references menus read-only; never write nav rows from the storefront.
+  items through that existing nav read path (the site already has a way to read menus; it
+  just isn't wired into the layout yet — this is the wiring gap to close). The site
+  references menus read-only; never write nav rows from the site.
 - `announcement` slot → the top announcement bar (text/link/colors in `config`).
 - Respect `visible` per block.
 
@@ -163,9 +163,9 @@ The 7 section types and their config schemas live in `@sparx/sitebuilder-schemas
 
 ## 5. Dashboard live-preview transport (so customizer edits show instantly)
 
-The dashboard customizer renders your storefront in an iframe (`?sparxPreview=` /
+The dashboard customizer renders your site in an iframe (`?sparxPreview=` /
 `?tenant=<slug>`) and pushes **token-only** changes over `postMessage` for instant feedback
-without a reload. Listen for this message on the storefront and apply the vars live:
+without a reload. Listen for this message on the site and apply the vars live:
 
 ```ts
 // message.data shape:
@@ -201,9 +201,9 @@ reflect the latest draft via the preview endpoint. Guard the listener to the exp
 
 ## 7. Boundaries to respect (these are load-bearing)
 
-- **Don't** add columns to `commerce_storefront_themes` — the light-token write-through is the
-  only writer of that projection now; the storefront read path through it stays as-is.
-- **Don't** write `NavigationMenu`/`NavigationItem` rows from the storefront — reference only
+- **Don't** add columns to `commerce_site_themes` — the light-token write-through is the
+  only writer of that projection now; the site read path through it stays as-is.
+- **Don't** write `NavigationMenu`/`NavigationItem` rows from the site — reference only
   (navigation is edited in the Site Builder dashboard via `/v1/navigation/*`).
 - **Don't** fork the token→CSS mapping — import `tokensToCss` / `TOKEN_CSS_VARS` from
   `@sparx/site-themes`.

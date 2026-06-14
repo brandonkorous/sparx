@@ -117,14 +117,14 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
 
   if (cartEmpty && step !== 'done') {
     return (
-      <div className="sf-empty" style={{ minHeight: '40vh' }}>
-        <span className="sf-empty__icon" aria-hidden="true">
+      <div className="st-empty" style={{ minHeight: '40vh' }}>
+        <span className="st-empty__icon" aria-hidden="true">
           🛒
         </span>
-        <h2 className="sf-h2" style={{ color: 'var(--sf-text)' }}>
+        <h2 className="st-h2" style={{ color: 'var(--st-text)' }}>
           Your cart is empty
         </h2>
-        <Link href="/products" className="sf-btn sf-btn--primary">
+        <Link href="/products" className="st-btn st-btn--primary">
           Shop all products
         </Link>
       </div>
@@ -136,23 +136,23 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
   }
 
   return (
-    <div className="sf-checkout">
-      <div className="sf-checkout__main">
+    <div className="st-checkout">
+      <div className="st-checkout__main">
         <StepIndicator step={step} />
 
         {error ? (
-          <div className="sf-alert sf-alert--error" role="alert">
+          <div className="st-alert st-alert--error" role="alert">
             {error}
           </div>
         ) : null}
 
         {step === 'contact' ? (
-          <form onSubmit={handleContact} className="sf-form">
-            <h2 className="sf-h2">Contact</h2>
-            <label className="sf-field">
+          <form onSubmit={handleContact} className="st-form">
+            <h2 className="st-h2">Contact</h2>
+            <label className="st-field">
               <span>Email</span>
               <input
-                className="sf-input"
+                className="st-input"
                 type="email"
                 required
                 value={email}
@@ -161,7 +161,7 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
                 autoComplete="email"
               />
             </label>
-            <label className="sf-check">
+            <label className="st-check">
               <input
                 type="checkbox"
                 checked={acceptsMarketing}
@@ -169,22 +169,22 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
               />
               Email me with news and offers
             </label>
-            <button type="submit" className="sf-btn sf-btn--primary sf-btn--lg" disabled={busy}>
+            <button type="submit" className="st-btn st-btn--primary st-btn--lg" disabled={busy}>
               {busy ? 'Saving…' : 'Continue to shipping'}
             </button>
           </form>
         ) : null}
 
         {step === 'shipping' ? (
-          <form onSubmit={handleShipping} className="sf-form">
-            <h2 className="sf-h2">Shipping address</h2>
+          <form onSubmit={handleShipping} className="st-form">
+            <h2 className="st-h2">Shipping address</h2>
             <AddressForm value={address} onChange={setAddress} />
 
             {rates.length > 0 ? (
-              <fieldset className="sf-rates">
-                <legend className="sf-h3">Shipping method</legend>
+              <fieldset className="st-rates">
+                <legend className="st-h3">Shipping method</legend>
                 {rates.map((rate) => (
-                  <label key={rate.rateRef} className="sf-rate">
+                  <label key={rate.rateRef} className="st-rate">
                     <input
                       type="radio"
                       name="rate"
@@ -194,7 +194,7 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
                     <span style={{ flex: 1 }}>
                       <strong>{rate.service}</strong>
                       {rate.estimatedDays != null ? (
-                        <span className="sf-muted"> · {rate.estimatedDays} days</span>
+                        <span className="st-muted"> · {rate.estimatedDays} days</span>
                       ) : null}
                     </span>
                     <span>
@@ -210,14 +210,14 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
             <div style={{ display: 'flex', gap: '0.75rem' }}>
               <button
                 type="button"
-                className="sf-btn sf-btn--ghost"
+                className="st-btn st-btn--ghost"
                 onClick={() => setStep('contact')}
               >
                 ← Back
               </button>
               <button
                 type="submit"
-                className="sf-btn sf-btn--primary sf-btn--lg"
+                className="st-btn st-btn--primary st-btn--lg"
                 style={{ flex: 1 }}
                 disabled={busy}
               >
@@ -242,7 +242,7 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
         ) : null}
       </div>
 
-      <aside className="sf-checkout__aside">
+      <aside className="st-checkout__aside">
         <OrderSummary
           lines={cart.lines}
           totals={session?.totals ?? cart.totals}
@@ -263,13 +263,13 @@ function StepIndicator({ step }: { step: Step }) {
   const order: Step[] = ['contact', 'shipping', 'payment', 'done'];
   const currentIdx = order.indexOf(step);
   return (
-    <ol className="sf-steps">
+    <ol className="st-steps">
       {steps.map((s, i) => {
         const idx = order.indexOf(s.key);
         const state = idx < currentIdx ? 'done' : idx === currentIdx ? 'current' : 'todo';
         return (
-          <li key={s.key} className="sf-steps__item" data-state={state}>
-            <span className="sf-steps__dot">{state === 'done' ? '✓' : i + 1}</span>
+          <li key={s.key} className="st-steps__item" data-state={state}>
+            <span className="st-steps__dot">{state === 'done' ? '✓' : i + 1}</span>
             {s.label}
           </li>
         );
@@ -280,18 +280,18 @@ function StepIndicator({ step }: { step: Step }) {
 
 function Confirmation({ orderNumber }: { orderNumber: string }) {
   return (
-    <div className="sf-empty" style={{ minHeight: '50vh' }}>
-      <span className="sf-empty__icon" aria-hidden="true">
+    <div className="st-empty" style={{ minHeight: '50vh' }}>
+      <span className="st-empty__icon" aria-hidden="true">
         🎉
       </span>
-      <h1 className="sf-h1" style={{ color: 'var(--sf-text)' }}>
+      <h1 className="st-h1" style={{ color: 'var(--st-text)' }}>
         Order confirmed
       </h1>
       <p style={{ margin: 0 }}>
         Thank you! Your order <strong>{orderNumber}</strong> has been placed. A confirmation email
         is on its way.
       </p>
-      <Link href="/products" className="sf-btn sf-btn--primary" style={{ marginTop: '0.5rem' }}>
+      <Link href="/products" className="st-btn st-btn--primary" style={{ marginTop: '0.5rem' }}>
         Continue shopping
       </Link>
     </div>

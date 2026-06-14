@@ -24,7 +24,7 @@ export function Join({
   children,
 }: JoinProps): React.ReactElement {
   return (
-    <div className={cx('sf-join', `sf-join--${orientation}`, className)} style={style} id={id}>
+    <div className={cx('st-join', `st-join--${orientation}`, className)} style={style} id={id}>
       {children}
     </div>
   );

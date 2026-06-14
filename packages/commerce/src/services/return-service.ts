@@ -1,5 +1,5 @@
 // returnService — RMA workflow. Customer- or staff-initiated; staff
-// inspection + restock decision per line item; refund-or-store-credit
+// inspection + restock decision per line item; refund-or-account-credit
 // settlement. Actual provider-side refund settlement (Stripe) is
 // invoked through the order-payments path; this service owns the
 // lifecycle state machine + audit + events.
@@ -408,7 +408,7 @@ export async function issueRefund(
         `Cannot issue refund from status "${ret.status}"; expected "inspected" or "received"`
       );
     }
-    if (input.asStoreCredit) return null;
+    if (input.asAccountCredit) return null;
     const payment = await tx.orderPayment.findFirst({
       where: { orderId: ret.orderId, status: 'captured' },
       orderBy: { capturedAt: 'desc' },
@@ -430,7 +430,7 @@ export async function issueRefund(
     } catch (err) {
       if (err instanceof PaymentConfigError || err instanceof GatewayNotFoundError) {
         throw new CommerceValidationError(
-          'No payment gateway is configured to settle this refund. Refund the customer manually or issue store credit.'
+          'No payment gateway is configured to settle this refund. Refund the customer manually or issue account credit.'
         );
       }
       throw err;
@@ -445,7 +445,7 @@ export async function issueRefund(
   let refundId = '';
   await withTenant(ctx, async (tx) => {
     const ret = await assertReturnWritable(tx, input.returnId);
-    const issuedAs = input.asStoreCredit ? 'store_credit' : 'original_payment';
+    const issuedAs = input.asAccountCredit ? 'account_credit' : 'original_payment';
     await tx.returnRequest.update({
       where: { id: ret.id },
       data: {
@@ -481,7 +481,7 @@ export async function issueRefund(
     data: {
       returnId: input.returnId,
       refundAmountCents: input.refundAmountCents,
-      asStoreCredit: input.asStoreCredit,
+      asAccountCredit: input.asAccountCredit,
     },
   });
 

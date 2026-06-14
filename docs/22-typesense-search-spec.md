@@ -12,8 +12,8 @@ Built end-to-end across four shippable slices (branch `feat/typesense-search-pha
 
 - **Collections** are **shared + tenant-partitioned** (one `products`/`customers`/`orders` collection each, every query forced through a `tenant_id:=<t>` filter by the `@sparx/search` wrappers), not a collection per tenant. The schema field names/types live in `packages/search/src/schemas/` and supersede the field sketches in §3 (notably `*_cents` int money fields, `handle`, `category_ids`/`collection_ids`).
 - **Indexing pipeline:** real-time via Pub/Sub. Products/variants/inventory already published; **customers** flow through the CRM bus (`crm.customer.*`) and **orders** through the platform bus (`order.*`), both bridged to Google Pub/Sub by `@sparx/crm/pubsub` and consumed by the `commerce-indexer` Cloud Run worker. Full reindex via `POST /v1/search/reindex` → `search.reindex.requested` → worker bulk-projection from Postgres.
-- **API:** `GET /v1/search/{products,customers,orders}`, `GET /v1/search` (palette), `GET /v1/search/status`, `POST /v1/search/reindex`, `GET /v1/search/key` (scoped-key), plus the public storefront `GET /v1/public/commerce/search` (Typesense-ranked, Postgres-hydrated cards + facet counts).
-- **Surfaces:** storefront `/search` faceted page, dashboard ⌘K deep search, CRM orders list, and MCP tools (`search_products/customers/orders/all`, scope `read:search`).
+- **API:** `GET /v1/search/{products,customers,orders}`, `GET /v1/search` (palette), `GET /v1/search/status`, `POST /v1/search/reindex`, `GET /v1/search/key` (scoped-key), plus the public site `GET /v1/public/commerce/search` (Typesense-ranked, Postgres-hydrated cards + facet counts).
+- **Surfaces:** site `/search` faceted page, dashboard ⌘K deep search, CRM orders list, and MCP tools (`search_products/customers/orders/all`, scope `read:search`).
 - **Synonyms (§6):** GLOBAL only. Per-tenant custom synonyms are **NOT** possible with shared collections (they'd leak across tenants) — deferred to a future per-tenant-collection model.
 - **Scoped keys:** require a search-only parent key (`TYPESENSE_SEARCH_KEY`), never the admin key; endpoint 501s until provisioned. Server-proxied search is the default; browser-direct querying is opt-in.
 
@@ -495,8 +495,8 @@ GET /v1/search/orders?q=WW-1234
 POST /v1/search/reindex           (staff only — trigger full reindex)
 GET  /v1/search/status            (index stats per collection)
 
-// Storefront-facing (no auth, tenant from domain)
-GET /storefront/search?q=injector&facets=vendor,product_type,price_range
+// Site-facing (no auth, tenant from domain)
+GET /site/search?q=injector&facets=vendor,product_type,price_range
 ```
 
 ---

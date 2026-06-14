@@ -186,6 +186,34 @@ export async function deleteSite(propertyId: string): Promise<ActionResult> {
   return { ok: true };
 }
 
+const RenameSiteSchema = z.object({
+  propertyId: z.string().uuid(),
+  name: z.string().min(1, 'Site name is required.').max(255),
+});
+
+/** Rename a site — sets `Property.name`, the CUSTOMER-FACING site name every
+ *  storefront/email surface renders (docs/49). This is NOT the tenant's legal/org
+ *  name (that lives in Settings → General). */
+export async function renameSite(formData: FormData): Promise<ActionResult> {
+  const parsed = RenameSiteSchema.safeParse({
+    propertyId: formData.get('propertyId'),
+    name: formData.get('name'),
+  });
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid input.' };
+  }
+  try {
+    await api.patch<Property>(`/v1/properties/${parsed.data.propertyId}`, {
+      name: parsed.data.name,
+    });
+  } catch (err) {
+    return fail(err);
+  }
+  // The name shows on the live site (title/header/footer) + emails — revalidate broadly.
+  revalidatePath('/', 'layout');
+  return { ok: true };
+}
+
 /** Make a site the tenant's primary (dashboard default + billing anchor). */
 export async function makeSitePrimary(propertyId: string): Promise<ActionResult> {
   try {
@@ -262,7 +290,9 @@ export async function updateBrandOverride(formData: FormData): Promise<ActionRes
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? 'Invalid input.' };
   }
-  const businessName = blankToNull(formData.get('businessName'));
+  // NOTE: `businessName` is intentionally NOT read here. The customer-facing site
+  // name is `Property.name` (edited via renameSite), not a brand override (docs/49).
+  // The brand override now carries only presentation (colours/type/logo).
   const colorPrimary = blankToNull(formData.get('colorPrimary'));
   const colorAccent = blankToNull(formData.get('colorAccent'));
   const fontHeading = blankToNull(formData.get('fontHeading'));
@@ -275,7 +305,6 @@ export async function updateBrandOverride(formData: FormData): Promise<ActionRes
   const defaultLocale = blankToNull(formData.get('defaultLocale'));
 
   const fields = {
-    businessName,
     colorPrimary,
     colorAccent,
     fontHeading,

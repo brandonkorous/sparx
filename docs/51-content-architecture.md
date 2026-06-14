@@ -8,7 +8,7 @@
 
 ## 1. Purpose & relationship to other docs
 
-Building the storefront render path surfaced a structural problem the earlier docs each
+Building the site render path surfaced a structural problem the earlier docs each
 saw one face of: **where content's _shape_ lives, and how a template attaches to it.**
 
 This document is the **foundational content model**: what a content type _is_, what a
@@ -26,7 +26,7 @@ and the affected doc is amended in the phase that lands the change:
 - [docs/40 — Composition model](40-sitebuilder-composition-model.md): unchanged in spirit;
   this doc names where the "typed schema keystone" is owned (the content type) and adds that
   it is **authored from the builder**.
-- [docs/41 — Builder page model](41-builder-page-model.md) / [docs/44 — Storefront render](44-builder-storefront-render.md):
+- [docs/41 — Builder page model](41-builder-page-model.md) / [docs/44 — Site render](44-builder-site-render.md):
   the `BuilderPage.record_type` **magic string** is replaced by a first-class link from a
   content type to its template, with a per-entry override.
 - The legacy `Page` model ([10-cms-pages.prisma](../packages/db/prisma/schema/10-cms-pages.prisma))
@@ -41,7 +41,7 @@ This is a model + decision + worklist doc. It locks vocabulary so we stop re-der
 Four overlapping systems each model "a page" or "a content shape," and the seams leak:
 
 1. **Legacy `Page` model** (`cms_pages`) — a separate static-page table, unrelated to content
-   entries or the builder. The storefront already serves pages via the `page` _content type_
+   entries or the builder. The site already serves pages via the `page` _content type_
    (`content_entries`), not this table. It is vestigial.
 2. **Content types** house field schemas — but the builtin set mixes **page-level shapes**
    (`blog_post`, `page`) with **widget-shaped** types (`feature`, `faq_item`,
@@ -62,7 +62,7 @@ widget data).
 ## 3. The model in one paragraph
 
 **Content** is a page-level _shape_ — a field schema, owned independently of any presentation,
-so it is consumable by the storefront, email, MCP, AI, and mobile alike. **Components** are
+so it is consumable by the site, email, MCP, AI, and mobile alike. **Components** are
 presentation widgets (FAQ, carousel, gallery, feature grid…) that **bind to** content fields —
 including nested `list`/`group` fields — and decide how data is drawn; they never own the data.
 **Templates** are builder node-trees that present a content shape; a content type has **one
@@ -82,7 +82,7 @@ with page-first ergonomics.
 - Storage is unchanged: one polymorphic `content_entries` table, `type_key` discriminator,
   `body` JSONB validated against the type's schema. **There is no per-type SQL table.**
 - The schema is **presentation-independent**. It is the single source of truth that the
-  storefront, email, MCP/AI, and any API client read. This is non-negotiable — it is why
+  site, email, MCP/AI, and any API client read. This is non-negotiable — it is why
   Content owns the schema and the builder does not.
 - A content type's schema may contain **nested structure** — `group` (a sub-record) and `list`
   (a repeatable sub-record) field kinds. Repeatable sub-content (a page's FAQ entries, a
@@ -113,7 +113,7 @@ with page-first ergonomics.
 ### 4.4 Pages — routes that resolve record → template
 
 - A request for `/blog/<slug>` resolves the entry, picks its template (entry → type → fallback),
-  binds the record in, and renders the tree (the per-record router, [docs/44](44-builder-storefront-render.md) §3 B).
+  binds the record in, and renders the tree (the per-record router, [docs/44](44-builder-site-render.md) §3 B).
 - Singleton routed pages (an About page) are the degenerate case: one entry, one template.
 
 ---
@@ -192,7 +192,7 @@ catalog already exposes ([docs/43](43-builder-binding-schema.md)).
 ## 8. What retires
 
 - **`Page` model + `/cms/pages`** — deleted once confirmed nothing live reads `cms_pages` (the
-  storefront already uses the `page` content type). Any rows migrate to `page` entries.
+  site already uses the `page` content type). Any rows migrate to `page` entries.
 - **`BuilderPage.record_type` string** — replaced by the §6 link.
 - **Widget-shaped builtin content types** — reclassified per §7 (a migration touching `apps/web`,
   which currently renders its marketing pages from `feature`/`module` types).
@@ -217,7 +217,7 @@ Deploy small ([feedback]); each phase is independently shippable and testable.
 - **Phase 5+ — Component library.** FAQ / carousel / gallery / feature-grid as data-bound,
   tenant-extensible components ([docs/38](38-sitebuilder-extensible-sections.md)).
 
-The storefront blog render path (`/blog/[slug]`, the `Prose` rich-text node) and the
+The site blog render path (`/blog/[slug]`, the `Prose` rich-text node) and the
 `postToBuilderRecord` mapper already landed against the old string link; Phase 1 re-points them
 at the resolver and they continue to work.
 

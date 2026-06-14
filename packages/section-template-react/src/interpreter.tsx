@@ -2,7 +2,7 @@
 // (docs/38 Phase C; docs/handoffs/sitebuilder-custom-section-template-spec.md).
 //
 // The shared half of the interpreter: it walks the closed node set and emits a
-// closed family of `sf-tpl-*` classes + `data-*` enums (defined once in
+// closed family of `st-tpl-*` classes + `data-*` enums (defined once in
 // section-template.css), delegating ALL value resolution to the pure evaluator in
 // @sparx/sitebuilder-schemas. App-specific concerns — how a link renders, how a
 // media ref resolves to a URL — are injected as ADAPTERS, so the storefront (SSR)
@@ -65,7 +65,7 @@ function renderNode(
       return (
         <div
           key={key}
-          className="sf-tpl-stack"
+          className="st-tpl-stack"
           data-dir={node.dir}
           data-gap={node.gap}
           data-align={node.align}
@@ -79,7 +79,7 @@ function renderNode(
       return (
         <div
           key={key}
-          className="sf-tpl-grid"
+          className="st-tpl-grid"
           data-cols={resolveEnum(node.cols, COLS, '2', scope, ctx)}
           data-gap={node.gap}
         >
@@ -90,7 +90,7 @@ function renderNode(
       return (
         <div
           key={key}
-          className="sf-tpl-box"
+          className="st-tpl-box"
           data-pad={node.pad}
           data-tone={node.tone}
           data-radius={node.radius}
@@ -103,25 +103,25 @@ function renderNode(
       const text = resolveValue(node.text, scope, ctx);
       if (node.level === 1)
         return (
-          <h1 key={key} className="sf-h1">
+          <h1 key={key} className="st-h1">
             {text}
           </h1>
         );
       if (node.level === 3)
         return (
-          <h3 key={key} className="sf-h3">
+          <h3 key={key} className="st-h3">
             {text}
           </h3>
         );
       return (
-        <h2 key={key} className="sf-h2">
+        <h2 key={key} className="st-h2">
           {text}
         </h2>
       );
     }
     case 'Text':
       return (
-        <p key={key} className="sf-tpl-text" data-tone={node.tone} data-size={node.size}>
+        <p key={key} className="st-tpl-text" data-tone={node.tone} data-size={node.size}>
           {resolveValue(node.text, scope, ctx)}
         </p>
       );
@@ -130,7 +130,7 @@ function renderNode(
       if (!html) return null;
       // richtext field values are sanitized at write time (the same trust model
       // as the rich-text section); the host renders its own published content.
-      return <div key={key} className="sf-prose" dangerouslySetInnerHTML={{ __html: html }} />;
+      return <div key={key} className="st-prose" dangerouslySetInnerHTML={{ __html: html }} />;
     }
     case 'Image': {
       const ref = resolveValue(node.src, scope, ctx);
@@ -140,7 +140,7 @@ function renderNode(
       return (
         <div
           key={key}
-          className="sf-tpl-img"
+          className="st-tpl-img"
           data-ratio={node.ratio ?? '16:9'}
           data-fit={node.fit}
           role="img"
@@ -151,7 +151,7 @@ function renderNode(
     }
     case 'Icon':
       return (
-        <span key={key} className="sf-tpl-icon" data-size={node.size} data-tone={node.tone}>
+        <span key={key} className="st-tpl-icon" data-size={node.size} data-tone={node.tone}>
           <TemplateIcon name={resolveValue(node.name, scope, ctx)} />
         </span>
       );
@@ -160,7 +160,7 @@ function renderNode(
       return (
         <Link
           key={key}
-          className={`sf-tpl-btn sf-tpl-btn--${resolveEnum(node.variant, BUTTON_VARIANTS, 'solid', scope, ctx)}`}
+          className={`st-tpl-btn st-tpl-btn--${resolveEnum(node.variant, BUTTON_VARIANTS, 'solid', scope, ctx)}`}
           url={resolveValue(node.url, scope, ctx)}
           label={resolveValue(node.label, scope, ctx)}
         />
@@ -171,16 +171,16 @@ function renderNode(
       return (
         <Link
           key={key}
-          className="sf-tpl-link"
+          className="st-tpl-link"
           url={resolveValue(node.url, scope, ctx)}
           label={resolveValue(node.label, scope, ctx)}
         />
       );
     }
     case 'Divider':
-      return <hr key={key} className="sf-tpl-divider" />;
+      return <hr key={key} className="st-tpl-divider" />;
     case 'Spacer':
-      return <div key={key} className="sf-tpl-spacer" data-size={node.size} aria-hidden="true" />;
+      return <div key={key} className="st-tpl-spacer" data-size={node.size} aria-hidden="true" />;
     case 'Repeater': {
       // `each` names a list field in the current frame (top-level config, or the
       // enclosing Repeater item when nested) — matching the validator's scoping.

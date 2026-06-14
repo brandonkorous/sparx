@@ -16,7 +16,7 @@ test.describe('/welcome — onboarding checklist', () => {
 
     // Every actionable + coming-soon step is listed.
     await expect(page.getByText('Create your account')).toBeVisible();
-    await expect(page.getByText('Confirm your store details')).toBeVisible();
+    await expect(page.getByText('Confirm your site details')).toBeVisible();
     await expect(page.getByText('Add your first page')).toBeVisible();
     await expect(page.getByText('Pick a theme')).toBeVisible();
     await expect(page.getByText('Connect a custom domain')).toBeVisible();

@@ -413,7 +413,7 @@ function CanvasNode({
   // → the Button `<span>`), so the content wrapper omits it to avoid double-paint.
   // Every other node carries node.class on its content wrapper, where the live-
   // compiled utilities (flex/grid/padding/surface) lay out + paint it.
-  const leafByClass = def.leafStylesByClass === true && /(^|\s)sf-/.test(node.class ?? '');
+  const leafByClass = def.leafStylesByClass === true && /(^|\s)st-/.test(node.class ?? '');
   // The `.bx-node` chrome wrapper is `display:contents` (builder.css) so the live
   // renderer's wrapperless DOM is reproduced and `node.class` sizing (w-full,
   // flex-1, mx-auto) resolves against the real flex/grid parent. The selection

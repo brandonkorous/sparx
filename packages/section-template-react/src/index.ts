@@ -3,7 +3,7 @@
 // with it (SSR); the dashboard Section Studio renders the live preview with it —
 // one render path, injected adapters, so the preview can't drift from production.
 //
-// The `sf-tpl-*` CSS family ships alongside as ./section-template.css; import it
+// The `st-tpl-*` CSS family ships alongside as ./section-template.css; import it
 // once per host (the storefront layout; the Studio preview container).
 
 export { TemplateRenderer, type TemplateAdapters } from './interpreter';

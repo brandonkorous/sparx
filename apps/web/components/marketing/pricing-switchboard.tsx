@@ -68,7 +68,7 @@ const MODULES: Mod[] = [
     price: 49,
     elsewhere: 99,
     color: 'var(--module-cms)',
-    long: 'A real editor with autosave and revisions, structured content types with a typed API, a media library, and SEO scored on every publish. Standalone or paired with your store.',
+    long: 'A real editor with autosave and revisions, structured content types with a typed API, a media library, and SEO scored on every publish. Standalone or paired with your site.',
     feats: [
       'Block editor, autosave + revisions',
       'Structured content types + typed API',
@@ -183,7 +183,7 @@ const MODULES: Mod[] = [
     color: 'var(--module-chat)',
     long: 'A themed chat widget on every page, an AI first responder that answers product and policy questions from your own catalog, and a staff inbox for everything it escalates. Leads from sparx.market route here too.',
     feats: [
-      'Storefront widget in your theme',
+      'On-site widget in your theme',
       'AI answers from your own catalog',
       'Staff inbox — assign, reply, resolve',
       'Web-push + email notifications',

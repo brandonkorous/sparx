@@ -284,6 +284,10 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
             onChange={(e) => setBusinessName(e.target.value)}
             placeholder="Acme Diesel"
           />
+          <p className="text-xs text-[var(--color-text-muted)]">
+            Your brand/legal name for documents like invoices. The name customers see on a site
+            (title, header, emails) is that site&apos;s name, set in Settings → Sites.
+          </p>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="brand-tagline">Tagline</Label>

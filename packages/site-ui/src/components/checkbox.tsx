@@ -17,11 +17,11 @@ export interface CheckboxProps extends Omit<
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-checkbox--sz-xs',
-  sm: 'sf-checkbox--sz-sm',
-  md: 'sf-checkbox--sz-md',
-  lg: 'sf-checkbox--sz-lg',
-  xl: 'sf-checkbox--sz-xl',
+  xs: 'st-checkbox--sz-xs',
+  sm: 'st-checkbox--sz-sm',
+  md: 'st-checkbox--sz-md',
+  lg: 'st-checkbox--sz-lg',
+  xl: 'st-checkbox--sz-xl',
 };
 
 export function Checkbox({
@@ -34,7 +34,7 @@ export function Checkbox({
     <input
       {...rest}
       type="checkbox"
-      className={cx('sf-checkbox', colorClass(color), SIZE_CLASS[size], className)}
+      className={cx('st-checkbox', colorClass(color), SIZE_CLASS[size], className)}
     />
   );
 }

@@ -42,7 +42,7 @@ interface CartTotals {
   shippingTotalCents: number;
   taxTotalCents: number;
   giftCardAppliedCents: number;
-  storeCreditAppliedCents: number;
+  accountCreditAppliedCents: number;
   totalCents: number;
 }
 
@@ -54,7 +54,7 @@ interface CartSnapshot {
   items: CartItem[];
   appliedDiscountCodes: string[];
   appliedGiftCardCodes: string[];
-  storeCreditAppliedCents: number;
+  accountCreditAppliedCents: number;
   totals: CartTotals;
   expiresAt: string;
   abandonedAt: string | null;
@@ -161,8 +161,8 @@ export async function CartDetailContent({ id }: Props) {
               value={`-${fmt(cart.totals.giftCardAppliedCents, cart.currency)}`}
             />
             <Row
-              label="Store credit applied"
-              value={`-${fmt(cart.totals.storeCreditAppliedCents, cart.currency)}`}
+              label="Account credit applied"
+              value={`-${fmt(cart.totals.accountCreditAppliedCents, cart.currency)}`}
             />
             <Row label="Total" value={fmt(cart.totals.totalCents, cart.currency)} bold />
             {cart.appliedDiscountCodes.length > 0 && (

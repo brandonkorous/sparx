@@ -4,7 +4,7 @@
 // from the brand-governed vocabulary. The Phase C control registry (docs/47 §11)
 // models the structured inspector as a set of CONTROLS, each owning a
 // mutually-exclusive GROUP of tokens — e.g. the colour control owns
-// `sf-c-primary | sf-c-secondary | …`, the variant control owns `sf-v-solid | …`.
+// `st-c-primary | st-c-secondary | …`, the variant control owns `st-v-solid | …`.
 // Setting a control swaps the active token within its group while leaving every
 // other token untouched. These pure helpers are that read/write primitive,
 // shared by the editor controls and anything else that edits a class string.

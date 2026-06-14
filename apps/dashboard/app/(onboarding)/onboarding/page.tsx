@@ -95,8 +95,10 @@ export default async function OnboardingPage({
       ? { ...storedModules, ...Object.fromEntries(DEFAULT_ON.map((k) => [k, true])) }
       : storedModules;
 
-  // The primary site's display name. Signup seeds it as "Default"; the Workspace
-  // step's friendlier default is "Primary" (decision B).
+  // The primary site's display name — the CUSTOMER-FACING site name (docs/49).
+  // Signup now seeds it from the tenant name; the Workspace step lets the merchant
+  // refine it. The `=== 'Default'` guard is a legacy fallback for tenants
+  // provisioned before that change (and not yet covered by the name backfill).
   const primary = properties.find((p) => p.isPrimary) ?? properties[0];
   const rawSiteName = primary?.name ?? 'Primary';
   const siteName = rawSiteName === 'Default' ? 'Primary' : rawSiteName;

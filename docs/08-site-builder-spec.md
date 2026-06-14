@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-The WizeWorks Site Builder enables tenants to launch a professional storefront in under 5 minutes, with no code required. It follows a **theme-first architecture** — a tenant selects a theme, customizes colors, fonts, and content, and publishes. Power users and developers can build fully custom frontends that connect to the WizeWorks API.
+The WizeWorks Site Builder enables tenants to launch a professional site in under 5 minutes, with no code required. It follows a **theme-first architecture** — a tenant selects a theme, customizes colors, fonts, and content, and publishes. Power users and developers can build fully custom frontends that connect to the WizeWorks API.
 
 ---
 
@@ -18,7 +18,7 @@ The WizeWorks Site Builder enables tenants to launch a professional storefront i
 
 - Curated, industry-optimized themes
 - Tenant customizes via settings panel (no code)
-- Rendered by the platform's Next.js storefront service
+- Rendered by the platform's Next.js site service
 - Updates to theme engine automatically benefit all tenants on that theme
 
 ### Tier 2 — Headless API (Pro + Enterprise)
@@ -100,7 +100,7 @@ theme/
 
 ## 4. Visual Customizer
 
-The customizer panel renders alongside the live storefront preview. Changes are reflected in real-time without page reload.
+The customizer panel renders alongside the live site preview. Changes are reflected in real-time without page reload.
 
 ### Customizer Panels
 
@@ -155,23 +155,23 @@ Step 1: Business Info (30 sec)
 Step 2: Theme (45 sec)
 ├── Platform recommends theme based on category
 ├── Tenant previews 2-3 options
-└── Selects theme — store renders live instantly
+└── Selects theme — site renders live instantly
 
 Step 3: First Product (90 sec)  [or connect dropship supplier]
 ├── Product title
 ├── Price
 ├── Photo (upload or skip)
-└── "Add Product" → live on store
+└── "Add Product" → live on site
 
 Step 4: Domain (30 sec)
 ├── Subdomain auto-generated from business name
 ├── Tenant can accept or change slug
-└── Store is live at slug.wizeworks.com
+└── Site is live at slug.wizeworks.com
 
 Step 5: Payments (60 sec)
 ├── "Connect Stripe" (OAuth — one click)
-├── Or "Skip for now" (store visible, checkout disabled)
-└── Done — store is live and taking orders
+├── Or "Skip for now" (site visible, checkout disabled)
+└── Done — site is live and taking orders
 
 Total: ~4.5 minutes
 ```
@@ -220,14 +220,14 @@ const response = await fetch('https://api.wizeworks.com/v1/products', {
 const { products } = await response.json();
 ```
 
-### Storefront SDK (Published NPM Package)
+### Site SDK (Published NPM Package)
 
 ```bash
-npm install @wizeworks/storefront-sdk
+npm install @wizeworks/site-sdk
 ```
 
 ```typescript
-import { WizeWorks } from '@wizeworks/storefront-sdk';
+import { WizeWorks } from '@wizeworks/site-sdk';
 
 const ww = new WizeWorks({
   tenantId: process.env.WW_TENANT_ID,

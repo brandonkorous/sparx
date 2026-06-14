@@ -96,8 +96,8 @@ subtitle paragraph (muted, one or two sentences)
 
 ## 6. Actions & Module Color
 
-- **Primary action** = `Button variant="module"`. It reads `--module-active`, so it is orange on Commerce, cyan on CRM, teal on CMS, blue on Email — automatically. The audit found Commerce's Discounts "Create discount" and Storefront-Settings "Save settings" rendering **indigo** (the default), and the Commerce settings page showing orange channel pills next to an indigo save button. **Cause:** those buttons use the default variant instead of `variant="module"`. **Fix:** one prop.
-- **Module color reference** (`packages/ui/src/tokens.css`): Storefront `#6366F1`, Commerce `#F97316`, CMS `#14B8A6`, CRM `#06B6D4`, Email `#0EA5E9`, B2B `#475569`, Dropship `#10B981`, AI `#EC4899`. Never hardcode these — reference `--module-active` via the component variant.
+- **Primary action** = `Button variant="module"`. It reads `--module-active`, so it is orange on Commerce, cyan on CRM, teal on CMS, blue on Email — automatically. The audit found Commerce's Discounts "Create discount" and Site-Settings "Save settings" rendering **indigo** (the default), and the Commerce settings page showing orange channel pills next to an indigo save button. **Cause:** those buttons use the default variant instead of `variant="module"`. **Fix:** one prop.
+- **Module color reference** (`packages/ui/src/tokens.css`): Site `#6366F1`, Commerce `#F97316`, CMS `#14B8A6`, CRM `#06B6D4`, Email `#0EA5E9`, B2B `#475569`, Dropship `#10B981`, AI `#EC4899`. Never hardcode these — reference `--module-active` via the component variant.
 - **Secondary actions**: `variant="outline"` (e.g. Record-Detail "Unpublish", "Archive"). **Tertiary/utility** (Recompute, Show archived): `variant="ghost"` or a plain link, grouped with the primary in the header action slot, never as a separate left-aligned row.
 
 ---

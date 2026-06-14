@@ -4,7 +4,7 @@ const OLD_STACK = [
   {
     initial: 'S',
     name: 'Shopify',
-    sub: 'Storefront + Commerce',
+    sub: 'Site + Commerce',
     price: '$399',
     color: '#95BF47',
     dark: false,

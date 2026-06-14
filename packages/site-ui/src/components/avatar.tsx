@@ -31,16 +31,16 @@ export interface AvatarProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-avatar--sz-xs',
-  sm: 'sf-avatar--sz-sm',
-  md: 'sf-avatar--sz-md',
-  lg: 'sf-avatar--sz-lg',
-  xl: 'sf-avatar--sz-xl',
+  xs: 'st-avatar--sz-xs',
+  sm: 'st-avatar--sz-sm',
+  md: 'st-avatar--sz-md',
+  lg: 'st-avatar--sz-lg',
+  xl: 'st-avatar--sz-xl',
 };
 const SHAPE_CLASS: Record<AvatarShape, string> = {
-  circle: 'sf-avatar--circle',
-  rounded: 'sf-avatar--rounded',
-  square: 'sf-avatar--square',
+  circle: 'st-avatar--circle',
+  rounded: 'st-avatar--rounded',
+  square: 'st-avatar--square',
 };
 
 /** First letters of the first and last words, up to two, uppercased. */
@@ -65,33 +65,33 @@ export function Avatar({
   id,
 }: AvatarProps): React.ReactElement {
   const classes = cx(
-    'sf-avatar',
+    'st-avatar',
     colorClass(color),
     SIZE_CLASS[size],
     SHAPE_CLASS[shape],
     className
   );
   const dot = status ? (
-    <span className={cx('sf-avatar__status', `sf-avatar__status--${status}`)} aria-label={status} />
+    <span className={cx('st-avatar__status', `st-avatar__status--${status}`)} aria-label={status} />
   ) : null;
 
   if (src) {
     return (
       <span className={classes} style={style} id={id}>
-        <img className="sf-avatar__img" src={src} alt={alt ?? name ?? ''} />
+        <img className="st-avatar__img" src={src} alt={alt ?? name ?? ''} />
         {dot}
       </span>
     );
   }
   return (
     <span
-      className={cx(classes, 'sf-avatar--placeholder')}
+      className={cx(classes, 'st-avatar--placeholder')}
       style={style}
       id={id}
       role="img"
       aria-label={alt ?? name ?? 'avatar'}
     >
-      <span className="sf-avatar__initials" aria-hidden="true">
+      <span className="st-avatar__initials" aria-hidden="true">
         {initials(name)}
       </span>
       {dot}

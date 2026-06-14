@@ -68,7 +68,7 @@ model ContentEntry {
   terms           EntryTaxonomyTerm[]
   previewTokens   PreviewToken[]
   navigationItems NavigationItem[]
-  docPlacements   StorefrontDocPlacement[]
+  docPlacements   SiteDocPlacement[]
   propertyLinks   ContentEntryProperty[]
 
   @@unique([tenantId, typeKey, slug])

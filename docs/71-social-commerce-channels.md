@@ -62,14 +62,14 @@ channelRegistry.register(new AmazonAdapter());
 - Products appear in Google Shopping tab and search results
 - Content API for Shopping handles catalog sync
 - Should be automatic for all merchants (opt-out, not opt-in)
-- Free organic placement drives traffic to merchant's sparx.zone storefront
+- Free organic placement drives traffic to merchant's sparx.zone site
 - No order management needed — checkout stays on Sparx
 
 **Meta — Instagram Shopping + Facebook Shop**
 
 - Meta Commerce API
 - Instagram: tag products in posts and reels
-- Facebook: full storefront inside Facebook
+- Facebook: full site inside Facebook
 - Same OAuth + catalog sync + order management pattern as TikTok
 - Every SMB merchant already has Facebook/Instagram — table stakes
 
@@ -84,7 +84,7 @@ channelRegistry.register(new AmazonAdapter());
 **Pinterest Catalogs**
 
 - Product feed sync (not full order management)
-- Drives traffic to Sparx storefront — high purchase intent audience
+- Drives traffic to Sparx site — high purchase intent audience
 - Strong for fashion, home, food, lifestyle merchants
 - Relatively lightweight — primarily a product feed, not full order integration
 
@@ -130,8 +130,8 @@ Critical invariant: inventory is NEVER re-incremented on a failed channel push. 
 Orders from all channels share the same schema, differentiated by source:
 
 ```sql
-ALTER TABLE orders ADD COLUMN source VARCHAR(50) DEFAULT 'storefront';
--- storefront | tiktok_shop | instagram | facebook | amazon |
+ALTER TABLE orders ADD COLUMN source VARCHAR(50) DEFAULT 'site';
+-- site | tiktok_shop | instagram | facebook | amazon |
 -- walmart | ebay | etsy | b2b_portal | sparx_market
 
 ALTER TABLE orders ADD COLUMN external_id VARCHAR(255);
@@ -223,7 +223,7 @@ All channel revenue surfaces in the Sparx analytics dashboard:
 ```
 Revenue by channel · Last 30 days
 
-Storefront        $48,200   52%   ████████████
+Site        $48,200   52%   ████████████
 TikTok Shop       $12,800   14%   ███
 B2B Portal        $18,400   20%   █████
 sparx.market       $8,100    9%   ██

@@ -41,7 +41,7 @@ function StepsRoot({
 }: StepsProps): React.ReactElement {
   return (
     <ol
-      className={cx('sf-steps', `sf-steps--${orientation}`, colorClass(color), className)}
+      className={cx('st-steps', `st-steps--${orientation}`, colorClass(color), className)}
       style={style}
       id={id}
     >
@@ -60,11 +60,11 @@ function Step({
 }: StepProps): React.ReactElement {
   return (
     <li
-      className={cx('sf-step', `sf-step--${state}`, icon != null && 'sf-step--has-icon', className)}
+      className={cx('st-step', `st-step--${state}`, icon != null && 'st-step--has-icon', className)}
       style={style}
     >
-      <span className="sf-step__marker">{icon}</span>
-      <span className="sf-step__label">{children}</span>
+      <span className="st-step__marker">{icon}</span>
+      <span className="st-step__label">{children}</span>
     </li>
   );
 }

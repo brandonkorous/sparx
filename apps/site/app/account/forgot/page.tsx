@@ -22,26 +22,26 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="sf-container">
-      <div className="sf-container--prose" style={{ paddingBlock: '2.5rem' }}>
-        <h1 className="sf-h2" style={{ marginBottom: '0.5rem' }}>
+    <div className="st-container">
+      <div className="st-container--prose" style={{ paddingBlock: '2.5rem' }}>
+        <h1 className="st-h2" style={{ marginBottom: '0.5rem' }}>
           Reset your password
         </h1>
         {state === 'sent' ? (
-          <div className="sf-alert" style={{ background: 'var(--sf-bg-subtle)' }} role="status">
+          <div className="st-alert" style={{ background: 'var(--st-bg-subtle)' }} role="status">
             If an account exists for <strong>{email}</strong>, we’ve sent a link to reset your
             password. Check your inbox.
           </div>
         ) : (
           <>
-            <p className="sf-muted" style={{ marginBottom: '1.5rem' }}>
+            <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
               Enter your email and we’ll send you a link to set a new password.
             </p>
-            <form onSubmit={submit} className="sf-form">
-              <label className="sf-field">
+            <form onSubmit={submit} className="st-form">
+              <label className="st-field">
                 <span>Email</span>
                 <input
-                  className="sf-input"
+                  className="st-input"
                   type="email"
                   required
                   autoComplete="email"
@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
               </label>
               <button
                 type="submit"
-                className="sf-btn sf-btn--primary sf-btn--lg"
+                className="st-btn st-btn--primary st-btn--lg"
                 disabled={state === 'busy'}
               >
                 {state === 'busy' ? 'Sending…' : 'Send reset link'}
@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
             </form>
           </>
         )}
-        <p className="sf-muted" style={{ marginTop: '1.5rem', fontSize: '0.9rem' }}>
+        <p className="st-muted" style={{ marginTop: '1.5rem', fontSize: '0.9rem' }}>
           <Link href="/account/login">← Back to sign in</Link>
         </p>
       </div>

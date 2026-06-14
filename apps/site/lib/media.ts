@@ -26,7 +26,7 @@ export function mediaUrl(assetId: string | null | undefined, tenantSlug: string)
  * to the origin object; width/quality are advisory (the CDN/origin may ignore
  * them) but kept in the URL so Next treats variants as distinct cache keys.
  */
-export function storefrontImageLoader({
+export function siteImageLoader({
   src,
   width,
   quality,

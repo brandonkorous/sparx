@@ -83,12 +83,12 @@ describe('calculateB2BPrice', () => {
 
 ### Coverage Targets
 
-| Package          | Branch | Function | Line |
-| ---------------- | ------ | -------- | ---- |
-| `api` services   | 85%    | 85%      | 85%  |
-| `ui` components  | 75%    | 80%      | 75%  |
-| `storefront-sdk` | 90%    | 90%      | 90%  |
-| Business logic   | 90%    | 90%      | 90%  |
+| Package         | Branch | Function | Line |
+| --------------- | ------ | -------- | ---- |
+| `api` services  | 85%    | 85%      | 85%  |
+| `ui` components | 75%    | 80%      | 75%  |
+| `site-sdk`      | 90%    | 90%      | 90%  |
+| Business logic  | 90%    | 90%      | 90%  |
 
 ---
 
@@ -177,8 +177,8 @@ E2E tests run against the full deployed application (staging environment) after 
 
 **Critical Path Suite** (runs on every deploy, must pass for deployment to proceed):
 
-- Tenant signup → onboarding → live store
-- Add product → publish → visible on storefront
+- Tenant signup → onboarding → live site
+- Add product → publish → visible on site
 - Customer places order → checkout → order confirmation
 - Order fulfillment → tracking email sent
 - Tenant admin views order dashboard
@@ -254,8 +254,8 @@ test('merchant can complete onboarding in under 5 minutes', async ({ page }) => 
   const elapsed = Date.now() - start;
   expect(elapsed).toBeLessThan(5 * 60 * 1000); // Under 5 minutes
 
-  // Verify store is live
-  const slug = await page.locator('[data-testid=store-url]').textContent();
+  // Verify site is live
+  const slug = await page.locator('[data-testid=site-url]').textContent();
   await page.goto(slug!);
   await expect(page.locator('text=Bosch Injector Set')).toBeVisible();
 });
@@ -269,9 +269,9 @@ Load tests run on demand (before major launches, after significant changes).
 
 ### Scenarios
 
-**Storefront Load Test:**
+**Site Load Test:**
 
-- 1,000 concurrent users browsing storefront
+- 1,000 concurrent users browsing the site
 - Mix: 60% product pages, 25% collection pages, 15% search
 - Duration: 10 minutes
 - Pass criteria: p95 < 300ms, error rate < 0.1%
@@ -289,7 +289,7 @@ Load tests run on demand (before major launches, after significant changes).
 - Pass criteria: p95 < 200ms, p99 < 500ms
 
 ```javascript
-// k6 scenario: storefront load
+// k6 scenario: site load
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
@@ -323,7 +323,7 @@ async function createTestTenant(overrides = {}) {
   const tenant = await db.tenant.create({
     data: {
       slug: `test-${nanoid(8)}`,
-      name: 'Test Store',
+      name: 'Test Site',
       plan: 'pro',
       ...overrides,
     },

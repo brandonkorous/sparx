@@ -18,13 +18,13 @@ export function PanelsSection({ config, ctx }: { config: PanelsConfig; ctx: Sect
   const isMedia = config.variant === 'media';
 
   return (
-    <section className="sf-container sf-section">
+    <section className="st-container st-section">
       {config.heading ? (
-        <div className="sf-section__head">
-          <h2 className="sf-h2">{config.heading}</h2>
+        <div className="st-section__head">
+          <h2 className="st-h2">{config.heading}</h2>
         </div>
       ) : null}
-      <div className="sf-sb-panels" data-cols={config.columns} data-variant={config.variant}>
+      <div className="st-sb-panels" data-cols={config.columns} data-variant={config.variant}>
         {items.map((p, i) => {
           const img = mediaUrl(p.mediaId ?? null, ctx.tenantSlug);
           const bg = img
@@ -35,10 +35,10 @@ export function PanelsSection({ config, ctx }: { config: PanelsConfig; ctx: Sect
               }
             : undefined;
           const content = (
-            <div className="sf-sb-panel__inner">
-              {p.eyebrow ? <p className="sf-sb-panel__eyebrow">{p.eyebrow}</p> : null}
-              {p.heading ? <h3 className="sf-sb-panel__title">{p.heading}</h3> : null}
-              {p.subheading ? <p className="sf-sb-panel__sub">{p.subheading}</p> : null}
+            <div className="st-sb-panel__inner">
+              {p.eyebrow ? <p className="st-sb-panel__eyebrow">{p.eyebrow}</p> : null}
+              {p.heading ? <h3 className="st-sb-panel__title">{p.heading}</h3> : null}
+              {p.subheading ? <p className="st-sb-panel__sub">{p.subheading}</p> : null}
               <SbCtaRow ctas={p.ctas} />
             </div>
           );
@@ -47,7 +47,7 @@ export function PanelsSection({ config, ctx }: { config: PanelsConfig; ctx: Sect
             return (
               <div
                 key={i}
-                className="sf-sb-panel sf-sb-panel--media"
+                className="st-sb-panel st-sb-panel--media"
                 data-align={config.align}
                 data-valign={config.verticalAlign}
                 data-height={config.height}
@@ -56,7 +56,7 @@ export function PanelsSection({ config, ctx }: { config: PanelsConfig; ctx: Sect
               >
                 {img ? (
                   <div
-                    className="sf-sb-panel__scrim"
+                    className="st-sb-panel__scrim"
                     style={{ opacity: overlay }}
                     aria-hidden="true"
                   />
@@ -67,8 +67,8 @@ export function PanelsSection({ config, ctx }: { config: PanelsConfig; ctx: Sect
           }
 
           return (
-            <div key={i} className="sf-sb-panel sf-sb-panel--card">
-              {img ? <div className="sf-sb-panel__media" style={bg} /> : null}
+            <div key={i} className="st-sb-panel st-sb-panel--card">
+              {img ? <div className="st-sb-panel__media" style={bg} /> : null}
               {content}
             </div>
           );

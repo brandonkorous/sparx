@@ -55,7 +55,7 @@ the manual ops are done.
   `@sparx/billing` computes the tier from the tenant's **explicit** billable-module
   mix (0.5% Commerce / 0.3% with CRM / 0% once monthly spend ≥ $299) and emits a
   `transaction_fee` meter event keyed by `stripe_customer_id`. Wired at **both**
-  `order.placed` emit sites via the `meterOrderFee` api-rest helper: storefront
+  `order.placed` emit sites via the `meterOrderFee` api-rest helper: site
   checkout completion (gated on a new `freshlyPlaced` flag so an idempotent retry
   never double-bills) and the B2B approval queue (the placement moment for a held
   order). Best-effort + guarded; the order id rides along as the Stripe meter-event
@@ -212,7 +212,7 @@ On `customer.subscription.updated` webhook (trial → active): update `billing_c
 
 - Mark subscription as `canceled`
 - Disable all modules (set `enabled: false` in `Tenant.settings.modules`)
-- Store goes read-only (storefront still renders but returns "store currently unavailable" on checkout)
+- Store goes read-only (site still renders but returns "store currently unavailable" on checkout)
 - Data retained 30 days per docs/17 §6
 
 ---

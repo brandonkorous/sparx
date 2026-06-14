@@ -69,9 +69,9 @@ export const moduleCatalog: Record<ModuleSlug, ModuleCatalogEntry> = {
   commerce: {
     Icon: ShoppingCart,
     title: 'Commerce',
-    tagline: 'Products, orders, and checkout for your storefront.',
+    tagline: 'Products, orders, and checkout for your site.',
     description:
-      'The Commerce module turns on product catalogs, inventory, pricing rules, and Stripe-powered checkout for your storefront.',
+      'The Commerce module turns on product catalogs, inventory, pricing rules, and Stripe-powered checkout for your site.',
     features: [
       { title: 'Products', description: 'Variants, options, media, SEO, and bulk imports.' },
       { title: 'Orders', description: 'Fulfilment, refunds, and customer-visible status.' },
@@ -104,7 +104,7 @@ export const moduleCatalog: Record<ModuleSlug, ModuleCatalogEntry> = {
     title: 'CRM',
     tagline: 'Customers, segments, and lifecycle automation.',
     description:
-      'The CRM module unifies customer profiles across storefront, B2B, and email so you can segment, score, and re-engage them.',
+      'The CRM module unifies customer profiles across site, B2B, and email so you can segment, score, and re-engage them.',
     features: [
       { title: 'Customer profiles', description: 'Order history, tags, notes, and engagement.' },
       { title: 'Pipeline', description: 'Kanban deal flow for B2B and high-touch sales.' },
@@ -149,7 +149,7 @@ export const moduleCatalog: Record<ModuleSlug, ModuleCatalogEntry> = {
     title: 'B2B',
     tagline: 'Wholesale, fleet, and net-terms commerce.',
     description:
-      'The B2B module layers company accounts, approval flows, and custom price lists onto your storefront — ready for accounts like Gillett Diesel.',
+      'The B2B module layers company accounts, approval flows, and custom price lists onto your site — ready for accounts like Gillett Diesel.',
     features: [
       {
         title: 'Company accounts',
@@ -238,12 +238,12 @@ export const moduleCatalog: Record<ModuleSlug, ModuleCatalogEntry> = {
   chat: {
     Icon: MessagesSquare,
     title: 'Live Chat',
-    tagline: 'Storefront chat widget, AI replies, and a staff inbox.',
+    tagline: 'On-site chat widget, AI replies, and a staff inbox.',
     description:
-      'The Live Chat module adds a floating chat widget to your storefront, answers common questions with AI, and routes anything it cannot handle to a real person in the dashboard inbox.',
+      'The Live Chat module adds a floating chat widget to your site, answers common questions with AI, and routes anything it cannot handle to a real person in the dashboard inbox.',
     features: [
       {
-        title: 'Storefront widget',
+        title: 'On-site widget',
         description: 'Themed floating bubble on every page, with an optional pre-chat form.',
       },
       {
@@ -267,12 +267,12 @@ export const moduleCatalog: Record<ModuleSlug, ModuleCatalogEntry> = {
     title: 'AI',
     tagline: 'MCP server, agents, and copilots.',
     description:
-      'The AI module exposes your storefront and back office to MCP-aware agents — and gives you a copilot that can query orders, customers, and inventory in plain English.',
+      'The AI module exposes your site and back office to MCP-aware agents — and gives you a copilot that can query orders, customers, and inventory in plain English.',
     features: [
       { title: 'MCP server', description: 'First-class MCP endpoint with per-tenant scopes.' },
       {
         title: 'Tenant copilot',
-        description: 'Chat over your store data with safe write actions.',
+        description: 'Chat over your site data with safe write actions.',
       },
       { title: 'Agent webhooks', description: 'Subscribe agents to business events via Pub/Sub.' },
       {

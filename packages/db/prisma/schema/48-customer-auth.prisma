@@ -1,4 +1,4 @@
-// Customer auth — Layer 2 (storefront shoppers). See docs/27-customer-accounts-storefront-auth.md.
+// Customer auth — Layer 2 (site shoppers). See docs/27-customer-accounts-site-auth.md.
 //
 // Distinct from Layer 1 (staff Better Auth: users/sessions/accounts). These
 // tables hang off the CRM `customers` spine — the CRM owns the customer record;

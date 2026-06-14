@@ -3,9 +3,9 @@
 //
 // SiteConfig is the editable source of truth (one per tenant). Publishing
 // snapshots it into an immutable SiteVersion and write-through-compiles the
-// light token subset into the commerce-owned StorefrontTheme row (the
+// light token subset into the commerce-owned CommerceSiteTheme row (the
 // storefront's existing themeToCss() read path is unchanged). Sitebuilder
-// never adds columns to commerce_storefront_themes and never writes CMS
+// never adds columns to commerce_site_themes and never writes CMS
 // navigation rows — SiteLayoutBlock only *references* a NavigationMenu.
 //
 // Tenant-scoped + FORCE RLS so a callsite that forgets withTenant() returns
@@ -45,7 +45,7 @@ model SiteConfig {
 
 // Immutable published snapshot. Rollback = copy a snapshot back into the
 // draft and republish (creating a new version). compiledTokens holds the
-// exact { light, dark } maps so a rollback re-writes StorefrontTheme
+// exact { light, dark } maps so a rollback re-writes CommerceSiteTheme
 // deterministically without recompiling.
 model SiteVersion {
   id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid

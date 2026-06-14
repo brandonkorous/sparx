@@ -1,6 +1,6 @@
 // Commerce list endpoints that the dashboard needs but the service layer
 // hasn't yet abstracted: tenant-wide variant catalog, active recalls,
-// store-credit balances, cart inbox, checkout-session inbox, tenant-wide
+// account-credit balances, cart inbox, checkout-session inbox, tenant-wide
 // reviews / questions, question detail, wishlist analytics, plus an
 // enriched warehouse-levels view that joins variant + product columns.
 //
@@ -157,8 +157,8 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
     );
   });
 
-  // ── Store credit balances ─────────────────────────────────────────
-  app.get('/v1/commerce/store-credit', async (request) => {
+  // ── Account credit balances ─────────────────────────────────────────
+  app.get('/v1/commerce/account-credit', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const q = request.query as Record<string, string | undefined>;
@@ -166,7 +166,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
     const minBalance = q?.min_balance_cents ? Number(q.min_balance_cents) : 1;
 
     const rows = await withRequestTenant(request, (tx) =>
-      tx.storeCredit.findMany({
+      tx.accountCredit.findMany({
         where: { balanceCents: { gte: minBalance } },
         orderBy: { balanceCents: 'desc' },
         take,

@@ -28,11 +28,11 @@ export interface GridProps {
 }
 
 const GAP_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-grid--gap-xs',
-  sm: 'sf-grid--gap-sm',
-  md: 'sf-grid--gap-md',
-  lg: 'sf-grid--gap-lg',
-  xl: 'sf-grid--gap-xl',
+  xs: 'st-grid--gap-xs',
+  sm: 'st-grid--gap-sm',
+  md: 'st-grid--gap-md',
+  lg: 'st-grid--gap-lg',
+  xl: 'st-grid--gap-xl',
 };
 
 export function Grid({
@@ -49,9 +49,9 @@ export function Grid({
   return (
     <Tag
       className={cx(
-        'sf-grid',
-        `sf-grid--cols-${cols}`,
-        !responsive && 'sf-grid--fixed',
+        'st-grid',
+        `st-grid--cols-${cols}`,
+        !responsive && 'st-grid--fixed',
         GAP_CLASS[gap],
         className
       )}

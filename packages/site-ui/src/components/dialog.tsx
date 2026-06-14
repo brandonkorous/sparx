@@ -2,7 +2,7 @@
 
 // Dialog (Modal) — Radix behavior, Surface appearance (docs/47 §11 B3). Radix
 // (@radix-ui/react-dialog) owns focus trap, scroll lock, ESC/overlay close, and
-// portalling; styling is `sf-*`. `placement` positions the panel (top · center ·
+// portalling; styling is `st-*`. `placement` positions the panel (top · center ·
 // bottom). The root is a thin wrapper (NOT a mutated primitive, so Drawer can reuse
 // the same primitive independently). Compound parts attach + export.
 
@@ -37,9 +37,9 @@ function DialogContent({
 }: DialogContentProps): React.ReactElement {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className={cx('sf-dialog__overlay', overlayClassName)} />
+      <DialogPrimitive.Overlay className={cx('st-dialog__overlay', overlayClassName)} />
       <DialogPrimitive.Content
-        className={cx('sf-dialog', `sf-dialog--${placement}`, className)}
+        className={cx('st-dialog', `st-dialog--${placement}`, className)}
         {...props}
       >
         {children}
@@ -53,7 +53,7 @@ function DialogTitle({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>): React.ReactElement {
-  return <DialogPrimitive.Title className={cx('sf-dialog__title', className)} {...props} />;
+  return <DialogPrimitive.Title className={cx('st-dialog__title', className)} {...props} />;
 }
 DialogTitle.displayName = 'DialogTitle';
 
@@ -61,7 +61,7 @@ function DialogDescription({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>): React.ReactElement {
-  return <DialogPrimitive.Description className={cx('sf-dialog__desc', className)} {...props} />;
+  return <DialogPrimitive.Description className={cx('st-dialog__desc', className)} {...props} />;
 }
 DialogDescription.displayName = 'DialogDescription';
 

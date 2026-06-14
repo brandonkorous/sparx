@@ -20,8 +20,8 @@ export default async function CheckoutPage() {
   if (!tenant) notFound();
 
   return (
-    <div className="sf-container" style={{ paddingBlock: '2rem' }}>
-      <h1 className="sf-h1" style={{ marginBottom: '1.5rem' }}>
+    <div className="st-container" style={{ paddingBlock: '2rem' }}>
+      <h1 className="st-h1" style={{ marginBottom: '1.5rem' }}>
         Checkout
       </h1>
       <CheckoutFlow tenantSlug={tenant.slug} />

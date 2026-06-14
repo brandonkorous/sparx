@@ -30,11 +30,11 @@ export interface MenuItemProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-menu--sz-xs',
-  sm: 'sf-menu--sz-sm',
-  md: 'sf-menu--sz-md',
-  lg: 'sf-menu--sz-lg',
-  xl: 'sf-menu--sz-xl',
+  xs: 'st-menu--sz-xs',
+  sm: 'st-menu--sz-sm',
+  md: 'st-menu--sz-md',
+  lg: 'st-menu--sz-lg',
+  xl: 'st-menu--sz-xl',
 };
 
 function MenuRoot({
@@ -47,7 +47,7 @@ function MenuRoot({
 }: MenuProps): React.ReactElement {
   return (
     <ul
-      className={cx('sf-menu', `sf-menu--${orientation}`, SIZE_CLASS[size], className)}
+      className={cx('st-menu', `st-menu--${orientation}`, SIZE_CLASS[size], className)}
       style={style}
       id={id}
     >
@@ -66,13 +66,13 @@ function MenuItem({
   children,
 }: MenuItemProps): React.ReactElement {
   const itemClass = cx(
-    'sf-menu__item',
-    active && 'sf-menu__item--active',
-    disabled && 'sf-menu__item--disabled',
+    'st-menu__item',
+    active && 'st-menu__item--active',
+    disabled && 'st-menu__item--disabled',
     className
   );
   return (
-    <li className="sf-menu__li" style={style}>
+    <li className="st-menu__li" style={style}>
       {href && !disabled ? (
         <a href={href} className={itemClass} aria-current={active ? 'page' : undefined}>
           {children}

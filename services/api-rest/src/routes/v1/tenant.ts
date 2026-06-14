@@ -748,13 +748,13 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       {
         id: 'account' as const,
         title: 'Create your account',
-        description: 'Email, password, and store name.',
+        description: 'Email, password, and site name.',
         done: true,
       },
       {
         id: 'tenant' as const,
-        title: 'Confirm your store details',
-        description: 'Make sure the contact email and store name look right.',
+        title: 'Confirm your site details',
+        description: 'Make sure the contact email and site name look right.',
         done: Boolean(tenant.name),
         cta: { label: 'Open settings', href: '/settings/general' },
       },
@@ -774,7 +774,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       },
       {
         id: 'domain' as const,
-        title: 'Set your store address',
+        title: 'Set your site address',
         description: 'Purchase a domain or connect one you already own.',
         done: state.completed.domain,
         cta: { label: 'Manage domains', href: '/settings/domains' },

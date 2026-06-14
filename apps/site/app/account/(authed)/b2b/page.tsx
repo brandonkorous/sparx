@@ -50,23 +50,23 @@ export default function B2bPortalPage() {
 
   if (error) {
     return (
-      <div className="sf-alert sf-alert--error" role="alert">
+      <div className="st-alert st-alert--error" role="alert">
         {error}
       </div>
     );
   }
 
   if (accounts === null) {
-    return <div className="sf-skeleton" style={{ height: 120 }} />;
+    return <div className="st-skeleton" style={{ height: 120 }} />;
   }
 
   if (accounts.length === 0) {
     return (
       <div>
-        <h1 className="sf-h2" style={{ marginBottom: '0.5rem' }}>
+        <h1 className="st-h2" style={{ marginBottom: '0.5rem' }}>
           B2B Account
         </h1>
-        <p className="sf-muted" style={{ marginBottom: '1.5rem' }}>
+        <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
           Your account doesn&apos;t have B2B access yet. Contact your sales representative to set up
           wholesale purchasing on your account.
         </p>
@@ -76,7 +76,7 @@ export default function B2bPortalPage() {
 
   return (
     <div>
-      <h1 className="sf-h2" style={{ marginBottom: '1.25rem' }}>
+      <h1 className="st-h2" style={{ marginBottom: '1.25rem' }}>
         B2B Accounts
       </h1>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -84,7 +84,7 @@ export default function B2bPortalPage() {
           <Link
             key={acct.accountId}
             href={`/account/b2b/${acct.accountId}`}
-            className="sf-card"
+            className="st-card"
             style={{
               padding: '1rem 1.25rem',
               display: 'flex',
@@ -95,15 +95,15 @@ export default function B2bPortalPage() {
           >
             <div>
               <strong>{acct.companyName}</strong>
-              <div className="sf-muted" style={{ fontSize: '0.85rem', marginTop: '0.2rem' }}>
+              <div className="st-muted" style={{ fontSize: '0.85rem', marginTop: '0.2rem' }}>
                 {acct.role.replace('_', ' ')}
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <span className="sf-badge" data-status={acct.status}>
+              <span className="st-badge" data-status={acct.status}>
                 {statusLabel(acct.status)}
               </span>
-              <span className="sf-muted" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+              <span className="st-muted" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
                 ${acct.creditAvailable.toLocaleString()} available
               </span>
             </div>

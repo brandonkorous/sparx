@@ -3,7 +3,7 @@
 //
 // Brand is the tenant-level source of truth (docs/30 §6): email READS it, never
 // overrides it. We read `TenantBrand` directly — the old cascade (Commerce
-// StorefrontTheme → EmailSettings.brandingOverride → defaults) is gone; those
+// CommerceSiteTheme → EmailSettings.brandingOverride → defaults) is gone; those
 // sources were consolidated into TenantBrand by migration 20260610000000 and
 // `brandingOverride` is removed. The brand's identity palette/typography overlay
 // the default theme preset; unset tokens fall back to the preset, and a tenant
@@ -53,7 +53,7 @@ function fontStack(name: string): string {
 
 function tokensToBrand(
   tokens: ThemeTokens,
-  extras: { logoUrl?: string; storeName?: string }
+  extras: { logoUrl?: string; siteName?: string }
 ): BrandTokens {
   return {
     primary: tokens.colorPrimary,
@@ -66,7 +66,7 @@ function tokensToBrand(
     fontHeading: fontStack(tokens.fontHeading),
     fontBody: fontStack(tokens.fontBody),
     ...(extras.logoUrl ? { logoUrl: extras.logoUrl } : {}),
-    ...(extras.storeName ? { storeName: extras.storeName } : {}),
+    ...(extras.siteName ? { siteName: extras.siteName } : {}),
   };
 }
 
@@ -100,12 +100,21 @@ export async function resolveEmailBrand(
   propertyId?: string | null
 ): Promise<BrandTokens | null> {
   return withTenant(ctx, async (tx) => {
-    const [brandRow, tenant, propertyRow] = await Promise.all([
+    const [brandRow, tenant, propertyRow, primaryProperty] = await Promise.all([
       tx.tenantBrand.findUnique({ where: { tenantId: ctx.tenantId } }),
-      tx.tenant.findUnique({ where: { id: ctx.tenantId }, select: { name: true, slug: true } }),
+      tx.tenant.findUnique({ where: { id: ctx.tenantId }, select: { slug: true } }),
       propertyId
-        ? tx.property.findUnique({ where: { id: propertyId }, select: { brandOverride: true } })
+        ? tx.property.findUnique({
+            where: { id: propertyId },
+            select: { name: true, brandOverride: true },
+          })
         : Promise.resolve(null),
+      // The tenant's PRIMARY site name — the fallback when no specific property is
+      // in scope (a tenant-wide send). Only read when we don't already have the
+      // active property row.
+      propertyId
+        ? Promise.resolve(null)
+        : tx.property.findFirst({ where: { isPrimary: true }, select: { name: true } }),
     ]);
 
     const override = parseBrandOverride(propertyRow?.brandOverride);
@@ -129,9 +138,17 @@ export async function resolveEmailBrand(
     };
 
     const slug = tenant?.slug ?? '';
-    const storeName = brand.businessName ?? tenant?.name ?? undefined;
+    // The wordmark/footer name is the customer-facing SITE name (Property.name —
+    // the active site, else the tenant's primary), NEVER the tenant's legal/org
+    // name (docs/49). brand.businessName is no longer a name source; it stays only
+    // as one signal that this tenant has a brand identity worth rendering (below).
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `||` is intended: an empty trimmed name must collapse to undefined, which `??` would not do.
+    const siteName = (propertyRow?.name ?? primaryProperty?.name)?.trim() || undefined;
 
-    // A merged brand with no identity tokens at all → defaults.
+    // A merged brand with no identity tokens at all → defaults. `businessName`
+    // still counts: a tenant who set a brand name (but no colours/logo) keeps a
+    // branded email — its wordmark just shows the SITE name now, not the name they
+    // typed into brand settings.
     const hasIdentity = [
       brand.businessName,
       brand.colorPrimary,
@@ -149,7 +166,7 @@ export async function resolveEmailBrand(
     const compiled = compileTokens(DEFAULT_THEME_KEY, { light: overlay }).light;
     return tokensToBrand(compiled, {
       logoUrl: logoUrlFor(brand.logoLightMediaId, slug),
-      storeName,
+      siteName,
     });
   });
 }

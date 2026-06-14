@@ -48,7 +48,7 @@ New route file `services/api-rest/src/routes/v1/checkout.ts` (or extend existing
 | `POST`  | `/v1/checkout/sessions/:id/shipping-rates` | Calculate available shipping rates for current address                                   |
 | `POST`  | `/v1/checkout/sessions/:id/complete`       | Confirm PaymentIntent → create Order → decrement inventory atomically                    |
 
-Checkout session creates a `PaymentIntent` and returns `client_secret` to the storefront for Stripe.js to handle 3D Secure, Apple Pay, Google Pay, and Link. The session stores `stripe_payment_intent_id`; completion is idempotent (re-presenting confirmed intent returns the existing order).
+Checkout session creates a `PaymentIntent` and returns `client_secret` to the site for Stripe.js to handle 3D Secure, Apple Pay, Google Pay, and Link. The session stores `stripe_payment_intent_id`; completion is idempotent (re-presenting confirmed intent returns the existing order).
 
 Order creation (atomic, in a Postgres transaction):
 
@@ -100,7 +100,7 @@ API:
 - `POST /v1/orders/:id/fulfillments` — create fulfillment
 - `POST /v1/orders/:id/refunds` — initiate refund
 
-### Phase 6 — Storefront checkout UI
+### Phase 6 — Site checkout UI
 
 `apps/site/app/checkout/` — multi-step React form:
 
@@ -285,7 +285,7 @@ TF changes: add `api-mcp` to the service image registry in `infra/terraform/`, a
 | 6   | MCP        | Ph2 Core read tools                | After Ph1                        |
 | 7   | Onboarding | Ph1 Stripe Connect OAuth           | After Checkout Ph1               |
 | 8   | Checkout   | Ph5 Orders dashboard + fulfillment | After Ph2                        |
-| 9   | Checkout   | Ph6 Storefront checkout UI         | After Ph2–4                      |
+| 9   | Checkout   | Ph6 Site checkout UI               | After Ph2–4                      |
 | 10  | Checkout   | Ph7 Stripe webhooks                | After Ph6                        |
 | 11  | Checkout   | Ph8 Discounts at checkout          | After Ph6                        |
 | 12  | Onboarding | Ph2 Done screen + tips             | After Onboarding Ph1             |

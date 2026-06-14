@@ -18,7 +18,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma, withTenant } from '@sparx/db';
-import { storefrontService } from '@sparx/commerce';
+import { commerceSiteService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { notFound, badRequest } from '@sparx/api-core/errors';
 import { serializeEntry } from '@sparx/api-core/entries';
@@ -288,7 +288,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     const propertyId = await resolvePublicPropertyId(tenantId, q.property ?? null);
 
     const rows = await withTenant({ tenantId }, (tx) =>
-      tx.storefrontDocPlacement.findMany({
+      tx.siteDocPlacement.findMany({
         // Tenant-wide (null) placements show on every site; site-scoped ones only
         // on their site. A sibling site's exclusive links never appear here.
         where: {
@@ -354,7 +354,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       throw badRequest('Reserved tenant.');
     }
 
-    // The active site (docs/49 Phase 6): the StorefrontTheme write-through is now
+    // The active site (docs/49 Phase 6): the CommerceSiteTheme write-through is now
     // per-property, so resolve which site this payload reflects (the `?property=`
     // slug, else the primary) and key the theme read by it.
     const propertyId = await resolvePublicPropertyId(tenant.id, query.property ?? null);
@@ -364,14 +364,14 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     // theme row is one-per-(tenant, property); settings stays one-per-tenant. A
     // missing row means the site hasn't customized, so we fall back to
     // nulls/defaults the storefront's token layer reads as "use the default theme".
-    const [theme, storefront, brand, consent, propertyRow] = await withTenant(
+    const [theme, storefront, brand, consent, propertyRow, propertyNameRow] = await withTenant(
       { tenantId: tenant.id },
       (tx) =>
         Promise.all([
           // PRESENTATION tokens only. Identity (colours, type, logo, favicon) comes
-          // from the tenant brand below — those StorefrontTheme columns were removed
+          // from the tenant brand below — those CommerceSiteTheme columns were removed
           // in migration 20260610000200 (docs/30 §6).
-          tx.storefrontTheme.findUnique({
+          tx.commerceSiteTheme.findUnique({
             where: { tenantId_propertyId: { tenantId: tenant.id, propertyId } },
             select: {
               colorBackground: true,
@@ -382,9 +382,9 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
           // The active site's settings, inheriting the primary's when the site has
           // no row of its own (docs/49 Phase 6b). Returns the full row; the payload
           // below reads currency/locale/stock/auth off it.
-          storefrontService.resolveSettingsRow(tx, tenant.id, propertyId),
+          commerceSiteService.resolveSettingsRow(tx, tenant.id, propertyId),
           // Tenant-level brand is the source of truth for IDENTITY (docs/30 §6):
-          // logo/favicon + brand colours + brand type. It WINS over StorefrontTheme
+          // logo/favicon + brand colours + brand type. It WINS over CommerceSiteTheme
           // here; the theme keeps only presentation tokens (background/muted/radius).
           tx.tenantBrand.findUnique({
             where: { tenantId: tenant.id },
@@ -412,6 +412,11 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
                 select: { brandOverride: true, moduleScope: true },
               })
             : Promise.resolve(null),
+          // The active site's NAME — the customer-facing SITE name the storefront
+          // renders in chrome/title/OG (docs/49). Keyed by the resolved propertyId
+          // (the `?property=` site, else the primary), so it's present even for the
+          // bare primary host. This is NEVER the tenant's legal/org name.
+          tx.property.findUnique({ where: { id: propertyId }, select: { name: true } }),
         ])
     );
 
@@ -460,15 +465,21 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     return ok({
       id: tenant.id,
       slug: tenant.slug,
+      // `name` (legal/org tenant name) + `businessName` (brand) stay for rollout
+      // back-compat but are NON-authoritative for display. `propertyName` is the
+      // customer-facing SITE name the storefront renders (docs/49) — the active
+      // site, else the primary. The storefront collapses to it (apps/site/lib/
+      // tenant.ts) so chrome/title/OG never show the tenant's legal name.
       name: tenant.name,
       businessName: identity.businessName,
+      propertyName: propertyNameRow?.name ?? null,
       settings: tenant.settings,
       // Site-wide social links (a SITE setting on the tenant, not brand/theme —
       // docs/45 §3): an ordered { platform, url }[] the storefront chrome renders.
       socials: Array.isArray(tenant.socials) ? tenant.socials : [],
       theme: mergedTheme,
-      storefront: {
-        // Per-site override wins; falls back to tenant StorefrontSettings then hardcoded default.
+      commerce: {
+        // Per-site override wins; falls back to tenant CommerceSiteSettings then hardcoded default.
         defaultCurrency: override?.defaultCurrency ?? storefront?.defaultCurrency ?? 'USD',
         defaultLocale: override?.defaultLocale ?? storefront?.defaultLocale ?? 'en-US',
         showStockBelow: storefront?.showStockBelow ?? 10,

@@ -1,9 +1,9 @@
-// Token compilation + the StorefrontTheme write-through map.
+// Token compilation + the CommerceSiteTheme write-through map.
 //
 // `compileTokens` overlays a tenant's per-mode token overrides on top of a
 // theme preset's defaults to produce the final { light, dark } token maps that
 // publishing snapshots into SiteVersion.compiledTokens. The light subset that
-// has a matching StorefrontTheme column is written through on publish so the
+// has a matching CommerceSiteTheme column is written through on publish so the
 // storefront's existing read path keeps working.
 
 import type { ThemeKey, ThemePreset, ThemeOverlay, ThemeTokens, CompiledTokens } from './types';
@@ -56,28 +56,28 @@ export function compileTokensFromDefaults(
   };
 }
 
-// Token → StorefrontTheme column. The light values for these PRESENTATION
-// tokens are written through to the commerce-owned commerce_storefront_themes
+// Token → CommerceSiteTheme column. The light values for these PRESENTATION
+// tokens are written through to the commerce-owned commerce_site_themes
 // row on publish so the storefront's no-snapshot fallback read path keeps
 // working. Identity tokens (colorPrimary/PrimaryForeground/Accent, fontHeading/
 // Body) are NOT written through — they're owned by the tenant-level brand
-// (docs/30 §6), read live and overlaid at render; their StorefrontTheme columns
+// (docs/30 §6), read live and overlaid at render; their CommerceSiteTheme columns
 // were removed in migration 20260610000200. Tokens with no column at all
 // (colorForeground, colorBorder, containerWidth) reach the storefront only via
 // the Site Builder public snapshot.
-export const STOREFRONT_THEME_WRITETHROUGH: { token: keyof ThemeTokens; column: string }[] = [
+export const SITE_THEME_WRITETHROUGH: { token: keyof ThemeTokens; column: string }[] = [
   { token: 'colorBackground', column: 'colorBackground' },
   { token: 'colorMuted', column: 'colorMuted' },
   { token: 'radiusBase', column: 'radiusBase' },
 ];
 
 /**
- * Projects a compiled light token map onto the StorefrontTheme column shape
+ * Projects a compiled light token map onto the CommerceSiteTheme column shape
  * for the write-through upsert performed by the publish service.
  */
-export function toStorefrontThemeColumns(lightTokens: ThemeTokens): Record<string, string> {
+export function toCommerceSiteThemeColumns(lightTokens: ThemeTokens): Record<string, string> {
   const out: Record<string, string> = {};
-  for (const { token, column } of STOREFRONT_THEME_WRITETHROUGH) {
+  for (const { token, column } of SITE_THEME_WRITETHROUGH) {
     const v = lightTokens[token];
     if (typeof v === 'string' && v !== '') out[column] = v;
   }

@@ -8,7 +8,7 @@
 
 ## 1. Purpose & forcing function
 
-The Site Builder can dress a commerce storefront — hero, product grids, collection tiles, a
+The Site Builder can dress a commerce site — hero, product grids, collection tiles, a
 testimonials row. It cannot yet compose a real **marketing landing page**. This document specifies
 the gap precisely and the section model that closes it.
 
@@ -62,8 +62,8 @@ Session-level bugs that are not about composition are listed in §8.
 A PageLayout's content region is an **ordered, flat list** of sections. Each section type is declared
 once in [section-registry.ts](packages/sitebuilder-schemas/src/section-registry.ts) — the single
 source consulted by the editor (form generation + the scope-restricted library), the service (config
-validation + defaults), and the storefront (rendering). **Adding a section means:** write its Zod
-schema + `SectionField[]`, register it in `SECTION_REGISTRY`, add a storefront component, and add a
+validation + defaults), and the site (rendering). **Adding a section means:** write its Zod
+schema + `SectionField[]`, register it in `SECTION_REGISTRY`, add a site component, and add a
 `case` to [section-renderer.tsx](apps/site/components/section-renderer.tsx).
 
 The critical structural fact: **sections do not nest.** A page is a flat stack of full-width blocks.
@@ -81,7 +81,7 @@ editor primitives.
 | Section               | Config (source of truth)                                                                                                             | Hard ceiling that blocks landing-page use                                                                                                                                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Hero**              | `backgroundMediaId`, `heading` (≤160), `subheading` (≤400), **one** `ctaLabel` (≤60)/`ctaUrl`, `align` L/C/R, `overlayOpacity` 0–100 | Padding clamps `3.5–7rem` (never full-viewport); **single CTA**; text block always centered vertically; image only (no video); white text forced when a bg is set.                                                        |
-| **Image banner**      | `imageMediaId`, `heading`, `subheading`, **one** `ctaLabel`/`ctaUrl`, `align`, `height` sm/md/lg                                     | Lives **inside `sf-container`** (width-constrained, rounded corners) so it is _not_ full-bleed; text sits in a fixed centered `46ch` dark box (no corner anchor); `height` maxes at **480px**; **single CTA**; one image. |
+| **Image banner**      | `imageMediaId`, `heading`, `subheading`, **one** `ctaLabel`/`ctaUrl`, `align`, `height` sm/md/lg                                     | Lives **inside `st-container`** (width-constrained, rounded corners) so it is _not_ full-bleed; text sits in a fixed centered `46ch` dark box (no corner anchor); `height` maxes at **480px**; **single CTA**; one image. |
 | **Featured products** | `heading`, `source` newest/collection/manual, `columns` 1–4, `limit`                                                                 | Renders product tiles only; `return null` when zero products resolve (silent).                                                                                                                                            |
 | **Collection grid**   | collection tiles                                                                                                                     | `return null` when empty (silent).                                                                                                                                                                                        |
 | **Rich text**         | `heading`, sanitized `html` (≤20k), `align`, `width`                                                                                 | Prose only — no CTA, no media slot, **no `<iframe>`/script** (sanitized).                                                                                                                                                 |
@@ -89,9 +89,9 @@ editor primitives.
 | **Email signup**      | heading/description/placeholder/button/success                                                                                       | Single inline form.                                                                                                                                                                                                       |
 
 Render path: `SectionRenderer` switches `sectionType` against a component map, themes purely via the
-`--sf-*` token layer injected by the storefront layout (the storefront has its **own** token/CSS
+`--st-*` token layer injected by the site layout (the site has its **own** token/CSS
 surface — it does **not** consume `@sparx/ui` components), and **skips unknown types** so an old
-storefront tolerates a new section. Empty data-bound sections render nothing.
+site tolerates a new section. Empty data-bound sections render nothing.
 
 ---
 
@@ -103,7 +103,7 @@ Every gap found in the exercise, ranked by leverage (how much of a real landing 
 
 | #   | Gap                                         | Target evidence                                                                 | Root cause                                                                                                                        | Tier                |
 | --- | ------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| 1   | **No multi-panel / split-row layout**       | Three 2-up rows of media cards (product pair, offers pair, accessory pair)      | Sections don't nest; only full-width stacking exists. The one grid (`sf-grid[data-cols]`) renders product/testimonial tiles only. | PageLayout          |
+| 1   | **No multi-panel / split-row layout**       | Three 2-up rows of media cards (product pair, offers pair, accessory pair)      | Sections don't nest; only full-width stacking exists. The one grid (`st-grid[data-cols]`) renders product/testimonial tiles only. | PageLayout          |
 | 2   | **Media panels too constrained**            | Every panel is a full-bleed photo, tall, text anchored bottom-left              | `ImageBanner` is container-width + rounded + centered `46ch` box + `≤480px`                                                       | PageLayout          |
 | 3   | **Single CTA everywhere**                   | Every panel pairs a solid + a ghost button (a primary + a "learn more")         | `Hero` and `ImageBanner` expose exactly one `ctaLabel`/`ctaUrl`                                                                   | PageLayout          |
 | 4   | **No side-by-side media+text band**         | A feature band: heading + CTAs on a light side, media strip on the other        | No section composes a text column beside a media column                                                                           | PageLayout          |
@@ -159,8 +159,8 @@ ctas: z.array(Cta).max(2).default([]);
 ```
 
 Editor: a `list` field with `itemFields` (`text` label, `url`, `select` style) — **no new field
-type**. Storefront: `solid` → existing `sf-btn--primary`; `ghost` needs a new **`sf-btn--ghost`**
-(outline-on-image) variant in [storefront.css](apps/site/app/storefront.css); `link` → text
+type**. Site: `solid` → existing `st-btn--primary`; `ghost` needs a new **`st-btn--ghost`**
+(outline-on-image) variant in [site.css](apps/site/app/site.css); `link` → text
 link. `SbLink` already discriminates internal vs external. A small `SbCtaRow` wraps `ctas.map`.
 
 **`MediaBlock` (closes #2, #8, #9, #10, #11).** The shared "framed media with overlaid content"
@@ -169,7 +169,7 @@ fields, mixed into Hero, Image banner, and each Panel:
 ```ts
 mediaId: OptionalUuid,
 mediaType: z.enum(['image', 'video']).default('image'),     // #8
-fullBleed: z.boolean().default(false),                       // #2  (escape sf-container)
+fullBleed: z.boolean().default(false),                       // #2  (escape st-container)
 height: z.enum(['sm', 'md', 'lg', 'screen']).default('md'),  // #11 ('screen' = 100dvh)
 contentPosition: z.enum([                                    // #10 9-point grid
   'top-left','top-center','top-right',
@@ -181,7 +181,7 @@ overlayOpacity: z.number().min(0).max(100).default(40),
 ```
 
 `contentPosition` is a `select`; the rest are `select`/`boolean`/`media`/`range` — again **no new
-field type**. `textColor: light|dark` maps to `--sf-*` tokens, never an arbitrary hex (brand rule,
+field type**. `textColor: light|dark` maps to `--st-*` tokens, never an arbitrary hex (brand rule,
 §6). Video uses a muted/looped/`playsInline` `<video>` with the image as `poster`.
 
 ### 4.2 New & upgraded sections (PageLayout tier)
@@ -231,7 +231,7 @@ build:
   refinement (media **focal point**, richer icon picker) can add field types when needed.
 - **Empty-section placeholder (closes #14).** The editor canvas must render a "Nothing to show yet —
   configure this section" placeholder for any section that would render `null` (no products resolved,
-  no panels added), instead of vanishing. This is editor-only; the storefront still renders nothing.
+  no panels added), instead of vanishing. This is editor-only; the site still renders nothing.
 - **Responsive authoring.** Panels / Media+Text / Stats collapse to one stacked column on small
   screens, and the editor's two-pane inspector collapses the same way
   ([[feedback_responsive_builder_mobile]]).
@@ -242,16 +242,16 @@ build:
 
 ## 6. Theming & brand-rule compliance
 
-Every new section themes **exclusively** through the `--sf-*` token layer, like the existing ones —
+Every new section themes **exclusively** through the `--st-*` token layer, like the existing ones —
 no hardcoded colors, consistent with the CLAUDE.md brand rule and [[feedback_sparx_ui_decisions]]:
 
-- `textColor: light|dark` selects token sets (`--sf-text` / inverse), never a raw hex.
-- The new `sf-btn--ghost` variant is defined once in `storefront.css` alongside `sf-btn--primary` —
+- `textColor: light|dark` selects token sets (`--st-text` / inverse), never a raw hex.
+- The new `st-btn--ghost` variant is defined once in `site.css` alongside `st-btn--primary` —
   feature/section code references the class, it does not hand-build hover/focus states.
 - The only inline style any section uses remains the background-image URL (the existing Hero/banner
   pattern); no new `style={{ color/background }}` fingerprints.
-- Storefront sections render on the storefront's own CSS surface (not `@sparx/ui`), so this is
-  additive CSS in `storefront.css` — the same place Hero/banner styles already live.
+- Site sections render on the site's own CSS surface (not `@sparx/ui`), so this is
+  additive CSS in `site.css` — the same place Hero/banner styles already live.
 
 ---
 
@@ -262,7 +262,7 @@ sequenced by leverage and dependency:
 
 | Phase | Scope                                                                                                     | Unblocks                              | Notes                                                                |
 | ----- | --------------------------------------------------------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------- |
-| **A** | `Cta`/`ctas[]` primitive + `sf-btn--ghost`                                                                | #3 — every panel's two-button pairing | Smallest change; legacy single-CTA migration.                        |
+| **A** | `Cta`/`ctas[]` primitive + `st-btn--ghost`                                                                | #3 — every panel's two-button pairing | Smallest change; legacy single-CTA migration.                        |
 | **B** | `MediaBlock` upgrade on Hero + Image banner (fullBleed, height:screen, contentPosition, textColor, video) | #2, #8, #9, #10, #11                  | Hero becomes a real landing hero.                                    |
 | **C** | **Panels** section                                                                                        | #1 — the three 2-up rows              | The headline gap; depends on A + B primitives.                       |
 | **D** | **Media+Text**, **Stats**, **Embed**                                                                      | #4, #5, #6                            | Embed needs the allowlist (§9).                                      |
@@ -279,11 +279,11 @@ motion; Phase F makes the chrome match.
 
 Session findings that are **not** composition gaps (tracked in project memory, not here):
 
-- Draft theme not previewable on the storefront (layout injects **published** tokens while the page
+- Draft theme not previewable on the site (layout injects **published** tokens while the page
   renders **draft** sections).
 - Social links live on the Brand & Theme surface; they are business identity and belong at the
   **tenant** level.
-- Local dashboard preview points at the **live** storefront when `SPARX_STOREFRONT_URL` is unset.
+- Local dashboard preview points at the **live** site when `SPARX_SITE_URL` is unset.
 
 The theme-not-applying bug (brand color overrides masking a selected theme) was fixed separately
 (doc 33 model; released 2026-06-01).
@@ -296,7 +296,7 @@ The theme-not-applying bug (brand color overrides masking a selected theme) was 
    tenants ever need arbitrary nesting (sections inside panels)? If so it's a flat-model rework —
    revisit only on real demand.
 2. **Embed allowlist & CSP.** Which hosts (Google/Mapbox maps, YouTube/Vimeo, form providers)? The
-   allowlist is enforced server-side at publish; the storefront's CSP `frame-src` must match. Needs a
+   allowlist is enforced server-side at publish; the site's CSP `frame-src` must match. Needs a
    security sign-off before Phase D.
 3. **"Powered by Sparx" removal as a plan entitlement** — ties into
    [docs/17-billing-subscriptions.md](17-billing-subscriptions.md). Decide before Phase F.

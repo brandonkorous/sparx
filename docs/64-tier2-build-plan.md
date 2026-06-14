@@ -161,11 +161,11 @@ Invoice generation at order creation for net-terms accounts:
 
 ### Phase 4 — Fleet & fitment
 
-Extend product variants with fitment data (JSONB `fitment` array). Product import/edit UI gets a Fitment tab (year_min, year_max, make, model, engine). Fleet profile editor on B2B account. Price resolution passes fleet context to `resolve_b2b_price`. Storefront catalog filtering by fleet profile (via `ext.b2b.fleet` binding in Builder).
+Extend product variants with fitment data (JSONB `fitment` array). Product import/edit UI gets a Fitment tab (year_min, year_max, make, model, engine). Fleet profile editor on B2B account. Price resolution passes fleet context to `resolve_b2b_price`. Site catalog filtering by fleet profile (via `ext.b2b.fleet` binding in Builder).
 
-### Phase 5 — B2B Portal (storefront-side)
+### Phase 5 — B2B Portal (site-side)
 
-Extend `@sparx/customer-auth` (not Better Auth — see docs/27) with B2B account context. B2B portal routes under the tenant storefront: `/account/b2b/` — credit summary, invoice downloads, quote submission, reorder, saved carts. Access control: `account_admin` / `buyer` / `viewer` roles on `b2b_account_contacts`.
+Extend `@sparx/customer-auth` (not Better Auth — see docs/27) with B2B account context. B2B portal routes under the tenant site: `/account/b2b/` — credit summary, invoice downloads, quote submission, reorder, saved carts. Access control: `account_admin` / `buyer` / `viewer` roles on `b2b_account_contacts`.
 
 ### Phase 6 — Purchase approval workflows
 

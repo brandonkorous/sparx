@@ -13,9 +13,10 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 import type { FastifyBaseLogger } from 'fastify';
-import { prisma, withTenant } from '@sparx/db';
+import { withTenant } from '@sparx/db';
 import type { TenantContext } from '@sparx/db';
 
+import { resolveActivePropertyName } from '../property.js';
 import { env } from '../../env.js';
 import { conversationService } from './index.js';
 import { getChatConfig, isWithinOperatingHours } from './config.js';
@@ -103,16 +104,16 @@ export async function handleInboundForAI(
 }
 
 interface GroundingDto {
-  tenantName: string;
+  siteName: string;
   products: string[];
   pages: string[];
 }
 
 async function buildGrounding(tenantId: string): Promise<GroundingDto> {
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { name: true },
-  });
+  // The assistant introduces itself as the SITE (the tenant's primary site —
+  // docs/49), shown to the customer in the chat widget. Never the tenant's
+  // legal/org name.
+  const siteName = (await resolveActivePropertyName(tenantId, null)) || 'this store';
   const { products, pages } = await withTenant({ tenantId }, async (tx) => {
     const [products, pages] = await Promise.all([
       tx.product.findMany({
@@ -132,7 +133,7 @@ async function buildGrounding(tenantId: string): Promise<GroundingDto> {
   });
 
   return {
-    tenantName: tenant?.name ?? 'this store',
+    siteName,
     products: products.map((p) => {
       const desc = p.description ? stripHtml(p.description).slice(0, 120) : '';
       return desc ? p.title + ' — ' + desc : p.title;
@@ -156,7 +157,7 @@ function buildSystemPrompt(g: GroundingDto): string {
     ? `Information / policy pages on the site: ${g.pages.join(', ')}.`
     : '';
   return [
-    `You are the customer-support assistant for ${g.tenantName}, embedded in its storefront chat widget.`,
+    `You are the customer-support assistant for ${g.siteName}, embedded in its storefront chat widget.`,
     'Answer concisely and only from the context below. If the customer asks about an order, account, refund, a specific price, availability, or anything not covered by the context, do NOT guess — set escalate to true so a human takes over.',
     'Always call the `respond` tool. Set confidence between 0 and 1 for how sure you are the answer is correct and grounded. Be honest: low confidence is better than a wrong answer.',
     catalog,

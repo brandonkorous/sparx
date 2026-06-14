@@ -152,6 +152,8 @@ export const BillingPaymentMethod = z.enum([
   'check',
   'ach',
   'wire',
+  'account_credit',
+  // legacy alias of 'account_credit' (store→site rename); tolerated on read.
   'store_credit',
   'other',
 ]);

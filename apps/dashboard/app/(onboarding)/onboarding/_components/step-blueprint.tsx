@@ -13,7 +13,7 @@ import type { BlueprintVertical, WizardBlueprint } from '../_lib/types';
 // hundreds — the module pick is the first, biggest cut.
 
 const VERTICAL_LABEL: Record<BlueprintVertical, string> = {
-  retail: 'Store',
+  retail: 'Shop',
   b2b: 'Wholesale',
   content: 'Publication',
   services: 'Services',

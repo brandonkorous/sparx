@@ -39,9 +39,9 @@ _into_ `@sparx/ui`'s `tokens.css` to back the new `color` axis.
 > Decision #2 here **reverses that for the palette only**: we adopt v2's _color vocabulary_
 > (semantic slots + `-content` pairs + OKLCH derivation) in the dashboard token layer so the
 > `color` axis has something coherent to bind to. We do **not** adopt v2's storage model,
-> compile pipeline, or `--sf-*` layer — those stay storefront-only. Doc 33 §6 is amended by
-> this doc; the storefront and dashboard now share a token _shape_ but keep separate _layers_
-> (`--sf-*` vs `--color-*`).
+> compile pipeline, or `--st-*` layer — those stay site-only. Doc 33 §6 is amended by
+> this doc; the site and dashboard now share a token _shape_ but keep separate _layers_
+> (`--st-*` vs `--color-*`).
 
 ---
 
@@ -141,8 +141,8 @@ resolving while we migrate. `--sparx-primary*` and `--module-active*` are untouc
 ### 3.4 What we are NOT changing
 
 - No change to `--space-*`, `--radius-*`, `--shadow-*`, type tokens. Shape/rhythm stays
-  as-is in the dashboard (v2's radius-trio / space-base are a storefront concern).
-- No change to the `--sf-*` layer or `@sparx/site-themes`.
+  as-is in the dashboard (v2's radius-trio / space-base are a site concern).
+- No change to the `--st-*` layer or `@sparx/site-themes`.
 - No new dark-mode declarations beyond the few base colors that need a dark variant
   (`neutral`, surfaces already present). Derived tokens inherit automatically.
 
@@ -395,7 +395,7 @@ matrix grids collapse to fewer columns on small screens (no fixed desktop-only l
   rewrites explicit old `variant`/`size` values. Badge/Tag default to `neutral` (matches
   today's `default` variant).
 - **`color-mix(in oklch …)` support.** Evergreen browsers only — fine for the dashboard
-  (authenticated app, modern browsers). Unlike the storefront we do not SSR-derive to hex;
+  (authenticated app, modern browsers). Unlike the site we do not SSR-derive to hex;
   if a legacy browser matters later we precompute. Noted, not blocking.
 - **Runtime custom colors (the `string` escape hatch).** `color` accepts arbitrary strings
   so a tenant color maps to `sx-c-<name>`. If the theme layer hasn't emitted that
@@ -404,6 +404,6 @@ matrix grids collapse to fewer columns on small screens (no fixed desktop-only l
   — documented as the contract, not enforced by the type.
 - **AA contrast on arbitrary `-content`.** Our palette is fixed (not tenant-set), so
   `-content` pairs are authored to clear AA once; no runtime contrast concern here (that's
-  the storefront's problem, doc 33 §8).
+  the site's problem, doc 33 §8).
 - **Scope creep toward full DaisyUI.** Accordion, radial progress, indicator-badge are
   deferred (§5.2); don't pull them in without a trigger.

@@ -61,7 +61,7 @@ The only truly synchronous email would be OTP/2FA, which does not exist yet (§8
 > operational alerts), or
 > (b) **auth/security infrastructure** — password reset, email verification — where
 > merchant-editable structure is a security and support liability. This holds **even
-> when the recipient is the tenant's customer** (the storefront password reset is
+> when the recipient is the tenant's customer** (the site password reset is
 > exactly this case, and it stays coded).
 
 Brand still applies to coded emails — `brandService.resolveEmailBrand` already
@@ -71,25 +71,25 @@ the merchant doesn't edit **structure/copy**, not that it's unbranded.
 
 ### 1.1 Per-template disposition
 
-| Template                   | Audience                                   | Sender today                                | Disposition                                           |
-| -------------------------- | ------------------------------------------ | ------------------------------------------- | ----------------------------------------------------- |
-| `order-confirmation`       | tenant → customer                          | Stripe webhook + `stripe-payment-reconcile` | **→ Builder** (`order-confirmation` key)              |
-| `shipping-confirmation`    | tenant → customer                          | fulfillment flow                            | **→ Builder** (`shipping-confirmation` key)           |
-| `appointment-confirmation` | tenant → customer                          | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-confirmation` key)        |
-| `appointment-reminder`     | tenant → customer                          | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-reminder` key)            |
-| `appointment-cancelled`    | tenant → customer                          | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-cancelled` key)           |
-| `welcome-merchant`         | Sparx → merchant                           | Better Auth (`@sparx/auth`)                 | **Stays coded** (platform onboarding)                 |
-| `email-verification`       | Sparx → dashboard user                     | Better Auth (`@sparx/auth`)                 | **Stays coded** (auth)                                |
-| `password-reset`           | dashboard user **and** storefront customer | Better Auth + `public/account`              | **Stays coded** (auth infra — §1.2)                   |
-| `domain-renewal-reminder`  | Sparx → merchant                           | `domain-worker` cron                        | **Stays coded** (platform/account)                    |
-| `chat-notification`        | Sparx-system → owner/admin **staff**       | `lib/chat/notify`                           | **Stays coded** (operational; links to the dashboard) |
+| Template                   | Audience                             | Sender today                                | Disposition                                           |
+| -------------------------- | ------------------------------------ | ------------------------------------------- | ----------------------------------------------------- |
+| `order-confirmation`       | tenant → customer                    | Stripe webhook + `stripe-payment-reconcile` | **→ Builder** (`order-confirmation` key)              |
+| `shipping-confirmation`    | tenant → customer                    | fulfillment flow                            | **→ Builder** (`shipping-confirmation` key)           |
+| `appointment-confirmation` | tenant → customer                    | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-confirmation` key)        |
+| `appointment-reminder`     | tenant → customer                    | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-reminder` key)            |
+| `appointment-cancelled`    | tenant → customer                    | `v1/b2b/scheduling`                         | **→ Builder** (`appointment-cancelled` key)           |
+| `welcome-merchant`         | Sparx → merchant                     | Better Auth (`@sparx/auth`)                 | **Stays coded** (platform onboarding)                 |
+| `email-verification`       | Sparx → dashboard user               | Better Auth (`@sparx/auth`)                 | **Stays coded** (auth)                                |
+| `password-reset`           | dashboard user **and** site customer | Better Auth + `public/account`              | **Stays coded** (auth infra — §1.2)                   |
+| `domain-renewal-reminder`  | Sparx → merchant                     | `domain-worker` cron                        | **Stays coded** (platform/account)                    |
+| `chat-notification`        | Sparx-system → owner/admin **staff** | `lib/chat/notify`                           | **Stays coded** (operational; links to the dashboard) |
 
 The customer-facing chat email (`chat-satisfaction`) is already a Builder default —
 `chat-notification` above is the **staff** alert, a different email.
 
-### 1.2 The one carve-out: storefront customer password reset
+### 1.2 The one carve-out: site customer password reset
 
-The storefront customer reset
+The site customer reset
 ([account.ts:331](../services/api-rest/src/routes/v1/public/account.ts#L331))
 **reuses the same `password-reset` coded template** as the dashboard. It is a
 tenant→customer email, so by the audience test alone it would move to the Builder —
@@ -161,7 +161,7 @@ templates need:
 
 These follow the existing resolver idiom exactly: entity-scoped, selected by
 `collectEmailSourceKeys` so a tree that doesn't reference them costs nothing, every
-`*Url` resolved to a real storefront route. Add the new ref ids
+`*Url` resolved to a real site route. Add the new ref ids
 (`fulfillmentId`, `appointmentId`) to `EmailRecipientRef`.
 
 ---

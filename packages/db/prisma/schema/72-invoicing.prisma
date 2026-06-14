@@ -314,7 +314,7 @@ model BillingDocumentPayment {
   documentId  String  @map("document_id") @db.Uuid
   // deposit | payment | refund (§8)
   kind        String  @db.VarChar(16)
-  // cash | card | check | ach | wire | store_credit | other
+  // cash | card | check | ach | wire | account_credit | other
   method      String  @db.VarChar(16)
   amount      Decimal @db.Decimal(12, 2)
   // Free-text instrument reference (check #, memo) + optional provider charge id

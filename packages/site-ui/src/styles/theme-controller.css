@@ -2,14 +2,14 @@
  * `[data-theme]` (the @sparx/site-themes mechanism). Segmented variant is a small
  * button group; the active option uses the surface/primary accent. */
 
-.sf-theme-controller {
+.st-theme-controller {
   display: inline-flex;
   padding: 0.2rem;
   gap: 0.15rem;
-  background: var(--sf-base-200, #f4f1e8);
-  border-radius: var(--sf-radius-field, 0.5rem);
+  background: var(--st-base-200, #f4f1e8);
+  border-radius: var(--st-radius-field, 0.5rem);
 }
-.sf-theme-controller__option {
+.st-theme-controller__option {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -18,29 +18,29 @@
   font-size: 0.85rem;
   line-height: 1;
   color: var(
-    --sf-text-secondary,
-    color-mix(in oklab, var(--sf-base-content, #23211c) 70%, transparent)
+    --st-text-secondary,
+    color-mix(in oklab, var(--st-base-content, #23211c) 70%, transparent)
   );
   background: transparent;
   border: 0;
-  border-radius: calc(var(--sf-radius-field, 0.5rem) - 0.15rem);
+  border-radius: calc(var(--st-radius-field, 0.5rem) - 0.15rem);
   cursor: pointer;
 }
-.sf-theme-controller__option:hover {
-  color: var(--sf-base-content, #23211c);
+.st-theme-controller__option:hover {
+  color: var(--st-base-content, #23211c);
 }
-.sf-theme-controller__option--active {
-  background: var(--sf-base-100, #fff);
-  color: var(--sf-base-content, #23211c);
-  box-shadow: var(--sf-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.12));
+.st-theme-controller__option--active {
+  background: var(--st-base-100, #fff);
+  color: var(--st-base-content, #23211c);
+  box-shadow: var(--st-shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.12));
 }
-.sf-theme-controller__option:focus-visible {
-  outline: 2px solid var(--sf-primary, #3f6b52);
+.st-theme-controller__option:focus-visible {
+  outline: 2px solid var(--st-primary, #3f6b52);
   outline-offset: 2px;
 }
 
-/* select variant reuses the .sf-input base for chrome. */
-.sf-theme-controller__select {
+/* select variant reuses the .st-input base for chrome. */
+.st-theme-controller__select {
   width: auto;
   padding: 0.4rem 0.6rem;
 }

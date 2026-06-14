@@ -39,18 +39,18 @@ export async function CollectionGridSection({
   if (collections.length === 0) return null;
 
   return (
-    <section className="sf-container sf-section">
+    <section className="st-container st-section">
       {config.heading ? (
-        <div className="sf-section__head">
-          <h2 className="sf-h2">{config.heading}</h2>
+        <div className="st-section__head">
+          <h2 className="st-h2">{config.heading}</h2>
         </div>
       ) : null}
-      <div className="sf-grid" data-cols={config.columns}>
+      <div className="st-grid" data-cols={config.columns}>
         {collections.map((c) => {
           const hero = mediaUrl(c.heroMediaId, ctx.tenantSlug);
           return (
-            <Link key={c.id} href={`/collections/${c.handle}`} className="sf-card">
-              <div className="sf-card__media">
+            <Link key={c.id} href={`/collections/${c.handle}`} className="st-card">
+              <div className="st-card__media">
                 {hero ? (
                   <Image
                     src={hero}
@@ -60,14 +60,14 @@ export async function CollectionGridSection({
                     style={{ objectFit: 'cover' }}
                   />
                 ) : (
-                  <div className="sf-card__media sf-card__media--empty" aria-hidden="true">
+                  <div className="st-card__media st-card__media--empty" aria-hidden="true">
                     <span style={{ fontSize: '2rem' }}>❖</span>
                   </div>
                 )}
               </div>
-              <div className="sf-card__body">
-                <span className="sf-card__title">{c.name}</span>
-                {c.description ? <span className="sf-muted">{c.description}</span> : null}
+              <div className="st-card__body">
+                <span className="st-card__title">{c.name}</span>
+                {c.description ? <span className="st-muted">{c.description}</span> : null}
               </div>
             </Link>
           );

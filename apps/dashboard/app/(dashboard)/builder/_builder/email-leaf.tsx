@@ -12,7 +12,7 @@
 // the SAME `EMAIL_DESIGN` tokens the renderer inlines on send — so the SCALE
 // (sizes, weights, spacing, radius, the accent CTA) is an exact match. Brand-
 // derived values (text/accent color, fonts) read the tenant theme `.bx-canvas`
-// exposes as `--sf-*` vars; the EMAIL_DESIGN values are the inlined fallback when
+// exposes as `--st-*` vars; the EMAIL_DESIGN values are the inlined fallback when
 // no brand is compiled (matching @sparx/email's `defaultBrand`).
 //
 // CAVEAT: the true send resolves its brand via email-platform's brand-service —
@@ -31,12 +31,12 @@ const { typography, colors, spacing, radius } = EMAIL_DESIGN;
 // Tenant brand via the canvas theme vars, with the email default inlined as the
 // fallback. Foreground/accent/fonts are brand-derived (the email brand-service
 // maps them); muted is the fixed email token, exactly like the primitive.
-const FG = `var(--sf-base-content, ${colors.textPrimary})`;
-const FONT_HEADING = `var(--sf-font-heading, ${EMAIL_DESIGN.fontFamily})`;
-const FONT_BODY = `var(--sf-font-body, ${EMAIL_DESIGN.fontFamily})`;
-const PRIMARY = `var(--sf-primary, ${colors.brand})`;
-const PRIMARY_FG = `var(--sf-primary-content, ${colors.textInverse})`;
-const BORDER = `var(--sf-border, ${colors.border})`;
+const FG = `var(--st-base-content, ${colors.textPrimary})`;
+const FONT_HEADING = `var(--st-font-heading, ${EMAIL_DESIGN.fontFamily})`;
+const FONT_BODY = `var(--st-font-body, ${EMAIL_DESIGN.fontFamily})`;
+const PRIMARY = `var(--st-primary, ${colors.brand})`;
+const PRIMARY_FG = `var(--st-primary-content, ${colors.textInverse})`;
+const BORDER = `var(--st-border, ${colors.border})`;
 
 /** A Heading at the email scale. The renderer collapses h2/h3 to the subheading
  *  size — only h1 is the display heading — so mirror that here for an exact match. */

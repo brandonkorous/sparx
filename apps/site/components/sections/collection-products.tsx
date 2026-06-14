@@ -20,8 +20,8 @@ export function CollectionProductsSection({
   return (
     <>
       {config.showCount ? (
-        <div className="sf-toolbar">
-          <span className="sf-toolbar__count">
+        <div className="st-toolbar">
+          <span className="st-toolbar__count">
             {extras.total} {extras.total === 1 ? 'product' : 'products'}
           </span>
         </div>

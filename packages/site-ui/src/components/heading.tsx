@@ -1,7 +1,7 @@
 // Heading — h1/h2/h3 in the tenant heading font (docs/46 §5.2).
 // SERVER component. Harvested from the site renderer's `headingStyle`
 // (the parity baseline): sizes 2.5 / 1.75 / 1.25rem, weight 600, line-height
-// 1.15. Themed by --sf-font-heading.
+// 1.15. Themed by --st-font-heading.
 
 import * as React from 'react';
 import { cx } from '../utils/cx';
@@ -20,16 +20,16 @@ export interface HeadingProps {
 }
 
 const LEVEL_CLASS: Record<HeadingLevel, string> = {
-  h1: 'sf-h--1',
-  h2: 'sf-h--2',
-  h3: 'sf-h--3',
+  h1: 'st-h--1',
+  h2: 'st-h--2',
+  h3: 'st-h--3',
 };
 
 export function Heading({ level = 'h2', size, className, style, id, children }: HeadingProps) {
   const Tag = level;
   return (
     <Tag
-      className={cx('sf-h', size === 'display' ? 'sf-h--display' : LEVEL_CLASS[level], className)}
+      className={cx('st-h', size === 'display' ? 'st-h--display' : LEVEL_CLASS[level], className)}
       style={style}
       id={id}
     >

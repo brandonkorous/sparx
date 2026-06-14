@@ -23,29 +23,29 @@ export function EmailSignupSection({ config }: { config: EmailSignupConfig }) {
   }
 
   return (
-    <section className="sf-container sf-section">
-      <div className="sf-sb-signup">
-        {config.heading ? <h2 className="sf-h2">{config.heading}</h2> : null}
-        {config.description ? <p className="sf-muted">{config.description}</p> : null}
+    <section className="st-container st-section">
+      <div className="st-sb-signup">
+        {config.heading ? <h2 className="st-h2">{config.heading}</h2> : null}
+        {config.description ? <p className="st-muted">{config.description}</p> : null}
         {done ? (
-          <p className="sf-sb-signup__ok" role="status">
+          <p className="st-sb-signup__ok" role="status">
             {config.successMessage}
           </p>
         ) : (
-          <form className="sf-sb-signup__form" onSubmit={onSubmit}>
-            <label className="sf-skip-link" htmlFor="sf-newsletter-email">
+          <form className="st-sb-signup__form" onSubmit={onSubmit}>
+            <label className="st-skip-link" htmlFor="st-newsletter-email">
               Email address
             </label>
             <input
-              id="sf-newsletter-email"
+              id="st-newsletter-email"
               type="email"
-              className="sf-input"
+              className="st-input"
               placeholder={config.placeholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <button type="submit" className="sf-btn sf-btn--primary">
+            <button type="submit" className="st-btn st-btn--primary">
               {config.buttonLabel}
             </button>
           </form>

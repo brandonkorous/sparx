@@ -54,21 +54,21 @@ export default function B2bInvoicesPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-        <Link href={`/account/b2b/${accountId}`} className="sf-link" style={{ fontSize: '0.9rem' }}>
+        <Link href={`/account/b2b/${accountId}`} className="st-link" style={{ fontSize: '0.9rem' }}>
           ← Back
         </Link>
-        <h1 className="sf-h2">Invoices</h1>
+        <h1 className="st-h2">Invoices</h1>
       </div>
 
       {error ? (
-        <div className="sf-alert sf-alert--error" role="alert">
+        <div className="st-alert st-alert--error" role="alert">
           {error}
         </div>
       ) : invoices === null ? (
-        <div className="sf-skeleton" style={{ height: 200 }} />
+        <div className="st-skeleton" style={{ height: 200 }} />
       ) : invoices.length === 0 ? (
-        <div className="sf-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="sf-muted">No invoices found.</p>
+        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
+          <p className="st-muted">No invoices found.</p>
         </div>
       ) : (
         <>
@@ -78,7 +78,7 @@ export default function B2bInvoicesPage() {
               return (
                 <div
                   key={inv.id}
-                  className="sf-card"
+                  className="st-card"
                   style={{
                     padding: '0.875rem 1rem',
                     display: 'flex',
@@ -89,17 +89,17 @@ export default function B2bInvoicesPage() {
                 >
                   <div>
                     <strong>{inv.invoiceNumber}</strong>
-                    <div className="sf-muted" style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}>
+                    <div className="st-muted" style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}>
                       Due {formatDate(inv.dueAt)}
                       {isOverdue && inv.overdueDays > 0 && (
-                        <span style={{ color: 'var(--sf-danger)', marginLeft: '0.4rem' }}>
+                        <span style={{ color: 'var(--st-danger)', marginLeft: '0.4rem' }}>
                           · {inv.overdueDays}d overdue
                         </span>
                       )}
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span className="sf-badge" {...statusBadgeProps(inv.status)}>
+                    <span className="st-badge" {...statusBadgeProps(inv.status)}>
                       {inv.status}
                     </span>
                     <strong style={{ whiteSpace: 'nowrap' }}>
@@ -115,18 +115,18 @@ export default function B2bInvoicesPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
               <button
                 type="button"
-                className="sf-btn sf-btn--outline"
+                className="st-btn st-btn--outline"
                 disabled={skip === 0}
                 onClick={() => setSkip(Math.max(0, skip - PAGE_SIZE))}
               >
                 Previous
               </button>
-              <span className="sf-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
+              <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
                 {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
               <button
                 type="button"
-                className="sf-btn sf-btn--outline"
+                className="st-btn st-btn--outline"
                 disabled={skip + PAGE_SIZE >= total}
                 onClick={() => setSkip(skip + PAGE_SIZE)}
               >

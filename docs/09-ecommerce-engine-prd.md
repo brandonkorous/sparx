@@ -231,7 +231,7 @@ B2B account-specific pricing is handled separately via pricing tiers, not as dis
 
 ---
 
-## 7. Storefront
+## 7. Site
 
 ### Pages
 
@@ -252,7 +252,7 @@ B2B account-specific pricing is handled separately via pricing tiers, not as dis
 
 ### Performance Targets
 
-- Storefront page load (p95): < 200ms TTFB via SSR + CDN caching
+- Site page load (p95): < 200ms TTFB via SSR + CDN caching
 - Core Web Vitals: LCP < 2.5s, FID < 100ms, CLS < 0.1
 - Product images lazy-loaded, WebP served, responsive srcset
 

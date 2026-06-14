@@ -105,7 +105,7 @@ One default variant is always created. If the merchant wants to add options (col
 | Field            | Type     | Required | Notes                                         |
 | ---------------- | -------- | -------- | --------------------------------------------- |
 | Price            | currency | yes      | Sets the default variant price                |
-| Compare-at price | currency | no       | Shown as strikethrough on storefront          |
+| Compare-at price | currency | no       | Shown as strikethrough on site                |
 | Cost per item    | currency | no       | Used for margin calculation                   |
 | SKU              | text     | no       | Unique per tenant; leave blank to auto-assign |
 | Barcode          | text     | no       | UPC, EAN, ISBN                                |
@@ -128,7 +128,7 @@ One default variant is always created. If the merchant wants to add options (col
 | Tags        | tag-input    | no       | Comma-separated                |
 | Status      | radio        | yes      | Draft (default) / Active       |
 
-"Create product" button. Draft = saved but not published to storefront. Active = live immediately.
+"Create product" button. Draft = saved but not published to site. Active = live immediately.
 
 **Post-wizard:** toast says "Product created — add images and variants from the product page."
 

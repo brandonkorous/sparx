@@ -247,7 +247,7 @@ const MODULES: ModuleDef[] = [
       { label: 'Bundles', icon: Package2 },
       { label: 'Configurator', icon: Settings2 },
       { label: 'Gift cards', icon: Gift },
-      { label: 'Store credit', icon: Wallet },
+      { label: 'Account credit', icon: Wallet },
       { label: 'Carts', icon: ShoppingCart },
       { label: 'Checkout sessions', icon: CreditCard },
       { label: 'Subscriptions', icon: Repeat2 },

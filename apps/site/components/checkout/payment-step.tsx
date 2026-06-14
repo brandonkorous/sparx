@@ -66,7 +66,7 @@ export function PaymentStep({
 
   if (!PUBLISHABLE_KEY) {
     return (
-      <div className="sf-alert sf-alert--error" role="alert">
+      <div className="st-alert st-alert--error" role="alert">
         Payments aren’t configured for this store yet (missing Stripe publishable key).
       </div>
     );
@@ -74,11 +74,11 @@ export function PaymentStep({
 
   if (error) {
     return (
-      <div className="sf-form">
-        <div className="sf-alert sf-alert--error" role="alert">
+      <div className="st-form">
+        <div className="st-alert st-alert--error" role="alert">
           {error}
         </div>
-        <button type="button" className="sf-btn sf-btn--ghost" onClick={onBack}>
+        <button type="button" className="st-btn st-btn--ghost" onClick={onBack}>
           ← Back to shipping
         </button>
       </div>
@@ -87,9 +87,9 @@ export function PaymentStep({
 
   if (!intent?.clientSecret) {
     return (
-      <div className="sf-form">
-        <h2 className="sf-h2">Payment</h2>
-        <div className="sf-skeleton" style={{ height: 180 }} />
+      <div className="st-form">
+        <h2 className="st-h2">Payment</h2>
+        <div className="st-skeleton" style={{ height: 180 }} />
       </div>
     );
   }
@@ -160,21 +160,21 @@ function PaymentInner({
   }
 
   return (
-    <form onSubmit={pay} className="sf-form">
-      <h2 className="sf-h2">Payment</h2>
+    <form onSubmit={pay} className="st-form">
+      <h2 className="st-h2">Payment</h2>
       <PaymentElement options={{ layout: 'tabs' }} />
       {error ? (
-        <div className="sf-alert sf-alert--error" role="alert">
+        <div className="st-alert st-alert--error" role="alert">
           {error}
         </div>
       ) : null}
       <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <button type="button" className="sf-btn sf-btn--ghost" onClick={onBack} disabled={busy}>
+        <button type="button" className="st-btn st-btn--ghost" onClick={onBack} disabled={busy}>
           ← Back
         </button>
         <button
           type="submit"
-          className="sf-btn sf-btn--primary sf-btn--lg"
+          className="st-btn st-btn--primary st-btn--lg"
           style={{ flex: 1 }}
           disabled={!stripe || busy}
         >

@@ -23,7 +23,7 @@ export interface NavbarSlotProps {
 
 function NavbarRoot({ className, style, id, children }: NavbarProps): React.ReactElement {
   return (
-    <nav className={cx('sf-navbar', className)} style={style} id={id}>
+    <nav className={cx('st-navbar', className)} style={style} id={id}>
       {children}
     </nav>
   );
@@ -32,7 +32,7 @@ NavbarRoot.displayName = 'Navbar';
 
 function NavbarStart({ className, style, children }: NavbarSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-navbar__start', className)} style={style}>
+    <div className={cx('st-navbar__start', className)} style={style}>
       {children}
     </div>
   );
@@ -41,7 +41,7 @@ NavbarStart.displayName = 'NavbarStart';
 
 function NavbarCenter({ className, style, children }: NavbarSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-navbar__center', className)} style={style}>
+    <div className={cx('st-navbar__center', className)} style={style}>
       {children}
     </div>
   );
@@ -50,7 +50,7 @@ NavbarCenter.displayName = 'NavbarCenter';
 
 function NavbarEnd({ className, style, children }: NavbarSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-navbar__end', className)} style={style}>
+    <div className={cx('st-navbar__end', className)} style={style}>
       {children}
     </div>
   );

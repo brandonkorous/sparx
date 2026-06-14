@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 export type ConversationStatus = 'open' | 'pending' | 'resolved' | 'spam';
 export type SenderType = 'customer' | 'staff' | 'ai';
-export type ChatSource = 'storefront' | 'sparx_market' | 'dashboard';
+export type ChatSource = 'site' | 'sparx_market' | 'dashboard';
 
 /** First value that is neither null/undefined nor an empty string, else null.
  *  Used for "name → company → email" display fallbacks where `??` is wrong
@@ -45,7 +45,7 @@ export interface ChatConfig {
   greeting: string;
   /** Shown instead of the composer when outside operating hours. */
   awayMessage: string;
-  /** Overrides the storefront `--sf-accent` for the bubble/panel. */
+  /** Overrides the storefront `--st-accent` for the bubble/panel. */
   primaryColor: string | null;
   position: 'bottom-right' | 'bottom-left';
   /** null = always available (no away state). */
@@ -89,7 +89,7 @@ export const ChatConfigPatchSchema = ChatConfigSchema.partial();
 export const CreateConversationInput = z.object({
   customerId: z.string().uuid().optional(),
   subject: z.string().max(255).optional(),
-  source: z.enum(['storefront', 'sparx_market', 'dashboard']).optional(),
+  source: z.enum(['site', 'sparx_market', 'dashboard']).optional(),
   visitorName: z.string().max(255).optional(),
   visitorEmail: z.string().email().max(255).optional(),
   /** Optional opening message body (staff- or visitor-initiated). */

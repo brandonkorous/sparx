@@ -470,8 +470,8 @@ export default function WebhooksPage() {
             <li>
               <strong>Gift cards & credit:</strong> <InlineCode>giftcard.issued</InlineCode> ·{' '}
               <InlineCode>giftcard.redeemed</InlineCode> ·{' '}
-              <InlineCode>storecredit.granted</InlineCode> ·{' '}
-              <InlineCode>storecredit.spent</InlineCode>
+              <InlineCode>accountcredit.granted</InlineCode> ·{' '}
+              <InlineCode>accountcredit.spent</InlineCode>
             </li>
             <li>
               <strong>Configurator:</strong> <InlineCode>configuration.requested</InlineCode> ·{' '}

@@ -1,4 +1,4 @@
-# 44 — Builder: The Storefront Render Path
+# 44 — Builder: The Site Render Path
 
 Version: 1.0
 Author: Brandon Korous
@@ -8,7 +8,7 @@ Last Updated: 2026-06-02
 > page as a node tree; persistence ([41](41-builder-page-model.md)) stores it;
 > the keystone ([43](43-builder-binding-schema.md)) tells the editor what it can
 > bind to. This doc closes the loop: a **published** Builder page actually SERVES
-> on the storefront at a URL, resolving its bindings against REAL records. Until
+> on the site at a URL, resolving its bindings against REAL records. Until
 > now `published_tree` had no consumer ([41](41-builder-page-model.md) §1) — this
 > is that consumer.
 
@@ -18,7 +18,7 @@ Publishing snapshots `draft_tree → published_tree` and emits `builder.page.pub
 but nothing renders it. We need:
 
 1. **Addressing** — a URL a published page lives at. Builder pages have no slug.
-2. **A public read** — the storefront fetches published trees without auth.
+2. **A public read** — the site fetches published trees without auth.
 3. **A renderer** — walks the node tree → production markup (not editor chrome),
    in the tenant brand.
 4. **Binding resolution** — bound nodes resolve against real CMS/Commerce/CRM
@@ -31,7 +31,7 @@ A `singleton` page (Home, About) gets an optional `slug`; it serves at `/{slug}`
 A `collection` page (Product page, Blog post) has NO slug — it's a template that
 renders PER RECORD at the record's own route (Slice B). `slug` is nullable +
 unique-per-tenant (Postgres treats NULLs as distinct, so many slugless/collection
-pages coexist). The Home page's takeover of the storefront root `/` is deferred
+pages coexist). The Home page's takeover of the site root `/` is deferred
 (Slice B) — the commerce homepage is sensitive; we don't risk it in slice one.
 
 **2.2 Public endpoint — its own route, reading `builder_pages`.**
@@ -48,26 +48,26 @@ Mirrors `/v1/public/content/*`: no auth (`/v1/public/` is an auth-exempt prefix)
 tenant resolved by slug (the only non-RLS table), then an RLS-scoped read via
 `withTenant`. Preview-token (draft) access layers on later, like content.
 
-**2.3 The renderer — storefront-owned, model + resolver shared.**
-A storefront **server component** `BuilderRenderer` walks the tree → semantic
+**2.3 The renderer — site-owned, model + resolver shared.**
+A site **server component** `BuilderRenderer` walks the tree → semantic
 production markup. It is DISTINCT from the editor canvas: no selection chrome, no
 fixed preview heights, real `<img>`/prices/text. What's shared with the editor:
 
 - the node **model** — already in `@sparx/builder-schemas`.
 - binding **resolution** — `resolvePath` / `cardinalityOf` are PROMOTED from the
   dashboard's `_builder/model.ts` into `@sparx/builder-schemas` (a `runtime.ts`),
-  so editor and storefront resolve bindings through ONE implementation. No drift
+  so editor and site resolve bindings through ONE implementation. No drift
   on the core semantic.
 
 The box-base → CSS mapping is reimplemented for production (it maps to the live
-`--sf-*` tokens, where the editor maps to `--bxc-*`). When a second renderer
+`--st-*` tokens, where the editor maps to `--bxc-*`). When a second renderer
 consumer appears (email), extract a `@sparx/builder-render` package; not yet.
 
-**2.4 Theming — reuse the storefront's `--sf-*` contract.**
+**2.4 Theming — reuse the site's `--st-*` contract.**
 The renderer emits the same surface / spacing / width / height semantics as the
-editor canvas, mapped to the storefront's existing `--sf-*` custom properties
+editor canvas, mapped to the site's existing `--st-*` custom properties
 (injected by the root layout's `buildThemeCss`). No new token injection — a
-Builder page inherits the tenant theme exactly like every other storefront page.
+Builder page inherits the tenant theme exactly like every other site page.
 
 **2.5 Routing — additive, Builder wins its own slug.**
 In `/[...slug]`, look up a published Builder page FIRST. If one exists → render it
@@ -99,7 +99,7 @@ untouched; a new Builder page lights up its slug. Safe + reversible.
 - **`@sparx/builder`** — `pageService`: `slug` in `toDto`/`create`/`update`;
   `getPublishedBySlug(ctx, slug)`.
 - **api-rest** — `routes/v1/public/builder.ts` → `GET /v1/public/builder/page`.
-- **storefront** — `lib/builder.ts` (`getPublishedBuilderPage`) +
+- **site** — `lib/builder.ts` (`getPublishedBuilderPage`) +
   `components/builder-renderer.tsx` + `/[...slug]/page.tsx` wiring.
 - **dashboard editor** — page-settings (slug) in the inspector's no-selection
   state + a `setPageSlug` action.

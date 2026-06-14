@@ -1,7 +1,7 @@
 // Image — a ratio-locked, cover-fit image with a graceful placeholder
 // (docs/46 §5.2). SERVER component. Harvested from the site renderer's
 // Image/ImageDisplay leaf: ratios wide 16/9, square 1/1, portrait 3/4; rounded
-// to --sf-radius-box. With no `src` it renders an accessible placeholder box
+// to --st-radius-box. With no `src` it renders an accessible placeholder box
 // (the unbound / empty state) instead of a broken image.
 
 import * as React from 'react';
@@ -18,9 +18,9 @@ export interface ImageProps {
 }
 
 const RATIO_CLASS: Record<ImageRatio, string> = {
-  wide: 'sf-img--wide',
-  square: 'sf-img--square',
-  portrait: 'sf-img--portrait',
+  wide: 'st-img--wide',
+  square: 'st-img--square',
+  portrait: 'st-img--portrait',
 };
 
 export function Image({ src, alt = '', ratio = 'wide', className, style }: ImageProps) {
@@ -31,7 +31,7 @@ export function Image({ src, alt = '', ratio = 'wide', className, style }: Image
       <img
         src={src}
         alt={alt}
-        className={cx('sf-img', RATIO_CLASS[ratio], className)}
+        className={cx('st-img', RATIO_CLASS[ratio], className)}
         style={style}
       />
     );
@@ -40,7 +40,7 @@ export function Image({ src, alt = '', ratio = 'wide', className, style }: Image
     <div
       role="img"
       aria-label={alt}
-      className={cx('sf-img', 'sf-img--placeholder', RATIO_CLASS[ratio], className)}
+      className={cx('st-img', 'st-img--placeholder', RATIO_CLASS[ratio], className)}
       style={style}
     />
   );

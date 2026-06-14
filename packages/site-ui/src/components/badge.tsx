@@ -14,7 +14,7 @@ import {
 
 export interface BadgeProps {
   /** Semantic color slot. Defaults to `neutral`. Any string is accepted so a
-   *  runtime custom color works once its `.sf-c-*` rule exists. */
+   *  runtime custom color works once its `.st-c-*` rule exists. */
   color?: ColorKey | (string & {});
   /** Chip treatment. Defaults to `solid`. */
   variant?: ChipTreatmentKey;
@@ -28,11 +28,11 @@ export interface BadgeProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-badge--sz-xs',
-  sm: 'sf-badge--sz-sm',
-  md: 'sf-badge--sz-md',
-  lg: 'sf-badge--sz-lg',
-  xl: 'sf-badge--sz-xl',
+  xs: 'st-badge--sz-xs',
+  sm: 'st-badge--sz-sm',
+  md: 'st-badge--sz-md',
+  lg: 'st-badge--sz-lg',
+  xl: 'st-badge--sz-xl',
 };
 
 export function Badge({
@@ -48,7 +48,7 @@ export function Badge({
   return (
     <span
       className={cx(
-        'sf-badge',
+        'st-badge',
         colorClass(color),
         chipTreatmentVariants[variant],
         SIZE_CLASS[size],

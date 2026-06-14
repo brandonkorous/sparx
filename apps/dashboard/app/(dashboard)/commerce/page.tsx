@@ -246,7 +246,7 @@ const QUICK_LINKS = [
   {
     href: '/commerce/discounts',
     title: 'Discounts & gift cards',
-    description: 'Promo codes, automatic discounts, gift cards, store credit.',
+    description: 'Promo codes, automatic discounts, gift cards, account credit.',
     icon: <Sparkles className="h-5 w-5" />,
   },
   {

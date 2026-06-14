@@ -16,11 +16,11 @@ export function ProductRelatedSection({
   if (related.length === 0) return null;
   const items = related.slice(0, config.limit);
   return (
-    <section className="sf-section">
-      <div className="sf-section__head">
-        <h2 className="sf-h2">{config.heading}</h2>
+    <section className="st-section">
+      <div className="st-section__head">
+        <h2 className="st-h2">{config.heading}</h2>
       </div>
-      <div className="sf-grid">
+      <div className="st-grid">
         {items.map((p) => (
           <ProductCard
             key={p.id}

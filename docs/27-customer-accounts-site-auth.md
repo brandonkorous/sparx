@@ -1,4 +1,4 @@
-# Sparx Platform — Customer Accounts & Storefront Authentication
+# Sparx Platform — Customer Accounts & Site Authentication
 
 **Version:** 1.1.1
 **Author:** Brandon Korous
@@ -9,7 +9,7 @@
 ## 1. Overview
 
 This document specifies **Layer 2 authentication** — accounts for the _shoppers_ who buy
-from a tenant's storefront. It is deliberately separate from **Layer 1** (tenant staff
+from a tenant's site. It is deliberately separate from **Layer 1** (tenant staff
 auth, [docs/16-auth-security.md](16-auth-security.md)), which uses Better Auth and lives in
 `packages/auth`.
 
@@ -23,9 +23,9 @@ tenant's store. The same person can hold a separate account at `bravo.sparx.zone
 
 ### 1.1 What ships here
 
-- Register / login / logout for storefront shoppers, tenant-scoped.
+- Register / login / logout for site shoppers, tenant-scoped.
 - Customer session (first-party httpOnly cookie), issued by `api-rest`, relayed through the
-  storefront's `/api/sparx` proxy.
+  site's `/api/sparx` proxy.
 - Account area: order history, order detail, address book, profile.
 - Guest → customer **cart merge** on login (reuses the existing `cartService.merge`).
 - Password reset via the existing `email.send` Pub/Sub path.
@@ -43,7 +43,7 @@ tenant's store. The same person can hold a separate account at `bravo.sparx.zone
 
 ## 2. Why not a second Better Auth instance
 
-The instinct — and the initial direction — was "give the storefront its own Better Auth
+The instinct — and the initial direction — was "give the site its own Better Auth
 instance." We are **not** doing that, and the reason is structural, not stylistic.
 
 Better Auth keys credential sign-in on a **globally unique email**. Staff auth leans on this
@@ -61,7 +61,7 @@ are worse than the alternative.
 
 ### The insight that makes it easy
 
-**For a shopper, the tenant is known _before_ authentication.** It is the storefront's
+**For a shopper, the tenant is known _before_ authentication.** It is the site's
 hostname (`acme.sparx.zone`, or `?tenant=acme` in dev), resolved at the edge in
 [apps/site/middleware.ts](../apps/site/middleware.ts) and carried to `api-rest` as
 the `?tenant=<slug>` param the public commerce surface already uses. Staff sign-in can't do
@@ -104,7 +104,7 @@ apps/site  /api/sparx/[...path]  (same-origin proxy)
   │  forwards to api-rest; relays Set-Cookie back as first-party on acme.sparx.zone
   ▼
 services/api-rest  /v1/public/commerce/account/*   (tenant by ?tenant=<slug>)
-  │  resolves tenantId, asserts Storefront/Commerce module active
+  │  resolves tenantId, asserts Site/Commerce module active
   ▼
 @sparx/customer-auth   registerCustomer / authenticateCustomer / {create,verify,revoke}Session
   │  Argon2id hashing · opaque session tokens · all inside withTenant()
@@ -113,7 +113,7 @@ Postgres (RLS FORCE)   customer_credentials · customer_sessions · customer_pas
         + CRM customers (the profile spine — already exists)
 ```
 
-Two cookies coexist on the storefront origin, never colliding with staff auth (which lives on
+Two cookies coexist on the site origin, never colliding with staff auth (which lives on
 `app.sparx.works`, a different origin):
 
 | Cookie                   | Set by   | Purpose                               | Flags                                  |
@@ -140,7 +140,7 @@ table. Customer auth adds only the credential + session + reset tables that hang
 ```prisma
 // packages/db/prisma/schema/40-customer-auth.prisma  (new file)
 
-// Credential for a storefront shopper. One row per registered customer.
+// Credential for a site shopper. One row per registered customer.
 // A `customers` row can exist with no credential (guest checkout, CRM-imported
 // prospect); a credential row means "this customer has set a password".
 model CustomerCredential {
@@ -236,8 +236,8 @@ guard), same as every prior migration.
 
 ## 5. `@sparx/customer-auth` package
 
-New workspace package. Server-only (no React surface; the storefront calls it via `api-rest`,
-never directly — honouring the "storefront talks to api-rest only" constraint). Mirrors the
+New workspace package. Server-only (no React surface; the site calls it via `api-rest`,
+never directly — honouring the "site talks to api-rest only" constraint). Mirrors the
 ergonomics of `packages/auth` but is its own thing.
 
 ```
@@ -296,7 +296,7 @@ here; reset is a link, not a code.)
 New file `services/api-rest/src/routes/v1/public/account.ts`, registered in
 [app.ts](../services/api-rest/src/routes/v1/public/) alongside `publicCartRoutes` /
 `publicCheckoutRoutes`. All routes resolve the tenant via the existing
-`publicCommerceContext(request)` helper and gate on the Storefront module.
+`publicCommerceContext(request)` helper and gate on the Site module.
 
 | Method | Path                                          | Purpose                                        |
 | ------ | --------------------------------------------- | ---------------------------------------------- |
@@ -325,15 +325,15 @@ cents at the boundary.
 **Cart claim on auth (as built).** `register` and `login` accept the guest `x-cart-token` and
 stamp `customerId` onto the cart that token owns (`claimGuestCart`), leaving the guest token in
 place so the client's existing `x-cart-token` keeps authorizing cart calls — the cart simply
-gains an owner, so the resulting order attributes to the account. The storefront always operates
+gains an owner, so the resulting order attributes to the account. The site always operates
 on the guest-token cart, so this re-own is sufficient; cross-device merge via `cartService.merge`
 is a later enhancement.
 
 ---
 
-## 7. Storefront UI (`apps/site`)
+## 7. Site UI (`apps/site`)
 
-All token-driven `sf-*` classes (no Tailwind in feature code), responsive, with loading/empty/
+All token-driven `st-*` classes (no Tailwind in feature code), responsive, with loading/empty/
 error states. New customer-session client mirrors the existing `cart-provider` pattern.
 
 - `lib/customer-client.ts` — typed wrappers over `/api/sparx/.../account/*` (register, login,
@@ -347,7 +347,7 @@ register, logout, refresh }`; hydrates from `/account/me` on mount.
   - `app/account/orders/page.tsx`, `app/account/orders/[orderId]/page.tsx`
   - `app/account/addresses/page.tsx`, `app/account/profile/page.tsx`
   - `app/account/layout.tsx` — guards the subtree (redirect to `/account/login` when signed out),
-    renders the account nav tabs (the `.sf-account` / `.sf-tabs` CSS blocks already exist).
+    renders the account nav tabs (the `.st-account` / `.st-tabs` CSS blocks already exist).
 - Header: the account icon links to `/account` when signed in, `/account/login` otherwise; the
   checkout flow offers "sign in for faster checkout" without ever _requiring_ it (guest checkout
   stays first-class unless the tenant sets `requireAuthForCheckout`).
@@ -362,7 +362,7 @@ Per `memory/feedback_deploy_early_deploy_small.md`, ship in independently-deploy
    for hash/verify, session lifecycle, register/login/reset. Nothing user-facing yet.
 2. **API** — `account.ts` routes (register/login/logout/me) + session preHandler + cart merge.
    Verifiable with `curl` against a seeded tenant.
-3. **Storefront auth UI** — login/register/forgot/reset pages + `customer-provider` + header
+3. **Site auth UI** — login/register/forgot/reset pages + `customer-provider` + header
    wiring. Guest→customer merge live end-to-end.
 4. **Account area** — orders list/detail, address book, profile.
 5. **Polish** — password-reset emails, rate-limiting on login/register, a11y pass, E2E
@@ -389,7 +389,7 @@ cross-tenant RLS) green; api-rest routes exercised end-to-end via `app.inject` a
 Postgres (register/login/logout/me, profile, orders paging + ownership-404, address CRUD,
 forgot/reset incl. replay rejection). Remaining: a browser-level Playwright E2E (register →
 guest cart → login → cart claimed → checkout → order in account) — the only verification not yet
-automated; the storefront builds + typechecks + lints clean.
+automated; the site builds + typechecks + lints clean.
 
 ---
 

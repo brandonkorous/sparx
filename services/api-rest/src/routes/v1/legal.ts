@@ -71,7 +71,7 @@ const legalRoutes: FastifyPluginAsync = (app) => {
           updatedAt: true,
         },
       });
-      const placements = await tx.storefrontDocPlacement.findMany({
+      const placements = await tx.siteDocPlacement.findMany({
         where: { placement: 'footer', enabled: true, entryId: { not: null } },
         select: { entryId: true },
       });
@@ -176,7 +176,7 @@ const legalRoutes: FastifyPluginAsync = (app) => {
       // Tenant-wide footer placement (docs/49 Phase 6c — propertyId null = every
       // site). Find-or-create scoped to null so a site-specific placement of the
       // same page never blocks the default tenant-wide one.
-      const existingPlacement = await tx.storefrontDocPlacement.findFirst({
+      const existingPlacement = await tx.siteDocPlacement.findFirst({
         where: {
           placement: 'footer',
           sourceKind: 'cms_entry',
@@ -186,11 +186,11 @@ const legalRoutes: FastifyPluginAsync = (app) => {
         select: { id: true },
       });
       if (!existingPlacement) {
-        const maxPos = await tx.storefrontDocPlacement.aggregate({
+        const maxPos = await tx.siteDocPlacement.aggregate({
           where: { placement: 'footer' },
           _max: { position: true },
         });
-        await tx.storefrontDocPlacement.create({
+        await tx.siteDocPlacement.create({
           data: {
             tenantId: auth.tenantId,
             placement: 'footer',
@@ -267,7 +267,7 @@ const legalRoutes: FastifyPluginAsync = (app) => {
     // own (docs/49 Phase 6c). `propertyId` rides along so the UI can show scope.
     const propertyId = await activeProperty(request, auth.tenantId);
     const rows = await withRequestTenant(request, (tx) =>
-      tx.storefrontDocPlacement.findMany({
+      tx.siteDocPlacement.findMany({
         where: { placement: 'footer', OR: [{ propertyId: null }, { propertyId }] },
         orderBy: { position: 'asc' },
         select: {
@@ -323,7 +323,7 @@ const legalRoutes: FastifyPluginAsync = (app) => {
         select: { id: true, legalKind: true },
       });
       if (!entry) throw notFound('Page', input.entryId);
-      const dup = await tx.storefrontDocPlacement.findFirst({
+      const dup = await tx.siteDocPlacement.findFirst({
         where: { placement: 'footer', sourceKind: 'cms_entry', entryId: entry.id, propertyId },
         select: { id: true },
       });
@@ -334,11 +334,11 @@ const legalRoutes: FastifyPluginAsync = (app) => {
             : 'That page is already placed in the footer.'
         );
       }
-      const maxPos = await tx.storefrontDocPlacement.aggregate({
+      const maxPos = await tx.siteDocPlacement.aggregate({
         where: { placement: 'footer' },
         _max: { position: true },
       });
-      return tx.storefrontDocPlacement.create({
+      return tx.siteDocPlacement.create({
         data: {
           tenantId: auth.tenantId,
           propertyId,
@@ -369,12 +369,12 @@ const legalRoutes: FastifyPluginAsync = (app) => {
       .parse(request.body);
 
     const updated = await withRequestTenant(request, async (tx) => {
-      const existing = await tx.storefrontDocPlacement.findUnique({
+      const existing = await tx.siteDocPlacement.findUnique({
         where: { id },
         select: { id: true },
       });
       if (!existing) throw notFound('Placement', id);
-      return tx.storefrontDocPlacement.update({ where: { id }, data: input });
+      return tx.siteDocPlacement.update({ where: { id }, data: input });
     });
     return ok(updated);
   });
@@ -383,12 +383,12 @@ const legalRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     const { id } = z.object({ id: z.string().uuid() }).parse(request.params);
     await withRequestTenant(request, async (tx) => {
-      const existing = await tx.storefrontDocPlacement.findUnique({
+      const existing = await tx.siteDocPlacement.findUnique({
         where: { id },
         select: { id: true },
       });
       if (!existing) throw notFound('Placement', id);
-      await tx.storefrontDocPlacement.delete({ where: { id } });
+      await tx.siteDocPlacement.delete({ where: { id } });
     });
     return ok({ deleted: true });
   });

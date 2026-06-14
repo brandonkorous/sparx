@@ -10,6 +10,6 @@ export interface DividerProps {
 }
 
 export function Divider({ className, style }: DividerProps) {
-  return <hr className={cx('sf-divider', className)} style={style} />;
+  return <hr className={cx('st-divider', className)} style={style} />;
 }
 Divider.displayName = 'Divider';

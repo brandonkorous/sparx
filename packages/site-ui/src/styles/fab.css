@@ -1,8 +1,8 @@
 /* Surface FAB / Speed Dial — fixed action button (docs/46 §5.2). The main button
- * takes its fill from the recipe (`sf-v-solid` → `--c-bg`/`--c-fg`); this owns the
+ * takes its fill from the recipe (`st-v-solid` → `--c-bg`/`--c-fg`); this owns the
  * round shape, placement, and the hover/focus-revealed actions. */
 
-.sf-fab {
+.st-fab {
   position: fixed;
   z-index: 60;
   display: flex;
@@ -10,25 +10,25 @@
   align-items: center;
   gap: 0.75rem;
 }
-.sf-fab--bottom-end {
+.st-fab--bottom-end {
   right: 1.5rem;
   bottom: 1.5rem;
 }
-.sf-fab--bottom-start {
+.st-fab--bottom-start {
   left: 1.5rem;
   bottom: 1.5rem;
 }
-.sf-fab--top-end {
+.st-fab--top-end {
   top: 1.5rem;
   right: 1.5rem;
   flex-direction: column-reverse;
 }
-.sf-fab--top-start {
+.st-fab--top-start {
   top: 1.5rem;
   left: 1.5rem;
   flex-direction: column-reverse;
 }
-.sf-fab__main {
+.st-fab__main {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -37,9 +37,9 @@
   border: 0;
   border-radius: 999px;
   cursor: pointer;
-  box-shadow: var(--sf-shadow-lg, 0 12px 28px rgba(0, 0, 0, 0.24));
+  box-shadow: var(--st-shadow-lg, 0 12px 28px rgba(0, 0, 0, 0.24));
 }
-.sf-fab__actions {
+.st-fab__actions {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,14 +51,14 @@
     opacity 0.15s ease,
     transform 0.15s ease;
 }
-.sf-fab:hover .sf-fab__actions,
-.sf-fab:focus-within .sf-fab__actions {
+.st-fab:hover .st-fab__actions,
+.st-fab:focus-within .st-fab__actions {
   opacity: 1;
   transform: none;
   pointer-events: auto;
 }
 @media (prefers-reduced-motion: reduce) {
-  .sf-fab__actions {
+  .st-fab__actions {
     transition: none;
   }
 }

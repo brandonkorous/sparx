@@ -17,11 +17,11 @@ import { colorClass, type ColorKey, type SizeKey } from './_recipes/variants';
 export type SectionContentWidth = 'full' | 'contained';
 
 export interface SectionProps {
-  /** Surface color band — the shared role-var recipe (`.sf-c-*`). A band reads
+  /** Surface color band — the shared role-var recipe (`.st-c-*`). A band reads
    *  `--c-bg` for its fill and `--c-fg` for legible text. Omit for a transparent
    *  band. Any string is accepted so a runtime custom color works. */
   surface?: ColorKey | (string & {});
-  /** Content width: `contained` (centered, capped at `--sf-container`) or `full`
+  /** Content width: `contained` (centered, capped at `--st-container`) or `full`
    *  (edge-to-edge). Defaults to `contained`. */
   contentWidth?: SectionContentWidth;
   /** Vertical rhythm scale. Defaults to `lg`. */
@@ -41,11 +41,11 @@ export interface SectionProps {
 }
 
 const PAD_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-section--pad-xs',
-  sm: 'sf-section--pad-sm',
-  md: 'sf-section--pad-md',
-  lg: 'sf-section--pad-lg',
-  xl: 'sf-section--pad-xl',
+  xs: 'st-section--pad-xs',
+  sm: 'st-section--pad-sm',
+  md: 'st-section--pad-md',
+  lg: 'st-section--pad-lg',
+  xl: 'st-section--pad-xl',
 };
 
 export function Section({
@@ -67,14 +67,14 @@ export function Section({
   const bg = image ? photoPanelStyle({ image, overlay, tone }) : undefined;
   return (
     <Tag
-      className={cx('sf-section', colorClass(surface), PAD_CLASS[padding], className)}
+      className={cx('st-section', colorClass(surface), PAD_CLASS[padding], className)}
       style={bg ? { ...bg, ...style } : style}
       id={id}
     >
       <div
         className={cx(
-          'sf-section__inner',
-          contentWidth === 'contained' ? 'sf-section__inner--contained' : 'sf-section__inner--full'
+          'st-section__inner',
+          contentWidth === 'contained' ? 'st-section__inner--contained' : 'st-section__inner--full'
         )}
       >
         {children}

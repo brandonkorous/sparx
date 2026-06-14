@@ -10,7 +10,7 @@
 //
 // SECURITY MODEL: there is no path from template data to a raw color, class,
 // style, or executable string. Every styleable prop is a closed enum the
-// interpreter maps to a `data-*` attribute on a fixed `sf-tpl-*` class; every
+// interpreter maps to a `data-*` attribute on a fixed `st-tpl-*` class; every
 // text/url value is a value-expression that resolves a bounded scope (no
 // function calls, no operators, no arbitrary JS). Author-time semantic checks
 // (do bound paths reference declared fields, etc.) live in
@@ -70,7 +70,7 @@ export const Condition = z.union([
 ]);
 export type Condition = z.infer<typeof Condition>;
 
-// ── Styleable prop enums (each maps to a `data-*` value on an `sf-tpl-*` class) ─
+// ── Styleable prop enums (each maps to a `data-*` value on an `st-tpl-*` class) ─
 const Gap = z.enum(['none', 'xs', 'sm', 'md', 'lg', 'xl']);
 const Pad = z.enum(['none', 'sm', 'md', 'lg', 'xl']);
 const Dir = z.enum(['col', 'row']);

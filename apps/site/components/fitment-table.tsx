@@ -40,12 +40,12 @@ export function FitmentTable({ fitments, domainsBySlug }: FitmentTableProps) {
         return (
           <div key={slug}>
             {groups.size > 1 ? (
-              <h3 className="sf-h3" style={{ marginBottom: '0.75rem' }}>
+              <h3 className="st-h3" style={{ marginBottom: '0.75rem' }}>
                 {heading}
               </h3>
             ) : null}
             <div style={{ overflowX: 'auto' }}>
-              <table className="sf-fitment-table">
+              <table className="st-fitment-table">
                 <thead>
                   <tr>
                     <th>{l1}</th>

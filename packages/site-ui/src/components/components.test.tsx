@@ -12,12 +12,12 @@ import { Stat } from './stat';
 
 describe('Heading', () => {
   it('renders the matching tag + size class per level', () => {
-    const cases: Record<HeadingLevel, string> = { h1: 'sf-h--1', h2: 'sf-h--2', h3: 'sf-h--3' };
+    const cases: Record<HeadingLevel, string> = { h1: 'st-h--1', h2: 'st-h--2', h3: 'st-h--3' };
     for (const [level, cls] of Object.entries(cases) as [HeadingLevel, string][]) {
       const { unmount } = render(<Heading level={level}>{level}</Heading>);
       const el = screen.getByText(level);
       expect(el.tagName).toBe(level.toUpperCase());
-      expect(el).toHaveClass('sf-h', cls);
+      expect(el).toHaveClass('st-h', cls);
       unmount();
     }
   });
@@ -31,15 +31,15 @@ describe('Heading', () => {
 describe('Text', () => {
   it('maps each variant to its class on a <p>', () => {
     const cases: Record<TextVariant, string> = {
-      body: 'sf-text--body',
-      eyebrow: 'sf-text--eyebrow',
-      meta: 'sf-text--meta',
+      body: 'st-text--body',
+      eyebrow: 'st-text--eyebrow',
+      meta: 'st-text--meta',
     };
     for (const [variant, cls] of Object.entries(cases) as [TextVariant, string][]) {
       const { unmount } = render(<Text variant={variant}>{variant}</Text>);
       const el = screen.getByText(variant);
       expect(el.tagName).toBe('P');
-      expect(el).toHaveClass('sf-text', cls);
+      expect(el).toHaveClass('st-text', cls);
       unmount();
     }
   });
@@ -49,7 +49,7 @@ describe('Divider', () => {
   it('renders an <hr> with the divider class', () => {
     const { container } = render(<Divider />);
     const hr = container.querySelector('hr');
-    expect(hr).toHaveClass('sf-divider');
+    expect(hr).toHaveClass('st-divider');
   });
 });
 
@@ -70,7 +70,7 @@ describe('Image', () => {
     render(<Image src="/hero.jpg" alt="Hero" ratio="square" />);
     const img = screen.getByRole('img', { name: 'Hero' });
     expect(img.tagName).toBe('IMG');
-    expect(img).toHaveClass('sf-img', 'sf-img--square');
+    expect(img).toHaveClass('st-img', 'st-img--square');
     expect(img).toHaveAttribute('src', '/hero.jpg');
   });
 
@@ -78,7 +78,7 @@ describe('Image', () => {
     render(<Image alt="Missing" />);
     const ph = screen.getByRole('img', { name: 'Missing' });
     expect(ph.tagName).toBe('DIV');
-    expect(ph).toHaveClass('sf-img--placeholder', 'sf-img--wide');
+    expect(ph).toHaveClass('st-img--placeholder', 'st-img--wide');
   });
 });
 
@@ -87,7 +87,7 @@ describe('Logo', () => {
     render(<Logo name="Acme" />);
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('href', '/');
-    expect(screen.getByText('Acme')).toHaveClass('sf-logo__name');
+    expect(screen.getByText('Acme')).toHaveClass('st-logo__name');
   });
 
   it('renders the logo image when src is set', () => {
@@ -108,7 +108,7 @@ describe('NavMenu', () => {
         ]}
       />
     );
-    expect(screen.getByRole('navigation')).toHaveClass('sf-nav', 'sf-nav--stack');
+    expect(screen.getByRole('navigation')).toHaveClass('st-nav', 'st-nav--stack');
     expect(screen.getAllByRole('link')).toHaveLength(2);
     expect(screen.getByRole('link', { name: 'Shop' })).toHaveAttribute('href', '/shop');
   });
@@ -132,14 +132,14 @@ describe('SocialLinks', () => {
 describe('Stat', () => {
   it('renders value, label, and caption', () => {
     render(<Stat value="396 mi" label="Range" caption="EPA est." />);
-    expect(screen.getByText('396 mi')).toHaveClass('sf-stat__value');
-    expect(screen.getByText('Range')).toHaveClass('sf-stat__label');
-    expect(screen.getByText('EPA est.')).toHaveClass('sf-stat__caption');
+    expect(screen.getByText('396 mi')).toHaveClass('st-stat__value');
+    expect(screen.getByText('Range')).toHaveClass('st-stat__label');
+    expect(screen.getByText('EPA est.')).toHaveClass('st-stat__caption');
   });
 
   it('omits label/caption when not provided', () => {
     const { container } = render(<Stat value="100%" />);
-    expect(container.querySelector('.sf-stat__label')).toBeNull();
-    expect(container.querySelector('.sf-stat__caption')).toBeNull();
+    expect(container.querySelector('.st-stat__label')).toBeNull();
+    expect(container.querySelector('.st-stat__caption')).toBeNull();
   });
 });

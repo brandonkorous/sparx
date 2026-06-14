@@ -748,7 +748,7 @@ export async function goLiveInstall(ctxIn: InstallContext, installId: string): P
 
   // Site theme — PUBLISH the draft into a SiteVersion. Install applied the shipped
   // theme to the DRAFT only (savedThemeService.apply → sitebuilder_configs draft);
-  // the storefront reads its --sf-* tokens from the PUBLISHED snapshot, so without
+  // the storefront reads its --st-* tokens from the PUBLISHED snapshot, so without
   // this the live site keeps serving whatever was last published (a prior theme, or
   // the default) and the blueprint's theme never reaches the page. publishNow
   // snapshots the draft's themeKey + presentation and write-throughs the compiled

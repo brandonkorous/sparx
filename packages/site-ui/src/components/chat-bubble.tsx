@@ -37,7 +37,7 @@ function ChatBubbleRoot({
   children,
 }: ChatBubbleProps): React.ReactElement {
   return (
-    <div className={cx('sf-chat', `sf-chat--${placement}`, className)} style={style} id={id}>
+    <div className={cx('st-chat', `st-chat--${placement}`, className)} style={style} id={id}>
       {children}
     </div>
   );
@@ -46,7 +46,7 @@ ChatBubbleRoot.displayName = 'ChatBubble';
 
 function ChatAvatar({ className, style, children }: ChatSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-chat__avatar', className)} style={style}>
+    <div className={cx('st-chat__avatar', className)} style={style}>
       {children}
     </div>
   );
@@ -55,7 +55,7 @@ ChatAvatar.displayName = 'ChatAvatar';
 
 function ChatHeader({ className, style, children }: ChatSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-chat__header', className)} style={style}>
+    <div className={cx('st-chat__header', className)} style={style}>
       {children}
     </div>
   );
@@ -66,9 +66,9 @@ function ChatMessage({ color, className, style, children }: ChatMessageProps): R
   return (
     <div
       className={cx(
-        'sf-chat__bubble',
+        'st-chat__bubble',
         color && colorClass(color),
-        color && 'sf-chat__bubble--colored',
+        color && 'st-chat__bubble--colored',
         className
       )}
       style={style}
@@ -81,7 +81,7 @@ ChatMessage.displayName = 'ChatMessage';
 
 function ChatFooter({ className, style, children }: ChatSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-chat__footer', className)} style={style}>
+    <div className={cx('st-chat__footer', className)} style={style}>
       {children}
     </div>
   );

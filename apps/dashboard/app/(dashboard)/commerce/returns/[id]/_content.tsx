@@ -213,7 +213,7 @@ export async function ReturnDetailContent({ id }: Props) {
             <Stack gap={1}>
               <Heading level={3}>Issue refund</Heading>
               <CardDescription>
-                Refund to original payment or as store credit. Provider-side settlement runs
+                Refund to original payment or as account credit. Provider-side settlement runs
                 alongside.
               </CardDescription>
             </Stack>

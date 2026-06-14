@@ -53,10 +53,10 @@ export default function OrderDetailPage() {
   if (error === 'notfound') {
     return (
       <div>
-        <p className="sf-muted" style={{ marginBottom: '1rem' }}>
+        <p className="st-muted" style={{ marginBottom: '1rem' }}>
           We couldn’t find that order.
         </p>
-        <Link href="/account/orders" className="sf-btn sf-btn--secondary">
+        <Link href="/account/orders" className="st-btn st-btn--secondary">
           ← Back to orders
         </Link>
       </div>
@@ -64,18 +64,18 @@ export default function OrderDetailPage() {
   }
   if (error) {
     return (
-      <div className="sf-alert sf-alert--error" role="alert">
+      <div className="st-alert st-alert--error" role="alert">
         Could not load this order.
       </div>
     );
   }
-  if (!order) return <div className="sf-skeleton" style={{ height: 320 }} />;
+  if (!order) return <div className="st-skeleton" style={{ height: 320 }} />;
 
   const ship = addressLine(order.shippingAddress);
 
   return (
     <div>
-      <Link href="/account/orders" className="sf-muted" style={{ fontSize: '0.85rem' }}>
+      <Link href="/account/orders" className="st-muted" style={{ fontSize: '0.85rem' }}>
         ← Orders
       </Link>
       <div
@@ -87,12 +87,12 @@ export default function OrderDetailPage() {
           margin: '0.5rem 0 1.5rem',
         }}
       >
-        <h1 className="sf-h2">Order #{order.orderNumber}</h1>
-        <span className="sf-badge" data-status={order.status}>
+        <h1 className="st-h2">Order #{order.orderNumber}</h1>
+        <span className="st-badge" data-status={order.status}>
           {order.status}
         </span>
       </div>
-      <p className="sf-muted" style={{ marginBottom: '1.5rem' }}>
+      <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
         Placed {formatDate(order.placedAt)} · {order.paymentStatus}
       </p>
 
@@ -106,35 +106,35 @@ export default function OrderDetailPage() {
           >
             <span>
               {it.name}
-              <span className="sf-muted"> × {it.quantity}</span>
+              <span className="st-muted"> × {it.quantity}</span>
             </span>
             <strong>{formatMoney(it.lineTotalCents, order.currency)}</strong>
           </div>
         ))}
       </div>
 
-      <div className="sf-summary" style={{ maxWidth: 360, marginLeft: 'auto' }}>
-        <div className="sf-summary__row">
+      <div className="st-summary" style={{ maxWidth: 360, marginLeft: 'auto' }}>
+        <div className="st-summary__row">
           <span>Subtotal</span>
           <span>{formatMoney(order.subtotalCents, order.currency)}</span>
         </div>
         {order.discountTotalCents > 0 ? (
-          <div className="sf-summary__row">
+          <div className="st-summary__row">
             <span>Discount</span>
             <span>−{formatMoney(order.discountTotalCents, order.currency)}</span>
           </div>
         ) : null}
-        <div className="sf-summary__row">
+        <div className="st-summary__row">
           <span>Shipping</span>
           <span>{formatMoney(order.shippingTotalCents, order.currency)}</span>
         </div>
         {order.taxTotalCents > 0 ? (
-          <div className="sf-summary__row">
+          <div className="st-summary__row">
             <span>Tax</span>
             <span>{formatMoney(order.taxTotalCents, order.currency)}</span>
           </div>
         ) : null}
-        <div className="sf-summary__total">
+        <div className="st-summary__total">
           <span>Total</span>
           <span>{formatMoney(order.totalCents, order.currency)}</span>
         </div>
@@ -142,10 +142,10 @@ export default function OrderDetailPage() {
 
       {ship ? (
         <div style={{ marginTop: '1.5rem' }}>
-          <h2 className="sf-h3" style={{ marginBottom: '0.5rem' }}>
+          <h2 className="st-h3" style={{ marginBottom: '0.5rem' }}>
             Shipping to
           </h2>
-          <p className="sf-muted">{ship}</p>
+          <p className="st-muted">{ship}</p>
         </div>
       ) : null}
     </div>

@@ -1,4 +1,4 @@
-﻿import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import {
   Bell,
   CreditCard,
@@ -36,7 +36,7 @@ export const SETTINGS_NAV: readonly SettingsNavItem[] = [
   {
     id: 'general',
     label: 'General',
-    description: 'Store name, locale, currency, time zone.',
+    description: 'Site name, locale, currency, time zone.',
     icon: SettingsIcon,
     href: '/settings/general',
     ready: true,

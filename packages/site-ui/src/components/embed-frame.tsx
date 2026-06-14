@@ -19,10 +19,10 @@ export interface EmbedFrameProps {
 }
 
 const RATIO_CLASS: Record<EmbedRatio, string> = {
-  wide: 'sf-embed--wide',
-  square: 'sf-embed--square',
-  portrait: 'sf-embed--portrait',
-  pano: 'sf-embed--pano',
+  wide: 'st-embed--wide',
+  square: 'st-embed--square',
+  portrait: 'st-embed--portrait',
+  pano: 'st-embed--pano',
 };
 
 export function EmbedFrame({
@@ -33,11 +33,11 @@ export function EmbedFrame({
   className,
   style,
 }: EmbedFrameProps) {
-  const classes = cx('sf-embed', RATIO_CLASS[ratio], className);
+  const classes = cx('st-embed', RATIO_CLASS[ratio], className);
   if (!src) {
     return (
       <div className={classes} style={style}>
-        <span className="sf-embed__placeholder">{placeholder ?? title}</span>
+        <span className="st-embed__placeholder">{placeholder ?? title}</span>
       </div>
     );
   }
@@ -50,7 +50,7 @@ export function EmbedFrame({
         allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         referrerPolicy="no-referrer-when-downgrade"
-        className="sf-embed__frame"
+        className="st-embed__frame"
       />
     </div>
   );

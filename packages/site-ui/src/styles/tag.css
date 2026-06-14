@@ -2,29 +2,29 @@
  * (not a full pill), with an optional leading dot that reads the active role var.
  * Authored with @apply. */
 
-.sf-tag {
+.st-tag {
   @apply inline-flex items-center gap-1.5 leading-none font-medium whitespace-nowrap;
-  border-radius: var(--sf-radius-field, 0.5rem);
-  font-family: var(--sf-font-body, inherit);
+  border-radius: var(--st-radius-field, 0.5rem);
+  font-family: var(--st-font-body, inherit);
 }
-.sf-tag__dot {
+.st-tag__dot {
   @apply inline-block h-2 w-2 shrink-0 rounded-full;
   background: var(--c-ink, currentColor);
 }
 
 /* Size axis. */
-.sf-tag--sz-xs {
+.st-tag--sz-xs {
   @apply px-1.5 py-0.5 text-[0.625rem];
 }
-.sf-tag--sz-sm {
+.st-tag--sz-sm {
   @apply px-2 py-1 text-xs;
 }
-.sf-tag--sz-md {
+.st-tag--sz-md {
   @apply px-2.5 py-1 text-sm;
 }
-.sf-tag--sz-lg {
+.st-tag--sz-lg {
   @apply px-3 py-1.5 text-sm;
 }
-.sf-tag--sz-xl {
+.st-tag--sz-xl {
   @apply px-3.5 py-2 text-base;
 }

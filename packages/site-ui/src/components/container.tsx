@@ -1,5 +1,5 @@
 // Container — a max-width content wrapper (docs/47 §11 B1). Centers content and
-// caps it at a width; the `lg` default reads the tenant `--sf-container` token.
+// caps it at a width; the `lg` default reads the tenant `--st-container` token.
 // SERVER component — pure markup + classes, no color axis (purely structural).
 
 import * as React from 'react';
@@ -8,7 +8,7 @@ import { cx } from '../utils/cx';
 export type ContainerWidth = 'sm' | 'md' | 'lg' | 'full';
 
 export interface ContainerProps {
-  /** Max content width. `lg` reads `--sf-container`; `full` removes the cap.
+  /** Max content width. `lg` reads `--st-container`; `full` removes the cap.
    *  Defaults to `lg`. */
   width?: ContainerWidth;
   /** Semantic element. Defaults to `div`. */
@@ -20,10 +20,10 @@ export interface ContainerProps {
 }
 
 const WIDTH_CLASS: Record<ContainerWidth, string> = {
-  sm: 'sf-container--sm',
-  md: 'sf-container--md',
-  lg: 'sf-container--lg',
-  full: 'sf-container--full',
+  sm: 'st-container--sm',
+  md: 'st-container--md',
+  lg: 'st-container--lg',
+  full: 'st-container--full',
 };
 
 export function Container({
@@ -36,7 +36,7 @@ export function Container({
 }: ContainerProps): React.ReactElement {
   const Tag = as as React.ElementType;
   return (
-    <Tag className={cx('sf-container', WIDTH_CLASS[width], className)} style={style} id={id}>
+    <Tag className={cx('st-container', WIDTH_CLASS[width], className)} style={style} id={id}>
       {children}
     </Tag>
   );

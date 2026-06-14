@@ -53,8 +53,8 @@ export interface ChatWidgetProps {
   tenantSlug: string;
   /** Fallback accent when the tenant hasn't set a chat primaryColor. */
   accentColor?: string | null;
-  /** Conversation source — 'storefront' (default) or 'sparx_market'. */
-  source?: 'storefront' | 'sparx_market';
+  /** Conversation source — 'site' (default) or 'sparx_market'. */
+  source?: 'site' | 'sparx_market';
   /** Display name shown in the panel header (defaults to "Chat"). */
   title?: string;
   /** Hide the floating launcher bubble. The panel then opens only through the

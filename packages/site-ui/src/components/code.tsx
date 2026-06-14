@@ -24,7 +24,7 @@ export interface CodeLineProps {
 
 function CodeRoot({ className, style, id, children }: CodeProps): React.ReactElement {
   return (
-    <div className={cx('sf-mockup-code', className)} style={style} id={id}>
+    <div className={cx('st-mockup-code', className)} style={style} id={id}>
       {children}
     </div>
   );
@@ -40,7 +40,7 @@ function CodeLine({
 }: CodeLineProps): React.ReactElement {
   return (
     <pre
-      className={cx('sf-mockup-code__line', highlight && 'sf-mockup-code__line--hl', className)}
+      className={cx('st-mockup-code__line', highlight && 'st-mockup-code__line--hl', className)}
       style={style}
       data-prefix={prefix}
     >

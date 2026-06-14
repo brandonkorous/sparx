@@ -11,7 +11,7 @@
 WizeWorks has three frontend applications sharing a common design system and component library:
 
 1. **Tenant Dashboard** — Admin interface for managing the tenant's modules (Next.js)
-2. **Storefront** — Customer-facing store (Next.js, multi-tenant, theme-driven)
+2. **Site** — Customer-facing website (Next.js, multi-tenant, theme-driven)
 3. **B2B Portal** — Wholesale/fleet account portal (Next.js)
 
 All three consume the WizeWorks REST/GraphQL API and share the `@sparx/ui` component library.
@@ -44,7 +44,7 @@ All three consume the WizeWorks REST/GraphQL API and share the `@sparx/ui` compo
 ```
 apps/
 ├── dashboard/              # Tenant admin (Next.js)
-├── storefront/             # Customer storefront (Next.js, multi-tenant)
+├── site/             # Customer site (Next.js, multi-tenant)
 └── b2b-portal/             # B2B wholesale portal (Next.js)
 
 packages/
@@ -53,7 +53,7 @@ packages/
 │   ├── hooks/              # useDebounce, useMediaQuery, useClipboard, etc.
 │   └── utils/              # cn(), formatCurrency(), formatDate(), etc.
 ├── api-client/             # Type-safe API client (generated from OpenAPI)
-├── storefront-sdk/         # Public SDK for headless storefronts
+├── site-sdk/         # Public SDK for headless sites
 ├── email-templates/        # React Email templates
 ├── theme-engine/           # Theme rendering, CSS variable generation
 └── types/                  # Shared TypeScript types (DTOs, enums)
@@ -116,7 +116,7 @@ Defined in `packages/ui/tokens.css`:
 
 ### Theme Overrides (Tenant Themes)
 
-Tenant themes override the base tokens via CSS custom properties on the `:root` of their storefront:
+Tenant themes override the base tokens via CSS custom properties on the `:root` of their site:
 
 ```css
 /* Industrial theme (Gillett Diesel) */
@@ -245,11 +245,11 @@ app/
 
 ---
 
-## 7. Storefront (Multi-Tenant)
+## 7. Site (Multi-Tenant)
 
 ### Tenant Resolution
 
-The storefront resolves the correct tenant from the request's `Host` header:
+The site resolves the correct tenant from the request's `Host` header:
 
 ```typescript
 // middleware.ts
@@ -268,7 +268,7 @@ export async function middleware(request: NextRequest) {
 
 ### Theme Rendering
 
-Each storefront page reads the tenant's theme configuration and generates CSS variables:
+Each site page reads the tenant's theme configuration and generates CSS variables:
 
 ```typescript
 // app/layout.tsx
@@ -332,7 +332,7 @@ export default async function RootLayout({ children }) {
 
 Key flows tested on every deploy to staging:
 
-- Tenant signup → onboarding → live store
+- Tenant signup → onboarding → live site
 - Add product → publish
 - Place order as customer → checkout
 - Order fulfillment flow

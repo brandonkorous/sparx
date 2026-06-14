@@ -16,7 +16,7 @@ export default async function LegalPage() {
       <Stack gap={8} className="py-10">
         <PageHeader
           title="Legal"
-          description="Your store's policy pages and cookie consent. Sparx seeds editable starter templates — review them with your own counsel before publishing."
+          description="Your site's policy pages and cookie consent. Sparx seeds editable starter templates — review them with your own counsel before publishing."
         />
         <LegalChecklist data={checklist} />
         <ConsentSettingsForm config={consent} />

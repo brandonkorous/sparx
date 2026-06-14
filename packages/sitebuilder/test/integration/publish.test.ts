@@ -2,7 +2,7 @@
 // the architectural commitments that aren't visible from the signatures:
 //   • Publishing snapshots the draft into an immutable, monotonically-numbered
 //     SiteVersion and write-throughs the compiled light tokens to the
-//     commerce-owned StorefrontTheme row (same transaction).
+//     commerce-owned CommerceSiteTheme row (same transaction).
 //   • A sitebuilder.published event fires AFTER commit (RecordingPublisher).
 //   • Rollback restores a prior version's snapshot into the draft and
 //     republishes it as a NEW version (history is append-only).
@@ -18,7 +18,7 @@ import {
 import {
   disposeTestContext,
   makeTestContext,
-  readStorefrontTheme,
+  readCommerceSiteTheme,
   type TestContext,
 } from '../helpers.js';
 
@@ -63,10 +63,10 @@ describe('sitebuilder publish lifecycle', () => {
     expect(snap?.compiledTokens.light.colorPrimary).toBe('#cc1010');
     expect(snap?.compiledTokens.dark.colorPrimary).toBe('#ef4444');
 
-    // Write-through: StorefrontTheme mirrors the compiled light *presentation*
+    // Write-through: CommerceSiteTheme mirrors the compiled light *presentation*
     // tokens only — brand identity (colour/type/logo) is owned by TenantBrand
     // now (docs/30 §6), not this row.
-    const theme = await readStorefrontTheme(test.tenant.tenantId, test.tenant.propertyId);
+    const theme = await readCommerceSiteTheme(test.tenant.tenantId, test.tenant.propertyId);
     expect(theme?.colorBackground).toBe(snap?.compiledTokens.light.colorBackground);
     expect(theme?.radiusBase).toBe(snap?.compiledTokens.light.radiusBase);
   });
@@ -78,7 +78,7 @@ describe('sitebuilder publish lifecycle', () => {
     expect(v2.versionNumber).toBe(2);
     // Write-through tracks the active version's compiled *presentation* tokens
     // (identity is brand-owned now, no longer mirrored here).
-    let theme = await readStorefrontTheme(test.tenant.tenantId, test.tenant.propertyId);
+    let theme = await readCommerceSiteTheme(test.tenant.tenantId, test.tenant.propertyId);
     let snap = await publishService.getPublishedSnapshot(test.ctx);
     expect(theme?.colorBackground).toBe(snap?.compiledTokens.light.colorBackground); // apex
 
@@ -88,7 +88,7 @@ describe('sitebuilder publish lifecycle', () => {
     expect(v3.versionNumber).toBe(3);
     expect(v3.themeKey).toBe('industrial');
 
-    theme = await readStorefrontTheme(test.tenant.tenantId, test.tenant.propertyId);
+    theme = await readCommerceSiteTheme(test.tenant.tenantId, test.tenant.propertyId);
     snap = await publishService.getPublishedSnapshot(test.ctx);
     expect(theme?.colorBackground).toBe(snap?.compiledTokens.light.colorBackground); // industrial
 

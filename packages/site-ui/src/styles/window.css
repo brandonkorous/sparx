@@ -1,24 +1,24 @@
 /* Surface Window mockup (docs/46 §5.2). A title bar (traffic-light dots from
  * browser.css + optional caption) over content. */
 
-.sf-mockup-window {
+.st-mockup-window {
   overflow: hidden;
-  background: var(--sf-base-100, #fff);
-  border: 1px solid var(--sf-border, #e3dfd2);
-  border-radius: var(--sf-radius-box, 1rem);
+  background: var(--st-base-100, #fff);
+  border: 1px solid var(--st-border, #e3dfd2);
+  border-radius: var(--st-radius-box, 1rem);
 }
-.sf-mockup-window__bar {
+.st-mockup-window__bar {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.6rem 0.85rem;
-  background: var(--sf-base-200, #f4f1e8);
-  border-bottom: 1px solid var(--sf-border, #e3dfd2);
+  background: var(--st-base-200, #f4f1e8);
+  border-bottom: 1px solid var(--st-border, #e3dfd2);
 }
-.sf-mockup-window__title {
+.st-mockup-window__title {
   font-size: 0.8rem;
   color: var(
-    --sf-text-secondary,
-    color-mix(in oklab, var(--sf-base-content, #23211c) 70%, transparent)
+    --st-text-secondary,
+    color-mix(in oklab, var(--st-base-content, #23211c) 70%, transparent)
   );
 }

@@ -69,7 +69,7 @@ async function postRevalidate(slug: string, scope: RevalidateScope): Promise<voi
     // so it's loud (and retried) rather than silently dropping purges.
     throw new Error('SPARX_REVALIDATE_SECRET is not set');
   }
-  const res = await fetch(env.STOREFRONT_REVALIDATE_URL, {
+  const res = await fetch(env.SITE_REVALIDATE_URL, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',

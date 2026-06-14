@@ -2,18 +2,18 @@
  * Pure CSS; the contained control turns danger and the hint reveals once the user
  * has interacted and the value is invalid. */
 
-.sf-validator {
+.st-validator {
   display: block;
 }
-.sf-validator__hint {
+.st-validator__hint {
   display: none;
   margin: 0.25rem 0 0;
   font-size: 0.8rem;
-  color: var(--sf-danger, #dc2626);
+  color: var(--st-danger, #dc2626);
 }
-.sf-validator :user-invalid {
-  border-color: var(--sf-danger, #dc2626);
+.st-validator :user-invalid {
+  border-color: var(--st-danger, #dc2626);
 }
-.sf-validator:has(:user-invalid) .sf-validator__hint {
+.st-validator:has(:user-invalid) .st-validator__hint {
   display: block;
 }

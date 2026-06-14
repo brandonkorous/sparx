@@ -39,36 +39,36 @@ export default function WishlistPage() {
 
   return (
     <div>
-      <h1 className="sf-h2" style={{ marginBottom: '1.25rem' }}>
+      <h1 className="st-h2" style={{ marginBottom: '1.25rem' }}>
         Wishlist
       </h1>
 
       {error ? (
-        <div className="sf-alert sf-alert--error" role="alert">
+        <div className="st-alert st-alert--error" role="alert">
           {error}
         </div>
       ) : visible === null ? (
-        <div className="sf-skeleton" style={{ height: 160 }} />
+        <div className="st-skeleton" style={{ height: 160 }} />
       ) : visible.length === 0 ? (
-        <div className="sf-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="sf-muted" style={{ marginBottom: '1rem' }}>
+        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
+          <p className="st-muted" style={{ marginBottom: '1rem' }}>
             You haven’t saved anything yet.
           </p>
-          <Link href="/products" className="sf-btn sf-btn--primary">
+          <Link href="/products" className="st-btn st-btn--primary">
             Browse products
           </Link>
         </div>
       ) : (
         <div
-          className="sf-grid"
+          className="st-grid"
           style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}
         >
           {visible.map((it) => {
             const img = mediaUrl(it.imageMediaId, tenantSlug);
             return (
-              <div key={it.variantId} className="sf-card" style={{ overflow: 'hidden' }}>
+              <div key={it.variantId} className="st-card" style={{ overflow: 'hidden' }}>
                 <Link href={`/products/${it.handle}`} style={{ display: 'block' }}>
-                  <div className="sf-line__media" style={{ aspectRatio: '1', width: '100%' }}>
+                  <div className="st-line__media" style={{ aspectRatio: '1', width: '100%' }}>
                     {img ? (
                       <Image
                         src={img}
@@ -81,7 +81,7 @@ export default function WishlistPage() {
                   </div>
                   <div style={{ padding: '0.75rem' }}>
                     <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{it.title}</div>
-                    <div className="sf-muted" style={{ fontSize: '0.85rem' }}>
+                    <div className="st-muted" style={{ fontSize: '0.85rem' }}>
                       {formatMoney(it.priceCents)}
                     </div>
                   </div>
@@ -89,7 +89,7 @@ export default function WishlistPage() {
                 <div style={{ padding: '0 0.75rem 0.75rem' }}>
                   <button
                     type="button"
-                    className="sf-btn sf-btn--ghost"
+                    className="st-btn st-btn--ghost"
                     onClick={() => void remove(it.variantId)}
                   >
                     Remove

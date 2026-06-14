@@ -17,7 +17,7 @@ describe('Link', () => {
       </Link>
     );
     const el = screen.getByRole('link', { name: 'Go' });
-    expect(el).toHaveClass('sf-link', 'sf-c-accent', 'sf-link--ul-always');
+    expect(el).toHaveClass('st-link', 'st-c-accent', 'st-link--ul-always');
     expect(el).toHaveAttribute('href', '/x');
   });
 });
@@ -26,14 +26,14 @@ describe('Status', () => {
   it('maps color + size and pulses', () => {
     render(<Status color="success" size="lg" pulse label="Online" />);
     const el = screen.getByRole('status', { name: 'Online' });
-    expect(el).toHaveClass('sf-status', 'sf-c-success', 'sf-status--sz-lg', 'sf-status--pulse');
+    expect(el).toHaveClass('st-status', 'st-c-success', 'st-status--sz-lg', 'st-status--pulse');
   });
 });
 
 describe('Kbd', () => {
   it('renders a key with the size class', () => {
     render(<Kbd size="lg">Esc</Kbd>);
-    expect(screen.getByText('Esc')).toHaveClass('sf-kbd', 'sf-kbd--sz-lg');
+    expect(screen.getByText('Esc')).toHaveClass('st-kbd', 'st-kbd--sz-lg');
   });
 });
 
@@ -46,10 +46,10 @@ describe('Steps', () => {
         <Step>Three</Step>
       </Steps>
     );
-    expect(container.querySelector('.sf-steps')).toHaveClass('sf-steps--vertical', 'sf-c-info');
-    expect(screen.getByText('One').closest('.sf-step')).toHaveClass('sf-step--complete');
-    expect(screen.getByText('Two').closest('.sf-step')).toHaveClass('sf-step--active');
-    expect(screen.getByText('Three').closest('.sf-step')).toHaveClass('sf-step--upcoming');
+    expect(container.querySelector('.st-steps')).toHaveClass('st-steps--vertical', 'st-c-info');
+    expect(screen.getByText('One').closest('.st-step')).toHaveClass('st-step--complete');
+    expect(screen.getByText('Two').closest('.st-step')).toHaveClass('st-step--active');
+    expect(screen.getByText('Three').closest('.st-step')).toHaveClass('st-step--upcoming');
   });
 });
 
@@ -57,9 +57,9 @@ describe('RadialProgress', () => {
   it('renders a progressbar with the color class and value var', () => {
     render(<RadialProgress value={30} max={60} color="warning" />);
     const el = screen.getByRole('progressbar');
-    expect(el).toHaveClass('sf-radial', 'sf-c-warning');
+    expect(el).toHaveClass('st-radial', 'st-c-warning');
     expect(el).toHaveAttribute('aria-valuenow', '30');
-    expect(el.style.getPropertyValue('--sf-radial-value')).toBe('50');
+    expect(el.style.getPropertyValue('--st-radial-value')).toBe('50');
     expect(screen.getByText('50%')).toBeInTheDocument();
   });
 });
@@ -71,11 +71,11 @@ describe('ChatBubble', () => {
         <ChatBubble.Message color="primary">Hi</ChatBubble.Message>
       </ChatBubble>
     );
-    expect(container.querySelector('.sf-chat')).toHaveClass('sf-chat--end');
+    expect(container.querySelector('.st-chat')).toHaveClass('st-chat--end');
     expect(screen.getByText('Hi')).toHaveClass(
-      'sf-chat__bubble',
-      'sf-c-primary',
-      'sf-chat__bubble--colored'
+      'st-chat__bubble',
+      'st-c-primary',
+      'st-chat__bubble--colored'
     );
   });
 });
@@ -85,15 +85,15 @@ describe('Range', () => {
     render(<Range color="accent" size="lg" aria-label="vol" />);
     const el = screen.getByLabelText('vol');
     expect(el).toHaveAttribute('type', 'range');
-    expect(el).toHaveClass('sf-range', 'sf-c-accent', 'sf-range--sz-lg');
+    expect(el).toHaveClass('st-range', 'st-c-accent', 'st-range--sz-lg');
   });
 });
 
 describe('Rating', () => {
   it('renders a readOnly display with filled stars', () => {
     const { container } = render(<Rating name="r" value={3} readOnly />);
-    expect(container.querySelectorAll('.sf-rating__star')).toHaveLength(5);
-    expect(container.querySelectorAll('.sf-rating__star--on')).toHaveLength(3);
+    expect(container.querySelectorAll('.st-rating__star')).toHaveLength(5);
+    expect(container.querySelectorAll('.st-rating__star--on')).toHaveLength(3);
   });
 
   it('renders interactive radios', () => {

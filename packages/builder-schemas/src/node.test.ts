@@ -36,12 +36,12 @@ describe('class survives the import path', () => {
     const res = parsePageImport({
       type: 'Section',
       class: 'navbar bg-base-100 shadow-sm',
-      children: [{ type: 'Heading', class: 'sf-h sf-h--1', props: { text: 'Hi' } }],
+      children: [{ type: 'Heading', class: 'st-h st-h--1', props: { text: 'Hi' } }],
     });
     expect(res.ok).toBe(true);
     if (res.ok) {
       expect(res.tree.class).toBe('navbar bg-base-100 shadow-sm');
-      expect(res.tree.children?.[0]?.class).toBe('sf-h sf-h--1');
+      expect(res.tree.children?.[0]?.class).toBe('st-h st-h--1');
     }
   });
 });

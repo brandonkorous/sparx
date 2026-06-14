@@ -35,22 +35,22 @@ export default function OrdersPage() {
 
   return (
     <div>
-      <h1 className="sf-h2" style={{ marginBottom: '1.25rem' }}>
+      <h1 className="st-h2" style={{ marginBottom: '1.25rem' }}>
         Orders
       </h1>
 
       {error ? (
-        <div className="sf-alert sf-alert--error" role="alert">
+        <div className="st-alert st-alert--error" role="alert">
           {error}
         </div>
       ) : orders === null ? (
-        <div className="sf-skeleton" style={{ height: 160 }} />
+        <div className="st-skeleton" style={{ height: 160 }} />
       ) : orders.length === 0 ? (
-        <div className="sf-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="sf-muted" style={{ marginBottom: '1rem' }}>
+        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
+          <p className="st-muted" style={{ marginBottom: '1rem' }}>
             You haven’t placed any orders yet.
           </p>
-          <Link href="/products" className="sf-btn sf-btn--primary">
+          <Link href="/products" className="st-btn st-btn--primary">
             Start shopping
           </Link>
         </div>
@@ -60,7 +60,7 @@ export default function OrdersPage() {
             <Link
               key={o.id}
               href={`/account/orders/${o.id}`}
-              className="sf-card"
+              className="st-card"
               style={{
                 padding: '1rem 1.25rem',
                 display: 'flex',
@@ -71,12 +71,12 @@ export default function OrdersPage() {
             >
               <div>
                 <strong>#{o.orderNumber}</strong>
-                <div className="sf-muted" style={{ fontSize: '0.85rem' }}>
+                <div className="st-muted" style={{ fontSize: '0.85rem' }}>
                   {formatDate(o.placedAt)}
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span className="sf-badge" data-status={o.status}>
+                <span className="st-badge" data-status={o.status}>
                   {o.status}
                 </span>
                 <strong>{formatMoney(o.totalCents, o.currency)}</strong>

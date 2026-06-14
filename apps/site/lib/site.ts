@@ -1,10 +1,10 @@
 // Server-side read of a tenant's published Site Builder snapshot.
 //
-// `GET /v1/public/storefront/site?tenant=<slug>` returns the published
+// `GET /v1/public/site?tenant=<slug>` returns the published
 // PublishedSnapshot (theme tokens for light + dark, ordered section list per
 // page, and the header/footer/announcement layout blocks) — or `null` when the
 // tenant has never published. The storefront layers this on top of the
-// existing themeToCss(StorefrontTheme) path; a null snapshot keeps the legacy
+// existing themeToCss(CommerceSiteTheme) path; a null snapshot keeps the legacy
 // composed-commerce homepage as the empty-store fallback.
 //
 // Drafts are NOT exposed here — the authenticated /v1/sitebuilder/preview
@@ -113,7 +113,7 @@ export async function getPublishedSite(
     const params = new URLSearchParams({ tenant: tenantSlug });
     if (propertySlug) params.set('property', propertySlug);
     const res = await fetch(
-      `${BASE_URL}/v1/public/storefront/site?${params.toString()}`,
+      `${BASE_URL}/v1/public/site?${params.toString()}`,
       sitePreviewToken
         ? { headers: { Authorization: `Preview ${sitePreviewToken}` }, cache: 'no-store' }
         : {

@@ -21,7 +21,16 @@ export const ReturnStatus = z.enum([
 ]);
 export type ReturnStatus = z.infer<typeof ReturnStatus>;
 
-export const ReturnOutcome = z.enum(['refund', 'store_credit', 'exchange', 'repair']);
+// 'store_credit' is the pre-rename legacy alias of 'account_credit' (store→site
+// rename). Kept as a tolerated value so historical rows validate until the
+// account-credit backfill is confirmed everywhere; remove in the contract step.
+export const ReturnOutcome = z.enum([
+  'refund',
+  'account_credit',
+  'exchange',
+  'repair',
+  'store_credit',
+]);
 export type ReturnOutcome = z.infer<typeof ReturnOutcome>;
 
 export const ReturnReasonCode = z.enum([
@@ -105,7 +114,7 @@ export type RecordReturnInspectionInput = z.infer<typeof RecordReturnInspectionI
 export const IssueReturnRefundInput = z.object({
   returnId: Uuid,
   refundAmountCents: MoneyCents,
-  asStoreCredit: z.boolean().default(false),
+  asAccountCredit: z.boolean().default(false),
   restockingFeeCents: MoneyCents.optional(),
 });
 export type IssueReturnRefundInput = z.infer<typeof IssueReturnRefundInput>;

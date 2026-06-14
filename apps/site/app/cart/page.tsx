@@ -20,10 +20,10 @@ export default async function CartPage() {
   if (!tenant) notFound();
 
   return (
-    <div className="sf-container">
+    <div className="st-container">
       <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Cart' }]} />
       <header style={{ marginBottom: '1.5rem' }}>
-        <h1 className="sf-h1">Your cart</h1>
+        <h1 className="st-h1">Your cart</h1>
       </header>
       <CartView />
     </div>

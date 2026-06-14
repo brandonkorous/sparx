@@ -43,15 +43,15 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
   const rangeUnit = activeDomain?.rangeUnit ?? null;
 
   return (
-    <form id="plp-filters" className="sf-facets" method="GET" action={action}>
+    <form id="plp-filters" className="st-facets" method="GET" action={action}>
       {values.q ? <input type="hidden" name="q" value={values.q} /> : null}
       <input type="hidden" name="sort" value={values.sort ?? 'relevance'} />
 
-      <div className="sf-facet">
+      <div className="st-facet">
         <h4>Price</h4>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <input
-            className="sf-select"
+            className="st-select"
             type="number"
             name="minPrice"
             inputMode="numeric"
@@ -61,9 +61,9 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
             style={{ width: '100%' }}
             aria-label="Minimum price (dollars)"
           />
-          <span className="sf-muted">–</span>
+          <span className="st-muted">–</span>
           <input
-            className="sf-select"
+            className="st-select"
             type="number"
             name="maxPrice"
             inputMode="numeric"
@@ -76,7 +76,7 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
         </div>
       </div>
 
-      <div className="sf-facet">
+      <div className="st-facet">
         <h4>Availability</h4>
         <label>
           <input type="checkbox" name="inStock" value="true" defaultChecked={values.inStock} />
@@ -85,7 +85,7 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
       </div>
 
       {activeDomain ? (
-        <div className="sf-facet">
+        <div className="st-facet">
           <h4>
             {domains.length > 1
               ? 'Fits your'
@@ -101,10 +101,10 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
                 marginBottom: '0.5rem',
               }}
             >
-              <span className="sf-muted" style={{ fontSize: '0.78rem' }}>
+              <span className="st-muted" style={{ fontSize: '0.78rem' }}>
                 Type
               </span>
-              <select className="sf-select" name="fitmentDomain" defaultValue={activeDomain.slug}>
+              <select className="st-select" name="fitmentDomain" defaultValue={activeDomain.slug}>
                 {domains.map((d) => (
                   <option key={d.id} value={d.slug}>
                     {d.displayName}
@@ -115,11 +115,11 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
           ) : null}
 
           <label style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.4rem' }}>
-            <span className="sf-muted" style={{ fontSize: '0.78rem' }}>
+            <span className="st-muted" style={{ fontSize: '0.78rem' }}>
               {categoryLabel}
             </span>
             <select
-              className="sf-select"
+              className="st-select"
               name="fitmentCategory"
               defaultValue={values.fitmentCategory ?? ''}
             >
@@ -141,7 +141,7 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
                 marginTop: '0.5rem',
               }}
             >
-              <span className="sf-muted" style={{ fontSize: '0.78rem' }}>
+              <span className="st-muted" style={{ fontSize: '0.78rem' }}>
                 {rangeLabel}
               </span>
               <RangeWidget unit={rangeUnit} value={values.fitmentRangeValue} label={rangeLabel} />
@@ -151,10 +151,10 @@ export function FacetPanel({ action, domains, activeDomain, categories, values }
       ) : null}
 
       <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button type="submit" className="sf-btn sf-btn--primary" style={{ flex: 1 }}>
+        <button type="submit" className="st-btn st-btn--primary" style={{ flex: 1 }}>
           Apply
         </button>
-        <a href={action} className="sf-btn sf-btn--ghost" aria-label="Clear filters">
+        <a href={action} className="st-btn st-btn--ghost" aria-label="Clear filters">
           Clear
         </a>
       </div>
@@ -184,7 +184,7 @@ function RangeWidget({ unit, value, label }: { unit: string; value?: string; lab
 
   if (unit === 'year') {
     return (
-      <select className="sf-select" name="fitmentRangeValue" defaultValue={value ?? ''}>
+      <select className="st-select" name="fitmentRangeValue" defaultValue={value ?? ''}>
         <option value="">Any year</option>
         {YEARS.map((y) => (
           <option key={y} value={y}>
@@ -198,7 +198,7 @@ function RangeWidget({ unit, value, label }: { unit: string; value?: string; lab
   if (unit === 'us_shoe' || unit === 'eu_shoe') {
     const sizes = unit === 'us_shoe' ? US_SHOES : EU_SHOES;
     return (
-      <select className="sf-select" name="fitmentRangeValue" defaultValue={value ?? ''}>
+      <select className="st-select" name="fitmentRangeValue" defaultValue={value ?? ''}>
         <option value="">Any size</option>
         {sizes.map((s) => (
           <option key={s} value={s}>
@@ -213,7 +213,7 @@ function RangeWidget({ unit, value, label }: { unit: string; value?: string; lab
   return (
     <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
       <input
-        className="sf-select"
+        className="st-select"
         type="number"
         name="fitmentRangeValue"
         inputMode="decimal"
@@ -224,7 +224,7 @@ function RangeWidget({ unit, value, label }: { unit: string; value?: string; lab
         style={{ width: '100%' }}
         aria-label={`${label}${unitSuffix ? ` (${unitSuffix})` : ''}`}
       />
-      {unitSuffix ? <span className="sf-muted">{unitSuffix}</span> : null}
+      {unitSuffix ? <span className="st-muted">{unitSuffix}</span> : null}
     </span>
   );
 }

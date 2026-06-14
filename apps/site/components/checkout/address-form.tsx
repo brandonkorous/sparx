@@ -35,69 +35,69 @@ export function AddressForm({
   }
 
   return (
-    <div className="sf-addr">
-      <label className="sf-field sf-field--full">
+    <div className="st-addr">
+      <label className="st-field st-field--full">
         <span>Full name</span>
         <input
-          className="sf-input"
+          className="st-input"
           required
           value={value.name}
           onChange={(e) => set('name', e.target.value)}
           autoComplete="name"
         />
       </label>
-      <label className="sf-field sf-field--full">
+      <label className="st-field st-field--full">
         <span>Address</span>
         <input
-          className="sf-input"
+          className="st-input"
           required
           value={value.line1}
           onChange={(e) => set('line1', e.target.value)}
           autoComplete="address-line1"
         />
       </label>
-      <label className="sf-field sf-field--full">
+      <label className="st-field st-field--full">
         <span>Apartment, suite, etc. (optional)</span>
         <input
-          className="sf-input"
+          className="st-input"
           value={value.line2 ?? ''}
           onChange={(e) => set('line2', e.target.value)}
           autoComplete="address-line2"
         />
       </label>
-      <label className="sf-field">
+      <label className="st-field">
         <span>City</span>
         <input
-          className="sf-input"
+          className="st-input"
           required
           value={value.city}
           onChange={(e) => set('city', e.target.value)}
           autoComplete="address-level2"
         />
       </label>
-      <label className="sf-field">
+      <label className="st-field">
         <span>State / Region</span>
         <input
-          className="sf-input"
+          className="st-input"
           value={value.region ?? ''}
           onChange={(e) => set('region', e.target.value)}
           autoComplete="address-level1"
         />
       </label>
-      <label className="sf-field">
+      <label className="st-field">
         <span>Postal code</span>
         <input
-          className="sf-input"
+          className="st-input"
           required
           value={value.postalCode}
           onChange={(e) => set('postalCode', e.target.value)}
           autoComplete="postal-code"
         />
       </label>
-      <label className="sf-field">
+      <label className="st-field">
         <span>Country</span>
         <select
-          className="sf-input"
+          className="st-input"
           value={value.country}
           onChange={(e) => set('country', e.target.value)}
           autoComplete="country"
@@ -109,10 +109,10 @@ export function AddressForm({
           ))}
         </select>
       </label>
-      <label className="sf-field sf-field--full">
+      <label className="st-field st-field--full">
         <span>Phone (optional)</span>
         <input
-          className="sf-input"
+          className="st-input"
           type="tel"
           value={value.phone ?? ''}
           onChange={(e) => set('phone', e.target.value)}

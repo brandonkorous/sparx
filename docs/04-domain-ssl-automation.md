@@ -33,14 +33,14 @@ At tenant signup, a `slug` is chosen or auto-generated from business name:
 
 ```
 Business: "Acme Parts Co"  →  slug: "acme-parts"
-Storefront URL: https://acme-parts.wizeworks.com
+Site URL: https://acme-parts.wizeworks.com
 ```
 
 ### Infrastructure
 
 - **Wildcard DNS:** `*.wizeworks.com → GKE ingress load balancer IP` (set once, never changed)
 - **Wildcard SSL:** Single wildcard cert for `*.wizeworks.com` via Let's Encrypt, auto-renewed
-- **Caddy routing:** Reads `Host` header, extracts slug, looks up tenant in `domains` table, proxies to storefront
+- **Caddy routing:** Reads `Host` header, extracts slug, looks up tenant in `domains` table, proxies to site
 
 ### Slug Rules
 
@@ -124,7 +124,7 @@ Caddy is configured with `on_demand_tls` which issues Let's Encrypt certs on fir
   tls {
     on_demand
   }
-  reverse_proxy storefront-service:3000
+  reverse_proxy site-service:3000
 }
 ```
 

@@ -1,18 +1,18 @@
 /* site-ui Logo — logo image or wordmark fallback (docs/46 §5.2). */
 
-.sf-logo {
+.st-logo {
   display: inline-flex;
   align-items: center;
   color: inherit;
   text-decoration: none;
 }
-.sf-logo__img {
+.st-logo__img {
   display: block;
   height: 2rem;
   width: auto;
 }
-.sf-logo__name {
-  font-family: var(--sf-font-heading, inherit);
+.st-logo__name {
+  font-family: var(--st-font-heading, inherit);
   font-weight: 700;
   font-size: 1.25rem;
   letter-spacing: -0.02em;

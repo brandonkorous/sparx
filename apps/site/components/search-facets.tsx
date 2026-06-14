@@ -43,16 +43,16 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
   const hasAnyFacet = FACET_GROUPS.some((g) => (facets[g.field]?.length ?? 0) > 0);
 
   return (
-    <form id="search-filters" className="sf-facets" method="GET" action={action}>
+    <form id="search-filters" className="st-facets" method="GET" action={action}>
       {/* Preserve the query + sort across filter submits. */}
       {values.q ? <input type="hidden" name="q" value={values.q} /> : null}
       <input type="hidden" name="sort" value={values.sort ?? 'relevance'} />
 
-      <div className="sf-facet">
+      <div className="st-facet">
         <h4>Price</h4>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <input
-            className="sf-select"
+            className="st-select"
             type="number"
             name="minPrice"
             inputMode="numeric"
@@ -62,9 +62,9 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
             style={{ width: '100%' }}
             aria-label="Minimum price (dollars)"
           />
-          <span className="sf-muted">–</span>
+          <span className="st-muted">–</span>
           <input
-            className="sf-select"
+            className="st-select"
             type="number"
             name="maxPrice"
             inputMode="numeric"
@@ -77,7 +77,7 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
         </div>
       </div>
 
-      <div className="sf-facet">
+      <div className="st-facet">
         <h4>Availability</h4>
         <label>
           <input type="checkbox" name="inStock" value="true" defaultChecked={values.inStock} />
@@ -90,7 +90,7 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
         if (!counts || counts.length === 0) return null;
         const active = values[group.param];
         return (
-          <div className="sf-facet" key={group.field}>
+          <div className="st-facet" key={group.field}>
             <h4>{group.label}</h4>
             {counts.slice(0, 10).map((c) => (
               <label key={c.value}>
@@ -101,7 +101,7 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
                   defaultChecked={active === c.value}
                 />
                 <span style={{ flex: 1 }}>{c.value}</span>
-                <span className="sf-muted" style={{ fontSize: '0.78rem' }}>
+                <span className="st-muted" style={{ fontSize: '0.78rem' }}>
                   {c.count}
                 </span>
               </label>
@@ -111,12 +111,12 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
       })}
 
       <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button type="submit" className="sf-btn sf-btn--primary" style={{ flex: 1 }}>
+        <button type="submit" className="st-btn st-btn--primary" style={{ flex: 1 }}>
           Apply
         </button>
         <a
           href={values.q ? `${action}?q=${encodeURIComponent(values.q)}` : action}
-          className="sf-btn sf-btn--ghost"
+          className="st-btn st-btn--ghost"
           aria-label="Clear filters"
         >
           Clear
@@ -124,7 +124,7 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
       </div>
 
       {!hasAnyFacet ? (
-        <p className="sf-muted" style={{ fontSize: '0.8rem' }}>
+        <p className="st-muted" style={{ fontSize: '0.8rem' }}>
           Refine with price or availability.
         </p>
       ) : null}

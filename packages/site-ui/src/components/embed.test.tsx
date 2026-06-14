@@ -39,7 +39,7 @@ describe('mapEmbed', () => {
 describe('EmbedFrame', () => {
   it('renders an iframe with the given src + ratio class', () => {
     const { container } = render(<EmbedFrame src="https://x.test/e" title="Clip" ratio="pano" />);
-    expect(container.querySelector('.sf-embed')).toHaveClass('sf-embed--pano');
+    expect(container.querySelector('.st-embed')).toHaveClass('st-embed--pano');
     const frame = screen.getByTitle('Clip');
     expect(frame.tagName).toBe('IFRAME');
     expect(frame).toHaveAttribute('src', 'https://x.test/e');
@@ -47,7 +47,7 @@ describe('EmbedFrame', () => {
 
   it('renders a placeholder when there is no src', () => {
     render(<EmbedFrame title="Clip" placeholder="Add a link" />);
-    expect(screen.getByText('Add a link')).toHaveClass('sf-embed__placeholder');
+    expect(screen.getByText('Add a link')).toHaveClass('st-embed__placeholder');
   });
 });
 

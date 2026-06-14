@@ -13,7 +13,7 @@ export function CartButton() {
   return (
     <Link
       href="/cart"
-      className="sf-iconbtn"
+      className="st-iconbtn"
       aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
       onClick={(e) => {
         // Progressive enhancement: open the drawer instead of navigating.
@@ -36,7 +36,7 @@ export function CartButton() {
         <circle cx="20" cy="21" r="1" />
         <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
       </svg>
-      {count > 0 ? <span className="sf-iconbtn__count">{count > 99 ? '99+' : count}</span> : null}
+      {count > 0 ? <span className="st-iconbtn__count">{count > 99 ? '99+' : count}</span> : null}
     </Link>
   );
 }

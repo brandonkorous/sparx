@@ -14,7 +14,7 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     id: 'static-1',
     order: 10,
-    question: 'Can I really get a live store in five minutes?',
+    question: 'Can I really get a live site in five minutes?',
     answer:
       'Yes — that’s the design target the entire platform is built around. Sign up, pick a theme, activate the modules you need, add a product, take an order. We measure new-merchant time-to-first-order and that number is the north star metric. If it takes longer for you, something is broken and we want to know.',
   },

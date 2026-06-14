@@ -24,7 +24,7 @@ These are all largely independent of each other and can be built in parallel. Le
 >   fixed (`generateScopedSearchKey` in `@sparx/search`).
 > - **Product Markup (Feature 4): Ph1, Ph2, and Surcharges (Ph2b) shipped.** Remaining: Ph3
 >   (quote/invoice-line markup) and Ph4 (cost-change recompute worker + MCP tools).
-> - **Legal & Consent (Feature 1): slices 3b–6 shipped** (seed worker, storefront consent UX,
+> - **Legal & Consent (Feature 1): slices 3b–6 shipped** (seed worker, site consent UX,
 >   dashboard surfaces, onboarding acceptance gate). Remaining: **Slice 7 (backfill existing tenants)**
 >   and **Slice 8 (polish)**.
 
@@ -33,7 +33,7 @@ These are all largely independent of each other and can be built in parallel. Le
 ## Feature 1 — Legal & Consent Completion (docs/42)
 
 **Spec:** [docs/42-legal-and-consent.md](42-legal-and-consent.md)
-**Already shipped:** Slices 0 (design doc), 1 (foundations: 4 tables + RLS migrations, `LEGAL_TEMPLATES` catalog, `legalKind` on `content_entries`, `legal-versions` constant, `GET/PATCH /v1/tenant/consent`), 2 (public placements API, storefront footer fix, real legal pages replacing ComingSoon stubs on apps/web), 3a (public consent POST + config fanout into `/v1/public/tenants/:slug`), PageView fix.
+**Already shipped:** Slices 0 (design doc), 1 (foundations: 4 tables + RLS migrations, `LEGAL_TEMPLATES` catalog, `legalKind` on `content_entries`, `legal-versions` constant, `GET/PATCH /v1/tenant/consent`), 2 (public placements API, site footer fix, real legal pages replacing ComingSoon stubs on apps/web), 3a (public consent POST + config fanout into `/v1/public/tenants/:slug`), PageView fix.
 **Remaining:** Slices 3b, 4, 5, 6, 7, 8.
 
 ### Slice 3b — Seed worker + Terraform
@@ -44,7 +44,7 @@ New Cloud Run worker `services/legal-seed-worker/`:
 
 - Subscribes to `tenant.created`
 - Under the new tenant's RLS context (`withRequestTenant`), seeds one `content_entry` per `LEGAL_TEMPLATES` row (status: **draft**, `legalKind`, `legalTemplateVersion`, disclaimer set)
-- Seeds `storefront_doc_placements` rows for footer placements
+- Seeds `site_doc_placements` rows for footer placements
 - Idempotent on `(tenantId, typeKey, slug)` unique constraint — safe to redeliver
 
 Terraform additions:
@@ -53,9 +53,9 @@ Terraform additions:
 - `google_pubsub_subscription` pointing at the Cloud Run worker URL
 - Add `legal-seed-worker` to cloud-run-worker TF module
 
-### Slice 4 — Storefront consent UX
+### Slice 4 — Site consent UX
 
-The banner/preference-center island that renders on tenant storefronts.
+The banner/preference-center island that renders on tenant sites.
 
 `apps/site/lib/consent.ts` — client registry:
 
@@ -93,7 +93,7 @@ Three dashboard surfaces (none built yet):
 **Settings → Cookie Consent:**
 
 - Mode selector (off / gdpr / ccpa) with per-category toggles
-- Preview of what the storefront banner will look like
+- Preview of what the site banner will look like
 - Saves via `PATCH /v1/tenant/consent`
 
 **Onboarding progress step:**
@@ -126,7 +126,7 @@ DECLARE t RECORD;
 BEGIN
   FOR t IN SELECT id FROM tenants LOOP
     PERFORM set_config('app.tenant_id', t.id::text, true);
-    -- seed content_entries + storefront_doc_placements per template
+    -- seed content_entries + site_doc_placements per template
     -- idempotent ON CONFLICT DO NOTHING
   END LOOP;
 END $$;
@@ -165,7 +165,7 @@ Theme catalog adapter for `/marketplace/themes`:
 - Facets: Style/mood (minimal, bold, editorial, playful), Color family, Layout density, Industry
 - Detail page: live preview using the Builder's theme preview mechanism, "Apply" CTA
 
-"Apply" a theme: updates `savedThemeService` / `StorefrontTheme` for the tenant's active site — same flow as the existing Brand & Theme editor in `/builder/_brand`. Shows a confirmation dialog naming the active site.
+"Apply" a theme: updates `savedThemeService` / `SiteTheme` for the tenant's active site — same flow as the existing Brand & Theme editor in `/builder/_brand`. Shows a confirmation dialog naming the active site.
 
 Install count + rating: stub with static data for system themes until telemetry exists (docs/60 §12 open question — defer real data).
 
@@ -255,7 +255,7 @@ Each new entity type gets a card in the ⌘K result list with an appropriate ico
 
 The Typesense scoped-key generation (per-tenant search isolation) currently returns 501 Not Implemented. Implement `generateScopedSearchKey(tenantId)` in `services/typesense-worker/` or `@sparx/search` using the Typesense Node.js client's `generateScopedSearchKey()` method with a filter_by `tenantId:{tenantId}` embedded.
 
-The storefront's public search (`/v1/public/search`) uses this scoped key — fix unblocks storefront product search from being truly tenant-isolated.
+The site's public search (`/v1/public/search`) uses this scoped key — fix unblocks site product search from being truly tenant-isolated.
 
 ---
 
@@ -353,7 +353,7 @@ MCP tools (docs/48 §9 / docs/07):
 | #   | Feature          | Phase                                  | Notes                               |
 | --- | ---------------- | -------------------------------------- | ----------------------------------- |
 | 1   | Legal & Consent  | Slice 3b seed worker + TF              | Unblocked                           |
-| 2   | Legal & Consent  | Slice 4 storefront consent UX          | After 3b                            |
+| 2   | Legal & Consent  | Slice 4 site consent UX                | After 3b                            |
 | 3   | Legal & Consent  | Slice 5 dashboard surfaces             | After 3b                            |
 | 4   | Legal & Consent  | Slice 6 onboarding acceptance gate     | Unblocked (can go first)            |
 | 5   | Product Markup   | Ph1 Catalog markup rules               | Unblocked                           |

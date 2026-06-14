@@ -79,7 +79,7 @@ export interface EditableTenantPage {
 const ZONE_DOMAIN = process.env.NEXT_PUBLIC_SPARX_ZONE_DOMAIN ?? 'sparx.zone';
 const AUTOSAVE_DEBOUNCE_MS = 600;
 
-function storefrontOrigin(tenantSlug: string | null): string {
+function siteOrigin(tenantSlug: string | null): string {
   if (tenantSlug) return `https://${tenantSlug}.${ZONE_DOMAIN}`;
   return process.env.NEXT_PUBLIC_MARKETING_URL ?? 'https://sparx.works';
 }
@@ -106,7 +106,7 @@ export function EditPageForm({
   sites: Property[];
   initialPropertyIds: string[];
 }) {
-  const previewOrigin = storefrontOrigin(tenantSlug);
+  const previewOrigin = siteOrigin(tenantSlug);
   const router = useRouter();
   const multiSite = sites.length > 1;
   const [error, setError] = React.useState<string | null>(null);
@@ -416,7 +416,7 @@ export function EditPageForm({
                   required
                 />
                 <Text size="xs" variant="muted">
-                  /{slug} is your storefront path.
+                  /{slug} is your site path.
                 </Text>
               </Stack>
               <Stack gap={2}>

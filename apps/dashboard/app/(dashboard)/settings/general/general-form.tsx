@@ -114,13 +114,20 @@ export function GeneralForm({ tenant }: GeneralFormProps) {
       <Card>
         <CardHeader>
           <CardTitle>General</CardTitle>
-          <CardDescription>How your site identifies itself across Sparx.</CardDescription>
+          <CardDescription>
+            Your business and account details — used for billing and admin. Your customer-facing
+            site name lives in Settings → Sites.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Stack gap={4}>
             <Stack gap={2}>
-              <Label htmlFor="name">Site name</Label>
+              <Label htmlFor="name">Business name</Label>
               <Input id="name" name="name" defaultValue={tenant.name} required />
+              <Text size="xs" variant="muted">
+                Your legal or organization name. Used for billing and account notices — never shown
+                to customers.
+              </Text>
             </Stack>
             <Stack gap={2}>
               <Label htmlFor="email">Contact email</Label>

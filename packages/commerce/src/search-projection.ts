@@ -89,7 +89,7 @@ export async function projectProduct(
       select: { id: true },
     });
     const settings = primary
-      ? await tx.storefrontSettings.findUnique({
+      ? await tx.commerceSiteSettings.findUnique({
           where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: primary.id } },
           select: { defaultCurrency: true },
         })

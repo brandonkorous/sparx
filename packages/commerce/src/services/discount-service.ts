@@ -1,4 +1,4 @@
-// discountService — codes, automatic discounts, gift cards, store credit.
+// discountService — codes, automatic discounts, gift cards, account credit.
 // Pricing pipeline applies these on top of the base/price-list resolution
 // in pricingService.resolve(); this service owns the CRUD + redemption
 // math plus the per-customer / total-usage enforcement.
@@ -15,11 +15,11 @@ import {
   AdjustGiftCardInput,
   CreateDiscountInput,
   type DiscountCondition,
-  GrantStoreCreditInput,
+  GrantAccountCreditInput,
   IssueGiftCardInput,
   RedeemDiscountInput,
   RedeemGiftCardInput,
-  SpendStoreCreditInput,
+  SpendAccountCreditInput,
   UpdateDiscountInput,
 } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
@@ -633,21 +633,21 @@ export async function adjustGiftCard(
   });
 }
 
-// ─── Store credit ─────────────────────────────────────────────────────
+// ─── Account credit ─────────────────────────────────────────────────────
 
-export interface StoreCreditBalance {
+export interface AccountCreditBalance {
   customerId: string;
   balanceCents: number;
   currency: string;
 }
 
-export async function getStoreCreditBalance(
+export async function getAccountCreditBalance(
   ctx: ServiceContext,
   customerId: string,
   currency = 'USD'
-): Promise<StoreCreditBalance | null> {
+): Promise<AccountCreditBalance | null> {
   return withTenant(ctx, async (tx) => {
-    const row = await tx.storeCredit.findFirst({
+    const row = await tx.accountCredit.findFirst({
       where: { customerId, currency },
     });
     return row
@@ -656,7 +656,7 @@ export async function getStoreCreditBalance(
   });
 }
 
-export async function listStoreCreditTransactions(
+export async function listAccountCreditTransactions(
   ctx: ServiceContext,
   customerId: string,
   currency = 'USD'
@@ -672,7 +672,7 @@ export async function listStoreCreditTransactions(
   }[]
 > {
   return withTenant(ctx, async (tx) => {
-    const credit = await tx.storeCredit.findFirst({
+    const credit = await tx.accountCredit.findFirst({
       where: { customerId, currency },
       include: {
         transactions: {
@@ -694,14 +694,14 @@ export async function listStoreCreditTransactions(
   });
 }
 
-export async function grantStoreCredit(
+export async function grantAccountCredit(
   ctx: ServiceContext,
   rawInput: unknown
 ): Promise<{ newBalanceCents: number }> {
-  const input = GrantStoreCreditInput.parse(rawInput);
+  const input = GrantAccountCreditInput.parse(rawInput);
 
   const result = await withTenant(ctx, async (tx) => {
-    const credit = await tx.storeCredit.upsert({
+    const credit = await tx.accountCredit.upsert({
       where: {
         tenantId_customerId_currency: {
           tenantId: ctx.tenantId,
@@ -721,10 +721,10 @@ export async function grantStoreCredit(
         ...(input.expiresAt ? { expiresAt: new Date(input.expiresAt) } : {}),
       },
     });
-    await tx.storeCreditTransaction.create({
+    await tx.accountCreditTransaction.create({
       data: {
         tenantId: ctx.tenantId,
-        storeCreditId: credit.id,
+        accountCreditId: credit.id,
         deltaCents: input.amountCents,
         reason: input.reason,
         note: input.note ?? null,
@@ -736,7 +736,7 @@ export async function grantStoreCredit(
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
       actorType: ctx.userId ? 'user' : 'system',
-      action: 'commerce.storecredit.granted',
+      action: 'commerce.accountcredit.granted',
       entityType: 'Customer',
       entityId: input.customerId,
       diff: { after: { amountCents: input.amountCents, reason: input.reason } },
@@ -747,7 +747,7 @@ export async function grantStoreCredit(
   await publishCommerceEvent({
     tenantId: ctx.tenantId,
     actorId: ctx.userId ?? null,
-    topic: 'storecredit.granted',
+    topic: 'accountcredit.granted',
     data: {
       customerId: input.customerId,
       amountCents: input.amountCents,
@@ -758,11 +758,11 @@ export async function grantStoreCredit(
   return { newBalanceCents: result.balanceCents };
 }
 
-export async function spendStoreCredit(
+export async function spendAccountCredit(
   ctx: ServiceContext,
   rawInput: unknown
 ): Promise<{ spentCents: number; remainingBalanceCents: number }> {
-  const input = SpendStoreCreditInput.parse(rawInput);
+  const input = SpendAccountCreditInput.parse(rawInput);
   return withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
       where: { id: input.cartId, abandonedAt: null },
@@ -770,25 +770,25 @@ export async function spendStoreCredit(
     });
     if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
 
-    const credit = await tx.storeCredit.findFirst({
+    const credit = await tx.accountCredit.findFirst({
       where: { customerId: input.customerId, currency: cart.currency },
     });
     if (!credit || credit.balanceCents <= 0) {
-      throw new CommercePricingError('No spendable store credit for this customer/currency');
+      throw new CommercePricingError('No spendable account credit for this customer/currency');
     }
 
     const cartTotal = await sumCartLineSubtotals(tx, input.cartId);
     const spent = Math.min(credit.balanceCents, input.amountCents, cartTotal);
     if (spent <= 0) return { spentCents: 0, remainingBalanceCents: credit.balanceCents };
 
-    await tx.storeCredit.update({
+    await tx.accountCredit.update({
       where: { id: credit.id },
       data: { balanceCents: { decrement: spent } },
     });
-    await tx.storeCreditTransaction.create({
+    await tx.accountCreditTransaction.create({
       data: {
         tenantId: ctx.tenantId,
-        storeCreditId: credit.id,
+        accountCreditId: credit.id,
         deltaCents: -spent,
         reason: 'spend',
         referenceType: 'Cart',
@@ -799,7 +799,7 @@ export async function spendStoreCredit(
     await publishCommerceEvent({
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
-      topic: 'storecredit.spent',
+      topic: 'accountcredit.spent',
       data: {
         customerId: input.customerId,
         cartId: input.cartId,

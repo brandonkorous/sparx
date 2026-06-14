@@ -50,7 +50,7 @@ the "Sparx handles the complexity" pitch. Destination charges is correct.
 
 ## 3. The Gateway Interface
 
-Build this interface now. Every payment flow in the platform — storefront
+Build this interface now. Every payment flow in the platform — site
 checkout, invoice payment links, B2B order payments — calls this interface.
 None of them know or care which vendor is behind it.
 
@@ -472,7 +472,7 @@ export class StripeDirectGateway implements PaymentGateway {
 Sparx Pay (destination charges):
   Platform fee: 0.5% on every payment processed
   Collected:    automatically via application_fee_amount
-  Applied to:   storefront checkout, invoice payment links,
+  Applied to:   site checkout, invoice payment links,
                 B2B order payments, any Sparx Pay transaction
 
 Any other gateway (stripe_direct, paypal, square, etc.):
@@ -660,7 +660,7 @@ Do not build any of the following. These are future decisions.
 ✅ Platform fee $0 on all other gateways — enforced, not optional
 ✅ Webhook endpoints per gateway (/webhooks/sparx-pay, etc.)
 ✅ Webhook events normalized and published to Pub/Sub
-✅ Storefront checkout uses PaymentService (not Stripe directly)
+✅ Site checkout uses PaymentService (not Stripe directly)
 ✅ Invoice payment link creation uses PaymentService
 ✅ B2B order payment uses PaymentService
 ✅ Sparx Pay Connect Express onboarding flow in dashboard

@@ -1711,7 +1711,7 @@
   /* ── TENANT brand ──────────────────────────────────────────────────────
    * The canvas renders in the MERCHANT's brand, not the Sparx admin palette.
    * The /builder/page route compiles the tenant's saved brand + theme into a
-   * `--sf-*` block scoped to `.bx-canvas` (the SAME compileThemeForTenant →
+   * `--st-*` block scoped to `.bx-canvas` (the SAME compileThemeForTenant →
    * buildThemeCssV2 pipeline the /builder/brand showcase and the live
    * storefront use, so the preview can't drift from production). These
    * `--bxc-*` vars alias onto that compiled set.
@@ -1719,28 +1719,28 @@
    * The fallbacks are a self-contained studio brand (warm paper, fern green,
    * generously rounded, serif headings) — they render only when no brand is
    * compiled in (e.g. the brand read failed), so the canvas is never unthemed.
-   * `--sf-font-fallback` is what the compiled font stacks fall back to. */
-  --sf-font-fallback: var(--bx-sans);
-  --bxc-bg: var(--sf-base-100, #fcfbf7);
-  --bxc-fg: var(--sf-base-content, #23211c);
-  --bxc-subtle: var(--sf-base-200, #f1efe6);
-  --bxc-muted: var(--sf-base-300, #e6e1d3);
-  --bxc-inverse-bg: var(--sf-neutral, #21342a);
-  --bxc-inverse-fg: var(--sf-neutral-content, #f3f1e8);
-  --bxc-border: var(--sf-border, #e3dfd2);
-  --bxc-primary: var(--sf-primary, #3f6b52);
-  --bxc-primary-fg: var(--sf-primary-content, #ffffff);
-  --bxc-radius: var(--sf-radius-box, 16px);
-  --bxc-radius-sm: var(--sf-radius-field, 10px);
+   * `--st-font-fallback` is what the compiled font stacks fall back to. */
+  --st-font-fallback: var(--bx-sans);
+  --bxc-bg: var(--st-base-100, #fcfbf7);
+  --bxc-fg: var(--st-base-content, #23211c);
+  --bxc-subtle: var(--st-base-200, #f1efe6);
+  --bxc-muted: var(--st-base-300, #e6e1d3);
+  --bxc-inverse-bg: var(--st-neutral, #21342a);
+  --bxc-inverse-fg: var(--st-neutral-content, #f3f1e8);
+  --bxc-border: var(--st-border, #e3dfd2);
+  --bxc-primary: var(--st-primary, #3f6b52);
+  --bxc-primary-fg: var(--st-primary-content, #ffffff);
+  --bxc-radius: var(--st-radius-box, 16px);
+  --bxc-radius-sm: var(--st-radius-field, 10px);
   --bxc-font-head: var(
-    --sf-font-heading,
+    --st-font-heading,
     'Iowan Old Style',
     'Palatino Linotype',
     Palatino,
     Georgia,
     serif
   );
-  --bxc-font-body: var(--sf-font-body, var(--bx-sans));
+  --bxc-font-body: var(--st-font-body, var(--bx-sans));
 
   width: 100%;
   max-width: 1200px;
@@ -1761,10 +1761,10 @@
   /* The canvas is the container-query context (docs/61 §7): authored `@md:`-style
      utilities respond to the canvas WIDTH — which the device switcher fixes — so
      the preview reflows exactly as production does, no iframe + no JS. Named
-     `sf-frame` so CollapsibleNav's inline↔hamburger swap binds to the frame
+     `st-frame` so CollapsibleNav's inline↔hamburger swap binds to the frame
      width (matching `.bx-render` on the live site), giving canvas parity. */
   container-type: inline-size;
-  container-name: sf-frame;
+  container-name: st-frame;
 }
 
 /* ── Canvas framing (browser window · device bezel · email envelope) ──────────
@@ -1803,7 +1803,7 @@
    inset exactly as the send does (the renderer pads the Container, so email has no
    full-bleed). The tenant base surface with a white fallback when unthemed. */
 .bx-canvas[data-surface='email'] {
-  background: var(--sf-base-100, #fff);
+  background: var(--st-base-100, #fff);
   padding: 32px;
 }
 
@@ -2029,13 +2029,13 @@
   text-align: left;
   padding: 0 0 24px;
   margin-bottom: 24px;
-  font-family: var(--sf-font-heading, 'Helvetica Neue', Helvetica, Arial, sans-serif);
+  font-family: var(--st-font-heading, 'Helvetica Neue', Helvetica, Arial, sans-serif);
   font-size: 22px;
   font-weight: 500;
   letter-spacing: -0.03em;
   line-height: 1;
-  color: var(--sf-base-content, #0f172a);
-  border-bottom: 1px solid var(--sf-border, #e2e8f0);
+  color: var(--st-base-content, #0f172a);
+  border-bottom: 1px solid var(--st-border, #e2e8f0);
 }
 /* Tenant logo wordmark — geometry mirrors EmailWordmark's <Img> (height ~size×1.4
    at the 22px default). The logo replaces the name text when the brand has one. */
@@ -2049,7 +2049,7 @@
   text-align: left;
   padding-top: 24px;
   margin-top: 24px;
-  border-top: 1px solid var(--sf-border, #e2e8f0);
+  border-top: 1px solid var(--st-border, #e2e8f0);
   font-size: 12px;
   line-height: 1.5;
   color: #64748b;
@@ -2062,7 +2062,7 @@
    met at send. The canvas always renders the content (the gate applies at dispatch),
    marked with a dashed rail so the author sees it's conditional. */
 .bx-node[data-bx-type='conditional_block'] > .bx-inner {
-  border-left: 2px dashed var(--sf-border, #e2e8f0);
+  border-left: 2px dashed var(--st-border, #e2e8f0);
   padding-left: 12px;
 }
 

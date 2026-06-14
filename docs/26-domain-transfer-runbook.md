@@ -13,7 +13,7 @@ Moving eight Sparx-owned domains from GoDaddy (current registrar) to Cloudflare 
 | Domain           | Purpose                                                                                                     | Priority            |
 | ---------------- | ----------------------------------------------------------------------------------------------------------- | ------------------- |
 | `sparx.works`    | Platform brand — app, api, mcp, marketing                                                                   | **P0 — first**      |
-| `sparx.zone`     | Tenant storefronts (`*.sparx.zone`, `customers.sparx.zone`). Shopify-style split for reputation isolation.  | **P0 — also first** |
+| `sparx.zone`     | Tenant sites (`*.sparx.zone`, `customers.sparx.zone`). Shopify-style split for reputation isolation.        | **P0 — also first** |
 | `sparx.email`    | Postal sending infrastructure **and** platform-to-tenant transactional emails (replaces planned `sparx.mx`) | P1                  |
 | `sparxcms.com`   | CMS module marketing site                                                                                   | P2                  |
 | `sparxcrm.com`   | CRM module marketing site                                                                                   | P2                  |

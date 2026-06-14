@@ -8,10 +8,10 @@
 
 ## 1. Overview
 
-Sparx Live Chat is a built-in customer communication module. Merchants get a branded chat widget on their storefront and a unified inbox in the dashboard — no Intercom, no Zendesk, no Crisp required. The AI layer handles common questions instantly; humans handle the rest.
+Sparx Live Chat is a built-in customer communication module. Merchants get a branded chat widget on their site and a unified inbox in the dashboard — no Intercom, no Zendesk, no Crisp required. The AI layer handles common questions instantly; humans handle the rest.
 
 **Module:** Chat · +$19/mo  
-**Surfaces:** Storefront widget, merchant dashboard inbox, sparx.market product pages
+**Surfaces:** Site widget, merchant dashboard inbox, sparx.market product pages
 
 ---
 
@@ -23,15 +23,15 @@ Every Sparx merchant currently solves customer support themselves. Options are:
 - Pay Intercom/Zendesk ($100–300/mo)
 - Cobble together Facebook Messenger
 
-A native chat widget that works out of the box — on their sparx.zone storefront and custom domain — is a retention feature. For sparx.market specifically, chat is essential: a shopper looking at a diesel injector has questions. A "Chat with Gillett Diesel" button is the difference between a bounce and a sale.
+A native chat widget that works out of the box — on their sparx.zone site and custom domain — is a retention feature. For sparx.market specifically, chat is essential: a shopper looking at a diesel injector has questions. A "Chat with Gillett Diesel" button is the difference between a bounce and a sale.
 
 ---
 
 ## 3. Three Surfaces
 
-### Surface 1 — Storefront Widget
+### Surface 1 — Site Widget
 
-Floating chat bubble on merchant's storefront (sparx.zone or custom domain). Shopper opens conversation → merchant responds from dashboard inbox. Conversation history saved in CRM.
+Floating chat bubble on merchant's site (sparx.zone or custom domain). Shopper opens conversation → merchant responds from dashboard inbox. Conversation history saved in CRM.
 
 ### Surface 2 — Merchant Dashboard Inbox
 
@@ -94,7 +94,7 @@ Redis pub/sub     — route messages to correct merchant dashboard
                     already in stack
 
 React chat widget — @sparx/chat-widget package
-                    embeds on storefront via Next.js component
+                    embeds on site via Next.js component
 
 AI layer          — Anthropic API (claude-haiku-4-5)
                     reads product data, fitment, policies
@@ -113,8 +113,8 @@ CREATE TABLE chat_conversations (
   status          VARCHAR(20) DEFAULT 'open',
   -- open | assigned | resolved | spam
   assigned_to     UUID REFERENCES staff_members(id),
-  source          VARCHAR(20) DEFAULT 'storefront',
-  -- storefront | sparx_market | b2b_portal
+  source          VARCHAR(20) DEFAULT 'site',
+  -- site | sparx_market | b2b_portal
   subject         VARCHAR(255),
   last_message_at TIMESTAMPTZ,
   resolved_at     TIMESTAMPTZ,
@@ -238,7 +238,7 @@ Right panel (conversation selected):
 - [ ] WebSocket server on API (socket.io)
 - [ ] Redis pub/sub for message routing to merchant dashboard
 - [ ] AI handler — Claude Haiku integration with product context
-- [ ] Storefront widget component (@sparx/chat-widget)
+- [ ] Site widget component (@sparx/chat-widget)
 - [ ] Widget configuration UI (Settings → Chat)
 - [ ] Dashboard inbox UI (conversation list + thread view)
 - [ ] Customer context sidebar (orders, LTV, history)

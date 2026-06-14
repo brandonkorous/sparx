@@ -68,7 +68,7 @@ Each module owns one color. This color appears identically across three touchpoi
 
 | Module        | Color Name | Hex       | Why                                                      |
 | ------------- | ---------- | --------- | -------------------------------------------------------- |
-| Storefront    | Indigo     | `#6366F1` | The platform color — Storefront IS the foundation        |
+| Site          | Indigo     | `#6366F1` | The platform color — Site IS the foundation              |
 | Commerce      | Orange     | `#F97316` | Action, conversion, energy — every "Buy Now" button ever |
 | CMS           | Teal       | `#14B8A6` | Editorial, calm, focused — content creation energy       |
 | CRM           | Cyan       | `#06B6D4` | Connective, relational, people-centric                   |
@@ -177,7 +177,7 @@ The onboarding path hides complexity. Advanced features (API keys, custom webhoo
 
 ### Mobile-first, always
 
-Every Sparx surface — marketing pages, the tenant dashboard, customer-facing storefronts — must work and look intentional from a 320px phone to a 2560px monitor. Marketing pages in particular are read on phones far more than on desktops; a layout that "doesn't look great on mobile" is a broken layout. Display type uses fluid `clamp()` scaling rather than fixed pixel sizes; layouts reflow, never just shrink. See [docs/23 §13](23-frontend-component-architecture.md) for the implementation rules.
+Every Sparx surface — marketing pages, the tenant dashboard, customer-facing sites — must work and look intentional from a 320px phone to a 2560px monitor. Marketing pages in particular are read on phones far more than on desktops; a layout that "doesn't look great on mobile" is a broken layout. Display type uses fluid `clamp()` scaling rather than fixed pixel sizes; layouts reflow, never just shrink. See [docs/23 §13](23-frontend-component-architecture.md) for the implementation rules.
 
 ---
 
@@ -195,7 +195,7 @@ Every Sparx surface — marketing pages, the tenant dashboard, customer-facing s
 
 **Short sentences.** Subject, verb, done. Sparx doesn't explain itself — it demonstrates.
 
-**Second person, present tense.** "Your store is live" not "Merchants can launch their stores."
+**Second person, present tense.** "Your site is live" not "Tenants can launch their sites."
 
 ### 7.1 Positioning: permanence
 
@@ -223,7 +223,7 @@ The current hero — the rotating _"[Offering], ignited."_ wordline plus the 5-m
 - **Headline:** The website that's still yours next year.
 - **Subhead:** Generate it with AI if you want. Then maintain and enhance it yourself — no-code by default, full code when you want it — for years. You own the data. You own the site.
 - **Proof row (four chips):** No-code editor · Own your data · Headless API · MCP-native
-- **CTA:** Launch your store / See how it lasts
+- **CTA:** Launch your site / See how it lasts
 
 Implementation note: this is a **new content section** in `apps/web` (a sibling of `hero.tsx`), not an edit to the indigo hero. Same voice — short sentences, second person, no "revolutionary."
 
@@ -233,13 +233,13 @@ Implementation note: this is a **new content section** in `apps/web` (a sibling 
 
 Each module marketing domain uses its module color as the primary accent, with sparx.works' neutral palette as the base:
 
-| Domain         | Module                | Accent    |
-| -------------- | --------------------- | --------- |
-| sparx.works    | Platform / Storefront | `#6366F1` |
-| sparxcms.com   | CMS                   | `#14B8A6` |
-| sparxcrm.com   | CRM                   | `#06B6D4` |
-| sparxemail.com | Email                 | `#0EA5E9` |
-| sparxb2b.com   | B2B/Wholesale         | `#475569` |
+| Domain         | Module          | Accent    |
+| -------------- | --------------- | --------- |
+| sparx.works    | Platform / Site | `#6366F1` |
+| sparxcms.com   | CMS             | `#14B8A6` |
+| sparxcrm.com   | CRM             | `#06B6D4` |
+| sparxemail.com | Email           | `#0EA5E9` |
+| sparxb2b.com   | B2B/Wholesale   | `#475569` |
 
 Each site is conversion-optimized for a specific search intent. All CTAs point to `sparx.works/signup?module={module}` — the module query param pre-selects the relevant module during onboarding.
 

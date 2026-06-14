@@ -25,7 +25,7 @@ model Cart {
   shippingTotalCents      Int @default(0) @map("shipping_total_cents")
   taxTotalCents           Int @default(0) @map("tax_total_cents")
   giftCardAppliedCents    Int @default(0) @map("gift_card_applied_cents")
-  storeCreditAppliedCents Int @default(0) @map("store_credit_applied_cents")
+  accountCreditAppliedCents Int @default(0) @map("account_credit_applied_cents")
   totalCents              Int @default(0) @map("total_cents")
 
   // Per-tenant pricing trace — every step of the resolution pipeline is

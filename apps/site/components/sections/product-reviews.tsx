@@ -16,8 +16,8 @@ export function ProductReviewsSection({
   const product = ctx.product;
   if (!product) return null;
   return (
-    <section className="sf-section">
-      <h2 className="sf-h2" style={{ marginBottom: '1rem' }}>
+    <section className="st-section">
+      <h2 className="st-h2" style={{ marginBottom: '1rem' }}>
         {config.heading}
       </h2>
       {product.reviewCount > 0 && product.averageRating != null ? (
@@ -27,7 +27,7 @@ export function ProductReviewsSection({
           <RatingStars rating={product.averageRating} count={product.reviewCount} />
         </div>
       ) : (
-        <p className="sf-muted" style={{ marginBottom: '1.25rem' }}>
+        <p className="st-muted" style={{ marginBottom: '1.25rem' }}>
           {config.emptyText}
         </p>
       )}

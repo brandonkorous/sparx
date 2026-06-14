@@ -1,38 +1,38 @@
 /* Surface RadialProgress — circular dial (docs/46 §3.6). The arc reads the role
- * var `--c-bg`; a conic-gradient fills `--sf-radial-value`%, masked into a ring of
- * `--sf-radial-thickness`. */
+ * var `--c-bg`; a conic-gradient fills `--st-radial-value`%, masked into a ring of
+ * `--st-radial-thickness`. */
 
-.sf-radial {
-  --sf-radial-value: 0;
-  --sf-radial-size: 4rem;
-  --sf-radial-thickness: 0.5rem;
+.st-radial {
+  --st-radial-value: 0;
+  --st-radial-size: 4rem;
+  --st-radial-thickness: 0.5rem;
   position: relative;
   display: inline-grid;
   place-items: center;
-  width: var(--sf-radial-size);
-  height: var(--sf-radial-size);
+  width: var(--st-radial-size);
+  height: var(--st-radial-size);
 }
-.sf-radial::before {
+.st-radial::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 999px;
   background: conic-gradient(
-    var(--c-bg, var(--sf-primary, #3f6b52)) calc(var(--sf-radial-value) * 1%),
-    var(--sf-base-300, #e6e1d3) 0
+    var(--c-bg, var(--st-primary, #3f6b52)) calc(var(--st-radial-value) * 1%),
+    var(--st-base-300, #e6e1d3) 0
   );
   -webkit-mask: radial-gradient(
     farthest-side,
-    transparent calc(100% - var(--sf-radial-thickness)),
-    #000 calc(100% - var(--sf-radial-thickness))
+    transparent calc(100% - var(--st-radial-thickness)),
+    #000 calc(100% - var(--st-radial-thickness))
   );
   mask: radial-gradient(
     farthest-side,
-    transparent calc(100% - var(--sf-radial-thickness)),
-    #000 calc(100% - var(--sf-radial-thickness))
+    transparent calc(100% - var(--st-radial-thickness)),
+    #000 calc(100% - var(--st-radial-thickness))
   );
 }
-.sf-radial__label {
+.st-radial__label {
   position: relative;
   font-size: 0.85rem;
   font-weight: 600;
