@@ -50,6 +50,7 @@ import {
   listWarehousesAction,
   setReorderPolicyAction,
 } from '../../../inventory-actions';
+import { OrganizationStep } from './organization-step';
 
 // ─── Types & constants ─────────────────────────────────────────────────────────
 
@@ -98,6 +99,11 @@ const RAIL: Record<StepKey, { title: string; blurb: string; context?: string }> 
     blurb:
       'Track stock per warehouse, set a reorder point, and give us the shipping weight & size.',
     context: 'Skip any of this — you can manage inventory anytime from the product.',
+  },
+  organization: {
+    title: 'Organize & merchandise',
+    blurb: 'Add the product to collections and categories, and choose which sites show it.',
+    context: 'All optional — skip and set these up later from the product.',
   },
   review: {
     title: 'Review & publish',
@@ -185,8 +191,14 @@ function ProductWizardInner() {
   const steps: WizardStepDef[] = React.useMemo(
     () =>
       isPhysical
-        ? [ALL_STEPS.basics, ALL_STEPS.pricing, ALL_STEPS.inventory, ALL_STEPS.review]
-        : [ALL_STEPS.basics, ALL_STEPS.pricing, ALL_STEPS.review],
+        ? [
+            ALL_STEPS.basics,
+            ALL_STEPS.pricing,
+            ALL_STEPS.inventory,
+            ALL_STEPS.organization,
+            ALL_STEPS.review,
+          ]
+        : [ALL_STEPS.basics, ALL_STEPS.pricing, ALL_STEPS.organization, ALL_STEPS.review],
     [isPhysical]
   );
   const current = Math.max(
@@ -787,10 +799,9 @@ function ProductWizardInner() {
           <Text size="sm" variant="muted">
             Next, from the product’s tabs you can add{' '}
             <span className="text-[var(--color-text-primary)]">variants &amp; options</span>,{' '}
-            <span className="text-[var(--color-text-primary)]">media</span>,{' '}
-            <span className="text-[var(--color-text-primary)]">collections</span>, and{' '}
+            <span className="text-[var(--color-text-primary)]">media</span>, and{' '}
             <span className="text-[var(--color-text-primary)]">fitment</span>. These become guided
-            steps here in the next slice.
+            steps here as the wizard is completed.
           </Text>
         </div>
 
@@ -807,6 +818,14 @@ function ProductWizardInner() {
   if (stepKey === 'basics') body = basicsStep;
   else if (stepKey === 'pricing') body = pricingStep;
   else if (stepKey === 'inventory') body = inventoryStep;
+  else if (stepKey === 'organization' && productId)
+    body = (
+      <OrganizationStep
+        productId={productId}
+        onBack={() => goToStep(prevKeyBefore('organization'))}
+        onComplete={() => goToStep('review')}
+      />
+    );
   else body = reviewStep;
 
   return (

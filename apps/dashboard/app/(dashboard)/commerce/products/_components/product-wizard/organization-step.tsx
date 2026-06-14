@@ -101,7 +101,8 @@ export function OrganizationStep({ productId, onBack, onComplete }: Organization
     <WizardStep
       header={{
         title: 'Organize & merchandise',
-        supporting: 'Group this product into collections and categories, and choose where it shows.',
+        supporting:
+          'Group this product into collections and categories, and choose where it shows.',
       }}
       actions={{
         onBack,
