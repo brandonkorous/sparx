@@ -8,6 +8,41 @@ import { useState } from 'react';
 
 const API_BASE = '/api/sparx';
 
+// Interactive star rating. Native radios (one per star) keep it fully keyboard-
+// and screen-reader-accessible — arrow keys move between stars, the group is
+// labelled by the legend — while the visible glyphs fill on hover/selection.
+function StarRating({ value, onChange }: { value: number; onChange: (n: number) => void }) {
+  const [hover, setHover] = useState(0);
+  const shown = hover || value; // hover preview wins, else the committed value
+  return (
+    <fieldset className="st-stars-input" onMouseLeave={() => setHover(0)}>
+      <legend>Rating</legend>
+      <div className="st-stars-input__row">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <label
+            key={n}
+            className={shown >= n ? 'st-stars-input__star is-on' : 'st-stars-input__star'}
+            onMouseEnter={() => setHover(n)}
+          >
+            <input
+              type="radio"
+              name="rating"
+              value={n}
+              checked={value === n}
+              onChange={() => onChange(n)}
+              className="st-sr-only"
+            />
+            <span aria-hidden="true">★</span>
+            <span className="st-sr-only">
+              {n} star{n === 1 ? '' : 's'}
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
 export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle: string }) {
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(5);
@@ -72,20 +107,7 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
 
   return (
     <form onSubmit={submit} className="st-form">
-      <label className="st-field">
-        <span>Rating</span>
-        <select
-          className="st-input"
-          value={rating}
-          onChange={(e) => setRating(Number(e.target.value))}
-        >
-          {[5, 4, 3, 2, 1].map((n) => (
-            <option key={n} value={n}>
-              {n} star{n === 1 ? '' : 's'}
-            </option>
-          ))}
-        </select>
-      </label>
+      <StarRating value={rating} onChange={setRating} />
       <div style={{ display: 'flex', gap: '0.75rem' }}>
         <label className="st-field" style={{ flex: 1 }}>
           <span>Name</span>

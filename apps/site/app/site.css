@@ -2131,6 +2131,56 @@
   font-size: 0.82rem;
 }
 
+/* Screen-reader-only (kept focusable — clip, not display:none). */
+.st-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Interactive star rating input (review form). */
+.st-stars-input {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.st-stars-input > legend {
+  padding: 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--st-text-secondary);
+}
+.st-stars-input__row {
+  display: inline-flex;
+  gap: 0.15rem;
+}
+.st-stars-input__star {
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--st-text-muted) 35%, transparent);
+  transition: color 0.12s ease;
+  border-radius: var(--st-radius-sm);
+}
+.st-stars-input__star.is-on {
+  color: #f5a623;
+}
+/* Keyboard focus lands on the visually-hidden radio — surface it on the star. */
+.st-stars-input__star:focus-within {
+  outline: 2px solid var(--st-primary);
+  outline-offset: 2px;
+}
+
 /* Email signup section. */
 .st-sb-signup {
   display: grid;
