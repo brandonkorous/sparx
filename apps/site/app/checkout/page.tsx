@@ -6,7 +6,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { CheckoutFlow } from '@/components/checkout/checkout-flow';
-import { resolveTenant } from '@/lib/tenant';
+import { resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,15 +16,15 @@ export const metadata: Metadata = {
 };
 
 export default async function CheckoutPage() {
-  const tenant = await resolveTenant();
-  if (!tenant) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
 
   return (
     <div className="st-container" style={{ paddingBlock: '2rem' }}>
       <h1 className="st-h1" style={{ marginBottom: '1.5rem' }}>
         Checkout
       </h1>
-      <CheckoutFlow tenantSlug={tenant.slug} />
+      <CheckoutFlow tenantSlug={site.slug} />
     </div>
   );
 }

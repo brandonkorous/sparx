@@ -37,7 +37,7 @@ import { ConsentManager } from '@/components/consent/consent-manager';
 import { ChatWidget } from '@sparx/chat-widget';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
-import { resolveActivePropertySlug, resolveTenant, type TenantTheme } from '@/lib/tenant';
+import { resolveActivePropertySlug, resolveSite, type SiteTheme } from '@/lib/site-context';
 import { buildCommerceSiteThemeCss } from '@/lib/theme';
 import {
   getPublishedSite,
@@ -61,15 +61,15 @@ const FOOTER_YEAR = 2026; // static so SSR output stays deterministic/cacheable
 const THEME_COOKIE = 'sparx_theme';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const tenant = await resolveTenant();
-  if (!tenant) {
+  const site = await resolveSite();
+  if (!site) {
     return {
       title: 'Store not found',
       robots: { index: false, follow: false },
       icons: { icon: '/sparx-icon.svg' },
     };
   }
-  const favicon = mediaUrl(tenant.theme?.faviconMediaId ?? null, tenant.slug);
+  const favicon = mediaUrl(site.theme?.faviconMediaId ?? null, site.slug);
 
   // metadataBase makes every page's relative OG image (the `/api/og` fallback
   // card, docs/50 §5) resolve to an absolute URL on THIS tenant's origin, so the
@@ -81,21 +81,21 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     ...(origin ? { metadataBase: new URL(origin) } : {}),
-    title: { default: tenant.name, template: `%s · ${tenant.name}` },
-    description: `Shop ${tenant.name}.`,
+    title: { default: site.name, template: `%s · ${site.name}` },
+    description: `Shop ${site.name}.`,
     // Site-level default social card. Pages with a real image (product photo,
     // collection hero, author-set OG) override this with their own; pages without
     // one inherit a tenant-branded generated card.
     openGraph: {
       type: 'website',
-      title: tenant.name,
-      description: `Shop ${tenant.name}.`,
+      title: site.name,
+      description: `Shop ${site.name}.`,
       images: [
         ogImageUrl({
-          title: tenant.name,
+          title: site.name,
           eyebrow: 'Site',
-          brand: tenant.name,
-          accent: tenant.theme?.colorPrimary,
+          brand: site.name,
+          accent: site.theme?.colorPrimary,
         }),
       ],
     },
@@ -126,7 +126,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 function buildThemeCss(
   snapshot: PublishedSnapshot | null,
-  theme: TenantTheme | null,
+  theme: SiteTheme | null,
   preset: string | null | undefined
 ): string {
   const themeKey = snapshot?.themeKey ?? preset ?? 'apex';
@@ -197,27 +197,27 @@ function navNodesToFooterColumns(nodes: NavNode[]): FooterColumn[] {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const tenant = await resolveTenant();
+  const site = await resolveSite();
   // Live Chat (docs/56, docs/69 A-4) — the floating widget mounts only when the
   // tenant has the `chat` module active. The widget is a client component, so it
   // talks to the browser-reachable public API origin (NEXT_PUBLIC_API_URL), not
   // the in-cluster SPARX_API_REST_URL the SSR data fetchers use.
   const chatEnabled = Boolean(
-    (tenant?.settings as { modules?: { chat?: { enabled?: boolean } } } | undefined)?.modules?.chat
+    (site?.settings as { modules?: { chat?: { enabled?: boolean } } } | undefined)?.modules?.chat
       ?.enabled
   );
   const chatApiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
   // Active site slug (docs/58 D1) — handed to CartProvider so storefront carts
   // (and the orders they become) are tagged with their origin site. Cheap: the
-  // underlying resolveSiteRoute() is request-cached alongside resolveTenant.
+  // underlying resolveSiteRoute() is request-cached alongside resolveSite.
   const activePropertySlug = await resolveActivePropertySlug();
   // Mirror of the `?sparxSitePreview=` token, set by the proxy so this layout
   // (which the App Router never hands searchParams) can render the DRAFT chrome
   // — header/footer/announcement — in the editor preview, not just published.
   const hdrs = await headers();
   const sitePreviewToken = hdrs.get('x-sparx-site-preview') ?? undefined;
-  const snapshot = tenant
-    ? await getPublishedSite(tenant.slug, sitePreviewToken, activePropertySlug ?? undefined)
+  const snapshot = site
+    ? await getPublishedSite(site.slug, sitePreviewToken, activePropertySlug ?? undefined)
     : null;
 
   // A published Builder layout (docs/45) is the chrome shell, and it WINS over
@@ -225,18 +225,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // fall through" pattern (cf. the page render path, docs/44 §2.5). Its chrome
   // binds to the `site` sources resolved here. The snapshot is still read above
   // for THEME (the Builder layout carries chrome, not tokens).
-  const builderLayout = tenant ? await getPublishedBuilderLayout(tenant.slug) : null;
+  const builderLayout = site ? await getPublishedBuilderLayout(site.slug) : null;
 
   // The compiled Surface stylesheet (docs/47 §5): the utilities authored as
   // node `class` strings across the tenant's published trees. Injected after the
   // --st-* theme block so the utilities resolve against the tenant tokens. '' (so
   // nothing is injected) until class-first authoring is in use.
-  const surfaceCss = tenant ? await getPublishedBuilderStyles(tenant.slug) : '';
+  const surfaceCss = site ? await getPublishedBuilderStyles(site.slug) : '';
 
   // Active base theme preset (additive registry) for the no-snapshot path.
-  const themePreset = (tenant?.settings as { theme?: { preset?: string } } | undefined)?.theme
+  const themePreset = (site?.settings as { theme?: { preset?: string } } | undefined)?.theme
     ?.preset;
-  const themeCss = buildThemeCss(snapshot, tenant?.theme ?? null, themePreset);
+  const themeCss = buildThemeCss(snapshot, site?.theme ?? null, themePreset);
 
   // Appearance policy → initial data-theme + whether the no-flash script runs.
   const policy = snapshot?.appearancePolicy ?? 'light-only';
@@ -252,7 +252,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Site-layout render data — built after the appearance policy resolves so the
   // Builder `ThemeToggle` node can auto-hide unless both themes are offered.
   const siteData =
-    tenant && builderLayout ? loadSiteData(tenant, { policy, initial: initialTheme }) : null;
+    site && builderLayout ? loadSiteData(site, { policy, initial: initialTheme }) : null;
 
   // Resolve header/footer/announcement from the snapshot's layout blocks.
   const blocks: PublishedSnapshot['layout'] = snapshot?.layout ?? [];
@@ -268,9 +268,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // from the tenant's collections so a brand-new store still has working links.
   // Skipped entirely when a Builder layout owns the chrome.
   let collectionNav: NavItem[] = [];
-  if (tenant && !builderLayout) {
+  if (site && !builderLayout) {
     try {
-      const collections = await listCollections(tenant.slug);
+      const collections = await listCollections(site.slug);
       collectionNav = collections.slice(0, 4).map((c) => ({
         label: c.name,
         href: `/collections/${c.handle}`,
@@ -310,12 +310,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   ];
 
   // Snapshot nav menus override the defaults when present + non-empty.
-  if (tenant && !builderLayout && headerBlock?.navigationMenuId) {
-    const items = await getNavigationMenu(tenant.slug, headerBlock.navigationMenuId);
+  if (site && !builderLayout && headerBlock?.navigationMenuId) {
+    const items = await getNavigationMenu(site.slug, headerBlock.navigationMenuId);
     if (items.length > 0) nav = navNodesToItems(items);
   }
-  if (tenant && !builderLayout && footerBlock?.navigationMenuId) {
-    const items = await getNavigationMenu(tenant.slug, footerBlock.navigationMenuId);
+  if (site && !builderLayout && footerBlock?.navigationMenuId) {
+    const items = await getNavigationMenu(site.slug, footerBlock.navigationMenuId);
     const cols = navNodesToFooterColumns(items);
     if (cols.length > 0) footerColumns = cols;
   }
@@ -325,8 +325,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // footer above is default or nav-menu-driven, since legal links are
   // compliance-driven, not editorial. Omitted entirely when nothing is
   // published yet.
-  if (tenant && !builderLayout) {
-    const legalLinks = await getLegalFooterLinks(tenant.slug, activePropertySlug ?? undefined);
+  if (site && !builderLayout) {
+    const legalLinks = await getLegalFooterLinks(site.slug, activePropertySlug ?? undefined);
     if (legalLinks.length > 0) {
       footerColumns = [
         ...footerColumns,
@@ -346,25 +346,25 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const sdHost = hdrs.get('x-forwarded-host') ?? hdrs.get('host');
   const sdProto = hdrs.get('x-forwarded-proto') ?? 'https';
   const origin = sdHost ? `${sdProto}://${sdHost}` : null;
-  const logo = tenant ? mediaUrl(tenant.theme?.logoMediaId ?? null, tenant.slug) : null;
-  const sameAs = tenant ? Object.values(tenant.socials).filter(Boolean) : [];
+  const logo = site ? mediaUrl(site.theme?.logoMediaId ?? null, site.slug) : null;
+  const sameAs = site ? Object.values(site.socials).filter(Boolean) : [];
   const orgJsonLd =
-    tenant && origin
+    site && origin
       ? {
           '@context': 'https://schema.org',
           '@type': 'Organization',
-          name: tenant.name,
+          name: site.name,
           url: origin,
           ...(logo ? { logo } : {}),
           ...(sameAs.length > 0 ? { sameAs } : {}),
         }
       : null;
   const siteJsonLd =
-    tenant && origin
+    site && origin
       ? {
           '@context': 'https://schema.org',
           '@type': 'WebSite',
-          name: tenant.name,
+          name: site.name,
           url: origin,
           potentialAction: {
             '@type': 'SearchAction',
@@ -393,7 +393,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <script dangerouslySetInnerHTML={{ __html: noFlashScript(dynamicPolicy) }} />
         ) : null}
         <script dangerouslySetInnerHTML={{ __html: REVEAL_INIT_SCRIPT }} />
-        {tenant && tenant.consent.mode !== 'off' ? (
+        {site && site.consent.mode !== 'off' ? (
           <script dangerouslySetInnerHTML={{ __html: CONSENT_INIT_SCRIPT }} />
         ) : null}
         {orgJsonLd ? (
@@ -413,13 +413,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <PreviewBridge />
         <RevealController />
         <MotionController />
-        {tenant ? (
-          <CustomerProvider tenantSlug={tenant.slug} propertySlug={activePropertySlug ?? undefined}>
+        {site ? (
+          <CustomerProvider tenantSlug={site.slug} propertySlug={activePropertySlug ?? undefined}>
             <WishlistProvider>
               <CartProvider
-                tenantSlug={tenant.slug}
+                tenantSlug={site.slug}
                 propertySlug={activePropertySlug ?? undefined}
-                currency={tenant.commerce.defaultCurrency}
+                currency={site.commerce.defaultCurrency}
               >
                 <div className="st-frame">
                   <a href="#st-main" className="st-skip-link">
@@ -436,7 +436,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   ) : (
                     <>
                       <SiteHeader
-                        tenant={tenant}
+                        site={site}
                         nav={nav}
                         announcement={announcement}
                         announcementHref={blankToNull(announceConfig.linkUrl)}
@@ -451,7 +451,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         {children}
                       </main>
                       <SiteFooter
-                        tenant={tenant}
+                        site={site}
                         columns={footerColumns}
                         year={FOOTER_YEAR}
                         copyright={blankToNull(footerConfig.copyright)}
@@ -463,12 +463,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   )}
                 </div>
                 <MiniCart />
-                <ConsentManager tenant={tenant.slug} config={tenant.consent} />
+                <ConsentManager tenant={site.slug} config={site.consent} />
                 {chatEnabled && chatApiUrl ? (
                   <ChatWidget
                     apiUrl={chatApiUrl}
-                    tenantSlug={tenant.slug}
-                    accentColor={tenant.theme?.colorPrimary ?? null}
+                    tenantSlug={site.slug}
+                    accentColor={site.theme?.colorPrimary ?? null}
                   />
                 ) : null}
               </CartProvider>

@@ -6,7 +6,7 @@
 import Link from 'next/link';
 
 import { mediaUrl } from '@/lib/media';
-import type { ResolvedTenant } from '@/lib/tenant';
+import type { ResolvedSite } from '@/lib/site-context';
 import { CartButton } from './cart-button';
 import { HeaderScroll } from './header-scroll';
 import { MobileNav } from './mobile-nav';
@@ -18,7 +18,7 @@ export interface NavItem {
 }
 
 export interface SiteHeaderProps {
-  tenant: ResolvedTenant;
+  site: ResolvedSite;
   nav: NavItem[];
   announcement?: string | null;
   /** Announcement link target (when the announcement bar links somewhere). */
@@ -35,7 +35,7 @@ export interface SiteHeaderProps {
 }
 
 export function SiteHeader({
-  tenant,
+  site,
   nav,
   announcement,
   announcementHref,
@@ -44,7 +44,7 @@ export function SiteHeader({
   overlay = false,
   modeToggle,
 }: SiteHeaderProps) {
-  const logo = mediaUrl(tenant.theme?.logoMediaId ?? null, tenant.slug);
+  const logo = mediaUrl(site.theme?.logoMediaId ?? null, site.slug);
 
   return (
     <header className={overlay ? 'st-header st-header--overlay' : 'st-header'}>
@@ -62,13 +62,13 @@ export function SiteHeader({
       ) : null}
       <div className="st-container">
         <div className="st-header__bar" data-logo={logoPlacement}>
-          <MobileNav nav={nav} brand={tenant.name} />
+          <MobileNav nav={nav} brand={site.name} />
 
-          <Link href="/" className="st-header__brand" aria-label={`${tenant.name} home`}>
+          <Link href="/" className="st-header__brand" aria-label={`${site.name} home`}>
             {/* Plain <img>: a tenant logo has unknown intrinsic dimensions and
                 a redirecting media src, so next/image (which needs width+height
                 or a sized fill parent) doesn't fit; CSS caps it at 34px tall. */}
-            {logo ? <img src={logo} alt={tenant.name} /> : tenant.name}
+            {logo ? <img src={logo} alt={site.name} /> : site.name}
           </Link>
 
           <nav className="st-nav" aria-label="Primary">
@@ -79,7 +79,7 @@ export function SiteHeader({
             ))}
           </nav>
 
-          {showSearch ? <SearchBox tenantSlug={tenant.slug} /> : null}
+          {showSearch ? <SearchBox tenantSlug={site.slug} /> : null}
 
           <div className="st-header__actions">
             {showSearch ? (

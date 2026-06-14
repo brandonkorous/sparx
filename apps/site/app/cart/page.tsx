@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { CartView } from '@/components/cart-view';
-import { resolveTenant } from '@/lib/tenant';
+import { resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,8 +16,8 @@ export const metadata: Metadata = {
 };
 
 export default async function CartPage() {
-  const tenant = await resolveTenant();
-  if (!tenant) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
 
   return (
     <div className="st-container">

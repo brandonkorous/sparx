@@ -17,7 +17,7 @@ import { getPublishedBuilderHome, getPublishedBuilderStyles } from '@/lib/builde
 import { loadBuilderData } from '@/lib/builder-data';
 import { mediaUrl } from '@/lib/media';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
-import { resolveActivePropertySlug, resolveTenant } from '@/lib/tenant';
+import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,8 +26,8 @@ interface RootPageProps {
 }
 
 export default async function SiteRoot({ searchParams }: RootPageProps) {
-  const tenant = await resolveTenant();
-  if (!tenant) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
 
   const sp = (await searchParams) ?? {};
 
@@ -38,13 +38,13 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
   // inheriting the tenant-wide snapshot. A site-preview token swaps in the DRAFT.
   const sitePreview = sp.sparxSitePreview;
   const builderHome = await getPublishedBuilderHome(
-    tenant.slug,
+    site.slug,
     sitePreview ? { previewToken: sitePreview } : {}
   );
   if (builderHome) {
-    const data = await loadBuilderData(tenant.slug, builderHome.tree);
+    const data = await loadBuilderData(site.slug, builderHome.tree);
     const draftCss = sitePreview
-      ? await getPublishedBuilderStyles(tenant.slug, { previewToken: sitePreview })
+      ? await getPublishedBuilderStyles(site.slug, { previewToken: sitePreview })
       : '';
     return (
       <>
@@ -59,17 +59,17 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
   // Site Builder home composition wins when the tenant has published one — or,
   // with a site-preview token, the current unsaved draft.
   const snapshot = await getPublishedSite(
-    tenant.slug,
+    site.slug,
     sp.sparxSitePreview,
     (await resolveActivePropertySlug()) ?? undefined
   );
   const homeSections = sectionsForPage(snapshot, 'home');
   if (homeSections.length > 0) {
-    const { defaultCurrency, defaultLocale } = tenant.commerce;
+    const { defaultCurrency, defaultLocale } = site.commerce;
     return (
       <SectionRenderer
         sections={homeSections}
-        ctx={{ tenantSlug: tenant.slug, currency: defaultCurrency, locale: defaultLocale }}
+        ctx={{ tenantSlug: site.slug, currency: defaultCurrency, locale: defaultLocale }}
         definitions={snapshot?.definitions ?? []}
       />
     );
@@ -78,15 +78,15 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
   // Empty-store fallback: the composed commerce homepage.
   const previewToken = sp.sparxPreview;
   const [cmsHome, collections, fresh] = await Promise.all([
-    getPageBySlug(tenant.slug, 'home', previewToken ? { previewToken } : {}).catch(() => null),
-    listCollections(tenant.slug).catch(() => []),
-    listProducts(tenant.slug, { sort: 'newest', perPage: 8 }).catch(() => ({ items: [] })),
+    getPageBySlug(site.slug, 'home', previewToken ? { previewToken } : {}).catch(() => null),
+    listCollections(site.slug).catch(() => []),
+    listProducts(site.slug, { sort: 'newest', perPage: 8 }).catch(() => ({ items: [] })),
   ]);
 
   const featuredCollections = collections.filter((c) => c.featured).slice(0, 3);
   const collectionShelf =
     featuredCollections.length > 0 ? featuredCollections : collections.slice(0, 3);
-  const { defaultCurrency: currency, defaultLocale: locale } = tenant.commerce;
+  const { defaultCurrency: currency, defaultLocale: locale } = site.commerce;
 
   return (
     <>
@@ -95,7 +95,7 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
       {!cmsHome ? (
         <section className="st-container">
           <div className="st-hero">
-            <span className="st-eyebrow">Welcome to {tenant.name}</span>
+            <span className="st-eyebrow">Welcome to {site.name}</span>
             <h1 className="st-hero__title">Gear built to perform, priced to move.</h1>
             <p className="st-hero__sub">
               Browse the full catalog, find exactly what fits, and check out in seconds.
@@ -122,7 +122,7 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
           </div>
           <div className="st-grid">
             {collectionShelf.map((c) => {
-              const hero = mediaUrl(c.heroMediaId, tenant.slug);
+              const hero = mediaUrl(c.heroMediaId, site.slug);
               return (
                 <Link key={c.id} href={`/collections/${c.handle}`} className="st-card">
                   <div className="st-card__media">
@@ -164,7 +164,7 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
               <ProductCard
                 key={p.id}
                 product={p}
-                tenantSlug={tenant.slug}
+                tenantSlug={site.slug}
                 currency={currency}
                 locale={locale}
               />

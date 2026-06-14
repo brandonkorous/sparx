@@ -26,7 +26,7 @@ import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
 import { isSampleRequested, SAMPLE_PRODUCT, SAMPLE_PRODUCT_EXTRAS } from '@/lib/sample-data';
 import { getPublishedSite, resolveTemplateSections } from '@/lib/site';
-import { resolveActivePropertySlug, resolveTenant } from '@/lib/tenant';
+import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,20 +38,20 @@ interface PageProps {
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const tenant = await resolveTenant();
-  if (!tenant) return {};
+  const site = await resolveSite();
+  if (!site) return {};
   const { handle } = await params;
-  const product = await getProduct(tenant.slug, handle);
+  const product = await getProduct(site.slug, handle);
   if (!product) return {};
   // The product photo is the best OG image; fall back to a tenant-branded
   // generated card (docs/50 §5) only when the product has no image.
   const image =
-    mediaUrl(product.images[0]?.mediaAssetId ?? null, tenant.slug) ??
+    mediaUrl(product.images[0]?.mediaAssetId ?? null, site.slug) ??
     ogImageUrl({
       title: product.seoTitle ?? product.title,
       eyebrow: 'Product',
-      brand: tenant.name,
-      accent: tenant.theme?.colorPrimary,
+      brand: site.name,
+      accent: site.theme?.colorPrimary,
     });
   return {
     title: product.seoTitle ?? product.title,
@@ -65,8 +65,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ProductDetailPage({ params, searchParams }: PageProps) {
-  const tenant = await resolveTenant();
-  if (!tenant) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
   const { handle } = await params;
   const sp = (await searchParams) ?? {};
 
@@ -75,9 +75,9 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   // product layout before any real product exists. The layout still resolves
   // from the (draft) snapshot — only the bound data is swapped.
   const sample = isSampleRequested(sp);
-  const product = sample ? SAMPLE_PRODUCT : await getProduct(tenant.slug, handle);
+  const product = sample ? SAMPLE_PRODUCT : await getProduct(site.slug, handle);
   if (!product) {
-    if (!sample) await applyRedirect(tenant.slug, `/products/${handle}`);
+    if (!sample) await applyRedirect(site.slug, `/products/${handle}`);
     notFound();
   }
 
@@ -89,15 +89,15 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   // (the merchant designing before a product exists) keep the legacy path.
   if (!sample) {
     const builderTemplate = await getPublishedBuilderCollection(
-      tenant.slug,
+      site.slug,
       'commerce.product',
       product.id
     );
     if (builderTemplate) {
-      const currency = tenant.commerce.defaultCurrency;
-      const data = await loadBuilderData(tenant.slug, builderTemplate.tree, {
+      const currency = site.commerce.defaultCurrency;
+      const data = await loadBuilderData(site.slug, builderTemplate.tree, {
         key: 'product',
-        value: productToBuilderRecord(product, tenant.slug, currency),
+        value: productToBuilderRecord(product, site.slug, currency),
       });
       // Render the builder tree BARE — exactly like the catch-all page route
       // ([...slug]). The template owns its own width (full-bleed hero sections,
@@ -114,7 +114,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   // only, `sparxLayoutKey` forces a specific alternate layout onto the canvas
   // (gated to the preview token — a public visitor can't pin a layout via query).
   const snapshot = await getPublishedSite(
-    tenant.slug,
+    site.slug,
     one(sp.sparxSitePreview),
     (await resolveActivePropertySlug()) ?? undefined
   );
@@ -140,10 +140,8 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
     fitmentDomainsBySlug = needsFitment ? SAMPLE_PRODUCT_EXTRAS.fitmentDomainsBySlug : {};
   } else {
     const [r, q] = await Promise.all([
-      relatedSection
-        ? listRelatedProducts(tenant.slug, product, relatedLimit)
-        : Promise.resolve([]),
-      needsQuestions ? listProductQuestions(tenant.slug, product.handle) : Promise.resolve([]),
+      relatedSection ? listRelatedProducts(site.slug, product, relatedLimit) : Promise.resolve([]),
+      needsQuestions ? listProductQuestions(site.slug, product.handle) : Promise.resolve([]),
     ]);
     related = r;
     questions = q;
@@ -151,14 +149,14 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
     // (Make/Model/Engine). Fetch the domains (cached) and map by slug so the
     // table can render vertical-appropriate column headers.
     const fitmentDomains = needsFitment
-      ? await listFitmentDomains(tenant.slug).catch<PublicFitmentDomain[]>(() => [])
+      ? await listFitmentDomains(site.slug).catch<PublicFitmentDomain[]>(() => [])
       : [];
     fitmentDomainsBySlug = Object.fromEntries(fitmentDomains.map((d) => [d.slug, d]));
   }
 
-  const { defaultCurrency: currency, defaultLocale: locale, showStockBelow } = tenant.commerce;
+  const { defaultCurrency: currency, defaultLocale: locale, showStockBelow } = site.commerce;
 
-  const primaryImage = mediaUrl(product.images[0]?.mediaAssetId ?? null, tenant.slug);
+  const primaryImage = mediaUrl(product.images[0]?.mediaAssetId ?? null, site.slug);
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -204,7 +202,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
       <SectionRenderer
         sections={sections}
         ctx={{
-          tenantSlug: tenant.slug,
+          tenantSlug: site.slug,
           currency,
           locale,
           showStockBelow,

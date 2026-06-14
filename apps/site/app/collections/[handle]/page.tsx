@@ -17,7 +17,7 @@ import {
   SAMPLE_COLLECTION_PRODUCTS,
 } from '@/lib/sample-data';
 import { getPublishedSite, resolveTemplateSections } from '@/lib/site';
-import { resolveActivePropertySlug, resolveTenant } from '@/lib/tenant';
+import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 import { applyRedirect } from '@/lib/redirects';
 
 export const dynamic = 'force-dynamic';
@@ -30,20 +30,20 @@ interface PageProps {
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const tenant = await resolveTenant();
-  if (!tenant) return {};
+  const site = await resolveSite();
+  if (!site) return {};
   const { handle } = await params;
-  const collection = await getCollection(tenant.slug, handle);
+  const collection = await getCollection(site.slug, handle);
   if (!collection) return {};
   // Author-set OG, then the collection hero, then a tenant-branded generated
   // card (docs/50 §5) — so a collection always has a real social image.
   const image =
-    mediaUrl(collection.ogImageId ?? collection.heroMediaId ?? null, tenant.slug) ??
+    mediaUrl(collection.ogImageId ?? collection.heroMediaId ?? null, site.slug) ??
     ogImageUrl({
       title: collection.seoTitle ?? collection.name,
       eyebrow: 'Collection',
-      brand: tenant.name,
-      accent: tenant.theme?.colorPrimary,
+      brand: site.name,
+      accent: site.theme?.colorPrimary,
     });
   return {
     title: collection.seoTitle ?? collection.name,
@@ -57,8 +57,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function CollectionDetailPage({ params, searchParams }: PageProps) {
-  const tenant = await resolveTenant();
-  if (!tenant) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
   const { handle } = await params;
   const sp = (await searchParams) ?? {};
   const page = Math.max(1, Number(one(sp.page) ?? '1') || 1);
@@ -68,9 +68,9 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
   // before any real collection exists. The layout still resolves from the
   // (draft) snapshot — only the bound data is swapped.
   const sample = isSampleRequested(sp);
-  const collection = sample ? SAMPLE_COLLECTION : await getCollection(tenant.slug, handle);
+  const collection = sample ? SAMPLE_COLLECTION : await getCollection(site.slug, handle);
   if (!collection) {
-    if (!sample) await applyRedirect(tenant.slug, `/collections/${handle}`);
+    if (!sample) await applyRedirect(site.slug, `/collections/${handle}`);
     notFound();
   }
 
@@ -79,7 +79,7 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
   // only, `sparxLayoutKey` forces a specific alternate layout onto the canvas
   // (gated to the preview token — a public visitor can't pin a layout via query).
   const snapshot = await getPublishedSite(
-    tenant.slug,
+    site.slug,
     one(sp.sparxSitePreview),
     (await resolveActivePropertySlug()) ?? undefined
   );
@@ -102,8 +102,8 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
         total: SAMPLE_COLLECTION_PRODUCTS.length,
         perPage: requestedPerPage,
       }
-    : await listCollectionProducts(tenant.slug, handle, page, requestedPerPage);
-  const { defaultCurrency: currency, defaultLocale: locale } = tenant.commerce;
+    : await listCollectionProducts(site.slug, handle, page, requestedPerPage);
+  const { defaultCurrency: currency, defaultLocale: locale } = site.commerce;
 
   return (
     <div className="st-container">
@@ -118,7 +118,7 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
       <SectionRenderer
         sections={sections}
         ctx={{
-          tenantSlug: tenant.slug,
+          tenantSlug: site.slug,
           currency,
           locale,
           collection,

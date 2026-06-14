@@ -6,7 +6,7 @@
 // machine-readable sitemap (which already enumerates every product, collection,
 // and page). Tenant resolved from the Host header, same as robots.txt/sitemap.xml.
 
-import { resolveTenant } from '@/lib/tenant';
+import { resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -23,25 +23,25 @@ export async function GET(request: Request) {
   const protocol = forwardedProto ? `${forwardedProto}:` : url.protocol;
   const origin = `${protocol}//${host}`;
 
-  const tenant = await resolveTenant();
-  if (!tenant) {
+  const site = await resolveSite();
+  if (!site) {
     return new Response('# Unknown store\n', {
       status: 404,
       headers: { 'content-type': 'text/plain; charset=utf-8' },
     });
   }
 
-  const settings = tenant.settings ?? {};
+  const settings = site.settings ?? {};
   const description =
     typeof settings.description === 'string' && settings.description.trim()
       ? settings.description.trim()
       : typeof settings.tagline === 'string' && settings.tagline.trim()
         ? settings.tagline.trim()
-        : `${tenant.name} — an online store powered by Sparx.`;
+        : `${site.name} — an online store powered by Sparx.`;
 
-  const policySlug = tenant.consent?.policyPageSlug;
+  const policySlug = site.consent?.policyPageSlug;
 
-  const body = `# ${tenant.name}
+  const body = `# ${site.name}
 
 > ${description}
 

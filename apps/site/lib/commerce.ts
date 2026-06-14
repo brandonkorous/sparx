@@ -3,7 +3,7 @@
 // the rendering layer can treat both content + commerce reads the same
 // way.
 
-import { resolveActivePropertySlug } from './tenant';
+import { resolveActivePropertySlug } from './site-context';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 

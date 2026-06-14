@@ -18,7 +18,7 @@ import {
   type ProductSort,
   type SiteSearchHit,
 } from '@/lib/commerce';
-import { resolveTenant } from '@/lib/tenant';
+import { resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,8 +42,8 @@ export default async function SearchPage({
 }: {
   searchParams?: Promise<SearchParams>;
 }) {
-  const tenant = await resolveTenant();
-  if (!tenant) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
 
   const sp = (await searchParams) ?? {};
   const q = (one(sp.q) ?? '').trim();
@@ -69,12 +69,10 @@ export default async function SearchPage({
   // Kick off the universal "search everything" alongside the product search.
   // Products appear in the grid below, so the strip surfaces the rest of the
   // site (collections, CMS pages). Starts here so it runs concurrently.
-  const siteSearch = q
-    ? searchEverything(tenant.slug, q, 12)
-    : Promise.resolve<SiteSearchHit[]>([]);
+  const siteSearch = q ? searchEverything(site.slug, q, 12) : Promise.resolve<SiteSearchHit[]>([]);
 
   const result = hasCriteria
-    ? await searchProducts(tenant.slug, {
+    ? await searchProducts(site.slug, {
         q: q || undefined,
         sort,
         page,
@@ -93,7 +91,7 @@ export default async function SearchPage({
   const siteHits = (await siteSearch).filter((h) => h.type !== 'product');
 
   const totalPages = Math.max(1, Math.ceil(result.total / result.perPage));
-  const { defaultCurrency: currency, defaultLocale: locale } = tenant.commerce;
+  const { defaultCurrency: currency, defaultLocale: locale } = site.commerce;
 
   return (
     <div className="st-container" style={{ paddingBlock: '2rem' }}>
@@ -191,7 +189,7 @@ export default async function SearchPage({
               <>
                 <ProductGrid
                   products={result.items}
-                  tenantSlug={tenant.slug}
+                  tenantSlug={site.slug}
                   currency={currency}
                   locale={locale}
                 />

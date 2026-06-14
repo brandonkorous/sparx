@@ -6,7 +6,7 @@
 // the token and, if it grants this entry, returns the draft body. Failing
 // validation just falls back to the published-only path.
 
-import { resolveActivePropertySlug } from './tenant';
+import { resolveActivePropertySlug } from './site-context';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 

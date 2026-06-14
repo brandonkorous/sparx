@@ -11,7 +11,7 @@
 // the legal record. Built from st-consent-* classes in site.css.
 
 import { useEffect, useState } from 'react';
-import type { TenantConsent } from '@/lib/tenant';
+import type { SiteConsent } from '@/lib/site-context';
 import {
   getConsent,
   getVisitorId,
@@ -41,7 +41,7 @@ const NONE: ConsentState = {
   marketing: false,
 };
 
-export function ConsentManager({ tenant, config }: { tenant: string; config: TenantConsent }) {
+export function ConsentManager({ tenant, config }: { tenant: string; config: SiteConsent }) {
   const [bannerOpen, setBannerOpen] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [draft, setDraft] = useState<ConsentState>(NONE);

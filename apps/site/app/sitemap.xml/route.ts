@@ -3,7 +3,7 @@
 // own pages/products/content at its own canonical host. Cached at the edge for
 // 5 min (same as api-rest's own Cache-Control on the underlying endpoint).
 
-import { resolveTenant, resolveActivePropertySlug } from '@/lib/tenant';
+import { resolveSite, resolveActivePropertySlug } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -11,22 +11,22 @@ export const runtime = 'nodejs';
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
 export async function GET() {
-  const tenant = await resolveTenant();
-  if (!tenant) {
+  const site = await resolveSite();
+  if (!site) {
     return new Response('Not found', { status: 404 });
   }
   const propertySlug = await resolveActivePropertySlug();
 
   const upstream = new URL(`${BASE_URL}/v1/sitemap.xml`);
-  upstream.searchParams.set('tenant', tenant.slug);
+  upstream.searchParams.set('tenant', site.slug);
   if (propertySlug) upstream.searchParams.set('property', propertySlug);
 
   const res = await fetch(upstream, {
     next: {
       revalidate: 300,
       tags: propertySlug
-        ? [`tenant:${tenant.slug}`, `tenant:${tenant.slug}:${propertySlug}`, 'sparx-storefront']
-        : [`tenant:${tenant.slug}`, 'sparx-storefront'],
+        ? [`tenant:${site.slug}`, `tenant:${site.slug}:${propertySlug}`, 'sparx-storefront']
+        : [`tenant:${site.slug}`, 'sparx-storefront'],
     },
   });
   if (!res.ok) {

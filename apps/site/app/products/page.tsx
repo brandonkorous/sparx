@@ -19,7 +19,7 @@ import {
   type PublicFitmentCategory,
   type PublicFitmentDomain,
 } from '@/lib/commerce';
-import { resolveTenant } from '@/lib/tenant';
+import { resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,8 +45,8 @@ export default async function ProductsPage({
 }: {
   searchParams?: Promise<SearchParams>;
 }) {
-  const tenant = await resolveTenant();
-  if (!tenant) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
 
   const sp = (await searchParams) ?? {};
   const q = one(sp.q);
@@ -62,15 +62,15 @@ export default async function ProductsPage({
 
   // Load the fitment domains, then resolve the active one + its categories so
   // the facet panel can render domain-appropriate labels and a range widget.
-  const domains = await listFitmentDomains(tenant.slug).catch<PublicFitmentDomain[]>(() => []);
+  const domains = await listFitmentDomains(site.slug).catch<PublicFitmentDomain[]>(() => []);
   const activeDomain = domains.find((d) => d.slug === fitmentDomain) ?? domains[0] ?? null;
   const categories = activeDomain
-    ? await listFitmentCategories(tenant.slug, activeDomain.id).catch<PublicFitmentCategory[]>(
+    ? await listFitmentCategories(site.slug, activeDomain.id).catch<PublicFitmentCategory[]>(
         () => []
       )
     : [];
 
-  const result = await listProducts(tenant.slug, {
+  const result = await listProducts(site.slug, {
     ...(q ? { q } : {}),
     sort,
     ...(minPrice ? { minPriceCents: dollarsToCents(minPrice) } : {}),
@@ -83,7 +83,7 @@ export default async function ProductsPage({
   });
 
   const totalPages = Math.max(1, Math.ceil(result.total / result.perPage));
-  const { defaultCurrency: currency, defaultLocale: locale } = tenant.commerce;
+  const { defaultCurrency: currency, defaultLocale: locale } = site.commerce;
 
   const facetValues: FacetValues = {
     q,
@@ -127,7 +127,7 @@ export default async function ProductsPage({
 
           <ProductGrid
             products={result.items}
-            tenantSlug={tenant.slug}
+            tenantSlug={site.slug}
             currency={currency}
             locale={locale}
           />

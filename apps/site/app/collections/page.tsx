@@ -11,17 +11,17 @@ import { Breadcrumbs } from '@/components/breadcrumbs';
 import { EmptyState } from '@/components/empty-state';
 import { listCollections } from '@/lib/commerce';
 import { mediaUrl } from '@/lib/media';
-import { resolveTenant } from '@/lib/tenant';
+import { resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = { title: 'Collections' };
 
 export default async function CollectionListingPage() {
-  const tenant = await resolveTenant();
-  if (!tenant) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
 
-  const collections = await listCollections(tenant.slug);
+  const collections = await listCollections(site.slug);
 
   return (
     <div className="st-container">
@@ -29,7 +29,7 @@ export default async function CollectionListingPage() {
       <header style={{ marginBottom: '2rem' }}>
         <h1 className="st-h1">Collections</h1>
         <p className="st-muted" style={{ marginTop: '0.5rem' }}>
-          Curated lineups from {tenant.name}.
+          Curated lineups from {site.name}.
         </p>
       </header>
 
@@ -43,7 +43,7 @@ export default async function CollectionListingPage() {
       ) : (
         <div className="st-grid">
           {collections.map((c) => {
-            const hero = mediaUrl(c.heroMediaId, tenant.slug);
+            const hero = mediaUrl(c.heroMediaId, site.slug);
             return (
               <Link key={c.id} href={`/collections/${c.handle}`} className="st-card">
                 <div className="st-card__media">

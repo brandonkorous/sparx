@@ -18,7 +18,7 @@ import { getBlogPostBySlug } from '@/lib/content';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
-import { resolveTenant } from '@/lib/tenant';
+import { resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,11 +28,11 @@ interface BlogPageProps {
 }
 
 export async function generateMetadata({ params, searchParams }: BlogPageProps): Promise<Metadata> {
-  const tenant = await resolveTenant();
-  if (!tenant) return {};
+  const site = await resolveSite();
+  if (!site) return {};
   const { slug } = await params;
   const previewToken = (await searchParams)?.sparxPreview;
-  const post = await getBlogPostBySlug(tenant.slug, slug, previewToken ? { previewToken } : {});
+  const post = await getBlogPostBySlug(site.slug, slug, previewToken ? { previewToken } : {});
   if (!post) return {};
 
   const body = post.body ?? {};
@@ -44,19 +44,19 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps):
   const seoTitle = str(seo.title);
   const seoDescription = str(seo.description);
   const canonical = str(seo.canonical);
-  const title = seoTitle ?? body.title ?? tenant.name;
+  const title = seoTitle ?? body.title ?? site.name;
   const description = seoDescription ?? body.excerpt ?? undefined;
   // OG image: the author's chosen social image wins (a media id or absolute URL),
   // then the post's featured image, then a tenant-branded generated card.
   const seoOg = str(seo.ogImage);
   const ogImage =
-    (seoOg ? (seoOg.startsWith('http') ? seoOg : mediaUrl(seoOg, tenant.slug)) : undefined) ??
-    mediaUrl(typeof body.featuredImage === 'string' ? body.featuredImage : null, tenant.slug) ??
+    (seoOg ? (seoOg.startsWith('http') ? seoOg : mediaUrl(seoOg, site.slug)) : undefined) ??
+    mediaUrl(typeof body.featuredImage === 'string' ? body.featuredImage : null, site.slug) ??
     ogImageUrl({
-      title: body.title ?? tenant.name,
+      title: body.title ?? site.name,
       eyebrow: 'Article',
-      brand: tenant.name,
-      accent: tenant.theme?.colorPrimary,
+      brand: site.name,
+      accent: site.theme?.colorPrimary,
     });
   // Indexable only when published AND the author hasn't flagged the entry noindex.
   const noindex = typeof seo.robots === 'string' && seo.robots.includes('noindex');
@@ -75,34 +75,30 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps):
 }
 
 export default async function BlogPostPage({ params, searchParams }: BlogPageProps) {
-  const tenant = await resolveTenant();
-  if (!tenant) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
   const { slug } = await params;
   const previewToken = (await searchParams)?.sparxPreview;
 
-  const post = await getBlogPostBySlug(tenant.slug, slug, previewToken ? { previewToken } : {});
+  const post = await getBlogPostBySlug(site.slug, slug, previewToken ? { previewToken } : {});
   if (!post) {
     // Last chance before 404: a tenant-managed redirect for this path.
-    await applyRedirect(tenant.slug, `/blog/${slug}`);
+    await applyRedirect(site.slug, `/blog/${slug}`);
     notFound();
   }
 
   // The generic per-record router (docs/44 §3 B): a published `cms.blog_post`
   // collection template renders the post through the node tree, binding THIS entry
   // as `blog_post`. Falls through to the legacy render when none is published.
-  const builderTemplate = await getPublishedBuilderCollection(
-    tenant.slug,
-    'cms.blog_post',
-    post.id
-  );
+  const builderTemplate = await getPublishedBuilderCollection(site.slug, 'cms.blog_post', post.id);
   if (builderTemplate) {
-    const data = await loadBuilderData(tenant.slug, builderTemplate.tree, {
+    const data = await loadBuilderData(site.slug, builderTemplate.tree, {
       key: 'blog_post',
-      value: postToBuilderRecord(post, tenant.slug),
+      value: postToBuilderRecord(post, site.slug),
     });
     return (
       <>
-        <ArticleJsonLd post={post} tenant={tenant} />
+        <ArticleJsonLd post={post} site={site} />
         <BuilderRenderer tree={builderTemplate.tree} data={data} />
       </>
     );
@@ -112,7 +108,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
   // still readable (PageView already renders the body doc + title).
   return (
     <>
-      <ArticleJsonLd post={post} tenant={tenant} />
+      <ArticleJsonLd post={post} site={site} />
       <PageView entry={post} />
     </>
   );

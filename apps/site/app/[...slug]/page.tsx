@@ -4,7 +4,7 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { resolveActivePropertySlug, resolveTenant } from '@/lib/tenant';
+import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 import { getPageBySlug } from '@/lib/content';
 import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
@@ -27,8 +27,8 @@ function buildSlug(parts: string[]): string {
 }
 
 export async function generateMetadata({ params, searchParams }: SlugPageProps): Promise<Metadata> {
-  const tenant = await resolveTenant();
-  if (!tenant) return {};
+  const site = await resolveSite();
+  if (!site) return {};
   const slug = buildSlug((await params).slug);
   const sp = await searchParams;
   const previewToken = sp?.sparxPreview;
@@ -37,7 +37,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   // A Builder page owns its slug — title it from the page name (docs/44). Under a
   // site-preview token, the DRAFT page's name.
   const builderPage = await getPublishedBuilderPage(
-    tenant.slug,
+    site.slug,
     slug,
     sitePreview ? { previewToken: sitePreview } : {}
   );
@@ -49,7 +49,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
       const t = v?.trim();
       return t && t.length > 0 ? t : undefined;
     };
-    const title = clean(builderPage.seoTitle) ?? `${builderPage.name} · ${tenant.name}`;
+    const title = clean(builderPage.seoTitle) ?? `${builderPage.name} · ${site.name}`;
     const description = clean(builderPage.seoDescription);
     const canonical = clean(builderPage.canonical);
     // Author-set OG URL wins; otherwise a tenant-branded generated card
@@ -59,8 +59,8 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
       ogImageUrl({
         title: clean(builderPage.seoTitle) ?? builderPage.name,
         eyebrow: 'Page',
-        brand: tenant.name,
-        accent: tenant.theme?.colorPrimary,
+        brand: site.name,
+        accent: site.theme?.colorPrimary,
       });
     return {
       title,
@@ -75,14 +75,14 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
     };
   }
 
-  const page = await getPageBySlug(tenant.slug, slug, previewToken ? { previewToken } : {});
+  const page = await getPageBySlug(site.slug, slug, previewToken ? { previewToken } : {});
   if (!page) return {};
 
   const seo = page.seo ?? {};
   const seoTitle = typeof seo.title === 'string' ? seo.title : undefined;
   const seoDescription = typeof seo.description === 'string' ? seo.description : undefined;
   const bodyTitle = typeof page.body.title === 'string' ? page.body.title : undefined;
-  const title = seoTitle ?? bodyTitle ?? tenant.name;
+  const title = seoTitle ?? bodyTitle ?? site.name;
 
   return {
     title,
@@ -97,8 +97,8 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
           url: ogImageUrl({
             title,
             eyebrow: 'Page',
-            brand: tenant.name,
-            accent: tenant.theme?.colorPrimary,
+            brand: site.name,
+            accent: site.theme?.colorPrimary,
           }),
         },
       ],
@@ -108,8 +108,8 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
 }
 
 export default async function SitePage({ params, searchParams }: SlugPageProps) {
-  const tenant = await resolveTenant();
-  if (!tenant) notFound();
+  const site = await resolveSite();
+  if (!site) notFound();
 
   const slug = buildSlug((await params).slug);
   const sp = (await searchParams) ?? {};
@@ -121,17 +121,17 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
   // valid `?sparxSitePreview=<token>` swaps in the DRAFT page (docs/45 §2.6).
   const sitePreview = sp.sparxSitePreview;
   const builderPage = await getPublishedBuilderPage(
-    tenant.slug,
+    site.slug,
     slug,
     sitePreview ? { previewToken: sitePreview } : {}
   );
   if (builderPage) {
-    const data = await loadBuilderData(tenant.slug, builderPage.tree);
+    const data = await loadBuilderData(site.slug, builderPage.tree);
     // In preview, inject the DRAFT Surface sheet so classes authored since the
     // last publish resolve (the layout injects only the published sheet). A plain
     // inline <style> in the body lands after it, simply adding the missing rules.
     const draftCss = sitePreview
-      ? await getPublishedBuilderStyles(tenant.slug, { previewToken: sitePreview })
+      ? await getPublishedBuilderStyles(site.slug, { previewToken: sitePreview })
       : '';
     return (
       <>
@@ -145,25 +145,25 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
 
   const activePropertySlug = (await resolveActivePropertySlug()) ?? undefined;
   const [page, snapshot] = await Promise.all([
-    getPageBySlug(tenant.slug, slug, previewToken ? { previewToken } : {}),
-    getPublishedSite(tenant.slug, sp.sparxSitePreview, activePropertySlug),
+    getPageBySlug(site.slug, slug, previewToken ? { previewToken } : {}),
+    getPublishedSite(site.slug, sp.sparxSitePreview, activePropertySlug),
   ]);
   const sections = sectionsForPage(snapshot, slug);
 
   // Neither a CMS page nor Site Builder sections exist for this slug — last
   // chance is a tenant-managed redirect before we 404.
   if (!page && sections.length === 0) {
-    await applyRedirect(tenant.slug, `/${slug}`);
+    await applyRedirect(site.slug, `/${slug}`);
     notFound();
   }
 
-  const { defaultCurrency, defaultLocale } = tenant.commerce;
+  const { defaultCurrency, defaultLocale } = site.commerce;
   return (
     <>
       {sections.length > 0 ? (
         <SectionRenderer
           sections={sections}
-          ctx={{ tenantSlug: tenant.slug, currency: defaultCurrency, locale: defaultLocale }}
+          ctx={{ tenantSlug: site.slug, currency: defaultCurrency, locale: defaultLocale }}
           definitions={snapshot?.definitions ?? []}
         />
       ) : null}

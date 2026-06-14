@@ -16,7 +16,7 @@ import type { BuilderNode, DataSources } from '@sparx/builder-schemas';
 import { publicGet, type ApiEntry, type BlogPostBody } from './content';
 import { listProducts, type PublicProduct, type PublicProductListItem } from './commerce';
 import { mediaUrl } from './media';
-import type { ResolvedTenant } from './tenant';
+import type { ResolvedSite } from './site-context';
 import type { BuilderProduct } from '../components/builder-commerce';
 
 function walkBindings(node: BuilderNode, visit: (path: string) => void): void {
@@ -239,26 +239,26 @@ function socialsToItems(
 }
 
 /** Build the `site` resolver root for the layout renderer: brand identity + social
- *  links from the resolved tenant, plus the site's appearance settings. Navigation
+ *  links from the resolved site, plus the site's appearance settings. Navigation
  *  is Builder-owned (docs/57) — it lives on the NavMenu node, not here.
  *
  *  `appearance` carries the published appearance policy + the SSR-resolved initial
  *  mode, so the Builder `ThemeToggle` node can auto-hide unless both themes are
  *  offered (`policy === 'toggle'`) and paint the right icon before hydration. */
 export function loadSiteData(
-  tenant: ResolvedTenant,
+  site: ResolvedSite,
   appearance?: { policy: string; initial: 'light' | 'dark' }
 ): DataSources {
   const root: DataSources = {};
 
-  const logo = mediaUrl(tenant.theme?.logoMediaId ?? null, tenant.slug);
+  const logo = mediaUrl(site.theme?.logoMediaId ?? null, site.slug);
   setAtPath(root, 'site.identity', {
-    name: tenant.name,
+    name: site.name,
     tagline: '',
-    logo: logo ? { url: logo, alt: tenant.name } : null,
+    logo: logo ? { url: logo, alt: site.name } : null,
   });
 
-  setAtPath(root, 'site.social', socialsToItems(tenant.socials));
+  setAtPath(root, 'site.social', socialsToItems(site.socials));
 
   if (appearance) {
     setAtPath(root, 'site.appearance', {

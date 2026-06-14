@@ -2,7 +2,7 @@
 // preview-token paths so a leaked preview URL doesn't get indexed.
 // Sitemap reference points back at this same host.
 
-import { resolveTenant } from '@/lib/tenant';
+import { resolveSite } from '@/lib/site-context';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   const host = forwardedHost ?? headers.get('host') ?? url.host;
   const protocol = forwardedProto ? `${forwardedProto}:` : url.protocol;
   const origin = `${protocol}//${host}`;
-  const tenant = await resolveTenant();
+  const site = await resolveSite();
 
   // Shared exclusions applied to every crawler group: the internal API and any
   // leaked preview-token URL.
@@ -57,7 +57,7 @@ export async function GET(request: Request) {
     '',
   ];
 
-  if (!tenant) {
+  if (!site) {
     return new Response('User-agent: *\nDisallow: /\n', {
       headers: { 'content-type': 'text/plain; charset=utf-8' },
     });

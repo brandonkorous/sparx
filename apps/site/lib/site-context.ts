@@ -21,7 +21,7 @@ const ZONE_DOMAIN = process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone';
 /** Per-tenant theme overrides. Every field is nullable — null means "fall
  *  back to the default theme token" (see lib/theme.ts). Mirrors the
  *  CommerceSiteTheme model. */
-export interface TenantTheme {
+export interface SiteTheme {
   colorPrimary: string | null;
   colorPrimaryForeground: string | null;
   colorAccent: string | null;
@@ -37,7 +37,7 @@ export interface TenantTheme {
 }
 
 /** Commerce-relevant storefront defaults (currency, locale, gating). */
-export interface TenantSite {
+export interface SiteCommerce {
   defaultCurrency: string;
   defaultLocale: string;
   showStockBelow: number;
@@ -47,7 +47,7 @@ export interface TenantSite {
 
 /** Cookie-consent config (docs/42 §4) — travels in the tenant payload so the
  *  layout decides off/quiet-notice/banner server-side with no client flash. */
-export interface TenantConsent {
+export interface SiteConsent {
   mode: 'off' | 'gdpr' | 'ccpa';
   categories: string[];
   activeCategories: string[];
@@ -58,21 +58,21 @@ export interface TenantConsent {
   policyVersion: string;
 }
 
-export interface ResolvedTenant {
+export interface ResolvedSite {
   id: string;
   slug: string;
   name: string;
   settings: Record<string, unknown>;
-  theme: TenantTheme | null;
-  commerce: TenantSite;
-  consent: TenantConsent;
+  theme: SiteTheme | null;
+  commerce: SiteCommerce;
+  consent: SiteConsent;
   // Site-wide social links (a SITE setting on the tenant, not brand/theme —
   // docs/45 §3): an ordered { platform, url }[] the layout chrome binds
   // `site.social` to.
   socials: { platform: string; url: string }[];
 }
 
-// `ResolvedTenant.name` is the customer-facing SITE name, NOT the tenant's legal/
+// `ResolvedSite.name` is the customer-facing SITE name, NOT the tenant's legal/
 // org name. The API returns `propertyName` (the active site, else the tenant's
 // primary — docs/49); we collapse it into `name` at this boundary so every
 // storefront surface (header, footer, title, OG, JSON-LD, hero) shows the SITE
@@ -82,11 +82,11 @@ export interface ResolvedTenant {
 // `propertyName`.
 interface TenantApiResponse {
   success: boolean;
-  data?: ResolvedTenant & { businessName?: string | null; propertyName?: string | null };
+  data?: ResolvedSite & { businessName?: string | null; propertyName?: string | null };
   error?: { code: string; message: string };
 }
 
-const DEFAULT_SITE: TenantSite = {
+const DEFAULT_SITE: SiteCommerce = {
   defaultCurrency: 'USD',
   defaultLocale: 'en-US',
   showStockBelow: 10,
@@ -97,7 +97,7 @@ const DEFAULT_SITE: TenantSite = {
 // Consent defaults to 'off' (no banner, no consent cookie) so storefronts
 // served by an older api-rest that doesn't yet return `consent` behave exactly
 // as before.
-const DEFAULT_CONSENT: TenantConsent = {
+const DEFAULT_CONSENT: SiteConsent = {
   mode: 'off',
   categories: ['strictly_necessary', 'preferences', 'analytics', 'marketing'],
   activeCategories: [],
@@ -214,9 +214,9 @@ export async function resolveActivePropertySlug(): Promise<string | null> {
   return (await resolveSiteRoute())?.propertySlug ?? null;
 }
 
-// Cached per-request so layout + page can both resolve the tenant without a
+// Cached per-request so layout + page can both resolve the site without a
 // double fetch. React.cache() dedupes within a single server render.
-export const resolveTenant = cache(async (): Promise<ResolvedTenant | null> => {
+export const resolveSite = cache(async (): Promise<ResolvedSite | null> => {
   const route = await resolveSiteRoute();
   if (!route) return null;
   const { tenantSlug: slug, propertySlug } = route;
@@ -246,7 +246,7 @@ export const resolveTenant = cache(async (): Promise<ResolvedTenant | null> => {
     return {
       ...data,
       name: siteName && siteName.length > 0 ? siteName : data.name,
-      commerce: data.commerce ?? (data as { storefront?: TenantSite }).storefront ?? DEFAULT_SITE,
+      commerce: data.commerce ?? (data as { storefront?: SiteCommerce }).storefront ?? DEFAULT_SITE,
       consent: data.consent ?? DEFAULT_CONSENT,
       // Defaults to [] so a storefront served by an older api-rest that doesn't
       // yet return `socials` behaves exactly as before (no links).

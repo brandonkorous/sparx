@@ -1,12 +1,12 @@
 // Tenant resolution at the edge (Next.js `proxy` file convention — formerly
 // `middleware`).
 //
-// Production: the tenant is derived from the Host header inside resolveTenant()
+// Production: the tenant is derived from the Host header inside resolveSite()
 // (subdomain of sparx.zone, or a custom domain later). The proxy doesn't need
 // to do anything there.
 //
 // Local dev: there's no per-tenant DNS, so we accept `?tenant=<slug>`, stash it
-// in an `x-tenant-slug` request header (read by resolveTenant) AND persist it
+// in an `x-tenant-slug` request header (read by resolveSite) AND persist it
 // as a cookie so navigating between pages keeps the active store without
 // re-appending the query param.
 //

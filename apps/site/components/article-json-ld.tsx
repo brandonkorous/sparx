@@ -11,22 +11,22 @@ import { mediaUrl } from '@/lib/media';
 
 interface ArticleJsonLdProps {
   post: ApiEntry<BlogPostBody>;
-  tenant: { slug: string; name: string };
+  site: { slug: string; name: string };
 }
 
 const str = (v: unknown): string | undefined => (typeof v === 'string' && v ? v : undefined);
 
-export async function ArticleJsonLd({ post, tenant }: ArticleJsonLdProps) {
+export async function ArticleJsonLd({ post, site }: ArticleJsonLdProps) {
   const body = post.body ?? {};
   const seo = post.seo ?? {};
 
-  const headline = str(seo.title) ?? str(body.title) ?? tenant.name;
+  const headline = str(seo.title) ?? str(body.title) ?? site.name;
   const description = str(seo.description) ?? str(body.excerpt);
   // The featured image is the best article image; it's a media-asset id (or an
   // absolute URL) — mediaUrl resolves both to an absolute, CDN-served URL.
   const image = mediaUrl(
     typeof body.featuredImage === 'string' ? body.featuredImage : null,
-    tenant.slug
+    site.slug
   );
 
   // Absolute canonical for mainEntityOfPage. The tenant origin is whatever host
@@ -47,8 +47,8 @@ export async function ArticleJsonLd({ post, tenant }: ArticleJsonLdProps) {
     ...(url ? { mainEntityOfPage: { '@type': 'WebPage', '@id': url } } : {}),
     // No first-class author field on a blog_post yet — attribute to the tenant
     // as the publishing organization. Swap to a Person once authors are modeled.
-    author: { '@type': 'Organization', name: tenant.name },
-    publisher: { '@type': 'Organization', name: tenant.name },
+    author: { '@type': 'Organization', name: site.name },
+    publisher: { '@type': 'Organization', name: site.name },
   };
 
   return (

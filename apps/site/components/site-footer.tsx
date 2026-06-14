@@ -4,7 +4,7 @@
 
 import Link from 'next/link';
 
-import type { ResolvedTenant } from '@/lib/tenant';
+import type { ResolvedSite } from '@/lib/site-context';
 
 export interface FooterColumn {
   title: string;
@@ -17,7 +17,7 @@ export interface FooterSocialLink {
 }
 
 export interface SiteFooterProps {
-  tenant: ResolvedTenant;
+  site: ResolvedSite;
   columns: FooterColumn[];
   year: number;
   /** Tenant copyright line (Site Builder footer config); falls back to the
@@ -65,7 +65,7 @@ function SocialRow({ socialLinks }: { socialLinks: FooterSocialLink[] }) {
 }
 
 export function SiteFooter({
-  tenant,
+  site,
   columns,
   year,
   copyright,
@@ -74,7 +74,7 @@ export function SiteFooter({
   tagline,
 }: SiteFooterProps) {
   const social = socialLinks ?? [];
-  const legal = copyright ?? `© ${year} ${tenant.name}. All rights reserved.`;
+  const legal = copyright ?? `© ${year} ${site.name}. All rights reserved.`;
 
   // Minimal: a flat, centered row of every link + a legal line. Suits sites
   // whose footer is a thin legal/locale strip rather than a sitemap.
@@ -109,7 +109,7 @@ export function SiteFooter({
       <div className="st-container">
         <div className="st-footer__grid">
           <div className="st-footer__col">
-            <span className="st-header__brand">{tenant.name}</span>
+            <span className="st-header__brand">{site.name}</span>
             <p
               className="st-muted"
               style={{ marginTop: '0.75rem', maxWidth: '34ch', lineHeight: 1.6 }}
