@@ -14,6 +14,7 @@ interface CategoryTreeNode {
   id: string;
   name: string;
   depth: number;
+  path: string;
   children: CategoryTreeNode[];
 }
 
@@ -28,7 +29,7 @@ export async function loadCategoryParents(): Promise<CategoryParentOption[]> {
   const out: CategoryParentOption[] = [];
   function walk(list: CategoryTreeNode[]): void {
     for (const node of list) {
-      out.push({ id: node.id, name: node.name, depth: node.depth });
+      out.push({ id: node.id, name: node.name, depth: node.depth, path: node.path });
       walk(node.children);
     }
   }

@@ -44,10 +44,11 @@ interface CategoryTreeNode {
 // surface (Featured, New for Spring, etc.) lives in /commerce/collections.
 //
 // A product can sit in many categories but exactly one is canonical.
-// The tree editor lets merchants create / rename / reparent / delete
-// categories with optimistic UI; the server enforces handle uniqueness,
-// cycle prevention, and the rule that you must remove descendants before
-// the parent.
+// The tree is read-only navigation: "New" and each row open the create /
+// detail surface (drawer, modal, or full page per the user's preference),
+// where rename / reslug / reparent / reorder / delete live — uniform with
+// every other entity. The server enforces handle uniqueness, cycle
+// prevention, and the rule that you must remove descendants before the parent.
 
 export const dynamic = 'force-dynamic';
 
@@ -89,8 +90,8 @@ export default async function CategoriesPage() {
             <Stack gap={1}>
               <Heading level={3}>Tree</Heading>
               <CardDescription>
-                Each row shows depth, product count, and inline edit / delete affordances. New
-                categories add at the bottom of the chosen parent.
+                Each row shows depth and product count. Open a category to rename, reparent,
+                reorder, or delete; new categories add at the bottom of the chosen parent.
               </CardDescription>
             </Stack>
           </CardHeader>

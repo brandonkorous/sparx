@@ -33,6 +33,7 @@ import { QuoteDetailContent } from '../crm/quotes/[id]/_content';
 import { SegmentDetailContent } from '../crm/segments/[id]/_content';
 import { BundleDetailContent } from '../commerce/bundles/[id]/_content';
 import { CartDetailContent } from '../commerce/carts/[id]/_content';
+import { CategoryDetailContent } from '../commerce/categories/[id]/_content';
 import { CollectionDetailContent } from '../commerce/collections/[id]/_content';
 import { ConfiguratorTemplateDetailContent } from '../commerce/configurator/[id]/_content';
 import { PriceListDetailContent } from '../commerce/pricing/[id]/_content';
@@ -77,6 +78,7 @@ const detailComponents: Record<string, DetailComponent> = {
   segment: SegmentDetailContent,
   // Commerce
   product: ProductDetailContent,
+  category: CategoryDetailContent,
   collection: CollectionDetailContent,
   warehouse: WarehouseDetailContent,
   review: ReviewDetailContent,

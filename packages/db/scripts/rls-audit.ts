@@ -252,9 +252,9 @@ function main(): void {
       console.error(`  ${f.table}  (last defined in ${f.migration})`);
     }
     console.error(
-      "\nFix: add a later migration that DROPs + recreates each policy with the\n" +
-        "missing-safe helper — USING (tenant_id = current_tenant_id()) — which\n" +
-        "returns NULL on an unset GUC instead of throwing 42704 under FORCE RLS.\n" +
+      '\nFix: add a later migration that DROPs + recreates each policy with the\n' +
+        'missing-safe helper — USING (tenant_id = current_tenant_id()) — which\n' +
+        'returns NULL on an unset GUC instead of throwing 42704 under FORCE RLS.\n' +
         '(See 20260801000000_fix_b2b_import_rls_guc for the canonical pattern.)'
     );
   }

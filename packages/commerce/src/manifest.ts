@@ -99,7 +99,7 @@ export const commerceManifest: ModuleManifest = {
   ],
   entityTypes: [
     { id: 'product', label: 'Product', routePrefix: '/commerce/products', hasDetailView: true },
-    { id: 'category', label: 'Category', routePrefix: '/commerce/categories' },
+    { id: 'category', label: 'Category', routePrefix: '/commerce/categories', hasDetailView: true },
     {
       id: 'collection',
       label: 'Collection',

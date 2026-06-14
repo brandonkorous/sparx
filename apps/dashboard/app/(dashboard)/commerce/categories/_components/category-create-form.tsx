@@ -37,6 +37,8 @@ export interface CategoryParentOption {
   id: string;
   name: string;
   depth: number;
+  /** Materialized tree path — lets the edit form exclude self + descendants. */
+  path: string;
 }
 
 interface CategoryCreateFormProps {
