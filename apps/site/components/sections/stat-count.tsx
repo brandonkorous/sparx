@@ -93,7 +93,7 @@ export function StatValue({ value, animate }: { value: string; animate: boolean 
   }, [value, animate]);
 
   return (
-    <span ref={ref} className="sf-sb-stat__value">
+    <span ref={ref} className="st-sb-stat__value">
       {display}
     </span>
   );

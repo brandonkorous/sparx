@@ -1,15 +1,15 @@
 /* Surface TextRotate — animated phrase swap (docs/46 §5.2). Each phrase fades/rises
  * in via a keyed re-mount; reduced-motion shows it instantly. */
 
-.sf-textrotate {
+.st-textrotate {
   display: inline-block;
   position: relative;
 }
-.sf-textrotate__item {
+.st-textrotate__item {
   display: inline-block;
-  animation: sf-textrotate-in 0.4s ease;
+  animation: st-textrotate-in 0.4s ease;
 }
-@keyframes sf-textrotate-in {
+@keyframes st-textrotate-in {
   from {
     opacity: 0;
     transform: translateY(0.4em);
@@ -20,7 +20,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sf-textrotate__item {
+  .st-textrotate__item {
     animation: none;
   }
 }

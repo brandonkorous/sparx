@@ -33,11 +33,11 @@ export interface InputProps extends Omit<
 }
 
 export const FIELD_SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-input--sz-xs',
-  sm: 'sf-input--sz-sm',
-  md: 'sf-input--sz-md',
-  lg: 'sf-input--sz-lg',
-  xl: 'sf-input--sz-xl',
+  xs: 'st-input--sz-xs',
+  sm: 'st-input--sz-sm',
+  md: 'st-input--sz-md',
+  lg: 'st-input--sz-lg',
+  xl: 'st-input--sz-xl',
 };
 
 export function Input({
@@ -52,11 +52,11 @@ export function Input({
     <input
       {...rest}
       className={cx(
-        'sf-input',
+        'st-input',
         colorClass(color),
         FIELD_SIZE_CLASS[size],
         fieldTreatmentVariants[variant],
-        invalid && 'sf-input--invalid',
+        invalid && 'st-input--invalid',
         className
       )}
       aria-invalid={invalid || undefined}

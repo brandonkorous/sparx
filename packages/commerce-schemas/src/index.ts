@@ -22,7 +22,7 @@ export * from './fitment';
 // Phase 2 — inventory (warehouses, levels, lots, serials).
 export * from './inventory';
 
-// Phase 3 — pricing + discounts + gift cards + store credit.
+// Phase 3 — pricing + discounts + gift cards + account credit.
 export * from './pricing';
 export * from './discounts';
 
@@ -50,4 +50,4 @@ export * from './reviews';
 export * from './returns';
 
 // Phase 8 — storefront-level settings + theme.
-export * from './storefront';
+export * from './site';

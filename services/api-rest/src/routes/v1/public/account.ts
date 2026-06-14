@@ -1,5 +1,5 @@
 // Public customer-account surface for the storefront (Layer 2 — shoppers).
-// See docs/27-customer-accounts-storefront-auth.md.
+// See docs/27-customer-accounts-site-auth.md.
 //
 //   POST   /v1/public/commerce/account/register ?tenant=  { email, password, firstName?, lastName? }
 //   POST   /v1/public/commerce/account/login    ?tenant=  { email, password }
@@ -119,7 +119,7 @@ const emailPublisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: 
  *  else the <slug>.sparx.zone subdomain. Used to build the reset link so the
  *  email points at the shopper's actual storefront (never a client-supplied
  *  origin, which would be a token-phishing vector). */
-async function storefrontBaseUrl(tenantId: string, slug: string): Promise<string> {
+async function siteBaseUrl(tenantId: string, slug: string): Promise<string> {
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     select: { settings: true },
@@ -319,7 +319,7 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
 
     const reset = await requestPasswordReset({ tenantId }, body);
     if (reset) {
-      const base = await storefrontBaseUrl(tenantId, slug);
+      const base = await siteBaseUrl(tenantId, slug);
       const resetUrl = `${base}/account/reset?token=${encodeURIComponent(reset.resetToken)}`;
       await publishEvent(
         emailPublisher,

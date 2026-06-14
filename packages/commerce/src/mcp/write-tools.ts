@@ -9,7 +9,7 @@ import {
   BulkUpdateProductStatusInput,
   CancelSubscriptionInput,
   CreateSurchargeRuleInput,
-  GrantStoreCreditInput,
+  GrantAccountCreditInput,
   IssueGiftCardInput,
   MarkupScope,
   ModerateReviewInput,
@@ -74,13 +74,13 @@ const issueGiftCard: McpToolDefinition = {
   run: (ctx, input) => discountService.issueGiftCard(ctx, input),
 };
 
-const grantStoreCredit: McpToolDefinition = {
-  name: 'grant_store_credit',
-  description: "Add to a customer's store credit balance.",
+const grantAccountCredit: McpToolDefinition = {
+  name: 'grant_account_credit',
+  description: "Add to a customer's account credit balance.",
   scope: 'write:commerce',
   confirmation: true,
-  input: GrantStoreCreditInput,
-  run: (ctx, input) => discountService.grantStoreCredit(ctx, input),
+  input: GrantAccountCreditInput,
+  run: (ctx, input) => discountService.grantAccountCredit(ctx, input),
 };
 
 const pauseSubscription: McpToolDefinition = {
@@ -157,7 +157,7 @@ export const writeTools: AnyMcpTool[] = [
   archiveProduct,
   bulkUpdateProductStatus,
   issueGiftCard,
-  grantStoreCredit,
+  grantAccountCredit,
   pauseSubscription,
   resumeSubscription,
   cancelSubscription,

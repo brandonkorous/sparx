@@ -29,10 +29,10 @@ export function Swap({
   ...rest
 }: SwapProps): React.ReactElement {
   return (
-    <label className={cx('sf-swap', `sf-swap--${animation}`, className)}>
-      <input {...rest} type="checkbox" className="sf-swap__input" />
-      <span className="sf-swap__on">{on}</span>
-      <span className="sf-swap__off">{off}</span>
+    <label className={cx('st-swap', `st-swap--${animation}`, className)}>
+      <input {...rest} type="checkbox" className="st-swap__input" />
+      <span className="st-swap__on">{on}</span>
+      <span className="st-swap__off">{off}</span>
     </label>
   );
 }

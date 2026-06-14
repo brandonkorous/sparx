@@ -77,7 +77,7 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     price: 49,
     elsewhere: 99,
     colorVar: 'var(--module-cms)',
-    long: 'A real editor with autosave and revisions, structured content types with a typed API, a media library, and SEO scored on every publish. Standalone or paired with your store.',
+    long: 'A real editor with autosave and revisions, structured content types with a typed API, a media library, and SEO scored on every publish. Standalone or paired with your site.',
     feats: [
       'Block editor, autosave + revisions',
       'Structured content types + typed API',

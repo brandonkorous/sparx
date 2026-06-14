@@ -2,7 +2,7 @@
 //
 // Until the Phase 2 generator editor writes v2 token docs natively, the live
 // storefront still has only the v1 stores: the tenant brand columns (identity),
-// the StorefrontTheme presentation columns (single, light-biased), and — when a
+// the CommerceSiteTheme presentation columns (single, light-biased), and — when a
 // site is published — the per-mode v1 compiled tokens in the snapshot. This
 // module maps those into v2 compiler inputs so the storefront renders through
 // the v2 engine with NO schema or API change. It is deleted in §6 once the
@@ -32,7 +32,7 @@ export interface LegacyBrandInput {
 export interface LegacySources {
   themeKey: string;
   brand?: LegacyBrandInput | null;
-  // StorefrontTheme presentation columns (light-biased single values).
+  // CommerceSiteTheme presentation columns (light-biased single values).
   presentationLight?: {
     colorBackground?: string | null;
     colorMuted?: string | null;
@@ -81,7 +81,7 @@ export function compileFromLegacy(sources: LegacySources): CompiledThemeV2 {
   };
 
   // Prefer the published snapshot's per-mode surfaces; otherwise seed light from
-  // the StorefrontTheme columns and let the preset fill dark.
+  // the CommerceSiteTheme columns and let the preset fill dark.
   const presentation: PresentationOverlayV2 = snapshotTokens
     ? {
         v: 2,

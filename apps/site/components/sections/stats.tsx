@@ -15,10 +15,10 @@ export function StatsSection({ config, ctx }: { config: StatsConfig; ctx: Sectio
   const hasLead = Boolean(config.heading || config.subheading || (config.ctas ?? []).length);
 
   return (
-    <section className="sf-section sf-sb-stats">
+    <section className="st-section st-sb-stats">
       {img ? (
         <div
-          className="sf-sb-stats__media"
+          className="st-sb-stats__media"
           style={{
             backgroundImage: `url("${img}")`,
             backgroundSize: config.imageFit === 'contain' ? 'contain' : 'cover',
@@ -26,20 +26,20 @@ export function StatsSection({ config, ctx }: { config: StatsConfig; ctx: Sectio
           }}
         />
       ) : null}
-      <div className="sf-container sf-sb-stats__body">
+      <div className="st-container st-sb-stats__body">
         {hasLead ? (
-          <div className="sf-sb-stats__lead">
-            {config.heading ? <h2 className="sf-h2">{config.heading}</h2> : null}
-            {config.subheading ? <p className="sf-muted">{config.subheading}</p> : null}
+          <div className="st-sb-stats__lead">
+            {config.heading ? <h2 className="st-h2">{config.heading}</h2> : null}
+            {config.subheading ? <p className="st-muted">{config.subheading}</p> : null}
             <SbCtaRow ctas={config.ctas} />
           </div>
         ) : null}
         {items.length ? (
-          <div className="sf-sb-stats__grid" data-cols={config.columns}>
+          <div className="st-sb-stats__grid" data-cols={config.columns}>
             {items.map((s, i) => (
-              <div key={i} className="sf-sb-stat">
+              <div key={i} className="st-sb-stat">
                 <StatValue value={s.value} animate={config.animate} />
-                <span className="sf-sb-stat__label">{s.label}</span>
+                <span className="st-sb-stat__label">{s.label}</span>
               </div>
             ))}
           </div>

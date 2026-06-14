@@ -48,21 +48,21 @@ export default function B2bOrdersPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-        <Link href={`/account/b2b/${accountId}`} className="sf-link" style={{ fontSize: '0.9rem' }}>
+        <Link href={`/account/b2b/${accountId}`} className="st-link" style={{ fontSize: '0.9rem' }}>
           ← Back
         </Link>
-        <h1 className="sf-h2">Orders</h1>
+        <h1 className="st-h2">Orders</h1>
       </div>
 
       {error ? (
-        <div className="sf-alert sf-alert--error" role="alert">
+        <div className="st-alert st-alert--error" role="alert">
           {error}
         </div>
       ) : orders === null ? (
-        <div className="sf-skeleton" style={{ height: 200 }} />
+        <div className="st-skeleton" style={{ height: 200 }} />
       ) : orders.length === 0 ? (
-        <div className="sf-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="sf-muted">No orders found on this account.</p>
+        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
+          <p className="st-muted">No orders found on this account.</p>
         </div>
       ) : (
         <>
@@ -70,7 +70,7 @@ export default function B2bOrdersPage() {
             {orders.map((o) => (
               <div
                 key={o.id}
-                className="sf-card"
+                className="st-card"
                 style={{
                   padding: '0.875rem 1rem',
                   display: 'flex',
@@ -81,7 +81,7 @@ export default function B2bOrdersPage() {
               >
                 <div>
                   <strong>#{o.orderNumber}</strong>
-                  <div className="sf-muted" style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}>
+                  <div className="st-muted" style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}>
                     {formatDate(o.createdAt)}
                     {o.customerName && (
                       <span style={{ marginLeft: '0.4rem' }}>· {o.customerName}</span>
@@ -89,7 +89,7 @@ export default function B2bOrdersPage() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span className="sf-badge" data-status={o.status}>
+                  <span className="st-badge" data-status={o.status}>
                     {o.status}
                   </span>
                   <strong style={{ whiteSpace: 'nowrap' }}>
@@ -104,18 +104,18 @@ export default function B2bOrdersPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
               <button
                 type="button"
-                className="sf-btn sf-btn--outline"
+                className="st-btn st-btn--outline"
                 disabled={skip === 0}
                 onClick={() => setSkip(Math.max(0, skip - PAGE_SIZE))}
               >
                 Previous
               </button>
-              <span className="sf-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
+              <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
                 {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
               <button
                 type="button"
-                className="sf-btn sf-btn--outline"
+                className="st-btn st-btn--outline"
                 disabled={skip + PAGE_SIZE >= total}
                 onClick={() => setSkip(skip + PAGE_SIZE)}
               >

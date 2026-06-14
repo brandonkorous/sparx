@@ -18,7 +18,7 @@ Adding one means an engineer touches five places and ships a deploy:
 5. **`switch` case** in [section-renderer.tsx](../apps/site/components/section-renderer.tsx)
 
 This document specifies how we let **tenants and agencies add their own components without a deploy** — and
-just as importantly, where we deliberately stop, because the storefront render path is a multi-tenant server
+just as importantly, where we deliberately stop, because the site render path is a multi-tenant server
 surface and arbitrary user code on it is a non-starter.
 
 ### 1.1 The pivotal observation
@@ -31,7 +31,7 @@ Four of those five steps are **already data, or trivial dispatch**:
 - The registry (step 3) and the `switch` (step 5) are lookups. A dynamic registry replaces them mechanically.
 - A validator can be **derived from** the field spec, so step 1 need not be hand-written Zod.
 
-**Only step 4 — the renderer — is genuinely hard.** It is arbitrary React executing inside the storefront's
+**Only step 4 — the renderer — is genuinely hard.** It is arbitrary React executing inside the site's
 server render (RSC), in a multi-tenant process. Untrusted user code there is an RCE / cross-tenant
 exfiltration risk; even client-only it is stored XSS against the tenant's shoppers. So the entire problem
 reduces to one question:
@@ -118,7 +118,7 @@ payload: JSON }`. Mirrors `SiteTheme`.
 
 Let a technical tenant/agency define a **brand-new section type as data** — fields + a safe render template —
 with no deploy. This is the phase that genuinely answers the title question; §4 specs it. **Built end-to-end**
-(DB → schemas → service → storefront render → REST/MCP → editor placement) per the build-status block in
+(DB → schemas → service → site render → REST/MCP → editor placement) per the build-status block in
 [the template-language spec](handoffs/sitebuilder-custom-section-template-spec.md) §10. The remaining
 authoring UX (a non-developer composing the template tree) is the deferred "section studio" slice (§6.2);
 definitions are created via API/MCP and placed/configured in the dashboard today.
@@ -131,7 +131,7 @@ template: JSON, version }`.
   authors the field list + template.
 - **Snapshot:** publish **pins the definition** (or its version) into the version so render is deterministic.
 - **API/MCP:** define / update / version a section type.
-- **Exit:** a tenant defines a new section type, places it, publishes, and it renders on the storefront —
+- **Exit:** a tenant defines a new section type, places it, publishes, and it renders on the site —
   with no engineer involvement and no deploy.
 
 ### Phase D — Marketplace / partner sections _(vetted, platform-level)_
@@ -142,7 +142,7 @@ packages** that pass review and are baked into the platform image (or a plugin r
 
 - **For:** the ecosystem; cross-tenant distribution.
 - **Render path:** real code, but **reviewed and platform-owned**, never per-tenant arbitrary React in SSR.
-- **Guard:** per-tenant arbitrary React on the storefront server is explicitly **out of scope** without
+- **Guard:** per-tenant arbitrary React on the site server is explicitly **out of scope** without
   isolate-level sandboxing — the multi-tenant blast radius is too large. Phase D is gated behind review and
   distribution, not self-serve code execution.
 - **Exit:** a third party publishes a section other tenants can install from the marketplace.
@@ -177,16 +177,16 @@ scope), and theme tokens:
   field), `Link`. A closed set — additive only by platform.
 - **Bindings:** props reference `{{ field.heading }}`, `{{ item.title }}`, `{{ index }}` — a restricted
   expression surface with **no function calls, no arbitrary JS, no network**.
-- **Styling:** props map **only to `--sf-*` tokens** (e.g. `tone="muted"`, `pad="lg"`), never raw hex or free
+- **Styling:** props map **only to `--st-*` tokens** (e.g. `tone="muted"`, `pad="lg"`), never raw hex or free
   CSS — the same brand rule that binds code sections (doc 37 §6, [[feedback_sparx_ui_decisions]]). The
   template literally cannot express an off-token color.
 - **Output:** server-rendered to sanitized HTML; any embed/iframe primitive is **host-allowlist-validated**,
   reusing the allowlist doc 37 §9 already requires for the Embed section.
 
-This keeps custom sections on the storefront's own CSS surface (it does not consume `@sparx/ui`) and inside
+This keeps custom sections on the site's own CSS surface (it does not consume `@sparx/ui`) and inside
 the flat-stack model — a custom section is one block, not a nesting mechanism.
 
-The template language is specified in full — node set, value-expression grammar, the `sf-tpl-*` CSS contract,
+The template language is specified in full — node set, value-expression grammar, the `st-tpl-*` CSS contract,
 the derived validator, snapshot pinning, and a worked `custom:icon-grid` example — in the handoff spec
 [docs/handoffs/sitebuilder-custom-section-template-spec.md](handoffs/sitebuilder-custom-section-template-spec.md),
 which resolves open question #1 below in favor of a **typed JSON component AST** (not a string grammar).
@@ -211,9 +211,9 @@ preserved as the final fallback.
 
 ## 5. Guardrails (binding on every phase)
 
-1. **No untrusted code on the storefront server.** Templates are interpreted; output is sanitized. Arbitrary
+1. **No untrusted code on the site server.** Templates are interpreted; output is sanitized. Arbitrary
    per-tenant React in SSR is out of scope (Phase D is reviewed, platform-owned code).
-2. **Token-only theming.** Custom sections express style solely through `--sf-*` tokens — no raw hex, no free
+2. **Token-only theming.** Custom sections express style solely through `--st-*` tokens — no raw hex, no free
    CSS. The brand rule is enforced by the template's prop surface, not by review.
 3. **Tenant isolation via RLS** on every new definition/preset table, consistent with the rest of
    `sitebuilder_*` ([[feedback_sparx_db_rls_pattern]]).
@@ -231,7 +231,7 @@ preserved as the final fallback.
 
 1. **Template language: build vs. adopt.** ~~A bespoke JSON primitive tree vs. a restricted templating
    grammar.~~ **Resolved** → typed JSON component AST, interpreted server-side, compiling to a closed
-   `sf-tpl-*` class family. See [handoff spec](handoffs/sitebuilder-custom-section-template-spec.md).
+   `st-tpl-*` class family. See [handoff spec](handoffs/sitebuilder-custom-section-template-spec.md).
 2. **Definition versioning & migration.** When a tenant edits a definition that live + published pages
    reference, what migrates and what stays pinned? (Ties to §4.5.)
 3. **Where the interpreter lives.** A new runtime package vs. extending `@sparx/sitebuilder-schemas` (which is

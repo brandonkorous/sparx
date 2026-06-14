@@ -15,23 +15,23 @@ describe('variant recipe', () => {
     expect(COLOR_KEYS).toContain('danger');
   });
 
-  it('maps every color key to its sf-c-* role-var class', () => {
+  it('maps every color key to its st-c-* role-var class', () => {
     for (const key of COLOR_KEYS) {
-      expect(colorVariants[key]).toBe(`sf-c-${key}`);
+      expect(colorVariants[key]).toBe(`st-c-${key}`);
     }
   });
 
   it('colorClass resolves known and runtime-custom colors, empty for nullish', () => {
-    expect(colorClass('primary')).toBe('sf-c-primary');
-    expect(colorClass('brand-mint')).toBe('sf-c-brand-mint');
+    expect(colorClass('primary')).toBe('st-c-primary');
+    expect(colorClass('brand-mint')).toBe('st-c-brand-mint');
     expect(colorClass(undefined)).toBe('');
     expect(colorClass(null)).toBe('');
   });
 
-  it('exposes the full treatment set incl. glass, mapped to sf-v-* classes', () => {
-    expect(treatmentVariants.solid).toBe('sf-v-solid');
-    expect(treatmentVariants.glass).toBe('sf-v-glass');
-    expect(treatmentVariants.link).toBe('sf-v-link');
+  it('exposes the full treatment set incl. glass, mapped to st-v-* classes', () => {
+    expect(treatmentVariants.solid).toBe('st-v-solid');
+    expect(treatmentVariants.glass).toBe('st-v-glass');
+    expect(treatmentVariants.link).toBe('st-v-link');
     expect(Object.keys(treatmentVariants)).toHaveLength(7);
   });
 

@@ -44,12 +44,12 @@ Sparx authenticates **five distinct kinds of principal**, each with its own iden
 | #   | Tier                       | Who                                           | Identity store                    | Isolation                         | Session / credential                          | Status          |
 | --- | -------------------------- | --------------------------------------------- | --------------------------------- | --------------------------------- | --------------------------------------------- | --------------- |
 | 1   | **Tenant Staff**           | People running a Sparx tenant account         | Better Auth (organization member) | One tenant (`tid` in every token) | JWT 15 min + rotating refresh (HTTP-only)     | ✅ Built        |
-| 2   | **Tenant Customer**        | Shoppers/members of a tenant's storefront     | `@sparx/customer-auth` (docs/27)  | One tenant, RLS-isolated          | `sparx_customer_session` cookie, separate JWT | ✅ Built        |
+| 2   | **Tenant Customer**        | Shoppers/members of a tenant's site           | `@sparx/customer-auth` (docs/27)  | One tenant, RLS-isolated          | `sparx_customer_session` cookie, separate JWT | ✅ Built        |
 | 3   | **Programmatic (API key)** | Headless frontends, MCP, integrations         | `api_keys` table (SHA-256 hash)   | One tenant, scope-limited         | `sparx_live_…` bearer key                     | ✅ Built        |
 | 4   | **Platform Operator**      | WizeWorks staff operating the platform itself | _none yet_ — see §2.4             | **Cross-tenant** (all tenants)    | Interim: internal shared-secret header        | ⚠️ **Deferred** |
 | 5   | **System / Internal**      | Machine-to-machine service calls (cron, push) | Shared secret in Secret Manager   | Cross-tenant, ClusterIP-only      | `X-Sparx-Internal-*-Token` header             | ✅ Built (§2.5) |
 
-The rule that ties them together: **a session is scoped to the narrowest tier that satisfies the request.** A storefront shopper never receives a staff token; a staff member never receives a cross-tenant operator capability; an internal service call never rides on a human's session. Crossing a tier boundary is always an explicit, audited hop (e.g. a staff member impersonating a customer for support, once §2.4 ships), never an implicit widening of an existing token.
+The rule that ties them together: **a session is scoped to the narrowest tier that satisfies the request.** A site shopper never receives a staff token; a staff member never receives a cross-tenant operator capability; an internal service call never rides on a human's session. Crossing a tier boundary is always an explicit, audited hop (e.g. a staff member impersonating a customer for support, once §2.4 ships), never an implicit widening of an existing token.
 
 ### Layer 1 — Tenant Staff (Tenant Users)
 
@@ -71,14 +71,14 @@ Better Auth's organization plugin maps directly: **Organization = Tenant**. Orga
 
 Example: Tenant Owner (e.g., Brandon's contact at Gillett Diesel Service) creates a Sparx account → becomes tenant owner → invites staff via Better Auth's organization invitations.
 
-### Layer 2 — Tenant's Customers (Storefront Users)
+### Layer 2 — Tenant's Customers (Site Users)
 
-End customers logging into a tenant's storefront, B2B portal, or account page.
+End customers logging into a tenant's site, B2B portal, or account page.
 
 ```
 Customer of "Gillett Diesel"
-├── Registers on gillettdiesel.com storefront
-├── Auth scoped to GDS tenant (cannot log into other storefronts)
+├── Registers on gillettdiesel.com site
+├── Auth scoped to GDS tenant (cannot log into other sites)
 ├── Email/password OR magic link (no Google OAuth — keeps it clean)
 └── Session: separate JWT pool, tenant-scoped
 ```

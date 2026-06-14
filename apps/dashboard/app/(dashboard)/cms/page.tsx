@@ -34,7 +34,7 @@ export default function CmsOverviewPage() {
           className="mb-0"
           icon={<FileText className="h-5 w-5" />}
           title="CMS"
-          description="Content, content types, media, and navigation for your storefront."
+          description="Content, content types, media, and navigation for your site."
           actions={
             <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
               <Link href="/cms/new">New page</Link>

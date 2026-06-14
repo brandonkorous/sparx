@@ -20,11 +20,11 @@ export function Logo({ name, src, alt, href = '/', className, style }: LogoProps
   // prefer-nullish-coalescing rule rewrites.
   const label = name && name.length > 0 ? name : 'Brand';
   return (
-    <a href={href} className={cx('sf-logo', className)} style={style}>
+    <a href={href} className={cx('st-logo', className)} style={style}>
       {src ? (
-        <img src={src} alt={alt ?? name ?? ''} className="sf-logo__img" />
+        <img src={src} alt={alt ?? name ?? ''} className="st-logo__img" />
       ) : (
-        <span className="sf-logo__name">{label}</span>
+        <span className="st-logo__name">{label}</span>
       )}
     </a>
   );

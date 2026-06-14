@@ -11,7 +11,7 @@ import {
 import { searchDomains, type DomainSuggestion } from '@/app/(dashboard)/settings/domains/actions';
 import { getPrimaryPropertyAction } from '../_lib/actions';
 
-const STORE_ZONE = 'sparx.zone';
+const SITE_ZONE = 'sparx.zone';
 
 // Step 4 — Domain (work pane). Search-led, best match highlighted. Buying a domain
 // is DEFERRED: a custom domain is a paid registration, so the choice is captured
@@ -205,7 +205,7 @@ export function StepDomain({
         <Text size="xs" variant="muted">
           Your site is live at{' '}
           <span className="font-medium text-[var(--color-text-secondary)]">
-            {slug}.{STORE_ZONE}
+            {slug}.{SITE_ZONE}
           </span>{' '}
           — just hit Continue. You can add a domain anytime from Settings.
         </Text>

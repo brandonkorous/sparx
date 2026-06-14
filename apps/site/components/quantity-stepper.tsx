@@ -28,7 +28,7 @@ export function QuantityStepper({
 
   return (
     <div
-      className="sf-qty"
+      className="st-qty"
       style={small ? { transform: 'scale(0.9)', transformOrigin: 'left' } : undefined}
     >
       <button type="button" aria-label="Decrease quantity" onClick={dec}>

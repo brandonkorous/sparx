@@ -92,14 +92,14 @@ async function emailBrandCanvasCss(override: BrandOverride | null): Promise<stri
     const identity = mergeEmailBrandIdentity(brand, override);
     const t = compileTokens(DEFAULT_THEME_KEY, { light: brandIdentityOverlay(identity) }).light;
     const vars = [
-      `--sf-base-100:${t.colorBackground}`,
-      `--sf-base-200:${t.colorMuted}`,
-      `--sf-base-content:${t.colorForeground}`,
-      `--sf-primary:${t.colorPrimary}`,
-      `--sf-primary-content:${t.colorPrimaryForeground}`,
-      `--sf-border:${t.colorBorder}`,
-      `--sf-font-heading:${fontStack(t.fontHeading)}`,
-      `--sf-font-body:${fontStack(t.fontBody)}`,
+      `--st-base-100:${t.colorBackground}`,
+      `--st-base-200:${t.colorMuted}`,
+      `--st-base-content:${t.colorForeground}`,
+      `--st-primary:${t.colorPrimary}`,
+      `--st-primary-content:${t.colorPrimaryForeground}`,
+      `--st-border:${t.colorBorder}`,
+      `--st-font-heading:${fontStack(t.fontHeading)}`,
+      `--st-font-body:${fontStack(t.fontBody)}`,
     ].join(';');
     return `.bx-canvas[data-surface='email']{${vars}}`;
   } catch {
@@ -136,22 +136,24 @@ async function loadCatalog(): Promise<BindingCatalog> {
 }
 
 // The tenant's sending identity for the canvas inbox-envelope `From` row. The
-// name is the brand's business name; the address is the tenant's default Sparx
-// sending subdomain (`<slug>.sparx.email` — docs/13). The active site's
-// `brand_override` wins for the name + logo (same merge as the send), so a
-// multi-site tenant's per-site name/logo show on the canvas. Defensive: a failed
+// name is the SITE name (Property.name — passed in, the active site, else the
+// primary; docs/49), never the tenant's legal/org name; the address is the
+// tenant's default Sparx sending subdomain (`<slug>.sparx.email` — docs/13). The
+// active site's `brand_override` still wins for the LOGO (same merge as the send),
+// so a multi-site tenant's per-site logo shows on the canvas. Defensive: a failed
 // read yields a neutral label so the envelope still renders.
-async function loadSender(override: BrandOverride | null): Promise<{
+async function loadSender(
+  override: BrandOverride | null,
+  siteName: string
+): Promise<{
   name: string;
   address: string | null;
   logoUrl: string | null;
-  storeName: string;
+  siteName: string;
 }> {
   try {
     const [brand, tenant] = await Promise.all([getBrand(), getTenant()]);
     const identity = mergeEmailBrandIdentity(brand, override);
-    const trimmed = identity.businessName?.trim() ?? '';
-    const name = trimmed.length > 0 ? trimmed : 'Your store';
     const address = tenant.slug ? `hello@${tenant.slug}.sparx.email` : null;
     // The email wordmark renders the tenant's LIGHT logo when one is set (email is
     // light-palette only), and then shows ONLY the logo — exactly like
@@ -160,13 +162,13 @@ async function loadSender(override: BrandOverride | null): Promise<{
     // envelope's From row, like a real inbox. The per-site override's logo wins
     // (mergeEmailBrandIdentity), matching the send's resolveEmailBrand.
     const logoUrl = tenant.slug ? publicMediaUrl(identity.logoMediaId, tenant.slug) : null;
-    // The customer-facing store name `{{tenant.name}}` resolves to in the send
-    // (email-data resolveTenant: brand business name, falling back to the org name).
-    // Mirror that so the canvas headings read the real store, not "Acme Supply Co.".
-    const storeName = trimmed.length > 0 ? trimmed : tenant.name?.trim() || 'Your store';
-    return { name, address, logoUrl, storeName };
+    // Both the From-row label and the customer-facing `{{site.name}}` resolve to the
+    // SITE name (Property.name — the active site, else the primary; docs/49), the
+    // SAME name the real send's wordmark/footer show — NEVER the tenant's legal/org
+    // name. Mirror it so the canvas headings read the real site.
+    return { name: siteName, address, logoUrl, siteName };
   } catch {
-    return { name: 'Your store', address: null, logoUrl: null, storeName: 'Your store' };
+    return { name: siteName, address: null, logoUrl: null, siteName };
   }
 }
 
@@ -183,13 +185,19 @@ export default async function BuilderEmailRoute() {
   // tenant brand for the canvas's email-exact theme + sender, the SAME merge the
   // send does. Null for a single-site tenant or a site without an override.
   const brandOverride = activeSite?.brandOverride ?? null;
+  // The customer-facing SITE name (Property.name) the canvas previews in headings +
+  // the From row — the active site, else the tenant's primary (docs/49). Never the
+  // tenant's legal/org name. Mirrors the send's resolveActivePropertyName.
+  const siteName =
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `||` is intended: an empty trimmed name must fall through to the primary site's name, then the placeholder, which `??` would not do.
+    activeSite?.name?.trim() || scope?.sites.find((s) => s.isPrimary)?.name?.trim() || 'Your site';
 
   const [themeCss, emailBrandCss, emails, catalog, sender] = await Promise.all([
     canvasThemeCss(),
     emailBrandCanvasCss(brandOverride),
     loadEmails(activePropertyId),
     loadCatalog(),
-    loadSender(brandOverride),
+    loadSender(brandOverride, siteName),
   ]);
   if (emails.length === 0) {
     return (
@@ -212,7 +220,7 @@ export default async function BuilderEmailRoute() {
         senderName={sender.name}
         senderAddress={sender.address}
         senderLogoUrl={sender.logoUrl}
-        tenant={{ name: sender.storeName, supportEmail: sender.address }}
+        tenant={{ name: sender.siteName, supportEmail: sender.address }}
         site={
           activePropertyId && activeSite
             ? { propertyId: activePropertyId, name: activeSite.name }

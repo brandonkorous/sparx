@@ -1,6 +1,6 @@
 # packages/ui — @sparx/ui design system
 
-Scoped guidance for the platform component library. Loads when working in `@sparx/ui`. See root [CLAUDE.md](../../CLAUDE.md) "Brand & design" for the binding rules that apply everywhere; this file is the build mechanics. Sibling: `@sparx/site-ui` (tenant-themed `--sf-*` storefront components).
+Scoped guidance for the platform component library. Loads when working in `@sparx/ui`. See root [CLAUDE.md](../../CLAUDE.md) "Brand & design" for the binding rules that apply everywhere; this file is the build mechanics. Sibling: `@sparx/site-ui` (tenant-themed `--st-*` storefront components).
 
 ## CVA + token mechanics
 
@@ -10,7 +10,7 @@ Scoped guidance for the platform component library. Loads when working in `@spar
 
 ## Four-axis variant system (color × variant × size)
 
-Every color-bearing component uses **four-axis** `color × variant × size` via a **shared role-var recipe** (`.sx-c-*` in `@sparx/ui`, `.sf-c-*` in `@sparx/site-ui`) — never a flat enum. This is not just `<Button>`; it's the rule for elements in general (Badge, etc.). See [docs/35](../../docs/35-ui-variant-system.md).
+Every color-bearing component uses **four-axis** `color × variant × size` via a **shared role-var recipe** (`.sx-c-*` in `@sparx/ui`, `.st-c-*` in `@sparx/site-ui`) — never a flat enum. This is not just `<Button>`; it's the rule for elements in general (Badge, etc.). See [docs/35](../../docs/35-ui-variant-system.md).
 
 - `primary` / `success` are **colors** (`color=`), not variants.
 - Variants are `solid | soft | outline | dashed | ghost | link`.

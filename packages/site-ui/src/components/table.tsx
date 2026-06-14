@@ -22,11 +22,11 @@ export interface TableProps extends Omit<React.TableHTMLAttributes<HTMLTableElem
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-table--sz-xs',
-  sm: 'sf-table--sz-sm',
-  md: 'sf-table--sz-md',
-  lg: 'sf-table--sz-lg',
-  xl: 'sf-table--sz-xl',
+  xs: 'st-table--sz-xs',
+  sm: 'st-table--sz-sm',
+  md: 'st-table--sz-md',
+  lg: 'st-table--sz-lg',
+  xl: 'st-table--sz-xl',
 };
 
 export function Table({
@@ -44,10 +44,10 @@ export function Table({
     <table
       {...rest}
       className={cx(
-        'sf-table',
-        zebra && 'sf-table--zebra',
-        pinRows && 'sf-table--pin-rows',
-        pinCols && 'sf-table--pin-cols',
+        'st-table',
+        zebra && 'st-table--zebra',
+        pinRows && 'st-table--pin-rows',
+        pinCols && 'st-table--pin-cols',
         SIZE_CLASS[size],
         className
       )}
@@ -56,6 +56,6 @@ export function Table({
     </table>
   );
   if (!scrollable) return table;
-  return <div className={cx('sf-table-wrap', wrapperClassName)}>{table}</div>;
+  return <div className={cx('st-table-wrap', wrapperClassName)}>{table}</div>;
 }
 Table.displayName = 'Table';

@@ -15,16 +15,16 @@ export interface KbdProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-kbd--sz-xs',
-  sm: 'sf-kbd--sz-sm',
-  md: 'sf-kbd--sz-md',
-  lg: 'sf-kbd--sz-lg',
-  xl: 'sf-kbd--sz-xl',
+  xs: 'st-kbd--sz-xs',
+  sm: 'st-kbd--sz-sm',
+  md: 'st-kbd--sz-md',
+  lg: 'st-kbd--sz-lg',
+  xl: 'st-kbd--sz-xl',
 };
 
 export function Kbd({ size = 'md', className, style, id, children }: KbdProps): React.ReactElement {
   return (
-    <kbd className={cx('sf-kbd', SIZE_CLASS[size], className)} style={style} id={id}>
+    <kbd className={cx('st-kbd', SIZE_CLASS[size], className)} style={style} id={id}>
       {children}
     </kbd>
   );

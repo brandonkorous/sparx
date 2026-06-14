@@ -2,7 +2,7 @@
 
 // Drawer — an off-canvas side sheet (docs/47 §11 B3). Reuses the Radix Dialog
 // primitive (focus trap, scroll lock, ESC/overlay close) with a `side` that slides
-// the panel in from an edge; styling is `sf-*`. Its own root wrapper keeps it
+// the panel in from an edge; styling is `st-*`. Its own root wrapper keeps it
 // independent of Dialog (no shared primitive mutation). Compound parts attach +
 // export.
 //
@@ -40,9 +40,9 @@ function DrawerContent({
 }: DrawerContentProps): React.ReactElement {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className={cx('sf-drawer__overlay', overlayClassName)} />
+      <DialogPrimitive.Overlay className={cx('st-drawer__overlay', overlayClassName)} />
       <DialogPrimitive.Content
-        className={cx('sf-drawer', `sf-drawer--${side}`, className)}
+        className={cx('st-drawer', `st-drawer--${side}`, className)}
         {...props}
       >
         {children}
@@ -56,7 +56,7 @@ function DrawerTitle({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>): React.ReactElement {
-  return <DialogPrimitive.Title className={cx('sf-drawer__title', className)} {...props} />;
+  return <DialogPrimitive.Title className={cx('st-drawer__title', className)} {...props} />;
 }
 DrawerTitle.displayName = 'DrawerTitle';
 

@@ -26,11 +26,11 @@ export interface FileInputProps extends Omit<
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-file--sz-xs',
-  sm: 'sf-file--sz-sm',
-  md: 'sf-file--sz-md',
-  lg: 'sf-file--sz-lg',
-  xl: 'sf-file--sz-xl',
+  xs: 'st-file--sz-xs',
+  sm: 'st-file--sz-sm',
+  md: 'st-file--sz-md',
+  lg: 'st-file--sz-lg',
+  xl: 'st-file--sz-xl',
 };
 
 export function FileInput({
@@ -45,7 +45,7 @@ export function FileInput({
       {...rest}
       type="file"
       className={cx(
-        'sf-file',
+        'st-file',
         colorClass(color),
         SIZE_CLASS[size],
         fieldTreatmentVariants[variant],

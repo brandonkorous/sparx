@@ -9,7 +9,7 @@ import { Uuid } from '@sparx/crm-schemas';
 
 import { Channel, Currency } from './common';
 
-export const UpdateStorefrontSettingsInput = z.object({
+export const UpdateCommerceSiteSettingsInput = z.object({
   defaultCurrency: Currency,
   defaultLocale: z.string().min(2).max(10).default('en-US'),
   defaultWarehouseId: Uuid.optional(),
@@ -27,15 +27,15 @@ export const UpdateStorefrontSettingsInput = z.object({
   hidePricesWhenSignedOut: z.boolean().default(false),
   requireAuthForCheckout: z.boolean().default(false),
 });
-export type UpdateStorefrontSettingsInput = z.infer<typeof UpdateStorefrontSettingsInput>;
+export type UpdateCommerceSiteSettingsInput = z.infer<typeof UpdateCommerceSiteSettingsInput>;
 
 // Theme tokens — the PRESENTATION-only subset a tenant can override on the
 // storefront without touching Sitebuilder. Brand IDENTITY (primary/accent
 // colour, typography, logo, favicon) is owned by the tenant-level brand
 // (docs/30 §6) and is NOT settable here — those columns were removed from
-// StorefrontTheme in migration 20260610000200. Anything beyond presentation
+// CommerceSiteTheme in migration 20260610000200. Anything beyond presentation
 // goes through Sitebuilder's theme editor / the Brand panel.
-export const StorefrontThemeTokens = z
+export const CommerceSiteThemeTokens = z
   .object({
     colorBackground: z
       .string()
@@ -51,9 +51,9 @@ export const StorefrontThemeTokens = z
       .optional(),
   })
   .partial();
-export type StorefrontThemeTokens = z.infer<typeof StorefrontThemeTokens>;
+export type CommerceSiteThemeTokens = z.infer<typeof CommerceSiteThemeTokens>;
 
-export const UpdateStorefrontThemeInput = z.object({
-  tokens: StorefrontThemeTokens,
+export const UpdateCommerceSiteThemeInput = z.object({
+  tokens: CommerceSiteThemeTokens,
 });
-export type UpdateStorefrontThemeInput = z.infer<typeof UpdateStorefrontThemeInput>;
+export type UpdateCommerceSiteThemeInput = z.infer<typeof UpdateCommerceSiteThemeInput>;

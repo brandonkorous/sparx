@@ -142,7 +142,7 @@ export async function getPublishedBuilderLayout(
 
 /** The compiled per-tenant Surface stylesheet (docs/47 §5) — the CSS for every
  *  class authored across the tenant's published Builder trees. The root layout
- *  inlines it after the `--sf-*` theme block so authored utilities resolve. '' on
+ *  inlines it after the `--st-*` theme block so authored utilities resolve. '' on
  *  failure or when no classes are authored, so the storefront degrades cleanly. */
 export async function getPublishedBuilderStyles(
   tenantSlug: string,

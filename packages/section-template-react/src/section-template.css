@@ -1,268 +1,268 @@
-/* ─── Custom-section template primitives (sf-tpl-*) ──────────────────────────
+/* ─── Custom-section template primitives (st-tpl-*) ──────────────────────────
    The closed class family the custom-section interpreter (docs/38 Phase C;
    docs/handoffs/sitebuilder-custom-section-template-spec.md) compiles its AST
    into. Shared by the storefront (SSR) and the dashboard Section Studio preview,
    so both render identically.
 
-   Every value reads a --sf-* token; variant selection is data-* only and scoped
-   to the sf-tpl-* classes (never bare attribute selectors, which would collide
-   with the sf-sb-* sections' own data-cols/data-align). A tenant-authored
+   Every value reads a --st-* token; variant selection is data-* only and scoped
+   to the st-tpl-* classes (never bare attribute selectors, which would collide
+   with the st-sb-* sections' own data-cols/data-align). A tenant-authored
    template can therefore never emit an off-token value. */
 
 /* Stack — flex column/row */
-.sf-tpl-stack {
+.st-tpl-stack {
   display: flex;
   flex-direction: column;
-  gap: var(--sf-space-4);
+  gap: var(--st-space-4);
 }
-.sf-tpl-stack[data-dir='row'] {
+.st-tpl-stack[data-dir='row'] {
   flex-direction: row;
 }
-.sf-tpl-stack[data-wrap] {
+.st-tpl-stack[data-wrap] {
   flex-wrap: wrap;
 }
-.sf-tpl-stack[data-align='start'] {
+.st-tpl-stack[data-align='start'] {
   align-items: flex-start;
 }
-.sf-tpl-stack[data-align='center'] {
+.st-tpl-stack[data-align='center'] {
   align-items: center;
 }
-.sf-tpl-stack[data-align='end'] {
+.st-tpl-stack[data-align='end'] {
   align-items: flex-end;
 }
-.sf-tpl-stack[data-align='stretch'] {
+.st-tpl-stack[data-align='stretch'] {
   align-items: stretch;
 }
-.sf-tpl-stack[data-justify='start'] {
+.st-tpl-stack[data-justify='start'] {
   justify-content: flex-start;
 }
-.sf-tpl-stack[data-justify='center'] {
+.st-tpl-stack[data-justify='center'] {
   justify-content: center;
 }
-.sf-tpl-stack[data-justify='end'] {
+.st-tpl-stack[data-justify='end'] {
   justify-content: flex-end;
 }
-.sf-tpl-stack[data-justify='between'] {
+.st-tpl-stack[data-justify='between'] {
   justify-content: space-between;
 }
 
 /* gap — a shared scale on Stack + Grid */
-.sf-tpl-stack[data-gap='none'],
-.sf-tpl-grid[data-gap='none'] {
+.st-tpl-stack[data-gap='none'],
+.st-tpl-grid[data-gap='none'] {
   gap: 0;
 }
-.sf-tpl-stack[data-gap='xs'],
-.sf-tpl-grid[data-gap='xs'] {
-  gap: var(--sf-space-2);
+.st-tpl-stack[data-gap='xs'],
+.st-tpl-grid[data-gap='xs'] {
+  gap: var(--st-space-2);
 }
-.sf-tpl-stack[data-gap='sm'],
-.sf-tpl-grid[data-gap='sm'] {
-  gap: var(--sf-space-3);
+.st-tpl-stack[data-gap='sm'],
+.st-tpl-grid[data-gap='sm'] {
+  gap: var(--st-space-3);
 }
-.sf-tpl-stack[data-gap='md'],
-.sf-tpl-grid[data-gap='md'] {
-  gap: var(--sf-space-4);
+.st-tpl-stack[data-gap='md'],
+.st-tpl-grid[data-gap='md'] {
+  gap: var(--st-space-4);
 }
-.sf-tpl-stack[data-gap='lg'],
-.sf-tpl-grid[data-gap='lg'] {
-  gap: var(--sf-space-6);
+.st-tpl-stack[data-gap='lg'],
+.st-tpl-grid[data-gap='lg'] {
+  gap: var(--st-space-6);
 }
-.sf-tpl-stack[data-gap='xl'],
-.sf-tpl-grid[data-gap='xl'] {
-  gap: var(--sf-space-10);
+.st-tpl-stack[data-gap='xl'],
+.st-tpl-grid[data-gap='xl'] {
+  gap: var(--st-space-10);
 }
 
 /* Grid — responsive column count (collapses like the panels grid) */
-.sf-tpl-grid {
+.st-tpl-grid {
   display: grid;
-  gap: var(--sf-space-6);
-  grid-template-columns: repeat(var(--sf-tpl-cols, 2), minmax(0, 1fr));
+  gap: var(--st-space-6);
+  grid-template-columns: repeat(var(--st-tpl-cols, 2), minmax(0, 1fr));
 }
-.sf-tpl-grid[data-cols='1'] {
-  --sf-tpl-cols: 1;
+.st-tpl-grid[data-cols='1'] {
+  --st-tpl-cols: 1;
 }
-.sf-tpl-grid[data-cols='2'] {
-  --sf-tpl-cols: 2;
+.st-tpl-grid[data-cols='2'] {
+  --st-tpl-cols: 2;
 }
-.sf-tpl-grid[data-cols='3'] {
-  --sf-tpl-cols: 3;
+.st-tpl-grid[data-cols='3'] {
+  --st-tpl-cols: 3;
 }
-.sf-tpl-grid[data-cols='4'] {
-  --sf-tpl-cols: 4;
+.st-tpl-grid[data-cols='4'] {
+  --st-tpl-cols: 4;
 }
 @media (max-width: 900px) {
-  .sf-tpl-grid[data-cols='3'],
-  .sf-tpl-grid[data-cols='4'] {
-    --sf-tpl-cols: 2;
+  .st-tpl-grid[data-cols='3'],
+  .st-tpl-grid[data-cols='4'] {
+    --st-tpl-cols: 2;
   }
 }
 @media (max-width: 600px) {
-  .sf-tpl-grid[data-cols] {
-    --sf-tpl-cols: 1;
+  .st-tpl-grid[data-cols] {
+    --st-tpl-cols: 1;
   }
 }
 
 /* Box — padded / toned container */
-.sf-tpl-box {
-  border-radius: var(--sf-radius);
+.st-tpl-box {
+  border-radius: var(--st-radius);
 }
-.sf-tpl-box[data-pad='none'] {
+.st-tpl-box[data-pad='none'] {
   padding: 0;
 }
-.sf-tpl-box[data-pad='sm'] {
-  padding: var(--sf-space-4);
+.st-tpl-box[data-pad='sm'] {
+  padding: var(--st-space-4);
 }
-.sf-tpl-box[data-pad='md'] {
-  padding: var(--sf-space-6);
+.st-tpl-box[data-pad='md'] {
+  padding: var(--st-space-6);
 }
-.sf-tpl-box[data-pad='lg'] {
-  padding: var(--sf-space-8);
+.st-tpl-box[data-pad='lg'] {
+  padding: var(--st-space-8);
 }
-.sf-tpl-box[data-pad='xl'] {
-  padding: var(--sf-space-12);
+.st-tpl-box[data-pad='xl'] {
+  padding: var(--st-space-12);
 }
-.sf-tpl-box[data-tone='surface'] {
-  background: var(--sf-surface);
+.st-tpl-box[data-tone='surface'] {
+  background: var(--st-surface);
 }
-.sf-tpl-box[data-tone='subtle'] {
-  background: var(--sf-bg-subtle);
+.st-tpl-box[data-tone='subtle'] {
+  background: var(--st-bg-subtle);
 }
-.sf-tpl-box[data-tone='brand-tint'] {
-  background: var(--sf-primary-tint);
+.st-tpl-box[data-tone='brand-tint'] {
+  background: var(--st-primary-tint);
 }
-.sf-tpl-box[data-tone='accent-tint'] {
-  background: var(--sf-accent-tint);
+.st-tpl-box[data-tone='accent-tint'] {
+  background: var(--st-accent-tint);
 }
-.sf-tpl-box[data-tone='inverse'] {
-  background: var(--sf-base-content);
-  color: var(--sf-base-100);
+.st-tpl-box[data-tone='inverse'] {
+  background: var(--st-base-content);
+  color: var(--st-base-100);
 }
-.sf-tpl-box[data-radius='none'] {
+.st-tpl-box[data-radius='none'] {
   border-radius: 0;
 }
-.sf-tpl-box[data-radius='sm'] {
-  border-radius: var(--sf-radius-field);
+.st-tpl-box[data-radius='sm'] {
+  border-radius: var(--st-radius-field);
 }
-.sf-tpl-box[data-radius='md'],
-.sf-tpl-box[data-radius='lg'] {
-  border-radius: var(--sf-radius-box);
+.st-tpl-box[data-radius='md'],
+.st-tpl-box[data-radius='lg'] {
+  border-radius: var(--st-radius-box);
 }
-.sf-tpl-box[data-radius='pill'] {
-  border-radius: var(--sf-radius-selector);
+.st-tpl-box[data-radius='pill'] {
+  border-radius: var(--st-radius-selector);
 }
-.sf-tpl-box[data-border] {
-  border: var(--sf-border-width) solid var(--sf-border);
+.st-tpl-box[data-border] {
+  border: var(--st-border-width) solid var(--st-border);
 }
 
 /* Text */
-.sf-tpl-text {
+.st-tpl-text {
   margin: 0;
   line-height: 1.6;
 }
-.sf-tpl-text[data-tone='secondary'] {
-  color: var(--sf-text-secondary);
+.st-tpl-text[data-tone='secondary'] {
+  color: var(--st-text-secondary);
 }
-.sf-tpl-text[data-tone='muted'] {
-  color: var(--sf-text-muted);
+.st-tpl-text[data-tone='muted'] {
+  color: var(--st-text-muted);
 }
-.sf-tpl-text[data-size='sm'] {
+.st-tpl-text[data-size='sm'] {
   font-size: 0.875rem;
 }
-.sf-tpl-text[data-size='md'] {
+.st-tpl-text[data-size='md'] {
   font-size: 1rem;
 }
-.sf-tpl-text[data-size='lg'] {
+.st-tpl-text[data-size='lg'] {
   font-size: 1.125rem;
 }
 
-/* Image — background-image div (matches the sf-sb-* media pattern) */
-.sf-tpl-img {
+/* Image — background-image div (matches the st-sb-* media pattern) */
+.st-tpl-img {
   width: 100%;
   aspect-ratio: 16 / 9;
   background-size: cover;
   background-position: center;
-  background-color: var(--sf-bg-subtle);
-  border-radius: var(--sf-radius);
+  background-color: var(--st-bg-subtle);
+  border-radius: var(--st-radius);
 }
-.sf-tpl-img[data-ratio='auto'] {
+.st-tpl-img[data-ratio='auto'] {
   aspect-ratio: auto;
 }
-.sf-tpl-img[data-ratio='1:1'] {
+.st-tpl-img[data-ratio='1:1'] {
   aspect-ratio: 1 / 1;
 }
-.sf-tpl-img[data-ratio='4:3'] {
+.st-tpl-img[data-ratio='4:3'] {
   aspect-ratio: 4 / 3;
 }
-.sf-tpl-img[data-ratio='16:9'] {
+.st-tpl-img[data-ratio='16:9'] {
   aspect-ratio: 16 / 9;
 }
-.sf-tpl-img[data-ratio='21:9'] {
+.st-tpl-img[data-ratio='21:9'] {
   aspect-ratio: 21 / 9;
 }
-.sf-tpl-img[data-fit='contain'] {
+.st-tpl-img[data-fit='contain'] {
   background-size: contain;
   background-repeat: no-repeat;
 }
 
 /* Icon — bundled inline SVG sized via font-size */
-.sf-tpl-icon {
+.st-tpl-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   line-height: 0;
   font-size: 1.5rem;
-  color: var(--sf-text);
+  color: var(--st-text);
 }
-.sf-tpl-icon[data-size='sm'] {
+.st-tpl-icon[data-size='sm'] {
   font-size: 1rem;
 }
-.sf-tpl-icon[data-size='md'] {
+.st-tpl-icon[data-size='md'] {
   font-size: 1.5rem;
 }
-.sf-tpl-icon[data-size='lg'] {
+.st-tpl-icon[data-size='lg'] {
   font-size: 2rem;
 }
-.sf-tpl-icon[data-tone='muted'] {
-  color: var(--sf-text-muted);
+.st-tpl-icon[data-tone='muted'] {
+  color: var(--st-text-muted);
 }
-.sf-tpl-icon[data-tone='accent'] {
-  color: var(--sf-accent);
+.st-tpl-icon[data-tone='accent'] {
+  color: var(--st-accent);
 }
-.sf-tpl-icon[data-tone='brand'] {
-  color: var(--sf-primary);
+.st-tpl-icon[data-tone='brand'] {
+  color: var(--st-primary);
 }
 
 /* Link / Divider / Spacer */
-.sf-tpl-link {
-  color: var(--sf-primary);
+.st-tpl-link {
+  color: var(--st-primary);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.sf-tpl-link:hover {
-  color: var(--sf-primary-hover);
+.st-tpl-link:hover {
+  color: var(--st-primary-hover);
 }
-.sf-tpl-divider {
+.st-tpl-divider {
   border: none;
-  border-top: 1px solid var(--sf-border);
-  margin-block: var(--sf-space-4);
+  border-top: 1px solid var(--st-border);
+  margin-block: var(--st-space-4);
 }
-.sf-tpl-spacer[data-size='sm'] {
-  height: var(--sf-space-4);
+.st-tpl-spacer[data-size='sm'] {
+  height: var(--st-space-4);
 }
-.sf-tpl-spacer[data-size='md'] {
-  height: var(--sf-space-8);
+.st-tpl-spacer[data-size='md'] {
+  height: var(--st-space-8);
 }
-.sf-tpl-spacer[data-size='lg'] {
-  height: var(--sf-space-12);
+.st-tpl-spacer[data-size='lg'] {
+  height: var(--st-space-12);
 }
-.sf-tpl-spacer[data-size='xl'] {
-  height: var(--sf-space-16);
+.st-tpl-spacer[data-size='xl'] {
+  height: var(--st-space-16);
 }
 
 /* Button — the template family's own button, token-driven and self-contained
    (so the renderer needs no storefront.css). Variants mirror the multi-CTA set
    (solid → primary fill, light/dark filled, ghost, link). */
-.sf-tpl-btn {
+.st-tpl-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -272,56 +272,56 @@
   font-size: 0.95rem;
   line-height: 1;
   padding: 0.85rem 1.5rem;
-  min-height: var(--sf-size-field);
-  border-radius: var(--sf-radius-field);
-  border: var(--sf-border-width) solid transparent;
+  min-height: var(--st-size-field);
+  border-radius: var(--st-radius-field);
+  border: var(--st-border-width) solid transparent;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
   transition:
-    background var(--sf-ease) 160ms,
-    border-color var(--sf-ease) 160ms,
-    transform var(--sf-ease) 120ms;
+    background var(--st-ease) 160ms,
+    border-color var(--st-ease) 160ms,
+    transform var(--st-ease) 120ms;
 }
-.sf-tpl-btn:active {
+.st-tpl-btn:active {
   transform: translateY(1px);
 }
-.sf-tpl-btn:focus-visible {
+.st-tpl-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sf-primary) 35%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--st-primary) 35%, transparent);
 }
-.sf-tpl-btn--solid {
-  background: var(--sf-primary);
-  color: var(--sf-on-primary);
+.st-tpl-btn--solid {
+  background: var(--st-primary);
+  color: var(--st-on-primary);
 }
-.sf-tpl-btn--solid:hover {
-  background: var(--sf-primary-hover);
+.st-tpl-btn--solid:hover {
+  background: var(--st-primary-hover);
 }
-.sf-tpl-btn--light {
-  background: var(--sf-base-100);
-  color: var(--sf-base-content);
+.st-tpl-btn--light {
+  background: var(--st-base-100);
+  color: var(--st-base-content);
 }
-.sf-tpl-btn--light:hover {
-  background: color-mix(in oklab, var(--sf-base-100) 88%, var(--sf-base-content));
+.st-tpl-btn--light:hover {
+  background: color-mix(in oklab, var(--st-base-100) 88%, var(--st-base-content));
 }
-.sf-tpl-btn--dark {
-  background: var(--sf-base-content);
-  color: var(--sf-base-100);
+.st-tpl-btn--dark {
+  background: var(--st-base-content);
+  color: var(--st-base-100);
 }
-.sf-tpl-btn--dark:hover {
-  background: color-mix(in oklab, var(--sf-base-content) 86%, var(--sf-base-100));
+.st-tpl-btn--dark:hover {
+  background: color-mix(in oklab, var(--st-base-content) 86%, var(--st-base-100));
 }
-.sf-tpl-btn--ghost {
+.st-tpl-btn--ghost {
   background: transparent;
-  color: var(--sf-text);
-  border-color: var(--sf-border-strong);
+  color: var(--st-text);
+  border-color: var(--st-border-strong);
 }
-.sf-tpl-btn--ghost:hover {
-  background: var(--sf-bg-subtle);
+.st-tpl-btn--ghost:hover {
+  background: var(--st-bg-subtle);
 }
-.sf-tpl-btn--link {
+.st-tpl-btn--link {
   background: transparent;
-  color: var(--sf-primary);
+  color: var(--st-primary);
   padding-inline: 0.25rem;
   min-height: 0;
   text-decoration: underline;

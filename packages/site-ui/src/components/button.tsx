@@ -1,8 +1,8 @@
 // Button — the reference consumer of the site-ui variant recipe (docs/46 §6).
 //
 // FOUR-AXIS (docs/35): `color` (semantic palette, runtime-extensible) × `variant`
-// (treatment) × `size`, themed entirely by --sf-* through the role vars. `color`
-// is applied as a `.sf-c-*` role-var class; `variant` maps to a shared `.sf-v-*`
+// (treatment) × `size`, themed entirely by --st-* through the role vars. `color`
+// is applied as a `.st-c-*` role-var class; `variant` maps to a shared `.st-v-*`
 // treatment authored once in recipes.css; `size` is the button's own padding
 // scale. No flat enum — the same recipe drives every color-bearing component.
 //
@@ -27,7 +27,7 @@ import {
 export interface ButtonProps {
   /** Semantic color slot. Known slots autocomplete; any string is accepted so a
    *  runtime custom theme color (`color="brand-mint"`) works once its
-   *  `.sf-c-brand-mint` rule exists. Defaults to `primary`. */
+   *  `.st-c-brand-mint` rule exists. Defaults to `primary`. */
   color?: ColorKey | (string & {});
   /** Treatment. Defaults to `solid`. */
   variant?: TreatmentKey;
@@ -48,11 +48,11 @@ export interface ButtonProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-btn--sz-xs',
-  sm: 'sf-btn--sz-sm',
-  md: 'sf-btn--sz-md',
-  lg: 'sf-btn--sz-lg',
-  xl: 'sf-btn--sz-xl',
+  xs: 'st-btn--sz-xs',
+  sm: 'st-btn--sz-sm',
+  md: 'st-btn--sz-md',
+  lg: 'st-btn--sz-lg',
+  xl: 'st-btn--sz-xl',
 };
 
 export function Button(props: ButtonProps): React.ReactElement {
@@ -72,7 +72,7 @@ export function Button(props: ButtonProps): React.ReactElement {
   } = props;
   const ariaLabel = props['aria-label'];
   const classes = cx(
-    'sf-btn',
+    'st-btn',
     colorClass(color),
     treatmentVariants[variant],
     SIZE_CLASS[size],

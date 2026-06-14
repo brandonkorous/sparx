@@ -28,14 +28,14 @@ export function DiscountField() {
     <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
       <div style={{ display: 'flex', gap: '0.5rem' }}>
         <input
-          className="sf-select"
+          className="st-select"
           style={{ flex: 1 }}
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Discount code"
           aria-label="Discount code"
         />
-        <button type="submit" className="sf-btn sf-btn--secondary" disabled={busy || !code.trim()}>
+        <button type="submit" className="st-btn st-btn--secondary" disabled={busy || !code.trim()}>
           {busy ? 'Applying…' : 'Apply'}
         </button>
       </div>

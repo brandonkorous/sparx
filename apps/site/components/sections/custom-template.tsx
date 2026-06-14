@@ -1,7 +1,7 @@
 // Custom-section renderer (docs/38 Phase C). A thin storefront wrapper over the
 // shared interpreter in @sparx/section-template-react: it supplies the storefront
 // adapters (next/link via SbLink, media resolution via mediaUrl) and the section
-// chrome, while the AST walk + `sf-tpl-*` markup live in the shared package — so
+// chrome, while the AST walk + `st-tpl-*` markup live in the shared package — so
 // the dashboard Section Studio preview renders from the exact same path.
 
 import { TemplateRenderer, type TemplateAdapters } from '@sparx/section-template-react';
@@ -32,7 +32,7 @@ export function CustomTemplateSection({
     resolveMediaSrc: (ref) => mediaUrl(ref || null, ctx.tenantSlug),
   };
   return (
-    <section className="sf-container sf-section sf-sb-custom">
+    <section className="st-container st-section st-sb-custom">
       <TemplateRenderer
         node={template}
         config={config}

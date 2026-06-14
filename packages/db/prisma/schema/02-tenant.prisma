@@ -10,6 +10,13 @@
 model Tenant {
   id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   slug                 String    @unique @db.VarChar(63)
+  // The tenant's LEGAL/ORG name (a business, or the individual if not a business).
+  // Billing/ownership only — it is NEVER rendered to a customer or sent in a customer
+  // email. The customer-facing name is the SITE's `Property.name` (docs/49); a new
+  // tenant's primary site is seeded FROM this name, but render/send paths read the
+  // site, never this. Edited in Settings → General ("Business name").
+  // A tenant is also conceptually the holder of a tax id (not captured yet — a future
+  // `taxId` column would live here, on the legal entity).
   name                 String    @db.VarChar(255)
   email                String    @db.VarChar(255)
   plan                 String    @default("starter") @db.VarChar(50)
@@ -189,8 +196,8 @@ model Tenant {
   discountUsages           DiscountUsage[]
   giftCards                GiftCard[]
   giftCardTransactions     GiftCardTransaction[]
-  storeCredits             StoreCredit[]
-  storeCreditTransactions  StoreCreditTransaction[]
+  accountCredits             AccountCredit[]
+  accountCreditTransactions  AccountCreditTransaction[]
 
   // Commerce module — bundles + configurator
   bundles                Bundle[]
@@ -245,8 +252,8 @@ model Tenant {
   // Commerce module — storefront defaults + theme. Per web PROPERTY (docs/49
   // Phase 6): a tenant's sites each keep their own applied theme + settings, so
   // these are arrays, not one-per-tenant.
-  storefrontSettings StorefrontSettings[]
-  storefrontThemes   StorefrontTheme[]
+  commerceSiteSettings CommerceSiteSettings[]
+  commerceSiteThemes   CommerceSiteTheme[]
 
   // Customer-auth (Layer 2) — storefront shopper credentials/sessions (docs/27)
   customerIdentities     CustomerIdentity[]
@@ -294,7 +301,7 @@ model Tenant {
   emailSuppressions   EmailSuppression[]
 
   // Legal & consent (docs/42)
-  storefrontDocPlacements StorefrontDocPlacement[]
+  siteDocPlacements SiteDocPlacement[]
   consentSettings         ConsentSettings?
   consentRecords          ConsentRecord[]
   legalAcceptances        PlatformLegalAcceptance[]

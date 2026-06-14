@@ -47,12 +47,12 @@ export function SiteHeader({
   const logo = mediaUrl(tenant.theme?.logoMediaId ?? null, tenant.slug);
 
   return (
-    <header className={overlay ? 'sf-header sf-header--overlay' : 'sf-header'}>
+    <header className={overlay ? 'st-header st-header--overlay' : 'st-header'}>
       {overlay ? <HeaderScroll /> : null}
       {announcement ? (
-        <div className="sf-announce">
+        <div className="st-announce">
           {announcementHref ? (
-            <Link href={announcementHref} className="sf-announce__link">
+            <Link href={announcementHref} className="st-announce__link">
               {announcement}
             </Link>
           ) : (
@@ -60,20 +60,20 @@ export function SiteHeader({
           )}
         </div>
       ) : null}
-      <div className="sf-container">
-        <div className="sf-header__bar" data-logo={logoPlacement}>
+      <div className="st-container">
+        <div className="st-header__bar" data-logo={logoPlacement}>
           <MobileNav nav={nav} brand={tenant.name} />
 
-          <Link href="/" className="sf-header__brand" aria-label={`${tenant.name} home`}>
+          <Link href="/" className="st-header__brand" aria-label={`${tenant.name} home`}>
             {/* Plain <img>: a tenant logo has unknown intrinsic dimensions and
                 a redirecting media src, so next/image (which needs width+height
                 or a sized fill parent) doesn't fit; CSS caps it at 34px tall. */}
             {logo ? <img src={logo} alt={tenant.name} /> : tenant.name}
           </Link>
 
-          <nav className="sf-nav" aria-label="Primary">
+          <nav className="st-nav" aria-label="Primary">
             {nav.map((item) => (
-              <Link key={item.href} href={item.href} className="sf-nav__link">
+              <Link key={item.href} href={item.href} className="st-nav__link">
                 {item.label}
               </Link>
             ))}
@@ -81,14 +81,14 @@ export function SiteHeader({
 
           {showSearch ? <SearchBox tenantSlug={tenant.slug} /> : null}
 
-          <div className="sf-header__actions">
+          <div className="st-header__actions">
             {showSearch ? (
-              <Link href="/search" className="sf-iconbtn sf-search--mobile" aria-label="Search">
+              <Link href="/search" className="st-iconbtn st-search--mobile" aria-label="Search">
                 <SearchIcon />
               </Link>
             ) : null}
             {modeToggle}
-            <Link href="/account" className="sf-iconbtn" aria-label="Account">
+            <Link href="/account" className="st-iconbtn" aria-label="Account">
               <UserIcon />
             </Link>
             <CartButton />
@@ -102,7 +102,7 @@ export function SiteHeader({
 function SearchIcon() {
   return (
     <svg
-      className="sf-search__icon"
+      className="st-search__icon"
       width="18"
       height="18"
       viewBox="0 0 24 24"

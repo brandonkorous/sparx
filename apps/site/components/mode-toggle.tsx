@@ -40,7 +40,7 @@ export function ModeToggle({ initial }: { initial: 'light' | 'dark' }) {
   return (
     <button
       type="button"
-      className="sf-iconbtn"
+      className="st-iconbtn"
       onClick={toggle}
       aria-label={`Switch to ${next} mode`}
       title={`Switch to ${next} mode`}

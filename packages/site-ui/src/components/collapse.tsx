@@ -2,7 +2,7 @@
 
 // Collapse — a single show/hide region (docs/47 §11 B3). Radix
 // (@radix-ui/react-collapsible) provides the toggle behavior + `data-state`;
-// styling is all `sf-*`. The daisyUI "collapse" single-section case (Accordion is
+// styling is all `st-*`. The daisyUI "collapse" single-section case (Accordion is
 // the multi-section one). Compound parts attach to the root + export.
 
 import * as React from 'react';
@@ -13,7 +13,7 @@ function CollapseRoot({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Root>): React.ReactElement {
-  return <CollapsiblePrimitive.Root className={cx('sf-collapse', className)} {...props} />;
+  return <CollapsiblePrimitive.Root className={cx('st-collapse', className)} {...props} />;
 }
 CollapseRoot.displayName = 'Collapse';
 
@@ -26,11 +26,11 @@ function CollapseTrigger({
 >): React.ReactElement {
   return (
     <CollapsiblePrimitive.CollapsibleTrigger
-      className={cx('sf-collapse__trigger', className)}
+      className={cx('st-collapse__trigger', className)}
       {...props}
     >
-      <span className="sf-collapse__label">{children}</span>
-      <span className="sf-collapse__indicator" aria-hidden="true" />
+      <span className="st-collapse__label">{children}</span>
+      <span className="st-collapse__indicator" aria-hidden="true" />
     </CollapsiblePrimitive.CollapsibleTrigger>
   );
 }
@@ -45,10 +45,10 @@ function CollapseContent({
 >): React.ReactElement {
   return (
     <CollapsiblePrimitive.CollapsibleContent
-      className={cx('sf-collapse__content', className)}
+      className={cx('st-collapse__content', className)}
       {...props}
     >
-      <div className="sf-collapse__content-inner">{children}</div>
+      <div className="st-collapse__content-inner">{children}</div>
     </CollapsiblePrimitive.CollapsibleContent>
   );
 }

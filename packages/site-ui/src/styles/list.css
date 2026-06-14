@@ -1,19 +1,19 @@
 /* Surface List — vertical row list (docs/46 §5.2). Rows are flex containers with a
  * divider between them. */
 
-.sf-list {
+.st-list {
   display: flex;
   flex-direction: column;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.sf-list__row {
+.st-list__row {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 0.25rem;
 }
-.sf-list__row:not(:last-child) {
-  border-bottom: 1px solid var(--sf-border, #e3dfd2);
+.st-list__row:not(:last-child) {
+  border-bottom: 1px solid var(--st-border, #e3dfd2);
 }

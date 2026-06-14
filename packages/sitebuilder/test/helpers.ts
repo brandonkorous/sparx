@@ -33,7 +33,7 @@ export async function createTestTenant(role = 'owner'): Promise<TestTenant> {
       email,
       plan: 'starter',
       status: 'active',
-      settings: { modules: { storefront: { enabled: true } } },
+      settings: { modules: { builder: { enabled: true } } },
     },
   });
 
@@ -79,12 +79,12 @@ export async function disposeTestContext(test: TestContext): Promise<void> {
   test.publisher.clear();
 }
 
-/** Reads the commerce StorefrontTheme row written through on publish — now keyed
+/** Reads the commerce CommerceSiteTheme row written through on publish — now keyed
  *  per (tenant, property) (docs/49 Phase 6). */
-export function readStorefrontTheme(tenantId: string, propertyId: string) {
+export function readCommerceSiteTheme(tenantId: string, propertyId: string) {
   return prisma.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
-    return tx.storefrontTheme.findUnique({
+    return tx.commerceSiteTheme.findUnique({
       where: { tenantId_propertyId: { tenantId, propertyId } },
     });
   });

@@ -46,7 +46,7 @@ export function QuestionForm({ tenantSlug, handle }: { tenantSlug: string; handl
   if (state === 'done') {
     return (
       <div
-        className="sf-alert"
+        className="st-alert"
         style={{ background: 'var(--color-success-tint)', color: 'var(--color-success-text)' }}
       >
         Thanks for your question! It’ll appear once it’s answered.
@@ -56,26 +56,26 @@ export function QuestionForm({ tenantSlug, handle }: { tenantSlug: string; handl
 
   if (!open) {
     return (
-      <button type="button" className="sf-btn sf-btn--secondary" onClick={() => setOpen(true)}>
+      <button type="button" className="st-btn st-btn--secondary" onClick={() => setOpen(true)}>
         Ask a question
       </button>
     );
   }
 
   return (
-    <form onSubmit={submit} className="sf-form">
-      <label className="sf-field">
+    <form onSubmit={submit} className="st-form">
+      <label className="st-field">
         <span>Name (optional)</span>
         <input
-          className="sf-input"
+          className="st-input"
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
         />
       </label>
-      <label className="sf-field">
+      <label className="st-field">
         <span>Your question</span>
         <textarea
-          className="sf-input"
+          className="st-input"
           required
           rows={3}
           value={body}
@@ -83,15 +83,15 @@ export function QuestionForm({ tenantSlug, handle }: { tenantSlug: string; handl
         />
       </label>
       {error ? (
-        <div className="sf-alert sf-alert--error" role="alert">
+        <div className="st-alert st-alert--error" role="alert">
           {error}
         </div>
       ) : null}
       <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <button type="button" className="sf-btn sf-btn--ghost" onClick={() => setOpen(false)}>
+        <button type="button" className="st-btn st-btn--ghost" onClick={() => setOpen(false)}>
           Cancel
         </button>
-        <button type="submit" className="sf-btn sf-btn--primary" disabled={state === 'busy'}>
+        <button type="submit" className="st-btn st-btn--primary" disabled={state === 'busy'}>
           {state === 'busy' ? 'Submitting…' : 'Submit question'}
         </button>
       </div>

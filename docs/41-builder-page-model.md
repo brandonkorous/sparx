@@ -24,7 +24,7 @@ page's draft tree, and a minimal publish (snapshot draft → published).
 
 - **Real data + the schema keystone** — the binding picker still reads the mock
   `SAMPLE_DATA`; wiring real CMS/Commerce field schemas is doc 40 §5 work.
-- **Rendering / routing** — there is no storefront consumer of `publishedTree` yet,
+- **Rendering / routing** — there is no site consumer of `publishedTree` yet,
   and pages have no `slug`/route. Publish stores a snapshot; nothing reads it.
 - **Version history** — a single `publishedTree` column, not an immutable
   `SiteVersion`-style snapshot table. History lands when rollback is needed.
@@ -93,10 +93,10 @@ POST   /v1/builder/pages/reorder  → reorder the catalog
 POST   /v1/builder/pages/:id/publish → snapshot draftTree → publishedTree
 ```
 
-**Module gate:** `requireBuilderModule` gates on the existing `storefront` module flag.
+**Module gate:** `requireBuilderModule` gates on the existing `site` module flag.
 Builder is the successor to Site Builder and shares its activation; a tenant with Site
 Builder active is exactly the tenant who should reach the Builder API. This retires
-together with the `storefront` → `builder` rename (doc 40 / `project_builder_ui_backbone`).
+together with the `site` → `builder` rename (doc 40 / `project_builder_ui_backbone`).
 
 ## 5. Seeding & the hydration win
 
@@ -112,5 +112,5 @@ and client ids aligned. The fetched data is identical on both sides by construct
 ## 6. What this unblocks
 
 With pages persisted, the next slices have somewhere to attach: the schema keystone
-(real binding sources), the storefront render path (a consumer for `publishedTree` +
+(real binding sources), the site render path (a consumer for `publishedTree` +
 routing/slug), and version history (promote `publishedTree` to a snapshot table).

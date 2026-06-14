@@ -1,28 +1,28 @@
 /* Surface Navbar — top bar with start/center/end slots (docs/46 §5.2). */
 
-.sf-navbar {
+.st-navbar {
   display: flex;
   align-items: center;
   gap: 1rem;
   width: 100%;
   min-height: 3.5rem;
   padding: 0.5rem 1rem;
-  background: var(--sf-base-100, #fff);
-  color: var(--sf-base-content, #23211c);
+  background: var(--st-base-100, #fff);
+  color: var(--st-base-content, #23211c);
 }
-.sf-navbar__start {
+.st-navbar__start {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
-.sf-navbar__center {
+.st-navbar__center {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   flex: 1;
 }
-.sf-navbar__end {
+.st-navbar__end {
   display: flex;
   align-items: center;
   justify-content: flex-end;

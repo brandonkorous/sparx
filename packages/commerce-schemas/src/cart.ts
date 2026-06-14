@@ -83,7 +83,7 @@ export const CartTotals = z.object({
   shippingTotalCents: MoneyCents,
   taxTotalCents: MoneyCents,
   giftCardAppliedCents: MoneyCents,
-  storeCreditAppliedCents: MoneyCents,
+  accountCreditAppliedCents: MoneyCents,
   totalCents: MoneyCents,
 });
 export type CartTotals = z.infer<typeof CartTotals>;

@@ -1,23 +1,23 @@
 /* Surface Tooltip — bubble themed off the role var (docs/47 §11 B3). `--c-bg` fill
  * / `--c-fg` text; the arrow inherits the fill. Radix sets the position; appearance
- * is `sf-*` + tokens. */
+ * is `st-*` + tokens. */
 
-.sf-tooltip {
+.st-tooltip {
   max-width: 16rem;
   padding: 0.375rem 0.625rem;
-  border-radius: var(--sf-radius-field, 0.5rem);
-  background: var(--c-bg, var(--sf-neutral, #1f2430));
-  color: var(--c-fg, var(--sf-neutral-content, #fff));
+  border-radius: var(--st-radius-field, 0.5rem);
+  background: var(--c-bg, var(--st-neutral, #1f2430));
+  color: var(--c-fg, var(--st-neutral-content, #fff));
   font-size: 0.8rem;
   line-height: 1.35;
-  box-shadow: var(--sf-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.18));
+  box-shadow: var(--st-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.18));
   z-index: 50;
-  animation: sf-pop-in 0.12s ease;
+  animation: st-pop-in 0.12s ease;
 }
-.sf-tooltip__arrow {
-  fill: var(--c-bg, var(--sf-neutral, #1f2430));
+.st-tooltip__arrow {
+  fill: var(--c-bg, var(--st-neutral, #1f2430));
 }
-@keyframes sf-pop-in {
+@keyframes st-pop-in {
   from {
     opacity: 0;
     transform: scale(0.96);
@@ -28,7 +28,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sf-tooltip {
+  .st-tooltip {
     animation: none;
   }
 }

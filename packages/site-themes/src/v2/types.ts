@@ -62,7 +62,7 @@ export interface SharedTokensV2 {
   radiusBox: string; // cards, panels, drawers, media
   borderWidth: string; // site-wide line weight
   // Rhythm (brand-owned)
-  spaceBase: string; // the rhythm unit; --sf-space-* scale derives from it
+  spaceBase: string; // the rhythm unit; --st-space-* scale derives from it
   sizeField: string; // control height for inputs/buttons
   sizeSelector: string; // control height for pills/toggles
   // Effect (brand-owned)

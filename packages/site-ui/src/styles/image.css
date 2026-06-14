@@ -1,21 +1,21 @@
 /* site-ui Image — ratio-locked, cover-fit, rounded to the tenant box radius
  * (docs/46 §5.2). Site-renderer parity ratios. */
 
-.sf-img {
+.st-img {
   display: block;
   width: 100%;
   object-fit: cover;
-  border-radius: var(--sf-radius-box, 16px);
+  border-radius: var(--st-radius-box, 16px);
 }
-.sf-img--wide {
+.st-img--wide {
   aspect-ratio: 16 / 9;
 }
-.sf-img--square {
+.st-img--square {
   aspect-ratio: 1 / 1;
 }
-.sf-img--portrait {
+.st-img--portrait {
   aspect-ratio: 3 / 4;
 }
-.sf-img--placeholder {
-  background: var(--sf-base-300, #e6e1d3);
+.st-img--placeholder {
+  background: var(--st-base-300, #e6e1d3);
 }

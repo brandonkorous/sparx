@@ -1,25 +1,25 @@
 /* Surface Hover3DCard — 3D tilt on hover (docs/46 §5.2). Pure CSS; reduced-motion
  * disables the tilt. */
 
-.sf-card3d {
+.st-card3d {
   perspective: 1000px;
 }
-.sf-card3d__inner {
+.st-card3d__inner {
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
   transform-style: preserve-3d;
   will-change: transform;
 }
-.sf-card3d:hover .sf-card3d__inner {
+.st-card3d:hover .st-card3d__inner {
   transform: rotateX(6deg) rotateY(-6deg) translateZ(0);
-  box-shadow: var(--sf-shadow-lg, 0 20px 40px rgba(0, 0, 0, 0.25));
+  box-shadow: var(--st-shadow-lg, 0 20px 40px rgba(0, 0, 0, 0.25));
 }
 @media (prefers-reduced-motion: reduce) {
-  .sf-card3d__inner {
+  .st-card3d__inner {
     transition: none;
   }
-  .sf-card3d:hover .sf-card3d__inner {
+  .st-card3d:hover .st-card3d__inner {
     transform: none;
   }
 }

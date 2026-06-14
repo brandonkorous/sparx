@@ -15,7 +15,7 @@ export default async function WelcomePage() {
         <PageHeader
           title="Welcome to Sparx"
           badge={progress.state.finishedAt ? <Badge color="success">All set</Badge> : undefined}
-          description="A short checklist to get your store production-ready. You can skip and come back any time."
+          description="A short checklist to get your site production-ready. You can skip and come back any time."
         />
 
         <WelcomeChecklist progress={progress} />

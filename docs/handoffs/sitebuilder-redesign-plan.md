@@ -29,7 +29,7 @@ corrected; brand becomes one source of truth. No new editor shell yet.
 - [x] Add a server action/endpoint that mints a Site Builder preview-token JWT (mirror CMS `/v1/content/preview-tokens`), scoped to tenant + page/scope.
 - [x] Replace the literal `sparxPreview=1` with the minted token in `preview-frame.tsx` and `customizer.tsx`.
 - [x] On every section save/mutation, re-fetch/refresh the canvas so the change shows without a manual reload.
-- [x] Confirm the storefront draft path (`apps/site/lib/content.ts` + `site.ts`) returns the draft for a valid token — expect **no** storefront change.
+- [x] Confirm the site draft path (`apps/site/lib/content.ts` + `site.ts`) returns the draft for a valid token — expect **no** site change.
 - [~] **Acceptance (Playwright):** _(pending deploy)_ edit a hero heading → Save → the preview shows the new value. Re-run the exact repro that failed in the eval.
 
 ### 1B · Padding, container & craft details (§10)
@@ -51,19 +51,19 @@ corrected; brand becomes one source of truth. No new editor shell yet.
 - [x] Move the "Navigation" section + `menu` entityType from `sitebuilderManifest` → `cmsManifest`.
 - [x] Repoint cross-links (SB slot editor "edit this menu's links" → `/cms/navigation/:location`).
 - [x] Amend doc 29 §2 + the schema/code header comments; bump doc 29 version.
-- [~] **Verify:** storefront still resolves menus (no change expected, confirmed in code); Playwright pass _(pending deploy)_ on `/cms/navigation` + the SB slot editor.
+- [~] **Verify:** site still resolves menus (no change expected, confirmed in code); Playwright pass _(pending deploy)_ on `/cms/navigation` + the SB slot editor.
 
 ### 1D · Brand = tenant-level source of truth (§6) — _heaviest; involves a migration via the pipeline_
 
 - [ ] Decide storage shape (Open Q 13.4): dedicated `TenantBrand` table vs `tenants.settings.brand`.
 - [ ] Add the brand model/shape + RLS (hand-edited migration SQL); author locally against docker Postgres (`pnpm db:up`).
-- [ ] Migration: consolidate `StorefrontTheme.{logoMediaId, logoDarkMediaId, faviconMediaId}` + `EmailSettings.brandingOverride` into brand; backfill existing tenants.
-- [ ] Rewire `resolveEmailBrand` (`packages/email-platform/src/services/brand-service.ts`) to read the tenant brand directly; drop the StorefrontTheme + `brandingOverride` branches; keep the Sparx-default fallback.
+- [ ] Migration: consolidate `SiteTheme.{logoMediaId, logoDarkMediaId, faviconMediaId}` + `EmailSettings.brandingOverride` into brand; backfill existing tenants.
+- [ ] Rewire `resolveEmailBrand` (`packages/email-platform/src/services/brand-service.ts`) to read the tenant brand directly; drop the SiteTheme + `brandingOverride` branches; keep the Sparx-default fallback.
 - [ ] Remove `brandingOverride` end to end: `50-email.prisma`, `settings-service.ts`, `schemas/settings.ts`, the dashboard email settings form, `email/_lib/types.ts`.
-- [ ] Make the storefront theme + `StorefrontTheme` write-through **source** logo/palette from brand (read-only — no consumer override, the §6.2 rule).
+- [ ] Make the site theme + `SiteTheme` write-through **source** logo/palette from brand (read-only — no consumer override, the §6.2 rule).
 - [ ] Surface a **Brand** editing panel (SB rail entry) + onboarding tie-in; both write to the one tenant brand record.
 - [ ] Apply the migration via the **DB Migrate workflow** (Cloud SQL is private-IP only), re-seed if needed.
-- [ ] **Verify:** email renders brand with no published storefront; editing brand updates storefront + email together; confirm no module path can override brand.
+- [ ] **Verify:** email renders brand with no published site; editing brand updates site + email together; confirm no module path can override brand.
 
 ---
 
@@ -84,7 +84,7 @@ Goal: a single unified editor replaces the six-route hub.
   shown only for a `CANVAS_SCOPES` allowlist; Brand (self-contained board) + Publishing + un-migrated
   routes render full-width.
 - **Panes rewritten v2-native as shippable increments** (end state: generator panes, old routes
-  gone). The v2 storage cutover (TenantBrand.tokens + drop StorefrontTheme cols) stays **staged
+  gone). The v2 storage cutover (TenantBrand.tokens + drop SiteTheme cols) stays **staged
   separately**: read-both-shapes code deploys first, the destructive migration runs after.
 
 So doc 30 §3's "one screen" = platform two-tier nav (kills the route-bounce) + persistent-canvas
@@ -96,7 +96,7 @@ layout (keeps live preview + docked inspector + in-canvas selection).
       canvas iframe + device/mode toolbar + `EditorCanvasContext`/`useEditorCanvas` exposing
       setMode/setThemeCss/highlightSection/setPreviewPath/reload/onSectionSelected; re-asserts live
       state on `sparx-preview-ready`; responsive Edit/Preview stack below `lg`). `/sitebuilder/layout.tsx`
-      mounts it (resolves slug/storefrontOrigin/previewToken once). `/sitebuilder` Overview rewritten
+      mounts it (resolves slug/siteOrigin/previewToken once). `/sitebuilder` Overview rewritten
       slim (status + active theme + jump links) to sit in the inspector column with the live preview
       beside it. Manifest curated: dropped "Themes" gallery, relabeled Design→"Theme". `CANVAS_SCOPES`
       = `/sitebuilder` only for now (un-migrated routes still render full-width, unchanged).
@@ -118,14 +118,14 @@ layout (keeps live preview + docked inspector + in-canvas selection).
       backward-safe + WITHOUT a migration. Key design change vs the original spec: `compiledV2` is
       computed at **READ time** in `publish-service.overlayBrand` (NOT baked into the version on publish)
       — so a brand edit reflects live on the v2 path too, and the stored `SiteVersion` shape is untouched.
-      Files: (1) `storefront-themes/src/v2/tenant.ts` (new) — `brandColsToTokenDoc` +
+      Files: (1) `site-themes/src/v2/tenant.ts` (new) — `brandColsToTokenDoc` +
       `compileThemeForTenant({themeKey, brand, presentation})`, exported from `v2/index.ts`, the ONE
       entry both the read path and the inspector call (+ `tenant.test.ts`). (2) `sitebuilder-schemas`
       `site-settings.ts` — optional permissive `PresentationOverlay` added to `SiteSettings` (persists in
       `draftSettings`). (3) `publish-internals.ts` — `PublishedSnapshot += compiledV2?` (set later, not in
       `toPublishedSnapshot`). (4) `publish-service.ts` — `overlayBrand` now also compiles `compiledV2`
       live (theme key + live brand cols + presentation), `readPresentation()` pulls the overlay from the
-      version snapshot (published) / draft config (draft). (5) storefront — `lib/site.ts`
+      version snapshot (published) / draft config (draft). (5) site — `lib/site.ts`
       `PublishedSnapshot += compiledV2?`; `lib/theme.ts` prefers `buildThemeCssV2(compiledV2)` else the
       legacy bridge; `app/layout.tsx` passes it. (6) dashboard — new `_components/theme-inspector.tsx`
       (theme picker + appearance + per-mode swatch grid + container; edit → `compileThemeForTenant` +
@@ -136,7 +136,7 @@ layout (keeps live preview + docked inspector + in-canvas selection).
       only); recommend eyeballing on the deploy or local `pnpm db:up`.
 - [x] **§2.4 Brand pane v2-native** (2026-05-31, green: typecheck 38/38, lint 0 err, 52 theme tests;
       migration applied to LOCAL docker only — **prod via db-migrate.yml, user-triggered**). The Brand
-      pane now edits identity (colour/type — existing) PLUS shape/rhythm/effect (new), and the storefront
+      pane now edits identity (colour/type — existing) PLUS shape/rhythm/effect (new), and the site
       SSR + the Theme scope's live canvas pick up the brand feel via `compileThemeForTenant`. Kept the
       shipped self-contained brand BOARD full-width (NOT a canvas scope) — flipping it into the ~360px
       inspector would have forced a rewrite of a good, working surface; instead the board's "Applied"
@@ -146,7 +146,7 @@ layout (keeps live preview + docked inspector + in-canvas selection).
       Border weight / Spacing / Control size / Depth), each with a "Theme default" that clears the axis so
       it inherits the preset (brand never silently pins a default). Files: migration
       `20260610000300_tenant_brand_tokens` (additive `ADD COLUMN tokens JSONB`, nullable, no policy change
-      — table already RLS); schema `07-tenant-brand.prisma` `tokens Json?`; `storefront-themes/v2/tenant.ts`
+      — table already RLS); schema `07-tenant-brand.prisma` `tokens Json?`; `site-themes/v2/tenant.ts`
       `TenantBrandColumns += tokens?: unknown`, `brandColsToTokenDoc` merges shape/rhythm/effect (+ tests);
       api-rest `/v1/brand` (PatchBrand/BrandView/toView + `tokens` via `Prisma.DbNull` clear); `publish-service`
       brand select `+tokens`; dashboard `_lib/brand-feel.ts` (NEW: preset tables + resolve/reverse-match +
@@ -165,7 +165,7 @@ layout (keeps live preview + docked inspector + in-canvas selection).
   > failed `_prisma_migrations` row (`clearFailedMigrations` in `run-migrations.ts`) and re-applies §3.0 cleanly
   > (manual fallback: `gh workflow run db-migrate.yml -f resolve_migration=20260611000000_sitebuilder_templates`).
   > §3.0 is the only destructive step (drops `page_key`); the code is already deployed and degrades gracefully
-  > (storefront falls back to `DEFAULT_TEMPLATES`) until §3.0 lands.
+  > (site falls back to `DEFAULT_TEMPLATES`) until §3.0 lands.
 - [x] **Saved themes (Brand+Theme tier, 2026-05-31)** — backend built + green (migration LOCAL only; **prod
       user-triggered**). New `SiteTheme` table (`sitebuilder_themes`, ENABLE+FORCE RLS) = the tenant's NAMED
       presentation variants ("My themes"), distinct from the read-only code-first presets ("Prebuilt"). New
@@ -184,9 +184,9 @@ layout (keeps live preview + docked inspector + in-canvas selection).
       colour slots, which `compileTokensV2` already consumed) + `publish-service` brand `select` +
       dashboard `BrandDto`. **Deliberately did NOT touch the v1 `BRAND_IDENTITY_TOKEN_KEYS`/`applyBrandIdentityTokens`
       surface** (the recorded plan listed it): the v1 `ThemeTokenKey` union has no slot for secondary or any
-      accent/secondary `-content`, and the storefront CSS reads no such v1 var — adding them would be inventing
+      accent/secondary `-content`, and the site CSS reads no such v1 var — adding them would be inventing
       dead legacy tokens. The v2 path (always computed at read by `overlayBrand`) is the real surface. GATE:
-      55/55 storefront-themes tests (+3 new in `v2/tenant.test.ts`), typecheck 5 pkgs clean, lint 0 err, format
+      55/55 site-themes tests (+3 new in `v2/tenant.test.ts`), typecheck 5 pkgs clean, lint 0 err, format
       clean. The brand/theme agent now wires the persisting editor fields (it left accent fill-only + secondary
       derived pending this). **Migration joins the still-pending prod set; one `prisma migrate deploy` covers all
       pending; user-triggered.** Local api-rest restart needed to expose the new `/v1/brand` fields (running
@@ -198,10 +198,10 @@ layout (keeps live preview + docked inspector + in-canvas selection).
 > × `variant` (solid|soft|outline|dashed|ghost|link) × size × shape. `primary`/`success` are colors,
 > not variants. See [[reference_ui_color_variant_api]].
 
-**§1 · Preview transport — DONE + green (2026-05-31):** storefront `PreviewBridge` (self-gates on
+**§1 · Preview transport — DONE + green (2026-05-31):** site `PreviewBridge` (self-gates on
 `?sparxSitePreview`, sets `data-sparx-preview`, injects `<style id=sparx-live>`, mode flip, section
 highlight, emits `sparx-preview-ready` + `sparx-section-selected`); `section-renderer` wrappers carry
-`data-section-id`/`-type`; preview chrome CSS; bridge mounted in storefront layout; customizer rewired
+`data-section-id`/`-type`; preview chrome CSS; bridge mounted in site layout; customizer rewired
 to `sparx-preview-mode`. Locked message contract documented in `preview-bridge.tsx`. Runtime
 acceptance pending deploy. (Live token streaming deferred to §2.1's v2 inspector.)
 
@@ -209,17 +209,17 @@ acceptance pending deploy. (Live token streaming deferred to §2.1's v2 inspecto
 
 ## Phase 3 — Layouts as templates (§4)
 
-Goal: the storefront becomes fully composable. Needs its own implementation spec before build.
+Goal: the site becomes fully composable. Needs its own implementation spec before build.
 
-- [x] Write the Phase 3 implementation spec (honors doc 30 §4) → **[docs/handoffs/sitebuilder-phase3-spec.md](sitebuilder-phase3-spec.md)** (2026-05-31). Locks: code-defined seeded defaults (no-rows-until-used), `SiteSection.pageKey`→`templateId` re-key with a read-time back-compat shim for old snapshots, enriched `SectionSnapshot` (no new column), bound family re-houses existing storefront components. Build order = spec §9 (3.0 schema → 3.1 registry → 3.2 storefront parity → 3.3 editor). **3 open decisions need sign-off first (spec §12).**
-- [x] **3.0 — `SiteTemplate` model + re-key + service/api** (2026-05-31, green; migration applied LOCAL docker only — **prod via db-migrate.yml, user-triggered**). `SiteTemplate` (scope/key/name, `@@unique([tenantId,scope,key])`, ENABLE+FORCE RLS); `SiteSection.pageKey`→`templateId` FK. Migration `20260611000000_sitebuilder_templates` is data-driven (one template per distinct `(tenant_id,page_key)`; `home`→`(home,default)`, else `(custom,<slug>)`), drops `page_key`, hand-edited RLS. **Backward-safe seam:** the public section surface stays pageKey-shaped — `templateService` maps pageKey↔(scope,key), `sectionService` resolves internally + returns a `SectionView` with derived `pageKey`, so routes/MCP/dashboard/inputs are byte-identical (zero churn). `SectionSnapshot` enriched with optional `scope`/`templateKey`/`templateId` (kept in sync in storefront `lib/site.ts`); `pageKey` retained (derived) so old snapshots + the 3.0 storefront still resolve. `readDraft` exported + reused by `getDraftSnapshot` (one draft reader); `materializeWithinTx` (rollback) get-or-creates templates from the snapshot (explicit scope/key on P3 snapshots, derived from pageKey on legacy). Verified: typecheck 5 pkgs, lint 3, format clean, migration applies on real local data with no drift, RLS audit passes (141 tables), unit tests pass. Publish/rollback round-trip → runtime acceptance.
-- [x] **3.1 — Bound section schemas + scope-restricted registry** (2026-05-31, green; additive, no runtime wiring). `sections/product-bound.ts` (6: `product-buy-box`, `-description`, `-fitment`, `-reviews`, `-questions`, `-related`) + `sections/collection-bound.ts` (2: `collection-header`, `collection-products`) — presentation-config-only Zod schemas + fields. Registry gained `SCOPES`/`Scope`/`ScopeEnum`, `SectionDefinition += scopes/binding/bindings` (read-only data-binding descriptors for the inspector), all 15 types registered (static = ALL_SCOPES, bound = their one scope), `sectionsForScope(scope)` + `isSectionAllowedInScope(type,scope)`. `default-templates.ts` `DEFAULT_TEMPLATES` (code-defined product/collection parity compositions, ordered to match today's PDP/PLP — covers the "seed default templates" bullet below in code, not rows). Tests: 9 pass (scope restriction, sectionsForScope, bindings, default-template validity). typecheck (schemas + storefront/dashboard/api-rest/sitebuilder), lint, format all clean.
-- [x] **3.2 — Storefront template-driven PDP/PLP** (2026-05-31, green: storefront typecheck + lint + format clean). `section-renderer` `SectionContext` widened (showStockBelow + product/productExtras{related,questions,fitmentDomainsBySlug} + collection/collectionExtras{items,total,page,perPage,currentParams}); switch gained the 8 bound cases. 8 new bound render components in `components/sections/` re-house the EXACT PDP/PLP markup (ProductDetail, FitmentTable, RatingStars/ReviewForm, QuestionForm, ProductCard, ProductGrid/Pagination) with config-driven headings whose defaults match today's hardcoded copy. `lib/site.ts`: `sectionsForScope(snapshot,scope,key)` (+ legacy pageKey→scope shim) and `resolveTemplateSections(snapshot,scope)` (published layout → else code `DEFAULT_TEMPLATES`). PDP + PLP fetch the snapshot (draft via `?sparxSitePreview` token) and render the resolved sections; metadata + JSON-LD + breadcrumbs kept as page chrome; supplementary fetches (related/questions/fitment) gated on the section being present. **Parity:** identical render for the seeded default (only delta = inert `data-section-id` wrappers, same as home). Runtime eyeball pending deploy.
-- [x] Seed default `product` + `collection` templates expressing today's hardcoded PDP/PLP (day-one parity) — **done in 3.1 as code-defined `DEFAULT_TEMPLATES`** (no rows; materialized on first edit by 3.3, used as the storefront fallback by 3.2).
-- [x] Switch storefront `products/[handle]` + `collections/[handle]` to template-driven rendering with the seeded default as fallback — **done in 3.2** (above).
+- [x] Write the Phase 3 implementation spec (honors doc 30 §4) → **[docs/handoffs/sitebuilder-phase3-spec.md](sitebuilder-phase3-spec.md)** (2026-05-31). Locks: code-defined seeded defaults (no-rows-until-used), `SiteSection.pageKey`→`templateId` re-key with a read-time back-compat shim for old snapshots, enriched `SectionSnapshot` (no new column), bound family re-houses existing site components. Build order = spec §9 (3.0 schema → 3.1 registry → 3.2 site parity → 3.3 editor). **3 open decisions need sign-off first (spec §12).**
+- [x] **3.0 — `SiteTemplate` model + re-key + service/api** (2026-05-31, green; migration applied LOCAL docker only — **prod via db-migrate.yml, user-triggered**). `SiteTemplate` (scope/key/name, `@@unique([tenantId,scope,key])`, ENABLE+FORCE RLS); `SiteSection.pageKey`→`templateId` FK. Migration `20260611000000_sitebuilder_templates` is data-driven (one template per distinct `(tenant_id,page_key)`; `home`→`(home,default)`, else `(custom,<slug>)`), drops `page_key`, hand-edited RLS. **Backward-safe seam:** the public section surface stays pageKey-shaped — `templateService` maps pageKey↔(scope,key), `sectionService` resolves internally + returns a `SectionView` with derived `pageKey`, so routes/MCP/dashboard/inputs are byte-identical (zero churn). `SectionSnapshot` enriched with optional `scope`/`templateKey`/`templateId` (kept in sync in site `lib/site.ts`); `pageKey` retained (derived) so old snapshots + the 3.0 site still resolve. `readDraft` exported + reused by `getDraftSnapshot` (one draft reader); `materializeWithinTx` (rollback) get-or-creates templates from the snapshot (explicit scope/key on P3 snapshots, derived from pageKey on legacy). Verified: typecheck 5 pkgs, lint 3, format clean, migration applies on real local data with no drift, RLS audit passes (141 tables), unit tests pass. Publish/rollback round-trip → runtime acceptance.
+- [x] **3.1 — Bound section schemas + scope-restricted registry** (2026-05-31, green; additive, no runtime wiring). `sections/product-bound.ts` (6: `product-buy-box`, `-description`, `-fitment`, `-reviews`, `-questions`, `-related`) + `sections/collection-bound.ts` (2: `collection-header`, `collection-products`) — presentation-config-only Zod schemas + fields. Registry gained `SCOPES`/`Scope`/`ScopeEnum`, `SectionDefinition += scopes/binding/bindings` (read-only data-binding descriptors for the inspector), all 15 types registered (static = ALL_SCOPES, bound = their one scope), `sectionsForScope(scope)` + `isSectionAllowedInScope(type,scope)`. `default-templates.ts` `DEFAULT_TEMPLATES` (code-defined product/collection parity compositions, ordered to match today's PDP/PLP — covers the "seed default templates" bullet below in code, not rows). Tests: 9 pass (scope restriction, sectionsForScope, bindings, default-template validity). typecheck (schemas + site/dashboard/api-rest/sitebuilder), lint, format all clean.
+- [x] **3.2 — Site template-driven PDP/PLP** (2026-05-31, green: site typecheck + lint + format clean). `section-renderer` `SectionContext` widened (showStockBelow + product/productExtras{related,questions,fitmentDomainsBySlug} + collection/collectionExtras{items,total,page,perPage,currentParams}); switch gained the 8 bound cases. 8 new bound render components in `components/sections/` re-house the EXACT PDP/PLP markup (ProductDetail, FitmentTable, RatingStars/ReviewForm, QuestionForm, ProductCard, ProductGrid/Pagination) with config-driven headings whose defaults match today's hardcoded copy. `lib/site.ts`: `sectionsForScope(snapshot,scope,key)` (+ legacy pageKey→scope shim) and `resolveTemplateSections(snapshot,scope)` (published layout → else code `DEFAULT_TEMPLATES`). PDP + PLP fetch the snapshot (draft via `?sparxSitePreview` token) and render the resolved sections; metadata + JSON-LD + breadcrumbs kept as page chrome; supplementary fetches (related/questions/fitment) gated on the section being present. **Parity:** identical render for the seeded default (only delta = inert `data-section-id` wrappers, same as home). Runtime eyeball pending deploy.
+- [x] Seed default `product` + `collection` templates expressing today's hardcoded PDP/PLP (day-one parity) — **done in 3.1 as code-defined `DEFAULT_TEMPLATES`** (no rows; materialized on first edit by 3.3, used as the site fallback by 3.2).
+- [x] Switch site `products/[handle]` + `collections/[handle]` to template-driven rendering with the seeded default as fallback — **done in 3.2** (above).
 - [x] **3.3a — templateId-native backend (additive)** (2026-05-31, green). The correct fix (spec §13): the editor addresses sections by `templateId`, `pageKey` retiring from the live API. New **templates resource** — `GET /v1/sitebuilder/templates?scope=` (list), `POST` (resolve-or-create by `(scope,key)`, `key` default `default`), `POST .../materialize` (the "Customize" action: get-or-create + if empty copy code `DEFAULT_TEMPLATES[scope]` into real rows; idempotent, no-dup on re-run; scopes w/o a code default get an empty layout). `templateService` gained `TemplateView`, `getOrCreate`/`materializeDefault` (parse raw input — schemas stay the service boundary, api-rest keeps zero `@sparx/sitebuilder-schemas` dep), `list`→views. `sectionService`: `SectionView += templateId/scope/templateKey` (keeps `pageKey` alias for the window), `resolveTemplateForWrite` (templateId wins, else pageKey get-or-create — cross-tenant id → RLS null → NotFound), **scope safety** (`create` rejects a section not in the template scope via `isSectionAllowedInScope` → 422), `listForTemplate`, reorder by templateId. Routes: `GET /sections` accepts `template_id` **or** `page_key`; `POST`/`reorder` accept `templateId` or `pageKey` in the body (un-migrated dashboard + MCP keep working). 9 new integration tests (idempotency, materialize order + no-dup, templateId CRUD, scope safety, pageKey alias) — 13 pass total. typecheck (3 pkgs) + lint + format clean. **Not deployed by me — user-triggered.**
 - [x] **3.3b — dashboard Layouts UI** (2026-05-31, green). The dashboard SB editor is now fully `templateId`-native. Manifest gained **Product pages** (`/sitebuilder/products`) + **Collection pages** (`/sitebuilder/collections`) sections (flat, adjacent to Homepage/Pages — the shared shell nav is a flat `ModuleSection[]`, so the visual "Layouts group" is left as a separate future shell enhancement, not folded in here). `SectionBuilder` re-keyed `pageKey`→`templateId` + a `scope: Scope` prop: the add-section gallery is filtered by `sectionsForScope(scope)` with a Static/**Bound** legend + per-tile/row Bound chip, and a bound section's inspector shows its read-only **Data bindings** (`def.bindings`) above the editable fields. New **`LayoutScopeEditor`** (client) wraps `SectionBuilder` for the bound scopes: a **sample-item picker** (`listSampleProducts`/`listSampleCollections` — commerce-gated, best-effort `[]` + graceful empty-state) drives the canvas to a real `/products/<handle>` · `/collections/<handle>` (+ the §1 preview token via the shell), and the **explicit "Customize this layout"** gate (`materializeTemplate` → `POST .../materialize`) shows the seeded `DEFAULT_TEMPLATES[scope]` read-only until clicked, then drops into the editable list on `router.refresh`. `_lib`: added `listTemplates`/`resolveTemplate`/`listSectionsByTemplate` + sample readers (api), `materializeTemplate` + `templateId`-keyed `createSection`/`reorderSections` (actions), `SiteTemplateDto`/`SampleItem` + `SiteSectionDto += templateId/scope/templateKey` (types). Home + Pages migrated to resolve-or-create their template on load (`home`/`custom`+slug) and address sections by `templateId` (consistent with the 3.0 backfill — existing home/slug sections already carry a template). `editor-shell` `CANVAS_SCOPES += products/collections`. typecheck (dashboard + sitebuilder) + lint (0 errors) + format clean. **Not deployed/committed by me — user-triggered.**
-- [x] **3.3c — cleanup** (2026-05-31, green). Zero `pageKey` in the live section API. `CreateSectionInput`/`ReorderSectionsInput` drop `pageKey`, gain `scope`+`key` (the service requires `templateId` **or** `scope`); `PageKey` schema deleted. `sectionService`: `SectionView` drops `pageKey`, `resolveTemplateForWrite` is `templateId | (scope,key)` get-or-create, `list(pageKey)`→`listForScope(scope,key)`, reorder by `templateId | scope`. `templateService` drops `scopeKeyForPageKey`/`pageKeyForTemplate`/`getOrCreateForPageKey`/`findForPageKey`, adds `findTemplate(scope,key)` + exports `defaultTemplateName`. The legacy `pageKey`↔`(scope,key)` mapping now lives ONLY in the snapshot path — `publish-internals.ts` (local helpers, for writing `SectionSnapshot.pageKey` + rolling back pre-P3 versions) and the storefront `lib/site.ts` read shim. REST `GET /sections` takes `template_id` or `scope`+`key`; MCP `get_sections` takes `scope`+`key`, `add_section`/`reorder_sections` take `templateId | scope+key`. Dashboard `SiteSectionDto` drops `pageKey`. typecheck (schemas + sitebuilder + api-rest + dashboard) + lint + format clean; 14 integration tests pass.
+- [x] **3.3c — cleanup** (2026-05-31, green). Zero `pageKey` in the live section API. `CreateSectionInput`/`ReorderSectionsInput` drop `pageKey`, gain `scope`+`key` (the service requires `templateId` **or** `scope`); `PageKey` schema deleted. `sectionService`: `SectionView` drops `pageKey`, `resolveTemplateForWrite` is `templateId | (scope,key)` get-or-create, `list(pageKey)`→`listForScope(scope,key)`, reorder by `templateId | scope`. `templateService` drops `scopeKeyForPageKey`/`pageKeyForTemplate`/`getOrCreateForPageKey`/`findForPageKey`, adds `findTemplate(scope,key)` + exports `defaultTemplateName`. The legacy `pageKey`↔`(scope,key)` mapping now lives ONLY in the snapshot path — `publish-internals.ts` (local helpers, for writing `SectionSnapshot.pageKey` + rolling back pre-P3 versions) and the site `lib/site.ts` read shim. REST `GET /sections` takes `template_id` or `scope`+`key`; MCP `get_sections` takes `scope`+`key`, `add_section`/`reorder_sections` take `templateId | scope+key`. Dashboard `SiteSectionDto` drops `pageKey`. typecheck (schemas + sitebuilder + api-rest + dashboard) + lint + format clean; 14 integration tests pass.
 - [x] Sample-item preview binding in the editor (`preview against [sample product ▾]`) — done in 3.3b.
 - [ ] **Acceptance:** edit the product template → every product reflects it; seeded default renders identically to today.
 
@@ -240,14 +240,14 @@ before build.
 **Now (independent, ships first):**
 
 - [x] **S0 · Sample-data preview (doc 36 §9)** — DONE + green + runtime-verified (2026-05-31). Always-on,
-      storefront-only, no schema change. NEW `apps/site/lib/sample-data.ts` (`SAMPLE_PRODUCT` +
+      site-only, no schema change. NEW `apps/site/lib/sample-data.ts` (`SAMPLE_PRODUCT` +
       extras, `SAMPLE_COLLECTION` + 8 grid items, `isSampleRequested(sp)` gate = `sparxSampleData=1` AND a
       `sparxSitePreview` token present — off the public site entirely). PDP + PLP take a `sample` branch:
       use the fixtures + skip the catalog fetch (and the `notFound`), layout still resolves from the draft
       snapshot (or `DEFAULT_TEMPLATES`). Dashboard: `EditorShell` gained `setSampleData(on)` (appends
       `&sparxSampleData=1` to the canvas URL); `LayoutScopeEditor` now **always** previews sample data
       (dropped the real-product picker per owner "always, for consistency" — removed `listSampleProducts`/
-      `listSampleCollections`/`SampleItem`). Verified via Playwright on the local stack (storefront :3004,
+      `listSampleCollections`/`SampleItem`). Verified via Playwright on the local stack (site :3004,
       tenant `e2e-store`): PDP renders the full bound layout against the sample product on a nonexistent
       handle; the same handle WITHOUT the flag 404s (gate holds); collection sample renders the header + the
       8-product grid. Images use empty media ids → clean `◳` placeholder (real sample imagery = a later nicety).
@@ -258,8 +258,8 @@ before build.
       **code-only rename, NO migration**: the Prisma model + field + all code symbols rename, but the physical
       table keeps `@@map("sitebuilder_templates")` and the FK keeps `@map("template_id")`, so `prisma validate`
       is clean with zero `migrate diff` drift (the physical table/column rename folds into P-B's migration, which
-      touches this table anyway). Storefront UNTOUCHED — the published `SectionSnapshot` JSON keeps its wire keys
-      (`templateId`/`templateKey`/`scope`/`pageKey`) and the storefront reads via HTTP, never importing the model.
+      touches this table anyway). Site UNTOUCHED — the published `SectionSnapshot` JSON keeps its wire keys
+      (`templateId`/`templateKey`/`scope`/`pageKey`) and the site reads via HTTP, never importing the model.
       Renamed: schema (`49-sitebuilder.prisma`, `02-tenant.prisma` `siteTemplates`→`pageLayouts`) + `@sparx/db`
       re-export; `sitebuilder-schemas/inputs.ts` (`TemplateKey`→`LayoutKey`, `Create/Materialize/ListTemplates*`→
       `*PageLayout*`, section `templateId`→`pageLayoutId`); service `template-service.ts`→`page-layout-service.ts`
@@ -291,10 +291,10 @@ before build.
       services (`page-layout-service`, `section-service` `listForScope`→`listForTarget`, `publish-internals`
       snapshot field + `pageKeyForLayout`/`targetKeyForPageKey`/`resolveTargetKey`); api-rest routes (`?target_id=`,
       bodies forward `targetId`); MCP (`get_sections`/`add_section`/`reorder_sections` descriptions + `TargetArg`);
-      storefront (`lib/site.ts` `sectionsForTarget`/`resolveTemplateSections('commerce:product'|'commerce:collection')`/
+      site (`lib/site.ts` `sectionsForTarget`/`resolveTemplateSections('commerce:product'|'commerce:collection')`/
       `targetKeyOf`, product+collection pages); dashboard (`_lib` api/types/actions, `section-builder` prop
       `scope`→`targetId`, `layout-scope-editor` `BoundTarget`, 4 route pages). GATE: typecheck (6 pkgs:
-      db/schemas/sitebuilder/api-rest/storefront/dashboard) + lint (0 err) + format + 20/20 sitebuilder integration
+      db/schemas/sitebuilder/api-rest/site/dashboard) + lint (0 err) + format + 20/20 sitebuilder integration
       tests, all green. Migration applied to LOCAL docker only (no drift, RLS-audit 142 tables OK, draft rows
       verified re-keyed `commerce:product`/`site:home`; 0 local SiteVersions so the snapshot-rewrite branch ran
       clean but untouched — exercises on the prod e2e store). **Snapshot wire keys `templateKey`/`templateId`/
@@ -309,7 +309,7 @@ before build.
       applied LOCAL only). **`itemRef` = the record's stable id.** **Assignments read LIVE** (no `SiteVersion`
       column) — `assignmentService.readAssignmentSnapshot(tx)` resolves both tables → `{defaults, items}`
       layoutKeys, attached in `publish-service` `getPublishedSnapshot`+`getDraftSnapshot` (like brand/compiledV2;
-      a layout's sections must be published to take effect regardless, so baking buys nothing). Storefront
+      a layout's sections must be published to take effect regardless, so baking buys nothing). Site
       **resolver cascade** `resolveTemplateSections(snapshot, targetId, itemRef?)` → `resolveLayoutKey`
       (per-item → per-target default → `default` key) → `sectionsForTarget`, else code default; product/collection
       pages pass `product.id`/`collection.id`. New `assignment-service` (setDefault/clearDefault/assign/unassign/
@@ -320,7 +320,7 @@ before build.
       (client Select, `__default__` sentinel) + `_lib` `getLayoutResolution`/`assignLayout`/`unassignLayout`;
       mounted in the **Commerce product editor** (Overview tab, `commerce:product`, wired end-to-end) and the
       **CMS entry editor** (`cms:content-type:<typeKey>` — the immutable key IS the stable id the API exposes;
-      gated to types with a `url_pattern`; **write-only until §8** wires CMS storefront rendering through layouts —
+      gated to types with a `url_pattern`; **write-only until §8** wires CMS site rendering through layouts —
       picker carries a muted note saying so). GATE: typecheck (6 pkgs) + lint (0 err) + format + 25/25 sitebuilder
       integration tests (5 new in `assignments.test.ts`), all green. **PROD migration USER-TRIGGERED** (additive,
       joins the still-pending set). Local api-rest restart needed. **Picker is thin until P-D** (only `default` to
@@ -334,7 +334,7 @@ before build.
       `RenamePageLayoutInput`. Service: `pageLayoutService.getById`/`instantiate` (unique-key slugify w/ `-2` suffix;
       binding-fits-target check **inside** the tenant tx so a mismatch rejects)/`rename`/`remove` (cascade);
       `assignmentService.listDefaults`. api-rest: `page-layouts` `POST /instantiate` + `GET`/`PATCH`/`DELETE /:id`,
-      `assignments` `GET /defaults`. Storefront: `resolveTemplateSections(..., forcedKey?)` — preview-only forced key
+      `assignments` `GET /defaults`. Site: `resolveTemplateSections(..., forcedKey?)` — preview-only forced key
       bypasses the cascade (code-default fallback now ONLY for the `default` key, so named alternates preview empty
       not seeded); PDP/PLP pass `sparxLayoutKey` gated to a `sparxSitePreview` token. Dashboard: `editor-shell`
       `setLayoutKey` + `&sparxLayoutKey=`, `CANVAS_SCOPES` → `/sitebuilder/layouts` + `FULL_WIDTH_EXACT` (index
@@ -346,12 +346,12 @@ before build.
       (generalizes the deleted `layout-scope-editor`); `_lib` `getPageLayout`/`listLayoutDefaults` (api) +
       `instantiateLayout`/`renamePageLayout`/`deletePageLayout`/`setLayoutDefault`/`clearLayoutDefault` (actions) +
       `LayoutDefaultDto` (types). DELETED the `homepage`/`products`/`collections`/`pages` routes + `page-slug-form` + `layout-scope-editor`; Overview "Manage pages"→"Manage layouts". **`cms:content-type:<id>` targets are NOT
-      on the surface yet** (no storefront render path until layout-driven CMS authoring, doc 36 §8) — noted. GATE:
-      typecheck (schemas/sitebuilder/api-rest/storefront/dashboard) + lint (0 err) + format + **31/31** sitebuilder
+      on the surface yet** (no site render path until layout-driven CMS authoring, doc 36 §8) — noted. GATE:
+      typecheck (schemas/sitebuilder/api-rest/site/dashboard) + lint (0 err) + format + **31/31** sitebuilder
       integration tests (6 new), all green. Not committed/deployed — user-triggered. Local api-rest restart needed
       to expose the new `/page-layouts/:id` + `/instantiate` + `/assignments/defaults` routes.
 - [x] **Acceptance — met.** A per-item override AND a per-target default both resolve at render (P-C
-      `getDraftSnapshot` test + storefront cascade); a Page Template instantiates into an editable PageLayout
+      `getDraftSnapshot` test + site cascade); a Page Template instantiates into an editable PageLayout
       (`instantiate` test); the seeded default renders identically to today (`forcedKey==='default'` keeps the
       `DEFAULT_TEMPLATES` fallback). Runtime eyeball of the new surface pending the local stack / deploy.
 

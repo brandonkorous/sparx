@@ -2,7 +2,7 @@
 
 // DropdownMenu — Radix behavior, Surface appearance (docs/47 §11 B3). Radix
 // (@radix-ui/react-dropdown-menu) owns the trigger/focus/typeahead/positioning;
-// styling is `sf-*`. Compound parts (Trigger/Content/Item/Separator/Label) attach +
+// styling is `st-*`. Compound parts (Trigger/Content/Item/Separator/Label) attach +
 // export. The menu surface dogfoods the shared `surface` color via its CSS.
 
 import * as React from 'react';
@@ -24,7 +24,7 @@ function DropdownMenuContent({
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
-        className={cx('sf-dropdown', className)}
+        className={cx('st-dropdown', className)}
         sideOffset={sideOffset}
         {...props}
       />
@@ -37,7 +37,7 @@ function DropdownMenuItem({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item>): React.ReactElement {
-  return <DropdownMenuPrimitive.Item className={cx('sf-dropdown__item', className)} {...props} />;
+  return <DropdownMenuPrimitive.Item className={cx('st-dropdown__item', className)} {...props} />;
 }
 DropdownMenuItem.displayName = 'DropdownMenuItem';
 
@@ -45,7 +45,7 @@ function DropdownMenuLabel({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label>): React.ReactElement {
-  return <DropdownMenuPrimitive.Label className={cx('sf-dropdown__label', className)} {...props} />;
+  return <DropdownMenuPrimitive.Label className={cx('st-dropdown__label', className)} {...props} />;
 }
 DropdownMenuLabel.displayName = 'DropdownMenuLabel';
 
@@ -55,7 +55,7 @@ function DropdownMenuSeparator({
 }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>): React.ReactElement {
   return (
     <DropdownMenuPrimitive.Separator
-      className={cx('sf-dropdown__separator', className)}
+      className={cx('st-dropdown__separator', className)}
       {...props}
     />
   );

@@ -123,23 +123,23 @@ describe('css emission', () => {
   it('maps canonical color vars', () => {
     const c = compileTokensV2(PRESET);
     const vars = colorVars(c.light);
-    expect(vars['--sf-base-100']).toBe('#ffffff');
-    expect(vars['--sf-primary']).toBe('#4f46e5');
-    expect(vars['--sf-primary-content']).toBe('#ffffff');
-    expect(vars['--sf-danger']).toBe('#dc2626');
+    expect(vars['--st-base-100']).toBe('#ffffff');
+    expect(vars['--st-primary']).toBe('#4f46e5');
+    expect(vars['--st-primary-content']).toBe('#ffffff');
+    expect(vars['--st-danger']).toBe('#dc2626');
   });
 
   it('emits the space scale, depth, font stack, and legacy aliases', () => {
     const c = compileTokensV2(PRESET);
     const s = sharedVars(c.shared);
-    expect(s['--sf-space-base']).toBe('0.25rem');
-    expect(s['--sf-space-4']).toBe('calc(var(--sf-space-base) * 4)');
-    expect(s['--sf-depth']).toBe('1');
-    expect(s['--sf-font-heading']).toContain("'Geist'");
+    expect(s['--st-space-base']).toBe('0.25rem');
+    expect(s['--st-space-4']).toBe('calc(var(--st-space-base) * 4)');
+    expect(s['--st-depth']).toBe('1');
+    expect(s['--st-font-heading']).toContain("'Geist'");
     // Legacy aliases point at canonical vars (removed in §4).
-    expect(s['--sf-bg']).toBe('var(--sf-base-100)');
-    expect(s['--sf-radius']).toBe('var(--sf-radius-box)');
-    expect(s['--sf-on-primary']).toBe('var(--sf-primary-content)');
+    expect(s['--st-bg']).toBe('var(--st-base-100)');
+    expect(s['--st-radius']).toBe('var(--st-radius-box)');
+    expect(s['--st-on-primary']).toBe('var(--st-primary-content)');
   });
 
   it('builds a stylesheet with root, dark opt-in, and system-preference blocks', () => {
@@ -147,6 +147,6 @@ describe('css emission', () => {
     expect(css).toContain(':root{');
     expect(css).toContain(':root[data-theme="dark"]{');
     expect(css).toContain('@media (prefers-color-scheme:dark)');
-    expect(css).toContain('--sf-primary:#4f46e5');
+    expect(css).toContain('--st-primary:#4f46e5');
   });
 });

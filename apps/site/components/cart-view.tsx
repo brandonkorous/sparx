@@ -25,15 +25,15 @@ export function CartView() {
 
   if (lines.length === 0) {
     return (
-      <div className="sf-empty" style={{ minHeight: '40vh' }}>
-        <span className="sf-empty__icon" aria-hidden="true">
+      <div className="st-empty" style={{ minHeight: '40vh' }}>
+        <span className="st-empty__icon" aria-hidden="true">
           🛒
         </span>
-        <h2 className="sf-h2" style={{ color: 'var(--sf-text)' }}>
+        <h2 className="st-h2" style={{ color: 'var(--st-text)' }}>
           Your cart is empty
         </h2>
         <p style={{ margin: 0 }}>Browse the catalog and add something you like.</p>
-        <Link href="/products" className="sf-btn sf-btn--primary" style={{ marginTop: '0.5rem' }}>
+        <Link href="/products" className="st-btn st-btn--primary" style={{ marginTop: '0.5rem' }}>
           Shop all products
         </Link>
       </div>
@@ -41,11 +41,11 @@ export function CartView() {
   }
 
   return (
-    <div className="sf-cart-grid">
+    <div className="st-cart-grid">
       <div>
         {lines.map((line) => (
-          <div key={line.id} className="sf-line">
-            <div className="sf-line__media">
+          <div key={line.id} className="st-line">
+            <div className="st-line__media">
               {line.imageUrl ? (
                 <Image
                   src={line.imageUrl}
@@ -60,25 +60,25 @@ export function CartView() {
               {line.productHandle ? (
                 <Link
                   href={`/products/${line.productHandle}`}
-                  className="sf-card__title"
+                  className="st-card__title"
                   style={{ textDecoration: 'none', color: 'inherit' }}
                 >
                   {line.title}
                 </Link>
               ) : (
-                <span className="sf-card__title">{line.title}</span>
+                <span className="st-card__title">{line.title}</span>
               )}
               {line.variantTitle ? (
-                <span className="sf-muted" style={{ fontSize: '0.85rem' }}>
+                <span className="st-muted" style={{ fontSize: '0.85rem' }}>
                   {line.variantTitle}
                 </span>
               ) : null}
               {line.sku ? (
-                <span className="sf-muted" style={{ fontSize: '0.78rem' }}>
+                <span className="st-muted" style={{ fontSize: '0.78rem' }}>
                   SKU: {line.sku}
                 </span>
               ) : null}
-              <div className="sf-line__qty" style={{ marginTop: '0.25rem' }}>
+              <div className="st-line__qty" style={{ marginTop: '0.25rem' }}>
                 <QuantityStepper
                   value={line.quantity}
                   onChange={(q) => updateItem(line.id, q)}
@@ -88,7 +88,7 @@ export function CartView() {
               <button
                 type="button"
                 onClick={() => removeItem(line.id)}
-                className="sf-muted"
+                className="st-muted"
                 style={{
                   background: 'none',
                   border: 'none',
@@ -105,7 +105,7 @@ export function CartView() {
             </div>
             <div style={{ textAlign: 'right', fontWeight: 600 }}>
               {formatMoney(line.lineTotalCents, currency)}
-              <div className="sf-muted" style={{ fontSize: '0.8rem', fontWeight: 400 }}>
+              <div className="st-muted" style={{ fontSize: '0.8rem', fontWeight: 400 }}>
                 {formatMoney(line.unitPriceCents, currency)} ea
               </div>
             </div>
@@ -113,14 +113,14 @@ export function CartView() {
         ))}
       </div>
 
-      <aside className="sf-summary" style={{ position: 'sticky', top: '92px' }}>
-        <h2 className="sf-h3">Order summary</h2>
-        <div className="sf-summary__row">
+      <aside className="st-summary" style={{ position: 'sticky', top: '92px' }}>
+        <h2 className="st-h3">Order summary</h2>
+        <div className="st-summary__row">
           <span>Subtotal ({count} items)</span>
           <span>{formatMoney(totals.subtotalCents, currency)}</span>
         </div>
         {totals.discountTotalCents > 0 ? (
-          <div className="sf-summary__row" style={{ color: 'var(--color-success-text)' }}>
+          <div className="st-summary__row" style={{ color: 'var(--color-success-text)' }}>
             <span>Discount</span>
             <span>−{formatMoney(totals.discountTotalCents, currency)}</span>
           </div>
@@ -130,7 +130,7 @@ export function CartView() {
             {appliedDiscountCodes.map((code) => (
               <span
                 key={code}
-                className="sf-badge"
+                className="st-badge"
                 style={{ position: 'static', display: 'inline-flex', gap: '0.4rem' }}
               >
                 {code}
@@ -154,17 +154,17 @@ export function CartView() {
 
         <DiscountField />
 
-        <div className="sf-summary__total">
+        <div className="st-summary__total">
           <span>Estimated total</span>
           <span>{formatMoney(totals.totalCents, currency)}</span>
         </div>
-        <p className="sf-muted" style={{ fontSize: '0.8rem', margin: 0 }}>
+        <p className="st-muted" style={{ fontSize: '0.8rem', margin: 0 }}>
           Shipping &amp; taxes calculated at checkout.
         </p>
-        <Link href="/checkout" className="sf-btn sf-btn--primary sf-btn--block sf-btn--lg">
+        <Link href="/checkout" className="st-btn st-btn--primary st-btn--block st-btn--lg">
           Proceed to checkout
         </Link>
-        <Link href="/products" className="sf-btn sf-btn--ghost sf-btn--block">
+        <Link href="/products" className="st-btn st-btn--ghost st-btn--block">
           Continue shopping
         </Link>
       </aside>

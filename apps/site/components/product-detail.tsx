@@ -125,10 +125,10 @@ export function ProductDetail({
   }
 
   return (
-    <div className="sf-pdp">
+    <div className="st-pdp">
       {/* Gallery */}
-      <div className="sf-gallery">
-        <div className="sf-gallery__main">
+      <div className="st-gallery">
+        <div className="st-gallery__main">
           {activeImage && mediaUrl(activeImage.mediaAssetId, tenantSlug) ? (
             <Image
               src={mediaUrl(activeImage.mediaAssetId, tenantSlug)!}
@@ -139,18 +139,18 @@ export function ProductDetail({
               style={{ objectFit: 'cover' }}
             />
           ) : (
-            <div className="sf-card__media--empty" style={{ height: '100%' }} aria-hidden="true">
+            <div className="st-card__media--empty" style={{ height: '100%' }} aria-hidden="true">
               <span style={{ fontSize: '3rem' }}>◳</span>
             </div>
           )}
         </div>
         {galleryImages.length > 1 ? (
-          <div className="sf-gallery__thumbs">
+          <div className="st-gallery__thumbs">
             {galleryImages.map((img) => (
               <button
                 key={img.id}
                 type="button"
-                className="sf-thumb"
+                className="st-thumb"
                 aria-current={img.id === activeImage?.id}
                 aria-label={img.alt ?? 'Product image'}
                 onClick={() => setActiveImageId(img.id)}
@@ -171,18 +171,18 @@ export function ProductDetail({
       </div>
 
       {/* Info */}
-      <div className="sf-pdp__info">
-        {product.vendor ? <span className="sf-card__vendor">{product.vendor}</span> : null}
-        <h1 className="sf-h1" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.25rem)' }}>
+      <div className="st-pdp__info">
+        {product.vendor ? <span className="st-card__vendor">{product.vendor}</span> : null}
+        <h1 className="st-h1" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.25rem)' }}>
           {product.title}
         </h1>
 
-        <div className="sf-pdp__price">
+        <div className="st-pdp__price">
           {resolvedVariant
             ? formatMoney(priceCents, currency, locale)
             : formatPriceRange(product.priceMinCents, product.priceMaxCents, currency, locale)}
           {onSale ? (
-            <span className="sf-card__compare" style={{ fontSize: '1rem' }}>
+            <span className="st-card__compare" style={{ fontSize: '1rem' }}>
               {formatMoney(compareAt, currency, locale)}
             </span>
           ) : null}
@@ -194,16 +194,16 @@ export function ProductDetail({
         {product.options.map((opt) => {
           const isSwatch = opt.displayType === 'swatch' || opt.values.some((v) => v.swatchHex);
           return (
-            <div key={opt.id} className="sf-option">
-              <span className="sf-option__label">
+            <div key={opt.id} className="st-option">
+              <span className="st-option__label">
                 {opt.name}
                 {selected[opt.id] ? (
-                  <span className="sf-muted" style={{ fontWeight: 400, marginLeft: '0.4rem' }}>
+                  <span className="st-muted" style={{ fontWeight: 400, marginLeft: '0.4rem' }}>
                     {opt.values.find((v) => v.id === selected[opt.id])?.value}
                   </span>
                 ) : null}
               </span>
-              <div className="sf-option__values">
+              <div className="st-option__values">
                 {opt.values.map((val) => {
                   const isSelected = selected[opt.id] === val.id;
                   const disabled = !valueAvailable[val.id];
@@ -211,7 +211,7 @@ export function ProductDetail({
                     <button
                       key={val.id}
                       type="button"
-                      className="sf-swatch"
+                      className="st-swatch"
                       style={{ background: val.swatchHex }}
                       aria-pressed={isSelected}
                       aria-label={val.value}
@@ -222,7 +222,7 @@ export function ProductDetail({
                     <button
                       key={val.id}
                       type="button"
-                      className="sf-chip"
+                      className="st-chip"
                       aria-pressed={isSelected}
                       disabled={disabled}
                       onClick={() => selectValue(opt.id, val.id)}
@@ -238,7 +238,7 @@ export function ProductDetail({
 
         {/* Quantity + add to cart */}
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div className="sf-qty">
+          <div className="st-qty">
             <button
               type="button"
               aria-label="Decrease quantity"
@@ -263,7 +263,7 @@ export function ProductDetail({
           </div>
           <button
             type="button"
-            className="sf-btn sf-btn--primary sf-btn--lg"
+            className="st-btn st-btn--primary st-btn--lg"
             style={{ flex: 1, minWidth: '200px' }}
             disabled={!resolvedVariant || !inStock || adding}
             onClick={handleAdd}
@@ -282,7 +282,7 @@ export function ProductDetail({
         </div>
 
         {resolvedVariant?.sku ? (
-          <span className="sf-muted" style={{ fontSize: '0.82rem' }}>
+          <span className="st-muted" style={{ fontSize: '0.82rem' }}>
             SKU: {resolvedVariant.sku}
           </span>
         ) : null}
@@ -302,23 +302,23 @@ function StockLine({
 }) {
   if (!inStock) {
     return (
-      <span className="sf-stock sf-stock--out">
-        <span className="sf-stock__dot" />
+      <span className="st-stock st-stock--out">
+        <span className="st-stock__dot" />
         Out of stock
       </span>
     );
   }
   if (lowStock && available != null) {
     return (
-      <span className="sf-stock sf-stock--low">
-        <span className="sf-stock__dot" />
+      <span className="st-stock st-stock--low">
+        <span className="st-stock__dot" />
         Only {available} left
       </span>
     );
   }
   return (
-    <span className="sf-stock">
-      <span className="sf-stock__dot" />
+    <span className="st-stock">
+      <span className="st-stock__dot" />
       In stock
     </span>
   );

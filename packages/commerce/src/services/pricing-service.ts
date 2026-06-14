@@ -5,7 +5,7 @@
 //   2. Price list entry (channel + segment + B2B-targeted)
 //   3. Bulk price tier (quantity ramp)
 //   4. Variant base price (fallback)
-// Discounts, gift cards, and store credit stack on top via the discount
+// Discounts, gift cards, and account credit stack on top via the discount
 // + gift card services — never inline here.
 //
 // Every resolution produces a `trace` array so the storefront can answer

@@ -36,12 +36,12 @@ export function EditorialSection({
   // text-align governs horizontal alignment; the CTA is wrapped in a block so
   // that text-align reaches it.
   return (
-    <div className={cx('sf-editorial', className)}>
+    <div className={cx('st-editorial', className)}>
       {eyebrow ? <Text variant="eyebrow">{eyebrow}</Text> : null}
       {headline ? <Heading level="h2">{headline}</Heading> : null}
       {body ? <Text variant="body">{body}</Text> : null}
       {ctaLabel ? (
-        <div className="sf-editorial__cta">
+        <div className="st-editorial__cta">
           <Button href={href} variant="solid">
             {ctaLabel}
           </Button>

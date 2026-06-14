@@ -67,15 +67,15 @@ export function Pagination({
   const atEnd = page >= total;
 
   return (
-    <nav aria-label={label} className={cx('sf-pagination', className)} style={style} id={id}>
-      <ul className="sf-pagination__list">
-        <li className={cx('sf-pagination__item', atStart && 'sf-pagination__item--disabled')}>
+    <nav aria-label={label} className={cx('st-pagination', className)} style={style} id={id}>
+      <ul className="st-pagination__list">
+        <li className={cx('st-pagination__item', atStart && 'st-pagination__item--disabled')}>
           {atStart ? (
-            <span className="sf-pagination__link" aria-disabled="true">
+            <span className="st-pagination__link" aria-disabled="true">
               {prevLabel}
             </span>
           ) : (
-            <a className="sf-pagination__link" href={hrefFor(page - 1)} rel="prev">
+            <a className="st-pagination__link" href={hrefFor(page - 1)} rel="prev">
               {prevLabel}
             </a>
           )}
@@ -83,18 +83,18 @@ export function Pagination({
 
         {pages.map((p, i) =>
           p === DOTS ? (
-            <li key={`dots-${i}`} className="sf-pagination__item">
-              <span className="sf-pagination__ellipsis" aria-hidden="true">
+            <li key={`dots-${i}`} className="st-pagination__item">
+              <span className="st-pagination__ellipsis" aria-hidden="true">
                 …
               </span>
             </li>
           ) : (
             <li
               key={p}
-              className={cx('sf-pagination__item', p === page && 'sf-pagination__item--active')}
+              className={cx('st-pagination__item', p === page && 'st-pagination__item--active')}
             >
               <a
-                className="sf-pagination__link"
+                className="st-pagination__link"
                 href={hrefFor(p)}
                 aria-current={p === page ? 'page' : undefined}
               >
@@ -104,13 +104,13 @@ export function Pagination({
           )
         )}
 
-        <li className={cx('sf-pagination__item', atEnd && 'sf-pagination__item--disabled')}>
+        <li className={cx('st-pagination__item', atEnd && 'st-pagination__item--disabled')}>
           {atEnd ? (
-            <span className="sf-pagination__link" aria-disabled="true">
+            <span className="st-pagination__link" aria-disabled="true">
               {nextLabel}
             </span>
           ) : (
-            <a className="sf-pagination__link" href={hrefFor(page + 1)} rel="next">
+            <a className="st-pagination__link" href={hrefFor(page + 1)} rel="next">
               {nextLabel}
             </a>
           )}

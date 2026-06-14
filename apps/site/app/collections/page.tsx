@@ -24,11 +24,11 @@ export default async function CollectionListingPage() {
   const collections = await listCollections(tenant.slug);
 
   return (
-    <div className="sf-container">
+    <div className="st-container">
       <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Collections' }]} />
       <header style={{ marginBottom: '2rem' }}>
-        <h1 className="sf-h1">Collections</h1>
-        <p className="sf-muted" style={{ marginTop: '0.5rem' }}>
+        <h1 className="st-h1">Collections</h1>
+        <p className="st-muted" style={{ marginTop: '0.5rem' }}>
           Curated lineups from {tenant.name}.
         </p>
       </header>
@@ -41,13 +41,13 @@ export default async function CollectionListingPage() {
           action={{ label: 'Shop all products', href: '/products' }}
         />
       ) : (
-        <div className="sf-grid">
+        <div className="st-grid">
           {collections.map((c) => {
             const hero = mediaUrl(c.heroMediaId, tenant.slug);
             return (
-              <Link key={c.id} href={`/collections/${c.handle}`} className="sf-card">
-                <div className="sf-card__media">
-                  {c.featured ? <span className="sf-badge">Featured</span> : null}
+              <Link key={c.id} href={`/collections/${c.handle}`} className="st-card">
+                <div className="st-card__media">
+                  {c.featured ? <span className="st-badge">Featured</span> : null}
                   {hero ? (
                     <Image
                       src={hero}
@@ -57,14 +57,14 @@ export default async function CollectionListingPage() {
                       style={{ objectFit: 'cover' }}
                     />
                   ) : (
-                    <div className="sf-card__media sf-card__media--empty" aria-hidden="true">
+                    <div className="st-card__media st-card__media--empty" aria-hidden="true">
                       <span style={{ fontSize: '2rem' }}>❖</span>
                     </div>
                   )}
                 </div>
-                <div className="sf-card__body">
-                  <span className="sf-card__title">{c.name}</span>
-                  {c.description ? <span className="sf-muted">{c.description}</span> : null}
+                <div className="st-card__body">
+                  <span className="st-card__title">{c.name}</span>
+                  {c.description ? <span className="st-muted">{c.description}</span> : null}
                 </div>
               </Link>
             );

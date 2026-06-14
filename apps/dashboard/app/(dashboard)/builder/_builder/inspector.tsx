@@ -495,7 +495,7 @@ function RetypeControl({
 
 // One recipe-axis selector (Color / Variant / Size). Writing a value also
 // backfills the node's archetype base + defaults for any unset axis, so styling a
-// component authored before class-first (no `sf-btn` base) doesn't collapse it to
+// component authored before class-first (no `st-btn` base) doesn't collapse it to
 // a bare element (docs/47). Shared by the everyday Style panel and the collapsed
 // Advanced panel so both write identically.
 function StyleControlField({

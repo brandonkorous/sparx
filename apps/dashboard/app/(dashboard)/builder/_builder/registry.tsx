@@ -224,9 +224,9 @@ export interface ComponentDef {
     layout?: LayoutStyle;
     props?: Record<string, unknown>;
     /** Archetype seed (docs/47 §11): the brand-governed class bundle a freshly
-     *  dropped node carries (e.g. a Button → `sf-btn sf-c-primary sf-v-solid
-     *  sf-btn--sz-md`). The inspector's Style controls then read / write its
-     *  `sf-c-*` / `sf-v-*` groups; the published site renders the real Surface
+     *  dropped node carries (e.g. a Button → `st-btn st-c-primary st-v-solid
+     *  st-btn--sz-md`). The inspector's Style controls then read / write its
+     *  `st-c-*` / `st-v-*` groups; the published site renders the real Surface
      *  component against the loaded `@sparx/site-ui` stylesheet. */
     class?: string;
   };
@@ -635,11 +635,11 @@ const DEFS: ComponentDef[] = [
     ],
     // Archetype (docs/47): a fresh Button IS the Surface button — the recipe's
     // base + a default colour/treatment/size. The inspector's Style panel drives
-    // `sf-c-*` / `sf-v-*` from here, retiring the old freeform `style` prop (legacy
+    // `st-c-*` / `st-v-*` from here, retiring the old freeform `style` prop (legacy
     // trees that still carry `props.style` keep rendering via the canvas fallback).
     defaults: {
       props: { label: 'Button', href: '' },
-      class: 'sf-btn sf-c-primary sf-v-solid sf-btn--sz-md',
+      class: 'st-btn st-c-primary st-v-solid st-btn--sz-md',
     },
     leafStylesByClass: true,
     // A Button can nest an Icon (icon + label) without becoming a full container
@@ -650,7 +650,7 @@ const DEFS: ComponentDef[] = [
         ? firstString(value, 'Button')
         : sampleEmailText(firstString(node.props.label, 'Button'), emailSample);
       // On email, the filled accent CTA at the @sparx/email scale (docs/93) — the
-      // recipe `sf-*` classes are a storefront concern that doesn't apply to email.
+      // recipe `st-*` classes are a storefront concern that doesn't apply to email.
       if (surface === 'email') {
         return (
           <EmailButtonLeaf>
@@ -663,7 +663,7 @@ const DEFS: ComponentDef[] = [
       // inspector's Color / Variant / size paint live against the canvas-scoped
       // @sparx/site-ui sheet (docs/47). Legacy buttons (no recipe class — e.g.
       // starter trees carrying `props.style`) keep the neutral primitive chrome.
-      if (/(^|\s)sf-/.test(node.class ?? '')) {
+      if (/(^|\s)st-/.test(node.class ?? '')) {
         return (
           <span className={node.class}>
             {label}
@@ -697,14 +697,14 @@ const DEFS: ComponentDef[] = [
     props: [{ key: 'label', label: 'Label', control: 'text', placeholder: 'New' }],
     defaults: {
       props: { label: 'Badge' },
-      class: 'sf-badge sf-c-neutral sf-v-soft sf-badge--sz-md',
+      class: 'st-badge st-c-neutral st-v-soft st-badge--sz-md',
     },
     leafStylesByClass: true,
     acceptsChildren: true,
     renderLeaf: ({ node, value, bound, children }) => {
       const label = bound ? firstString(value, 'Badge') : firstString(node.props.label, 'Badge');
       return (
-        <span className={node.class ?? 'sf-badge sf-c-neutral sf-v-soft sf-badge--sz-md'}>
+        <span className={node.class ?? 'st-badge st-c-neutral st-v-soft st-badge--sz-md'}>
           {label}
           {children}
         </span>
@@ -716,7 +716,7 @@ const DEFS: ComponentDef[] = [
     // name; both renderers resolve it with the lazy DynamicIcon. Color comes from
     // the recipe (Advanced "Color"); the SIZE axis is declared on `archetype` (so
     // the Size control shows) but LEFT OFF the fresh node's `class` — a sizeless
-    // `.sf-icon` inherits its context's font-size (1em), so an icon dropped into a
+    // `.st-icon` inherits its context's font-size (1em), so an icon dropped into a
     // Button just matches the label instead of jumping to 28px. Picking a size
     // then grows it (and the button), which is the expected override. Bindable to a
     // scalar field (e.g. a CMS "Feature › Icon") so a collection can drive glyphs.
@@ -728,13 +728,13 @@ const DEFS: ComponentDef[] = [
     bindable: true,
     accepts: ['scalar'],
     props: [{ key: 'name', label: 'Icon', control: 'icon' }],
-    defaults: { props: { name: 'star' }, class: 'sf-icon' },
-    archetype: 'sf-icon sf-icon--sz-md',
+    defaults: { props: { name: 'star' }, class: 'st-icon' },
+    archetype: 'st-icon st-icon--sz-md',
     leafStylesByClass: true,
     renderLeaf: ({ node, value, bound }) => {
       const name = (bound ? firstString(value) : '') || firstString(node.props.name, 'star');
       return (
-        <span className={node.class ?? 'sf-icon'}>
+        <span className={node.class ?? 'st-icon'}>
           <DynamicIcon name={name as IconName} />
         </span>
       );
@@ -1136,10 +1136,10 @@ const DEFS: ComponentDef[] = [
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <PriceTag amount={null} />
         <div style={{ display: 'flex', gap: '0.4rem' }}>
-          <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-sm">Small</span>
-          <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-sm">Large</span>
+          <span className="st-btn st-c-neutral st-v-soft st-btn--sz-sm">Small</span>
+          <span className="st-btn st-c-neutral st-v-soft st-btn--sz-sm">Large</span>
         </div>
-        <span className="sf-btn sf-c-primary sf-v-solid sf-btn--sz-md">Add to cart</span>
+        <span className="st-btn st-c-primary st-v-solid st-btn--sz-md">Add to cart</span>
       </div>
     ),
   },
@@ -1157,9 +1157,9 @@ const DEFS: ComponentDef[] = [
     defaults: {},
     renderLeaf: () => (
       <div style={{ display: 'flex', gap: '0.4rem' }}>
-        <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-sm">Small</span>
-        <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-sm">Medium</span>
-        <span className="sf-btn sf-c-neutral sf-v-soft sf-btn--sz-sm">Large</span>
+        <span className="st-btn st-c-neutral st-v-soft st-btn--sz-sm">Small</span>
+        <span className="st-btn st-c-neutral st-v-soft st-btn--sz-sm">Medium</span>
+        <span className="st-btn st-c-neutral st-v-soft st-btn--sz-sm">Large</span>
       </div>
     ),
   },
@@ -1192,7 +1192,7 @@ const DEFS: ComponentDef[] = [
     props: [{ key: 'label', label: 'Label', control: 'text', placeholder: 'Add to cart' }],
     defaults: { props: { label: 'Add to cart' } },
     renderLeaf: ({ node }) => (
-      <span className="sf-btn sf-c-primary sf-v-solid sf-btn--sz-md">
+      <span className="st-btn st-c-primary st-v-solid st-btn--sz-md">
         {firstString(node.props.label, 'Add to cart')}
       </span>
     ),
@@ -1303,7 +1303,7 @@ const DEFS: ComponentDef[] = [
         ...(l.openInNewTab ? { openInNewTab: true } : {}),
       }));
       // Same components the live site renders (docs/62): row → the responsive
-      // CollapsibleNav (inline ↔ hamburger via the sf-frame container query, so
+      // CollapsibleNav (inline ↔ hamburger via the st-frame container query, so
       // the canvas device preview collapses too); stack → the static NavMenu.
       if (orientation === 'row') return <CollapsibleNav items={items} />;
       return <NavMenu items={items} orientation="stack" />;
@@ -1685,7 +1685,7 @@ export function paletteForSurface(surface: EditorSurface): ComponentDef[] {
 
 /** Build a fresh node from a palette entry. The entry's ergonomic box/layout
  *  defaults compile to the node's `class` string (docs/61), joined after the
- *  archetype/recipe seed (`defaults.class`, e.g. a Button's `sf-btn …`). */
+ *  archetype/recipe seed (`defaults.class`, e.g. a Button's `st-btn …`). */
 export function makeNode(type: string): BuilderNode {
   const def = getDef(type);
   if (!def) throw new Error(`Unknown component type: ${type}`);

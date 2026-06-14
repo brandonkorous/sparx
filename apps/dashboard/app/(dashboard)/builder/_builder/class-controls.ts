@@ -13,7 +13,7 @@ import { readClassGroup, setClassGroup } from '@sparx/builder-schemas';
 export interface ClassOption {
   value: string;
   label: string;
-  /** The class token this option writes (e.g. `sf-c-primary`). */
+  /** The class token this option writes (e.g. `st-c-primary`). */
   token: string;
 }
 
@@ -52,7 +52,7 @@ const TREATMENT_LABELS: Record<string, string> = {
 };
 
 // The shared xs…xl size steps (docs/46 §3.6, docs/47 §11). Element-namespaced in
-// the recipe (e.g. a Button's size class is `sf-btn--sz-md`); `archetypeSizeBase`
+// the recipe (e.g. a Button's size class is `st-btn--sz-md`); `archetypeSizeBase`
 // reads the prefix off a node's archetype so one control drives whatever element
 // it's editing. Only shown when the node's archetype carries a size token.
 const SIZE_KEYS = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
@@ -69,7 +69,7 @@ const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 export const COLOR_CONTROL: ClassControl = {
   id: 'color',
   label: 'Color',
-  options: COLOR_KEYS.map((k) => ({ value: k, label: cap(k), token: `sf-c-${k}` })),
+  options: COLOR_KEYS.map((k) => ({ value: k, label: cap(k), token: `st-c-${k}` })),
 };
 
 export const VARIANT_CONTROL: ClassControl = {
@@ -78,14 +78,14 @@ export const VARIANT_CONTROL: ClassControl = {
   options: TREATMENT_KEYS.map((k) => ({
     value: k,
     label: TREATMENT_LABELS[k] ?? cap(k),
-    token: `sf-v-${k}`,
+    token: `st-v-${k}`,
   })),
 };
 
 /** The controls rendered, in order, in the inspector's everyday Style panel. */
 export const STYLE_CONTROLS: ClassControl[] = [COLOR_CONTROL, VARIANT_CONTROL];
 
-/** The element prefix of a node's size axis (e.g. `sf-btn` from `sf-btn--sz-md`),
+/** The element prefix of a node's size axis (e.g. `st-btn` from `st-btn--sz-md`),
  *  or null when the archetype has no size step. Lets one Size control target
  *  whatever element it's editing without a per-component control table. */
 function archetypeSizeBase(archetype: string | undefined): string | null {
@@ -114,11 +114,11 @@ export function sizeControlFor(archetype: string | undefined): ClassControl | nu
 }
 
 // Universal utilities — Tailwind-NATIVE class names (docs/61 §11), the same a power
-// user or AI would type, compiled to the tenant `--sf-*` tokens by @sparx/surface-compile
+// user or AI would type, compiled to the tenant `--st-*` tokens by @sparx/surface-compile
 // and rendered live in the canvas (useSurfacePreview). Corners/spacing/shadow therefore
-// track the brand scale (`--sf-radius-*` / `--sf-space-base` / `--sf-shadow-*`), not
+// track the brand scale (`--st-radius-*` / `--st-space-base` / `--st-shadow-*`), not
 // hardcoded values. These write the same class on any node, shared across all archetypes.
-// (The bespoke `sf-radius-*` / `sf-m-*` / … util-box dialect is retired — docs/61 §11.)
+// (The bespoke `st-radius-*` / `st-m-*` / … util-box dialect is retired — docs/61 §11.)
 export const RADIUS_CONTROL: ClassControl = {
   id: 'radius',
   label: 'Corners',
@@ -280,7 +280,7 @@ export const BORDER_COLOR_CONTROL: ClassControl = {
 // ── Skin families (docs/61 §5.2, Phase 3) — component-builder only ────────────
 // The FULL appearance surface for a reusable component: free background/text color
 // (beyond the recipe's color×variant), free type, and motion. Tokenized → every
-// option resolves to a tenant `--sf-*` value at compile time. Gated to the
+// option resolves to a tenant `--st-*` value at compile time. Gated to the
 // component builder (the page builder gets a component's skin from its recipe, not
 // per-instance re-skinning) and driven through the same single-token group model
 // as every other control — so the context selector re-prefixes them for free.
@@ -399,8 +399,8 @@ export const TRANSFORM_CONTROL: ClassControl = {
 // ── Motion (docs/61 §9) — entrance × trigger, BOTH surfaces ───────────────────
 // Entrance and trigger interact: the SAME entrance plays through a different class
 // shape per trigger — load `animate-<token>` (pure CSS, on paint), hover
-// `hover:animate-<token>` (pure CSS), scroll `sf-reveal sf-reveal--<token>` (the
-// MotionController island flips `.sf-in` in view, against SCROLL_MOTION_CSS). So
+// `hover:animate-<token>` (pure CSS), scroll `st-reveal st-reveal--<token>` (the
+// MotionController island flips `.st-in` in view, against SCROLL_MOTION_CSS). So
 // Motion is a small COMPOSITE over `node.class` rather than one flat group: the
 // reader detects the shape, the writer clears the whole motion vocabulary and
 // re-emits. Reduced motion is neutralized globally (REDUCED_MOTION_CSS) — no
@@ -413,7 +413,7 @@ export interface MotionOption {
 }
 
 /** Entrance tokens — the canonical names shared by the compile-theme `--animate-*`
- *  set (surface-compile/theme.ts) and the `.sf-reveal--*` scroll rules
+ *  set (surface-compile/theme.ts) and the `.st-reveal--*` scroll rules
  *  (surface-compile/motion.ts, SCROLL_MOTION_CSS). */
 export const MOTION_ENTRANCES: MotionOption[] = [
   { value: 'fade-in', label: 'Fade in' },
@@ -439,18 +439,18 @@ export interface MotionState {
 
 /** The class(es) a given entrance + trigger emits. */
 function entranceClasses(entrance: string, trigger: string): string[] {
-  if (trigger === 'scroll') return ['sf-reveal', `sf-reveal--${entrance}`];
+  if (trigger === 'scroll') return ['st-reveal', `st-reveal--${entrance}`];
   if (trigger === 'hover') return [`hover:animate-${entrance}`];
   return [`animate-${entrance}`];
 }
 
 /** Every class token the Motion control may own — cleared before re-emit. */
 function allMotionTokens(): Set<string> {
-  const out = new Set<string>(['sf-reveal', 'animate-none']);
+  const out = new Set<string>(['st-reveal', 'animate-none']);
   for (const e of MOTION_ENTRANCES) {
     out.add(`animate-${e.value}`);
     out.add(`hover:animate-${e.value}`);
-    out.add(`sf-reveal--${e.value}`);
+    out.add(`st-reveal--${e.value}`);
   }
   return out;
 }
@@ -459,7 +459,7 @@ function allMotionTokens(): Set<string> {
 export function readMotion(classStr: string | undefined): MotionState {
   const tokens = new Set((classStr ?? '').split(/\s+/).filter(Boolean));
   for (const e of MOTION_ENTRANCES) {
-    if (tokens.has(`sf-reveal--${e.value}`)) return { entrance: e.value, trigger: 'scroll' };
+    if (tokens.has(`st-reveal--${e.value}`)) return { entrance: e.value, trigger: 'scroll' };
     if (tokens.has(`hover:animate-${e.value}`)) return { entrance: e.value, trigger: 'hover' };
     if (tokens.has(`animate-${e.value}`)) return { entrance: e.value, trigger: 'load' };
   }
@@ -484,8 +484,8 @@ export const STAGGER_CONTROL: ClassControl = {
   id: 'stagger',
   label: 'Reveal one by one',
   options: [
-    { value: 'subtle', label: 'Gentle', token: 'sf-reveal-stagger' },
-    { value: 'bold', label: 'Snappy', token: 'sf-reveal-stagger--bold' },
+    { value: 'subtle', label: 'Gentle', token: 'st-reveal-stagger' },
+    { value: 'bold', label: 'Snappy', token: 'st-reveal-stagger--bold' },
   ],
 };
 
@@ -760,10 +760,10 @@ export function lengthDisplay(suffix: string | null): string {
 }
 
 /** The styling axis a recipe token belongs to (mutually-exclusive groups), or
- *  null for a structural BASE token like `sf-btn` (matched exactly, not by axis). */
+ *  null for a structural BASE token like `st-btn` (matched exactly, not by axis). */
 function axisOf(token: string): string | null {
-  if (token.startsWith('sf-c-')) return 'color';
-  if (token.startsWith('sf-v-')) return 'variant';
+  if (token.startsWith('st-c-')) return 'color';
+  if (token.startsWith('st-v-')) return 'variant';
   if (token.includes('--sz-')) return 'size';
   return null;
 }
@@ -771,10 +771,10 @@ function axisOf(token: string): string | null {
 /**
  * Ensure a node keeps its archetype's structural base + a default for every
  * styling axis the author hasn't set (docs/47). When a Style control writes only
- * e.g. `sf-c-secondary` onto a node whose `class` predates class-first — a
- * template built before archetypes, so NO `sf-btn` base — the element collapses
+ * e.g. `st-c-secondary` onto a node whose `class` predates class-first — a
+ * template built before archetypes, so NO `st-btn` base — the element collapses
  * to a bare, unstyled span. This merges in the archetype's base token(s) (e.g.
- * `sf-btn`) plus the default for any UNSET axis (variant, size), so a Button
+ * `st-btn`) plus the default for any UNSET axis (variant, size), so a Button
  * stays a Button. Axes the author already set are left untouched; existing tokens
  * are preserved. No-op for nodes without an archetype (`archetype` undefined).
  */

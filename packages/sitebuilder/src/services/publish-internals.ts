@@ -8,7 +8,7 @@ import type { Prisma, SiteConfig, SiteVersion, TxClient } from '@sparx/db';
 import {
   compileTokens,
   compileTokensFromDefaults,
-  toStorefrontThemeColumns,
+  toCommerceSiteThemeColumns,
   type CompiledThemeV2,
   type CompiledTokens,
 } from '@sparx/site-themes';
@@ -78,7 +78,7 @@ export interface PublishedSnapshot {
   themeKey: string;
   appearancePolicy: string;
   // v1 compiled tokens (kept for the legacy bridge + write-through to
-  // StorefrontTheme). Never dropped — existing tenants render off it as fallback.
+  // CommerceSiteTheme). Never dropped — existing tenants render off it as fallback.
   compiledTokens: { light: Record<string, string>; dark: Record<string, string> };
   // Token Model v2 compiled set — the storefront's preferred read path
   // (docs/33). Computed LIVE at read (publish-service.overlayBrand) from the
@@ -186,7 +186,7 @@ async function nextVersionNumber(
 }
 
 // Write-through: project the compiled LIGHT tokens onto the commerce-owned
-// StorefrontTheme row so the storefront's existing token read path keeps
+// CommerceSiteTheme row so the storefront's existing token read path keeps
 // working. Per-property (docs/49 Phase 6) — each site's publish writes its own
 // row. Never adds columns — only sets the mapped subset.
 async function writeThrough(
@@ -195,10 +195,10 @@ async function writeThrough(
   propertyId: string,
   lightTokens: Record<string, string>
 ): Promise<void> {
-  const columns = toStorefrontThemeColumns(
-    lightTokens as Parameters<typeof toStorefrontThemeColumns>[0]
+  const columns = toCommerceSiteThemeColumns(
+    lightTokens as Parameters<typeof toCommerceSiteThemeColumns>[0]
   );
-  await tx.storefrontTheme.upsert({
+  await tx.commerceSiteTheme.upsert({
     where: { tenantId_propertyId: { tenantId, propertyId } },
     create: { tenantId, propertyId, ...columns },
     update: columns,

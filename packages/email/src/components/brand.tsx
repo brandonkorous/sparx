@@ -36,7 +36,7 @@ export interface BrandTokens {
   /** Absolute logo URL; when present the wordmark renders the image. */
   logoUrl?: string;
   /** Store name — wordmark fallback + footer. */
-  storeName?: string;
+  siteName?: string;
 }
 
 export const defaultBrand: BrandTokens = {
@@ -49,7 +49,7 @@ export const defaultBrand: BrandTokens = {
   border: colors.border,
   fontHeading: fontFamily,
   fontBody: fontFamily,
-  storeName: 'Sparx',
+  siteName: 'Sparx',
 };
 
 const BrandContext = React.createContext<BrandTokens>(defaultBrand);

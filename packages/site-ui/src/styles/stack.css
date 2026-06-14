@@ -1,66 +1,66 @@
 /* Surface Stack — one-dimensional flex flow (docs/47 §11 B1). Authored with
  * @apply; all axes are structural. */
 
-.sf-stack {
+.st-stack {
   @apply flex;
 }
-.sf-stack--vertical {
+.st-stack--vertical {
   @apply flex-col;
 }
-.sf-stack--horizontal {
+.st-stack--horizontal {
   @apply flex-row;
 }
-.sf-stack--wrap {
+.st-stack--wrap {
   @apply flex-wrap;
 }
 
 /* Gap scale. */
-.sf-stack--gap-xs {
+.st-stack--gap-xs {
   @apply gap-1;
 }
-.sf-stack--gap-sm {
+.st-stack--gap-sm {
   @apply gap-2;
 }
-.sf-stack--gap-md {
+.st-stack--gap-md {
   @apply gap-4;
 }
-.sf-stack--gap-lg {
+.st-stack--gap-lg {
   @apply gap-6;
 }
-.sf-stack--gap-xl {
+.st-stack--gap-xl {
   @apply gap-10;
 }
 
 /* Cross-axis alignment. */
-.sf-stack--align-start {
+.st-stack--align-start {
   @apply items-start;
 }
-.sf-stack--align-center {
+.st-stack--align-center {
   @apply items-center;
 }
-.sf-stack--align-end {
+.st-stack--align-end {
   @apply items-end;
 }
-.sf-stack--align-stretch {
+.st-stack--align-stretch {
   @apply items-stretch;
 }
-.sf-stack--align-baseline {
+.st-stack--align-baseline {
   @apply items-baseline;
 }
 
 /* Main-axis distribution. */
-.sf-stack--justify-start {
+.st-stack--justify-start {
   @apply justify-start;
 }
-.sf-stack--justify-center {
+.st-stack--justify-center {
   @apply justify-center;
 }
-.sf-stack--justify-end {
+.st-stack--justify-end {
   @apply justify-end;
 }
-.sf-stack--justify-between {
+.st-stack--justify-between {
   @apply justify-between;
 }
-.sf-stack--justify-around {
+.st-stack--justify-around {
   @apply justify-around;
 }

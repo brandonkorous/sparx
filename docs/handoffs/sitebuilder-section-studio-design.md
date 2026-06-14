@@ -8,7 +8,7 @@
 
 The dashboard surface where a tenant authors a **custom section type** — its field spec + render
 template — with no engineer and no deploy. It completes the self-serve loop for docs/38 Phase C: the
-data model, service, transports, storefront render, and editor _placement_ already ship (see
+data model, service, transports, site render, and editor _placement_ already ship (see
 [the template-language spec](sitebuilder-custom-section-template-spec.md) §10); today a definition can
 only be _created_ via API/MCP. The Studio is the missing authoring UX.
 
@@ -21,8 +21,8 @@ only be _created_ via API/MCP. The Studio is the missing authoring UX.
    **in the browser** (it's zod-only) and surfaces issues live in both views. A **form preview** shows the
    inspector form the field spec generates (reusing `FieldControl`).
 3. **Live render preview ships in v1** — the in-progress template renders against sample field values,
-   updating as you edit, themed with the real `sf-tpl-*` classes + `--sf-*` tokens.
-4. **Parity is non-negotiable**, so the render path is **extracted into one shared package** the storefront
+   updating as you edit, themed with the real `st-tpl-*` classes + `--st-*` tokens.
+4. **Parity is non-negotiable**, so the render path is **extracted into one shared package** the site
    and the Studio both consume (§4) — the preview can't drift from production because it _is_ production.
 
 ## 2. Where it lives
@@ -46,7 +46,7 @@ Left column (authoring), right column (preview); stacks on small screens.
 │ binding (none|product|collection)        │   │                            │
 ├ Fields ──────────────────────────────────┤   │  <live render of the       │
 │ SectionField[] editor (add/reorder/edit) │   │   template against sample  │
-├ Template ────────────────────────────────┤   │   field values, sf-tpl-*>  │
+├ Template ────────────────────────────────┤   │   field values, st-tpl-*>  │
 │ [ Visual | JSON ] toggle                 │   │                            │
 │  • Visual: node tree + palette + props   │   │  Form tab: the inspector   │
 │  • JSON: code editor                     │   │   FieldControl form        │
@@ -59,26 +59,26 @@ Left column (authoring), right column (preview); stacks on small screens.
 
 ### 4.1 Shared render package — `@sparx/section-template-react`
 
-Extract the storefront interpreter into a framework-neutral package so storefront SSR and the dashboard
+Extract the site interpreter into a framework-neutral package so site SSR and the dashboard
 preview render **identically**. Plain React (no `'use client'`, no server-only imports) with **injected
-adapters**, so the storefront uses it as an RSC and the dashboard wraps it in a client boundary.
+adapters**, so the site uses it as an RSC and the dashboard wraps it in a client boundary.
 
-- **Exports:** `<TemplateRenderer node config ctx adapters />` (the AST walk → `sf-tpl-*` markup, calling the
+- **Exports:** `<TemplateRenderer node config ctx adapters />` (the AST walk → `st-tpl-*` markup, calling the
   shared pure evaluator from `@sparx/sitebuilder-schemas`); the bundled `<TemplateIcon>` + `TEMPLATE_ICON_NAMES`;
-  and `section-template.css` (the `sf-tpl-*` family, moved here from `apps/site/app/storefront-template.css`).
-- **Adapters (injected):** `Link` (storefront → `SbLink` / next; dashboard → plain `<a>`), `resolveMediaSrc`
-  (storefront → `mediaUrl(ref, tenantSlug)`; dashboard → placeholder or media API), so the package owns no
+  and `section-template.css` (the `st-tpl-*` family, moved here from `apps/site/app/site-template.css`).
+- **Adapters (injected):** `Link` (site → `SbLink` / next; dashboard → plain `<a>`), `resolveMediaSrc`
+  (site → `mediaUrl(ref, tenantSlug)`; dashboard → placeholder or media API), so the package owns no
   app-specific deps.
 - **Depends on** `@sparx/sitebuilder-schemas` (types + evaluator) + `react`. React package → only apps
-  COPY it; add the COPY lines to the storefront + dashboard Dockerfiles ([[feedback_dockerfile_package_wiring]]).
-- **Storefront rewire:** `custom-template.tsx` becomes a thin wrapper passing storefront adapters;
-  `layout.tsx` imports the package CSS instead of the local `storefront-template.css` (deleted).
+  COPY it; add the COPY lines to the site + dashboard Dockerfiles ([[feedback_dockerfile_package_wiring]]).
+- **Site rewire:** `custom-template.tsx` becomes a thin wrapper passing site adapters;
+  `layout.tsx` imports the package CSS instead of the local `site-template.css` (deleted).
 
 ### 4.2 Dashboard preview
 
-A client wrapper around `<TemplateRenderer>` inside a scoped container that carries a **default `--sf-*`
+A client wrapper around `<TemplateRenderer>` inside a scoped container that carries a **default `--st-*`
 token set** (the apex preset's light tokens) as inline CSS vars, so the preview looks themed without the
-storefront's compile pipeline. Sample field values are synthesized from the field spec (placeholder text,
+site's compile pipeline. Sample field values are synthesized from the field spec (placeholder text,
 first select option, sample list rows) so a freshly-authored template renders something. Media resolves to a
 neutral placeholder.
 
@@ -113,8 +113,8 @@ shape + semantics + the in-use delete guard.
 
 ## 5. Build plan (incremental, each verifiable)
 
-1. **Extract `@sparx/section-template-react`** (interpreter + icons + CSS, adapters); rewire storefront;
-   add Dockerfile COPY lines. _Refactor, no behavior change_ → storefront build stays green.
+1. **Extract `@sparx/section-template-react`** (interpreter + icons + CSS, adapters); rewire site;
+   add Dockerfile COPY lines. _Refactor, no behavior change_ → site build stays green.
 2. **Plumbing:** “Sections” rail item, list page, create/edit routes, server actions + `getDefinition`.
 3. **Field-spec editor** component.
 4. **JSON template view + live validation + form preview** — a usable end-to-end Studio (create/edit/save).
@@ -134,10 +134,10 @@ builder is additive.
 > immutable tree ops, palette, per-node inspector, `scopeAtPath` mirrors the validator's binding scoping),
 > `value-expr-editor.tsx` (ValueExpr literal/`$bind`/`$concat` + Condition + scope-aware path picker), and
 > `section-preview.tsx` + `section-preview.css` (live render via the shared `@sparx/section-template-react`
-> interpreter against synthesized sample config, scoped apex-default `--sf-*` tokens, inert link adapter +
+> interpreter against synthesized sample config, scoped apex-default `--st-*` tokens, inert link adapter +
 > placeholder media). All green: dashboard typecheck + lint (0 errors) + repo `format:check`. A production
 > `next build` is the only check not yet run (deferred while a dev server holds the repo); the package + CSS
-> imports are proven by the identical storefront usage.
+> imports are proven by the identical site usage.
 
 ## 6. Risks & deferred
 

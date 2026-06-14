@@ -40,8 +40,8 @@ export default function AuthedAccountLayout({ children }: { children: React.Reac
 
   if (status !== 'authenticated' || !customer) {
     return (
-      <div className="sf-container" style={{ paddingBlock: '3rem' }}>
-        <div className="sf-skeleton" style={{ height: 240 }} />
+      <div className="st-container" style={{ paddingBlock: '3rem' }}>
+        <div className="st-skeleton" style={{ height: 240 }} />
       </div>
     );
   }
@@ -49,12 +49,12 @@ export default function AuthedAccountLayout({ children }: { children: React.Reac
   const displayName = customer.firstName ?? customer.email ?? 'Your account';
 
   return (
-    <div className="sf-container" style={{ paddingBlock: '2rem' }}>
-      <div className="sf-account">
-        <nav className="sf-account__nav" aria-label="Account">
-          <div className="sf-account__who">
+    <div className="st-container" style={{ paddingBlock: '2rem' }}>
+      <div className="st-account">
+        <nav className="st-account__nav" aria-label="Account">
+          <div className="st-account__who">
             <strong>{displayName}</strong>
-            {customer.email ? <span className="sf-muted">{customer.email}</span> : null}
+            {customer.email ? <span className="st-muted">{customer.email}</span> : null}
           </div>
           {NAV.map((item) => {
             const active =
@@ -64,7 +64,7 @@ export default function AuthedAccountLayout({ children }: { children: React.Reac
               <Link
                 key={item.href}
                 href={item.href}
-                className={['sf-account__link', active && 'is-active'].filter(Boolean).join(' ')}
+                className={['st-account__link', active && 'is-active'].filter(Boolean).join(' ')}
               >
                 {item.label}
               </Link>
@@ -72,7 +72,7 @@ export default function AuthedAccountLayout({ children }: { children: React.Reac
           })}
           <button
             type="button"
-            className="sf-account__link"
+            className="st-account__link"
             onClick={() => {
               void logout().then(() => router.push('/'));
             }}

@@ -31,7 +31,7 @@ export function Mask({
   children,
 }: MaskProps): React.ReactElement {
   return (
-    <div className={cx('sf-mask', `sf-mask--${shape}`, className)} style={style} id={id}>
+    <div className={cx('st-mask', `st-mask--${shape}`, className)} style={style} id={id}>
       {children}
     </div>
   );

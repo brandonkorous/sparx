@@ -22,7 +22,7 @@ export function ResetForm() {
 
   if (!token) {
     return (
-      <div className="sf-alert sf-alert--error" role="alert">
+      <div className="st-alert st-alert--error" role="alert">
         This reset link is missing its token. Request a new one from{' '}
         <Link href="/account/forgot">forgot password</Link>.
       </div>
@@ -49,18 +49,18 @@ export function ResetForm() {
 
   if (state === 'done') {
     return (
-      <div className="sf-alert" style={{ background: 'var(--sf-bg-subtle)' }} role="status">
+      <div className="st-alert" style={{ background: 'var(--st-bg-subtle)' }} role="status">
         Your password has been reset. Redirecting you to sign in…
       </div>
     );
   }
 
   return (
-    <form onSubmit={submit} className="sf-form">
-      <label className="sf-field">
+    <form onSubmit={submit} className="st-form">
+      <label className="st-field">
         <span>New password</span>
         <input
-          className="sf-input"
+          className="st-input"
           type="password"
           required
           minLength={8}
@@ -68,14 +68,14 @@ export function ResetForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <span className="sf-muted" style={{ fontSize: '0.8rem' }}>
+        <span className="st-muted" style={{ fontSize: '0.8rem' }}>
           At least 8 characters.
         </span>
       </label>
-      <label className="sf-field">
+      <label className="st-field">
         <span>Confirm password</span>
         <input
-          className="sf-input"
+          className="st-input"
           type="password"
           required
           autoComplete="new-password"
@@ -84,13 +84,13 @@ export function ResetForm() {
         />
       </label>
       {error ? (
-        <div className="sf-alert sf-alert--error" role="alert">
+        <div className="st-alert st-alert--error" role="alert">
           {error}
         </div>
       ) : null}
       <button
         type="submit"
-        className="sf-btn sf-btn--primary sf-btn--lg"
+        className="st-btn st-btn--primary st-btn--lg"
         disabled={state === 'busy'}
       >
         {state === 'busy' ? 'Saving…' : 'Set new password'}

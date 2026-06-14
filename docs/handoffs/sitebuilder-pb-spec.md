@@ -54,7 +54,7 @@ or §8 layout-driven authoring — those stay deferred.
   `ScopeEnum` in `inputs.ts` with a `TargetId` validator. Update `section-registry.test.ts`. Pure code — no
   DB, no snapshot, no live-store risk.
 - **P-B2 — storage re-key + all consumers (one migration).** Schema + migration (§4); services
-  (`page-layout-service`, `section-service`, `publish-internals`); api-rest routes + MCP; storefront
+  (`page-layout-service`, `section-service`, `publish-internals`); api-rest routes + MCP; site
   (`lib/site.ts` resolve + product/collection pages + `DEFAULT_TEMPLATES`); dashboard (`_lib`, components,
   route pages). Field `scope` → `targetId` end to end. `templateKey` / `templateId` / `pageKey` snapshot wire
   keys keep their P-A names (renaming those is a separate, later tidy — out of P-B scope).
@@ -98,7 +98,7 @@ policy (policies attach to the table OID, not the name). Confirm with `pnpm db:r
 ## 5. Deploy ordering (prod, user-triggered)
 
 Same staged discipline as the 1D migrations: **deploy the P-B2 code (which reads/writes `target_id`) to prod
-first, then run `gh workflow run db-migrate.yml` once.** Window between the two: the live storefront only
+first, then run `gh workflow run db-migrate.yml` once.** Window between the two: the live site only
 consults targets for product/collection pages, and those **fall back to `DEFAULT_TEMPLATES`** when a
 target lookup misses — so a bare-valued snapshot during the window degrades to the seeded default, never a
 hard error. Home / CMS pages render off `pageKey`, untouched. This migration **joins the still-pending prod

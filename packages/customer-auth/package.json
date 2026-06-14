@@ -2,7 +2,7 @@
   "name": "@sparx/customer-auth",
   "version": "0.0.0",
   "private": true,
-  "description": "Layer-2 storefront shopper authentication — tenant-scoped credentials, Argon2id hashing, opaque sessions. Distinct from @sparx/auth (staff Better Auth). See docs/27-customer-accounts-storefront-auth.md.",
+  "description": "Layer-2 site shopper authentication — tenant-scoped credentials, Argon2id hashing, opaque sessions. Distinct from @sparx/auth (staff Better Auth). See docs/27-customer-accounts-site-auth.md.",
   "type": "module",
   "exports": {
     ".": {

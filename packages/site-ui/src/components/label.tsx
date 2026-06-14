@@ -26,10 +26,10 @@ export function Label({
   children,
 }: LabelProps): React.ReactElement {
   return (
-    <label htmlFor={htmlFor} className={cx('sf-label', className)} style={style} id={id}>
+    <label htmlFor={htmlFor} className={cx('st-label', className)} style={style} id={id}>
       {children}
       {required ? (
-        <span className="sf-label__required" aria-hidden="true">
+        <span className="st-label__required" aria-hidden="true">
           *
         </span>
       ) : null}

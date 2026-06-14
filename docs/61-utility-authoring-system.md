@@ -17,7 +17,7 @@
 
 A node carries a **class string** of tokenized, Tailwind-native utilities (`bg-primary`, `grid-cols-4`,
 `@md:flex-row`, `animate-pulse`) plus **semantic component classes** from the Surface library
-(`sf-btn`, `sf-card`, the recipe). The class owns **all styling**; the tree owns **structure +
+(`st-btn`, `st-card`, the recipe). The class owns **all styling**; the tree owns **structure +
 binding**; a thin **`props`** slot owns per-instance data (image/embed URLs, labels, the component
 `$ref`/`$prop` machinery). The freeform `box` and `layout` objects are **deleted**. One per-tenant
 stylesheet — compiled from the tenant's own tree by `@sparx/surface-compile` — drives **both** the
@@ -33,7 +33,7 @@ This is an **execution** doc, not a greenfield one. Current state (verified 2026
 
 | Already built & wired                                                                                                                                                                                                                                    | Where                                                                                |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| **Per-tenant Tailwind compile** — tree-shake class literals → compile through a tenant-flavored theme (`bg-primary`/`p-6`/`rounded-box` → `--sf-*`) → content-hashed `tenant.css`; real `@tailwindcss/node` compiler, so _any_ utility compiles for free | `packages/surface-compile/*`                                                         |
+| **Per-tenant Tailwind compile** — tree-shake class literals → compile through a tenant-flavored theme (`bg-primary`/`p-6`/`rounded-box` → `--st-*`) → content-hashed `tenant.css`; real `@tailwindcss/node` compiler, so _any_ utility compiles for free | `packages/surface-compile/*`                                                         |
 | **Three compile endpoints** — `getPublishedStylesheet` (`tenant.css`), `getDraftStylesheet`, `compilePreview` (live editor)                                                                                                                              | `packages/builder/src/services/surface-css-service.ts`                               |
 | **Rich token theme** — semantic palette + `-content`/hover/active/tint, 12-step spacing, 3 radius scales, depth shadows, container width, fonts; `@theme` maps color/spacing/radius/shadow/font/container                                                | `packages/site-themes/src/v2/*`, `surface-compile/src/theme.ts`                      |
 | **Surface component library** — 100+ components on the five-axis recipe, `@apply` over the same theme                                                                                                                                                    | `packages/site-ui/*`                                                                 |
@@ -79,7 +79,7 @@ coexisting). Instead:
 | `surface`                                                           | `bg-base-100` / `bg-primary` / … (recipe or token utility)                                  |
 | `padding`                                                           | `p-*` (token spacing scale)                                                                 |
 | `height`                                                            | `min-h-*` / `h-*`                                                                           |
-| `backgroundWidth` / `contentWidth`                                  | a Section archetype (`sf-section` full-bleed + contained inner)                             |
+| `backgroundWidth` / `contentWidth`                                  | a Section archetype (`st-section` full-bleed + contained inner)                             |
 | `align`                                                             | `text-*` / `items-*` / `justify-*`                                                          |
 | `backgroundImage` / `…Binding`                                      | `props.bg` (URL/binding) + `bg-cover bg-center` classes; renderer sets `style` from `props` |
 | `overlay` / `textTone`                                              | Section/PhotoPanel archetype classes (scrim + tone)                                         |
@@ -209,7 +209,7 @@ Defense in depth — the same boundary [47](47-class-first-authoring-model.md) �
 3. **Publish-time:** a final gate refuses a tree carrying a disallowed token.
 
 **Allowed:** all layout/flex/grid/spacing/sizing/typography/border/radius/shadow/opacity/transform/
-motion utilities; `--sf-*`-mapped colors; container-query + state + `dark:` variants; arbitrary values
+motion utilities; `--st-*`-mapped colors; container-query + state + `dark:` variants; arbitrary values
 on safe properties. **Blocked/constrained:** `position: fixed` (clickjacking — `relative`/`absolute`/
 `sticky` only); `z-index` capped to a bounded scale (no `z-[9999]`); raw `url()` and `content-[…]`
 (image URLs go through `props` + the asset picker, never a class); `@import`. **Tier 4 (raw CSS)** is
@@ -253,7 +253,7 @@ Motion is authored **as classes on `node.class`**, through the same class-group 
 other docs/61 control uses (`readClassGroup`/`setClassGroup`) — _not_ a side-channel `props` object. The
 key realization: a scroll trigger needs a runtime hook, but the **authoring is still a static class** —
 the class declares the intent and the resting/target states; the island only flips one state class
-(`.sf-in`) at the right moment. This is how the deprecated `[data-sf-reveal]` reveal already worked,
+(`.st-in`) at the right moment. This is how the deprecated `[data-st-reveal]` reveal already worked,
 re-expressed as a marker _class_ so it merges naturally onto **both** render paths (the wrapper div _and_
 a class-on-leaf element) with **zero renderer translation** — the renderer already applies `node.class`
 verbatim to the one styled element per node.
@@ -264,15 +264,15 @@ The three triggers map to three class shapes:
 | ------------- | ------------------------------ | ------------------------------- |
 | **On load**   | `animate-<token>`              | pure CSS, fires on paint        |
 | **On hover**  | `hover:animate-<token>`        | pure CSS variant                |
-| **On scroll** | `sf-reveal sf-reveal--<token>` | island toggles `.sf-in` in view |
+| **On scroll** | `st-reveal st-reveal--<token>` | island toggles `.st-in` in view |
 
 Tempo rides along as ordinary allowlisted utilities: **speed** → `[animation-duration:300ms|500ms|800ms]`,
-**delay** → `[animation-delay:Nms]`. Container **stagger** → `sf-reveal-stagger` (+ `--bold`), a CSS-only
+**delay** → `[animation-delay:Nms]`. Container **stagger** → `st-reveal-stagger` (+ `--bold`), a CSS-only
 rule that fades its direct children in sequence. The standalone entrance-Animation picker shipped in
 Phase 3 (§12.3) **folds into** this Motion control rather than running in parallel — it already wrote
 `animate-*` via the class-group bridge, so this is an extension, not a parallel system.
 
-### 9.3 The `.sf-reveal` contract — the one new runtime
+### 9.3 The `.st-reveal` contract — the one new runtime
 
 The render layer ships **one self-contained stylesheet block** (`SCROLL_MOTION_CSS`, beside
 `REDUCED_MOTION_CSS` in `@sparx/surface-compile`'s `motion.ts`) and **one client island**
@@ -282,24 +282,24 @@ The render layer ships **one self-contained stylesheet block** (`SCROLL_MOTION_C
   `animation` shorthands literally, so it never depends on whether the per-tenant compile happened to
   emit the `--animate-*` theme vars (which tree-shake on usage). It ships once on the render surface, not
   per tenant.
-- The hidden initial state is **gated on `html.sf-anim-ready`**, set by a tiny before-paint script **only
+- The hidden initial state is **gated on `html.st-anim-ready`**, set by a tiny before-paint script **only
   when motion is allowed**, so JS-off _or_ reduced-motion never hides content (the proven
   [reveal](59-responsive-rendering.md) gate, generalized off the deprecated section path):
 
   ```css
-  html.sf-anim-ready .sf-reveal:not(.sf-in) {
+  html.st-anim-ready .st-reveal:not(.st-in) {
     opacity: 0;
   }
-  html.sf-anim-ready .sf-reveal--fade-up.sf-in {
-    animation: sf-fade-up 0.6s ease-out both;
+  html.st-anim-ready .st-reveal--fade-up.st-in {
+    animation: st-fade-up 0.6s ease-out both;
   }
   /* …one rule per token; the @keyframes are defined in the same block… */
   ```
 
 - `MotionController` (one shared `IntersectionObserver`, `rootMargin` tuned to fire just before entry, low
-  `threshold`) queries `.sf-reveal`, adds `.sf-in` on intersect, then unobserves (one-shot). Re-scans on
+  `threshold`) queries `.st-reveal`, adds `.st-in` on intersect, then unobserves (one-shot). Re-scans on
   route change (`usePathname`). Early-returns under `prefers-reduced-motion`. It needs **no per-token
-  knowledge** — the token-specific rule lives in CSS; the island just flips `.sf-in`.
+  knowledge** — the token-specific rule lives in CSS; the island just flips `.st-in`.
 - **on load** (`animate-<token>`) and **on hover** (`hover:animate-<token>`) are pure CSS, no island. The
   global `REDUCED_MOTION_CSS` neutralizes all three triggers under the OS setting — no per-class
   `motion-safe:` needed.
@@ -309,12 +309,12 @@ The render layer ships **one self-contained stylesheet block** (`SCROLL_MOTION_C
 Because motion is just classes the renderer already applies, **the site renderer needs no change to
 _apply_ motion**. The only work is render-surface plumbing, done once:
 
-- **Site** (`apps/site/app/layout.tsx`): inject `SCROLL_MOTION_CSS` in `<head>`, add the `sf-anim-ready`
+- **Site** (`apps/site/app/layout.tsx`): inject `SCROLL_MOTION_CSS` in `<head>`, add the `st-anim-ready`
   before-paint line, mount `MotionController` in `<body>`. (The legacy
-  `RevealController`/`[data-sf-reveal]` path is retired when the legacy section renderer goes.)
+  `RevealController`/`[data-st-reveal]` path is retired when the legacy section renderer goes.)
 - **Canvas** (`_builder/canvas.tsx`): inject `SCROLL_MOTION_CSS`; the editor shows motion elements in
   their **resting (visible) state** by default — an author never loses sight of content mid-edit — with a
-  canvas toolbar **"Play motion"** that adds `sf-anim-ready` and runs the observer for a single replay.
+  canvas toolbar **"Play motion"** that adds `st-anim-ready` and runs the observer for a single replay.
   Preview == production for the _result_, without the hostile UX of content vanishing while you arrange
   it.
 
@@ -352,7 +352,7 @@ Restraint is **engineered, not gated**:
 One compiled stylesheet drives both surfaces:
 
 - **Site:** the published `tenant.css` (already produced by `getPublishedStylesheet`) loads in the site
-  `<head>`, after the per-request `--sf-*` theme. The renderer applies `node.class` + `node.props`
+  `<head>`, after the per-request `--st-*` theme. The renderer applies `node.class` + `node.props`
   (image URLs etc. via `style`) and renders leaves/containers through **Surface components** — finishing
   the [46](46-site-ui-component-library.md) §7 migration, now unblocked.
 - **Canvas:** the live `compilePreview`/`getDraftStylesheet` output injects into the canvas; the canvas
@@ -372,13 +372,13 @@ Extends the existing class-group bridge (`class-controls.ts`, `readClassGroup`/`
   (§5.1) for `surface==='page'`.
 - A bounded **raw class field** remains the final author escape hatch (allowlist-checked).
 
-**Naming — keep two populations, switch one (Phase 0, pre-launch).** (1) The **`--sf-*` token**
-namespace _stays_ — plumbing; authors never type it. (2) **Component classes** (`sf-btn`, `sf-card`,
-parts) and the **recipe** (`sf-c-*`/`sf-v-*`) _stay_, but the recipe is **internal to Surface
-components only** — an author never types `sf-c-primary`. (3) The **author-facing utility surface**
-goes **Tailwind-native now**: retire the bespoke `util-box.css` set (`sf-radius-*` → `rounded-*`,
-`sf-m-*` → `m-*`, `sf-border-*` → `border`, `sf-shadow-*` → `shadow-*`), and color a generic element
-with `bg-primary`/`text-primary-content` (which `surface-compile` already resolves to `--sf-*`). This
+**Naming — keep two populations, switch one (Phase 0, pre-launch).** (1) The **`--st-*` token**
+namespace _stays_ — plumbing; authors never type it. (2) **Component classes** (`st-btn`, `st-card`,
+parts) and the **recipe** (`st-c-*`/`st-v-*`) _stay_, but the recipe is **internal to Surface
+components only** — an author never types `st-c-primary`. (3) The **author-facing utility surface**
+goes **Tailwind-native now**: retire the bespoke `util-box.css` set (`st-radius-*` → `rounded-*`,
+`st-m-*` → `m-*`, `st-border-*` → `border`, `st-shadow-*` → `shadow-*`), and color a generic element
+with `bg-primary`/`text-primary-content` (which `surface-compile` already resolves to `--st-*`). This
 is nearly free (the compile already maps the native names) and is done in **Phase 0** so the Phase 1
 re-seed bakes native names from the start — post-launch it would be a stored-content migration; now it
 is code-only.
@@ -392,7 +392,7 @@ is code-only.
 | **2 — Render unification** _(keystone)_ | Load `tenant.css`/draft into site + canvas; renderers apply `class` + `props` via Surface components inside `@container`; **delete both box engines + `bx-*` + device-JS**.                                                                                                                                                                                                 | Preview == production, one sheet     |
 | **3 — Utility panel**                   | Full property panel in the component builder — all families as class-group controls, with breakpoint/state/`dark:` context. Allowlist-enforced.                                                                                                                                                                                                                             | Power authoring                      |
 | **4 — Page presets + escalation**       | Replace the page box panel with the layout-archetype prop controls (write classes, seed responsive defaults); polish "Edit as component."                                                                                                                                                                                                                                   | Safe human surface                   |
-| **5 — Motion (both surfaces)**          | Motion classes (entrance × trigger × tempo) on every node, **both** surfaces; the `.sf-reveal` in-view island + self-contained `SCROLL_MOTION_CSS` (the one new runtime); canvas "Play motion"; container stagger; consolidate the Phase 3 entrance picker; teach motion in the Builder MCP guide. (Breakpoint switcher ↔ device-preview linkage landed in Phase 3, §12.3.) | Animation authoring, all surfaces    |
+| **5 — Motion (both surfaces)**          | Motion classes (entrance × trigger × tempo) on every node, **both** surfaces; the `.st-reveal` in-view island + self-contained `SCROLL_MOTION_CSS` (the one new runtime); canvas "Play motion"; container stagger; consolidate the Phase 3 entrance picker; teach motion in the Builder MCP guide. (Breakpoint switcher ↔ device-preview linkage landed in Phase 3, §12.3.) | Animation authoring, all surfaces    |
 | **6 — Governance & demos**              | Brand designer governs the archetype set + the utility allowlist; re-author blueprints/Tesla/PDP onto archetypes; supersede the box sections in 40/44/45/46/59.                                                                                                                                                                                                             | Polished + documented                |
 | **7 — Tier 4 raw CSS** _(deferred)_     | Scoped + sanitized raw CSS, Enterprise-gated.                                                                                                                                                                                                                                                                                                                               | Later                                |
 
@@ -484,7 +484,7 @@ the inspector. Both files: `_builder/class-controls.ts` + `_builder/inspector.ts
   gate Phase 4 set). The full skin families: Background + Text color (free, beyond the recipe's
   color×variant), Font family/size/weight/tracking/case, Corners/Border/Shadow (moved here out of
   Advanced), Transition + Transform, and the Surface entrance Animations. All tokenized → resolve to
-  `--sf-*`. Entrance Animation is base-only (no variant), so it's dropped off-base. `skinControlsFor(prefix)`.
+  `--st-*`. Entrance Animation is base-only (no variant), so it's dropped off-base. `skinControlsFor(prefix)`.
 - **Responsive arrangement.** `ArrangementPanel` (containers, both surfaces) got the context selector too —
   breakpoints only (no hover/dark layout). The structural choice (direction vs columns) follows the BASE
   display; you tune columns/gap/justify/align/padding per breakpoint.
@@ -502,10 +502,10 @@ the renderer already applies `node.class` verbatim). Decisions made during execu
 
 - **Class-based, not props-based.** The §9 spec was revised from a `props.motion` object to plain
   classes on `node.class`: load `animate-<token>`, hover `hover:animate-<token>`, scroll
-  `sf-reveal sf-reveal--<token>`. The site renderer needed **zero** change to _apply_ motion — only
-  render-surface plumbing. Stagger is a container class `sf-reveal-stagger` (+ `--bold`).
+  `st-reveal st-reveal--<token>`. The site renderer needed **zero** change to _apply_ motion — only
+  render-surface plumbing. Stagger is a container class `st-reveal-stagger` (+ `--bold`).
 - **One new runtime + one self-contained sheet.** `SCROLL_MOTION_CSS` (own `@keyframes` + the
-  `.sf-reveal`/`.sf-in`/stagger rules, generated programmatically) and `MotionController` (one shared
+  `.st-reveal`/`.st-in`/stagger rules, generated programmatically) and `MotionController` (one shared
   `IntersectionObserver`, one-shot, reduced-motion early-return, route re-scan) ship from
   `@sparx/surface-compile`'s `motion.ts` + `apps/site`. The sheet is self-contained so it never depends
   on the per-tenant compile emitting `--animate-*` (which tree-shakes on use).
@@ -513,8 +513,8 @@ the renderer already applies `node.class` verbatim). Decisions made during execu
   `SCROLL_MOTION_CSS` are prepended in `surface-css-service` (`getPublishedStylesheet` /
   `getDraftStylesheet` / `compilePreview`), so they ride the existing HTTP `surfaceCss` path to the live
   site **and** the canvas with no new `apps/site` dependency (the site deliberately has no
-  `surface-compile` dep — it would pull Tailwind in). The before-paint gate adds `sf-anim-ready` (next to
-  the legacy `sf-reveal-ready`); `<MotionController />` mounts in the site layout body.
+  `surface-compile` dep — it would pull Tailwind in). The before-paint gate adds `st-anim-ready` (next to
+  the legacy `st-reveal-ready`); `<MotionController />` mounts in the site layout body.
 - **Inspector.** A cross-surface **Motion** panel (`MotionPanel`) on every node: Entrance picker +
   Trigger (Scroll/Load/Hover); containers also get **Stagger**. It's a small composite over
   `node.class` (`readMotion`/`applyMotion`) since entrance × trigger isn't a single flat group. The
@@ -527,11 +527,11 @@ the renderer already applies `node.class` verbatim). Decisions made during execu
   scroll-reveal recipe; `vocabulary.test.ts` asserts the recipe validates and every motion class passes
   the allowlist.
 - **Deferred (fast-follows):** (1) the canvas **"Play motion"** replay — the no-iframe canvas shares the
-  document, and the reveal CSS is gated on `html.sf-anim-ready`, so a scoped one-shot replay is fiddly;
+  document, and the reveal CSS is gated on `html.st-anim-ready`, so a scoped one-shot replay is fiddly;
   the canvas correctly shows the **resting** state today (the dashboard `<html>` never sets the gate).
   (2) **Speed / Delay** controls (the `--animate-*` durations are baked; a clean speed knob wants a CSS
   var threaded through the shorthand). (3) **LCP guard** for above-the-fold scroll entrances. (4)
-  Retiring the legacy `RevealController`/`[data-sf-reveal]` path when the legacy section renderer goes.
+  Retiring the legacy `RevealController`/`[data-st-reveal]` path when the legacy section renderer goes.
 
 ## 13. Open questions / deferred
 
@@ -551,7 +551,7 @@ the renderer already applies `node.class` verbatim). Decisions made during execu
 - **[40](40-sitebuilder-composition-model.md) §5** (the box/layout base) — the node shape is now §4
   here; box/layout are deleted.
 - **[47](47-class-first-authoring-model.md)** — this doc is its execution; node keeps `props` (not
-  `data`); the utility layer is Tailwind-native, not the `sf-*` _dialect_, at the author surface.
+  `data`); the utility layer is Tailwind-native, not the `st-*` _dialect_, at the author surface.
 - **[46](46-site-ui-component-library.md) §7** — the migration is no longer "on hold"; it lands in
   Phase 2 as the render-unification keystone.
 - **[59](59-responsive-rendering.md)** — auto-collapse + device-derived JS are replaced by explicit

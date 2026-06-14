@@ -214,7 +214,7 @@ api-rest          # Fastify REST API
 api-graphql       # Pothos/Mercurius GraphQL
 api-mcp           # MCP server (AI integration)
 dashboard         # Next.js tenant admin
-storefront        # Next.js multi-tenant storefronts
+site        # Next.js multi-tenant sites
 caddy             # Reverse proxy + on-demand TLS
 redis             # Cache + BullMQ (Phase 1: pod, Phase 2: Memorystore)
 postal            # Self-hosted email delivery
@@ -233,7 +233,7 @@ webhook-worker    # Outbound webhook dispatch
 | api-graphql    | 1        | 250m        | 256Mi          |
 | api-mcp        | 1        | 250m        | 256Mi          |
 | dashboard      | 1        | 250m        | 512Mi          |
-| storefront     | 2        | 500m        | 512Mi          |
+| site           | 2        | 500m        | 512Mi          |
 | caddy          | 1        | 100m        | 128Mi          |
 | redis          | 1        | 100m        | 256Mi          |
 | postal         | 1        | 500m        | 512Mi          |
@@ -296,7 +296,7 @@ New tenant signs up
         → Tenant found and active
         → Caddy calls Let's Encrypt ACME API
         → SSL cert issued (~2 seconds)
-        → Storefront renders
+        → Site renders
     → All subsequent requests: cert cached, sub-200ms
 ```
 

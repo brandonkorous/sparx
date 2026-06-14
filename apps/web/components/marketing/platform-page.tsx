@@ -104,8 +104,8 @@ function PlatformHero() {
           >
             Sparx is a modular operating system for the web. Builder, Commerce, CMS, CRM, Email,
             B2B, Dropship, and AI — running on one shared data layer, behind one dashboard, on one
-            bill. A publisher, a storefront, a wholesale distributor, and a CRM-only team are all
-            equally first-class. Selling is one capability, never the assumption.
+            bill. A publisher, a shop, a wholesale distributor, and a CRM-only team are all equally
+            first-class. Selling is one capability, never the assumption.
           </p>
 
           <div
@@ -1036,7 +1036,7 @@ function ApiSurface() {
       ci: 'S',
       color: MODS.commerce.color,
       name: 'Your site',
-      desc: 'Storefront and pages read the same API',
+      desc: 'Site and pages read the same API',
     },
     {
       ci: 'AI',

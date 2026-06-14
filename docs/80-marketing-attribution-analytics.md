@@ -64,7 +64,7 @@ and who reads the report. Build the engine once; instantiate it twice.
   referrer + landing path + click ids). Touches are append-only.
 - **Session** — a series of pageviews under one visit (PostHog's `$session_id`; 30-min inactivity
   window). A session has at most one entry touch.
-- **Visitor** — an anonymous person, keyed by a first-party UUID. On storefronts this UUID is
+- **Visitor** — an anonymous person, keyed by a first-party UUID. On sites this UUID is
   **already minted**: the `sparx_consent` cookie's `visitorId` (doc 42 §4.2). We reuse it rather than
   create a parallel id (§6.1).
 - **Identity edge** — the link from an anonymous visitor to a known principal: a Better Auth user /
@@ -122,7 +122,7 @@ community · qr · mcp`. The classifier (§5.4) maps medium → channel; an unkn
 
 - **L-PLAT:** `apps/web` (all marketing routes) + the per-module marketing domains. Cookie scoped to
   the registrable domain **`.sparx.works`** so `app.sparx.works` can read first-touch at signup.
-- **L-TEN:** `apps/site` storefronts. Cookie scoped to the storefront's registrable domain. For
+- **L-TEN:** `apps/site` sites. Cookie scoped to the site's registrable domain. For
   `*.sparx.zone` that's `.sparx.zone`; for a tenant **custom domain** it's that domain (handled in §6.2).
 
 ### 5.2 The attribution snapshot (the shared shape)
@@ -164,7 +164,7 @@ ordered list lives in `attribution_touches` (§8).
 - **`sparx_attr_last`** — overwritten on every touch that carries new channel context (a bare repeat
   visit with no UTM and an internal referrer does **not** overwrite last-touch — that's the
   _last-non-direct_ rule baked into capture).
-- **Visitor id** — on storefronts, **reuse `sparx_consent.visitorId`** (doc 42). On marketing,
+- **Visitor id** — on sites, **reuse `sparx_consent.visitorId`** (doc 42). On marketing,
   mint `sparx_attr_vid` (UUID) at the edge.
 - **localStorage mirror** for resilience against cookie eviction; cookie is source of truth.
 - **Edge-set, not just client JS.** A Next middleware (`apps/web/middleware.ts`,
@@ -218,7 +218,7 @@ Attribution is **not** strictly-necessary. It maps onto doc 42's four categories
 ### 6.2 True cross-domain (different registrable domains)
 
 A tenant on a **custom domain** whose checkout or account lives on `*.sparx.zone` crosses an eTLD+1
-boundary the cookie can't span. Handle with **link decoration**: the storefront appends a short-lived
+boundary the cookie can't span. Handle with **link decoration**: the site appends a short-lived
 signed `?_sx=` handoff param (the visitor id + a capture nonce) to cross-origin navigations into the
 Sparx-hosted surface; the receiving middleware mints/reconciles the cookie from it. Same mechanism we
 use for `sparx.works → app.sparx.works` when a future custom WizeWorks domain is involved. No
@@ -276,7 +276,7 @@ order_id (nullable FK) · occurred_at`. Append-only like `audit_logs` / `consent
 
 ### 8.2 `attribution_visitors` (tenant)
 
-1:1 with a storefront visitor id: `tenant_id · visitor_id (PK part) · first_touch (jsonb) ·
+1:1 with a site visitor id: `tenant_id · visitor_id (PK part) · first_touch (jsonb) ·
 last_touch (jsonb) · first_seen_at · last_seen_at · customer_id (nullable)`. `visitor_id` **is**
 `sparx_consent.visitorId`. Set-once on `first_touch`.
 
@@ -469,7 +469,7 @@ touches a module, RLS on every tenant table, event-driven, conventional commits.
 
 [05 Data Model](05-data-model.md) · [07 MCP](07-mcp-server-spec.md) · [11 CRM](11-crm-prd.md) ·
 [16 Auth & Security](16-auth-security.md) · [17 Billing](17-billing-subscriptions.md) ·
-[27 Customer Accounts & Storefront Auth](27-customer-accounts-storefront-auth.md) ·
+[27 Customer Accounts & Site Auth](27-customer-accounts-site-auth.md) ·
 [42 Legal & Consent](42-legal-and-consent.md) · [50 SEO/AIO](50-seo-aio-discoverability.md) ·
 [60 Marketplace](60-marketplace.md) · [63 External Data Connections](63-external-data-connections.md) ·
 [67 Billing Build Plan](67-billing-build-plan.md)

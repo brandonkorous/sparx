@@ -1,4 +1,4 @@
-// Runs the REAL Tailwind compiler — proves token utilities resolve to --sf-*,
+// Runs the REAL Tailwind compiler — proves token utilities resolve to --st-*,
 // structural utilities still work, and unknown classes are dropped (not fatal).
 
 import { describe, expect, it } from 'vitest';
@@ -7,20 +7,20 @@ import { compileClasses } from './compile';
 import { buildTenantStylesheet } from './index';
 
 describe('compileClasses', () => {
-  it('maps a color utility onto the tenant --sf-* var', async () => {
+  it('maps a color utility onto the tenant --st-* var', async () => {
     const css = await compileClasses(['bg-base-100', 'text-primary-content']);
     expect(css).toContain('.bg-base-100');
-    expect(css).toContain('--color-base-100: var(--sf-base-100)');
-    expect(css).toContain('--color-primary-content: var(--sf-primary-content)');
+    expect(css).toContain('--color-base-100: var(--st-base-100)');
+    expect(css).toContain('--color-primary-content: var(--st-primary-content)');
   });
 
   it('emits structural utilities and the tenant spacing scale', async () => {
     const css = await compileClasses(['flex', 'p-6', 'rounded-box']);
     expect(css).toMatch(/\.flex\b/);
     expect(css).toMatch(/display:\s*flex/);
-    // p-6 references the --spacing multiplier, which we remap to --sf-space-base.
-    expect(css).toContain('--spacing: var(--sf-space-base');
-    expect(css).toContain('--radius-box: var(--sf-radius-box)');
+    // p-6 references the --spacing multiplier, which we remap to --st-space-base.
+    expect(css).toContain('--spacing: var(--st-space-base');
+    expect(css).toContain('--radius-box: var(--st-radius-box)');
   });
 
   it('drops unknown candidates without throwing', async () => {
@@ -66,7 +66,7 @@ describe('buildTenantStylesheet', () => {
     });
     const sheet = await buildTenantStylesheet(tree);
     expect(sheet.classes).toEqual(['bg-base-100', 'flex', 'text-base-content']);
-    expect(sheet.css).toContain('var(--sf-base-100)');
+    expect(sheet.css).toContain('var(--st-base-100)');
     expect(sheet.hash).toMatch(/^[0-9a-f]{16}$/);
   });
 

@@ -30,22 +30,22 @@ export function HoverGallery({
   const current = images[Math.min(active, images.length - 1)]!;
 
   return (
-    <div className={cx('sf-hovergallery', className)} style={style} id={id}>
-      <div className="sf-hovergallery__main">
-        <img src={current.src} alt={current.alt ?? ''} className="sf-hovergallery__img" />
+    <div className={cx('st-hovergallery', className)} style={style} id={id}>
+      <div className="st-hovergallery__main">
+        <img src={current.src} alt={current.alt ?? ''} className="st-hovergallery__img" />
       </div>
       {images.length > 1 ? (
-        <div className="sf-hovergallery__thumbs">
+        <div className="st-hovergallery__thumbs">
           {images.map((img, i) => (
             <button
               type="button"
               key={i}
-              className={cx('sf-hovergallery__thumb', i === active && 'sf-hovergallery__thumb--on')}
+              className={cx('st-hovergallery__thumb', i === active && 'st-hovergallery__thumb--on')}
               aria-label={img.alt ?? `Image ${i + 1}`}
               onMouseEnter={() => setActive(i)}
               onFocus={() => setActive(i)}
             >
-              <img src={img.src} alt="" className="sf-hovergallery__thumb-img" />
+              <img src={img.src} alt="" className="st-hovergallery__thumb-img" />
             </button>
           ))}
         </div>

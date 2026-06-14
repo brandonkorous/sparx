@@ -1,141 +1,141 @@
-/* site-ui variant recipe — the --sf-* analog of @sparx/ui tokens.css `.sx-c-*`
+/* site-ui variant recipe — the --st-* analog of @sparx/ui tokens.css `.sx-c-*`
  * + treatmentVariants (docs/46 §3.6). THIS is the load-bearing primitive: every
  * color-bearing component composes color × variant off these classes.
  *
- * COLOR axis (`.sf-c-{color}`): maps the five role vars the treatments read —
+ * COLOR axis (`.st-c-{color}`): maps the five role vars the treatments read —
  *   --c-bg    fill color (solid) / border color (outline,dashed)
  *   --c-fg    text ON the fill (solid, glass)
  *   --c-ink   text/border when NOT filled (soft, outline, dashed, ghost, link)
  *   --c-hover solid hover fill / link hover ink (base nudged toward base-content)
  *   --c-tint  low-alpha wash (soft fill, outline/ghost hover)
  * mirrors @sparx/ui's derivation (oklch mixes toward the readable ink). Assumes
- * --sf-* are in scope (site.css default layer or the compiled tenant
+ * --st-* are in scope (site.css default layer or the compiled tenant
  * block / .bx-canvas), exactly as @sparx/ui assumes tokens.css.
  *
- * VARIANT axis (`.sf-v-{variant}`): treatments authored ONCE against --c-*, so
+ * VARIANT axis (`.st-v-{variant}`): treatments authored ONCE against --c-*, so
  * color × variant composes with no cartesian product. Imported LAST so a
  * treatment's resets (e.g. link's padding:0) win over component size classes. */
 
 /* ── Color recipe ─────────────────────────────────────────────────────────── */
 
-.sf-c-primary {
-  --c-bg: var(--sf-primary);
-  --c-fg: var(--sf-primary-content);
-  --c-ink: color-mix(in oklch, var(--sf-primary) 60%, var(--sf-base-content));
-  --c-hover: color-mix(in oklch, var(--sf-primary) 86%, var(--sf-base-content));
-  --c-tint: color-mix(in oklch, var(--sf-primary) 14%, transparent);
+.st-c-primary {
+  --c-bg: var(--st-primary);
+  --c-fg: var(--st-primary-content);
+  --c-ink: color-mix(in oklch, var(--st-primary) 60%, var(--st-base-content));
+  --c-hover: color-mix(in oklch, var(--st-primary) 86%, var(--st-base-content));
+  --c-tint: color-mix(in oklch, var(--st-primary) 14%, transparent);
 }
-.sf-c-secondary {
-  --c-bg: var(--sf-secondary);
-  --c-fg: var(--sf-secondary-content);
-  --c-ink: color-mix(in oklch, var(--sf-secondary) 60%, var(--sf-base-content));
-  --c-hover: color-mix(in oklch, var(--sf-secondary) 86%, var(--sf-base-content));
-  --c-tint: color-mix(in oklch, var(--sf-secondary) 14%, transparent);
+.st-c-secondary {
+  --c-bg: var(--st-secondary);
+  --c-fg: var(--st-secondary-content);
+  --c-ink: color-mix(in oklch, var(--st-secondary) 60%, var(--st-base-content));
+  --c-hover: color-mix(in oklch, var(--st-secondary) 86%, var(--st-base-content));
+  --c-tint: color-mix(in oklch, var(--st-secondary) 14%, transparent);
 }
-.sf-c-accent {
-  --c-bg: var(--sf-accent);
-  --c-fg: var(--sf-accent-content);
-  --c-ink: color-mix(in oklch, var(--sf-accent) 60%, var(--sf-base-content));
-  --c-hover: color-mix(in oklch, var(--sf-accent) 86%, var(--sf-base-content));
-  --c-tint: color-mix(in oklch, var(--sf-accent) 14%, transparent);
+.st-c-accent {
+  --c-bg: var(--st-accent);
+  --c-fg: var(--st-accent-content);
+  --c-ink: color-mix(in oklch, var(--st-accent) 60%, var(--st-base-content));
+  --c-hover: color-mix(in oklch, var(--st-accent) 86%, var(--st-base-content));
+  --c-tint: color-mix(in oklch, var(--st-accent) 14%, transparent);
 }
-.sf-c-neutral {
-  --c-bg: var(--sf-neutral);
-  --c-fg: var(--sf-neutral-content);
-  --c-ink: var(--sf-base-content);
-  --c-hover: color-mix(in oklch, var(--sf-neutral) 86%, var(--sf-base-content));
-  --c-tint: color-mix(in oklch, var(--sf-neutral) 14%, transparent);
+.st-c-neutral {
+  --c-bg: var(--st-neutral);
+  --c-fg: var(--st-neutral-content);
+  --c-ink: var(--st-base-content);
+  --c-hover: color-mix(in oklch, var(--st-neutral) 86%, var(--st-base-content));
+  --c-tint: color-mix(in oklch, var(--st-neutral) 14%, transparent);
 }
-.sf-c-info {
-  --c-bg: var(--sf-info);
-  --c-fg: var(--sf-info-content);
-  --c-ink: color-mix(in oklch, var(--sf-info) 60%, var(--sf-base-content));
-  --c-hover: color-mix(in oklch, var(--sf-info) 86%, var(--sf-base-content));
-  --c-tint: color-mix(in oklch, var(--sf-info) 14%, transparent);
+.st-c-info {
+  --c-bg: var(--st-info);
+  --c-fg: var(--st-info-content);
+  --c-ink: color-mix(in oklch, var(--st-info) 60%, var(--st-base-content));
+  --c-hover: color-mix(in oklch, var(--st-info) 86%, var(--st-base-content));
+  --c-tint: color-mix(in oklch, var(--st-info) 14%, transparent);
 }
-.sf-c-success {
-  --c-bg: var(--sf-success);
-  --c-fg: var(--sf-success-content);
-  --c-ink: color-mix(in oklch, var(--sf-success) 58%, var(--sf-base-content));
-  --c-hover: color-mix(in oklch, var(--sf-success) 86%, var(--sf-base-content));
-  --c-tint: color-mix(in oklch, var(--sf-success) 14%, transparent);
+.st-c-success {
+  --c-bg: var(--st-success);
+  --c-fg: var(--st-success-content);
+  --c-ink: color-mix(in oklch, var(--st-success) 58%, var(--st-base-content));
+  --c-hover: color-mix(in oklch, var(--st-success) 86%, var(--st-base-content));
+  --c-tint: color-mix(in oklch, var(--st-success) 14%, transparent);
 }
-.sf-c-warning {
-  --c-bg: var(--sf-warning);
-  --c-fg: var(--sf-warning-content);
-  --c-ink: color-mix(in oklch, var(--sf-warning) 52%, var(--sf-base-content));
-  --c-hover: color-mix(in oklch, var(--sf-warning) 86%, var(--sf-base-content));
-  --c-tint: color-mix(in oklch, var(--sf-warning) 16%, transparent);
+.st-c-warning {
+  --c-bg: var(--st-warning);
+  --c-fg: var(--st-warning-content);
+  --c-ink: color-mix(in oklch, var(--st-warning) 52%, var(--st-base-content));
+  --c-hover: color-mix(in oklch, var(--st-warning) 86%, var(--st-base-content));
+  --c-tint: color-mix(in oklch, var(--st-warning) 16%, transparent);
 }
-.sf-c-danger {
-  --c-bg: var(--sf-danger);
-  --c-fg: var(--sf-danger-content);
-  --c-ink: color-mix(in oklch, var(--sf-danger) 60%, var(--sf-base-content));
-  --c-hover: color-mix(in oklch, var(--sf-danger) 86%, var(--sf-base-content));
-  --c-tint: color-mix(in oklch, var(--sf-danger) 14%, transparent);
+.st-c-danger {
+  --c-bg: var(--st-danger);
+  --c-fg: var(--st-danger-content);
+  --c-ink: color-mix(in oklch, var(--st-danger) 60%, var(--st-base-content));
+  --c-hover: color-mix(in oklch, var(--st-danger) 86%, var(--st-base-content));
+  --c-tint: color-mix(in oklch, var(--st-danger) 14%, transparent);
 }
 /* highlight — semantic attention / promo (sale badges, "new" tags, callouts). */
-.sf-c-highlight {
-  --c-bg: var(--sf-highlight);
-  --c-fg: var(--sf-highlight-content);
-  --c-ink: color-mix(in oklch, var(--sf-highlight) 60%, var(--sf-base-content));
-  --c-hover: color-mix(in oklch, var(--sf-highlight) 86%, var(--sf-base-content));
-  --c-tint: color-mix(in oklch, var(--sf-highlight) 14%, transparent);
+.st-c-highlight {
+  --c-bg: var(--st-highlight);
+  --c-fg: var(--st-highlight-content);
+  --c-ink: color-mix(in oklch, var(--st-highlight) 60%, var(--st-base-content));
+  --c-hover: color-mix(in oklch, var(--st-highlight) 86%, var(--st-base-content));
+  --c-tint: color-mix(in oklch, var(--st-highlight) 14%, transparent);
 }
 /* surface — the neutral page surface (light-glass / chrome). */
-.sf-c-surface {
-  --c-bg: var(--sf-base-100);
-  --c-fg: var(--sf-base-content);
-  --c-ink: var(--sf-base-content);
-  --c-hover: color-mix(in oklch, var(--sf-base-100) 92%, var(--sf-base-content));
-  --c-tint: color-mix(in oklch, var(--sf-base-content) 8%, transparent);
+.st-c-surface {
+  --c-bg: var(--st-base-100);
+  --c-fg: var(--st-base-content);
+  --c-ink: var(--st-base-content);
+  --c-hover: color-mix(in oklch, var(--st-base-100) 92%, var(--st-base-content));
+  --c-tint: color-mix(in oklch, var(--st-base-content) 8%, transparent);
 }
 
 /* ── Treatment recipe ─────────────────────────────────────────────────────── */
 
-.sf-v-solid {
+.st-v-solid {
   background: var(--c-bg);
   color: var(--c-fg);
 }
-.sf-v-solid:hover {
+.st-v-solid:hover {
   background: var(--c-hover);
 }
 
-.sf-v-soft {
+.st-v-soft {
   background: var(--c-tint);
   color: var(--c-ink);
 }
-.sf-v-soft:hover {
+.st-v-soft:hover {
   filter: brightness(0.96);
 }
 
-.sf-v-outline {
+.st-v-outline {
   background: transparent;
   color: var(--c-ink);
-  border: var(--sf-border-width, 1px) solid var(--c-bg);
+  border: var(--st-border-width, 1px) solid var(--c-bg);
 }
-.sf-v-outline:hover {
+.st-v-outline:hover {
   background: var(--c-tint);
 }
 
-.sf-v-dashed {
+.st-v-dashed {
   background: transparent;
   color: var(--c-ink);
-  border: var(--sf-border-width, 1px) dashed var(--c-bg);
+  border: var(--st-border-width, 1px) dashed var(--c-bg);
 }
-.sf-v-dashed:hover {
+.st-v-dashed:hover {
   background: var(--c-tint);
 }
 
-.sf-v-ghost {
+.st-v-ghost {
   background: transparent;
   color: var(--c-ink);
 }
-.sf-v-ghost:hover {
+.st-v-ghost:hover {
   background: var(--c-tint);
 }
 
-.sf-v-link {
+.st-v-link {
   padding: 0;
   min-width: 0;
   background: transparent;
@@ -143,18 +143,18 @@
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
-.sf-v-link:hover {
+.st-v-link:hover {
   color: var(--c-hover);
 }
 
 /* glass — frosted --c-bg over arbitrary content + backdrop blur. The legibility
  * scrim: `glass` × `neutral` = frosted dark CTA, `glass` × `surface` = frosted
- * light CTA (supersedes the old --sf-overlay-* tokens). */
-.sf-v-glass {
+ * light CTA (supersedes the old --st-overlay-* tokens). */
+.st-v-glass {
   background: color-mix(in srgb, var(--c-bg) 82%, transparent);
   color: var(--c-fg);
   backdrop-filter: blur(6px);
 }
-.sf-v-glass:hover {
+.st-v-glass:hover {
   filter: brightness(0.97);
 }

@@ -327,7 +327,7 @@ Every Tier-2 component declares:
    (default) / grid / stack; etc.
 3. **Config derived from the bound type's schema** — the inspector for the component is _generated_
    from the bound type's properties (§7.1).
-4. **Empty-state behavior** — hide / placeholder / fallback, defaulting to **hide on the live storefront,
+4. **Empty-state behavior** — hide / placeholder / fallback, defaulting to **hide on the live site,
    placeholder in the editor**.
 
 Pin this contract down and the entire Tier-2 authoring experience falls out of it.
@@ -338,9 +338,9 @@ Pin this contract down and the entire Tier-2 authoring experience falls out of i
 
 Independent of authoring, every node must:
 
-- **Server-render** (the storefront reads a published snapshot; bound data resolves at render: route →
+- **Server-render** (the site reads a published snapshot; bound data resolves at render: route →
   record → fields).
-- Emit **tokenized, themeable output** — no arbitrary colors/classes/styles; values resolve to `--sf-*`
+- Emit **tokenized, themeable output** — no arbitrary colors/classes/styles; values resolve to `--st-*`
   tokens; variant selection is a closed enum (the Tier-1 substrate already enforces this).
 - Be **multi-tenant safe** — no path from authored data to executable strings.
 - **Collapse responsively** — every N-column container defines its small-screen behavior.

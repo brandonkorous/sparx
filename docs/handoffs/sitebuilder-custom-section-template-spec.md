@@ -20,7 +20,7 @@ grammar).
 Rationale:
 
 - **Token enforcement is structural.** Every styleable prop is a closed enum that maps to a `data-*` attribute
-  on a fixed `sf-tpl-*` class. There is no path from definition data to a raw color, size, or class string.
+  on a fixed `st-tpl-*` class. There is no path from definition data to a raw color, size, or class string.
   The brand rule (token-only, no Tailwind, [docs/37](../37-sitebuilder-section-system.md) §6,
   [[feedback_sparx_ui_decisions]]) is guaranteed by construction, not by review.
 - **It is validatable + versionable.** The template is data with a Zod schema — author-time validation rejects
@@ -50,7 +50,7 @@ The interpreter does **not** replace the existing code-section path — it exten
 - **Snapshots.** Publishing pins the definition into the `SiteVersion` (§8) so render is deterministic.
 
 The custom section stays inside the flat-stack model — one block, not a nesting mechanism — and on the
-storefront's own CSS surface (it never consumes `@sparx/ui`).
+site's own CSS surface (it never consumes `@sparx/ui`).
 
 ---
 
@@ -63,23 +63,23 @@ The node set is **closed** — additive only by the platform.
 
 | Node    | Props (all enums → `data-*`)                                                                                                                  | Compiles to                                                                      |
 | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `Stack` | `dir` col\|row · `gap` none\|xs\|sm\|md\|lg\|xl · `align` start\|center\|end\|stretch · `justify` start\|center\|end\|between · `wrap` bool   | `sf-tpl-stack[data-*]`                                                           |
-| `Grid`  | `cols` 1\|2\|3\|4 · `gap`                                                                                                                     | `sf-tpl-grid[data-cols][data-gap]` (collapses 4/3→2→1 at the panels breakpoints) |
-| `Box`   | `pad` none\|sm\|md\|lg\|xl · `tone` none\|surface\|subtle\|inverse\|brand-tint\|accent-tint · `radius` none\|sm\|md\|lg\|pill · `border` bool | `sf-tpl-box[data-*]`                                                             |
+| `Stack` | `dir` col\|row · `gap` none\|xs\|sm\|md\|lg\|xl · `align` start\|center\|end\|stretch · `justify` start\|center\|end\|between · `wrap` bool   | `st-tpl-stack[data-*]`                                                           |
+| `Grid`  | `cols` 1\|2\|3\|4 · `gap`                                                                                                                     | `st-tpl-grid[data-cols][data-gap]` (collapses 4/3→2→1 at the panels breakpoints) |
+| `Box`   | `pad` none\|sm\|md\|lg\|xl · `tone` none\|surface\|subtle\|inverse\|brand-tint\|accent-tint · `radius` none\|sm\|md\|lg\|pill · `border` bool | `st-tpl-box[data-*]`                                                             |
 
 ### 3.2 Content primitives
 
 | Node       | Props                                                                                                           | Compiles to                                                                                                                      |
 | ---------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `Heading`  | `level` 1\|2\|3 · `text` _value-expr_                                                                           | `<h1\|h2\|h3 class="sf-h{level}">` (reuses existing type scale)                                                                  |
-| `Text`     | `text` _value-expr_ · `tone` default\|secondary\|muted · `size` sm\|md\|lg                                      | `<p class="sf-tpl-text" data-*>`                                                                                                 |
-| `RichText` | `html` _value-expr_ (must reference a `richtext` field)                                                         | `<div class="sf-prose">` — **sanitized**                                                                                         |
-| `Image`    | `src` _value-expr_ (media ref) · `alt` _value-expr_ · `ratio` auto\|1:1\|4:3\|16:9\|21:9 · `fit` cover\|contain | `<img class="sf-tpl-img" data-*>` — `src` resolved via the storefront media resolver                                             |
-| `Icon`     | `name` _value-expr_ (allowlisted lucide name) · `size` sm\|md\|lg · `tone`                                      | inline SVG from the bundled lucide subset, `sf-tpl-icon[data-*]`                                                                 |
-| `Button`   | `label` _value-expr_ · `url` _value-expr_ · `variant` solid\|light\|dark\|ghost\|link                           | `SbLink` + `sf-btn sf-btn--{variant}` (the exact CTA mapping in [\_shared.tsx](../../apps/site/components/sections/_shared.tsx)) |
-| `Link`     | `label` · `url`                                                                                                 | `SbLink` + `sf-tpl-link`                                                                                                         |
-| `Divider`  | —                                                                                                               | `<hr class="sf-tpl-divider">`                                                                                                    |
-| `Spacer`   | `size` sm\|md\|lg\|xl                                                                                           | `sf-tpl-spacer[data-size]`                                                                                                       |
+| `Heading`  | `level` 1\|2\|3 · `text` _value-expr_                                                                           | `<h1\|h2\|h3 class="st-h{level}">` (reuses existing type scale)                                                                  |
+| `Text`     | `text` _value-expr_ · `tone` default\|secondary\|muted · `size` sm\|md\|lg                                      | `<p class="st-tpl-text" data-*>`                                                                                                 |
+| `RichText` | `html` _value-expr_ (must reference a `richtext` field)                                                         | `<div class="st-prose">` — **sanitized**                                                                                         |
+| `Image`    | `src` _value-expr_ (media ref) · `alt` _value-expr_ · `ratio` auto\|1:1\|4:3\|16:9\|21:9 · `fit` cover\|contain | `<img class="st-tpl-img" data-*>` — `src` resolved via the site media resolver                                                   |
+| `Icon`     | `name` _value-expr_ (allowlisted lucide name) · `size` sm\|md\|lg · `tone`                                      | inline SVG from the bundled lucide subset, `st-tpl-icon[data-*]`                                                                 |
+| `Button`   | `label` _value-expr_ · `url` _value-expr_ · `variant` solid\|light\|dark\|ghost\|link                           | `SbLink` + `st-btn st-btn--{variant}` (the exact CTA mapping in [\_shared.tsx](../../apps/site/components/sections/_shared.tsx)) |
+| `Link`     | `label` · `url`                                                                                                 | `SbLink` + `st-tpl-link`                                                                                                         |
+| `Divider`  | —                                                                                                               | `<hr class="st-tpl-divider">`                                                                                                    |
+| `Spacer`   | `size` sm\|md\|lg\|xl                                                                                           | `st-tpl-spacer[data-size]`                                                                                                       |
 
 ### 3.3 Data / control
 
@@ -127,26 +127,26 @@ bound, but the resolved value must be a valid enum token or the interpreter fall
 
 ---
 
-## 5. The CSS contract (`sf-tpl-*`)
+## 5. The CSS contract (`st-tpl-*`)
 
-The interpreter emits **only** the closed `sf-tpl-*` family plus the existing `sf-*` classes it reuses
-(`sf-h1/2/3`, `sf-prose`, `sf-btn--*`, `sf-cta-row`). The family is defined **once** in
-[storefront.css](../../apps/site/app/storefront.css), every value reading a `--sf-*` token — identical
-to how `sf-sb-panels[data-cols]` / `sf-sb-hero[data-height]` already work. Consequences:
+The interpreter emits **only** the closed `st-tpl-*` family plus the existing `st-*` classes it reuses
+(`st-h1/2/3`, `st-prose`, `st-btn--*`, `st-cta-row`). The family is defined **once** in
+[site.css](../../apps/site/app/site.css), every value reading a `--st-*` token — identical
+to how `st-sb-panels[data-cols]` / `st-sb-hero[data-height]` already work. Consequences:
 
-- Tenant `StorefrontTheme` overrides + light/dark cascade in automatically (token-driven).
-- It is ESLint-clean (no Tailwind utilities, the storefront's standing rule).
+- Tenant `SiteTheme` overrides + light/dark cascade in automatically (token-driven).
+- It is ESLint-clean (no Tailwind utilities, the site's standing rule).
 - A tenant **cannot** express an off-token color, arbitrary spacing, or a raw class — the prop enums are the
   only inputs, and they map to `data-*` attributes the CSS interprets.
 
 Token mapping examples (the full table ships with the CSS):
 
 ```
-[data-gap]   xs→--sf-space-2  sm→--sf-space-3  md→--sf-space-4  lg→--sf-space-6  xl→--sf-space-10
-[data-pad]   sm→--sf-space-4  md→--sf-space-6  lg→--sf-space-8  xl→--sf-space-12
-[data-tone]  surface→--sf-surface  subtle→--sf-bg-subtle  inverse→(--sf-base-content / --sf-base-100)
-             brand-tint→--sf-primary-tint  accent-tint→--sf-accent-tint
-[data-radius] sm→--sf-radius-field  md→--sf-radius-box  pill→--sf-radius-selector
+[data-gap]   xs→--st-space-2  sm→--st-space-3  md→--st-space-4  lg→--st-space-6  xl→--st-space-10
+[data-pad]   sm→--st-space-4  md→--st-space-6  lg→--st-space-8  xl→--st-space-12
+[data-tone]  surface→--st-surface  subtle→--st-bg-subtle  inverse→(--st-base-content / --st-base-100)
+             brand-tint→--st-primary-tint  accent-tint→--st-accent-tint
+[data-radius] sm→--st-radius-field  md→--st-radius-box  pill→--st-radius-selector
 ```
 
 The only inline style any node emits is a resolved background/`<img src>` URL (the established Hero/banner
@@ -266,16 +266,16 @@ A genuinely new section (not a stock type): a row of N items, each an icon + tit
 }
 ```
 
-**Emitted HTML** (abridged — note: only `sf-tpl-*`/`sf-*` classes + `data-*`, zero inline style):
+**Emitted HTML** (abridged — note: only `st-tpl-*`/`st-*` classes + `data-*`, zero inline style):
 
 ```html
-<div class="sf-tpl-stack" data-gap="lg">
-  <h2 class="sf-h2">Why fleets choose us</h2>
-  <div class="sf-tpl-grid" data-cols="3" data-gap="lg">
-    <div class="sf-tpl-stack" data-gap="sm">
-      <span class="sf-tpl-icon" data-size="lg" data-tone="accent"><svg>…wrench…</svg></span>
-      <h3 class="sf-h3">On-site service</h3>
-      <p class="sf-tpl-text" data-tone="secondary">We come to your yard.</p>
+<div class="st-tpl-stack" data-gap="lg">
+  <h2 class="st-h2">Why fleets choose us</h2>
+  <div class="st-tpl-grid" data-cols="3" data-gap="lg">
+    <div class="st-tpl-stack" data-gap="sm">
+      <span class="st-tpl-icon" data-size="lg" data-tone="accent"><svg>…wrench…</svg></span>
+      <h3 class="st-h3">On-site service</h3>
+      <p class="st-tpl-text" data-tone="secondary">We come to your yard.</p>
     </div>
     <!-- …two more items… -->
   </div>
@@ -314,7 +314,7 @@ template may resolve `product.*` / `collection.*` paths against the bound item t
 
 **Build status (2026-06-01): COMPLETE — built + green end-to-end.** Every layer below is implemented,
 typechecked, linted, and tested (schemas 70 tests, sitebuilder 37 tests incl. a definition-lifecycle +
-publish-pinning integration test, storefront production build, dashboard typecheck/lint). The migration is
+publish-pinning integration test, site production build, dashboard typecheck/lint). The migration is
 applied to local docker; prod applies via the DB Migrate pipeline on push.
 
 **Ships (server-safe split per [[feedback_dockerfile_package_wiring]]):**
@@ -326,8 +326,8 @@ applied to local docker; prod applies via the DB Migrate pipeline on push.
   the custom-aware lookups (`resolveSectionDefinition` / `parseSectionConfigWith` /
   `isSectionAllowedInTargetWith` / `mergedSectionsForTarget`), the `SectionField[]` CRUD schema, and the
   `SectionDefinitionInput` write contract. `CreateSectionInput.sectionType` now accepts code OR `custom:<slug>`.
-- ✅ Storefront (React): the thin interpreter [`custom-template.tsx`](../../apps/site/components/sections/custom-template.tsx),
-  the bundled icon subset, the `sf-tpl-*` CSS family ([`storefront-template.css`](../../apps/site/app/storefront-template.css)),
+- ✅ Site (React): the thin interpreter [`custom-template.tsx`](../../apps/site/components/sections/custom-template.tsx),
+  the bundled icon subset, the `st-tpl-*` CSS family ([`site-template.css`](../../apps/site/app/site-template.css)),
   **and the `SectionRenderer` `custom:*` branch** — it resolves a section's pinned template from
   `snapshot.definitions` (threaded through all four page routes) and renders it. Image node = token-driven
   background-image div, not `<img>`.
@@ -340,13 +340,13 @@ applied to local docker; prod applies via the DB Migrate pipeline on push.
   `definitionsSnapshot` (getDraftSnapshot pins too, for live preview). Rollback re-references live defs.
 - ✅ Transports: REST `/v1/sitebuilder/definitions` (list/create/get/PUT/delete by slug), MCP read tools
   (`list_custom_sections`, `get_custom_section`) + write tools (`create_/update_/delete_custom_section`), and
-  the public storefront endpoint passes `definitions` through verbatim.
+  the public site endpoint passes `definitions` through verbatim.
 - ✅ Dashboard editor: the section library merges the tenant's custom sections (a "Custom" badge), placing one
   works, and the inspector auto-renders its fields from the field spec.
 
 **Exit (met):** a tenant (via API/MCP) defines `custom:icon-grid`, the dashboard auto-generates its inspector
 form from the field spec, the tenant places + configures it, publishes, and it renders theme-correct on the
-storefront — **no engineer, no deploy** — and a rollback reproduces it exactly (the integration test asserts the
+site — **no engineer, no deploy** — and a rollback reproduces it exactly (the integration test asserts the
 publish pin + version).
 
 **Deferred (own slices):** the visual template-authoring UI (a non-developer builds the AST — §11.2, aligns

@@ -22,11 +22,11 @@ export function SortSelect({ value }: { value: string }) {
 
   return (
     <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-      <span className="sf-muted" style={{ fontSize: '0.85rem' }}>
+      <span className="st-muted" style={{ fontSize: '0.85rem' }}>
         Sort
       </span>
       <select
-        className="sf-select"
+        className="st-select"
         value={value}
         onChange={(e) => {
           const next = new URLSearchParams(params.toString());

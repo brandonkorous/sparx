@@ -124,7 +124,7 @@ Syncs run on a schedule and on-demand:
 
 If a supplier product is discontinued or goes out of stock:
 
-- Product marked as unavailable on storefront
+- Product marked as unavailable on site
 - Merchant notified via dashboard alert + email
 - Merchant can remove or substitute product
 

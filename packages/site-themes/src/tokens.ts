@@ -3,12 +3,12 @@
 // A "theme token" is a logical design value (a color, a font, a radius) that
 // every theme provides for both light and dark. Tokens bind to one or more
 // CSS custom properties on the storefront via `tokensToCssVars` — the same
-// `--sf-*` variable names the storefront's app/storefront.css already reads,
+// `--st-*` variable names the storefront's app/storefront.css already reads,
 // so a token override cascades into every component (incl. @sparx/ui) without
 // per-tenant code.
 //
-// A subset of tokens maps 1:1 onto the commerce-owned `StorefrontTheme`
-// columns; publishing write-throughs that subset (see STOREFRONT_THEME_WRITETHROUGH
+// A subset of tokens maps 1:1 onto the commerce-owned `CommerceSiteTheme`
+// columns; publishing write-throughs that subset (see SITE_THEME_WRITETHROUGH
 // in compile.ts) so the existing storefront read path keeps working for
 // tenants that aren't yet rendering the full Site Builder snapshot.
 
@@ -44,17 +44,17 @@ export const TOKEN_KEYS: readonly ThemeTokenKey[] = [
 // Token → CSS custom properties it drives. Mirrors (and extends) the VAR_MAP
 // in apps/site/lib/theme.ts so light and dark share one mapping.
 export const TOKEN_CSS_VARS: Record<ThemeTokenKey, readonly string[]> = {
-  colorPrimary: ['--sf-primary', '--sparx-primary', '--color-action-primary'],
-  colorPrimaryForeground: ['--sf-on-primary'],
-  colorAccent: ['--sf-accent'],
-  colorBackground: ['--sf-bg', '--color-bg-page'],
-  colorForeground: ['--sf-fg', '--color-text-primary'],
-  colorMuted: ['--sf-bg-subtle', '--color-bg-subtle'],
-  colorBorder: ['--sf-border', '--color-border-default'],
-  fontHeading: ['--sf-font-heading'],
-  fontBody: ['--sf-font-body', '--font-sans'],
-  radiusBase: ['--sf-radius'],
-  containerWidth: ['--sf-container'],
+  colorPrimary: ['--st-primary', '--sparx-primary', '--color-action-primary'],
+  colorPrimaryForeground: ['--st-on-primary'],
+  colorAccent: ['--st-accent'],
+  colorBackground: ['--st-bg', '--color-bg-page'],
+  colorForeground: ['--st-fg', '--color-text-primary'],
+  colorMuted: ['--st-bg-subtle', '--color-bg-subtle'],
+  colorBorder: ['--st-border', '--color-border-default'],
+  fontHeading: ['--st-font-heading'],
+  fontBody: ['--st-font-body', '--font-sans'],
+  radiusBase: ['--st-radius'],
+  containerWidth: ['--st-container'],
 };
 
 // Named container widths → the CSS max-width they compile to.
@@ -66,7 +66,7 @@ export const CONTAINER_WIDTHS: Record<string, string> = {
 };
 
 // A font *name* needs a fallback stack so a missing webfont still renders.
-const FONT_FALLBACK = 'var(--sf-font-fallback, system-ui, -apple-system, sans-serif)';
+const FONT_FALLBACK = 'var(--st-font-fallback, system-ui, -apple-system, sans-serif)';
 
 function isFontToken(key: ThemeTokenKey): boolean {
   return key === 'fontHeading' || key === 'fontBody';
@@ -99,7 +99,7 @@ export function tokensToCssVars(tokens: Partial<ThemeTokens>): Record<string, st
 
 /**
  * Serializes token declarations into a CSS block body (no selector).
- * `tokensToCss(tokens)` → `--sf-primary:#fff;--sf-bg:#000;…`
+ * `tokensToCss(tokens)` → `--st-primary:#fff;--st-bg:#000;…`
  */
 export function tokensToCss(tokens: Partial<ThemeTokens>): string {
   const vars = tokensToCssVars(tokens);

@@ -11,18 +11,18 @@ export interface EmptyStateProps {
 
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <div className="sf-empty">
+    <div className="st-empty">
       {icon ? (
-        <span className="sf-empty__icon" aria-hidden="true">
+        <span className="st-empty__icon" aria-hidden="true">
           {icon}
         </span>
       ) : null}
-      <h3 className="sf-h3" style={{ color: 'var(--sf-text)' }}>
+      <h3 className="st-h3" style={{ color: 'var(--st-text)' }}>
         {title}
       </h3>
       {description ? <p style={{ margin: 0, maxWidth: '40ch' }}>{description}</p> : null}
       {action ? (
-        <Link href={action.href} className="sf-btn sf-btn--primary" style={{ marginTop: '0.5rem' }}>
+        <Link href={action.href} className="st-btn st-btn--primary" style={{ marginTop: '0.5rem' }}>
           {action.label}
         </Link>
       ) : null}

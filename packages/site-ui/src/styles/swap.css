@@ -1,71 +1,71 @@
 /* Surface Swap — CSS toggle between two contents (docs/46 §5.2). The hidden
  * checkbox drives it via `:checked`; `rotate`/`flip` add a transition. */
 
-.sf-swap {
+.st-swap {
   position: relative;
   display: inline-grid;
   place-items: center;
   cursor: pointer;
   user-select: none;
 }
-.sf-swap__input {
+.st-swap__input {
   position: absolute;
   inset: 0;
   opacity: 0;
   cursor: pointer;
 }
-.sf-swap__on,
-.sf-swap__off {
+.st-swap__on,
+.st-swap__off {
   grid-area: 1 / 1;
   transition:
     transform 0.2s ease,
     opacity 0.2s ease;
 }
-.sf-swap__on {
+.st-swap__on {
   opacity: 0;
 }
-.sf-swap__off {
+.st-swap__off {
   opacity: 1;
 }
-.sf-swap__input:checked ~ .sf-swap__on {
+.st-swap__input:checked ~ .st-swap__on {
   opacity: 1;
 }
-.sf-swap__input:checked ~ .sf-swap__off {
+.st-swap__input:checked ~ .st-swap__off {
   opacity: 0;
 }
 
 /* rotate */
-.sf-swap--rotate .sf-swap__on {
+.st-swap--rotate .st-swap__on {
   transform: rotate(-45deg);
 }
-.sf-swap--rotate .sf-swap__input:checked ~ .sf-swap__on {
+.st-swap--rotate .st-swap__input:checked ~ .st-swap__on {
   transform: rotate(0);
 }
-.sf-swap--rotate .sf-swap__input:checked ~ .sf-swap__off {
+.st-swap--rotate .st-swap__input:checked ~ .st-swap__off {
   transform: rotate(45deg);
 }
 
 /* flip */
-.sf-swap--flip {
+.st-swap--flip {
   transform-style: preserve-3d;
 }
-.sf-swap--flip .sf-swap__on {
+.st-swap--flip .st-swap__on {
   transform: rotateY(180deg);
   backface-visibility: hidden;
 }
-.sf-swap--flip .sf-swap__off {
+.st-swap--flip .st-swap__off {
   backface-visibility: hidden;
 }
-.sf-swap--flip .sf-swap__input:checked ~ .sf-swap__on {
+.st-swap--flip .st-swap__input:checked ~ .st-swap__on {
   transform: rotateY(0);
 }
-.sf-swap--flip .sf-swap__input:checked ~ .sf-swap__off {
+.st-swap--flip .st-swap__input:checked ~ .st-swap__off {
   transform: rotateY(-180deg);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sf-swap__on,
-  .sf-swap__off {
+  .st-swap__on,
+  .st-swap__off {
     transition: none;
   }
 }

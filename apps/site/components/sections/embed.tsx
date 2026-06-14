@@ -12,10 +12,10 @@ export function EmbedSection({ config }: { config: EmbedConfig }) {
 
   const full = config.width === 'full';
   return (
-    <section className="sf-section sf-sb-embed" data-width={config.width}>
-      <div className={full ? 'sf-sb-embed__bleed' : 'sf-container'}>
-        {config.heading ? <h2 className="sf-h2 sf-sb-embed__heading">{config.heading}</h2> : null}
-        <div className="sf-sb-embed__frame" data-aspect={config.aspect}>
+    <section className="st-section st-sb-embed" data-width={config.width}>
+      <div className={full ? 'st-sb-embed__bleed' : 'st-container'}>
+        {config.heading ? <h2 className="st-h2 st-sb-embed__heading">{config.heading}</h2> : null}
+        <div className="st-sb-embed__frame" data-aspect={config.aspect}>
           <iframe
             src={resolved.src}
             title={config.heading || resolved.title}
@@ -26,7 +26,7 @@ export function EmbedSection({ config }: { config: EmbedConfig }) {
             allowFullScreen={resolved.allowFullScreen}
           />
         </div>
-        {config.caption ? <p className="sf-muted sf-sb-embed__caption">{config.caption}</p> : null}
+        {config.caption ? <p className="st-muted st-sb-embed__caption">{config.caption}</p> : null}
       </div>
     </section>
   );

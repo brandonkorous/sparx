@@ -21,10 +21,10 @@ export function CollectionHeaderSection({
     <header
       style={{
         position: 'relative',
-        borderRadius: 'var(--sf-radius-lg)',
+        borderRadius: 'var(--st-radius-lg)',
         overflow: 'hidden',
         marginBottom: '2rem',
-        background: hero ? undefined : 'var(--sf-bg-subtle)',
+        background: hero ? undefined : 'var(--st-bg-subtle)',
       }}
     >
       {hero ? (
@@ -52,7 +52,7 @@ export function CollectionHeaderSection({
             : {}),
         }}
       >
-        <h1 className="sf-h1" style={hero ? { color: '#fff' } : undefined}>
+        <h1 className="st-h1" style={hero ? { color: '#fff' } : undefined}>
           {collection.name}
         </h1>
         {config.showDescription && collection.description ? (

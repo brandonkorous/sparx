@@ -88,7 +88,7 @@ export default async function CategoriesPage() {
               <EmptyState
                 icon={<FolderTree className="h-5 w-5" />}
                 title="No categories yet"
-                description="Start with a few top-level categories that match how shoppers browse your storefront."
+                description="Start with a few top-level categories that match how shoppers browse your site."
               />
             ) : (
               <CategoriesEditor tree={tree} />

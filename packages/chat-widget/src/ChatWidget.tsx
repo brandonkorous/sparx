@@ -45,7 +45,7 @@ export function ChatWidget(props: ChatWidgetProps): React.JSX.Element | null {
     apiUrl,
     tenantSlug,
     accentColor,
-    source = 'storefront',
+    source = 'site',
     title = 'Chat',
     hideLauncher = false,
     onOpenChange,

@@ -108,14 +108,17 @@ export async function provisionTenant(
 
   // Every tenant is born with one PRIMARY web property (docs/49) + its always-on
   // `<slug>.sparx.zone` subdomain, so host→property resolution and the Builder
-  // render path have a site from day one. The display NAME is "Default" — a
-  // tenant is a workspace that HAS sites; the host keeps the bare
-  // `<slug>.sparx.zone` (slug 'primary' is reserved, never in the host).
+  // render path have a site from day one. The default site's NAME is seeded from
+  // the tenant name (docs/49) — it is the CUSTOMER-FACING site name every storefront/
+  // email surface reads, so it must be a real name from the start, never "Default".
+  // The merchant renames it in Settings → Sites (or onboarding updates it to the
+  // business name). The host keeps the bare `<slug>.sparx.zone` (slug 'primary' is
+  // reserved, never in the host).
   const property = await tx.property.create({
     data: {
       tenantId: tenant.id,
       slug: 'primary',
-      name: 'Default',
+      name: input.name,
       isPrimary: true,
     },
   });

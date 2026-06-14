@@ -35,7 +35,7 @@ together:
   ([24-crm-orders.prisma](../packages/db/prisma/schema/24-crm-orders.prisma)) — so it
   is site-_tagged_, not site-_owned_.
 - **Inventory is one shared pool.** A shared product has one stock level, deducted by
-  any site's checkout. Two sites are storefronts over the **same warehouse**.
+  any site's checkout. Two sites are sites over the **same warehouse**.
 
 So "everything filters by site" means: **default-separate customers per site (under a
 tenant-wide login identity), tag orders with their origin site, and keep the genuinely
@@ -81,10 +81,10 @@ The axis every record falls on. "Scoped" = the active-site switch filters it;
   becomes that link). Default = separated; the identity exists to recognize the same
   human across sister sites (D6), never to merge their consent.
 
-- **D3 — Origin site is captured at the cart, copied at placement.** The storefront
+- **D3 — Origin site is captured at the cart, copied at placement.** The site
   already knows its property (`resolveSiteRoute` → `?property=`). Carry it on the
   `Cart` (`commerce_carts.property_id`, nullable) when the cart is created on a
-  storefront, and copy `cart.property_id → order.property_id` when checkout produces
+  site, and copy `cart.property_id → order.property_id` when checkout produces
   the order. Admin/import/MCP orders pass `property_id` explicitly or leave it null.
   This is the single capture point; no checkout UI change.
 
@@ -154,7 +154,7 @@ single-site tenant    → no filter, no Site control                // zero beha
    `sparx_owner` is non-superuser in prod, `feedback_sparx_db_rls_pattern`.)
 
 2. **Capture** (`@sparx/commerce` checkout→order path): set `cart.property_id` from
-   the storefront's active property when a storefront cart is created; copy it onto
+   the site's active property when a site cart is created; copy it onto
    the order at placement. The order-event consumer keeps maintaining
    `customers.totalSpent`/`orderCount` — now naturally **per-membership** (per-site),
    since the order's customer row _is_ that site's membership.
@@ -221,7 +221,7 @@ On one tenant with two sites (primary "Tesla", secondary "Driftwood"):
 
 - Switching the dashboard switcher to Driftwood narrows **products, content, orders,
   and the customers list** to Driftwood; each list offers "All sites".
-- An order placed on the Driftwood storefront carries `property_id = Driftwood` and
+- An order placed on the Driftwood site carries `property_id = Driftwood` and
   appears only under Driftwood (and All sites), never under Tesla.
 - A shopper who signs up on Tesla then signs in on Driftwood is **recognized** (one
   identity), **prompted** to link, and gets a **separate Driftwood membership with its
@@ -234,7 +234,7 @@ On one tenant with two sites (primary "Tesla", secondary "Driftwood"):
 ## 8. Open questions for review
 
 1. **Channel vs. property.** Orders already have `channel`
-   (`storefront | b2b_portal | admin | import | mcp`). `property_id` is orthogonal
+   (`site | b2b_portal | admin | import | mcp`). `property_id` is orthogonal
    (which _site_, not which _surface_) — confirm we want both, not a merge.
 2. **B2B orders' origin site.** B2B _accounts_ stay tenant-wide (D2/§7). A B2B order
    placed through a site's portal still gets that site's `property_id` by the same cart

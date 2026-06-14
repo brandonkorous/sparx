@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { Button, Input, Label, Stack, Switch, Text } from '@sparx/ui';
 
-import { updateStorefrontSettingsAction } from '../../storefront-actions';
+import { updateCommerceSiteSettingsAction } from '../../site-actions';
 
 type Channel = 'storefront' | 'b2b_portal' | 'admin' | 'subscription' | 'mcp' | 'import';
 
@@ -35,7 +35,7 @@ const CHANNELS: { id: Channel; label: string }[] = [
   { id: 'import', label: 'Bulk import' },
 ];
 
-export function StorefrontSettingsForm({
+export function CommerceSiteSettingsForm({
   initial,
   warehouses,
 }: {
@@ -70,7 +70,7 @@ export function StorefrontSettingsForm({
     setError(null);
     setSaved(false);
     startTransition(async () => {
-      const result = await updateStorefrontSettingsAction({
+      const result = await updateCommerceSiteSettingsAction({
         ...form,
         defaultWarehouseId: form.defaultWarehouseId ?? undefined,
       });

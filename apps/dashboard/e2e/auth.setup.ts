@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const TEST_EMAIL = 'e2e-staff@sparx.test';
 const TEST_PASSWORD = 'e2e-test-password';
 const TEST_NAME = 'E2E Tester';
-const TEST_STORE = 'E2E Store';
+const TEST_SITE = 'E2E Site';
 
 export const STORAGE_STATE_PATH = path.resolve(__dirname, '../playwright/.auth/user.json');
 
@@ -26,7 +26,7 @@ setup('authenticate', async ({ page }) => {
 
   await page.goto('/sign-up');
   await page.getByLabel('Your name').fill(TEST_NAME);
-  await page.getByLabel('Store name').fill(TEST_STORE);
+  await page.getByLabel('Site name').fill(TEST_SITE);
   await page.getByLabel('Work email').fill(TEST_EMAIL);
   await page.getByLabel('Password').fill(TEST_PASSWORD);
   await page.getByRole('button', { name: 'Create account' }).click();

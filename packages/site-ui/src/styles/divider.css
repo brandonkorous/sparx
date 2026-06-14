@@ -1,9 +1,9 @@
 /* site-ui Divider — a full-width hairline in the tenant border color
  * (docs/46 §5.2). */
 
-.sf-divider {
+.st-divider {
   width: 100%;
   margin: 0;
   border: 0;
-  border-top: 1px solid var(--sf-border, #e3dfd2);
+  border-top: 1px solid var(--st-border, #e3dfd2);
 }

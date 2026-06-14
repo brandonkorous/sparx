@@ -3,8 +3,8 @@ import { photoPanelStyle } from './photo-panel';
 
 describe('photoPanelStyle', () => {
   it('uses the surface color and no tone when there is no image', () => {
-    expect(photoPanelStyle({ surfaceBg: 'var(--sf-base-200)' })).toEqual({
-      background: 'var(--sf-base-200)',
+    expect(photoPanelStyle({ surfaceBg: 'var(--st-base-200)' })).toEqual({
+      background: 'var(--st-base-200)',
     });
   });
 

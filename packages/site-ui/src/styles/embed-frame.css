@@ -1,33 +1,33 @@
 /* site-ui EmbedFrame — responsive ratio box for Video / Map iframes
  * (docs/46 §5.2). Site-renderer parity ratios. */
 
-.sf-embed {
+.st-embed {
   position: relative;
   width: 100%;
   overflow: hidden;
-  border-radius: var(--sf-radius-box, 16px);
-  background: var(--sf-base-300, #e6e1d3);
+  border-radius: var(--st-radius-box, 16px);
+  background: var(--st-base-300, #e6e1d3);
 }
-.sf-embed--wide {
+.st-embed--wide {
   aspect-ratio: 16 / 9;
 }
-.sf-embed--square {
+.st-embed--square {
   aspect-ratio: 1 / 1;
 }
-.sf-embed--portrait {
+.st-embed--portrait {
   aspect-ratio: 9 / 16;
 }
-.sf-embed--pano {
+.st-embed--pano {
   aspect-ratio: 21 / 9;
 }
-.sf-embed__frame {
+.st-embed__frame {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
 }
-.sf-embed__placeholder {
+.st-embed__placeholder {
   position: absolute;
   inset: 0;
   display: flex;
@@ -37,7 +37,7 @@
   text-align: center;
   font-size: 0.85rem;
   color: var(
-    --sf-text-muted,
-    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+    --st-text-muted,
+    color-mix(in oklab, var(--st-base-content, #23211c) 55%, transparent)
   );
 }

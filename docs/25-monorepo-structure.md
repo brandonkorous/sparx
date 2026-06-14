@@ -32,7 +32,7 @@ sparx/
 ├── apps/
 │   ├── web/                  # @sparx/web — sparx.works marketing site (Next.js)
 │   ├── dashboard/            # @sparx/dashboard — app.sparx.works tenant admin (Next.js)
-│   ├── storefront/           # @sparx/site — multi-tenant storefronts (Next.js)
+│   ├── site/           # @sparx/site — multi-tenant sites (Next.js)
 │   └── api/                  # @sparx/api — Fastify REST + GraphQL + MCP server
 │
 ├── packages/
@@ -40,7 +40,7 @@ sparx/
 │   ├── db/                   # @sparx/db — Prisma client + schema + migrations
 │   ├── auth/                 # @sparx/auth — Better Auth config (staff + customer layers)
 │   ├── email/                # @sparx/email — React Email templates + Postal client
-│   ├── sdk/                  # @sparx/sdk — public storefront SDK
+│   ├── sdk/                  # @sparx/sdk — public site SDK
 │   ├── config/               # @sparx/config — shared ESLint, Prettier, TS, Tailwind configs
 │   └── types/                # @sparx/types — shared TypeScript types
 │
@@ -52,7 +52,7 @@ sparx/
 │   └── search/               # @sparx/worker-search — Typesense sync
 │
 ├── k8s/
-│   ├── sparx-prod/           # Kubernetes manifests (namespace, redis, typesense, postal, caddy, api, dashboard, storefront, web, workers)
+│   ├── sparx-prod/           # Kubernetes manifests (namespace, redis, typesense, postal, caddy, api, dashboard, site, web, workers)
 │   └── sparx-staging/        # mirrors prod
 │
 ├── infrastructure/           # Terraform (gke, cloudsql, pubsub, gcs, secrets modules)
@@ -81,7 +81,7 @@ app/
 └── (dashboard)/
     ├── layout.tsx            # sidebar shell
     ├── page.tsx              # home / overview stats
-    ├── storefront/layout.tsx # <ModuleProvider module="storefront">
+    ├── site/layout.tsx # <ModuleProvider module="site">
     ├── commerce/layout.tsx   # <ModuleProvider module="commerce">
     │   ├── products/page.tsx + [id]/page.tsx
     │   └── orders/page.tsx + [id]/page.tsx
@@ -186,12 +186,12 @@ src/
 
 ## 9. Workspace Dependencies
 
-| Workspace    | Depends on                                                 |
-| ------------ | ---------------------------------------------------------- | --- | ----- |
-| `dashboard`  | `@sparx/ui`, `@sparx/auth`, `@sparx/db`, `@sparx/types`    |
-| `api`        | `@sparx/db`, `@sparx/auth`, `@sparx/email`, `@sparx/types` |
-| `storefront` | `@sparx/ui`, `@sparx/sdk`, `@sparx/types`                  |
-| `ui`         | `@sparx/types` (peerDeps: `react ^18                       |     | ^19`) |
+| Workspace   | Depends on                                                 |
+| ----------- | ---------------------------------------------------------- | --- | ----- |
+| `dashboard` | `@sparx/ui`, `@sparx/auth`, `@sparx/db`, `@sparx/types`    |
+| `api`       | `@sparx/db`, `@sparx/auth`, `@sparx/email`, `@sparx/types` |
+| `site`      | `@sparx/ui`, `@sparx/sdk`, `@sparx/types`                  |
+| `ui`        | `@sparx/types` (peerDeps: `react ^18                       |     | ^19`) |
 
 All internal: `"workspace:*"`
 
@@ -207,22 +207,22 @@ TYPESENSE_API_KEY | TYPESENSE_HOST | TYPESENSE_PORT
 POSTAL_API_KEY | POSTAL_API_URL
 GCS_BUCKET | GOOGLE_CLOUD_PROJECT | PUBSUB_TOPIC_PREFIX
 CLOUDFLARE_API_TOKEN | CLOUDFLARE_ZONE_ID
-NEXT_PUBLIC_APP_URL | NEXT_PUBLIC_API_URL | NEXT_PUBLIC_STOREFRONT_URL
+NEXT_PUBLIC_APP_URL | NEXT_PUBLIC_API_URL | NEXT_PUBLIC_SITE_URL
 ```
 
 ---
 
 ## 11. Dev Server Ports
 
-| Service      | Port |
-| ------------ | ---- |
-| `api`        | 3000 |
-| `dashboard`  | 3001 |
-| `storefront` | 3002 |
-| `web`        | 3003 |
-| Typesense    | 8108 |
-| Redis        | 6379 |
-| PostgreSQL   | 5432 |
+| Service     | Port |
+| ----------- | ---- |
+| `api`       | 3000 |
+| `dashboard` | 3001 |
+| `site`      | 3002 |
+| `web`       | 3003 |
+| Typesense   | 8108 |
+| Redis       | 6379 |
+| PostgreSQL  | 5432 |
 
 ---
 

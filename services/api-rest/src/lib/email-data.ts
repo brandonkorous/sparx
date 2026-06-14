@@ -24,7 +24,7 @@ import { discountService, productService } from '@sparx/commerce';
 import { collectEmailSourceKeys, type BuilderNode, type DataSources } from '@sparx/builder-schemas';
 import type { ServiceContext } from '@sparx/email-platform';
 
-import { parseBrandOverride } from './property-brand.js';
+import { resolveActivePropertyName } from './property.js';
 
 /** The entity ids a send resolves against (docs/91 §3) — the automation's
  *  `entityRefs`, or just `{ customerId }` for a customer-addressed broadcast.
@@ -52,22 +52,22 @@ const API_BASE =
   'http://localhost:3100';
 // Storefront base for clickable links. `{slug}` is substituted per tenant; unset
 // → path-only links (still valid, refined once tenant domain resolution is wired).
-const STOREFRONT_BASE = process.env.SPARX_STOREFRONT_BASE ?? '';
+const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
 
 function mediaUrl(mediaId: string | null | undefined, slug: string): string {
   if (!mediaId) return '';
   return `${API_BASE}/v1/public/media/${encodeURIComponent(mediaId)}?tenant=${encodeURIComponent(slug)}`;
 }
 
-function storefrontUrl(slug: string, path: string): string {
-  if (!STOREFRONT_BASE) return path;
-  return `${STOREFRONT_BASE.replace('{slug}', slug)}${path}`;
+function siteLink(slug: string, path: string): string {
+  if (!SITE_BASE) return path;
+  return `${SITE_BASE.replace('{slug}', slug)}${path}`;
 }
 
-/** The store root as an absolute-or-`/` URL — `storefrontUrl(slug, '')` is `''`
+/** The store root as an absolute-or-`/` URL — `siteLink(slug, '')` is `''`
  *  when the base is unset, so fall back to `/` for a still-valid link. */
 function homeUrl(slug: string): string {
-  const url = storefrontUrl(slug, '');
+  const url = siteLink(slug, '');
   return url === '' ? '/' : url;
 }
 
@@ -237,41 +237,28 @@ async function resolveTenant(
   tenant: { slug: string; name: string; email: string },
   propertyId?: string | null
 ): Promise<Record<string, string>> {
-  const [settings, brand, property] = await Promise.all([
+  const [settings, propertyName] = await Promise.all([
     withTenant(ctx, (tx) =>
       tx.emailSettings.findUnique({ where: { tenantId: ctx.tenantId }, select: { replyTo: true } })
     ),
-    withTenant(ctx, (tx) =>
-      tx.tenantBrand.findUnique({
-        where: { tenantId: ctx.tenantId },
-        select: { businessName: true },
-      })
-    ),
-    propertyId
-      ? withTenant(ctx, (tx) =>
-          tx.property.findUnique({ where: { id: propertyId }, select: { brandOverride: true } })
-        )
-      : Promise.resolve(null),
+    resolveActivePropertyName(ctx.tenantId, propertyId ?? null),
   ]);
   // `{{site.name}}` is customer-facing copy ("Welcome to …", "thanks for shopping
-  // with …"), so it must be the STORE name — the brand business name the wordmark
-  // already uses (brand-service's `storeName`) — not the internal org/account name
-  // on the tenant row. On a multi-site tenant it is the ACTIVE site's name when the
-  // site overrides `businessName` (docs/49 Phase 7) — the SAME per-site name the
-  // wordmark/footer brand resolves — so a per-site email reads the site name in
-  // body copy too, not just the chrome. Falls back: site name → tenant brand name →
-  // org name (an empty string falls through, hence the explicit length checks).
-  const siteName = parseBrandOverride(property?.brandOverride)?.businessName?.trim() ?? '';
-  const businessName = brand?.businessName?.trim() ?? '';
-  const storeName =
-    siteName.length > 0 ? siteName : businessName.length > 0 ? businessName : tenant.name;
+  // with …"), so it must be the SITE name — `Property.name` for the ACTIVE site,
+  // else the tenant's PRIMARY site (docs/49 Phase 7) — the SAME per-site name the
+  // wordmark/footer brand resolves, so a per-site email reads the site name in
+  // body copy too, not just the chrome. It is NEVER the tenant's legal/org name.
+  // The `tenant.name` tail is a defensive non-blank guard only: Property.name is
+  // NOT NULL and seeded from the tenant name at provisioning, so it is effectively
+  // unreachable.
+  const siteName = propertyName || tenant.name;
   // `url` is the canonical field (`{{site.url}}`); `siteUrl` + `storeUrl` are
   // back-compat aliases (the store→site, then `tenant.*`→`site.*` renames) so an
   // email authored before either rename (an existing `{{tenant.siteUrl}}` /
   // `{{tenant.storeUrl}}` button) still resolves to the same URL.
   const home = homeUrl(tenant.slug);
   return {
-    name: storeName,
+    name: siteName,
     url: home,
     siteUrl: home,
     storeUrl: home,
@@ -321,9 +308,9 @@ async function resolveOrder(
   // reviewUrl → the first purchased product's PDP (where the review UI lives),
   // falling back to the store root when no item resolves a product (docs/91 §3).
   const firstHandle = order.items.find((i) => i.product?.handle)?.product?.handle ?? '';
-  const reviewUrl = firstHandle ? storefrontUrl(slug, `/products/${firstHandle}`) : homeUrl(slug);
+  const reviewUrl = firstHandle ? siteLink(slug, `/products/${firstHandle}`) : homeUrl(slug);
   // statusUrl → the customer's order detail (order-confirmation CTA, docs/93 §4).
-  const statusUrl = storefrontUrl(slug, '/account/orders');
+  const statusUrl = siteLink(slug, '/account/orders');
   return {
     number: order.orderNumber,
     status: order.status,
@@ -377,7 +364,7 @@ async function resolveShipping(
     trackingNumber: f.trackingNumber ?? '',
     // The carrier's tracking page when known; else the customer's order detail so
     // the CTA always resolves to something useful (docs/93 §3).
-    trackingUrl: f.trackingUrl ?? storefrontUrl(slug, '/account/orders'),
+    trackingUrl: f.trackingUrl ?? siteLink(slug, '/account/orders'),
     shippedAt: dateLabel(f.shippedAt),
   };
 }
@@ -419,8 +406,8 @@ async function resolveAppointment(
     // Where the customer manages/reschedules — their B2B portal appointments, else
     // their account home.
     manageUrl: appt.b2bAccountId
-      ? storefrontUrl(slug, `/account/b2b/${appt.b2bAccountId}/appointments`)
-      : storefrontUrl(slug, '/account'),
+      ? siteLink(slug, `/account/b2b/${appt.b2bAccountId}/appointments`)
+      : siteLink(slug, '/account'),
   };
 }
 
@@ -474,7 +461,7 @@ async function resolveCart(
   return {
     total: moneyCents(cart.totalCents),
     itemCount: String(cart.items.reduce((n, it) => n + it.quantity, 0)),
-    recoveryUrl: storefrontUrl(slug, '/cart'),
+    recoveryUrl: siteLink(slug, '/cart'),
     items: cart.items.map((it) => ({
       name: it.variant.product.title,
       quantity: qty(it.quantity),
@@ -522,8 +509,8 @@ async function resolveQuote(
     total: money(quote.total),
     validUntil: dateLabel(quote.validUntil),
     reviewUrl: quote.b2bAccountId
-      ? storefrontUrl(slug, `/account/b2b/${quote.b2bAccountId}/quotes`)
-      : storefrontUrl(slug, '/account'),
+      ? siteLink(slug, `/account/b2b/${quote.b2bAccountId}/quotes`)
+      : siteLink(slug, '/account'),
     items: quote.items.map((i) => ({
       name: firstText(i.name, i.description),
       quantity: qty(i.quantity),
@@ -570,8 +557,8 @@ async function resolveInvoice(
     daysUntilDue: String(daysUntilDue),
     overdueDays: String(overdueDays),
     payUrl: doc.b2bAccountId
-      ? storefrontUrl(slug, `/account/b2b/${doc.b2bAccountId}/invoices`)
-      : storefrontUrl(slug, '/account'),
+      ? siteLink(slug, `/account/b2b/${doc.b2bAccountId}/invoices`)
+      : siteLink(slug, '/account'),
     items: doc.lines.map((l) => ({
       description: l.description,
       quantity: qty(l.quantity),
@@ -601,7 +588,7 @@ async function resolveB2bAccount(
     status: account.status,
     paymentTerms: account.paymentTerms ?? '',
     creditLimit: account.creditLimit != null ? money(account.creditLimit) : '',
-    portalUrl: storefrontUrl(slug, `/account/b2b/${ref.b2bAccountId}`),
+    portalUrl: siteLink(slug, `/account/b2b/${ref.b2bAccountId}`),
   };
 }
 
@@ -620,13 +607,13 @@ async function resolveLoyalty(
   ctx: ServiceContext,
   ref: EmailRecipientRef | undefined
 ): Promise<Record<string, string>> {
-  // No points model exists — surface the store-credit balance (mirrors the
+  // No points model exists — surface the account-credit balance (mirrors the
   // section loyalty resolver; revisit if a points engine lands).
   const empty = { pointsLabel: '', tierName: '' };
   if (!ref?.customerId) return empty;
-  const bal = await discountService.getStoreCreditBalance(ctx, ref.customerId);
+  const bal = await discountService.getAccountCreditBalance(ctx, ref.customerId);
   if (!bal || bal.balanceCents <= 0) return empty;
-  return { pointsLabel: moneyCents(bal.balanceCents), tierName: 'Store credit available' };
+  return { pointsLabel: moneyCents(bal.balanceCents), tierName: 'Account credit available' };
 }
 
 // ── per-send sources (kept) ─────────────────────────────────────────────────
@@ -644,7 +631,7 @@ async function resolveProducts(
     title: p.title,
     priceLabel: moneyCents(p.priceMinCents),
     imageUrl: p.imageUrl ?? '',
-    url: storefrontUrl(slug, `/products/${p.handle}`),
+    url: siteLink(slug, `/products/${p.handle}`),
   }));
 }
 
@@ -683,7 +670,7 @@ async function resolveCmsCollection(
     return {
       ...body,
       slug: r.slug ?? '',
-      url: storefrontUrl(slug, `/${typeKey === 'blog_post' ? 'blog' : typeKey}/${r.slug ?? ''}`),
+      url: siteLink(slug, `/${typeKey === 'blog_post' ? 'blog' : typeKey}/${r.slug ?? ''}`),
       imageUrl: featured ? mediaUrl(featured, slug) : '',
       dateLabel: dateLabel(r.publishedAt),
     };

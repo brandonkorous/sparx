@@ -12,7 +12,7 @@
 
 Today Sparx treats inventory as a number we own. [`product_variants.inventory_quantity`](05-data-model.md) is a single `INTEGER` that the Commerce engine decrements atomically on checkout ([09-ecommerce-engine-prd.md](09-ecommerce-engine-prd.md) §Inventory). The platform is the source of truth.
 
-For any merchant who already runs an ERP or dedicated inventory system, that assumption is wrong. **Their system is the source of truth**, not us. That's where receiving, purchase orders, physical counts, manufacturing/work orders, and often their own POS sales happen. The Sparx storefront is downstream — it needs to _reflect_ the external on-hand quantities and _report_ sales back so the external system depletes stock and triggers reorders. If the two drift, the merchant either oversells what they don't have or hides what they could sell.
+For any merchant who already runs an ERP or dedicated inventory system, that assumption is wrong. **Their system is the source of truth**, not us. That's where receiving, purchase orders, physical counts, manufacturing/work orders, and often their own POS sales happen. The Sparx site is downstream — it needs to _reflect_ the external on-hand quantities and _report_ sales back so the external system depletes stock and triggers reorders. If the two drift, the merchant either oversells what they don't have or hides what they could sell.
 
 This is not "import a CSV once." It is **continuous, bidirectional reconciliation** between an external system of record and our catalog, per tenant — and the external system is frequently one we can't reach directly (it lives behind the merchant's firewall).
 
@@ -137,7 +137,7 @@ CREATE TABLE inventory_sources (
 
 All tables are tenant-scoped, so they carry RLS the same way every other tenant table does: `ENABLE` + `FORCE` row-level security with a `tenant_isolation` policy on `current_tenant_id()`, hand-written into the migration SQL (Prisma doesn't generate it — see the RLS pattern in [packages/db/README.md](../packages/db/README.md) and CLAUDE.md).
 
-`product_variants.inventory_quantity` stays as the fast-read denormalized "total available across sellable locations" for Sparx-native SKUs and the storefront's existing availability checks; for externally-linked variants it becomes a derived rollup of `stock_levels`. (Alternatively, deprecate it and always sum `stock_levels` — decide on read-path cost. For now, keep it and treat it as a cache.)
+`product_variants.inventory_quantity` stays as the fast-read denormalized "total available across sellable locations" for Sparx-native SKUs and the site's existing availability checks; for externally-linked variants it becomes a derived rollup of `stock_levels`. (Alternatively, deprecate it and always sum `stock_levels` — decide on read-path cost. For now, keep it and treat it as a cache.)
 
 A variant with **no** row in `inventory_source_links` is fully Sparx-managed and behaves exactly as today. That's what keeps the change non-breaking.
 
@@ -151,7 +151,7 @@ All normalized — adapters emit/consume these regardless of the external system
 
 Two mechanisms, both needed:
 
-- **Delta events.** When stock changes in the external system (receipt, adjustment, their own POS sale, work-order consumption), the adapter emits `inventory.external.updated` with `{ source, external_sku, location, on_hand }`. The sync worker resolves the SKU via `inventory_source_links`, upserts `stock_levels`, recomputes `available`, and publishes `inventory.changed` so the storefront / search index / `inventory.low` consumers update. Near-real-time path.
+- **Delta events.** When stock changes in the external system (receipt, adjustment, their own POS sale, work-order consumption), the adapter emits `inventory.external.updated` with `{ source, external_sku, location, on_hand }`. The sync worker resolves the SKU via `inventory_source_links`, upserts `stock_levels`, recomputes `available`, and publishes `inventory.changed` so the site / search index / `inventory.low` consumers update. Near-real-time path.
 - **Periodic full snapshot (reconciliation).** Deltas drift — a missed event, a manual edit, an agent restart, a file gap. So on a schedule (nightly, plus on-demand), the adapter pulls a **full SKU/on-hand list** and the worker reconciles: anything that disagrees with our mirror gets corrected to the external value, and the discrepancy is logged. **The external system always wins on `on_hand`.** Reconciliation is the safety net that makes the lossy delta path tolerable.
 
 ### 5.2 Outbound — Sparx → external system (sales)
@@ -162,7 +162,7 @@ This write is **advisory from Sparx's perspective** — the external system is a
 
 ### 5.3 Overselling and reservations
 
-The storefront sells against `available` (`on_hand − committed`). Risk is the window between a physical change at the merchant and the next delta reaching us. Mitigations, configurable per tenant/source:
+The site sells against `available` (`on_hand − committed`). Risk is the window between a physical change at the merchant and the next delta reaching us. Mitigations, configurable per tenant/source:
 
 - A **safety buffer** per location/variant (don't expose the last N units online).
 - `inventory_policy = deny` for externally-linked variants by default (no backorders on stock we can't guarantee).
@@ -178,7 +178,7 @@ The storefront sells against `available` (`on_hand − committed`). Risk is the 
 | We sold a unit; external snapshot hasn't caught up          | Keep our `committed`; reconcile `on_hand` to the source, recompute `available`.              |
 | SKU exists in external system, not in Sparx catalog         | Don't auto-create products. Surface in an "unmapped external SKUs" review queue.             |
 | SKU exists in Sparx, link points to a missing external part | Mark variant stale, stop selling it (or fall back to manual), alert the merchant.            |
-| UoM mismatch (external "case of 12" vs storefront "each")   | Conversion factor on `inventory_source_links.external_uom` + a multiplier; never assume 1:1. |
+| UoM mismatch (external "case of 12" vs site "each")         | Conversion factor on `inventory_source_links.external_uom` + a multiplier; never assume 1:1. |
 | Two delta events out of order                               | Last-writer-by-`source_synced_at`, not by arrival time. Stamp events at the source.          |
 | Two sources both claim the same variant                     | Disallow — `inventory_source_links` is one source per variant; enforce in mapping UI.        |
 
@@ -204,7 +204,7 @@ The storefront sells against `available` (`on_hand − committed`). Risk is the 
 
 ## 9. Rough phasing (when scheduled)
 
-1. **Core + read-only mirror.** Add the tables, build the source-agnostic worker, and ingest a full snapshot via the simplest transport available for the first merchant (even a manual export), showing real on-hand on the storefront. No writes back. Proves the data model, the adapter interface, and the SKU-mapping UX with the least risk.
+1. **Core + read-only mirror.** Add the tables, build the source-agnostic worker, and ingest a full snapshot via the simplest transport available for the first merchant (even a manual export), showing real on-hand on the site. No writes back. Proves the data model, the adapter interface, and the SKU-mapping UX with the least risk.
 2. **Live inbound deltas + reconciliation.** Stand up the first adapter (bridge agent or cloud API), near-real-time updates, nightly reconcile, sync-health UI.
 3. **Outbound sales write (`two_way`).** Close the loop so Sparx sales deplete the external system.
 4. **Second adapter.** Onboard a different inventory system to prove the abstraction holds; refactor anything that leaked system-specifics into the core.

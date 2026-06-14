@@ -19,9 +19,9 @@ export interface SkeletonProps {
 }
 
 const SHAPE_CLASS: Record<SkeletonShape, string> = {
-  block: 'sf-skeleton--block',
-  text: 'sf-skeleton--text',
-  circle: 'sf-skeleton--circle',
+  block: 'st-skeleton--block',
+  text: 'st-skeleton--text',
+  circle: 'st-skeleton--circle',
 };
 
 const dim = (v: number | string | undefined): string | undefined =>
@@ -38,7 +38,7 @@ export function Skeleton({
   return (
     <span
       aria-hidden="true"
-      className={cx('sf-skeleton', SHAPE_CLASS[shape], className)}
+      className={cx('st-skeleton', SHAPE_CLASS[shape], className)}
       style={{ width: dim(width), height: dim(height), ...style }}
       id={id}
     />

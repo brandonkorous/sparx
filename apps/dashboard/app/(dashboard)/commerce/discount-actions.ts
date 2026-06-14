@@ -125,17 +125,17 @@ export async function adjustGiftCardAction(
   });
 }
 
-// ─── Store credit ─────────────────────────────────────────────────────
+// ─── Account credit ─────────────────────────────────────────────────────
 
-export async function grantStoreCreditAction(
+export async function grantAccountCreditAction(
   input: unknown
 ): Promise<ActionResult<{ newBalanceCents: number }>> {
   return restAction(async () => {
     const result = await api.post<{ newBalanceCents: number }>(
-      '/v1/commerce/store-credit/grant',
+      '/v1/commerce/account-credit/grant',
       input
     );
-    revalidatePath('/commerce/store-credit');
+    revalidatePath('/commerce/account-credit');
     return result;
   });
 }

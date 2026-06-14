@@ -34,7 +34,7 @@ import type { SendableEmail } from '../types';
 // (docs/52 §3). The email analog of apps/site's builder-renderer.tsx: it walks the
 // SAME BuilderNode tree and resolves bindings through the SAME runtime
 // (resolvePath / cardinalityOf), but emits @react-email primitives with INLINE
-// styles instead of <div> + flexbox + `--sf-*` vars — because mail clients strip
+// styles instead of <div> + flexbox + `--st-*` vars — because mail clients strip
 // <style> blocks and don't honour CSS custom properties.
 //
 // Email is fixed-width (the ~560px EmailLayout container) and non-interactive, so

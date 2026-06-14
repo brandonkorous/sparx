@@ -12,7 +12,7 @@
 // Builder published snapshot, so the two can never drift. Because a preset
 // always supplies every slot, the output is complete even for a tenant with no
 // brand doc and no overlay — which is what makes dropping the legacy
-// StorefrontTheme columns safe (decision #3's dependency).
+// CommerceSiteTheme columns safe (decision #3's dependency).
 
 import { deriveContent, normalizeHex } from './color';
 import type {

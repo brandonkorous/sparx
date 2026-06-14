@@ -37,17 +37,17 @@ export function Field({
   children,
 }: FieldProps): React.ReactElement {
   return (
-    <div className={cx('sf-field', className)} style={style} id={id}>
+    <div className={cx('st-field', className)} style={style} id={id}>
       {label ? (
         <Label htmlFor={htmlFor} required={required}>
           {label}
         </Label>
       ) : null}
-      <div className="sf-field__control">{children}</div>
+      <div className="st-field__control">{children}</div>
       {error ? (
-        <p className="sf-field__error">{error}</p>
+        <p className="st-field__error">{error}</p>
       ) : hint ? (
-        <p className="sf-field__hint">{hint}</p>
+        <p className="st-field__hint">{hint}</p>
       ) : null}
     </div>
   );

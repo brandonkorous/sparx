@@ -21,11 +21,11 @@ export interface StatusProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-status--sz-xs',
-  sm: 'sf-status--sz-sm',
-  md: 'sf-status--sz-md',
-  lg: 'sf-status--sz-lg',
-  xl: 'sf-status--sz-xl',
+  xs: 'st-status--sz-xs',
+  sm: 'st-status--sz-sm',
+  md: 'st-status--sz-md',
+  lg: 'st-status--sz-lg',
+  xl: 'st-status--sz-xl',
 };
 
 export function Status({
@@ -42,10 +42,10 @@ export function Status({
       role="status"
       aria-label={label}
       className={cx(
-        'sf-status',
+        'st-status',
         colorClass(color),
         SIZE_CLASS[size],
-        pulse && 'sf-status--pulse',
+        pulse && 'st-status--pulse',
         className
       )}
       style={style}

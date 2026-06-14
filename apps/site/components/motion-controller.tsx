@@ -1,17 +1,17 @@
 'use client';
 
-// Scroll-reveal motion controller (docs/61 §9). Watches every `.sf-reveal` and
-// `.sf-reveal-stagger` element and adds `.sf-in` as it scrolls into view, which
+// Scroll-reveal motion controller (docs/61 §9). Watches every `.st-reveal` and
+// `.st-reveal-stagger` element and adds `.st-in` as it scrolls into view, which
 // fires the entrance defined in SCROLL_MOTION_CSS (shipped with the tenant
 // stylesheet, @sparx/surface-compile/motion). One-shot per element (unobserved
 // after it reveals). Re-scans on route change so client navigations pick up the
 // new page's elements.
 //
-// The hidden initial state is gated on `html.sf-anim-ready` (set by a tiny
+// The hidden initial state is gated on `html.st-anim-ready` (set by a tiny
 // before-paint script in the layout head, only when motion is allowed), so with
 // JS disabled — or reduced motion — nothing is ever hidden. The island carries no
 // per-token knowledge: the token-specific entrance lives in CSS, it just flips
-// `.sf-in`. Renders nothing.
+// `.st-in`. Renders nothing.
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
@@ -23,15 +23,15 @@ export function MotionController() {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
     const els = Array.from(
       document.querySelectorAll<HTMLElement>(
-        '.sf-reveal, .sf-reveal-stagger, .sf-reveal-stagger--bold'
+        '.st-reveal, .st-reveal-stagger, .st-reveal-stagger--bold'
       )
-    ).filter((el) => !el.classList.contains('sf-in'));
+    ).filter((el) => !el.classList.contains('st-in'));
     if (els.length === 0) return;
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            entry.target.classList.add('sf-in');
+            entry.target.classList.add('st-in');
             io.unobserve(entry.target);
           }
         }

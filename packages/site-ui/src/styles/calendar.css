@@ -1,41 +1,41 @@
 /* Surface Calendar — static month grid (docs/46 §5.2). today/selected use the fixed
  * primary accent. */
 
-.sf-calendar {
+.st-calendar {
   display: inline-block;
-  color: var(--sf-base-content, #23211c);
+  color: var(--st-base-content, #23211c);
 }
-.sf-calendar__grid {
+.st-calendar__grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.15rem;
 }
-.sf-calendar__weekday {
+.st-calendar__weekday {
   padding: 0.25rem;
   text-align: center;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(
-    --sf-text-muted,
-    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+    --st-text-muted,
+    color-mix(in oklab, var(--st-base-content, #23211c) 55%, transparent)
   );
 }
-.sf-calendar__cell {
+.st-calendar__cell {
   display: flex;
   align-items: center;
   justify-content: center;
   aspect-ratio: 1;
   min-width: 2rem;
   font-size: 0.85rem;
-  border-radius: var(--sf-radius-field, 0.5rem);
+  border-radius: var(--st-radius-field, 0.5rem);
 }
-.sf-calendar__cell--blank {
+.st-calendar__cell--blank {
   visibility: hidden;
 }
-.sf-calendar__cell--today {
-  box-shadow: inset 0 0 0 1px var(--sf-primary, #3f6b52);
+.st-calendar__cell--today {
+  box-shadow: inset 0 0 0 1px var(--st-primary, #3f6b52);
 }
-.sf-calendar__cell--selected {
-  background: var(--sf-primary, #3f6b52);
-  color: var(--sf-primary-content, #fff);
+.st-calendar__cell--selected {
+  background: var(--st-primary, #3f6b52);
+  color: var(--st-primary-content, #fff);
 }

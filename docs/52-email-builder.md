@@ -46,7 +46,7 @@ tree**, closest to `/builder/page`'s catalog model:
 | --------- | ------------------------------------- | ---------------------------------------------------- | ------------------------------------------------ | -------------------------------------------------- |
 | Model     | `@sparx/sitebuilder-schemas` sections | `@sparx/builder-schemas` node tree                   | `@sparx/email-sections` flat section list        | **`@sparx/builder-schemas` node tree**             |
 | Editor    | `/sitebuilder`                        | `/builder/page` + `/builder/site`                    | `/email/templates`, `/email/broadcasts` composer | **`/builder/email`**                               |
-| Renderer  | —                                     | `apps/site` `builder-renderer.tsx` (HTML + `--sf-*`) | `@sparx/email` `renderSections` (React Email)    | **`@sparx/email` `renderEmailTree` (React Email)** |
+| Renderer  | —                                     | `apps/site` `builder-renderer.tsx` (HTML + `--st-*`) | `@sparx/email` `renderSections` (React Email)    | **`@sparx/email` `renderEmailTree` (React Email)** |
 | Persisted | `sitebuilder_*`                       | `BuilderPage` / `BuilderLayout`                      | `EmailTemplate.body` / `Broadcast.body` JSON     | **`BuilderEmail` (draft/published tree)**          |
 
 **Decision (locked):** the node tree is THE email authoring model. Broadcasts and
@@ -57,14 +57,14 @@ out of scope for the section retirement.
 
 ## 3. The one hard part: the renderer
 
-Editor reuse is cheap (§4). The renderer is the real work. The storefront renderer
+Editor reuse is cheap (§4). The renderer is the real work. The site renderer
 ([apps/site/components/builder-renderer.tsx](../apps/site/components/builder-renderer.tsx))
-emits `<div>` + flexbox + `--sf-*` CSS variables — which mail clients won't render.
+emits `<div>` + flexbox + `--st-*` CSS variables — which mail clients won't render.
 The Email Builder needs a **parallel renderer that walks the same `BuilderNode`
 tree but emits table-based React Email components with inline styles**, reusing
 the shared binding runtime (`resolvePath` / `cardinalityOf` from
 `@sparx/builder-schemas/runtime`) so iterate/scope semantics never drift between
-the storefront and email.
+the site and email.
 
 Email is **fixed-width and non-interactive**, which collapses most of the box
 model:
@@ -80,7 +80,7 @@ model:
   `Heading→EmailHeading`, `Text→EmailParagraph`, `Button→EmailButton`,
   `Divider→EmailDivider`, `Spacer→EmailSpacer`, `Image→<Img>`.
 
-Module color / `--module-active` and the `sf-*` recipe classes do **not** apply in
+Module color / `--module-active` and the `st-*` recipe classes do **not** apply in
 email; styling resolves from `BrandTokens` (`useBrand()`), exactly as the existing
 templates do.
 

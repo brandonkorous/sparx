@@ -23,8 +23,8 @@ export type CardModifier = 'none' | 'side' | 'image-full';
 
 export interface CardProps {
   /** Semantic color slot; drives the border color for `border`/`dash`. Any string
-   *  is accepted so a runtime custom theme color works once its `.sf-c-*` rule
-   *  exists. Omit for a card with no color (border falls back to `--sf-border`). */
+   *  is accepted so a runtime custom theme color works once its `.st-c-*` rule
+   *  exists. Omit for a card with no color (border falls back to `--st-border`). */
   color?: ColorKey | (string & {});
   /** Border treatment — the "style" axis. Defaults to `none`. */
   border?: CardBorder;
@@ -51,20 +51,20 @@ export interface CardTitleProps extends CardSlotProps {
 
 const BORDER_CLASS: Record<CardBorder, string> = {
   none: '',
-  solid: 'sf-card--border',
-  dashed: 'sf-card--dash',
+  solid: 'st-card--border',
+  dashed: 'st-card--dash',
 };
 const MODIFIER_CLASS: Record<CardModifier, string> = {
   none: '',
-  side: 'sf-card--side',
-  'image-full': 'sf-card--image-full',
+  side: 'st-card--side',
+  'image-full': 'st-card--image-full',
 };
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-card--sz-xs',
-  sm: 'sf-card--sz-sm',
-  md: 'sf-card--sz-md',
-  lg: 'sf-card--sz-lg',
-  xl: 'sf-card--sz-xl',
+  xs: 'st-card--sz-xs',
+  sm: 'st-card--sz-sm',
+  md: 'st-card--sz-md',
+  lg: 'st-card--sz-lg',
+  xl: 'st-card--sz-xl',
 };
 
 function CardRoot(props: CardProps): React.ReactElement {
@@ -81,7 +81,7 @@ function CardRoot(props: CardProps): React.ReactElement {
   return (
     <div
       className={cx(
-        'sf-card',
+        'st-card',
         colorClass(color),
         BORDER_CLASS[border],
         MODIFIER_CLASS[modifier],
@@ -99,7 +99,7 @@ CardRoot.displayName = 'Card';
 
 function CardBody({ className, style, children }: CardSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-card-body', className)} style={style}>
+    <div className={cx('st-card-body', className)} style={style}>
       {children}
     </div>
   );
@@ -109,7 +109,7 @@ CardBody.displayName = 'CardBody';
 function CardTitle({ as = 'h3', className, style, children }: CardTitleProps): React.ReactElement {
   const Tag = as as React.ElementType;
   return (
-    <Tag className={cx('sf-card-title', className)} style={style}>
+    <Tag className={cx('st-card-title', className)} style={style}>
       {children}
     </Tag>
   );
@@ -118,7 +118,7 @@ CardTitle.displayName = 'CardTitle';
 
 function CardActions({ className, style, children }: CardSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-card-actions', className)} style={style}>
+    <div className={cx('st-card-actions', className)} style={style}>
       {children}
     </div>
   );

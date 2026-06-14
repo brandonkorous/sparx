@@ -29,7 +29,7 @@ const STEPS = [
     time: '04:50',
     label: 'Live',
     title: 'Take your first order',
-    body: 'Stripe wired. Email confirmation sent. Your store is open.',
+    body: 'Stripe wired. Email confirmation sent. Your site is live.',
     invert: true,
   },
 ] as const;

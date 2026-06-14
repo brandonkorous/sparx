@@ -31,19 +31,20 @@ describe('templates', () => {
     expect(rendered.templateId).toBe('password-reset');
   });
 
-  it('renders the merchant welcome template with the store name', async () => {
+  it('renders the merchant welcome template — greets the person, no site/tenant name', async () => {
     const rendered = await _renderTemplateForTest({
       template: 'welcome-merchant',
       to: 'owner@example.test',
       props: {
         name: 'Brandon',
-        storeName: 'Acme Diesel',
         dashboardUrl: 'https://app.sparx.works/welcome',
       },
     });
     expect(rendered.subject).toBe('Welcome to Sparx');
-    expect(rendered.html).toContain('Acme Diesel');
-    expect(rendered.text).toContain('Acme Diesel');
+    expect(rendered.html).toContain('Brandon');
+    // The welcome email never carries a site/tenant name (docs/49) — it refers to
+    // "Your site" generically.
+    expect(rendered.text).toContain('Your site is live on Sparx');
     expect(rendered.text).toContain('https://app.sparx.works/welcome');
     expect(rendered.templateId).toBe('welcome-merchant');
   });
@@ -55,7 +56,6 @@ describe('sendTemplate', () => {
       template: 'welcome-merchant',
       to: 'owner@example.test',
       props: {
-        storeName: 'Acme Diesel',
         dashboardUrl: 'https://app.sparx.works/welcome',
       },
     });

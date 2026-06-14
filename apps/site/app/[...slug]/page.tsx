@@ -107,7 +107,7 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   };
 }
 
-export default async function StorefrontPage({ params, searchParams }: SlugPageProps) {
+export default async function SitePage({ params, searchParams }: SlugPageProps) {
   const tenant = await resolveTenant();
   if (!tenant) notFound();
 
@@ -157,7 +157,7 @@ export default async function StorefrontPage({ params, searchParams }: SlugPageP
     notFound();
   }
 
-  const { defaultCurrency, defaultLocale } = tenant.storefront;
+  const { defaultCurrency, defaultLocale } = tenant.commerce;
   return (
     <>
       {sections.length > 0 ? (

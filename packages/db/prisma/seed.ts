@@ -692,7 +692,7 @@ const SPARX_COMPONENTS: {
 // reuses @sparx/legal-templates for the canonical bodies, so there is no fragile
 // inline-SQL copy of the legal text.
 //
-// content_entries + storefront_doc_placements are FORCE-RLS, so each tenant's
+// content_entries + site_doc_placements are FORCE-RLS, so each tenant's
 // writes run inside a transaction with app.tenant_id SET LOCAL to that tenant
 // (the WITH CHECK is tenant_id = current_tenant_id()). This mirrors the
 // legal-seed-worker's withTenant() path; sparx_owner is a non-superuser in prod,
@@ -731,12 +731,12 @@ async function backfillLegalPages(): Promise<void> {
           created++;
         }
 
-        const existingPlacement = await tx.storefrontDocPlacement.findFirst({
+        const existingPlacement = await tx.siteDocPlacement.findFirst({
           where: { placement: 'footer', sourceKind: 'cms_entry', entryId },
           select: { id: true },
         });
         if (!existingPlacement) {
-          await tx.storefrontDocPlacement.create({
+          await tx.siteDocPlacement.create({
             data: {
               tenantId,
               placement: 'footer',

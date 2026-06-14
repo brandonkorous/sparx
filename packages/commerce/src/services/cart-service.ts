@@ -10,7 +10,7 @@
 //   5. (post-commit) publish a cart.* event
 //
 // Pricing math defers to pricingService.resolve(); discount + gift-card
-// + store-credit application defers to discountService. This file is the
+// + account-credit application defers to discountService. This file is the
 // orchestrator only.
 
 import {
@@ -44,7 +44,7 @@ export interface CartSnapshot {
   items: CartItemSnapshot[];
   appliedDiscountCodes: string[];
   appliedGiftCardCodes: string[];
-  storeCreditAppliedCents: number;
+  accountCreditAppliedCents: number;
   totals: CartTotals;
   expiresAt: string;
   abandonedAt: string | null;
@@ -309,7 +309,7 @@ export async function clear(ctx: ServiceContext, cartId: string): Promise<void> 
         shippingTotalCents: 0,
         taxTotalCents: 0,
         giftCardAppliedCents: 0,
-        storeCreditAppliedCents: 0,
+        accountCreditAppliedCents: 0,
         totalCents: 0,
         pricingTrace: {},
       },
@@ -551,14 +551,14 @@ async function recomputeTotals(tx: TxClient, _ctx: ServiceContext, cartId: strin
   });
   const discountTotal = discounts.reduce((sum, d) => sum + d.appliedCents, 0);
 
-  // Gift card + store credit applied amounts are owned by the discount
+  // Gift card + account credit applied amounts are owned by the discount
   // service; we only re-cap them against the new subtotal so a cart
   // shrink can't leave an over-applied balance dangling.
   const current = await tx.cart.findFirstOrThrow({
     where: { id: cartId },
     select: {
       giftCardAppliedCents: true,
-      storeCreditAppliedCents: true,
+      accountCreditAppliedCents: true,
       shippingTotalCents: true,
       taxTotalCents: true,
     },
@@ -567,13 +567,13 @@ async function recomputeTotals(tx: TxClient, _ctx: ServiceContext, cartId: strin
   const postDiscount = Math.max(0, subtotal - discountTotal);
   const giftCardApplied = Math.min(current.giftCardAppliedCents, postDiscount);
   const afterGc = Math.max(0, postDiscount - giftCardApplied);
-  const storeCreditApplied = Math.min(current.storeCreditAppliedCents, afterGc);
+  const accountCreditApplied = Math.min(current.accountCreditAppliedCents, afterGc);
 
   const total = Math.max(
     0,
     postDiscount -
       giftCardApplied -
-      storeCreditApplied +
+      accountCreditApplied +
       current.shippingTotalCents +
       current.taxTotalCents
   );
@@ -584,7 +584,7 @@ async function recomputeTotals(tx: TxClient, _ctx: ServiceContext, cartId: strin
       subtotalCents: subtotal,
       discountTotalCents: discountTotal,
       giftCardAppliedCents: giftCardApplied,
-      storeCreditAppliedCents: storeCreditApplied,
+      accountCreditAppliedCents: accountCreditApplied,
       totalCents: total,
     },
   });
@@ -657,14 +657,14 @@ function serializeCart(row: CartWithRelations): CartSnapshot {
     items,
     appliedDiscountCodes: row.discounts.map((d) => d.discount.code ?? '').filter(Boolean),
     appliedGiftCardCodes: [],
-    storeCreditAppliedCents: row.storeCreditAppliedCents,
+    accountCreditAppliedCents: row.accountCreditAppliedCents,
     totals: {
       subtotalCents: row.subtotalCents,
       discountTotalCents: row.discountTotalCents,
       shippingTotalCents: row.shippingTotalCents,
       taxTotalCents: row.taxTotalCents,
       giftCardAppliedCents: row.giftCardAppliedCents,
-      storeCreditAppliedCents: row.storeCreditAppliedCents,
+      accountCreditAppliedCents: row.accountCreditAppliedCents,
       totalCents: row.totalCents,
     },
     expiresAt: row.expiresAt?.toISOString() ?? '',

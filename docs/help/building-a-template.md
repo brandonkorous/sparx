@@ -70,7 +70,7 @@ const manifest = {
   key: 'retail-store-blog', // stable id, lowercase-with-hyphens
   version: '0.1.0', // semver
   name: 'Retail Store + Blog', // shown on the card
-  summary: 'A clean DTC storefront with a small catalog and a journal…',
+  summary: 'A clean DTC site with a small catalog and a journal…',
   vertical: 'retail', // retail | b2b | content | services
   preview: '/blueprint-previews/retail-store-blog.png', // marketplace screenshot
   requiresModules: ['builder', 'commerce', 'cms', 'email'],
@@ -546,7 +546,7 @@ That's it — the `/templates` page, the install API, and the marketplace all re
 A few rules that aren't obvious but will bite you:
 
 - **No eyebrows.** Never put a small uppercase/mono kicker label above a heading. Carry hierarchy with size, weight, and color. (This is a platform-wide rule — see the brand guide.)
-- **Say "Site," not "Storefront"** in any user-facing copy. (Code identifiers can keep "storefront.")
+- **Say "Site," not "Site"** in any user-facing copy. (Code identifiers can keep "site.")
 - **Product options come before variants.** Define the option lattice, then map each variant onto it with `optionValues`. A variant that names an option/value you didn't declare fails validation.
 - **Prices are integer cents** (`priceCents: 2400` = $24.00).
 - **Reference by handle/id, never by UUID.** The manifest can't know runtime ids; the installer resolves handles as it goes.

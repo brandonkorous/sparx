@@ -15,8 +15,8 @@ export function ProductDescriptionSection({
   if (!product) return null;
   if (!product.description && config.hideWhenEmpty) return null;
   return (
-    <section className="sf-section sf-container--prose" style={{ paddingInline: 0 }}>
-      <h2 className="sf-h2" style={{ marginBottom: '1rem' }}>
+    <section className="st-section st-container--prose" style={{ paddingInline: 0 }}>
+      <h2 className="st-h2" style={{ marginBottom: '1rem' }}>
         {config.heading}
       </h2>
       <div className="sparx-content" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>

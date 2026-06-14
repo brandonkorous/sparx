@@ -99,7 +99,7 @@ export const CheckoutSessionSnapshot = z.object({
     // method; completed sessions report the frozen amount. Included in totalCents.
     surchargeTotalCents: MoneyCents,
     giftCardAppliedCents: MoneyCents,
-    storeCreditAppliedCents: MoneyCents,
+    accountCreditAppliedCents: MoneyCents,
     totalCents: MoneyCents,
   }),
   expiresAt: z.string().datetime(),

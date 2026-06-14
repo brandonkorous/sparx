@@ -36,7 +36,7 @@ Each module is independently activatable:
 - Builder is optional, not a required base. It hosts and serves a website (pages, themes, domains, SSL, CDN); a tenant that wants a hosted Sparx site turns it on.
 - Headless consumers don't need Builder — a content-only publisher (CMS), a CRM-only team, or anyone driving their own frontend off the API/MCP can run without it.
 - **B2B requires Commerce** — enabling B2B auto-activates **and bills** Commerce (B2B is wholesale _on top of_ the commerce engine), and Commerce cannot be turned off while B2B is on. Enforced in the activation handlers (`@sparx/modules` `REQUIRES` graph), not just documented.
-- **Invoicing is a bundled-free capability of Commerce and B2B** — either one activates the full Invoicing surface (authoring, AR, aging, templates, MCP tools) at **$0**. A tenant with neither pays **$19** for it standalone (a service business — contractor, repair shop, consultant — that quotes and bills without a storefront). Modeled as the `@sparx/modules` `BUNDLED_FREE` graph: the standalone `invoicing` flag is only ever set on a real $19 purchase, so the bundled case is never billed.
+- **Invoicing is a bundled-free capability of Commerce and B2B** — either one activates the full Invoicing surface (authoring, AR, aging, templates, MCP tools) at **$0**. A tenant with neither pays **$19** for it standalone (a service business — contractor, repair shop, consultant — that quotes and bills without a site). Modeled as the `@sparx/modules` `BUNDLED_FREE` graph: the standalone `invoicing` flag is only ever set on a real $19 purchase, so the bundled case is never billed.
 - Modules can be added or removed at any time (prorated).
 
 ### Transaction Fees
@@ -112,7 +112,7 @@ All billing handled via Stripe:
   Metering/gating is deferred — create-site is open until the billing build wires
   this item; the Sites settings page is where the count surfaces.
 - Transaction fees calculated via Stripe Connect (when applicable)
-- Failed payment / trial expiry: handled by the **Trial → Grace → Suspend** lifecycle in §6 — a 7-day grace window (site stays live), then a non-bypassable storefront overlay; modules pause, the dashboard stays open, and data is retained throughout.
+- Failed payment / trial expiry: handled by the **Trial → Grace → Suspend** lifecycle in §6 — a 7-day grace window (site stays live), then a non-bypassable site overlay; modules pause, the dashboard stays open, and data is retained throughout.
 
 ### Stripe Customer Portal
 
@@ -154,7 +154,7 @@ The site stays live for visitors; the dashboard nudges daily. A lapsed **active*
 
 ### Day 21 — Suspend
 
-No active subscription past grace → the **storefront** (`apps/site`) serves a full-page, **non-bypassable** "site unavailable" overlay — a friendly Sparx-flavored message (e.g. _"Catching a fresh spark — back in a flash"_) that never exposes a billing problem to the tenant's customers. The site is suspended to the public; **the dashboard stays fully open** so the owner can add a card or export. **Nothing is deleted.**
+No active subscription past grace → the **site** (`apps/site`) serves a full-page, **non-bypassable** "site unavailable" overlay — a friendly Sparx-flavored message (e.g. _"Catching a fresh spark — back in a flash"_) that never exposes a billing problem to the tenant's customers. The site is suspended to the public; **the dashboard stays fully open** so the owner can add a card or export. **Nothing is deleted.**
 
 ### Anytime — Reactivate
 
@@ -162,7 +162,7 @@ Adding a card switches modules back on and lifts the overlay; the subscription r
 
 ### Dashboard prompting ladder
 
-The in-app counterpart to the storefront overlay — escalation, not nagging:
+The in-app counterpart to the site overlay — escalation, not nagging:
 
 | When               | Treatment                                                                                         |
 | ------------------ | ------------------------------------------------------------------------------------------------- |
@@ -175,7 +175,7 @@ The in-app counterpart to the storefront overlay — escalation, not nagging:
 
 ### Implementation notes
 
-- **The storefront billing-state check is on the public hot path** — it must be cached (per-tenant, short TTL, invalidated on subscription webhooks) so it does not tax TTFB.
+- **The site billing-state check is on the public hot path** — it must be cached (per-tenant, short TTL, invalidated on subscription webhooks) so it does not tax TTFB.
 - **Module toggle ↔ subscription item must stay in sync.** Toggling a module in the dashboard switchboard flips `tenants.settings.modules.<slug>.enabled` **and** adds/removes the matching Stripe subscription item (prorated), with **Stripe webhooks as the source of truth** for subscription state.
 - **Platform/internal tenants are exempt** from trial suspension (the dogfood `wizeworks` tenant and any reserved/platform tenant via `SPARX_PLATFORM_TENANT_ID`).
 

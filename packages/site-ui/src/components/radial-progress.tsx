@@ -1,6 +1,6 @@
 // RadialProgress — a circular progress dial (docs/46 §3.6). Color-bearing: the arc
 // reads the role var `--c-bg`. Pure CSS (conic-gradient + a ring mask) driven by
-// the `--sf-radial-*` custom properties; `size`/`thickness` are free dimensions.
+// the `--st-radial-*` custom properties; `size`/`thickness` are free dimensions.
 // SERVER component; `role="progressbar"` with ARIA values.
 
 import * as React from 'react';
@@ -40,9 +40,9 @@ export function RadialProgress({
 }: RadialProgressProps): React.ReactElement {
   const pct = Math.max(0, Math.min(100, (value / max) * 100));
   const vars = {
-    '--sf-radial-value': String(Math.round(pct)),
-    '--sf-radial-size': dim(size),
-    '--sf-radial-thickness': dim(thickness),
+    '--st-radial-value': String(Math.round(pct)),
+    '--st-radial-size': dim(size),
+    '--st-radial-thickness': dim(thickness),
     ...style,
   } as React.CSSProperties;
   return (
@@ -51,11 +51,11 @@ export function RadialProgress({
       aria-valuemin={0}
       aria-valuemax={max}
       aria-valuenow={value}
-      className={cx('sf-radial', colorClass(color), className)}
+      className={cx('st-radial', colorClass(color), className)}
       style={vars}
       id={id}
     >
-      <span className="sf-radial__label">{children ?? `${Math.round(pct)}%`}</span>
+      <span className="st-radial__label">{children ?? `${Math.round(pct)}%`}</span>
     </div>
   );
 }

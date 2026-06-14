@@ -17,11 +17,11 @@ export interface RangeProps extends Omit<
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-range--sz-xs',
-  sm: 'sf-range--sz-sm',
-  md: 'sf-range--sz-md',
-  lg: 'sf-range--sz-lg',
-  xl: 'sf-range--sz-xl',
+  xs: 'st-range--sz-xs',
+  sm: 'st-range--sz-sm',
+  md: 'st-range--sz-md',
+  lg: 'st-range--sz-lg',
+  xl: 'st-range--sz-xl',
 };
 
 export function Range({
@@ -34,7 +34,7 @@ export function Range({
     <input
       {...rest}
       type="range"
-      className={cx('sf-range', colorClass(color), SIZE_CLASS[size], className)}
+      className={cx('st-range', colorClass(color), SIZE_CLASS[size], className)}
     />
   );
 }

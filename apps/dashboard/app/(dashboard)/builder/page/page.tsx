@@ -13,7 +13,7 @@ import {
 } from '@/lib/sites';
 import { BuilderApp } from '../_builder/builder-app';
 import '../builder.css';
-// The Surface RECIPE — @sparx/site-ui's `sf-*` component/color/variant classes,
+// The Surface RECIPE — @sparx/site-ui's `st-*` component/color/variant classes,
 // PRE-SCOPED to `.bx-canvas` by site-ui's build (styles.canvas.css = the recipe
 // wrapped in `@scope (.bx-canvas)`). Loaded here so the Color/Variant a node is
 // authored with renders LIVE on the canvas, identical to the published site —
@@ -32,8 +32,8 @@ import '@sparx/site-ui/styles.canvas.css';
 //    to the canvas, so the preview renders in the real brand (the same
 //    compileThemeForTenant → buildThemeCssV2 the /builder/brand showcase and the
 //    live storefront use). builder.css aliases the canvas's `--bxc-*` vars onto
-//    the compiled `--sf-*` set.
-// The Surface recipe (`sf-*` classes) is loaded separately via a side-effect CSS
+//    the compiled `--st-*` set.
+// The Surface recipe (`st-*` classes) is loaded separately via a side-effect CSS
 // import below — see that import's note.
 
 export const metadata: Metadata = {

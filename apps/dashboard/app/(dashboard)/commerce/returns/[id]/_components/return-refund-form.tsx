@@ -25,7 +25,7 @@ export function ReturnRefundForm({
     const form = new FormData(e.currentTarget);
     const amount = formNumber(form, 'amount');
     const restockingFee = formNumber(form, 'restockingFee');
-    const asStoreCredit = formBool(form, 'asStoreCredit');
+    const asAccountCredit = formBool(form, 'asAccountCredit');
 
     if (amount <= 0) {
       setError('Refund amount must be greater than zero.');
@@ -37,7 +37,7 @@ export function ReturnRefundForm({
         returnId,
         refundAmountCents: Math.round(amount * 100),
         ...(restockingFee > 0 ? { restockingFeeCents: Math.round(restockingFee * 100) } : {}),
-        asStoreCredit,
+        asAccountCredit,
       });
       if (!result.ok) {
         setError(result.error.message);
@@ -67,10 +67,10 @@ export function ReturnRefundForm({
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
-            name="asStoreCredit"
-            defaultChecked={preferredOutcome === 'store_credit'}
+            name="asAccountCredit"
+            defaultChecked={preferredOutcome === 'account_credit'}
           />
-          <Text size="sm">Issue as store credit instead of refunding to original payment</Text>
+          <Text size="sm">Issue as account credit instead of refunding to original payment</Text>
         </label>
         {error && (
           <Text size="sm" className="text-[var(--color-danger)]">

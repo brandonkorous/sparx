@@ -76,7 +76,7 @@ Status legend: ☐ not started · ◐ in progress · ☑ done · ⃠ deferred/bl
 >   (d) **`resolveEmailData` rewritten to the docs/91 §3 vocabulary** — `customer/tenant/order/cart/quote/invoice/
 b2bAccount` (+ enriched order/cart), each resolved from the send's `entityRefs` (the exact entity the automation
 >   fired on, else recipient's most-recent for a broadcast), with `items[]` line collections + every `*Url`
->   (storeUrl/recoveryUrl/reviewUrl/payUrl/portalUrl) → real storefront routes. `applyEntitySnapshot` overlays the
+>   (storeUrl/recoveryUrl/reviewUrl/payUrl/portalUrl) → real site routes. `applyEntitySnapshot` overlays the
 >   flat trigger-time fields as a scalar fallback for a since-deleted entity. (e) **Dispatch tick** — builds the ref
 >   from `entityRefs`, resolves data (incl. subject/preheader source-collection), interpolates subject + preheader,
 >   sets the `ComplianceContext` (physical address + a real one-click unsubscribe URL) and the `List-Unsubscribe` /

@@ -47,7 +47,7 @@ model CheckoutSession {
   shippingTotalCents      Int @default(0) @map("shipping_total_cents")
   taxTotalCents           Int @default(0) @map("tax_total_cents")
   giftCardAppliedCents    Int @default(0) @map("gift_card_applied_cents")
-  storeCreditAppliedCents Int @default(0) @map("store_credit_applied_cents")
+  accountCreditAppliedCents Int @default(0) @map("account_credit_applied_cents")
   // Document-level surcharge (docs/48 §6), computed at complete() after tax and
   // folded into totalCents. Cached here so refund/serialization paths read it.
   surchargeTotalCents     Int @default(0) @map("surcharge_total_cents")

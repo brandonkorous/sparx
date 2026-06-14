@@ -36,7 +36,7 @@ export function EmailWordmark({
   const brand = useBrand();
   const logoUrl = brand.logoUrl;
   const hasLogo = Boolean(logoUrl);
-  const hasName = Boolean(brand.storeName) && brand.storeName !== 'Sparx';
+  const hasName = Boolean(brand.siteName) && brand.siteName !== 'Sparx';
 
   // Which parts the treatment asks for, then a name fallback so the header is never
   // empty (a logo-only treatment with no logo, etc. → the name / Sparx default).
@@ -56,7 +56,7 @@ export function EmailWordmark({
   };
 
   const nameNode = hasName ? (
-    <span style={nameStyle}>{brand.storeName}</span>
+    <span style={nameStyle}>{brand.siteName}</span>
   ) : (
     <span style={nameStyle}>
       Spar<span style={{ color: brand.primary }}>x</span>
@@ -68,7 +68,7 @@ export function EmailWordmark({
       {showLogo && logoUrl ? (
         <Img
           src={logoUrl}
-          alt={brand.storeName ?? 'Logo'}
+          alt={brand.siteName ?? 'Logo'}
           height={Math.round(size * 1.4)}
           style={{
             display: 'inline-block',

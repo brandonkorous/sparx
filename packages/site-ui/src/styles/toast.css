@@ -2,7 +2,7 @@
  * column (click-through) anchored by horizontal × vertical; the toasts stack at the
  * anchor. */
 
-.sf-toast {
+.st-toast {
   position: fixed;
   inset: 0;
   z-index: 70;
@@ -12,28 +12,28 @@
   padding: 1rem;
   pointer-events: none;
 }
-.sf-toast > * {
+.st-toast > * {
   pointer-events: auto;
 }
 
 /* vertical anchor (main axis). */
-.sf-toast--v-top {
+.st-toast--v-top {
   justify-content: flex-start;
 }
-.sf-toast--v-middle {
+.st-toast--v-middle {
   justify-content: center;
 }
-.sf-toast--v-bottom {
+.st-toast--v-bottom {
   justify-content: flex-end;
 }
 
 /* horizontal anchor (cross axis). */
-.sf-toast--h-start {
+.st-toast--h-start {
   align-items: flex-start;
 }
-.sf-toast--h-center {
+.st-toast--h-center {
   align-items: center;
 }
-.sf-toast--h-end {
+.st-toast--h-end {
   align-items: flex-end;
 }

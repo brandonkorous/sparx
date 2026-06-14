@@ -1,75 +1,75 @@
 /* Surface box utilities — token-backed radius / border / shadow steps surfaced by
  * the builder's Advanced panel (docs/47 §4: safelisted token utilities). Plain
- * declarations rather than @apply, because each reads a tenant --sf-* token with a
+ * declarations rather than @apply, because each reads a tenant --st-* token with a
  * fallback and @apply can't express `var(--x, fallback)` (same reason button.css's
- * radius/font lines stay raw). The `--sf-*` they read are emitted by every compiled
+ * radius/font lines stay raw). The `--st-*` they read are emitted by every compiled
  * tenant theme (site-themes v2 css.ts) AND the editor's `.bx-canvas` block, so they
  * render identically in the designer and on the published site.
  *
  * Imported into the `utilities` layer so a node-level choice WINS over an
- * archetype's own value (a `card` with `sf-radius-pill` rounds fully) — the
+ * archetype's own value (a `card` with `st-radius-pill` rounds fully) — the
  * Tier-3 override rule from docs/47 §4 / styles.css's layer note. */
 
 /* ── Radius ─────────────────────────────────────────────────────────────────
  * none → square; sm/md map to the field/box tokens; lg is a generous fixed step
  * for large hero panels; pill is the fully-round selector token. */
-.sf-radius-none {
+.st-radius-none {
   border-radius: 0;
 }
-.sf-radius-sm {
-  border-radius: var(--sf-radius-field, 0.5rem);
+.st-radius-sm {
+  border-radius: var(--st-radius-field, 0.5rem);
 }
-.sf-radius-md {
-  border-radius: var(--sf-radius-box, 0.875rem);
+.st-radius-md {
+  border-radius: var(--st-radius-box, 0.875rem);
 }
-.sf-radius-lg {
+.st-radius-lg {
   border-radius: 1.5rem;
 }
-.sf-radius-pill {
+.st-radius-pill {
   border-radius: 9999px;
 }
 
 /* ── Border ───────────────────────────────────────────────────────────────── */
-.sf-border-none {
+.st-border-none {
   border: 0;
 }
-.sf-border-thin {
-  border: var(--sf-border-width, 1px) solid var(--sf-border, currentColor);
+.st-border-thin {
+  border: var(--st-border-width, 1px) solid var(--st-border, currentColor);
 }
-.sf-border-strong {
-  border: var(--sf-border-width, 1px) solid var(--sf-border-strong, currentColor);
+.st-border-strong {
+  border: var(--st-border-width, 1px) solid var(--st-border-strong, currentColor);
 }
 
 /* ── Margin (outer spacing, all sides) ────────────────────────────────────────
  * Space AROUND the block — the complement to the box's padding (inner). All four
  * sides, so "Margin" behaves the way authors expect rather than silently nudging
  * only top/bottom. (Per-side control can come later if needed.) */
-.sf-m-none {
+.st-m-none {
   margin: 0;
 }
-.sf-m-sm {
+.st-m-sm {
   margin: 0.5rem;
 }
-.sf-m-md {
+.st-m-md {
   margin: 1rem;
 }
-.sf-m-lg {
+.st-m-lg {
   margin: 2rem;
 }
-.sf-m-xl {
+.st-m-xl {
   margin: 4rem;
 }
 
 /* ── Shadow / elevation ───────────────────────────────────────────────────── */
-.sf-shadow-none {
+.st-shadow-none {
   box-shadow: none;
 }
-.sf-shadow-sm {
-  box-shadow: var(--sf-shadow-sm);
+.st-shadow-sm {
+  box-shadow: var(--st-shadow-sm);
 }
-.sf-shadow-md {
-  box-shadow: var(--sf-shadow-md);
+.st-shadow-md {
+  box-shadow: var(--st-shadow-md);
 }
-.sf-shadow-lg {
-  box-shadow: var(--sf-shadow-lg);
+.st-shadow-lg {
+  box-shadow: var(--st-shadow-lg);
 }

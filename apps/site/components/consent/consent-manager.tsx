@@ -8,7 +8,7 @@
 //
 // The decision is persisted client-side (the /api/sparx proxy relays only one
 // Set-Cookie, so the cookie is set here) and POSTed to /v1/public/consent for
-// the legal record. Built from sf-consent-* classes in site.css.
+// the legal record. Built from st-consent-* classes in site.css.
 
 import { useEffect, useState } from 'react';
 import type { TenantConsent } from '@/lib/tenant';
@@ -84,8 +84,8 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Ten
   return (
     <>
       {bannerOpen ? (
-        <div className="sf-consent-banner" role="dialog" aria-label="Cookie consent">
-          <div className="sf-consent-banner__text">
+        <div className="st-consent-banner" role="dialog" aria-label="Cookie consent">
+          <div className="st-consent-banner__text">
             <strong>{config.bannerTitle ?? 'We value your privacy'}</strong>
             <p>
               {config.bannerBody ??
@@ -93,12 +93,12 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Ten
               See our <a href={policyHref}>Cookie Policy</a>.
             </p>
           </div>
-          <div className="sf-consent-banner__actions">
+          <div className="st-consent-banner__actions">
             {config.mode === 'ccpa' ? (
               <>
                 <button
                   type="button"
-                  className="sf-consent-btn sf-consent-btn--primary"
+                  className="st-consent-btn st-consent-btn--primary"
                   onClick={() =>
                     record({ ...draft, analytics: false, marketing: false }, 'opt_out')
                   }
@@ -107,7 +107,7 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Ten
                 </button>
                 <button
                   type="button"
-                  className="sf-consent-btn"
+                  className="st-consent-btn"
                   onClick={() => record(ALL_ON, 'accept_all')}
                 >
                   Got it
@@ -117,14 +117,14 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Ten
               <>
                 <button
                   type="button"
-                  className="sf-consent-btn"
+                  className="st-consent-btn"
                   onClick={() => record(NONE, 'reject_all')}
                 >
                   Reject all
                 </button>
                 <button
                   type="button"
-                  className="sf-consent-btn sf-consent-btn--primary"
+                  className="st-consent-btn st-consent-btn--primary"
                   onClick={() => record(ALL_ON, 'accept_all')}
                 >
                   Accept all
@@ -133,7 +133,7 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Ten
             )}
             <button
               type="button"
-              className="sf-consent-btn sf-consent-btn--ghost"
+              className="st-consent-btn st-consent-btn--ghost"
               onClick={() => setPrefsOpen(true)}
             >
               Manage
@@ -146,7 +146,7 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Ten
         // cookies" link. Both open the preference center.
         <button
           type="button"
-          className="sf-consent-pill"
+          className="st-consent-pill"
           onClick={() => setPrefsOpen(true)}
           aria-label={
             config.mode === 'ccpa'
@@ -159,26 +159,26 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Ten
       )}
 
       {prefsOpen ? (
-        <div className="sf-consent-modal__overlay">
+        <div className="st-consent-modal__overlay">
           <button
             type="button"
-            className="sf-consent-modal__scrim"
+            className="st-consent-modal__scrim"
             aria-label="Close cookie preferences"
             onClick={() => setPrefsOpen(false)}
           />
           <div
-            className="sf-consent-modal"
+            className="st-consent-modal"
             role="dialog"
             aria-modal="true"
             aria-label="Cookie preferences"
           >
-            <h2 className="sf-consent-modal__title">Cookie preferences</h2>
-            <p className="sf-consent-modal__lede">
+            <h2 className="st-consent-modal__title">Cookie preferences</h2>
+            <p className="st-consent-modal__lede">
               Choose which cookies to allow. See our <a href={policyHref}>Cookie Policy</a> for
               details.
             </p>
 
-            <div className="sf-consent-row sf-consent-row--locked">
+            <div className="st-consent-row st-consent-row--locked">
               <div>
                 <strong>Strictly necessary</strong>
                 <span>Required for the site to work. Always on.</span>
@@ -187,7 +187,7 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Ten
             </div>
 
             {nonEssential.map((cat) => (
-              <label key={cat} className="sf-consent-row">
+              <label key={cat} className="st-consent-row">
                 <div>
                   <strong>{cat.charAt(0).toUpperCase() + cat.slice(1)}</strong>
                   <span>{CATEGORY_COPY[cat]}</span>
@@ -201,17 +201,17 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Ten
               </label>
             ))}
 
-            <div className="sf-consent-modal__actions">
+            <div className="st-consent-modal__actions">
               <button
                 type="button"
-                className="sf-consent-btn sf-consent-btn--ghost"
+                className="st-consent-btn st-consent-btn--ghost"
                 onClick={() => record(NONE, 'reject_all')}
               >
                 Reject all
               </button>
               <button
                 type="button"
-                className="sf-consent-btn sf-consent-btn--primary"
+                className="st-consent-btn st-consent-btn--primary"
                 onClick={() => record(draft, 'save_prefs')}
               >
                 Save preferences

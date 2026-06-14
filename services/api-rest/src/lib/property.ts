@@ -93,3 +93,23 @@ export async function resolvePublicPropertyId(
   }
   return resolvePrimaryPropertyId(tenantId);
 }
+
+/** The customer-facing SITE name (`Property.name`) a public/email read is scoped
+ *  to: the active property (by id) when given, else the tenant's PRIMARY property.
+ *  This is the ONLY name shown to customers (storefront chrome, email wordmark/
+ *  footer, `{{site.name}}` copy) — NEVER the tenant's legal/org name (`Tenant.name`
+ *  is billing/ownership only). The default site's name is seeded from the tenant
+ *  name at provisioning, so a single-site tenant still reads a sensible name here.
+ *  Returns '' only if the resolved property somehow has a blank name (NOT NULL in
+ *  the schema, so effectively unreachable). */
+export async function resolveActivePropertyName(
+  tenantId: string,
+  propertyId?: string | null
+): Promise<string> {
+  const row = await withTenant({ tenantId }, (tx) =>
+    propertyId
+      ? tx.property.findUnique({ where: { id: propertyId }, select: { name: true } })
+      : tx.property.findFirst({ where: { isPrimary: true }, select: { name: true } })
+  );
+  return row?.name?.trim() ?? '';
+}

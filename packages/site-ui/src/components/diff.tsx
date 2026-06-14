@@ -20,7 +20,7 @@ export interface DiffSlotProps {
 
 function DiffRoot({ className, style, id, children }: DiffProps): React.ReactElement {
   return (
-    <figure className={cx('sf-diff', className)} style={style} id={id}>
+    <figure className={cx('st-diff', className)} style={style} id={id}>
       {children}
     </figure>
   );
@@ -29,7 +29,7 @@ DiffRoot.displayName = 'Diff';
 
 function DiffItem1({ className, style, children }: DiffSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-diff__item-1', className)} style={style}>
+    <div className={cx('st-diff__item-1', className)} style={style}>
       {children}
     </div>
   );
@@ -38,7 +38,7 @@ DiffItem1.displayName = 'DiffItem1';
 
 function DiffItem2({ className, style, children }: DiffSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-diff__item-2', className)} style={style}>
+    <div className={cx('st-diff__item-2', className)} style={style}>
       {children}
     </div>
   );
@@ -46,7 +46,7 @@ function DiffItem2({ className, style, children }: DiffSlotProps): React.ReactEl
 DiffItem2.displayName = 'DiffItem2';
 
 function DiffResizer({ className, style }: DiffSlotProps): React.ReactElement {
-  return <div className={cx('sf-diff__resizer', className)} style={style} aria-hidden="true" />;
+  return <div className={cx('st-diff__resizer', className)} style={style} aria-hidden="true" />;
 }
 DiffResizer.displayName = 'DiffResizer';
 

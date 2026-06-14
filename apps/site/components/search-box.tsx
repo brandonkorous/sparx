@@ -89,10 +89,10 @@ export function SearchBox({ tenantSlug }: { tenantSlug: string }) {
   const showMenu = open && q.trim().length >= 2 && results.length > 0;
 
   return (
-    <div className="sf-search sf-search--desktop" ref={boxRef} style={{ position: 'relative' }}>
+    <div className="st-search st-search--desktop" ref={boxRef} style={{ position: 'relative' }}>
       <button
         type="button"
-        className="sf-search__submit"
+        className="st-search__submit"
         aria-label="Search"
         onClick={() => go()}
         style={{ display: 'contents' }}
@@ -107,7 +107,7 @@ export function SearchBox({ tenantSlug }: { tenantSlug: string }) {
         autoComplete="off"
         role="combobox"
         aria-expanded={showMenu}
-        aria-controls="sf-search-menu"
+        aria-controls="st-search-menu"
         value={q}
         onChange={(e) => {
           setQ(e.target.value);
@@ -117,12 +117,12 @@ export function SearchBox({ tenantSlug }: { tenantSlug: string }) {
         onKeyDown={onKeyDown}
       />
       {showMenu ? (
-        <ul className="sf-search__menu" id="sf-search-menu" role="listbox">
+        <ul className="st-search__menu" id="st-search-menu" role="listbox">
           {results.map((r, i) => (
             <li key={r.id} role="option" aria-selected={i === active}>
               <Link
                 href={`/products/${r.handle}`}
-                className={['sf-search__result', i === active && 'is-active']
+                className={['st-search__result', i === active && 'is-active']
                   .filter(Boolean)
                   .join(' ')}
                 onClick={() => setOpen(false)}
@@ -132,7 +132,7 @@ export function SearchBox({ tenantSlug }: { tenantSlug: string }) {
             </li>
           ))}
           <li role="option" aria-selected={false}>
-            <button type="button" className="sf-search__result sf-search__all" onClick={() => go()}>
+            <button type="button" className="st-search__result st-search__all" onClick={() => go()}>
               See all results for “{q.trim()}”
             </button>
           </li>
@@ -145,7 +145,7 @@ export function SearchBox({ tenantSlug }: { tenantSlug: string }) {
 function SearchIcon() {
   return (
     <svg
-      className="sf-search__icon"
+      className="st-search__icon"
       width="18"
       height="18"
       viewBox="0 0 24 24"

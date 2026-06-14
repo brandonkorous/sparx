@@ -44,13 +44,13 @@ the "find anything in Sparx" command an OS should have.
 - A real **global ⌘K** ("search everything across Sparx"), tenant-isolated and
   module/permission-gated.
 - Per-module list pages can search their own entity type against the universal index.
-- The three rich collections **keep** their faceted/ranked behaviour and storefront
+- The three rich collections **keep** their faceted/ranked behaviour and site
   use — universal search _coexists_, it does not replace them.
 
 **Non-goals (v1)**
 
 - Replacing the rich collections. Products/orders/customers keep theirs for
-  fitment/price/payment faceting and storefront instant-search.
+  fitment/price/payment faceting and site instant-search.
 - Per-record ACL beyond module + role gating (see §9).
 - Cross-tenant / admin-console search.
 
@@ -134,7 +134,7 @@ in [packages/search/src/schemas/index.ts](../packages/search/src/schemas/index.t
 global ⌘K is a **single query** against `entities` rather than a fan-out across four
 collections. The duplication is cheap (a universal doc is ~10 small fields) and keeps
 global search trivial. Their rich collections stay the source for faceted list search +
-storefront. The indexer already projects them on their events; it adds one universal
+site. The indexer already projects them on their events; it adds one universal
 upsert alongside.
 
 ## 5. Projector registry

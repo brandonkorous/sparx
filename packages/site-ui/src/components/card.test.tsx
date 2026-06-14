@@ -5,23 +5,23 @@ import { Card, CardBody, CardTitle, CardActions } from './card';
 describe('Card', () => {
   it('renders the default card container', () => {
     const { container } = render(<Card>content</Card>);
-    const el = container.querySelector('.sf-card');
+    const el = container.querySelector('.st-card');
     expect(el).toBeInTheDocument();
-    expect(el).toHaveClass('sf-card', 'sf-card--sz-md');
+    expect(el).toHaveClass('st-card', 'st-card--sz-md');
   });
 
   it('maps the style axis to border / dash classes', () => {
     const { container, rerender } = render(<Card border="solid">x</Card>);
-    expect(container.querySelector('.sf-card')).toHaveClass('sf-card--border');
+    expect(container.querySelector('.st-card')).toHaveClass('st-card--border');
     rerender(<Card border="dashed">x</Card>);
-    expect(container.querySelector('.sf-card')).toHaveClass('sf-card--dash');
+    expect(container.querySelector('.st-card')).toHaveClass('st-card--dash');
   });
 
   it('maps the modifier axis to side / image-full classes', () => {
     const { container, rerender } = render(<Card modifier="side">x</Card>);
-    expect(container.querySelector('.sf-card')).toHaveClass('sf-card--side');
+    expect(container.querySelector('.st-card')).toHaveClass('st-card--side');
     rerender(<Card modifier="image-full">x</Card>);
-    expect(container.querySelector('.sf-card')).toHaveClass('sf-card--image-full');
+    expect(container.querySelector('.st-card')).toHaveClass('st-card--image-full');
   });
 
   it('maps color to the shared role-var class and the xs…xl size scale', () => {
@@ -30,7 +30,7 @@ describe('Card', () => {
         x
       </Card>
     );
-    expect(container.querySelector('.sf-card')).toHaveClass('sf-c-primary', 'sf-card--sz-xl');
+    expect(container.querySelector('.st-card')).toHaveClass('st-c-primary', 'st-card--sz-xl');
   });
 
   it('renders parts with their semantic classes via the compound API', () => {
@@ -45,10 +45,10 @@ describe('Card', () => {
       </Card>
     );
     const title = screen.getByText('Model 3');
-    expect(title).toHaveClass('sf-card-title');
+    expect(title).toHaveClass('st-card-title');
     expect(title.tagName).toBe('H3');
     expect(screen.getByRole('button', { name: 'Order' }).parentElement).toHaveClass(
-      'sf-card-actions'
+      'st-card-actions'
     );
   });
 
@@ -61,6 +61,6 @@ describe('Card', () => {
     );
     const title = screen.getByText('Title');
     expect(title.tagName).toBe('H2');
-    expect(title).toHaveClass('sf-card-title');
+    expect(title).toHaveClass('st-card-title');
   });
 });

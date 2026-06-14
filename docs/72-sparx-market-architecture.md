@@ -50,7 +50,7 @@ sparx.market
   /products             → All public products, search + filter
   /products/[slug]      → Product detail page
   /merchants            → Directory of all Sparx merchants
-  /merchants/[slug]     → Merchant profile → links to their sparx.zone storefront
+  /merchants/[slug]     → Merchant profile → links to their sparx.zone site
   /cart                 → Unified cart (Phase 1: single merchant per cart)
   /checkout             → Stripe-powered checkout
   /orders/[id]          → Order status page (no login required, UUID URL)
@@ -206,7 +206,7 @@ Each category page targets category-specific keywords:
 - sparx.market/auto → "buy auto parts online," "auto parts marketplace"
 - sparx.market/beauty → "independent beauty brands," "small business beauty"
 
-Product pages target long-tail product keywords that individual merchant storefronts can't compete on alone — but the aggregate marketplace can.
+Product pages target long-tail product keywords that individual merchant sites can't compete on alone — but the aggregate marketplace can.
 
 ---
 
@@ -216,7 +216,7 @@ Market revenue surfaces alongside other channels in the Sparx analytics dashboar
 
 ```
 Revenue by channel · Last 30 days
-Storefront          $48,200
+Site          $48,200
 sparx.market         $8,100  ← marketplace sales
 TikTok Shop         $12,800
 B2B Portal          $18,400

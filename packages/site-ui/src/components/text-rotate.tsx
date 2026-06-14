@@ -38,8 +38,8 @@ export function TextRotate({
   const current = items[Math.min(index, count - 1)]!;
 
   return (
-    <span className={cx('sf-textrotate', className)} style={style} id={id}>
-      <span key={index} className="sf-textrotate__item">
+    <span className={cx('st-textrotate', className)} style={style} id={id}>
+      <span key={index} className="st-textrotate__item">
         {current}
       </span>
     </span>

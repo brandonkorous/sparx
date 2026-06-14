@@ -46,7 +46,7 @@ function fieldToZod(field: SectionField): z.ZodTypeAny {
       return z.boolean().default(false);
     case 'color':
     case 'font':
-      // A token KEY (resolved to a `--sf-*` value at render), never a raw value.
+      // A token KEY (resolved to a `--st-*` value at render), never a raw value.
       // v1 accepts a bounded string; a token-key enum is a follow-up.
       return z.string().max(64).default('');
     case 'media':

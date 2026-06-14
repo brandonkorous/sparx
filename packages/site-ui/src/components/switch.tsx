@@ -18,11 +18,11 @@ export interface SwitchProps extends Omit<
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-switch--sz-xs',
-  sm: 'sf-switch--sz-sm',
-  md: 'sf-switch--sz-md',
-  lg: 'sf-switch--sz-lg',
-  xl: 'sf-switch--sz-xl',
+  xs: 'st-switch--sz-xs',
+  sm: 'st-switch--sz-sm',
+  md: 'st-switch--sz-md',
+  lg: 'st-switch--sz-lg',
+  xl: 'st-switch--sz-xl',
 };
 
 export function Switch({
@@ -36,7 +36,7 @@ export function Switch({
       {...rest}
       type="checkbox"
       role="switch"
-      className={cx('sf-switch', colorClass(color), SIZE_CLASS[size], className)}
+      className={cx('st-switch', colorClass(color), SIZE_CLASS[size], className)}
     />
   );
 }

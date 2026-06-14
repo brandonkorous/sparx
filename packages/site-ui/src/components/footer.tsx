@@ -29,7 +29,7 @@ function FooterRoot({
 }: FooterProps): React.ReactElement {
   return (
     <footer
-      className={cx('sf-footer', center && 'sf-footer--center', className)}
+      className={cx('st-footer', center && 'st-footer--center', className)}
       style={style}
       id={id}
     >
@@ -41,7 +41,7 @@ FooterRoot.displayName = 'Footer';
 
 function FooterColumn({ className, style, children }: FooterSlotProps): React.ReactElement {
   return (
-    <div className={cx('sf-footer__col', className)} style={style}>
+    <div className={cx('st-footer__col', className)} style={style}>
       {children}
     </div>
   );
@@ -50,7 +50,7 @@ FooterColumn.displayName = 'FooterColumn';
 
 function FooterTitle({ className, style, children }: FooterSlotProps): React.ReactElement {
   return (
-    <h6 className={cx('sf-footer__title', className)} style={style}>
+    <h6 className={cx('st-footer__title', className)} style={style}>
       {children}
     </h6>
   );

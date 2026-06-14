@@ -1,8 +1,8 @@
 # WizeWorks Platform — Data Model
 
-**Version:** 1.0.2  
+**Version:** 1.0.3  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-05
+**Last Updated:** 2026-06-13
 
 ---
 
@@ -29,8 +29,11 @@
 ## 2. Core Entity Map
 
 ```
-Tenant (organization account)
-├── Domain(s)
+Tenant (the legal entity — a business, or an individual; billing/ownership only)
+├── Properties (sites) ─ one-or-more; exactly one is_primary (the "default site")
+│   ├── name ............ the CUSTOMER-FACING site name (what storefront + email show)
+│   ├── Domain(s) ....... host → this site
+│   └── Builder pages / layouts / theme (per-site presentation)
 ├── Subscription (billing plan)
 ├── Settings (JSON config)
 ├── Users (staff accounts)
@@ -69,12 +72,20 @@ Tenant (organization account)
 
 ### tenants
 
+A tenant is the **legal entity** — a business, or an individual if not a business.
+`name` is its **legal/org name**, used for billing and account admin only; it is
+**never** rendered to a customer or sent in a customer email (the customer-facing
+name is the site's `properties.name` — see [49-multi-site-per-tenant.md](49-multi-site-per-tenant.md)).
+A tenant is conceptually the holder of a **tax id** (`tax_id` — documented here as a
+tenant attribute; not yet captured/stored).
+
 ```sql
 CREATE TABLE tenants (
   id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   slug              VARCHAR(63) NOT NULL UNIQUE,
-  name              VARCHAR(255) NOT NULL,
+  name              VARCHAR(255) NOT NULL,   -- legal/org name (billing/admin only — NOT customer-facing)
   email             VARCHAR(255) NOT NULL,
+  -- tax_id         VARCHAR(50),             -- (planned) the legal entity's tax id; optional, not yet captured
   plan              VARCHAR(50) NOT NULL DEFAULT 'starter',
   status            VARCHAR(20) NOT NULL DEFAULT 'active',
   settings          JSONB NOT NULL DEFAULT '{}',

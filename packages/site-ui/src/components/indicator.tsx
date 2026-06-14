@@ -34,7 +34,7 @@ export interface IndicatorItemProps {
 
 function IndicatorRoot({ className, style, id, children }: IndicatorProps): React.ReactElement {
   return (
-    <div className={cx('sf-indicator', className)} style={style} id={id}>
+    <div className={cx('st-indicator', className)} style={style} id={id}>
       {children}
     </div>
   );
@@ -49,7 +49,7 @@ function IndicatorItem({
 }: IndicatorItemProps): React.ReactElement {
   return (
     <span
-      className={cx('sf-indicator__item', `sf-indicator__item--${placement}`, className)}
+      className={cx('st-indicator__item', `st-indicator__item--${placement}`, className)}
       style={style}
     >
       {children}

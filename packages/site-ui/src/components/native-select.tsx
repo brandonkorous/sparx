@@ -1,5 +1,5 @@
 // NativeSelect — a styled native `<select>` (docs/46 §3.6). SERVER component,
-// sharing the `.sf-input` base (focus/invalid states off the recipe) plus a
+// sharing the `.st-input` base (focus/invalid states off the recipe) plus a
 // custom chevron drawn with a `currentColor` mask (no hardcoded color). The
 // `<select>` is wrapped so the chevron can sit over the (replaced) control.
 // Forwards standard select props; children are the `<option>`s.
@@ -42,23 +42,23 @@ export function NativeSelect({
   ...rest
 }: NativeSelectProps): React.ReactElement {
   return (
-    <span className={cx('sf-select-wrap', wrapperClassName)}>
+    <span className={cx('st-select-wrap', wrapperClassName)}>
       <select
         {...rest}
         className={cx(
-          'sf-input',
-          'sf-select',
+          'st-input',
+          'st-select',
           colorClass(color),
           FIELD_SIZE_CLASS[size],
           fieldTreatmentVariants[variant],
-          invalid && 'sf-input--invalid',
+          invalid && 'st-input--invalid',
           className
         )}
         aria-invalid={invalid || undefined}
       >
         {children}
       </select>
-      <span className="sf-select__chevron" aria-hidden="true" />
+      <span className="st-select__chevron" aria-hidden="true" />
     </span>
   );
 }

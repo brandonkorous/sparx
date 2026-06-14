@@ -2,23 +2,23 @@
  * Drives [data-theme] (the @sparx/site-themes mechanism). Mirrors the header
  * icon-button chrome: transparent at rest, a subtle surface fill on hover. */
 
-.sf-theme-toggle {
+.st-theme-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 40px;
   height: 40px;
   border: 0;
-  border-radius: var(--sf-radius-field, 0.5rem);
+  border-radius: var(--st-radius-field, 0.5rem);
   background: transparent;
-  color: var(--sf-base-content, #23211c);
+  color: var(--st-base-content, #23211c);
   cursor: pointer;
   transition: background 140ms ease;
 }
-.sf-theme-toggle:hover {
-  background: var(--sf-base-200, #f4f1e8);
+.st-theme-toggle:hover {
+  background: var(--st-base-200, #f4f1e8);
 }
-.sf-theme-toggle:focus-visible {
-  outline: 2px solid var(--sf-primary, #3f6b52);
+.st-theme-toggle:focus-visible {
+  outline: 2px solid var(--st-primary, #3f6b52);
   outline-offset: 2px;
 }

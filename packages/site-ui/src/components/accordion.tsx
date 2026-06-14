@@ -2,7 +2,7 @@
 
 // Accordion — Radix behavior, Surface appearance (docs/47 §11 B3). Radix
 // (@radix-ui/react-accordion) provides the open/close state, keyboard nav, and
-// `data-state` attributes; ALL styling is our `sf-*` classes + tokens (no Radix
+// `data-state` attributes; ALL styling is our `st-*` classes + tokens (no Radix
 // class convention). `icon` switches the trigger indicator (arrow / plus), styled
 // in CSS off `[data-state='open']`. Compound parts attach to the root + export.
 
@@ -24,7 +24,7 @@ function AccordionRoot({
 }: AccordionProps): React.ReactElement {
   return (
     <AccordionPrimitive.Root
-      className={cx('sf-accordion', icon !== 'none' && `sf-accordion--${icon}`, className)}
+      className={cx('st-accordion', icon !== 'none' && `st-accordion--${icon}`, className)}
       {...props}
     />
   );
@@ -35,7 +35,7 @@ function AccordionItem({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>): React.ReactElement {
-  return <AccordionPrimitive.Item className={cx('sf-accordion__item', className)} {...props} />;
+  return <AccordionPrimitive.Item className={cx('st-accordion__item', className)} {...props} />;
 }
 AccordionItem.displayName = 'AccordionItem';
 
@@ -45,10 +45,10 @@ function AccordionTrigger({
   ...props
 }: React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>): React.ReactElement {
   return (
-    <AccordionPrimitive.Header className="sf-accordion__header">
-      <AccordionPrimitive.Trigger className={cx('sf-accordion__trigger', className)} {...props}>
-        <span className="sf-accordion__label">{children}</span>
-        <span className="sf-accordion__indicator" aria-hidden="true" />
+    <AccordionPrimitive.Header className="st-accordion__header">
+      <AccordionPrimitive.Trigger className={cx('st-accordion__trigger', className)} {...props}>
+        <span className="st-accordion__label">{children}</span>
+        <span className="st-accordion__indicator" aria-hidden="true" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   );
@@ -61,8 +61,8 @@ function AccordionContent({
   ...props
 }: React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>): React.ReactElement {
   return (
-    <AccordionPrimitive.Content className={cx('sf-accordion__content', className)} {...props}>
-      <div className="sf-accordion__content-inner">{children}</div>
+    <AccordionPrimitive.Content className={cx('st-accordion__content', className)} {...props}>
+      <div className="st-accordion__content-inner">{children}</div>
     </AccordionPrimitive.Content>
   );
 }

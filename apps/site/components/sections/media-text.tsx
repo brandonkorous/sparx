@@ -21,13 +21,13 @@ export function MediaTextSection({
 
   const grid = (
     <div
-      className={config.fullBleed ? 'sf-sb-mediatext__grid' : 'sf-container sf-sb-mediatext__grid'}
+      className={config.fullBleed ? 'st-sb-mediatext__grid' : 'st-container st-sb-mediatext__grid'}
       data-media-side={config.mediaSide}
     >
-      <div className="sf-sb-mediatext__media">
+      <div className="st-sb-mediatext__media">
         {img ? (
           <div
-            className="sf-sb-mediatext__img"
+            className="st-sb-mediatext__img"
             style={{
               backgroundImage: `url("${img}")`,
               backgroundSize: config.imageFit === 'contain' ? 'contain' : 'cover',
@@ -36,10 +36,10 @@ export function MediaTextSection({
           />
         ) : null}
       </div>
-      <div className="sf-sb-mediatext__text">
-        {config.eyebrow ? <p className="sf-sb-mediatext__eyebrow">{config.eyebrow}</p> : null}
-        {config.heading ? <h2 className="sf-h2">{config.heading}</h2> : null}
-        {config.body ? <p className="sf-sb-mediatext__body">{config.body}</p> : null}
+      <div className="st-sb-mediatext__text">
+        {config.eyebrow ? <p className="st-sb-mediatext__eyebrow">{config.eyebrow}</p> : null}
+        {config.heading ? <h2 className="st-h2">{config.heading}</h2> : null}
+        {config.body ? <p className="st-sb-mediatext__body">{config.body}</p> : null}
         <SbCtaRow ctas={config.ctas} />
       </div>
     </div>
@@ -47,14 +47,14 @@ export function MediaTextSection({
 
   return config.fullBleed ? (
     <section
-      className="sf-section sf-section--flush sf-sb-mediatext"
+      className="st-section st-section--flush st-sb-mediatext"
       data-bg={config.background}
       data-fullbleed="true"
     >
       {grid}
     </section>
   ) : (
-    <section className="sf-section sf-sb-mediatext" data-bg={config.background}>
+    <section className="st-section st-sb-mediatext" data-bg={config.background}>
       {grid}
     </section>
   );

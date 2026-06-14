@@ -20,7 +20,7 @@ import { z } from 'zod';
 import {
   cartService,
   discountService,
-  storefrontService,
+  commerceSiteService,
   type ServiceContext,
 } from '@sparx/commerce';
 import { withTenant } from '@sparx/db';
@@ -155,7 +155,7 @@ async function defaultCurrency(tenantId: string, propertyId: string | null): Pro
       propertyId ??
       (await tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } }))?.id;
     if (!effective) return null;
-    return storefrontService.resolveSettingsRow(tx, tenantId, effective);
+    return commerceSiteService.resolveSettingsRow(tx, tenantId, effective);
   });
   return row?.defaultCurrency ?? 'USD';
 }

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { Button, Input, Label, Stack, Text } from '@sparx/ui';
 
-import { grantStoreCreditAction } from '../../discount-actions';
+import { grantAccountCreditAction } from '../../discount-actions';
 
 export interface CustomerOption {
   id: string;
@@ -13,7 +13,7 @@ export interface CustomerOption {
   email: string | null;
 }
 
-export function GrantStoreCreditForm({ customers }: { customers: CustomerOption[] }) {
+export function GrantAccountCreditForm({ customers }: { customers: CustomerOption[] }) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
@@ -46,7 +46,7 @@ export function GrantStoreCreditForm({ customers }: { customers: CustomerOption[
     if (note) input.note = note;
 
     startTransition(async () => {
-      const result = await grantStoreCreditAction(input);
+      const result = await grantAccountCreditAction(input);
       if (!result.ok) {
         setError(result.error.message);
         return;

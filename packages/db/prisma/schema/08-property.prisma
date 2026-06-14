@@ -21,6 +21,10 @@ model Property {
 
   // Stable per-tenant handle. The primary property is seeded as 'primary'.
   slug String @db.VarChar(63)
+  // The CUSTOMER-FACING site name (docs/49). Every storefront surface (title, header,
+  // footer, OG, JSON-LD) and email (wordmark/footer, `{{site.name}}`) reads THIS —
+  // never the tenant's legal/org name (`Tenant.name` is billing/ownership only). NOT
+  // NULL: seeded from the tenant name at provisioning, edited in Settings → Sites.
   name String @db.VarChar(255)
 
   // Exactly one per tenant (DB-enforced by the partial unique index). The
@@ -67,18 +71,18 @@ model Property {
 
   // Sitebuilder applied-theme trio, re-keyed per-property (docs/49 Phase 6). Each
   // site keeps its own draft config + published version history + publish
-  // schedules, and its own write-through StorefrontTheme. The saved-theme LIBRARY
+  // schedules, and its own write-through CommerceSiteTheme. The saved-theme LIBRARY
   // (SiteTheme) + the legacy section tier stay tenant-wide and do NOT relate here.
   siteConfig           SiteConfig?
   siteVersions         SiteVersion[]
   sitePublishSchedules SitePublishSchedule[]
-  storefrontTheme      StorefrontTheme?
+  commerceSiteTheme      CommerceSiteTheme?
   // Per-site commerce defaults + checkout policy (docs/49 Phase 6b); a site with
   // no row inherits the primary's at read time.
-  storefrontSettings   StorefrontSettings?
+  commerceSiteSettings   CommerceSiteSettings?
   // Per-site legal/footer doc placements (docs/49 Phase 6c); null-property
   // placements are tenant-wide and show on every site.
-  docPlacements        StorefrontDocPlacement[]
+  docPlacements        SiteDocPlacement[]
   // Per-site email sends (docs/49 Phase 7) — broadcasts, queued sends, and the
   // engagement events they produce render/attribute against this site's brand.
   // null-property rows fall back to the tenant's primary brand.

@@ -30,7 +30,7 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
 
   return (
     <section
-      className="sf-sb-hero"
+      className="st-sb-hero"
       data-align={config.align}
       data-valign={config.verticalAlign}
       data-height={config.height}
@@ -40,7 +40,7 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
     >
       {isVideo ? (
         <video
-          className="sf-sb-hero__media"
+          className="st-sb-hero__media"
           autoPlay
           muted
           loop
@@ -50,19 +50,19 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
           style={mediaStyle}
         />
       ) : bg ? (
-        <img className="sf-sb-hero__media" src={bg} alt="" aria-hidden="true" style={mediaStyle} />
+        <img className="st-sb-hero__media" src={bg} alt="" aria-hidden="true" style={mediaStyle} />
       ) : null}
       {bg ? (
-        <div className="sf-sb-hero__scrim" style={{ opacity: overlay }} aria-hidden="true" />
+        <div className="st-sb-hero__scrim" style={{ opacity: overlay }} aria-hidden="true" />
       ) : null}
-      <div className={config.fullBleed ? 'sf-sb-hero__inner' : 'sf-container sf-sb-hero__inner'}>
-        {config.eyebrow ? <p className="sf-sb-hero__eyebrow">{config.eyebrow}</p> : null}
-        {config.heading ? <h1 className="sf-sb-hero__title">{config.heading}</h1> : null}
-        {config.subheading ? <p className="sf-sb-hero__sub">{config.subheading}</p> : null}
+      <div className={config.fullBleed ? 'st-sb-hero__inner' : 'st-container st-sb-hero__inner'}>
+        {config.eyebrow ? <p className="st-sb-hero__eyebrow">{config.eyebrow}</p> : null}
+        {config.heading ? <h1 className="st-sb-hero__title">{config.heading}</h1> : null}
+        {config.subheading ? <p className="st-sb-hero__sub">{config.subheading}</p> : null}
         <SbCtaRow ctas={ctas} size="lg" layout={config.ctaLayout} />
       </div>
       {config.showScrollHint ? (
-        <span className="sf-sb-hero__scroll-hint" aria-hidden="true">
+        <span className="st-sb-hero__scroll-hint" aria-hidden="true">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path d="M6 9l6 6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>

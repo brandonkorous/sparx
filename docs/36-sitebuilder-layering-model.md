@@ -30,7 +30,7 @@ Builder schema change**.
 
 ## 2. The three tiers that compose the experience
 
-A storefront page is produced by three independent layers. Each answers a different question, each
+A site page is produced by three independent layers. Each answers a different question, each
 is owned and edited separately, and together they are the whole tenant experience.
 
 | Tier            | Question it answers              | What it owns                                                                                                    | Status                                                   |
@@ -79,7 +79,7 @@ Layout, and they take it from there.
 
 Today's code already has the seed of this: `DEFAULT_TEMPLATES` (in `@sparx/sitebuilder-schemas`) is
 the **built-in default Page Template** for `product` and `collection` — a code-defined composition
-that the storefront falls back to and that "Customize this layout" materializes into real rows. The
+that the site falls back to and that "Customize this layout" materializes into real rows. The
 generalization: `DEFAULT_TEMPLATES` becomes one entry in a **Page Template catalog**, and
 `templateService.materializeDefault` generalizes to **`instantiateFromTemplate(templateId)`**.
 
@@ -196,15 +196,15 @@ work in its own module).
 | A **per-item** override                  | Site Builder   | SB-owned assignment table: `(targetId, itemRef) → pageLayoutId`. "This product → Spotlight layout."            |
 | Which of its records exist (the items)   | Commerce / CMS | unchanged — the module owns its data; SB references items by id.                                               |
 
-**Resolver cascade (storefront site-resolver), per page render:**
+**Resolver cascade (site site-resolver), per page render:**
 
 ```
 per-item override (SB) → tenant default for the target (SB) → seeded/code default (Page Template) → safety fallback
 ```
 
 This is the doc 30 §5 cascade with assignment moved fully into Site-Builder-owned tables. Consuming
-modules never read SB assignment tables; the storefront's site-resolver performs the join at render,
-exactly as Phase 3's storefront already resolves a layout from the published snapshot.
+modules never read SB assignment tables; the site's site-resolver performs the join at render,
+exactly as Phase 3's site already resolves a layout from the published snapshot.
 
 **The picker.** A `Layout: [▾]` control appears in the item editors a module already owns — the
 Commerce product editor, the CMS entry editor — letting a tenant pin a specific layout to a specific
@@ -290,19 +290,19 @@ the registry, assignment, and the rename in place, plus CMS-editor coordination.
 ## 9. Sample-data preview (always-on)
 
 A tenant cannot design a product / collection / content layout before the store has data — and
-storefront PDP/PLP filter `status:'active'`, so even a draft product 404s in preview (the 3.3b sample
+site PDP/PLP filter `status:'active'`, so even a draft product 404s in preview (the 3.3b sample
 picker hits exactly this: a fresh store shows the catalog/home fallback, never a real bound page).
 **This is the wrong order** (owner). The fix: preview bound layouts against **code-defined sample
 data**, always.
 
 - **Always-on**, not conditional on having data — so the design surface is consistent whether or not
   the tenant has products yet.
-- A storefront **URL flag** (e.g. `sparxSampleData=1`), **gated behind the existing `sparxSitePreview`
+- A site **URL flag** (e.g. `sparxSampleData=1`), **gated behind the existing `sparxSitePreview`
   preview token** so it only ever affects authenticated preview, never the public site. When set, the
-  storefront **skips the commerce/CMS fetch** and feeds `SectionContext` a code-defined fixture —
+  site **skips the commerce/CMS fetch** and feeds `SectionContext` a code-defined fixture —
   `SAMPLE_PRODUCT`, `SAMPLE_COLLECTION`, `SAMPLE_CONTENT` (mirroring how `DEFAULT_TEMPLATES` lives in
   code).
-- **Storefront-only change.** The renderer needs nothing new — bound sections already resolve purely
+- **Site-only change.** The renderer needs nothing new — bound sections already resolve purely
   from `SectionContext`. The dashboard Layouts editor appends the flag.
 
 This is **independent of the rest of this doc** and ships first, as its own small slice, because it
@@ -331,8 +331,8 @@ slices, deploy-small, each keeping the live e2e store working.
 
 **Now (independent, ships first):**
 
-- **S0 · Sample-data preview (§9).** Storefront fixture source + `sparxSampleData` flag (token-gated)
-  - dashboard toggle. Storefront-first; no schema change. _Unblocks designing every bound layout._
+- **S0 · Sample-data preview (§9).** Site fixture source + `sparxSampleData` flag (token-gated)
+  - dashboard toggle. Site-first; no schema change. _Unblocks designing every bound layout._
 
 **The PageLayout tier (revises doc 30 Phase 4):**
 
@@ -344,7 +344,7 @@ slices, deploy-small, each keeping the live e2e store working.
   CMS content-page target; design category/warehouse/taxonomy/per-content-type as the registry admits
   them. **Spec: [docs/handoffs/sitebuilder-pb-spec.md](handoffs/sitebuilder-pb-spec.md)** (grammar +
   registration resolved; full-re-key migration; built in two increments P-B1/P-B2).
-- **P-C · Assignment & resolver (§6).** SB-owned default + per-item assignment tables; the storefront
+- **P-C · Assignment & resolver (§6).** SB-owned default + per-item assignment tables; the site
   resolver cascade; the `Layout: [▾]` picker in the Commerce product editor + CMS entry editor.
 - **P-D · Unified Layouts surface.** Fold 3.3b's per-scope nav entries (Product pages / Collection
   pages / Homepage / Pages) into one **Layouts** surface organized by target, listing the tenant's

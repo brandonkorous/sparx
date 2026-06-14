@@ -19,13 +19,13 @@ export interface SocialLinksProps {
 export function SocialLinks({ items, className, style }: SocialLinksProps) {
   if (items.length === 0) return null;
   return (
-    <div className={cx('sf-social', className)} style={style}>
+    <div className={cx('st-social', className)} style={style}>
       {items.map((item, i) => (
         <a
           key={`${i}-${item.platform}`}
           href={item.url || '#'}
           aria-label={item.platform || 'social link'}
-          className="sf-social__link"
+          className="st-social__link"
         >
           {item.platform}
         </a>

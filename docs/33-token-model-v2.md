@@ -8,7 +8,7 @@
 
 ## 1. Purpose & scope
 
-The storefront's design-token model is thin: **11 flat tokens**, one radius knob, no
+The site's design-token model is thin: **11 flat tokens**, one radius knob, no
 spacing scale, hardcoded shadows, and status colors that tenants can't touch. It was
 enough to ship Site Builder Phase 1, but it can't express a real design system and it
 would force us to build the Phase 2 theme inspector twice — once on the throwaway model,
@@ -28,12 +28,12 @@ this doc wins and the older doc is amended in the phase that lands the change.
 
 ### Decisions locked (2026-05-30)
 
-| #   | Decision                       | Choice                                                                                                                                                                                                                                                                                                                                                    |
-| --- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Color space & storage**      | **Store hex, derive in CSS.** Tenants keep hex pickers (no input-UX change, no value migration). `-content` pairs, hover shades and tints are generated at render via CSS `color-mix` in OKLCH space.                                                                                                                                                     |
-| 2   | **Palette breadth**            | **Full DaisyUI parity.** `base-100/200/300`, `primary`, `secondary`, `accent`, `neutral`, `info`, `success`, `warning`, `danger`, each with a `-content` pair. All base color slots tenant-editable; `-content` pairs auto-derived by default, overridable as an escape hatch.                                                                            |
-| 3   | **Storage model**              | **JSON only, drop fallback.** Full token set lives in JSONB; the 3 legacy `StorefrontTheme` columns (`color_background`, `color_muted`, `radius_base`) are dropped. The public read path **compiles** a token document on the fly (preset defaults ← presentation overlay ← brand), so every tenant — published or not — always has a complete token map. |
-| 4   | **Ownership** (your directive) | **Brand owns identity (color/type) + shape + rhythm.** Theme/tenant owns surfaces, neutral, status, border color, container width.                                                                                                                                                                                                                        |
+| #   | Decision                       | Choice                                                                                                                                                                                                                                                                                                                                              |
+| --- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Color space & storage**      | **Store hex, derive in CSS.** Tenants keep hex pickers (no input-UX change, no value migration). `-content` pairs, hover shades and tints are generated at render via CSS `color-mix` in OKLCH space.                                                                                                                                               |
+| 2   | **Palette breadth**            | **Full DaisyUI parity.** `base-100/200/300`, `primary`, `secondary`, `accent`, `neutral`, `info`, `success`, `warning`, `danger`, each with a `-content` pair. All base color slots tenant-editable; `-content` pairs auto-derived by default, overridable as an escape hatch.                                                                      |
+| 3   | **Storage model**              | **JSON only, drop fallback.** Full token set lives in JSONB; the 3 legacy `SiteTheme` columns (`color_background`, `color_muted`, `radius_base`) are dropped. The public read path **compiles** a token document on the fly (preset defaults ← presentation overlay ← brand), so every tenant — published or not — always has a complete token map. |
+| 4   | **Ownership** (your directive) | **Brand owns identity (color/type) + shape + rhythm.** Theme/tenant owns surfaces, neutral, status, border color, container width.                                                                                                                                                                                                                  |
 
 ---
 
@@ -45,19 +45,19 @@ Confirmed by reading the code, not docs:
 colorAccent, colorBackground, colorForeground, colorMuted, colorBorder, fontHeading,
 fontBody, radiusBase, containerWidth`
   ([packages/site-themes/src/tokens.ts](../packages/site-themes/src/tokens.ts)).
-- **Shape is one knob.** `--sf-radius: 14px` with `-sm`/`-lg` _computed_ off it. No
+- **Shape is one knob.** `--st-radius: 14px` with `-sm`/`-lg` _computed_ off it. No
   per-component radius.
-- **Rhythm doesn't exist.** [apps/site/app/storefront.css](../apps/site/app/storefront.css)
+- **Rhythm doesn't exist.** [apps/site/app/site.css](../apps/site/app/site.css)
   hardcodes every gap, pad and `clamp()` as magic numbers. There is no spacing scale a
   tenant could shift.
-- **Effects hardcoded.** `--sf-shadow-sm/md/lg`, `--sf-ease` live in CSS.
+- **Effects hardcoded.** `--st-shadow-sm/md/lg`, `--st-ease` live in CSS.
 - **Status colors not themeable.** `--color-success/warning/danger` come from @sparx/ui
   globals, not the tenant theme.
-- **Two CSS layers**, bridged by aliasing: `--sparx-*` / `--color-*` (@sparx/ui) → `--sf-*`
-  (storefront). @sparx/ui already ships `--space-1..16` and `--radius-sm..full` — the
-  storefront just doesn't consume them.
+- **Two CSS layers**, bridged by aliasing: `--sparx-*` / `--color-*` (@sparx/ui) → `--st-*`
+  (site). @sparx/ui already ships `--space-1..16` and `--radius-sm..full` — the
+  site just doesn't consume them.
 - **Storage:** brand identity on `TenantBrand` columns; presentation overlay is JSONB (Site
-  Builder) write-through to 3 `StorefrontTheme` columns as the no-snapshot SSR fallback. The
+  Builder) write-through to 3 `SiteTheme` columns as the no-snapshot SSR fallback. The
   public `/v1/public/tenants/:slug` `theme` object reads those columns
   ([apps/site/lib/tenant.ts](../apps/site/lib/tenant.ts) → [lib/theme.ts](../apps/site/lib/theme.ts)).
 
@@ -72,13 +72,13 @@ Every color slot is a base color the tenant can set (hex). Each has a `-content`
 
 | Group   | Slot                        | `-content`              | Owner        | Maps to today                             |
 | ------- | --------------------------- | ----------------------- | ------------ | ----------------------------------------- |
-| Surface | `base-100` (page)           | `base-content`          | presentation | `colorBackground` / `--sf-bg`             |
-| Surface | `base-200` (surface/card)   | (shares `base-content`) | presentation | `--sf-surface` (was hardcoded alias)      |
-| Surface | `base-300` (subtle/muted)   | (shares `base-content`) | presentation | `colorMuted` / `--sf-bg-subtle`           |
+| Surface | `base-100` (page)           | `base-content`          | presentation | `colorBackground` / `--st-bg`             |
+| Surface | `base-200` (surface/card)   | (shares `base-content`) | presentation | `--st-surface` (was hardcoded alias)      |
+| Surface | `base-300` (subtle/muted)   | (shares `base-content`) | presentation | `colorMuted` / `--st-bg-subtle`           |
 | Brand   | `primary`                   | `primary-content`       | **brand**    | `colorPrimary` / `colorPrimaryForeground` |
 | Brand   | `secondary` _(new)_         | `secondary-content`     | **brand**    | — (derived from primary if unset)         |
 | Brand   | `accent`                    | `accent-content`        | **brand**    | `colorAccent`                             |
-| UI      | `neutral` _(new)_           | `neutral-content`       | presentation | `--sf-text` used as dark fill today       |
+| UI      | `neutral` _(new)_           | `neutral-content`       | presentation | `--st-text` used as dark fill today       |
 | Status  | `info` _(new themeable)_    | `info-content`          | presentation | @sparx/ui global                          |
 | Status  | `success` _(new themeable)_ | `success-content`       | presentation | @sparx/ui global                          |
 | Status  | `warning` _(new themeable)_ | `warning-content`       | presentation | @sparx/ui global                          |
@@ -87,7 +87,7 @@ Every color slot is a base color the tenant can set (hex). Each has a `-content`
 
 Naming note: DaisyUI's `error` is our `danger` (consistent with @sparx/ui's `--color-danger`);
 `base-content` is our text color (replaces the standalone `colorForeground`). Secondary text /
-muted text tiers (`--sf-text-secondary`, `--sf-text-muted`) are **derived** from `base-content`
+muted text tiers (`--st-text-secondary`, `--st-text-muted`) are **derived** from `base-content`
 × `base-100` via `color-mix`, not separate slots.
 
 ### 3.2 Shape — brand-owned
@@ -105,16 +105,16 @@ Replaces the single `radiusBase` + computed `-sm`/`-lg`.
 
 ### 3.3 Rhythm — brand-owned (new)
 
-The storefront has **no** spacing scale today. v2 introduces one, owned by brand so the
+The site has **no** spacing scale today. v2 introduces one, owned by brand so the
 whole site's density shifts together:
 
 | Token           | Meaning                                                                                                                 |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `space-base`    | the rhythm unit (e.g. `0.25rem`); the `--sf-space-*` scale is derived from it (`space-1 = base`, `space-2 = base×2`, …) |
+| `space-base`    | the rhythm unit (e.g. `0.25rem`); the `--st-space-*` scale is derived from it (`space-1 = base`, `space-2 = base×2`, …) |
 | `size-field`    | control height for inputs/buttons (DaisyUI `--size-field`)                                                              |
 | `size-selector` | control height for pills/toggles (DaisyUI `--size-selector`)                                                            |
 
-storefront.css's hardcoded gaps/pads are refactored onto `var(--sf-space-*)` as part of the
+site.css's hardcoded gaps/pads are refactored onto `var(--st-space-*)` as part of the
 build (§7). Section-level `clamp()` rhythm (hero/section vertical padding) stays responsive but
 is scaled by `space-base`.
 
@@ -122,7 +122,7 @@ is scaled by `space-base`.
 
 | Token   | Meaning                                                                                         | DaisyUI analog |
 | ------- | ----------------------------------------------------------------------------------------------- | -------------- |
-| `depth` | shadow intensity multiplier (0 = flat, 1 = default, >1 = lifted); drives `--sf-shadow-sm/md/lg` | `--depth`      |
+| `depth` | shadow intensity multiplier (0 = flat, 1 = default, >1 = lifted); drives `--st-shadow-sm/md/lg` | `--depth`      |
 
 DaisyUI's `--noise` (decorative grain) is **out of scope** — low value for commerce, easy to
 add later if asked.
@@ -164,17 +164,17 @@ Tenants set base colors as hex. Everything else is computed at render with `colo
 OKLCH space (perceptually uniform), so a single hex pick yields a coherent set:
 
 ```css
-/* stored: --sf-primary: #4f46e5; (one hex pick) */
---sf-primary-hover: color-mix(in oklch, var(--sf-primary) 86%, black);
---sf-primary-active: color-mix(in oklch, var(--sf-primary) 74%, black);
---sf-primary-tint: color-mix(in oklch, var(--sf-primary) 8%, transparent);
+/* stored: --st-primary: #4f46e5; (one hex pick) */
+--st-primary-hover: color-mix(in oklch, var(--st-primary) 86%, black);
+--st-primary-active: color-mix(in oklch, var(--st-primary) 74%, black);
+--st-primary-tint: color-mix(in oklch, var(--st-primary) 8%, transparent);
 /* auto contrast content: pick near-white or near-black off the surface's lightness */
---sf-primary-content: /* derived; see below */;
+--st-primary-content: /* derived; see below */;
 ```
 
 **`-content` auto-derivation.** Default rule: choose `base-content`-dark or `base-100`-light
 against the slot's perceptual lightness so contrast clears WCAG AA. Where `relative-color`
-syntax is available (`oklch(from var(--sf-primary) …)`) we read lightness directly; otherwise
+syntax is available (`oklch(from var(--st-primary) …)`) we read lightness directly; otherwise
 we compute the content color **at compile time** (server-side, in `@sparx/site-themes`)
 using a small OKLCH helper and emit a concrete hex, so SSR is deterministic and we don't depend
 on browser `relative-color` support. Either way, a tenant may **override** any `-content` slot
@@ -222,7 +222,7 @@ A token document is a small, versioned JSON object, split by owner:
 
 ### 5.2 Columns dropped
 
-`commerce_storefront_themes` loses `color_background`, `color_muted`, `radius_base` (the last
+`commerce_site_themes` loses `color_background`, `color_muted`, `radius_base` (the last
 of the write-through columns; identity columns already dropped in `20260610000200`). The
 presentation overlay JSONB becomes the sole presentation store. **No write-through on publish.**
 
@@ -245,15 +245,15 @@ the section-render path and the chrome read path can't drift.
 v2 does **not** refactor @sparx/ui's `--color-*` / `--space-*` tokens — the dashboard depends
 on them and that's out of scope. Instead:
 
-- The storefront's `--sf-*` layer becomes the single canonical surface for storefront chrome +
+- The site's `--st-*` layer becomes the single canonical surface for site chrome +
   Site Builder sections, **generated** from the compiled token doc (one `tokensToCssVarsV2`).
-- The `--sf-space-1..N` scale is emitted from `space-base`; storefront.css's hardcoded
+- The `--st-space-1..N` scale is emitted from `space-base`; site.css's hardcoded
   gaps/pads are migrated onto it (mechanical, section by section).
-- The existing `--sf-* : var(--color-*)` aliases stay as _fallback seeds_ (so an un-themed
-  storefront still renders), but a compiled token always overrides them.
+- The existing `--st-* : var(--color-*)` aliases stay as _fallback seeds_ (so an un-themed
+  site still renders), but a compiled token always overrides them.
 
-Net: one place (`@sparx/site-themes`) owns the storefront token vocabulary; @sparx/ui is
-untouched; the dashboard inspector and the storefront read the same compiled doc.
+Net: one place (`@sparx/site-themes`) owns the site token vocabulary; @sparx/ui is
+untouched; the dashboard inspector and the site read the same compiled doc.
 
 ---
 
@@ -281,13 +281,13 @@ path that depends on data nothing writes.
    from `getThemePresetV2(themeKey)` ← a **brand doc built from the existing `TenantBrand`
    columns** (color/type; shape/rhythm/effect fall through to preset defaults — no brand schema
    change yet) ← a best-effort presentation overlay mapped from the **existing** stored
-   overrides. Returns the compiled CSS. No migration. StorefrontTheme columns + write-through
+   overrides. Returns the compiled CSS. No migration. SiteTheme columns + write-through
    stay (harmless) until step 6.
-4. **storefront.css refactor** — onto the canonical `--sf-*` vocabulary: radius trio,
-   `--sf-space-*` scale, `depth`-driven shadows. Legacy aliases (emitted by the CSS layer)
+4. **site.css refactor** — onto the canonical `--st-*` vocabulary: radius trio,
+   `--st-space-*` scale, `depth`-driven shadows. Legacy aliases (emitted by the CSS layer)
    keep any un-migrated rule rendering during the refactor.
 
-   _Net after 3–4:_ every storefront immediately gets the richer preset tokens (surface tiers,
+   _Net after 3–4:_ every site immediately gets the richer preset tokens (surface tiers,
    radius trio, spacing scale, depth, themeable status), with brand identity overlaid live from
    existing columns. Ships small, breaks nothing, needs no editor.
 
@@ -295,8 +295,8 @@ path that depends on data nothing writes.
 
 5. **Storage** — add `TenantBrand.tokens` (shape/rhythm/effect + secondary/content) + the v2
    presentation-overlay shape on `SiteConfig.draftSettings`, written by the new editor.
-6. **Drop + backfill** — backfill existing `TenantBrand` / `StorefrontTheme` rows into the v2
-   docs, drop the 3 `StorefrontTheme` columns, delete the write-through (hand-edited RLS-aware
+6. **Drop + backfill** — backfill existing `TenantBrand` / `SiteTheme` rows into the v2
+   docs, drop the 3 `SiteTheme` columns, delete the write-through (hand-edited RLS-aware
    migration SQL). Prod ordering: deploy the editor + JSON readers first, then run DB Migrate
    once (same cutover rule as 1D).
 

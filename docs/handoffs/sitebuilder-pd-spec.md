@@ -37,7 +37,7 @@ service/route verbs it needs.
   (`product` | `collection`) that says what data its bound sections resolve against (doc 36 §4, P-B).
 - A **`PageLayout`** is `(targetId, key)` → an ordered section list. `key` is `default` for a
   target's single layout, a slug for a standalone page, or a generated slug for a named alternate.
-- The **resolver cascade** (storefront `resolveTemplateSections`): per-item override → per-target
+- The **resolver cascade** (site `resolveTemplateSections`): per-item override → per-target
   default → `default` key → code `DEFAULT_TEMPLATES` → empty (doc 36 §6, P-C).
 - A **Page Template** (preset) is platform-authored; instantiating one produces an editable
   `PageLayout` (doc 36 §3). `DEFAULT_TEMPLATES` is the built-in product/collection composition.
@@ -70,7 +70,7 @@ service/route verbs it needs.
     `sitebuilder.page_layout.instantiated`.
   - `rename(ctx, id, rawInput)` — label only; `key` is immutable (the snapshot/resolver identity).
   - `remove(ctx, id)` — delete; cascade removes sections + any default/assignment rows pointing at
-    it, so the storefront cleanly falls back to the cascade.
+    it, so the site cleanly falls back to the cascade.
 - `assignmentService.listDefaults(ctx)` → `{ targetId, pageLayoutId }[]` (the surface's default
   badges).
 
@@ -81,7 +81,7 @@ service/route verbs it needs.
   `@sparx/sitebuilder-schemas` dep (the established route ↔ service boundary).
 - `assignments.ts`: `GET /assignments/defaults`.
 
-### 3.4 Storefront
+### 3.4 Site
 
 - `resolveTemplateSections(snapshot, targetId, itemRef?, forcedKey?)` — `forcedKey` (preview only)
   renders a **specific** layout directly, bypassing the cascade, so the dashboard canvas can preview
@@ -99,7 +99,7 @@ service/route verbs it needs.
   children show the canvas.
 - **Manifest**: the four nav entries → one `{ id: 'layouts', label: 'Layouts', icon: Layers }`. The
   global action becomes `sitebuilder.layout.create → /sitebuilder/layouts`. `entityTypes` emptied —
-  the storefront `page` entity is **CMS-owned** (the `cms-editor` manifest declares `page` + its
+  the site `page` entity is **CMS-owned** (the `cms-editor` manifest declares `page` + its
   detail view; the old SB `page` entityType was a dead collision pointing at a deleted route).
 - **NEW routes**:
   - `/sitebuilder/layouts/page.tsx` — full-width grouped-by-target index (`LayoutsIndex`). Resolves
@@ -142,7 +142,7 @@ the CMS entry editor stays write-only until then.
 A bound target can now have several layouts, but the canvas previews **one** sample path
 (`/products/sample`). Without a hint, `resolveTemplateSections` would resolve the sample item to the
 target's _default_ layout — so editing "Spotlight" would preview the default. `setLayoutKey(key)` →
-`&sparxLayoutKey=` → the storefront's `forcedKey` makes the canvas show exactly the layout being
+`&sparxLayoutKey=` → the site's `forcedKey` makes the canvas show exactly the layout being
 edited. It is gated to the preview token (public visitors can't use it) and only meaningful for bound
 targets — `site:home` and `cms:content-page` preview by **path** (the home route and the `[...slug]`
 route resolve by `pageKey`, not the cascade), so the editor sets `setLayoutKey(null)` for them.
@@ -157,7 +157,7 @@ route resolve by `pageKey`, not the cascade), so the editor sets `setLayoutKey(n
 - **`key` immutable.** Rename changes the label only; the key is the snapshot/resolver identity, so
   changing it would orphan published sections and assignments.
 - **Delete cascades, never blocks.** Deleting any layout (including a `default`-key one) is allowed —
-  the cascade drops its sections + default/assignment rows, and the storefront falls back to the
+  the cascade drops its sections + default/assignment rows, and the site falls back to the
   seeded code default. The UI confirms (danger tone).
 - **"New page" reuses `instantiate`.** A `cms:content-page` page is `instantiate(blank, key=slug)`;
   if the slug already exists the index navigates to it instead of suffixing.
@@ -169,7 +169,7 @@ name` for context.
 
 ## 7. Gate
 
-typecheck (db unaffected; schemas / sitebuilder / api-rest / storefront / dashboard) + lint (0
+typecheck (db unaffected; schemas / sitebuilder / api-rest / site / dashboard) + lint (0
 errors) + format + **31/31** sitebuilder integration tests (6 new: instantiate product-default /
 binding-mismatch / blank, getById + rename + remove, unknown-id, listDefaults). **No migration.** Not
 committed/deployed — user-triggered.
@@ -179,7 +179,7 @@ committed/deployed — user-triggered.
 ## 8. Acceptance
 
 - A per-item override **and** a per-target default both resolve at render — proven by P-C's
-  `getDraftSnapshot` test (kept) + the storefront cascade.
+  `getDraftSnapshot` test (kept) + the site cascade.
 - A Page Template instantiates into an editable `PageLayout` — `instantiate` test.
 - The seeded default renders identically to today — `forcedKey === 'default'` keeps the
   `DEFAULT_TEMPLATES` fallback; named alternates preview honestly (empty when empty).

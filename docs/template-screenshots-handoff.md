@@ -64,7 +64,7 @@ After adding `preview` to the 4 manifests, run `pnpm exec prettier --write` on t
 
 - **Do NOT push, do NOT commit unless the user explicitly asks** — the user pushes manually. Everything stays UNPUSHED.
 - **Never** add a `Co-Authored-By` trailer. **Never** `git stash`.
-- No eyebrows (no small uppercase kicker above headings). Say "Site," not "Storefront," in user‑facing copy.
+- No eyebrows (no small uppercase kicker above headings). Say "Site," not "Site," in user‑facing copy.
 - If the live install also hits the duplicate‑handle collision (template already installed in that tenant), use a different fresh tenant/site rather than deleting+reinstalling.
 
 ## Done =

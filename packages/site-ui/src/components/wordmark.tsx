@@ -3,7 +3,7 @@
 // span — the prebuilt counterpart to the bare `Logo`, which renders mark-OR-name
 // but never both.
 //
-// Responsive via the nearest `sf-frame` container query (the Builder render frame
+// Responsive via the nearest `st-frame` container query (the Builder render frame
 // — `.bx-render` live, `.bx-canvas` in the editor), so it collapses at the
 // SIMULATED device width in the canvas preview, not only the real viewport
 // (docs/62, wordmark.css). `collapse` picks what survives a narrow frame:
@@ -54,12 +54,12 @@ export function Wordmark({
   return (
     <a
       href={href}
-      className={cx('sf-wordmark', className)}
+      className={cx('st-wordmark', className)}
       data-collapse={dataCollapse}
       style={style}
     >
-      {hasMark ? <img src={src} alt={alt ?? name ?? ''} className="sf-wordmark__mark" /> : null}
-      {showName ? <span className="sf-wordmark__name">{label}</span> : null}
+      {hasMark ? <img src={src} alt={alt ?? name ?? ''} className="st-wordmark__mark" /> : null}
+      {showName ? <span className="st-wordmark__name">{label}</span> : null}
     </a>
   );
 }

@@ -45,30 +45,30 @@ export function Filter({
     <div
       role="radiogroup"
       aria-label={label ?? 'Filter'}
-      className={cx('sf-filter', colorClass(color), className)}
+      className={cx('st-filter', colorClass(color), className)}
       style={style}
       id={id}
     >
-      <label className="sf-filter__chip">
+      <label className="st-filter__chip">
         <input
           type="radio"
           name={name}
           value=""
           defaultChecked={!hasValue}
-          className="sf-filter__input"
+          className="st-filter__input"
         />
-        <span className="sf-filter__chip-label">{resetLabel}</span>
+        <span className="st-filter__chip-label">{resetLabel}</span>
       </label>
       {options.map((opt) => (
-        <label className="sf-filter__chip" key={opt.value}>
+        <label className="st-filter__chip" key={opt.value}>
           <input
             type="radio"
             name={name}
             value={opt.value}
             defaultChecked={value === opt.value}
-            className="sf-filter__input"
+            className="st-filter__input"
           />
-          <span className="sf-filter__chip-label">{opt.label}</span>
+          <span className="st-filter__chip-label">{opt.label}</span>
         </label>
       ))}
     </div>

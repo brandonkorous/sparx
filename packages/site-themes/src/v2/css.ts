@@ -1,11 +1,11 @@
 // Token Model v2 → CSS custom properties (docs/33-token-model-v2.md §6).
 //
-// Emits the canonical `--sf-*` vocabulary from a compiled token set, plus:
+// Emits the canonical `--st-*` vocabulary from a compiled token set, plus:
 //   • derived expressions (hover/active/tint, text tiers) as `color-mix(in
 //     oklab …)` referencing the canonical base vars — no precompute needed,
-//   • a `--sf-space-*` scale derived from `--sf-space-base`,
+//   • a `--st-space-*` scale derived from `--st-space-base`,
 //   • depth-scaled shadow vars,
-//   • LEGACY ALIASES (`--sf-bg`, `--sf-surface`, `--sf-radius`, …) mapping the
+//   • LEGACY ALIASES (`--st-bg`, `--st-surface`, `--st-radius`, …) mapping the
 //     names today's storefront.css reads onto the canonical vars. The aliases
 //     are `var()` references, so they follow each canonical var's per-mode
 //     value automatically. §4 refactors storefront.css onto the canonical names
@@ -22,12 +22,12 @@ const CONTAINER_WIDTHS: Record<string, string> = {
   full: '100%',
 };
 
-// The --sf-space-N scale (Tailwind-aligned multiples of the base unit). Each is
-// a calc() off --sf-space-base, so shifting the base reflows the whole site.
+// The --st-space-N scale (Tailwind-aligned multiples of the base unit). Each is
+// a calc() off --st-space-base, so shifting the base reflows the whole site.
 const SPACE_STEPS = [1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24] as const;
 
 function fontStack(name: string): string {
-  return `'${name.replace(/'/g, '')}', var(--sf-font-fallback)`;
+  return `'${name.replace(/'/g, '')}', var(--st-font-fallback)`;
 }
 
 function containerLength(width: string): string {
@@ -37,29 +37,29 @@ function containerLength(width: string): string {
 /** Canonical per-mode color vars (base + every resolved `-content`). */
 export function colorVars(c: CompiledColorTokensV2): Record<string, string> {
   return {
-    '--sf-base-100': c.base100,
-    '--sf-base-200': c.base200,
-    '--sf-base-300': c.base300,
-    '--sf-base-content': c.baseContent,
-    '--sf-primary': c.primary,
-    '--sf-primary-content': c.primaryContent,
-    '--sf-secondary': c.secondary,
-    '--sf-secondary-content': c.secondaryContent,
-    '--sf-accent': c.accent,
-    '--sf-accent-content': c.accentContent,
-    '--sf-neutral': c.neutral,
-    '--sf-neutral-content': c.neutralContent,
-    '--sf-info': c.info,
-    '--sf-info-content': c.infoContent,
-    '--sf-success': c.success,
-    '--sf-success-content': c.successContent,
-    '--sf-warning': c.warning,
-    '--sf-warning-content': c.warningContent,
-    '--sf-danger': c.danger,
-    '--sf-danger-content': c.dangerContent,
-    '--sf-highlight': c.highlight,
-    '--sf-highlight-content': c.highlightContent,
-    '--sf-border': c.border,
+    '--st-base-100': c.base100,
+    '--st-base-200': c.base200,
+    '--st-base-300': c.base300,
+    '--st-base-content': c.baseContent,
+    '--st-primary': c.primary,
+    '--st-primary-content': c.primaryContent,
+    '--st-secondary': c.secondary,
+    '--st-secondary-content': c.secondaryContent,
+    '--st-accent': c.accent,
+    '--st-accent-content': c.accentContent,
+    '--st-neutral': c.neutral,
+    '--st-neutral-content': c.neutralContent,
+    '--st-info': c.info,
+    '--st-info-content': c.infoContent,
+    '--st-success': c.success,
+    '--st-success-content': c.successContent,
+    '--st-warning': c.warning,
+    '--st-warning-content': c.warningContent,
+    '--st-danger': c.danger,
+    '--st-danger-content': c.dangerContent,
+    '--st-highlight': c.highlight,
+    '--st-highlight-content': c.highlightContent,
+    '--st-border': c.border,
   };
 }
 
@@ -68,56 +68,56 @@ export function colorVars(c: CompiledColorTokensV2): Record<string, string> {
 export function sharedVars(s: SharedTokensV2): Record<string, string> {
   const out: Record<string, string> = {
     // Type
-    '--sf-font-heading': fontStack(s.fontHeading),
-    '--sf-font-body': fontStack(s.fontBody),
+    '--st-font-heading': fontStack(s.fontHeading),
+    '--st-font-body': fontStack(s.fontBody),
     // Shape
-    '--sf-radius-selector': s.radiusSelector,
-    '--sf-radius-field': s.radiusField,
-    '--sf-radius-box': s.radiusBox,
-    '--sf-border-width': s.borderWidth,
+    '--st-radius-selector': s.radiusSelector,
+    '--st-radius-field': s.radiusField,
+    '--st-radius-box': s.radiusBox,
+    '--st-border-width': s.borderWidth,
     // Rhythm
-    '--sf-space-base': s.spaceBase,
-    '--sf-size-field': s.sizeField,
-    '--sf-size-selector': s.sizeSelector,
+    '--st-space-base': s.spaceBase,
+    '--st-size-field': s.sizeField,
+    '--st-size-selector': s.sizeSelector,
     // Effect
-    '--sf-depth': String(s.depth),
+    '--st-depth': String(s.depth),
     // Layout
-    '--sf-container': containerLength(s.containerWidth),
+    '--st-container': containerLength(s.containerWidth),
   };
 
   for (const n of SPACE_STEPS) {
-    out[`--sf-space-${n}`] = `calc(var(--sf-space-base) * ${n})`;
+    out[`--st-space-${n}`] = `calc(var(--st-space-base) * ${n})`;
   }
 
   // Derived color expressions (follow the per-mode canonical vars).
-  out['--sf-primary-hover'] = 'color-mix(in oklab, var(--sf-primary) 86%, black)';
-  out['--sf-primary-active'] = 'color-mix(in oklab, var(--sf-primary) 74%, black)';
-  out['--sf-primary-tint'] = 'color-mix(in oklab, var(--sf-primary) 8%, transparent)';
-  out['--sf-accent-tint'] = 'color-mix(in oklab, var(--sf-accent) 8%, transparent)';
-  out['--sf-highlight-tint'] = 'color-mix(in oklab, var(--sf-highlight) 8%, transparent)';
+  out['--st-primary-hover'] = 'color-mix(in oklab, var(--st-primary) 86%, black)';
+  out['--st-primary-active'] = 'color-mix(in oklab, var(--st-primary) 74%, black)';
+  out['--st-primary-tint'] = 'color-mix(in oklab, var(--st-primary) 8%, transparent)';
+  out['--st-accent-tint'] = 'color-mix(in oklab, var(--st-accent) 8%, transparent)';
+  out['--st-highlight-tint'] = 'color-mix(in oklab, var(--st-highlight) 8%, transparent)';
 
   // Depth-scaled shadows (override storefront.css's hardcoded set).
-  out['--sf-shadow-sm'] =
-    '0 1px 2px rgb(0 0 0 / calc(0.04 * var(--sf-depth))), 0 1px 3px rgb(0 0 0 / calc(0.06 * var(--sf-depth)))';
-  out['--sf-shadow-md'] =
-    '0 4px 12px -2px rgb(0 0 0 / calc(0.08 * var(--sf-depth))), 0 2px 6px -2px rgb(0 0 0 / calc(0.05 * var(--sf-depth)))';
-  out['--sf-shadow-lg'] = '0 18px 40px -12px rgb(0 0 0 / calc(0.18 * var(--sf-depth)))';
+  out['--st-shadow-sm'] =
+    '0 1px 2px rgb(0 0 0 / calc(0.04 * var(--st-depth))), 0 1px 3px rgb(0 0 0 / calc(0.06 * var(--st-depth)))';
+  out['--st-shadow-md'] =
+    '0 4px 12px -2px rgb(0 0 0 / calc(0.08 * var(--st-depth))), 0 2px 6px -2px rgb(0 0 0 / calc(0.05 * var(--st-depth)))';
+  out['--st-shadow-lg'] = '0 18px 40px -12px rgb(0 0 0 / calc(0.18 * var(--st-depth)))';
 
   // ── Legacy aliases (removed in §4) ──────────────────────────────────────
-  out['--sf-bg'] = 'var(--sf-base-100)';
-  out['--sf-surface'] = 'var(--sf-base-200)';
-  out['--sf-bg-subtle'] = 'var(--sf-base-300)';
-  out['--sf-text'] = 'var(--sf-base-content)';
-  out['--sf-text-secondary'] =
-    'color-mix(in oklab, var(--sf-base-content) 78%, var(--sf-base-100))';
-  out['--sf-text-muted'] = 'color-mix(in oklab, var(--sf-base-content) 55%, var(--sf-base-100))';
-  out['--sf-text-tertiary'] = 'color-mix(in oklab, var(--sf-base-content) 40%, var(--sf-base-100))';
-  out['--sf-on-primary'] = 'var(--sf-primary-content)';
-  out['--sf-border-strong'] = 'color-mix(in oklab, var(--sf-border), var(--sf-base-content) 35%)';
-  out['--sf-radius'] = 'var(--sf-radius-box)';
-  out['--sf-radius-sm'] = 'var(--sf-radius-field)';
-  out['--sf-radius-lg'] = 'var(--sf-radius-box)';
-  out['--sf-max'] = 'var(--sf-container)';
+  out['--st-bg'] = 'var(--st-base-100)';
+  out['--st-surface'] = 'var(--st-base-200)';
+  out['--st-bg-subtle'] = 'var(--st-base-300)';
+  out['--st-text'] = 'var(--st-base-content)';
+  out['--st-text-secondary'] =
+    'color-mix(in oklab, var(--st-base-content) 78%, var(--st-base-100))';
+  out['--st-text-muted'] = 'color-mix(in oklab, var(--st-base-content) 55%, var(--st-base-100))';
+  out['--st-text-tertiary'] = 'color-mix(in oklab, var(--st-base-content) 40%, var(--st-base-100))';
+  out['--st-on-primary'] = 'var(--st-primary-content)';
+  out['--st-border-strong'] = 'color-mix(in oklab, var(--st-border), var(--st-base-content) 35%)';
+  out['--st-radius'] = 'var(--st-radius-box)';
+  out['--st-radius-sm'] = 'var(--st-radius-field)';
+  out['--st-radius-lg'] = 'var(--st-radius-box)';
+  out['--st-max'] = 'var(--st-container)';
 
   return out;
 }

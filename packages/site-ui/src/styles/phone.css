@@ -1,13 +1,13 @@
 /* Surface Phone mockup (docs/46 §5.2). A bezel + camera notch around a display. */
 
-.sf-mockup-phone {
+.st-mockup-phone {
   position: relative;
   display: inline-block;
   padding: 1rem 0.6rem 1.5rem;
-  background: var(--sf-neutral, #1f2430);
+  background: var(--st-neutral, #1f2430);
   border-radius: 2.5rem;
 }
-.sf-mockup-phone__camera {
+.st-mockup-phone__camera {
   position: absolute;
   top: 0.55rem;
   left: 50%;
@@ -15,12 +15,12 @@
   width: 3rem;
   height: 0.4rem;
   border-radius: 999px;
-  background: color-mix(in srgb, #000 55%, var(--sf-neutral, #1f2430));
+  background: color-mix(in srgb, #000 55%, var(--st-neutral, #1f2430));
 }
-.sf-mockup-phone__display {
+.st-mockup-phone__display {
   width: 14rem;
   min-height: 26rem;
   overflow: hidden;
-  background: var(--sf-base-100, #fff);
+  background: var(--st-base-100, #fff);
   border-radius: 1.5rem;
 }

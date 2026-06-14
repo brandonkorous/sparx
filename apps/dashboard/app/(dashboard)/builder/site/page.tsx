@@ -13,11 +13,11 @@ import {
 } from '@/lib/sites';
 import { SiteBuilderApp } from '../_builder/site-builder-app';
 import '../builder.css';
-// The Surface RECIPE — @sparx/site-ui's `sf-*` component/color/variant classes,
+// The Surface RECIPE — @sparx/site-ui's `st-*` component/color/variant classes,
 // PRE-SCOPED to `.bx-canvas` by site-ui's build (styles.canvas.css). Loaded here
 // so the layout chrome (Logo · NavMenu/CollapsibleNav · Button · Footer) renders
 // LIVE on the canvas, identical to the published site — matching the page +
-// email editors, which already import it. Without it the chrome's sf-* nodes
+// email editors, which already import it. Without it the chrome's st-* nodes
 // render unstyled (jammed nav, stuck hamburger).
 import '@sparx/site-ui/styles.canvas.css';
 

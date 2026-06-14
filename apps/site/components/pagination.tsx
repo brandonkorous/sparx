@@ -48,7 +48,7 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
       }}
     >
       {page > 1 ? (
-        <Link href={hrefFor(basePath, currentParams, page - 1)} className="sf-btn sf-btn--ghost">
+        <Link href={hrefFor(basePath, currentParams, page - 1)} className="st-btn st-btn--ghost">
           ← Prev
         </Link>
       ) : null}
@@ -57,13 +57,13 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
         const gap = i > 0 && p - window[i - 1]! > 1;
         return (
           <span key={p} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-            {gap ? <span className="sf-muted">…</span> : null}
+            {gap ? <span className="st-muted">…</span> : null}
             {p === page ? (
-              <span className="sf-btn sf-btn--primary" aria-current="page">
+              <span className="st-btn st-btn--primary" aria-current="page">
                 {p}
               </span>
             ) : (
-              <Link href={hrefFor(basePath, currentParams, p)} className="sf-btn sf-btn--ghost">
+              <Link href={hrefFor(basePath, currentParams, p)} className="st-btn st-btn--ghost">
                 {p}
               </Link>
             )}
@@ -72,7 +72,7 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
       })}
 
       {page < totalPages ? (
-        <Link href={hrefFor(basePath, currentParams, page + 1)} className="sf-btn sf-btn--ghost">
+        <Link href={hrefFor(basePath, currentParams, page + 1)} className="st-btn st-btn--ghost">
           Next →
         </Link>
       ) : null}

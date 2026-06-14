@@ -2,13 +2,13 @@
  * row on wide frames and stack on narrow ones (the input flex-grows; both wrap
  * once there's no room for a comfortable field width). */
 
-.sf-signup {
+.st-signup {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   width: 100%;
 }
-.sf-signup__row {
+.st-signup__row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
@@ -16,13 +16,13 @@
 }
 /* Grow to fill the row, but force a wrap (→ stacked layout) below a usable
  * field width rather than crushing the input next to the button. */
-.sf-signup__input {
+.st-signup__input {
   flex: 1 1 16rem;
   min-width: 0;
 }
 /* Accessible label — present for screen readers, the placeholder carries the
  * visual cue (matches the storefront's other compact forms). */
-.sf-signup__label {
+.st-signup__label {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -33,13 +33,13 @@
   white-space: nowrap;
   border: 0;
 }
-.sf-signup__status {
+.st-signup__status {
   margin: 0;
   font-size: 0.9375rem;
 }
-.sf-signup__status--ok {
-  color: var(--sf-success, #16a34a);
+.st-signup__status--ok {
+  color: var(--st-success, #16a34a);
 }
-.sf-signup__status--error {
-  color: var(--sf-danger, #dc2626);
+.st-signup__status--error {
+  color: var(--st-danger, #dc2626);
 }

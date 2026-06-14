@@ -1,6 +1,6 @@
 // Textarea — a multi-line input shell (docs/46 §3.6). SERVER component, sharing
-// the `.sf-input` base look with Input (border, radius, focus/invalid states off
-// the recipe) plus `.sf-textarea` for min-height + vertical resize. Forwards
+// the `.st-input` base look with Input (border, radius, focus/invalid states off
+// the recipe) plus `.st-textarea` for min-height + vertical resize. Forwards
 // standard textarea props.
 
 import * as React from 'react';
@@ -39,12 +39,12 @@ export function Textarea({
     <textarea
       {...rest}
       className={cx(
-        'sf-input',
-        'sf-textarea',
+        'st-input',
+        'st-textarea',
         colorClass(color),
         FIELD_SIZE_CLASS[size],
         fieldTreatmentVariants[variant],
-        invalid && 'sf-input--invalid',
+        invalid && 'st-input--invalid',
         className
       )}
       aria-invalid={invalid || undefined}

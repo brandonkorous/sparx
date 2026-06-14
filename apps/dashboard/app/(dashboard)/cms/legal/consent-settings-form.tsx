@@ -97,8 +97,8 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
         <CardHeader>
           <CardTitle>Consent mode</CardTitle>
           <CardDescription>
-            Controls the cookie banner on your storefront. The banner only appears when a
-            non-essential category (analytics or marketing) is active.
+            Controls the cookie banner on your site. The banner only appears when a non-essential
+            category (analytics or marketing) is active.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -123,7 +123,7 @@ export function ConsentSettingsForm({ config }: { config: ConsentConfig }) {
             <Stack gap={2}>
               <Label>Cookie categories in use</Label>
               <Text size="xs" variant="muted">
-                Strictly-necessary cookies are always on. Enable the categories your store actually
+                Strictly-necessary cookies are always on. Enable the categories your site actually
                 uses — enabling analytics or marketing turns the banner on.
               </Text>
               <Stack gap={2} className="pt-1">

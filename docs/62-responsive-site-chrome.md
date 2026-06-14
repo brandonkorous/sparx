@@ -19,15 +19,15 @@ island. This fixed two things v1.0 left open:
 - **The swap is a container query, not a viewport one (supersedes D4).** The old
   `@media (max-width: 767px)` could never fire in the canvas, whose device
   preview is a fixed-width element inside a desktop viewport, not a narrow
-  viewport. `CollapsibleNav` now swaps on a **named `sf-frame` container query**
-  (`@container sf-frame (min-width: 768px)`), and both frame roots declare
-  `container-name: sf-frame` (`.bx-render` live, `.bx-canvas` canvas). It collapses
+  viewport. `CollapsibleNav` now swaps on a **named `st-frame` container query**
+  (`@container st-frame (min-width: 768px)`), and both frame roots declare
+  `container-name: st-frame` (`.bx-render` live, `.bx-canvas` canvas). It collapses
   identically at the simulated device width and the real viewport.
 - **Centralized in site-ui, not forked (supersedes D5).** `CollapsibleNav`
   composes the existing `NavMenu` + `Drawer` primitives; its CSS lives in
   `packages/site-ui/src/styles/collapsible-nav.css` (compiled into both
   `styles.css` and `styles.canvas.css`). The `apps/site` island
-  (`builder-nav-menu.tsx`) and the `.sf-builder-nav*` viewport switch are deleted.
+  (`builder-nav-menu.tsx`) and the `.st-builder-nav*` viewport switch are deleted.
 
 D1, D2, and D3 below still stand (scoping the legacy CSS, a real mobile app-bar,
 the always-horizontal app-bar header). The text below is the original v1.0 record.
@@ -50,44 +50,44 @@ A tenant's chrome comes from one of two mutually-exclusive paths (see
    exists. Header/footer are a Builder **node tree** (Logo · NavMenu · Button …)
    rendered by `apps/site/components/builder-renderer.tsx` using the
    `@sparx/site-ui` primitives. The nav primitive emits
-   `<nav class="sf-nav sf-nav--row|--stack"><a class="sf-nav__item">`.
+   `<nav class="st-nav st-nav--row|--stack"><a class="st-nav__item">`.
 2. **Legacy chrome** (`SiteHeader`/`SiteFooter`) — the fallback when there is no
-   Builder layout. It renders its own `<nav class="sf-nav"><a class="sf-nav__link">`
-   **inside `.sf-header`**, and ships a working mobile hamburger
-   (`components/mobile-nav.tsx` + the `.sf-drawer-*` CSS).
+   Builder layout. It renders its own `<nav class="st-nav"><a class="st-nav__link">`
+   **inside `.st-header`**, and ships a working mobile hamburger
+   (`components/mobile-nav.tsx` + the `.st-drawer-*` CSS).
 
-Both systems use the bare class `.sf-nav`. The legacy responsive rule in
+Both systems use the bare class `.st-nav`. The legacy responsive rule in
 `apps/site/app/site.css` was written for path 2 but was **unscoped**:
 
 ```css
 @media (max-width: 760px) {
-  .sf-nav {
+  .st-nav {
     display: none;
   }
-  .sf-nav__toggle {
+  .st-nav__toggle {
     display: inline-flex;
   }
 }
 ```
 
-Because `.sf-nav` is also what the Builder chrome (path 1) renders, this rule
+Because `.st-nav` is also what the Builder chrome (path 1) renders, this rule
 **hid the Builder header nav and every footer link column on phones**. The
 footer links literally vanished < 760px. That is the bulk of "the header and
 footer aren't responsive."
 
 ## Decisions
 
-- **D1 — Scope the legacy chrome CSS to `.sf-header`.** The legacy header's
-  responsive rules (`.sf-nav` hide, `.sf-nav__toggle` show, `.sf-header__brand`
-  margin) are scoped under `.sf-header` so they can only touch path-2 chrome.
-  The Builder chrome's `.sf-nav` (which lives under `.bx-render`, never under
-  `.sf-header`) is no longer affected. This alone restores the footer + header
+- **D1 — Scope the legacy chrome CSS to `.st-header`.** The legacy header's
+  responsive rules (`.st-nav` hide, `.st-nav__toggle` show, `.st-header__brand`
+  margin) are scoped under `.st-header` so they can only touch path-2 chrome.
+  The Builder chrome's `.st-nav` (which lives under `.bx-render`, never under
+  `.st-header`) is no longer affected. This alone restores the footer + header
   nav on phones.
 
 - **D2 — Give the Builder header a real mobile app-bar.** A new client island,
   `apps/site/components/builder-nav-menu.tsx`, renders a **row** NavMenu as:
   inline links ≥ 768px; a hamburger + slide-in drawer < 768px. It reuses the
-  existing `.sf-nav__toggle` + `.sf-drawer-*` CSS and the proven MobileNav
+  existing `.st-nav__toggle` + `.st-drawer-*` CSS and the proven MobileNav
   behavior (Escape, backdrop click, body-scroll lock, close-on-select). The
   renderer routes `NavMenu orientation:'row'` (primary/header nav) to the island;
   `orientation:'stack'` (footer / secondary) keeps the static `NavMenu`.
@@ -111,8 +111,8 @@ footer aren't responsive."
   exactly why the drawer must be a first-class island, not author-class chrome.
 
 - **D5 — Reuse, don't fork.** The island reuses the existing drawer CSS kit and
-  the `.sf-iconbtn`/`.sf-nav__toggle` styling. The only new CSS is the
-  inline-vs-hamburger visibility switch (`.sf-builder-nav*`). No `@sparx/site-ui`
+  the `.st-iconbtn`/`.st-nav__toggle` styling. The only new CSS is the
+  inline-vs-hamburger visibility switch (`.st-builder-nav*`). No `@sparx/site-ui`
   rebuild is required — all changes live in `apps/site` + the blueprint.
 
 ## Known follow-ups (not in this slice)
@@ -130,7 +130,7 @@ responsiveness rule):
 
 ## Files
 
-- `apps/site/app/site.css` — D1 scoping + D5 `.sf-builder-nav*` visibility switch.
+- `apps/site/app/site.css` — D1 scoping + D5 `.st-builder-nav*` visibility switch.
 - `apps/site/components/builder-nav-menu.tsx` — D2 island (new).
 - `apps/site/components/builder-renderer.tsx` — route row NavMenu to the island.
 - `packages/blueprints/src/blueprints/notion-workspace.ts` — D3 app-bar header.

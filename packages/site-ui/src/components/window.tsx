@@ -15,16 +15,16 @@ export interface WindowProps {
 
 export function Window({ title, className, style, id, children }: WindowProps): React.ReactElement {
   return (
-    <div className={cx('sf-mockup-window', className)} style={style} id={id}>
-      <div className="sf-mockup-window__bar">
-        <span className="sf-mockup__dots" aria-hidden="true">
+    <div className={cx('st-mockup-window', className)} style={style} id={id}>
+      <div className="st-mockup-window__bar">
+        <span className="st-mockup__dots" aria-hidden="true">
           <span />
           <span />
           <span />
         </span>
-        {title != null ? <span className="sf-mockup-window__title">{title}</span> : null}
+        {title != null ? <span className="st-mockup-window__title">{title}</span> : null}
       </div>
-      <div className="sf-mockup-window__content">{children}</div>
+      <div className="st-mockup-window__content">{children}</div>
     </div>
   );
 }

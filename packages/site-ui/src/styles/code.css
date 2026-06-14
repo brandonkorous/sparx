@@ -1,30 +1,30 @@
 /* Surface Code mockup (docs/46 §5.2). A dark terminal block; each line's gutter
  * prefix comes from `data-prefix`. */
 
-.sf-mockup-code {
+.st-mockup-code {
   padding: 1rem 1.25rem;
   overflow-x: auto;
-  background: var(--sf-neutral, #1f2430);
-  color: var(--sf-neutral-content, #ffffff);
-  border-radius: var(--sf-radius-box, 1rem);
-  font-family: var(--sf-font-fallback, ui-monospace, monospace);
+  background: var(--st-neutral, #1f2430);
+  color: var(--st-neutral-content, #ffffff);
+  border-radius: var(--st-radius-box, 1rem);
+  font-family: var(--st-font-fallback, ui-monospace, monospace);
   font-size: 0.85rem;
   line-height: 1.6;
 }
-.sf-mockup-code__line {
+.st-mockup-code__line {
   margin: 0;
   white-space: pre;
 }
-.sf-mockup-code__line::before {
+.st-mockup-code__line::before {
   content: attr(data-prefix);
   display: inline-block;
   width: 1.5em;
   opacity: 0.5;
   user-select: none;
 }
-.sf-mockup-code__line--hl {
+.st-mockup-code__line--hl {
   background: color-mix(in srgb, #ffffff 12%, transparent);
 }
-.sf-mockup-code__line code {
+.st-mockup-code__line code {
   font: inherit;
 }

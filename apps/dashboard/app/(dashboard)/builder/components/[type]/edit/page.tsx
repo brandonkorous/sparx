@@ -9,7 +9,7 @@ import { getBindingCatalog, listComponentsFull } from '../../../_lib/api';
 import { ComponentBuilderApp } from '../../../_builder/component-builder-app';
 import '../../../builder.css';
 // The Surface recipe, pre-scoped to `.bx-canvas` — so a component authored with
-// `sf-*` classes previews exactly as it will ship (parity with /builder/page).
+// `st-*` classes previews exactly as it will ship (parity with /builder/page).
 import '@sparx/site-ui/styles.canvas.css';
 
 // /builder/components/[type]/edit — the component tree editor (docs/53 P-C). Edits

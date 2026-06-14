@@ -8,7 +8,7 @@
 //
 // The scrim/tone values are documented legibility constants (veils over an
 // ARBITRARY photo, not tenant-brand colors) — the same exception class as the
-// --sf-overlay-* button scrims (docs/46 §4.1). The box-background scrim adopts
+// --st-overlay-* button scrims (docs/46 §4.1). The box-background scrim adopts
 // theme tokens in a later pass; for now these match the renderer verbatim.
 
 import type * as React from 'react';

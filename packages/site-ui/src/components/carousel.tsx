@@ -3,7 +3,7 @@
 // Carousel — the one interactive primitive (docs/46 §3.2, §5.2). CLIENT
 // component: it owns the runtime concerns a server component can't — active
 // index, autoplay timer, arrows, dots. Ported from the site's
-// builder-carousel.tsx (bx-carousel → sf-carousel); the server renderer builds
+// builder-carousel.tsx (bx-carousel → st-carousel); the server renderer builds
 // each child into a slide and hands them in as `slides`. Pure CSS-transform
 // transition (no animation lib): the track translates by -index * 100%.
 
@@ -45,17 +45,17 @@ export function Carousel({
   }, [autoplay, paused, interval, count]);
 
   if (count === 0) return null;
-  if (count === 1) return <div className={cx('sf-carousel', className)}>{slides[0]}</div>;
+  if (count === 1) return <div className={cx('st-carousel', className)}>{slides[0]}</div>;
 
   return (
     <div
-      className={cx('sf-carousel', className)}
+      className={cx('st-carousel', className)}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="sf-carousel__track" style={{ transform: `translateX(-${index * 100}%)` }}>
+      <div className="st-carousel__track" style={{ transform: `translateX(-${index * 100}%)` }}>
         {slides.map((slide, i) => (
-          <div className="sf-carousel__slide" key={i} aria-hidden={i !== index}>
+          <div className="st-carousel__slide" key={i} aria-hidden={i !== index}>
             {slide}
           </div>
         ))}
@@ -66,10 +66,10 @@ export function Carousel({
           <button
             type="button"
             className={cx(
-              'sf-carousel__arrow',
-              'sf-carousel__arrow--prev',
-              'sf-c-surface',
-              'sf-v-glass'
+              'st-carousel__arrow',
+              'st-carousel__arrow--prev',
+              'st-c-surface',
+              'st-v-glass'
             )}
             aria-label="Previous slide"
             onClick={() => go(index - 1)}
@@ -88,10 +88,10 @@ export function Carousel({
           <button
             type="button"
             className={cx(
-              'sf-carousel__arrow',
-              'sf-carousel__arrow--next',
-              'sf-c-surface',
-              'sf-v-glass'
+              'st-carousel__arrow',
+              'st-carousel__arrow--next',
+              'st-c-surface',
+              'st-v-glass'
             )}
             aria-label="Next slide"
             onClick={() => go(index + 1)}
@@ -111,12 +111,12 @@ export function Carousel({
       ) : null}
 
       {dots ? (
-        <div className="sf-carousel__dots">
+        <div className="st-carousel__dots">
           {slides.map((_, i) => (
             <button
               type="button"
               key={i}
-              className="sf-carousel__dot"
+              className="st-carousel__dot"
               data-on={i === index}
               aria-label={`Go to slide ${i + 1}`}
               aria-current={i === index}

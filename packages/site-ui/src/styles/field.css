@@ -1,20 +1,20 @@
 /* Surface Field — label + control + hint/error row (docs/46 §5.2). Structural;
  * the error uses the danger token, the hint the muted-text token. */
 
-.sf-field {
+.st-field {
   @apply flex flex-col gap-1.5;
 }
-.sf-field__control {
+.st-field__control {
   @apply block;
 }
-.sf-field__hint {
+.st-field__hint {
   @apply m-0 text-xs;
   color: var(
-    --sf-text-muted,
-    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+    --st-text-muted,
+    color-mix(in oklab, var(--st-base-content, #23211c) 55%, transparent)
   );
 }
-.sf-field__error {
+.st-field__error {
   @apply m-0 text-xs;
-  color: var(--sf-danger, #dc2626);
+  color: var(--st-danger, #dc2626);
 }

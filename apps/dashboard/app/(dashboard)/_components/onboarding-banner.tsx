@@ -48,7 +48,7 @@ export function OnboardingBanner({ progress }: OnboardingBannerProps) {
             </Badge>
           </Stack>
           <Text size="sm" variant="muted">
-            A few quick steps to get your store production-ready ({pct}% complete).
+            A few quick steps to get your site production-ready ({pct}% complete).
           </Text>
         </Stack>
         <Button asChild rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>

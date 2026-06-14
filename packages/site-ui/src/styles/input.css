@@ -1,83 +1,83 @@
-/* Surface field controls — the shared `.sf-input` base used by Input, Textarea,
+/* Surface field controls — the shared `.st-input` base used by Input, Textarea,
  * and NativeSelect (docs/46 §3.6). The base is STRUCTURE only (a transparent 1px
  * border-box, so switching treatment never shifts layout); the field `variant`
- * axis — `.sf-fv-outline` | `.sf-fv-filled` | `.sf-fv-ghost` (docs/35,
+ * axis — `.st-fv-outline` | `.st-fv-filled` | `.st-fv-ghost` (docs/35,
  * _recipes/variants.ts) — owns the fill + border and is shared with FileInput.
  * The recipe shows up in the focus ring (reads `--c-bg`) and the invalid state
  * (danger role). Structural bits are @apply'd; token/role-var values are raw. */
 
-.sf-input {
+.st-input {
   @apply block w-full;
   border: 1px solid transparent;
-  border-radius: var(--sf-radius-field, 0.5rem);
-  color: var(--sf-base-content, #23211c);
-  font-family: var(--sf-font-body, inherit);
+  border-radius: var(--st-radius-field, 0.5rem);
+  color: var(--st-base-content, #23211c);
+  font-family: var(--st-font-body, inherit);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease,
     background-color 0.15s ease;
 }
-.sf-input::placeholder {
+.st-input::placeholder {
   color: var(
-    --sf-text-muted,
-    color-mix(in oklab, var(--sf-base-content, #23211c) 50%, transparent)
+    --st-text-muted,
+    color-mix(in oklab, var(--st-base-content, #23211c) 50%, transparent)
   );
 }
-.sf-input:disabled {
+.st-input:disabled {
   @apply cursor-not-allowed opacity-60;
 }
 
 /* Field treatments — the field-appropriate `variant` axis. The fill + border live
  * here (the base is a transparent border-box), so `color × treatment` composes and
  * there's no layout shift between treatments. Shared by Input/Textarea/
- * NativeSelect/FileInput (all get one `.sf-fv-*` class from the recipe). */
-.sf-fv-outline {
-  background: var(--sf-base-100, #fff);
-  border-color: var(--sf-border, #e3dfd2);
+ * NativeSelect/FileInput (all get one `.st-fv-*` class from the recipe). */
+.st-fv-outline {
+  background: var(--st-base-100, #fff);
+  border-color: var(--st-border, #e3dfd2);
 }
-.sf-fv-filled {
-  background: color-mix(in srgb, var(--sf-base-content, #23211c) 5%, var(--sf-base-100, #fff));
+.st-fv-filled {
+  background: color-mix(in srgb, var(--st-base-content, #23211c) 5%, var(--st-base-100, #fff));
   border-color: transparent;
 }
-.sf-fv-ghost {
+.st-fv-ghost {
   background: transparent;
   border-color: transparent;
 }
-.sf-fv-ghost:focus-visible {
-  background: var(--sf-base-100, #fff);
+.st-fv-ghost:focus-visible {
+  background: var(--st-base-100, #fff);
 }
 
 /* Focus ring reads the `color` axis (`--c-bg`); the class+pseudo wins over the
  * treatment's border-color. */
-.sf-input:focus-visible {
+.st-input:focus-visible {
   @apply outline-none;
-  border-color: var(--c-bg, var(--sf-primary, #3f6b52));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--sf-primary, #3f6b52)) 25%, transparent);
+  border-color: var(--c-bg, var(--st-primary, #3f6b52));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--st-primary, #3f6b52)) 25%, transparent);
 }
 
 /* Invalid — danger border + ring (the danger role, not the color axis). Authored
  * AFTER the treatments + base focus so it overrides them at equal specificity. */
-.sf-input--invalid {
-  border-color: var(--sf-danger, #dc2626);
+.st-input--invalid {
+  border-color: var(--st-danger, #dc2626);
 }
-.sf-input--invalid:focus-visible {
-  border-color: var(--sf-danger, #dc2626);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sf-danger, #dc2626) 25%, transparent);
+.st-input--invalid:focus-visible {
+  border-color: var(--st-danger, #dc2626);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--st-danger, #dc2626) 25%, transparent);
 }
 
 /* Size axis. */
-.sf-input--sz-xs {
+.st-input--sz-xs {
   @apply px-2 py-1 text-xs;
 }
-.sf-input--sz-sm {
+.st-input--sz-sm {
   @apply px-2.5 py-1.5 text-sm;
 }
-.sf-input--sz-md {
+.st-input--sz-md {
   @apply px-3 py-2 text-base;
 }
-.sf-input--sz-lg {
+.st-input--sz-lg {
   @apply px-3.5 py-2.5 text-lg;
 }
-.sf-input--sz-xl {
+.st-input--sz-xl {
   @apply px-4 py-3 text-xl;
 }

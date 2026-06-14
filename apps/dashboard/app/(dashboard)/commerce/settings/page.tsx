@@ -14,11 +14,11 @@ import {
 
 import { api } from '@/lib/api-rest-client';
 
-import { StorefrontSettingsForm } from './_components/storefront-settings-form';
+import { CommerceSiteSettingsForm } from './_components/site-settings-form';
 
 export const dynamic = 'force-dynamic';
 
-interface StorefrontSettings {
+interface CommerceSiteSettings {
   defaultCurrency: string;
   defaultLocale: string;
   defaultWarehouseId: string | null;
@@ -49,9 +49,9 @@ interface WarehouseRow {
   updatedAt: string;
 }
 
-export default async function StorefrontSettingsPage() {
+export default async function CommerceSiteSettingsPage() {
   const [settings, warehouses] = await Promise.all([
-    api.get<StorefrontSettings>('/v1/commerce/storefront/settings'),
+    api.get<CommerceSiteSettings>('/v1/commerce/site/settings'),
     api.get<WarehouseRow[]>('/v1/commerce/warehouses'),
   ]);
 
@@ -88,7 +88,7 @@ export default async function StorefrontSettingsPage() {
             </Stack>
           </CardHeader>
           <CardContent>
-            <StorefrontSettingsForm
+            <CommerceSiteSettingsForm
               initial={initialForForm}
               warehouses={warehouses.map((w) => ({ id: w.id, name: w.name, code: w.code }))}
             />

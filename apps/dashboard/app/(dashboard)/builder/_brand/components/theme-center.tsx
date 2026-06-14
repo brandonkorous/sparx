@@ -8,7 +8,7 @@
 // tenant sees the brand applied across the whole platform without an iframe.
 //
 //   edit → compileThemeForTenant(themeKey, brand, presentation)
-//        → buildThemeCssV2(..., { rootSelector:'#sf-theme-preview' })   ← scoped, instant
+//        → buildThemeCssV2(..., { rootSelector:'#st-theme-preview' })   ← scoped, instant
 //        → debounced updateBrand / updateSettings                       ← persists
 //
 // The same compile runs server-side on publish, so the showcase tells the truth.
@@ -256,7 +256,7 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     [themeKey, brandCols, presentation]
   );
   const css = React.useMemo(
-    () => buildThemeCssV2(compiled, { rootSelector: '#sf-theme-preview' }),
+    () => buildThemeCssV2(compiled, { rootSelector: '#st-theme-preview' }),
     [compiled]
   );
 

@@ -142,7 +142,7 @@ export function ThemeController({
   if (variant === 'select') {
     return (
       <select
-        className={cx('sf-theme-controller__select', 'sf-input', className)}
+        className={cx('st-theme-controller__select', 'st-input', className)}
         style={style}
         id={id}
         aria-label={label}
@@ -162,7 +162,7 @@ export function ThemeController({
     <div
       role="radiogroup"
       aria-label={label}
-      className={cx('sf-theme-controller', className)}
+      className={cx('st-theme-controller', className)}
       style={style}
       id={id}
     >
@@ -173,8 +173,8 @@ export function ThemeController({
           role="radio"
           aria-checked={m === mode}
           className={cx(
-            'sf-theme-controller__option',
-            m === mode && 'sf-theme-controller__option--active'
+            'st-theme-controller__option',
+            m === mode && 'st-theme-controller__option--active'
           )}
           onClick={() => select(m)}
         >

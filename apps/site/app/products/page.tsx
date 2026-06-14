@@ -83,7 +83,7 @@ export default async function ProductsPage({
   });
 
   const totalPages = Math.max(1, Math.ceil(result.total / result.perPage));
-  const { defaultCurrency: currency, defaultLocale: locale } = tenant.storefront;
+  const { defaultCurrency: currency, defaultLocale: locale } = tenant.commerce;
 
   const facetValues: FacetValues = {
     q,
@@ -97,16 +97,16 @@ export default async function ProductsPage({
   };
 
   return (
-    <div className="sf-container">
+    <div className="st-container">
       <Breadcrumbs
         items={[{ label: 'Home', href: '/' }, { label: q ? `Search: ${q}` : 'All products' }]}
       />
 
       <header style={{ marginBottom: '0.5rem' }}>
-        <h1 className="sf-h1">{q ? `Results for “${q}”` : 'All products'}</h1>
+        <h1 className="st-h1">{q ? `Results for “${q}”` : 'All products'}</h1>
       </header>
 
-      <div className="sf-plp">
+      <div className="st-plp">
         <aside>
           <FacetPanel
             action="/products"
@@ -118,8 +118,8 @@ export default async function ProductsPage({
         </aside>
 
         <div>
-          <div className="sf-toolbar">
-            <span className="sf-toolbar__count">
+          <div className="st-toolbar">
+            <span className="st-toolbar__count">
               {result.total} {result.total === 1 ? 'product' : 'products'}
             </span>
             <SortSelect value={sort} />

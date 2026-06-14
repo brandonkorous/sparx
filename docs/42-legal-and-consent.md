@@ -9,14 +9,14 @@ Last Updated: 2026-06-02
 > Sparx's own platform legal docs with a tenant acceptance gate. Builds out the
 > "tenant tools" promised in [16-auth-security.md](16-auth-security.md) §10 (consent
 > tracking, cookie banner) and the policy-page use case in [12-cms-prd.md](12-cms-prd.md)
-> §3, and finally lands the `storefront_doc_placements` bridge so marketplace
+> §3, and finally lands the `site_doc_placements` bridge so marketplace
 > integrations can publish docs later ([09-ecommerce-engine-prd.md](09-ecommerce-engine-prd.md)).
 
 ## 1. Why
 
-Tenant storefronts ship today with no legal scaffolding and no consent mechanism:
+Tenant sites ship today with no legal scaffolding and no consent mechanism:
 
-- The storefront footer hard-links `/shipping-policy` and `/returns-policy` to pages
+- The site footer hard-links `/shipping-policy` and `/returns-policy` to pages
   that do not exist — they 404.
 - The CMS can hold legal pages only as generic `page` entries: no legal page type, no
   starter templates, no completeness view, no footer wiring.
@@ -43,9 +43,9 @@ storage.
 | **L2 — Cookie consent**     | The tenant's | The tenant's shoppers   | `consent_settings` / `consent_records`                      | Tenant configures         |
 | **L3 — Platform legal**     | Sparx's      | Tenants (the merchants) | Versioned pages on `apps/web` + `platform_legal_acceptance` | Sparx (WizeWorks)         |
 
-L1 and L2 share the storefront and the seeded **cookie-policy** page (the consent
+L1 and L2 share the site and the seeded **cookie-policy** page (the consent
 preference center links to it). L3 lives entirely on the marketing/dashboard side and
-never touches a storefront.
+never touches a site.
 
 ## 3. L1 — Tenant legal pages
 
@@ -116,7 +116,7 @@ Terraform topic + subscriber addition.
 
 A consumer seeds, under the new tenant's RLS context, one `content_entry` per
 `LEGAL_TEMPLATES` row (status **draft**, `body.legalKind` / `legalTemplateVersion` /
-disclaimer set) plus `storefront_doc_placements` rows. It is idempotent on the
+disclaimer set) plus `site_doc_placements` rows. It is idempotent on the
 `(tenantId, typeKey, slug)` and placement unique constraints, so redelivery is safe.
 
 **Seed as draft, not published.** Nothing unreviewed goes live; the footer simply omits
@@ -152,7 +152,7 @@ routes to `/cms/{entryId}`. Editing reuses the CMS editor stack wholesale — le
 are `page` entries. A placement-manager panel reuses the ordered / toggleable list UX
 from the navigation menu editor.
 
-### 3.6 Storefront footer
+### 3.6 Site footer
 
 The placements table (§5) is the source of truth for legal footer links, intentionally
 separate from the Site Builder `FooterConfig` (which owns copyright / social / tagline)
@@ -171,20 +171,20 @@ publishing or reordering purges the footer.
 Four fixed categories: `strictly_necessary | preferences | analytics | marketing`.
 `strictly_necessary` is always on and non-rejectable. Per-tenant config lives in a
 dedicated 1:1 `consent_settings` table (PK = `tenantId`), **not** in `Tenant.settings`
-(a hot, RLS-exempt row reserved for module flags) and **not** in `StorefrontSettings`
+(a hot, RLS-exempt row reserved for module flags) and **not** in `SiteSettings`
 (Commerce-owned — consent must work for content-only tenants too). This mirrors the
-established one-per-tenant `StorefrontTheme` / `StorefrontSettings` shape.
+established one-per-tenant `SiteTheme` / `SiteSettings` shape.
 
 The derived rule that defines the product: `bannerEnabled` is true **iff** `mode != off`
 **and** `activeCategories` contains a non-essential category. The state is computed
-server-side and shipped to the storefront, so SSR picks the UI with zero client flash.
+server-side and shipped to the site, so SSR picks the UI with zero client flash.
 
 ### 4.2 Three render states
 
 1. **`off`** — render nothing; set no consent cookie.
 2. **Quiet notice** (`bannerEnabled = false`, strictly-necessary only) — a persistent
    footer "Manage cookies" link opening the preference center; no blocking layer. This
-   is the default for every storefront today, since none set a non-essential cookie.
+   is the default for every site today, since none set a non-essential cookie.
 3. **Banner** (`bannerEnabled = true`):
    - **GDPR** (`mode = gdpr`) — Accept all / Reject all / Manage; non-essential
      trackers stay off until an explicit accept (true opt-in).
@@ -204,12 +204,12 @@ the existing `sessionMeta()` pattern (Fastify `trustProxy` makes `request.ip` ho
 with the tenant.
 
 The choices are _also_ mirrored into a readable `sparx_consent_state` cookie so the
-storefront can gate scripts at first paint without a round-trip; the server-side record
+site can gate scripts at first paint without a round-trip; the server-side record
 is the source of legal truth.
 
 ### 4.4 The script-gating contract
 
-A storefront client registry (`apps/site/lib/consent.ts`) exposes the single seam
+A site client registry (`apps/site/lib/consent.ts`) exposes the single seam
 every future tracker uses:
 
 - `getConsent()` — reads `sparx_consent_state`.
@@ -221,7 +221,7 @@ Server-side, the layout reads the consent cookie (the way it already reads the t
 cookie) and only injects a tracker `<script>` into `<head>` when that category is
 granted. A future analytics/marketing integration declares its category in its provider
 manifest; installing it adds the category to `activeCategories`, which automatically
-promotes the storefront from quiet-notice to banner. No tracker fires pre-consent.
+promotes the site from quiet-notice to banner. No tracker fires pre-consent.
 
 The three existing cookies are categorized in this same registry: `sparx_customer_session`
 = strictly-necessary, `sparx_theme` = preferences, `sparx_dev_tenant` = strictly-necessary
@@ -231,18 +231,18 @@ generated from this list.
 
 ### 4.5 Always-on, not module-gated
 
-Consent endpoints require only a valid tenant — they are not behind the Storefront or
+Consent endpoints require only a valid tenant — they are not behind the Site or
 Commerce module gate, because compliance applies to content-only and commerce-only
 tenants alike. This is the reason config lives in its own table.
 
 ## 5. The placements table (shared L1 infrastructure)
 
-`storefront_doc_placements` drives where legal docs appear, with a polymorphic
+`site_doc_placements` drives where legal docs appear, with a polymorphic
 `sourceKind` so the same table serves the future integration-published-docs bridge
 (`ProviderMetadata.publishedDocs[]`) without a v2 migration:
 
 ```
-StorefrontDocPlacement
+SiteDocPlacement
   tenantId, placement ('footer'|'checkout'|'terms_gate'),
   sourceKind ('cms_entry'|'integration_doc'),
   entryId? (FK→content_entries), legalKind?, providerSlug?,
@@ -309,13 +309,13 @@ Authenticated (dashboard, `requireRole` like existing content routes):
 - `GET /v1/me/legal-status`, `POST /v1/me/legal-accept` — platform legal re-acceptance.
 - Editing/publishing legal pages reuses the existing `content/{entries,publish}` routes.
 
-Public (storefront, no auth, published-only, under the `/v1/public/` allowlist):
+Public (site, no auth, published-only, under the `/v1/public/` allowlist):
 
 - `GET /v1/public/legal/placements?tenant=&placement=footer` — resolved, ordered,
   dead-link-filtered legal links.
 - `POST /v1/public/consent?tenant=` — write a consent record (IP/UA captured server-side).
 - `GET /v1/public/consent/config?tenant=` — public consent config; these same fields are
-  also folded into `GET /v1/public/tenants/:slug` so the storefront gets them in its one
+  also folded into `GET /v1/public/tenants/:slug` so the site gets them in its one
   existing fetch.
 
 ## 8. Sequencing
@@ -327,11 +327,11 @@ cookie-policy page (L1) that the consent preference center (L2) links to.
 1. **Foundations (ships dark):** the four tables + hand-edited RLS migrations; the
    `LEGAL_TEMPLATES` catalog + `legalKind` on `pageType`; the `legal-versions` constant;
    authenticated `GET / PATCH /v1/tenant/consent`.
-2. **High-value low-risk fixes:** public placements API + the storefront footer fix
+2. **High-value low-risk fixes:** public placements API + the site footer fix
    (broken links gone); replace the `apps/web` `ComingSoon` legal stubs with real pages.
 3. **Seeding + consent API:** the `tenant.created` event (+ Terraform topic/sub) + the
    seed consumer; public consent `POST` + config fanout into `/v1/public/tenants/:slug`.
-4. **Storefront consent UX:** the gating contract + the consent island (banner /
+4. **Site consent UX:** the gating contract + the consent island (banner /
    quiet-notice / preference center) + SSR script gating + the before-paint script.
 5. **Dashboard surfaces:** the CMS Legal checklist + instantiate/placement APIs +
    placement-manager UI; the consent settings panel; the onboarding-progress step swap.
@@ -357,10 +357,10 @@ cookie-policy page (L1) that the consent preference center (L2) links to.
   no-flash script needs it at first paint. It is categorized strictly-necessary /
   functional, disclosed, and not gated (gating it reintroduces theme flash) — defensible
   as a user-initiated functional preference.
-- **Proxy single-Set-Cookie.** The storefront `/api/sparx` proxy relays only one
+- **Proxy single-Set-Cookie.** The site `/api/sparx` proxy relays only one
   `Set-Cookie`; the consent cookie is therefore set client-side (like `sparx_theme`),
   never by the API. The consent write endpoint records the row but does not set the cookie.
-- **[27-customer-accounts-storefront-auth.md](27-customer-accounts-storefront-auth.md)
+- **[27-customer-accounts-site-auth.md](27-customer-accounts-site-auth.md)
   cart-cookie drift.** That doc describes an httpOnly `sparx_cart` cookie; the live code
   uses localStorage. Categorize the localStorage keys as functional storage; reconcile
   the doc separately.

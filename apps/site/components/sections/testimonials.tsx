@@ -20,23 +20,23 @@ export function TestimonialsSection({
   if (items.length === 0) return null;
 
   return (
-    <section className="sf-container sf-section">
+    <section className="st-container st-section">
       {config.heading ? (
-        <div className="sf-section__head">
-          <h2 className="sf-h2">{config.heading}</h2>
+        <div className="st-section__head">
+          <h2 className="st-h2">{config.heading}</h2>
         </div>
       ) : null}
-      <div className="sf-grid" data-cols={config.columns}>
+      <div className="st-grid" data-cols={config.columns}>
         {items.map((t, i) => {
           const avatar = mediaUrl(t.avatarMediaId ?? null, ctx.tenantSlug);
           return (
-            <figure key={i} className="sf-sb-quote">
+            <figure key={i} className="st-sb-quote">
               {typeof t.rating === 'number' ? <RatingStars rating={t.rating} compact /> : null}
-              <blockquote className="sf-sb-quote__text">{t.quote}</blockquote>
-              <figcaption className="sf-sb-quote__by">
+              <blockquote className="st-sb-quote__text">{t.quote}</blockquote>
+              <figcaption className="st-sb-quote__by">
                 {avatar ? (
                   <Image
-                    className="sf-sb-quote__avatar"
+                    className="st-sb-quote__avatar"
                     src={avatar}
                     alt=""
                     width={36}
@@ -46,7 +46,7 @@ export function TestimonialsSection({
                 ) : null}
                 <span>
                   {t.authorName ? <strong>{t.authorName}</strong> : null}
-                  {t.authorTitle ? <span className="sf-muted"> · {t.authorTitle}</span> : null}
+                  {t.authorTitle ? <span className="st-muted"> · {t.authorTitle}</span> : null}
                 </span>
               </figcaption>
             </figure>

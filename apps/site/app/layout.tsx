@@ -3,9 +3,9 @@
 // chrome, and mounts the client providers.
 //
 // When the tenant has a published Site Builder snapshot, its compiled tokens
-// (a superset of the StorefrontTheme columns — adds foreground/border/container)
+// (a superset of the CommerceSiteTheme columns — adds foreground/border/container)
 // and its data-driven header/footer/announcement blocks take over. Without a
-// snapshot the legacy themeToCss(StorefrontTheme) path and collection-derived
+// snapshot the legacy themeToCss(CommerceSiteTheme) path and collection-derived
 // chrome still render, so brand-new stores look polished out of the box.
 //
 // Unknown hosts (no tenant) render a bare frame — the page-level not-found
@@ -38,7 +38,7 @@ import { ChatWidget } from '@sparx/chat-widget';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import { resolveActivePropertySlug, resolveTenant, type TenantTheme } from '@/lib/tenant';
-import { buildStorefrontThemeCss } from '@/lib/theme';
+import { buildCommerceSiteThemeCss } from '@/lib/theme';
 import {
   getPublishedSite,
   getNavigationMenu,
@@ -48,13 +48,13 @@ import {
 
 import './globals.css';
 import './site.css';
-// The custom-section template primitives (sf-tpl-*), shared with the dashboard
+// The custom-section template primitives (st-tpl-*), shared with the dashboard
 // Section Studio preview so both render identically (docs/38 Phase C).
 import '@sparx/section-template-react/section-template.css';
-// The Surface component library (docs/46/47): the tenant-themed `sf-*` component
+// The Surface component library (docs/46/47): the tenant-themed `st-*` component
 // + recipe classes that authored `node.class` strings resolve against. Loaded
-// LAST so it owns the `sf-*` component vocabulary (supersedes the legacy
-// component rules in site.css). Plain compiled CSS — no preflight, --sf-* keyed.
+// LAST so it owns the `st-*` component vocabulary (supersedes the legacy
+// component rules in site.css). Plain compiled CSS — no preflight, --st-* keyed.
 import '@sparx/site-ui/styles.css';
 
 const FOOTER_YEAR = 2026; // static so SSR output stays deterministic/cacheable
@@ -93,7 +93,7 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [
         ogImageUrl({
           title: tenant.name,
-          eyebrow: 'Store',
+          eyebrow: 'Site',
           brand: tenant.name,
           accent: tenant.theme?.colorPrimary,
         }),
@@ -121,7 +121,7 @@ export async function generateMetadata(): Promise<Metadata> {
 // Compiled by the Token Model v2 engine (docs/33-token-model-v2.md). The theme
 // key comes from the published snapshot when present, else the tenant's preset;
 // brand identity + presentation surfaces are sourced from the data the layout
-// already fetched. buildStorefrontThemeCss emits the canonical `--sf-*` tokens
+// already fetched. buildCommerceSiteThemeCss emits the canonical `--st-*` tokens
 // plus the legacy aliases the current site.css still reads.
 
 function buildThemeCss(
@@ -130,7 +130,7 @@ function buildThemeCss(
   preset: string | null | undefined
 ): string {
   const themeKey = snapshot?.themeKey ?? preset ?? 'apex';
-  return buildStorefrontThemeCss({
+  return buildCommerceSiteThemeCss({
     themeKey,
     tenantTheme: theme,
     snapshotTokens: snapshot?.compiledTokens ?? null,
@@ -149,10 +149,10 @@ function noFlashScript(policy: 'auto' | 'toggle'): string {
 // Before-paint flag that enables scroll-reveal entrances. Gating the hidden
 // initial state on these classes means content is fully visible when JS is off
 // (this script never runs) or reduced motion is requested (the classes are not
-// added), avoiding any flash of invisible content. `sf-reveal-ready` gates the
-// legacy section path; `sf-anim-ready` gates the docs/61 Builder motion
-// (`.sf-reveal` + SCROLL_MOTION_CSS, driven by MotionController).
-const REVEAL_INIT_SCRIPT = `(function(){try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.documentElement.classList.add('sf-reveal-ready','sf-anim-ready');}catch(e){}})();`;
+// added), avoiding any flash of invisible content. `st-reveal-ready` gates the
+// legacy section path; `st-anim-ready` gates the docs/61 Builder motion
+// (`.st-reveal` + SCROLL_MOTION_CSS, driven by MotionController).
+const REVEAL_INIT_SCRIPT = `(function(){try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.documentElement.classList.add('st-reveal-ready','st-anim-ready');}catch(e){}})();`;
 
 // Before-paint: reflect the recorded cookie-consent decision onto <html> as a
 // `data-consent` attribute (space-separated granted categories) so any deferred
@@ -229,7 +229,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   // The compiled Surface stylesheet (docs/47 §5): the utilities authored as
   // node `class` strings across the tenant's published trees. Injected after the
-  // --sf-* theme block so the utilities resolve against the tenant tokens. '' (so
+  // --st-* theme block so the utilities resolve against the tenant tokens. '' (so
   // nothing is injected) until class-first authoring is in use.
   const surfaceCss = tenant ? await getPublishedBuilderStyles(tenant.slug) : '';
 
@@ -409,7 +409,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           />
         ) : null}
       </head>
-      <body className="sf-body">
+      <body className="st-body">
         <PreviewBridge />
         <RevealController />
         <MotionController />
@@ -419,17 +419,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <CartProvider
                 tenantSlug={tenant.slug}
                 propertySlug={activePropertySlug ?? undefined}
-                currency={tenant.storefront.defaultCurrency}
+                currency={tenant.commerce.defaultCurrency}
               >
-                <div className="sf-frame">
-                  <a href="#sf-main" className="sf-skip-link">
+                <div className="st-frame">
+                  <a href="#st-main" className="st-skip-link">
                     Skip to content
                   </a>
                   {builderLayout && siteData ? (
                     // A published Builder layout owns the chrome: render its tree
                     // with the page dropped at the Outlet (docs/45 §2.6).
                     <BuilderSiteChrome tree={builderLayout.tree} data={siteData}>
-                      <main className="sf-main" id="sf-main" tabIndex={-1}>
+                      <main className="st-main" id="st-main" tabIndex={-1}>
                         {children}
                       </main>
                     </BuilderSiteChrome>
@@ -447,7 +447,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                           policy === 'toggle' ? <ModeToggle initial={initialTheme} /> : undefined
                         }
                       />
-                      <main className="sf-main" id="sf-main" tabIndex={-1}>
+                      <main className="st-main" id="st-main" tabIndex={-1}>
                         {children}
                       </main>
                       <SiteFooter
@@ -475,8 +475,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </WishlistProvider>
           </CustomerProvider>
         ) : (
-          <div className="sf-frame">
-            <main className="sf-main">{children}</main>
+          <div className="st-frame">
+            <main className="st-main">{children}</main>
           </div>
         )}
       </body>

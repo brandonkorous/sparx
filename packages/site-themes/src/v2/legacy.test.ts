@@ -29,7 +29,7 @@ describe('compileFromLegacy', () => {
     expect(c.shared.radiusField).toBe('0px');
   });
 
-  it('seeds light surfaces from StorefrontTheme columns; dark stays on preset', () => {
+  it('seeds light surfaces from CommerceSiteTheme columns; dark stays on preset', () => {
     const preset = compileTokensV2(getThemePresetV2('apex'));
     const c = compileFromLegacy({
       themeKey: 'apex',
@@ -71,10 +71,10 @@ describe('compileFromLegacy', () => {
 describe('buildLegacyThemeCss', () => {
   it('emits canonical vars + legacy aliases in a root block', () => {
     const css = buildLegacyThemeCss({ themeKey: 'apex', brand: { colorPrimary: '#4f46e5' } });
-    expect(css).toContain('--sf-primary:#4f46e5');
-    expect(css).toContain('--sf-base-100:');
-    expect(css).toContain('--sf-bg:var(--sf-base-100)'); // legacy alias
-    expect(css).toContain('--sf-radius:var(--sf-radius-box)');
+    expect(css).toContain('--st-primary:#4f46e5');
+    expect(css).toContain('--st-base-100:');
+    expect(css).toContain('--st-bg:var(--st-base-100)'); // legacy alias
+    expect(css).toContain('--st-radius:var(--st-radius-box)');
     expect(css).toContain(':root[data-theme="dark"]{');
   });
 });

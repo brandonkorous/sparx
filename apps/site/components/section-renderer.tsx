@@ -2,7 +2,7 @@
 // each section's `sectionType` against a component map. Unknown types are
 // skipped gracefully (a snapshot may carry a section type this storefront
 // version doesn't know how to render yet). Each section is themed purely via
-// the `--sf-*` tokens injected in the layout — no raw Tailwind (brand rule).
+// the `--st-*` tokens injected in the layout — no raw Tailwind (brand rule).
 //
 // Phase 3: bound sections (product/collection scope) resolve from the assigned
 // item supplied on the context (docs/handoffs/sitebuilder-phase3-spec.md §6).
@@ -182,14 +182,14 @@ export function SectionRenderer({
         return (
           // data-section-* lets the Site Builder preview bridge resolve a click to
           // a section without each section having to become a client component.
-          // data-sf-reveal opts the wrapper into the scroll-reveal entrance
+          // data-st-reveal opts the wrapper into the scroll-reveal entrance
           // (RevealController + site.css); inert without JS / reduced motion.
           <div
             key={section.id}
             data-section-id={section.id}
             data-section-type={section.sectionType}
             data-section-height={sh && sh !== 'auto' ? sh : undefined}
-            data-sf-reveal
+            data-st-reveal
           >
             {renderSection(section, ctx, customTemplates)}
           </div>

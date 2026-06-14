@@ -20,7 +20,7 @@ const ZONE_DOMAIN = process.env.SPARX_ZONE_DOMAIN ?? 'sparx.zone';
 
 /** Per-tenant theme overrides. Every field is nullable — null means "fall
  *  back to the default theme token" (see lib/theme.ts). Mirrors the
- *  StorefrontTheme model. */
+ *  CommerceSiteTheme model. */
 export interface TenantTheme {
   colorPrimary: string | null;
   colorPrimaryForeground: string | null;
@@ -37,7 +37,7 @@ export interface TenantTheme {
 }
 
 /** Commerce-relevant storefront defaults (currency, locale, gating). */
-export interface TenantStorefront {
+export interface TenantSite {
   defaultCurrency: string;
   defaultLocale: string;
   showStockBelow: number;
@@ -64,7 +64,7 @@ export interface ResolvedTenant {
   name: string;
   settings: Record<string, unknown>;
   theme: TenantTheme | null;
-  storefront: TenantStorefront;
+  commerce: TenantSite;
   consent: TenantConsent;
   // Site-wide social links (a SITE setting on the tenant, not brand/theme —
   // docs/45 §3): an ordered { platform, url }[] the layout chrome binds
@@ -72,17 +72,21 @@ export interface ResolvedTenant {
   socials: { platform: string; url: string }[];
 }
 
-// The API also returns `businessName` (the tenant-level brand display name,
-// docs/30 §6). We collapse it into `name` at this boundary so every storefront
-// surface (header, footer, title, hero) shows the brand name with zero extra
-// wiring, falling back to the legal tenant name when brand has none set.
+// `ResolvedTenant.name` is the customer-facing SITE name, NOT the tenant's legal/
+// org name. The API returns `propertyName` (the active site, else the tenant's
+// primary — docs/49); we collapse it into `name` at this boundary so every
+// storefront surface (header, footer, title, OG, JSON-LD, hero) shows the SITE
+// name with zero per-surface wiring and never leaks the tenant's legal name. The
+// legacy `businessName`/`name` fields stay in the payload only as a last-resort
+// fallback for a storefront talking to an older api-rest that predates
+// `propertyName`.
 interface TenantApiResponse {
   success: boolean;
-  data?: ResolvedTenant & { businessName?: string | null };
+  data?: ResolvedTenant & { businessName?: string | null; propertyName?: string | null };
   error?: { code: string; message: string };
 }
 
-const DEFAULT_STOREFRONT: TenantStorefront = {
+const DEFAULT_SITE: TenantSite = {
   defaultCurrency: 'USD',
   defaultLocale: 'en-US',
   showStockBelow: 10,
@@ -234,12 +238,15 @@ export const resolveTenant = cache(async (): Promise<ResolvedTenant | null> => {
     );
     const json = (await res.json()) as TenantApiResponse;
     if (!res.ok || !json.success || !json.data) return null;
-    const { businessName, ...data } = json.data;
-    const display = businessName?.trim();
+    const { businessName, propertyName, ...data } = json.data;
+    // The customer-facing name is the SITE name (`propertyName`). Fall back to the
+    // legacy brand/legal name ONLY for an older api-rest that doesn't return it.
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `||` is intended: an empty trimmed propertyName must fall through to businessName, which `??` would not do.
+    const siteName = propertyName?.trim() || businessName?.trim();
     return {
       ...data,
-      name: display && display.length > 0 ? display : data.name,
-      storefront: data.storefront ?? DEFAULT_STOREFRONT,
+      name: siteName && siteName.length > 0 ? siteName : data.name,
+      commerce: data.commerce ?? (data as { storefront?: TenantSite }).storefront ?? DEFAULT_SITE,
       consent: data.consent ?? DEFAULT_CONSENT,
       // Defaults to [] so a storefront served by an older api-rest that doesn't
       // yet return `socials` behaves exactly as before (no links).

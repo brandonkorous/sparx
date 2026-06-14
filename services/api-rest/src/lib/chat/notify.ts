@@ -16,6 +16,7 @@ import { prisma, withTenant } from '@sparx/db';
 import type { TenantContext } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
 
+import { resolveActivePropertyName } from '../property.js';
 import { firstNonEmpty } from './types.js';
 
 const DASHBOARD_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.sparx.works';
@@ -73,10 +74,10 @@ export async function escalateToHuman(
         info.conv.visitorEmail
       ) ?? 'A visitor';
 
-    const tenant = await prisma.tenant.findUnique({
-      where: { id: ctx.tenantId },
-      select: { name: true },
-    });
+    // The SITE name the chat came in on — the tenant's primary site (docs/49). The
+    // staff notification reads "New message … on {siteName}"; never the tenant's
+    // legal/org name.
+    const siteName = await resolveActivePropertyName(ctx.tenantId, null);
 
     // owner/admin recipients. `users` is ENABLE-only RLS (not FORCE), so the
     // tenant filter scopes correctly without a tenant GUC.
@@ -111,7 +112,7 @@ export async function escalateToHuman(
                 customerName,
                 messageSnippet: snippet,
                 conversationUrl,
-                ...(tenant?.name ? { storeName: tenant.name } : {}),
+                ...(siteName ? { siteName } : {}),
               },
             })
           );

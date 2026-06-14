@@ -5,8 +5,8 @@
 // daisyUI theme-builder board): every semantic colour, every control, every
 // radius tier, depth, and type — all visible at once, themed by the tenant's
 // compiled Token Model v2 (docs/33). The compiled CSS is SCOPED to
-// `#sf-theme-preview` via buildThemeCssV2({ rootSelector }), so it styles only
-// this preview (no iframe, no leakage), and everything reads `--sf-*` through the
+// `#st-theme-preview` via buildThemeCssV2({ rootSelector }), so it styles only
+// this preview (no iframe, no leakage), and everything reads `--st-*` through the
 // co-located `sfx-` classes exactly like the storefront does — so "what you see
 // here" is "what the tokens render", spacing included.
 //
@@ -23,7 +23,7 @@ type Mode = 'light' | 'dark';
 
 // Preset/picker fonts that are Google-hosted — the only ones we can fetch for a
 // true-to-life specimen. Anything else (e.g. Geist, system fonts) falls back to
-// the --sf-font-fallback stack.
+// the --st-font-fallback stack.
 const GOOGLE_FONTS = new Set([
   'Inter',
   'Roboto',
@@ -40,7 +40,7 @@ const GOOGLE_FONTS = new Set([
   'Source Sans 3',
 ]);
 
-const FONT_LINK_ID = 'sf-preview-fonts';
+const FONT_LINK_ID = 'st-preview-fonts';
 
 // Relative bar heights for the weekly-sales sparkline/chart (last bar is "hot").
 const CHART = [34, 28, 46, 40, 58, 52, 70, 64, 82, 76, 96, 88];
@@ -68,7 +68,7 @@ function useShowcaseFonts(heading: string | null, body: string | null) {
 }
 
 export interface ThemeShowcaseProps {
-  /** Compiled, scoped theme CSS (buildThemeCssV2 with rootSelector '#sf-theme-preview'). */
+  /** Compiled, scoped theme CSS (buildThemeCssV2 with rootSelector '#st-theme-preview'). */
   css: string;
   mode: Mode;
   /** When provided, renders the Light/Dark toggle in the preview header. Omitted
@@ -119,7 +119,7 @@ export function ThemeShowcase({
       <style dangerouslySetInnerHTML={{ __html: css }} />
 
       <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-default)] shadow-sm">
-        <div id="sf-theme-preview" data-theme={mode}>
+        <div id="st-theme-preview" data-theme={mode}>
           {/* Storefront header chrome */}
           <header className="sfx-header">
             <span className="sfx-logo">
@@ -474,7 +474,7 @@ export function ThemeShowcase({
                 </div>
                 <textarea
                   className="sfx-textarea"
-                  placeholder="What's new with your store?"
+                  placeholder="What's new with your site?"
                   readOnly
                   aria-label="Post body (preview)"
                 />
@@ -563,7 +563,7 @@ function Ring({ percent }: { percent: number }) {
     <div
       className="sfx-ring"
       style={{
-        background: `conic-gradient(var(--sf-success) ${percent}%, var(--sf-base-300) 0)`,
+        background: `conic-gradient(var(--st-success) ${percent}%, var(--st-base-300) 0)`,
       }}
     >
       <span>{percent}</span>

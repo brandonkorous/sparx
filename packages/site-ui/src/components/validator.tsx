@@ -23,9 +23,9 @@ export function Validator({
   children,
 }: ValidatorProps): React.ReactElement {
   return (
-    <div className={cx('sf-validator', className)} style={style} id={id}>
+    <div className={cx('st-validator', className)} style={style} id={id}>
       {children}
-      {hint != null ? <p className="sf-validator__hint">{hint}</p> : null}
+      {hint != null ? <p className="st-validator__hint">{hint}</p> : null}
     </div>
   );
 }

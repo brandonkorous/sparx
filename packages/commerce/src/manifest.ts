@@ -48,7 +48,12 @@ export const commerceManifest: ModuleManifest = {
     { id: 'bundles', label: 'Bundles', icon: Package2, href: '/commerce/bundles' },
     { id: 'configurator', label: 'Configurator', icon: Settings2, href: '/commerce/configurator' },
     { id: 'gift-cards', label: 'Gift cards', icon: Gift, href: '/commerce/gift-cards' },
-    { id: 'store-credit', label: 'Store credit', icon: Wallet, href: '/commerce/store-credit' },
+    {
+      id: 'account-credit',
+      label: 'Account credit',
+      icon: Wallet,
+      href: '/commerce/account-credit',
+    },
     { id: 'carts', label: 'Carts', icon: ShoppingCart, href: '/commerce/carts' },
     {
       id: 'checkout-sessions',

@@ -15,7 +15,7 @@ import { Validator } from './validator';
 describe('Countdown', () => {
   it('renders only the provided units, zero-padded', () => {
     const { container } = render(<Countdown hours={9} minutes={5} />);
-    expect(container.querySelectorAll('.sf-countdown__unit')).toHaveLength(2);
+    expect(container.querySelectorAll('.st-countdown__unit')).toHaveLength(2);
     expect(screen.getByText('09')).toBeInTheDocument();
     expect(screen.getByText('05')).toBeInTheDocument();
   });
@@ -30,16 +30,16 @@ describe('Diff', () => {
         <Diff.Resizer />
       </Diff>
     );
-    expect(container.querySelector('.sf-diff__item-1')).toHaveTextContent('a');
-    expect(container.querySelector('.sf-diff__item-2')).toHaveTextContent('b');
-    expect(container.querySelector('.sf-diff__resizer')).toBeInTheDocument();
+    expect(container.querySelector('.st-diff__item-1')).toHaveTextContent('a');
+    expect(container.querySelector('.st-diff__item-2')).toHaveTextContent('b');
+    expect(container.querySelector('.st-diff__resizer')).toBeInTheDocument();
   });
 });
 
 describe('Hover3DCard', () => {
   it('wraps content in the tilt inner', () => {
     const { container } = render(<Hover3DCard>card</Hover3DCard>);
-    expect(container.querySelector('.sf-card3d__inner')).toHaveTextContent('card');
+    expect(container.querySelector('.st-card3d__inner')).toHaveTextContent('card');
   });
 });
 
@@ -53,25 +53,25 @@ describe('HoverGallery', () => {
         ]}
       />
     );
-    expect(container.querySelector('.sf-hovergallery__img')).toHaveAttribute('src', '/a.jpg');
-    expect(container.querySelectorAll('.sf-hovergallery__thumb')).toHaveLength(2);
+    expect(container.querySelector('.st-hovergallery__img')).toHaveAttribute('src', '/a.jpg');
+    expect(container.querySelectorAll('.st-hovergallery__thumb')).toHaveLength(2);
   });
 });
 
 describe('TextRotate', () => {
   it('renders the first phrase', () => {
     render(<TextRotate items={['one', 'two']} />);
-    expect(screen.getByText('one')).toHaveClass('sf-textrotate__item');
+    expect(screen.getByText('one')).toHaveClass('st-textrotate__item');
   });
 });
 
 describe('Swap', () => {
   it('renders a checkbox with on/off content', () => {
     const { container } = render(<Swap animation="rotate" on="ON" off="OFF" defaultChecked />);
-    expect(container.querySelector('.sf-swap')).toHaveClass('sf-swap--rotate');
-    expect(container.querySelector('.sf-swap__input')).toBeChecked();
-    expect(screen.getByText('ON')).toHaveClass('sf-swap__on');
-    expect(screen.getByText('OFF')).toHaveClass('sf-swap__off');
+    expect(container.querySelector('.st-swap')).toHaveClass('st-swap--rotate');
+    expect(container.querySelector('.st-swap__input')).toBeChecked();
+    expect(screen.getByText('ON')).toHaveClass('st-swap__on');
+    expect(screen.getByText('OFF')).toHaveClass('st-swap__off');
   });
 });
 
@@ -82,13 +82,13 @@ describe('FAB', () => {
         +
       </FAB>
     );
-    expect(container.querySelector('.sf-fab')).toHaveClass('sf-fab--bottom-start');
+    expect(container.querySelector('.st-fab')).toHaveClass('st-fab--bottom-start');
     expect(screen.getByRole('button', { name: 'Add' })).toHaveClass(
-      'sf-fab__main',
-      'sf-c-accent',
-      'sf-v-solid'
+      'st-fab__main',
+      'st-c-accent',
+      'st-v-solid'
     );
-    expect(container.querySelector('.sf-fab__actions')).toHaveTextContent('act');
+    expect(container.querySelector('.st-fab__actions')).toHaveTextContent('act');
   });
 });
 
@@ -101,8 +101,8 @@ describe('Calendar', () => {
 
   it('marks today and selected', () => {
     const { container } = render(<Calendar year={2026} month={5} today={2} selected={15} />);
-    expect(container.querySelector('.sf-calendar__cell--today')).toHaveTextContent('2');
-    expect(container.querySelector('.sf-calendar__cell--selected')).toHaveTextContent('15');
+    expect(container.querySelector('.st-calendar__cell--today')).toHaveTextContent('2');
+    expect(container.querySelector('.st-calendar__cell--selected')).toHaveTextContent('15');
   });
 });
 
@@ -111,7 +111,7 @@ describe('FileInput', () => {
     render(<FileInput color="success" size="lg" aria-label="upload" />);
     const el = screen.getByLabelText('upload');
     expect(el).toHaveAttribute('type', 'file');
-    expect(el).toHaveClass('sf-file', 'sf-c-success', 'sf-file--sz-lg');
+    expect(el).toHaveClass('st-file', 'st-c-success', 'st-file--sz-lg');
   });
 });
 
@@ -128,8 +128,8 @@ describe('Filter', () => {
       />
     );
     expect(screen.getByRole('radiogroup', { name: 'Filter' })).toHaveClass(
-      'sf-filter',
-      'sf-c-primary'
+      'st-filter',
+      'st-c-primary'
     );
     expect(screen.getByRole('radio', { name: 'All' })).toBeChecked();
     expect(screen.getAllByRole('radio')).toHaveLength(3);
@@ -143,7 +143,7 @@ describe('Validator', () => {
         <input required />
       </Validator>
     );
-    expect(container.querySelector('.sf-validator')).toBeInTheDocument();
-    expect(screen.getByText('Required')).toHaveClass('sf-validator__hint');
+    expect(container.querySelector('.st-validator')).toBeInTheDocument();
+    expect(screen.getByText('Required')).toHaveClass('st-validator__hint');
   });
 });

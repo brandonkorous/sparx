@@ -200,14 +200,14 @@ services. No SQL payload, no code-registry lookup by slug, no deploy.
 - **Theme → Apply.** Load `DataThemePreset`; write it into the tenant's
   `SiteConfig.draftSettings.themePreset`; the compile engine compiles from the inline
   preset (the `compileTokensFromDefaults` / `compileThemeForTenant({preset})` seam
-  added in `@sparx/site-themes`). Publish snapshots it forward; the storefront renders
+  added in `@sparx/site-themes`). Publish snapshots it forward; the site renders
   from the snapshot. **No code preset, no closed enum.**
 - **Blueprint → Install.** `parseBlueprint(artifact)` → `installBlueprint(ctx, bp)`
   (the installer already takes a `Blueprint` object). Routes resolve the manifest from
   the **storage artifact**, not a SQL column or the code registry.
 - **Component → Add.** `componentService.create({ tree, propSpec, … })` clones the
   artifact into the tenant's own component library (editable copy). Publish expands
-  `custom:*` → primitives, so the storefront only sees data.
+  `custom:*` → primitives, so the site only sees data.
 - **Integration → Connect.** Render the connector's `configSchema`, store secrets
   encrypted, register the resources as `ext.*` data sources (docs/63) and the webhooks
   on the tenant bus. The platform's HTTP client executes the connector; no submitter

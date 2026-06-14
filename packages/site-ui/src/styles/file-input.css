@@ -2,62 +2,62 @@
  * button reads the role var `--c-bg`/`--c-fg`; focus ring reads `--c-bg`. */
 
 /* Structure only — the fill + border come from the shared field treatments
- * (`.sf-fv-outline` | `.sf-fv-filled` | `.sf-fv-ghost`, in input.css), so a
+ * (`.st-fv-outline` | `.st-fv-filled` | `.st-fv-ghost`, in input.css), so a
  * FileInput shares the field `variant` axis with the other controls. */
-.sf-file {
+.st-file {
   display: block;
   width: 100%;
-  font-family: var(--sf-font-body, inherit);
+  font-family: var(--st-font-body, inherit);
   font-size: 0.9rem;
-  color: var(--sf-base-content, #23211c);
+  color: var(--st-base-content, #23211c);
   border: 1px solid transparent;
-  border-radius: var(--sf-radius-field, 0.5rem);
+  border-radius: var(--st-radius-field, 0.5rem);
   cursor: pointer;
 }
-.sf-file::file-selector-button {
+.st-file::file-selector-button {
   margin-right: 0.75rem;
   padding: 0.5rem 0.85rem;
   border: 0;
   font-weight: 600;
   cursor: pointer;
-  background: var(--c-bg, var(--sf-primary, #3f6b52));
-  color: var(--c-fg, var(--sf-primary-content, #fff));
+  background: var(--c-bg, var(--st-primary, #3f6b52));
+  color: var(--c-fg, var(--st-primary-content, #fff));
 }
-.sf-file:focus-visible {
+.st-file:focus-visible {
   outline: none;
-  border-color: var(--c-bg, var(--sf-primary, #3f6b52));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--sf-primary, #3f6b52)) 25%, transparent);
+  border-color: var(--c-bg, var(--st-primary, #3f6b52));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--st-primary, #3f6b52)) 25%, transparent);
 }
-.sf-file:disabled {
+.st-file:disabled {
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 /* Size axis. */
-.sf-file--sz-xs {
+.st-file--sz-xs {
   font-size: 0.75rem;
 }
-.sf-file--sz-xs::file-selector-button {
+.st-file--sz-xs::file-selector-button {
   padding: 0.3rem 0.6rem;
 }
-.sf-file--sz-sm {
+.st-file--sz-sm {
   font-size: 0.8rem;
 }
-.sf-file--sz-sm::file-selector-button {
+.st-file--sz-sm::file-selector-button {
   padding: 0.4rem 0.7rem;
 }
-.sf-file--sz-md::file-selector-button {
+.st-file--sz-md::file-selector-button {
   padding: 0.5rem 0.85rem;
 }
-.sf-file--sz-lg {
+.st-file--sz-lg {
   font-size: 1rem;
 }
-.sf-file--sz-lg::file-selector-button {
+.st-file--sz-lg::file-selector-button {
   padding: 0.6rem 1rem;
 }
-.sf-file--sz-xl {
+.st-file--sz-xl {
   font-size: 1.1rem;
 }
-.sf-file--sz-xl::file-selector-button {
+.st-file--sz-xl::file-selector-button {
   padding: 0.75rem 1.25rem;
 }

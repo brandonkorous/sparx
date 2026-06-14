@@ -15,7 +15,7 @@ import providerRoutes from './providers.js';
 import paymentsRoutes from './payments.js';
 import reviewRoutes from './reviews.js';
 import fitmentRoutes from './fitment.js';
-import storefrontRoutes from './storefront.js';
+import siteCommerceRoutes from './site.js';
 import commerceListRoutes from './lists.js';
 import commerceImportExportRoutes from './import.js';
 
@@ -32,7 +32,7 @@ const commerceRoutes: FastifyPluginAsync = async (app) => {
   await app.register(paymentsRoutes);
   await app.register(reviewRoutes);
   await app.register(fitmentRoutes);
-  await app.register(storefrontRoutes);
+  await app.register(siteCommerceRoutes);
   await app.register(commerceListRoutes);
   await app.register(commerceImportExportRoutes);
 };

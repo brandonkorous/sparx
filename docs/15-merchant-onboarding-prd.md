@@ -8,7 +8,7 @@
 
 ## 1. North Star: Live in Under 5 Minutes
 
-Every onboarding decision is measured against one thing: **time from signup to a live site** — a published page, a store taking orders, or a headless API a developer can call, depending on what the tenant came to do. Target: under 5 minutes.
+Every onboarding decision is measured against one thing: **time from signup to a live site** — a published page, a shop taking orders, or a headless API a developer can call, depending on what the tenant came to do. Target: under 5 minutes.
 
 Selling is one capability, never the assumption. A CMS-only publisher, a CRM-only team, and a B2B distributor are all first-class. Onboarding copy says "tenant"/"site"/"workspace" — never "merchant"/"store" — unless the tenant has turned on a selling module.
 
@@ -83,14 +83,14 @@ Names the tenant's company and its first site. Signup already ran `slugify(compa
 
 ### 4.5 — Step 5 · Payments (conditional)
 
-**Stripe Connect** — connects the tenant's _own_ account so their store can accept customer payments and receive payouts. This is entirely separate from the tenant's Sparx subscription (docs/17 §5).
+**Stripe Connect** — connects the tenant's _own_ account so their site can accept customer payments and receive payouts. This is entirely separate from the tenant's Sparx subscription (docs/17 §5).
 
 - **Conditional:** shown only if a **selling module** (Commerce / B2B / Dropship) is enabled. A content/CRM-only tenant skips this step — there is nothing to collect.
 - **Skippable;** the site still launches, and checkout simply stays off until Connect is finished.
 
 ### 4.6 — Step 6 · Launch
 
-One tap publishes the installed draft. No embedded iframe — the storefront serves only published data, so a pre-publish preview reads as empty. Instead: a confident "your site is ready" summary (what's installed) + **Publish** + **Preview in a new tab** (full-fidelity draft via preview token) + Customize / different-template.
+One tap publishes the installed draft. No embedded iframe — the site serves only published data, so a pre-publish preview reads as empty. Instead: a confident "your site is ready" summary (what's installed) + **Publish** + **Preview in a new tab** (full-fidelity draft via preview token) + Customize / different-template.
 
 ---
 
@@ -141,7 +141,7 @@ After launch the tenant lands in the dashboard. Everything deferred to protect t
 - **Modules, not plans.** No tiers. Each module is an independent, priced toggle; the tenant pays only for what's on.
 - **14-day trial, no card.** At module-select a Stripe subscription is created **trialing**, with one line item per active module and no payment method. The plan card shows the post-trial monthly.
 - **Card is never collected during onboarding** — it is captured later via a dashboard trial banner, and required only to continue past day 14. This protects the "no card to start" promise and the 5-minute path.
-- The full **trial → grace → suspend** lifecycle (including the storefront "site unavailable" overlay and the dashboard prompting ladder) lives in **docs/17 §6**.
+- The full **trial → grace → suspend** lifecycle (including the site "site unavailable" overlay and the dashboard prompting ladder) lives in **docs/17 §6**.
 
 ---
 

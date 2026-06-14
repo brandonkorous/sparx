@@ -26,16 +26,16 @@ export interface DockItemProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-dock--sz-xs',
-  sm: 'sf-dock--sz-sm',
-  md: 'sf-dock--sz-md',
-  lg: 'sf-dock--sz-lg',
-  xl: 'sf-dock--sz-xl',
+  xs: 'st-dock--sz-xs',
+  sm: 'st-dock--sz-sm',
+  md: 'st-dock--sz-md',
+  lg: 'st-dock--sz-lg',
+  xl: 'st-dock--sz-xl',
 };
 
 function DockRoot({ size = 'md', className, style, id, children }: DockProps): React.ReactElement {
   return (
-    <nav className={cx('sf-dock', SIZE_CLASS[size], className)} style={style} id={id}>
+    <nav className={cx('st-dock', SIZE_CLASS[size], className)} style={style} id={id}>
       {children}
     </nav>
   );
@@ -52,13 +52,13 @@ function DockItem({
 }: DockItemProps): React.ReactElement {
   const inner = (
     <>
-      <span className="sf-dock__icon" aria-hidden="true">
+      <span className="st-dock__icon" aria-hidden="true">
         {children}
       </span>
-      {label != null ? <span className="sf-dock__label">{label}</span> : null}
+      {label != null ? <span className="st-dock__label">{label}</span> : null}
     </>
   );
-  const itemClass = cx('sf-dock__item', active && 'sf-dock__item--active', className);
+  const itemClass = cx('st-dock__item', active && 'st-dock__item--active', className);
   return href ? (
     <a href={href} className={itemClass} style={style} aria-current={active ? 'page' : undefined}>
       {inner}

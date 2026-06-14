@@ -61,7 +61,7 @@ import { SignupForm } from './signup-form';
 // ── Class-only rendering (docs/61) ────────────────────────────────────────────
 //
 // A node's entire styling is its `class` string, compiled per tenant to the
-// `--sf-*` tokens by @sparx/surface-compile. The renderer applies it verbatim —
+// `--st-*` tokens by @sparx/surface-compile. The renderer applies it verbatim —
 // no box→CSS engine, no `.bx-*` layout classes, no inline geometry. The ONE inline
 // style that remains is a dynamic background image (a per-node / per-record URL
 // can't be a static utility class), painted from the node's bg-* props.
@@ -285,7 +285,7 @@ function renderLeaf(
       const label = (bound ? asText(value) : '') || str('label') || 'Button';
       const href = str('href');
       // Class-first (docs/47 §7): a button's look is the Surface recipe class
-      // (`sf-btn sf-c-* sf-v-* sf-btn--sz-*`). A recipe-classed button carries it on
+      // (`st-btn st-c-* st-v-* st-btn--sz-*`). A recipe-classed button carries it on
       // the element; a LEGACY button (no class, styled via the old `props.style`
       // enum) maps that enum to the SAME recipe, so it renders identically to the
       // editor canvas + a class-first button — no parallel inline-style path.
@@ -320,7 +320,7 @@ function renderLeaf(
       return <BuilderAddToCart label={str('label') || undefined} />;
     case 'Badge': {
       // Class-first like Button (docs/47 §7): the recipe class string
-      // (`sf-badge sf-c-* sf-v-* sf-badge--sz-*`) rides on the element itself, so a
+      // (`st-badge st-c-* st-v-* st-badge--sz-*`) rides on the element itself, so a
       // raw span carries it verbatim — matching the editor canvas. A nested Icon
       // renders inline after the label.
       const label = (bound ? asText(value) : '') || str('label') || 'Badge';

@@ -1,4 +1,4 @@
-// storefrontService — per-site storefront settings + theme tokens.
+// commerceSiteService — per-site storefront settings + theme tokens.
 //
 // Sitebuilder owns layout; this service owns the commerce-relevant defaults
 // (currency, channels, abandonment threshold, theme overrides).
@@ -10,13 +10,16 @@
 // currency/locale/checkout policy. RLS enforces per-tenant isolation regardless;
 // property_id is app-tier scoping within the tenant.
 
-import { UpdateStorefrontSettingsInput, UpdateStorefrontThemeInput } from '@sparx/commerce-schemas';
+import {
+  UpdateCommerceSiteSettingsInput,
+  UpdateCommerceSiteThemeInput,
+} from '@sparx/commerce-schemas';
 import { withTenant, type TxClient } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
 
-export interface StorefrontSettings {
+export interface CommerceSiteSettings {
   defaultCurrency: string;
   defaultLocale: string;
   defaultWarehouseId: string | null;
@@ -27,7 +30,7 @@ export interface StorefrontSettings {
   requireAuthForCheckout: boolean;
 }
 
-const DEFAULTS: StorefrontSettings = {
+const DEFAULTS: CommerceSiteSettings = {
   defaultCurrency: 'USD',
   defaultLocale: 'en-US',
   defaultWarehouseId: null,
@@ -39,7 +42,7 @@ const DEFAULTS: StorefrontSettings = {
 };
 
 // The raw settings row returned by Prisma (the subset every reader needs).
-type SettingsRow = NonNullable<Awaited<ReturnType<TxClient['storefrontSettings']['findUnique']>>>;
+type SettingsRow = NonNullable<Awaited<ReturnType<TxClient['commerceSiteSettings']['findUnique']>>>;
 
 /**
  * Resolve the settings row that GOVERNS a site (docs/49 Phase 6b): the site's own
@@ -54,7 +57,7 @@ export async function resolveSettingsRow(
   tenantId: string,
   propertyId: string
 ): Promise<SettingsRow | null> {
-  const own = await tx.storefrontSettings.findUnique({
+  const own = await tx.commerceSiteSettings.findUnique({
     where: { tenantId_propertyId: { tenantId, propertyId } },
   });
   if (own) return own;
@@ -63,7 +66,7 @@ export async function resolveSettingsRow(
     select: { id: true },
   });
   if (!primary || primary.id === propertyId) return null;
-  return tx.storefrontSettings.findUnique({
+  return tx.commerceSiteSettings.findUnique({
     where: { tenantId_propertyId: { tenantId, propertyId: primary.id } },
   });
 }
@@ -71,7 +74,7 @@ export async function resolveSettingsRow(
 export async function getSettings(
   ctx: ServiceContext,
   propertyId: string
-): Promise<StorefrontSettings> {
+): Promise<CommerceSiteSettings> {
   return withTenant(ctx, async (tx) => {
     const row = await resolveSettingsRow(tx, ctx.tenantId, propertyId);
     if (!row) return DEFAULTS;
@@ -95,14 +98,14 @@ export async function updateSettings(
   propertyId: string,
   rawInput: unknown
 ): Promise<void> {
-  const input = UpdateStorefrontSettingsInput.parse(rawInput);
+  const input = UpdateCommerceSiteSettingsInput.parse(rawInput);
 
   await withTenant(ctx, async (tx) => {
-    const before = await tx.storefrontSettings.findUnique({
+    const before = await tx.commerceSiteSettings.findUnique({
       where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId } },
     });
 
-    await tx.storefrontSettings.upsert({
+    await tx.commerceSiteSettings.upsert({
       where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId } },
       create: {
         tenantId: ctx.tenantId,
@@ -136,7 +139,7 @@ export async function updateSettings(
       action: before
         ? 'commerce.storefront.settings.updated'
         : 'commerce.storefront.settings.created',
-      entityType: 'StorefrontSettings',
+      entityType: 'CommerceSiteSettings',
       entityId: propertyId,
       diff: { before: before as Record<string, unknown> | null, after: input },
     });
@@ -153,7 +156,7 @@ export async function getTheme(
   propertyId: string
 ): Promise<Record<string, string | null>> {
   return withTenant(ctx, async (tx) => {
-    const row = await tx.storefrontTheme.findUnique({
+    const row = await tx.commerceSiteTheme.findUnique({
       where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId } },
     });
     const empty: Record<string, string | null> = {};
@@ -171,7 +174,7 @@ export async function updateTheme(
   propertyId: string,
   rawInput: unknown
 ): Promise<void> {
-  const input = UpdateStorefrontThemeInput.parse(rawInput);
+  const input = UpdateCommerceSiteThemeInput.parse(rawInput);
 
   // Strip undefined keys so an upsert doesn't blow away an existing
   // value the user didn't touch — the form only sends the fields that
@@ -182,7 +185,7 @@ export async function updateTheme(
   }
 
   await withTenant(ctx, async (tx) => {
-    await tx.storefrontTheme.upsert({
+    await tx.commerceSiteTheme.upsert({
       where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId } },
       create: { tenantId: ctx.tenantId, propertyId, ...cleanTokens },
       update: cleanTokens,
@@ -194,7 +197,7 @@ export async function updateTheme(
       actorId: ctx.userId ?? null,
       actorType: ctx.userId ? 'user' : 'system',
       action: 'commerce.storefront.theme.updated',
-      entityType: 'StorefrontTheme',
+      entityType: 'CommerceSiteTheme',
       entityId: propertyId,
       diff: { after: cleanTokens },
     });

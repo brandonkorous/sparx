@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { type BuilderNode } from '@sparx/builder-schemas';
 import { renderEmailTree } from '../render-email-tree';
 
-const brand = { primary: '#0EA5E9', storeName: 'Acme Diesel' };
+const brand = { primary: '#0EA5E9', siteName: 'Acme Diesel' };
 
 function node(type: string, over: Partial<BuilderNode> = {}): BuilderNode {
   return { id: `${type}-1`, type, props: {}, ...over };

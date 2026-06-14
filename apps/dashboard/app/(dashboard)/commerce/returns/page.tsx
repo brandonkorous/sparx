@@ -88,7 +88,7 @@ export default async function ReturnsPage({
           icon={<Inbox className="h-5 w-5" />}
           title="Returns"
           badge={<Badge color="module">{total} total</Badge>}
-          description="Customer- or staff-initiated returns. Approve, generate a label, receive, inspect each line, then settle as refund or store credit. Provider-driven refund settlement (Stripe, etc.) happens via the order-payments path once a TaxProvider/PaymentProvider is wired into the marketplace."
+          description="Customer- or staff-initiated returns. Approve, generate a label, receive, inspect each line, then settle as refund or account credit. Provider-driven refund settlement (Stripe, etc.) happens via the order-payments path once a TaxProvider/PaymentProvider is wired into the marketplace."
         />
 
         <ListToolbar

@@ -1,26 +1,26 @@
 /* site-ui Heading — tenant heading font, site-renderer parity sizes
- * (docs/46 §5.2). Every value resolves to a --sf-* token. */
+ * (docs/46 §5.2). Every value resolves to a --st-* token. */
 
-.sf-h {
+.st-h {
   margin: 0;
-  font-family: var(--sf-font-heading, inherit);
+  font-family: var(--st-font-heading, inherit);
   font-weight: 600;
   line-height: 1.15;
   color: inherit;
 }
-.sf-h--1 {
+.st-h--1 {
   font-size: 2.5rem;
 }
-.sf-h--2 {
+.st-h--2 {
   font-size: 1.75rem;
 }
-.sf-h--3 {
+.st-h--3 {
   font-size: 1.25rem;
 }
 /* Display/hero scale — opt-in via the Heading `size="display"` prop (docs/46).
  * A fluid, heavier headline for hero sections; additive, so existing headings
- * are unaffected. Pairs with --sf-font-heading like the level sizes above. */
-.sf-h--display {
+ * are unaffected. Pairs with --st-font-heading like the level sizes above. */
+.st-h--display {
   font-size: clamp(2.75rem, 5.5vw, 4.25rem);
   font-weight: 800;
   line-height: 1.05;

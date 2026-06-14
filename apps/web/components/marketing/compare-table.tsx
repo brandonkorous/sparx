@@ -8,7 +8,7 @@ const ROWS: {
   highlight?: boolean;
 }[] = [
   {
-    capability: 'Live store in under 5 minutes',
+    capability: 'Live site in under 5 minutes',
     cells: [
       { kind: 'check' },
       { kind: 'text', text: '~60 min' },

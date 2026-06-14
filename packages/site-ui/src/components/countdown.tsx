@@ -37,11 +37,11 @@ export function Countdown({
   if (seconds != null) units.push({ value: seconds, label: 'sec' });
 
   return (
-    <div className={cx('sf-countdown', className)} style={style} id={id}>
+    <div className={cx('st-countdown', className)} style={style} id={id}>
       {units.map((u) => (
-        <div className="sf-countdown__unit" key={u.label}>
-          <span className="sf-countdown__num">{pad(u.value)}</span>
-          {showLabels ? <span className="sf-countdown__label">{u.label}</span> : null}
+        <div className="st-countdown__unit" key={u.label}>
+          <span className="st-countdown__num">{pad(u.value)}</span>
+          {showLabels ? <span className="st-countdown__label">{u.label}</span> : null}
         </div>
       ))}
     </div>

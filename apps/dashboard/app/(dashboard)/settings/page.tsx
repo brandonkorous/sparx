@@ -21,7 +21,7 @@ export default function SettingsPage() {
       <Stack gap={8} className="py-10">
         <PageHeader
           title="Settings"
-          description="Manage your store, team, and integrations. Each section will land here as the platform comes online."
+          description="Manage your site, team, and integrations. Each section will land here as the platform comes online."
         />
 
         <Grid cols={1} mdCols={2} lgCols={3} gap={4}>

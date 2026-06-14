@@ -20,7 +20,7 @@ import { getPreviewTokenAction } from '../_lib/actions';
 import type { OnboardingModule } from '../_lib/modules';
 import type { PendingDomain, WizardBlueprint } from '../_lib/types';
 
-const STORE_ZONE = 'sparx.zone';
+const SITE_ZONE = 'sparx.zone';
 const BUILDER_HREF = '/builder/page';
 
 function usd(n: number): string {
@@ -89,7 +89,7 @@ export function StepLaunch({
   onDifferentTemplate: () => void;
 }) {
   const [token, setToken] = React.useState<string | null>(null);
-  const host = `${slug}.${STORE_ZONE}`;
+  const host = `${slug}.${SITE_ZONE}`;
 
   React.useEffect(() => {
     if (!installId) return;
@@ -203,7 +203,7 @@ export function StepLaunch({
           <ValuePoint
             icon={<Boxes className="h-4 w-4 text-[var(--module-active)]" />}
             title="One platform, not a patched-together stack"
-            body="Your storefront, content, customers, and email run on one database — nothing to integrate, sync, or keep in step. It just works together."
+            body="Your site, content, customers, and email run on one database — nothing to integrate, sync, or keep in step. It just works together."
           />
           <ValuePoint
             icon={<Receipt className="h-4 w-4 text-[var(--module-active)]" />}
@@ -375,7 +375,7 @@ function LaunchSuccess({
           </Text>
           <Button color="primary" variant="link" asChild>
             <a href={liveUrl} target="_blank" rel="noreferrer">
-              {slug}.{STORE_ZONE}
+              {slug}.{SITE_ZONE}
               <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
             </a>
           </Button>

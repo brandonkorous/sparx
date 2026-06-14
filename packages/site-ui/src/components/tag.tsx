@@ -31,11 +31,11 @@ export interface TagProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-tag--sz-xs',
-  sm: 'sf-tag--sz-sm',
-  md: 'sf-tag--sz-md',
-  lg: 'sf-tag--sz-lg',
-  xl: 'sf-tag--sz-xl',
+  xs: 'st-tag--sz-xs',
+  sm: 'st-tag--sz-sm',
+  md: 'st-tag--sz-md',
+  lg: 'st-tag--sz-lg',
+  xl: 'st-tag--sz-xl',
 };
 
 export function Tag({
@@ -52,7 +52,7 @@ export function Tag({
   return (
     <span
       className={cx(
-        'sf-tag',
+        'st-tag',
         colorClass(color),
         chipTreatmentVariants[variant],
         SIZE_CLASS[size],
@@ -62,7 +62,7 @@ export function Tag({
       id={id}
       title={title}
     >
-      {dot ? <span className="sf-tag__dot" aria-hidden="true" /> : null}
+      {dot ? <span className="st-tag__dot" aria-hidden="true" /> : null}
       {children}
     </span>
   );

@@ -537,7 +537,7 @@ export function EmailBuilderApp({
           frame={{
             kind: 'email',
             subject: active.subject,
-            senderName: senderName ?? 'Your store',
+            senderName: senderName ?? 'Your site',
             senderAddress: senderAddress ?? null,
             senderLogoUrl: senderLogoUrl ?? null,
             tenant,

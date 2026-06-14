@@ -35,7 +35,7 @@ never override). Where the Site Builder composes a **page** bound to a sample it
 composer composes a **message** bound to a sample **recipient** — the same direct-manipulation tool,
 a different render target.
 
-**Non-goal:** this build does not edit `@sparx/sitebuilder-schemas` or the storefront renderer. Email
+**Non-goal:** this build does not edit `@sparx/sitebuilder-schemas` or the site renderer. Email
 sections live in their own package (§8) to avoid colliding with the in-flight Site Builder
 workstream, structured so a future shared "section kernel" absorbs both with no rework (§12).
 
@@ -229,7 +229,7 @@ The resolver is the **only** place that reaches into other modules; renderers (�
 dataById, { brand })` composer that maps each instance → its component, wraps the result in
 `<BrandProvider>` + `<EmailLayout>`, and renders to inlined `html` + `text`. Brand is threaded
 exactly as today (§10). Renderers are email-safe (inlined styles, `<img>`/`<a>`, table layout) —
-they share **schemas** with the storefront, never **renderers**.
+they share **schemas** with the site, never **renderers**.
 
 ---
 
@@ -292,7 +292,7 @@ inspector. A template's detail page links into the full-bleed designer.
 ## 10. Brand
 
 The composer renders through the existing `resolveEmailBrand(ctx)` resolver, threaded as
-`BrandTokens` through `<BrandProvider>` (today: Commerce `StorefrontTheme` → Sparx defaults; doc 30
+`BrandTokens` through `<BrandProvider>` (today: Commerce `SiteTheme` → Sparx defaults; doc 30
 §6 Phase 1 rewires it to the tenant-level `TenantBrand`). The composer **never** introduces a
 per-email brand control — consistent with doc 30 §6.2 (consumers read brand, never override) and the
 already-removed `EmailSettings` brand-color field. "Preview as recipient" changes _data_, not brand.
@@ -331,7 +331,7 @@ extending it with bound sections (doc 30 §4.2, §11). `@sparx/email-sections` i
 extracted holding the surface-agnostic primitives — the `SectionField` descriptor types, the
 registry mechanism (`parseSectionConfig`/`defaultSectionConfig`/`isType`), the section-instance +
 body model, and the composer shell — with **web** and **email** each contributing a catalog
-(section types + `tier`/`scope`) and a renderer (storefront React vs. React Email). Until then,
+(section types + `tier`/`scope`) and a renderer (site React vs. React Email). Until then,
 the small duplication (the `SectionField` type, the registry helpers) is the deliberate cost of not
 coupling email to an in-flight redesign. No email decision in this doc blocks that extraction.
 

@@ -16,34 +16,34 @@ export function ProductQuestionsSection({
   if (!product) return null;
   const questions = ctx.productExtras?.questions ?? [];
   return (
-    <section className="sf-section">
-      <h2 className="sf-h2" style={{ marginBottom: '1rem' }}>
+    <section className="st-section">
+      <h2 className="st-h2" style={{ marginBottom: '1rem' }}>
         {config.heading}
       </h2>
       {questions.length > 0 ? (
-        <ul className="sf-qa" style={{ listStyle: 'none', padding: 0, margin: '0 0 1.25rem' }}>
+        <ul className="st-qa" style={{ listStyle: 'none', padding: 0, margin: '0 0 1.25rem' }}>
           {questions.map((q) => (
-            <li key={q.id} className="sf-qa__item">
-              <p className="sf-qa__q">
+            <li key={q.id} className="st-qa__item">
+              <p className="st-qa__q">
                 <strong>Q:</strong> {q.body}
                 {q.displayName ? (
-                  <span className="sf-muted" style={{ fontWeight: 400 }}>
+                  <span className="st-muted" style={{ fontWeight: 400 }}>
                     {' '}
                     — {q.displayName}
                   </span>
                 ) : null}
               </p>
               {q.answers.map((a) => (
-                <p key={a.id} className="sf-qa__a">
+                <p key={a.id} className="st-qa__a">
                   <strong>A:</strong> {a.body}
-                  {a.isOfficial ? <span className="sf-qa__official">Store</span> : null}
+                  {a.isOfficial ? <span className="st-qa__official">Store</span> : null}
                 </p>
               ))}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="sf-muted" style={{ marginBottom: '1.25rem' }}>
+        <p className="st-muted" style={{ marginBottom: '1.25rem' }}>
           {config.emptyText}
         </p>
       )}

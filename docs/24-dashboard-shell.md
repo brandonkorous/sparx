@@ -51,7 +51,7 @@ export const commerceManifest: ModuleManifest = {
   label: 'Commerce',
   icon: ShoppingCart,
   // URL prefix this module owns. Usually `/${id}`; explicit because not all
-  // module ids match their dashboard route (Storefront → /sitebuilder).
+  // module ids match their dashboard route (Site → /sitebuilder).
   routePrefix: '/commerce',
 
   // Sections the module owns. Rendered as the contextual panel's section list

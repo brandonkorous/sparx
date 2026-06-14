@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 // Exercises the first DB-backed page round-trip:
 //   1. /settings/general loads the seeded test tenant from Postgres
-//   2. Saving a new store name calls the server action → withTenant() → Prisma
+//   2. Saving a new site name calls the server action → withTenant() → Prisma
 //   3. The tenant row is updated; reloading the page shows the new value
 //
 // Uses the authenticated storageState from auth.setup.ts (chromium project).
@@ -13,7 +13,7 @@ test.describe('/settings/general — DB round-trip', () => {
 
     await expect(page.getByRole('heading', { name: 'General settings' })).toBeVisible();
 
-    const nameField = page.getByLabel('Store name');
+    const nameField = page.getByLabel('Site name');
     const emailField = page.getByLabel('Contact email');
 
     // Tenant data was created by auth.setup.ts with name="E2E Store".
@@ -35,7 +35,7 @@ test.describe('/settings/general — DB round-trip', () => {
     // Reload — the new value must come back from the DB, not just stay in
     // the form's local state.
     await page.reload();
-    await expect(page.getByLabel('Store name')).toHaveValue(newName);
+    await expect(page.getByLabel('Site name')).toHaveValue(newName);
   });
 
   test('rejects an invalid email', async ({ page }) => {

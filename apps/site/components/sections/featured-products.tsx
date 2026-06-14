@@ -58,13 +58,13 @@ export async function FeaturedProductsSection({
   if (products.length === 0) return null;
 
   return (
-    <section className="sf-container sf-section">
+    <section className="st-container st-section">
       {config.heading ? (
-        <div className="sf-section__head">
-          <h2 className="sf-h2">{config.heading}</h2>
+        <div className="st-section__head">
+          <h2 className="st-h2">{config.heading}</h2>
         </div>
       ) : null}
-      <div className="sf-grid" data-cols={config.columns}>
+      <div className="st-grid" data-cols={config.columns}>
         {products.map((p) => (
           <ProductCard
             key={p.id}

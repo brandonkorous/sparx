@@ -28,11 +28,11 @@ export interface RatingProps {
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-rating--sz-xs',
-  sm: 'sf-rating--sz-sm',
-  md: 'sf-rating--sz-md',
-  lg: 'sf-rating--sz-lg',
-  xl: 'sf-rating--sz-xl',
+  xs: 'st-rating--sz-xs',
+  sm: 'st-rating--sz-sm',
+  md: 'st-rating--sz-md',
+  lg: 'st-rating--sz-lg',
+  xl: 'st-rating--sz-xl',
 };
 
 export function Rating({
@@ -47,7 +47,7 @@ export function Rating({
   style,
   id,
 }: RatingProps): React.ReactElement {
-  const classes = cx('sf-rating', colorClass(color), SIZE_CLASS[size], className);
+  const classes = cx('st-rating', colorClass(color), SIZE_CLASS[size], className);
 
   if (readOnly) {
     return (
@@ -62,7 +62,7 @@ export function Rating({
           <span
             key={i}
             aria-hidden="true"
-            className={cx('sf-rating__star', i < value && 'sf-rating__star--on')}
+            className={cx('st-rating__star', i < value && 'st-rating__star--on')}
           />
         ))}
       </span>
@@ -75,21 +75,21 @@ export function Rating({
     <span
       role="radiogroup"
       aria-label={label ?? 'Rating'}
-      className={cx(classes, 'sf-rating--interactive')}
+      className={cx(classes, 'st-rating--interactive')}
       style={style}
       id={id}
     >
       {Array.from({ length: count }, (_, i) => count - i).map((star) => (
-        <label key={star} className="sf-rating__item">
+        <label key={star} className="st-rating__item">
           <input
             type="radio"
             name={name}
             value={star}
             defaultChecked={value === star}
-            className="sf-rating__input"
+            className="st-rating__input"
             aria-label={`${star} star${star > 1 ? 's' : ''}`}
           />
-          <span className="sf-rating__star" aria-hidden="true" />
+          <span className="st-rating__star" aria-hidden="true" />
         </label>
       ))}
     </span>

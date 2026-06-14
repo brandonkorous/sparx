@@ -1,15 +1,15 @@
 /* Surface Filter — single-select chip group (docs/46 §5.2). The checked chip reads
  * the role var `--c-bg`/`--c-fg`; radios are visually hidden. */
 
-.sf-filter {
+.st-filter {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
-.sf-filter__chip {
+.st-filter__chip {
   cursor: pointer;
 }
-.sf-filter__input {
+.st-filter__input {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -19,24 +19,24 @@
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
-.sf-filter__chip-label {
+.st-filter__chip-label {
   display: inline-flex;
   align-items: center;
   padding: 0.35rem 0.8rem;
   font-size: 0.85rem;
-  border: 1px solid var(--sf-border, #e3dfd2);
+  border: 1px solid var(--st-border, #e3dfd2);
   border-radius: 999px;
   transition:
     background 0.15s ease,
     color 0.15s ease,
     border-color 0.15s ease;
 }
-.sf-filter__input:checked + .sf-filter__chip-label {
-  background: var(--c-bg, var(--sf-primary, #3f6b52));
-  color: var(--c-fg, var(--sf-primary-content, #fff));
+.st-filter__input:checked + .st-filter__chip-label {
+  background: var(--c-bg, var(--st-primary, #3f6b52));
+  color: var(--c-fg, var(--st-primary-content, #fff));
   border-color: transparent;
 }
-.sf-filter__input:focus-visible + .sf-filter__chip-label {
-  outline: 2px solid var(--c-bg, var(--sf-primary, #3f6b52));
+.st-filter__input:focus-visible + .st-filter__chip-label {
+  outline: 2px solid var(--c-bg, var(--st-primary, #3f6b52));
   outline-offset: 2px;
 }

@@ -26,15 +26,15 @@ export function ImageBannerSection({
 
   const textBlock = (
     <>
-      {config.eyebrow ? <p className="sf-sb-banner__eyebrow">{config.eyebrow}</p> : null}
-      {config.heading ? <h2 className="sf-sb-banner__title">{config.heading}</h2> : null}
-      {config.subheading ? <p className="sf-sb-banner__sub">{config.subheading}</p> : null}
+      {config.eyebrow ? <p className="st-sb-banner__eyebrow">{config.eyebrow}</p> : null}
+      {config.heading ? <h2 className="st-sb-banner__title">{config.heading}</h2> : null}
+      {config.subheading ? <p className="st-sb-banner__sub">{config.subheading}</p> : null}
     </>
   );
 
   const banner = (
     <div
-      className="sf-sb-banner"
+      className="st-sb-banner"
       data-height={config.height}
       data-align={config.align}
       data-valign={config.verticalAlign}
@@ -51,15 +51,15 @@ export function ImageBannerSection({
       }
     >
       {img ? (
-        <div className="sf-sb-banner__scrim" style={{ opacity: overlay }} aria-hidden="true" />
+        <div className="st-sb-banner__scrim" style={{ opacity: overlay }} aria-hidden="true" />
       ) : null}
       {hasText ? (
-        <div className="sf-sb-banner__inner">
+        <div className="st-sb-banner__inner">
           {isSplit ? (
             <>
-              <div className="sf-sb-banner__group sf-sb-banner__group--top">{textBlock}</div>
+              <div className="st-sb-banner__group st-sb-banner__group--top">{textBlock}</div>
               {ctas.length ? (
-                <div className="sf-sb-banner__group sf-sb-banner__group--bottom">
+                <div className="st-sb-banner__group st-sb-banner__group--bottom">
                   <SbCtaRow ctas={ctas} />
                 </div>
               ) : null}
@@ -76,8 +76,8 @@ export function ImageBannerSection({
   );
 
   return config.fullBleed ? (
-    <section className="sf-section sf-section--flush">{banner}</section>
+    <section className="st-section st-section--flush">{banner}</section>
   ) : (
-    <section className="sf-container sf-section">{banner}</section>
+    <section className="st-container st-section">{banner}</section>
   );
 }

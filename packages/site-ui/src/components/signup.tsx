@@ -56,17 +56,17 @@ export function Signup({
 }: SignupProps): React.ReactElement {
   const fieldId = React.useId();
   return (
-    <form className={cx('sf-signup', className)} onSubmit={onSubmit} noValidate>
+    <form className={cx('st-signup', className)} onSubmit={onSubmit} noValidate>
       {heading ? <Heading level="h3">{heading}</Heading> : null}
       {description ? <Text variant="body">{description}</Text> : null}
       {done ? (
-        <p className="sf-signup__status sf-signup__status--ok" role="status">
+        <p className="st-signup__status st-signup__status--ok" role="status">
           {message ?? 'Thanks — you’re subscribed.'}
         </p>
       ) : (
         <>
-          <div className="sf-signup__row">
-            <label className="sf-signup__label" htmlFor={fieldId}>
+          <div className="st-signup__row">
+            <label className="st-signup__label" htmlFor={fieldId}>
               Email address
             </label>
             <Input
@@ -80,14 +80,14 @@ export function Signup({
               color={color}
               size={size}
               invalid={error}
-              className="sf-signup__input"
+              className="st-signup__input"
             />
             <Button type="submit" color={color} size={size}>
               {pending ? 'Subscribing…' : cta}
             </Button>
           </div>
           {error && message ? (
-            <p className="sf-signup__status sf-signup__status--error" role="alert">
+            <p className="st-signup__status st-signup__status--error" role="alert">
               {message}
             </p>
           ) : null}

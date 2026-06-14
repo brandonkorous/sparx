@@ -249,7 +249,7 @@ const SCENARIOS: {
   featured?: boolean;
 }[] = [
   {
-    title: 'A growing store',
+    title: 'A growing site',
     sub: 'Builder · Commerce · CMS · CRM · Email',
     separate: '$1,002/mo',
     sparx: '$186/mo',

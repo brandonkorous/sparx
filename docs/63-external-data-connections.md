@@ -6,7 +6,7 @@ Last Updated: 2026-06-08
 
 > **Status: _Planned — capstone._** This is intentionally the **last** feature on
 > the roadmap, not something to sneak in mid-flight. It depends on the Builder
-> composition model (docs/40), the binding schema (docs/43), the storefront render
+> composition model (docs/40), the binding schema (docs/43), the site render
 > path (docs/44), and the tenant-component model (docs/53) all being settled. This
 > doc is the complete design so the build, when it comes, is mechanical.
 
@@ -397,7 +397,7 @@ GET  /v1/public/connections/resolve?tenant=<slug>&connection=<slug>[&params...]
 POST /v1/connections/:slug/refresh           inbound webhook (HMAC), cache-invalidate
 ```
 
-The resolve endpoint is the **only** thing the storefront/island ever calls for
+The resolve endpoint is the **only** thing the site/island ever calls for
 external data; it enforces module gating, runs the proxy + cache, and returns
 shaped rows. It accepts a **bounded, declared** param allowlist (from
 `config_json`) — never arbitrary query passthrough.

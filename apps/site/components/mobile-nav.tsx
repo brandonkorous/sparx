@@ -1,7 +1,7 @@
 'use client';
 
 // Mobile navigation — hamburger that opens a left slide-in panel. Only shown
-// on narrow viewports (the desktop .sf-nav is hidden by media query). Closes
+// on narrow viewports (the desktop .st-nav is hidden by media query). Closes
 // on route selection, Escape, and backdrop click.
 
 import Link from 'next/link';
@@ -29,7 +29,7 @@ export function MobileNav({ nav, brand }: { nav: NavItem[]; brand: string }) {
     <>
       <button
         type="button"
-        className="sf-iconbtn sf-nav__toggle"
+        className="st-iconbtn st-nav__toggle"
         aria-label="Open menu"
         aria-expanded={open}
         onClick={() => setOpen(true)}
@@ -49,19 +49,19 @@ export function MobileNav({ nav, brand }: { nav: NavItem[]; brand: string }) {
       </button>
 
       {open ? (
-        <div className="sf-drawer-backdrop" role="presentation">
+        <div className="st-drawer-backdrop" role="presentation">
           <button
             type="button"
             aria-label="Close mobile navigation"
-            className="sf-drawer-backdrop__close"
+            className="st-drawer-backdrop__close"
             onClick={() => setOpen(false)}
           />
-          <nav className="sf-drawer-panel sf-drawer-panel--left" aria-label="Mobile navigation">
-            <div className="sf-drawer-panel__head">
-              <span className="sf-header__brand">{brand}</span>
+          <nav className="st-drawer-panel st-drawer-panel--left" aria-label="Mobile navigation">
+            <div className="st-drawer-panel__head">
+              <span className="st-header__brand">{brand}</span>
               <button
                 type="button"
-                className="sf-iconbtn"
+                className="st-iconbtn"
                 aria-label="Close menu"
                 onClick={() => setOpen(false)}
               >
@@ -79,7 +79,7 @@ export function MobileNav({ nav, brand }: { nav: NavItem[]; brand: string }) {
                 </svg>
               </button>
             </div>
-            <div className="sf-drawer-panel__links">
+            <div className="st-drawer-panel__links">
               {nav.map((item) => (
                 <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
                   {item.label}

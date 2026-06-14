@@ -226,7 +226,7 @@ export async function create(
         tenantId: ctx.tenantId,
         customerId: args.customerId ?? null,
         subject: args.subject ?? null,
-        source: args.source ?? 'storefront',
+        source: args.source ?? 'site',
         visitorName: args.visitorName ?? null,
         visitorEmail: args.visitorEmail ?? null,
         visitorToken: args.visitorToken ?? null,

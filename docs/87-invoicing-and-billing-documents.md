@@ -239,7 +239,7 @@ earns its keep; financial data is not.
   document data (`{{ document.number }}`, line table, totals, party) via the same data-binding model
   emails use. A built-in default tree ships seeded; the builder edits a copy. Rendering a document =
   resolve its data against the active template tree → HTML → PDF; the snapshot freezes the result.
-- A tokenized **customer-facing view** (approve / pay online) is a later slice, reusing the storefront
+- A tokenized **customer-facing view** (approve / pay online) is a later slice, reusing the site
   customer-auth surfaces.
 
 ---
@@ -325,7 +325,7 @@ into their own surfaces.
 **Pricing — $19/mo standalone, bundled free with Commerce or B2B** (decided 2026-06-12):
 
 - A tenant with **neither** Commerce nor B2B pays **$19/mo** for invoicing — the service-business
-  case (contractor, repair shop, salon, consultant) that quotes and bills without a storefront.
+  case (contractor, repair shop, salon, consultant) that quotes and bills without a site.
 - **Commerce or B2B activates the full invoicing surface for $0.** This is the `@sparx/modules`
   **`BUNDLED_FREE`** graph (`invoicing ⇐ [b2b, commerce]`): `isModuleEnabled('invoicing')` is derived
   true whenever a provider is on, so the existing `requireInvoicingModule` gate "just passes" for those
@@ -411,7 +411,7 @@ deploy small."
   v1 uses an optional staff `User` ref + free-text. Hooks to B2B service scheduling (docs/64) later.
 - **Recurring / subscription invoices** — reuse the subscriptions engine ([09](09-ecommerce-engine-prd.md)),
   not modeled here.
-- **Customer-facing approve/pay portal** — Phase 5+ (storefront customer-auth).
+- **Customer-facing approve/pay portal** — Phase 5+ (site customer-auth).
 - **Multi-currency per document**, **partial-line refunds**, **time-tracking → labor lines** — later.
 - **Inventory decrement** when a `catalog`/`part` line is added (reserve/consume stock) — integrate
   with [inventory](09-ecommerce-engine-prd.md) in a follow-up; v1 records the line without a stock move.

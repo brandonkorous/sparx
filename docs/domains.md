@@ -16,13 +16,13 @@ Current registrations (all in Cloudflare DNS):
 | `mcp.sparx.works`    | MCP server (AI integration)                  |
 | `status.sparx.works` | Status page                                  |
 
-## Tenant storefronts — sparx.zone
+## Tenant sites — sparx.zone
 
 Shopify-style split: tenant content lives on a different registrable domain from the platform brand. Keeps reputation, cookies, and SEO cleanly isolated.
 
 | Hostname               | Purpose                                             |
 | ---------------------- | --------------------------------------------------- |
-| `*.sparx.zone`         | Tenant subdomain storefronts (`acme.sparx.zone`)    |
+| `*.sparx.zone`         | Tenant subdomain sites (`acme.sparx.zone`)          |
 | `customers.sparx.zone` | CNAME target for tenant custom domains              |
 | `sparx.zone`           | Apex 301s to sparx.works (not a destination itself) |
 

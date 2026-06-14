@@ -510,7 +510,7 @@ type Subscription {
 ## 11. SDK
 
 ```bash
-npm install @wizeworks/storefront-sdk    # Storefront / headless
+npm install @wizeworks/site-sdk    # Site / headless
 npm install @wizeworks/admin-sdk        # Server-side admin operations
 ```
 

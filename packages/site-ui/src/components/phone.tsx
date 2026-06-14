@@ -13,9 +13,9 @@ export interface PhoneProps {
 
 export function Phone({ className, style, id, children }: PhoneProps): React.ReactElement {
   return (
-    <div className={cx('sf-mockup-phone', className)} style={style} id={id}>
-      <span className="sf-mockup-phone__camera" aria-hidden="true" />
-      <div className="sf-mockup-phone__display">{children}</div>
+    <div className={cx('st-mockup-phone', className)} style={style} id={id}>
+      <span className="st-mockup-phone__camera" aria-hidden="true" />
+      <div className="st-mockup-phone__display">{children}</div>
     </div>
   );
 }

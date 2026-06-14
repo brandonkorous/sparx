@@ -6,7 +6,7 @@ Last Updated: 2026-06-04
 
 > Discoverability is a **platform capability**, not a per-app chore. It spans two audiences —
 > traditional search crawlers and the new wave of answer/generative engines (AIO) — and two
-> surfaces — the Sparx **marketing site** (`apps/web`) and every **tenant storefront**
+> surfaces — the Sparx **marketing site** (`apps/web`) and every **tenant site**
 > (`apps/site`). For tenants, SEO/AIO is a _product feature they control_ through the Builder and
 > CMS, the same way [auth](16-auth-security.md), [billing](17-billing-subscriptions.md), and
 > [consent](42-legal-and-consent.md) each became first-class. This doc records the model and the
@@ -17,7 +17,7 @@ Last Updated: 2026-06-04
 ## 1. Why this exists
 
 A 2026-06-03 audit graded discoverability across three pillars (traditional SEO, AIO, modern web
-best practices) for both app classes. Traditional SEO was already strong on tenant storefronts
+best practices) for both app classes. Traditional SEO was already strong on tenant sites
 (per-page metadata, Product + BreadcrumbList JSON-LD, per-tenant `robots.txt`, `next/image`); the
 sharp gaps were **sitemap completeness**, **redirect enforcement**, **Builder-page SEO**, and a
 total **absence of an AIO layer** — conspicuous for a platform whose positioning is _"AI builds it,
@@ -32,7 +32,7 @@ complete machinery by default.
 ### 2.1 Sitemap completeness — `services/api-rest/src/routes/v1/sitemap.ts`
 
 The per-tenant `sitemap.xml` previously listed only CMS `content_entries`. It now covers everything
-the storefront serves, all read in one RLS-scoped round-trip:
+the site serves, all read in one RLS-scoped round-trip:
 
 - the home page (`/`);
 - published CMS entries (unchanged — via the content type's `urlPattern`);
@@ -46,7 +46,7 @@ advertises an empty commerce surface. Final URL set is de-duplicated by path (a 
 CMS entry can't double-list the same path) and capped at `COMMERCE_URL_LIMIT` (20k) as a memory
 guard — a catalog past that needs a paginated sitemap index, which is future work.
 
-### 2.2 Redirect enforcement — storefront 404 boundary
+### 2.2 Redirect enforcement — site 404 boundary
 
 Tenants could create 301/302 redirects in the dashboard, but **nothing applied them** — a renamed
 slug just 404'd, burning the link equity the redirect existed to preserve.
@@ -61,13 +61,13 @@ slug just 404'd, burning the link equity the redirect existed to preserve.
 
 **Decision — 308/307, not 301/302.** Next's App Router issues `permanentRedirect()` (308) /
 `redirect()` (307). We map stored `301|308 → permanent`, `302|307 → temporary`. Google treats 308 ≡
-301 and 307 ≡ 302, and for GET storefront navigations the method-preservation difference is moot —
+301 and 307 ≡ 302, and for GET site navigations the method-preservation difference is moot —
 so the idiomatic framework call is correct. The lookup is cached and tagged `redirect:<tenant>`;
 new redirects take effect within the cache TTL (revalidation worker wiring is future work).
 
 ### 2.3 Builder-page SEO — schema → inspector → render
 
-Builder singleton pages (the primary authoring surface, [44](44-builder-storefront-render.md)) emitted
+Builder singleton pages (the primary authoring surface, [44](44-builder-site-render.md)) emitted
 only `name · tenant`. They now carry real SEO, end to end:
 
 - **Schema** (`51-builder.prisma`, migration `20260624000000_builder_page_seo`): five additive,
@@ -88,7 +88,7 @@ only `name · tenant`. They now carry real SEO, end to end:
 **Decision — OG as a URL, not an asset id.** Products/collections store `og_image_id` (a media
 UUID). Builder pages store `og_image` as a **full URL**, matching the Builder's URL-first image
 convention (cf. `box.backgroundImage`) and avoiding a media-picker dependency in the inspector. The
-storefront passes it straight to `openGraph.images`. Collection _templates_ keep SEO null — they
+site passes it straight to `openGraph.images`. Collection _templates_ keep SEO null — they
 render per-record and inherit SEO from the bound product/entry.
 
 ### 2.4 AIO layer — `llms.txt`, AI-crawler policy, FAQ schema
@@ -98,18 +98,18 @@ positioning) rather than the common default of blocking AI crawlers.
 
 - **`llms.txt`** ([llmstxt.org](https://llmstxt.org)): the marketing site serves a curated,
   link-first Markdown index built from the canonical `MODULES` source (`apps/web/app/llms.txt`); each
-  tenant storefront serves a store-identity index pointing at its full sitemap
+  tenant site serves a store-identity index pointing at its full sitemap
   (`apps/site/app/llms.txt`).
 - **AI-crawler policy**: both `robots` surfaces name the major AI agents (GPTBot, OAI-SearchBot,
   ClaudeBot, anthropic-ai, PerplexityBot, Google-Extended, Applebot-Extended, CCBot, Amazonbot,
-  Meta-ExternalAgent, …) as explicitly welcome, and the storefront `robots.txt` points to `llms.txt`.
+  Meta-ExternalAgent, …) as explicitly welcome, and the site `robots.txt` points to `llms.txt`.
   The named groups are also the lever to _tighten_ later if ever needed.
 - **FAQPage JSON-LD**: the marketing FAQ (`apps/web/components/marketing/faq.tsx`) emits FAQPage
   structured data built from the same items it renders, so markup and visible prose never diverge.
 
 ## 3. Per-tenant control surface
 
-| Capability                                 | Where the tenant controls it             | Storefront effect                            |
+| Capability                                 | Where the tenant controls it             | Site effect                                  |
 | ------------------------------------------ | ---------------------------------------- | -------------------------------------------- |
 | Page SEO (title/desc/canonical/OG/noindex) | Builder → page settings → SEO panel      | `generateMetadata` on `/{slug}`              |
 | Product/collection SEO                     | Commerce admin (existing `seo_*` fields) | PDP/PLP `generateMetadata` + Product JSON-LD |
@@ -122,7 +122,7 @@ positioning) rather than the common default of blocking AI crawlers.
 
 A second pass landed the lower-risk web-best-practice gaps:
 
-- **Structured-data breadth** — storefront layout now emits **Organization** (logo + social `sameAs`)
+- **Structured-data breadth** — site layout now emits **Organization** (logo + social `sameAs`)
   and **WebSite + SearchAction** (`/search?q=`); the marketing layout emits **WebSite**; CMS blog
   posts emit **BlogPosting / Article** (`apps/site/components/article-json-ld.tsx`, wired around both
   the builder-collection and bare-`PageView` render paths). (FAQPage landed in §2.4; **BreadcrumbList**
@@ -137,17 +137,17 @@ A second pass landed the lower-risk web-best-practice gaps:
   theme-agnostic, with a `console.error` hook where a tracker attaches later. **Sentry intentionally
   skipped** for now (no DSN/dependency).
 - **Core Web Vitals** — `useReportWebVitals` → PostHog (`web_vitals` event) on marketing + dashboard.
-  Storefront CWV waits on its consent-gated analytics path ([42](42-legal-and-consent.md)).
+  Site CWV waits on its consent-gated analytics path ([42](42-legal-and-consent.md)).
 - **Marketing sitemap completeness** — `apps/web/app/sitemap.ts` now lists the substantial static
   routes (`/security`, `/legal/{privacy,terms,dpa,aup}`) alongside the home + module pages; legal
   `lastModified` tracks the document revision from `@sparx/legal`. `ComingSoon` stubs stay excluded
   on purpose (thin placeholders → soft-404 risk).
 - **Tenant social cards (dynamic OG fallback)** — a tenant-branded Satori card so every shareable
-  storefront URL has a real social image even with no asset of its own. `apps/site/app/api/og`
+  site URL has a real social image even with no asset of its own. `apps/site/app/api/og`
   is a pure renderer (title/eyebrow/brand/accent as query params — no tenant lookup, no data
   fetch); `lib/og.ts → ogImageUrl()` builds the URL. **Real images always win**: the precedence is
   product photo → collection hero → author-set `og_image` → generated card. Wired into the PDP,
-  collection, catch-all (Builder + CMS), and the site-level default (home). The storefront layout
+  collection, catch-all (Builder + CMS), and the site-level default (home). The site layout
   now sets `metadataBase` from the forwarded host so the relative card URL resolves to an absolute
   one on the correct tenant origin.
 
@@ -160,7 +160,7 @@ remaining follow-ups live with the feature in §7.6.)
 - **Markdown content endpoints for LLM ingest** (`/<path>.md`) — serve a clean Markdown twin of every
   public page so AI crawlers ingest structure without HTML noise.
   _Needs:_ a doc→Markdown serializer in `@sparx/cms-editor` (today only `renderDocToHtml` exists) + a
-  `.md` route on the storefront. _Trigger:_ the largest remaining AIO lever — do next when AIO is
+  `.md` route on the site. _Trigger:_ the largest remaining AIO lever — do next when AIO is
   prioritized.
 - **CSP + Permissions-Policy (Report-Only first)** — the deferred half of the security headers (§4).
   _Needs:_ a report sink (`report-to`/`report-uri` endpoint) + per-app allow-list tuning around
@@ -182,7 +182,7 @@ remaining follow-ups live with the feature in §7.6.)
   bare/`absolute` titles in lockstep. Revisit only if the page count grows enough to make the
   boilerplate a real maintenance cost.
 - **Redirect cache purge** on `redirect.added`/`removed` (today: TTL-bounded), and the broader
-  Pub/Sub → storefront revalidation worker.
+  Pub/Sub → site revalidation worker.
 
 ## 6. Conventions for future code
 

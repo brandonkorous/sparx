@@ -16,21 +16,21 @@ export interface ChatNotificationEmailProps {
   /** Deep link to the conversation in the dashboard inbox. */
   conversationUrl: string;
   /** Store name for the greeting. */
-  storeName?: string;
+  siteName?: string;
 }
 
 export function ChatNotificationEmail({
   customerName,
   messageSnippet,
   conversationUrl,
-  storeName,
+  siteName,
 }: ChatNotificationEmailProps) {
   return (
     <EmailLayout preview={`New chat message from ${customerName}`}>
       <Section>
         <EmailHeading>New chat message</EmailHeading>
         <EmailParagraph>
-          {customerName} started a conversation{storeName ? ` on ${storeName}` : ''} and is waiting
+          {customerName} started a conversation{siteName ? ` on ${siteName}` : ''} and is waiting
           for a reply.
         </EmailParagraph>
         <EmailCallout tone="info">{messageSnippet}</EmailCallout>

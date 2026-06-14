@@ -34,8 +34,8 @@ function BreadcrumbRoot({
   children,
 }: BreadcrumbProps): React.ReactElement {
   return (
-    <nav aria-label={label} className={cx('sf-breadcrumb', className)} style={style} id={id}>
-      <ol className="sf-breadcrumb__list">{children}</ol>
+    <nav aria-label={label} className={cx('st-breadcrumb', className)} style={style} id={id}>
+      <ol className="st-breadcrumb__list">{children}</ol>
     </nav>
   );
 }
@@ -49,13 +49,13 @@ function BreadcrumbItem({
   children,
 }: BreadcrumbItemProps): React.ReactElement {
   return (
-    <li className={cx('sf-breadcrumb__item', className)} style={style}>
+    <li className={cx('st-breadcrumb__item', className)} style={style}>
       {href && !current ? (
-        <a href={href} className="sf-breadcrumb__link">
+        <a href={href} className="st-breadcrumb__link">
           {children}
         </a>
       ) : (
-        <span className="sf-breadcrumb__current" aria-current={current ? 'page' : undefined}>
+        <span className="st-breadcrumb__current" aria-current={current ? 'page' : undefined}>
           {children}
         </span>
       )}

@@ -25,6 +25,7 @@ import {
   deleteDomain,
   deleteSite,
   makeSitePrimary,
+  renameSite,
   setActiveSite,
   setDomainCanonical,
   updateBrandOverride,
@@ -111,6 +112,13 @@ export function SitesManager({
     run(() => updateBrandOverride(fd), 'Brand override saved.');
   };
 
+  const onSaveName = (e: React.FormEvent<HTMLFormElement>, propertyId: string) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    fd.set('propertyId', propertyId);
+    run(() => renameSite(fd), 'Site name saved.');
+  };
+
   const onDeleteSite = async (property: Property) => {
     const domainCount = (domainsByProperty.get(property.id) ?? []).length;
     const ok = await confirm({
@@ -191,6 +199,30 @@ export function SitesManager({
 
             <CardContent>
               <Stack gap={4}>
+                {/* Site name — the customer-facing name (Property.name, docs/49).
+                    NOT the tenant's legal/org name (Settings → General). */}
+                <form
+                  onSubmit={(e) => onSaveName(e, property.id)}
+                  className="flex flex-col gap-2 sm:flex-row sm:items-end"
+                >
+                  <div className="flex-1">
+                    <Label htmlFor={`sn-${property.id}`}>Site name</Label>
+                    <Input
+                      id={`sn-${property.id}`}
+                      name="name"
+                      defaultValue={property.name}
+                      required
+                      maxLength={255}
+                    />
+                    <Text size="xs" variant="muted">
+                      Shown to customers in this site&apos;s title, header, and emails.
+                    </Text>
+                  </div>
+                  <Button type="submit" color="primary" variant="soft" disabled={pending}>
+                    Save
+                  </Button>
+                </form>
+
                 {/* Domains */}
                 <Stack gap={2}>
                   {propDomains.length === 0 && (
@@ -309,8 +341,8 @@ export function SitesManager({
                     className="mt-3 flex flex-col gap-4"
                   >
                     <Text size="sm" variant="muted">
-                      Override this site&apos;s identity, typography, and surface colours. Leave any
-                      field blank to inherit from your tenant brand or theme.
+                      Override this site&apos;s colours and typography. Leave any field blank to
+                      inherit from your tenant brand or theme. (The site name lives above.)
                     </Text>
 
                     {/* Identity */}
@@ -318,16 +350,7 @@ export function SitesManager({
                       <p className="mb-2 text-xs font-medium tracking-wide text-[var(--color-text-muted)] uppercase">
                         Identity
                       </p>
-                      <div className="grid gap-3 sm:grid-cols-3">
-                        <div>
-                          <Label htmlFor={`bn-${property.id}`}>Display name</Label>
-                          <Input
-                            id={`bn-${property.id}`}
-                            name="businessName"
-                            defaultValue={property.brandOverride?.businessName ?? ''}
-                            placeholder="Wholesale Co."
-                          />
-                        </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
                         <div>
                           <Label htmlFor={`cp-${property.id}`}>Primary colour</Label>
                           <Input

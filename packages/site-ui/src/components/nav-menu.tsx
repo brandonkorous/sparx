@@ -26,15 +26,15 @@ export interface NavMenuProps {
 }
 
 export function NavMenu({ items, orientation = 'row', className, style }: NavMenuProps) {
-  const modifier = orientation === 'stack' ? 'sf-nav--stack' : 'sf-nav--row';
+  const modifier = orientation === 'stack' ? 'st-nav--stack' : 'st-nav--row';
   return (
-    <nav className={cx('sf-nav', modifier, className)} style={style}>
+    <nav className={cx('st-nav', modifier, className)} style={style}>
       {items.map((item, i) =>
         item.label ? (
           <a
             key={`${i}-${item.label}`}
             href={item.url || '#'}
-            className="sf-nav__item"
+            className="st-nav__item"
             {...(item.openInNewTab ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
           >
             {item.label}

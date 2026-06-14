@@ -1,40 +1,40 @@
 /* Surface Button — base layout + size scale, authored with @apply over Tailwind
  * utilities (docs/47 §5.3). Color × treatment come from the shared role-var recipe
- * (recipes.css `.sf-c-*` / `.sf-v-*`); this file owns the button's shape and its
+ * (recipes.css `.st-c-*` / `.st-v-*`); this file owns the button's shape and its
  * size scale. The handful of values that are tenant tokens with a fallback (field
  * radius, body font) or a derived color (the focus ring reads the active --c-bg)
  * stay raw declarations — @apply can't express a `var(--x, fallback)`. */
 
-.sf-btn {
+.st-btn {
   @apply inline-flex cursor-pointer items-center justify-center gap-2 border-0 text-center leading-tight font-semibold no-underline transition duration-150 ease-in-out;
-  border-radius: var(--sf-radius-field, 0.5rem);
-  font-family: var(--sf-font-body, inherit);
+  border-radius: var(--st-radius-field, 0.5rem);
+  font-family: var(--st-font-body, inherit);
 }
 
-.sf-btn:focus-visible {
+.st-btn:focus-visible {
   @apply outline-none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--sf-primary, #3f6b52)) 40%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--st-primary, #3f6b52)) 40%, transparent);
 }
 
-.sf-btn:disabled,
-.sf-btn[aria-disabled='true'] {
+.st-btn:disabled,
+.st-btn[aria-disabled='true'] {
   @apply cursor-not-allowed opacity-50;
 }
 
 /* Size axis — what the shared xs…xl steps mean for a button. `md` keeps the
  * site CTA proportions. */
-.sf-btn--sz-xs {
+.st-btn--sz-xs {
   @apply px-3 py-1.5 text-xs;
 }
-.sf-btn--sz-sm {
+.st-btn--sz-sm {
   @apply px-4 py-2 text-sm;
 }
-.sf-btn--sz-md {
+.st-btn--sz-md {
   @apply px-6 py-3 text-base;
 }
-.sf-btn--sz-lg {
+.st-btn--sz-lg {
   @apply px-8 py-[0.85rem] text-lg;
 }
-.sf-btn--sz-xl {
+.st-btn--sz-xl {
   @apply px-10 py-4 text-xl;
 }

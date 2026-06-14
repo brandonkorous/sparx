@@ -12,20 +12,20 @@ describe('Badge', () => {
   it('renders the default neutral/solid/md badge', () => {
     render(<Badge>New</Badge>);
     const el = screen.getByText('New');
-    expect(el).toHaveClass('sf-badge', 'sf-c-neutral', 'sf-v-solid', 'sf-badge--sz-md');
+    expect(el).toHaveClass('st-badge', 'st-c-neutral', 'st-v-solid', 'st-badge--sz-md');
   });
 
   it('maps color × chip treatment × size', () => {
     const colors: ColorKey[] = ['primary', 'success', 'danger', 'highlight'];
     for (const color of colors) {
       const { unmount } = render(<Badge color={color}>{color}</Badge>);
-      expect(screen.getByText(color)).toHaveClass(`sf-c-${color}`);
+      expect(screen.getByText(color)).toHaveClass(`st-c-${color}`);
       unmount();
     }
     const variants: ChipTreatmentKey[] = ['solid', 'soft', 'outline', 'dashed'];
     for (const variant of variants) {
       const { unmount } = render(<Badge variant={variant}>{variant}</Badge>);
-      expect(screen.getByText(variant)).toHaveClass(`sf-v-${variant}`);
+      expect(screen.getByText(variant)).toHaveClass(`st-v-${variant}`);
       unmount();
     }
   });
@@ -34,10 +34,10 @@ describe('Badge', () => {
 describe('Tag', () => {
   it('defaults to neutral/soft and renders an optional dot', () => {
     const { container, rerender } = render(<Tag>Filter</Tag>);
-    expect(screen.getByText('Filter')).toHaveClass('sf-tag', 'sf-c-neutral', 'sf-v-soft');
-    expect(container.querySelector('.sf-tag__dot')).toBeNull();
+    expect(screen.getByText('Filter')).toHaveClass('st-tag', 'st-c-neutral', 'st-v-soft');
+    expect(container.querySelector('.st-tag__dot')).toBeNull();
     rerender(<Tag dot>Filter</Tag>);
-    expect(container.querySelector('.sf-tag__dot')).toBeInTheDocument();
+    expect(container.querySelector('.st-tag__dot')).toBeInTheDocument();
   });
 });
 
@@ -45,17 +45,17 @@ describe('Alert', () => {
   it('renders an alert role with color × treatment and the vertical modifier', () => {
     const { container, rerender } = render(<Alert>Heads up</Alert>);
     const el = screen.getByRole('alert');
-    expect(el).toHaveClass('sf-alert', 'sf-c-info', 'sf-v-soft');
-    expect(el).not.toHaveClass('sf-alert--vertical');
+    expect(el).toHaveClass('st-alert', 'st-c-info', 'st-v-soft');
+    expect(el).not.toHaveClass('st-alert--vertical');
     rerender(
       <Alert color="warning" variant="outline" vertical>
         x
       </Alert>
     );
-    expect(container.querySelector('.sf-alert')).toHaveClass(
-      'sf-c-warning',
-      'sf-v-outline',
-      'sf-alert--vertical'
+    expect(container.querySelector('.st-alert')).toHaveClass(
+      'st-c-warning',
+      'st-v-outline',
+      'st-alert--vertical'
     );
   });
 
@@ -69,8 +69,8 @@ describe('Alert', () => {
         </Alert.Body>
       </Alert>
     );
-    expect(screen.getByText('Saved')).toHaveClass('sf-alert__title');
-    expect(screen.getByText('Done.')).toHaveClass('sf-alert__body');
+    expect(screen.getByText('Saved')).toHaveClass('st-alert__title');
+    expect(screen.getByText('Done.')).toHaveClass('st-alert__body');
 
     const { container } = render(
       <div>
@@ -79,9 +79,9 @@ describe('Alert', () => {
         <AlertBody>B</AlertBody>
       </div>
     );
-    expect(container.querySelector('.sf-alert__icon')).toBeInTheDocument();
-    expect(container.querySelector('.sf-alert__title')).toBeInTheDocument();
-    expect(container.querySelector('.sf-alert__body')).toBeInTheDocument();
+    expect(container.querySelector('.st-alert__icon')).toBeInTheDocument();
+    expect(container.querySelector('.st-alert__title')).toBeInTheDocument();
+    expect(container.querySelector('.st-alert__body')).toBeInTheDocument();
   });
 });
 
@@ -92,9 +92,9 @@ describe('Callout', () => {
         Body copy
       </Callout>
     );
-    expect(container.querySelector('.sf-callout')).toHaveClass('sf-c-success', 'sf-v-outline');
-    expect(screen.getByText('Tip')).toHaveClass('sf-callout__title');
-    expect(screen.getByText('Body copy')).toHaveClass('sf-callout__body');
+    expect(container.querySelector('.st-callout')).toHaveClass('st-c-success', 'st-v-outline');
+    expect(screen.getByText('Tip')).toHaveClass('st-callout__title');
+    expect(screen.getByText('Body copy')).toHaveClass('st-callout__body');
   });
 });
 
@@ -111,34 +111,34 @@ describe('Avatar', () => {
     const img = screen.getByRole('img', { name: 'Ada Lovelace' });
     expect(img.tagName).toBe('IMG');
     expect(img).toHaveAttribute('src', '/me.jpg');
-    expect(img.parentElement).toHaveClass('sf-avatar', 'sf-avatar--sz-lg', 'sf-avatar--rounded');
+    expect(img.parentElement).toHaveClass('st-avatar', 'st-avatar--sz-lg', 'st-avatar--rounded');
   });
 
   it('renders an initials placeholder with the color role var when there is no image', () => {
     render(<Avatar name="Ada Lovelace" color="primary" />);
     const ph = screen.getByRole('img', { name: 'Ada Lovelace' });
     expect(ph.tagName).toBe('SPAN');
-    expect(ph).toHaveClass('sf-avatar--placeholder', 'sf-c-primary');
-    expect(screen.getByText('AL')).toHaveClass('sf-avatar__initials');
+    expect(ph).toHaveClass('st-avatar--placeholder', 'st-c-primary');
+    expect(screen.getByText('AL')).toHaveClass('st-avatar__initials');
   });
 
   it('renders a presence status dot', () => {
     const { container } = render(<Avatar name="Ada" status="online" />);
-    expect(container.querySelector('.sf-avatar__status--online')).toBeInTheDocument();
+    expect(container.querySelector('.st-avatar__status--online')).toBeInTheDocument();
   });
 });
 
 describe('Label', () => {
   it('renders a <label> wired to a control with an optional required marker', () => {
     const { container, rerender } = render(<Label htmlFor="email">Email</Label>);
-    const label = container.querySelector<HTMLLabelElement>('label.sf-label')!;
+    const label = container.querySelector<HTMLLabelElement>('label.st-label')!;
     expect(label).toHaveAttribute('for', 'email');
-    expect(container.querySelector('.sf-label__required')).toBeNull();
+    expect(container.querySelector('.st-label__required')).toBeNull();
     rerender(
       <Label htmlFor="email" required>
         Email
       </Label>
     );
-    expect(container.querySelector('.sf-label__required')).toBeInTheDocument();
+    expect(container.querySelector('.st-label__required')).toBeInTheDocument();
   });
 });

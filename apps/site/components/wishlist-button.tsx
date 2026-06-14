@@ -34,7 +34,7 @@ export function WishlistButton({
   return (
     <button
       type="button"
-      className={['sf-wishbtn', saved && 'is-saved', className].filter(Boolean).join(' ')}
+      className={['st-wishbtn', saved && 'is-saved', className].filter(Boolean).join(' ')}
       aria-pressed={saved}
       aria-label={saved ? 'Remove from wishlist' : 'Save to wishlist'}
       title={saved ? 'Saved' : 'Save to wishlist'}

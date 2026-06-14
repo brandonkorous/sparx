@@ -1,29 +1,29 @@
 /* Surface Countdown — labelled digit groups (docs/46 §5.2). Tabular figures keep
  * the digits from jittering. */
 
-.sf-countdown {
+.st-countdown {
   display: inline-flex;
   gap: 1rem;
 }
-.sf-countdown__unit {
+.st-countdown__unit {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   gap: 0.15rem;
 }
-.sf-countdown__num {
-  font-family: var(--sf-font-heading, inherit);
+.st-countdown__num {
+  font-family: var(--st-font-heading, inherit);
   font-size: 2rem;
   font-weight: 600;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
-.sf-countdown__label {
+.st-countdown__label {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(
-    --sf-text-muted,
-    color-mix(in oklab, var(--sf-base-content, #23211c) 55%, transparent)
+    --st-text-muted,
+    color-mix(in oklab, var(--st-base-content, #23211c) 55%, transparent)
   );
 }

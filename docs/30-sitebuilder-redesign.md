@@ -10,7 +10,7 @@
 
 The Site Builder is the platform's centerpiece — the first surface a tenant touches and
 the lens through which they judge everything else. The first build ([docs/29-sitebuilder-architecture.md](29-sitebuilder-architecture.md))
-shipped a working backend (theme engine, section schemas, draft→publish→rollback, storefront
+shipped a working backend (theme engine, section schemas, draft→publish→rollback, site
 rendering) behind a dashboard that is assembled as **six disconnected admin screens** rather
 than one creative tool — and whose core loop (change something → see it) is broken end to end.
 
@@ -30,14 +30,14 @@ wins** and doc 29 is amended in the phase that lands the change.
 A live walkthrough of `app.sparx.works` (tenant: E2E Shop) plus a full read of the module
 confirmed seven issues, each traced to a concrete cause:
 
-| #   | Symptom                        | Root cause                                                                                                                                                                                               |
-| --- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | No work-area padding           | `sitebuilder/layout.tsx` wraps children in `py-10` only — vertical padding, no horizontal gutter, no container.                                                                                          |
-| 2   | Layout feels sparse/unbalanced | Fixed two-column grids with no empty-state composition; the "site" is never shown as a whole.                                                                                                            |
-| 3·6 | Flow is fragmented             | Six sibling routes, each a standalone page-load with its own data fetch + preview. No shared canvas.                                                                                                     |
-| 4   | Weak functionality             | `@dnd-kit` installed but unused (reorder is ▲▼ buttons); image fields are raw id text boxes; no duplicate/undo/inline edit.                                                                              |
-| 5   | Rough UX                       | Section editor is a modal that **covers** the preview; two Light/Dark toggles in the customizer; self-contradicting copy.                                                                                |
-| 7   | **"It doesn't apply"**         | Preview iframe hardcodes `?sparxPreview=1`; the storefront expects a JWT preview token and **falls back to the published snapshot** on an invalid token, so draft edits never appear. **Verified live.** |
+| #   | Symptom                        | Root cause                                                                                                                                                                                         |
+| --- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | No work-area padding           | `sitebuilder/layout.tsx` wraps children in `py-10` only — vertical padding, no horizontal gutter, no container.                                                                                    |
+| 2   | Layout feels sparse/unbalanced | Fixed two-column grids with no empty-state composition; the "site" is never shown as a whole.                                                                                                      |
+| 3·6 | Flow is fragmented             | Six sibling routes, each a standalone page-load with its own data fetch + preview. No shared canvas.                                                                                               |
+| 4   | Weak functionality             | `@dnd-kit` installed but unused (reorder is ▲▼ buttons); image fields are raw id text boxes; no duplicate/undo/inline edit.                                                                        |
+| 5   | Rough UX                       | Section editor is a modal that **covers** the preview; two Light/Dark toggles in the customizer; self-contradicting copy.                                                                          |
+| 7   | **"It doesn't apply"**         | Preview iframe hardcodes `?sparxPreview=1`; the site expects a JWT preview token and **falls back to the published snapshot** on an invalid token, so draft edits never appear. **Verified live.** |
 
 ---
 
@@ -68,7 +68,7 @@ And two expansions of mission:
 
 A single full-bleed workspace at `/sitebuilder`, composed of four regions. All chrome is built
 from `@sparx/ui` components (CVA + Radix + tokens per [docs/23-frontend-component-architecture.md](23-frontend-component-architecture.md));
-no raw Tailwind appears in feature code, and the workspace sits inside `<ModuleProvider module="storefront">`.
+no raw Tailwind appears in feature code, and the workspace sits inside `<ModuleProvider module="site">`.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -76,7 +76,7 @@ no raw Tailwind appears in feature code, and the workspace sits inside `<ModuleP
 ├───────────────┬──────────────────────────────────────┬───────────────┤
 │  STRUCTURE    │                                       │  INSPECTOR    │
 │  RAIL         │            LIVE CANVAS                │  (contextual) │
-│               │   (draft storefront, real preview     │               │
+│               │   (draft site, real preview     │               │
 │  ▸ Brand      │    token, device toggles, click a     │  settings for │
 │  ▸ Theme      │    section to select it)              │  the selected │
 │  ▸ Layouts    │                                       │  section /    │
@@ -90,7 +90,7 @@ no raw Tailwind appears in feature code, and the workspace sits inside `<ModuleP
 └───────────────┴──────────────────────────────────────┴───────────────┘
 ```
 
-- **Canvas (center).** The tenant's storefront in draft mode, one persistent iframe (replacing
+- **Canvas (center).** The tenant's site in draft mode, one persistent iframe (replacing
   the two separate preview harnesses). Device toggles (desktop/tablet/mobile) and a light/dark
   switch live once, here. Clicking a section in the canvas selects it; the inspector opens for it.
 - **Structure rail (left).** What you're editing: **Brand** (the tenant identity, §6), the active
@@ -131,7 +131,7 @@ types allowed inside it:
 
 | Scope                    | Renders                                   | v1                                  |
 | ------------------------ | ----------------------------------------- | ----------------------------------- |
-| `home`                   | The storefront homepage                   | ✅                                  |
+| `home`                   | The site homepage                         | ✅                                  |
 | `product`                | A product detail page, bound to a product | ✅                                  |
 | `collection`             | A collection/category page, bound to one  | ✅                                  |
 | `cms-page`               | A CMS `page`-typed entry                  | ✅                                  |
@@ -141,7 +141,7 @@ types allowed inside it:
 **Email is a natural future scope.** The composer the Email module is prototyping is this same
 model with a different render target: its "static / dynamic / personalized" blocks are exactly
 static vs bound, with the **recipient** as the assigned item. Folding email authoring in as an
-`email` scope would give the platform one design surface — and one brand — across storefront
+`email` scope would give the platform one design surface — and one brand — across site
 _and_ email, retiring the separate email builder. The seam: Site Builder owns the **authoring**
 (composition + bindings + brand/theme); the Email module keeps all email **functionality** —
 sending, automations, recipients, deliverability, assignment of template→automation, and
@@ -165,7 +165,7 @@ What makes a layout a _template_ and not a one-off page is that it mixes two kin
 
 Bound section types are **scope-restricted** — a product gallery cannot be dropped into a `home`
 layout. The current hardcoded PDP/PLP become the **seeded default templates** for their scopes,
-expressed as bound-section compositions, so existing storefronts render identically on day one.
+expressed as bound-section compositions, so existing sites render identically on day one.
 
 **Two senses of "bound" — and both are total in the real build.** _Style_ is always bound:
 every section, static or bound, draws its colors, type, spacing and radii from the brand + theme
@@ -198,7 +198,7 @@ of its records uses which layout.**
 | The **default** layout per scope / content type  | **Site Builder**   | A default mapping (scope/type → `templateId`). "Products default → Layout A"; "Article type → Layout C". |
 | A **specific** per-item or per-group override    | **Commerce / CMS** | The override pointer lives on the record the module already owns (a product, a collection, an entry).    |
 
-**Resolution at render** (storefront site-resolver): `item/group override (module-owned) → type
+**Resolution at render** (site site-resolver): `item/group override (module-owned) → type
 default (Site-Builder-owned) → seeded scope default → safety fallback`.
 
 This satisfies both motivating stories: _"certain products have a special layout that highlights
@@ -207,7 +207,7 @@ them"_ (per-item override, Commerce-owned) and _"articles look different than bl
 
 **Boundary preservation (binding).** Per doc 29 §2 and [docs/02-architecture-overview.md](02-architecture-overview.md),
 Commerce/CMS must not grow Site-Builder-specific schema. The **default mapping table is
-Site-Builder-owned**, and consuming modules never read it directly — the storefront's
+Site-Builder-owned**, and consuming modules never read it directly — the site's
 site-resolver performs the join at render. The **per-item override** is the one pointer that
 lives on the consuming record, owned and written by that module's API. (Open question 13.1:
 finalize whether the override is a nullable FK on the entity vs. a small module-owned
@@ -219,7 +219,7 @@ assignment table — to be settled when §11 is specced.)
 
 Brand is the tenant's **identity** — business name, logo (light/dark), favicon, core color
 palette, typography, tagline, social links. It is **vital and cross-cutting**: it must read
-identically on the storefront, in transactional + marketing email, the customer account area,
+identically on the site, in transactional + marketing email, the customer account area,
 invoices/PDFs, the B2B portal, and anywhere else the tenant is represented. It is **not** a
 Site Builder concept, a Commerce concept, or an Email concept.
 
@@ -233,13 +233,13 @@ Brand is **owned at the tenant/platform level, above every module.** Three force
 - **Onboarding.** Brand (business name → logo → colors) is captured in the 5-minute onboarding
   flow ([docs/15-merchant-onboarding-prd.md](15-merchant-onboarding-prd.md)), before the tenant
   touches any module, and outlives every one of them.
-- **It already fragments.** Brand is spread across Commerce `StorefrontTheme` (`logoMediaId`,
+- **It already fragments.** Brand is spread across Commerce `SiteTheme` (`logoMediaId`,
   `logoDarkMediaId`, `faviconMediaId` + color tokens) and a per-module
-  `EmailSettings.brandingOverride`. `resolveEmailBrand` cascades Commerce `StorefrontTheme` →
+  `EmailSettings.brandingOverride`. `resolveEmailBrand` cascades Commerce `SiteTheme` →
   the email override → Sparx defaults; the intended Site-Builder-snapshot source is documented
   but `not yet exposed — falls through`. There is no single record a tenant sets, the email
   override is precisely the kind of per-module brand redefinition §6.2 forbids, and a tenant
-  without a storefront has no shared identity for email. A tenant-level brand removes the
+  without a site has no shared identity for email. A tenant-level brand removes the
   fragmentation and the override.
 
 ### 6.2 Consumers read, never override (binding)
@@ -248,25 +248,25 @@ Brand is **read-only to every consumer.** CMS, Commerce, Email, the customer are
 may override the brand.** They reference it; they never redefine it. This is the rule that makes
 brand a _source of truth_ rather than another layer of defaults, and it is hard.
 
-- The storefront **theme** _applies_ brand as its foundation and may add **presentation** tokens
+- The site **theme** _applies_ brand as its foundation and may add **presentation** tokens
   on top (layout, spacing, surfaces, dark-mode variants) — but it cannot redefine the brand's
   identity tokens (logo, brand/primary color, typography, business name, favicon). Brand color =
   brand color, everywhere.
 - Email's `brandingOverride` is **removed**; `resolveEmailBrand` reads the tenant brand directly.
   (Email-specific, non-identity settings such as the CAN-SPAM footer stay in the email config —
   they are not brand.)
-- Commerce's `StorefrontTheme` logo/favicon/palette **source from** brand rather than being
+- Commerce's `SiteTheme` logo/favicon/palette **source from** brand rather than being
   independently editable identity.
 
 ### 6.3 Presence — primary, but editing a tenant record
 
 Brand is surfaced **prominently** — set in onboarding and editable as a first-class **Brand**
 rail entry in the Site Builder editor, plus a platform/settings Brand area for tenants without
-the Storefront module. Every one of these surfaces _edits the single tenant brand record_; none
+the Site module. Every one of these surfaces _edits the single tenant brand record_; none
 owns it (the same pattern as navigation in §8 — a consuming surface edits content it doesn't own).
 
-The storefront theme then resolves as: **brand (identity foundation, read-only) → storefront
-presentation tokens (theme) → tenant presentation overrides → write-through to `StorefrontTheme`.**
+The site theme then resolves as: **brand (identity foundation, read-only) → site
+presentation tokens (theme) → tenant presentation overrides → write-through to `SiteTheme`.**
 
 ---
 
@@ -275,7 +275,7 @@ presentation tokens (theme) → tenant presentation overrides → write-through 
 This is the single highest-leverage fix and lands first.
 
 **Root cause.** `preview-frame.tsx` and `customizer.tsx` set the iframe src to
-`?sparxPreview=1`. The storefront treats `sparxPreview` as a **JWT preview token**, forwards it
+`?sparxPreview=1`. The site treats `sparxPreview` as a **JWT preview token**, forwards it
 as `Authorization: Preview <jwt>`, and on an invalid/expired token **deliberately retries
 without preview**, returning the _published_ snapshot ([apps/site/lib/content.ts](../apps/site/lib/content.ts)).
 `1` is never a valid token, so the preview always renders published. Section edits save
@@ -287,7 +287,7 @@ preview button). The Site Builder must do the same:
 
 1. Mint a tenant/scope/page-scoped preview-token JWT server-side and put it in the canvas iframe
    src (replacing the literal `1`).
-2. The storefront's draft path already honors a valid token — no storefront change required for
+2. The site's draft path already honors a valid token — no site change required for
    structural content; it begins returning the **draft** composition.
 3. Keep the `postMessage` channel for instantaneous token (color/font) feedback; structural and
    content edits reflect on save via the now-valid draft fetch.
@@ -307,17 +307,17 @@ architecture — **content**. The corrected split:
   and which menu fills each (`SiteLayoutBlock.navigationMenuId`).
 
 The seam already exists (the `navigationMenuId` FK), and the runtime is already aligned: the
-storefront resolves menus live via `/v1/public/content/navigation/:id` and the SB version
+site resolves menus live via `/v1/public/content/navigation/:id` and the SB version
 snapshot stores only the menu _reference_. So the flip is a **forward refactor with no data
-migration and no storefront change**.
+migration and no site change**.
 
 **Scope of the move**
 
-| Moves → CMS (`/cms`, `@sparx/cms-editor`)                                                       | Stays → Site Builder                                               | Unchanged (module-neutral)                                              |
-| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| `NavigationMenu` + `NavigationItem` models (schema file → CMS domain, `@@map` unchanged)        | `SiteLayoutBlock` model                                            | Tables `navigation_menus` / `navigation_items` + RLS                    |
-| `navigation/[location]/page.tsx`, `menu-editor.tsx`, `menu-detail.tsx`, `menu-actions.ts`, list | `layout-editor.tsx` (slots), `upsertLayout` action + slot MCP tool | `PUT /v1/navigation/menus/:location` (admin)                            |
-| "Navigation" manifest section + `menu` entityType → `cmsManifest`                               | publish snapshot of slot→menu refs                                 | `GET /v1/public/content/navigation/:id`, storefront `getNavigationMenu` |
+| Moves → CMS (`/cms`, `@sparx/cms-editor`)                                                       | Stays → Site Builder                                               | Unchanged (module-neutral)                                        |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| `NavigationMenu` + `NavigationItem` models (schema file → CMS domain, `@@map` unchanged)        | `SiteLayoutBlock` model                                            | Tables `navigation_menus` / `navigation_items` + RLS              |
+| `navigation/[location]/page.tsx`, `menu-editor.tsx`, `menu-detail.tsx`, `menu-actions.ts`, list | `layout-editor.tsx` (slots), `upsertLayout` action + slot MCP tool | `PUT /v1/navigation/menus/:location` (admin)                      |
+| "Navigation" manifest section + `menu` entityType → `cmsManifest`                               | publish snapshot of slot→menu refs                                 | `GET /v1/public/content/navigation/:id`, site `getNavigationMenu` |
 
 **Steps:** relocate the two models to `16-cms-navigation.prisma` (verify `prisma migrate diff`
 is empty — no migration); move the four editor files to `/cms/navigation` and repoint
@@ -337,7 +337,7 @@ the correct outcome — nav links should not require a full site re-publish.
 
 Unchanged in mechanism, generalized in subject. The doc-29 draft → publish → schedule →
 rollback pipeline is reused: a **layout** is just another versioned, scoped snapshot keyed by
-`(scope, templateId)` instead of `pageKey = "home"`. The write-through to `StorefrontTheme` and
+`(scope, templateId)` instead of `pageKey = "home"`. The write-through to `SiteTheme` and
 the scheduled-publish tick are untouched. Version history and rollback in the status-bar menu
 operate over the same `SiteVersion` table.
 
@@ -365,8 +365,8 @@ generate it, per the established pattern):
 - **`TenantBrand`** (new, tenant-level, **not** module-gated) — business name, logo light/dark +
   favicon (media FKs), core color palette, typography, tagline. (Social links are NOT brand — they
   are a site setting on `Tenant.socials`, edited in `/settings/general`; docs/45 §3.) The single source of
-  truth (§6). Migration **consolidates** Commerce `StorefrontTheme.{logoMediaId, logoDarkMediaId,
-faviconMediaId}` + Email `brandingOverride` into it; `resolveEmailBrand`, the storefront theme
+  truth (§6). Migration **consolidates** Commerce `SiteTheme.{logoMediaId, logoDarkMediaId,
+faviconMediaId}` + Email `brandingOverride` into it; `resolveEmailBrand`, the site theme
   resolver, and the SB theme foundation all read it (no consumer override). Exact home (dedicated
   table vs. `tenants.settings.brand`) — see open question 13.4.
 - **`SiteTemplate`** (new) — a reusable layout. `scope` (`home | product | collection | cms-page
@@ -374,7 +374,7 @@ faviconMediaId}` + Email `brandingOverride` into it; `resolveEmailBrand`, the st
   Sections for a template live in `SiteSection` re-keyed from `pageKey` to a `templateId` +
   scope (migration generalizes the existing `pageKey` column).
 - **Default mapping** (new, Site-Builder-owned) — `(scope, contentTypeId?) → templateId`. The
-  per-scope/per-type default. Read by the storefront resolver only.
+  per-scope/per-type default. Read by the site resolver only.
 - **Per-item override** (module-owned) — see §5 / open question 13.1.
 - **Bound section schemas** (new, in `@sparx/sitebuilder-schemas`) — Zod schemas + registry
   entries for the product/collection bound section family (§4.2), scope-restricted.
@@ -406,11 +406,11 @@ gallery. Existing static-section composition runs inside it. _Outcome: one creat
 the hub._
 
 **Phase 3 — Layouts as templates.** The `SiteTemplate` model + scope (§4.1); the bound section
-family for `product` and `collection` (§4.2); sample-item preview binding (§4.3); the storefront
+family for `product` and `collection` (§4.2); sample-item preview binding (§4.3); the site
 switches PDP/PLP from hardcoded React to template-driven rendering with the seeded defaults as
-fallback. _Outcome: the storefront becomes fully composable._
+fallback. _Outcome: the site becomes fully composable._
 
-**Phase 4 — Assignment.** The default mapping + per-item override (§5); the storefront
+**Phase 4 — Assignment.** The default mapping + per-item override (§5); the site
 resolver's cascade; the "Layout: [template ▾]" control surfaced in Commerce/CMS item editors.
 _Outcome: design once, apply to many._
 
@@ -436,6 +436,6 @@ must honor.
 ## 14. Non-goals
 
 - Replacing the theme engine, section-schema registry, or publish/version backend — all reused.
-- A from-scratch storefront renderer — bound sections plug into the existing
+- A from-scratch site renderer — bound sections plug into the existing
   `section-renderer.tsx` switch.
 - Custom-domain self-serve, Stripe Connect OAuth, dropship import (flagged follow-ons in doc 29 §9).

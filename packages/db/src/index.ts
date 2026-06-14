@@ -96,8 +96,8 @@ export type {
   DiscountUsage,
   GiftCard,
   GiftCardTransaction,
-  StoreCredit,
-  StoreCreditTransaction,
+  AccountCredit,
+  AccountCreditTransaction,
   // Commerce — bundles + configurator
   Bundle,
   BundleComponent,
@@ -135,8 +135,8 @@ export type {
   TaxExemption,
   ProviderInstallation,
   ProviderWebhookEvent,
-  StorefrontSettings,
-  StorefrontTheme,
+  CommerceSiteSettings,
+  CommerceSiteTheme,
   // Sitebuilder
   SiteConfig,
   SiteVersion,

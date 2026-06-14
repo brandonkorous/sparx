@@ -1,4 +1,4 @@
-// Commerce — pricing, discounts, gift cards, store credit.
+// Commerce — pricing, discounts, gift cards, account credit.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -204,11 +204,11 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     return ok(await discountService.adjustGiftCard(toCommerceContext(request), request.body));
   });
 
-  // Store credit
-  app.post('/v1/commerce/store-credit/grant', async (request) => {
+  // Account credit
+  app.post('/v1/commerce/account-credit/grant', async (request) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
-    return ok(await discountService.grantStoreCredit(toCommerceContext(request), request.body));
+    return ok(await discountService.grantAccountCredit(toCommerceContext(request), request.body));
   });
 };
 

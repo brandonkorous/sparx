@@ -23,9 +23,9 @@ export interface FaqProps {
 export function FAQ({ items, className }: FaqProps): React.ReactElement | null {
   if (items.length === 0) return null;
   return (
-    <div className={cx('sf-faq', className)}>
+    <div className={cx('st-faq', className)}>
       {items.map((it, i) => (
-        <div key={i} className="sf-faq__item">
+        <div key={i} className="st-faq__item">
           <Heading level="h3">{it.question}</Heading>
           {it.answer ? <Text variant="body">{it.answer}</Text> : null}
         </div>

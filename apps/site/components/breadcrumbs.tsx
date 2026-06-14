@@ -21,7 +21,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
   };
 
   return (
-    <nav className="sf-crumbs" aria-label="Breadcrumb">
+    <nav className="st-crumbs" aria-label="Breadcrumb">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

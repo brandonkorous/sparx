@@ -16,16 +16,16 @@ export interface BrowserProps {
 
 export function Browser({ url, className, style, id, children }: BrowserProps): React.ReactElement {
   return (
-    <div className={cx('sf-mockup-browser', className)} style={style} id={id}>
-      <div className="sf-mockup-browser__toolbar">
-        <span className="sf-mockup__dots" aria-hidden="true">
+    <div className={cx('st-mockup-browser', className)} style={style} id={id}>
+      <div className="st-mockup-browser__toolbar">
+        <span className="st-mockup__dots" aria-hidden="true">
           <span />
           <span />
           <span />
         </span>
-        {url != null ? <span className="sf-mockup-browser__url">{url}</span> : null}
+        {url != null ? <span className="st-mockup-browser__url">{url}</span> : null}
       </div>
-      <div className="sf-mockup-browser__content">{children}</div>
+      <div className="st-mockup-browser__content">{children}</div>
     </div>
   );
 }

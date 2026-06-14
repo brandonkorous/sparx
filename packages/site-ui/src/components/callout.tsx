@@ -39,18 +39,18 @@ export function Callout({
 }: CalloutProps): React.ReactElement {
   return (
     <div
-      className={cx('sf-callout', colorClass(color), chipTreatmentVariants[variant], className)}
+      className={cx('st-callout', colorClass(color), chipTreatmentVariants[variant], className)}
       style={style}
       id={id}
     >
       {icon ? (
-        <span className="sf-callout__icon" aria-hidden="true">
+        <span className="st-callout__icon" aria-hidden="true">
           {icon}
         </span>
       ) : null}
-      <div className="sf-callout__content">
-        {title ? <div className="sf-callout__title">{title}</div> : null}
-        <div className="sf-callout__body">{children}</div>
+      <div className="st-callout__content">
+        {title ? <div className="st-callout__title">{title}</div> : null}
+        <div className="st-callout__body">{children}</div>
       </div>
     </div>
   );

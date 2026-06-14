@@ -98,7 +98,7 @@ export const ChangeSubscriptionAddressInput = z.object({
 export type ChangeSubscriptionAddressInput = z.infer<typeof ChangeSubscriptionAddressInput>;
 
 // Dunning policy — how the platform retries a failed renewal charge.
-// Stored per-tenant on `commerce_storefront_settings` and reused by every
+// Stored per-tenant on `commerce_site_settings` and reused by every
 // subscription unless overridden.
 export const DunningPolicy = z.object({
   maxAttempts: z.number().int().min(1).max(10).default(4),

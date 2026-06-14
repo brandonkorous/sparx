@@ -29,21 +29,21 @@ concurrently invites migration-ordering and merge conflicts.
 
 **Unblock condition:** the DB churn settles (no other agent editing `customers`/`orders` schema or
 adding migrations), then build straight through. Attribution is **not retroactive** (docs/80 §1) —
-every storefront visit that lands before the capture layer exists is unattributable forever, so this
+every site visit that lands before the capture layer exists is unattributable forever, so this
 should ship soon after the tree is calm, capture-layer first.
 
 ## 2. Reuse — do NOT rebuild these
 
-| Asset                                                                                        | Where                                              | Use for L-TEN                                                 |
-| -------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------- |
-| `captureTouch` / `classify` / `resolveFirstTouch` / `resolveLastTouch` / `serializeSnapshot` | `@sparx/attribution` (`packages/attribution/src/`) | Pure, domain-agnostic — call directly from storefront capture |
-| UTM taxonomy + `AttributionSnapshot` / `Channel` / `AttributionModel` types                  | `@sparx/attribution`                               | Universal                                                     |
-| `gateTracker({ category, load })`                                                            | `apps/site/lib/consent.ts`                         | Consent-gate the storefront capture (analytics category)      |
-| `getVisitorId()` (mints/returns `sparx_consent` UUID)                                        | `apps/site/lib/consent.ts`                         | Visitor identity for stitching touches → customer → order     |
-| `ConsentRecord.visitorId → customerId` edges                                                 | `packages/db/prisma/schema/53-consent.prisma`      | Back-link anonymous touches once a customer is known          |
+| Asset                                                                                        | Where                                              | Use for L-TEN                                             |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------- | --------------------------------------------------------- |
+| `captureTouch` / `classify` / `resolveFirstTouch` / `resolveLastTouch` / `serializeSnapshot` | `@sparx/attribution` (`packages/attribution/src/`) | Pure, domain-agnostic — call directly from site capture   |
+| UTM taxonomy + `AttributionSnapshot` / `Channel` / `AttributionModel` types                  | `@sparx/attribution`                               | Universal                                                 |
+| `gateTracker({ category, load })`                                                            | `apps/site/lib/consent.ts`                         | Consent-gate the site capture (analytics category)        |
+| `getVisitorId()` (mints/returns `sparx_consent` UUID)                                        | `apps/site/lib/consent.ts`                         | Visitor identity for stitching touches → customer → order |
+| `ConsentRecord.visitorId → customerId` edges                                                 | `packages/db/prisma/schema/53-consent.prisma`      | Back-link anonymous touches once a customer is known      |
 
 The L-TEN difference from L-PLAT is only: **tenant-scoped cookies** (not `.sparx.works`), **the
-storefront visitor id** (`sparx_consent`, not `sparx_attr_vid`), and persistence to an
+site visitor id** (`sparx_consent`, not `sparx_attr_vid`), and persistence to an
 `attribution_touches` table instead of platform `tenants.*` columns.
 
 ## 3. Build checklist
@@ -51,11 +51,11 @@ storefront visitor id** (`sparx_consent`, not `sparx_attr_vid`), and persistence
 ### 3.1 Capture layer (`apps/site`)
 
 - [ ] Add `@sparx/attribution` (`workspace:*`) to `apps/site/package.json` (+ Dockerfile COPY closure).
-- [ ] Storefront capture component (mirror `apps/web/components/attribution-capture.tsx`): consent-gated
-      via the **storefront** `gateTracker`, tenant-scoped cookie domain, visitor id from `getVisitorId()`.
-- [ ] Edge proxy/middleware visitor seam if needed (the storefront already mints `sparx_consent`).
+- [ ] Site capture component (mirror `apps/web/components/attribution-capture.tsx`): consent-gated
+      via the **site** `gateTracker`, tenant-scoped cookie domain, visitor id from `getVisitorId()`.
+- [ ] Edge proxy/middleware visitor seam if needed (the site already mints `sparx_consent`).
 - [ ] Cross-domain handoff for custom domains (docs/80 §6.2): signed `?_sx=` param to carry the visitor
-      id across the eTLD+1 boundary (storefront ↔ checkout/account on a different registrable domain).
+      id across the eTLD+1 boundary (site ↔ checkout/account on a different registrable domain).
 
 ### 3.2 Schema — one migration (docs/80 §8; RLS per [packages/db/CLAUDE.md](../packages/db/CLAUDE.md))
 
@@ -100,7 +100,7 @@ medium · campaign · friendly_name · created_by · created_at`. RLS on tenant-
 
 ## 4. Done when
 
-- A storefront visit with a `utm_*` URL (consent granted) writes an `attribution_touches` row.
+- A site visit with a `utm_*` URL (consent granted) writes an `attribution_touches` row.
 - An order placed by that visitor carries `orders.attributed_*` + an `attribution` snapshot.
 - The tenant dashboard shows orders/revenue by channel & campaign, RLS-isolated per tenant.
 - The four MCP attribution tools answer for a tenant.

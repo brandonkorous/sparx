@@ -69,7 +69,7 @@ export function ThemeToggle({
   return (
     <button
       type="button"
-      className={cx('sf-theme-toggle', className)}
+      className={cx('st-theme-toggle', className)}
       onClick={toggle}
       aria-label={aria['aria-label'] ?? `Switch to ${next} mode`}
       title={`Switch to ${next} mode`}

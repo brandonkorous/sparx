@@ -81,21 +81,21 @@ export default function B2bAppointmentsPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-        <Link href={`/account/b2b/${accountId}`} className="sf-link" style={{ fontSize: '0.9rem' }}>
+        <Link href={`/account/b2b/${accountId}`} className="st-link" style={{ fontSize: '0.9rem' }}>
           ← Back
         </Link>
-        <h1 className="sf-h2">Appointments</h1>
+        <h1 className="st-h2">Appointments</h1>
       </div>
 
       {error ? (
-        <div className="sf-alert sf-alert--error" role="alert">
+        <div className="st-alert st-alert--error" role="alert">
           {error}
         </div>
       ) : appointments === null ? (
-        <div className="sf-skeleton" style={{ height: 200 }} />
+        <div className="st-skeleton" style={{ height: 200 }} />
       ) : appointments.length === 0 ? (
-        <div className="sf-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="sf-muted">No appointments found on this account.</p>
+        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
+          <p className="st-muted">No appointments found on this account.</p>
         </div>
       ) : (
         <>
@@ -105,7 +105,7 @@ export default function B2bAppointmentsPage() {
               return (
                 <div
                   key={a.id}
-                  className="sf-card"
+                  className="st-card"
                   style={{
                     padding: '0.875rem 1rem',
                     display: 'flex',
@@ -117,11 +117,11 @@ export default function B2bAppointmentsPage() {
                 >
                   <div style={{ flex: 1 }}>
                     <strong>{a.serviceTypeName ?? 'Appointment'}</strong>
-                    <div className="sf-muted" style={{ fontSize: '0.82rem', marginTop: '0.2rem' }}>
+                    <div className="st-muted" style={{ fontSize: '0.82rem', marginTop: '0.2rem' }}>
                       {formatDateTime(a.scheduledAt)} · {a.durationMinutes} min
                     </div>
                     {vehicleLabel(a.vehicleRef) && (
-                      <div className="sf-muted" style={{ fontSize: '0.82rem' }}>
+                      <div className="st-muted" style={{ fontSize: '0.82rem' }}>
                         {vehicleLabel(a.vehicleRef)}
                       </div>
                     )}
@@ -130,7 +130,7 @@ export default function B2bAppointmentsPage() {
                     )}
                     {a.cancellationReason && (
                       <div
-                        className="sf-muted"
+                        className="st-muted"
                         style={{ fontSize: '0.82rem', marginTop: '0.2rem' }}
                       >
                         Reason: {a.cancellationReason}
@@ -145,13 +145,13 @@ export default function B2bAppointmentsPage() {
                       flexShrink: 0,
                     }}
                   >
-                    <span className="sf-badge" data-status={a.status}>
+                    <span className="st-badge" data-status={a.status}>
                       {STATUS_LABEL[a.status] ?? a.status}
                     </span>
                     {canCancel && (
                       <button
                         type="button"
-                        className="sf-btn sf-btn--ghost"
+                        className="st-btn st-btn--ghost"
                         style={{ fontSize: '0.82rem', padding: '0.25rem 0.6rem' }}
                         disabled={cancelling === a.id}
                         onClick={() => void handleCancel(a.id)}
@@ -169,18 +169,18 @@ export default function B2bAppointmentsPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
               <button
                 type="button"
-                className="sf-btn sf-btn--outline"
+                className="st-btn st-btn--outline"
                 disabled={skip === 0}
                 onClick={() => setSkip(Math.max(0, skip - PAGE_SIZE))}
               >
                 Previous
               </button>
-              <span className="sf-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
+              <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
                 {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
               <button
                 type="button"
-                className="sf-btn sf-btn--outline"
+                className="st-btn st-btn--outline"
                 disabled={skip + PAGE_SIZE >= total}
                 onClick={() => setSkip(skip + PAGE_SIZE)}
               >

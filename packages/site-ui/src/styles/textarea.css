@@ -1,6 +1,6 @@
-/* Surface Textarea — deltas over the shared `.sf-input` base (docs/46 §3.6). */
+/* Surface Textarea — deltas over the shared `.st-input` base (docs/46 §3.6). */
 
-.sf-textarea {
+.st-textarea {
   min-height: 6rem;
   line-height: 1.5;
   resize: vertical;

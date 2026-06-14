@@ -1,5 +1,5 @@
 // Commerce — Returns / RMA workflow. Customer- or staff-initiated;
-// inspection + restock decision per line item; refund or store-credit
+// inspection + restock decision per line item; refund or account-credit
 // settlement.
 
 model ReturnRequest {
@@ -12,13 +12,13 @@ model ReturnRequest {
   // ^ requested | approved | denied | awaiting_shipment | in_transit |
   //   received | inspecting | inspected | refunded | cancelled
   preferredOutcome String  @default("refund") @map("preferred_outcome") @db.VarChar(20)
-  // ^ refund | store_credit | exchange | repair
+  // ^ refund | account_credit | exchange | repair
   staffNote        String? @map("staff_note") @db.Text
 
   refundedAmountCents Int?    @map("refunded_amount_cents")
   restockingFeeCents  Int?    @map("restocking_fee_cents")
   refundIssuedAs      String? @map("refund_issued_as") @db.VarChar(20)
-  // ^ original_payment | store_credit | gift_card
+  // ^ original_payment | account_credit | gift_card
 
   approvedBy  String?   @map("approved_by") @db.Uuid
   approvedAt  DateTime? @map("approved_at") @db.Timestamptz

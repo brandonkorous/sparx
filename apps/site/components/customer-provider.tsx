@@ -115,14 +115,14 @@ export function CustomerProvider({
   return (
     <CustomerContext.Provider value={value}>
       {recognized ? (
-        <div className="sf-recognition" role="status">
+        <div className="st-recognition" role="status">
           <span>
             Welcome back! We recognized your email from another of our sites and created a separate
             account for you here — your orders and preferences on this site stay private to it.
           </span>
           <button
             type="button"
-            className="sf-recognition__close"
+            className="st-recognition__close"
             aria-label="Dismiss"
             onClick={() => setRecognized(false)}
           >

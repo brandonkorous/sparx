@@ -2,7 +2,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { reportingService, storefrontService } from '@sparx/commerce';
+import { reportingService, commerceSiteService } from '@sparx/commerce';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
@@ -34,39 +34,39 @@ function resolveRange(input: { from?: string; to?: string }): { from: string; to
 }
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
-const storefrontRoutes: FastifyPluginAsync = async (app) => {
+const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
   // Storefront settings
-  app.get('/v1/commerce/storefront/settings', async (request) => {
+  app.get('/v1/commerce/site/settings', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
     const propertyId = await resolveRequestProperty(request, ctx.tenantId);
-    return ok(await storefrontService.getSettings(ctx, propertyId));
+    return ok(await commerceSiteService.getSettings(ctx, propertyId));
   });
 
-  app.patch('/v1/commerce/storefront/settings', async (request) => {
+  app.patch('/v1/commerce/site/settings', async (request) => {
     requireRole(request, 'admin');
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
     const propertyId = await resolveRequestProperty(request, ctx.tenantId);
-    await storefrontService.updateSettings(ctx, propertyId, request.body);
+    await commerceSiteService.updateSettings(ctx, propertyId, request.body);
     return ok({ updated: true });
   });
 
-  app.get('/v1/commerce/storefront/theme', async (request) => {
+  app.get('/v1/commerce/site/theme', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
     const propertyId = await resolveRequestProperty(request, ctx.tenantId);
-    return ok(await storefrontService.getTheme(ctx, propertyId));
+    return ok(await commerceSiteService.getTheme(ctx, propertyId));
   });
 
-  app.patch('/v1/commerce/storefront/theme', async (request) => {
+  app.patch('/v1/commerce/site/theme', async (request) => {
     requireRole(request, 'admin');
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
     const propertyId = await resolveRequestProperty(request, ctx.tenantId);
-    await storefrontService.updateTheme(ctx, propertyId, request.body);
+    await commerceSiteService.updateTheme(ctx, propertyId, request.body);
     return ok({ updated: true });
   });
 
@@ -132,4 +132,4 @@ const storefrontRoutes: FastifyPluginAsync = async (app) => {
   });
 };
 
-export default storefrontRoutes;
+export default siteCommerceRoutes;

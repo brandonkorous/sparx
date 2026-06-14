@@ -9,8 +9,8 @@ import { Pagination, paginationRange } from './pagination';
 describe('Skeleton', () => {
   it('maps the shape and applies width/height', () => {
     const { container } = render(<Skeleton shape="circle" width={40} height="2rem" />);
-    const el = container.querySelector<HTMLElement>('.sf-skeleton')!;
-    expect(el).toHaveClass('sf-skeleton--circle');
+    const el = container.querySelector<HTMLElement>('.st-skeleton')!;
+    expect(el).toHaveClass('st-skeleton--circle');
     expect(el.style.width).toBe('40px');
     expect(el.style.height).toBe('2rem');
     expect(el).toHaveAttribute('aria-hidden', 'true');
@@ -21,14 +21,14 @@ describe('Spinner', () => {
   it('renders a labelled status with the kind + size classes', () => {
     render(<Spinner kind="ring" size="lg" label="Saving" />);
     const el = screen.getByRole('status');
-    expect(el).toHaveClass('sf-spinner', 'sf-spinner--ring', 'sf-spinner--sz-lg');
-    expect(screen.getByText('Saving')).toHaveClass('sf-spinner__label');
+    expect(el).toHaveClass('st-spinner', 'st-spinner--ring', 'st-spinner--sz-lg');
+    expect(screen.getByText('Saving')).toHaveClass('st-spinner__label');
   });
 
   it('renders three child elements for dots and bars', () => {
     const cases: [SpinnerKind, string][] = [
-      ['dots', '.sf-spinner__dot'],
-      ['bars', '.sf-spinner__bar'],
+      ['dots', '.st-spinner__dot'],
+      ['bars', '.st-spinner__bar'],
     ];
     for (const [kind, sel] of cases) {
       const { container, unmount } = render(<Spinner kind={kind} />);
@@ -42,16 +42,16 @@ describe('Progress', () => {
   it('renders a determinate bar with the color role var and aria values', () => {
     const { container } = render(<Progress value={25} max={50} color="success" />);
     const bar = screen.getByRole('progressbar');
-    expect(bar).toHaveClass('sf-progress', 'sf-c-success');
+    expect(bar).toHaveClass('st-progress', 'st-c-success');
     expect(bar).toHaveAttribute('aria-valuenow', '25');
     expect(bar).toHaveAttribute('aria-valuemax', '50');
-    const fill = container.querySelector<HTMLElement>('.sf-progress__fill')!;
+    const fill = container.querySelector<HTMLElement>('.st-progress__fill')!;
     expect(fill.style.width).toBe('50%');
   });
 
   it('is indeterminate with no value', () => {
     const { container } = render(<Progress />);
-    expect(container.querySelector('.sf-progress')).toHaveClass('sf-progress--indeterminate');
+    expect(container.querySelector('.st-progress')).toHaveClass('st-progress--indeterminate');
     expect(screen.getByRole('progressbar')).not.toHaveAttribute('aria-valuenow');
   });
 });
@@ -68,7 +68,7 @@ describe('Breadcrumb', () => {
     expect(screen.getByRole('navigation', { name: 'Breadcrumb' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Shop' })).toHaveAttribute('href', '/shop');
     const current = screen.getByText('Model 3');
-    expect(current).toHaveClass('sf-breadcrumb__current');
+    expect(current).toHaveClass('st-breadcrumb__current');
     expect(current).toHaveAttribute('aria-current', 'page');
   });
 });
@@ -90,6 +90,6 @@ describe('Pagination', () => {
     const { container } = render(<Pagination page={1} total={5} hrefFor={(p) => `/p/${p}`} />);
     expect(screen.getByRole('link', { name: '1' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: '2' })).toHaveAttribute('href', '/p/2');
-    expect(container.querySelector('.sf-pagination__item--disabled')).toBeInTheDocument();
+    expect(container.querySelector('.st-pagination__item--disabled')).toBeInTheDocument();
   });
 });

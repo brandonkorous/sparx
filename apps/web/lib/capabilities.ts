@@ -115,7 +115,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
       live('Auto cost-recompute'),
       live('Discount codes & conditions'),
       live('Gift cards (issue, reload, redeem)'),
-      live('Store credit'),
+      live('Account credit'),
       live('Surcharges (card / fuel / handling)'),
       live('Persistent guest & member carts'),
       live('Abandoned-cart capture'),

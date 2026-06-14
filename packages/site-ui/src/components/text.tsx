@@ -17,14 +17,14 @@ export interface TextProps {
 }
 
 const VARIANT_CLASS: Record<TextVariant, string> = {
-  body: 'sf-text--body',
-  eyebrow: 'sf-text--eyebrow',
-  meta: 'sf-text--meta',
+  body: 'st-text--body',
+  eyebrow: 'st-text--eyebrow',
+  meta: 'st-text--meta',
 };
 
 export function Text({ variant = 'body', className, style, id, children }: TextProps) {
   return (
-    <p className={cx('sf-text', VARIANT_CLASS[variant], className)} style={style} id={id}>
+    <p className={cx('st-text', VARIANT_CLASS[variant], className)} style={style} id={id}>
       {children}
     </p>
   );

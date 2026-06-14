@@ -128,8 +128,8 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
 
     // Welcome email is fire-and-forget via Pub/Sub — email-worker pulls the
     // event and handles the send. A Pub/Sub outage must never roll back an
-    // otherwise successful sign-up, so we log + swallow. Greets the person; the
-    // workspace name is still the placeholder at this point.
+    // otherwise successful sign-up, so we log + swallow. Greets the PERSON only —
+    // no site/tenant name (a tenant has many sites, named later; docs/49).
     try {
       const dashboardUrl =
         (process.env.BETTER_AUTH_URL ?? 'http://localhost:3001').replace(/\/$/, '') + '/welcome';
@@ -141,7 +141,6 @@ export async function signUpMerchant(input: SignUpMerchantInput): Promise<SignUp
         to: email,
         props: {
           name,
-          storeName: tenantName,
           dashboardUrl,
         },
       });

@@ -34,9 +34,9 @@ describe('ThemeController', () => {
   });
 
   it('supports localStorage persistence', () => {
-    render(<ThemeController persist="localStorage" storageKey="sf-theme" />);
+    render(<ThemeController persist="localStorage" storageKey="st-theme" />);
     fireEvent.click(screen.getByRole('radio', { name: 'Dark' }));
-    expect(window.localStorage.getItem('sf-theme')).toBe('dark');
+    expect(window.localStorage.getItem('st-theme')).toBe('dark');
   });
 
   it('targets a custom element and supports the select variant', () => {

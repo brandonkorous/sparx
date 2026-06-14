@@ -10,7 +10,7 @@
 
 Per [docs/36-sitebuilder-layering-model.md](../36-sitebuilder-layering-model.md) §6 and §11: **Site Builder
 owns the layouts and the assignment; the data module owns its records.** Add SB-owned assignment tables, a
-storefront **resolver cascade**, and a `Layout: [▾]` picker in the Commerce product editor + CMS entry editor.
+site **resolver cascade**, and a `Layout: [▾]` picker in the Commerce product editor + CMS entry editor.
 Builds on P-B's target ids. Does not build the unified Layouts surface / per-target-default UI (P-D) or
 layout-driven authoring (§8).
 
@@ -29,14 +29,14 @@ layout-driven authoring (§8).
   LIVE avoids a column + rollback-restore complexity, and an assignment edit reflects as soon as the
   referenced layout's sections are published. Existing tenants (no rows) → resolver lands on `default` → today's
   behavior unchanged.
-- **Resolver cascade** (storefront, per page render): `per-item override → per-target default → 'default' key
+- **Resolver cascade** (site, per page render): `per-item override → per-target default → 'default' key
 → seeded code default (DEFAULT_TEMPLATES) → empty`. `resolveTemplateSections(snapshot, targetId, itemRef?)`
   resolves a `layoutKey`, then renders `sectionsForTarget(snapshot, targetId, layoutKey)`.
 - **Snapshot shape** gains `assignments?: { defaults: Record<targetId, layoutKey>; items: Array<{ targetId,
 itemRef, layoutKey }> }`. Only non-`default` defaults and actual overrides appear (small).
 - **Picker scope (owner decision 2026-05-31): build both editors' pickers now.** The Commerce product/collection
-  picker is wired end-to-end (the storefront resolver consumes it). **The CMS entry-editor picker stores valid,
-  forward-compatible assignments but has NO storefront effect until §8** (CMS pages still render off `pageKey`,
+  picker is wired end-to-end (the site resolver consumes it). **The CMS entry-editor picker stores valid,
+  forward-compatible assignments but has NO site effect until §8** (CMS pages still render off `pageKey`,
   not the target resolver) — the picker UI says so, and it's flagged in the tracker.
 - **Open Q 12.3 (group-level assignment)** stays deferred — the `itemRef` column can later carry a group ref,
   no schema change needed.
@@ -45,7 +45,7 @@ itemRef, layoutKey }> }`. Only non-`default` defaults and actual overrides appea
 
 - **P-C1 · Backend** — schema (2 tables) + migration + `assignment-service` + inputs + api-rest
   `/v1/sitebuilder/assignments` + snapshot wiring (live read in `getPublishedSnapshot`/`getDraftSnapshot`) +
-  storefront resolver cascade (`lib/site.ts` + product/collection pages) + tests.
+  site resolver cascade (`lib/site.ts` + product/collection pages) + tests.
 - **P-C2 · Commerce picker** — dashboard `LayoutAssignmentPicker` client component + SB `_lib` api/actions;
   mount in the product editor (server-fetch layouts + current assignment, pass to the client picker).
 - **P-C3 · CMS picker** — mount the same picker in the CMS entry editor (target `cms:content-type:<typeId>`),
@@ -59,5 +59,5 @@ via the **DB Migrate workflow** (user-triggered; joins the still-pending set).
 
 ## 5. Non-goals (deferred)
 
-Per-target-default UI + unified Layouts surface (P-D); CMS storefront rendering through layouts (§8); group-level
+Per-target-default UI + unified Layouts surface (P-D); CMS site rendering through layouts (§8); group-level
 assignment (Open Q 12.3); the SiteLayout regions tier.

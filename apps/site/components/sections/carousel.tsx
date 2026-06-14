@@ -103,26 +103,26 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
   const multi = items.length > 1;
 
   return (
-    <section className="sf-sb-carousel-section">
+    <section className="st-sb-carousel-section">
       {config.heading ? (
-        <div className="sf-container sf-section__head">
-          <h2 className="sf-h2">{config.heading}</h2>
+        <div className="st-container st-section__head">
+          <h2 className="st-h2">{config.heading}</h2>
         </div>
       ) : null}
       <div
-        className="sf-sb-carousel"
+        className="st-sb-carousel"
         onMouseEnter={() => (pausedRef.current = true)}
         onMouseLeave={() => (pausedRef.current = false)}
         onFocusCapture={() => (pausedRef.current = true)}
         onBlurCapture={() => (pausedRef.current = false)}
       >
-        <div className="sf-sb-carousel__track" ref={trackRef}>
+        <div className="st-sb-carousel__track" ref={trackRef}>
           {items.map((s, i) => {
             const img = mediaUrl(s.mediaId ?? null, ctx.tenantSlug);
             return (
               <div
                 key={i}
-                className="sf-sb-carousel__slide"
+                className="st-sb-carousel__slide"
                 data-align={config.align}
                 data-valign={config.verticalAlign}
                 data-text={config.textColor}
@@ -139,15 +139,15 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
               >
                 {img ? (
                   <div
-                    className="sf-sb-carousel__scrim"
+                    className="st-sb-carousel__scrim"
                     style={{ opacity: overlay }}
                     aria-hidden="true"
                   />
                 ) : null}
-                <div className="sf-container sf-sb-carousel__inner">
-                  {s.eyebrow ? <p className="sf-sb-carousel__eyebrow">{s.eyebrow}</p> : null}
-                  {s.heading ? <h3 className="sf-sb-carousel__title">{s.heading}</h3> : null}
-                  {s.subheading ? <p className="sf-sb-carousel__sub">{s.subheading}</p> : null}
+                <div className="st-container st-sb-carousel__inner">
+                  {s.eyebrow ? <p className="st-sb-carousel__eyebrow">{s.eyebrow}</p> : null}
+                  {s.heading ? <h3 className="st-sb-carousel__title">{s.heading}</h3> : null}
+                  {s.subheading ? <p className="st-sb-carousel__sub">{s.subheading}</p> : null}
                   <SbCtaRow ctas={s.ctas} layout={config.ctaLayout} />
                 </div>
               </div>
@@ -159,7 +159,7 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
           <>
             <button
               type="button"
-              className="sf-sb-carousel__arrow sf-sb-carousel__arrow--prev"
+              className="st-sb-carousel__arrow st-sb-carousel__arrow--prev"
               aria-label="Previous slide"
               onClick={() => scrollToIndex(index - 1)}
             >
@@ -167,7 +167,7 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
             </button>
             <button
               type="button"
-              className="sf-sb-carousel__arrow sf-sb-carousel__arrow--next"
+              className="st-sb-carousel__arrow st-sb-carousel__arrow--next"
               aria-label="Next slide"
               onClick={() => scrollToIndex(index + 1)}
             >
@@ -177,12 +177,12 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
         ) : null}
 
         {config.showDots && multi ? (
-          <div className="sf-sb-carousel__dots" role="tablist" aria-label="Slides">
+          <div className="st-sb-carousel__dots" role="tablist" aria-label="Slides">
             {items.map((_, i) => (
               <button
                 key={i}
                 type="button"
-                className="sf-sb-carousel__dot"
+                className="st-sb-carousel__dot"
                 data-active={i === index}
                 aria-label={`Go to slide ${i + 1}`}
                 aria-current={i === index}

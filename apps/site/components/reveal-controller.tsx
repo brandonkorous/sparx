@@ -1,12 +1,12 @@
 'use client';
 
-// Scroll-reveal controller. Watches every `[data-sf-reveal]` element (the
+// Scroll-reveal controller. Watches every `[data-st-reveal]` element (the
 // Site Builder section wrappers) and adds `is-visible` as each scrolls into
 // view, driving the fade-up entrance defined in site.css. One-shot per
 // element (unobserved after it reveals). Re-scans on route change so client
 // navigations pick up the new page's sections.
 //
-// The hidden initial state is gated on `html.sf-reveal-ready` (set by a tiny
+// The hidden initial state is gated on `html.st-reveal-ready` (set by a tiny
 // before-paint script in the layout head), so with JS disabled — or reduced
 // motion — nothing ever hides. Renders nothing.
 
@@ -18,7 +18,7 @@ export function RevealController() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    const els = Array.from(document.querySelectorAll<HTMLElement>('[data-sf-reveal]'));
+    const els = Array.from(document.querySelectorAll<HTMLElement>('[data-st-reveal]'));
     if (els.length === 0) return;
     const io = new IntersectionObserver(
       (entries) => {

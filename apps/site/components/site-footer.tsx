@@ -47,14 +47,14 @@ function FooterLink({ link }: { link: FooterColumn['links'][number] }) {
 function SocialRow({ socialLinks }: { socialLinks: FooterSocialLink[] }) {
   if (socialLinks.length === 0) return null;
   return (
-    <div className="sf-footer__social">
+    <div className="st-footer__social">
       {socialLinks.map((s) => (
         <a
           key={s.platform}
           href={s.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="sf-iconbtn"
+          className="st-iconbtn"
           aria-label={s.platform}
         >
           {s.platform.charAt(0).toUpperCase()}
@@ -81,18 +81,18 @@ export function SiteFooter({
   if (variant === 'minimal') {
     const links = columns.flatMap((c) => c.links);
     return (
-      <footer className="sf-footer sf-footer--minimal">
-        <div className="sf-container">
-          <div className="sf-footer__minimal">
+      <footer className="st-footer st-footer--minimal">
+        <div className="st-container">
+          <div className="st-footer__minimal">
             {links.length > 0 ? (
-              <nav className="sf-footer__minimal-links" aria-label="Footer">
+              <nav className="st-footer__minimal-links" aria-label="Footer">
                 {links.map((link) => (
                   <FooterLink key={link.href} link={link} />
                 ))}
               </nav>
             ) : null}
             <SocialRow socialLinks={social} />
-            <div className="sf-footer__minimal-legal">
+            <div className="st-footer__minimal-legal">
               <span>{legal}</span>
               <span>
                 Powered by <strong>Sparx</strong>
@@ -105,13 +105,13 @@ export function SiteFooter({
   }
 
   return (
-    <footer className="sf-footer">
-      <div className="sf-container">
-        <div className="sf-footer__grid">
-          <div className="sf-footer__col">
-            <span className="sf-header__brand">{tenant.name}</span>
+    <footer className="st-footer">
+      <div className="st-container">
+        <div className="st-footer__grid">
+          <div className="st-footer__col">
+            <span className="st-header__brand">{tenant.name}</span>
             <p
-              className="sf-muted"
+              className="st-muted"
               style={{ marginTop: '0.75rem', maxWidth: '34ch', lineHeight: 1.6 }}
             >
               {tagline && tagline.length > 0 ? tagline : DEFAULT_TAGLINE}
@@ -119,7 +119,7 @@ export function SiteFooter({
             <SocialRow socialLinks={social} />
           </div>
           {columns.map((col) => (
-            <div key={col.title} className="sf-footer__col">
+            <div key={col.title} className="st-footer__col">
               <h4>{col.title}</h4>
               {col.links.map((link) => (
                 <FooterLink key={link.href} link={link} />
@@ -127,7 +127,7 @@ export function SiteFooter({
             </div>
           ))}
         </div>
-        <div className="sf-footer__bottom">
+        <div className="st-footer__bottom">
           <span>{legal}</span>
           <span>
             Powered by <strong>Sparx</strong>

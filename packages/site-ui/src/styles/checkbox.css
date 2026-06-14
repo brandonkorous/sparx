@@ -2,7 +2,7 @@
  * Checked fill = the role var `--c-bg`; the tick = `--c-fg`. Token-driven; the
  * mask + role-var values are raw declarations. */
 
-.sf-checkbox {
+.st-checkbox {
   appearance: none;
   -webkit-appearance: none;
   position: relative;
@@ -10,54 +10,54 @@
   flex-shrink: 0;
   vertical-align: middle;
   cursor: pointer;
-  background: var(--sf-base-100, #fff);
-  border: 1.5px solid var(--sf-border, #e3dfd2);
-  border-radius: var(--sf-radius-selector, 0.25rem);
+  background: var(--st-base-100, #fff);
+  border: 1.5px solid var(--st-border, #e3dfd2);
+  border-radius: var(--st-radius-selector, 0.25rem);
   transition:
     background 0.15s ease,
     border-color 0.15s ease;
 }
-.sf-checkbox:checked {
-  background: var(--c-bg, var(--sf-primary, #3f6b52));
-  border-color: var(--c-bg, var(--sf-primary, #3f6b52));
+.st-checkbox:checked {
+  background: var(--c-bg, var(--st-primary, #3f6b52));
+  border-color: var(--c-bg, var(--st-primary, #3f6b52));
 }
-.sf-checkbox:checked::after {
+.st-checkbox:checked::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--c-fg, var(--sf-primary-content, #fff));
+  background: var(--c-fg, var(--st-primary-content, #fff));
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12l5 5L20 7' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
     center / 72% no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12l5 5L20 7' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
     center / 72% no-repeat;
 }
-.sf-checkbox:focus-visible {
+.st-checkbox:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--sf-primary, #3f6b52)) 25%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-bg, var(--st-primary, #3f6b52)) 25%, transparent);
 }
-.sf-checkbox:disabled {
+.st-checkbox:disabled {
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 /* Size axis. */
-.sf-checkbox--sz-xs {
+.st-checkbox--sz-xs {
   width: 0.85rem;
   height: 0.85rem;
 }
-.sf-checkbox--sz-sm {
+.st-checkbox--sz-sm {
   width: 1rem;
   height: 1rem;
 }
-.sf-checkbox--sz-md {
+.st-checkbox--sz-md {
   width: 1.25rem;
   height: 1.25rem;
 }
-.sf-checkbox--sz-lg {
+.st-checkbox--sz-lg {
   width: 1.5rem;
   height: 1.5rem;
 }
-.sf-checkbox--sz-xl {
+.st-checkbox--sz-xl {
   width: 1.85rem;
   height: 1.85rem;
 }

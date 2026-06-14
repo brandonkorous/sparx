@@ -8,13 +8,13 @@
  *
  * Preflight is intentionally NOT imported — consumers own their CSS reset. Surface
  * ships only the theme tokens it needs + the component classes. Every rule is keyed
- * on the tenant --sf-* tokens produced by @sparx/site-themes (docs/46 §3.3);
+ * on the tenant --st-* tokens produced by @sparx/site-themes (docs/46 §3.3);
  * a static head-loaded stylesheet means the first paint is already themed (no FOUC).
  *
  * Layer order: component partials live in `components`; any utility a power-user
  * adds at the node level (Tier 3, docs/47 §4) sits in `utilities` and therefore
  * WINS over an archetype's @apply'd property. The shared variant recipe is imported
- * LAST within `components` so a treatment's resets (e.g. `.sf-v-link` padding:0)
+ * LAST within `components` so a treatment's resets (e.g. `.st-v-link` padding:0)
  * win over a component's size classes (docs/46 §3.6). */
 
 @layer theme, base, components, utilities;

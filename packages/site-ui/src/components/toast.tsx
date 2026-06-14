@@ -29,7 +29,7 @@ export function Toast({
 }: ToastProps): React.ReactElement {
   return (
     <div
-      className={cx('sf-toast', `sf-toast--h-${horizontal}`, `sf-toast--v-${vertical}`, className)}
+      className={cx('st-toast', `st-toast--h-${horizontal}`, `st-toast--v-${vertical}`, className)}
       style={style}
       id={id}
       role="status"

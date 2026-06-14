@@ -8,11 +8,11 @@ describe('Button', () => {
     render(<Button>Order now</Button>);
     const el = screen.getByRole('button', { name: 'Order now' });
     expect(el.tagName).toBe('BUTTON');
-    expect(el).toHaveClass('sf-btn', 'sf-c-primary', 'sf-v-solid', 'sf-btn--sz-md');
+    expect(el).toHaveClass('st-btn', 'st-c-primary', 'st-v-solid', 'st-btn--sz-md');
     expect(el).toHaveAttribute('type', 'button');
   });
 
-  it('maps the color axis to a sf-c-{color} role-var class', () => {
+  it('maps the color axis to a st-c-{color} role-var class', () => {
     const colors: ColorKey[] = [
       'primary',
       'secondary',
@@ -27,17 +27,17 @@ describe('Button', () => {
     ];
     for (const color of colors) {
       const { unmount } = render(<Button color={color}>{color}</Button>);
-      expect(screen.getByRole('button', { name: color })).toHaveClass(`sf-c-${color}`);
+      expect(screen.getByRole('button', { name: color })).toHaveClass(`st-c-${color}`);
       unmount();
     }
   });
 
   it('accepts a runtime custom color name', () => {
     render(<Button color="brand-mint">Custom</Button>);
-    expect(screen.getByRole('button', { name: 'Custom' })).toHaveClass('sf-c-brand-mint');
+    expect(screen.getByRole('button', { name: 'Custom' })).toHaveClass('st-c-brand-mint');
   });
 
-  it('maps the variant axis to a shared sf-v-{variant} treatment class', () => {
+  it('maps the variant axis to a shared st-v-{variant} treatment class', () => {
     const variants: TreatmentKey[] = [
       'solid',
       'soft',
@@ -49,16 +49,16 @@ describe('Button', () => {
     ];
     for (const variant of variants) {
       const { unmount } = render(<Button variant={variant}>{variant}</Button>);
-      expect(screen.getByRole('button', { name: variant })).toHaveClass(`sf-v-${variant}`);
+      expect(screen.getByRole('button', { name: variant })).toHaveClass(`st-v-${variant}`);
       unmount();
     }
   });
 
-  it('maps the size axis to a sf-btn--sz-{size} class', () => {
+  it('maps the size axis to a st-btn--sz-{size} class', () => {
     const sizes: SizeKey[] = ['xs', 'sm', 'md', 'lg', 'xl'];
     for (const size of sizes) {
       const { unmount } = render(<Button size={size}>{size}</Button>);
-      expect(screen.getByRole('button', { name: size })).toHaveClass(`sf-btn--sz-${size}`);
+      expect(screen.getByRole('button', { name: size })).toHaveClass(`st-btn--sz-${size}`);
       unmount();
     }
   });
@@ -75,12 +75,12 @@ describe('Button', () => {
       </>
     );
     expect(screen.getByRole('button', { name: 'Order Now' })).toHaveClass(
-      'sf-v-glass',
-      'sf-c-neutral'
+      'st-v-glass',
+      'st-c-neutral'
     );
     expect(screen.getByRole('button', { name: 'Learn More' })).toHaveClass(
-      'sf-v-glass',
-      'sf-c-surface'
+      'st-v-glass',
+      'st-c-surface'
     );
   });
 
@@ -94,7 +94,7 @@ describe('Button', () => {
     expect(el.tagName).toBe('A');
     expect(el).toHaveAttribute('href', '/order');
     expect(el).toHaveAttribute('target', '_blank');
-    expect(el).toHaveClass('sf-btn', 'sf-c-neutral', 'sf-v-glass');
+    expect(el).toHaveClass('st-btn', 'st-c-neutral', 'st-v-glass');
     expect(el).not.toHaveAttribute('type');
   });
 
@@ -110,8 +110,8 @@ describe('Button', () => {
       </Button>
     );
     expect(screen.getByRole('button', { name: 'Buy' })).toHaveClass(
-      'sf-btn',
-      'sf-c-primary',
+      'st-btn',
+      'st-c-primary',
       'mt-4'
     );
   });

@@ -184,7 +184,7 @@ export default async function DashboardHome() {
         <Stack direction="row" align="end" justify="between">
           <Stack gap={1}>
             <Heading level={1}>Good morning</Heading>
-            <Text variant="muted">Here&apos;s a quick snapshot of your store.</Text>
+            <Text variant="muted">Here&apos;s a quick snapshot of your site.</Text>
           </Stack>
           <Button leftIcon={<Plus className="h-4 w-4" />}>New product</Button>
         </Stack>

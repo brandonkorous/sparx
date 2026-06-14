@@ -5,7 +5,7 @@ import { Button, Input, Label, Spinner, Text } from '@sparx/ui';
 import { Check } from 'lucide-react';
 import type { SlugCheck } from './onboarding-wizard';
 
-const STORE_ZONE = 'sparx.zone';
+const SITE_ZONE = 'sparx.zone';
 
 const REASON_COPY: Record<string, string> = {
   invalid: 'Use lowercase letters, numbers, and hyphens (3–63 characters).',
@@ -66,7 +66,7 @@ export function StepWorkspace({
               spellCheck={false}
             />
             <Text variant="muted" className="whitespace-nowrap">
-              .{STORE_ZONE}
+              .{SITE_ZONE}
             </Text>
           </div>
           {check.status === 'checking' && (
@@ -81,7 +81,7 @@ export function StepWorkspace({
             <div className="flex items-center gap-1.5">
               <Check className="h-4 w-4 text-[var(--color-success-text)]" />
               <Text size="xs" className="text-[var(--color-success-text)]">
-                {normalized}.{STORE_ZONE} is available
+                {normalized}.{SITE_ZONE} is available
               </Text>
             </div>
           )}

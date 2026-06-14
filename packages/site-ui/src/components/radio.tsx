@@ -19,11 +19,11 @@ export interface RadioProps extends Omit<
 }
 
 const SIZE_CLASS: Record<SizeKey, string> = {
-  xs: 'sf-radio--sz-xs',
-  sm: 'sf-radio--sz-sm',
-  md: 'sf-radio--sz-md',
-  lg: 'sf-radio--sz-lg',
-  xl: 'sf-radio--sz-xl',
+  xs: 'st-radio--sz-xs',
+  sm: 'st-radio--sz-sm',
+  md: 'st-radio--sz-md',
+  lg: 'st-radio--sz-lg',
+  xl: 'st-radio--sz-xl',
 };
 
 export function Radio({
@@ -36,7 +36,7 @@ export function Radio({
     <input
       {...rest}
       type="radio"
-      className={cx('sf-radio', colorClass(color), SIZE_CLASS[size], className)}
+      className={cx('st-radio', colorClass(color), SIZE_CLASS[size], className)}
     />
   );
 }
@@ -67,7 +67,7 @@ export function RadioGroup({
       role="radiogroup"
       aria-label={aria['aria-label']}
       aria-labelledby={aria['aria-labelledby']}
-      className={cx('sf-radio-group', `sf-radio-group--${orientation}`, className)}
+      className={cx('st-radio-group', `st-radio-group--${orientation}`, className)}
       style={style}
       id={id}
     >

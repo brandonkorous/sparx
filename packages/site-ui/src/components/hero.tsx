@@ -42,11 +42,11 @@ export function Hero({
   const bg = image ? photoPanelStyle({ image, overlay, tone }) : undefined;
   return (
     <Tag
-      className={cx('sf-hero', `sf-hero--align-${align}`, className)}
+      className={cx('st-hero', `st-hero--align-${align}`, className)}
       style={{ minHeight: dim(minHeight), ...bg, ...style }}
       id={id}
     >
-      <div className="sf-hero__content">{children}</div>
+      <div className="st-hero__content">{children}</div>
     </Tag>
   );
 }

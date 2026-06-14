@@ -1,19 +1,19 @@
 /* Surface Container — centered, width-capped content wrapper (docs/47 §11 B1).
- * The `lg` cap is the tenant `--sf-container` token; the others are fixed reading
+ * The `lg` cap is the tenant `--st-container` token; the others are fixed reading
  * widths. Authored with @apply; the token cap stays a raw declaration. */
 
-.sf-container {
+.st-container {
   @apply mx-auto w-full px-6;
 }
-.sf-container--sm {
+.st-container--sm {
   max-width: 48rem;
 }
-.sf-container--md {
+.st-container--md {
   max-width: 64rem;
 }
-.sf-container--lg {
-  max-width: var(--sf-container, 80rem);
+.st-container--lg {
+  max-width: var(--st-container, 80rem);
 }
-.sf-container--full {
+.st-container--full {
   max-width: none;
 }

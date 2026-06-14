@@ -1,7 +1,7 @@
 /* Surface Hero — banner stage (docs/46 §5.2). Background image composed inline via
  * photoPanelStyle; this owns layout + alignment. */
 
-.sf-hero {
+.st-hero {
   position: relative;
   display: flex;
   align-items: center;
@@ -10,19 +10,19 @@
   background-size: cover;
   background-position: center;
 }
-.sf-hero__content {
+.st-hero__content {
   width: 100%;
-  max-width: var(--sf-container, 80rem);
+  max-width: var(--st-container, 80rem);
   margin-inline: auto;
 }
-.sf-hero--align-center {
+.st-hero--align-center {
   justify-content: center;
   text-align: center;
 }
-.sf-hero--align-start {
+.st-hero--align-start {
   justify-content: flex-start;
 }
-.sf-hero--align-end {
+.st-hero--align-end {
   justify-content: flex-end;
   text-align: right;
 }

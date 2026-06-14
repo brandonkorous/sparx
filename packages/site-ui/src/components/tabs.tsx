@@ -2,7 +2,7 @@
 
 // Tabs — Radix behavior, Surface appearance (docs/47 §11 B3). Radix
 // (@radix-ui/react-tabs) owns selection + keyboard nav + `data-state="active"`;
-// styling is `sf-*`. `variant` is the tab-strip treatment (line · box · lift) and
+// styling is `st-*`. `variant` is the tab-strip treatment (line · box · lift) and
 // `color` themes the active indicator off the role var. Compound parts attach +
 // export.
 
@@ -28,7 +28,7 @@ function TabsRoot({
 }: TabsProps): React.ReactElement {
   return (
     <TabsPrimitive.Root
-      className={cx('sf-tabs', `sf-tabs--${variant}`, colorClass(color), className)}
+      className={cx('st-tabs', `st-tabs--${variant}`, colorClass(color), className)}
       {...props}
     />
   );
@@ -39,7 +39,7 @@ function TabsList({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>): React.ReactElement {
-  return <TabsPrimitive.List className={cx('sf-tabs__list', className)} {...props} />;
+  return <TabsPrimitive.List className={cx('st-tabs__list', className)} {...props} />;
 }
 TabsList.displayName = 'TabsList';
 
@@ -47,7 +47,7 @@ function TabsTab({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>): React.ReactElement {
-  return <TabsPrimitive.Trigger className={cx('sf-tabs__tab', className)} {...props} />;
+  return <TabsPrimitive.Trigger className={cx('st-tabs__tab', className)} {...props} />;
 }
 TabsTab.displayName = 'TabsTab';
 
@@ -55,7 +55,7 @@ function TabsPanel({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>): React.ReactElement {
-  return <TabsPrimitive.Content className={cx('sf-tabs__panel', className)} {...props} />;
+  return <TabsPrimitive.Content className={cx('st-tabs__panel', className)} {...props} />;
 }
 TabsPanel.displayName = 'TabsPanel';
 

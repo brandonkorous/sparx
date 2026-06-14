@@ -1,10 +1,10 @@
 // @sparx/site-ui — public barrel.
 //
-// The tenant-themed (--sf-*) site component library. Consumed by the
+// The tenant-themed (--st-*) site component library. Consumed by the
 // site chrome, the Builder renderer, and the editor canvas so the preview
 // renders the exact components the site ships (docs/46).
 //
-// Components emit semantic `sf-*` classes; consumers must also import the
+// Components emit semantic `st-*` classes; consumers must also import the
 // stylesheet once: `import '@sparx/site-ui/styles.css'`.
 
 // ── Utilities ──────────────────────────────────────────────

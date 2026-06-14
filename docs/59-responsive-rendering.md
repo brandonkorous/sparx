@@ -1,6 +1,6 @@
 # Sparx Platform — Responsive Rendering
 
-**Version:** 0.1 (BUILT — storefront renderer + editor canvas)
+**Version:** 0.1 (BUILT — site renderer + editor canvas)
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-05
 
@@ -17,7 +17,7 @@ Each container node carries a single `layout` ({ direction, columns, gap,
 justify, alignItems, wrap }) with **no per-breakpoint values** — the author
 picks one arrangement. Two render paths walk that tree:
 
-- **Storefront** — `apps/site/components/builder-renderer.tsx` (the live site).
+- **Site** — `apps/site/components/builder-renderer.tsx` (the live site).
 - **Editor canvas** — `apps/dashboard/.../builder/_builder/canvas.tsx` (the
   in-dashboard preview, "what you see is what you ship").
 
@@ -35,14 +35,14 @@ tenant-authored page get responsiveness for free, no per-node authoring.
 The author still picks **one** desktop arrangement. The renderer derives the
 narrower tiers from it. No new schema fields; `LayoutBase` is unchanged.
 
-| Tier    | Viewport (storefront) | Editor device | Grid columns  | Row direction |
-| ------- | --------------------- | ------------- | ------------- | ------------- |
-| Mobile  | `< 640px`             | `mobile` 390  | **1**         | stacks\*      |
-| Tablet  | `640–1023px`          | `tablet` 834  | **min(N, 2)** | row           |
-| Desktop | `≥ 1024px`            | `desktop`     | **N**         | row           |
+| Tier    | Viewport (site) | Editor device | Grid columns  | Row direction |
+| ------- | --------------- | ------------- | ------------- | ------------- |
+| Mobile  | `< 640px`       | `mobile` 390  | **1**         | stacks\*      |
+| Tablet  | `640–1023px`    | `tablet` 834  | **min(N, 2)** | row           |
+| Desktop | `≥ 1024px`      | `desktop`     | **N**         | row           |
 
 Breakpoints are aligned so the editor's fixed-width device preview matches the
-storefront's real-viewport behavior at the same widths.
+site's real-viewport behavior at the same widths.
 
 ### Grids (`direction: 'grid'`)
 
@@ -60,7 +60,7 @@ lockup (logo + name, button + icon, a nav row) that must **not** stack.
 \* When a row stacks, cross/main axes swap, so the authored `alignItems` /
 `justify` would misbehave. Stacked rows reset to `align-items: stretch`
 (full-width children) and `justify-content: flex-start`. The desktop values are
-preserved and re-applied at `≥ 768px` (storefront passes them via the
+preserved and re-applied at `≥ 768px` (site passes them via the
 `--bx-ai` / `--bx-jc` custom properties so the stacked rule can override them;
 the editor recomputes from `device`).
 
@@ -82,7 +82,7 @@ aren't overlong and content isn't crushed:
 The two paths use the mechanism that fits — but the **rules above are the
 single source of truth**; keep them in lockstep.
 
-- **Storefront** renders to a real viewport, so it emits **CSS classes** and
+- **Site** renders to a real viewport, so it emits **CSS classes** and
   lets `@media` do the work. Layout/height/padding move out of inline styles
   into `bx-*` classes defined in `apps/site/app/site.css` (`.bx-grid` +
   `.bx-grid--cN`, `.bx-row`, `.bx-row--resp`, `.bx-stack`, `.bx-h-*`,
