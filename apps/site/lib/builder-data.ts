@@ -112,6 +112,7 @@ export function productToBuilderRecord(
     variants: p.variants.map((v) => ({
       id: v.id,
       sku: v.sku,
+      title: v.title,
       priceCents: v.priceCents,
       compareAtPriceCents: v.compareAtPriceCents,
       isDefault: v.isDefault,

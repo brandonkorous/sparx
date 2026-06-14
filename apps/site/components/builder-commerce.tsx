@@ -33,12 +33,19 @@ export interface BuilderOption {
 export interface BuilderVariant {
   id: string;
   sku: string;
+  title: string | null;
   priceCents: number;
   compareAtPriceCents: number | null;
   isDefault: boolean;
   inStock: boolean;
   available: number | null;
   optionValueIds: string[];
+}
+
+/** Display label for a variant chip in the option-less picker — its title, or
+ *  the SKU when the supplier gave no title. */
+function variantLabel(v: BuilderVariant): string {
+  return v.title ?? v.sku;
 }
 export interface BuilderProduct {
   title: string;
@@ -64,6 +71,11 @@ interface ProductFormState {
   product: BuilderProduct;
   selected: Record<string, string>;
   selectValue: (optionId: string, valueId: string) => void;
+  // Option-less products with >1 SKU: the buyer picks a variant directly (by
+  // title) since there are no option chips to render.
+  optionless: boolean;
+  selectedVariantId: string | null;
+  selectVariant: (variantId: string) => void;
   qty: number;
   setQty: (q: number) => void;
   adding: boolean;
@@ -93,6 +105,9 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
   const options = React.useMemo(() => product.options ?? [], [product]);
 
   const defaultVariant = variants.find((v) => v.isDefault) ?? variants[0];
+  // More than one purchasable SKU but no options to drive the picker — fall back
+  // to direct variant selection so the buyer isn't stranded on the default.
+  const optionless = options.length === 0 && variants.length > 1;
   const [selected, setSelected] = React.useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
     if (defaultVariant) {
@@ -103,12 +118,18 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
     }
     return init;
   });
+  const [selectedVariantId, setSelectedVariantId] = React.useState<string | null>(() =>
+    optionless ? (defaultVariant?.id ?? null) : null
+  );
   const [qty, setQty] = React.useState(1);
   const [adding, setAdding] = React.useState(false);
 
-  const allSelected = options.length === 0 || Object.keys(selected).length === options.length;
+  const allSelected = optionless
+    ? selectedVariantId !== null
+    : options.length === 0 || Object.keys(selected).length === options.length;
 
   const resolvedVariant = React.useMemo<BuilderVariant | null>(() => {
+    if (optionless) return variants.find((v) => v.id === selectedVariantId) ?? null;
     if (variants.length === 1) return variants[0] ?? null;
     if (!allSelected) return null;
     return (
@@ -117,7 +138,7 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
           variantMatches(v, selected) && v.optionValueIds.length === Object.keys(selected).length
       ) ?? null
     );
-  }, [variants, selected, allSelected]);
+  }, [variants, selected, allSelected, optionless, selectedVariantId]);
 
   const valueAvailable = React.useMemo(() => {
     const map: Record<string, boolean> = {};
@@ -132,6 +153,10 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
 
   const selectValue = React.useCallback((optionId: string, valueId: string) => {
     setSelected((prev) => ({ ...prev, [optionId]: valueId }));
+  }, []);
+
+  const selectVariant = React.useCallback((variantId: string) => {
+    setSelectedVariantId(variantId);
   }, []);
 
   const priceCents = resolvedVariant?.priceCents ?? product.priceMinCents ?? 0;
@@ -153,6 +178,9 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
     product,
     selected,
     selectValue,
+    optionless,
+    selectedVariantId,
+    selectVariant,
     qty,
     setQty,
     adding,
@@ -191,7 +219,39 @@ function moneyOf(cents: number, currency: string): string {
  *  Unavailable combinations are disabled (mirrors the legacy PDP). */
 export function BuilderVariantPicker() {
   const f = useProductForm();
-  if (!f || f.product.options.length === 0) return null;
+  if (!f) return null;
+  // Option-less products with multiple SKUs: pick the variant directly by title.
+  if (f.optionless) {
+    return (
+      <div className="bx-variant-picker">
+        <div className="st-option">
+          <span className="st-option__label">
+            Variant
+            {f.resolvedVariant ? (
+              <span className="st-muted" style={{ fontWeight: 400, marginLeft: '0.4rem' }}>
+                {variantLabel(f.resolvedVariant)}
+              </span>
+            ) : null}
+          </span>
+          <div className="st-option__values">
+            {f.product.variants.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                className="st-chip"
+                aria-pressed={f.selectedVariantId === v.id}
+                disabled={!v.inStock}
+                onClick={() => f.selectVariant(v.id)}
+              >
+                {variantLabel(v)}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (f.product.options.length === 0) return null;
   return (
     <div className="bx-variant-picker">
       {f.product.options.map((opt) => {

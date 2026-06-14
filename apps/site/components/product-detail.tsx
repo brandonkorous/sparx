@@ -55,10 +55,24 @@ export function ProductDetail({
   const [adding, setAdding] = useState(false);
   const [activeImageId, setActiveImageId] = useState<string | null>(product.images[0]?.id ?? null);
 
-  const allSelected =
-    product.options.length === 0 || Object.keys(selected).length === product.options.length;
+  // Option-less multi-variant products — more than one purchasable SKU but no
+  // ProductOption rows (e.g. a dropship import whose sizes/colours live only in
+  // the variant title) — are still selectable: fall back to picking the variant
+  // directly by its title instead of stranding the buyer on the default. The
+  // per-option chips below render nothing in this case, so without this the page
+  // shows a single price and no way to reach the other SKUs. Single-variant and
+  // option-driven products are unchanged.
+  const optionless = product.options.length === 0 && product.variants.length > 1;
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(() =>
+    optionless ? (defaultVariant?.id ?? null) : null
+  );
+
+  const allSelected = optionless
+    ? selectedVariantId !== null
+    : product.options.length === 0 || Object.keys(selected).length === product.options.length;
 
   const resolvedVariant = useMemo<PublicProductVariant | null>(() => {
+    if (optionless) return product.variants.find((v) => v.id === selectedVariantId) ?? null;
     if (product.variants.length === 1) return product.variants[0] ?? null;
     if (!allSelected) return null;
     return (
@@ -67,7 +81,7 @@ export function ProductDetail({
           variantMatches(v, selected) && v.optionValueIds.length === Object.keys(selected).length
       ) ?? null
     );
-  }, [product.variants, selected, allSelected]);
+  }, [product.variants, selected, allSelected, optionless, selectedVariantId]);
 
   // Availability per option value: a value is selectable if some variant with
   // that value (consistent with other current selections) is in stock-or-orderable.
@@ -111,6 +125,13 @@ export function ProductDetail({
     setSelected((prev) => ({ ...prev, [optionId]: valueId }));
     // Switch gallery to a matching image if one exists.
     const linked = product.images.find((img) => img.optionValueIds.includes(valueId));
+    if (linked) setActiveImageId(linked.id);
+  }
+
+  function selectVariant(variantId: string) {
+    setSelectedVariantId(variantId);
+    // Switch the gallery to this variant's own image when it has one.
+    const linked = product.images.find((img) => img.variantId === variantId);
     if (linked) setActiveImageId(linked.id);
   }
 
@@ -189,6 +210,36 @@ export function ProductDetail({
         </div>
 
         <StockLine inStock={inStock} lowStock={lowStock} available={available} />
+
+        {/* Variant selector — option-less products with multiple SKUs. The
+            per-option chips below render nothing (no options), so this is the
+            buyer's only way to reach the other variants. */}
+        {optionless ? (
+          <div className="st-option">
+            <span className="st-option__label">
+              Variant
+              {resolvedVariant ? (
+                <span className="st-muted" style={{ fontWeight: 400, marginLeft: '0.4rem' }}>
+                  {resolvedVariant.title ?? resolvedVariant.sku}
+                </span>
+              ) : null}
+            </span>
+            <div className="st-option__values">
+              {product.variants.map((v) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  className="st-chip"
+                  aria-pressed={selectedVariantId === v.id}
+                  disabled={!v.inStock}
+                  onClick={() => selectVariant(v.id)}
+                >
+                  {v.title ?? v.sku}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         {/* Options */}
         {product.options.map((opt) => {

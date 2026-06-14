@@ -209,6 +209,80 @@ async function attachDropshipImages(
   return imageUrls.length;
 }
 
+// Materialize a product's option lattice (ProductOption + ProductOptionValue)
+// from a set of normalized dropship variants, and return a map from each
+// variant's supplierSku to the option-value ids it should be pinned to.
+//
+// Dropship variants carry their options inline (`{ Size: '3"x3"', Color: 'Black' }`),
+// but the storefront's variant picker renders from ProductOption rows and resolves
+// the chosen variant via the ProductVariantOptionValue lattice — so without these
+// rows an imported multi-variant product shows NO size/colour picker and silently
+// strands the buyer on the default variant. We rebuild the lattice in first-seen
+// order (so sizes/colours render in the sequence the supplier listed them) and
+// hand back the per-SKU value ids so the caller can pin each variant.
+//
+// Returns an empty map when no variant carries options (single-SKU products) —
+// the caller then skips variant↔option-value joins entirely.
+async function materializeDropshipOptions(
+  tx: Parameters<Parameters<typeof withTenant>[1]>[0],
+  tenantId: string,
+  productId: string,
+  variants: { supplierSku: string; options: Record<string, string> }[]
+): Promise<Map<string, string[]>> {
+  // First-seen order for both option names and their values.
+  const optionNames: string[] = [];
+  const valuesByOption = new Map<string, string[]>();
+  for (const v of variants) {
+    for (const [name, value] of Object.entries(v.options ?? {})) {
+      if (!name || !value) continue;
+      if (!valuesByOption.has(name)) {
+        optionNames.push(name);
+        valuesByOption.set(name, []);
+      }
+      const vals = valuesByOption.get(name)!;
+      if (!vals.includes(value)) vals.push(value);
+    }
+  }
+
+  if (optionNames.length === 0) return new Map();
+
+  // optionName → (value → optionValueId)
+  const valueId = new Map<string, Map<string, string>>();
+  for (const [i, name] of optionNames.entries()) {
+    const option = await tx.productOption.create({
+      data: {
+        tenantId,
+        productId,
+        name: name.slice(0, 63),
+        // No hex from suppliers, so colour options render as labelled chips
+        // until a merchant adds swatches — 'swatch' just primes that later.
+        displayType: /colou?r/i.test(name) ? 'swatch' : 'dropdown',
+        position: i,
+      },
+    });
+    const lookup = new Map<string, string>();
+    for (const [j, value] of valuesByOption.get(name)!.entries()) {
+      const row = await tx.productOptionValue.create({
+        data: { tenantId, optionId: option.id, value: value.slice(0, 127), position: j },
+        select: { id: true },
+      });
+      lookup.set(value, row.id);
+    }
+    valueId.set(name, lookup);
+  }
+
+  const bySku = new Map<string, string[]>();
+  for (const v of variants) {
+    const ids: string[] = [];
+    for (const [name, value] of Object.entries(v.options ?? {})) {
+      const id = valueId.get(name)?.get(value);
+      if (id) ids.push(id);
+    }
+    bySku.set(v.supplierSku, ids);
+  }
+  return bySku;
+}
+
 // Validate that every property id in a requested site scope belongs to the
 // tenant. Returns the (de-duplicated) id list. An empty input means "all sites"
 // and writes no rows.
@@ -634,6 +708,16 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
         },
       });
 
+      // Build the option lattice first so each variant can be pinned to its
+      // option-value set as it's created — otherwise the storefront renders no
+      // size/colour picker and the buyer is stranded on the default variant.
+      const optionValueIdsBySku = await materializeDropshipOptions(
+        tx,
+        tenantId,
+        product.id,
+        variants
+      );
+
       // Create variants
       const createdVariants = await Promise.all(
         variants.map((v, idx) => {
@@ -665,6 +749,22 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
           });
         })
       );
+
+      // Pin each created variant onto its option-value lattice point — this is
+      // what lets the storefront resolve a picked Size/Colour back to a SKU.
+      // createdVariants preserves the `variants` order (Promise.all), so index
+      // alignment maps each commerce variant to its source supplierSku.
+      const variantJoins = createdVariants.flatMap((cv, idx) => {
+        const supplierSku = variants[idx]?.supplierSku;
+        const ids = supplierSku ? (optionValueIdsBySku.get(supplierSku) ?? []) : [];
+        return ids.map((optionValueId) => ({ variantId: cv.id, optionValueId }));
+      });
+      if (variantJoins.length > 0) {
+        await tx.productVariantOptionValue.createMany({
+          data: variantJoins,
+          skipDuplicates: true,
+        });
+      }
 
       // Copy the supplier's product imagery into the commerce catalog (hot-linked
       // media; see attachDropshipImages).
@@ -767,7 +867,45 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
           ? await attachDropshipImages(tx, tenantId, commerceProductId, dropshipProduct.images)
           : 0;
 
-      return { productId: commerceProductId, imagesAdded };
+      // Backfill the option lattice for products imported before options were
+      // materialized — their variants exist but carry no ProductOption rows, so
+      // the storefront shows no size/colour picker. Only when the product has
+      // none, so a merchant's hand-curated options are never clobbered.
+      let optionsAdded = 0;
+      const existingOptions = await tx.productOption.count({
+        where: { productId: commerceProductId },
+      });
+      if (existingOptions === 0) {
+        const normalizedVariants = dropshipProduct.variants as {
+          supplierSku: string;
+          options: Record<string, string>;
+        }[];
+        const optionValueIdsBySku = await materializeDropshipOptions(
+          tx,
+          tenantId,
+          commerceProductId,
+          normalizedVariants
+        );
+        if (optionValueIdsBySku.size > 0) {
+          // Map back onto the commerce variants by sku — import stamps each
+          // variant's sku as its supplierSku, so the join is exact.
+          const commerceVariants = await tx.productVariant.findMany({
+            where: { productId: commerceProductId, deletedAt: null },
+            select: { id: true, sku: true },
+          });
+          for (const cv of commerceVariants) {
+            const ids = optionValueIdsBySku.get(cv.sku) ?? [];
+            if (ids.length === 0) continue;
+            await tx.productVariantOptionValue.createMany({
+              data: ids.map((optionValueId) => ({ variantId: cv.id, optionValueId })),
+              skipDuplicates: true,
+            });
+            optionsAdded += 1;
+          }
+        }
+      }
+
+      return { productId: commerceProductId, imagesAdded, optionsAdded };
     });
 
     await publishEvent(
