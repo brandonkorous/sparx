@@ -1,49 +1,29 @@
 import { DollarSign } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ListToolbar } from '../../_components/list-toolbar';
 import { TierCreateButton } from './_components/tier-create-button';
+import { PricingTiersList, type PricingTierRow } from './_components/pricing-tiers-list';
 
 export const dynamic = 'force-dynamic';
 
-interface PricingTierRow {
-  id: string;
-  name: string;
-  description: string | null;
-  discountType: string;
-  discountValue: number;
-  productScope: string;
-  minOrderCents: number;
-  accountCount?: number;
-  createdAt: string;
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-function discountLabel(t: PricingTierRow) {
-  if (t.discountType === 'percentage') return `${t.discountValue}% off list`;
-  return `$${(t.discountValue / 100).toFixed(2)} off`;
-}
+export default async function PricingTiersPage({ searchParams }: PageProps) {
+  const params = await searchParams;
 
-function scopeLabel(scope: string) {
-  if (scope === 'all') return 'All products';
-  if (scope === 'collections') return 'Selected collections';
-  return 'Selected products';
-}
+  const [prefs, paged] = await Promise.all([
+    getUserPreferences(),
+    api.getPaged<PricingTierRow[]>('/v1/b2b/pricing-tiers'),
+  ]);
+  const tiers = paged.data;
 
-export default async function PricingTiersPage() {
-  const { data: tiers } = await api.getPaged<PricingTierRow[]>('/v1/b2b/pricing-tiers');
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="xl">
@@ -60,6 +40,8 @@ export default async function PricingTiersPage() {
           actions={<TierCreateButton />}
         />
 
+        <ListToolbar searchable={false} enableViewToggle />
+
         {tiers.length === 0 ? (
           <Card padding="none">
             <EmptyState
@@ -70,54 +52,15 @@ export default async function PricingTiersPage() {
             />
           </Card>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {tiers.map((tier) => (
-              <Card key={tier.id}>
-                <CardHeader>
-                  <Stack direction="row" align="start" justify="between" gap={2}>
-                    <CardTitle>{tier.name}</CardTitle>
-                    <Badge color="module" variant="soft">
-                      {discountLabel(tier)}
-                    </Badge>
-                  </Stack>
-                  {tier.description && <CardDescription>{tier.description}</CardDescription>}
-                </CardHeader>
-                <CardContent>
-                  <Stack gap={2}>
-                    <Stack direction="row" justify="between">
-                      <Text size="sm" variant="muted">
-                        Scope
-                      </Text>
-                      <Text size="sm">{scopeLabel(tier.productScope)}</Text>
-                    </Stack>
-                    {tier.minOrderCents > 0 && (
-                      <Stack direction="row" justify="between">
-                        <Text size="sm" variant="muted">
-                          Minimum order
-                        </Text>
-                        <Text size="sm">
-                          $
-                          {(tier.minOrderCents / 100).toLocaleString('en-US', {
-                            minimumFractionDigits: 0,
-                          })}
-                        </Text>
-                      </Stack>
-                    )}
-                    {tier.accountCount !== undefined && (
-                      <Stack direction="row" justify="between">
-                        <Text size="sm" variant="muted">
-                          Accounts
-                        </Text>
-                        <Text size="sm">{tier.accountCount}</Text>
-                      </Stack>
-                    )}
-                  </Stack>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <PricingTiersList rows={tiers} view={view} />
         )}
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

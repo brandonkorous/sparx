@@ -1,9 +1,14 @@
 import { notFound } from 'next/navigation';
-import { Container, PageHeader, Stack } from '@sparx/ui';
 import type { FieldDef } from '@sparx/cms-schemas';
-import { FileText } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import { ContentEntryWizard } from './content-entry-wizard';
+import { loadAuthorOptions } from './author-options';
+
+// Full-page surface for creating a content entry. The WizardFrame `page` variant
+// (docs/86) owns the viewport. On the content list the "New" affordance opens
+// this same wizard inside the dashboard's drawer/modal detail chrome, picked by
+// the user's `defaultDetailView` preference (the `overlay` presentation). This
+// route is the full-page option and the one that carries a `?type=` preselection.
 
 export const dynamic = 'force-dynamic';
 
@@ -51,25 +56,18 @@ export default async function NewContentEntryPage({ searchParams }: PageProps) {
         `/v1/content/types/${encodeURIComponent(typeKey)}`
       );
     } catch {
-      // Type not found — fall through to step 1 (type picker)
+      // Type not found — fall through to the type-picker step.
     }
   }
 
-  const title = preselectedType ? `New ${preselectedType.name.toLowerCase()}` : 'New content entry';
-  const description = preselectedType
-    ? preselectedType.name
-    : 'Choose a content type, fill required fields, and publish.';
+  const authors = await loadAuthorOptions();
 
   return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          icon={<FileText className="h-5 w-5" />}
-          title={title}
-          description={description}
-        />
-        <ContentEntryWizard types={types} preselectedType={preselectedType} />
-      </Stack>
-    </Container>
+    <ContentEntryWizard
+      types={types}
+      preselectedType={preselectedType}
+      presentation="page"
+      authors={authors}
+    />
   );
 }

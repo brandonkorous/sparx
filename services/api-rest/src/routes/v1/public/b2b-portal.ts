@@ -243,26 +243,24 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
 
     type InvoiceRow = (typeof invoiceItems)[number];
 
-    return ok(
-      paged(
-        invoiceItems.map((inv: InvoiceRow) => {
-          const meta = (inv.metadata ?? {}) as Record<string, unknown>;
-          return {
-            id: inv.id,
-            invoiceNumber: inv.number ?? '',
-            amountCents: Math.round(Number(inv.total) * 100),
-            balanceCents: Math.round(Number(inv.balance) * 100),
-            status: inv.status,
-            overdueDays: inv.overdueDays,
-            orderId: typeof meta.orderId === 'string' ? meta.orderId : null,
-            notes: inv.notes,
-            dueAt: inv.dueAt ? inv.dueAt.toISOString() : null,
-            paidAt: inv.paidAt ? inv.paidAt.toISOString() : null,
-            createdAt: inv.createdAt.toISOString(),
-          };
-        }),
-        { total: invoiceTotal, skip: q.skip, take: q.take }
-      )
+    return paged(
+      invoiceItems.map((inv: InvoiceRow) => {
+        const meta = (inv.metadata ?? {}) as Record<string, unknown>;
+        return {
+          id: inv.id,
+          invoiceNumber: inv.number ?? '',
+          amountCents: Math.round(Number(inv.total) * 100),
+          balanceCents: Math.round(Number(inv.balance) * 100),
+          status: inv.status,
+          overdueDays: inv.overdueDays,
+          orderId: typeof meta.orderId === 'string' ? meta.orderId : null,
+          notes: inv.notes,
+          dueAt: inv.dueAt ? inv.dueAt.toISOString() : null,
+          paidAt: inv.paidAt ? inv.paidAt.toISOString() : null,
+          createdAt: inv.createdAt.toISOString(),
+        };
+      }),
+      { total: invoiceTotal, skip: q.skip, take: q.take }
     );
   });
 
@@ -318,21 +316,19 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
 
     type OrderRow = (typeof orderItems)[number];
 
-    return ok(
-      paged(
-        orderItems.map((o: OrderRow) => ({
-          id: o.id,
-          orderNumber: o.orderNumber,
-          status: o.status,
-          totalCents: Math.round(Number(o.total) * 100),
-          currency: o.currency,
-          createdAt: o.createdAt.toISOString(),
-          customerName:
-            [o.customer?.firstName, o.customer?.lastName].filter(Boolean).join(' ') || null,
-          customerEmail: o.customer?.email ?? null,
-        })),
-        { total: orderTotal, skip: q.skip, take: q.take }
-      )
+    return paged(
+      orderItems.map((o: OrderRow) => ({
+        id: o.id,
+        orderNumber: o.orderNumber,
+        status: o.status,
+        totalCents: Math.round(Number(o.total) * 100),
+        currency: o.currency,
+        createdAt: o.createdAt.toISOString(),
+        customerName:
+          [o.customer?.firstName, o.customer?.lastName].filter(Boolean).join(' ') || null,
+        customerEmail: o.customer?.email ?? null,
+      })),
+      { total: orderTotal, skip: q.skip, take: q.take }
     );
   });
 
@@ -372,19 +368,17 @@ const b2bPortalRoutes: FastifyPluginAsync = async (app) => {
 
     type QuoteRow = (typeof quoteItems)[number];
 
-    return ok(
-      paged(
-        quoteItems.map((q2: QuoteRow) => ({
-          id: q2.id,
-          quoteNumber: q2.quoteNumber,
-          status: q2.status,
-          totalCents: Math.round(Number(q2.total) * 100),
-          currency: q2.currency,
-          validUntil: q2.validUntil?.toISOString() ?? null,
-          createdAt: q2.createdAt.toISOString(),
-        })),
-        { total: quoteTotal, skip: q.skip, take: q.take }
-      )
+    return paged(
+      quoteItems.map((q2: QuoteRow) => ({
+        id: q2.id,
+        quoteNumber: q2.quoteNumber,
+        status: q2.status,
+        totalCents: Math.round(Number(q2.total) * 100),
+        currency: q2.currency,
+        validUntil: q2.validUntil?.toISOString() ?? null,
+        createdAt: q2.createdAt.toISOString(),
+      })),
+      { total: quoteTotal, skip: q.skip, take: q.take }
     );
   });
 };

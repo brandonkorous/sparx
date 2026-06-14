@@ -16,18 +16,34 @@ import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@
 import { api } from '@/lib/api-rest-client';
 import type { AutomationDto } from './_lib/types';
 import { AutomationList } from './_components/automation-list';
+import { ListToolbar } from '../_components/list-toolbar';
+import { getUserPreferences } from '../_shell/preferences';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AutomationsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ focus?: string }>;
-}) {
-  const [{ focus }, session] = await Promise.all([searchParams, requireSession()]);
-  const [enabledModules, automations] = await Promise.all([
+const STATUS_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'paused', label: 'Paused' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'error', label: 'Error' },
+];
+
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function AutomationsPage({ searchParams }: PageProps) {
+  const [params, session] = await Promise.all([searchParams, requireSession()]);
+  const focus = stringParam(params.focus);
+  // Status is the API's `?status=` facet (filtered server-side); surfaced as a
+  // ListToolbar filter so it serializes into the URL like every other list.
+  const status = parseStatus(stringParam(params.status));
+  const [enabledModules, prefs, automations] = await Promise.all([
     listEnabledModules(session.user.tenantId),
-    api.get<AutomationDto[]>('/v1/automations'),
+    getUserPreferences(),
+    api.get<AutomationDto[]>(
+      `/v1/automations${status ? `?status=${encodeURIComponent(status)}` : ''}`
+    ),
   ]);
 
   const role = session.user.role;
@@ -35,6 +51,8 @@ export default async function AutomationsPage({
   // The email surface deep-links here (`?focus=email`) to land on the email-only
   // view — the unified replacement for the standalone Email Automations page.
   const emailFocus = focus === 'email';
+  // `?view=` overrides; absent → the user's saved default (§7.2).
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   if (enabledModules.length === 0) {
     return (
@@ -83,14 +101,24 @@ export default async function AutomationsPage({
           }
         />
 
+        <ListToolbar
+          searchable={false}
+          filters={[{ key: 'status', label: 'Status', options: STATUS_OPTIONS }]}
+          enableViewToggle
+        />
+
         {automations.length === 0 ? (
           <Card padding="none">
             <EmptyState
               icon={<Workflow className="h-5 w-5" />}
-              title="No automations yet"
-              description="Create your first rule to trigger actions when events happen across your modules."
+              title={status ? 'No automations match this filter' : 'No automations yet'}
+              description={
+                status
+                  ? 'Clear the status filter to see your other rules.'
+                  : 'Create your first rule to trigger actions when events happen across your modules.'
+              }
               action={
-                canWrite ? (
+                !status && canWrite ? (
                   <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
                     <Link href="/automations/new">New automation</Link>
                   </Button>
@@ -102,10 +130,21 @@ export default async function AutomationsPage({
           <AutomationList
             automations={automations}
             canWrite={canWrite}
+            view={view}
             initialEmailOnly={emailFocus}
           />
         )}
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
+}
+
+function parseStatus(v: string | undefined): 'active' | 'paused' | 'draft' | 'error' | undefined {
+  return v === 'active' || v === 'paused' || v === 'draft' || v === 'error' ? v : undefined;
 }

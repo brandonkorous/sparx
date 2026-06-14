@@ -1,16 +1,18 @@
 'use client';
 
-// B2B account creation wizard (docs/68 Phase B-5).
+// B2B account creation wizard (docs/68 Phase B-5, docs/86 WizardFrame).
 // 3 steps:
-//   1. Company info  — name (required), tax ID, website, status, tags
-//   2. Pricing        — credit limit, discount %, payment terms, fleet size, pricing tier, notes
-//   3. Engine profiles — optional fleet engine variants (make/model/year/engine/count)
+//   1. Company  — name (required), tax ID, website, status, tags
+//   2. Pricing  — credit limit, discount %, payment terms, fleet size, tier, notes
+//   3. Fleet    — optional engine variants (make/model/year/engine/count)
 //
-// On finish: calls createB2bAccountAction → navigates to the new account's detail.
+// Presentation: the `/new` route renders the full-screen `page` variant; the B2B
+// accounts list opens it inside the dashboard's drawer/modal detail chrome
+// (`overlay` → WizardFrame `inline`), picked by the user's `defaultDetailView`.
+// On finish: createB2bAccountAction → navigates to the new account's detail.
 
 import * as React from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
   Card,
@@ -19,18 +21,49 @@ import {
   Heading,
   Input,
   Label,
+  ModuleProvider,
   SchemaFieldRenderer,
   Stack,
-  Stepper,
   Text,
+  WizardFrame,
+  WizardStep,
+  type WizardStepDef,
 } from '@sparx/ui';
 import { Plus, Trash2 } from 'lucide-react';
 
 import { createB2bAccountAction } from '../../../crm/b2b-actions';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Steps & rail copy ──────────────────────────────────────────────────────────
 
-const STEPS = [{ label: 'Company' }, { label: 'Pricing' }, { label: 'Fleet' }];
+type StepKey = 'company' | 'pricing' | 'fleet';
+
+const ALL_STEPS: Record<StepKey, WizardStepDef> = {
+  company: { key: 'company', label: 'Company', sublabel: 'Name & status' },
+  pricing: { key: 'pricing', label: 'Pricing', sublabel: 'Credit & terms' },
+  fleet: { key: 'fleet', label: 'Fleet', sublabel: 'Engine profiles' },
+};
+
+const STEP_ORDER: StepKey[] = ['company', 'pricing', 'fleet'];
+
+const RAIL: Record<StepKey, { title: string; blurb: string; context?: string }> = {
+  company: {
+    title: 'Set up the account',
+    blurb: 'The company’s details. Pricing tiers and credit terms come in the next step.',
+    context: 'Only the company name is required to create the account.',
+  },
+  pricing: {
+    title: 'Pricing & credit',
+    blurb: 'Pricing tier, credit limit, and payment terms. All optional — tune them anytime.',
+    context: 'All optional — these can change later from the account.',
+  },
+  fleet: {
+    title: 'Fleet engine profiles',
+    blurb: 'The engine variants this fleet runs — used by fitment-aware catalog filtering.',
+    context: 'Optional — skip if not applicable.',
+  },
+};
+
+// ─── Field schemas ──────────────────────────────────────────────────────────────
 
 const COMPANY_FIELDS = [
   {
@@ -38,7 +71,7 @@ const COMPANY_FIELDS = [
     label: 'Company name',
     type: 'text' as const,
     required: true,
-    placeholder: 'Gillett Diesel Service',
+    placeholder: 'Acme Manufacturing',
   },
   { key: 'taxId', label: 'Tax ID', type: 'text' as const, placeholder: '12-3456789' },
   { key: 'website', label: 'Website', type: 'url' as const, placeholder: 'https://example.com' },
@@ -131,10 +164,27 @@ function emptyProfile(): EngineProfileDraft {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function B2bAccountWizard() {
-  const router = useRouter();
+export interface B2bAccountWizardProps {
+  /** `'page'` = full-screen `/new` route; `'overlay'` = inside the dashboard
+   *  drawer/modal detail chrome (the `defaultDetailView` preference picks which). */
+  presentation?: 'page' | 'overlay';
+}
 
-  const [step, setStep] = React.useState(0);
+export function B2bAccountWizard(props: B2bAccountWizardProps = {}) {
+  const fill = props.presentation === 'overlay';
+  return (
+    <ModuleProvider module="b2b" className={fill ? 'h-full' : undefined}>
+      <B2bAccountWizardInner {...props} />
+    </ModuleProvider>
+  );
+}
+
+function B2bAccountWizardInner({ presentation = 'page' }: B2bAccountWizardProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [stepKey, setStepKey] = React.useState<StepKey>('company');
 
   const [company, setCompany] = React.useState<Record<string, unknown>>({ status: 'active' });
   const [pricing, setPricing] = React.useState<Record<string, unknown>>({
@@ -147,7 +197,30 @@ export function B2bAccountWizard() {
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  // ── Validation ─────────────────────────────────────────────────────────
+  const steps: WizardStepDef[] = STEP_ORDER.map((k) => ALL_STEPS[k]);
+  const current = Math.max(
+    0,
+    steps.findIndex((s) => s.key === stepKey)
+  );
+
+  function goToStep(key: StepKey) {
+    setError(null);
+    setStepKey(key);
+  }
+
+  const close = React.useCallback(() => {
+    if (presentation === 'overlay') {
+      const next = new URLSearchParams(searchParams?.toString() ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/b2b/accounts');
+    }
+  }, [presentation, pathname, searchParams, router]);
+
+  // ── Validation ─────────────────────────────────────────────────────────────
 
   function validateCompany(): boolean {
     const errs: Record<string, string> = {};
@@ -158,21 +231,12 @@ export function B2bAccountWizard() {
     return Object.keys(errs).length === 0;
   }
 
-  // ── Navigation ─────────────────────────────────────────────────────────
-
-  function goNext() {
-    setError(null);
-    if (step === 0 && !validateCompany()) return;
-    setStep((s) => s + 1);
+  function commitCompany() {
+    if (!validateCompany()) return;
+    goToStep('pricing');
   }
 
-  function goBack() {
-    setError(null);
-    setCompanyErrors({});
-    setStep((s) => s - 1);
-  }
-
-  // ── Engine profile helpers ──────────────────────────────────────────────
+  // ── Engine profile helpers ──────────────────────────────────────────────────
 
   function updateProfile(id: string, field: keyof EngineProfileDraft, value: string) {
     setEngineProfiles((prev) => prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
@@ -182,7 +246,7 @@ export function B2bAccountWizard() {
     setEngineProfiles((prev) => prev.filter((p) => p.id !== id));
   }
 
-  // ── Submit ─────────────────────────────────────────────────────────────
+  // ── Submit ───────────────────────────────────────────────────────────────────
 
   async function handleSubmit() {
     setError(null);
@@ -242,188 +306,229 @@ export function B2bAccountWizard() {
     }
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────
+  // ── Step bodies ──────────────────────────────────────────────────────────────
+
+  const companyStep = (
+    <WizardStep
+      header={{
+        title: 'Company details',
+        supporting: 'The account’s company info. Pricing and credit terms come next.',
+      }}
+      actions={{
+        onNext: commitCompany,
+        nextLabel: 'Continue',
+        nextDisabled:
+          typeof company.companyName !== 'string' ||
+          company.companyName.trim() === '' ||
+          submitting,
+      }}
+    >
+      <SchemaFieldRenderer
+        fields={COMPANY_FIELDS}
+        values={company}
+        onChange={(key, value) => setCompany((prev) => ({ ...prev, [key]: value }))}
+        errors={companyErrors}
+        disabled={submitting}
+      />
+    </WizardStep>
+  );
+
+  const pricingStep = (
+    <WizardStep
+      header={{
+        title: 'Pricing & credit',
+        supporting: 'Pricing tier, credit limit, and payment terms — all optional.',
+      }}
+      actions={{
+        onBack: () => goToStep('company'),
+        onNext: () => goToStep('fleet'),
+        nextLabel: 'Continue',
+        nextDisabled: submitting,
+      }}
+    >
+      <SchemaFieldRenderer
+        fields={PRICING_FIELDS}
+        values={pricing}
+        onChange={(key, value) => setPricing((prev) => ({ ...prev, [key]: value }))}
+        disabled={submitting}
+      />
+    </WizardStep>
+  );
+
+  const fleetStep = (
+    <WizardStep
+      header={{
+        title: 'Fleet engine profiles',
+        supporting:
+          'Optionally record the engine variants this fleet runs. Each row is one engine type.',
+      }}
+      actions={{
+        onBack: () => goToStep('pricing'),
+        onNext: () => void handleSubmit(),
+        nextLabel: 'Create account',
+        nextLoading: submitting,
+        nextDisabled: submitting,
+      }}
+    >
+      <div className="flex flex-col gap-4">
+        <Card variant="module">
+          <CardHeader>
+            <Stack direction="row" align="center" justify="between">
+              <Heading level={3}>Engine profiles</Heading>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                leftIcon={<Plus className="h-3.5 w-3.5" />}
+                onClick={() => setEngineProfiles((prev) => [...prev, emptyProfile()])}
+                disabled={submitting}
+              >
+                Add engine
+              </Button>
+            </Stack>
+          </CardHeader>
+          <CardContent>
+            {engineProfiles.length === 0 ? (
+              <Text size="sm" variant="muted">
+                No engine profiles. Click “Add engine” to record the make, model, and count for each
+                engine variant the fleet runs.
+              </Text>
+            ) : (
+              <Stack gap={2}>
+                <Stack direction="row" gap={2} className="px-1">
+                  {['Year', 'Make', 'Model', 'Engine code', 'Count'].map((h) => (
+                    <Label key={h} className="flex-1 text-xs first:w-20 last:w-20">
+                      {h}
+                    </Label>
+                  ))}
+                  <div className="w-8" />
+                </Stack>
+                {engineProfiles.map((profile) => (
+                  <Stack
+                    key={profile.id}
+                    direction="row"
+                    gap={2}
+                    align="center"
+                    className="rounded-md border border-[var(--color-border-default)] p-2"
+                  >
+                    <Input
+                      type="number"
+                      min="1900"
+                      max="2100"
+                      className="w-20"
+                      placeholder="2022"
+                      value={profile.year}
+                      onChange={(e) => updateProfile(profile.id, 'year', e.target.value)}
+                      disabled={submitting}
+                    />
+                    <Input
+                      className="flex-1"
+                      placeholder="Cummins"
+                      value={profile.make}
+                      onChange={(e) => updateProfile(profile.id, 'make', e.target.value)}
+                      disabled={submitting}
+                    />
+                    <Input
+                      className="flex-1"
+                      placeholder="ISX15"
+                      value={profile.model}
+                      onChange={(e) => updateProfile(profile.id, 'model', e.target.value)}
+                      disabled={submitting}
+                    />
+                    <Input
+                      className="flex-1"
+                      placeholder="optional"
+                      value={profile.engine}
+                      onChange={(e) => updateProfile(profile.id, 'engine', e.target.value)}
+                      disabled={submitting}
+                    />
+                    <Input
+                      type="number"
+                      min="0"
+                      className="w-20"
+                      placeholder="3"
+                      value={profile.count}
+                      onChange={(e) => updateProfile(profile.id, 'count', e.target.value)}
+                      disabled={submitting}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      aria-label="Remove engine profile"
+                      onClick={() => removeProfile(profile.id)}
+                      disabled={submitting}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </Stack>
+                ))}
+              </Stack>
+            )}
+          </CardContent>
+        </Card>
+
+        {error && (
+          <Text size="sm" variant="danger" role="alert">
+            {error}
+          </Text>
+        )}
+      </div>
+    </WizardStep>
+  );
+
+  let body: React.ReactNode;
+  if (stepKey === 'company') body = companyStep;
+  else if (stepKey === 'pricing') body = pricingStep;
+  else body = fleetStep;
+
+  // ── Frame ──────────────────────────────────────────────────────────────────
+
+  const onStepSelect = (key: string) => {
+    const target = steps.findIndex((s) => s.key === key);
+    if (target >= 0 && target <= current) goToStep(key as StepKey);
+  };
+  const canSelectStep = (_key: string, index: number) => index <= current;
+  const cancelButton = (
+    <button
+      type="button"
+      onClick={close}
+      className="text-white/70 underline-offset-2 hover:underline"
+    >
+      Cancel
+    </button>
+  );
+
+  if (presentation === 'overlay') {
+    return (
+      <WizardFrame
+        variant="inline"
+        title="New B2B account"
+        steps={steps}
+        current={current}
+        context={RAIL[stepKey].context}
+        onStepSelect={onStepSelect}
+        canSelectStep={canSelectStep}
+        footer={cancelButton}
+      >
+        {body}
+      </WizardFrame>
+    );
+  }
 
   return (
-    <Stack gap={6}>
-      <Stepper steps={STEPS} current={step} />
-
-      {/* Step 1 — Company info */}
-      {step === 0 && (
-        <Stack gap={4}>
-          <Text variant="muted">
-            Enter the account&apos;s company details. Pricing tiers and credit terms are set in the
-            next step.
-          </Text>
-          <SchemaFieldRenderer
-            fields={COMPANY_FIELDS}
-            values={company}
-            onChange={(key, value) => setCompany((prev) => ({ ...prev, [key]: value }))}
-            errors={companyErrors}
-            disabled={submitting}
-          />
-          <Stack direction="row" gap={3}>
-            <Button variant="ghost" asChild>
-              <Link href="/b2b/accounts">Cancel</Link>
-            </Button>
-            <Button color="module" onClick={goNext}>
-              Continue
-            </Button>
-          </Stack>
-        </Stack>
-      )}
-
-      {/* Step 2 — Pricing & credit */}
-      {step === 1 && (
-        <Stack gap={4}>
-          <Text variant="muted">
-            Set the account&apos;s pricing tier, credit limit, and payment terms. All fields are
-            optional and can be updated later.
-          </Text>
-          <SchemaFieldRenderer
-            fields={PRICING_FIELDS}
-            values={pricing}
-            onChange={(key, value) => setPricing((prev) => ({ ...prev, [key]: value }))}
-            disabled={submitting}
-          />
-          <Stack direction="row" gap={3}>
-            <Button variant="ghost" onClick={goBack} disabled={submitting}>
-              Back
-            </Button>
-            <Button color="module" onClick={goNext} disabled={submitting}>
-              Continue
-            </Button>
-          </Stack>
-        </Stack>
-      )}
-
-      {/* Step 3 — Engine profiles */}
-      {step === 2 && (
-        <Stack gap={4}>
-          <Text variant="muted">
-            Optionally add the engine variants this fleet runs. Each row is one engine type — used
-            by fitment-aware catalog filtering once Commerce is active. Skip if not applicable.
-          </Text>
-
-          <Card variant="module">
-            <CardHeader>
-              <Stack direction="row" align="center" justify="between">
-                <Heading level={3}>Engine profiles</Heading>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  leftIcon={<Plus className="h-3.5 w-3.5" />}
-                  onClick={() => setEngineProfiles((prev) => [...prev, emptyProfile()])}
-                  disabled={submitting}
-                >
-                  Add engine
-                </Button>
-              </Stack>
-            </CardHeader>
-            <CardContent>
-              {engineProfiles.length === 0 ? (
-                <Text size="sm" variant="muted">
-                  No engine profiles. Click &ldquo;Add engine&rdquo; to record the make, model, and
-                  count for each engine variant the fleet runs.
-                </Text>
-              ) : (
-                <Stack gap={2}>
-                  {/* Column headers */}
-                  <Stack direction="row" gap={2} className="px-1">
-                    {['Year', 'Make', 'Model', 'Engine code', 'Count'].map((h) => (
-                      <Label key={h} className="flex-1 text-xs first:w-20 last:w-20">
-                        {h}
-                      </Label>
-                    ))}
-                    <div className="w-8" />
-                  </Stack>
-                  {engineProfiles.map((profile) => (
-                    <Stack
-                      key={profile.id}
-                      direction="row"
-                      gap={2}
-                      align="center"
-                      className="rounded-md border border-[var(--color-border-default)] p-2"
-                    >
-                      <Input
-                        type="number"
-                        min="1900"
-                        max="2100"
-                        className="w-20"
-                        placeholder="2022"
-                        value={profile.year}
-                        onChange={(e) => updateProfile(profile.id, 'year', e.target.value)}
-                        disabled={submitting}
-                      />
-                      <Input
-                        className="flex-1"
-                        placeholder="Cummins"
-                        value={profile.make}
-                        onChange={(e) => updateProfile(profile.id, 'make', e.target.value)}
-                        disabled={submitting}
-                      />
-                      <Input
-                        className="flex-1"
-                        placeholder="ISX15"
-                        value={profile.model}
-                        onChange={(e) => updateProfile(profile.id, 'model', e.target.value)}
-                        disabled={submitting}
-                      />
-                      <Input
-                        className="flex-1"
-                        placeholder="optional"
-                        value={profile.engine}
-                        onChange={(e) => updateProfile(profile.id, 'engine', e.target.value)}
-                        disabled={submitting}
-                      />
-                      <Input
-                        type="number"
-                        min="0"
-                        className="w-20"
-                        placeholder="3"
-                        value={profile.count}
-                        onChange={(e) => updateProfile(profile.id, 'count', e.target.value)}
-                        disabled={submitting}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        aria-label="Remove engine profile"
-                        onClick={() => removeProfile(profile.id)}
-                        disabled={submitting}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </Stack>
-                  ))}
-                </Stack>
-              )}
-            </CardContent>
-          </Card>
-
-          {error && (
-            <Text size="sm" variant="danger" role="alert">
-              {error}
-            </Text>
-          )}
-
-          <Stack direction="row" gap={3}>
-            <Button variant="ghost" onClick={goBack} disabled={submitting}>
-              Back
-            </Button>
-            <Button
-              color="module"
-              onClick={() => void handleSubmit()}
-              disabled={submitting}
-              loading={submitting}
-            >
-              Create account
-            </Button>
-          </Stack>
-        </Stack>
-      )}
-    </Stack>
+    <WizardFrame
+      variant="page"
+      className="fixed inset-0 z-50"
+      lede={{ title: RAIL[stepKey].title, blurb: RAIL[stepKey].blurb }}
+      steps={steps}
+      current={current}
+      context={RAIL[stepKey].context}
+      onStepSelect={onStepSelect}
+      canSelectStep={canSelectStep}
+      footer={cancelButton}
+    >
+      {body}
+    </WizardFrame>
   );
 }

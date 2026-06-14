@@ -1,29 +1,12 @@
 import { MessageSquare, Star } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
-import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ReviewsList, type ReviewListRow } from './_components/reviews-list';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,42 +20,6 @@ const STATUS_OPTIONS = [
   { value: 'rejected', label: 'Rejected' },
   { value: 'flagged', label: 'Flagged' },
 ];
-
-interface ReviewCustomer {
-  id: string;
-  firstName: string | null;
-  lastName: string | null;
-  email: string | null;
-}
-
-interface ReviewListRow {
-  id: string;
-  productId: string;
-  rating: number;
-  title: string;
-  body: string;
-  status: string;
-  verifiedPurchase: boolean;
-  createdAt: string;
-  productTitle?: string | null;
-  productHandle?: string | null;
-  customer?: ReviewCustomer | null;
-  // Only present on the /pending endpoint:
-  displayName?: string | null;
-  customerId?: string | null;
-}
-
-function authorLabel(row: ReviewListRow): string {
-  if (row.displayName) return row.displayName;
-  if (row.customer) {
-    const full = `${row.customer.firstName ?? ''} ${row.customer.lastName ?? ''}`.trim();
-    if (full) return full;
-    if (row.customer.email) return row.customer.email;
-    return 'Customer';
-  }
-  if (row.customerId) return 'Customer';
-  return 'Anon';
-}
 
 type Filter = { kind: 'queue' } | { kind: 'all' } | { kind: 'status'; status: ReviewStatus };
 
@@ -94,25 +41,14 @@ function labelFor(f: Filter): string {
 export default async function ReviewsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; productId?: string }>;
+  searchParams: Promise<{ status?: string; productId?: string; view?: string }>;
 }) {
-  const { status: statusParam, productId } = await searchParams;
+  const { status: statusParam, productId, view: viewParam } = await searchParams;
   const filter = parseFilter(statusParam);
 
-  let rows: ReviewListRow[] = [];
-  if (filter.kind === 'queue') {
-    rows = await api.get<ReviewListRow[]>('/v1/commerce/reviews/pending');
-  } else if (productId) {
-    const params = new URLSearchParams({ take: '250' });
-    if (filter.kind === 'status') params.set('status', filter.status);
-    rows = await api.get<ReviewListRow[]>(
-      `/v1/commerce/products/${productId}/reviews?${params.toString()}`
-    );
-  } else {
-    const params = new URLSearchParams({ take: '250' });
-    if (filter.kind === 'status') params.set('status', filter.status);
-    rows = await api.get<ReviewListRow[]>(`/v1/commerce/reviews?${params.toString()}`);
-  }
+  const [prefs, rows] = await Promise.all([getUserPreferences(), fetchRows(filter, productId)]);
+
+  const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -133,111 +69,43 @@ export default async function ReviewsPage({
         <ListToolbar
           searchable={false}
           filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
+          enableViewToggle
         />
 
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>{labelFor(filter)}</Heading>
-              <CardDescription>
-                Click a review to read the full body + media, respond as the merchant, or moderate.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            {rows.length === 0 ? (
-              <EmptyState
-                icon={<MessageSquare className="h-5 w-5" />}
-                title="Nothing here"
-                description="Reviews land here as customers submit them on storefront PDPs."
-              />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Rating</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Author</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Verified</TableHead>
-                    <TableHead>Submitted</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.map((r) => (
-                    <TableRow key={r.id}>
-                      <TableCell>
-                        <Stars value={r.rating} />
-                      </TableCell>
-                      <TableCell>
-                        <EntityRowLink
-                          href={`/commerce/reviews/${r.id}`}
-                          entityType="review"
-                          entityId={r.id}
-                          className="hover:text-[var(--module-active)]"
-                        >
-                          {r.title}
-                        </EntityRowLink>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm">
-                          {r.productTitle ?? (
-                            <span className="font-mono text-xs">{r.productId.slice(0, 8)}</span>
-                          )}
-                        </Text>
-                      </TableCell>
-                      <TableCell>{authorLabel(r)}</TableCell>
-                      <TableCell>
-                        <StatusBadge status={r.status} />
-                      </TableCell>
-                      <TableCell>
-                        {r.verifiedPurchase ? (
-                          <Badge color="success">verified</Badge>
-                        ) : (
-                          <Text size="xs" variant="muted">
-                            —
-                          </Text>
-                        )}
-                      </TableCell>
-                      <TableCell>{new Date(r.createdAt).toLocaleDateString()}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        {rows.length === 0 ? (
+          <Card variant="module" padding="none">
+            <EmptyState
+              icon={<MessageSquare className="h-5 w-5" />}
+              title="Nothing here"
+              description="Reviews land here as customers submit them on storefront PDPs."
+            />
+          </Card>
+        ) : (
+          <>
+            <Text size="sm" variant="muted">
+              {labelFor(filter)} — click a review to read the full body + media, respond as the
+              merchant, or moderate.
+            </Text>
+            <ReviewsList rows={rows} view={view} />
+          </>
+        )}
       </Stack>
     </Container>
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const variant: 'success' | 'warning' | 'outline' | 'danger' =
-    status === 'approved'
-      ? 'success'
-      : status === 'flagged'
-        ? 'warning'
-        : status === 'rejected'
-          ? 'danger'
-          : 'outline';
-  return <Badge color={variant}>{status}</Badge>;
-}
-
-function Stars({ value }: { value: number }) {
-  return (
-    <Stack direction="row" gap={0} align="center">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Star
-          key={i}
-          className={
-            i <= value
-              ? 'h-3.5 w-3.5 fill-[var(--module-active)] text-[var(--module-active)]'
-              : 'h-3.5 w-3.5 text-[var(--color-text-muted)]'
-          }
-        />
-      ))}
-    </Stack>
-  );
+async function fetchRows(filter: Filter, productId?: string): Promise<ReviewListRow[]> {
+  if (filter.kind === 'queue') {
+    return api.get<ReviewListRow[]>('/v1/commerce/reviews/pending');
+  }
+  if (productId) {
+    const params = new URLSearchParams({ take: '250' });
+    if (filter.kind === 'status') params.set('status', filter.status);
+    return api.get<ReviewListRow[]>(
+      `/v1/commerce/products/${productId}/reviews?${params.toString()}`
+    );
+  }
+  const params = new URLSearchParams({ take: '250' });
+  if (filter.kind === 'status') params.set('status', filter.status);
+  return api.get<ReviewListRow[]>(`/v1/commerce/reviews?${params.toString()}`);
 }

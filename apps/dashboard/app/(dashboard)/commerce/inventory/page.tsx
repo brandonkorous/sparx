@@ -25,7 +25,9 @@ import {
 import { api } from '@/lib/api-rest-client';
 
 import { ListToolbar } from '../../_components/list-toolbar';
-import { InventoryRowEditor } from './_components/inventory-row-editor';
+import { getUserPreferences } from '../../_shell/preferences';
+import { InventoryList } from './_components/inventory-list';
+import type { InventoryRow } from './_components/inventory-row-editor';
 
 // Inventory — by-warehouse stock view. Lets staff:
 //   • Filter to one warehouse
@@ -103,7 +105,8 @@ export default async function InventoryPage({ searchParams }: PageProps) {
   const lowStockQuery = new URLSearchParams({ take: '50' });
   if (warehouseFilter) lowStockQuery.set('warehouse_id', warehouseFilter);
 
-  const [warehouses, lowStock] = await Promise.all([
+  const [prefs, warehouses, lowStock] = await Promise.all([
+    getUserPreferences(),
     api.get<WarehouseRow[]>('/v1/commerce/warehouses'),
     api.get<LowStockRow[]>(`/v1/commerce/inventory/low-stock?${lowStockQuery.toString()}`),
   ]);
@@ -117,7 +120,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
       )
     : [];
   const warehouseCode = fallbackWarehouse?.code ?? '';
-  const gridRows = gridItems.map((r) => ({
+  const gridRows: InventoryRow[] = gridItems.map((r) => ({
     variantId: r.variantId,
     warehouseId: r.warehouseId,
     warehouseCode,
@@ -132,12 +135,13 @@ export default async function InventoryPage({ searchParams }: PageProps) {
     productId: r.productId,
     productTitle: r.productTitle,
   }));
-  const grid = { items: gridRows, total: gridRows.length };
 
   const warehouseOptions = warehouses.map((w) => ({
     value: w.id,
     label: `${w.code} — ${w.name}`,
   }));
+
+  const view = (pickString(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -170,6 +174,7 @@ export default async function InventoryPage({ searchParams }: PageProps) {
             <ListToolbar
               searchable={false}
               filters={[{ key: 'warehouse', label: 'Warehouses', options: warehouseOptions }]}
+              enableViewToggle
             />
 
             {lowStock.length > 0 && (
@@ -225,54 +230,30 @@ export default async function InventoryPage({ searchParams }: PageProps) {
               </Card>
             )}
 
-            <Card>
-              <CardHeader>
-                <Stack gap={1}>
-                  <Heading level={3}>
-                    Stock at {fallbackWarehouse?.code ?? '—'}
-                    <Badge variant="outline" className="ml-2 text-xs">
-                      {grid.total} variants
-                    </Badge>
-                  </Heading>
-                  <CardDescription>
-                    Each row shows the latest counts; the inline editor records every change as an
-                    audited adjustment (sale, recount, manual…).
-                  </CardDescription>
-                </Stack>
-              </CardHeader>
-              <CardContent>
-                {grid.items.length === 0 ? (
+            <Stack gap={2}>
+              <Heading level={3}>
+                Stock at {fallbackWarehouse?.code ?? '—'}
+                <Badge variant="outline" className="ml-2 text-xs">
+                  {gridRows.length} variants
+                </Badge>
+              </Heading>
+              <Text size="sm" variant="muted">
+                Each row shows the latest counts; the inline editor records every change as an
+                audited adjustment (sale, recount, manual…).
+              </Text>
+
+              {gridRows.length === 0 ? (
+                <Card variant="module" padding="none">
                   <EmptyState
                     icon={<Boxes className="h-5 w-5" />}
                     title="No stock tracked at this warehouse"
                     description="As soon as a variant is reserved, sold, or manually adjusted at this warehouse, a row appears here."
                   />
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>SKU</TableHead>
-                        <TableHead>Product</TableHead>
-                        <TableHead className="text-right">On hand</TableHead>
-                        <TableHead className="text-right">Allocated</TableHead>
-                        <TableHead className="text-right">Available</TableHead>
-                        <TableHead>Reorder</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {grid.items.map((row) => (
-                        <InventoryRowEditor
-                          key={`${row.variantId}:${row.warehouseId}`}
-                          row={row}
-                          warehouseId={fallbackWarehouse!.id}
-                        />
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
+                </Card>
+              ) : (
+                <InventoryList rows={gridRows} warehouseId={fallbackWarehouse!.id} view={view} />
+              )}
+            </Stack>
           </>
         )}
       </Stack>

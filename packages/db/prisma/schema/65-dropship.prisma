@@ -10,7 +10,7 @@ model DropshipSupplier {
   id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId    String    @map("tenant_id") @db.Uuid
   name        String    @db.VarChar(255)
-  // csv | dsers | spocket | faire | autods | custom
+  // csv | dsers | spocket | faire | autods | tapstitch | printful | zendrop | custom
   type        String    @db.VarChar(20)
   // Encrypted credentials bag (API key, secret, etc.) — never log raw.
   credentials Json      @default("{}")
@@ -27,9 +27,34 @@ model DropshipSupplier {
   tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   products       DropshipProduct[]
   dropshipOrders DropshipOrder[]
+  // Per-site enablement (docs/14, docs/49). A connection is tenant-wide — one
+  // credential set + one imported catalog — and EITHER serves every site (NO
+  // rows here, the default) OR is restricted to the listed sites. Mirrors the
+  // commerce_product_properties "empty = all sites" convention.
+  siteScopes     DropshipSupplierProperty[]
 
   @@index([tenantId, status])
   @@map("dropship_suppliers")
+}
+
+// dropship_suppliers ↔ properties — which SITES a tenant-wide supplier
+// connection is enabled on (docs/14, docs/49 §3). JUNCTION table: composite PK,
+// NO tenant_id, NO RLS — isolation rides the FK parents via ON DELETE CASCADE,
+// exactly like commerce_product_properties. NO rows for a supplier = enabled on
+// ALL of the tenant's sites (the default); rows present = enabled ONLY on those
+// sites. The catalog (dropship_products) stays tenant-wide; this gates which
+// sites may IMPORT/sell from the connection and which connection the order
+// router considers for an order placed on a given site.
+model DropshipSupplierProperty {
+  supplierId String @map("supplier_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  supplier DropshipSupplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  property Property         @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@id([supplierId, propertyId])
+  @@index([propertyId])
+  @@map("dropship_supplier_properties")
 }
 
 model DropshipProduct {
@@ -70,6 +95,12 @@ model DropshipProductLink {
   supplierSku       String   @map("supplier_sku") @db.VarChar(255)
   // active | discontinued
   status            String   @default("active") @db.VarChar(20)
+  // Forward-compatible seam for print-on-demand (docs/14 §10 — POD authoring is
+  // DEFERRED). When a POD supplier (Tapstitch, Printful) is wired for design
+  // authoring, the artwork/design binding for this product↔supplier link
+  // (designRef, printFileUrls, placement map) lands here without a migration.
+  // Null for catalog/order-routing connections (every connection today).
+  metadata          Json?
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz
 

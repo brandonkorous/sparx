@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { CheckCircle2 } from 'lucide-react';
 import {
   Button,
   Stack,
@@ -15,11 +16,49 @@ import {
 } from '@sparx/ui';
 import { createSupplier, updateSupplier } from '../_lib/actions';
 
+// ── Shared shapes (mirror @sparx/dropship/vendors, delivered via the API) ──────
+
+export interface VendorCredentialField {
+  key: string;
+  label: string;
+  type: 'text' | 'password' | 'url';
+  placeholder?: string;
+  help?: string;
+  required: boolean;
+}
+
+export interface Vendor {
+  slug: string;
+  label: string;
+  tagline: string;
+  description: string;
+  connectionMethod: 'api' | 'manual';
+  pod: boolean;
+  credentialFields: VendorCredentialField[];
+  capabilities: {
+    catalogSync: boolean;
+    orderSubmission: boolean;
+    trackingSync: boolean;
+    inventorySync: boolean;
+  };
+  credentialsHelpUrl?: string;
+}
+
+export interface SiteOption {
+  id: string;
+  name: string;
+  isPrimary: boolean;
+}
+
 interface Supplier {
   id: string;
   name: string;
   type: string;
-  credentials: Record<string, string>;
+  // The credential field spec for this vendor type and whether a token is
+  // already on file — both come from the API (toSupplierView). Secrets are
+  // write-only, so the form never receives the values themselves.
+  credentialFields?: VendorCredentialField[];
+  credentialsSet?: boolean;
   pricingRule: {
     type: string;
     value: number;
@@ -27,22 +66,19 @@ interface Supplier {
     maxMsrp?: string;
   } | null;
   notes: string | null;
+  siteScope?: string[];
 }
 
 interface Props {
+  /** The chosen vendor (create flow). */
+  vendor?: Vendor;
+  /** The existing supplier (edit flow). */
   supplier?: Supplier;
+  /** The tenant's sites, for per-site enablement. */
+  sites: SiteOption[];
   onSuccess: () => void;
   onCancel: () => void;
 }
-
-const SUPPLIER_TYPES = [
-  { value: 'csv', label: 'CSV Feed' },
-  { value: 'dsers', label: 'DSers' },
-  { value: 'spocket', label: 'Spocket' },
-  { value: 'faire', label: 'Faire' },
-  { value: 'autods', label: 'AutoDS' },
-  { value: 'custom', label: 'Custom' },
-];
 
 const PRICING_TYPES = [
   { value: 'percentage_markup', label: 'Percentage markup (cost × (1 + %))' },
@@ -57,16 +93,29 @@ const ROUND_OPTIONS = [
   { value: 'five_dollar', label: 'Nearest $5' },
 ];
 
-export function SupplierForm({ supplier, onSuccess, onCancel }: Props) {
-  const [name, setName] = useState(supplier?.name ?? '');
-  const [type, setType] = useState(supplier?.type ?? 'csv');
-  // CSV credentials
-  const [csvUrl, setCsvUrl] = useState(supplier?.credentials?.csvUrl ?? '');
-  // DSers credentials
-  const [dsersToken, setDsersToken] = useState(supplier?.credentials?.apiToken ?? '');
-  const [dsersStoreId, setDsersStoreId] = useState(supplier?.credentials?.storeId ?? '');
-  // Spocket credentials
-  const [spocketKey, setSpocketKey] = useState(supplier?.credentials?.apiKey ?? '');
+export function SupplierForm({ vendor, supplier, sites, onSuccess, onCancel }: Props) {
+  const isEdit = Boolean(supplier);
+  // Credential field spec comes from the supplier (edit, via the API) or the
+  // chosen vendor (create). Secrets are write-only — the API never echoes them
+  // back — so on edit the inputs always start blank and a blank field means
+  // "keep the stored value". `credentialsSet` tells us whether a token is on
+  // file, which drives the "saved / replace" vs "needs credentials" UI below.
+  const fields: VendorCredentialField[] =
+    supplier?.credentialFields ?? vendor?.credentialFields ?? [];
+  const hasStoredCreds = supplier?.credentialsSet ?? false;
+
+  const [name, setName] = useState(supplier?.name ?? vendor?.label ?? '');
+  const [creds, setCreds] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {};
+    for (const f of fields) init[f.key] = '';
+    return init;
+  });
+  // On edit with a token already on file, the credential inputs stay hidden
+  // behind a "Replace" affordance so a routine edit (pricing, sites, notes)
+  // never requires the token. When there are no stored creds (e.g. a wiped
+  // connection being recovered), the inputs show immediately.
+  const [replacingCreds, setReplacingCreds] = useState(false);
+  const credsOpen = !isEdit || !hasStoredCreds || replacingCreds;
   const [notes, setNotes] = useState(supplier?.notes ?? '');
 
   const [hasPricingRule, setHasPricingRule] = useState(supplier?.pricingRule != null);
@@ -79,8 +128,25 @@ export function SupplierForm({ supplier, onSuccess, onCancel }: Props) {
     supplier?.pricingRule?.maxMsrp === 'use_supplier_msrp'
   );
 
+  // Per-site enablement. Empty siteScope = all sites. Only relevant when the
+  // tenant has more than one site.
+  const multiSite = sites.length > 1;
+  const [limitSites, setLimitSites] = useState((supplier?.siteScope?.length ?? 0) > 0);
+  const [selectedSites, setSelectedSites] = useState<Set<string>>(
+    () => new Set(supplier?.siteScope ?? [])
+  );
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function toggleSite(id: string) {
+    setSelectedSites((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -88,23 +154,37 @@ export function SupplierForm({ supplier, onSuccess, onCancel }: Props) {
       setError('Name is required.');
       return;
     }
+    // On edit, blank credential fields mean "keep current", so required only
+    // applies when connecting (create).
+    if (!isEdit) {
+      for (const f of fields) {
+        if (f.required && !creds[f.key]?.trim()) {
+          setError(`${f.label} is required.`);
+          return;
+        }
+      }
+    }
     const value = parseFloat(pricingValue);
     if (hasPricingRule && isNaN(value)) {
       setError('Pricing rule value must be a number.');
+      return;
+    }
+    if (multiSite && limitSites && selectedSites.size === 0) {
+      setError('Select at least one site, or switch back to all sites.');
       return;
     }
 
     setSubmitting(true);
     setError(null);
     try {
-      const credentials: Record<string, string> =
-        type === 'csv'
-          ? { csvUrl: csvUrl.trim() }
-          : type === 'dsers'
-            ? { apiToken: dsersToken.trim(), storeId: dsersStoreId.trim() }
-            : type === 'spocket'
-              ? { apiKey: spocketKey.trim() }
-              : {};
+      // On edit, send ONLY the fields the user actually re-entered; the backend
+      // merges them over the stored secrets so blanks keep their value (and an
+      // untouched edit never wipes credentials). On create, send everything.
+      const credentials: Record<string, string> = {};
+      for (const f of fields) {
+        const value = (creds[f.key] ?? '').trim();
+        if (!isEdit || value) credentials[f.key] = value;
+      }
 
       const pricingRule = hasPricingRule
         ? {
@@ -115,19 +195,26 @@ export function SupplierForm({ supplier, onSuccess, onCancel }: Props) {
           }
         : null;
 
-      const body = {
-        name: name.trim(),
-        ...(supplier ? {} : { type }),
-        credentials,
-        pricingRule,
-        notes: notes.trim() || null,
-      };
+      const siteScope = multiSite && limitSites ? [...selectedSites] : [];
 
       if (supplier) {
-        const { error: err } = await updateSupplier(supplier.id, body);
+        const { error: err } = await updateSupplier(supplier.id, {
+          name: name.trim(),
+          credentials,
+          pricingRule,
+          notes: notes.trim() || null,
+          siteScope,
+        });
         if (err) throw new Error(err);
       } else {
-        const { error: err } = await createSupplier(body);
+        const { error: err } = await createSupplier({
+          name: name.trim(),
+          type: vendor!.slug,
+          credentials,
+          pricingRule,
+          notes: notes.trim() || null,
+          siteScope,
+        });
         if (err) throw new Error(err);
       }
       onSuccess();
@@ -146,89 +233,147 @@ export function SupplierForm({ supplier, onSuccess, onCancel }: Props) {
             Name <span className="text-[var(--color-danger)]">*</span>
           </Text>
           <Input
-            placeholder="e.g. Main Warehouse CSV"
+            placeholder="e.g. Printify — Main shop"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
         </Stack>
 
-        {!supplier && (
+        {fields.length > 0 && (
           <Stack gap={2}>
             <Text size="sm" className="font-medium">
-              Supplier type
+              Connection credentials
             </Text>
-            <Select value={type} onValueChange={setType}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SUPPLIER_TYPES.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
-                  </SelectItem>
+
+            {/* Token is on file and the user hasn't chosen to rotate it — show a
+                reassuring "saved" row so routine edits never demand the secret. */}
+            {isEdit && hasStoredCreds && !credsOpen && (
+              <div className="flex items-center justify-between gap-3 rounded-md border border-[var(--color-border)] px-3 py-2.5">
+                <Stack direction="row" align="center" gap={2}>
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-[var(--color-success)]" />
+                  <Text size="sm" className="text-[var(--color-muted-foreground)]">
+                    Saved — you don&apos;t need to re-enter it to make changes.
+                  </Text>
+                </Stack>
+                <Button
+                  type="button"
+                  color="neutral"
+                  variant="soft"
+                  size="sm"
+                  onClick={() => setReplacingCreds(true)}
+                >
+                  Replace
+                </Button>
+              </div>
+            )}
+
+            {credsOpen && (
+              <Stack gap={4}>
+                {isEdit && !hasStoredCreds && (
+                  <Text size="xs" className="text-[var(--color-warning)]">
+                    No credentials on file — enter the token below to reconnect this supplier.
+                  </Text>
+                )}
+                {fields.map((f) => (
+                  <Stack key={f.key} gap={2}>
+                    <Text size="sm" className="font-medium">
+                      {f.label}
+                      {f.required && !isEdit && (
+                        <span className="text-[var(--color-danger)]"> *</span>
+                      )}
+                    </Text>
+                    <Input
+                      type={f.type === 'password' ? 'password' : f.type === 'url' ? 'url' : 'text'}
+                      placeholder={f.placeholder}
+                      value={creds[f.key] ?? ''}
+                      onChange={(e) => setCreds((p) => ({ ...p, [f.key]: e.target.value }))}
+                      autoComplete="off"
+                    />
+                    {f.help && (
+                      <Text size="xs" className="text-[var(--color-muted-foreground)]">
+                        {f.help}
+                      </Text>
+                    )}
+                  </Stack>
                 ))}
-              </SelectContent>
-            </Select>
+
+                {vendor?.credentialsHelpUrl && (
+                  <Text size="xs" className="text-[var(--color-muted-foreground)]">
+                    Need help finding these?{' '}
+                    <a
+                      href={vendor.credentialsHelpUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      {vendor.label} credentials guide
+                    </a>
+                  </Text>
+                )}
+
+                {/* Let the user back out of a rotation without wiping the stored
+                    token (blank submit keeps it, but this avoids the inputs
+                    lingering and reassures them nothing changed). */}
+                {isEdit && hasStoredCreds && replacingCreds && (
+                  <button
+                    type="button"
+                    className="self-start text-xs text-[var(--color-muted-foreground)] underline"
+                    onClick={() => {
+                      setReplacingCreds(false);
+                      setCreds((p) => {
+                        const cleared: Record<string, string> = {};
+                        for (const k of Object.keys(p)) cleared[k] = '';
+                        return cleared;
+                      });
+                    }}
+                  >
+                    Cancel — keep the saved credentials
+                  </button>
+                )}
+              </Stack>
+            )}
           </Stack>
         )}
 
-        {type === 'csv' && (
-          <Stack gap={2}>
-            <Text size="sm" className="font-medium">
-              CSV feed URL <span className="text-[var(--color-danger)]">*</span>
-            </Text>
-            <Input
-              type="url"
-              placeholder="https://supplier.example.com/catalog.csv"
-              value={csvUrl}
-              onChange={(e) => setCsvUrl(e.target.value)}
-            />
-            <Text size="xs" className="text-[var(--color-muted-foreground)]">
-              Must be a publicly accessible URL. The first row must be a header row.
-            </Text>
-          </Stack>
-        )}
-
-        {type === 'dsers' && (
+        {/* Per-site enablement — only for multi-site tenants. */}
+        {multiSite && (
           <Stack gap={3}>
-            <Stack gap={2}>
-              <Text size="sm" className="font-medium">
-                DSers API token <span className="text-[var(--color-danger)]">*</span>
-              </Text>
-              <Input
-                type="password"
-                placeholder="Paste your DSers API token"
-                value={dsersToken}
-                onChange={(e) => setDsersToken(e.target.value)}
+            <label className="flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                className="rounded"
+                checked={limitSites}
+                onChange={(e) => setLimitSites(e.target.checked)}
               />
-            </Stack>
-            <Stack gap={2}>
               <Text size="sm" className="font-medium">
-                DSers store ID <span className="text-[var(--color-danger)]">*</span>
+                Limit this connection to specific sites
               </Text>
-              <Input
-                placeholder="e.g. 123456"
-                value={dsersStoreId}
-                onChange={(e) => setDsersStoreId(e.target.value)}
-              />
-            </Stack>
-          </Stack>
-        )}
-
-        {type === 'spocket' && (
-          <Stack gap={2}>
-            <Text size="sm" className="font-medium">
-              Spocket API key <span className="text-[var(--color-danger)]">*</span>
-            </Text>
-            <Input
-              type="password"
-              placeholder="Paste your Spocket API key"
-              value={spocketKey}
-              onChange={(e) => setSpocketKey(e.target.value)}
-            />
-            <Text size="xs" className="text-[var(--color-muted-foreground)]">
-              Found in your Spocket dashboard under Settings → API.
-            </Text>
+            </label>
+            {!limitSites && (
+              <Text size="xs" className="text-[var(--color-muted-foreground)]">
+                Available on all of your sites.
+              </Text>
+            )}
+            {limitSites && (
+              <Stack gap={2} className="border-l-2 border-[var(--color-border)] pl-6">
+                {sites.map((s) => (
+                  <label key={s.id} className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="checkbox"
+                      className="rounded"
+                      checked={selectedSites.has(s.id)}
+                      onChange={() => toggleSite(s.id)}
+                    />
+                    <Text size="sm">
+                      {s.name}
+                      {s.isPrimary && (
+                        <span className="text-[var(--color-muted-foreground)]"> (primary)</span>
+                      )}
+                    </Text>
+                  </label>
+                ))}
+              </Stack>
+            )}
           </Stack>
         )}
 

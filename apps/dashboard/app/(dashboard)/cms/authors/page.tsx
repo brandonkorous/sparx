@@ -1,35 +1,31 @@
-import {
-  Avatar,
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
-import { Pencil, Users } from 'lucide-react';
+// Authors index — a standard Collection/List surface (docs/34 §7): the create
+// form on top, then a ListToolbar with a Table/Cards toggle honoring the user's
+// defaultListView over the existing authors. The card view is preserved as the
+// `card` slot; the table mirrors its key fields.
+
+import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
+import { Users } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
-import { EntityRowLink } from '../../_components/entity-row-link';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ListToolbar } from '../../_components/list-toolbar';
 import { AuthorCreateForm } from './author-create-form';
+import { AuthorsList, type AuthorListItem } from './_components/authors-list';
 
 export const dynamic = 'force-dynamic';
 
-interface ApiAuthor {
-  id: string;
-  slug: string;
-  display_name: string;
-  bio: string | null;
-  created_at: string;
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function AuthorsPage() {
-  const authors = await api.get<ApiAuthor[]>('/v1/authors');
+export default async function AuthorsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
+  const [prefs, authors] = await Promise.all([
+    getUserPreferences(),
+    api.get<AuthorListItem[]>('/v1/authors'),
+  ]);
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -42,67 +38,31 @@ export default async function AuthorsPage() {
 
         <AuthorCreateForm />
 
-        <Card variant="module">
-          <CardHeader>
-            <Heading level={3}>Existing authors</Heading>
-            <CardDescription>Click an author to edit name, slug, and bio.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {authors.length === 0 ? (
-              <EmptyState
-                icon={<Users className="h-5 w-5" />}
-                title="No authors yet"
-                description="Add your first author above to start attributing blog posts and editorial entries."
-              />
-            ) : (
-              <Stack gap={2}>
-                {authors.map((a) => (
-                  <Stack
-                    key={a.id}
-                    direction="row"
-                    align="center"
-                    gap={3}
-                    className="rounded-md border border-[var(--color-border-default)] px-3 py-2"
-                  >
-                    <Avatar size="md" alt={a.display_name} />
-                    <Stack gap={0} className="min-w-0 flex-1">
-                      <Text size="sm" weight="medium" className="truncate">
-                        {a.display_name}
-                      </Text>
-                      <Text size="xs" variant="muted" className="truncate">
-                        /{a.slug}
-                        {a.bio ? ` · ${a.bio.slice(0, 80)}${a.bio.length > 80 ? '…' : ''}` : ''}
-                      </Text>
-                    </Stack>
-                    <Text size="xs" variant="muted" className="hidden sm:inline">
-                      Added{' '}
-                      {new Date(a.created_at).toLocaleDateString(undefined, {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </Text>
-                    <Button
-                      asChild
-                      variant="ghost"
-                      size="xs"
-                      leftIcon={<Pencil className="h-3 w-3" />}
-                    >
-                      <EntityRowLink
-                        href={`/cms/authors/${a.id}`}
-                        entityType="author"
-                        entityId={a.id}
-                      >
-                        Edit
-                      </EntityRowLink>
-                    </Button>
-                  </Stack>
-                ))}
-              </Stack>
-            )}
-          </CardContent>
-        </Card>
+        <ListToolbar searchable={false} enableViewToggle />
+
+        {authors.length === 0 ? (
+          <Card variant="module" padding="none">
+            <EmptyState
+              icon={<Users className="h-5 w-5" />}
+              title="No authors yet"
+              description="Add your first author above to start attributing blog posts and editorial entries."
+            />
+          </Card>
+        ) : (
+          <>
+            <Text size="sm" variant="muted">
+              Click an author to edit name, slug, and bio.
+            </Text>
+            <AuthorsList rows={authors} view={view} />
+          </>
+        )}
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

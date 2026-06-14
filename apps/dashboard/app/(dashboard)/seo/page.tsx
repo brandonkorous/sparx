@@ -7,29 +7,14 @@
 
 import { Gauge } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
-import {
-  Card,
-  Container,
-  EmptyState,
-  Grid,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-import { SeoScoreBadge } from '@/components/seo/seo-score';
-import { ENTITY_LABEL, type SeoAuditRow } from '@/components/seo/types';
+import { type SeoAuditRow } from '@/components/seo/types';
 import { getUserPreferences } from '../_shell/preferences';
 import { ListToolbar } from '../_components/list-toolbar';
 import { RescanButton } from './_components/rescan-button';
-import { SeoRowLink } from './_components/seo-row-link';
+import { SeoAuditList } from './_components/seo-audit-list';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,66 +88,7 @@ export default async function SeoOverviewPage({ searchParams }: PageProps) {
               {avg != null ? ` · average ${avg}/100` : ''}
             </Text>
 
-            {view === 'card' ? (
-              <Grid minItemWidth="20rem" gap={4}>
-                {rows.map((r) => (
-                  <Card key={r.id} variant="module" padding="md">
-                    <Stack direction="row" gap={3} align="start">
-                      <SeoScoreBadge score={r.score} grade={r.grade} size={36} />
-                      <Stack gap={1} className="min-w-0 flex-1">
-                        <SeoRowLink
-                          type={r.entityType}
-                          id={r.entityId}
-                          title={r.title ?? '(untitled)'}
-                          entityLabel={ENTITY_LABEL[r.entityType]}
-                          path={r.path}
-                        />
-                        {r.fixFirst ? (
-                          <Text size="xs" variant="muted">
-                            Top fix: {r.fixFirst}
-                          </Text>
-                        ) : null}
-                      </Stack>
-                    </Stack>
-                  </Card>
-                ))}
-              </Grid>
-            ) : (
-              <Card variant="module" padding="none">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Score</TableHead>
-                      <TableHead>Page</TableHead>
-                      <TableHead>Top fix</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {rows.map((r) => (
-                      <TableRow key={r.id}>
-                        <TableCell>
-                          <SeoScoreBadge score={r.score} grade={r.grade} size={30} />
-                        </TableCell>
-                        <TableCell>
-                          <SeoRowLink
-                            type={r.entityType}
-                            id={r.entityId}
-                            title={r.title ?? '(untitled)'}
-                            entityLabel={ENTITY_LABEL[r.entityType]}
-                            path={r.path}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Text size="sm" variant="muted">
-                            {r.fixFirst ?? '—'}
-                          </Text>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Card>
-            )}
+            <SeoAuditList rows={rows} view={view} />
           </>
         )}
       </Stack>

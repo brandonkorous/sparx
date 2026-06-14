@@ -5,7 +5,26 @@ import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { cn } from '../../utils/cn';
 
 export const TooltipProvider = TooltipPrimitive.Provider;
-export const Tooltip = TooltipPrimitive.Root;
+
+// Tooltip Root — self-contained: each instance carries its OWN Provider so a
+// trigger never throws "Tooltip must be used within TooltipProvider", no matter
+// where it mounts (overlay portals, the WizardFrame, the builder canvas, a
+// detached subtree). A shared <TooltipProvider> higher up (the app layout) still
+// works — nested Radix providers are a no-op for the inner subtree — but it's no
+// longer load-bearing for correctness. Mirrors @sparx/site-ui's Tooltip, which
+// already does this. `delayDuration` defaults to 150ms (the app's house value)
+// and an explicit prop still wins.
+export function Tooltip({
+  delayDuration = 150,
+  ...props
+}: React.ComponentProps<typeof TooltipPrimitive.Root>) {
+  return (
+    <TooltipPrimitive.Provider delayDuration={delayDuration}>
+      <TooltipPrimitive.Root delayDuration={delayDuration} {...props} />
+    </TooltipPrimitive.Provider>
+  );
+}
+
 export const TooltipTrigger = TooltipPrimitive.Trigger;
 
 export const TooltipContent = React.forwardRef<

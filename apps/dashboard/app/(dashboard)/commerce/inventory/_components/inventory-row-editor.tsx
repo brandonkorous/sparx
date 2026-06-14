@@ -1,10 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { Badge, Button, Input, Stack, TableCell, TableRow, Text } from '@sparx/ui';
+import { Button, Input, Stack, Text } from '@sparx/ui';
 
 import { adjustInventoryAction, setReorderPolicyAction } from '../../inventory-actions';
 
@@ -34,7 +33,12 @@ export interface InventoryRow {
   productTitle: string;
 }
 
-export function InventoryRowEditor({
+// Cell-friendly inventory editor — the interactive island reused by the
+// inventory list in BOTH the table (an "Actions" column cell) and card views.
+// Renders the Adjust / Reorder buttons and an inline expandable form panel
+// below them (no row-spanning <TableRow>, so it drops into a <TableCell> or a
+// card body unchanged). Every adjustment is recorded as an audited change.
+export function InventoryRowControls({
   row,
   warehouseId,
 }: {
@@ -45,8 +49,6 @@ export function InventoryRowEditor({
   const [mode, setMode] = React.useState<'view' | 'adjust' | 'reorder'>('view');
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
-
-  const belowReorder = row.reorderPoint !== null && row.available <= row.reorderPoint;
 
   function onAdjust(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -114,168 +116,122 @@ export function InventoryRowEditor({
   }
 
   return (
-    <>
-      <TableRow>
-        <TableCell>
-          <span className="font-mono text-xs">{row.sku}</span>
-        </TableCell>
-        <TableCell>
-          <Stack gap={0}>
-            <Link
-              href={`/commerce/products/${row.productId}`}
-              className="text-sm hover:text-[var(--module-active)]"
-            >
-              {row.productTitle}
-            </Link>
-            {row.variantTitle && (
+    <Stack gap={2}>
+      <Stack direction="row" gap={1}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setMode(mode === 'adjust' ? 'view' : 'adjust')}
+        >
+          Adjust
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setMode(mode === 'reorder' ? 'view' : 'reorder')}
+        >
+          Reorder
+        </Button>
+      </Stack>
+
+      {mode === 'adjust' && (
+        <form onSubmit={onAdjust} className="rounded bg-[var(--color-bg-subtle)] p-3">
+          <Stack direction="row" gap={3} align="end" wrap>
+            <Stack gap={1}>
               <Text size="xs" variant="muted">
-                {row.variantTitle}
+                Delta (±)
               </Text>
-            )}
+              <Input name="delta" defaultValue="0" className="w-[6rem]" />
+            </Stack>
+            <Stack gap={1}>
+              <Text size="xs" variant="muted">
+                Reason
+              </Text>
+              <select
+                name="reason"
+                defaultValue="manual"
+                className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
+              >
+                {REASONS.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+            </Stack>
+            <Stack gap={1} className="min-w-[14rem] flex-1">
+              <Text size="xs" variant="muted">
+                Note (optional)
+              </Text>
+              <Input name="note" placeholder="e.g. damaged in transit, recount after audit" />
+            </Stack>
+            <Stack direction="row" gap={2}>
+              <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
+                Cancel
+              </Button>
+              <Button color="module" size="sm" type="submit" disabled={pending}>
+                {pending ? 'Saving…' : 'Apply'}
+              </Button>
+            </Stack>
           </Stack>
-        </TableCell>
-        <TableCell className="text-right">{row.onHand}</TableCell>
-        <TableCell className="text-right">{row.allocated}</TableCell>
-        <TableCell className="text-right">
-          <Text className={belowReorder ? 'text-[var(--color-warning)]' : undefined}>
-            {row.available}
-          </Text>
-        </TableCell>
-        <TableCell>
-          {row.reorderPoint !== null ? (
-            <Badge color={belowReorder ? 'warning' : 'outline'} className="text-xs">
-              ≤ {row.reorderPoint}
-            </Badge>
-          ) : (
-            <Text size="xs" variant="muted">
-              none
+          {error && (
+            <Text size="xs" className="mt-2 text-[var(--color-danger)]">
+              {error}
             </Text>
           )}
-        </TableCell>
-        <TableCell>
-          <Stack direction="row" gap={1}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setMode(mode === 'adjust' ? 'view' : 'adjust')}
-            >
-              Adjust
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setMode(mode === 'reorder' ? 'view' : 'reorder')}
-            >
-              Reorder
-            </Button>
-          </Stack>
-        </TableCell>
-      </TableRow>
-      {mode === 'adjust' && (
-        <TableRow>
-          <TableCell colSpan={7} className="bg-[var(--color-bg-subtle)]">
-            <form onSubmit={onAdjust}>
-              <Stack direction="row" gap={3} align="end" wrap>
-                <Stack gap={1}>
-                  <Text size="xs" variant="muted">
-                    Delta (±)
-                  </Text>
-                  <Input name="delta" defaultValue="0" className="w-[6rem]" />
-                </Stack>
-                <Stack gap={1}>
-                  <Text size="xs" variant="muted">
-                    Reason
-                  </Text>
-                  <select
-                    name="reason"
-                    defaultValue="manual"
-                    className="h-9 rounded border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] px-3 text-sm"
-                  >
-                    {REASONS.map((r) => (
-                      <option key={r} value={r}>
-                        {r}
-                      </option>
-                    ))}
-                  </select>
-                </Stack>
-                <Stack gap={1} className="min-w-[14rem] flex-1">
-                  <Text size="xs" variant="muted">
-                    Note (optional)
-                  </Text>
-                  <Input name="note" placeholder="e.g. damaged in transit, recount after audit" />
-                </Stack>
-                <Stack direction="row" gap={2}>
-                  <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
-                    Cancel
-                  </Button>
-                  <Button color="module" size="sm" type="submit" disabled={pending}>
-                    {pending ? 'Saving…' : 'Apply'}
-                  </Button>
-                </Stack>
-              </Stack>
-              {error && (
-                <Text size="xs" className="mt-2 text-[var(--color-danger)]">
-                  {error}
-                </Text>
-              )}
-            </form>
-          </TableCell>
-        </TableRow>
+        </form>
       )}
+
       {mode === 'reorder' && (
-        <TableRow>
-          <TableCell colSpan={7} className="bg-[var(--color-bg-subtle)]">
-            <form onSubmit={onSetReorder}>
-              <Stack direction="row" gap={3} align="end" wrap>
-                <Stack gap={1}>
-                  <Text size="xs" variant="muted">
-                    Reorder point
-                  </Text>
-                  <Input
-                    name="reorderPoint"
-                    defaultValue={row.reorderPoint?.toString() ?? '0'}
-                    className="w-[6rem]"
-                  />
-                </Stack>
-                <Stack gap={1}>
-                  <Text size="xs" variant="muted">
-                    Reorder qty
-                  </Text>
-                  <Input
-                    name="reorderQuantity"
-                    defaultValue={row.reorderQuantity?.toString() ?? ''}
-                    className="w-[6rem]"
-                  />
-                </Stack>
-                <Stack gap={1}>
-                  <Text size="xs" variant="muted">
-                    Lead time (days)
-                  </Text>
-                  <Input
-                    name="leadTimeDays"
-                    defaultValue={row.leadTimeDays?.toString() ?? ''}
-                    className="w-[8rem]"
-                  />
-                </Stack>
-                <Stack direction="row" gap={2}>
-                  <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
-                    Cancel
-                  </Button>
-                  <Button color="module" size="sm" type="submit" disabled={pending}>
-                    {pending ? 'Saving…' : 'Save policy'}
-                  </Button>
-                </Stack>
-              </Stack>
-              {error && (
-                <Text size="xs" className="mt-2 text-[var(--color-danger)]">
-                  {error}
-                </Text>
-              )}
-            </form>
-          </TableCell>
-        </TableRow>
+        <form onSubmit={onSetReorder} className="rounded bg-[var(--color-bg-subtle)] p-3">
+          <Stack direction="row" gap={3} align="end" wrap>
+            <Stack gap={1}>
+              <Text size="xs" variant="muted">
+                Reorder point
+              </Text>
+              <Input
+                name="reorderPoint"
+                defaultValue={row.reorderPoint?.toString() ?? '0'}
+                className="w-[6rem]"
+              />
+            </Stack>
+            <Stack gap={1}>
+              <Text size="xs" variant="muted">
+                Reorder qty
+              </Text>
+              <Input
+                name="reorderQuantity"
+                defaultValue={row.reorderQuantity?.toString() ?? ''}
+                className="w-[6rem]"
+              />
+            </Stack>
+            <Stack gap={1}>
+              <Text size="xs" variant="muted">
+                Lead time (days)
+              </Text>
+              <Input
+                name="leadTimeDays"
+                defaultValue={row.leadTimeDays?.toString() ?? ''}
+                className="w-[8rem]"
+              />
+            </Stack>
+            <Stack direction="row" gap={2}>
+              <Button variant="ghost" size="sm" type="button" onClick={() => setMode('view')}>
+                Cancel
+              </Button>
+              <Button color="module" size="sm" type="submit" disabled={pending}>
+                {pending ? 'Saving…' : 'Save policy'}
+              </Button>
+            </Stack>
+          </Stack>
+          {error && (
+            <Text size="xs" className="mt-2 text-[var(--color-danger)]">
+              {error}
+            </Text>
+          )}
+        </form>
       )}
-    </>
+    </Stack>
   );
 }
 

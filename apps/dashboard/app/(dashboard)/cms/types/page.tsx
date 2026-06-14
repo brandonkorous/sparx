@@ -4,31 +4,23 @@
 // tenant-defined types), with a per-type entry count. The type name and count
 // link to that type's items on the unified content list (/cms/content?type=...);
 // the "Schema" action opens the type's identity + schema editor (custom) /
-// read-only schema (built-in) in the user's preferred detail surface.
+// read-only schema (built-in) in the user's preferred detail surface. A standard
+// Collection/List surface (docs/34 §7): ListToolbar with a Table/Cards toggle
+// honoring the user's defaultListView.
 
-import Link from 'next/link';
-import {
-  Badge,
-  Card,
-  CardContent,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 import { Database, Plus } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
 import { EntityCreateButton } from '../../_components/entity-create-button';
-import { EntityRowLink } from '../../_components/entity-row-link';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ContentTypesList } from './_components/content-types-list';
 
 export const dynamic = 'force-dynamic';
+
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
 interface ApiContentType {
   key: string;
@@ -45,14 +37,25 @@ interface ApiEntry {
   type_key: string;
 }
 
-export default async function ContentTypesPage() {
-  const [types, entries] = await Promise.all([
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
+}
+
+export default async function ContentTypesPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
+  const [prefs, types, entries] = await Promise.all([
+    getUserPreferences(),
     api.get<ApiContentType[]>('/v1/content/types'),
     api.get<ApiEntry[]>('/v1/content/entries?limit=250'),
   ]);
 
-  const counts = new Map<string, number>();
-  for (const e of entries) counts.set(e.type_key, (counts.get(e.type_key) ?? 0) + 1);
+  const counts: Record<string, number> = {};
+  for (const e of entries) counts[e.type_key] = (counts[e.type_key] ?? 0) + 1;
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -74,6 +77,8 @@ export default async function ContentTypesPage() {
           }
         />
 
+        <ListToolbar enableViewToggle searchable={false} />
+
         {types.length === 0 ? (
           <Card variant="module" padding="none">
             <EmptyState
@@ -93,86 +98,7 @@ export default async function ContentTypesPage() {
             />
           </Card>
         ) : (
-          <Card variant="module" padding="none">
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Kind</TableHead>
-                    <TableHead>URL pattern</TableHead>
-                    <TableHead className="text-right">Items</TableHead>
-                    <TableHead className="text-right">Schema</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {types.map((t) => {
-                    const count = counts.get(t.key) ?? 0;
-                    return (
-                      <TableRow key={t.key}>
-                        <TableCell>
-                          <Stack gap={1}>
-                            <Link
-                              href={`/cms/content?type=${t.key}`}
-                              className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                            >
-                              {t.plural_name}
-                            </Link>
-                            {t.description && (
-                              <Text size="xs" variant="muted" className="line-clamp-1">
-                                {t.description}
-                              </Text>
-                            )}
-                          </Stack>
-                        </TableCell>
-                        <TableCell>
-                          <Stack direction="row" align="center" gap={2}>
-                            <Badge color={t.is_built_in ? 'outline' : 'module'} className="text-xs">
-                              {t.is_built_in ? 'built-in' : 'custom'}
-                            </Badge>
-                            {t.is_singleton && (
-                              <Badge variant="outline" className="text-xs">
-                                singleton
-                              </Badge>
-                            )}
-                          </Stack>
-                        </TableCell>
-                        <TableCell>
-                          {t.url_pattern ? (
-                            <Text size="xs" variant="muted" className="font-mono">
-                              {t.url_pattern}
-                            </Text>
-                          ) : (
-                            <Text size="xs" variant="muted">
-                              —
-                            </Text>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          <Link
-                            href={`/cms/content?type=${t.key}`}
-                            className="hover:text-[var(--module-active)] hover:underline"
-                          >
-                            {count}
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <EntityRowLink
-                            href={`/cms/types/${t.key}`}
-                            entityType="content-type"
-                            entityId={t.key}
-                            className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--module-active)] hover:underline"
-                          >
-                            {t.is_built_in ? 'View' : 'Edit'}
-                          </EntityRowLink>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <ContentTypesList types={types} counts={counts} view={view} />
         )}
       </Stack>
     </Container>

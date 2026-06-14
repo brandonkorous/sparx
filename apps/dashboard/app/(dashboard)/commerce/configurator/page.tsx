@@ -1,40 +1,11 @@
-import Link from 'next/link';
 import { Settings2 } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-import { EntityRowLink } from '../../_components/entity-row-link';
-
-interface ConfigurationTemplateRow {
-  id: string;
-  productId: string;
-  productTitle: string;
-  name: string;
-  description: string | null;
-  status: string;
-  optionCount: number;
-  ruleCount: number;
-  addOnCount: number;
-  updatedAt: string;
-}
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ConfiguratorList, type ConfigurationTemplateRow } from './_components/configurator-list';
 
 // Configurator — option-matrix-with-rules templates that resolve a
 // storefront selection into a ResolvedConfiguration. Per-product
@@ -43,16 +14,19 @@ interface ConfigurationTemplateRow {
 
 export const dynamic = 'force-dynamic';
 
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
-  active: 'success',
-  draft: 'outline',
-  archived: 'warning',
-};
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
-export default async function ConfiguratorPage() {
-  const templates = await api.get<ConfigurationTemplateRow[]>(
-    '/v1/commerce/configurator-templates?take=200'
-  );
+export default async function ConfiguratorPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
+  const [prefs, templates] = await Promise.all([
+    getUserPreferences(),
+    api.get<ConfigurationTemplateRow[]>('/v1/commerce/configurator-templates?take=200'),
+  ]);
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -64,70 +38,26 @@ export default async function ConfiguratorPage() {
           description="Templates drive any configurable product — play structures, beauty gift sets, custom auto parts, configurable dogfood crates. Each template is a set of options + rules + add-ons; the resolver turns a user's selections into a cart line."
         />
 
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>All templates</Heading>
-              <CardDescription>
-                Templates are scoped to a product. Edit them from the product detail page&apos;s
-                Configurator tab.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            {templates.length === 0 ? (
-              <EmptyState
-                icon={<Settings2 className="h-5 w-5" />}
-                title="No configurators yet"
-                description="Open any configurable product (e.g. a play structure or gift-set) and add a configurator template from its detail page."
-              />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Template</TableHead>
-                    <TableHead>Options</TableHead>
-                    <TableHead>Rules</TableHead>
-                    <TableHead>Add-ons</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {templates.map((t) => (
-                    <TableRow key={t.id}>
-                      <TableCell>
-                        <Link
-                          href={`/commerce/products/${t.productId}`}
-                          className="hover:text-[var(--module-active)]"
-                        >
-                          {t.productTitle}
-                        </Link>
-                      </TableCell>
-                      <TableCell>
-                        <EntityRowLink
-                          href={`/commerce/configurator/${t.id}`}
-                          entityType="configurator-template"
-                          entityId={t.id}
-                          className="hover:text-[var(--module-active)]"
-                        >
-                          {t.name}
-                        </EntityRowLink>
-                      </TableCell>
-                      <TableCell>{t.optionCount}</TableCell>
-                      <TableCell>{t.ruleCount}</TableCell>
-                      <TableCell>{t.addOnCount}</TableCell>
-                      <TableCell>
-                        <Badge color={STATUS_VARIANT[t.status] ?? 'outline'}>{t.status}</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        <ListToolbar enableViewToggle searchable={false} />
+
+        {templates.length === 0 ? (
+          <Card padding="none">
+            <EmptyState
+              icon={<Settings2 className="h-5 w-5" />}
+              title="No configurators yet"
+              description="Open any configurable product (e.g. a play structure or gift-set) and add a configurator template from its detail page."
+            />
+          </Card>
+        ) : (
+          <ConfiguratorList templates={templates} view={view} />
+        )}
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

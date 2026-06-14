@@ -1,17 +1,37 @@
 import { ShieldOff } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@sparx/ui';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  EmptyState,
+  Text,
+} from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { EmailShell } from '../_components/email-shell';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
 import { AddSuppressionForm } from './_components/add-suppression-form';
-import { SuppressionsTable } from './_components/suppressions-table';
+import { SuppressionsList } from './_components/suppressions-list';
 import type { SuppressionRow } from '../_lib/types';
 
 export const dynamic = 'force-dynamic';
 
-export default async function SuppressionsPage() {
-  const { data: items, meta } = await api.getPaged<SuppressionRow[]>('/v1/email/suppressions');
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function SuppressionsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const [prefs, { data: items, meta }] = await Promise.all([
+    getUserPreferences(),
+    api.getPaged<SuppressionRow[]>('/v1/email/suppressions'),
+  ]);
   const total = typeof meta?.total === 'number' ? meta.total : items.length;
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <EmailShell
@@ -33,14 +53,29 @@ export default async function SuppressionsPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Suppressed addresses ({total})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SuppressionsTable items={items} />
-        </CardContent>
-      </Card>
+      <Text size="sm" variant="muted">
+        {total} suppressed address{total === 1 ? '' : 'es'}
+      </Text>
+
+      <ListToolbar enableViewToggle searchable={false} />
+
+      {items.length === 0 ? (
+        <Card padding="none">
+          <EmptyState
+            icon={<ShieldOff className="h-5 w-5" />}
+            title="No suppressed addresses"
+            description="Bounces, complaints, and unsubscribes will appear here automatically, and you can add addresses manually above."
+          />
+        </Card>
+      ) : (
+        <SuppressionsList rows={items} view={view} />
+      )}
     </EmailShell>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

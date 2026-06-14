@@ -8,10 +8,11 @@ import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { getUserPreferences } from '../../_shell/preferences';
 import { CustomersSelectionTable } from './_components/customers-selection-table';
 import { CustomersImportExport } from './_components/customers-import-export';
-import { CustomerNewButton } from './_components/customer-new-button';
 import type { CustomerListRow } from './_components/customers-selection-table';
 
 // Typesense customer search document (the subset this list needs). Returned by
@@ -60,6 +61,7 @@ interface PageProps {
 
 export default async function CrmCustomersPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { page, perPage, skip, take } = parsePageParams(params);
   const type = stringParam(params.type);
   const tag = stringParam(params.tag);
   const q = stringParam(params.q);
@@ -83,7 +85,7 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
   if (q) {
     // Search via Typesense, scoped to the active site (docs/58 D2) via the
     // customers `property_id` facet — same selection as the browse list below.
-    const sq = new URLSearchParams({ q, per_page: '100' });
+    const sq = new URLSearchParams({ q, page: String(page), per_page: String(perPage) });
     if (propertyFilter) sq.set('property', propertyFilter);
     const { data, meta } = await api.getPaged<CustomerSearchDoc[]>(
       `/v1/search/customers?${sq.toString()}`
@@ -104,7 +106,8 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
     total = (meta?.total as number | undefined) ?? customers.length;
   } else {
     const query = new URLSearchParams();
-    query.set('take', '100');
+    query.set('take', String(take));
+    query.set('skip', String(skip));
     query.set('sort_by', sort);
     if (type === 'prospect' || type === 'retail' || type === 'b2b') query.set('type', type);
     if (tag) query.set('tag', tag);
@@ -152,7 +155,14 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
                 <Link href="/crm/duplicates">Find duplicates</Link>
               </Button>
               <CustomersImportExport />
-              <CustomerNewButton />
+              <EntityCreateButton
+                entityType="customer"
+                newHref="/crm/customers/new"
+                color="module"
+                leftIcon={<Plus className="h-4 w-4" />}
+              >
+                New
+              </EntityCreateButton>
             </>
           }
         />
@@ -186,6 +196,8 @@ export default async function CrmCustomersPage({ searchParams }: PageProps) {
         ) : (
           <CustomersSelectionTable customers={customers} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

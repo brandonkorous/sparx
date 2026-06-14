@@ -168,7 +168,10 @@ export interface SupplierAdapter {
 
 // ── Supplier type discriminant ────────────────────────────────────────────────
 
-export type SupplierType = 'csv' | 'dsers' | 'spocket' | 'faire' | 'autods' | 'custom';
+// Only suppliers with a real, self-serve integration. Suppliers without a
+// usable public API (Tapstitch, PODPartner, Zendrop, AutoDS, Faire) are
+// deliberately excluded — see the vendor-API verdict matrix in docs/14 §3.
+export type SupplierType = 'csv' | 'dsers' | 'spocket' | 'printify' | 'printful';
 
 // ── dropship_supplier row view (after DB fetch) ───────────────────────────────
 

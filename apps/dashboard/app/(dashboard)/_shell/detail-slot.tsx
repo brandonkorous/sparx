@@ -1,12 +1,18 @@
 import 'server-only';
 import * as React from 'react';
 import { ModuleProvider, type SparxModule } from '@sparx/ui';
-import { CREATE_SENTINEL, parseDetailToken } from './detail-registry';
+import { requireSession } from '@sparx/auth';
+import { api } from '@/lib/api-rest-client';
+import { CREATE_SENTINEL, isFullBleedCreate, parseDetailToken } from './detail-registry';
+import { ProductWizard } from '../commerce/products/_components/product-wizard';
+import { CustomerFullProfileWizard } from '../crm/customers/new/customer-full-profile-wizard';
+import { loadPipelineOptions } from '../crm/customers/new/pipeline-options';
+import { B2bAccountWizard } from '../b2b/accounts/new/b2b-account-wizard';
+import { ContentEntryWizard } from '../cms/content/new/content-entry-wizard';
+import { loadAuthorOptions } from '../cms/content/new/author-options';
 import { CollectionCreateForm } from '../commerce/collections/_components/collection-create-form';
 import { WarehouseCreateForm } from '../commerce/warehouses/_components/warehouse-create-form';
 import { PriceListCreateForm } from '../commerce/pricing/_components/price-list-create-form';
-import { CustomerCreateForm } from '../crm/customers/_components/customer-create-form';
-import { B2bAccountCreateForm } from '../crm/b2b/_components/b2b-account-create-form';
 import { SegmentCreateForm } from '../crm/segments/_components/segment-create-form';
 import { PageCreateForm } from '../cms/_components/page-create-form';
 import { ContentTypeCreateForm } from '../cms/types/_components/content-type-create-form';
@@ -142,17 +148,59 @@ const detailModules: Record<string, SparxModule> = {
 // Forms needing server-fetched data (e.g. select options) would register a
 // thin server wrapper that fetches then renders the client form — these are
 // all self-contained, so they register directly.
+// Content-entry create is the WizardFrame, but its type-picker step needs the
+// tenant's content types — so it registers a thin server wrapper that fetches
+// them (the documented pattern for create overlays needing server data). The
+// overlay always starts at the type picker; the `/new` route carries any
+// `?type=` preselection instead.
+interface ContentTypeSummary {
+  key: string;
+  name: string;
+  plural_name: string;
+  description: string | null;
+  is_singleton: boolean;
+}
+
+// Customer create is the WizardFrame; its optional follow-up task is assigned to
+// the current user and its optional deal needs the tenant's pipelines, so a thin
+// server wrapper resolves the session + pipelines and passes them through.
+async function CustomerCreateOverlay() {
+  const [session, pipelines] = await Promise.all([requireSession(), loadPipelineOptions()]);
+  return (
+    <CustomerFullProfileWizard
+      presentation="overlay"
+      currentUserId={session.user.id}
+      pipelines={pipelines}
+    />
+  );
+}
+
+async function ContentEntryCreateOverlay() {
+  let types: ContentTypeSummary[] = [];
+  try {
+    types = await api.get<ContentTypeSummary[]>('/v1/content/types');
+  } catch {
+    types = [];
+  }
+  const authors = await loadAuthorOptions();
+  return <ContentEntryWizard types={types} presentation="overlay" authors={authors} />;
+}
+
 const createComponents: Record<string, React.ComponentType> = {
   collection: () => <CollectionCreateForm surface="overlay" />,
-  // product create is the full-screen WizardFrame at /commerce/products/new
-  // (see detail-registry CREATE_VIEW_TYPES) — no drawer/modal overlay form.
+  // Product create is the multi-step WizardFrame, rendered as its `inline`
+  // variant so the surrounding drawer/modal chrome owns the overlay shell. It's
+  // flagged full-bleed (detail-registry `FULL_BLEED_CREATE_TYPES`) so the chrome
+  // hands it the whole body. Full page stays at /commerce/products/new.
+  product: () => <ProductWizard presentation="overlay" />,
   warehouse: () => <WarehouseCreateForm surface="overlay" />,
   'price-list': () => <PriceListCreateForm surface="overlay" />,
-  customer: () => <CustomerCreateForm surface="overlay" />,
-  'b2b-account': () => <B2bAccountCreateForm surface="overlay" />,
+  customer: CustomerCreateOverlay,
+  'b2b-account': () => <B2bAccountWizard presentation="overlay" />,
   segment: () => <SegmentCreateForm surface="overlay" />,
   page: () => <PageCreateForm surface="overlay" />,
   'content-type': () => <ContentTypeCreateForm surface="overlay" />,
+  'content-entry': ContentEntryCreateOverlay,
 };
 
 // Renders the detail content for a given (typeId, id), or null when the type
@@ -167,8 +215,12 @@ export function renderDetailContent(typeId: string, id: string): React.ReactNode
   if (id === CREATE_SENTINEL) {
     const Create = createComponents[typeId];
     if (!Create) return null;
+    // Full-bleed create overlays (the product wizard) fill the chrome body, so
+    // the module wrapper must carry the height through rather than collapse to
+    // content — otherwise the wizard's two-pane frame can't fill the panel.
+    const fullBleed = isFullBleedCreate(typeId);
     return (
-      <ModuleProvider module={module}>
+      <ModuleProvider module={module} className={fullBleed ? 'h-full' : undefined}>
         <Create />
       </ModuleProvider>
     );

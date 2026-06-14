@@ -25,13 +25,21 @@ import {
 } from '@sparx/ui';
 import { MoreHorizontal, RefreshCw, Edit2, Trash2 } from 'lucide-react';
 import { syncSupplier, deleteSupplier } from '../_lib/actions';
-import { SupplierForm } from './supplier-form';
+import {
+  SupplierForm,
+  type SiteOption,
+  type Vendor,
+  type VendorCredentialField,
+} from './supplier-form';
 
 interface Supplier {
   id: string;
   name: string;
   type: string;
-  credentials: Record<string, string>;
+  // Credential spec + "token on file?" flag from the API. Secrets themselves are
+  // never sent to the browser.
+  credentialFields?: VendorCredentialField[];
+  credentialsSet?: boolean;
   pricingRule: {
     type: string;
     value: number;
@@ -39,13 +47,19 @@ interface Supplier {
     maxMsrp?: string;
   } | null;
   notes: string | null;
+  siteScope?: string[];
 }
 
 interface Props {
   supplier: Supplier;
+  sites: SiteOption[];
+  vendors: Vendor[];
 }
 
-export function SupplierActions({ supplier }: Props) {
+export function SupplierActions({ supplier, sites, vendors }: Props) {
+  // Resolve the vendor spec so the edit form renders the right credential fields
+  // (secrets are write-only, so they can't be derived from the API response).
+  const vendor = vendors.find((v) => v.slug === supplier.type);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [syncing, startSync] = useTransition();
@@ -121,7 +135,9 @@ export function SupplierActions({ supplier }: Props) {
             <ModalDescription>Update connection settings and pricing rule.</ModalDescription>
           </ModalHeader>
           <SupplierForm
+            vendor={vendor}
             supplier={supplier}
+            sites={sites}
             onSuccess={() => {
               setEditOpen(false);
               router.refresh();

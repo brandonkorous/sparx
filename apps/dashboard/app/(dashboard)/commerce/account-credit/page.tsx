@@ -11,39 +11,17 @@ import {
   Heading,
   PageHeader,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
 import { GrantAccountCreditForm } from './_components/grant-account-credit-form';
+import { AccountCreditList, type AccountCreditRow } from './_components/account-credit-list';
 
 export const dynamic = 'force-dynamic';
 
 const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
-
-interface AccountCreditCustomer {
-  id: string;
-  firstName: string | null;
-  lastName: string | null;
-  email: string | null;
-  company: string | null;
-}
-
-interface AccountCreditRow {
-  id: string;
-  customerId: string;
-  balanceCents: number;
-  currency: string;
-  updatedAt: string;
-  customer: AccountCreditCustomer | null;
-}
 
 interface CrmCustomerRow {
   id: string;
@@ -52,19 +30,21 @@ interface CrmCustomerRow {
   email: string | null;
 }
 
-function customerName(c: AccountCreditCustomer | null): string | null {
-  if (!c) return null;
-  const full = `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim();
-  return full !== '' ? full : (c.company ?? c.email ?? null);
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function AccountCreditPage() {
-  const [balances, customersPaged] = await Promise.all([
+export default async function AccountCreditPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
+  const [prefs, balances, customersPaged] = await Promise.all([
+    getUserPreferences(),
     api.get<AccountCreditRow[]>('/v1/commerce/account-credit?take=100'),
     api.getPaged<CrmCustomerRow[]>('/v1/crm/customers?take=200'),
   ]);
 
   const outstandingCents = balances.reduce((acc, b) => acc + b.balanceCents, 0);
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   const recentCustomers = customersPaged.data.map((c) => {
     const full = `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim();
@@ -99,55 +79,28 @@ export default async function AccountCreditPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <Heading level={3}>Outstanding balances</Heading>
-          </CardHeader>
-          <CardContent>
-            {balances.length === 0 ? (
-              <EmptyState
-                icon={<CircleDollarSign className="h-5 w-5" />}
-                title="No account credit issued yet"
-                description="Grant credit above or have it auto-issued from a refund."
-              />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Balance</TableHead>
-                    <TableHead>Currency</TableHead>
-                    <TableHead>Updated</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {balances.map((b) => (
-                    <TableRow key={`${b.customerId}:${b.currency}`}>
-                      <TableCell>
-                        <Stack gap={0}>
-                          <Text size="sm">{customerName(b.customer) ?? '—'}</Text>
-                          <Text size="xs" variant="muted">
-                            {b.customer?.email ?? b.customerId.slice(0, 8) + '…'}
-                          </Text>
-                        </Stack>
-                      </TableCell>
-                      <TableCell>{moneyFmt.format(b.balanceCents / 100)}</TableCell>
-                      <TableCell>
-                        <span className="font-mono text-xs">{b.currency}</span>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="xs" variant="muted">
-                          {new Date(b.updatedAt).toLocaleDateString()}
-                        </Text>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        <Heading level={3}>Outstanding balances</Heading>
+
+        <ListToolbar enableViewToggle searchable={false} />
+
+        {balances.length === 0 ? (
+          <Card padding="none">
+            <EmptyState
+              icon={<CircleDollarSign className="h-5 w-5" />}
+              title="No account credit issued yet"
+              description="Grant credit above or have it auto-issued from a refund."
+            />
+          </Card>
+        ) : (
+          <AccountCreditList balances={balances} view={view} />
+        )}
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

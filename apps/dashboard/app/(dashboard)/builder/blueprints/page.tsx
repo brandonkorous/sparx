@@ -8,19 +8,19 @@
 // The Builder "Blueprints" sub-nav points here; the Marketplace stays rail-pinned
 // and platform-wide (installing a blueprint enables Builder). The builder layout
 // is gate-only (no ModuleProvider), so this page supplies its own module color.
+//
+// A standard Collection/List surface (docs/34 §7): ListToolbar with a Table/Cards
+// toggle honoring the user's defaultListView; the card view is preserved as the
+// `card` slot and the table mirrors its key fields.
 
 import Link from 'next/link';
 import { ArrowRight, LayoutTemplate } from 'lucide-react';
 import { requireSession } from '@sparx/auth';
 import {
-  Badge,
   Button,
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
   Container,
-  Grid,
   ModuleProvider,
   PageHeader,
   Stack,
@@ -28,11 +28,13 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-import { BlueprintCardActions } from '../../marketplace/_components/blueprint-card-actions';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { BlueprintsList, type BlueprintListItem } from './_components/blueprints-list';
 
 export const dynamic = 'force-dynamic';
 
-interface BlueprintCard {
+interface ApiBlueprintCard {
   key: string;
   version: string;
   name: string;
@@ -59,14 +61,44 @@ interface BlueprintCard {
   } | null;
 }
 
-export default async function BuilderBlueprintsPage() {
-  const session = await requireSession();
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function BuilderBlueprintsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
+  const [session, prefs, catalog] = await Promise.all([
+    requireSession(),
+    getUserPreferences(),
+    api.get<{ blueprints: ApiBlueprintCard[]; property_id: string }>('/v1/blueprints'),
+  ]);
+
   const canInstall = session.user.role === 'owner' || session.user.role === 'admin';
-  const { blueprints } = await api.get<{ blueprints: BlueprintCard[]; property_id: string }>(
-    '/v1/blueprints'
-  );
   // Installed-only — the full catalog lives in the Marketplace (/marketplace).
-  const installed = blueprints.filter((bp) => bp.install !== null);
+  // /v1/blueprints (the install engine, docs/54) is snake_case; map the install
+  // overlay onto the marketplace shape the card actions consume.
+  const installed: BlueprintListItem[] = catalog.blueprints
+    .filter((bp) => bp.install !== null)
+    .map((bp) => ({
+      key: bp.key,
+      version: bp.version,
+      name: bp.name,
+      summary: bp.summary,
+      vertical: bp.vertical,
+      preview: bp.preview,
+      contents: bp.contents,
+      install: bp.install
+        ? {
+            id: bp.install.id,
+            status: bp.install.status,
+            version: bp.install.version,
+            updateAvailable: bp.install.update_available,
+          }
+        : null,
+    }));
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   const browseButton = (
     <Button color="module" variant="outline" asChild>
@@ -88,6 +120,8 @@ export default async function BuilderBlueprintsPage() {
             actions={browseButton}
           />
 
+          <ListToolbar searchable={false} enableViewToggle />
+
           {installed.length === 0 ? (
             <Card variant="module">
               <CardContent>
@@ -107,61 +141,16 @@ export default async function BuilderBlueprintsPage() {
               </CardContent>
             </Card>
           ) : (
-            <Grid minItemWidth="20rem" gap={4}>
-              {installed.map((bp) => (
-                <Card key={bp.key} variant="module" className="overflow-hidden">
-                  {bp.preview ? (
-                    <img
-                      src={bp.preview}
-                      alt={`${bp.name} preview`}
-                      className="aspect-[16/10] w-full border-b border-[var(--color-border)] object-cover object-top"
-                    />
-                  ) : null}
-                  <CardHeader>
-                    <Stack direction="row" align="center" gap={2} className="justify-between">
-                      <CardTitle>{bp.name}</CardTitle>
-                      <Badge variant="soft">{bp.vertical}</Badge>
-                    </Stack>
-                  </CardHeader>
-                  <CardContent>
-                    <Stack gap={3}>
-                      <Text size="sm" variant="muted">
-                        {bp.summary}
-                      </Text>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline">{bp.contents.products} products</Badge>
-                        <Badge variant="outline">{bp.contents.content} content</Badge>
-                        <Badge variant="outline">{bp.contents.pages} pages</Badge>
-                        <Badge variant="outline">{bp.contents.emails} emails</Badge>
-                        <Badge variant="outline">{bp.contents.components} components</Badge>
-                        <Badge variant="outline">Theme: {bp.contents.theme}</Badge>
-                      </div>
-                      <BlueprintCardActions
-                        blueprintKey={bp.key}
-                        blueprintName={bp.name}
-                        latestVersion={bp.version}
-                        // /v1/blueprints (the install engine, docs/54) is the
-                        // snake_case catalog; map onto the marketplace overlay shape.
-                        install={
-                          bp.install
-                            ? {
-                                id: bp.install.id,
-                                status: bp.install.status,
-                                version: bp.install.version,
-                                updateAvailable: bp.install.update_available,
-                              }
-                            : null
-                        }
-                        canInstall={canInstall}
-                      />
-                    </Stack>
-                  </CardContent>
-                </Card>
-              ))}
-            </Grid>
+            <BlueprintsList rows={installed} view={view} canInstall={canInstall} />
           )}
         </Stack>
       </Container>
     </ModuleProvider>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

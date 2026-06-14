@@ -347,6 +347,14 @@ export {
   type BulkAction,
 } from './components/data/bulk-action-bar';
 export {
+  SelectionList,
+  type SelectionListProps,
+  type SelectionColumn,
+  type SelectionCard,
+  type SelectionCardContext,
+} from './components/data/selection-list';
+export { Pager, type PagerProps } from './components/data/pager';
+export {
   ImportDialog,
   type ImportDialogProps,
   type ImportJobResult,

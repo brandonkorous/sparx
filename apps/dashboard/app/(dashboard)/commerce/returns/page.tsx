@@ -11,43 +11,15 @@ import {
   Heading,
   PageHeader,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
-import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ReturnsList, type ReturnStatus, type ReturnSummary } from './_components/returns-list';
 
 export const dynamic = 'force-dynamic';
-
-type ReturnStatus =
-  | 'requested'
-  | 'approved'
-  | 'denied'
-  | 'awaiting_shipment'
-  | 'in_transit'
-  | 'received'
-  | 'inspecting'
-  | 'inspected'
-  | 'refunded'
-  | 'cancelled';
-
-interface ReturnSummary {
-  id: string;
-  orderId: string;
-  customerId: string | null;
-  status: ReturnStatus;
-  preferredOutcome: string;
-  itemCount: number;
-  requestedAt: string;
-}
 
 interface ReturnsListResponse {
   items: ReturnSummary[];
@@ -69,17 +41,20 @@ const STATUS_OPTIONS = [
 export default async function ReturnsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; view?: string }>;
 }) {
-  const { status: statusParam } = await searchParams;
+  const { status: statusParam, view: viewParam } = await searchParams;
   const status = isStatus(statusParam) ? statusParam : undefined;
 
   const query = new URLSearchParams();
   if (status) query.set('status', status);
   query.set('take', '100');
-  const { items, total } = await api.get<ReturnsListResponse>(
-    `/v1/commerce/returns?${query.toString()}`
-  );
+  const [prefs, { items, total }] = await Promise.all([
+    getUserPreferences(),
+    api.get<ReturnsListResponse>(`/v1/commerce/returns?${query.toString()}`),
+  ]);
+
+  const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -94,17 +69,18 @@ export default async function ReturnsPage({
         <ListToolbar
           searchable={false}
           filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
+          enableViewToggle
         />
 
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>{status ? labelForStatus(status) : 'All returns'}</Heading>
-              <CardDescription>Click an ID to open the inspection queue.</CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            {items.length === 0 ? (
+        {items.length === 0 ? (
+          <Card>
+            <CardHeader>
+              <Stack gap={1}>
+                <Heading level={3}>{status ? labelForStatus(status) : 'All returns'}</Heading>
+                <CardDescription>Click an ID to open the inspection queue.</CardDescription>
+              </Stack>
+            </CardHeader>
+            <CardContent>
               <EmptyState
                 icon={<Inbox className="h-5 w-5" />}
                 title="No returns"
@@ -114,80 +90,18 @@ export default async function ReturnsPage({
                     : 'Returns are created when customers submit one from /account/orders.'
                 }
               />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Order</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Items</TableHead>
-                    <TableHead>Preferred outcome</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Requested</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {items.map((r) => (
-                    <TableRow key={r.id}>
-                      <TableCell>
-                        <EntityRowLink
-                          href={`/commerce/returns/${r.id}`}
-                          entityType="return"
-                          entityId={r.id}
-                          className="font-mono text-xs hover:text-[var(--module-active)]"
-                        >
-                          {r.id.slice(0, 8)}
-                        </EntityRowLink>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="xs" className="font-mono">
-                          {r.orderId.slice(0, 8)}
-                        </Text>
-                      </TableCell>
-                      <TableCell>
-                        {r.customerId ? (
-                          <Text size="xs" className="font-mono">
-                            {r.customerId.slice(0, 8)}
-                          </Text>
-                        ) : (
-                          '—'
-                        )}
-                      </TableCell>
-                      <TableCell>{r.itemCount}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{r.preferredOutcome}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge status={r.status} />
-                      </TableCell>
-                      <TableCell>{new Date(r.requestedAt).toLocaleDateString()}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : (
+          <Stack gap={1}>
+            <Heading level={3}>{status ? labelForStatus(status) : 'All returns'}</Heading>
+            <CardDescription>Click an ID to open the inspection queue.</CardDescription>
+            <ReturnsList rows={items} view={view} />
+          </Stack>
+        )}
       </Stack>
     </Container>
   );
-}
-
-function StatusBadge({ status }: { status: ReturnStatus }) {
-  const variant: Record<ReturnStatus, 'success' | 'warning' | 'outline'> = {
-    requested: 'warning',
-    approved: 'outline',
-    denied: 'outline',
-    awaiting_shipment: 'outline',
-    in_transit: 'outline',
-    received: 'outline',
-    inspecting: 'outline',
-    inspected: 'outline',
-    refunded: 'success',
-    cancelled: 'outline',
-  };
-  return <Badge color={variant[status]}>{status}</Badge>;
 }
 
 function labelForStatus(s: ReturnStatus): string {

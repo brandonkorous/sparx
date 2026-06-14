@@ -1,49 +1,30 @@
-import Link from 'next/link';
-import { KanbanSquare, ArrowRight, Archive, Plus, Settings } from 'lucide-react';
+import { KanbanSquare, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
+import { PipelinesList, type PipelineRow } from './_components/pipelines-list';
 
-interface PipelineStageRow {
-  id: string;
-  name: string;
-  stageType: 'open' | 'won' | 'lost';
-  probability: string | number;
-  color: string | null;
-}
-
-interface PipelineRow {
-  id: string;
-  name: string;
-  slug: string;
-  isDefault: boolean;
-  archivedAt: string | null;
-  stages: PipelineStageRow[];
-}
-
-// Pipelines index — one card per pipeline, click-through to Kanban.
+// Pipelines index — a standard docs/34 List surface: a ListToolbar with an
+// archived filter + Table/Cards toggle on top of the shared SelectionList. The
+// stage funnel is preserved inline (in both views) so the list communicates the
+// shape of each pipeline without forcing a click into the detail page.
 //
-// Stages are listed inline as a horizontal mini-funnel so the list view
-// communicates the shape of each pipeline without forcing a click into
-// the detail page. Archived pipelines are hidden by default; toggle with
-// ?includeArchived=1.
+// The archived filter maps to the API's only facet (`include_archived`):
+// `active` (default) fetches non-archived; `all` includes archived; `archived`
+// fetches all then narrows to archived rows server-side here.
 
 export const dynamic = 'force-dynamic';
+
+const ARCHIVED_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'archived', label: 'Archived' },
+  { value: 'all', label: 'All' },
+];
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -51,11 +32,18 @@ interface PageProps {
 
 export default async function PipelinesPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const includeArchived = Boolean(params.includeArchived);
+  const archived = parseArchived(stringParam(params.archived));
 
-  const pipelines = await api.get<PipelineRow[]>(
-    `/v1/crm/pipelines${includeArchived ? '?include_archived=true' : ''}`
-  );
+  const [prefs, fetched] = await Promise.all([
+    getUserPreferences(),
+    api.get<PipelineRow[]>(
+      `/v1/crm/pipelines${archived !== 'active' ? '?include_archived=true' : ''}`
+    ),
+  ]);
+
+  // `archived` narrows the all-inclusive fetch to just archived rows.
+  const pipelines = archived === 'archived' ? fetched.filter((p) => p.archivedAt) : fetched;
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -70,118 +58,51 @@ export default async function PipelinesPage({ searchParams }: PageProps) {
           }
           description="Each pipeline has its own ordered stage list. Deals move between stages on the Kanban board; stage probability feeds the forecast."
           actions={
-            <>
-              <Button asChild variant="ghost">
-                <Link
-                  href={includeArchived ? '/crm/pipelines' : '/crm/pipelines?includeArchived=1'}
-                >
-                  {includeArchived ? 'Hide archived' : 'Show archived'}
-                </Link>
-              </Button>
-              <EntityCreateButton
-                entityType="pipeline"
-                newHref="/crm/pipelines/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New
-              </EntityCreateButton>
-            </>
+            <EntityCreateButton
+              entityType="pipeline"
+              newHref="/crm/pipelines/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
           }
+        />
+
+        <ListToolbar
+          searchable={false}
+          filters={[
+            { key: 'archived', label: 'Status', options: ARCHIVED_OPTIONS, defaultValue: 'active' },
+          ]}
+          enableViewToggle
         />
 
         {pipelines.length === 0 ? (
           <Card padding="none">
             <EmptyState
               icon={<KanbanSquare className="h-5 w-5" />}
-              title="No pipelines yet"
-              description="A default pipeline is created when CRM is activated. If you cleared it, your tenant has no pipelines configured."
+              title={archived === 'archived' ? 'No archived pipelines' : 'No pipelines yet'}
+              description={
+                archived === 'archived'
+                  ? 'Archived pipelines stay out of the active list. Switch the filter to Active or All to see the rest.'
+                  : 'A default pipeline is created when CRM is activated. If you cleared it, your tenant has no pipelines configured.'
+              }
             />
           </Card>
         ) : (
-          <Stack gap={4}>
-            {pipelines.map((pipeline) => (
-              <Card key={pipeline.id} variant={pipeline.archivedAt ? 'default' : 'module'}>
-                <CardHeader>
-                  <Stack direction="row" align="center" justify="between" wrap>
-                    <Stack gap={1}>
-                      <Stack direction="row" align="center" gap={2}>
-                        <CardTitle>{pipeline.name}</CardTitle>
-                        {pipeline.isDefault && (
-                          <Badge variant="outline" className="text-xs">
-                            Default
-                          </Badge>
-                        )}
-                        {pipeline.archivedAt && (
-                          <Badge color="warning" className="text-xs">
-                            <Archive className="h-3 w-3" /> Archived
-                          </Badge>
-                        )}
-                      </Stack>
-                      <Text size="sm" variant="muted">
-                        {pipeline.stages.length} stage{pipeline.stages.length === 1 ? '' : 's'} —
-                        slug <code>{pipeline.slug}</code>
-                      </Text>
-                    </Stack>
-                    <Stack direction="row" gap={2}>
-                      <Button
-                        asChild
-                        variant="ghost"
-                        shape="square"
-                        size="sm"
-                        aria-label="Edit pipeline"
-                      >
-                        <Link href={`/crm/pipelines/${pipeline.id}/edit`}>
-                          <Settings className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button asChild variant="ghost">
-                        <Link href={`/crm/pipelines/${pipeline.id}?view=list`}>List</Link>
-                      </Button>
-                      <Button asChild variant="ghost">
-                        <Link href={`/crm/pipelines/${pipeline.id}?view=forecast`}>Forecast</Link>
-                      </Button>
-                      <Button asChild color="module" rightIcon={<ArrowRight className="h-4 w-4" />}>
-                        <Link href={`/crm/pipelines/${pipeline.id}`}>Open Kanban</Link>
-                      </Button>
-                    </Stack>
-                  </Stack>
-                </CardHeader>
-                <CardContent>
-                  <Stack direction="row" gap={2} wrap>
-                    {pipeline.stages.map((stage) => (
-                      <Stack
-                        key={stage.id}
-                        direction="row"
-                        align="center"
-                        gap={1}
-                        className="rounded-md border border-[var(--color-border-default)] px-2 py-1"
-                      >
-                        <span
-                          className="h-2 w-2 rounded-full"
-                          style={{
-                            backgroundColor:
-                              stage.color ??
-                              (stage.stageType === 'won'
-                                ? 'var(--color-success-500)'
-                                : stage.stageType === 'lost'
-                                  ? 'var(--color-danger-500)'
-                                  : 'var(--module-active)'),
-                          }}
-                        />
-                        <Text size="sm">{stage.name}</Text>
-                        <Text size="xs" variant="muted">
-                          {Number(stage.probability)}%
-                        </Text>
-                      </Stack>
-                    ))}
-                  </Stack>
-                </CardContent>
-              </Card>
-            ))}
-          </Stack>
+          <PipelinesList pipelines={pipelines} view={view} />
         )}
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
+}
+
+function parseArchived(v: string | undefined): 'active' | 'archived' | 'all' {
+  return v === 'archived' || v === 'all' ? v : 'active';
 }

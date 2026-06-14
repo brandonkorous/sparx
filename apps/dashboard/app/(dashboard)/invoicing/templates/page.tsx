@@ -1,39 +1,28 @@
 import { LayoutTemplate } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  Container,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Container, PageHeader, Stack, Text } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
-import { TemplateRowActions } from './_components/template-row-actions';
-
-interface TemplateRow {
-  id: string;
-  name: string;
-  isDefault: boolean;
-  published: boolean;
-  publishedAt: string | null;
-  updatedAt: string;
-}
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
+import { TemplatesList, type TemplateRow } from './_components/templates-list';
 
 export const dynamic = 'force-dynamic';
 
-export default async function InvoicingTemplatesPage() {
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function InvoicingTemplatesPage({ searchParams }: PageProps) {
+  const params = await searchParams;
   // listOrSeed lazily materializes the built-in default on first visit.
-  const templates = await api.get<TemplateRow[]>('/v1/invoicing/templates');
+  const [prefs, templates] = await Promise.all([
+    getUserPreferences(),
+    api.get<TemplateRow[]>('/v1/invoicing/templates'),
+  ]);
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="lg">
@@ -44,62 +33,9 @@ export default async function InvoicingTemplatesPage() {
           description="Design how invoices and estimates print. Every document renders with the built-in default until you publish a template; the default template, once published, drives every document's print + PDF."
         />
 
-        <Card padding="none">
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Updated</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {templates.map((t) => (
-                  <TableRow key={t.id}>
-                    <TableCell>
-                      <Stack direction="row" align="center" gap={2}>
-                        <Text size="sm" className="font-medium">
-                          {t.name}
-                        </Text>
-                        {t.isDefault && (
-                          <Badge color="module" variant="soft" className="text-xs">
-                            Default
-                          </Badge>
-                        )}
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      {t.published ? (
-                        <Badge color="success" variant="soft" className="text-xs">
-                          Published
-                        </Badge>
-                      ) : (
-                        <Badge color="neutral" variant="soft" className="text-xs">
-                          Draft
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm" variant="muted">
-                        {new Date(t.updatedAt).toLocaleDateString()}
-                      </Text>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <TemplateRowActions
-                        id={t.id}
-                        name={t.name}
-                        isDefault={t.isDefault}
-                        published={t.published}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        <ListToolbar enableViewToggle searchable={false} />
+
+        <TemplatesList rows={templates} view={view} />
 
         <Text size="xs" variant="muted">
           Templates reuse the builder framework (the same node-tree machinery as the page + email
@@ -109,4 +45,10 @@ export default async function InvoicingTemplatesPage() {
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

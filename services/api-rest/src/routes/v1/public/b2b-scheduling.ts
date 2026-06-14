@@ -215,29 +215,27 @@ const b2bPortalSchedulingRoutes: FastifyPluginAsync = async (app) => {
       return { items, total };
     });
 
-    return ok(
-      paged(
-        items.map((a) => ({
-          id: a.id,
-          serviceTypeId: a.serviceTypeId,
-          serviceTypeName: a.serviceType?.name ?? null,
-          scheduledAt: a.scheduledAt.toISOString(),
-          durationMinutes: a.durationMinutes,
-          status: a.status,
-          vehicleRef: a.vehicleRef,
-          notes: a.notes,
-          confirmedAt: a.confirmedAt?.toISOString() ?? null,
-          completedAt: a.completedAt?.toISOString() ?? null,
-          cancelledAt: a.cancelledAt?.toISOString() ?? null,
-          cancellationReason: a.cancellationReason,
-          createdAt: a.createdAt.toISOString(),
-          customerName: a.customer
-            ? [a.customer.firstName, a.customer.lastName].filter(Boolean).join(' ') ||
-              a.customer.email
-            : null,
-        })),
-        { total, skip: q.skip, take: q.take }
-      )
+    return paged(
+      items.map((a) => ({
+        id: a.id,
+        serviceTypeId: a.serviceTypeId,
+        serviceTypeName: a.serviceType?.name ?? null,
+        scheduledAt: a.scheduledAt.toISOString(),
+        durationMinutes: a.durationMinutes,
+        status: a.status,
+        vehicleRef: a.vehicleRef,
+        notes: a.notes,
+        confirmedAt: a.confirmedAt?.toISOString() ?? null,
+        completedAt: a.completedAt?.toISOString() ?? null,
+        cancelledAt: a.cancelledAt?.toISOString() ?? null,
+        cancellationReason: a.cancellationReason,
+        createdAt: a.createdAt.toISOString(),
+        customerName: a.customer
+          ? [a.customer.firstName, a.customer.lastName].filter(Boolean).join(' ') ||
+            a.customer.email
+          : null,
+      })),
+      { total, skip: q.skip, take: q.take }
     );
   });
 

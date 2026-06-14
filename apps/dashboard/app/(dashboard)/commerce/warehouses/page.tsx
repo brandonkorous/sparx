@@ -1,29 +1,13 @@
 import { Warehouse as WarehouseIcon, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  Container,
-  EmptyState,
-  Heading,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
-import { EntityRowLink } from '../../_components/entity-row-link';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
+import { WarehousesList, type WarehouseRow } from './_components/warehouses-list';
 
 // Warehouses — the per-tenant physical/virtual stock locations the
 // inventory picker selects between. Phase 2: list + create + archive.
@@ -31,31 +15,21 @@ import { EntityRowLink } from '../../_components/entity-row-link';
 
 export const dynamic = 'force-dynamic';
 
-interface WarehouseRow {
-  id: string;
-  name: string;
-  code: string;
-  type: string;
-  line1: string | null;
-  line2: string | null;
-  city: string | null;
-  region: string | null;
-  postalCode: string | null;
-  country: string | null;
-  phone: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  defaultForChannel: string[];
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function WarehousesPage() {
-  const warehouses = await api.get<WarehouseRow[]>('/v1/commerce/warehouses?include_archived=true');
+export default async function WarehousesPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const [prefs, warehouses] = await Promise.all([
+    getUserPreferences(),
+    api.get<WarehouseRow[]>('/v1/commerce/warehouses?include_archived=true'),
+  ]);
 
   const active = warehouses.filter((w) => w.isActive);
   const inactive = warehouses.filter((w) => !w.isActive);
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -81,94 +55,36 @@ export default async function WarehousesPage() {
           }
         />
 
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>All warehouses</Heading>
-              <CardDescription>
-                Click a row to manage its address, default channels, and reorder defaults.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            {warehouses.length === 0 ? (
-              <EmptyState
-                icon={<WarehouseIcon className="h-5 w-5" />}
-                title="No warehouses yet"
-                description="Add your first warehouse to start tracking stock. If you sell only digital goods, a single virtual warehouse is all you need."
-                action={
-                  <EntityCreateButton
-                    entityType="warehouse"
-                    newHref="/commerce/warehouses/new"
-                    color="module"
-                    leftIcon={<Plus className="h-4 w-4" />}
-                  >
-                    New
-                  </EntityCreateButton>
-                }
-              />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Channels</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {warehouses.map((w) => (
-                    <TableRow key={w.id}>
-                      <TableCell>
-                        <EntityRowLink
-                          href={`/commerce/warehouses/${w.id}`}
-                          entityType="warehouse"
-                          entityId={w.id}
-                          className="font-mono text-xs hover:text-[var(--module-active)]"
-                        >
-                          {w.code}
-                        </EntityRowLink>
-                      </TableCell>
-                      <TableCell>{w.name}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{w.type}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        {[w.city, w.region, w.country].filter(Boolean).join(', ') || '—'}
-                      </TableCell>
-                      <TableCell>
-                        {w.defaultForChannel.length > 0 ? (
-                          <Stack direction="row" gap={1} wrap>
-                            {w.defaultForChannel.map((c) => (
-                              <Badge key={c} variant="outline" className="text-xs">
-                                {c}
-                              </Badge>
-                            ))}
-                          </Stack>
-                        ) : (
-                          <Text size="xs" variant="muted">
-                            none
-                          </Text>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {w.isActive ? (
-                          <Badge color="success">active</Badge>
-                        ) : (
-                          <Badge color="warning">inactive</Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        <ListToolbar enableViewToggle searchable={false} />
+
+        {warehouses.length === 0 ? (
+          <Card padding="none">
+            <EmptyState
+              icon={<WarehouseIcon className="h-5 w-5" />}
+              title="No warehouses yet"
+              description="Add your first warehouse to start tracking stock. If you sell only digital goods, a single virtual warehouse is all you need."
+              action={
+                <EntityCreateButton
+                  entityType="warehouse"
+                  newHref="/commerce/warehouses/new"
+                  color="module"
+                  leftIcon={<Plus className="h-4 w-4" />}
+                >
+                  New
+                </EntityCreateButton>
+              }
+            />
+          </Card>
+        ) : (
+          <WarehousesList rows={warehouses} view={view} />
+        )}
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

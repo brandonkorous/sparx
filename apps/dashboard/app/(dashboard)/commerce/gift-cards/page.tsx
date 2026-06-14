@@ -11,41 +11,16 @@ import {
   Heading,
   PageHeader,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
 import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
 import { IssueGiftCardForm } from './_components/issue-gift-card-form';
-
-interface GiftCardSummary {
-  id: string;
-  code: string;
-  balanceCents: number;
-  initialBalanceCents: number;
-  currency: string;
-  status: string;
-  expiresAt: string | null;
-  recipientEmail: string | null;
-  recipientName: string | null;
-  createdAt: string;
-}
+import { GiftCardsList, type GiftCardSummary } from './_components/gift-cards-list';
 
 export const dynamic = 'force-dynamic';
-
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline'> = {
-  active: 'success',
-  spent: 'outline',
-  expired: 'warning',
-  cancelled: 'warning',
-};
 
 const moneyFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
@@ -58,11 +33,16 @@ export default async function GiftCardsPage({ searchParams }: PageProps) {
   const q = stringParam(params.q);
   const query = new URLSearchParams({ take: '100' });
   if (q) query.set('q', q);
-  const cards = await api.get<GiftCardSummary[]>(`/v1/commerce/gift-cards?${query.toString()}`);
+
+  const [prefs, cards] = await Promise.all([
+    getUserPreferences(),
+    api.get<GiftCardSummary[]>(`/v1/commerce/gift-cards?${query.toString()}`),
+  ]);
 
   const outstandingCents = cards
     .filter((c) => c.status === 'active')
     .reduce((acc, c) => acc + c.balanceCents, 0);
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -91,74 +71,19 @@ export default async function GiftCardsPage({ searchParams }: PageProps) {
           </CardContent>
         </Card>
 
-        <ListToolbar searchPlaceholder="Search code, recipient name or email…" />
+        <ListToolbar searchPlaceholder="Search code, recipient name or email…" enableViewToggle />
 
-        <Card>
-          <CardHeader>
-            <Heading level={3}>Issued cards</Heading>
-          </CardHeader>
-          <CardContent>
-            {cards.length === 0 ? (
-              <EmptyState
-                icon={<Gift className="h-5 w-5" />}
-                title="No gift cards yet"
-                description="Issue one above. Cards stay active until spent, expired, or cancelled."
-              />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Balance</TableHead>
-                    <TableHead>Initial</TableHead>
-                    <TableHead>Recipient</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Expires</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {cards.map((card) => (
-                    <TableRow key={card.id}>
-                      <TableCell>
-                        <span className="font-mono text-xs">{card.code}</span>
-                      </TableCell>
-                      <TableCell>{moneyFmt.format(card.balanceCents / 100)}</TableCell>
-                      <TableCell>
-                        <Text size="xs" variant="muted">
-                          {moneyFmt.format(card.initialBalanceCents / 100)}
-                        </Text>
-                      </TableCell>
-                      <TableCell>
-                        {card.recipientEmail ? (
-                          <Stack gap={0}>
-                            <Text size="sm">{card.recipientName ?? '—'}</Text>
-                            <Text size="xs" variant="muted">
-                              {card.recipientEmail}
-                            </Text>
-                          </Stack>
-                        ) : (
-                          <Text size="xs" variant="muted">
-                            none
-                          </Text>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge color={STATUS_VARIANT[card.status] ?? 'outline'}>
-                          {card.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="xs" variant="muted">
-                          {card.expiresAt ? new Date(card.expiresAt).toLocaleDateString() : 'never'}
-                        </Text>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        {cards.length === 0 ? (
+          <Card variant="module" padding="none">
+            <EmptyState
+              icon={<Gift className="h-5 w-5" />}
+              title="No gift cards yet"
+              description="Issue one above. Cards stay active until spent, expired, or cancelled."
+            />
+          </Card>
+        ) : (
+          <GiftCardsList cards={cards} view={view} />
+        )}
       </Stack>
     </Container>
   );

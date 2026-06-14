@@ -2,39 +2,26 @@ export const dynamic = 'force-dynamic';
 
 import type { Metadata } from 'next';
 import { api } from '@/lib/api-rest-client';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Badge,
-  Text,
-} from '@sparx/ui';
+import { Text } from '@sparx/ui';
+
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
+import { LocationsList, type StockLocation } from './_components/locations-list';
 
 export const metadata: Metadata = { title: 'Stock Locations' };
 
-interface StockLocation {
-  id: string;
-  name: string;
-  type: string;
-  countryCode: string | null;
-  isDefault: boolean;
-  active: boolean;
-  createdAt: string;
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-const TYPE_LABELS: Record<string, string> = {
-  warehouse: 'Warehouse',
-  bin: 'Bin',
-  '3pl': '3PL',
-  virtual: 'Virtual',
-  transit: 'Transit',
-};
+export default async function StockLocationsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const [prefs, locations] = await Promise.all([
+    getUserPreferences(),
+    api.get<StockLocation[]>('/v1/inventory/locations'),
+  ]);
 
-export default async function StockLocationsPage() {
-  const locations = await api.get<StockLocation[]>('/v1/inventory/locations');
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <div>
@@ -45,43 +32,23 @@ export default async function StockLocationsPage() {
         </p>
       </div>
 
+      <ListToolbar enableViewToggle searchable={false} />
+
       {locations.length === 0 ? (
         <Text className="text-[var(--color-muted-foreground)]">
           No stock locations configured yet.
         </Text>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Country</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {locations.map((loc) => (
-              <TableRow key={loc.id}>
-                <TableCell className="font-medium">
-                  {loc.name}
-                  {loc.isDefault && (
-                    <Badge color="primary" variant="soft" size="sm" className="ml-2">
-                      Default
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell>{TYPE_LABELS[loc.type] ?? loc.type}</TableCell>
-                <TableCell>{loc.countryCode ?? '—'}</TableCell>
-                <TableCell>
-                  <Badge color={loc.active ? 'success' : 'neutral'} variant="soft" size="sm">
-                    {loc.active ? 'Active' : 'Inactive'}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <div className="mt-6">
+          <LocationsList rows={locations} view={view} />
+        </div>
       )}
     </div>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

@@ -1,24 +1,29 @@
 import { Globe } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  EmptyState,
-  Stack,
-} from '@sparx/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, EmptyState } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
 import { EmailShell } from '../_components/email-shell';
 import { AddDomainForm } from './_components/add-domain-form';
-import { DomainCard } from './_components/domain-card';
+import { DomainsList } from './_components/domains-list';
 import type { SendingDomainRow } from '../_lib/types';
 
 export const dynamic = 'force-dynamic';
 
-export default async function DomainsPage() {
-  const domains = await api.get<SendingDomainRow[]>('/v1/email/domains');
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function DomainsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
+  const [prefs, domains] = await Promise.all([
+    getUserPreferences(),
+    api.get<SendingDomainRow[]>('/v1/email/domains'),
+  ]);
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <EmailShell
@@ -47,12 +52,17 @@ export default async function DomainsPage() {
           description="Add your first domain above to start sending from your own brand."
         />
       ) : (
-        <Stack gap={4}>
-          {domains.map((domain) => (
-            <DomainCard key={domain.id} domain={domain} />
-          ))}
-        </Stack>
+        <>
+          <ListToolbar searchable={false} enableViewToggle />
+          <DomainsList rows={domains} view={view} />
+        </>
       )}
     </EmailShell>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

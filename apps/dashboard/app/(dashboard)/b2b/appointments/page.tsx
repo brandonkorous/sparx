@@ -1,24 +1,13 @@
 import { Calendar } from 'lucide-react';
-import Link from 'next/link';
 
-import {
-  Badge,
-  Card,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-import { AppointmentActions } from './_components/appointment-actions';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
+import { AppointmentsList } from './_components/appointments-list';
 
 export const dynamic = 'force-dynamic';
 
@@ -48,60 +37,43 @@ interface AppointmentRow {
   createdAt: string;
 }
 
-const STATUS_BADGE: Record<string, 'outline' | 'info' | 'success' | 'warning' | 'danger'> = {
-  requested: 'outline',
-  confirmed: 'info',
-  in_progress: 'warning',
-  completed: 'success',
-  cancelled: 'danger',
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  requested: 'Requested',
-  confirmed: 'Confirmed',
-  in_progress: 'In progress',
-  completed: 'Completed',
-  cancelled: 'Cancelled',
-};
+const STATUS_OPTIONS = [
+  { value: 'requested', label: 'Requested' },
+  { value: 'confirmed', label: 'Confirmed' },
+  { value: 'in_progress', label: 'In progress' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'cancelled', label: 'Cancelled' },
+];
 
 function stringParam(v: string | string[] | undefined): string | undefined {
   if (Array.isArray(v)) return v[0];
-  return v;
-}
-
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
-
-function vehicleLabel(ref: Record<string, unknown> | null): string | null {
-  if (!ref) return null;
-  const parts = [ref.year, ref.make, ref.model].filter(Boolean);
-  return parts.length > 0 ? parts.join(' ') : null;
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }
 
 export default async function AppointmentsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status);
+  // account_id stays URL-readable for deep links from an account page; it isn't
+  // a toolbar control.
   const accountId = stringParam(params.account_id);
 
-  const query = new URLSearchParams({ take: '100' });
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status) query.set('status', status);
   if (accountId) query.set('account_id', accountId);
 
-  const { data: appointments, meta } = await api.getPaged<AppointmentRow[]>(
-    `/v1/b2b/appointments?${query.toString()}`
-  );
+  const [prefs, { data: appointments, meta }] = await Promise.all([
+    getUserPreferences(),
+    api.getPaged<AppointmentRow[]>(`/v1/b2b/appointments?${query.toString()}`),
+  ]);
   const total = (meta?.total as number | undefined) ?? appointments.length;
 
   const pendingCount = appointments.filter((a) =>
     ['requested', 'confirmed'].includes(a.status)
   ).length;
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -119,12 +91,22 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
           description="Manage B2B service appointments and track their status."
         />
 
+        <ListToolbar
+          searchable={false}
+          filters={[{ key: 'status', label: 'Status', options: STATUS_OPTIONS }]}
+          enableViewToggle
+        />
+
         {appointments.length === 0 ? (
           <Card padding="none">
             <EmptyState
               icon={<Calendar className="h-5 w-5" />}
-              title="No appointments"
-              description="Appointments booked from the B2B portal or created here will appear in this list."
+              title={status ? 'No appointments match this filter' : 'No appointments'}
+              description={
+                status
+                  ? 'Clear the status filter to see every appointment.'
+                  : 'Appointments booked from the B2B portal or created here will appear in this list.'
+              }
             />
           </Card>
         ) : (
@@ -132,79 +114,11 @@ export default async function AppointmentsPage({ searchParams }: PageProps) {
             <Text size="sm" variant="muted">
               {total} appointment{total !== 1 ? 's' : ''} total
             </Text>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Scheduled</TableHead>
-                  <TableHead>Service</TableHead>
-                  <TableHead>Account</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Vehicle</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {appointments.map((appt) => (
-                  <TableRow key={appt.id}>
-                    <TableCell>
-                      <Text size="sm" className="font-medium whitespace-nowrap tabular-nums">
-                        {formatDateTime(appt.scheduledAt)}
-                      </Text>
-                      <Text size="xs" variant="muted">
-                        {appt.durationMinutes} min
-                      </Text>
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm">{appt.serviceTypeName ?? '—'}</Text>
-                    </TableCell>
-                    <TableCell>
-                      {appt.b2bAccountId ? (
-                        <Link
-                          href={`/b2b/accounts/${appt.b2bAccountId}`}
-                          className="text-sm hover:text-[var(--module-active)] hover:underline"
-                        >
-                          {appt.companyName ?? appt.b2bAccountId}
-                        </Link>
-                      ) : (
-                        <Text size="sm" variant="muted">
-                          —
-                        </Text>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Stack gap={1}>
-                        <Text size="sm">{appt.customerName ?? appt.customerEmail ?? '—'}</Text>
-                        {appt.customerName && appt.customerEmail && (
-                          <Text size="xs" variant="muted">
-                            {appt.customerEmail}
-                          </Text>
-                        )}
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm" variant="muted">
-                        {vehicleLabel(appt.vehicleRef) ?? '—'}
-                      </Text>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        color={STATUS_BADGE[appt.status] ?? 'outline'}
-                        variant="soft"
-                        size="sm"
-                      >
-                        {STATUS_LABEL[appt.status] ?? appt.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <AppointmentActions appointment={appt} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <AppointmentsList appointments={appointments} view={view} />
           </>
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

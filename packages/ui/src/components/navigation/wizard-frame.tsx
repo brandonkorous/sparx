@@ -15,11 +15,19 @@ import { RAIL_BG, RailWordmark } from '../brand/brand-rail';
 // thing that changes. It ships in two variants of the SAME design so a user who
 // learns one knows the other:
 //
-//   • variant="page"  — full-bleed, first-run/high-stakes setup (onboarding,
-//                        blueprint install). Owns the whole viewport.
-//   • variant="modal" — the same frame inside a Radix dialog, for in-dashboard
-//                        create-wizards (Product / B2B / Email, docs/68) where
-//                        the user shouldn't lose their place.
+//   • variant="page"   — full-bleed, first-run/high-stakes setup (onboarding,
+//                         blueprint install). Owns the whole viewport.
+//   • variant="modal"  — the same frame inside a Radix dialog, for in-dashboard
+//                         create-wizards (Product / B2B / Email, docs/68) where
+//                         the user shouldn't lose their place.
+//   • variant="inline" — the same two-pane frame as the modal, but as plain
+//                         in-flow content with NO dialog of its own. For hosting
+//                         inside another overlay shell that supplies its own
+//                         chrome — the dashboard's drawer/modal detail panel,
+//                         where the user's `defaultDetailView` preference picks
+//                         drawer vs. modal and the wizard fills the body. It
+//                         collapses to the compact top-bar layout in a narrow
+//                         drawer via the same breakpoint as the modal.
 //
 // The rail is a FLAT SOLID fill of the active module color (no gradient — Sparx
 // is flat by default), driven by the wrapping <ModuleProvider> via
@@ -41,7 +49,7 @@ export interface WizardStepDef {
   sublabel?: string;
 }
 
-export type WizardVariant = 'page' | 'modal';
+export type WizardVariant = 'page' | 'modal' | 'inline';
 
 export interface WizardFrameProps {
   variant?: WizardVariant;
@@ -356,6 +364,54 @@ export function WizardFrame({
             </DialogPrimitive.Content>
           </DialogPrimitive.Portal>
         </DialogPrimitive.Root>
+      </WizardContext.Provider>
+    );
+  }
+
+  // ── Inline variant ────────────────────────────────────────────────────────────
+  // The modal's two-pane frame without the dialog — the host overlay (drawer or
+  // modal detail panel) owns the shell. WizardStep renders in its modal layout
+  // (scrolling body + pinned action row), so we pin the context to 'modal'.
+  if (variant === 'inline') {
+    const inlineBrand = title ? (
+      <span className="text-sm font-medium text-white">{title}</span>
+    ) : (
+      <RailWordmark />
+    );
+    return (
+      <WizardContext.Provider value={{ variant: 'modal' }}>
+        <div
+          className={cn(
+            'grid h-full grid-cols-[240px_1fr] overflow-hidden bg-[var(--color-bg-surface)]',
+            'max-[940px]:grid-cols-1 max-[940px]:grid-rows-[auto_1fr]',
+            className
+          )}
+        >
+          <RailTopBar
+            brand={inlineBrand}
+            steps={steps}
+            current={current}
+            className="hidden max-[940px]:flex"
+          />
+          <Rail
+            compact
+            brand={
+              title ? (
+                <span className="text-base font-medium tracking-tight text-white">{title}</span>
+              ) : (
+                <RailWordmark />
+              )
+            }
+            steps={steps}
+            current={current}
+            context={context}
+            onStepSelect={onStepSelect}
+            canSelectStep={selectable}
+            footer={footer}
+            className="max-[940px]:hidden"
+          />
+          <div className="min-h-0 min-w-0">{children}</div>
+        </div>
       </WizardContext.Provider>
     );
   }

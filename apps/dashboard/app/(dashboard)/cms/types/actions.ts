@@ -47,7 +47,8 @@ function friendly(err: unknown): string {
 export async function createEntry(
   typeKey: string,
   body: Record<string, unknown>,
-  slug?: string
+  slug?: string,
+  authorId?: string
 ): Promise<ActionResult<{ id: string }>> {
   const typeParsed = TypeKeySchema.safeParse(typeKey);
   if (!typeParsed.success) return { ok: false, error: 'Invalid content type.' };
@@ -60,6 +61,12 @@ export async function createEntry(
     const slugParsed = SlugSchema.safeParse(slug);
     if (!slugParsed.success) return { ok: false, error: slugParsed.error.issues[0]?.message };
     payload.slug = slugParsed.data;
+  }
+  // Author attribution sets content_entries.author_id (outside body). A UUID
+  // from the wizard's author picker; the entries route validates it.
+  if (authorId) {
+    const authorParsed = z.string().uuid().safeParse(authorId);
+    if (authorParsed.success) payload.author_id = authorParsed.data;
   }
 
   try {

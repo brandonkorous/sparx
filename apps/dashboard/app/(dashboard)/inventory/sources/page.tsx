@@ -3,24 +3,13 @@ export const dynamic = 'force-dynamic';
 import type { Metadata } from 'next';
 import { Database } from 'lucide-react';
 import { api } from '@/lib/api-rest-client';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Badge,
-  Card,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
+import { getUserPreferences } from '../../_shell/preferences';
 import { NewSourceButton } from './_components/new-source-button';
-import { SourceActions } from './_components/source-actions';
+import { SourcesList } from './_components/sources-list';
 
 export const metadata: Metadata = { title: 'Inventory Sources' };
 
@@ -36,25 +25,25 @@ interface InventorySource {
   createdAt: string;
 }
 
-const TYPE_LABELS: Record<string, string> = {
-  csv: 'CSV Feed',
-  api: 'API',
-};
-
-const STATUS_COLOR: Record<string, 'success' | 'warning' | 'danger' | 'neutral'> = {
-  active: 'success',
-  paused: 'warning',
-  error: 'danger',
-};
-
-function syncInterval(sec: number): string {
-  if (sec === 0) return 'Manual';
-  if (sec < 3600) return `Every ${sec / 60}m`;
-  return `Every ${sec / 3600}h`;
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function InventorySourcesPage() {
-  const sources = await api.get<InventorySource[]>('/v1/inventory/sources');
+export default async function InventorySourcesPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
+  const [{ data: sources, meta }, prefs] = await Promise.all([
+    api.getPaged<InventorySource[]>(
+      `/v1/inventory/sources?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+      }).toString()}`
+    ),
+    getUserPreferences(),
+  ]);
+  const total = (meta?.total as number | undefined) ?? sources.length;
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -64,14 +53,14 @@ export default async function InventorySourcesPage() {
           title="Sources"
           badge={
             <Badge color="neutral" variant="soft">
-              {sources.length} source{sources.length !== 1 ? 's' : ''}
+              {total} source{total !== 1 ? 's' : ''}
             </Badge>
           }
           description="Inventory feeds that push stock counts into Sparx."
           actions={<NewSourceButton />}
         />
 
-        <ListToolbar searchPlaceholder="Search sources…" />
+        <ListToolbar searchPlaceholder="Search sources…" enableViewToggle />
 
         {sources.length === 0 ? (
           <Card padding="none">
@@ -82,50 +71,17 @@ export default async function InventorySourcesPage() {
             />
           </Card>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Interval</TableHead>
-                <TableHead>Last sync</TableHead>
-                <TableHead className="w-10" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sources.map((s) => (
-                <TableRow key={s.id}>
-                  <TableCell className="font-medium">{s.name}</TableCell>
-                  <TableCell>
-                    <Text size="sm" className="text-[var(--color-muted-foreground)]">
-                      {TYPE_LABELS[s.type] ?? s.type}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <Badge color={STATUS_COLOR[s.status] ?? 'neutral'} variant="soft" size="sm">
-                      {s.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" className="text-[var(--color-muted-foreground)]">
-                      {syncInterval(s.syncIntervalSec)}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" className="text-[var(--color-muted-foreground)]">
-                      {s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleDateString() : 'Never'}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <SourceActions source={s} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <SourcesList sources={sources} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

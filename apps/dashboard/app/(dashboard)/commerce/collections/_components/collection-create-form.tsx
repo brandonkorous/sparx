@@ -148,7 +148,7 @@ export function CollectionCreateForm({ surface }: CollectionCreateFormProps) {
                     id="name"
                     name="name"
                     required
-                    placeholder="Featured, New for Spring, Diesel specials…"
+                    placeholder="Featured, New for Spring, Best sellers…"
                   />
                   {fieldErrors.name && (
                     <Text size="xs" variant="danger">

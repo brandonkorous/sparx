@@ -30,9 +30,12 @@ export const CREATE_SENTINEL = 'new';
 // is server-only; this set is client-safe).
 const CREATE_VIEW_TYPES = new Set<string>([
   'collection',
-  // 'product' intentionally omitted: product creation is the full-screen
-  // WizardFrame flow at /commerce/products/new, not a drawer/modal overlay.
-  // Without an entry here, EntityCreateButton falls back to that full-page route.
+  // Product creation is the multi-step WizardFrame flow (docs/86). It opts INTO
+  // the drawer/modal overlay so the user's `defaultDetailView` preference picks
+  // the style; unlike the single-column create forms it renders as the
+  // WizardFrame `inline` variant and is flagged full-bleed below so the chrome
+  // gives it the whole body. The full page lives at /commerce/products/new.
+  'product',
   'warehouse',
   'price-list',
   'customer',
@@ -40,10 +43,27 @@ const CREATE_VIEW_TYPES = new Set<string>([
   'segment',
   'page',
   'content-type',
+  'content-entry',
 ]);
 
 export function hasCreateView(typeId: string): boolean {
   return CREATE_VIEW_TYPES.has(typeId);
+}
+
+// Create overlays whose content manages its own padding + height and should
+// fill the drawer/modal body edge-to-edge, rather than sitting in the chrome's
+// default padded, single-scroll column. The product WizardFrame (two-pane rail
+// + working pane) is the first of these. Client-safe so the detail-panel chrome
+// can branch without importing the server-only slot.
+const FULL_BLEED_CREATE_TYPES = new Set<string>([
+  'product',
+  'customer',
+  'b2b-account',
+  'content-entry',
+]);
+
+export function isFullBleedCreate(typeId: string): boolean {
+  return FULL_BLEED_CREATE_TYPES.has(typeId);
 }
 
 // Parses a `type:id` token (the value of `?drawer=` / `?modal=`) into its

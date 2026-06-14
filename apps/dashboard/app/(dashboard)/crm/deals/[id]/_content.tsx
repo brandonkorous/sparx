@@ -118,7 +118,7 @@ export async function DealDetailContent({ id }: Props) {
     api.get<PipelineDetail>(`/v1/crm/pipelines/${deal.pipelineId}`),
     api.get<OrderSummary[]>(`/v1/crm/deals/${deal.id}/orders`),
     api.get<QuoteSummary[]>(`/v1/crm/deals/${deal.id}/quotes`),
-    api.get<ActivityRow[]>(`/v1/crm/activities?deal_id=${deal.id}&take=20`),
+    api.get<ActivityRow[]>(`/v1/crm/activities?deal_id=${deal.id}&limit=20`),
     deal.customerId
       ? api.get<CustomerSummary>(`/v1/crm/customers/${deal.customerId}`).catch(() => null)
       : Promise.resolve(null),

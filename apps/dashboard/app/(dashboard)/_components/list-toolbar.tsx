@@ -44,6 +44,10 @@ export interface ListToolbarProps {
   enableViewToggle?: boolean;
   /** Query key the view toggle writes. Default `view`. */
   viewKey?: string;
+  /** Show the manual refresh button (re-runs the server fetch via
+   *  `router.refresh()` without changing any filters). Default true — set false
+   *  on lists that carry their own re-fetch action (e.g. SEO "Re-scan"). */
+  enableRefresh?: boolean;
   /** Search debounce in ms. Default 250. */
   debounceMs?: number;
 }
@@ -57,6 +61,7 @@ export function ListToolbar({
   sortOptions,
   enableViewToggle = false,
   viewKey = 'view',
+  enableRefresh = true,
   debounceMs = 250,
 }: ListToolbarProps) {
   const searchParams = useSearchParams();
@@ -121,6 +126,7 @@ export function ListToolbar({
       onSortChange={(value) => commit({ [sortKey]: value })}
       view={enableViewToggle ? view : undefined}
       onViewChange={(v) => commit({ [viewKey]: v })}
+      onRefresh={enableRefresh ? () => router.refresh() : undefined}
     />
   );
 }

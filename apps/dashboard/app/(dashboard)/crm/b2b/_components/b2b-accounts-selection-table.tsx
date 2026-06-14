@@ -1,26 +1,22 @@
 'use client';
 
-import * as React from 'react';
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import {
   Badge,
-  BulkActionBar,
   type BulkAction,
-  Card,
-  CardContent,
-  Checkbox,
+  SelectionList,
+  type SelectionColumn,
+  type SelectionCard,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Text,
 } from '@sparx/ui';
 
 import { bulkDeleteB2bAccountsAction, bulkSetB2bStatusAction } from '../../b2b-actions';
 import { EntityRowLink } from '../../../_components/entity-row-link';
+
+// B2B accounts table/grid — selection + bulk actions on top of the shared
+// `SelectionList` dual-view substrate (docs/34 §7). The server page renders the
+// toolbar + header and passes `view`; this owns the interactive layer only.
 
 export interface B2bAccountRow {
   id: string;
@@ -41,43 +37,27 @@ const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline' | 'danger
 
 interface B2bAccountsSelectionTableProps {
   accounts: B2bAccountRow[];
+  view: 'table' | 'card';
 }
 
-export function B2bAccountsSelectionTable({ accounts }: B2bAccountsSelectionTableProps) {
-  const [selected, setSelected] = React.useState<string[]>([]);
-
-  const allIds = accounts.map((a) => a.id);
-  const allSelected = allIds.length > 0 && allIds.every((id) => selected.includes(id));
-  const someSelected = selected.length > 0 && !allSelected;
-
-  function toggleAll() {
-    setSelected(allSelected ? [] : allIds);
-  }
-
-  function toggle(id: string) {
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  }
-
+export function B2bAccountsSelectionTable({ accounts, view }: B2bAccountsSelectionTableProps) {
   const bulkActions: BulkAction[] = [
     {
       label: 'Set active',
       onAction: async (ids) => {
         await bulkSetB2bStatusAction(ids, 'active');
-        setSelected([]);
       },
     },
     {
       label: 'Set credit hold',
       onAction: async (ids) => {
         await bulkSetB2bStatusAction(ids, 'credit_hold');
-        setSelected([]);
       },
     },
     {
       label: 'Suspend',
       onAction: async (ids) => {
         await bulkSetB2bStatusAction(ids, 'suspended');
-        setSelected([]);
       },
     },
     {
@@ -89,96 +69,109 @@ export function B2bAccountsSelectionTable({ accounts }: B2bAccountsSelectionTabl
         'Delete {count} B2B account{count === 1 ? "" : "s"}? Credit history and contacts are also removed. This cannot be undone.',
       onAction: async (ids) => {
         await bulkDeleteB2bAccountsAction(ids);
-        setSelected([]);
       },
     },
   ];
 
-  return (
-    <>
-      <Card padding="none">
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-10">
-                  <Checkbox
-                    checked={someSelected ? 'indeterminate' : allSelected}
-                    onCheckedChange={toggleAll}
-                    aria-label="Select all B2B accounts"
-                  />
-                </TableHead>
-                <TableHead>Company</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Pricing tier</TableHead>
-                <TableHead className="text-right">Credit limit</TableHead>
-                <TableHead className="text-right">Used</TableHead>
-                <TableHead>Fleet</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {accounts.map((a) => {
-                const limit = Number(a.creditLimit);
-                const used = Number(a.creditUsed);
-                const utilization = limit > 0 ? used / limit : 0;
-                return (
-                  <TableRow
-                    key={a.id}
-                    data-state={selected.includes(a.id) ? 'selected' : undefined}
-                    className="group"
-                  >
-                    <TableCell className="w-10">
-                      <Checkbox
-                        checked={selected.includes(a.id)}
-                        onCheckedChange={() => toggle(a.id)}
-                        aria-label={`Select ${a.companyName}`}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <EntityRowLink
-                        href={`/crm/b2b/${a.id}`}
-                        entityType="b2b-account"
-                        entityId={a.id}
-                        className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                      >
-                        {a.companyName}
-                      </EntityRowLink>
-                    </TableCell>
-                    <TableCell>
-                      <Badge color={STATUS_VARIANT[a.status] ?? 'outline'} className="text-xs">
-                        {a.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm" variant="muted">
-                        {a.pricingTier ?? '—'}
-                      </Text>
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      ${limit.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      <Stack direction="row" gap={1} align="center" justify="end">
-                        <span>${used.toLocaleString()}</span>
-                        {utilization >= 0.85 && (
-                          <AlertTriangle className="h-3.5 w-3.5 text-[var(--color-warning-500)]" />
-                        )}
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Text size="sm" variant="muted">
-                        {a.fleetSize ?? '—'}
-                      </Text>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+  const companyLink = (a: B2bAccountRow, className: string) => (
+    <EntityRowLink
+      href={`/crm/b2b/${a.id}`}
+      entityType="b2b-account"
+      entityId={a.id}
+      className={className}
+    >
+      {a.companyName}
+    </EntityRowLink>
+  );
 
-      <BulkActionBar selected={selected} onClear={() => setSelected([])} actions={bulkActions} />
-    </>
+  const statusBadge = (a: B2bAccountRow) => (
+    <Badge color={STATUS_VARIANT[a.status] ?? 'outline'} className="text-xs">
+      {a.status}
+    </Badge>
+  );
+
+  const usedCell = (a: B2bAccountRow) => {
+    const limit = Number(a.creditLimit);
+    const used = Number(a.creditUsed);
+    const utilization = limit > 0 ? used / limit : 0;
+    return (
+      <Stack direction="row" gap={1} align="center" justify="end">
+        <span className="tabular-nums">${used.toLocaleString()}</span>
+        {utilization >= 0.85 && (
+          <AlertTriangle className="h-3.5 w-3.5 text-[var(--color-warning-500)]" />
+        )}
+      </Stack>
+    );
+  };
+
+  const columns: SelectionColumn<B2bAccountRow>[] = [
+    {
+      header: 'Company',
+      cell: (a) =>
+        companyLink(a, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
+    },
+    { header: 'Status', cell: statusBadge },
+    {
+      header: 'Pricing tier',
+      cell: (a) => (
+        <Text size="sm" variant="muted">
+          {a.pricingTier ?? '—'}
+        </Text>
+      ),
+    },
+    {
+      header: 'Credit limit',
+      align: 'right',
+      cell: (a) => `$${Number(a.creditLimit).toLocaleString()}`,
+    },
+    { header: 'Used', align: 'right', cell: usedCell },
+    {
+      header: 'Fleet',
+      cell: (a) => (
+        <Text size="sm" variant="muted">
+          {a.fleetSize ?? '—'}
+        </Text>
+      ),
+    },
+  ];
+
+  const card: SelectionCard<B2bAccountRow> = {
+    title: (a) =>
+      companyLink(
+        a,
+        'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
+      ),
+    subtitle: (a) => (
+      <Text size="xs" variant="muted">
+        {a.pricingTier ?? 'No pricing tier'}
+      </Text>
+    ),
+    badge: statusBadge,
+    body: (a) => (
+      <>
+        <Stack direction="row" align="center" justify="between" gap={2}>
+          <Text size="sm" variant="muted">
+            Limit ${Number(a.creditLimit).toLocaleString()}
+          </Text>
+          {usedCell(a)}
+        </Stack>
+        <Text size="xs" variant="muted">
+          Fleet: {a.fleetSize ?? '—'}
+        </Text>
+      </>
+    ),
+  };
+
+  return (
+    <SelectionList
+      items={accounts}
+      view={view}
+      getId={(a) => a.id}
+      getRowLabel={(a) => a.companyName}
+      entityLabelPlural="B2B accounts"
+      columns={columns}
+      card={card}
+      bulkActions={bulkActions}
+    />
   );
 }

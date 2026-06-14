@@ -1,52 +1,20 @@
 import { Receipt } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
-import Link from 'next/link';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack, Text } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
+import { getUserPreferences } from '../../_shell/preferences';
 import { ArAgingSummary, type AgingReport } from './_components/ar-aging-summary';
+import { InvoicesList, type InvoiceRow } from './_components/invoices-list';
 
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
-
-interface InvoiceRow {
-  id: string;
-  invoiceNumber: string;
-  status: string;
-  amountCents: number;
-  balanceCents: number;
-  overdueDays: number;
-  dueAt: string;
-  paidAt: string | null;
-  createdAt: string;
-  account: { id: string; companyName: string } | null;
-}
-
-const STATUS_VARIANT: Record<string, 'outline' | 'warning' | 'success' | 'danger'> = {
-  unpaid: 'outline',
-  partial: 'warning',
-  overdue: 'danger',
-  paid: 'success',
-  void: 'outline',
-};
 
 const STATUS_OPTIONS = [
   { value: 'unpaid', label: 'Unpaid' },
@@ -69,10 +37,11 @@ function formatCents(cents: number): string {
 
 export default async function B2bInvoicesPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status);
   const accountId = stringParam(params.account_id);
 
-  const query = new URLSearchParams({ take: '100' });
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status) query.set('status', status);
   if (accountId) query.set('account_id', accountId);
 
@@ -80,11 +49,14 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
   // this view alongside the invoice list. It sums ALL open B2B AR server-side —
   // not just the loaded page — so the buckets are accurate. Supplementary, so a
   // failure never breaks the list.
-  const [{ data: invoices, meta }, aging] = await Promise.all([
+  const [prefs, { data: invoices, meta }, aging] = await Promise.all([
+    getUserPreferences(),
     api.getPaged<InvoiceRow[]>(`/v1/b2b/invoices?${query.toString()}`),
     api.get<AgingReport>('/v1/invoicing/aging?scope=b2b').catch(() => null),
   ]);
   const total = (meta?.total as number | undefined) ?? invoices.length;
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   const overdueCount = invoices.filter((i) => i.status === 'overdue').length;
   const totalOwed = invoices
@@ -121,6 +93,7 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
         <ListToolbar
           searchPlaceholder="Search by invoice # or account…"
           filters={[{ key: 'status', label: 'Status', options: STATUS_OPTIONS }]}
+          enableViewToggle
         />
 
         {invoices.length === 0 ? (
@@ -132,76 +105,10 @@ export default async function B2bInvoicesPage({ searchParams }: PageProps) {
             />
           </Card>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Invoice #</TableHead>
-                <TableHead>Account</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Due</TableHead>
-                <TableHead>Overdue days</TableHead>
-                <TableHead>Paid</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.map((inv) => (
-                <TableRow key={inv.id} className="hover:bg-[var(--color-surface-subtle)]">
-                  <TableCell>
-                    <Link
-                      href={`/b2b/invoices/${inv.id}`}
-                      className="font-medium hover:text-[var(--module-active)] hover:underline"
-                    >
-                      {inv.invoiceNumber}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    {inv.account ? (
-                      <Link
-                        href={`/b2b/accounts/${inv.account.id}`}
-                        className="text-sm hover:text-[var(--module-active)] hover:underline"
-                      >
-                        {inv.account.companyName}
-                      </Link>
-                    ) : (
-                      <Text size="sm" variant="muted">
-                        —
-                      </Text>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Badge color={STATUS_VARIANT[inv.status] ?? 'outline'} variant="soft">
-                      {inv.status.replace('_', ' ')}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" className="tabular-nums">
-                      {formatCents(inv.amountCents)}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text
-                      size="sm"
-                      className={inv.status === 'overdue' ? 'text-[var(--color-danger)]' : ''}
-                    >
-                      {new Date(inv.dueAt).toLocaleDateString()}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" variant={inv.overdueDays > 0 ? 'default' : 'muted'}>
-                      {inv.overdueDays > 0 ? `${inv.overdueDays}d` : '—'}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" variant="muted">
-                      {inv.paidAt ? new Date(inv.paidAt).toLocaleDateString() : '—'}
-                    </Text>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <InvoicesList invoices={invoices} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

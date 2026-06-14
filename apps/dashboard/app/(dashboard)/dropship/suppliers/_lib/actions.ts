@@ -15,6 +15,8 @@ interface SupplierBody {
   credentials: Record<string, string>;
   pricingRule: PricingRule | null;
   notes: string | null;
+  // Property (site) ids this connection is enabled on. Empty = all sites.
+  siteScope?: string[];
 }
 
 export async function createSupplier(body: SupplierBody): Promise<{ error?: string }> {

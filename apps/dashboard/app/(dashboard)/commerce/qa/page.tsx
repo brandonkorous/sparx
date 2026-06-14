@@ -11,19 +11,13 @@ import {
   Heading,
   PageHeader,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
-import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
+import { QaList, type DisplayRow } from './_components/qa-list';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,17 +50,6 @@ interface QuestionListRow {
   answers?: unknown[];
 }
 
-interface DisplayRow {
-  id: string;
-  productId: string;
-  body: string;
-  status: string;
-  createdAt: string;
-  authorLabel: string;
-  productTitle: string | null;
-  answerCount: number | null;
-}
-
 function authorLabel(row: QuestionListRow): string {
   if (row.displayName) return row.displayName;
   if (row.customer) {
@@ -82,9 +65,12 @@ function authorLabel(row: QuestionListRow): string {
 export default async function QaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; view?: string }>;
 }) {
-  const { status: statusParam } = await searchParams;
+  const { status: statusParam, view: viewParam } = await searchParams;
+
+  const prefs = await getUserPreferences();
+  const view = (viewParam ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   let rows: DisplayRow[] = [];
   if (statusParam === undefined) {
@@ -127,69 +113,36 @@ export default async function QaPage({
         <ListToolbar
           searchable={false}
           filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
+          enableViewToggle
         />
 
-        <Card>
-          <CardHeader>
-            <Stack gap={1}>
-              <Heading level={3}>{labelFor(statusParam)}</Heading>
-              <CardDescription>
-                Click a question to publish or reject, and post an official answer.
-              </CardDescription>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            {rows.length === 0 ? (
+        {rows.length === 0 ? (
+          <Card>
+            <CardHeader>
+              <Stack gap={1}>
+                <Heading level={3}>{labelFor(statusParam)}</Heading>
+                <CardDescription>
+                  Click a question to publish or reject, and post an official answer.
+                </CardDescription>
+              </Stack>
+            </CardHeader>
+            <CardContent>
               <EmptyState
                 icon={<HelpCircle className="h-5 w-5" />}
                 title="No questions"
                 description="Questions arrive here once the storefront PDP starts accepting them."
               />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Question</TableHead>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Author</TableHead>
-                    <TableHead>Answers</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Asked</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.map((q) => (
-                    <TableRow key={q.id}>
-                      <TableCell>
-                        <EntityRowLink
-                          href={`/commerce/qa/${q.id}`}
-                          entityType="qa-question"
-                          entityId={q.id}
-                          className="hover:text-[var(--module-active)]"
-                        >
-                          {truncate(q.body, 80)}
-                        </EntityRowLink>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm">
-                          {q.productTitle ?? (
-                            <span className="font-mono text-xs">{q.productId.slice(0, 8)}</span>
-                          )}
-                        </Text>
-                      </TableCell>
-                      <TableCell>{q.authorLabel}</TableCell>
-                      <TableCell>{q.answerCount ?? '—'}</TableCell>
-                      <TableCell>
-                        <StatusBadge status={q.status} />
-                      </TableCell>
-                      <TableCell>{new Date(q.createdAt).toLocaleDateString()}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : (
+          <Stack gap={1}>
+            <Heading level={3}>{labelFor(statusParam)}</Heading>
+            <CardDescription>
+              Click a question to publish or reject, and post an official answer.
+            </CardDescription>
+            <QaList rows={rows} view={view} />
+          </Stack>
+        )}
       </Stack>
     </Container>
   );
@@ -199,14 +152,4 @@ function labelFor(s: string | undefined): string {
   if (s === undefined) return 'Pending';
   if (s === 'all') return 'All questions';
   return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-function truncate(s: string, n: number): string {
-  return s.length > n ? `${s.slice(0, n - 1)}…` : s;
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const variant: 'success' | 'outline' | 'danger' =
-    status === 'published' ? 'success' : status === 'rejected' ? 'danger' : 'outline';
-  return <Badge color={variant}>{status}</Badge>;
 }

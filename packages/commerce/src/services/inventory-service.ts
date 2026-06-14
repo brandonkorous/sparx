@@ -398,10 +398,16 @@ export async function adjust(
       actorType: ctx.userId ? 'user' : 'system',
       action: 'commerce.inventory.adjusted',
       entityType: 'InventoryLevel',
-      entityId: `${input.variantId}:${input.warehouseId}`,
+      // An inventory level is keyed by (variant, warehouse), but entity_id is a
+      // single UUID column — use the variant and carry the warehouse in the diff.
+      entityId: input.variantId,
       diff: {
         before: { onHand: before.onHand, allocated: before.allocated },
-        after: { onHand: updated.onHand, allocated: updated.allocated },
+        after: {
+          onHand: updated.onHand,
+          allocated: updated.allocated,
+          warehouseId: input.warehouseId,
+        },
       },
     });
 
@@ -498,9 +504,11 @@ export async function setReorderPolicy(ctx: ServiceContext, rawInput: unknown): 
       actorType: ctx.userId ? 'user' : 'system',
       action: 'commerce.inventory.reorder_policy_set',
       entityType: 'InventoryLevel',
-      entityId: `${input.variantId}:${input.warehouseId}`,
+      // entity_id is a single UUID — key on the variant, carry the warehouse in the diff.
+      entityId: input.variantId,
       diff: {
         after: {
+          warehouseId: input.warehouseId,
           reorderPoint: input.reorderPoint,
           reorderQuantity: input.reorderQuantity,
           leadTimeDays: input.leadTimeDays ?? null,
@@ -1148,16 +1156,29 @@ async function syncProductInStock(tx: TxClient, variantId: string): Promise<void
   });
   if (!variant) return;
 
-  const levels = await tx.inventoryLevel.findMany({
-    where: {
-      variant: { productId: variant.productId, deletedAt: null },
-    },
-    select: { onHand: true, allocated: true },
-  });
+  // A product is "in stock" if it has positive available inventory in any
+  // warehouse, OR any live variant is orderable without tracked stock
+  // (inventoryPolicy continue/preorder). The latter covers dropship / print-on-
+  // demand, whose stock lives with the supplier and never appears in
+  // inventory_levels — counting only on-hand would mark those permanently sold
+  // out even though they're always purchasable.
+  const [levels, sellableWithoutStock] = await Promise.all([
+    tx.inventoryLevel.findMany({
+      where: { variant: { productId: variant.productId, deletedAt: null } },
+      select: { onHand: true, allocated: true },
+    }),
+    tx.productVariant.count({
+      where: {
+        productId: variant.productId,
+        deletedAt: null,
+        inventoryPolicy: { not: 'deny' },
+      },
+    }),
+  ]);
   const total = levels.reduce((acc, l) => acc + (l.onHand - l.allocated), 0);
   await tx.product.update({
     where: { id: variant.productId },
-    data: { inStock: total > 0 },
+    data: { inStock: total > 0 || sellableWithoutStock > 0 },
   });
 }
 

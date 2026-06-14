@@ -4,6 +4,40 @@ import { revalidatePath } from 'next/cache';
 import { api } from '@/lib/api-rest-client';
 import type { ActionResult } from './_action-helpers';
 import { restAction } from './_rest-action';
+import type { OptionRow, VariantRow } from './products/[id]/_components/variants-panel';
+
+// Client-callable reads for the product wizard's Variants step. The detail page
+// fetches these server-side; the wizard needs them after it mutates the lattice
+// so it can re-derive the variant matrix without a full navigation.
+export async function listProductOptionsAction(
+  productId: string
+): Promise<ActionResult<OptionRow[]>> {
+  return restAction(() =>
+    api.get<OptionRow[]>(`/v1/commerce/products/${productId}/variants/options`)
+  );
+}
+
+export async function listVariantsAction(productId: string): Promise<ActionResult<VariantRow[]>> {
+  return restAction(() =>
+    api.get<VariantRow[]>(`/v1/commerce/products/${productId}/variants?include_archived=false`)
+  );
+}
+
+export interface ProductImageRow {
+  id: string;
+  variantId: string | null;
+  mediaAssetId: string;
+  position: number;
+  isPrimary: boolean;
+  alt: string | null;
+  optionValueIds: string[];
+}
+
+export async function listProductImagesAction(
+  productId: string
+): Promise<ActionResult<ProductImageRow[]>> {
+  return restAction(() => api.get<ProductImageRow[]>(`/v1/commerce/products/${productId}/images`));
+}
 
 export async function setProductOptionsAction(
   productId: string,

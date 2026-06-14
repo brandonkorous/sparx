@@ -1,25 +1,30 @@
-import Link from 'next/link';
-import { Layers, Plus, Star, Archive } from 'lucide-react';
+import { Layers, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
-import { EntityRowLink } from '../../_components/entity-row-link';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
 import { RecomputeButton } from './_components/recompute-button';
+import { SegmentsList, type SegmentListRow } from './_components/segments-list';
+
+// Segments index — a standard docs/34 List surface: a ListToolbar with an
+// archived filter + Table/Cards toggle on top of the shared SelectionList. The
+// create form, recompute button, and rule-builder live on their own surfaces.
+//
+// The archived filter maps to the API's only facet (`include_archived`):
+// `active` (default) fetches non-archived; `all` includes archived; `archived`
+// fetches all then narrows to archived rows server-side here.
 
 export const dynamic = 'force-dynamic';
+
+const ARCHIVED_OPTIONS = [
+  { value: 'active', label: 'Active' },
+  { value: 'archived', label: 'Archived' },
+  { value: 'all', label: 'All' },
+];
 
 interface SegmentRow {
   id: string;
@@ -40,19 +45,32 @@ interface PageProps {
 
 export default async function SegmentsPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const includeArchived = Boolean(params.includeArchived);
+  const archived = parseArchived(stringParam(params.archived));
 
-  const segments = await api.get<SegmentRow[]>(
-    `/v1/crm/segments${includeArchived ? '?include_archived=true' : ''}`
-  );
+  const [prefs, fetched] = await Promise.all([
+    getUserPreferences(),
+    api.get<SegmentRow[]>(
+      `/v1/crm/segments${archived !== 'active' ? '?include_archived=true' : ''}`
+    ),
+  ]);
+
+  // `archived` narrows the all-inclusive fetch to just archived rows.
+  const visible = archived === 'archived' ? fetched.filter((s) => s.archivedAt) : fetched;
+
   const counts = await Promise.all(
-    segments.map((s) =>
+    visible.map((s) =>
       api
         .get<MemberCountResponse>(`/v1/crm/segments/${s.id}/member-count`)
         .then((r) => ({ id: s.id, count: r.total }))
     )
   );
   const countById = new Map(counts.map((c) => [c.id, c.count]));
+
+  const segments: SegmentListRow[] = visible.map((s) => ({
+    ...s,
+    memberCount: countById.get(s.id) ?? 0,
+  }));
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -68,11 +86,6 @@ export default async function SegmentsPage({ searchParams }: PageProps) {
           description="Live customer audiences updated incrementally as events flow. Email broadcasts and automations target segments by name; membership joins are O(1)."
           actions={
             <>
-              <Button asChild variant="ghost">
-                <Link href={includeArchived ? '/crm/segments' : '/crm/segments?includeArchived=1'}>
-                  {includeArchived ? 'Hide archived' : 'Show archived'}
-                </Link>
-              </Button>
               <RecomputeButton />
               <EntityCreateButton
                 entityType="segment"
@@ -86,80 +99,52 @@ export default async function SegmentsPage({ searchParams }: PageProps) {
           }
         />
 
+        <ListToolbar
+          searchable={false}
+          filters={[
+            { key: 'archived', label: 'Status', options: ARCHIVED_OPTIONS, defaultValue: 'active' },
+          ]}
+          enableViewToggle
+        />
+
         {segments.length === 0 ? (
           <Card padding="none">
             <EmptyState
               icon={<Layers className="h-5 w-5" />}
-              title="No segments yet"
-              description="Built-in segments like High Value and At Risk are seeded automatically — if you see this, the seed didn't run. Create one to get started."
+              title={archived === 'archived' ? 'No archived segments' : 'No segments yet'}
+              description={
+                archived === 'archived'
+                  ? 'Archived segments stay out of the active list. Switch the filter to Active or All to see the rest.'
+                  : "Built-in segments like High Value and At Risk are seeded automatically — if you see this, the seed didn't run. Create one to get started."
+              }
               action={
-                <EntityCreateButton
-                  entityType="segment"
-                  newHref="/crm/segments/new"
-                  color="module"
-                  leftIcon={<Plus className="h-4 w-4" />}
-                >
-                  New
-                </EntityCreateButton>
+                archived === 'archived' ? undefined : (
+                  <EntityCreateButton
+                    entityType="segment"
+                    newHref="/crm/segments/new"
+                    color="module"
+                    leftIcon={<Plus className="h-4 w-4" />}
+                  >
+                    New
+                  </EntityCreateButton>
+                )
               }
             />
           </Card>
         ) : (
-          <Stack gap={3}>
-            {segments.map((s) => (
-              <Card key={s.id} variant={s.archivedAt ? 'default' : 'module'}>
-                <CardContent>
-                  <Stack direction="row" align="center" justify="between" wrap gap={3}>
-                    <Stack gap={1} className="min-w-0 flex-1">
-                      <Stack direction="row" align="center" gap={2}>
-                        <EntityRowLink
-                          href={`/crm/segments/${s.id}`}
-                          entityType="segment"
-                          entityId={s.id}
-                          className="text-base font-medium hover:text-[var(--module-active)] hover:underline"
-                        >
-                          {s.name}
-                        </EntityRowLink>
-                        {s.isBuiltIn && (
-                          <Badge variant="outline" className="text-xs">
-                            <Star className="h-3 w-3" /> Built-in
-                          </Badge>
-                        )}
-                        {s.archivedAt && (
-                          <Badge color="warning" className="text-xs">
-                            <Archive className="h-3 w-3" /> Archived
-                          </Badge>
-                        )}
-                      </Stack>
-                      {s.description && (
-                        <Text size="sm" variant="muted" className="truncate">
-                          {s.description}
-                        </Text>
-                      )}
-                      <Text size="xs" variant="muted">
-                        slug <code>{s.slug}</code>
-                      </Text>
-                    </Stack>
-                    <Stack direction="row" align="center" gap={3}>
-                      <Stack gap={0}>
-                        <Text size="xs" variant="muted">
-                          Members
-                        </Text>
-                        <Text size="lg" weight="medium" className="tabular-nums">
-                          {countById.get(s.id) ?? 0}
-                        </Text>
-                      </Stack>
-                      <Button asChild variant="ghost">
-                        <Link href={`/crm/segments/${s.id}`}>Open</Link>
-                      </Button>
-                    </Stack>
-                  </Stack>
-                </CardContent>
-              </Card>
-            ))}
-          </Stack>
+          <SegmentsList segments={segments} view={view} />
         )}
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
+}
+
+function parseArchived(v: string | undefined): 'active' | 'archived' | 'all' {
+  return v === 'archived' || v === 'all' ? v : 'active';
 }

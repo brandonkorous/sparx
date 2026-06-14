@@ -327,7 +327,7 @@ const b2bSchedulingRoutes: FastifyPluginAsync = async (app) => {
       return { items, total };
     });
 
-    return ok(paged(items.map(toApptView), { total, skip: q.skip, take: q.take }));
+    return paged(items.map(toApptView), { total, skip: q.skip, take: q.take });
   });
 
   app.post('/v1/b2b/appointments', async (request, reply) => {

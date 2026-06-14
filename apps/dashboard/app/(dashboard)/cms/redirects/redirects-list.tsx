@@ -27,11 +27,23 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  type SelectionCard,
+  type SelectionColumn,
+  SelectionList,
   Stack,
   Text,
 } from '@sparx/ui';
 import { ArrowRight, FileUp, Plus, Trash2, Waypoints } from 'lucide-react';
 import { bulkImportRedirects, createRedirect, deleteRedirect } from './actions';
+
+// Redirects — a standard Collection/List surface (docs/34 §7) with inline CRUD.
+// The create form + bulk import stay at the top (header/top), the existing
+// redirects render through the shared SelectionList dual-view substrate, and
+// per-row Remove (delete) is preserved as an actions column in the table and
+// inside the card body. The whole surface is one client component: SelectionList
+// takes render functions that can't cross the server→client boundary, and the
+// create/delete/import state is shared here. The server page computes `view` and
+// hands it down with the rows.
 
 interface RedirectRow {
   id: string;
@@ -42,7 +54,12 @@ interface RedirectRow {
   created_at: string;
 }
 
-export function RedirectsList({ rows }: { rows: RedirectRow[] }) {
+interface RedirectsListProps {
+  rows: RedirectRow[];
+  view: 'table' | 'card';
+}
+
+export function RedirectsList({ rows, view }: RedirectsListProps) {
   const router = useRouter();
   const [pending, startTransition] = React.useTransition();
   const [error, setError] = React.useState<string | null>(null);
@@ -92,6 +109,87 @@ export function RedirectsList({ rows }: { rows: RedirectRow[] }) {
       router.refresh();
     });
   }
+
+  const removeButton = (r: RedirectRow) => (
+    <Button
+      type="button"
+      variant="ghost"
+      size="xs"
+      leftIcon={<Trash2 className="h-3 w-3" />}
+      onClick={() => confirmDelete(r)}
+      disabled={pending}
+    >
+      Remove
+    </Button>
+  );
+
+  const columns: SelectionColumn<RedirectRow>[] = [
+    {
+      header: 'Status',
+      cell: (r) => <Badge variant="outline">{r.status_code}</Badge>,
+    },
+    {
+      header: 'From',
+      cell: (r) => (
+        <Text size="sm" className="truncate font-mono">
+          {r.from_path}
+        </Text>
+      ),
+    },
+    {
+      header: 'To',
+      cell: (r) => (
+        <Stack direction="row" align="center" gap={2} className="min-w-0">
+          <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+          <Text size="sm" className="truncate font-mono">
+            {r.to_path}
+          </Text>
+        </Stack>
+      ),
+    },
+    {
+      header: 'Hits',
+      align: 'right',
+      cell: (r) => (
+        <Text size="sm" variant="muted">
+          {r.hit_count}
+        </Text>
+      ),
+    },
+    {
+      header: '',
+      id: 'actions',
+      align: 'right',
+      cell: (r) => <div className="flex justify-end">{removeButton(r)}</div>,
+    },
+  ];
+
+  const card: SelectionCard<RedirectRow> = {
+    title: (r) => (
+      <Stack direction="row" align="center" gap={2} className="min-w-0">
+        <Badge variant="outline">{r.status_code}</Badge>
+        <Text size="sm" className="truncate font-mono">
+          {r.from_path}
+        </Text>
+      </Stack>
+    ),
+    body: (r) => (
+      <Stack gap={2}>
+        <Stack direction="row" align="center" gap={2} className="min-w-0">
+          <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
+          <Text size="sm" className="truncate font-mono">
+            {r.to_path}
+          </Text>
+        </Stack>
+        <Stack direction="row" align="center" justify="between" gap={2}>
+          <Text size="xs" variant="muted">
+            {r.hit_count} hits
+          </Text>
+          {removeButton(r)}
+        </Stack>
+      </Stack>
+    ),
+  };
 
   return (
     <Stack gap={5}>
@@ -170,72 +268,41 @@ export function RedirectsList({ rows }: { rows: RedirectRow[] }) {
         </Text>
       )}
 
-      <Card variant="module">
-        <CardHeader>
-          <Heading level={3}>Existing redirects</Heading>
-          <CardDescription>
-            {rows.length} redirect{rows.length === 1 ? '' : 's'} active.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {rows.length === 0 ? (
-            <EmptyState
-              icon={<Waypoints className="h-5 w-5" />}
-              title="No redirects yet"
-              description="Use the form above to forward an old URL to a new one. Redirects are returned with the chosen HTTP status code on every storefront hit."
-              action={
-                <Button
-                  type="button"
-                  color="module"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fromInputRef.current?.focus()}
-                >
-                  Add your first redirect
-                </Button>
-              }
-            />
-          ) : (
-            <Stack gap={2}>
-              {rows.map((r) => (
-                <Stack
-                  key={r.id}
-                  direction="row"
-                  align="center"
-                  justify="between"
-                  className="rounded-md border border-[var(--color-border-default)] px-3 py-2"
-                >
-                  <Stack direction="row" align="center" gap={3} className="min-w-0 flex-1">
-                    <Badge variant="outline">{r.status_code}</Badge>
-                    <Text size="sm" className="truncate font-mono">
-                      {r.from_path}
-                    </Text>
-                    <ArrowRight className="h-4 w-4 shrink-0 text-[var(--color-text-tertiary)]" />
-                    <Text size="sm" className="truncate font-mono">
-                      {r.to_path}
-                    </Text>
-                  </Stack>
-                  <Stack direction="row" align="center" gap={2}>
-                    <Text size="xs" variant="muted">
-                      {r.hit_count} hits
-                    </Text>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="xs"
-                      leftIcon={<Trash2 className="h-3 w-3" />}
-                      onClick={() => confirmDelete(r)}
-                      disabled={pending}
-                    >
-                      Remove
-                    </Button>
-                  </Stack>
-                </Stack>
-              ))}
-            </Stack>
-          )}
-        </CardContent>
-      </Card>
+      <Text size="sm" variant="muted">
+        {rows.length} redirect{rows.length === 1 ? '' : 's'} active.
+      </Text>
+
+      {rows.length === 0 ? (
+        <Card variant="module" padding="none">
+          <EmptyState
+            icon={<Waypoints className="h-5 w-5" />}
+            title="No redirects yet"
+            description="Use the form above to forward an old URL to a new one. Redirects are returned with the chosen HTTP status code on every storefront hit."
+            action={
+              <Button
+                type="button"
+                color="module"
+                variant="outline"
+                size="sm"
+                onClick={() => fromInputRef.current?.focus()}
+              >
+                Add your first redirect
+              </Button>
+            }
+          />
+        </Card>
+      ) : (
+        <SelectionList
+          items={rows}
+          view={view}
+          getId={(r) => r.id}
+          getRowLabel={(r) => r.from_path}
+          entityLabelPlural="redirects"
+          selectable={false}
+          columns={columns}
+          card={card}
+        />
+      )}
 
       <AlertDialog
         open={pendingDelete !== null}

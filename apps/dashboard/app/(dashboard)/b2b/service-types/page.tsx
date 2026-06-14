@@ -1,26 +1,18 @@
 import { Calendar } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-import { ServiceTypeActions } from './_components/service-type-actions';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { ServiceTypesList } from './_components/service-types-list';
 import { NewServiceTypeButton } from './_components/new-service-type-button';
 
 export const dynamic = 'force-dynamic';
+
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
 interface ServiceType {
   id: string;
@@ -34,9 +26,22 @@ interface ServiceType {
   createdAt: string;
 }
 
-export default async function ServiceTypesPage() {
-  const result = await api.get<{ types: ServiceType[] }>('/v1/b2b/service-types');
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
+}
+
+export default async function ServiceTypesPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
+  const [prefs, result] = await Promise.all([
+    getUserPreferences(),
+    api.get<{ types: ServiceType[] }>('/v1/b2b/service-types'),
+  ]);
   const types = result.types ?? [];
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -48,6 +53,8 @@ export default async function ServiceTypesPage() {
           actions={<NewServiceTypeButton />}
         />
 
+        <ListToolbar enableViewToggle searchable={false} />
+
         {types.length === 0 ? (
           <Card padding="none">
             <EmptyState
@@ -58,57 +65,7 @@ export default async function ServiceTypesPage() {
             />
           </Card>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Requires vehicle</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {types.map((t) => (
-                <TableRow key={t.id}>
-                  <TableCell>
-                    <Stack direction="row" gap={2} className="items-center">
-                      {t.color && (
-                        <span
-                          className="inline-block h-3 w-3 flex-shrink-0 rounded-full"
-                          style={{ backgroundColor: t.color }}
-                        />
-                      )}
-                      <Stack gap={1}>
-                        <Text size="sm" className="font-medium">
-                          {t.name}
-                        </Text>
-                        {t.description && (
-                          <Text size="xs" variant="muted" className="line-clamp-1">
-                            {t.description}
-                          </Text>
-                        )}
-                      </Stack>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm">{t.durationMinutes} min</Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm">{t.requiresVehicle ? 'Yes' : 'No'}</Text>
-                  </TableCell>
-                  <TableCell>
-                    <Badge color={t.isActive ? 'success' : 'warning'} variant="soft" size="sm">
-                      {t.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <ServiceTypeActions type={t} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <ServiceTypesList types={types} view={view} />
         )}
       </Stack>
     </Container>

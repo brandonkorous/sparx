@@ -282,7 +282,7 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
             id="brand-name"
             value={businessName}
             onChange={(e) => setBusinessName(e.target.value)}
-            placeholder="Acme Diesel"
+            placeholder="Acme Co."
           />
           <p className="text-xs text-[var(--color-text-muted)]">
             Your brand/legal name for documents like invoices. The name customers see on a site

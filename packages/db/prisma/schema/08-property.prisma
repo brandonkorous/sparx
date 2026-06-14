@@ -110,6 +110,11 @@ model Property {
   // these override for this specific site.
   navigationMenus NavigationMenu[]
 
+  // Per-site dropship supplier enablement (docs/14, docs/49 §3). A tenant-wide
+  // supplier connection with NO rows here serves ALL sites; rows present restrict
+  // it to those sites. JUNCTION — no fork, ON DELETE CASCADE.
+  dropshipSupplierScopes DropshipSupplierProperty[]
+
   @@unique([tenantId, slug])
   @@index([tenantId])
   @@map("properties")

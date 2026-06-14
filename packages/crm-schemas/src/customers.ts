@@ -22,6 +22,11 @@ export type GdprConsent = z.infer<typeof GdprConsent>;
 
 export const CreateCustomerInput = z.object({
   type: CustomerType.default('prospect'),
+  // The site (web property) this customer belongs to (docs/58 D2). Null/absent →
+  // a tenant-level (GLOBAL) customer, visible from every site's scoped list. The
+  // dashboard create route defaults this to the ACTIVE site for multi-site
+  // tenants, so a customer created while viewing a site belongs to that site.
+  propertyId: Uuid.nullable().optional(),
   email: z.string().email().max(255).nullable().optional(),
   phone: z.string().max(50).nullable().optional(),
   firstName: z.string().max(255).nullable().optional(),

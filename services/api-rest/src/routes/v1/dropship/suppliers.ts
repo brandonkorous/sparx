@@ -18,8 +18,8 @@ import { requireRole } from '@sparx/api-core/auth';
 import { notFound, badRequest, conflict } from '@sparx/api-core/errors';
 import { slugify, uniqueSlug } from '@sparx/api-core/slug';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
-import { createAdapter } from '@sparx/dropship';
-import type { PricingRule } from '@sparx/dropship';
+import { createAdapter, VENDOR_CATALOG } from '@sparx/dropship';
+import type { PricingRule, SupplierType } from '@sparx/dropship';
 import { applyPricingRule } from '@sparx/dropship';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
 import { env } from '../../../env.js';
@@ -34,8 +34,32 @@ const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLo
 const PathId = z.object({ id: z.string().uuid() });
 const PathIdProduct = z.object({ id: z.string().uuid(), productId: z.string().uuid() });
 
+// Best-effort MIME from a hot-linked image URL extension (mirrors the blueprint
+// installer). Defaults to jpeg — only used for the MediaAsset metadata, never
+// for actual decoding, so an occasional mismatch is harmless.
+function mimeFromImageUrl(url: string): string {
+  const ext = url.split('?')[0]?.split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'png':
+      return 'image/png';
+    case 'webp':
+      return 'image/webp';
+    case 'gif':
+      return 'image/gif';
+    case 'svg':
+      return 'image/svg+xml';
+    case 'avif':
+      return 'image/avif';
+    default:
+      return 'image/jpeg';
+  }
+}
+
 const ListQuery = z.object({
   status: z.enum(['connecting', 'active', 'error', 'disconnected']).optional(),
+  // When set, returns only connections enabled on this site — i.e. those scoped
+  // to it OR scoped to no site at all (all-sites connections).
+  propertyId: z.string().uuid().optional(),
   take: z.coerce.number().int().min(1).max(250).default(50),
   skip: z.coerce.number().int().min(0).default(0),
 });
@@ -53,12 +77,20 @@ const PricingRuleSchema = z.object({
   maxMsrp: z.literal('use_supplier_msrp').optional(),
 });
 
+// `siteScope` is the list of property (site) IDs this tenant-wide connection is
+// enabled on. Omitted or empty array = enabled on ALL of the tenant's sites
+// (the default; mirrors the commerce_product_properties "empty = all" rule).
+const SiteScope = z.array(z.string().uuid()).max(200);
+
 const SupplierBody = z.object({
   name: z.string().min(1).max(255),
-  type: z.enum(['csv', 'dsers', 'spocket', 'faire', 'autods', 'custom']),
+  // Only vendors with a real, self-serve adapter (docs/14 §3). Suppliers without
+  // a usable public API are not offered.
+  type: z.enum(['csv', 'dsers', 'spocket', 'printify', 'printful']),
   credentials: z.record(z.string(), z.string()),
   pricingRule: PricingRuleSchema.nullable().optional(),
   notes: z.string().max(5000).nullable().optional(),
+  siteScope: SiteScope.optional(),
 });
 
 const SupplierPatchBody = z.object({
@@ -66,23 +98,51 @@ const SupplierPatchBody = z.object({
   credentials: z.record(z.string(), z.string()).optional(),
   pricingRule: PricingRuleSchema.nullable().optional(),
   notes: z.string().max(5000).nullable().optional(),
+  siteScope: SiteScope.optional(),
 });
 
 const ImportBody = z.object({
   pricingRuleOverride: PricingRuleSchema.optional(),
 });
 
+// Vendor catalog keyed by slug — lets the supplier view attach the credential
+// field spec for its type without the dashboard re-fetching or re-deriving it.
+const VENDOR_BY_TYPE = new Map(VENDOR_CATALOG.map((v) => [v.slug, v]));
+
+// Are this connection's credentials actually on file? Secrets are write-only
+// (never returned to the browser), so the dashboard can't tell on its own
+// whether a token is stored — it relies on this flag to decide between the
+// "Credentials saved ✓ / Replace" state and the "needs credentials" recovery
+// state. True iff every required credential key has a non-empty stored value
+// (or, for vendors with no required fields, any value is present).
+function credentialsArePresent(vendorSlug: string, credentials: unknown): boolean {
+  const bag = (credentials as Record<string, string> | null) ?? {};
+  const required = (VENDOR_BY_TYPE.get(vendorSlug as SupplierType)?.credentialFields ?? []).filter(
+    (f) => f.required
+  );
+  if (required.length === 0) {
+    return Object.values(bag).some((v) => typeof v === 'string' && v.trim().length > 0);
+  }
+  return required.every((f) => {
+    const v = bag[f.key];
+    return typeof v === 'string' && v.trim().length > 0;
+  });
+}
+
 function toSupplierView(s: {
   id: string;
   name: string;
   type: string;
   status: string;
+  credentials: unknown;
   lastSyncAt: Date | null;
   pricingRule: unknown;
   notes: string | null;
   createdAt: Date;
   updatedAt: Date;
+  siteScopes?: { propertyId: string }[];
 }) {
+  const vendor = VENDOR_BY_TYPE.get(s.type as SupplierType);
   return {
     id: s.id,
     name: s.name,
@@ -91,9 +151,82 @@ function toSupplierView(s: {
     lastSyncAt: s.lastSyncAt?.toISOString() ?? null,
     pricingRule: (s.pricingRule as PricingRule | null) ?? null,
     notes: s.notes,
+    // The credential field spec for this vendor type, so the edit form can
+    // render the right inputs without depending on a separate vendors fetch.
+    // NEVER the secret values themselves — only the field *shape*.
+    credentialFields: vendor?.credentialFields ?? [],
+    // Whether a usable token is on file (see credentialsArePresent). The edit
+    // form uses this to avoid ever forcing a re-entry just to change other fields.
+    credentialsSet: credentialsArePresent(s.type, s.credentials),
+    vendorLabel: vendor?.label ?? s.type,
+    // Empty = enabled on every site (the default). A non-empty list restricts
+    // the connection to those properties.
+    siteScope: s.siteScopes?.map((x) => x.propertyId) ?? [],
     createdAt: s.createdAt.toISOString(),
     updatedAt: s.updatedAt.toISOString(),
   };
+}
+
+// Attach a dropship product's imagery to a commerce product as hot-linked media
+// (MediaAsset.key = the supplier's absolute URL; mediaPublicUrl() passes it
+// through — the blueprint-install pattern, docs/54 §6 — so there's no download/
+// re-upload). The first image becomes the hero (isPrimary), which is what the
+// PLP card + search index surface. Capped so a many-angle catalog can't create
+// an unbounded media fan-out. Returns the number of images attached.
+async function attachDropshipImages(
+  tx: Parameters<Parameters<typeof withTenant>[1]>[0],
+  tenantId: string,
+  productId: string,
+  rawImages: unknown
+): Promise<number> {
+  const imageUrls = ((rawImages as string[] | null) ?? [])
+    .filter((u) => typeof u === 'string' && /^https?:\/\//i.test(u))
+    .slice(0, 12);
+  for (const [imgIdx, url] of imageUrls.entries()) {
+    const rawName = url.split('/').pop()?.split('?')[0];
+    const fileName = rawName && rawName.length > 0 ? rawName : `dropship-image-${imgIdx}.jpg`;
+    const asset = await tx.mediaAsset.create({
+      data: {
+        tenantId,
+        key: url,
+        originalFilename: fileName,
+        mimeType: mimeFromImageUrl(url),
+        byteSize: BigInt(0),
+        status: 'ready',
+      },
+      select: { id: true },
+    });
+    await tx.variantImage.create({
+      data: {
+        tenantId,
+        productId,
+        mediaAssetId: asset.id,
+        position: imgIdx,
+        isPrimary: imgIdx === 0,
+      },
+    });
+  }
+  return imageUrls.length;
+}
+
+// Validate that every property id in a requested site scope belongs to the
+// tenant. Returns the (de-duplicated) id list. An empty input means "all sites"
+// and writes no rows.
+async function resolveSiteScope(
+  tx: Parameters<Parameters<typeof withTenant>[1]>[0],
+  tenantId: string,
+  ids: string[]
+): Promise<string[]> {
+  const unique = [...new Set(ids)];
+  if (unique.length === 0) return [];
+  const found = await tx.property.findMany({
+    where: { tenantId, id: { in: unique } },
+    select: { id: true },
+  });
+  if (found.length !== unique.length) {
+    throw badRequest('One or more sites in siteScope do not belong to this tenant', 'INVALID_SITE');
+  }
+  return unique;
 }
 
 function toDropshipProductView(dp: {
@@ -107,8 +240,14 @@ function toDropshipProductView(dp: {
   msrpCents: number | null;
   importedAt: Date;
   updatedAt: Date;
-  links?: { id: string; productId: string; status: string }[];
+  links?: {
+    id: string;
+    productId: string;
+    status: string;
+    product?: { status: string } | null;
+  }[];
 }) {
+  const primaryLink = dp.links?.[0];
   return {
     id: dp.id,
     supplierProductId: dp.supplierProductId,
@@ -121,12 +260,23 @@ function toDropshipProductView(dp: {
     importedAt: dp.importedAt.toISOString(),
     updatedAt: dp.updatedAt.toISOString(),
     isImported: (dp.links?.length ?? 0) > 0,
+    // The commerce publish state of the imported product — the thing that
+    // actually decides whether it shows on the site. Null when not yet imported.
+    productStatus: primaryLink?.product?.status ?? null,
     links: dp.links?.map((l) => ({ id: l.id, productId: l.productId, status: l.status })) ?? [],
   };
 }
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
+  // ── Vendor catalog (the connectable suppliers + their credential field spec) ──
+
+  app.get('/v1/dropship/vendors', async (request, reply) => {
+    await requireDropshipModule(request);
+    requireRole(request, 'editor');
+    return reply.send(ok(VENDOR_CATALOG));
+  });
+
   // ── List suppliers ───────────────────────────────────────────────────────────
 
   app.get('/v1/dropship/suppliers', async (request, reply) => {
@@ -137,10 +287,18 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
 
     const [suppliers, total] = await withTenant({ tenantId }, async (tx) => {
       const where: Prisma.DropshipSupplierWhereInput = { tenantId, deletedAt: null };
-      if (query.status) (where as Record<string, unknown>).status = query.status;
+      if (query.status) where.status = query.status;
+      // A site sees connections scoped to it OR scoped to no site (all-sites).
+      if (query.propertyId) {
+        where.OR = [
+          { siteScopes: { none: {} } },
+          { siteScopes: { some: { propertyId: query.propertyId } } },
+        ];
+      }
       return Promise.all([
         tx.dropshipSupplier.findMany({
           where,
+          include: { siteScopes: { select: { propertyId: true } } },
           orderBy: { createdAt: 'desc' },
           take: query.take,
           skip: query.skip,
@@ -173,7 +331,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const supplier = await withTenant({ tenantId }, async (tx) => {
-      return tx.dropshipSupplier.create({
+      const created = await tx.dropshipSupplier.create({
         data: {
           tenantId,
           name: body.name,
@@ -183,6 +341,16 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
           pricingRule: body.pricingRule ?? Prisma.JsonNull,
           notes: body.notes ?? null,
         },
+      });
+      const scope = await resolveSiteScope(tx, tenantId, body.siteScope ?? []);
+      if (scope.length > 0) {
+        await tx.dropshipSupplierProperty.createMany({
+          data: scope.map((propertyId) => ({ supplierId: created.id, propertyId })),
+        });
+      }
+      return tx.dropshipSupplier.findUniqueOrThrow({
+        where: { id: created.id },
+        include: { siteScopes: { select: { propertyId: true } } },
       });
     });
 
@@ -207,7 +375,10 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
 
     const supplier = await withTenant({ tenantId }, async (tx) => {
-      return tx.dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } });
+      return tx.dropshipSupplier.findFirst({
+        where: { id, tenantId, deletedAt: null },
+        include: { siteScopes: { select: { propertyId: true } } },
+      });
     });
     if (!supplier) throw notFound('Supplier not found');
 
@@ -228,12 +399,22 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     });
     if (!existing) throw notFound('Supplier not found');
 
-    // If credentials changed, re-validate connection.
+    // Credentials are write-only — the dashboard never receives stored secrets,
+    // so an edit only carries the fields the user actually (re-)entered. MERGE
+    // those over the stored bag so blank/omitted keys keep their value rather
+    // than wiping the connection. An edit that touches no credential field leaves
+    // both the secrets and the status untouched.
+    const incoming = body.credentials ?? {};
+    const mergedCreds =
+      Object.keys(incoming).length > 0
+        ? { ...((existing.credentials as Record<string, string>) ?? {}), ...incoming }
+        : null;
+
     let newStatus: string | undefined;
-    if (body.credentials) {
+    if (mergedCreds) {
       try {
-        const adapter = createAdapter(existing.type, body.credentials);
-        const ok2 = await adapter.authenticate(body.credentials);
+        const adapter = createAdapter(existing.type, mergedCreds);
+        const ok2 = await adapter.authenticate(mergedCreds);
         newStatus = ok2 ? 'active' : 'error';
       } catch {
         newStatus = 'error';
@@ -241,19 +422,32 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const updated = await withTenant({ tenantId }, async (tx) => {
-      return tx.dropshipSupplier.update({
+      await tx.dropshipSupplier.update({
         where: { id },
         data: {
           ...(body.name !== undefined && { name: body.name }),
-          ...(body.credentials !== undefined && {
-            credentials: body.credentials,
-          }),
+          ...(mergedCreds && { credentials: mergedCreds }),
           ...(body.pricingRule !== undefined && {
             pricingRule: body.pricingRule ?? Prisma.JsonNull,
           }),
           ...(body.notes !== undefined && { notes: body.notes }),
           ...(newStatus !== undefined && { status: newStatus }),
         },
+      });
+      // Replace the site-scope set when provided. An explicit empty array clears
+      // all rows → the connection reverts to serving every site.
+      if (body.siteScope !== undefined) {
+        const scope = await resolveSiteScope(tx, tenantId, body.siteScope);
+        await tx.dropshipSupplierProperty.deleteMany({ where: { supplierId: id } });
+        if (scope.length > 0) {
+          await tx.dropshipSupplierProperty.createMany({
+            data: scope.map((propertyId) => ({ supplierId: id, propertyId })),
+          });
+        }
+      }
+      return tx.dropshipSupplier.findUniqueOrThrow({
+        where: { id },
+        include: { siteScopes: { select: { propertyId: true } } },
       });
     });
 
@@ -333,7 +527,16 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
           where,
           include: {
             links: {
-              select: { id: true, productId: true, status: true },
+              // `product.status` is the commerce PUBLISH state (draft/active/
+              // archived) — what actually governs site visibility — as opposed to
+              // the link's own status (active/discontinued). The dropship products
+              // list shows the publish state so "imported" never reads as "live".
+              select: {
+                id: true,
+                productId: true,
+                status: true,
+                product: { select: { status: true } },
+              },
             },
           },
           orderBy: { importedAt: 'desc' },
@@ -366,7 +569,10 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
 
     const [supplier, dropshipProduct] = await withTenant({ tenantId }, async (tx) => {
       return Promise.all([
-        tx.dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } }),
+        tx.dropshipSupplier.findFirst({
+          where: { id, tenantId, deletedAt: null },
+          include: { siteScopes: { select: { propertyId: true } } },
+        }),
         tx.dropshipProduct.findFirst({
           where: { id: productId, supplierId: id, tenantId },
           include: {
@@ -408,7 +614,10 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
         return existing !== null;
       });
 
-      // Create the commerce product
+      // Create the commerce product. `inStock: true` because dropship items are
+      // supplier-fulfilled (made-to-order for POD) — we don't track their stock
+      // locally, so the storefront must never show them as sold out. The default
+      // is `false` (which is what made imported items read as sold out).
       const product = await tx.product.create({
         data: {
           tenantId,
@@ -417,6 +626,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
           description: dropshipProduct.description ?? null,
           status: 'draft',
           fulfillmentType: 'physical',
+          inStock: true,
           metadata: {
             dropshipSupplierId: id,
             dropshipProductId: productId,
@@ -444,6 +654,10 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
               costCents: v.costPriceCents,
               currency: 'USD',
               weightGrams: v.weight ?? undefined,
+              // `continue` = orderable without tracked stock. Dropship stock lives
+              // with the supplier, not in our inventory tables, so the default
+              // `deny` policy would block every add-to-cart (showing sold out).
+              inventoryPolicy: 'continue',
               isDefault: idx === 0,
               position: idx,
               dropshipSourceId: id,
@@ -451,6 +665,10 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
           });
         })
       );
+
+      // Copy the supplier's product imagery into the commerce catalog (hot-linked
+      // media; see attachDropshipImages).
+      await attachDropshipImages(tx, tenantId, product.id, dropshipProduct.images);
 
       // Link the dropship product
       const link = await tx.dropshipProductLink.create({
@@ -462,6 +680,19 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
           status: 'active',
         },
       });
+
+      // Inherit the supplier's site scope: a connection restricted to specific
+      // sites yields products visible only on those sites (commerce_product_
+      // properties — empty = all sites). An all-sites connection writes no rows,
+      // leaving the product global.
+      if (supplier.siteScopes.length > 0) {
+        await tx.productProperty.createMany({
+          data: supplier.siteScopes.map((s) => ({
+            productId: product.id,
+            propertyId: s.propertyId,
+          })),
+        });
+      }
 
       return { product, variants: createdVariants, link };
     });
@@ -482,6 +713,73 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
         variantCount: result.variants.length,
       })
     );
+  });
+
+  // ── Re-sync an already-imported product from the supplier ────────────────────
+  //
+  // Refreshes the EXISTING commerce product in place (no duplicate, no SKU
+  // churn): restores dropship availability (inStock + every variant's
+  // inventoryPolicy → continue) and backfills supplier imagery when the product
+  // has none. This is how items imported before an import-path fix — or whose
+  // supplier photos changed — get corrected through the normal UI rather than a
+  // manual DB edit.
+
+  app.post('/v1/dropship/suppliers/:id/catalog/:productId/reimport', async (request, reply) => {
+    await requireDropshipModule(request);
+    requireRole(request, 'admin');
+    const { tenantId, userId } = toDropshipContext(request);
+    const { id, productId } = PathIdProduct.parse(request.params);
+
+    const [supplier, dropshipProduct] = await withTenant({ tenantId }, async (tx) => {
+      return Promise.all([
+        tx.dropshipSupplier.findFirst({ where: { id, tenantId, deletedAt: null } }),
+        tx.dropshipProduct.findFirst({
+          where: { id: productId, supplierId: id, tenantId },
+          include: {
+            links: { where: { status: 'active' }, select: { productId: true } },
+          },
+        }),
+      ]);
+    });
+
+    if (!supplier) throw notFound('Supplier not found');
+    if (!dropshipProduct) throw notFound('Dropship product not found');
+    const commerceProductId = dropshipProduct.links[0]?.productId;
+    if (!commerceProductId) {
+      throw conflict('This product has not been imported yet', 'NOT_IMPORTED');
+    }
+
+    const result = await withTenant({ tenantId }, async (tx) => {
+      // Dropship items are supplier-fulfilled — always orderable, never sold out.
+      await tx.product.update({ where: { id: commerceProductId }, data: { inStock: true } });
+      await tx.productVariant.updateMany({
+        where: { productId: commerceProductId, deletedAt: null },
+        data: { inventoryPolicy: 'continue' },
+      });
+
+      // Only backfill imagery when the product has none, so re-syncing never
+      // duplicates images a merchant may have already curated.
+      const existingImages = await tx.variantImage.count({
+        where: { productId: commerceProductId },
+      });
+      const imagesAdded =
+        existingImages === 0
+          ? await attachDropshipImages(tx, tenantId, commerceProductId, dropshipProduct.images)
+          : 0;
+
+      return { productId: commerceProductId, imagesAdded };
+    });
+
+    await publishEvent(
+      publisher,
+      'search.entity.changed',
+      tenantId,
+      userId,
+      { entityType: 'product', recordId: result.productId, op: 'upsert' },
+      pubLogger
+    );
+
+    return reply.send(ok(result));
   });
 };
 

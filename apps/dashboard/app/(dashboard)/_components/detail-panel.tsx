@@ -20,8 +20,16 @@ import {
   CREATE_SENTINEL,
   findEntityType,
   fullPageHrefFor,
+  isFullBleedCreate,
   parseDetailToken,
 } from '../_shell/detail-registry';
+
+// A create overlay whose content fills the body edge-to-edge (it owns its own
+// padding + scroll), rather than the default padded single-scroll column. The
+// product WizardFrame is the first — see `FULL_BLEED_CREATE_TYPES`.
+function isFullBleedTarget(target: DetailTarget): boolean {
+  return target.entityId === CREATE_SENTINEL && isFullBleedCreate(target.typeId);
+}
 
 // Client chrome for the dashboard detail view. The detail BODY is rendered
 // server-side by the `@detail` parallel slot and passed in as `children`;
@@ -75,10 +83,11 @@ interface InlineDetailProps {
 }
 
 export function InlineDetailContent({ target, children }: InlineDetailProps) {
+  const fullBleed = isFullBleedTarget(target);
   return (
     <Stack gap={0} className="h-full">
       <DetailHeader target={target} />
-      <div className="flex-1 overflow-y-auto p-6">{children}</div>
+      <div className={fullBleed ? 'min-h-0 flex-1' : 'flex-1 overflow-y-auto p-6'}>{children}</div>
     </Stack>
   );
 }
@@ -93,6 +102,7 @@ interface ModalDetailProps {
 }
 
 export function ModalDetailContent({ target, onClose, children }: ModalDetailProps) {
+  const fullBleed = isFullBleedTarget(target);
   return (
     <Modal open onOpenChange={(open) => !open && onClose()}>
       <ModalContent className="max-h-[88vh] w-[min(1200px,94vw)] max-w-[min(1200px,94vw)] overflow-hidden p-0">
@@ -100,9 +110,15 @@ export function ModalDetailContent({ target, onClose, children }: ModalDetailPro
         <ModalDescription className="sr-only">
           Detail view for {describeTarget(target)}
         </ModalDescription>
+        {/* Hug the content, capped at 88vh (scroll within when taller) — a fixed
+            height would leave a tall empty box on short steps. Full-bleed create
+            (the product wizard) drops the padded single-scroll column so its
+            two-pane frame fills the body edge-to-edge and manages its own scroll. */}
         <Stack gap={0} className="max-h-[88vh]">
           <DetailHeader target={target} />
-          <div className="flex-1 overflow-y-auto p-6">{children}</div>
+          <div className={fullBleed ? 'min-h-0 flex-1' : 'flex-1 overflow-y-auto p-6'}>
+            {children}
+          </div>
         </Stack>
       </ModalContent>
     </Modal>

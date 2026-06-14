@@ -8,6 +8,10 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./vendors": {
+      "types": "./src/vendors.ts",
+      "default": "./src/vendors.ts"
     }
   },
   "scripts": {

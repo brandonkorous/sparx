@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { LayoutGrid, Rows3, Search, X } from 'lucide-react';
+import { LayoutGrid, RefreshCw, Rows3, Search, X } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { Input } from '../form/input';
 import { NativeSelect } from '../form/native-select';
@@ -58,6 +58,11 @@ export interface ListToolbarProps {
   view?: ListToolbarView;
   onViewChange?: (view: ListToolbarView) => void;
 
+  /** Manual refresh, pinned to the right cluster. Omit to hide the button —
+   *  e.g. lists that already carry their own re-fetch action. The icon spins
+   *  briefly on click for feedback. */
+  onRefresh?: () => void;
+
   className?: string;
 }
 
@@ -75,6 +80,7 @@ export function ListToolbar({
   onSortChange,
   view,
   onViewChange,
+  onRefresh,
   className,
 }: ListToolbarProps) {
   const activeChips = filters.filter((f) => f.value !== '');
@@ -116,8 +122,10 @@ export function ListToolbar({
           </NativeSelect>
         ))}
 
-        {(Boolean(sort) || Boolean(view)) && (
+        {(Boolean(sort) || Boolean(view) || Boolean(onRefresh)) && (
           <div className="ml-auto flex items-center gap-2">
+            {onRefresh && <RefreshButton onRefresh={onRefresh} />}
+
             {sort && (
               <NativeSelect
                 className="w-auto"
@@ -177,6 +185,31 @@ export function ListToolbar({
         </div>
       )}
     </div>
+  );
+}
+
+function RefreshButton({ onRefresh }: { onRefresh: () => void }) {
+  const [spinning, setSpinning] = React.useState(false);
+  const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => () => void (timer.current && clearTimeout(timer.current)), []);
+
+  function handleClick() {
+    onRefresh();
+    setSpinning(true);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setSpinning(false), 600);
+  }
+
+  return (
+    <button
+      type="button"
+      aria-label="Refresh"
+      onClick={handleClick}
+      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--color-border-default)] text-[var(--color-text-tertiary)] transition-colors hover:text-[var(--color-text-secondary)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:outline-none"
+    >
+      <RefreshCw className={cn('h-4 w-4', spinning && 'animate-spin')} />
+    </button>
   );
 }
 

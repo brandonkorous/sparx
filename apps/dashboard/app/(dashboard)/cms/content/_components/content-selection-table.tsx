@@ -1,22 +1,13 @@
 'use client';
 
-import * as React from 'react';
 import { Archive, Trash2, Zap } from 'lucide-react';
 import {
   Badge,
-  BulkActionBar,
   type BulkAction,
-  Card,
-  CardContent,
-  Checkbox,
-  Grid,
+  SelectionList,
+  type SelectionColumn,
+  type SelectionCard,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Text,
 } from '@sparx/ui';
 
@@ -68,27 +59,12 @@ export function ContentSelectionTable({
   showType,
   typeName,
 }: ContentSelectionTableProps) {
-  const [selected, setSelected] = React.useState<string[]>([]);
-
-  const allIds = entries.map((e) => e.id);
-  const allSelected = allIds.length > 0 && allIds.every((id) => selected.includes(id));
-  const someSelected = selected.length > 0 && !allSelected;
-
-  function toggleAll() {
-    setSelected(allSelected ? [] : allIds);
-  }
-
-  function toggle(id: string) {
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  }
-
   const bulkActions: BulkAction[] = [
     {
       label: 'Publish',
       icon: Zap,
       onAction: async (ids) => {
         await bulkPublishEntriesAction(ids);
-        setSelected([]);
       },
     },
     {
@@ -96,7 +72,6 @@ export function ContentSelectionTable({
       icon: Archive,
       onAction: async (ids) => {
         await bulkArchiveEntriesAction(ids);
-        setSelected([]);
       },
     },
     {
@@ -108,150 +83,87 @@ export function ContentSelectionTable({
         'Delete {count} entr{count === 1 ? "y" : "ies"}? Revisions and media references are also removed. This cannot be undone.',
       onAction: async (ids) => {
         await bulkDeleteEntriesAction(ids);
-        setSelected([]);
       },
     },
   ];
 
-  if (view === 'card') {
-    return (
-      <>
-        <Grid minItemWidth="18rem" gap={4}>
-          {entries.map((e) => (
-            <Card key={e.id} variant="module" padding="md">
-              <Stack gap={3}>
-                <Stack direction="row" align="start" justify="between" gap={2}>
-                  <Stack direction="row" align="start" gap={2} className="min-w-0">
-                    <Checkbox
-                      checked={selected.includes(e.id)}
-                      onCheckedChange={() => toggle(e.id)}
-                      aria-label={`Select ${entryTitle(e)}`}
-                      className="mt-0.5 shrink-0"
-                    />
-                    <Stack gap={1} className="min-w-0">
-                      <EntityRowLink
-                        href={entryHref(e)}
-                        entityType={rowEntityType(e)}
-                        entityId={rowEntityId(e)}
-                        className="truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                      >
-                        {entryTitle(e)}
-                      </EntityRowLink>
-                      {e.slug && (
-                        <Text size="xs" variant="muted">
-                          /{e.slug}
-                        </Text>
-                      )}
-                    </Stack>
-                  </Stack>
-                  <Badge
-                    color={e.status === 'published' ? 'success' : 'outline'}
-                    className="text-xs"
-                  >
-                    {e.status}
-                  </Badge>
-                </Stack>
-                <Stack direction="row" align="center" justify="between" gap={2}>
-                  {showType && (
-                    <Badge color="module" variant="soft" className="text-xs">
-                      {typeName[e.type_key] ?? e.type_key}
-                    </Badge>
-                  )}
-                  <Text size="xs" variant="muted">
-                    {e.status === 'published' && e.published_at
-                      ? `Published ${new Date(e.published_at).toLocaleDateString()}`
-                      : `Updated ${new Date(e.updated_at).toLocaleDateString()}`}
-                  </Text>
-                </Stack>
-              </Stack>
-            </Card>
-          ))}
-        </Grid>
+  const statusBadge = (e: ApiEntry) => (
+    <Badge color={e.status === 'published' ? 'success' : 'outline'} className="text-xs">
+      {e.status}
+    </Badge>
+  );
 
-        <BulkActionBar selected={selected} onClear={() => setSelected([])} actions={bulkActions} />
-      </>
-    );
-  }
+  const typeBadge = (e: ApiEntry) => (
+    <Badge color="module" variant="soft" className="text-xs">
+      {typeName[e.type_key] ?? e.type_key}
+    </Badge>
+  );
+
+  const titleCell = (e: ApiEntry, className: string) => (
+    <Stack gap={1}>
+      <EntityRowLink
+        href={entryHref(e)}
+        entityType={rowEntityType(e)}
+        entityId={rowEntityId(e)}
+        className={className}
+      >
+        {entryTitle(e)}
+      </EntityRowLink>
+      {e.slug && (
+        <Text size="xs" variant="muted">
+          /{e.slug}
+        </Text>
+      )}
+    </Stack>
+  );
+
+  const columns: SelectionColumn<ApiEntry>[] = [
+    {
+      header: 'Title',
+      cell: (e) =>
+        titleCell(e, 'text-sm font-medium hover:text-[var(--module-active)] hover:underline'),
+    },
+    ...(showType ? [{ header: 'Type', cell: typeBadge } satisfies SelectionColumn<ApiEntry>] : []),
+    { header: 'Status', cell: statusBadge },
+    {
+      header: 'Updated',
+      cell: (e) => (
+        <Text size="sm" variant="muted">
+          {new Date(e.updated_at).toLocaleDateString()}
+        </Text>
+      ),
+    },
+  ];
+
+  const card: SelectionCard<ApiEntry> = {
+    title: (e) =>
+      titleCell(
+        e,
+        'truncate text-sm font-medium hover:text-[var(--module-active)] hover:underline'
+      ),
+    badge: statusBadge,
+    body: (e) => (
+      <Stack direction="row" align="center" justify="between" gap={2}>
+        {showType ? typeBadge(e) : <span />}
+        <Text size="xs" variant="muted">
+          {e.status === 'published' && e.published_at
+            ? `Published ${new Date(e.published_at).toLocaleDateString()}`
+            : `Updated ${new Date(e.updated_at).toLocaleDateString()}`}
+        </Text>
+      </Stack>
+    ),
+  };
 
   return (
-    <>
-      <Card variant="module" padding="none">
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-10">
-                  <Checkbox
-                    checked={someSelected ? 'indeterminate' : allSelected}
-                    onCheckedChange={toggleAll}
-                    aria-label="Select all entries"
-                  />
-                </TableHead>
-                <TableHead>Title</TableHead>
-                {showType && <TableHead>Type</TableHead>}
-                <TableHead>Status</TableHead>
-                <TableHead>Updated</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {entries.map((e) => (
-                <TableRow
-                  key={e.id}
-                  data-state={selected.includes(e.id) ? 'selected' : undefined}
-                  className="group"
-                >
-                  <TableCell className="w-10">
-                    <Checkbox
-                      checked={selected.includes(e.id)}
-                      onCheckedChange={() => toggle(e.id)}
-                      aria-label={`Select ${entryTitle(e)}`}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Stack gap={1}>
-                      <EntityRowLink
-                        href={entryHref(e)}
-                        entityType={rowEntityType(e)}
-                        entityId={rowEntityId(e)}
-                        className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                      >
-                        {entryTitle(e)}
-                      </EntityRowLink>
-                      {e.slug && (
-                        <Text size="xs" variant="muted">
-                          /{e.slug}
-                        </Text>
-                      )}
-                    </Stack>
-                  </TableCell>
-                  {showType && (
-                    <TableCell>
-                      <Badge color="module" variant="soft" className="text-xs">
-                        {typeName[e.type_key] ?? e.type_key}
-                      </Badge>
-                    </TableCell>
-                  )}
-                  <TableCell>
-                    <Badge
-                      color={e.status === 'published' ? 'success' : 'outline'}
-                      className="text-xs"
-                    >
-                      {e.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" variant="muted">
-                      {new Date(e.updated_at).toLocaleDateString()}
-                    </Text>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      <BulkActionBar selected={selected} onClear={() => setSelected([])} actions={bulkActions} />
-    </>
+    <SelectionList
+      items={entries}
+      view={view}
+      getId={(e) => e.id}
+      getRowLabel={entryTitle}
+      entityLabelPlural="entries"
+      columns={columns}
+      card={card}
+      bulkActions={bulkActions}
+    />
   );
 }

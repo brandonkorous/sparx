@@ -23,7 +23,9 @@ import { z } from 'zod';
 import { customerService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
+import { withRequestTenant } from '@sparx/api-core/db';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
@@ -104,9 +106,26 @@ const customerRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.post('/v1/crm/customers', async (request, reply) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireCrmModule(request);
-    const customer = await customerService.create(toCrmContext(request), request.body);
+    // docs/58 D2: default a dashboard-created customer to the ACTIVE site for
+    // multi-site tenants (the `x-sparx-property-id` the site switcher sets) —
+    // mirrors the content-entries create — so the customer shows in that site's
+    // scoped list instead of being a property-less (global) row hidden from it.
+    // An explicit `propertyId` in the body is honored; single-site tenants leave
+    // it null. null stays "global" (visible from every site) on the read side.
+    const body = { ...((request.body as Record<string, unknown>) ?? {}) };
+    if (body.propertyId === undefined) {
+      const siteCount = await withRequestTenant(request, (tx) => tx.property.count());
+      if (siteCount > 1) {
+        const header = request.headers['x-sparx-property-id'];
+        body.propertyId = await resolvePropertyId(
+          auth.tenantId,
+          typeof header === 'string' ? header : null
+        );
+      }
+    }
+    const customer = await customerService.create(toCrmContext(request), body);
     reply.code(201);
     return ok(customer);
   });

@@ -16,7 +16,12 @@
 import type { Topic } from '@google-cloud/pubsub';
 import { PubSub } from '@google-cloud/pubsub';
 import type { FastifyBaseLogger } from 'fastify';
-import { AUTOMATION_FANIN_TOPIC, teeToFanIn, type EventType } from '@sparx/events';
+import {
+  AUTOMATION_FANIN_TOPIC,
+  teeToFanIn,
+  localDispatchFromEnv,
+  type EventType,
+} from '@sparx/events';
 import { withTenant } from '@sparx/db';
 import { enqueueWebhookDeliveries } from './webhook-delivery.js';
 
@@ -108,8 +113,13 @@ export function getPublisher(logger: FastifyBaseLogger): Publisher {
       'pubsub: Google Cloud publisher initialised (per-topic, one topic per EventType)'
     );
   } else {
-    publisher = new LoggingPublisher(logger);
-    logger.info('pubsub: gcpProjectId unset — using stdout-logging stub');
+    // Dev: forward to local workers if SPARX_DEV_WORKER_ROUTES is set, else
+    // stdout-log. localDispatchFromEnv returns a Publisher with the same
+    // structural shape as this module's local interface.
+    publisher = localDispatchFromEnv(logger) ?? new LoggingPublisher(logger);
+    if (publisher instanceof LoggingPublisher) {
+      logger.info('pubsub: gcpProjectId unset — using stdout-logging stub');
+    }
   }
   return publisher;
 }

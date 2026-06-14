@@ -14,7 +14,7 @@ import { restAction } from './_rest-action';
 // shapes (pet store registers Species → Breed, phone case shop
 // registers Brand → Model, etc.).
 
-interface FitmentDomainRow {
+export interface FitmentDomainRow {
   id: string;
   slug: string;
   displayName: string;
@@ -26,7 +26,7 @@ interface FitmentDomainRow {
   categoryCount: number;
 }
 
-interface FitmentCategoryRow {
+export interface FitmentCategoryRow {
   id: string;
   domainId: string;
   name: string;
@@ -35,7 +35,7 @@ interface FitmentCategoryRow {
   itemCount: number;
 }
 
-interface FitmentItemRow {
+export interface FitmentItemRow {
   id: string;
   categoryId: string;
   name: string;
@@ -44,13 +44,38 @@ interface FitmentItemRow {
   variantCount: number;
 }
 
-interface FitmentVariantRow {
+export interface FitmentVariantRow {
   id: string;
   itemId: string;
   name: string;
   slug: string;
   attributes: Record<string, unknown>;
   isGlobal: boolean;
+}
+
+export interface ProductFitmentRow {
+  id: string;
+  domainId: string;
+  domainSlug: string;
+  categoryId: string;
+  categoryName: string;
+  itemId: string | null;
+  itemName: string | null;
+  variantId: string | null;
+  variantName: string | null;
+  rangeMin: number | null;
+  rangeMax: number | null;
+  notes: string | null;
+}
+
+// The product wizard's Fitment step re-reads existing rows so its replace-all
+// save (PUT /fitment) doesn't wipe entries added in a prior visit.
+export async function listProductFitmentAction(
+  productId: string
+): Promise<ActionResult<ProductFitmentRow[]>> {
+  return restAction(async () =>
+    api.get<ProductFitmentRow[]>(`/v1/commerce/products/${productId}/fitment`)
+  );
 }
 
 export async function listFitmentDomainsAction(): Promise<ActionResult<FitmentDomainRow[]>> {

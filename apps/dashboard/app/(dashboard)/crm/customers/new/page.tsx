@@ -1,23 +1,22 @@
-import { Container, PageHeader, Stack } from '@sparx/ui';
-import { UserPlus } from 'lucide-react';
-
+import { requireSession } from '@sparx/auth';
 import { CustomerFullProfileWizard } from './customer-full-profile-wizard';
+import { loadPipelineOptions } from './pipeline-options';
 
-// Full-page guided wizard for creating a customer with contact info,
-// classification, and an optional primary address (docs/68 Phase B-5).
-// The surface-aware CustomerCreateForm (overlay) is separate and unchanged.
+// Full-page surface for creating a customer. The WizardFrame `page` variant
+// (docs/86) owns the viewport. On the CRM list the "New" affordance opens this
+// same wizard inside the dashboard's drawer/modal detail chrome, picked by the
+// user's `defaultDetailView` preference (the `overlay` presentation). This route
+// is the full-page option that "open in full page", Shift-click, new-tab, and
+// deep links resolve to. The current user id powers the optional follow-up task;
+// the pipelines power the optional deal in the Opportunity step.
 
-export default function NewCustomerPage() {
+export default async function NewCustomerPage() {
+  const [session, pipelines] = await Promise.all([requireSession(), loadPipelineOptions()]);
   return (
-    <Container size="md">
-      <Stack gap={6} className="py-10">
-        <PageHeader
-          icon={<UserPlus className="h-5 w-5" />}
-          title="New customer"
-          description="Add a contact with their profile, type, and optional address in three steps."
-        />
-        <CustomerFullProfileWizard />
-      </Stack>
-    </Container>
+    <CustomerFullProfileWizard
+      presentation="page"
+      currentUserId={session.user.id}
+      pipelines={pipelines}
+    />
   );
 }

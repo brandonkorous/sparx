@@ -59,7 +59,13 @@ export async function list(
       ...(filter.type ? { type: filter.type } : {}),
       ...(filter.assignedRepId !== undefined ? { assignedRepId: filter.assignedRepId } : {}),
       ...(filter.b2bAccountId !== undefined ? { b2bAccountId: filter.b2bAccountId } : {}),
-      ...(filter.propertyId ? { propertyId: filter.propertyId } : {}),
+      // docs/58 D2: a site-scoped list shows customers belonging to THAT site
+      // PLUS global (null-property) customers — null is treated as visible
+      // everywhere. Composed as `AND: [{ OR }]` so it never key-collides with the
+      // search `OR` below (mirrors the content/product site-visibility fragment).
+      ...(filter.propertyId
+        ? { AND: [{ OR: [{ propertyId: null }, { propertyId: filter.propertyId }] }] }
+        : {}),
       ...(filter.tag ? { tags: { has: filter.tag } } : {}),
       ...(filter.q
         ? {
@@ -150,6 +156,9 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Cu
       data: {
         tenantId: ctx.tenantId,
         type: input.type,
+        // The owning site (docs/58 D2); null → global. The api-rest route
+        // defaults this to the active site for multi-site tenants.
+        propertyId: input.propertyId ?? null,
         email: input.email ?? null,
         phone: input.phone ?? null,
         firstName: input.firstName ?? null,
@@ -377,6 +386,10 @@ export async function update(
         ...(input.company !== undefined ? { company: input.company } : {}),
         ...(input.jobTitle !== undefined ? { jobTitle: input.jobTitle } : {}),
         ...(input.b2bAccountId !== undefined ? { b2bAccountId: input.b2bAccountId } : {}),
+        // Site (re)assignment (docs/58 D2): a uuid moves the customer to that
+        // site; `null` clears it → global (visible from every site). `undefined`
+        // (absent) leaves the assignment untouched.
+        ...(input.propertyId !== undefined ? { propertyId: input.propertyId } : {}),
         ...(input.assignedRepId !== undefined ? { assignedRepId: input.assignedRepId } : {}),
         ...(input.preferredContactMethod !== undefined
           ? { preferredContactMethod: input.preferredContactMethod }

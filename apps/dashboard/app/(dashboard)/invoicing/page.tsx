@@ -1,28 +1,13 @@
 import { FileText, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../_components/entity-create-button';
-import { EntityRowLink } from '../_components/entity-row-link';
 import { ListToolbar } from '../_components/list-toolbar';
-import { AR_STATUS_VARIANT, formatMoney } from './_components/format';
+import { getUserPreferences } from '../_shell/preferences';
+import { DocumentsList } from './_components/documents-list';
 
 interface DocumentRow {
   id: string;
@@ -72,15 +57,18 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
 
   // The list returns { items, total }; workflows give us the stage label per row
   // (the document's customer-facing noun — Estimate / Invoice / Work Order).
-  const [{ items, total }, workflows] = await Promise.all([
+  const [{ items, total }, workflows, prefs] = await Promise.all([
     api.get<{ items: DocumentRow[]; total: number }>(`/v1/invoicing/documents?${query.toString()}`),
     api.get<WorkflowLite[]>('/v1/invoicing/workflows'),
+    getUserPreferences(),
   ]);
 
-  const stageLabel = new Map<string, string>();
-  for (const w of workflows) for (const s of w.stages) stageLabel.set(s.id, s.customerLabel);
+  const stageLabels: Record<string, string> = {};
+  for (const w of workflows) for (const s of w.stages) stageLabels[s.id] = s.customerLabel;
 
   const workflowOptions = workflows.map((w) => ({ value: w.id, label: w.name }));
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -112,6 +100,7 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
             { key: 'status', label: 'Statuses', options: STATUS_OPTIONS },
             { key: 'workflowId', label: 'Workflows', options: workflowOptions },
           ]}
+          enableViewToggle
         />
 
         {items.length === 0 ? (
@@ -123,59 +112,7 @@ export default async function InvoicingDocumentsPage({ searchParams }: PageProps
             />
           </Card>
         ) : (
-          <Card padding="none">
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Number</TableHead>
-                    <TableHead>Kind</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                    <TableHead className="text-right">Balance</TableHead>
-                    <TableHead>Updated</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {items.map((d) => (
-                    <TableRow key={d.id}>
-                      <TableCell>
-                        <EntityRowLink
-                          href={`/invoicing/documents/${d.id}`}
-                          entityType="billing-document"
-                          entityId={d.id}
-                          className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                        >
-                          {d.number ?? 'Draft'}
-                        </EntityRowLink>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm" variant="muted">
-                          {stageLabel.get(d.stageId) ?? '—'}
-                        </Text>
-                      </TableCell>
-                      <TableCell>
-                        <Badge color={AR_STATUS_VARIANT[d.status] ?? 'neutral'} className="text-xs">
-                          {d.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {formatMoney(d.total, d.currency)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {formatMoney(d.balance, d.currency)}
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm" variant="muted">
-                          {new Date(d.updatedAt).toLocaleDateString()}
-                        </Text>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <DocumentsList items={items} view={view} stageLabels={stageLabels} />
         )}
       </Stack>
     </Container>

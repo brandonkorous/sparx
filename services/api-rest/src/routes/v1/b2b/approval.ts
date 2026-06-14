@@ -250,24 +250,22 @@ const b2bApprovalRoutes: FastifyPluginAsync = async (app) => {
 
     type OrderRow = (typeof orders)[number];
 
-    return ok(
-      paged(
-        orders.map((o: OrderRow) => ({
-          id: o.id,
-          orderNumber: o.orderNumber,
-          totalCents: Math.round(Number(o.total) * 100),
-          currency: o.currency,
-          createdAt: o.createdAt.toISOString(),
-          customerId: o.customer.id,
-          customerName:
-            [o.customer.firstName, o.customer.lastName].filter(Boolean).join(' ') ||
-            (o.customer.email ?? null),
-          customerEmail: o.customer.email,
-          b2bAccountId: o.customer.b2bAccountId,
-          companyName: o.customer.b2bAccount?.companyName ?? null,
-        })),
-        { total, skip: q.skip, take: q.take }
-      )
+    return paged(
+      orders.map((o: OrderRow) => ({
+        id: o.id,
+        orderNumber: o.orderNumber,
+        totalCents: Math.round(Number(o.total) * 100),
+        currency: o.currency,
+        createdAt: o.createdAt.toISOString(),
+        customerId: o.customer.id,
+        customerName:
+          [o.customer.firstName, o.customer.lastName].filter(Boolean).join(' ') ||
+          (o.customer.email ?? null),
+        customerEmail: o.customer.email,
+        b2bAccountId: o.customer.b2bAccountId,
+        companyName: o.customer.b2bAccount?.companyName ?? null,
+      })),
+      { total, skip: q.skip, take: q.take }
     );
   });
 

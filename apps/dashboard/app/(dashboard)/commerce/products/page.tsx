@@ -6,6 +6,8 @@ import { api } from '@/lib/api-rest-client';
 import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
 import { ProductsSelectionTable } from './_components/products-selection-table';
 import { ProductsImportExport } from './_components/products-import-export';
 import { BulkPriceRevertBanner } from './_components/bulk-price-revert-banner';
@@ -64,6 +66,7 @@ const SORT_OPTIONS = [
 
 export default async function ProductsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { page, perPage, skip, take } = parsePageParams(params);
   const status = parseStatus(stringParam(params.status));
   // vendor / tag / type stay URL-readable for deep links; the toolbar surfaces
   // status + search + sort. Search covers title / handle / vendor.
@@ -105,7 +108,8 @@ export default async function ProductsPage({ searchParams }: PageProps) {
   if (q) {
     const sq = new URLSearchParams({
       q,
-      per_page: '100',
+      page: String(page),
+      per_page: String(perPage),
       ...(propertyFilter ? { property: propertyFilter } : {}),
     });
     const { data, meta } = await api.getPaged<ProductSearchDoc[]>(
@@ -127,7 +131,8 @@ export default async function ProductsPage({ searchParams }: PageProps) {
   } else {
     const { data, meta } = await api.getPaged<ProductListItem[]>(
       `/v1/commerce/products?${new URLSearchParams({
-        take: '100',
+        take: String(take),
+        skip: String(skip),
         sort_by: sortBy,
         ...(includeArchived ? { include_archived: 'true' } : {}),
         ...(status ? { status } : {}),
@@ -222,6 +227,8 @@ export default async function ProductsPage({ searchParams }: PageProps) {
         ) : (
           <ProductsSelectionTable products={products} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

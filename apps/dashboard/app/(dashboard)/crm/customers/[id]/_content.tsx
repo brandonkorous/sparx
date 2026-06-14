@@ -19,9 +19,11 @@ import {
 } from '@sparx/ui';
 
 import { api, type ApiRestError } from '@/lib/api-rest-client';
+import { resolveSiteScope } from '@/lib/sites';
 
 import { ActivityTimeline } from '../_components/activity-timeline';
 import { RecordActivityForm } from '../_components/record-activity-form';
+import { CustomerSiteSelect } from './_customer-site-select';
 
 interface Customer {
   id: string;
@@ -42,6 +44,7 @@ interface Customer {
   lastOrderAt: string | null;
   createdAt: string;
   b2bAccountId: string | null;
+  propertyId: string | null;
 }
 
 interface CustomerActivity {
@@ -89,7 +92,7 @@ export async function CustomerDetailContent({ id }: Props) {
     throw err;
   }
 
-  const [activities, openTasks, b2bAccount] = await Promise.all([
+  const [activities, openTasks, b2bAccount, siteScope] = await Promise.all([
     api.get<CustomerActivity[]>(`/v1/crm/activities?customer_id=${id}&limit=100`),
     api.get<CustomerTask[]>(`/v1/crm/tasks?customer_id=${id}&status=open&take=25`),
     customer.b2bAccountId
@@ -97,6 +100,7 @@ export async function CustomerDetailContent({ id }: Props) {
           .get<B2bAccountSummary>(`/v1/crm/b2b-accounts/${customer.b2bAccountId}`)
           .catch(() => null)
       : Promise.resolve(null),
+    resolveSiteScope(),
   ]);
 
   const displayName =
@@ -301,6 +305,21 @@ export async function CustomerDetailContent({ id }: Props) {
               </Stack>
             </CardContent>
           </Card>
+
+          {siteScope.multiSite && (
+            <Card variant="module">
+              <CardHeader>
+                <CardTitle>Site</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CustomerSiteSelect
+                  customerId={customer.id}
+                  value={customer.propertyId}
+                  sites={siteScope.sites.map((s) => ({ id: s.id, name: s.name }))}
+                />
+              </CardContent>
+            </Card>
+          )}
 
           {b2bAccount && <B2BAccountCard account={b2bAccount} />}
 

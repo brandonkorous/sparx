@@ -7,6 +7,9 @@ import { resolveSiteScope, resolvePropertyFilter } from '@/lib/sites';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
+import { getUserPreferences } from '../../_shell/preferences';
 import { OrdersSelectionTable } from './_components/orders-selection-table';
 import type { OrderRow } from './_components/orders-selection-table';
 
@@ -49,6 +52,7 @@ interface OrderSearchDoc {
 
 export default async function OrdersPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { page, perPage, skip, take } = parsePageParams(params);
   const status = stringParam(params.status);
   const paymentStatus = stringParam(params.paymentStatus);
   const q = stringParam(params.q);
@@ -56,7 +60,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
   // the active site; `all` → the whole tenant; an id → that site.
   const siteParam = stringParam(params.site);
 
-  const scope = await resolveSiteScope();
+  const [prefs, scope] = await Promise.all([getUserPreferences(), resolveSiteScope()]);
   const { sites, multiSite, activePropertyId } = scope;
   const propertyFilter = resolvePropertyFilter(scope, siteParam);
 
@@ -69,7 +73,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
   if (q) {
     // Search via Typesense, scoped to the active site (docs/58 D1) via the
     // orders `property_id` facet — same selection as the browse list below.
-    const sq = new URLSearchParams({ q, per_page: '100' });
+    const sq = new URLSearchParams({ q, page: String(page), per_page: String(perPage) });
     if (propertyFilter) sq.set('property', propertyFilter);
     const { data, meta } = await api.getPaged<OrderSearchDoc[]>(
       `/v1/search/orders?${sq.toString()}`
@@ -87,7 +91,11 @@ export default async function OrdersPage({ searchParams }: PageProps) {
     }));
     total = (meta?.total as number | undefined) ?? orders.length;
   } else {
-    const query = new URLSearchParams({ take: '100', sort_by: 'placedAt' });
+    const query = new URLSearchParams({
+      take: String(take),
+      skip: String(skip),
+      sort_by: 'placedAt',
+    });
     if (status) query.set('status', status);
     if (paymentStatus) query.set('payment_status', paymentStatus);
     if (propertyFilter) query.set('property', propertyFilter);
@@ -95,6 +103,9 @@ export default async function OrdersPage({ searchParams }: PageProps) {
     orders = res.data;
     total = (res.meta?.total as number | undefined) ?? orders.length;
   }
+
+  // `?view=` overrides; absent → the user's saved default (§7.2).
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   // The Site filter only appears for multi-site tenants; it defaults to the
   // active site (mirroring the global switcher) with an "All sites" escape.
@@ -143,6 +154,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
             { key: 'paymentStatus', label: 'Payment', options: PAYMENT_STATUS_OPTIONS },
             ...siteFilter,
           ]}
+          enableViewToggle
         />
 
         {orders.length === 0 ? (
@@ -154,8 +166,10 @@ export default async function OrdersPage({ searchParams }: PageProps) {
             />
           </Card>
         ) : (
-          <OrdersSelectionTable orders={orders} />
+          <OrdersSelectionTable orders={orders} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

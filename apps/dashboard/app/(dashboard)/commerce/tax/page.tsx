@@ -13,35 +13,30 @@ import {
   Heading,
   PageHeader,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Text,
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-
-import { EntityRowLink } from '../../_components/entity-row-link';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
+import { TaxZonesList, type TaxZoneRow } from './_components/tax-zones-list';
 
 export const dynamic = 'force-dynamic';
 
-interface TaxZoneRow {
-  id: string;
-  country: string;
-  region: string | null;
-  nexusType: string;
-  registrationNumber: string | null;
-  registeredAt: string | null;
-  isActive: boolean;
-  rateCount: number;
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function TaxPage() {
-  const zones = await api.get<TaxZoneRow[]>('/v1/commerce/tax/zones');
+export default async function TaxPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+
+  const [prefs, zones] = await Promise.all([
+    getUserPreferences(),
+    api.get<TaxZoneRow[]>('/v1/commerce/tax/zones'),
+  ]);
+
   const activeZones = zones.filter((z) => z.isActive);
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -55,95 +50,44 @@ export default async function TaxPage() {
             </Badge>
           }
           description="Register a tax zone for every jurisdiction where the merchant has nexus. Manual rates below run when no TaxProvider (Stripe Tax, TaxJar, Avalara) is installed; the provider wins as soon as one is connected from Commerce → Providers. B2B exemption certificates attach per customer or per B2B account."
+          actions={
+            <Button color="module" asChild>
+              <Link href="/commerce/tax/zones/new">
+                <Plus className="h-4 w-4" />
+                Add zone
+              </Link>
+            </Button>
+          }
         />
 
-        <Card>
-          <CardHeader>
-            <Stack direction="row" align="end" justify="between" wrap gap={2}>
-              <Stack gap={1}>
-                <Stack direction="row" align="center" gap={2}>
-                  <Globe2 className="h-4 w-4" />
-                  <Heading level={3}>Nexus zones</Heading>
-                </Stack>
-                <CardDescription>
-                  Country-wide or region-narrowed (US-CA, US-OR…). Click a zone to add rates.
-                </CardDescription>
-              </Stack>
-              <Button color="module" asChild>
-                <Link href="/commerce/tax/zones/new">
-                  <Plus className="h-4 w-4" />
-                  Add zone
-                </Link>
-              </Button>
-            </Stack>
-          </CardHeader>
-          <CardContent>
-            {zones.length === 0 ? (
-              <EmptyState
-                icon={<Globe2 className="h-5 w-5" />}
-                title="No tax zones yet"
-                description="Add a zone for every jurisdiction with nexus."
-                action={
-                  <Button color="module" asChild>
-                    <Link href="/commerce/tax/zones/new">Create zone</Link>
-                  </Button>
-                }
-              />
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Country</TableHead>
-                    <TableHead>Region</TableHead>
-                    <TableHead>Nexus</TableHead>
-                    <TableHead>Registration #</TableHead>
-                    <TableHead>Rates</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {zones.map((z) => (
-                    <TableRow key={z.id}>
-                      <TableCell>
-                        <EntityRowLink
-                          href={`/commerce/tax/zones/${z.id}`}
-                          entityType="tax-zone"
-                          entityId={z.id}
-                          className="font-medium hover:text-[var(--module-active)]"
-                        >
-                          {z.country}
-                        </EntityRowLink>
-                      </TableCell>
-                      <TableCell>
-                        {z.region ?? (
-                          <Text size="xs" variant="muted">
-                            —
-                          </Text>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{z.nexusType}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="xs" className="font-mono">
-                          {z.registrationNumber ?? '—'}
-                        </Text>
-                      </TableCell>
-                      <TableCell>{z.rateCount}</TableCell>
-                      <TableCell>
-                        {z.isActive ? (
-                          <Badge color="success">active</Badge>
-                        ) : (
-                          <Badge color="warning">inactive</Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        <Stack gap={1}>
+          <Stack direction="row" align="center" gap={2}>
+            <Globe2 className="h-4 w-4" />
+            <Heading level={3}>Nexus zones</Heading>
+          </Stack>
+          <Text size="sm" variant="muted">
+            Country-wide or region-narrowed (US-CA, US-OR…). Click a zone to add rates.
+          </Text>
+        </Stack>
+
+        <ListToolbar enableViewToggle searchable={false} />
+
+        {zones.length === 0 ? (
+          <Card padding="none">
+            <EmptyState
+              icon={<Globe2 className="h-5 w-5" />}
+              title="No tax zones yet"
+              description="Add a zone for every jurisdiction with nexus."
+              action={
+                <Button color="module" asChild>
+                  <Link href="/commerce/tax/zones/new">Create zone</Link>
+                </Button>
+              }
+            />
+          </Card>
+        ) : (
+          <TaxZonesList zones={zones} view={view} />
+        )}
 
         <Card>
           <CardHeader>
@@ -168,4 +112,10 @@ export default async function TaxPage() {
       </Stack>
     </Container>
   );
+}
+
+function stringParam(v: string | string[] | undefined): string | undefined {
+  if (Array.isArray(v)) return v[0];
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

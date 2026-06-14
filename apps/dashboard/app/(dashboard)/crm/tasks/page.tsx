@@ -1,10 +1,8 @@
-import Link from 'next/link';
 import { CheckSquare, Plus, Calendar, AlertCircle } from 'lucide-react';
 
 import { requireSession } from '@sparx/auth';
 import {
   Badge,
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -18,7 +16,16 @@ import {
 import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
-import { TaskRow } from './_components/task-row';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { getUserPreferences } from '../../_shell/preferences';
+import { TasksList } from './_components/tasks-list';
+import type { TaskCard } from './_components/task-row';
+
+// Tasks — a standard docs/34 List surface, but the data stays GROUPED (overdue
+// / open / completed): each group keeps its own card + heading and renders one
+// `<TasksList>` (a SelectionList) so all three share the single Table/Cards
+// toggle + the user's `defaultListView`. The me/all scope (already a
+// searchParam) is surfaced as a ListToolbar filter.
 
 interface TaskListItem {
   id: string;
@@ -33,6 +40,11 @@ interface TaskListItem {
 
 export const dynamic = 'force-dynamic';
 
+const SCOPE_OPTIONS = [
+  { value: 'me', label: 'My tasks' },
+  { value: 'all', label: 'Team tasks' },
+];
+
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
@@ -40,15 +52,18 @@ interface PageProps {
 export default async function TasksPage({ searchParams }: PageProps) {
   const session = await requireSession();
   const params = await searchParams;
-  const scope = stringParam(params.scope) ?? 'me';
+  const scope = stringParam(params.scope) === 'all' ? 'all' : 'me';
 
   const mine = scope === 'me' ? `&assigned_to_user_id=${session.user.id}` : '';
   const overdueQuery = scope === 'me' ? `?user_id=${session.user.id}` : '';
-  const [openTasks, overdueTasks, completedTasks] = await Promise.all([
+  const [prefs, openTasks, overdueTasks, completedTasks] = await Promise.all([
+    getUserPreferences(),
     api.get<TaskListItem[]>(`/v1/crm/tasks?status=open&take=100${mine}`),
     api.get<TaskListItem[]>(`/v1/crm/tasks/overdue${overdueQuery}`),
     api.get<TaskListItem[]>(`/v1/crm/tasks?status=completed&take=25${mine}`),
   ]);
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -66,31 +81,21 @@ export default async function TasksPage({ searchParams }: PageProps) {
           }
           description="Follow-ups attached to customers, deals, or standalone reminders. Overdue tasks trigger an email reminder to the assignee via the automation engine."
           actions={
-            <>
-              <Button
-                asChild
-                color={scope === 'me' ? 'module' : 'neutral'}
-                variant={scope === 'me' ? 'solid' : 'ghost'}
-              >
-                <Link href="/crm/tasks?scope=me">My tasks</Link>
-              </Button>
-              <Button
-                asChild
-                color={scope === 'all' ? 'module' : 'neutral'}
-                variant={scope === 'all' ? 'solid' : 'ghost'}
-              >
-                <Link href="/crm/tasks?scope=all">Team tasks</Link>
-              </Button>
-              <EntityCreateButton
-                entityType="task"
-                newHref="/crm/tasks/new"
-                color="module"
-                leftIcon={<Plus className="h-4 w-4" />}
-              >
-                New
-              </EntityCreateButton>
-            </>
+            <EntityCreateButton
+              entityType="task"
+              newHref="/crm/tasks/new"
+              color="module"
+              leftIcon={<Plus className="h-4 w-4" />}
+            >
+              New
+            </EntityCreateButton>
           }
+        />
+
+        <ListToolbar
+          searchable={false}
+          filters={[{ key: 'scope', label: 'Scope', options: SCOPE_OPTIONS, defaultValue: 'me' }]}
+          enableViewToggle
         />
 
         {overdueTasks.length > 0 && (
@@ -104,11 +109,7 @@ export default async function TasksPage({ searchParams }: PageProps) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Stack gap={2}>
-                {overdueTasks.map((task) => (
-                  <TaskRow key={task.id} task={serializeTask(task)} overdue />
-                ))}
-              </Stack>
+              <TasksList tasks={overdueTasks.map(serializeTask)} view={view} overdue />
             </CardContent>
           </Card>
         )}
@@ -129,11 +130,7 @@ export default async function TasksPage({ searchParams }: PageProps) {
                 description="Create a task to track follow-ups, calls, or to-dos for yourself or your team."
               />
             ) : (
-              <Stack gap={2}>
-                {openTasks.map((task) => (
-                  <TaskRow key={task.id} task={serializeTask(task)} />
-                ))}
-              </Stack>
+              <TasksList tasks={openTasks.map(serializeTask)} view={view} />
             )}
           </CardContent>
         </Card>
@@ -144,11 +141,7 @@ export default async function TasksPage({ searchParams }: PageProps) {
               <CardTitle>Recently completed</CardTitle>
             </CardHeader>
             <CardContent>
-              <Stack gap={2}>
-                {completedTasks.map((task) => (
-                  <TaskRow key={task.id} task={serializeTask(task)} />
-                ))}
-              </Stack>
+              <TasksList tasks={completedTasks.map(serializeTask)} view={view} />
             </CardContent>
           </Card>
         )}
@@ -157,7 +150,7 @@ export default async function TasksPage({ searchParams }: PageProps) {
   );
 }
 
-function serializeTask(task: TaskListItem) {
+function serializeTask(task: TaskListItem): TaskCard {
   return {
     id: task.id,
     title: task.title,
@@ -172,5 +165,6 @@ function serializeTask(task: TaskListItem) {
 
 function stringParam(v: string | string[] | undefined): string | undefined {
   if (Array.isArray(v)) return v[0];
-  return v;
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }

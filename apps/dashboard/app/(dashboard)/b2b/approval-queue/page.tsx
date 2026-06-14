@@ -1,24 +1,13 @@
 import { CheckCircle } from 'lucide-react';
-import Link from 'next/link';
 
-import {
-  Badge,
-  Card,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
-import { ApproveRejectActions } from './_components/approve-reject-actions';
+import { getUserPreferences } from '../../_shell/preferences';
+import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
+import { ApprovalQueueList } from './_components/approval-queue-list';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,24 +30,28 @@ interface QueuedOrder {
 
 function stringParam(v: string | string[] | undefined): string | undefined {
   if (Array.isArray(v)) return v[0];
-  return v;
-}
-
-function formatCents(cents: number): string {
-  return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+  if (typeof v === 'string' && v.length > 0) return v;
+  return undefined;
 }
 
 export default async function ApprovalQueuePage({ searchParams }: PageProps) {
   const params = await searchParams;
+  // account_id stays URL-readable for deep links from an account page; it isn't
+  // a toolbar control. The queue has no text search or status facet on its
+  // endpoint, so the toolbar surfaces only the view toggle.
   const accountId = stringParam(params.account_id);
+  const { skip, take } = parsePageParams(params);
 
-  const query = new URLSearchParams({ take: '100' });
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (accountId) query.set('account_id', accountId);
 
-  const { data: orders, meta } = await api.getPaged<QueuedOrder[]>(
-    `/v1/b2b/approval-queue?${query.toString()}`
-  );
+  const [prefs, { data: orders, meta }] = await Promise.all([
+    getUserPreferences(),
+    api.getPaged<QueuedOrder[]>(`/v1/b2b/approval-queue?${query.toString()}`),
+  ]);
   const total = (meta?.total as number | undefined) ?? orders.length;
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -80,6 +73,8 @@ export default async function ApprovalQueuePage({ searchParams }: PageProps) {
           description="B2B portal orders waiting for staff review before they are placed."
         />
 
+        <ListToolbar enableViewToggle searchable={false} />
+
         {orders.length === 0 ? (
           <Card padding="none">
             <EmptyState
@@ -89,67 +84,10 @@ export default async function ApprovalQueuePage({ searchParams }: PageProps) {
             />
           </Card>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order #</TableHead>
-                <TableHead>Account</TableHead>
-                <TableHead>Buyer</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Submitted</TableHead>
-                <TableHead />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell>
-                    <Text size="sm" className="font-medium tabular-nums">
-                      #{order.orderNumber}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    {order.b2bAccountId ? (
-                      <Link
-                        href={`/b2b/accounts/${order.b2bAccountId}`}
-                        className="text-sm hover:text-[var(--module-active)] hover:underline"
-                      >
-                        {order.companyName ?? order.b2bAccountId}
-                      </Link>
-                    ) : (
-                      <Text size="sm" variant="muted">
-                        —
-                      </Text>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Stack gap={1}>
-                      <Text size="sm">{order.customerName ?? order.customerEmail}</Text>
-                      {order.customerName && (
-                        <Text size="xs" variant="muted">
-                          {order.customerEmail}
-                        </Text>
-                      )}
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" className="font-medium tabular-nums">
-                      {formatCents(order.totalCents)}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" variant="muted">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <ApproveRejectActions orderId={order.id} orderNumber={order.orderNumber} />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <ApprovalQueueList orders={orders} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

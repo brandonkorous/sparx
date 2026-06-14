@@ -1,51 +1,19 @@
 import { FileText } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
-import Link from 'next/link';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
+import { getUserPreferences } from '../../_shell/preferences';
+import { QuotesList, type QuoteRow } from './_components/quotes-list';
 
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
-
-interface QuoteRow {
-  id: string;
-  quoteNumber: string;
-  status: string;
-  validUntil: string | null;
-  total: string | number;
-  createdAt: string;
-  b2bAccount: { id: string; companyName: string } | null;
-  _count: { items: number };
-}
-
-const STATUS_VARIANT: Record<string, 'outline' | 'warning' | 'success' | 'danger' | 'module'> = {
-  draft: 'outline',
-  submitted: 'warning',
-  under_review: 'warning',
-  quoted: 'module',
-  accepted: 'success',
-  declined: 'danger',
-  expired: 'outline',
-};
 
 const STATUS_OPTIONS = [
   { value: 'draft', label: 'Draft' },
@@ -64,17 +32,21 @@ function stringParam(v: string | string[] | undefined): string | undefined {
 
 export default async function B2bQuotesPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status);
   const accountId = stringParam(params.account_id);
 
-  const query = new URLSearchParams({ take: '100' });
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status) query.set('status', status);
   if (accountId) query.set('account_id', accountId);
 
-  const { data: quotes, meta } = await api.getPaged<QuoteRow[]>(
-    `/v1/b2b/quotes?${query.toString()}`
-  );
+  const [prefs, { data: quotes, meta }] = await Promise.all([
+    getUserPreferences(),
+    api.getPaged<QuoteRow[]>(`/v1/b2b/quotes?${query.toString()}`),
+  ]);
   const total = (meta?.total as number | undefined) ?? quotes.length;
+
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   const pendingResponse = quotes.filter((q) => ['submitted', 'under_review'].includes(q.status));
 
@@ -102,6 +74,7 @@ export default async function B2bQuotesPage({ searchParams }: PageProps) {
         <ListToolbar
           searchPlaceholder="Search by quote # or account…"
           filters={[{ key: 'status', label: 'Status', options: STATUS_OPTIONS }]}
+          enableViewToggle
         />
 
         {quotes.length === 0 ? (
@@ -113,71 +86,10 @@ export default async function B2bQuotesPage({ searchParams }: PageProps) {
             />
           </Card>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Quote #</TableHead>
-                <TableHead>Account</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Items</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Expires</TableHead>
-                <TableHead>Created</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {quotes.map((quote) => (
-                <TableRow key={quote.id} className="hover:bg-[var(--color-surface-subtle)]">
-                  <TableCell>
-                    <Link
-                      href={`/b2b/quotes/${quote.id}`}
-                      className="font-medium hover:text-[var(--module-active)] hover:underline"
-                    >
-                      {quote.quoteNumber}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    {quote.b2bAccount ? (
-                      <Link
-                        href={`/b2b/accounts/${quote.b2bAccount.id}`}
-                        className="text-sm hover:text-[var(--module-active)] hover:underline"
-                      >
-                        {quote.b2bAccount.companyName}
-                      </Link>
-                    ) : (
-                      <Text size="sm" variant="muted">
-                        —
-                      </Text>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Badge color={STATUS_VARIANT[quote.status] ?? 'outline'} variant="soft">
-                      {quote.status.replace('_', ' ')}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm">{quote._count.items}</Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm">
-                      ${Number(quote.total).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" variant="muted">
-                      {quote.validUntil ? new Date(quote.validUntil).toLocaleDateString() : '—'}
-                    </Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text size="sm" variant="muted">
-                      {new Date(quote.createdAt).toLocaleDateString()}
-                    </Text>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <QuotesList quotes={quotes} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

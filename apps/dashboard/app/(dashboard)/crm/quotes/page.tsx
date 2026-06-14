@@ -1,52 +1,22 @@
 import { FileText, Plus } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  Container,
-  EmptyState,
-  PageHeader,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  Text,
-} from '@sparx/ui';
+import { Badge, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
-import { EntityRowLink } from '../../_components/entity-row-link';
 import { ListToolbar } from '../../_components/list-toolbar';
-
-interface QuoteRow {
-  id: string;
-  quoteNumber: string;
-  status: string;
-  currency: string;
-  total: string | number;
-  validUntil: string | null;
-  createdAt: string;
-}
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
+import { getUserPreferences } from '../../_shell/preferences';
+import { QuotesList } from './_components/quotes-list';
+import type { QuoteRow } from './_components/quotes-list';
 
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
-
-const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'outline' | 'danger'> = {
-  draft: 'outline',
-  submitted: 'outline',
-  accepted: 'success',
-  declined: 'danger',
-  expired: 'warning',
-  converted: 'success',
-};
 
 const STATUS_OPTIONS = [
   { value: 'draft', label: 'Draft' },
@@ -59,17 +29,26 @@ const STATUS_OPTIONS = [
 
 export default async function QuotesPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status);
   const q = stringParam(params.q);
 
-  const query = new URLSearchParams({ take: '100', sort_by: 'createdAt' });
+  const query = new URLSearchParams({
+    take: String(take),
+    skip: String(skip),
+    sort_by: 'createdAt',
+  });
   if (status) query.set('status', status);
   if (q) query.set('q', q);
 
-  const { data: quotes, meta } = await api.getPaged<QuoteRow[]>(
-    `/v1/crm/quotes?${query.toString()}`
-  );
+  const [prefs, { data: quotes, meta }] = await Promise.all([
+    getUserPreferences(),
+    api.getPaged<QuoteRow[]>(`/v1/crm/quotes?${query.toString()}`),
+  ]);
   const total = (meta?.total as number | undefined) ?? quotes.length;
+
+  // `?view=` overrides; absent → the user's saved default (§7.2).
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -98,6 +77,7 @@ export default async function QuotesPage({ searchParams }: PageProps) {
         <ListToolbar
           searchable={false}
           filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
+          enableViewToggle
         />
 
         {quotes.length === 0 ? (
@@ -109,56 +89,10 @@ export default async function QuotesPage({ searchParams }: PageProps) {
             />
           </Card>
         ) : (
-          <Card padding="none">
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Quote #</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                    <TableHead>Valid until</TableHead>
-                    <TableHead>Created</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {quotes.map((q) => (
-                    <TableRow key={q.id}>
-                      <TableCell>
-                        <EntityRowLink
-                          href={`/crm/quotes/${q.id}`}
-                          entityType="quote"
-                          entityId={q.id}
-                          className="text-sm font-medium hover:text-[var(--module-active)] hover:underline"
-                        >
-                          {q.quoteNumber}
-                        </EntityRowLink>
-                      </TableCell>
-                      <TableCell>
-                        <Badge color={STATUS_VARIANT[q.status] ?? 'outline'} className="text-xs">
-                          {q.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {q.currency} {Number(q.total).toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm" variant="muted">
-                          {q.validUntil ? new Date(q.validUntil).toLocaleDateString() : '—'}
-                        </Text>
-                      </TableCell>
-                      <TableCell>
-                        <Text size="sm" variant="muted">
-                          {new Date(q.createdAt).toLocaleDateString()}
-                        </Text>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <QuotesList quotes={quotes} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );

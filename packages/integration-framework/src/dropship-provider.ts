@@ -1,8 +1,14 @@
-// DropshipProvider — supplier integrations (DSers, Spocket, Faire,
-// AutoDS, custom). Implements catalog browse + import, order submission,
-// inventory feed, and tracking sync. Commerce reuses the same plugin
-// shape as payment/tax/shipping so the marketplace and per-tenant config
-// flow are uniform.
+// DEPRECATED — not the built dropship path. The live dropship surface uses the
+// bespoke `@sparx/dropship` `SupplierAdapter` (packages/dropship) + the
+// `dropship_suppliers` table + the `/v1/dropship/*` routes, NOT this provider/
+// marketplace abstraction. This interface predates that decision and is unused;
+// it is kept only so `ProviderBundle.dropship` still type-checks. See docs/14
+// §2 (Architecture) for the reconciliation. Do not build new dropship work
+// against this interface — extend `@sparx/dropship` instead.
+//
+// DropshipProvider — supplier integrations. Implements catalog browse + import,
+// order submission, inventory feed, and tracking sync, in the same plugin shape
+// as payment/tax/shipping.
 
 import type { Currency, MoneyCents } from '@sparx/commerce-schemas';
 

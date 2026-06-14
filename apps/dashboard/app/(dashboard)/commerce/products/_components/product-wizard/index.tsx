@@ -21,7 +21,7 @@
 // against the draft product id.
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Badge,
   Button,
@@ -50,7 +50,12 @@ import {
   listWarehousesAction,
   setReorderPolicyAction,
 } from '../../../inventory-actions';
+import { listFitmentDomainsAction } from '../../../fitment-actions';
 import { OrganizationStep } from './organization-step';
+import { VariantsStep } from './variants-step';
+import { MediaStep } from './media-step';
+import { FitmentStep } from './fitment-step';
+import { InlineWarehouseCreate } from './inline-warehouse-create';
 
 // ─── Types & constants ─────────────────────────────────────────────────────────
 
@@ -72,11 +77,22 @@ interface WarehouseOption {
   name: string;
 }
 
-type StepKey = 'basics' | 'pricing' | 'inventory' | 'organization' | 'review';
+type StepKey =
+  | 'basics'
+  | 'pricing'
+  | 'variants'
+  | 'media'
+  | 'fitment'
+  | 'inventory'
+  | 'organization'
+  | 'review';
 
 const ALL_STEPS: Record<StepKey, WizardStepDef> = {
   basics: { key: 'basics', label: 'Basics', sublabel: 'Name & type' },
   pricing: { key: 'pricing', label: 'Pricing', sublabel: 'Price & tax' },
+  variants: { key: 'variants', label: 'Variants', sublabel: 'Options & SKUs' },
+  media: { key: 'media', label: 'Photos', sublabel: 'Images & hero' },
+  fitment: { key: 'fitment', label: 'Fitment', sublabel: 'Compatibility' },
   inventory: { key: 'inventory', label: 'Inventory', sublabel: 'Stock & shipping' },
   organization: { key: 'organization', label: 'Organize', sublabel: 'Collections & sites' },
   review: { key: 'review', label: 'Review', sublabel: 'Confirm & publish' },
@@ -92,7 +108,23 @@ const RAIL: Record<StepKey, { title: string; blurb: string; context?: string }> 
   pricing: {
     title: 'Set the price',
     blurb: 'The selling price, an optional “compare at” for showing a markdown, and your cost.',
-    context: 'This creates the default variant. Add more variants in the next slice.',
+    context: 'This creates the default variant — add options & more variants next.',
+  },
+  variants: {
+    title: 'Variants & options',
+    blurb: 'Sell variations — Size, Color, Material. Generate a SKU for every combination at once.',
+    context: 'Optional — skip for a single-SKU product.',
+  },
+  media: {
+    title: 'Photos',
+    blurb: 'Add product images and star the one that represents it best.',
+    context: 'Optional — add photos now or anytime from the product.',
+  },
+  fitment: {
+    title: 'Fitment & compatibility',
+    blurb:
+      'List what this product fits or works with — vehicles, devices, breeds, whatever applies.',
+    context: 'Optional — add as many fits as you need.',
   },
   inventory: {
     title: 'Stock & shipping',
@@ -137,16 +169,34 @@ function centsToDisplay(cents: number | undefined): string {
 
 // ─── Component ─────────────────────────────────────────────────────────────────
 
-export function ProductWizard() {
+export interface ProductWizardProps {
+  /** How the wizard is presented:
+   *   • `'page'`    — the `/new` route; a full-screen overlay that owns the
+   *                   viewport (the full-page escape hatch).
+   *   • `'overlay'` — hosted inside the dashboard's drawer/modal detail chrome
+   *                   (docs/86 `WizardFrame` inline variant). The user's
+   *                   `defaultDetailView` preference picks drawer vs. modal;
+   *                   the chrome supplies the shell + close/switch/maximize
+   *                   header, and the wizard fills the body. */
+  presentation?: 'page' | 'overlay';
+}
+
+export function ProductWizard(props: ProductWizardProps = {}) {
+  // In the overlay the wizard fills the host drawer/modal body, so the wrapping
+  // ModuleProvider div must carry the height through (h-full) instead of
+  // collapsing to content — otherwise the rail can't run the full panel height.
+  const fill = props.presentation === 'overlay';
   return (
-    <ModuleProvider module="commerce">
-      <ProductWizardInner />
+    <ModuleProvider module="commerce" className={fill ? 'h-full' : undefined}>
+      <ProductWizardInner {...props} />
     </ModuleProvider>
   );
 }
 
-function ProductWizardInner() {
+function ProductWizardInner({ presentation = 'page' }: ProductWizardProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const confirm = useConfirm();
 
   const [stepKey, setStepKey] = React.useState<StepKey>('basics');
@@ -187,45 +237,76 @@ function ProductWizardInner() {
 
   const isPhysical = fulfillmentType === 'physical';
 
-  // Active journey — digital/service skip the physical Inventory step.
-  const steps: WizardStepDef[] = React.useMemo(
-    () =>
-      isPhysical
-        ? [
-            ALL_STEPS.basics,
-            ALL_STEPS.pricing,
-            ALL_STEPS.inventory,
-            ALL_STEPS.organization,
-            ALL_STEPS.review,
-          ]
-        : [ALL_STEPS.basics, ALL_STEPS.pricing, ALL_STEPS.organization, ALL_STEPS.review],
-    [isPhysical]
-  );
+  // Fitment is generalized (vehicle / device / breed …) but only meaningful when
+  // the tenant has actually set up fitment data — a domain with categories. We
+  // gate the step on that so a plain content/apparel tenant never sees it.
+  const [fitmentRelevant, setFitmentRelevant] = React.useState(false);
+  React.useEffect(() => {
+    let cancelled = false;
+    void listFitmentDomainsAction().then((res) => {
+      if (cancelled || !res.ok) return;
+      setFitmentRelevant(res.data.some((d) => d.categoryCount > 0));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Active journey — digital/service skip the physical Inventory step; Fitment
+  // only appears when the tenant uses it.
+  const steps: WizardStepDef[] = React.useMemo(() => {
+    const journey: WizardStepDef[] = [
+      ALL_STEPS.basics,
+      ALL_STEPS.pricing,
+      ALL_STEPS.variants,
+      ALL_STEPS.media,
+    ];
+    if (fitmentRelevant) journey.push(ALL_STEPS.fitment);
+    if (isPhysical) journey.push(ALL_STEPS.inventory);
+    journey.push(ALL_STEPS.organization, ALL_STEPS.review);
+    return journey;
+  }, [isPhysical, fitmentRelevant]);
   const current = Math.max(
     0,
     steps.findIndex((s) => s.key === stepKey)
   );
 
+  // Refresh the warehouse list. `selectId` pins the selection (used after an
+  // inline create); otherwise the first warehouse is selected if none is yet.
+  const refreshWarehouses = React.useCallback(async (selectId?: string) => {
+    const res = await listWarehousesAction();
+    if (!res.ok) return;
+    const rows = res.data.map((w) => ({ id: w.id, code: w.code, name: w.name }));
+    setWarehouses(rows);
+    if (selectId) setWarehouseId(selectId);
+    else setWarehouseId((prev) => (prev ? prev : (rows[0]?.id ?? '')));
+  }, []);
+
   // Load warehouses lazily once stock matters.
   React.useEffect(() => {
     if (!isPhysical || warehouses.length > 0) return;
-    let cancelled = false;
-    void listWarehousesAction().then((res) => {
-      if (cancelled || !res.ok) return;
-      const rows = res.data.map((w) => ({ id: w.id, code: w.code, name: w.name }));
-      setWarehouses(rows);
-      const first = rows[0];
-      if (first) setWarehouseId((prev) => prev || first.id);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [isPhysical, warehouses.length]);
+    void refreshWarehouses();
+  }, [isPhysical, warehouses.length, refreshWarehouses]);
 
   function goToStep(key: StepKey) {
     setError(null);
     setStepKey(key);
   }
+
+  // Where "leave the wizard" goes. In the overlay it clears the detail token so
+  // the drawer/modal closes in place (the list stays mounted behind it); the
+  // full-page route navigates back to the list.
+  const close = React.useCallback(() => {
+    if (presentation === 'overlay') {
+      const next = new URLSearchParams(searchParams?.toString() ?? '');
+      next.delete('drawer');
+      next.delete('modal');
+      const qs = next.toString();
+      router.replace(qs ? `${pathname}?${qs}` : (pathname ?? '/'));
+    } else {
+      router.push('/commerce/products');
+    }
+  }, [presentation, pathname, searchParams, router]);
 
   function nextKeyAfter(key: StepKey): StepKey {
     const idx = steps.findIndex((s) => s.key === key);
@@ -344,6 +425,14 @@ function ProductWizardInner() {
     const dimensions =
       lengthMm && widthMm && heightMm ? { lengthMm, widthMm, heightMm } : undefined;
     try {
+      // Hazmat / shipping classification lives on the product and is authored on
+      // this (physical-only) step now, so sync it here.
+      const hazmatRes = await updateProductAction(productId, { hazmatClass });
+      if (!hazmatRes.ok) {
+        setError(hazmatRes.error.message);
+        return;
+      }
+
       if (weightGrams !== undefined || dimensions) {
         const res = await updateVariantAction(variantId, productId, {
           ...(weightGrams !== undefined ? { weight: weightGrams } : {}),
@@ -376,6 +465,9 @@ function ProductWizardInner() {
           variantId,
           warehouseId,
           reorderPoint,
+          // The wizard only asks for the trigger point; seed a sensible reorder
+          // quantity (the schema requires a positive value) the merchant tunes later.
+          reorderQuantity: Math.max(reorderPoint, 1),
         });
         if (!res.ok) {
           setError(res.error.message);
@@ -383,7 +475,7 @@ function ProductWizardInner() {
         }
       }
 
-      goToStep('review');
+      goToStep(nextKeyAfter('inventory'));
     } finally {
       setSubmitting(false);
     }
@@ -404,6 +496,8 @@ function ProductWizardInner() {
         }
         setPublished(true);
       }
+      // Created → go view the product. Navigating away clears the overlay token,
+      // so the drawer/modal closes on its own.
       router.push(`/commerce/products/${productId}`);
       router.refresh();
     } finally {
@@ -417,7 +511,7 @@ function ProductWizardInner() {
     if (submitting) return;
     // Nothing created yet → just leave.
     if (!productId) {
-      router.push('/commerce/products');
+      close();
       return;
     }
     const ok = await confirm({
@@ -429,7 +523,7 @@ function ProductWizardInner() {
     });
     if (!ok) return;
     await deleteProductAction(productId);
-    router.push('/commerce/products');
+    close();
   }
 
   // ── Step bodies ────────────────────────────────────────────────────────────────
@@ -454,7 +548,7 @@ function ProductWizardInner() {
             id="pw-title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="6.7L Power Stroke Turbocharger"
+            placeholder="What you're selling"
           />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -464,7 +558,7 @@ function ProductWizardInner() {
               id="pw-type"
               value={productType}
               onChange={(e) => setProductType(e.target.value)}
-              placeholder="Auto Part, Apparel, Food…"
+              placeholder="e.g. Apparel, Book, Tool"
             />
           </div>
           <div>
@@ -473,7 +567,7 @@ function ProductWizardInner() {
               id="pw-vendor"
               value={vendor}
               onChange={(e) => setVendor(e.target.value)}
-              placeholder="Garrett, Ford…"
+              placeholder="Brand or supplier"
             />
           </div>
         </div>
@@ -484,7 +578,7 @@ function ProductWizardInner() {
             rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="What it is, what it fits, why it’s good."
+            placeholder="What it is and why someone wants it."
           />
         </div>
         <div>
@@ -493,42 +587,23 @@ function ProductWizardInner() {
             id="pw-tags"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
-            placeholder="diesel, turbo, oem (comma-separated)"
+            placeholder="e.g. featured, sale, new (comma-separated)"
           />
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <Label htmlFor="pw-fulfillment">Fulfillment</Label>
-            <NativeSelect
-              id="pw-fulfillment"
-              value={fulfillmentType}
-              onChange={(e) => setFulfillmentType(e.target.value as FulfillmentType)}
-            >
-              <option value="physical">Physical goods</option>
-              <option value="digital">Digital download</option>
-              <option value="service">Service / booking</option>
-            </NativeSelect>
-          </div>
-          {isPhysical && (
-            <div>
-              <Label htmlFor="pw-hazmat">Hazmat class</Label>
-              <NativeSelect
-                id="pw-hazmat"
-                value={hazmatClass}
-                onChange={(e) => setHazmatClass(e.target.value as HazmatClass)}
-              >
-                <option value="none">None</option>
-                <option value="flammable_liquid">Flammable liquid</option>
-                <option value="flammable_solid">Flammable solid</option>
-                <option value="gas">Compressed gas</option>
-                <option value="oxidizer">Oxidizer</option>
-                <option value="toxic">Toxic</option>
-                <option value="corrosive">Corrosive</option>
-                <option value="radioactive">Radioactive</option>
-                <option value="misc">Miscellaneous</option>
-              </NativeSelect>
-            </div>
-          )}
+        <div>
+          <Label htmlFor="pw-fulfillment">Fulfillment</Label>
+          <NativeSelect
+            id="pw-fulfillment"
+            value={fulfillmentType}
+            onChange={(e) => setFulfillmentType(e.target.value as FulfillmentType)}
+          >
+            <option value="physical">Physical goods</option>
+            <option value="digital">Digital download</option>
+            <option value="service">Service / booking</option>
+          </NativeSelect>
+          <Text size="sm" variant="muted" className="mt-1.5">
+            Physical ships and tracks stock. Digital and service skip shipping.
+          </Text>
         </div>
         {error && (
           <Text size="sm" variant="danger" role="alert">
@@ -562,7 +637,7 @@ function ProductWizardInner() {
             id="pw-sku"
             value={sku}
             onChange={(e) => setSku(e.target.value)}
-            placeholder="GAR-6.7-TURBO"
+            placeholder="SKU-001"
           />
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
@@ -573,7 +648,7 @@ function ProductWizardInner() {
               inputMode="decimal"
               value={priceStr}
               onChange={(e) => setPriceStr(e.target.value)}
-              placeholder="1299.00"
+              placeholder="29.00"
             />
           </div>
           <div>
@@ -583,7 +658,7 @@ function ProductWizardInner() {
               inputMode="decimal"
               value={compareAtStr}
               onChange={(e) => setCompareAtStr(e.target.value)}
-              placeholder="1499.00"
+              placeholder="39.00"
             />
           </div>
           <div>
@@ -593,7 +668,7 @@ function ProductWizardInner() {
               inputMode="decimal"
               value={costStr}
               onChange={(e) => setCostStr(e.target.value)}
-              placeholder="900.00"
+              placeholder="12.00"
             />
           </div>
         </div>
@@ -624,7 +699,7 @@ function ProductWizardInner() {
       actions={{
         onBack: () => goToStep(prevKeyBefore('inventory')),
         onNext: () => void commitInventory(),
-        onSkip: () => goToStep('review'),
+        onSkip: () => goToStep(nextKeyAfter('inventory')),
         nextLabel: 'Save & continue',
         nextLoading: submitting,
         nextDisabled: submitting,
@@ -648,46 +723,56 @@ function ProductWizardInner() {
         </div>
 
         {trackInventory && (
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <Label htmlFor="pw-warehouse">Warehouse</Label>
-              <NativeSelect
-                id="pw-warehouse"
-                value={warehouseId}
-                onChange={(e) => setWarehouseId(e.target.value)}
-                disabled={warehouses.length === 0}
-              >
-                {warehouses.length === 0 ? (
-                  <option value="">No warehouses yet</option>
-                ) : (
-                  warehouses.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.name} ({w.code})
-                    </option>
-                  ))
-                )}
-              </NativeSelect>
+          <div className="flex flex-col gap-3">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <Label htmlFor="pw-warehouse">Warehouse</Label>
+                <NativeSelect
+                  id="pw-warehouse"
+                  value={warehouseId}
+                  onChange={(e) => setWarehouseId(e.target.value)}
+                  disabled={warehouses.length === 0}
+                >
+                  {warehouses.length === 0 ? (
+                    <option value="">No warehouses yet</option>
+                  ) : (
+                    warehouses.map((w) => (
+                      <option key={w.id} value={w.id}>
+                        {w.name} ({w.code})
+                      </option>
+                    ))
+                  )}
+                </NativeSelect>
+              </div>
+              <div>
+                <Label htmlFor="pw-qty">On hand</Label>
+                <Input
+                  id="pw-qty"
+                  inputMode="numeric"
+                  value={quantityStr}
+                  onChange={(e) => setQuantityStr(e.target.value)}
+                  placeholder="25"
+                  disabled={warehouses.length === 0}
+                />
+              </div>
+              <div>
+                <Label htmlFor="pw-reorder">Reorder at</Label>
+                <Input
+                  id="pw-reorder"
+                  inputMode="numeric"
+                  value={reorderPointStr}
+                  onChange={(e) => setReorderPointStr(e.target.value)}
+                  placeholder="5"
+                  disabled={warehouses.length === 0}
+                />
+              </div>
             </div>
-            <div>
-              <Label htmlFor="pw-qty">On hand</Label>
-              <Input
-                id="pw-qty"
-                inputMode="numeric"
-                value={quantityStr}
-                onChange={(e) => setQuantityStr(e.target.value)}
-                placeholder="25"
-              />
-            </div>
-            <div>
-              <Label htmlFor="pw-reorder">Reorder at</Label>
-              <Input
-                id="pw-reorder"
-                inputMode="numeric"
-                value={reorderPointStr}
-                onChange={(e) => setReorderPointStr(e.target.value)}
-                placeholder="5"
-              />
-            </div>
+            {warehouses.length === 0 && (
+              <Text size="sm" variant="muted">
+                No warehouse yet — create one here to seed stock without leaving the wizard.
+              </Text>
+            )}
+            <InlineWarehouseCreate onCreated={(id) => refreshWarehouses(id)} />
           </div>
         )}
 
@@ -732,6 +817,28 @@ function ProductWizardInner() {
               placeholder="25"
             />
           </div>
+        </div>
+        <div>
+          <Label htmlFor="pw-hazmat">Shipping classification</Label>
+          <NativeSelect
+            id="pw-hazmat"
+            value={hazmatClass}
+            onChange={(e) => setHazmatClass(e.target.value as HazmatClass)}
+          >
+            <option value="none">Standard — no special handling</option>
+            <option value="flammable_liquid">Flammable liquid</option>
+            <option value="flammable_solid">Flammable solid</option>
+            <option value="gas">Compressed gas</option>
+            <option value="oxidizer">Oxidizer</option>
+            <option value="toxic">Toxic</option>
+            <option value="corrosive">Corrosive</option>
+            <option value="radioactive">Radioactive</option>
+            <option value="misc">Other regulated</option>
+          </NativeSelect>
+          <Text size="sm" variant="muted" className="mt-1.5">
+            Most products are Standard. Set this only for regulated goods (batteries, aerosols,
+            chemicals) so carriers route them correctly.
+          </Text>
         </div>
         {error && (
           <Text size="sm" variant="danger" role="alert">
@@ -817,6 +924,32 @@ function ProductWizardInner() {
   let body: React.ReactNode;
   if (stepKey === 'basics') body = basicsStep;
   else if (stepKey === 'pricing') body = pricingStep;
+  else if (stepKey === 'variants' && productId)
+    body = (
+      <VariantsStep
+        productId={productId}
+        productTitle={title.trim() || 'Untitled product'}
+        requiresShipping={isPhysical}
+        onBack={() => goToStep(prevKeyBefore('variants'))}
+        onComplete={() => goToStep(nextKeyAfter('variants'))}
+      />
+    );
+  else if (stepKey === 'media' && productId)
+    body = (
+      <MediaStep
+        productId={productId}
+        onBack={() => goToStep(prevKeyBefore('media'))}
+        onComplete={() => goToStep(nextKeyAfter('media'))}
+      />
+    );
+  else if (stepKey === 'fitment' && productId)
+    body = (
+      <FitmentStep
+        productId={productId}
+        onBack={() => goToStep(prevKeyBefore('fitment'))}
+        onComplete={() => goToStep(nextKeyAfter('fitment'))}
+      />
+    );
   else if (stepKey === 'inventory') body = inventoryStep;
   else if (stepKey === 'organization' && productId)
     body = (
@@ -828,6 +961,51 @@ function ProductWizardInner() {
     );
   else body = reviewStep;
 
+  // Rail/journey props shared by both presentations — the colored rail, the
+  // step list, the per-step context card, and the click-to-revisit behavior are
+  // identical; only the frame around them (full-page overlay vs. dialog) differs.
+  const railContext = published ? (
+    <Badge color="success" variant="soft" size="sm">
+      Published
+    </Badge>
+  ) : (
+    RAIL[stepKey].context
+  );
+  const onStepSelect = (key: string) => {
+    const target = steps.findIndex((s) => s.key === key);
+    if (target >= 0 && target <= current) goToStep(key as StepKey);
+  };
+  const canSelectStep = (_key: string, index: number) => index <= current;
+  const cancelButton = (
+    <button
+      type="button"
+      onClick={() => void onCancel()}
+      className="text-white/70 underline-offset-2 hover:underline"
+    >
+      Cancel
+    </button>
+  );
+
+  if (presentation === 'overlay') {
+    // Hosted inside the dashboard's drawer/modal detail chrome — that shell owns
+    // the overlay + the close/switch/maximize header; the wizard just fills the
+    // body as its two-pane (collapsing) inline frame.
+    return (
+      <WizardFrame
+        variant="inline"
+        title="New product"
+        steps={steps}
+        current={current}
+        context={railContext}
+        onStepSelect={onStepSelect}
+        canSelectStep={canSelectStep}
+        footer={cancelButton}
+      >
+        {body}
+      </WizardFrame>
+    );
+  }
+
   return (
     <WizardFrame
       variant="page"
@@ -838,29 +1016,10 @@ function ProductWizardInner() {
       lede={{ title: RAIL[stepKey].title, blurb: RAIL[stepKey].blurb }}
       steps={steps}
       current={current}
-      context={
-        published ? (
-          <Badge color="success" variant="soft" size="sm">
-            Published
-          </Badge>
-        ) : (
-          RAIL[stepKey].context
-        )
-      }
-      onStepSelect={(key) => {
-        const target = steps.findIndex((s) => s.key === key);
-        if (target >= 0 && target <= current) goToStep(key as StepKey);
-      }}
-      canSelectStep={(_key, index) => index <= current}
-      footer={
-        <button
-          type="button"
-          onClick={() => void onCancel()}
-          className="text-white/70 underline-offset-2 hover:underline"
-        >
-          Cancel
-        </button>
-      }
+      context={railContext}
+      onStepSelect={onStepSelect}
+      canSelectStep={canSelectStep}
+      footer={cancelButton}
     >
       {body}
     </WizardFrame>

@@ -322,6 +322,13 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     return ok({ id, restored: true });
   });
 
+  app.get('/v1/commerce/products/:productId/images', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { productId } = ProductIdParam.parse(request.params);
+    return ok(await variantService.listImagesForProduct(toCommerceContext(request), productId));
+  });
+
   app.post('/v1/commerce/variants/images', async (request, reply) => {
     // addImage takes the productId + variantId inside its body, so we expose
     // it as a flat POST that just forwards request.body. Dashboard sets

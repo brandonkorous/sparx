@@ -6,6 +6,9 @@ import { api } from '@/lib/api-rest-client';
 
 import { EntityCreateButton } from '../../_components/entity-create-button';
 import { ListToolbar } from '../../_components/list-toolbar';
+import { ListPager } from '../../_components/list-pager';
+import { parsePageParams } from '@/lib/pagination';
+import { getUserPreferences } from '../../_shell/preferences';
 import { B2bAccountsSelectionTable } from './_components/b2b-accounts-selection-table';
 import type { B2bAccountRow } from './_components/b2b-accounts-selection-table';
 
@@ -26,17 +29,22 @@ const STATUS_OPTIONS = [
 
 export default async function B2bAccountsPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const { skip, take } = parsePageParams(params);
   const status = stringParam(params.status);
   const q = stringParam(params.q);
 
-  const query = new URLSearchParams({ take: '100' });
+  const query = new URLSearchParams({ take: String(take), skip: String(skip) });
   if (status && (STATUS_VALUES as readonly string[]).includes(status)) query.set('status', status);
   if (q) query.set('q', q);
 
-  const { data: accounts, meta } = await api.getPaged<B2bAccountRow[]>(
-    `/v1/crm/b2b-accounts?${query.toString()}`
-  );
+  const [prefs, { data: accounts, meta }] = await Promise.all([
+    getUserPreferences(),
+    api.getPaged<B2bAccountRow[]>(`/v1/crm/b2b-accounts?${query.toString()}`),
+  ]);
   const total = (meta?.total as number | undefined) ?? accounts.length;
+
+  // `?view=` overrides; absent → the user's saved default (§7.2).
+  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
   return (
     <Container size="full">
@@ -65,6 +73,7 @@ export default async function B2bAccountsPage({ searchParams }: PageProps) {
         <ListToolbar
           searchPlaceholder="Search company…"
           filters={[{ key: 'status', label: 'Statuses', options: STATUS_OPTIONS }]}
+          enableViewToggle
         />
 
         {accounts.length === 0 ? (
@@ -86,8 +95,10 @@ export default async function B2bAccountsPage({ searchParams }: PageProps) {
             />
           </Card>
         ) : (
-          <B2bAccountsSelectionTable accounts={accounts} />
+          <B2bAccountsSelectionTable accounts={accounts} view={view} />
         )}
+
+        <ListPager total={total} />
       </Stack>
     </Container>
   );
