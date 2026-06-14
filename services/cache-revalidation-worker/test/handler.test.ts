@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { planRevalidation } from '../src/handler.js';
 
 describe('planRevalidation', () => {
-  it('maps catalog + review events to the commerce scope', () => {
+  it('maps catalog + review + Q&A events to the commerce scope', () => {
     for (const type of [
       'product.created',
       'product.updated',
@@ -11,6 +11,8 @@ describe('planRevalidation', () => {
       'variant.updated',
       'inventory.adjusted',
       'review.published',
+      'question.published',
+      'question.answered',
     ]) {
       expect(planRevalidation(type)).toBe('commerce');
     }

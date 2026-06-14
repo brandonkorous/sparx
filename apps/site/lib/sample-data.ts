@@ -17,6 +17,7 @@ import type {
   PublicProduct,
   PublicProductListItem,
   PublicQuestion,
+  PublicReviewList,
 } from '@/lib/commerce';
 
 const SAMPLE_AT = '2026-01-02T00:00:00.000Z';
@@ -148,9 +149,39 @@ export const SAMPLE_PRODUCT: PublicProduct = {
 export const SAMPLE_PRODUCT_EXTRAS: {
   related: PublicProductListItem[];
   questions: PublicQuestion[];
+  reviews: PublicReviewList;
   fitmentDomainsBySlug: Record<string, PublicFitmentDomain>;
 } = {
   related: [1, 2, 3, 4].map((i) => sampleListItem(i)),
+  reviews: {
+    summary: { averageRating: 4.5, total: 2 },
+    items: [
+      {
+        id: 'sample-review-1',
+        rating: 5,
+        title: 'Exactly as described',
+        body: 'Great quality and fast shipping. Fit perfectly and looks even better in person.',
+        author: 'Alex P.',
+        verifiedPurchase: true,
+        helpfulCount: 4,
+        response: 'Thanks Alex — glad it worked out! Let us know if you need anything else.',
+        respondedAt: SAMPLE_AT,
+        createdAt: SAMPLE_AT,
+      },
+      {
+        id: 'sample-review-2',
+        rating: 4,
+        title: '',
+        body: 'Solid product for the price. Took a couple days to arrive but worth the wait.',
+        author: 'Riley T.',
+        verifiedPurchase: false,
+        helpfulCount: 1,
+        response: null,
+        respondedAt: null,
+        createdAt: SAMPLE_AT,
+      },
+    ],
+  },
   questions: [
     {
       id: 'sample-q-1',

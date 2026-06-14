@@ -39,6 +39,7 @@ import type {
   PublicProduct,
   PublicProductListItem,
   PublicQuestion,
+  PublicReviewList,
   PublicCollection,
   PublicFitmentDomain,
 } from '@/lib/commerce';
@@ -77,6 +78,7 @@ export interface SectionContext {
   productExtras?: {
     related: PublicProductListItem[];
     questions: PublicQuestion[];
+    reviews: PublicReviewList;
     fitmentDomainsBySlug: Record<string, PublicFitmentDomain>;
   };
   // Collection binding — present only when rendering a `collection`-scope template.

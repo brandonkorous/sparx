@@ -24,10 +24,18 @@ const HandleParam = z.object({ handle: z.string().min(1).max(255) });
 
 const ReviewBody = z.object({
   rating: z.number().int().min(1).max(5),
-  authorName: z.string().min(1).max(120),
-  authorEmail: z.string().email(),
-  title: z.string().max(200).optional(),
+  authorName: z.string().min(1).max(63),
+  // Optional — collected for future verified-purchase matching / moderation
+  // contact, but not persisted yet (no column). Accepted so the form can send
+  // it without 400ing.
+  authorEmail: z.string().email().optional(),
+  title: z.string().max(127).optional(),
   body: z.string().min(1).max(5000),
+});
+
+const ReviewListQuery = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  perPage: z.coerce.number().int().min(1).max(50).default(20),
 });
 
 const QuestionBody = z.object({
@@ -53,8 +61,10 @@ const publicReviewRoutes: FastifyPluginAsync = async (app) => {
       const result = await reviewService.submit(ctx, {
         productId: product.id,
         rating: body.rating,
-        authorName: body.authorName,
-        authorEmail: body.authorEmail,
+        // The guest's name is the review's display name (the service falls back
+        // to the customer profile name for signed-in reviewers, but storefront
+        // submissions are guest-shaped: name in, no customerId).
+        displayName: body.authorName,
         ...(body.title ? { title: body.title } : {}),
         body: body.body,
       });
@@ -62,6 +72,45 @@ const publicReviewRoutes: FastifyPluginAsync = async (app) => {
     } catch (err) {
       throw badRequest((err as Error).message || 'Could not submit review.');
     }
+  });
+
+  // List a product's APPROVED reviews for the storefront (newest first), plus
+  // the live rating summary. Moderation-only fields (email, status, notes) are
+  // never exposed.
+  app.get('/v1/public/commerce/products/:handle/reviews', async (request) => {
+    const { handle } = HandleParam.parse(request.params);
+    const query = ReviewListQuery.parse(request.query ?? {});
+    const { tenantId, ctx } = await publicCommerceContext(request);
+
+    const product = await withTenant({ tenantId }, (tx) =>
+      tx.product.findFirst({
+        where: { handle, status: 'active', deletedAt: null },
+        select: { id: true },
+      })
+    );
+    if (!product) throw notFound('Product', handle);
+
+    const { items, total, averageRating } = await reviewService.listReviewsForProduct(
+      ctx,
+      product.id,
+      { status: 'approved', take: query.perPage, skip: (query.page - 1) * query.perPage }
+    );
+
+    return ok({
+      summary: { averageRating, total },
+      items: items.map((r) => ({
+        id: r.id,
+        rating: r.rating,
+        title: r.title,
+        body: r.body,
+        author: r.displayName,
+        verifiedPurchase: r.verifiedPurchase,
+        helpfulCount: r.helpfulCount,
+        response: r.response,
+        respondedAt: r.respondedAt,
+        createdAt: r.createdAt,
+      })),
+    });
   });
 
   // ─── Q&A ───────────────────────────────────────────────────────────

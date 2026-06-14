@@ -100,6 +100,8 @@ export type EventType =
   | 'review.submitted'
   | 'review.published'
   | 'review.flagged'
+  | 'question.published'
+  | 'question.answered'
   // Provider marketplace
   | 'provider.installed'
   | 'provider.uninstalled'

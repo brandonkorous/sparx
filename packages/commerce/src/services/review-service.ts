@@ -106,6 +106,32 @@ export async function getReview(ctx: ServiceContext, reviewId: string): Promise<
   return toReviewRow(row);
 }
 
+// Recompute the denormalized rating aggregate the storefront reads
+// (Product.averageRating / reviewCount) from the product's APPROVED reviews.
+// Called inside the same transaction whenever the approved set changes — a
+// verified-purchase auto-approve, a moderation crossing the approved boundary,
+// or deleting an approved review. Without this the columns stay at their
+// defaults (null / 0) and the PDP shows "no reviews yet" no matter how many
+// reviews are approved.
+async function recomputeProductRating(
+  tx: Prisma.TransactionClient,
+  productId: string
+): Promise<void> {
+  const agg = await tx.productReview.aggregate({
+    where: { productId, status: 'approved', deletedAt: null },
+    _avg: { rating: true },
+    _count: { _all: true },
+  });
+  const count = agg._count._all;
+  await tx.product.update({
+    where: { id: productId },
+    data: {
+      reviewCount: count,
+      averageRating: count > 0 ? (agg._avg.rating ?? null) : null,
+    },
+  });
+}
+
 export async function submit(
   ctx: ServiceContext,
   rawInput: unknown
@@ -130,7 +156,9 @@ export async function submit(
         customerId: input.customerId ?? null,
         orderId: input.orderId ?? null,
         rating: input.rating,
-        title: input.title,
+        // Title is optional on the storefront form; the column is NOT NULL, so
+        // an omitted title persists as empty and the PDP hides it.
+        title: input.title ?? '',
         body: input.body,
         displayName: input.displayName ?? null,
         status: initialStatus,
@@ -171,6 +199,12 @@ export async function submit(
       entityId: created.id,
       diff: { after: { rating: input.rating, status: initialStatus } },
     });
+
+    // Verified-purchase reviews land approved, so the product's rating rolls up
+    // immediately. Pending reviews don't count until a moderator approves them.
+    if (initialStatus === 'approved') {
+      await recomputeProductRating(tx, input.productId);
+    }
 
     return created;
   });
@@ -239,6 +273,16 @@ export async function moderate(ctx: ServiceContext, rawInput: unknown): Promise<
       entityId: input.reviewId,
       diff: { before: { status: previousStatus }, after: { status: input.status } },
     });
+
+    // Roll the product rating up/down whenever this change adds or removes the
+    // review from the APPROVED set (approve, or un-approve a previously-approved
+    // one). Same-status or pending↔rejected moves don't affect the aggregate.
+    if (
+      input.status !== previousStatus &&
+      (input.status === 'approved' || previousStatus === 'approved')
+    ) {
+      await recomputeProductRating(tx, existing.productId);
+    }
 
     return { previousStatus, productId: existing.productId, rating: existing.rating };
   });
@@ -360,7 +404,7 @@ export async function deleteReview(ctx: ServiceContext, reviewId: string): Promi
   await withTenant(ctx, async (tx) => {
     const existing = await tx.productReview.findFirst({
       where: { id: reviewId, deletedAt: null },
-      select: { id: true, productId: true },
+      select: { id: true, productId: true, status: true },
     });
     if (!existing) throw new CommerceNotFoundError('ProductReview', reviewId);
 
@@ -378,6 +422,11 @@ export async function deleteReview(ctx: ServiceContext, reviewId: string): Promi
       entityType: 'ProductReview',
       entityId: reviewId,
     });
+
+    // Deleting an approved review drops it from the rating rollup.
+    if (existing.status === 'approved') {
+      await recomputeProductRating(tx, existing.productId);
+    }
   });
 }
 
@@ -480,10 +529,10 @@ export async function moderateQuestion(
   ctx: ServiceContext,
   input: { questionId: string; status: 'published' | 'rejected' }
 ): Promise<void> {
-  await withTenant(ctx, async (tx) => {
+  const change = await withTenant(ctx, async (tx) => {
     const existing = await tx.productQuestion.findFirst({
       where: { id: input.questionId },
-      select: { id: true, status: true },
+      select: { id: true, status: true, productId: true },
     });
     if (!existing) throw new CommerceNotFoundError('ProductQuestion', input.questionId);
 
@@ -502,7 +551,21 @@ export async function moderateQuestion(
       entityId: input.questionId,
       diff: { before: { status: existing.status }, after: { status: input.status } },
     });
+
+    return { previousStatus: existing.status, productId: existing.productId };
   });
+
+  // A question becoming published changes what the PDP renders — emit so the
+  // storefront cache busts (cache-revalidation-worker → commerce scope) and the
+  // realtime product channel can push it to viewers. Mirrors review.published.
+  if (input.status === 'published' && change.previousStatus !== 'published') {
+    await publishCommerceEvent({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      topic: 'question.published',
+      data: { questionId: input.questionId, productId: change.productId },
+    });
+  }
 }
 
 export async function submitAnswer(
@@ -512,7 +575,10 @@ export async function submitAnswer(
   const input = SubmitAnswerInput.parse(rawInput);
 
   const question = await withTenant(ctx, (tx) =>
-    tx.productQuestion.findFirst({ where: { id: input.questionId }, select: { id: true } })
+    tx.productQuestion.findFirst({
+      where: { id: input.questionId },
+      select: { id: true, productId: true, status: true },
+    })
   );
   if (!question) throw new CommerceNotFoundError('ProductQuestion', input.questionId);
 
@@ -546,6 +612,23 @@ export async function submitAnswer(
 
     return created;
   });
+
+  // An answer on an already-published question changes what the PDP shows, so
+  // bust the storefront cache (and feed the realtime product channel). Answers
+  // on a still-pending question wait for question.published to do the busting.
+  if (question.status === 'published') {
+    await publishCommerceEvent({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      topic: 'question.answered',
+      data: {
+        questionId: input.questionId,
+        productId: question.productId,
+        answerId: answer.id,
+        isOfficial: answer.isOfficial,
+      },
+    });
+  }
 
   return { id: answer.id };
 }

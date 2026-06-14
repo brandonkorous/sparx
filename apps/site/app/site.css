@@ -2063,6 +2063,74 @@
   padding: 0.1rem 0.4rem;
 }
 
+/* Reviews list (PDP). */
+.st-review {
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--st-border);
+}
+.st-review:first-child {
+  padding-top: 0;
+}
+.st-review__head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.st-review__author {
+  font-weight: 600;
+  color: var(--st-text);
+}
+.st-review__verified {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--st-on-primary);
+  background: var(--st-primary);
+  border-radius: var(--st-radius-sm);
+  padding: 0.1rem 0.4rem;
+}
+.st-review__date {
+  margin-left: auto;
+  font-size: 0.82rem;
+}
+.st-review__title {
+  margin: 0 0 0.3rem;
+  font-weight: 600;
+  color: var(--st-text);
+}
+.st-review__body {
+  margin: 0;
+  color: var(--st-text-secondary);
+  line-height: 1.55;
+}
+.st-review__response {
+  margin-top: 0.7rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--st-radius-sm);
+  background: var(--st-bg-subtle);
+  border-left: 3px solid var(--st-primary);
+}
+.st-review__response strong {
+  display: block;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--st-text-secondary);
+  margin-bottom: 0.25rem;
+}
+.st-review__response p {
+  margin: 0;
+  color: var(--st-text);
+  line-height: 1.5;
+}
+.st-review__helpful {
+  margin: 0.6rem 0 0;
+  font-size: 0.82rem;
+}
+
 /* Email signup section. */
 .st-sb-signup {
   display: grid;

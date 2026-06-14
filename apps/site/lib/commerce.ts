@@ -497,6 +497,43 @@ export interface PublicQuestion {
 
 /** Published Q&A for a product (questions + merchant answers). Returns [] on
  *  failure — the PDP Q&A block is supplementary, never load-bearing. */
+export interface PublicReview {
+  id: string;
+  rating: number;
+  title: string;
+  body: string;
+  author: string | null;
+  verifiedPurchase: boolean;
+  helpfulCount: number;
+  response: string | null;
+  respondedAt: string | null;
+  createdAt: string;
+}
+
+export interface PublicReviewList {
+  summary: { averageRating: number; total: number };
+  items: PublicReview[];
+}
+
+/** Approved reviews for a product (newest first) + the live rating summary.
+ *  Returns an empty list on failure — the PDP reviews block degrades to its
+ *  summary/empty state rather than erroring the whole page. */
+export async function listProductReviews(
+  tenantSlug: string,
+  handle: string
+): Promise<PublicReviewList> {
+  try {
+    const { data } = await publicGet<PublicReviewList>(
+      `/v1/public/commerce/products/${encodeURIComponent(handle)}/reviews`,
+      { tenant: tenantSlug },
+      [`commerce:${tenantSlug}:product:${handle}:reviews`]
+    );
+    return data;
+  } catch {
+    return { summary: { averageRating: 0, total: 0 }, items: [] };
+  }
+}
+
 export async function listProductQuestions(
   tenantSlug: string,
   handle: string

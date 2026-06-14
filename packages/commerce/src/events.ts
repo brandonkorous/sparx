@@ -64,6 +64,8 @@ export type CommerceTopic = Extract<
   | 'review.submitted'
   | 'review.published'
   | 'review.flagged'
+  | 'question.published'
+  | 'question.answered'
   | 'provider.installed'
   | 'provider.uninstalled'
   | 'provider.health_changed'

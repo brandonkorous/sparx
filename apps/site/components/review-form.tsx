@@ -31,7 +31,7 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
           body: JSON.stringify({
             rating,
             authorName,
-            authorEmail,
+            authorEmail: authorEmail || undefined,
             title: title || undefined,
             body,
           }),
@@ -97,11 +97,10 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
           />
         </label>
         <label className="st-field" style={{ flex: 1 }}>
-          <span>Email</span>
+          <span>Email (optional)</span>
           <input
             className="st-input"
             type="email"
-            required
             value={authorEmail}
             onChange={(e) => setAuthorEmail(e.target.value)}
           />

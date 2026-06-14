@@ -36,7 +36,8 @@ export function planRevalidation(type: string): RevalidateScope | null {
     type.startsWith('product.') ||
     type.startsWith('variant.') ||
     type.startsWith('inventory.') ||
-    type.startsWith('review.')
+    type.startsWith('review.') ||
+    type.startsWith('question.')
   ) {
     return 'commerce';
   }

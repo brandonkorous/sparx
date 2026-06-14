@@ -16,10 +16,12 @@ import {
   getProduct,
   listFitmentDomains,
   listProductQuestions,
+  listProductReviews,
   listRelatedProducts,
   type PublicFitmentDomain,
   type PublicProductListItem,
   type PublicQuestion,
+  type PublicReviewList,
 } from '@/lib/commerce';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
@@ -127,24 +129,31 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   const relatedLimit =
     typeof relatedSection?.config.limit === 'number' ? relatedSection.config.limit : 4;
   const needsQuestions = sections.some((s) => s.sectionType === 'product-questions');
+  const needsReviews = sections.some((s) => s.sectionType === 'product-reviews');
   const needsFitment =
     product.fitments.length > 0 && sections.some((s) => s.sectionType === 'product-fitment');
 
+  const emptyReviews: PublicReviewList = { summary: { averageRating: 0, total: 0 }, items: [] };
+
   let related: PublicProductListItem[];
   let questions: PublicQuestion[];
+  let reviews: PublicReviewList;
   let fitmentDomainsBySlug: Record<string, PublicFitmentDomain>;
   if (sample) {
     // Fixtures only — no fetch. Still honor which sections the layout includes.
     related = relatedSection ? SAMPLE_PRODUCT_EXTRAS.related.slice(0, relatedLimit) : [];
     questions = needsQuestions ? SAMPLE_PRODUCT_EXTRAS.questions : [];
+    reviews = needsReviews ? SAMPLE_PRODUCT_EXTRAS.reviews : emptyReviews;
     fitmentDomainsBySlug = needsFitment ? SAMPLE_PRODUCT_EXTRAS.fitmentDomainsBySlug : {};
   } else {
-    const [r, q] = await Promise.all([
+    const [r, q, rev] = await Promise.all([
       relatedSection ? listRelatedProducts(site.slug, product, relatedLimit) : Promise.resolve([]),
       needsQuestions ? listProductQuestions(site.slug, product.handle) : Promise.resolve([]),
+      needsReviews ? listProductReviews(site.slug, product.handle) : Promise.resolve(emptyReviews),
     ]);
     related = r;
     questions = q;
+    reviews = rev;
     // Fitment rows carry a domain slug + label but not the per-level labels
     // (Make/Model/Engine). Fetch the domains (cached) and map by slug so the
     // table can render vertical-appropriate column headers.
@@ -207,7 +216,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
           locale,
           showStockBelow,
           product,
-          productExtras: { related, questions, fitmentDomainsBySlug },
+          productExtras: { related, questions, reviews, fitmentDomainsBySlug },
         }}
         definitions={snapshot?.definitions ?? []}
       />

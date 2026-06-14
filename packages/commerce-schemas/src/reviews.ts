@@ -13,7 +13,9 @@ export const SubmitReviewInput = z.object({
   customerId: Uuid.optional(), // anonymous reviews allowed when null
   orderId: Uuid.optional(), // populated → verified-purchase badge
   rating: ReviewRating,
-  title: z.string().min(1).max(127),
+  // Title is optional — the storefront form lets shoppers leave it blank and a
+  // headline isn't required for a useful review. Stored as empty when omitted.
+  title: z.string().max(127).optional(),
   body: z.string().min(1).max(10_000),
   mediaAssetIds: z.array(Uuid).max(10).default([]),
   displayName: z.string().max(63).optional(), // overrides customer name
