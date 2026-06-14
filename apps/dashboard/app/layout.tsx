@@ -1,8 +1,16 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
-import { ConfirmProvider, THEME_INIT_SCRIPT, Toaster, TooltipProvider } from '@sparx/ui';
+import {
+  ChunkReloadGuard,
+  ConfirmProvider,
+  THEME_INIT_SCRIPT,
+  Toaster,
+  TooltipProvider,
+} from '@sparx/ui';
+import { QueryProvider } from '@sparx/query/provider';
 import { PostHogProvider } from '../components/posthog-provider';
+import { UpdateNotifier } from '../components/update-notifier';
 import './globals.css';
 
 // Inter powers the Sparx wordmark (bold, to match the monogram mark). Exposed
@@ -31,10 +39,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {THEME_INIT_SCRIPT}
         </Script>
         <PostHogProvider>
-          <TooltipProvider delayDuration={150}>
-            <ConfirmProvider>{children}</ConfirmProvider>
-          </TooltipProvider>
-          <Toaster />
+          <QueryProvider>
+            <TooltipProvider delayDuration={150}>
+              <ConfirmProvider>{children}</ConfirmProvider>
+            </TooltipProvider>
+            <Toaster />
+            {/* Runtime guards: notify when a new release is deployed, and recover
+                stale tabs whose chunks were purged by that deploy. */}
+            <UpdateNotifier />
+            <ChunkReloadGuard />
+          </QueryProvider>
         </PostHogProvider>
       </body>
     </html>

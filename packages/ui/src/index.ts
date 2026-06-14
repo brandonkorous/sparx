@@ -28,6 +28,7 @@ export { ModuleProvider, useModule, type SparxModule } from './providers/module-
 // ── Hooks ─────────────────────────────────────────────────
 export { useTheme, THEME_INIT_SCRIPT, type Theme } from './hooks/use-theme';
 export { useMediaQuery } from './hooks/use-media-query';
+export { useDebouncedValue } from './hooks/use-debounced-value';
 
 // ── Brand ────────────────────────────────────────────────
 export { Wordmark, type WordmarkProps } from './components/brand/wordmark';
@@ -253,6 +254,9 @@ export {
   CommandPalettePortal,
   type CommandPaletteProps,
 } from './components/overlay/command-palette';
+
+// ── System / runtime ──────────────────────────────────────
+export { ChunkReloadGuard } from './components/system/chunk-reload-guard';
 
 // ── Navigation ────────────────────────────────────────────
 export {

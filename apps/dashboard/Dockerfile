@@ -39,6 +39,7 @@ COPY packages/provider-easypost/package.json packages/provider-easypost/
 COPY packages/provider-paypal/package.json packages/provider-paypal/
 COPY packages/provider-shippo/package.json packages/provider-shippo/
 COPY packages/provider-taxjar/package.json packages/provider-taxjar/
+COPY packages/query/package.json packages/query/
 COPY packages/search/package.json packages/search/
 COPY packages/seo-audit/package.json packages/seo-audit/
 COPY packages/cms-editor/package.json packages/cms-editor/
@@ -83,6 +84,7 @@ COPY packages/provider-easypost packages/provider-easypost
 COPY packages/provider-paypal packages/provider-paypal
 COPY packages/provider-shippo packages/provider-shippo
 COPY packages/provider-taxjar packages/provider-taxjar
+COPY packages/query packages/query
 COPY packages/search packages/search
 COPY packages/seo-audit packages/seo-audit
 COPY packages/cms-editor packages/cms-editor
@@ -108,6 +110,14 @@ RUN pnpm --filter @sparx/db db:generate
 # installed devDep of site-ui (the filtered install above is not --prod).
 RUN pnpm --filter @sparx/site-ui build
 
+# Stamp the release version into the client bundle. NEXT_PUBLIC_* is inlined at
+# build time, so the JS a browser tab is running carries the version it was built
+# from; the runner stage exposes the same value at runtime for /api/version to
+# compare against (mismatch ⇒ a new release shipped ⇒ "refresh" prompt). Declared
+# right before the build so a version bump never busts the cached dependency /
+# source layers above it.
+ARG APP_VERSION=dev
+ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION
 RUN pnpm --filter @sparx/dashboard build
 
 # ----- Production runner -----
@@ -119,6 +129,12 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# Same release version as the client bundle above, exposed at runtime so the
+# /api/version route can report what this pod is serving. During a rolling deploy
+# an old tab (built from APP_VERSION=A) polls a new pod (serving B) → mismatch.
+ARG APP_VERSION=dev
+ENV APP_VERSION=$APP_VERSION
 
 RUN addgroup --system --gid 1001 nodejs \
  && adduser --system --uid 1001 --ingroup nodejs nextjs

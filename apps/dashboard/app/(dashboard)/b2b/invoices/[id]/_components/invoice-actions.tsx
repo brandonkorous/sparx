@@ -17,6 +17,7 @@ import {
   SelectValue,
   Textarea,
   Stack,
+  toast,
 } from '@sparx/ui';
 import { CheckCircle, XCircle } from 'lucide-react';
 
@@ -51,7 +52,7 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
       });
       if (!res.ok) {
         const err = (await res.json().catch(() => null)) as { message?: string } | null;
-        alert(err?.message ?? 'Failed to mark as paid');
+        toast.error(err?.message ?? 'Failed to mark as paid');
         return;
       }
       setMarkPaidOpen(false);
@@ -71,7 +72,7 @@ export function InvoiceActions({ invoiceId }: InvoiceActionsProps) {
       });
       if (!res.ok) {
         const err = (await res.json().catch(() => null)) as { message?: string } | null;
-        alert(err?.message ?? 'Failed to write off');
+        toast.error(err?.message ?? 'Failed to write off');
         return;
       }
       setWriteOffOpen(false);

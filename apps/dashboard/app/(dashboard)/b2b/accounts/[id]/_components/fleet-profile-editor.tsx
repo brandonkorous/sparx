@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { queryKeys, useQuery } from '@sparx/query';
 import {
   Button,
   Modal,
@@ -18,8 +19,22 @@ import {
   Stack,
   Text,
   Badge,
+  toast,
 } from '@sparx/ui';
 import { Plus, Trash2, Truck } from 'lucide-react';
+
+// Fitment vocabulary endpoints all return { data: T[] }. Empty on any failure so
+// a missing level just shows no options instead of throwing.
+async function fetchFitment<T>(url: string): Promise<T[]> {
+  const res = await fetch(url);
+  if (!res.ok) return [];
+  const json = (await res.json()) as { data?: T[] };
+  return json.data ?? [];
+}
+
+// Vocabulary is stable — a long staleTime makes re-opening the dialog (or
+// re-selecting a level) instant instead of refetching every time.
+const FITMENT_STALE_MS = 5 * 60_000;
 
 interface EngineProfile {
   fitmentCategoryId?: string;
@@ -48,12 +63,6 @@ export function FleetProfileEditor({ accountId, initialProfiles }: FleetProfileE
   const [profiles, setProfiles] = useState<EngineProfile[]>(initialProfiles);
   const [saving, setSaving] = useState(false);
 
-  // Fitment vocabulary cascade state
-  const [domains, setDomains] = useState<(FitmentNode & { rangeUnit?: string })[]>([]);
-  const [categories, setCategories] = useState<FitmentNode[]>([]);
-  const [items, setItems] = useState<FitmentNode[]>([]);
-  const [variants, setVariants] = useState<FitmentNode[]>([]);
-
   // Add-profile form state
   const [addOpen, setAddOpen] = useState(false);
   const [selDomain, setSelDomain] = useState('');
@@ -63,46 +72,35 @@ export function FleetProfileEditor({ accountId, initialProfiles }: FleetProfileE
   const [selYear, setSelYear] = useState('');
   const [selCount, setSelCount] = useState('1');
 
-  useEffect(() => {
-    if (!addOpen) return;
-    fetch('/api/fitment/domains')
-      .then((r) => r.json() as Promise<{ data?: (FitmentNode & { rangeUnit?: string })[] }>)
-      .then((j) => setDomains(j.data ?? []))
-      .catch(() => setDomains([]));
-  }, [addOpen]);
-
-  useEffect(() => {
-    if (!selDomain) {
-      setCategories([]);
-      return;
-    }
-    fetch(`/api/fitment/domains/${selDomain}/categories`)
-      .then((r) => r.json() as Promise<{ data?: FitmentNode[] }>)
-      .then((j) => setCategories(j.data ?? []))
-      .catch(() => setCategories([]));
-  }, [selDomain]);
-
-  useEffect(() => {
-    if (!selCategory) {
-      setItems([]);
-      return;
-    }
-    fetch(`/api/fitment/categories/${selCategory}/items`)
-      .then((r) => r.json() as Promise<{ data?: FitmentNode[] }>)
-      .then((j) => setItems(j.data ?? []))
-      .catch(() => setItems([]));
-  }, [selCategory]);
-
-  useEffect(() => {
-    if (!selItem) {
-      setVariants([]);
-      return;
-    }
-    fetch(`/api/fitment/items/${selItem}/variants`)
-      .then((r) => r.json() as Promise<{ data?: FitmentNode[] }>)
-      .then((j) => setVariants(j.data ?? []))
-      .catch(() => setVariants([]));
-  }, [selItem]);
+  // Fitment vocabulary cascade via @sparx/query. Each level is enabled only once
+  // its parent is chosen and is keyed on that parent, so picking a different
+  // domain swaps to the right categories automatically — and re-opening the
+  // dialog hits cache instead of refetching, which the old useEffect chain did
+  // on every open and every change.
+  const { data: domains = [] } = useQuery({
+    queryKey: queryKeys.fitment.domains(),
+    queryFn: () => fetchFitment<FitmentNode & { rangeUnit?: string }>('/api/fitment/domains'),
+    enabled: addOpen,
+    staleTime: FITMENT_STALE_MS,
+  });
+  const { data: categories = [] } = useQuery({
+    queryKey: queryKeys.fitment.categories(selDomain),
+    queryFn: () => fetchFitment<FitmentNode>(`/api/fitment/domains/${selDomain}/categories`),
+    enabled: addOpen && Boolean(selDomain),
+    staleTime: FITMENT_STALE_MS,
+  });
+  const { data: items = [] } = useQuery({
+    queryKey: queryKeys.fitment.items(selCategory),
+    queryFn: () => fetchFitment<FitmentNode>(`/api/fitment/categories/${selCategory}/items`),
+    enabled: addOpen && Boolean(selCategory),
+    staleTime: FITMENT_STALE_MS,
+  });
+  const { data: variants = [] } = useQuery({
+    queryKey: queryKeys.fitment.variants(selItem),
+    queryFn: () => fetchFitment<FitmentNode>(`/api/fitment/items/${selItem}/variants`),
+    enabled: addOpen && Boolean(selItem),
+    staleTime: FITMENT_STALE_MS,
+  });
 
   function handleAddProfile() {
     const cat = categories.find((c) => c.id === selCategory);
@@ -144,7 +142,7 @@ export function FleetProfileEditor({ accountId, initialProfiles }: FleetProfileE
       });
       if (!res.ok) {
         const err = (await res.json().catch(() => null)) as { message?: string } | null;
-        alert(err?.message ?? 'Failed to save');
+        toast.error(err?.message ?? 'Failed to save');
         return;
       }
       setOpen(false);

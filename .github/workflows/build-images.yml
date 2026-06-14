@@ -98,6 +98,13 @@ jobs:
             VERSION="${GITHUB_REF#refs/tags/}"
             echo "version_tag=$IMAGE:$VERSION" >> $GITHUB_OUTPUT
             echo "latest_tag=$IMAGE:latest" >> $GITHUB_OUTPUT
+            # Human-readable release stamped into the app bundles (APP_VERSION
+            # build-arg). Tag builds get the version, main-branch builds get the
+            # short SHA. Only the Next.js apps consume it; other Dockerfiles
+            # ignore the unused build-arg.
+            echo "app_version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "app_version=${GITHUB_SHA::12}" >> $GITHUB_OUTPUT
           fi
 
       - uses: docker/setup-buildx-action@v3
@@ -111,6 +118,8 @@ jobs:
           file: ${{ steps.dockerfile.outputs.path }}
           push: true
           provenance: false
+          build-args: |
+            APP_VERSION=${{ steps.tags.outputs.app_version }}
           tags: |
             ${{ steps.tags.outputs.sha_tag }}
             ${{ steps.tags.outputs.version_tag }}

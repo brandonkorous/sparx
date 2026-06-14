@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Gauge, Plus } from 'lucide-react';
+import { keepPreviousData, queryKeys, useQuery } from '@sparx/query';
 import {
   CommandEmpty,
   CommandGroup,
@@ -10,6 +11,7 @@ import {
   CommandList,
   CommandPalette as UICommandPalette,
   CommandShortcut,
+  useDebouncedValue,
 } from '@sparx/ui';
 import { findFavoritableById, listFavoritableItems, moduleManifests } from '../_shell/registry';
 import type { FavoriteRow, RecentRow } from '../_shell/service';
@@ -75,8 +77,6 @@ export function CommandPalette({ favorites, recents, enabledModules }: CommandPa
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
-  const [results, setResults] = React.useState<PaletteResults>(EMPTY_RESULTS);
-  const [loading, setLoading] = React.useState(false);
 
   // Let non-keyboard surfaces (the rail/mobile-nav Search affordance) open the
   // palette without re-implementing the ⌘K shortcut.
@@ -86,46 +86,36 @@ export function CommandPalette({ favorites, recents, enabledModules }: CommandPa
     return () => window.removeEventListener('sparx:open-command-palette', handler);
   }, []);
 
-  // Reset transient state when the palette closes so the next open is clean.
+  // Reset the query when the palette closes so the next open is clean. Results
+  // and loading now derive from the query via TanStack Query — nothing else to
+  // reset.
   React.useEffect(() => {
-    if (!open) {
-      setQuery('');
-      setResults(EMPTY_RESULTS);
-      setLoading(false);
-    }
+    if (!open) setQuery('');
   }, [open]);
 
-  // Debounced deep search. A request token guards against out-of-order
-  // responses (a slow early query resolving after a faster later one).
-  React.useEffect(() => {
-    const q = query.trim();
-    if (q.length < MIN_DEEP_QUERY) {
-      setResults(EMPTY_RESULTS);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    let active = true;
-    const handle = setTimeout(() => {
-      void searchEntities(q)
-        .then((r) => {
-          if (active) {
-            setResults(r);
-            setLoading(false);
-          }
-        })
-        .catch(() => {
-          if (active) {
-            setResults(EMPTY_RESULTS);
-            setLoading(false);
-          }
-        });
-    }, DEBOUNCE_MS);
-    return () => {
-      active = false;
-      clearTimeout(handle);
-    };
-  }, [query]);
+  // Debounced deep search via @sparx/query. Keying on the debounced term gives
+  // per-term caching (re-typing a recent query is instant), request dedup, and
+  // out-of-order safety for free — TanStack Query only ever exposes the data for
+  // the current key, so a slow early response can't clobber a faster later one.
+  // `keepPreviousData` holds the prior hits in place while the next term loads,
+  // avoiding a brief empty flash between keystrokes.
+  const trimmedQuery = query.trim();
+  const debouncedQuery = useDebouncedValue(trimmedQuery, DEBOUNCE_MS);
+  const deepEnabled = open && debouncedQuery.length >= MIN_DEEP_QUERY;
+
+  const { data, isFetching } = useQuery({
+    queryKey: queryKeys.search.all(debouncedQuery),
+    queryFn: () => searchEntities(debouncedQuery),
+    enabled: deepEnabled,
+    placeholderData: keepPreviousData,
+    staleTime: 30_000,
+  });
+
+  // Below the deep-search threshold we show nothing from the server: the query
+  // is disabled, but its cache may still hold a previous term's hits, so gate
+  // the displayed results on the threshold explicitly.
+  const results: PaletteResults = deepEnabled ? (data ?? EMPTY_RESULTS) : EMPTY_RESULTS;
+  const loading = deepEnabled && isFetching;
 
   const all = listFavoritableItems();
 

@@ -1,0 +1,50 @@
+{
+  "name": "@sparx/query",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Sparx client data layer — the blessed TanStack Query setup. Server-first stays the default (RSC reads + server-action writes); this package is the standard for client-interactive server state only (polling, debounced search, refetch-on-focus, optimistic mutations). Ships an isomorphic QueryClient factory, a client <QueryProvider>, a server-only SSR-prefetch helper, and the shared query-key factory. See docs/95-client-data-fetching.md.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./provider": {
+      "types": "./src/provider.tsx",
+      "default": "./src/provider.tsx"
+    },
+    "./server": {
+      "types": "./src/server.ts",
+      "default": "./src/server.ts"
+    },
+    "./keys": {
+      "types": "./src/keys.ts",
+      "default": "./src/keys.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.62.0",
+    "@tanstack/react-query-devtools": "^5.62.0",
+    "server-only": "^0.0.1"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}
