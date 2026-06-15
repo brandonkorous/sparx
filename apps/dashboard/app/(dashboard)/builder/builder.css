@@ -2977,3 +2977,97 @@
   align-items: center;
   gap: 8px;
 }
+
+/* ── Phase 4 inspector controls (docs/builder/04) ─────────────────────────── */
+
+/* Color + opacity: the color select takes the room, opacity is a slim trailer. */
+.bx-coloropacity__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  align-items: center;
+}
+.bx-coloropacity__row > :only-child {
+  grid-column: 1 / -1;
+}
+
+/* Per-edge / per-corner quad widget (border width, corner radius). */
+.bx-quad__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bx-quad__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  font-size: 11px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 7px;
+  background: var(--color-bg-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.bx-quad__link[data-on='true'] {
+  color: var(--module-active);
+  border-color: var(--module-active);
+  background: color-mix(in srgb, var(--module-active) 12%, transparent);
+}
+.bx-quad__link svg {
+  width: 12px;
+  height: 12px;
+}
+.bx-quad {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.bx-quad__edge {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.bx-quad__edge > span {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* Custom-CSS conflict warnings (the round-tripping hatch). */
+.bx-conflicts {
+  margin-top: 8px;
+  padding: 9px 10px;
+  border: 1px solid color-mix(in srgb, var(--color-text-danger, #dc2626) 30%, transparent);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--color-text-danger, #dc2626) 7%, transparent);
+}
+.bx-conflicts__head {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-danger, #dc2626);
+}
+.bx-conflicts__list {
+  margin: 0;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--color-text-secondary, var(--color-text-muted));
+}
+.bx-conflicts__fix {
+  margin-top: 8px;
+  padding: 4px 9px;
+  font-size: 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 7px;
+  background: var(--color-bg-surface);
+  color: var(--color-text-default, inherit);
+  cursor: pointer;
+}
+.bx-conflicts__fix:hover {
+  border-color: var(--module-active);
+  color: var(--module-active);
+}
