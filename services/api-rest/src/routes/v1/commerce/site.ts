@@ -150,6 +150,34 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     return ok(await reportingService.inventoryValuation(toCommerceContext(request)));
   });
+
+  // Per-discount redemption economics over a window (defaults to last 90 days).
+  app.get('/v1/commerce/reports/discount-performance', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const q = LimitedRangeQuery.parse(request.query);
+    const hasRange = q.from !== undefined && q.to !== undefined;
+    return ok(
+      await reportingService.discountPerformance(toCommerceContext(request), {
+        ...(hasRange ? { range: resolveRange(q) } : {}),
+        ...(q.limit ? { limit: q.limit } : {}),
+      })
+    );
+  });
+
+  // Orders + revenue split by channel (the derivable half of traffic sources).
+  app.get('/v1/commerce/reports/channel-breakdown', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const q = RangeQuery.parse(request.query);
+    const hasRange = q.from !== undefined && q.to !== undefined;
+    return ok(
+      await reportingService.channelBreakdown(
+        toCommerceContext(request),
+        hasRange ? resolveRange(q) : undefined
+      )
+    );
+  });
 };
 
 export default siteCommerceRoutes;

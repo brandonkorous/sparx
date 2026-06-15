@@ -1,6 +1,6 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 1.7
+**Version:** 1.8
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -79,8 +79,8 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 - ✅ Top customers — `GET /v1/commerce/reports/top-customers` (wired 2026-06-14; replaced the unbacked new-vs-returning donut)
 - ✅ Inventory value — `GET /v1/commerce/reports/inventory-valuation` (wired 2026-06-14; units + stock value on the Inventory card)
 - ✅ Sales **timeseries** — `GET /v1/commerce/reports/revenue-timeseries` (shipped 2026-06-15; **first rollup** — `rollup_commerce_daily_revenue` + nightly reconcile + live-overlay read per docs/97 §5; powers the Revenue chart + Gross/Refunds/Discounts/Net footer)
-- 🔴 Traffic sources / channel breakdown — no endpoint
-- 🔴 Discount performance — no endpoint (only `/discounts` CRUD)
+- ✅ Channel breakdown (orders + revenue by `channel`: storefront/b2b_portal/admin/import/mcp) — `GET /v1/commerce/reports/channel-breakdown` (shipped 2026-06-15). The referrer/UTM "traffic sources" half still needs site-analytics event capture (workload B).
+- ✅ Discount performance (per-discount redemptions / discount given / unique orders) — `GET /v1/commerce/reports/discount-performance` (shipped 2026-06-15)
 
 ### CMS / Content — Teal
 

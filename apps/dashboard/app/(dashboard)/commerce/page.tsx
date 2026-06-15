@@ -261,6 +261,48 @@ const ORDER_TONE: Record<string, string> = {
   neutral: 'neutral',
 };
 
+interface DiscountPerfRow {
+  discountId: string;
+  code: string | null;
+  name: string;
+  type: string;
+  status: string;
+  redemptions: number;
+  discountCents: number;
+  uniqueOrders: number;
+}
+interface DiscountPerformance {
+  rangeLabel: string;
+  totalRedemptions: number;
+  totalDiscountCents: number;
+  activeDiscounts: number;
+  byDiscount: DiscountPerfRow[];
+  currency: string;
+}
+interface ChannelRow {
+  channel: string;
+  orders: number;
+  revenueCents: number;
+  sharePct: number;
+}
+interface ChannelBreakdown {
+  rangeLabel: string;
+  totalOrders: number;
+  totalRevenueCents: number;
+  byChannel: ChannelRow[];
+  currency: string;
+}
+
+// Human labels for the order `channel` enum (storefront | b2b_portal | …).
+const CHANNEL_LABELS: Record<string, string> = {
+  storefront: 'Storefront',
+  b2b_portal: 'B2B portal',
+  admin: 'Admin',
+  import: 'Import',
+  mcp: 'MCP / AI',
+  unknown: 'Other',
+};
+
 export default async function CommercePage() {
   await requireSession();
   const now = new Date();
@@ -269,25 +311,37 @@ export default async function CommercePage() {
   const range = `from=${encodeURIComponent(thirtyDaysAgo.toISOString())}&to=${encodeURIComponent(now.toISOString())}`;
   const range14 = `from=${encodeURIComponent(fourteenDaysAgo.toISOString())}&to=${encodeURIComponent(now.toISOString())}`;
 
-  const [revenue, funnel, subs, abandoned, liveProducts, liveCustomers, valuation, revenueTs] =
-    await Promise.all([
-      api.get<RevenueSummary>(`/v1/commerce/reports/revenue-summary?${range}`).catch(() => null),
-      api
-        .get<ConversionFunnel>(`/v1/commerce/reports/conversion-funnel?${range}`)
-        .catch(() => null),
-      api.get<SubscriptionMetrics>('/v1/commerce/reports/subscription-metrics').catch(() => null),
-      api.get<AbandonedCarts>(`/v1/commerce/reports/abandoned-carts?${range}`).catch(() => null),
-      api
-        .get<TopProductRow[]>(`/v1/commerce/reports/top-products?${range}&limit=5`)
-        .catch(() => null),
-      api
-        .get<TopCustomerRow[]>(`/v1/commerce/reports/top-customers?${range}&limit=5`)
-        .catch(() => null),
-      api.get<InventoryValuation>('/v1/commerce/reports/inventory-valuation').catch(() => null),
-      api
-        .get<RevenueTimeseries>(`/v1/commerce/reports/revenue-timeseries?${range14}&grain=day`)
-        .catch(() => null),
-    ]);
+  const [
+    revenue,
+    funnel,
+    subs,
+    abandoned,
+    liveProducts,
+    liveCustomers,
+    valuation,
+    revenueTs,
+    discountPerf,
+    channels,
+  ] = await Promise.all([
+    api.get<RevenueSummary>(`/v1/commerce/reports/revenue-summary?${range}`).catch(() => null),
+    api.get<ConversionFunnel>(`/v1/commerce/reports/conversion-funnel?${range}`).catch(() => null),
+    api.get<SubscriptionMetrics>('/v1/commerce/reports/subscription-metrics').catch(() => null),
+    api.get<AbandonedCarts>(`/v1/commerce/reports/abandoned-carts?${range}`).catch(() => null),
+    api
+      .get<TopProductRow[]>(`/v1/commerce/reports/top-products?${range}&limit=5`)
+      .catch(() => null),
+    api
+      .get<TopCustomerRow[]>(`/v1/commerce/reports/top-customers?${range}&limit=5`)
+      .catch(() => null),
+    api.get<InventoryValuation>('/v1/commerce/reports/inventory-valuation').catch(() => null),
+    api
+      .get<RevenueTimeseries>(`/v1/commerce/reports/revenue-timeseries?${range14}&grain=day`)
+      .catch(() => null),
+    api
+      .get<DiscountPerformance>('/v1/commerce/reports/discount-performance?limit=4')
+      .catch(() => null),
+    api.get<ChannelBreakdown>(`/v1/commerce/reports/channel-breakdown?${range}`).catch(() => null),
+  ]);
   const currency = revenue?.currency ?? 'USD';
 
   // Top products + top customers — live once the store has sales, else a badged
@@ -687,23 +741,90 @@ export default async function CommercePage() {
               }
               right={fmtMoneyCents(subs?.mrrCents, subs?.currency ?? currency)}
             />
-            <OverviewRow
-              icon={<Tag className="h-4 w-4" />}
-              tone="module"
-              title="SUMMER15 discount"
-              hint="$3,110 in sales · 84 uses"
-              right={
-                <Badge color="success" variant="soft">
-                  Active
-                </Badge>
-              }
-            />
-            <div className="mt-3 flex items-center gap-2">
-              <SampleBadge />
-              <span className="text-xs text-[var(--color-text-tertiary)]">
-                Discount figures illustrative
-              </span>
-            </div>
+            {discountPerf && discountPerf.byDiscount.length > 0 ? (
+              discountPerf.byDiscount.slice(0, 2).map((d) => (
+                <OverviewRow
+                  key={d.discountId}
+                  icon={<Tag className="h-4 w-4" />}
+                  tone="module"
+                  title={d.code ?? d.name}
+                  hint={`${fmtMoneyCents(d.discountCents, currency)} given · ${fmtNumber(d.redemptions)} use${d.redemptions === 1 ? '' : 's'}`}
+                  right={
+                    <Badge color={d.status === 'active' ? 'success' : 'neutral'} variant="soft">
+                      {d.status === 'active' ? 'Active' : d.status}
+                    </Badge>
+                  }
+                />
+              ))
+            ) : (
+              <>
+                <OverviewRow
+                  icon={<Tag className="h-4 w-4" />}
+                  tone="module"
+                  title="SUMMER15 discount"
+                  hint="$3,110 in sales · 84 uses"
+                  right={
+                    <Badge color="success" variant="soft">
+                      Active
+                    </Badge>
+                  }
+                />
+                <div className="mt-3 flex items-center gap-2">
+                  <SampleBadge reason="no-data" />
+                  <span className="text-xs text-[var(--color-text-tertiary)]">
+                    Discount figures illustrative
+                  </span>
+                </div>
+              </>
+            )}
+          </OverviewCard>
+
+          <OverviewCard
+            title="Sales by channel"
+            icon={<TrendingUp className="h-4 w-4" />}
+            description="Where your orders come from · last 30 days"
+            right={
+              channels && channels.byChannel.length > 0 ? undefined : (
+                <SampleBadge reason="no-data" />
+              )
+            }
+          >
+            {channels && channels.byChannel.length > 0 ? (
+              channels.byChannel.map((c) => (
+                <OverviewRow
+                  key={c.channel}
+                  icon={<TrendingUp className="h-4 w-4" />}
+                  tone="module"
+                  title={CHANNEL_LABELS[c.channel] ?? c.channel}
+                  hint={`${fmtNumber(c.orders)} order${c.orders === 1 ? '' : 's'} · ${c.sharePct}%`}
+                  right={fmtMoneyCents(c.revenueCents, currency)}
+                />
+              ))
+            ) : (
+              <>
+                <OverviewRow
+                  icon={<TrendingUp className="h-4 w-4" />}
+                  tone="module"
+                  title="Storefront"
+                  hint="142 orders · 78%"
+                  right="$18,240"
+                />
+                <OverviewRow
+                  icon={<TrendingUp className="h-4 w-4" />}
+                  tone="module"
+                  title="B2B portal"
+                  hint="28 orders · 16%"
+                  right="$3,720"
+                />
+                <OverviewRow
+                  icon={<TrendingUp className="h-4 w-4" />}
+                  tone="module"
+                  title="MCP / AI"
+                  hint="9 orders · 6%"
+                  right="$1,410"
+                />
+              </>
+            )}
           </OverviewCard>
         </Grid>
       </Stack>

@@ -1123,3 +1123,175 @@ export async function reconcileDropshipOrdersRollup(
     };
   });
 }
+
+// ─── Discount performance (live aggregate, docs/97) ──────────────────
+//
+// Per-discount redemption economics over a window: how many times each code was
+// used, how much it gave away, and across how many distinct orders. Reads the
+// `commerce_discount_usages` ledger (one row per redemption, `applied_cents`
+// already in cents) joined to the discount for its code/name/type. A live
+// aggregate — redemption volume is modest and the read is bounded by tenant
+// (RLS) + a date range. Powers the Commerce overview's discount surface.
+
+const DISCOUNT_DEFAULT_DAYS = 90;
+const CHANNEL_DEFAULT_DAYS = 30;
+
+export interface DiscountPerfRow {
+  discountId: string;
+  code: string | null;
+  name: string;
+  type: string;
+  status: string;
+  redemptions: number;
+  discountCents: number;
+  uniqueOrders: number;
+}
+
+export interface DiscountPerformance {
+  rangeLabel: string;
+  totalRedemptions: number;
+  totalDiscountCents: number;
+  activeDiscounts: number;
+  byDiscount: DiscountPerfRow[];
+  currency: string;
+}
+
+interface RawDiscountRow {
+  discount_id: string;
+  redemptions: number;
+  discount_cents: unknown;
+  unique_orders: number;
+}
+
+export async function discountPerformance(
+  ctx: ServiceContext,
+  input?: { range?: DateRange; limit?: number }
+): Promise<DiscountPerformance> {
+  const limit = Math.min(Math.max(input?.limit ?? 8, 1), 50);
+  const to = input?.range ? new Date(input.range.to) : new Date();
+  const from = input?.range
+    ? new Date(input.range.from)
+    : new Date(Date.now() - DISCOUNT_DEFAULT_DAYS * 86_400_000);
+  const label = input?.range ? rangeLabel(input.range) : `Last ${DISCOUNT_DEFAULT_DAYS} days`;
+
+  return withTenant(ctx, async (tx) => {
+    const [rows, totals, activeDiscounts] = await Promise.all([
+      tx.$queryRaw<RawDiscountRow[]>`
+        SELECT
+          discount_id,
+          COUNT(*)::int                          AS redemptions,
+          COALESCE(SUM(applied_cents), 0)::bigint AS discount_cents,
+          COUNT(DISTINCT order_id)::int          AS unique_orders
+        FROM commerce_discount_usages
+        WHERE redeemed_at >= ${from} AND redeemed_at <= ${to}
+        GROUP BY discount_id
+        ORDER BY discount_cents DESC
+        LIMIT ${limit}
+      `,
+      tx.discountUsage.aggregate({
+        where: { redeemedAt: { gte: from, lte: to } },
+        _count: { _all: true },
+        _sum: { appliedCents: true },
+      }),
+      tx.discount.count({ where: { status: 'active', deletedAt: null } }),
+    ]);
+
+    const discounts =
+      rows.length > 0
+        ? await tx.discount.findMany({
+            where: { id: { in: rows.map((r) => r.discount_id) } },
+            select: { id: true, code: true, name: true, type: true, status: true },
+          })
+        : [];
+    const byId = new Map(discounts.map((d) => [d.id, d]));
+
+    const byDiscount: DiscountPerfRow[] = rows.map((r) => {
+      const d = byId.get(r.discount_id);
+      return {
+        discountId: r.discount_id,
+        code: d?.code ?? null,
+        name: d?.name ?? '—',
+        type: d?.type ?? 'unknown',
+        status: d?.status ?? 'unknown',
+        redemptions: Number(r.redemptions ?? 0),
+        discountCents: Number(r.discount_cents ?? 0),
+        uniqueOrders: Number(r.unique_orders ?? 0),
+      };
+    });
+
+    return {
+      rangeLabel: label,
+      totalRedemptions: totals._count._all,
+      totalDiscountCents: totals._sum.appliedCents ?? 0,
+      activeDiscounts,
+      byDiscount,
+      currency: DEFAULT_CURRENCY,
+    };
+  });
+}
+
+// ─── Channel breakdown (live aggregate, docs/97) ─────────────────────
+//
+// Orders + revenue split by the order's `channel` (storefront | b2b_portal |
+// admin | import | mcp). This is the derivable half of "traffic sources" — the
+// referrer/UTM half needs site-analytics event capture (workload B). Buckets
+// non-cancelled orders by `placed_at` over the window. Live aggregate.
+
+export interface ChannelRow {
+  channel: string;
+  orders: number;
+  revenueCents: number;
+  sharePct: number;
+}
+
+export interface ChannelBreakdown {
+  rangeLabel: string;
+  totalOrders: number;
+  totalRevenueCents: number;
+  byChannel: ChannelRow[];
+  currency: string;
+}
+
+export async function channelBreakdown(
+  ctx: ServiceContext,
+  range?: DateRange
+): Promise<ChannelBreakdown> {
+  const to = range ? new Date(range.to) : new Date();
+  const from = range
+    ? new Date(range.from)
+    : new Date(Date.now() - CHANNEL_DEFAULT_DAYS * 86_400_000);
+  const label = range ? rangeLabel(range) : `Last ${CHANNEL_DEFAULT_DAYS} days`;
+
+  return withTenant(ctx, async (tx) => {
+    const groups = await tx.order.groupBy({
+      by: ['channel'],
+      where: { placedAt: { gte: from, lte: to }, status: { not: 'cancelled' } },
+      _count: { _all: true },
+      _sum: { total: true },
+    });
+
+    const rows = groups.map((g) => ({
+      channel: g.channel ?? 'unknown',
+      orders: g._count._all,
+      revenueCents: decimalToCents(g._sum.total),
+    }));
+    const totalRevenueCents = rows.reduce((s, r) => s + r.revenueCents, 0);
+    const totalOrders = rows.reduce((s, r) => s + r.orders, 0);
+
+    const byChannel: ChannelRow[] = rows
+      .map((r) => ({
+        ...r,
+        sharePct:
+          totalRevenueCents > 0 ? +((r.revenueCents / totalRevenueCents) * 100).toFixed(1) : 0,
+      }))
+      .sort((a, b) => b.revenueCents - a.revenueCents);
+
+    return {
+      rangeLabel: label,
+      totalOrders,
+      totalRevenueCents,
+      byChannel,
+      currency: DEFAULT_CURRENCY,
+    };
+  });
+}
