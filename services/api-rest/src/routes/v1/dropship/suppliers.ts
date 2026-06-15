@@ -655,10 +655,7 @@ function runPublishReconcile(
   tenantId: string,
   userId: string | null
 ): Promise<ReconcileSummary> {
-  const adapter = createAdapter(
-    supplier.type as SupplierType,
-    supplier.credentials as Record<string, string>
-  );
+  const adapter = createAdapter(supplier.type, supplier.credentials as Record<string, string>);
   return reconcileSupplierPublishes(
     adapter,
     {
