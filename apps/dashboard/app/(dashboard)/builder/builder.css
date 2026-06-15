@@ -3125,6 +3125,114 @@
   outline-offset: -2px;
   background: color-mix(in srgb, var(--module-active) 8%, transparent);
 }
+/* Smart alignment rails (docs/builder/05 §2.4) — a distinct hue from the accent
+   insertion line so the two reads (where it drops vs what it lines up with) don't
+   blur into one. */
+.bx-dragguide__align {
+  position: fixed;
+  background: #ec4899;
+  box-shadow: 0 0 0 0.5px rgba(255, 255, 255, 0.45);
+}
+.bx-dragguide__align--v {
+  width: 1px;
+  margin-left: -0.5px;
+}
+.bx-dragguide__align--h {
+  height: 1px;
+  margin-top: -0.5px;
+}
+
+/* Canvas stage (docs/builder/05 §2.4 / eval Finding 7) — wraps the scroll + the
+   zoom control so the control pins to a corner regardless of the host layout. Takes
+   the scroll's place as the flex child of the editor's canvas column. */
+.bx-canvas-stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+}
+/* Zoom-to-fit: the framed preview is scaled by a transform so a fixed-width device
+   always fits the stage. The sizer reserves the SCALED box (the transform alone
+   wouldn't shrink the layout box) so centering + scrollbars stay correct. */
+.bx-zoomsizer {
+  flex: none;
+  margin: 0 auto;
+}
+.bx-zoomcontent {
+  /* width + transform are set inline (they depend on the live scale). */
+  will-change: transform;
+}
+
+/* Canvas zoom control — a compact glass chip pinned bottom-right, mirroring the
+   device switcher's button style (transparent → surface on the active Fit). */
+.bx-zoomctl {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--color-bg-surface) 90%, transparent);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+.bx-zoomctl__btn {
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.bx-zoomctl__btn:hover:not(:disabled) {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-default);
+}
+.bx-zoomctl__btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.bx-zoomctl__btn svg {
+  width: 15px;
+  height: 15px;
+}
+.bx-zoomctl__pct {
+  min-width: 40px;
+  text-align: center;
+  font: 500 12px var(--bx-mono);
+  color: var(--color-text-default);
+  font-variant-numeric: tabular-nums;
+}
+.bx-zoomctl__fit {
+  height: 26px;
+  margin-left: 2px;
+  padding: 0 9px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font: 500 12px var(--bx-sans);
+  cursor: pointer;
+}
+.bx-zoomctl__fit:hover {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-default);
+}
+.bx-zoomctl__fit[data-on='true'] {
+  background: var(--color-bg-surface);
+  color: var(--module-active);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
 
 /* Layers row in a multi-selection — quieter than the primary `--on` row, with a
    left accent bar so the set reads as a group. */

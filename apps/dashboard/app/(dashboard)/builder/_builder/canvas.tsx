@@ -13,6 +13,7 @@
 
 import * as React from 'react';
 import { createPortal } from 'react-dom';
+import { Minus, Plus } from 'lucide-react';
 import { cn } from '@sparx/ui';
 import {
   MAX_COMPONENT_NESTING,
@@ -748,6 +749,7 @@ function initialOf(name: string): string {
 // touch reorders through the Layers panel, so a finger-scroll never grabs a block.
 
 const DRAG_THRESHOLD = 6; // px of travel before a press becomes a drag (vs a click)
+const ALIGN_SNAP = 3; // px tolerance for treating two edges/centers as aligned
 
 interface DropTarget {
   kind: 'into' | 'before' | 'after';
@@ -756,20 +758,68 @@ interface DropTarget {
   targetId: string;
 }
 
+// A smart alignment rail (docs/builder/05 §2.4): a coordinate where the drop
+// container's children share an edge or center (or sit flush to the container), so
+// the author sees the alignment their block will join WITHIN the flow. These are
+// OBSERVED alignments, not free positioning — honest to the class-driven layout
+// (§5 "keep guides honest"), so they never imply a pixel-pusher canvas.
+interface AlignGuide {
+  axis: 'v' | 'h';
+  /** Viewport coord of the rail: x for a vertical rail, y for a horizontal one. */
+  pos: number;
+  /** The rail's extent (top→bottom for vertical, left→right for horizontal). */
+  start: number;
+  end: number;
+}
+
 interface DragGuide {
   /** The insertion line, in viewport coords (the overlay is position:fixed). */
   line: { left: number; top: number; width: number };
   /** The highlighted container box (only for an `into` drop). */
   box?: { left: number; top: number; width: number; height: number };
+  /** Smart alignment rails for the drop, drawn alongside the insertion line. */
+  aligns?: AlignGuide[];
 }
 
 /** The geometry box of a node's rendered element: the `.bx-inner` for an ordinary
  *  node (its wrapper is display:contents), or the element itself for a component
  *  placement. */
+/** The element whose box represents a node: the `.bx-inner` for an ordinary node
+ *  (its `.bx-node` wrapper is display:contents), or the element itself for a
+ *  component placement. */
+function innerElOf(wrapper: Element): Element {
+  if (wrapper.classList.contains('bx-node--custom')) return wrapper;
+  return wrapper.querySelector(':scope > .bx-inner') ?? wrapper;
+}
+
 function innerBoxOf(wrapper: Element): DOMRect | null {
-  if (wrapper.classList.contains('bx-node--custom')) return wrapper.getBoundingClientRect();
-  const inner = wrapper.querySelector(':scope > .bx-inner');
-  return (inner ?? wrapper).getBoundingClientRect();
+  return innerElOf(wrapper).getBoundingClientRect();
+}
+
+/** A node's CONTENT box (inside its border + padding), in viewport coords — the
+ *  region its children actually lay out in, so alignment rails line up with a
+ *  padded container's flush children, not its outer edge. Scale-aware: the element
+ *  may sit inside the zoom transform, so the padding/border insets (read in
+ *  unscaled CSS px) are mapped through the applied scale, derived from the ratio of
+ *  the visual rect to the unscaled layout (offset) size. */
+function contentRectOf(el: Element): DOMRect {
+  const r = el.getBoundingClientRect();
+  const cs = getComputedStyle(el);
+  const num = (v: string) => parseFloat(v) || 0;
+  const ow = (el as HTMLElement).offsetWidth || r.width;
+  const oh = (el as HTMLElement).offsetHeight || r.height;
+  const kx = ow ? r.width / ow : 1;
+  const ky = oh ? r.height / oh : 1;
+  const left = (num(cs.borderLeftWidth) + num(cs.paddingLeft)) * kx;
+  const right = (num(cs.borderRightWidth) + num(cs.paddingRight)) * kx;
+  const top = (num(cs.borderTopWidth) + num(cs.paddingTop)) * ky;
+  const bottom = (num(cs.borderBottomWidth) + num(cs.paddingBottom)) * ky;
+  return new DOMRect(
+    r.left + left,
+    r.top + top,
+    Math.max(0, r.width - left - right),
+    Math.max(0, r.height - top - bottom)
+  );
 }
 
 function nodeBoxById(rootEl: Element, id: string): DOMRect | null {
@@ -875,6 +925,91 @@ function useCanvasDrag(
     };
   };
 
+  // Smart alignment rails for a drop (docs/builder/05 §2.4): coordinates where the
+  // drop container's children share an edge/center (or align to the container's
+  // content box). Drawn alongside the insertion line so the author sees the
+  // alignment their block joins — meaningful within the flow, never positional.
+  const alignGuidesFor = (drop: DropTarget, dragId: string): AlignGuide[] => {
+    const rootEl = scrollRef.current;
+    if (!rootEl) return [];
+    const containerId = drop.kind === 'into' ? drop.targetId : drop.parentId;
+    const dragRoot = rootOf(dragId);
+    if (!dragRoot) return [];
+    const container = findNode(dragRoot, containerId);
+    if (!container) return [];
+    const wrap = rootEl.querySelector(`[data-node-id="${CSS.escape(containerId)}"]`);
+    if (!wrap) return [];
+    const cbox = innerBoxOf(wrap);
+    if (!cbox) return [];
+    const content = contentRectOf(innerElOf(wrap));
+    // Sibling boxes in the drop container, excluding the dragged node itself.
+    const boxes = (container.children ?? [])
+      .filter((c) => c.id !== dragId)
+      .map((c) => nodeBoxById(rootEl, c.id))
+      .filter((b): b is DOMRect => b !== null);
+    if (boxes.length === 0) return [];
+
+    // Flow axis from how the children spread: a vertical stack spreads along Y (so
+    // its children share VERTICAL rails on X); a row spreads along X (HORIZONTAL
+    // rails on Y).
+    const spread = (vals: number[]) => Math.max(...vals) - Math.min(...vals);
+    const stacked =
+      spread(boxes.map((b) => b.top + b.height / 2)) >=
+      spread(boxes.map((b) => b.left + b.width / 2));
+
+    // Candidate coords on the cross axis: each sibling's start/center/end plus the
+    // container's content edges + center. A cluster with >= 2 members, at least one
+    // a sibling, is a real alignment rail.
+    const members: { coord: number; sibling: boolean }[] = [];
+    const add = (coord: number, sibling: boolean) => members.push({ coord, sibling });
+    if (stacked) {
+      add(content.left, false);
+      add(content.left + content.width / 2, false);
+      add(content.right, false);
+      for (const b of boxes) {
+        add(b.left, true);
+        add(b.left + b.width / 2, true);
+        add(b.right, true);
+      }
+    } else {
+      add(content.top, false);
+      add(content.top + content.height / 2, false);
+      add(content.bottom, false);
+      for (const b of boxes) {
+        add(b.top, true);
+        add(b.top + b.height / 2, true);
+        add(b.bottom, true);
+      }
+    }
+    members.sort((a, b) => a.coord - b.coord);
+
+    const guides: AlignGuide[] = [];
+    let i = 0;
+    while (i < members.length) {
+      let j = i + 1;
+      let sum = members[i]!.coord;
+      let hasSibling = members[i]!.sibling;
+      let count = 1;
+      while (j < members.length && members[j]!.coord - members[i]!.coord <= ALIGN_SNAP) {
+        sum += members[j]!.coord;
+        hasSibling = hasSibling || members[j]!.sibling;
+        count += 1;
+        j += 1;
+      }
+      if (count >= 2 && hasSibling) {
+        const pos = sum / count;
+        guides.push(
+          stacked
+            ? { axis: 'v', pos, start: cbox.top, end: cbox.bottom }
+            : { axis: 'h', pos, start: cbox.left, end: cbox.right }
+        );
+      }
+      i = j;
+    }
+    // Cap to keep the overlay legible on a busy container.
+    return guides.slice(0, 6);
+  };
+
   const reset = () => {
     candidate.current = null;
     draggingRef.current = false;
@@ -918,7 +1053,12 @@ function useCanvasDrag(
     }
     const drop = computeDrop(e.clientX, e.clientY, cand.id);
     dropRef.current = drop;
-    setGuide(drop ? guideFor(drop) : null);
+    if (!drop) {
+      setGuide(null);
+      return;
+    }
+    const base = guideFor(drop);
+    setGuide(base ? { ...base, aligns: alignGuidesFor(drop, cand.id) } : null);
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
@@ -955,6 +1095,21 @@ function useCanvasDrag(
 function DragGuides({ guide }: { guide: DragGuide }) {
   return (
     <div className="bx-dragguide" aria-hidden>
+      {guide.aligns?.map((a) =>
+        a.axis === 'v' ? (
+          <div
+            key={`v${Math.round(a.pos)}-${Math.round(a.start)}`}
+            className="bx-dragguide__align bx-dragguide__align--v"
+            style={{ left: a.pos, top: a.start, height: a.end - a.start }}
+          />
+        ) : (
+          <div
+            key={`h${Math.round(a.pos)}-${Math.round(a.start)}`}
+            className="bx-dragguide__align bx-dragguide__align--h"
+            style={{ top: a.pos, left: a.start, width: a.end - a.start }}
+          />
+        )
+      )}
       {guide.box ? (
         <div
           className="bx-dragguide__box"
@@ -970,6 +1125,57 @@ function DragGuides({ guide }: { guide: DragGuide }) {
         className="bx-dragguide__line"
         style={{ left: guide.line.left, top: guide.line.top, width: guide.line.width }}
       />
+    </div>
+  );
+}
+
+/** The canvas zoom control (docs/builder/05 §2.4 / eval Finding 7): a compact corner
+ *  chip — zoom out · current scale · zoom in, plus a Fit toggle that returns to auto
+ *  fit-to-width. Pinned to the stage so a device frame that's wider than the stage
+ *  is scaled to fit instead of clipped. */
+function ZoomControl({
+  scale,
+  fit,
+  onFit,
+  onZoom,
+}: {
+  scale: number;
+  fit: boolean;
+  onFit: () => void;
+  onZoom: (next: number) => void;
+}) {
+  return (
+    <div className="bx-zoomctl" role="group" aria-label="Canvas zoom">
+      <button
+        type="button"
+        className="bx-zoomctl__btn"
+        aria-label="Zoom out"
+        disabled={scale <= 0.25}
+        onClick={() => onZoom(scale - 0.1)}
+      >
+        <Minus aria-hidden />
+      </button>
+      <span className="bx-zoomctl__pct" aria-live="polite">
+        {Math.round(scale * 100)}%
+      </span>
+      <button
+        type="button"
+        className="bx-zoomctl__btn"
+        aria-label="Zoom in"
+        disabled={scale >= 2}
+        onClick={() => onZoom(scale + 0.1)}
+      >
+        <Plus aria-hidden />
+      </button>
+      <button
+        type="button"
+        className="bx-zoomctl__fit"
+        data-on={fit}
+        aria-pressed={fit}
+        onClick={onFit}
+      >
+        Fit
+      </button>
     </div>
   );
 }
@@ -991,6 +1197,33 @@ export function Canvas({
 }: CanvasProps) {
   const width = DEVICE_WIDTH[device];
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const frameRef = React.useRef<HTMLDivElement>(null);
+
+  // Zoom-to-fit (docs/builder/05 §2.4 / eval Finding 7). The stage scales the framed
+  // preview so it always fits: a fixed-width device (390 / 834) on a narrow stage
+  // shows its TRUE width scaled down — the container query still reads the real
+  // device width, since a CSS transform doesn't change the layout box — instead of
+  // being clipped. `'fit'` auto-scales to the stage; a number is a manual zoom.
+  const [zoom, setZoom] = React.useState<'fit' | number>('fit');
+  const [avail, setAvail] = React.useState({ w: 0, h: 0 });
+  const [contentH, setContentH] = React.useState(0);
+
+  // Measure the stage's available content box (minus padding); recompute on any
+  // resize — window, or either editor rail dragging — via ResizeObserver.
+  React.useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const measure = () => {
+      const cs = getComputedStyle(el);
+      const px = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      const py = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+      setAvail({ w: Math.max(0, el.clientWidth - px), h: Math.max(0, el.clientHeight - py) });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // The secondary-selection set (every selected id except the primary), provided to
   // each node via context so multi-selected blocks paint the lighter chrome.
@@ -1063,6 +1296,34 @@ export function Canvas({
           ? 'browser'
           : 'bezel'
         : 'plain';
+
+  // The framed preview's natural (unscaled) width. A device bezel has a FIXED
+  // device width + its bezel chrome; the fluid frames (browser / email / plain)
+  // fill the stage, so their natural width is the available width (fit ⇒ scale 1,
+  // and they already reflow via the container query). `scale` is the fit ratio in
+  // 'fit' mode, else the manual zoom; only when it's ≠ 1 do we wrap in a transform,
+  // so the default desktop path renders exactly as before.
+  const BEZEL_CHROME = 24; // .bx-bezel padding (12px each side)
+  const naturalW = frameKind === 'bezel' && width ? width + BEZEL_CHROME : avail.w || 1;
+  const fitScale = avail.w > 0 ? Math.min(1, avail.w / naturalW) : 1;
+  const scale = zoom === 'fit' ? fitScale : zoom;
+  const scaled = scale !== 1;
+
+  // Measure the framed content's natural (pre-transform) height so the sizer
+  // reserves the right SCALED space — only while actually scaling.
+  React.useEffect(() => {
+    if (!scaled) {
+      setContentH(0);
+      return;
+    }
+    const el = frameRef.current;
+    if (!el) return;
+    const measure = () => setContentH(el.offsetHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [scaled, frameKind, device]);
 
   // The themed canvas element — the tenant-brand scope + container-query host.
   // Plain keeps its device width inline; framed variants are sized by the frame.
@@ -1188,38 +1449,67 @@ export function Canvas({
     );
   }
 
+  // Apply the zoom transform only when scaling — the unscaled path renders the frame
+  // exactly as before (zero layout change for the common desktop view). The sizer
+  // reserves the SCALED footprint so centering + scrollbars stay correct (a bare
+  // transform wouldn't shrink the layout box).
+  const zoomed = scaled ? (
+    <div
+      className="bx-zoomsizer"
+      style={{ width: naturalW * scale, height: contentH ? contentH * scale : undefined }}
+    >
+      <div
+        ref={frameRef}
+        className="bx-zoomcontent"
+        style={{ width: naturalW, transform: `scale(${scale})`, transformOrigin: 'top left' }}
+      >
+        {framed}
+      </div>
+    </div>
+  ) : (
+    framed
+  );
+
   return (
     // Marks the whole canvas as the editor surface, so the shared islands suppress
     // ambient effects a click-shield can't stop (the carousel autoplay timer).
     <EditModeProvider>
-      <EmailSampleContext.Provider value={emailSample}>
-        <EmailBrandContext.Provider value={emailBrand}>
-          <VersionResolverContext.Provider value={resolveVersion ?? null}>
-            <MultiSelectContext.Provider value={multiSet}>
-              <div
-                className="bx-canvas-scroll"
-                data-frame={frameKind}
-                data-dragging={drag.dragging ? '' : undefined}
-                ref={scrollRef}
-                role="button"
-                tabIndex={-1}
-                aria-label="Clear selection"
-                onClick={() => onSelect(null)}
-                onClickCapture={drag.onClickCapture}
-                onPointerDown={drag.onPointerDown}
-                onPointerMove={drag.onPointerMove}
-                onPointerUp={drag.onPointerUp}
-                onPointerCancel={drag.onPointerUp}
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') onSelect(null);
-                }}
-              >
-                {framed}
-              </div>
-            </MultiSelectContext.Provider>
-          </VersionResolverContext.Provider>
-        </EmailBrandContext.Provider>
-      </EmailSampleContext.Provider>
+      <div className="bx-canvas-stage">
+        <EmailSampleContext.Provider value={emailSample}>
+          <EmailBrandContext.Provider value={emailBrand}>
+            <VersionResolverContext.Provider value={resolveVersion ?? null}>
+              <MultiSelectContext.Provider value={multiSet}>
+                <div
+                  className="bx-canvas-scroll"
+                  data-frame={frameKind}
+                  data-dragging={drag.dragging ? '' : undefined}
+                  ref={scrollRef}
+                  role="button"
+                  tabIndex={-1}
+                  aria-label="Clear selection"
+                  onClick={() => onSelect(null)}
+                  onClickCapture={drag.onClickCapture}
+                  onPointerDown={drag.onPointerDown}
+                  onPointerMove={drag.onPointerMove}
+                  onPointerUp={drag.onPointerUp}
+                  onPointerCancel={drag.onPointerUp}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') onSelect(null);
+                  }}
+                >
+                  {zoomed}
+                </div>
+              </MultiSelectContext.Provider>
+            </VersionResolverContext.Provider>
+          </EmailBrandContext.Provider>
+        </EmailSampleContext.Provider>
+        <ZoomControl
+          scale={scale}
+          fit={zoom === 'fit'}
+          onFit={() => setZoom('fit')}
+          onZoom={(next) => setZoom(Math.min(2, Math.max(0.25, Math.round(next * 100) / 100)))}
+        />
+      </div>
       {/* The drag guides are portaled to <body> so position:fixed coords are
           immune to any transformed frame ancestor (bezel scale, etc.). */}
       {drag.guide ? createPortal(<DragGuides guide={drag.guide} />, document.body) : null}
