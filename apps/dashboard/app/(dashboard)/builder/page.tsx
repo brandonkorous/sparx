@@ -440,6 +440,7 @@ export default async function BuilderOverviewPage() {
         .filter((a) => a.score < SEO_OK)
         .slice(0, 4)
         .map((a) => ({
+          id: a.id,
           title: a.fixFirst ?? `Improve “${a.title ?? a.path ?? 'a page'}”`,
           hint: `${a.title ?? a.path ?? 'Page'} · scores ${a.score}/100`,
         }))
@@ -698,7 +699,7 @@ export default async function BuilderOverviewPage() {
               ) : (
                 seoAttention.map((a) => (
                   <OverviewRow
-                    key={a.hint}
+                    key={a.id}
                     icon={<Search className="h-4 w-4" />}
                     tone="warning"
                     title={a.title}
