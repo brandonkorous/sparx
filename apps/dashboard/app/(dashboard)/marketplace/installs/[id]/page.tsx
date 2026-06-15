@@ -70,7 +70,7 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
   const groups: ReviewGroup[] = [
     {
       title: 'Pages',
-      items: a.pages.map((p) => ({ label: p.name, href: `/builder/page?page=${p.id}` })),
+      items: a.pages.map((p) => ({ label: p.name, href: `/builder/studio?page=${p.id}` })),
     },
     {
       title: 'Products',
@@ -104,11 +104,11 @@ export default async function InstallReviewPage({ params }: { params: Promise<{ 
     },
     {
       title: 'Theme',
-      items: a.theme ? [{ label: a.theme.name, href: '/builder/brand' }] : [],
+      items: a.theme ? [{ label: a.theme.name, href: '/builder/studio?zone=theme' }] : [],
     },
     {
       title: 'Layout',
-      items: a.layoutId ? [{ label: 'Site layout', href: '/builder/site' }] : [],
+      items: a.layoutId ? [{ label: 'Site layout', href: '/builder/studio?zone=layout' }] : [],
     },
   ].filter((g) => g.items.length > 0);
 

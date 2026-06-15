@@ -21,7 +21,7 @@ import type { OnboardingModule } from '../_lib/modules';
 import type { PendingDomain, WizardBlueprint } from '../_lib/types';
 
 const SITE_ZONE = 'sparx.zone';
-const BUILDER_HREF = '/builder/page';
+const BUILDER_HREF = '/builder/studio';
 
 function usd(n: number): string {
   return n.toLocaleString('en-US');

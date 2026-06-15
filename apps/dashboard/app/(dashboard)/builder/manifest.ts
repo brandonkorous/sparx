@@ -8,7 +8,7 @@
 // migration completes, at which point the `storefront` id retires.
 
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Boxes, Component, File, Fingerprint, Globe, LayoutTemplate, Mail } from 'lucide-react';
+import { Boxes, Component, LayoutTemplate, Mail, Pencil } from 'lucide-react';
 
 export const builderManifest: ModuleManifest = {
   id: 'builder',
@@ -26,13 +26,11 @@ export const builderManifest: ModuleManifest = {
     // /builder/blueprints links out to it. Placed under the auto-injected Overview,
     // above Brand. Its href is inside `routePrefix`, so it claims the active panel.
     { id: 'blueprints', label: 'Blueprints', icon: LayoutTemplate, href: '/builder/blueprints' },
-    // Brand — the tenant identity (color/type/rounding) the canvas renders in.
-    // The current /sitebuilder/brand surface migrates here.
-    { id: 'brand', label: 'Brand', icon: Fingerprint, href: '/builder/brand' },
-    // Site — the whole tree: layouts, zones (header/footer/sidebar), navigation.
-    { id: 'site', label: 'Site', icon: Globe, href: '/builder/site' },
-    // Page — the page-template editor (the backbone built first).
-    { id: 'page', label: 'Page', icon: File, href: '/builder/page' },
+    // Editor — the unified studio (docs/builder/03): brand theme › site layout ›
+    // the active page, all on one live canvas. The Phase-7 cutover (docs/builder/07)
+    // retired the three split editors — /builder/brand|site|page now redirect to a
+    // zone of this one editor — so the sub-nav carries a single Editor entry.
+    { id: 'editor', label: 'Editor', icon: Pencil, href: '/builder/studio' },
     // Email — the Email Builder: one self-contained email per document (docs/52).
     { id: 'email', label: 'Email', icon: Mail, href: '/builder/email' },
     // Components — the catalog of building blocks (Tier-1 primitives + Tier-2

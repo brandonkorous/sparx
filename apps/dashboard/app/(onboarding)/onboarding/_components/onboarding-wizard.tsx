@@ -306,7 +306,7 @@ export function OnboardingWizard({ initial }: { initial: WizardInitialState }) {
           } else {
             res = await finishOnboardingAction();
             if (res.ok) {
-              router.push('/builder/page');
+              router.push('/builder/studio');
               return;
             }
           }

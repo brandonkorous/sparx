@@ -39,7 +39,9 @@ import {
   Mail,
   Maximize2,
   Palette,
+  Pencil,
   Plus,
+  Rocket,
   Search,
   Sparkles,
   SlidersHorizontal,
@@ -3097,12 +3099,156 @@ function PageSeoPanel({
   );
 }
 
-export function LayoutSettings({ name }: { name: string }) {
+/** A layout in the catalog, reduced to what the settings panel needs. */
+export interface LayoutSettingsItem {
+  id: string;
+  name: string;
+  isActive: boolean;
+  published: boolean;
+}
+
+// The Site-layout zone's settings home (docs/builder/07 §1) — the layout CATALOG
+// the unified studio folds in from the retired /builder/site editor: switch the
+// edited layout, create / rename / delete one, and make a published layout live.
+// Mirrors the page catalog's capabilities (which live in the toolbar), kept here
+// because a tenant switches layouts far less often than pages. Import/export rides
+// the toolbar (zone-aware), alongside the page's.
+export function LayoutSettings({
+  name,
+  layouts,
+  editingId,
+  busy = false,
+  onSelect,
+  onNew,
+  onRename,
+  onDelete,
+  onActivate,
+}: {
+  name: string;
+  layouts: LayoutSettingsItem[];
+  editingId: string;
+  busy?: boolean;
+  onSelect: (id: string) => void;
+  onNew: () => void;
+  onRename: (name: string) => void;
+  onDelete: () => void;
+  onActivate: () => void;
+}) {
+  const editing = layouts.find((l) => l.id === editingId);
+  // Inline rename: the switcher swaps to a text input. Enter/blur commits, Esc
+  // cancels — self-contained here so the toolbar (page-centric) stays untouched.
+  const [renaming, setRenaming] = React.useState(false);
+  const [draft, setDraft] = React.useState(name);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  React.useEffect(() => setDraft(name), [name]);
+  React.useEffect(() => {
+    if (renaming) inputRef.current?.select();
+  }, [renaming]);
+
+  const commitRename = () => {
+    setRenaming(false);
+    const next = draft.trim();
+    if (next && next !== name) onRename(next);
+  };
+
   return (
     <div className="bx-inspector">
       <PanelHead icon={LayoutGrid} title={name} subtitle="The chrome that wraps every page" />
       <div className="bx-ins-stack">
-        <Card icon={LayoutGrid} title="Site layout">
+        <Card
+          icon={LayoutGrid}
+          title="Layouts"
+          caption="Switch which layout you’re editing, or manage the catalog. Exactly one layout is live at a time — the chrome every published page renders inside."
+        >
+          <Field label="Editing">
+            {renaming ? (
+              <Input
+                ref={inputRef}
+                size="sm"
+                value={draft}
+                aria-label="Layout name"
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.currentTarget.blur();
+                  else if (e.key === 'Escape') {
+                    setDraft(name);
+                    setRenaming(false);
+                  }
+                }}
+                onBlur={commitRename}
+              />
+            ) : (
+              <NativeSelect
+                size="sm"
+                value={editingId}
+                aria-label="Layout being edited"
+                onChange={(e) => onSelect(e.target.value)}
+              >
+                {layouts.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                    {l.isActive ? ' · Live' : ''}
+                  </option>
+                ))}
+              </NativeSelect>
+            )}
+          </Field>
+          <div className="bx-ins-bulk">
+            <button
+              type="button"
+              className="bx-ins-bulk__btn"
+              disabled={busy || renaming}
+              onClick={() => setRenaming(true)}
+            >
+              <Pencil className="h-3.5 w-3.5" aria-hidden /> Rename
+            </button>
+            <button
+              type="button"
+              className="bx-ins-bulk__btn"
+              disabled={busy || renaming}
+              onClick={onNew}
+            >
+              <Plus className="h-3.5 w-3.5" aria-hidden /> New
+            </button>
+            <button
+              type="button"
+              className="bx-ins-bulk__btn bx-ins-bulk__btn--danger"
+              disabled={busy || renaming || layouts.length <= 1 || editing?.isActive}
+              title={
+                editing?.isActive
+                  ? 'The live layout can’t be deleted — make another layout live first'
+                  : layouts.length <= 1
+                    ? 'Keep at least one layout'
+                    : undefined
+              }
+              onClick={onDelete}
+            >
+              <Trash2 className="h-3.5 w-3.5" aria-hidden /> Delete
+            </button>
+          </div>
+          {editing?.isActive ? (
+            <p className="bx-default__hint">
+              ✓ This layout is live — it’s the chrome every published page renders inside.
+            </p>
+          ) : (
+            <div className="bx-default">
+              <button
+                type="button"
+                className="bx-default__set"
+                disabled={busy || !editing?.published}
+                onClick={onActivate}
+              >
+                <Rocket className="h-3.5 w-3.5" aria-hidden /> Make this layout live
+              </button>
+              <p className="bx-default__hint">
+                {editing?.published
+                  ? 'Publishing the site already makes the layout you’re viewing live. Use this to switch the live layout without republishing.'
+                  : 'Publish this layout before it can go live.'}
+              </p>
+            </div>
+          )}
+        </Card>
+        <Card icon={LayoutGrid} title="About this layout">
           <p className="bx-card__caption">
             The header and footer that wrap every page. The <strong>Page content</strong> block
             marks where each routed page renders; everything around it persists across navigation.

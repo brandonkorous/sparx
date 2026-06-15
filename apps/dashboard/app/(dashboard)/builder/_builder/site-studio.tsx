@@ -15,10 +15,12 @@
 // The canvas is the Phase-2 unified renderer with `chromeLocked={false}` so the
 // chrome is selectable alongside the page.
 //
-// Catalog scope: SiteStudio edits the tenant's ACTIVE layout + a switchable page,
-// publishes the visible stack, and owns the full page catalog (switch/new/rename/
-// delete) + SEO + saved themes. Layout-catalog switching, duplicate, and import/
-// export remain on the per-surface routes until the Phase-7 cutover.
+// Catalog scope: SiteStudio owns the FULL builder catalog (docs/builder/07 — the
+// cutover folded in the retired per-surface editors). It edits any saved layout
+// (switch/new/rename/delete/make-live, in the layout zone's settings) + the full
+// page catalog (switch/new/rename/delete/slug/SEO) + saved themes, imports/exports
+// either the page or the layout (the zone-aware toolbar control), and publishes the
+// visible stack (brand + chrome + page, activating the layout if it isn't live).
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
@@ -50,7 +52,14 @@ import {
   useConfirm,
   useMediaQuery,
 } from '@sparx/ui';
-import { makeCustomNode, SITE_CATALOG } from '@sparx/builder-schemas';
+import {
+  makeCustomNode,
+  parseLayoutImport,
+  parsePageImport,
+  SITE_CATALOG,
+  toLayoutDocument,
+  toPageDocument,
+} from '@sparx/builder-schemas';
 import type {
   BindingCatalog,
   BuilderLayoutDto,
@@ -63,6 +72,7 @@ import { getDef } from './registry';
 import { Inspector, LayoutSettings, PageSettings } from './inspector';
 import { AddPalette } from './add-palette';
 import { Canvas } from './canvas';
+import { ImportExportControls } from './import-export-controls';
 import { StudioLayers } from './studio-layers';
 import { FieldsPanel } from './fields-panel';
 import { deriveFieldKey, makeFieldDef, type CreatableType } from './field-kinds';
@@ -76,11 +86,14 @@ import { useSurfacePreview } from './use-surface-preview';
 import type { SitePreviewData } from './binding-catalog';
 import {
   activateLayout,
+  createLayout,
   createPage,
+  deleteLayout,
   deletePage,
   mintBuilderPreviewToken,
   publishLayout,
   publishPage,
+  renameLayout,
   renamePage,
   retargetPage,
   savePageTree,
@@ -272,6 +285,9 @@ export interface SiteStudioProps {
   sitePreview?: SitePreviewData | null;
   /** Deep-link: open this page in the Outlet on mount. */
   initialPageId?: string;
+  /** Deep-link: open a non-page zone on mount (the cutover redirects /builder/brand
+   *  → `theme`, /builder/site → `layout`; docs/builder/07 §2.2). Default: page. */
+  initialZone?: 'theme' | 'layout';
   /** Tenant slug + active property slug for the Preview tab. */
   tenantSlug?: string;
   previewPropertySlug?: string;
@@ -295,6 +311,7 @@ export function SiteStudio({
   siteOrigin,
   sitePreview,
   initialPageId,
+  initialZone,
   tenantSlug,
   previewPropertySlug,
   theme,
@@ -302,11 +319,18 @@ export function SiteStudio({
   const router = useRouter();
   const confirm = useConfirm();
 
-  // ── Catalog state (the active layout + the page catalog) ────────────────────
-  const [layoutItem, setLayoutItem] = React.useState<LayoutItem | null>(() => {
+  // ── Catalog state (the layout catalog + the page catalog) ───────────────────
+  // The studio owns the FULL layout catalog (docs/builder/07): it edits any saved
+  // layout, opening on the live one. Exactly one layout is active (the chrome the
+  // storefront serves); editing a non-live layout + Publish makes it live.
+  const [layouts, setLayouts] = React.useState<LayoutItem[]>(() =>
+    initialLayouts.map(toLayoutItem)
+  );
+  const [editingLayoutId, setEditingLayoutId] = React.useState<string | null>(() => {
     const active = initialLayouts.find((l) => l.isActive) ?? initialLayouts[0];
-    return active ? toLayoutItem(active) : null;
+    return active?.id ?? null;
   });
+  const editingLayout = layouts.find((l) => l.id === editingLayoutId) ?? layouts[0] ?? null;
   const [pages, setPages] = React.useState<PageTemplate[]>(() => initialPages.map(toTemplate));
   const [activePageId, setActivePageId] = React.useState<string | null>(() =>
     initialPageId && initialPages.some((p) => p.id === initialPageId)
@@ -337,16 +361,17 @@ export function SiteStudio({
 
   // ── The three-zone editing brain ────────────────────────────────────────────
   const studio = useStudioEditor({
-    layoutTree: layoutItem?.tree ?? null,
+    layoutTree: editingLayout?.tree ?? null,
     pageTree: activePage?.tree ?? null,
     layoutCatalog: SITE_CATALOG,
     pageCatalog,
     components: componentsByKey,
     sitePreview,
     saveLayout: async (next) =>
-      layoutItem ? (await saveLayoutTree(layoutItem.id, next)).ok : false,
+      editingLayout ? (await saveLayoutTree(editingLayout.id, next)).ok : false,
     savePage: async (next) => (activePage ? (await savePageTree(activePage.id, next)).ok : false),
-    onLayoutChange: (next) => setLayoutItem((l) => (l ? { ...l, tree: next } : l)),
+    onLayoutChange: (next) =>
+      setLayouts((ls) => ls.map((l) => (l.id === editingLayout?.id ? { ...l, tree: next } : l))),
     onPageChange: (next) =>
       setPages((ps) => ps.map((p) => (p.id === activePage?.id ? { ...p, tree: next } : p))),
     flushTheme: async () => {
@@ -362,14 +387,25 @@ export function SiteStudio({
       type: 'Section',
       props: {},
       children: [
-        ...(layoutItem ? [layoutItem.tree] : []),
+        ...(editingLayout ? [editingLayout.tree] : []),
         ...(activePage ? [activePage.tree] : []),
       ],
     }),
-    [layoutItem, activePage]
+    [editingLayout, activePage]
   );
   const previewCss = useSurfacePreview(combinedTree);
   const resolveVersion = useComponentVersions(componentsByKey, combinedTree);
+
+  // Deep-link zone (docs/builder/07 §2.2): the cutover redirects /builder/brand →
+  // the Theme inspector and /builder/site → the layout zone. Apply once on mount;
+  // the page zone is the default, so no action is needed for /builder/page.
+  const didInitZone = React.useRef(false);
+  React.useEffect(() => {
+    if (didInitZone.current) return;
+    didInitZone.current = true;
+    if (initialZone === 'theme') studio.selectTheme();
+    else if (initialZone === 'layout') studio.selectZoneHome('layout');
+  }, [initialZone, studio]);
 
   // ── Desktop chrome (resizable rail + collapsible inspector) ─────────────────
   const isDesktop = useMediaQuery('(min-width: 1024px)');
@@ -610,6 +646,115 @@ export function SiteStudio({
     router.refresh();
   };
 
+  // ── Layout catalog ops (parity with the retired /builder/site editor) ───────
+  // Switch which layout is edited. Flush the layout we're leaving FIRST so its
+  // pending autosave persists to ITS id before the save closure retargets (the
+  // same flush-before-switch the page switcher does).
+  const onSelectLayout = (id: string) => {
+    void studio.flushZone('layout');
+    setEditingLayoutId(id);
+    studio.selectZoneHome('layout');
+  };
+
+  const onNewLayout = async () => {
+    setBusy(true);
+    await studio.flushZone('layout');
+    const res = await createLayout({ name: 'Untitled layout' });
+    setBusy(false);
+    if (!res.ok || !res.data) {
+      studio.setSaveStatus('error');
+      return;
+    }
+    const created = res.data;
+    setLayouts((ls) => [...ls, toLayoutItem(created)]);
+    setEditingLayoutId(created.id);
+    studio.selectNode(created.tree.id);
+    studio.setRailTab('add');
+  };
+
+  const onRenameLayout = async (name: string) => {
+    if (!editingLayout) return;
+    const id = editingLayout.id;
+    setLayouts((ls) => ls.map((l) => (l.id === id ? { ...l, name } : l)));
+    studio.setSaveStatus('saving');
+    const res = await renameLayout(id, name);
+    studio.setSaveStatus(res.ok ? 'saved' : 'error');
+  };
+
+  const onDeleteLayout = async () => {
+    // Keep at least one layout, and never delete the live one (the server refuses
+    // too — make another active first).
+    if (!editingLayout || layouts.length <= 1 || editingLayout.isActive) return;
+    const ok = await confirm({
+      title: `Delete “${editingLayout.name}”?`,
+      description:
+        'This permanently removes the layout. Pages keep their content — they’ll render inside whichever layout is live. This can’t be undone.',
+      confirmLabel: 'Delete layout',
+      tone: 'danger',
+    });
+    if (!ok) return;
+    const removedId = editingLayout.id;
+    setBusy(true);
+    const res = await deleteLayout(removedId);
+    setBusy(false);
+    if (!res.ok) {
+      studio.setSaveStatus('error');
+      return;
+    }
+    const remaining = layouts.filter((l) => l.id !== removedId);
+    setLayouts(remaining);
+    setEditingLayoutId((cur) =>
+      cur === removedId ? (remaining.find((l) => l.isActive)?.id ?? remaining[0]?.id ?? null) : cur
+    );
+    studio.selectZoneHome('layout');
+  };
+
+  // Make the edited layout the live one (only a published layout can go live; the
+  // storefront serves the active layout's PUBLISHED tree). Exactly one stays live.
+  const onActivateLayout = async () => {
+    if (!editingLayout || editingLayout.isActive || !editingLayout.published) return;
+    const id = editingLayout.id;
+    setBusy(true);
+    const res = await activateLayout(id);
+    setBusy(false);
+    if (res.ok) {
+      setLayouts((ls) => ls.map((l) => ({ ...l, isActive: l.id === id })));
+    } else {
+      studio.setSaveStatus('error');
+    }
+  };
+
+  // ── Import (replace a zone's tree from a JSON document) ─────────────────────
+  // Keeps the page/layout identity (name/slug/kind) — only the tree is replaced.
+  // Returns an error message (shown by the control) or null on success.
+  const onLayoutImport = (text: string): string | null => {
+    if (!editingLayout) return 'No layout to import into.';
+    const result = parseLayoutImport(text);
+    if (!result.ok) return result.error;
+    const id = editingLayout.id;
+    setLayouts((ls) => ls.map((l) => (l.id === id ? { ...l, tree: result.tree } : l)));
+    studio.selectZoneHome('layout');
+    studio.setSaveStatus('saving');
+    void saveLayoutTree(id, result.tree).then((res) =>
+      studio.setSaveStatus(res.ok ? 'saved' : 'error')
+    );
+    return null;
+  };
+
+  const onPageImport = (text: string): string | null => {
+    if (!activePage) return 'No page to import into.';
+    const result = parsePageImport(text);
+    if (!result.ok) return result.error;
+    const id = activePage.id;
+    setPages((ps) => ps.map((p) => (p.id === id ? { ...p, tree: result.tree } : p)));
+    studio.selectZoneHome('page');
+    studio.setSaveStatus('saving');
+    void savePageTree(id, result.tree).then((res) =>
+      studio.setSaveStatus(res.ok ? 'saved' : 'error')
+    );
+    return null;
+  };
+
   // ── Preview (open the page's draft on the live site) ────────────────────────
   const previewPath: string | null =
     activePage?.kind === 'singleton'
@@ -642,7 +787,8 @@ export function SiteStudio({
 
   // ── Publish the visible site stack (theme + chrome + active page) ───────────
   const onPublish = async () => {
-    if (!layoutItem || !activePage) return;
+    if (!editingLayout || !activePage) return;
+    const layoutId = editingLayout.id;
     const ok = await confirm({
       title: 'Publish your site?',
       description:
@@ -655,18 +801,20 @@ export function SiteStudio({
     await studio.flushAll();
     const [brand, layout, page] = await Promise.all([
       publishNow(),
-      publishLayout(layoutItem.id),
+      publishLayout(layoutId),
       publishPage(activePage.id),
     ]);
     // If the published layout isn't yet the live one, activate it (a published
-    // layout can be idle; the studio edits the active one, so make it live).
-    if (layout.ok && layout.data && !layoutItem.isActive) {
-      const act = await activateLayout(layoutItem.id);
-      if (act.ok) setLayoutItem((l) => (l ? { ...l, isActive: true } : l));
+    // layout can be idle; the studio publishes the one you're viewing, so make it
+    // live — exactly one stays active).
+    if (layout.ok && layout.data && !editingLayout.isActive) {
+      const act = await activateLayout(layoutId);
+      if (act.ok) setLayouts((ls) => ls.map((l) => ({ ...l, isActive: l.id === layoutId })));
     }
     setBusy(false);
     if (brand.ok && layout.ok && page.ok) {
-      if (layout.data) setLayoutItem((l) => (l ? { ...l, published: true } : l));
+      if (layout.data)
+        setLayouts((ls) => ls.map((l) => (l.id === layoutId ? { ...l, published: true } : l)));
       if (page.data)
         setPages((ps) => ps.map((p) => (p.id === activePage.id ? toTemplate(page.data!) : p)));
       studio.setSaveStatus('saved');
@@ -678,15 +826,15 @@ export function SiteStudio({
   };
 
   // ── Empty state ─────────────────────────────────────────────────────────────
-  if (!layoutItem || !activePage) {
+  if (!editingLayout || !activePage) {
     return (
       <ModuleProvider module="builder">
         <div className="bx-shell">
           <div className="bx-noempty">
             <p className="bx-noempty__lead">
-              {!layoutItem ? 'No site layout yet.' : 'No pages yet.'}
+              {!editingLayout ? 'No site layout yet.' : 'No pages yet.'}
             </p>
-            {!layoutItem ? (
+            {!editingLayout ? (
               <Button size="sm" variant="solid" disabled>
                 Couldn’t load your site layout — reload.
               </Button>
@@ -806,7 +954,7 @@ export function SiteStudio({
             >
               <Trash2 aria-hidden />
             </button>
-            {layoutItem.isActive ? (
+            {editingLayout.isActive ? (
               <Badge color="success" variant="soft" size="sm">
                 Live
               </Badge>
@@ -858,6 +1006,36 @@ export function SiteStudio({
             >
               Preview
             </Button>
+            {/* Import/Export acts on the active zone's document (docs/builder/07
+                §2.6 parity) — the page in the Outlet, or the layout chrome; the
+                Theme zone exports its CSS via the Theme panel's Copy instead. */}
+            {studio.activeZone === 'page' ? (
+              <ImportExportControls
+                kind="page"
+                name={activePage.name}
+                getDocument={() =>
+                  toPageDocument({
+                    name: activePage.name,
+                    kind: activePage.kind,
+                    slug: activePage.slug,
+                    recordType: activePage.recordType ?? null,
+                    tree: activePage.tree,
+                  })
+                }
+                onImportText={onPageImport}
+                disabled={busy}
+              />
+            ) : studio.activeZone === 'layout' ? (
+              <ImportExportControls
+                kind="layout"
+                name={editingLayout.name}
+                getDocument={() =>
+                  toLayoutDocument({ name: editingLayout.name, tree: editingLayout.tree })
+                }
+                onImportText={onLayoutImport}
+                disabled={busy}
+              />
+            ) : null}
             <Button
               size="sm"
               variant="soft"
@@ -935,7 +1113,7 @@ export function SiteStudio({
             <ScrollArea className="bx-rail__body">
               {railTab === 'layers' ? (
                 <StudioLayers
-                  layoutTree={layoutItem.tree}
+                  layoutTree={editingLayout.tree}
                   pageTree={activePage.tree}
                   layoutCatalog={SITE_CATALOG}
                   pageCatalog={pageCatalog}
@@ -943,7 +1121,14 @@ export function SiteStudio({
                   selection={studio.selection}
                   pageLabel={activePage.name}
                   onSelectTheme={studio.selectTheme}
-                  onSelectNode={studio.selectNode}
+                  // The "Site layout" root row opens the layout CATALOG (zone home →
+                  // LayoutSettings), not the rarely-edited root Section — which stays
+                  // reachable by clicking the chrome on the canvas (docs/builder/07 §1).
+                  onSelectNode={(id, mods) =>
+                    id === editingLayout.tree.id
+                      ? studio.selectZoneHome('layout')
+                      : studio.selectNode(id, mods)
+                  }
                   onRemove={studio.onRemove}
                   onMove={studio.onMove}
                 />
@@ -982,7 +1167,7 @@ export function SiteStudio({
               selectedIds={studio.selection.zone === 'theme' ? [] : studio.selection.ids}
               onSelect={studio.selectNode}
               onMove={studio.onMove}
-              chrome={layoutItem.tree}
+              chrome={editingLayout.tree}
               chromeLocked={false}
               frame={
                 siteOrigin
@@ -1056,7 +1241,17 @@ export function SiteStudio({
                       surface={zone === 'layout' ? 'site' : 'page'}
                       settings={
                         zone === 'layout' ? (
-                          <LayoutSettings name={layoutItem.name} />
+                          <LayoutSettings
+                            name={editingLayout.name}
+                            layouts={layouts}
+                            editingId={editingLayout.id}
+                            busy={busy}
+                            onSelect={onSelectLayout}
+                            onNew={() => void onNewLayout()}
+                            onRename={(n) => void onRenameLayout(n)}
+                            onDelete={() => void onDeleteLayout()}
+                            onActivate={() => void onActivateLayout()}
+                          />
                         ) : (
                           <PageSettings
                             pageId={activePage.id}

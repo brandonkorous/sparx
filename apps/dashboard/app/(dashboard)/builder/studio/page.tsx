@@ -26,9 +26,10 @@ import '@sparx/site-ui/styles.canvas.css';
 // canvas is the live stack (brand theme › site layout › active page at the Outlet),
 // with the Email sibling surface alongside. It composes the data the three former
 // routes each loaded on their own — the page/site catalog + binding sources, the
-// brand/theme bundle, and the email surface — into one studio. The split routes
-// (/builder/page · /builder/site · /builder/brand · /builder/email) stay live until
-// the Phase-7 cutover; this is built beside them to de-risk.
+// brand/theme bundle, and the email surface — into one studio. The Phase-7 cutover
+// (docs/builder/07) made this THE builder editor: /builder/page · /site · /brand
+// redirect here (to the matching zone via `?zone=` / `?page=`); /builder/email is
+// kept as a sibling route. `?page=<id>` opens that page in the Outlet on mount.
 
 export const metadata: Metadata = {
   title: 'Builder · Studio',
@@ -107,6 +108,9 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
   ]);
 
   const initialPageId = typeof sp.page === 'string' ? sp.page : undefined;
+  // The cutover redirects /builder/brand → ?zone=theme and /builder/site →
+  // ?zone=layout (docs/builder/07 §2.2); the studio opens on that zone.
+  const initialZone = sp.zone === 'theme' || sp.zone === 'layout' ? sp.zone : undefined;
 
   // The brand the studio authors: the tenant base for the primary site, else the
   // base with this site's override applied (so a non-primary site shows ITS look).
@@ -153,7 +157,13 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
       {email.kind === 'ok' && email.emailBrandCss ? (
         <style dangerouslySetInnerHTML={{ __html: email.emailBrandCss }} />
       ) : null}
+      {/* Key on the active site id so switching sites (the breadcrumb switcher does a
+          soft router.refresh()) REMOUNTS the studio with the new site's identity —
+          its layouts, pages, AND the Theme form. Without it, the client useState
+          initializers keep the prior site's catalog/brand even though the server
+          passes fresh props (docs/49 per-site brand; matches the retired brand editor). */}
       <StudioApp
+        key={site.id || 'no-site'}
         site={{
           initialLayouts: layouts,
           initialPages: pages,
@@ -162,6 +172,7 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
           siteOrigin,
           sitePreview,
           initialPageId,
+          initialZone,
           tenantSlug: tenant.slug,
           previewPropertySlug: activeProperty?.slug,
           theme: {
