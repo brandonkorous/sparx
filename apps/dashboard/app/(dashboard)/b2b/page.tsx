@@ -321,13 +321,7 @@ export default async function B2bPage() {
               series={[{ key: 'revenue', label: 'Revenue', color: 'module' }]}
               xKey="label"
               height={210}
-              valueFormatter={(v) =>
-                new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  maximumFractionDigits: 0,
-                }).format(v)
-              }
+              valueFormat="currency"
               ariaLabel="Wholesale revenue, last 14 days"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">

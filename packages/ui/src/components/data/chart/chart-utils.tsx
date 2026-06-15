@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { MODULE_COLOR_KEYS } from '../../_recipes/variants';
+import { type ValueFormatter } from './value-format';
 
 // Shared internals for the chart primitives (docs/34 §15). Everything here is
 // themed off token CSS vars so charts inherit light/dark and the active
@@ -38,7 +39,15 @@ export const AXIS_TICK = { fill: 'var(--color-text-tertiary)', fontSize: 12 } as
 export const AXIS_LINE = { stroke: 'var(--color-border-default)' } as const;
 export const GRID_STROKE = 'var(--color-border-default)';
 
-export type ValueFormatter = (value: number) => string;
+// Value formatting lives in the pure (non-client) ./value-format module so
+// server components can use it too; re-exported here for existing importers.
+export {
+  resolveValueFormat,
+  resolveFormatter,
+  type ValueFormatter,
+  type ValueFormat,
+  type ValueFormatKind,
+} from './value-format';
 
 interface TooltipEntry {
   dataKey?: string | number;

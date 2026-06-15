@@ -381,7 +381,7 @@ export default async function CrmOverviewPage() {
               ]}
               xKey="label"
               height={210}
-              valueFormatter={(v) => fmtNumber(v)}
+              valueFormat="number"
               ariaLabel="Customer growth trend"
             />
           </OverviewCard>
@@ -397,7 +397,7 @@ export default async function CrmOverviewPage() {
                 value: s.value,
                 color: s.color,
               }))}
-              valueFormatter={(v) => `${v}%`}
+              valueFormat="percent"
               centerValue="486"
               centerLabel="new leads"
               ariaLabel="Leads by source"

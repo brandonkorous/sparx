@@ -27,7 +27,10 @@
   --module-invoicing: #65a30d;
   --module-ai: #ec4899;
   --module-dropship: #10b981;
+  --module-inventory: #f59e0b;
   --module-chat: #8b5cf6;
+  --module-automations: #d946ef;
+  --module-seo: #eab308;
 
   /* Active module — set by ModuleProvider, read by components */
   --module-active: var(--sparx-primary);
@@ -373,6 +376,30 @@
   --c-ink: color-mix(in oklch, var(--module-chat) 58%, var(--color-text-primary));
   --c-hover: color-mix(in oklch, var(--module-chat) 86%, var(--color-text-primary));
   --c-tint: color-mix(in oklch, var(--module-chat) 14%, transparent);
+}
+.sx-c-automations {
+  --c-bg: var(--module-automations);
+  --c-fg: #ffffff;
+  --c-ink: color-mix(in oklch, var(--module-automations) 58%, var(--color-text-primary));
+  --c-hover: color-mix(in oklch, var(--module-automations) 86%, var(--color-text-primary));
+  --c-tint: color-mix(in oklch, var(--module-automations) 14%, transparent);
+}
+/* Inventory amber + SEO yellow share the warning hue's legibility profile:
+   dark on-fill ink (white fails AA) and a lower ink mix so soft/outline text
+   stays dark and readable. */
+.sx-c-inventory {
+  --c-bg: var(--module-inventory);
+  --c-fg: #422006;
+  --c-ink: color-mix(in oklch, var(--module-inventory) 52%, var(--color-text-primary));
+  --c-hover: color-mix(in oklch, var(--module-inventory) 86%, var(--color-text-primary));
+  --c-tint: color-mix(in oklch, var(--module-inventory) 16%, transparent);
+}
+.sx-c-seo {
+  --c-bg: var(--module-seo);
+  --c-fg: #422006;
+  --c-ink: color-mix(in oklch, var(--module-seo) 52%, var(--color-text-primary));
+  --c-hover: color-mix(in oklch, var(--module-seo) 86%, var(--color-text-primary));
+  --c-tint: color-mix(in oklch, var(--module-seo) 16%, transparent);
 }
 
 /* Indeterminate <Progress> — a sliding pill that loops when no value is set. */

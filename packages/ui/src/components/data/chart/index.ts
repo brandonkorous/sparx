@@ -3,6 +3,7 @@ export {
   BarChart,
   AreaChart,
   type ChartSeries,
+  type ValueFormat,
   type BaseChartProps,
   type LineChartProps,
   type BarChartProps,

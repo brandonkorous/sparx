@@ -903,7 +903,7 @@ function InvoiceWizardInner({
   const cancelButton = (
     <button
       type="button"
-      onClick={() => router.push('/invoicing')}
+      onClick={() => router.push('/invoicing/documents')}
       className="text-white/70 underline-offset-2 hover:underline"
     >
       Cancel

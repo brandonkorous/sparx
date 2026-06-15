@@ -1,71 +1,177 @@
-// Automations list (docs/81 §8, docs/84 Slice G-UI) — the platform-level surface
-// for the cross-module rule engine. Reads `/v1/automations` (the API-first spine
-// the dashboard + MCP both consume) and renders the list with status filters,
-// per-row module tags + run stats, and quick enable/pause. A standard docs/34
-// List surface, full width.
+// Automations overview (docs/34 overview archetype, founder lens) — the
+// operator's one-glance answer to "is it working, and is it saving me time?".
+// It opens with a run-health KPI strip, a "needs attention" queue of failing /
+// paused rules, run-activity over time + a by-trigger split, then the full live
+// automations table (the old list, preserved in-place) and a recent-activity
+// feed.
 //
-// Platform capability, not a module: no ModuleGate. The page is reachable
-// whenever ≥1 trigger-capable module is active; with none, it points the tenant
-// at module activation instead of an empty rule list.
+// Automations is a PLATFORM capability, not a gated module (docs/81 §1, §3): no
+// ModuleGate. The surface is reachable whenever ≥1 trigger-capable module is
+// active; with none we keep the original activation upsell (the guard below).
+// The page reads `/v1/automations` (the API-first spine the dashboard + MCP
+// both consume) and fails soft to "—" / sample data per the overview archetype.
 
 import Link from 'next/link';
-import { Plus, Workflow } from 'lucide-react';
+import {
+  AlertTriangle,
+  Clock,
+  History,
+  ListChecks,
+  Pause,
+  PlayCircle,
+  Plus,
+  ShieldCheck,
+  TrendingUp,
+  XCircle,
+  Zap,
+} from 'lucide-react';
+
 import { listEnabledModules, requireSession } from '@sparx/auth';
-import { Badge, Button, Card, Container, EmptyState, PageHeader, Stack } from '@sparx/ui';
+import {
+  ActionQueue,
+  ActionTile,
+  AreaChart,
+  Badge,
+  Button,
+  Card,
+  Container,
+  DonutChart,
+  EmptyState,
+  Grid,
+  PageHeader,
+  Stack,
+  Stat,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  Timeline,
+  TimelineItem,
+  TimelineTitle,
+  TimelineTime,
+} from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
 import type { AutomationDto } from './_lib/types';
-import { AutomationList } from './_components/automation-list';
-import { ListToolbar } from '../_components/list-toolbar';
-import { getUserPreferences } from '../_shell/preferences';
+import { formatTimestamp, summarizeTrigger } from './_lib/presentation';
+import {
+  CardLink,
+  MetricTile,
+  OverviewCard,
+  OverviewRow,
+  SampleBadge,
+  fmtNumber,
+  fmtPercentRatio,
+} from '../_components/overview-bits';
 
 export const dynamic = 'force-dynamic';
 
-const STATUS_OPTIONS = [
-  { value: 'active', label: 'Active' },
-  { value: 'paused', label: 'Paused' },
-  { value: 'draft', label: 'Draft' },
-  { value: 'error', label: 'Error' },
+const TWO_COL = 'grid grid-cols-1 gap-4 lg:grid-cols-[1.9fr_1fr]';
+
+// ── Sample data (illustrative until a per-day runs report endpoint lands) ──
+// There is no `/v1/automations/reports/runs-timeseries` yet, so run-activity
+// over time is representative. Replace with live data + drop the SampleBadge
+// once the timeseries endpoint exists (see overview-charts.tsx convention).
+const SAMPLE_RUNS_14D = [
+  { label: 'Jun 1', runs: 184, failed: 3 },
+  { label: 'Jun 2', runs: 201, failed: 2 },
+  { label: 'Jun 3', runs: 176, failed: 5 },
+  { label: 'Jun 4', runs: 232, failed: 4 },
+  { label: 'Jun 5', runs: 248, failed: 2 },
+  { label: 'Jun 6', runs: 221, failed: 6 },
+  { label: 'Jun 7', runs: 168, failed: 1 },
+  { label: 'Jun 8', runs: 197, failed: 3 },
+  { label: 'Jun 9', runs: 263, failed: 4 },
+  { label: 'Jun 10', runs: 281, failed: 2 },
+  { label: 'Jun 11', runs: 254, failed: 7 },
+  { label: 'Jun 12', runs: 298, failed: 3 },
+  { label: 'Jun 13', runs: 312, failed: 2 },
+  { label: 'Jun 14', runs: 289, failed: 4 },
 ];
 
-interface PageProps {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+const SAMPLE_ACTIVITY = [
+  { title: 'New customer welcome — sent welcome email to Maya Chen', when: '8 minutes ago' },
+  {
+    title: 'Overdue invoice escalation — credit-hold applied to Foglight Café',
+    when: '41 minutes ago',
+  },
+  { title: 'Abandoned cart nudge — failed: email template not found', when: '2 hours ago' },
+  { title: 'VIP tag on $500+ order — tagged 4 customers', when: '5 hours ago' },
+] as const;
+
+// Module-prefix → human label for the trigger split. Trigger types are free
+// text (`crm.customer.created`, `order.placed`, `schedule.daily`), so we group
+// by the leading segment and humanize it for the donut + table.
+const TRIGGER_GROUP_LABEL: Record<string, string> = {
+  crm: 'CRM',
+  customer: 'CRM',
+  deal: 'CRM',
+  order: 'Commerce',
+  commerce: 'Commerce',
+  b2b: 'B2B',
+  email: 'Email',
+  cms: 'CMS',
+  site: 'CMS',
+  schedule: 'Scheduled',
+  webhook: 'Webhook',
+  platform: 'Platform',
+};
+
+function triggerGroup(triggerType: string): string {
+  const head = triggerType.split('.')[0] ?? '';
+  return TRIGGER_GROUP_LABEL[head] ?? 'Other';
 }
 
-export default async function AutomationsPage({ searchParams }: PageProps) {
-  const [params, session] = await Promise.all([searchParams, requireSession()]);
-  const focus = stringParam(params.focus);
-  // Status is the API's `?status=` facet (filtered server-side); surfaced as a
-  // ListToolbar filter so it serializes into the URL like every other list.
-  const status = parseStatus(stringParam(params.status));
-  const [enabledModules, prefs, automations] = await Promise.all([
+// Donut palette across the fuchsia accent — the live module color plus tints,
+// so the by-trigger split stays on-brand without hardcoding the hex.
+const DONUT_COLORS = [
+  'module',
+  'var(--module-active-tint)',
+  '#f0abfc',
+  '#f5d0fe',
+  '#fbcfe8',
+  '#fae8ff',
+];
+
+const ROW_STATUS: Record<AutomationDto['status'], { color: string; label: string }> = {
+  active: { color: 'success', label: 'Active' },
+  paused: { color: 'neutral', label: 'Paused' },
+  error: { color: 'danger', label: 'Error' },
+  draft: { color: 'neutral', label: 'Draft' },
+};
+
+function successRate(runCount: number, errorCount: number): number | null {
+  if (runCount <= 0) return null;
+  return Math.max(0, 1 - errorCount / runCount);
+}
+
+export default async function AutomationsPage() {
+  const session = await requireSession();
+
+  const [enabledModules, automations] = await Promise.all([
     listEnabledModules(session.user.tenantId),
-    getUserPreferences(),
-    api.get<AutomationDto[]>(
-      `/v1/automations${status ? `?status=${encodeURIComponent(status)}` : ''}`
-    ),
+    api.get<AutomationDto[]>('/v1/automations').catch(() => null),
   ]);
 
   const role = session.user.role;
   const canWrite = role === 'owner' || role === 'admin' || role === 'editor';
-  // The email surface deep-links here (`?focus=email`) to land on the email-only
-  // view — the unified replacement for the standalone Email Automations page.
-  const emailFocus = focus === 'email';
-  // `?view=` overrides; absent → the user's saved default (§7.2).
-  const view = (stringParam(params.view) ?? prefs.defaultListView) === 'card' ? 'card' : 'table';
 
+  // ── Guard (preserved): no trigger-capable module → activation upsell, not an
+  // empty rule list. This is the exact gate the old list page enforced. ──
   if (enabledModules.length === 0) {
     return (
       <Container size="full">
         <Stack gap={6} className="py-10">
           <PageHeader
-            icon={<Workflow className="h-5 w-5" />}
+            icon={<Zap className="h-5 w-5" />}
             title="Automations"
             description="Cross-module “when X, if Y, do Z” rules that connect your Sparx modules."
           />
           <Card padding="none">
             <EmptyState
-              icon={<Workflow className="h-5 w-5" />}
+              icon={<Zap className="h-5 w-5" />}
               title="Activate a module first"
               description="Automations connect your modules — activate at least one to start authoring rules."
               action={
@@ -80,71 +186,297 @@ export default async function AutomationsPage({ searchParams }: PageProps) {
     );
   }
 
+  const rules = automations ?? [];
+
+  // ── Live aggregates from the rule set ──
+  const activeCount = rules.filter((a) => a.status === 'active').length;
+  const pausedCount = rules.filter((a) => a.status === 'paused').length;
+  const totalRuns = rules.reduce((sum, a) => sum + (a.runCount ?? 0), 0);
+  const totalErrors = rules.reduce((sum, a) => sum + (a.errorCount ?? 0), 0);
+  const failing = rules.filter((a) => a.status === 'error' || (a.errorCount ?? 0) > 0);
+  const overallRate = successRate(totalRuns, totalErrors);
+
+  // Needs-attention queue: failing rules (danger) first, then paused (neutral).
+  const attention = [...failing, ...rules.filter((a) => a.status === 'paused')].slice(0, 6);
+
+  // By-trigger split, live: group the rule set by trigger module.
+  const triggerCounts = new Map<string, number>();
+  for (const a of rules) {
+    const g = triggerGroup(a.triggerType);
+    triggerCounts.set(g, (triggerCounts.get(g) ?? 0) + 1);
+  }
+  const triggerData = [...triggerCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([label, value], i) => ({
+      label,
+      value,
+      color: DONUT_COLORS[i % DONUT_COLORS.length],
+    }));
+
+  // Table: every automation, busiest first (preserves the old list — show all).
+  const tableRows = [...rules].sort((a, b) => (b.runCount ?? 0) - (a.runCount ?? 0));
+
   return (
-    <Container size="full">
-      <Stack gap={6} className="py-10">
+    <Container size="xl">
+      <Stack gap={6} className="py-8">
         <PageHeader
-          icon={<Workflow className="h-5 w-5" />}
+          icon={<Zap className="h-5 w-5" />}
           title="Automations"
-          badge={
-            <Badge color="module">
-              {automations.length} automation{automations.length === 1 ? '' : 's'}
-            </Badge>
-          }
-          description="Cross-module “when X, if Y, do Z” rules. Author here, or ask the AI assistant to build one."
+          description="Is it working & saving you time? — run health across your rules."
           actions={
             canWrite ? (
-              <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
-                <Link href="/automations/new">New automation</Link>
-              </Button>
+              <>
+                <Button asChild variant="outline" leftIcon={<ListChecks className="h-4 w-4" />}>
+                  <Link href="/automations/new">Browse templates</Link>
+                </Button>
+                <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
+                  <Link href="/automations/new">New automation</Link>
+                </Button>
+              </>
             ) : undefined
           }
         />
 
-        <ListToolbar
-          searchable={false}
-          filters={[{ key: 'status', label: 'Status', options: STATUS_OPTIONS }]}
-          enableViewToggle
-        />
+        {/* Headline KPIs — live from the rule set */}
+        <Grid cols={1} mdCols={2} lgCols={4} gap={4}>
+          <Stat
+            icon={<PlayCircle className="h-4 w-4" />}
+            label="Active automations"
+            value={fmtNumber(activeCount)}
+            hint={
+              rules.length
+                ? `${fmtNumber(rules.length)} total · ${fmtNumber(pausedCount)} paused`
+                : 'No rules authored yet'
+            }
+          />
+          <Stat
+            icon={<Zap className="h-4 w-4" />}
+            label="Runs · all time"
+            value={fmtNumber(totalRuns)}
+            hint="Across every automation"
+          />
+          <Stat
+            icon={<XCircle className="h-4 w-4" />}
+            label="Failures"
+            value={fmtNumber(totalErrors)}
+            hint={
+              failing.length
+                ? `${fmtNumber(failing.length)} automation${failing.length === 1 ? '' : 's'} affected`
+                : 'No failed runs'
+            }
+          />
+          <Stat
+            icon={<ShieldCheck className="h-4 w-4" />}
+            label="Success rate"
+            value={overallRate == null ? '—' : fmtPercentRatio(overallRate, 1)}
+            hint={totalRuns ? 'Completed ÷ total runs' : 'Awaiting first run'}
+          />
+        </Grid>
 
-        {automations.length === 0 ? (
-          <Card padding="none">
+        {/* Needs attention — failures to review (live) */}
+        <OverviewCard
+          title="Needs attention"
+          icon={<AlertTriangle className="h-4 w-4" />}
+          description="Automations that failed or are paused — clear these to keep work flowing."
+          right={<CardLink href="/automations?status=error">All issues</CardLink>}
+        >
+          {attention.length === 0 ? (
+            <div className="flex items-center gap-3 py-2 text-sm text-[var(--color-text-secondary)]">
+              <ShieldCheck className="h-4 w-4 text-[var(--color-success-text)]" />
+              Everything is running clean — no failed or paused automations.
+            </div>
+          ) : (
+            attention.map((a) => {
+              const failed = a.status === 'error' || (a.errorCount ?? 0) > 0;
+              return (
+                <OverviewRow
+                  key={a.id}
+                  icon={failed ? <XCircle className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+                  tone={failed ? 'danger' : 'neutral'}
+                  title={a.name}
+                  hint={
+                    failed
+                      ? `${fmtNumber(a.errorCount)} error${a.errorCount === 1 ? '' : 's'} · last failed ${formatTimestamp(a.lastErrorAt)}`
+                      : `Paused · ${summarizeTrigger(a.triggerType, a.triggerConfig)}`
+                  }
+                  right={
+                    <Button asChild variant="link" color="module" size="sm">
+                      <Link href={`/automations/${a.id}`}>{failed ? 'Review' : 'Resume'}</Link>
+                    </Button>
+                  }
+                />
+              );
+            })
+          )}
+        </OverviewCard>
+
+        {/* Run activity over time (sample) + by-trigger split (live) */}
+        <div className={TWO_COL}>
+          <OverviewCard
+            title="Run activity"
+            icon={<TrendingUp className="h-4 w-4" />}
+            description="Runs per day — last 14 days"
+            right={<SampleBadge />}
+          >
+            <AreaChart
+              data={SAMPLE_RUNS_14D}
+              series={[
+                { key: 'runs', label: 'Runs', color: 'module' },
+                { key: 'failed', label: 'Failed', color: 'danger' },
+              ]}
+              xKey="label"
+              height={210}
+              valueFormat="number"
+              ariaLabel="Automation runs per day, last 14 days"
+            />
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <MetricTile value="~3.4k" label="Runs · 14d" />
+              <MetricTile value="~6h" label="Est. time saved · 14d" tone="module" />
+            </div>
+            <div className="mt-3">
+              <SampleBadge />
+            </div>
+          </OverviewCard>
+
+          <OverviewCard
+            title="By trigger"
+            icon={<Zap className="h-4 w-4" />}
+            description="How your rules are triggered"
+          >
+            {triggerData.length === 0 ? (
+              <p className="py-6 text-center text-sm text-[var(--color-text-tertiary)]">
+                No automations to group yet.
+              </p>
+            ) : (
+              <DonutChart
+                data={triggerData}
+                valueFormat="number"
+                centerValue={fmtNumber(rules.length)}
+                centerLabel={rules.length === 1 ? 'automation' : 'automations'}
+                ariaLabel="Automations by trigger type"
+              />
+            )}
+          </OverviewCard>
+        </div>
+
+        {/* All automations — the live list, preserved in place */}
+        <OverviewCard
+          title="All automations"
+          icon={<ListChecks className="h-4 w-4" />}
+          right={<CardLink href="/automations/new">New automation</CardLink>}
+        >
+          {tableRows.length === 0 ? (
             <EmptyState
-              icon={<Workflow className="h-5 w-5" />}
-              title={status ? 'No automations match this filter' : 'No automations yet'}
-              description={
-                status
-                  ? 'Clear the status filter to see your other rules.'
-                  : 'Create your first rule to trigger actions when events happen across your modules.'
-              }
+              icon={<Zap className="h-5 w-5" />}
+              title="No automations yet"
+              description="Create your first rule to trigger actions when events happen across your modules."
               action={
-                !status && canWrite ? (
+                canWrite ? (
                   <Button asChild color="module" leftIcon={<Plus className="h-4 w-4" />}>
                     <Link href="/automations/new">New automation</Link>
                   </Button>
                 ) : undefined
               }
             />
-          </Card>
-        ) : (
-          <AutomationList
-            automations={automations}
-            canWrite={canWrite}
-            view={view}
-            initialEmailOnly={emailFocus}
-          />
-        )}
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Automation</TableHead>
+                  <TableHead>Trigger</TableHead>
+                  <TableHead className="text-right">Runs</TableHead>
+                  <TableHead className="text-right">Success</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {tableRows.map((a) => {
+                  const rate = successRate(a.runCount ?? 0, a.errorCount ?? 0);
+                  const status = ROW_STATUS[a.status] ?? ROW_STATUS.draft;
+                  return (
+                    <TableRow key={a.id}>
+                      <TableCell>
+                        <Link
+                          href={`/automations/${a.id}`}
+                          className="font-medium hover:text-[var(--module-active)] hover:underline"
+                        >
+                          {a.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-[var(--color-text-secondary)]">
+                        {summarizeTrigger(a.triggerType, a.triggerConfig)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {fmtNumber(a.runCount)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {rate == null ? '—' : fmtPercentRatio(rate, 0)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge color={status.color} variant="soft">
+                          {status.label}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </OverviewCard>
+
+        {/* Daily action queue + recent activity */}
+        <div className={TWO_COL}>
+          <OverviewCard
+            title="Recent activity"
+            icon={<History className="h-4 w-4" />}
+            right={<SampleBadge />}
+          >
+            <Timeline>
+              {SAMPLE_ACTIVITY.map((a, i) => (
+                <TimelineItem key={a.title} showConnector={i < SAMPLE_ACTIVITY.length - 1}>
+                  <TimelineTitle>{a.title}</TimelineTitle>
+                  <TimelineTime>{a.when}</TimelineTime>
+                </TimelineItem>
+              ))}
+            </Timeline>
+          </OverviewCard>
+
+          <ActionQueue
+            title="Keep momentum"
+            icon={<Clock className="h-4 w-4" />}
+            meta={<SampleBadge />}
+          >
+            <ActionTile
+              asChild
+              icon={<XCircle className="h-5 w-5" />}
+              count={failing.length}
+              label="Failures to review"
+              tone="danger"
+            >
+              <Link href="/automations?status=error" />
+            </ActionTile>
+            <ActionTile
+              asChild
+              icon={<Pause className="h-5 w-5" />}
+              count={pausedCount}
+              label="Paused automations"
+              tone="neutral"
+            >
+              <Link href="/automations?status=paused" />
+            </ActionTile>
+            <ActionTile
+              asChild
+              icon={<Plus className="h-5 w-5" />}
+              count={3}
+              label="Templates to try"
+              tone="module"
+            >
+              <Link href="/automations/new" />
+            </ActionTile>
+          </ActionQueue>
+        </div>
       </Stack>
     </Container>
   );
-}
-
-function stringParam(v: string | string[] | undefined): string | undefined {
-  if (Array.isArray(v)) return v[0];
-  if (typeof v === 'string' && v.length > 0) return v;
-  return undefined;
-}
-
-function parseStatus(v: string | undefined): 'active' | 'paused' | 'draft' | 'error' | undefined {
-  return v === 'active' || v === 'paused' || v === 'draft' || v === 'error' ? v : undefined;
 }

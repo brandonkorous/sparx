@@ -411,7 +411,7 @@ export default async function BuilderOverviewPage() {
                 ]}
                 xKey="label"
                 height={210}
-                valueFormatter={(v) => new Intl.NumberFormat('en-US').format(v)}
+                valueFormat="number"
                 ariaLabel="Site traffic, last 14 days"
               />
             </OverviewCard>

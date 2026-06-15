@@ -1,8 +1,8 @@
 /* ============================================================
    SPARX DESIGN TOKENS
-   Version: 1.0
+   Version: 1.1
    Author: Brandon Korous / WizeWorks
-   Updated: 2026-05-27
+   Updated: 2026-06-14
    
    The official Sparx color system, typography scale, and
    spacing tokens. Import this file as the foundation of
@@ -67,6 +67,34 @@
   --module-dropship: #10b981;
   --module-dropship-tint: #ecfdf5;
   --module-dropship-text: #065f46;
+
+  /* Invoicing — Lime. Getting paid, cashflow, money in. */
+  --module-invoicing: #65a30d;
+  --module-invoicing-tint: #f7fee7;
+  --module-invoicing-text: #3f6212;
+
+  /* Inventory — Amber. Stock, supply, the warehouse. NOTE: shares the warning
+     hue (#f59e0b); status colors inside Inventory must stay distinct — use
+     danger/red for stock alerts so they read against the amber chrome. */
+  --module-inventory: #f59e0b;
+  --module-inventory-tint: #fffbeb;
+  --module-inventory-text: #b45309;
+
+  /* Live Chat — Violet. Conversational, responsive, human. */
+  --module-chat: #8b5cf6;
+  --module-chat-tint: #f5f3ff;
+  --module-chat-text: #6d28d9;
+
+  /* Automations — Fuchsia. Workflows firing, work happening on its own. */
+  --module-automations: #d946ef;
+  --module-automations-tint: #fdf4ff;
+  --module-automations-text: #a21caf;
+
+  /* SEO — Yellow. Visibility, getting found, daylight. Bright; on a SOLID fill
+     use dark ink (white fails AA). */
+  --module-seo: #eab308;
+  --module-seo-tint: #fefce8;
+  --module-seo-text: #854d0e;
 }
 
 /* ── SEMANTIC / STATUS COLORS ──────────────────────────────── */
@@ -141,6 +169,11 @@
   --module-b2b-tint: #1c2333;
   --module-ai-tint: #2d0a1e;
   --module-dropship-tint: #022c22;
+  --module-invoicing-tint: #1a2e05;
+  --module-inventory-tint: #2c1503;
+  --module-chat-tint: #2e1065;
+  --module-automations-tint: #2e0a2e;
+  --module-seo-tint: #2c2103;
 }
 
 /* ── TYPOGRAPHY ────────────────────────────────────────────── */
@@ -270,6 +303,21 @@
 .module-stripe-dropship {
   border-top: 3px solid var(--module-dropship);
 }
+.module-stripe-invoicing {
+  border-top: 3px solid var(--module-invoicing);
+}
+.module-stripe-inventory {
+  border-top: 3px solid var(--module-inventory);
+}
+.module-stripe-chat {
+  border-top: 3px solid var(--module-chat);
+}
+.module-stripe-automations {
+  border-top: 3px solid var(--module-automations);
+}
+.module-stripe-seo {
+  border-top: 3px solid var(--module-seo);
+}
 
 /* ── MODULE BADGE UTILITY ──────────────────────────────────── */
 /* Small pill badge for module identification.                 */
@@ -317,6 +365,26 @@
   background: var(--module-dropship-tint);
   color: var(--module-dropship-text);
 }
+.module-badge-invoicing {
+  background: var(--module-invoicing-tint);
+  color: var(--module-invoicing-text);
+}
+.module-badge-inventory {
+  background: var(--module-inventory-tint);
+  color: var(--module-inventory-text);
+}
+.module-badge-chat {
+  background: var(--module-chat-tint);
+  color: var(--module-chat-text);
+}
+.module-badge-automations {
+  background: var(--module-automations-tint);
+  color: var(--module-automations-text);
+}
+.module-badge-seo {
+  background: var(--module-seo-tint);
+  color: var(--module-seo-text);
+}
 
 /* ── TAILWIND CSS VARIABLE BRIDGE ──────────────────────────── */
 /* If using Tailwind, extend the config with these values.
@@ -339,5 +407,10 @@
      b2b:        '#475569',
      ai:         '#EC4899',
      dropship:   '#10B981',
+     invoicing:  '#65A30D',
+     inventory:  '#F59E0B',
+     chat:       '#8B5CF6',
+     automations:'#D946EF',
+     seo:        '#EAB308',
    }
 */

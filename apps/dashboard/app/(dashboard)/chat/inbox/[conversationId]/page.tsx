@@ -4,9 +4,9 @@ import { requireSession } from '@sparx/auth';
 
 import { api } from '@/lib/api-rest-client';
 
-import { ThreadView } from '../_components/thread-view';
-import { CustomerContextSidebar } from '../_components/customer-context-sidebar';
-import type { ConversationDetailDto, CustomerContextDto, QuickReplyDto } from '../_lib/types';
+import { ThreadView } from '../../_components/thread-view';
+import { CustomerContextSidebar } from '../../_components/customer-context-sidebar';
+import type { ConversationDetailDto, CustomerContextDto, QuickReplyDto } from '../../_lib/types';
 
 export const dynamic = 'force-dynamic';
 

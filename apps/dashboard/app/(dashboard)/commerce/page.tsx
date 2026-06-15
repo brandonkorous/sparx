@@ -47,7 +47,6 @@ import {
   OverviewCard,
   OverviewRow,
   SampleBadge,
-  fmtMoney,
   fmtMoneyCents,
   fmtNumber,
   fmtPercentRatio,
@@ -314,7 +313,7 @@ export default async function CommercePage() {
               series={[{ key: 'revenue', label: 'Revenue', color: 'module' }]}
               xKey="label"
               height={210}
-              valueFormatter={(v) => fmtMoney(v, currency)}
+              valueFormat={{ kind: 'currency', currency }}
               ariaLabel="Net revenue, last 14 days"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
@@ -455,7 +454,7 @@ export default async function CommercePage() {
                 { label: 'Returning', value: 62, color: 'module' },
                 { label: 'New', value: 38, color: 'var(--module-active-tint)' },
               ]}
-              valueFormatter={(v) => `${v}%`}
+              valueFormat="percent"
               centerValue="62%"
               centerLabel="returning"
               ariaLabel="New vs returning customers"

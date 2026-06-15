@@ -3,7 +3,15 @@
 import * as React from 'react';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { cn } from '../../../utils/cn';
-import { resolveSeriesColor, type ValueFormatter, ChartTooltipContent } from './chart-utils';
+import {
+  resolveSeriesColor,
+  resolveFormatter,
+  type ValueFormatter,
+  type ValueFormat,
+  ChartTooltipContent,
+} from './chart-utils';
+
+export type { ValueFormat } from './chart-utils';
 
 // DonutChart — a part-to-whole ring (content mix, leads by source, AI usage by
 // surface). Same token contract as the rest of the chart family: each slice's
@@ -24,8 +32,11 @@ export interface DonutChartProps {
   size?: number;
   /** Ring thickness in px. Default 16. */
   thickness?: number;
-  /** Format slice values in the tooltip + legend (e.g. `v => `${v}%``). */
+  /** Format slice values in the tooltip + legend (e.g. `v => `${v}%``). Client
+   *  -only; from a Server Component use `valueFormat`. `valueFormatter` wins. */
   valueFormatter?: ValueFormatter;
+  /** Serializable formatting spec, safe from Server Components (e.g. `'percent'`). */
+  valueFormat?: ValueFormat;
   /** Large text in the ring center (e.g. a headline share or total). */
   centerValue?: React.ReactNode;
   /** Muted caption under `centerValue`. */
@@ -40,13 +51,15 @@ export function DonutChart({
   data,
   size = 132,
   thickness = 16,
-  valueFormatter,
+  valueFormatter: valueFormatterProp,
+  valueFormat,
   centerValue,
   centerLabel,
   legend = true,
   className,
   ariaLabel,
 }: DonutChartProps) {
+  const valueFormatter = resolveFormatter(valueFormatterProp, valueFormat);
   const colors = data.map((d, i) => resolveSeriesColor(d.color, i));
 
   return (
