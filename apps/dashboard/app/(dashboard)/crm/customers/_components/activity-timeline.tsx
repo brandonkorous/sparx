@@ -148,6 +148,7 @@ export function ActivityTimeline({ activities }: Props) {
               marker={
                 <span
                   aria-hidden
+                  // eslint-disable-next-line no-restricted-syntax -- icon marker dot in timeline, not a reimplemented control
                   className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--module-active)] text-white"
                 >
                   {meta.icon}

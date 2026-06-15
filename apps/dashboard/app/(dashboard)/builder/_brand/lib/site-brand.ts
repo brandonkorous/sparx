@@ -51,7 +51,8 @@ function coerceOverride(raw: unknown): BrandOverride | null {
 export function applyBrandOverride(base: BrandDto, overrideRaw: unknown): BrandDto {
   const override = coerceOverride(overrideRaw);
   if (!override) return base;
-  const legacyLight = override.logoLightMediaId ?? (override as { logoMediaId?: string | null }).logoMediaId;
+  const legacyLight =
+    override.logoLightMediaId ?? (override as { logoMediaId?: string | null }).logoMediaId;
   const pick = (k: ScalarBrandField): string | null => override[k] ?? base[k] ?? null;
   return {
     ...base,

@@ -107,6 +107,7 @@ export default async function SupplierCatalogPage({ params, searchParams }: Prop
           <>
             <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
               <table className="w-full text-sm">
+                {/* eslint-disable-next-line no-restricted-syntax -- table header with muted bg, not a reimplemented control */}
                 <thead className="bg-[var(--color-muted)] text-[var(--color-muted-foreground)]">
                   <tr>
                     <th className="px-4 py-3 text-left font-medium">Product</th>

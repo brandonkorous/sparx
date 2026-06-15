@@ -564,6 +564,7 @@ function AssetFieldR({
               onClick={() => removeRef(r.assetId)}
               aria-label="Remove asset"
               disabled={disabled}
+              // eslint-disable-next-line no-restricted-syntax -- semi-transparent overlay button on asset thumbnail, not a reimplemented control
               className="absolute top-0.5 right-0.5 rounded bg-black/60 p-0.5 text-white"
             >
               <Trash2 className="h-3 w-3" />
@@ -606,7 +607,8 @@ function ObjectFieldR({
   return (
     <Stack gap={2}>
       <FieldLabel htmlFor={inputId} field={field} />
-      <Card padding="md" className="border-[var(--color-border-default)]">
+      {/* variant="default": generic sub-field renderer used across modules, not module-scoped */}
+      <Card variant="default" padding="md" className="border-[var(--color-border-default)]">
         <Stack gap={4}>
           {field.fields.map((subField) => (
             <FieldRenderer
@@ -672,7 +674,13 @@ function RepeaterFieldR({
           </Text>
         )}
         {items.map((item, index) => (
-          <Card key={index} padding="md" className="border-[var(--color-border-default)]">
+          // variant="default": generic repeater renderer used across modules, not module-scoped
+          <Card
+            variant="default"
+            key={index}
+            padding="md"
+            className="border-[var(--color-border-default)]"
+          >
             <Stack gap={3}>
               <Stack direction="row" align="center" justify="between">
                 <Text size="sm" variant="muted">

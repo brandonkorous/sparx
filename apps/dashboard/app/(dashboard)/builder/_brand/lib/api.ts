@@ -104,9 +104,8 @@ export async function getSitePreviewData(propertySlug?: string | null): Promise<
     // First non-EMPTY trimmed value (an empty string must fall through, so this
     // can't collapse to `??`), defaulting to the always-present tenant name.
     const name =
-      [payload.propertyName, payload.businessName]
-        .map((s) => s?.trim())
-        .find((s) => s) ?? payload.name;
+      [payload.propertyName, payload.businessName].map((s) => s?.trim()).find((s) => s) ??
+      payload.name;
     const logoUrl = publicMediaUrl(payload.theme?.logoMediaId ?? null, tenant.slug);
     const social = (payload.socials ?? []).filter(
       (s) =>

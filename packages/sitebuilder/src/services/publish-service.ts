@@ -163,9 +163,7 @@ async function overlayBrand(
     }),
     tx.property.findUnique({ where: { id: propertyId }, select: { isPrimary: true } }),
   ]);
-  const override = property?.isPrimary
-    ? null
-    : await readPropertyBrandOverride(tx, propertyId);
+  const override = property?.isPrimary ? null : await readPropertyBrandOverride(tx, propertyId);
   const brand = mergeCompileBrand(base, override);
   const compiledTokens = brand
     ? applyBrandIdentityTokens(snapshot.compiledTokens, brand)
@@ -218,7 +216,7 @@ function mergeCompileBrand(
   const b = base ?? ({} as Partial<CompileBrand>);
   const o = override ?? {};
   const pick = (k: keyof CompileBrand): string | null =>
-    ((o[k] as string | null | undefined) ?? (b[k] as string | null | undefined) ?? null);
+    (o[k] as string | null | undefined) ?? (b[k] as string | null | undefined) ?? null;
   return {
     colorPrimary: pick('colorPrimary'),
     colorPrimaryForeground: pick('colorPrimaryForeground'),

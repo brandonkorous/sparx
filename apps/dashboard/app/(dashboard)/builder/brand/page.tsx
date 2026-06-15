@@ -1,6 +1,12 @@
 import { ModuleProvider } from '@sparx/ui';
 import { getActiveProperty } from '@/lib/sites';
-import { getBrand, getConfig, getTenant, listSavedThemes, resolveMediaUrl } from '../_brand/lib/api';
+import {
+  getBrand,
+  getConfig,
+  getTenant,
+  listSavedThemes,
+  resolveMediaUrl,
+} from '../_brand/lib/api';
 import { applyBrandOverride } from '../_brand/lib/site-brand';
 import { propertyOrigin } from '../_brand/lib/property';
 import { ThemeCenter } from '../_brand/components/theme-center';
@@ -50,7 +56,8 @@ export default async function BuilderBrandPage() {
     typeof activeProperty.settings === 'object' &&
     activeProperty.settings !== null &&
     Array.isArray((activeProperty.settings as { socials?: unknown }).socials)
-      ? ((activeProperty.settings as { socials?: { platform: string; url: string }[] }).socials ?? [])
+      ? ((activeProperty.settings as { socials?: { platform: string; url: string }[] }).socials ??
+        [])
       : [];
   const site: SiteDto = {
     id: activeProperty?.id ?? '',

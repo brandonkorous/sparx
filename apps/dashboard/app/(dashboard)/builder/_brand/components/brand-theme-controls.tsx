@@ -319,10 +319,7 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
         ) : null}
       </Section>
 
-      <Section
-        title="Social links"
-        hint="Shown in this site's footer. Each site has its own."
-      >
+      <Section title="Social links" hint="Shown in this site's footer. Each site has its own.">
         <SocialLinksEditor socials={socials} setSocials={setSocials} />
       </Section>
 

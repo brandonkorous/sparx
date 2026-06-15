@@ -278,7 +278,9 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
       // caller's explicit `settings` (replace those keys) → caller's `socials`.
       if (input.settings !== undefined || input.socials !== undefined) {
         const base =
-          existing.settings && typeof existing.settings === 'object' && !Array.isArray(existing.settings)
+          existing.settings &&
+          typeof existing.settings === 'object' &&
+          !Array.isArray(existing.settings)
             ? (existing.settings as Record<string, unknown>)
             : {};
         const merged: Record<string, unknown> = { ...base, ...(input.settings ?? {}) };

@@ -289,6 +289,7 @@ export function VariantsStep({
                 </Text>
               ) : (
                 <div className="overflow-hidden rounded-xl border border-[var(--color-border-default)]">
+                  {/* eslint-disable-next-line no-restricted-syntax -- table header row with subtle bg, not a reimplemented control */}
                   <div className="grid grid-cols-[1fr_minmax(8rem,1fr)_7rem_5rem] items-center gap-2 border-b border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] px-3 py-2 text-xs font-medium text-[var(--color-text-muted)]">
                     <span>Combination</span>
                     <span>SKU</span>

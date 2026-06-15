@@ -48,6 +48,7 @@ export function WelcomeChecklist({ progress }: WelcomeChecklistProps) {
             <Stack direction="row" align="start" gap={3}>
               <span
                 aria-hidden
+                // eslint-disable-next-line no-restricted-syntax -- step indicator icon container, not a reimplemented control
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)]"
               >
                 {step.done ? (

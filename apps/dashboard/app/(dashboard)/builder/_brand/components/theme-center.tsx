@@ -797,7 +797,10 @@ export function ThemeCenter({
           },
         }),
         site.id
-          ? updateSiteIdentity(site.id, { name: siteName.trim() || undefined, socials: cleanSocials })
+          ? updateSiteIdentity(site.id, {
+              name: siteName.trim() || undefined,
+              socials: cleanSocials,
+            })
           : Promise.resolve({ ok: true } as const),
       ]);
       if (b.ok && s.ok && identity.ok) {

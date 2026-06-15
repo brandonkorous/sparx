@@ -186,6 +186,7 @@ export function MediaPicker({ open, onOpenChange, onPick, accept }: MediaPickerP
                     aria-label={`Pick ${a.original_filename}`}
                   >
                     <AssetThumb src={thumb} alt={a.alt_text ?? a.original_filename} />
+                    {/* eslint-disable-next-line no-restricted-syntax -- semi-transparent image overlay label, not a reimplemented control */}
                     <span className="absolute inset-x-0 bottom-0 truncate bg-black/55 px-1.5 py-0.5 text-left text-[10px] text-white">
                       {a.original_filename}
                     </span>

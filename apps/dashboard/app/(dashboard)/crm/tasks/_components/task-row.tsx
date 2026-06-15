@@ -78,7 +78,10 @@ export function TaskRow({ task, overdue }: { task: TaskCard; overdue?: boolean }
         </button>
       )}
       {!isOpen && (
-        <div className="flex h-5 w-5 items-center justify-center rounded-md bg-[var(--color-success-500)] text-white">
+        <div
+          // eslint-disable-next-line no-restricted-syntax -- completion indicator icon container, not a reimplemented control
+          className="flex h-5 w-5 items-center justify-center rounded-md bg-[var(--color-success-500)] text-white"
+        >
           <Check className="h-3 w-3" />
         </div>
       )}
