@@ -89,6 +89,26 @@ export async function updateBrand(input: BrandPatch): Promise<ActionResult<Brand
   return run(() => api.patch<BrandDto>('/v1/brand', input));
 }
 
+// ── Per-site identity (docs/49) ─────────────────────────────────────────────
+// The Builder authors ONE active site at a time. The site's customer-facing
+// NAME (Property.name), its SOCIAL links, and — for a non-primary site — its
+// brand OVERRIDE are per-site, so they persist on the Property, not the tenant
+// brand. The primary site's brand is the tenant base (`updateBrand`); a
+// non-primary site stores a `brandOverride` (a partial that wins over the base,
+// null fields inherit). One PATCH endpoint, fields are independent.
+export interface SiteIdentityPatch {
+  name?: string;
+  socials?: { platform: string; url: string }[];
+  brandOverride?: Record<string, unknown> | null;
+}
+
+export async function updateSiteIdentity(
+  propertyId: string,
+  input: SiteIdentityPatch
+): Promise<ActionResult<unknown>> {
+  return run(() => api.patch(`/v1/properties/${propertyId}`, input));
+}
+
 // Resolve a freshly-picked/uploaded asset id to a preview URL for the brand
 // board, without touching revalidation (pure read).
 export async function resolveBrandMedia(mediaId: string | null): Promise<string | null> {

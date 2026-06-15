@@ -9,40 +9,13 @@ import { api, type ApiRestError } from '@/lib/api-rest-client';
 // admin role). Schema validation still happens here so the form error
 // surfaces inline without a round-trip.
 
-// Site-wide social links — an ordered { platform, url }[] (the form submits the
-// whole list as JSON in the hidden `socials` field). `platform` is a known key
-// or a free-text "Other" label; mirrors the api-rest PatchTenant schema.
-const SocialLink = z.object({
-  platform: z.string().min(1).max(40),
-  url: z.string().min(1).max(2048),
-});
-
+// Tenant-level account details only. Social links moved to a per-SITE setting
+// (each site has its own), edited in Builder → Brand (docs/49) — so this form no
+// longer reads or writes them.
 const TenantUpdateSchema = z.object({
   name: z.string().min(1, 'Site name is required.').max(255),
   email: z.string().email('Enter a valid email address.').max(255),
-  socials: z.array(SocialLink).max(50),
 });
-
-// Parse the hidden `socials` JSON field into a clean { platform, url }[],
-// dropping anything malformed or incomplete (defensive — the client already
-// filters, and the PATCH REPLACES the whole array).
-function parseSocials(raw: FormDataEntryValue | null): { platform: string; url: string }[] {
-  if (typeof raw !== 'string' || !raw) return [];
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    return [];
-  }
-  if (!Array.isArray(parsed)) return [];
-  return parsed.flatMap((item) => {
-    if (!item || typeof item !== 'object') return [];
-    const { platform, url } = item as Record<string, unknown>;
-    const p = typeof platform === 'string' ? platform.trim() : '';
-    const u = typeof url === 'string' ? url.trim() : '';
-    return p && u ? [{ platform: p, url: u }] : [];
-  });
-}
 
 export interface UpdateGeneralResult {
   ok: boolean;
@@ -53,7 +26,6 @@ export async function updateGeneralSettings(formData: FormData): Promise<UpdateG
   const parsed = TenantUpdateSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
-    socials: parseSocials(formData.get('socials')),
   });
 
   if (!parsed.success) {

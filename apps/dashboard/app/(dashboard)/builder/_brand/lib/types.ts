@@ -110,3 +110,25 @@ export interface BrandMediaUrls {
   logoDark: string | null;
   favicon: string | null;
 }
+
+// The active site the Builder is authoring (docs/49). The Brand page edits this
+// site's customer-facing NAME (Property.name), its own SOCIAL links, and — for a
+// non-primary site — its brand OVERRIDE. `isPrimary` decides where brand edits
+// land: the tenant base brand (primary) or this site's override (non-primary).
+export interface SiteDto {
+  id: string;
+  name: string;
+  isPrimary: boolean;
+  socials: { platform: string; url: string }[];
+}
+
+// What the brand page's "Site" preview iframe needs to load the ACTIVE site live
+// (docs/49). The iframe points at the tenant's web property and re-themes on every
+// brand edit via the storefront PreviewBridge postMessage channel (no reload).
+// `origin` is null when it can't be resolved (no tenant slug, or a prod localhost
+// iframe we deliberately skip) — the page then shows only the component showcase.
+export interface SitePreviewConfig {
+  origin: string | null;
+  tenantSlug: string;
+  propertySlug: string | null;
+}

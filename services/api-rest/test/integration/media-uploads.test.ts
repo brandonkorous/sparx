@@ -104,10 +104,12 @@ describe('media uploads', () => {
     expect(complete.statusCode).toBe(200);
     expect(complete.json().data.status).toBe('ready');
 
-    // Public GET serves the original bytes.
+    // Public GET serves the original bytes. The key travels as real path
+    // segments (the route is a wildcard — find-my-way decodes `%2F` over real
+    // HTTP, so an encoded single segment never matches a multi-segment key).
     const publicRes = await app.inject({
       method: 'GET',
-      url: `/v1/public/media/file/${encodeURIComponent(asset.key as string)}`,
+      url: `/v1/public/media/file/${asset.key as string}`,
     });
     expect(publicRes.statusCode).toBe(200);
     expect(publicRes.rawPayload.length).toBe(4);

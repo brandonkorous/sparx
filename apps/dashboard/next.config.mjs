@@ -39,6 +39,22 @@ const config = {
       { source: '/cms/pages', destination: '/cms/content', permanent: true },
     ];
   },
+  async rewrites() {
+    // Dev-only media-upload proxy. In local (non-GCS) mode api-rest's
+    // `presignPut` returns a RELATIVE upload URL (`/v1/media/_local/...`) so the
+    // browser PUTs same-origin; this proxy forwards it to api-rest. Without it
+    // the bytes hit the dashboard origin and 404 (the cause of "upload doesn't
+    // work" on the brand/media surfaces). In prod, uploads go straight to GCS
+    // signed URLs — there is no `_local` route — so this rewrite is omitted.
+    if (process.env.NODE_ENV === 'production') return [];
+    const apiOrigin = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
+    return [
+      {
+        source: '/v1/media/_local/:path*',
+        destination: `${apiOrigin}/v1/media/_local/:path*`,
+      },
+    ];
+  },
 };
 
 export default config;

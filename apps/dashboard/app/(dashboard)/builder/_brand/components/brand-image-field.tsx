@@ -37,6 +37,10 @@ export function BrandImageField({
   const [open, setOpen] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  // Track a broken preview so a stale/unresolvable id shows the placeholder
+  // instead of a broken-image glyph. Reset whenever the URL changes.
+  const [imgFailed, setImgFailed] = React.useState(false);
+  React.useEffect(() => setImgFailed(false), [previewUrl]);
   const fileRef = React.useRef<HTMLInputElement | null>(null);
 
   async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -80,12 +84,13 @@ export function BrandImageField({
             dark ? 'bg-[#0b0b0f]' : 'bg-[var(--color-bg-subtle)]'
           }`}
         >
-          {previewUrl ? (
+          {previewUrl && !imgFailed ? (
             <img
               src={previewUrl}
               alt=""
               decoding="async"
               className="h-full w-full object-contain"
+              onError={() => setImgFailed(true)}
             />
           ) : (
             <ImageIcon className="h-5 w-5 text-[var(--color-text-tertiary)]" />

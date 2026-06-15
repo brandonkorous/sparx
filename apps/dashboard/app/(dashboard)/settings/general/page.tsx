@@ -9,7 +9,6 @@ interface TenantCard {
   email: string;
   slug: string;
   plan: string;
-  socials: { platform: string; url: string }[];
 }
 
 // First real database-backed dashboard page. Now reads the tenant
@@ -37,7 +36,6 @@ export default async function GeneralSettingsPage() {
             email: tenant.email,
             slug: tenant.slug,
             plan: tenant.plan,
-            socials: tenant.socials ?? [],
           }}
         />
       </Stack>

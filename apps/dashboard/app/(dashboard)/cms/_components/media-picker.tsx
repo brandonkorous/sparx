@@ -41,6 +41,11 @@ interface ApiAsset {
   alt_text: string | null;
   caption: string | null;
   variants?: { format: string; width: number; url: string }[];
+  // Original bytes (served by api-rest in local mode; null in prod where
+  // originals are private) and the storage key (an absolute URL for hot-linked
+  // external assets). Both are thumbnail fallbacks when no variant exists.
+  original_url?: string | null;
+  key?: string;
 }
 
 export interface MediaPickerProps {
@@ -52,13 +57,39 @@ export interface MediaPickerProps {
 }
 
 function pickBestVariant(asset: ApiAsset): string | null {
-  if (!asset.variants?.length) return null;
   // Prefer webp around 800w as a thumbnail; fall back to the smallest variant.
-  const webp = asset.variants
+  const webp = (asset.variants ?? [])
     .filter((v) => v.format === 'webp')
     .sort((a, b) => Math.abs(a.width - 800) - Math.abs(b.width - 800));
   if (webp[0]) return webp[0].url;
-  return asset.variants[0]?.url ?? null;
+  if (asset.variants?.[0]) return asset.variants[0].url;
+  // No transcoded variants (dev/local, or a skipped format): serve the original
+  // bytes, or — for a hot-linked external asset — its absolute-URL key.
+  if (asset.original_url) return asset.original_url;
+  if (asset.key && /^https?:\/\//i.test(asset.key)) return asset.key;
+  return null;
+}
+
+// A thumbnail that degrades to the placeholder icon when there is no source OR
+// the image fails to load (e.g. a stray asset row whose bytes never landed).
+function AssetThumb({ src, alt }: { src: string | null; alt: string }) {
+  const [failed, setFailed] = React.useState(false);
+  if (!src || failed) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <ImageIcon className="h-6 w-6 text-[var(--color-text-tertiary)]" />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
 }
 
 function matchesAccept(mime: string, accept: string[] | undefined): boolean {
@@ -154,18 +185,7 @@ export function MediaPicker({ open, onOpenChange, onPick, accept }: MediaPickerP
                     className="group relative aspect-square overflow-hidden rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-subtle)] focus:ring-2 focus:ring-[var(--color-border-focus)] focus:outline-none"
                     aria-label={`Pick ${a.original_filename}`}
                   >
-                    {thumb ? (
-                      <img
-                        src={thumb}
-                        alt={a.alt_text ?? a.original_filename}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center">
-                        <ImageIcon className="h-6 w-6 text-[var(--color-text-tertiary)]" />
-                      </div>
-                    )}
+                    <AssetThumb src={thumb} alt={a.alt_text ?? a.original_filename} />
                     <span className="absolute inset-x-0 bottom-0 truncate bg-black/55 px-1.5 py-0.5 text-left text-[10px] text-white">
                       {a.original_filename}
                     </span>

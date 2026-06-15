@@ -130,6 +130,11 @@ export async function rollback(ctx: PropertyContext, rawInput: unknown): Promise
 async function overlayBrand(
   tx: TxClient,
   tenantId: string,
+  // The active site. A NON-PRIMARY site's brand override (docs/49 "full per-site
+  // brand") is merged over the tenant base brand below, so per-site colours/type/
+  // shape reach both the draft preview and the live storefront — not just the
+  // primary. A primary site (or one with no override) compiles the base brand.
+  propertyId: string,
   snapshot: PublishedSnapshot,
   presentation: PresentationOverlayV2 | null,
   // A DATA theme's inline v2 preset (docs/85 §7). When present the v2 compile uses
@@ -137,24 +142,31 @@ async function overlayBrand(
   // (no-code) theme renders with zero code-preset dependency.
   preset: ThemePresetV2 | null
 ): Promise<PublishedSnapshot> {
-  const brand = await tx.tenantBrand.findUnique({
-    where: { tenantId },
-    select: {
-      colorPrimary: true,
-      colorPrimaryForeground: true,
-      colorAccent: true,
-      // secondary + the accent/secondary `-content` overrides — feed compiledV2
-      // only (the v1 identity overlay below has no slot for them).
-      colorAccentForeground: true,
-      colorSecondary: true,
-      colorSecondaryForeground: true,
-      fontHeading: true,
-      fontBody: true,
-      // shape/rhythm/effect — feeds compiledV2 (the v1 identity overlay below
-      // ignores it; applyBrandIdentityTokens only touches colour/type).
-      tokens: true,
-    },
-  });
+  const [base, property] = await Promise.all([
+    tx.tenantBrand.findUnique({
+      where: { tenantId },
+      select: {
+        colorPrimary: true,
+        colorPrimaryForeground: true,
+        colorAccent: true,
+        // secondary + the accent/secondary `-content` overrides — feed compiledV2
+        // only (the v1 identity overlay below has no slot for them).
+        colorAccentForeground: true,
+        colorSecondary: true,
+        colorSecondaryForeground: true,
+        fontHeading: true,
+        fontBody: true,
+        // shape/rhythm/effect — feeds compiledV2 (the v1 identity overlay below
+        // ignores it; applyBrandIdentityTokens only touches colour/type).
+        tokens: true,
+      },
+    }),
+    tx.property.findUnique({ where: { id: propertyId }, select: { isPrimary: true } }),
+  ]);
+  const override = property?.isPrimary
+    ? null
+    : await readPropertyBrandOverride(tx, propertyId);
+  const brand = mergeCompileBrand(base, override);
   const compiledTokens = brand
     ? applyBrandIdentityTokens(snapshot.compiledTokens, brand)
     : snapshot.compiledTokens;
@@ -165,6 +177,59 @@ async function overlayBrand(
     presentation,
   });
   return { ...snapshot, compiledTokens, compiledV2 };
+}
+
+// The compile-relevant brand columns (colour/type/shape). `null` when the tenant
+// has no brand row AND no override (compile falls back to the preset defaults).
+type CompileBrand = {
+  colorPrimary: string | null;
+  colorPrimaryForeground: string | null;
+  colorAccent: string | null;
+  colorAccentForeground: string | null;
+  colorSecondary: string | null;
+  colorSecondaryForeground: string | null;
+  fontHeading: string | null;
+  fontBody: string | null;
+  tokens: unknown;
+};
+
+// Read a non-primary site's brand override (the compile-relevant subset) from the
+// property's `brand_override` JSON. Defensive — the column is unvalidated.
+async function readPropertyBrandOverride(
+  tx: TxClient,
+  propertyId: string
+): Promise<Partial<CompileBrand> | null> {
+  const row = await tx.property.findUnique({
+    where: { id: propertyId },
+    select: { brandOverride: true },
+  });
+  const raw = row?.brandOverride;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  return raw as Partial<CompileBrand>;
+}
+
+// Merge an override over the base brand, field-by-field (null/absent = inherit).
+// Returns null only when there is nothing to compile from.
+function mergeCompileBrand(
+  base: CompileBrand | null,
+  override: Partial<CompileBrand> | null
+): CompileBrand | null {
+  if (!base && !override) return null;
+  const b = base ?? ({} as Partial<CompileBrand>);
+  const o = override ?? {};
+  const pick = (k: keyof CompileBrand): string | null =>
+    ((o[k] as string | null | undefined) ?? (b[k] as string | null | undefined) ?? null);
+  return {
+    colorPrimary: pick('colorPrimary'),
+    colorPrimaryForeground: pick('colorPrimaryForeground'),
+    colorAccent: pick('colorAccent'),
+    colorAccentForeground: pick('colorAccentForeground'),
+    colorSecondary: pick('colorSecondary'),
+    colorSecondaryForeground: pick('colorSecondaryForeground'),
+    fontHeading: pick('fontHeading'),
+    fontBody: pick('fontBody'),
+    tokens: o.tokens ?? b.tokens ?? null,
+  };
 }
 
 /** A DATA theme's inline payload, persisted in a settings JSON blob under
@@ -201,6 +266,7 @@ export async function getPublishedSnapshot(
     const withBrand = await overlayBrand(
       tx,
       ctx.tenantId,
+      ctx.propertyId,
       toPublishedSnapshot(version),
       presentation,
       preset?.v2 ?? null
@@ -241,6 +307,7 @@ export async function getDraftSnapshot(ctx: PropertyContext): Promise<PublishedS
     const withBrand = await overlayBrand(
       tx,
       ctx.tenantId,
+      ctx.propertyId,
       snapshot,
       presentation,
       preset?.v2 ?? null

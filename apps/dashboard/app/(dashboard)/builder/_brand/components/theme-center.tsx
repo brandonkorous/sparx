@@ -47,6 +47,7 @@ import {
   updateBrand,
   updateSavedTheme,
   updateSettings,
+  updateSiteIdentity,
   type BrandPatch,
 } from '../lib/actions';
 import type {
@@ -54,11 +55,15 @@ import type {
   BrandDto,
   BrandMediaUrls,
   SiteConfigDto,
+  SiteDto,
+  SitePreviewConfig,
   SiteThemeDto,
 } from '../lib/types';
+import { computeBrandOverride } from '../lib/site-brand';
 import { cleanTokens, type BrandTokens } from '../lib/brand-feel';
 import { BrandThemeControls, type MediaState } from './brand-theme-controls';
 import { ThemeShowcase } from './theme-showcase';
+import { SitePreviewFrame } from './site-preview-frame';
 
 type Mode = 'light' | 'dark';
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
@@ -153,16 +158,71 @@ function ThemeDots({ colors }: { colors: string[] }) {
   );
 }
 
+// Segmented control flipping the preview column between the component showcase
+// and the tenant's live site (docs/49). Mirrors the showcase's Light/Dark toggle
+// shape so the two read as one control family.
+function PreviewSurfaceToggle({
+  value,
+  onChange,
+}: {
+  value: 'components' | 'site';
+  onChange: (v: 'components' | 'site') => void;
+}) {
+  return (
+    <div className="flex rounded-md border border-[var(--color-border-default)] p-0.5">
+      {(
+        [
+          ['components', 'Components'],
+          ['site', 'Site'],
+        ] as const
+      ).map(([v, label]) => (
+        <Button
+          key={v}
+          size="xs"
+          variant={value === v ? 'soft' : 'ghost'}
+          onClick={() => onChange(v)}
+          aria-pressed={value === v}
+        >
+          {label}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
 export interface ThemeCenterProps {
+  // The EFFECTIVE brand the active site renders (base for primary, base+override
+  // for a non-primary site). Drives the form + the live showcase.
   brand: BrandDto;
+  // The tenant BASE brand — a non-primary site's edits are diffed against this so
+  // only what differs is stored as its override (and re-inherits when reset).
+  baseBrand: BrandDto;
+  // The active site (docs/49) — its name + socials are per-site; `isPrimary`
+  // routes brand edits to the base brand vs this site's override.
+  site: SiteDto;
   config: SiteConfigDto;
   savedThemes: SiteThemeDto[];
   media: BrandMediaUrls;
+  // Where the live "Site" preview iframe points (docs/49) — the active site's
+  // public origin + tenant/property slugs.
+  sitePreview: SitePreviewConfig;
 }
 
-export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }: ThemeCenterProps) {
-  // ── Brand state (persists via /v1/brand) ──────────────────────────────────
-  const [businessName, setBusinessName] = React.useState(brand.businessName ?? '');
+export function ThemeCenter({
+  brand,
+  baseBrand,
+  site,
+  config,
+  savedThemes: initialSaved,
+  media,
+  sitePreview,
+}: ThemeCenterProps) {
+  // ── Per-site identity (persists on the Property, docs/49) ──────────────────
+  // The customer-facing SITE name (Property.name) — NOT the tenant's legal name.
+  const [siteName, setSiteName] = React.useState(site.name);
+  const [socials, setSocials] = React.useState(site.socials);
+
+  // ── Brand state (primary → /v1/brand; non-primary → this site's override) ──
   const [tagline, setTagline] = React.useState(brand.tagline ?? '');
   const [colorPrimary, setColorPrimary] = React.useState<string | null>(brand.colorPrimary);
   const [colorPrimaryForeground, setColorPrimaryForeground] = React.useState<string | null>(
@@ -259,11 +319,24 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     () => buildThemeCssV2(compiled, { rootSelector: '#st-theme-preview' }),
     [compiled]
   );
+  // The SAME compiled theme, scoped to `:root` — posted to the live site preview
+  // iframe (the storefront's PreviewBridge injects it so the real site re-themes
+  // on every edit). Separate from `css` only in selector scope.
+  const rootCss = React.useMemo(() => buildThemeCssV2(compiled), [compiled]);
+
+  // Which preview the right column shows: the component showcase (default) or the
+  // tenant's live site in an iframe (docs/49). The site origin always resolves in
+  // practice; guard anyway so a missing origin just hides the toggle.
+  const [previewSurface, setPreviewSurface] = React.useState<'components' | 'site'>('components');
+  const canPreviewSite = Boolean(sitePreview.origin && sitePreview.tenantSlug);
 
   // ── Debounced autosave: brand ──────────────────────────────────────────────
+  // The brand fields to persist. `businessName` is NOT here — it's deprecated as a
+  // name source (the site name is Property.name, saved separately). For a primary
+  // site this is the /v1/brand PATCH body; for a non-primary site the same field
+  // set is diffed into this site's override (see saveBrand).
   const brandPatch = React.useMemo<BrandPatch>(
     () => ({
-      businessName: businessName.trim() || null,
       tagline: tagline.trim() || null,
       logoLightMediaId: logoLight.id,
       logoDarkMediaId: logoDark.id,
@@ -279,7 +352,6 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
       tokens: cleanedTokens,
     }),
     [
-      businessName,
       tagline,
       logoLight.id,
       logoDark.id,
@@ -295,6 +367,57 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
       cleanedTokens,
     ]
   );
+
+  // The full effective brand assembled from current state — used to diff a
+  // non-primary site's edits into an override (only what differs from the base
+  // is stored, so it keeps inheriting everything else).
+  const currentBrand = React.useMemo<BrandDto>(
+    () => ({
+      tenantId: brand.tenantId,
+      businessName: brand.businessName,
+      tagline: tagline.trim() || null,
+      logoLightMediaId: logoLight.id,
+      logoDarkMediaId: logoDark.id,
+      faviconMediaId: favicon.id,
+      colorPrimary,
+      colorPrimaryForeground,
+      colorAccent,
+      colorAccentForeground,
+      colorSecondary,
+      colorSecondaryForeground,
+      fontHeading,
+      fontBody,
+      tokens: cleanedTokens,
+    }),
+    [
+      brand.tenantId,
+      brand.businessName,
+      tagline,
+      logoLight.id,
+      logoDark.id,
+      favicon.id,
+      colorPrimary,
+      colorPrimaryForeground,
+      colorAccent,
+      colorAccentForeground,
+      colorSecondary,
+      colorSecondaryForeground,
+      fontHeading,
+      fontBody,
+      cleanedTokens,
+    ]
+  );
+
+  // Persist the brand to the right place for the active site: the tenant BASE
+  // brand for the primary site (so "edit the brand everywhere" works), or this
+  // site's OVERRIDE for a non-primary one (diffed against the base).
+  const saveBrand = React.useCallback(() => {
+    if (site.isPrimary) return updateBrand(brandPatch);
+    return updateSiteIdentity(site.id, {
+      brandOverride: computeBrandOverride(currentBrand, baseBrand),
+    });
+  }, [site.isPrimary, site.id, brandPatch, currentBrand, baseBrand]);
+
   const savedBrandRef = React.useRef(JSON.stringify(brandPatch));
   React.useEffect(() => {
     const cur = JSON.stringify(brandPatch);
@@ -302,7 +425,7 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     setStatus('saving');
     const t = setTimeout(() => {
       void (async () => {
-        const res = await updateBrand(brandPatch);
+        const res = await saveBrand();
         if (res.ok) {
           savedBrandRef.current = cur;
           setSavedBrandColors(pickBrandColors(brandPatch));
@@ -315,7 +438,36 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
       })();
     }, 600);
     return () => clearTimeout(t);
-  }, [brandPatch]);
+  }, [brandPatch, saveBrand]);
+
+  // ── Debounced autosave: site name + social links (per-site, on the Property) ─
+  const savedSiteRef = React.useRef(JSON.stringify({ name: siteName, socials }));
+  React.useEffect(() => {
+    if (!site.id) return; // brand-new tenant with no property yet — nothing to save
+    const cur = JSON.stringify({ name: siteName, socials });
+    if (cur === savedSiteRef.current) return;
+    setStatus('saving');
+    const t = setTimeout(() => {
+      void (async () => {
+        const cleanSocials = socials
+          .map((s) => ({ platform: s.platform.trim(), url: s.url.trim() }))
+          .filter((s) => s.platform && s.url);
+        const res = await updateSiteIdentity(site.id, {
+          name: siteName.trim() || undefined,
+          socials: cleanSocials,
+        });
+        if (res.ok) {
+          savedSiteRef.current = cur;
+          setStatus('saved');
+        } else {
+          setError(res.error ?? 'Could not save your site details.');
+          setStatus('error');
+          toast.error(res.error ?? 'Could not save your site details.');
+        }
+      })();
+    }, 600);
+    return () => clearTimeout(t);
+  }, [siteName, socials, site.id]);
 
   // ── Write brand "look" edits back into the selected saved theme ─────────────
   // Separate from the tenant-brand save above: that always persists to /v1/brand
@@ -522,10 +674,14 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
     if (!t) return;
     setThemeKey(t.basePresetKey);
     setPresentation(t.presentation);
-    // Load the theme's captured brand "look" into state. That changes brandPatch,
-    // so the brand autosave writes it to /v1/brand — i.e. applying a theme updates
-    // the tenant brand everywhere (the chosen "apply to brand" model). Legacy
-    // themes with no snapshot (brand === null) leave the current brand untouched.
+    // Load the theme's captured brand "look" into state. That changes the brand
+    // form, so the brand autosave persists it through saveBrand() — which routes
+    // to the RIGHT place for the active site (docs/49): the tenant base brand for
+    // the primary site, or THIS site's override for a non-primary one. So applying
+    // a theme on a non-primary site recolours only that site, never the base. The
+    // server apply endpoint writes the per-site config (preset/presentation) only,
+    // never the brand. Legacy themes with no snapshot (brand === null) leave the
+    // current brand untouched.
     const tb = t.brand;
     if (tb) {
       setColorPrimary(tb.colorPrimary ?? null);
@@ -537,8 +693,8 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
       setFontHeading(tb.fontHeading ?? null);
       setFontBody(tb.fontBody ?? null);
       setTokens(tb.tokens ?? {});
-      // The applied theme's colours are persisted server-side (applyBrandLook),
-      // so they're the new "saved" baseline — no stale revert affordance.
+      // The brand autosave (saveBrand) persists these to the right scope, so seed
+      // the "saved" baseline now — no stale per-swatch revert affordance flashes.
       setSavedBrandColors(pickBrandColors(tb));
     }
     // This saved theme is now the one being edited — presentation AND brand edits
@@ -627,8 +783,11 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
   const onSaveNow = () => {
     startTransition(async () => {
       setStatus('saving');
-      const [b, s] = await Promise.all([
-        updateBrand(brandPatch),
+      const cleanSocials = socials
+        .map((s) => ({ platform: s.platform.trim(), url: s.url.trim() }))
+        .filter((s) => s.platform && s.url);
+      const [b, s, identity] = await Promise.all([
+        saveBrand(),
         updateSettings({
           settings: {
             tokens: draftTokens.current,
@@ -637,14 +796,19 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
             activeSavedThemeId,
           },
         }),
+        site.id
+          ? updateSiteIdentity(site.id, { name: siteName.trim() || undefined, socials: cleanSocials })
+          : Promise.resolve({ ok: true } as const),
       ]);
-      if (b.ok && s.ok) {
+      if (b.ok && s.ok && identity.ok) {
         savedBrandRef.current = JSON.stringify(brandPatch);
         setSavedBrandColors(pickBrandColors(brandPatch));
         savedSettingsRef.current = JSON.stringify({ presentation, activeSavedThemeId });
+        savedSiteRef.current = JSON.stringify({ name: siteName, socials });
         setStatus('saved');
       } else {
-        setError((b.ok ? s.error : b.error) ?? 'Could not save.');
+        const identityErr = 'error' in identity ? identity.error : undefined;
+        setError((b.ok ? (s.ok ? identityErr : s.error) : b.error) ?? 'Could not save.');
         setStatus('error');
         toast.error('Could not save your changes.');
       }
@@ -891,8 +1055,11 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
         <div className="grid gap-4 lg:grid-cols-[400px_1fr]">
           <div className="min-w-0 rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4">
             <BrandThemeControls
-              businessName={businessName}
-              setBusinessName={setBusinessName}
+              siteName={siteName}
+              setSiteName={setSiteName}
+              isPrimarySite={site.isPrimary}
+              socials={socials}
+              setSocials={setSocials}
               tagline={tagline}
               setTagline={setTagline}
               logoLight={logoLight}
@@ -931,15 +1098,35 @@ export function ThemeCenter({ brand, config, savedThemes: initialSaved, media }:
           </div>
 
           <div className="min-w-0 rounded-[var(--radius-lg)] bg-[var(--color-bg-subtle)] p-4 lg:sticky lg:top-4 lg:self-start">
-            <ThemeShowcase
-              css={css}
-              mode={mode}
-              brandName={businessName.trim() || brand.businessName}
-              logoLightUrl={logoLight.url}
-              logoDarkUrl={logoDark.url}
-              headingFont={fontHeading}
-              bodyFont={fontBody}
-            />
+            {previewSurface === 'site' && canPreviewSite && sitePreview.origin ? (
+              <SitePreviewFrame
+                origin={sitePreview.origin}
+                tenantSlug={sitePreview.tenantSlug}
+                propertySlug={sitePreview.propertySlug}
+                css={rootCss}
+                mode={mode}
+                headerExtra={
+                  canPreviewSite ? (
+                    <PreviewSurfaceToggle value={previewSurface} onChange={setPreviewSurface} />
+                  ) : null
+                }
+              />
+            ) : (
+              <ThemeShowcase
+                css={css}
+                mode={mode}
+                brandName={siteName.trim() || site.name}
+                logoLightUrl={logoLight.url}
+                logoDarkUrl={logoDark.url}
+                headingFont={fontHeading}
+                bodyFont={fontBody}
+                headerExtra={
+                  canPreviewSite ? (
+                    <PreviewSurfaceToggle value={previewSurface} onChange={setPreviewSurface} />
+                  ) : null
+                }
+              />
+            )}
           </div>
         </div>
       </div>

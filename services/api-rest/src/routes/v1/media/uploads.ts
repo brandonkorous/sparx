@@ -54,6 +54,31 @@ const CreateUploadBody = z.object({
   byte_size: z.coerce.number().int().positive().max(MAX_UPLOAD_BYTES),
 });
 
+// Content-type from a storage key's file extension — used by the local-mode
+// file route, whose backend (LocalStorage) does not persist the content-type.
+// Mirrors the allowlist of accepted upload types; defaults to octet-stream for
+// anything unrecognised (never an image type, so ORB still guards non-media).
+const CONTENT_TYPE_BY_EXT: Record<string, string> = {
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  webp: 'image/webp',
+  avif: 'image/avif',
+  gif: 'image/gif',
+  svg: 'image/svg+xml',
+  mp4: 'video/mp4',
+  webm: 'video/webm',
+  mov: 'video/quicktime',
+  mp3: 'audio/mpeg',
+  m4a: 'audio/mp4',
+  wav: 'audio/wav',
+  pdf: 'application/pdf',
+};
+function contentTypeForKey(key: string): string {
+  const ext = key.split('.').pop()?.toLowerCase() ?? '';
+  return CONTENT_TYPE_BY_EXT[ext] ?? 'application/octet-stream';
+}
+
 const PathId = z.object({ id: z.string().uuid() });
 
 const uploadRoutes: FastifyPluginAsync = (app) => {
@@ -182,14 +207,18 @@ const uploadRoutes: FastifyPluginAsync = (app) => {
   // re-check the key shape so a stray request can't write to a path that
   // looks like another tenant's prefix.
   if (env.GCS_MEDIA_BUCKET === undefined) {
-    app.put<{ Params: { encodedKey: string } }>(
-      '/v1/media/_local/:encodedKey',
+    app.put<{ Params: { '*': string } }>(
+      // Wildcard so the key travels as real path segments
+      // (`<tenantId>/originals/<assetId>/<filename>`), matching the relative
+      // URL `presignPut` returns. The dashboard proxies this path to api-rest
+      // in dev (next.config rewrite); prod uploads go straight to GCS.
+      '/v1/media/_local/*',
       {
         // Bigger than the JSON body limit because this carries real media.
         bodyLimit: MAX_UPLOAD_BYTES,
       },
       async (request, reply) => {
-        const key = decodeURIComponent(request.params.encodedKey);
+        const key = request.params['*'];
         const contentType = request.headers['content-type'] ?? 'application/octet-stream';
         const body = request.body;
         if (!Buffer.isBuffer(body)) {
@@ -203,13 +232,21 @@ const uploadRoutes: FastifyPluginAsync = (app) => {
     // Public read for local-mode variants + originals — match the GCS
     // public layout so the dashboard can `<img src=publicUrl(key)>` in
     // both modes without branching.
-    app.get<{ Params: { encodedKey: string } }>(
-      '/v1/public/media/file/:encodedKey',
+    app.get<{ Params: { '*': string } }>(
+      // Wildcard so the multi-segment key survives real-HTTP routing (find-my-way
+      // decodes `%2F`, which breaks a single `:param`). Matches the real-slash
+      // URL `LocalStorage.publicUrl` emits.
+      '/v1/public/media/file/*',
       async (request, reply) => {
-        const key = decodeURIComponent(request.params.encodedKey);
+        const key = request.params['*'];
         try {
           const obj = await getStorage().readObject(key);
-          if (obj.contentType) reply.header('content-type', obj.contentType);
+          // LocalStorage doesn't persist content-type, so derive it from the
+          // file extension. A correct image/* type is REQUIRED: the dashboard
+          // loads these cross-origin (3001 → 3100) in an <img>, and a missing/
+          // octet-stream type trips the browser's Opaque Response Blocking
+          // (ERR_BLOCKED_BY_ORB) — the asset uploads fine but never renders.
+          reply.header('content-type', obj.contentType ?? contentTypeForKey(key));
           if (obj.size) reply.header('content-length', String(obj.size));
           reply.header('cache-control', 'public, max-age=3600');
           return reply.send(obj.body);

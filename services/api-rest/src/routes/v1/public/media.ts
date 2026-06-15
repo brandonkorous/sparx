@@ -65,11 +65,22 @@ const publicMediaRoutes: FastifyPluginAsync = (app) => {
       tx.mediaAsset.findFirst({ where: { id }, select: { key: true } })
     );
     if (!asset?.key) throw notFound('MediaAsset', id);
+    // Resolve the redirect target for the asset's stored key:
+    //   · external hot-linked URL (blueprint installs) → pass through verbatim.
+    //   · local-dev (no GCS) → the original bytes are served by api-rest's own
+    //     /v1/public/media/file/* route. mediaPublicUrl() would hand back the raw
+    //     relative key here (no CDN/bucket env), which 404s in an <img>/iframe —
+    //     so route through storage.publicUrl(), the same URL the brand board uses.
+    //   · GCS mode → mediaPublicUrl() mints the CDN/public-bucket URL.
+    const storage = getStorage();
+    const target = /^https?:\/\//i.test(asset.key)
+      ? asset.key
+      : storage.mode === 'local'
+        ? storage.publicUrl(asset.key)
+        : mediaPublicUrl(asset.key);
     // The redirect is stable per asset id (a re-upload mints a new id), so let
     // the edge cache it.
-    return reply
-      .header('cache-control', 'public, max-age=86400')
-      .redirect(mediaPublicUrl(asset.key), 302);
+    return reply.header('cache-control', 'public, max-age=86400').redirect(target, 302);
   });
 
   app.get<{ Params: z.infer<typeof PathParams> }>(

@@ -16,7 +16,7 @@
 // override escape hatch.
 
 import * as React from 'react';
-import { Button, Input, Label } from '@sparx/ui';
+import { Alert, Button, Input, Label, NativeSelect } from '@sparx/ui';
 import {
   getThemePresetV2,
   type CompiledColorTokensV2,
@@ -24,7 +24,7 @@ import {
   type PresentationColorOverlay,
   type PresentationOverlayV2,
 } from '@sparx/site-themes';
-import { X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import type { AppearancePolicy } from '../lib/types';
 import { contrastRatio, rateContrast } from '../lib/brand-preview';
 import {
@@ -95,10 +95,20 @@ const POLICIES: { key: AppearancePolicy; label: string }[] = [
   { key: 'toggle', label: 'Toggle' },
 ];
 
+export interface SocialLink {
+  platform: string;
+  url: string;
+}
+
 export interface BrandThemeControlsProps {
-  // Identity (brand-owned)
-  businessName: string;
-  setBusinessName: (v: string) => void;
+  // Identity — the active SITE (docs/49): its customer-facing name + own socials.
+  siteName: string;
+  setSiteName: (v: string) => void;
+  // True when the active site is the tenant's primary — drives the Identity hint
+  // (a non-primary site's brand edits are its own override, not the tenant base).
+  isPrimarySite: boolean;
+  socials: SocialLink[];
+  setSocials: React.Dispatch<React.SetStateAction<SocialLink[]>>;
   tagline: string;
   setTagline: (v: string) => void;
   logoLight: MediaState;
@@ -150,8 +160,11 @@ export interface BrandThemeControlsProps {
 
 export function BrandThemeControls(props: BrandThemeControlsProps) {
   const {
-    businessName,
-    setBusinessName,
+    siteName,
+    setSiteName,
+    isPrimarySite,
+    socials,
+    setSocials,
     tagline,
     setTagline,
     logoLight,
@@ -277,16 +290,16 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
     <div className="flex flex-col gap-6">
       <Section title="Identity">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="brand-name">Business name</Label>
+          <Label htmlFor="site-name">Site name</Label>
           <Input
-            id="brand-name"
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
+            id="site-name"
+            value={siteName}
+            onChange={(e) => setSiteName(e.target.value)}
             placeholder="Acme Co."
           />
           <p className="text-xs text-[var(--color-text-muted)]">
-            Your brand/legal name for documents like invoices. The name customers see on a site
-            (title, header, emails) is that site&apos;s name, set in Settings → Sites.
+            The name customers see on this site — its title, header, and emails. Your tenant&apos;s
+            legal/billing name lives in Settings → General.
           </p>
         </div>
         <div className="flex flex-col gap-1.5">
@@ -298,6 +311,19 @@ export function BrandThemeControls(props: BrandThemeControlsProps) {
             placeholder="Parts that keep you running"
           />
         </div>
+        {!isPrimarySite ? (
+          <Alert color="info" variant="soft" size="sm">
+            You&apos;re editing a secondary site. Its brand below overrides your main brand — any
+            value you leave untouched keeps inheriting from it.
+          </Alert>
+        ) : null}
+      </Section>
+
+      <Section
+        title="Social links"
+        hint="Shown in this site's footer. Each site has its own."
+      >
+        <SocialLinksEditor socials={socials} setSocials={setSocials} />
       </Section>
 
       <Section title="Logo & favicon">
@@ -661,6 +687,132 @@ function Segmented({
         })}
       </div>
       {help ? <p className="text-xs text-[var(--color-text-muted)]">{help}</p> : null}
+    </div>
+  );
+}
+
+// Per-site social links editor (docs/49 "full per-site brand"). An ordered list
+// of { platform, url }; a known platform drives the storefront icon, "Other"
+// carries a free-text label. Mirrors the Settings → General editor it replaces,
+// but writes to the active SITE (the parent debounces the save).
+const KNOWN_PLATFORMS = [
+  { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/yourbrand' },
+  { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/yourbrand' },
+  { key: 'x', label: 'X', placeholder: 'https://x.com/yourbrand' },
+  { key: 'tiktok', label: 'TikTok', placeholder: 'https://tiktok.com/@yourbrand' },
+  { key: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/@yourbrand' },
+  { key: 'linkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/company/yourbrand' },
+  { key: 'pinterest', label: 'Pinterest', placeholder: 'https://pinterest.com/yourbrand' },
+  { key: 'threads', label: 'Threads', placeholder: 'https://threads.com/@yourbrand' },
+  { key: 'whatsapp', label: 'WhatsApp', placeholder: 'https://wa.me/15551234567' },
+  { key: 'bluesky', label: 'Bluesky', placeholder: 'https://bsky.app/profile/you.bsky.social' },
+  { key: 'snapchat', label: 'Snapchat', placeholder: 'https://snapchat.com/add/yourbrand' },
+] as const;
+
+const OTHER_PLATFORM = '__other__';
+const KNOWN_KEYS = new Set<string>(KNOWN_PLATFORMS.map((p) => p.key));
+
+function placeholderFor(platform: string): string {
+  return KNOWN_PLATFORMS.find((p) => p.key === platform)?.placeholder ?? 'https://…';
+}
+
+function SocialLinksEditor({
+  socials,
+  setSocials,
+}: {
+  socials: SocialLink[];
+  setSocials: React.Dispatch<React.SetStateAction<SocialLink[]>>;
+}) {
+  const usedKnown = new Set(socials.map((r) => r.platform).filter((p) => KNOWN_KEYS.has(p)));
+
+  const addRow = () =>
+    setSocials((rows) => {
+      const used = new Set(rows.map((r) => r.platform).filter((p) => KNOWN_KEYS.has(p)));
+      const next = KNOWN_PLATFORMS.find((p) => !used.has(p.key));
+      return [...rows, { platform: next ? next.key : '', url: '' }];
+    });
+  const removeRow = (index: number) => setSocials((rows) => rows.filter((_, i) => i !== index));
+  const patchRow = (index: number, patch: Partial<SocialLink>) =>
+    setSocials((rows) => rows.map((r, i) => (i === index ? { ...r, ...patch } : r)));
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      {socials.length === 0 ? (
+        <p className="text-xs text-[var(--color-text-muted)]">No links yet.</p>
+      ) : (
+        socials.map((row, index) => {
+          const known = KNOWN_KEYS.has(row.platform);
+          const selectValue = known ? row.platform : OTHER_PLATFORM;
+          const options = KNOWN_PLATFORMS.filter(
+            (p) => p.key === row.platform || !usedKnown.has(p.key)
+          );
+          return (
+            <div
+              key={index}
+              className="flex flex-col gap-2 rounded-md border border-[var(--color-border-default)] p-2.5 sm:flex-row sm:items-start"
+            >
+              <div className="flex flex-col gap-2 sm:w-36">
+                <NativeSelect
+                  aria-label="Platform"
+                  value={selectValue}
+                  onChange={(e) =>
+                    patchRow(index, {
+                      platform: e.target.value === OTHER_PLATFORM ? '' : e.target.value,
+                    })
+                  }
+                >
+                  {options.map((p) => (
+                    <option key={p.key} value={p.key}>
+                      {p.label}
+                    </option>
+                  ))}
+                  <option value={OTHER_PLATFORM}>Other…</option>
+                </NativeSelect>
+                {selectValue === OTHER_PLATFORM ? (
+                  <Input
+                    aria-label="Custom platform label"
+                    value={row.platform}
+                    onChange={(e) => patchRow(index, { platform: e.target.value })}
+                    placeholder="Label (e.g. Discord)"
+                  />
+                ) : null}
+              </div>
+              <Input
+                aria-label="Link URL"
+                type="url"
+                inputMode="url"
+                autoComplete="off"
+                className="flex-1"
+                value={row.url}
+                onChange={(e) => patchRow(index, { url: e.target.value })}
+                placeholder={placeholderFor(row.platform)}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                color="neutral"
+                size="sm"
+                aria-label="Remove link"
+                onClick={() => removeRow(index)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          );
+        })
+      )}
+      <div>
+        <Button
+          type="button"
+          variant="soft"
+          color="neutral"
+          size="sm"
+          leftIcon={<Plus className="h-3.5 w-3.5" />}
+          onClick={addRow}
+        >
+          Add link
+        </Button>
+      </div>
     </div>
   );
 }

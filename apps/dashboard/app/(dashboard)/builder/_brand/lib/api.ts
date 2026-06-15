@@ -73,6 +73,9 @@ export function publicMediaUrl(assetId: string | null, tenantSlug: string): stri
 interface PublicTenantChrome {
   name: string;
   businessName: string | null;
+  // The customer-facing SITE name (docs/49) — the active site, else the primary.
+  // This is what the canvas chrome shows, NOT the tenant's legal/brand name.
+  propertyName: string | null;
   theme: { logoMediaId: string | null } | null;
   socials?: { platform: string; url: string }[];
 }
@@ -95,8 +98,15 @@ export async function getSitePreviewData(propertySlug?: string | null): Promise<
     const payload = await api.get<PublicTenantChrome>(
       `/v1/public/tenants/${encodeURIComponent(tenant.slug)}${propertyParam}`
     );
-    const display = payload.businessName?.trim();
-    const name = display && display.length > 0 ? display : payload.name;
+    // The customer-facing SITE name wins (docs/49): the active site's name, then
+    // the legacy brand business name, then the tenant's legal name as a last
+    // resort — so the canvas chrome matches what the live/published site renders.
+    // First non-EMPTY trimmed value (an empty string must fall through, so this
+    // can't collapse to `??`), defaulting to the always-present tenant name.
+    const name =
+      [payload.propertyName, payload.businessName]
+        .map((s) => s?.trim())
+        .find((s) => s) ?? payload.name;
     const logoUrl = publicMediaUrl(payload.theme?.logoMediaId ?? null, tenant.slug);
     const social = (payload.socials ?? []).filter(
       (s) =>
@@ -112,18 +122,30 @@ export async function getSitePreviewData(propertySlug?: string | null): Promise<
 }
 
 // Resolve a media asset id to a browser-usable URL for the brand board
-// preview. Prefers a ~512w webp, falls back to the first variant. Returns null
-// when the id is absent or the asset can't be read (e.g. still transcoding).
+// preview. Prefers a ~512w webp; if no transcoded variants exist (dev/local
+// where no media-worker runs, or a format the worker skips such as SVG) it
+// falls back to the original bytes (`original_url`, served by api-rest in local
+// mode) or, for a hot-linked external asset whose key is an absolute URL
+// (blueprint installs), the key itself. Returns null when the id is absent or
+// the asset can't be read.
 export async function resolveMediaUrl(mediaId: string | null): Promise<string | null> {
   if (!mediaId) return null;
   try {
-    const asset = await api.get<{ variants?: AssetVariant[] }>(`/v1/media/assets/${mediaId}`);
+    const asset = await api.get<{
+      variants?: AssetVariant[];
+      original_url?: string | null;
+      key?: string;
+    }>(`/v1/media/assets/${mediaId}`);
     const variants = asset.variants ?? [];
-    if (variants.length === 0) return null;
-    const webp = variants
-      .filter((v) => v.format === 'webp')
-      .sort((a, b) => Math.abs(a.width - 512) - Math.abs(b.width - 512));
-    return webp[0]?.url ?? variants[0]?.url ?? null;
+    if (variants.length > 0) {
+      const webp = variants
+        .filter((v) => v.format === 'webp')
+        .sort((a, b) => Math.abs(a.width - 512) - Math.abs(b.width - 512));
+      return webp[0]?.url ?? variants[0]?.url ?? null;
+    }
+    if (asset.original_url) return asset.original_url;
+    if (asset.key && /^https?:\/\//i.test(asset.key)) return asset.key;
+    return null;
   } catch {
     return null;
   }

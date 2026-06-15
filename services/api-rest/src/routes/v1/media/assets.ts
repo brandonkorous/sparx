@@ -93,7 +93,15 @@ function serializeAsset(row: AssetRow, variants: VariantRow[] = []) {
     usage_count: row.usageCount,
     // Originals are private — the dashboard fetches them via a separate
     // signed-GET flow once we add it (Phase 3.7). Variants are public.
-    original_url: storage.mode === 'local' ? storage.publicUrl(row.key) : null,
+    // A hot-linked external asset (blueprint installs) stores an absolute URL
+    // as its key — surface it verbatim so the dashboard can preview it. In
+    // local mode the original bytes are served by api-rest; in GCS mode the
+    // private original has no public URL (null).
+    original_url: /^https?:\/\//i.test(row.key)
+      ? row.key
+      : storage.mode === 'local'
+        ? storage.publicUrl(row.key)
+        : null,
     variants: variants.map((v) => ({
       id: v.id,
       format: v.format,
@@ -142,8 +150,27 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
     const page = hasMore ? rows.slice(0, q.limit) : rows;
     const nextCursor = hasMore ? (page[page.length - 1]?.id ?? null) : null;
 
+    // Variants for the whole page in one query (not per-row), so the asset
+    // picker + media library can render real thumbnails. Without this the list
+    // returned `variants: []` for every asset and every thumbnail fell back to
+    // the (prod-private, so null) original — i.e. no thumbnails in prod at all.
+    const variantsByAsset = new Map<string, VariantRow[]>();
+    if (page.length > 0) {
+      const variants = await withRequestTenant(request, (tx) =>
+        tx.mediaVariant.findMany({
+          where: { assetId: { in: page.map((r) => r.id) } },
+          orderBy: [{ format: 'asc' }, { width: 'asc' }],
+        })
+      );
+      for (const v of variants) {
+        const list = variantsByAsset.get(v.assetId) ?? [];
+        list.push(v);
+        variantsByAsset.set(v.assetId, list);
+      }
+    }
+
     return paged(
-      page.map((row) => serializeAsset(row)),
+      page.map((row) => serializeAsset(row, variantsByAsset.get(row.id) ?? [])),
       { per_page: q.limit, next_cursor: nextCursor }
     );
   });

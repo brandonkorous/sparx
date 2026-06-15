@@ -222,11 +222,18 @@ class LocalStorage implements MediaStorage {
   // raw bytes and persists them under `MEDIA_LOCAL_DIR`. The endpoint
   // verifies the signed key claim so a malicious caller can't spray bytes
   // into arbitrary tenant prefixes.
+  //
+  // The URL is RELATIVE and carries the key as real path segments (the route
+  // is a wildcard, see routes/v1/media/uploads.ts). Relative so the browser
+  // PUTs same-origin: in dev the dashboard proxies `/v1/media/_local/*` to
+  // api-rest (next.config rewrite) — no cross-origin, no CORS. Real segments
+  // (not a single encodeURIComponent blob) so the proxy never has to round-trip
+  // an encoded `%2F`, which path normalisers mangle.
   presignPut(key: string, contentType: string): Promise<PresignedPut> {
     assertSafeKey(key);
     const expires = Date.now() + PUT_URL_TTL_SEC * 1000;
     return Promise.resolve({
-      url: `/v1/media/_local/${encodeURIComponent(key)}`,
+      url: `/v1/media/_local/${key}`,
       headers: { 'content-type': contentType },
       key,
       expiresAt: new Date(expires).toISOString(),
@@ -260,7 +267,11 @@ class LocalStorage implements MediaStorage {
 
   publicUrl(key: string): string {
     const base = this.publicBase || '';
-    return `${base}/v1/public/media/file/${encodeURIComponent(key)}`;
+    // Real path segments (not a single encodeURIComponent blob): the file route
+    // is a wildcard, and find-my-way decodes `%2F` before routing over real
+    // HTTP, so an encoded key never matches a multi-segment path (it 404s as
+    // JSON, which the browser then ORB-blocks when used as an <img>).
+    return `${base}/v1/public/media/file/${key}`;
   }
 }
 

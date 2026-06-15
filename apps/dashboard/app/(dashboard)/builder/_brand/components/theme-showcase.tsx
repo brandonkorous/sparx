@@ -74,6 +74,9 @@ export interface ThemeShowcaseProps {
   /** When provided, renders the Light/Dark toggle in the preview header. Omitted
    *  when an outer toolbar owns the toggle (the Builder brand editor, docs/45). */
   onModeChange?: (mode: Mode) => void;
+  /** Extra controls rendered at the right of the preview header (e.g. the
+   *  Components|Site surface toggle owned by the parent). */
+  headerExtra?: React.ReactNode;
   brandName: string | null;
   logoLightUrl: string | null;
   logoDarkUrl: string | null;
@@ -85,6 +88,7 @@ export function ThemeShowcase({
   css,
   mode,
   onModeChange,
+  headerExtra,
   brandName,
   logoLightUrl,
   logoDarkUrl,
@@ -96,23 +100,26 @@ export function ThemeShowcase({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-semibold text-[var(--color-text-primary)]">Preview</span>
-        {onModeChange ? (
-          <div className="flex rounded-md border border-[var(--color-border-default)] p-0.5">
-            {(['light', 'dark'] as const).map((m) => (
-              <Button
-                key={m}
-                size="xs"
-                variant={mode === m ? 'soft' : 'ghost'}
-                onClick={() => onModeChange(m)}
-                aria-pressed={mode === m}
-              >
-                {m === 'light' ? '☀ Light' : '☾ Dark'}
-              </Button>
-            ))}
-          </div>
-        ) : null}
+        <div className="flex items-center gap-2">
+          {onModeChange ? (
+            <div className="flex rounded-md border border-[var(--color-border-default)] p-0.5">
+              {(['light', 'dark'] as const).map((m) => (
+                <Button
+                  key={m}
+                  size="xs"
+                  variant={mode === m ? 'soft' : 'ghost'}
+                  onClick={() => onModeChange(m)}
+                  aria-pressed={mode === m}
+                >
+                  {m === 'light' ? '☀ Light' : '☾ Dark'}
+                </Button>
+              ))}
+            </div>
+          ) : null}
+          {headerExtra}
+        </div>
       </div>
 
       {/* The compiled theme, scoped to this subtree only. */}

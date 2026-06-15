@@ -53,6 +53,35 @@ const ByIdQuery = z.object({
   property: z.string().min(1).max(63).optional(),
 });
 
+// A clean { platform, url }[] from an unknown JSON value, dropping malformed
+// entries. Used to read both per-site (Property.settings.socials) and tenant
+// (Tenant.socials) links into the same shape.
+function coerceSocials(raw: unknown): { platform: string; url: string }[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((item) => {
+    if (!item || typeof item !== 'object') return [];
+    const { platform, url } = item as Record<string, unknown>;
+    const p = typeof platform === 'string' ? platform.trim() : '';
+    const u = typeof url === 'string' ? url.trim() : '';
+    return p && u ? [{ platform: p, url: u }] : [];
+  });
+}
+
+// The active site's social links: its OWN (Property.settings.socials) when set,
+// else the tenant-level links (legacy / not-yet-personalised). Per-site is the
+// authoritative model (docs/49 "full per-site brand"); the tenant fallback keeps
+// existing single-site links rendering until each site sets its own.
+function readSiteSocials(
+  settings: unknown,
+  tenantSocials: unknown
+): { platform: string; url: string }[] {
+  const own =
+    settings && typeof settings === 'object' && !Array.isArray(settings)
+      ? coerceSocials((settings as { socials?: unknown }).socials)
+      : [];
+  return own.length > 0 ? own : coerceSocials(tenantSocials);
+}
+
 async function resolveTenantBySlug(slug: string): Promise<string> {
   const t = await prisma.tenant.findUnique({ where: { slug }, select: { id: true } });
   if (!t) throw notFound('Tenant', slug);
@@ -390,11 +419,16 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
             where: { tenantId: tenant.id },
             select: {
               businessName: true,
+              tagline: true,
               colorPrimary: true,
               colorPrimaryForeground: true,
+              colorSecondary: true,
+              colorSecondaryForeground: true,
               colorAccent: true,
+              colorAccentForeground: true,
               fontHeading: true,
               fontBody: true,
+              tokens: true,
               logoLightMediaId: true,
               logoDarkMediaId: true,
               faviconMediaId: true,
@@ -412,11 +446,16 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
                 select: { brandOverride: true, moduleScope: true },
               })
             : Promise.resolve(null),
-          // The active site's NAME — the customer-facing SITE name the storefront
-          // renders in chrome/title/OG (docs/49). Keyed by the resolved propertyId
-          // (the `?property=` site, else the primary), so it's present even for the
-          // bare primary host. This is NEVER the tenant's legal/org name.
-          tx.property.findUnique({ where: { id: propertyId }, select: { name: true } }),
+          // The active site's NAME + SETTINGS — the customer-facing SITE name the
+          // storefront renders in chrome/title/OG, plus the per-site settings bag
+          // that carries the site's own social links (docs/49 "full per-site
+          // brand"). Keyed by the resolved propertyId (the `?property=` site, else
+          // the primary), so present even for the bare primary host. The name is
+          // NEVER the tenant's legal/org name.
+          tx.property.findUnique({
+            where: { id: propertyId },
+            select: { name: true, settings: true },
+          }),
         ])
     );
 
@@ -427,12 +466,19 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     const identity = mergeBrandIdentity(
       {
         businessName: brand?.businessName ?? null,
+        tagline: brand?.tagline ?? null,
+        logoLightMediaId: brand?.logoLightMediaId ?? null,
+        logoDarkMediaId: brand?.logoDarkMediaId ?? null,
+        faviconMediaId: brand?.faviconMediaId ?? null,
         colorPrimary: brand?.colorPrimary ?? null,
         colorPrimaryForeground: brand?.colorPrimaryForeground ?? null,
+        colorSecondary: brand?.colorSecondary ?? null,
+        colorSecondaryForeground: brand?.colorSecondaryForeground ?? null,
         colorAccent: brand?.colorAccent ?? null,
+        colorAccentForeground: brand?.colorAccentForeground ?? null,
         fontHeading: brand?.fontHeading ?? null,
         fontBody: brand?.fontBody ?? null,
-        logoMediaId: brand?.logoLightMediaId ?? null,
+        tokens: brand?.tokens ?? null,
       },
       override
     );
@@ -445,15 +491,17 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     const mergedTheme =
       theme || brand || override
         ? {
-            // Identity — tenant brand, with the per-site override applied (Phase 4).
+            // Identity — tenant brand, with the per-site override applied
+            // (docs/49 "full per-site brand"): logos, colours, and type all
+            // resolve to the active site's effective brand.
             colorPrimary: identity.colorPrimary,
             colorPrimaryForeground: identity.colorPrimaryForeground,
             colorAccent: identity.colorAccent,
             fontHeading: identity.fontHeading,
             fontBody: identity.fontBody,
-            logoMediaId: identity.logoMediaId,
-            logoDarkMediaId: brand?.logoDarkMediaId ?? null,
-            faviconMediaId: brand?.faviconMediaId ?? null,
+            logoMediaId: identity.logoLightMediaId,
+            logoDarkMediaId: identity.logoDarkMediaId,
+            faviconMediaId: identity.faviconMediaId,
             // Presentation — per-site override wins over the theme preset.
             colorBackground: override?.colorBackground ?? theme?.colorBackground ?? null,
             colorMuted: override?.colorMuted ?? theme?.colorMuted ?? null,
@@ -474,9 +522,10 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       businessName: identity.businessName,
       propertyName: propertyNameRow?.name ?? null,
       settings: tenant.settings,
-      // Site-wide social links (a SITE setting on the tenant, not brand/theme —
-      // docs/45 §3): an ordered { platform, url }[] the storefront chrome renders.
-      socials: Array.isArray(tenant.socials) ? tenant.socials : [],
+      // PER-SITE social links (docs/49 "full per-site brand"): each site has its
+      // own, stored in the property settings bag. Falls back to the tenant-level
+      // links (legacy / not-yet-set) so existing single-site links keep rendering.
+      socials: readSiteSocials(propertyNameRow?.settings, tenant.socials),
       theme: mergedTheme,
       commerce: {
         // Per-site override wins; falls back to tenant CommerceSiteSettings then hardcoded default.

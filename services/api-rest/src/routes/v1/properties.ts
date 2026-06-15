@@ -122,9 +122,20 @@ const MODULE_SLUGS = [
 // clear it (inherit the tenant brand) or a partial object to set it.
 // `moduleScope` replaces the disabled-modules list entirely (full PUT semantics
 // on the array).
+// A per-site social link (docs/49 "full per-site brand"). `platform` is a known
+// key or a free-text "Other" label; mirrors the tenant-level shape in tenant.ts.
+const SocialLink = z.object({
+  platform: z.string().min(1).max(40),
+  url: z.string().min(1).max(2048),
+});
+
 const PatchProperty = z.object({
   name: z.string().min(1).max(255).optional(),
   settings: z.record(z.string(), z.unknown()).optional(),
+  // Per-site social links — stored in the settings bag under `socials` so they
+  // need no schema column. Merged into existing settings (does not clobber other
+  // keys). A present-but-empty array clears the site's own links.
+  socials: z.array(SocialLink).max(50).optional(),
   brandOverride: PropertyBrandOverrideSchema.nullable().optional(),
   moduleScope: z.array(z.enum(MODULE_SLUGS)).optional(),
 });
@@ -242,11 +253,13 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
     // Only forward keys the caller actually sent (PATCH merge).
     const data: Prisma.PropertyUncheckedUpdateInput = {};
     if (input.name !== undefined) data.name = input.name;
-    if (input.settings !== undefined) data.settings = input.settings as Prisma.InputJsonValue;
     if (input.brandOverride !== undefined) {
       // object → set the override; null → Prisma.DbNull clears it (inherit the
-      // tenant brand). `?? DbNull` is exact here since the value is `object | null`.
-      data.brandOverride = input.brandOverride ?? Prisma.DbNull;
+      // tenant brand). The override is plain JSON (the `tokens` doc is unknown-
+      // valued), so cast to InputJsonValue for the JSONB column.
+      data.brandOverride = input.brandOverride
+        ? (input.brandOverride as Prisma.InputJsonValue)
+        : Prisma.DbNull;
     }
     if (input.moduleScope !== undefined) {
       data.moduleScope = input.moduleScope;
@@ -254,9 +267,24 @@ const propertiesRoutes: FastifyPluginAsync = async (app) => {
 
     const row = await withTenant({ tenantId: auth.tenantId, userId: auth.actorId }, async (tx) => {
       // Scope the update to the tenant's own row; a missing id is a 404, not a
-      // silent no-op (updateMany would hide it).
-      const existing = await tx.property.findUnique({ where: { id }, select: { id: true } });
+      // silent no-op (updateMany would hide it). Read the current settings so a
+      // `socials`/`settings` patch MERGES into the bag rather than clobbering it.
+      const existing = await tx.property.findUnique({
+        where: { id },
+        select: { id: true, settings: true },
+      });
       if (!existing) return null;
+      // settings + socials both live in the settings JSON. Layer: existing →
+      // caller's explicit `settings` (replace those keys) → caller's `socials`.
+      if (input.settings !== undefined || input.socials !== undefined) {
+        const base =
+          existing.settings && typeof existing.settings === 'object' && !Array.isArray(existing.settings)
+            ? (existing.settings as Record<string, unknown>)
+            : {};
+        const merged: Record<string, unknown> = { ...base, ...(input.settings ?? {}) };
+        if (input.socials !== undefined) merged.socials = input.socials;
+        data.settings = merged as Prisma.InputJsonValue;
+      }
       return tx.property.update({ where: { id }, data });
     });
     if (!row) throw notFound('Property', id);
