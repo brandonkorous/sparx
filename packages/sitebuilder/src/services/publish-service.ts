@@ -179,7 +179,7 @@ async function overlayBrand(
 
 // The compile-relevant brand columns (colour/type/shape). `null` when the tenant
 // has no brand row AND no override (compile falls back to the preset defaults).
-type CompileBrand = {
+interface CompileBrand {
   colorPrimary: string | null;
   colorPrimaryForeground: string | null;
   colorAccent: string | null;
@@ -189,7 +189,7 @@ type CompileBrand = {
   fontHeading: string | null;
   fontBody: string | null;
   tokens: unknown;
-};
+}
 
 // Read a non-primary site's brand override (the compile-relevant subset) from the
 // property's `brand_override` JSON. Defensive — the column is unvalidated.
@@ -203,7 +203,7 @@ async function readPropertyBrandOverride(
   });
   const raw = row?.brandOverride;
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
-  return raw as Partial<CompileBrand>;
+  return raw;
 }
 
 // Merge an override over the base brand, field-by-field (null/absent = inherit).
