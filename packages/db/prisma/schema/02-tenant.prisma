@@ -359,6 +359,7 @@ model Tenant {
   rollupCommerceDailyRevenue    RollupCommerceDailyRevenue[]
   rollupInvoicingDailyCollected RollupInvoicingDailyCollected[]
   rollupDropshipDailyOrders     RollupDropshipDailyOrders[]
+  rollupAutomationDailyRuns     RollupAutomationDailyRuns[]
 
   @@map("tenants")
 }

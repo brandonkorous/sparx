@@ -1,6 +1,6 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 1.3
+**Version:** 1.4
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -149,8 +149,8 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 ### Automations — Fuchsia
 
 - ✅ Automation list → total / active counts + by-trigger split — `GET /v1/automations`
-- 🟡 Per-automation run history exists (`GET /v1/automations/:id/runs`) but there is no aggregate
-- 🔴 Run-activity timeseries & success-rate report — new `…/reports/runs` (aggregate across automations)
+- ✅ Per-automation run history — `GET /v1/automations/:id/runs`
+- ✅ Run-activity **timeseries** & success-rate — `GET /v1/automations/reports/runs` (shipped 2026-06-15; **fourth rollup** — `rollup_automation_daily_runs` + nightly reconcile + live-overlay read per docs/97 §5; aggregate across every automation, powers the "Run activity" chart + Runs/Success-rate footer)
 
 ### SEO — Yellow
 
@@ -163,7 +163,7 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 ## Suggested order of work
 
 1. **🟡 Wire-now pass (frontend-only).** Commerce (top products, top customers, inventory value), CRM (pipeline, win rate, top customers, tasks, segment sizes), Email (broadcasts, domains), Dropship (supplier breakdown, orders). Each drops a `<SampleBadge>` and replaces sample constants with an `api.get(...)` call — no backend change.
-2. **🔴 Timeseries reports** are the most common backend gap and power the signature charts: commerce `revenue-timeseries` **✅ (shipped 2026-06-15 — the rollup reference impl, docs/97)**, invoicing `collected-timeseries` **✅ (shipped 2026-06-15 — `rollup_invoicing_daily_collected`)**, dropship `reports/orders-timeseries` **✅ (shipped 2026-06-15 — `rollup_dropship_daily_orders`)**, then automations `reports/runs`. The shared "daily bucket over a date range" rollup pattern (table + nightly reconcile + live-overlay read) is now established — copy it for the rest.
+2. **🔴 Timeseries reports** are the most common backend gap and power the signature charts: commerce `revenue-timeseries` **✅ (shipped 2026-06-15 — the rollup reference impl, docs/97)**, invoicing `collected-timeseries` **✅ (shipped 2026-06-15 — `rollup_invoicing_daily_collected`)**, dropship `reports/orders-timeseries` **✅ (shipped 2026-06-15 — `rollup_dropship_daily_orders`)**, automations `reports/runs` **✅ (shipped 2026-06-15 — `rollup_automation_daily_runs`)**. **All four signature timeseries are now live.** The shared "daily bucket over a date range" rollup pattern (table + nightly reconcile + live-overlay read) is established — copy it for the remaining metric rollups (CMS counts, B2B reporting, invoicing days-to-pay, etc.).
 3. **🔴 Net-new analytics surfaces** (larger): site analytics (builder), chat analytics, CMS reporting, B2B reporting, and the entire AI reports surface. These need new aggregation + likely event capture, not just a query.
 4. **🔴 External ingestion:** SEO Search Console (organic traffic / queries) and email revenue attribution depend on data we don't yet collect.
 

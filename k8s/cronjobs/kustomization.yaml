@@ -10,3 +10,4 @@ resources:
   - commerce-revenue-rollup.yaml
   - invoicing-collected-rollup.yaml
   - dropship-orders-rollup.yaml
+  - automation-runs-rollup.yaml

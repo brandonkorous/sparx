@@ -55,6 +55,25 @@ rollups it accepts an optional `?days=N` window override (default 400 days) and
 the read endpoint live-overlays "today", so this job only keeps closed days
 correct.
 
+## Automation scheduled jobs
+
+Wiring for the automation run-activity reconcile, which lives on the automation
+engine's own scheduler spine
+([packages/automation/src/schedulers/](../../packages/automation/src/schedulers/)).
+Automations are a platform capability, not a gated module, so it enumerates
+tenants that own ≥1 automation rather than a module-flag set.
+
+| CronJob                  | Schedule    | Endpoint                                 | Why this time                                                                       |
+| ------------------------ | ----------- | ---------------------------------------- | ----------------------------------------------------------------------------------- |
+| `automation-runs-rollup` | `0 8 * * *` | `POST /internal/automations/runs-rollup` | Nightly, after the commerce (06:00), invoicing (06:30) and dropship (07:00) rollups |
+
+`automation-runs-rollup` reconciles `rollup_automation_daily_runs` per tenant
+that owns an automation from the source-of-truth `automation_runs` (runs
+started + completed/failed/skipped counts, bucketed by `started_at`). Like the
+other rollups it accepts an optional `?days=N` window override (default 400
+days) and the read endpoint live-overlays "today", so this job only keeps
+closed days correct.
+
 All schedules are UTC. All endpoints are guarded by the
 `X-Sparx-Internal-Cron-Token` shared secret, sourced from the
 `sparx-app-secrets` Secret (key: `SPARX_INTERNAL_CRON_TOKEN`).

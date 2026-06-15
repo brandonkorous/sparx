@@ -39,6 +39,7 @@ import {
   listAutomationVersions,
   publishAutomation,
   restoreAutomationVersion,
+  runsTimeseries,
   setAutomationStatus,
   updateAutomation,
   type ServiceCtx,
@@ -69,6 +70,21 @@ const RunsQuery = z.object({
   limit: z.coerce.number().int().min(1).max(200).optional(),
 });
 
+// Run-activity timeseries (docs/97 §5). Accepts ?from=&to= (ISO 8601) and
+// defaults to the last 30 days when both are omitted — matches the dashboard's
+// presets so the surface is forgiving.
+const RunsTimeseriesQuery = z.object({
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  grain: z.enum(['day', 'week', 'month']).optional(),
+});
+
+function resolveRange(input: { from?: string; to?: string }): { from: string; to: string } {
+  const to = input.to ?? new Date().toISOString();
+  const from = input.from ?? new Date(Date.now() - 30 * 86_400_000).toISOString();
+  return { from, to };
+}
+
 const StatusBody = z.object({ status: z.enum(['draft', 'active', 'paused']) });
 
 /** Resolve the tenant service-ctx after a role check (write paths use 'editor',
@@ -91,6 +107,17 @@ const automationRoutes: FastifyPluginAsync = (app) => {
     const created = await createAutomation(ctx, input);
     reply.code(201);
     return ok(created);
+  });
+
+  // Aggregate run-activity timeseries across every automation the tenant owns
+  // (docs/97 §5). Static segment, so it never collides with `/:id`. Viewer-read,
+  // matching the per-automation `/:id/runs` list. Backed by the
+  // `rollup_automation_daily_runs` rollup with a live overlay of today.
+  app.get('/v1/automations/reports/runs', async (request) => {
+    const ctx = ctxFor(request, 'viewer');
+    const q = RunsTimeseriesQuery.parse(request.query);
+    const range = resolveRange(q);
+    return ok(await runsTimeseries(ctx, { range, ...(q.grain ? { grain: q.grain } : {}) }));
   });
 
   app.get('/v1/automations/:id', async (request) => {

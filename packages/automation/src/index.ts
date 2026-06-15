@@ -90,6 +90,21 @@ export {
   type AutomationRunWithSteps,
   type ListRunsFilter,
 } from './service/run-service';
+export {
+  reconcileRunsRollup,
+  runsTimeseries,
+  type DateRange as RunsDateRange,
+  type RollupGrain as RunsRollupGrain,
+  type RunsRollupReconcileResult,
+  type RunsTimeseries,
+  type RunsTimeseriesPoint,
+} from './service/run-report-service';
+
+// ── scheduler surface (docs/97 §5) ──
+// The nightly run-activity rollup reconcile + its tenant enumeration, invoked by
+// api-rest's /internal/automations/* cron route. Mirrors @sparx/commerce's
+// `commerceSchedulers` namespace.
+export * as automationSchedulers from './schedulers';
 
 // ── MCP tool surface (docs/84 Slice H) ──
 // The AI authoring path. `automationMcpTools` is the array `services/api-mcp`

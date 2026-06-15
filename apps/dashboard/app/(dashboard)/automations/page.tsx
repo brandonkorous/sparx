@@ -64,17 +64,37 @@ import {
   SampleBadge,
   fmtNumber,
   fmtPercentRatio,
+  liveOr,
 } from '../_components/overview-bits';
 
 export const dynamic = 'force-dynamic';
 
 const TWO_COL = 'grid grid-cols-1 gap-4 lg:grid-cols-[1.9fr_1fr]';
 
-// ── Sample data (illustrative until a per-day runs report endpoint lands) ──
-// There is no `/v1/automations/reports/runs-timeseries` yet, so run-activity
-// over time is representative. Replace with live data + drop the SampleBadge
-// once the timeseries endpoint exists (see overview-charts.tsx convention).
-const SAMPLE_RUNS_14D = [
+// Run-activity timeseries (docs/97 §5) — `GET /v1/automations/reports/runs`,
+// backed by the `rollup_automation_daily_runs` rollup. `liveOr` flips the chart
+// to this sample (badged) only until the tenant has runs in the window.
+interface RunsTimeseriesPoint {
+  bucket: string;
+  runsCount: number;
+  completedCount: number;
+  failedCount: number;
+  skippedCount: number;
+}
+interface RunsTimeseries {
+  range: { from: string; to: string; grain: string };
+  points: RunsTimeseriesPoint[];
+  totals: {
+    runsCount: number;
+    completedCount: number;
+    failedCount: number;
+    skippedCount: number;
+    successRate: number;
+  };
+}
+
+// ── Sample data (fallback until the tenant has run history in the window) ──
+const SAMPLE_RUNS_14D: { label: string; runs: number; failed: number }[] = [
   { label: 'Jun 1', runs: 184, failed: 3 },
   { label: 'Jun 2', runs: 201, failed: 2 },
   { label: 'Jun 3', runs: 176, failed: 5 },
@@ -150,9 +170,19 @@ function successRate(runCount: number, errorCount: number): number | null {
 export default async function AutomationsPage() {
   const session = await requireSession();
 
-  const [enabledModules, automations] = await Promise.all([
+  // Run-activity series over the last 14 days (UTC daily buckets).
+  const runsTo = new Date();
+  const runsFrom = new Date(runsTo.getTime() - 13 * 86_400_000);
+  const runsQs = new URLSearchParams({
+    grain: 'day',
+    from: runsFrom.toISOString(),
+    to: runsTo.toISOString(),
+  });
+
+  const [enabledModules, automations, runsTs] = await Promise.all([
     listEnabledModules(session.user.tenantId),
     api.get<AutomationDto[]>('/v1/automations').catch(() => null),
+    api.get<RunsTimeseries>(`/v1/automations/reports/runs?${runsQs.toString()}`).catch(() => null),
   ]);
 
   const role = session.user.role;
@@ -212,6 +242,25 @@ export default async function AutomationsPage() {
       value,
       color: DONUT_COLORS[i % DONUT_COLORS.length],
     }));
+
+  // Run-activity chart: map the rollup series to the chart's {label, runs,
+  // failed} shape, gated on real volume in the window. Falls back to the badged
+  // sample until the tenant has runs.
+  const runsPoints =
+    runsTs && runsTs.totals.runsCount > 0
+      ? runsTs.points.map((p) => ({
+          label: new Date(`${p.bucket}T00:00:00.000Z`).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          }),
+          runs: p.runsCount,
+          failed: p.failedCount,
+        }))
+      : null;
+  const runs14d = liveOr(runsPoints, SAMPLE_RUNS_14D);
+  const runs14dTotal = runsTs?.totals.runsCount ?? 0;
+  const runs14dSuccess = runsTs?.totals.successRate ?? 0;
 
   // Table: every automation, busiest first (preserves the old list — show all).
   const tableRows = [...rules].sort((a, b) => (b.runCount ?? 0) - (a.runCount ?? 0));
@@ -316,10 +365,10 @@ export default async function AutomationsPage() {
             title="Run activity"
             icon={<TrendingUp className="h-4 w-4" />}
             description="Runs per day — last 14 days"
-            right={<SampleBadge />}
+            right={runs14d.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
             <AreaChart
-              data={SAMPLE_RUNS_14D}
+              data={runs14d.data}
               series={[
                 { key: 'runs', label: 'Runs', color: 'module' },
                 { key: 'failed', label: 'Failed', color: 'danger' },
@@ -330,12 +379,21 @@ export default async function AutomationsPage() {
               ariaLabel="Automation runs per day, last 14 days"
             />
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <MetricTile value="~3.4k" label="Runs · 14d" />
-              <MetricTile value="~6h" label="Est. time saved · 14d" tone="module" />
+              <MetricTile
+                value={runs14d.isSample ? '~3.4k' : fmtNumber(runs14dTotal)}
+                label="Runs · 14d"
+              />
+              {runs14d.isSample ? (
+                <MetricTile value="~6h" label="Est. time saved · 14d" tone="module" />
+              ) : (
+                <MetricTile value={`${runs14dSuccess}%`} label="Success rate · 14d" tone="module" />
+              )}
             </div>
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
+            {runs14d.isSample ? (
+              <div className="mt-3">
+                <SampleBadge />
+              </div>
+            ) : null}
           </OverviewCard>
 
           <OverviewCard

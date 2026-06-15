@@ -1,0 +1,73 @@
+# Reconciles the automation daily run-activity rollup (docs/97 §5).
+# Recomputes a trailing window of rollup_automation_daily_runs from the
+# source-of-truth automation_runs, per tenant that owns ≥1 automation, so the
+# Automations overview's "run activity" chart + success-rate KPI read
+# pre-aggregated rows instead of scanning every automation's run history on the
+# hot path.
+#
+# Runs nightly at 08:00 UTC — after the day has fully closed and after the
+# commerce revenue (06:00), invoicing collected (06:30) and dropship orders
+# (07:00) rollups, so the nightly reconciles don't pile onto the DB at once. The
+# work is a single GROUP-BY-day pass over the trailing window per tenant, but
+# Forbid concurrency so a slow run never overlaps the next. The read endpoint
+# live-overlays today, so a late or skipped run only delays correcting closed
+# days, never the live figure.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: automation-runs-rollup
+  namespace: sparx-prod
+  labels:
+    app: automation-cron
+    job: runs-rollup
+spec:
+  schedule: '0 8 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: automation-cron
+            job: runs-rollup
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 300
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/automations/runs-rollup
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

@@ -103,3 +103,35 @@ model RollupDropshipDailyOrders {
   @@id([tenantId, bucket], map: "rollup_dropship_daily_orders_pkey")
   @@map("rollup_dropship_daily_orders")
 }
+
+// One row per (tenant, UTC day) of automation-engine run activity (docs/81,
+// docs/97 §5). Buckets `automation_runs` by `started_at`'s UTC date across every
+// automation the tenant owns — an aggregate the per-automation `/:id/runs` list
+// can't give. `runs_count` is all runs started that day; the three terminal
+// counters (completed | failed | skipped) let the read derive a success rate
+// without re-scanning the run table. Runs still in-flight (running | waiting)
+// are counted in `runs_count` but in none of the terminal counters until they
+// settle — the nightly reconcile re-buckets by `started_at` once they do, and
+// the read live-overlays the most recent open day(s). No money columns, so plain
+// INTEGER counts (a tenant's daily run volume stays well under INT4's ceiling).
+model RollupAutomationDailyRuns {
+  tenantId String   @map("tenant_id") @db.Uuid
+  // The UTC day this row aggregates (date only — no time component).
+  bucket   DateTime @db.Date
+
+  // All runs started this day (any status, including still in-flight).
+  runsCount      Int @default(0) @map("runs_count")
+  // Runs that reached `completed`.
+  completedCount Int @default(0) @map("completed_count")
+  // Runs that reached `failed`.
+  failedCount    Int @default(0) @map("failed_count")
+  // Runs short-circuited to `skipped` (e.g. conditions no longer matched).
+  skippedCount   Int @default(0) @map("skipped_count")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, bucket], map: "rollup_automation_daily_runs_pkey")
+  @@map("rollup_automation_daily_runs")
+}
