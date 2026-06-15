@@ -38,6 +38,7 @@ import { LayoutSettings } from './inspector';
 import { BuilderWorkspace } from './builder-workspace';
 import { ImportExportControls } from './import-export-controls';
 import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
+import { UndoRedoButtons } from './editor-undo-redo';
 import type { SitePreviewData } from './binding-catalog';
 import {
   activateLayout,
@@ -410,6 +411,12 @@ export function SiteBuilderApp({
             })}
           </div>
           <div className="bx-toolbar__actions">
+            <UndoRedoButtons
+              canUndo={editor.canUndo}
+              canRedo={editor.canRedo}
+              onUndo={editor.undo}
+              onRedo={editor.redo}
+            />
             {editor.saveStatus !== 'idle' ? (
               <span className="bx-savestate" data-state={editor.saveStatus}>
                 {SAVE_LABEL[editor.saveStatus]}

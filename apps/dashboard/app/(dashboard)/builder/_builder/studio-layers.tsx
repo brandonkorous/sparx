@@ -68,6 +68,7 @@ import {
 } from './layers-tree';
 import { findOutletId } from './studio-routing';
 import type { StudioSelection, StudioZone } from './use-studio-editor';
+import type { SelectMods } from './use-builder-editor';
 
 const INDENT = 16;
 const COLLAPSE_STORE = 'sparx.builder.studio.layers.collapsed.v1:';
@@ -110,6 +111,7 @@ function Row({
   catalog,
   components,
   selected,
+  multi,
   collapsed,
   draggable,
   dragDepth,
@@ -122,10 +124,12 @@ function Row({
   catalog: BindingCatalog;
   components?: ReadonlyMap<string, ComponentDto>;
   selected: boolean;
+  /** Part of a multi-selection but not the primary (docs/builder/05 §2.2). */
+  multi: boolean;
   collapsed: boolean;
   draggable: boolean;
   dragDepth: number;
-  onSelect: (id: string) => void;
+  onSelect: (id: string, mods?: SelectMods) => void;
   onRemove: (id: string) => void;
   onToggle: (id: string) => void;
 }) {
@@ -156,6 +160,7 @@ function Row({
         'bx-layer',
         canDrag && 'bx-layer--draggable',
         selected && 'bx-layer--on',
+        multi && 'bx-layer--multi',
         sortable.isDragging && 'bx-layer--dragging'
       )}
       style={style}
@@ -164,7 +169,7 @@ function Row({
       role="button"
       tabIndex={0}
       aria-pressed={selected}
-      onClick={() => onSelect(node.id)}
+      onClick={(e) => onSelect(node.id, { additive: e.metaKey || e.ctrlKey, range: e.shiftKey })}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -242,10 +247,16 @@ export function StudioLayers({
   /** The active page's display name, used to label its root row. */
   pageLabel: string;
   onSelectTheme: () => void;
-  onSelectNode: (id: string) => void;
+  onSelectNode: (id: string, mods?: SelectMods) => void;
   onRemove: (id: string) => void;
   onMove: (dragId: string, parentId: string, index: number) => void;
 }) {
+  // Secondary-selected rows within the active zone (all selected except primary).
+  const multiSet = React.useMemo(
+    () =>
+      new Set(selection.zone === 'theme' ? [] : selection.ids.filter((id) => id !== selection.id)),
+    [selection]
+  );
   // The COMPOSED display tree: the page grafted in as the Outlet's child, so one
   // flat list + one SortableContext covers the whole stack. The graft is for
   // display + drag projection only — the editor still persists the two trees apart.
@@ -431,6 +442,7 @@ export function StudioLayers({
                 catalog={zone === 'page' ? pageCatalog : layoutCatalog}
                 components={components}
                 selected={selectedId === f.node.id && selection.zone === zone}
+                multi={multiSet.has(f.node.id) && selection.zone === zone}
                 collapsed={collapsed.has(f.node.id)}
                 draggable={draggable}
                 dragDepth={isActive && projection ? projection.depth : f.depth}

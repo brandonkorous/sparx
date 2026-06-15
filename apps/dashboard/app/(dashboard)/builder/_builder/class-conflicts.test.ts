@@ -5,7 +5,12 @@
 // duplicates and never touches an unrecognized token or its order.
 
 import { describe, expect, it } from 'vitest';
-import { detectClassConflicts, hasClassConflicts, resolveClassConflicts } from './class-conflicts';
+import {
+  applyClassChangeToSibling,
+  detectClassConflicts,
+  hasClassConflicts,
+  resolveClassConflicts,
+} from './class-conflicts';
 
 describe('detectClassConflicts', () => {
   it('is clean for a well-formed class string', () => {
@@ -66,5 +71,41 @@ describe('resolveClassConflicts', () => {
   it('is idempotent', () => {
     const once = resolveClassConflicts('m-2 m-4 flex grid text-sm');
     expect(resolveClassConflicts(once)).toBe(once);
+  });
+});
+
+describe('applyClassChangeToSibling', () => {
+  it('replaces a sibling group member when the primary swaps colors', () => {
+    // primary: bg-primary → bg-accent; sibling had its own bg, keeps its padding.
+    expect(applyClassChangeToSibling('bg-primary p-2', 'bg-accent p-2', 'bg-neutral p-8')).toBe(
+      'p-8 bg-accent'
+    );
+  });
+
+  it('clears the sibling group when the primary clears that control', () => {
+    // text-primary / text-white share the Text-color group; clearing it on the
+    // primary clears whichever color each sibling had.
+    expect(applyClassChangeToSibling('text-primary flex', 'flex', 'text-white grid')).toBe('grid');
+  });
+
+  it('replaces a value-group utility (width) rather than stacking', () => {
+    expect(applyClassChangeToSibling('w-1/2', 'w-full', 'w-1/3 p-4')).toBe('p-4 w-full');
+  });
+
+  it('leaves untouched groups on the sibling alone', () => {
+    // Only display changed; the sibling keeps its distinct color + size.
+    expect(applyClassChangeToSibling('flex', 'grid', 'block bg-accent text-lg')).toBe(
+      'bg-accent text-lg grid'
+    );
+  });
+
+  it('is a no-op when nothing changed', () => {
+    expect(applyClassChangeToSibling('flex p-4', 'flex p-4', 'grid m-2')).toBe('grid m-2');
+  });
+
+  it('carries a color + opacity edit to the sibling group', () => {
+    expect(applyClassChangeToSibling('bg-primary', 'bg-primary/60', 'bg-accent')).toBe(
+      'bg-primary/60'
+    );
   });
 });

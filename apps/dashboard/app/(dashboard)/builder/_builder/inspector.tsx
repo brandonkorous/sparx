@@ -26,11 +26,15 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronUp,
+  ClipboardPaste,
+  Copy,
+  CopyPlus,
   Crosshair,
   Database,
   ExternalLink,
   FileText,
   LayoutGrid,
+  Layers,
   Link2,
   Mail,
   Maximize2,
@@ -40,6 +44,7 @@ import {
   Sparkles,
   SlidersHorizontal,
   Square,
+  Trash2,
   Type,
   X,
   type LucideIcon,
@@ -3480,6 +3485,164 @@ export interface InspectorProps {
   onBind: (path: string | null) => void;
   onProp: (key: string, value: unknown) => void;
   onRetype: (targetType: string) => void;
+  // ── Multi-select + clipboard (docs/builder/05 §2.2 / §2.5) ──────────────────
+  /** How many nodes are selected. >1 switches the inspector to the bulk panel:
+   *  only the universal style controls (which fan out to the whole selection) plus
+   *  bulk actions. Defaults to 1 (the full single-node inspector). */
+  selectionCount?: number;
+  /** Duplicate the selection in place (Cmd/Ctrl+D). */
+  onDuplicate?: () => void;
+  /** Delete the whole selection (confirm-gated). */
+  onDelete?: () => void;
+  /** Copy the selection to the clipboard. */
+  onCopy?: () => void;
+  /** Copy the primary node's styles (its full class). */
+  onCopyStyles?: () => void;
+  /** Paste the copied styles onto every selected node. */
+  onPasteStyles?: () => void;
+  /** Whether a style has been copied (enables Paste styles). */
+  canPasteStyles?: boolean;
+}
+
+// The bulk-edit panel (docs/builder/05 §2.2) shown when more than one node is
+// selected: only the UNIVERSAL style controls — driven by the primary node, but
+// every change fans out to the whole selection via `onClass` — plus the bulk
+// actions (copy / duplicate / paste-styles / delete). Type-specific controls
+// (content, data binding, rename, retype) are hidden because they aren't valid
+// across a mixed selection ("a mixed selection shows only controls valid for all").
+function MultiSelectPanel({
+  node,
+  surface,
+  count,
+  onClass,
+  onProp,
+  onBack,
+  onCopy,
+  onDuplicate,
+  onDelete,
+  onPasteStyles,
+  canPasteStyles,
+}: {
+  node: BuilderNode;
+  surface: EditorSurface;
+  count: number;
+  onClass: (value: string) => void;
+  onProp: (key: string, value: unknown) => void;
+  onBack: () => void;
+  onCopy?: () => void;
+  onDuplicate?: () => void;
+  onDelete?: () => void;
+  onPasteStyles?: () => void;
+  canPasteStyles?: boolean;
+}) {
+  const def = getDef(node.type);
+  const skinContexts = surface === 'email' ? [BASE_CONTEXT] : SKIN_CONTEXTS;
+  const arrangeContexts = surface === 'email' ? [BASE_CONTEXT] : ARRANGEMENT_CONTEXTS;
+  return (
+    <div className="bx-inspector" key="__multi">
+      <button type="button" className="bx-ins-back" onClick={onBack}>
+        <ChevronLeft aria-hidden /> Clear selection
+      </button>
+      <header className="bx-ins-head">
+        <div className="bx-ins-head__row">
+          <span className="bx-ins-head__icon">
+            <Layers aria-hidden />
+          </span>
+          <div className="bx-ins-head__titles">
+            <h3>{count} blocks selected</h3>
+            <span className="bx-ins-head__sub">Style changes apply to all of them</span>
+          </div>
+        </div>
+        <div className="bx-ins-bulk">
+          {onCopy ? (
+            <button type="button" className="bx-ins-bulk__btn" onClick={onCopy}>
+              <Copy aria-hidden /> Copy
+            </button>
+          ) : null}
+          {onDuplicate ? (
+            <button type="button" className="bx-ins-bulk__btn" onClick={onDuplicate}>
+              <CopyPlus aria-hidden /> Duplicate
+            </button>
+          ) : null}
+          {canPasteStyles && onPasteStyles ? (
+            <button type="button" className="bx-ins-bulk__btn" onClick={onPasteStyles}>
+              <ClipboardPaste aria-hidden /> Paste styles
+            </button>
+          ) : null}
+          {onDelete ? (
+            <button
+              type="button"
+              className="bx-ins-bulk__btn bx-ins-bulk__btn--danger"
+              onClick={onDelete}
+            >
+              <Trash2 aria-hidden /> Delete
+            </button>
+          ) : null}
+        </div>
+      </header>
+      {def ? (
+        <div className="bx-ins-stack">
+          <StyleCard node={node} def={def} onClass={onClass} />
+          {def.kind === 'container' ? (
+            <LayoutCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+          ) : null}
+          <BackgroundCard
+            node={node}
+            def={def}
+            contexts={skinContexts}
+            onClass={onClass}
+            onProp={onProp}
+          />
+          <TypographyCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+          <BordersCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+          <EffectsCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+          <SizeCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+          <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+          <PositionCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+          {surface !== 'email' ? <MotionCard node={node} def={def} onClass={onClass} /> : null}
+          <CustomCssCard node={node} onClass={onClass} />
+        </div>
+      ) : (
+        <p className="bx-inspector__tip">These blocks don’t share editable styles.</p>
+      )}
+    </div>
+  );
+}
+
+/** The copy/paste-styles row in the single-node header (docs/builder/05 §2.5) —
+ *  lift a block's full class and drop it onto another. */
+function StyleClipRow({
+  onCopyStyles,
+  onPasteStyles,
+  canPasteStyles,
+}: {
+  onCopyStyles?: () => void;
+  onPasteStyles?: () => void;
+  canPasteStyles?: boolean;
+}) {
+  if (!onCopyStyles) return null;
+  return (
+    <div className="bx-ins-styleclip">
+      <button
+        type="button"
+        className="bx-ins-styleclip__btn"
+        onClick={onCopyStyles}
+        title="Copy this block’s styles"
+      >
+        <Copy aria-hidden /> Copy styles
+      </button>
+      {canPasteStyles && onPasteStyles ? (
+        <button
+          type="button"
+          className="bx-ins-styleclip__btn"
+          onClick={onPasteStyles}
+          title="Paste the copied styles onto this block"
+        >
+          <ClipboardPaste aria-hidden /> Paste styles
+        </button>
+      ) : null}
+    </div>
+  );
 }
 
 export function Inspector({
@@ -3500,9 +3663,34 @@ export function Inspector({
   onBind,
   onProp,
   onRetype,
+  selectionCount = 1,
+  onDuplicate,
+  onDelete,
+  onCopy,
+  onCopyStyles,
+  onPasteStyles,
+  canPasteStyles,
 }: InspectorProps) {
   if (!node) {
     return <>{settings}</>;
+  }
+  // More than one node selected → the bulk panel (universal styles + bulk actions).
+  if (selectionCount > 1) {
+    return (
+      <MultiSelectPanel
+        node={node}
+        surface={surface}
+        count={selectionCount}
+        onClass={onClass}
+        onProp={onProp}
+        onBack={onBack}
+        onCopy={onCopy}
+        onDuplicate={onDuplicate}
+        onDelete={onDelete}
+        onPasteStyles={onPasteStyles}
+        canPasteStyles={canPasteStyles}
+      />
+    );
   }
   // A `custom:*` placement (docs/53 P-B) has its own panel — identity, version
   // pin, configurable fields, and a link to edit the component itself.
@@ -3576,6 +3764,11 @@ export function Inspector({
             <Boxes aria-hidden /> Save as component
           </button>
         ) : null}
+        <StyleClipRow
+          onCopyStyles={onCopyStyles}
+          onPasteStyles={onPasteStyles}
+          canPasteStyles={canPasteStyles}
+        />
       </header>
 
       <div className="bx-ins-stack">

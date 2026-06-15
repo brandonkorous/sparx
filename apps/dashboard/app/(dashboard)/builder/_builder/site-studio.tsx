@@ -68,6 +68,9 @@ import { FieldsPanel } from './fields-panel';
 import { deriveFieldKey, makeFieldDef, type CreatableType } from './field-kinds';
 import { useStudioEditor } from './use-studio-editor';
 import type { SaveStatus } from './use-builder-editor';
+import { UndoRedoButtons } from './editor-undo-redo';
+import { useEditorKeymap } from './editor-keymap';
+import { ShortcutsOverlay } from './shortcuts-overlay';
 import { useComponentVersions } from './use-component-versions';
 import { useSurfacePreview } from './use-surface-preview';
 import type { SitePreviewData } from './binding-catalog';
@@ -377,6 +380,26 @@ export function SiteStudio({
   React.useEffect(() => {
     setSideCollapsed(false);
   }, [studio.selection.zone, studio.selection.id, setSideCollapsed]);
+
+  // Editor keymap + `?` overlay (docs/builder/05 §2.6), wired to the studio brain.
+  const [showShortcuts, setShowShortcuts] = React.useState(false);
+  useEditorKeymap({
+    undo: studio.undo,
+    redo: studio.redo,
+    copy: studio.copySelection,
+    paste: studio.paste,
+    duplicate: studio.duplicateSelection,
+    remove: studio.deleteSelection,
+    copyStyles: studio.copyStyles,
+    pasteStyles: studio.pasteStyles,
+    selectAll: studio.selectAll,
+    selectParent: studio.selectParent,
+    clear: () => studio.selectNode(null),
+    nudge: studio.nudge,
+    save: () => void studio.flushAll(),
+    toggleHelp: () => setShowShortcuts((v) => !v),
+    hasSelection: studio.selection.zone !== 'theme' && studio.selection.id !== null,
+  });
 
   // The Fields tab only exists for a CMS collection template; fall back to Layers.
   const railTab = studio.railTab === 'fields' && !contentTypeKey ? 'layers' : studio.railTab;
@@ -704,6 +727,7 @@ export function SiteStudio({
           the first edit. */}
       {themeCanvasCss ? <style dangerouslySetInnerHTML={{ __html: themeCanvasCss }} /> : null}
       {previewCss ? <style dangerouslySetInnerHTML={{ __html: previewCss }} /> : null}
+      <ShortcutsOverlay open={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <div className="bx-shell">
         {/* Unified toolbar (docs/builder/03 §2.8): page switcher · settings · device
             · Preview · Save · Publish. The Site|Email surface switch lives one level
@@ -807,6 +831,12 @@ export function SiteStudio({
             })}
           </div>
           <div className="bx-toolbar__actions">
+            <UndoRedoButtons
+              canUndo={studio.canUndo}
+              canRedo={studio.canRedo}
+              onUndo={studio.undo}
+              onRedo={studio.redo}
+            />
             {studio.saveStatus !== 'idle' ? (
               <span className="bx-savestate" data-state={studio.saveStatus}>
                 {SAVE_LABEL[studio.saveStatus]}
@@ -949,7 +979,9 @@ export function SiteStudio({
               resolveVersion={resolveVersion}
               device={studio.device}
               selectedId={studio.selection.zone === 'theme' ? null : studio.selection.id}
+              selectedIds={studio.selection.zone === 'theme' ? [] : studio.selection.ids}
               onSelect={studio.selectNode}
+              onMove={studio.onMove}
               chrome={layoutItem.tree}
               chromeLocked={false}
               frame={
@@ -1052,6 +1084,13 @@ export function SiteStudio({
                       onBind={studio.onBind}
                       onProp={studio.onProp}
                       onRetype={studio.onRetype}
+                      selectionCount={studio.selection.ids.length}
+                      onDuplicate={studio.duplicateSelection}
+                      onDelete={studio.deleteSelection}
+                      onCopy={studio.copySelection}
+                      onCopyStyles={studio.copyStyles}
+                      onPasteStyles={studio.pasteStyles}
+                      canPasteStyles={studio.canPasteStyles}
                     />
                   )}
                 </ScrollArea>

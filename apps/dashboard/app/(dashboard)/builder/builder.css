@@ -3071,3 +3071,270 @@
   border-color: var(--module-active);
   color: var(--module-active);
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phase 5 — editor affordances (docs/builder/05): multi-select chrome, canvas
+   drag guides, undo/redo + bulk controls, the keyboard-shortcuts overlay.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Secondary multi-selection (docs/builder/05 §2.2) — a lighter, dashed outline so
+   the PRIMARY (solid) stays distinguishable as the inspector's focus. */
+.bx-node--multi:not(.bx-node--custom) > .bx-inner,
+.bx-node--custom.bx-node--multi {
+  outline: 2px dashed color-mix(in srgb, var(--module-active) 70%, transparent);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+/* Canvas drag (docs/builder/05 §2.3–2.4): a grabbing cursor while dragging, and a
+   viewport-fixed overlay with the insertion line + target-container highlight. */
+.bx-canvas-scroll[data-dragging] {
+  cursor: grabbing;
+  user-select: none;
+}
+.bx-dragguide {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+.bx-dragguide__line {
+  position: fixed;
+  height: 3px;
+  margin-top: -1.5px;
+  border-radius: 2px;
+  background: var(--module-active);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+.bx-dragguide__line::before {
+  /* A small dot on the leading end, the house drop-indicator look. */
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--module-active);
+  transform: translateY(-50%);
+}
+.bx-dragguide__box {
+  position: fixed;
+  border-radius: 5px;
+  outline: 2px solid var(--module-active);
+  outline-offset: -2px;
+  background: color-mix(in srgb, var(--module-active) 8%, transparent);
+}
+
+/* Layers row in a multi-selection — quieter than the primary `--on` row, with a
+   left accent bar so the set reads as a group. */
+.bx-layer--multi {
+  background: color-mix(in srgb, var(--module-active) 7%, transparent);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--module-active) 45%, transparent);
+}
+
+/* Undo / redo toolbar control (docs/builder/05 §2.1) — icon buttons matching the
+   page-switcher controls. */
+.bx-undoredo {
+  display: inline-flex;
+  gap: 2px;
+}
+.bx-undoredo__btn {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-default);
+  border-radius: 7px;
+  background: var(--color-bg-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.bx-undoredo__btn svg {
+  width: 15px;
+  height: 15px;
+}
+.bx-undoredo__btn:hover:not(:disabled) {
+  color: var(--module-active);
+  border-color: var(--module-active);
+}
+.bx-undoredo__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Bulk action bar in the multi-select inspector (docs/builder/05 §2.2). */
+.bx-ins-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.bx-ins-bulk__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--color-border-default);
+  border-radius: 7px;
+  background: var(--color-bg-surface);
+  color: var(--color-text-default);
+  cursor: pointer;
+}
+.bx-ins-bulk__btn svg {
+  width: 14px;
+  height: 14px;
+}
+.bx-ins-bulk__btn:hover {
+  border-color: var(--module-active);
+  color: var(--module-active);
+}
+.bx-ins-bulk__btn--danger:hover {
+  border-color: var(--color-danger, #dc2626);
+  color: var(--color-danger, #dc2626);
+}
+
+/* Copy / paste styles row in the single-node inspector header (§2.5). */
+.bx-ins-styleclip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.bx-ins-styleclip__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 7px;
+  background: var(--color-bg-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.bx-ins-styleclip__btn svg {
+  width: 13px;
+  height: 13px;
+}
+.bx-ins-styleclip__btn:hover {
+  border-color: var(--module-active);
+  color: var(--module-active);
+}
+
+/* The `?` keyboard-shortcuts overlay (docs/builder/05 §2.6) — portaled to <body>. */
+.bx-shortcuts {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.bx-shortcuts__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(15, 23, 42, 0.45);
+  cursor: pointer;
+}
+.bx-shortcuts__card {
+  position: relative;
+  width: min(640px, 100%);
+  max-height: 80vh;
+  overflow: auto;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+  padding: 18px 20px 22px;
+}
+.bx-shortcuts__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.bx-shortcuts__head h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-default);
+}
+.bx-shortcuts__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 7px;
+  background: var(--color-bg-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.bx-shortcuts__close:hover {
+  color: var(--module-active);
+  border-color: var(--module-active);
+}
+.bx-shortcuts__close svg {
+  width: 15px;
+  height: 15px;
+}
+.bx-shortcuts__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 28px;
+}
+@media (max-width: 520px) {
+  .bx-shortcuts__grid {
+    grid-template-columns: 1fr;
+  }
+}
+.bx-shortcuts__group h3 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.bx-shortcuts__group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.bx-shortcuts__group li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.bx-shortcuts__label {
+  font-size: 13px;
+  color: var(--color-text-default);
+}
+.bx-shortcuts__keys {
+  display: inline-flex;
+  gap: 3px;
+}
+.bx-shortcuts__keys kbd {
+  min-width: 20px;
+  padding: 1px 6px;
+  font: 600 11px/1.6 var(--bx-mono);
+  text-align: center;
+  color: var(--color-text-default);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-default);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+}

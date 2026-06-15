@@ -47,6 +47,7 @@ import {
 import { type BuilderNode } from './model';
 import { NO_SCOPE, cardinalityForPath, moduleColor, moduleForPath } from './binding-catalog';
 import { acceptsChildren, getDef } from './registry';
+import type { SelectMods } from './use-builder-editor';
 import {
   ancestorIds,
   collapsibleIds,
@@ -105,6 +106,7 @@ function Row({
   catalog,
   components,
   selectedId,
+  multi,
   collapsed,
   draggable,
   dragDepth,
@@ -116,13 +118,15 @@ function Row({
   catalog: BindingCatalog;
   components?: ReadonlyMap<string, ComponentDto>;
   selectedId: string | null;
+  /** This row is part of a multi-selection but not the primary (docs/builder/05). */
+  multi: boolean;
   collapsed: boolean;
   /** Root is shown but never dragged. */
   draggable: boolean;
   /** Depth to render at — the projected drop depth while this row is dragging,
    *  else its real depth. */
   dragDepth: number;
-  onSelect: (id: string) => void;
+  onSelect: (id: string, mods?: SelectMods) => void;
   onRemove: (id: string) => void;
   onToggle: (id: string) => void;
 }) {
@@ -166,6 +170,7 @@ function Row({
         'bx-layer',
         canDrag && 'bx-layer--draggable',
         node.id === selectedId && 'bx-layer--on',
+        multi && 'bx-layer--multi',
         sortable.isDragging && 'bx-layer--dragging'
       )}
       style={style}
@@ -173,7 +178,7 @@ function Row({
       role="button"
       tabIndex={0}
       aria-pressed={node.id === selectedId}
-      onClick={() => onSelect(node.id)}
+      onClick={(e) => onSelect(node.id, { additive: e.metaKey || e.ctrlKey, range: e.shiftKey })}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -231,6 +236,7 @@ export function LayersPanel({
   catalog,
   components,
   selectedId,
+  selectedIds,
   homeLabel,
   onSelect,
   onRemove,
@@ -240,16 +246,24 @@ export function LayersPanel({
   catalog: BindingCatalog;
   /** Tenant components keyed by key (docs/53 P-B) — labels `custom:*` rows. */
   components?: ReadonlyMap<string, ComponentDto>;
+  /** The PRIMARY selected id (the inspector's focus). */
   selectedId: string | null;
+  /** The full multi-selection set (docs/builder/05 §2.2). Omitted ⇒ single select. */
+  selectedIds?: string[];
   /** Label for the settings-home row pinned atop the tree ("Page" / "Site").
    *  Selecting it clears the selection → the inspector shows that surface's
    *  settings (URL + SEO for a page). */
   homeLabel: string;
-  onSelect: (id: string | null) => void;
+  onSelect: (id: string | null, mods?: SelectMods) => void;
   onRemove: (id: string) => void;
   /** Re-parent / reorder: move `dragId` to be child `index` of `parentId`. */
   onMove: (dragId: string, parentId: string, index: number) => void;
 }) {
+  // Secondary-selected rows (everything selected except the primary).
+  const multiSet = React.useMemo(
+    () => new Set((selectedIds ?? []).filter((id) => id !== selectedId)),
+    [selectedIds, selectedId]
+  );
   // Collapse state starts COLLAPSED BY DEFAULT (every collapsible row). This
   // initializer is deterministic from `tree`, so SSR and the first client render
   // match; the localStorage load below then overrides it post-mount (client only),
@@ -424,6 +438,7 @@ export function LayersPanel({
                 catalog={catalog}
                 components={components}
                 selectedId={selectedId}
+                multi={multiSet.has(f.node.id)}
                 collapsed={collapsed.has(f.node.id)}
                 draggable={!isRoot}
                 dragDepth={isActive && projection ? projection.depth : f.depth}

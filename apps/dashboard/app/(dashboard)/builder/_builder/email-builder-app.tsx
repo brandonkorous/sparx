@@ -40,6 +40,7 @@ import { MergeTagsPanel } from './merge-tags-panel';
 import { BuilderWorkspace } from './builder-workspace';
 import { ImportExportControls } from './import-export-controls';
 import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
+import { UndoRedoButtons } from './editor-undo-redo';
 import {
   createEmail,
   customizeEmailForSite,
@@ -469,6 +470,12 @@ export function EmailBuilderApp({
             })}
           </div>
           <div className="bx-toolbar__actions">
+            <UndoRedoButtons
+              canUndo={editor.canUndo}
+              canRedo={editor.canRedo}
+              onUndo={editor.undo}
+              onRedo={editor.redo}
+            />
             {editor.saveStatus !== 'idle' ? (
               <span className="bx-savestate" data-state={editor.saveStatus}>
                 {SAVE_LABEL[editor.saveStatus]}

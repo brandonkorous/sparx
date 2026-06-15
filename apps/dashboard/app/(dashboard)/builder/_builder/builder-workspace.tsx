@@ -24,6 +24,8 @@ import { LayersPanel } from './layers-panel';
 import { AddPalette } from './add-palette';
 import { useComponentVersions } from './use-component-versions';
 import { useSurfacePreview } from './use-surface-preview';
+import { useEditorKeymap } from './editor-keymap';
+import { ShortcutsOverlay } from './shortcuts-overlay';
 
 export interface BuilderWorkspaceProps {
   tree: BuilderNode;
@@ -230,6 +232,27 @@ export function BuilderWorkspace({
     if (editor.selectedId) setSideCollapsed(false);
   }, [editor.selectedId, setSideCollapsed]);
 
+  // The editor keymap (docs/builder/05 §2.6) + the `?` shortcuts overlay. One
+  // handler over the whole workspace, wired to the shared editor brain.
+  const [showShortcuts, setShowShortcuts] = React.useState(false);
+  useEditorKeymap({
+    undo: editor.undo,
+    redo: editor.redo,
+    copy: editor.copySelection,
+    paste: editor.paste,
+    duplicate: editor.duplicateSelection,
+    remove: editor.deleteSelection,
+    copyStyles: editor.copyStyles,
+    pasteStyles: editor.pasteStyles,
+    selectAll: editor.selectAll,
+    selectParent: editor.selectParent,
+    clear: () => editor.setSelectedId(null),
+    nudge: editor.nudge,
+    save: () => void editor.flushSave(),
+    toggleHelp: () => setShowShortcuts((v) => !v),
+    hasSelection: editor.selectedId !== null,
+  });
+
   const bodyStyle = {
     '--bx-rail-w': `${railW}px`,
     '--bx-side-w': effectiveCollapsed ? '2.75rem' : '360px',
@@ -237,6 +260,7 @@ export function BuilderWorkspace({
   return (
     <>
       {previewCss ? <style dangerouslySetInnerHTML={{ __html: previewCss }} /> : null}
+      <ShortcutsOverlay open={showShortcuts} onClose={() => setShowShortcuts(false)} />
       {/* Mobile pane switch */}
       <div className="bx-paneswitch">
         {(['edit', 'preview'] as const).map((p) => (
@@ -295,8 +319,9 @@ export function BuilderWorkspace({
                 catalog={catalog}
                 components={components}
                 selectedId={editor.selectedId}
+                selectedIds={editor.selectedIds}
                 homeLabel={surface === 'site' ? 'Site' : surface === 'email' ? 'Email' : 'Page'}
-                onSelect={editor.setSelectedId}
+                onSelect={editor.select}
                 onRemove={editor.onRemove}
                 onMove={editor.onMove}
               />
@@ -331,7 +356,9 @@ export function BuilderWorkspace({
             resolveVersion={resolveVersion}
             device={editor.device}
             selectedId={editor.selectedId}
-            onSelect={editor.setSelectedId}
+            selectedIds={editor.selectedIds}
+            onSelect={editor.select}
+            onMove={editor.onMove}
             chrome={chrome}
             frame={frame}
           />
@@ -391,6 +418,13 @@ export function BuilderWorkspace({
                   onBind={editor.onBind}
                   onProp={editor.onProp}
                   onRetype={editor.onRetype}
+                  selectionCount={editor.selectedIds.length}
+                  onDuplicate={editor.duplicateSelection}
+                  onDelete={editor.deleteSelection}
+                  onCopy={editor.copySelection}
+                  onCopyStyles={editor.copyStyles}
+                  onPasteStyles={editor.pasteStyles}
+                  canPasteStyles={editor.canPasteStyles}
                 />
               </ScrollArea>
             </>

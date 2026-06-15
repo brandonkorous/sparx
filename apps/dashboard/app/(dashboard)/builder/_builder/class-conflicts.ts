@@ -244,3 +244,111 @@ export function resolveClassConflicts(classStr: string | undefined): string {
   }
   return kept.join(' ');
 }
+
+// ── Multi-select class fan-out (docs/builder/05 §2.2) ─────────────────────────
+//
+// When several nodes are selected, a structured control still edits only the
+// PRIMARY node's class string; the change then FANS OUT to the rest. Fanning out
+// the whole string would clobber each sibling's own classes, so instead we apply
+// the DELTA (what the edit added / removed) GROUP-AWARE-ly: an added token
+// replaces any same-group member on the sibling (so a color swap replaces the
+// sibling's color, not stacks on it), a removed token clears its group. Tokens
+// outside any group are added/removed literally.
+
+// Open-ended VALUE-group prefixes (w-, p-, top-, gap-x-, …) — single-token-per-
+// prefix by construction, so they're not in MANAGED, but a bulk width change must
+// still REPLACE the sibling's width. Matched longest-first so `min-w` beats `w`.
+const VALUE_PREFIXES = [
+  'min-w',
+  'min-h',
+  'max-w',
+  'max-h',
+  'inset-x',
+  'inset-y',
+  'gap-x',
+  'gap-y',
+  'skew-x',
+  'skew-y',
+  'translate-x',
+  'translate-y',
+  'space-x',
+  'space-y',
+  'w',
+  'h',
+  'size',
+  'p',
+  'px',
+  'py',
+  'pt',
+  'pr',
+  'pb',
+  'pl',
+  'm',
+  'mx',
+  'my',
+  'mt',
+  'mr',
+  'mb',
+  'ml',
+  'gap',
+  'top',
+  'right',
+  'bottom',
+  'left',
+  'inset',
+  'basis',
+  'order',
+  'z',
+  'opacity',
+  'duration',
+  'delay',
+  'rotate',
+  'scale',
+].sort((a, b) => b.length - a.length);
+
+/** The "group identity" of a token, per layer — two tokens with the same key are
+ *  alternatives that should replace one another. Managed group → its index; a
+ *  value-prefix utility → that prefix; anything else → the literal token. */
+function groupKeyOf(token: string): string {
+  const { prefix, base } = splitToken(token);
+  const idx = MANAGED.findIndex((g) => g.tokens.includes(base));
+  if (idx !== -1) return `m${idx}|${prefix}`;
+  const vp = VALUE_PREFIXES.find(
+    (p) => base === p || base.startsWith(`${p}-`) || base.startsWith(`${p}[`)
+  );
+  if (vp) return `v${vp}|${prefix}`;
+  return `u${prefix}${base}`;
+}
+
+/** Apply the change made to a PRIMARY node's class (`oldPrimary` → `newPrimary`)
+ *  onto a sibling's class string, group-aware: an added token replaces any
+ *  same-group token on the sibling, a removed token clears its group. Returns the
+ *  sibling's new class string (the sibling keeps every class outside the touched
+ *  groups). A no-op change returns the sibling unchanged. */
+export function applyClassChangeToSibling(
+  oldPrimary: string | undefined,
+  newPrimary: string | undefined,
+  sibling: string | undefined
+): string {
+  const oldTokens = parseClasses(oldPrimary);
+  const newTokens = parseClasses(newPrimary);
+  const oldSet = new Set(oldTokens);
+  const newSet = new Set(newTokens);
+  const added = newTokens.filter((t) => !oldSet.has(t));
+  const removed = oldTokens.filter((t) => !newSet.has(t));
+  if (added.length === 0 && removed.length === 0) return sibling ?? '';
+
+  const removedExact = new Set(removed);
+  const addedKeys = new Set(added.map(groupKeyOf));
+  const removedKeys = new Set(removed.map(groupKeyOf));
+
+  const kept = parseClasses(sibling).filter((t) => {
+    if (removedExact.has(t)) return false; // the literal token was removed
+    const key = groupKeyOf(t);
+    if (addedKeys.has(key)) return false; // replaced by the new value
+    if (removedKeys.has(key)) return false; // the whole group was cleared
+    return true;
+  });
+  kept.push(...added);
+  return kept.join(' ');
+}

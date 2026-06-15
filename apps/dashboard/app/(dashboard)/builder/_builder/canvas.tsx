@@ -12,6 +12,7 @@
 // from feeling disjointed.
 
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@sparx/ui';
 import {
   MAX_COMPONENT_NESTING,
@@ -31,6 +32,8 @@ import type { VersionResolver } from './use-component-versions';
 
 import {
   cardinalityOf,
+  findNode,
+  findParent,
   resolvePath,
   type BuilderNode,
   type Cardinality,
@@ -38,7 +41,8 @@ import {
   type Scope,
 } from './model';
 import { moduleColor, moduleForPath } from './binding-catalog';
-import { getDef } from './registry';
+import { acceptsChildren, getDef } from './registry';
+import type { SelectMods } from './use-builder-editor';
 // The ONE per-type leaf map + the interactive islands, shared with the live
 // storefront renderer (docs/builder/02). The canvas wraps each node in its own
 // selection chrome, then renders this for the leaf body in `edit` mode — so the
@@ -129,6 +133,18 @@ function backgroundStyleFor(node: BuilderNode, scope: Scope): React.CSSPropertie
 
 // ── The recursive node ───────────────────────────────────────────────────────
 
+// The secondary-selection set (docs/builder/05 §2.2) — every selected node id
+// EXCEPT the primary (`selectedId`). Read by each node to paint the lighter
+// multi-select chrome without threading the whole set through every recursive
+// call. Empty for a single selection.
+const MultiSelectContext = React.createContext<ReadonlySet<string>>(new Set());
+
+/** Translate a click's modifier keys into a selection intent (docs/builder/05
+ *  §2.2): Shift = range, Cmd/Ctrl = additive toggle. */
+function selectMods(e: React.MouseEvent): SelectMods {
+  return { additive: e.metaKey || e.ctrlKey, range: e.shiftKey };
+}
+
 interface NodeProps {
   node: BuilderNode;
   scope: Scope;
@@ -137,7 +153,7 @@ interface NodeProps {
    *  for a live preview. */
   components?: ReadonlyMap<string, ComponentDto>;
   selectedId: string | null;
-  onSelect: (id: string) => void;
+  onSelect: (id: string, mods?: SelectMods) => void;
   /** Locked = render as a non-interactive backdrop (no selection chrome, not
    *  clickable). Used to frame the page editor in its site layout. */
   locked?: boolean;
@@ -228,7 +244,9 @@ function CustomCanvasNode({
   const comp = components?.get(key);
   const resolveVersion = React.useContext(VersionResolverContext);
   const depth = React.useContext(CustomDepthContext);
+  const multiSet = React.useContext(MultiSelectContext);
   const selected = node.id === selectedId;
+  const multi = !selected && multiSet.has(node.id);
 
   // Nesting backstop (docs/53 4a): the service rejects cycles + over-deep nesting
   // at save, but a stale tree shouldn't be able to recurse the renderer to death.
@@ -256,7 +274,8 @@ function CustomCanvasNode({
           'bx-node',
           'bx-node--custom',
           'bx-node--missing',
-          selected && 'bx-node--selected'
+          selected && 'bx-node--selected',
+          multi && 'bx-node--multi'
         )}
         style={{ position: 'relative' }}
         data-node-id={node.id}
@@ -265,7 +284,7 @@ function CustomCanvasNode({
         aria-label="Missing component"
         onClick={(e) => {
           e.stopPropagation();
-          onSelect(node.id);
+          onSelect(node.id, selectMods(e));
         }}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
@@ -320,7 +339,12 @@ function CustomCanvasNode({
 
   return (
     <div
-      className={cn('bx-node', 'bx-node--custom', selected && 'bx-node--selected')}
+      className={cn(
+        'bx-node',
+        'bx-node--custom',
+        selected && 'bx-node--selected',
+        multi && 'bx-node--multi'
+      )}
       style={{ position: 'relative' }}
       data-node-id={node.id}
       role="button"
@@ -328,7 +352,7 @@ function CustomCanvasNode({
       aria-label={node.name ?? comp.name}
       onClick={(e) => {
         e.stopPropagation();
-        onSelect(node.id);
+        onSelect(node.id, selectMods(e));
       }}
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
@@ -363,6 +387,9 @@ function CanvasNode({
   const emailMode = emailSample !== null;
   // The resolved email brand (logo + store name) for the wordmark header leaf.
   const emailBrand = React.useContext(EmailBrandContext);
+  // The secondary-selection set (docs/builder/05 §2.2) — read before any early
+  // return so the hook order stays stable.
+  const multiSet = React.useContext(MultiSelectContext);
   // A tenant-component placement expands to a live preview (docs/53 P-B) — handled
   // before the registry lookup, which has no entry for `custom:*` types.
   if (isCustomType(node.type)) {
@@ -391,6 +418,7 @@ function CanvasNode({
   const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
 
   const selected = node.id === selectedId;
+  const multi = !selected && multiSet.has(node.id);
   // The only inline style: a dynamic background image (a URL can't be a class).
   // The surface COLOR comes from node.class (live-compiled into the canvas).
   const bgStyle = backgroundStyleFor(node, scope);
@@ -491,7 +519,7 @@ function CanvasNode({
     if (bound && card === 'array' && scopes.length === 0) {
       body = <div className="bx-empty">Nothing to show — the list is empty</div>;
     } else {
-      body = scopes.flatMap(({ s, key }) =>
+      const rendered = scopes.flatMap(({ s, key }) =>
         kids.map((child) => (
           <CanvasNode
             key={`${key}:${child.id}`}
@@ -506,6 +534,15 @@ function CanvasNode({
           />
         ))
       );
+      // An empty container in edit mode shows a clear, droppable hint instead of a
+      // zero-height void (docs/builder/05 §2.7) — the wrapper stays selectable, so a
+      // canvas drag can drop straight into it.
+      body =
+        rendered.length === 0 && !locked ? (
+          <div className="bx-empty">Empty — add or drop blocks here</div>
+        ) : (
+          rendered
+        );
     }
   } else {
     // A leaf may still nest children (Button → an inline Icon, docs/47). Render
@@ -566,7 +603,7 @@ function CanvasNode({
 
   return (
     <div
-      className={cn('bx-node', selected && 'bx-node--selected')}
+      className={cn('bx-node', selected && 'bx-node--selected', multi && 'bx-node--multi')}
       data-node-id={node.id}
       data-bx-type={node.type}
       role="button"
@@ -574,7 +611,7 @@ function CanvasNode({
       aria-label={node.name ?? def.label}
       onClick={(e) => {
         e.stopPropagation();
-        onSelect(node.id);
+        onSelect(node.id, selectMods(e));
       }}
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
@@ -651,8 +688,18 @@ export interface CanvasProps {
    *  canvas previews each component's latest. */
   resolveVersion?: VersionResolver;
   device: Device;
+  /** The PRIMARY selected node id (the inspector's focus). */
   selectedId: string | null;
-  onSelect: (id: string | null) => void;
+  /** The full multi-selection set (docs/builder/05 §2.2); the primary plus any
+   *  secondary nodes. Omitted ⇒ single selection. */
+  selectedIds?: string[];
+  /** Select a node (with optional click modifiers for multi-select) or clear with
+   *  null. */
+  onSelect: (id: string | null, mods?: SelectMods) => void;
+  /** Re-parent / reorder by dragging on the canvas (docs/builder/05 §2.3): move
+   *  `dragId` to be child `index` of `parentId`, through the SAME move logic the
+   *  layers tree uses. Omitted ⇒ canvas drag is off (read-only preview). */
+  onMove?: (dragId: string, parentId: string, index: number) => void;
   /** The site layout tree (page editor only). When present, the page is framed
    *  inside it: the layout renders as a locked backdrop and `tree` is dropped at
    *  the layout's Outlet — the same composition the storefront ships, so the
@@ -683,6 +730,250 @@ function initialOf(name: string): string {
   return name.trim().charAt(0).toUpperCase() || '·';
 }
 
+// ── Canvas drag/drop (docs/builder/05 §2.3) ───────────────────────────────────
+//
+// Direct-manipulation reorder/reparent ON the canvas, reusing the SAME `onMove`
+// (model.moveNode) the layers tree uses. Geometry is read from the rendered DOM:
+// each node's box is its `.bx-inner` (the `.bx-node` wrapper is `display:contents`,
+// docs/builder/04, so it has no box of its own) or, for a component placement, the
+// `.bx-node--custom` element itself. The drop position is derived from where the
+// pointer sits over the hovered node — into a container's middle band, else before/
+// after it as a sibling — and the index among children comes from the MODEL, so it
+// matches a layers-tree move exactly.
+//
+// Only the SELECTABLE nodes (`role="button"`) are drag targets, so a locked chrome
+// backdrop (page editor) is never a drop site; a drop whose hovered node lives in a
+// different tree-root than the dragged node is rejected, so nothing crosses the
+// Outlet boundary (the studio router would reject that save anyway). Mouse only —
+// touch reorders through the Layers panel, so a finger-scroll never grabs a block.
+
+const DRAG_THRESHOLD = 6; // px of travel before a press becomes a drag (vs a click)
+
+interface DropTarget {
+  kind: 'into' | 'before' | 'after';
+  parentId: string;
+  index: number;
+  targetId: string;
+}
+
+interface DragGuide {
+  /** The insertion line, in viewport coords (the overlay is position:fixed). */
+  line: { left: number; top: number; width: number };
+  /** The highlighted container box (only for an `into` drop). */
+  box?: { left: number; top: number; width: number; height: number };
+}
+
+/** The geometry box of a node's rendered element: the `.bx-inner` for an ordinary
+ *  node (its wrapper is display:contents), or the element itself for a component
+ *  placement. */
+function innerBoxOf(wrapper: Element): DOMRect | null {
+  if (wrapper.classList.contains('bx-node--custom')) return wrapper.getBoundingClientRect();
+  const inner = wrapper.querySelector(':scope > .bx-inner');
+  return (inner ?? wrapper).getBoundingClientRect();
+}
+
+function nodeBoxById(rootEl: Element, id: string): DOMRect | null {
+  const el = rootEl.querySelector(`[data-node-id="${CSS.escape(id)}"]`);
+  return el ? innerBoxOf(el) : null;
+}
+
+function useCanvasDrag(
+  roots: BuilderNode[],
+  onMove: ((dragId: string, parentId: string, index: number) => void) | undefined,
+  scrollRef: React.RefObject<HTMLDivElement | null>
+) {
+  const [dragging, setDragging] = React.useState(false);
+  const [guide, setGuide] = React.useState<DragGuide | null>(null);
+  // Pointer capture (set on the scroll container) routes every move/up to the
+  // container's own React handlers — no window listeners to add/remove, no stale
+  // closures. These refs carry per-drag state across those handlers.
+  const candidate = React.useRef<{ id: string; pointerId: number; x: number; y: number } | null>(
+    null
+  );
+  const draggingRef = React.useRef(false);
+  const dropRef = React.useRef<DropTarget | null>(null);
+  const suppressClick = React.useRef(false);
+  const rootsRef = React.useRef(roots);
+  rootsRef.current = roots;
+  const onMoveRef = React.useRef(onMove);
+  onMoveRef.current = onMove;
+
+  const rootOf = (id: string): BuilderNode | null =>
+    rootsRef.current.find((r) => findNode(r, id)) ?? null;
+
+  const computeDrop = (px: number, py: number, dragId: string): DropTarget | null => {
+    const rootEl = scrollRef.current;
+    if (!rootEl) return null;
+    const hit = document.elementFromPoint(px, py);
+    const wrapper = hit?.closest('[data-node-id][role="button"]');
+    if (!wrapper) return null;
+    const hoveredId = wrapper.getAttribute('data-node-id');
+    if (!hoveredId || hoveredId === dragId) return null;
+    const dragRoot = rootOf(dragId);
+    if (!dragRoot) return null;
+    const draggedNode = findNode(dragRoot, dragId);
+    // Can't drop a node into its own subtree, and can't cross tree-roots (Outlet).
+    if (draggedNode && findNode(draggedNode, hoveredId)) return null;
+    if (rootOf(hoveredId) !== dragRoot) return null;
+    const hovered = findNode(dragRoot, hoveredId);
+    if (!hovered) return null;
+    const box = innerBoxOf(wrapper);
+    if (!box) return null;
+    const relY = (py - box.top) / Math.max(1, box.height);
+
+    if (acceptsChildren(hovered.type) && relY > 0.25 && relY < 0.75) {
+      const kids = hovered.children ?? [];
+      let index = kids.length;
+      for (let k = 0; k < kids.length; k += 1) {
+        const kb = nodeBoxById(rootEl, kids[k]!.id);
+        if (kb && py < kb.top + kb.height / 2) {
+          index = k;
+          break;
+        }
+      }
+      return { kind: 'into', parentId: hoveredId, index, targetId: hoveredId };
+    }
+
+    const parent = findParent(dragRoot, hoveredId);
+    if (!parent) return null; // the root can't be a sibling target
+    const at = (parent.children ?? []).findIndex((c) => c.id === hoveredId);
+    if (at === -1) return null;
+    const before = relY < 0.5;
+    return {
+      kind: before ? 'before' : 'after',
+      parentId: parent.id,
+      index: before ? at : at + 1,
+      targetId: hoveredId,
+    };
+  };
+
+  const guideFor = (drop: DropTarget): DragGuide | null => {
+    const rootEl = scrollRef.current;
+    if (!rootEl) return null;
+    const box = nodeBoxById(rootEl, drop.targetId);
+    if (!box) return null;
+    if (drop.kind === 'into') {
+      const kids =
+        findNode(rootOf(drop.targetId) ?? rootsRef.current[0]!, drop.targetId)?.children ?? [];
+      let top = box.top + 4;
+      if (kids.length > 0) {
+        const at = Math.min(drop.index, kids.length - 1);
+        const kb = nodeBoxById(rootEl, kids[at]!.id);
+        if (kb) top = drop.index >= kids.length ? kb.bottom : kb.top;
+      }
+      return {
+        line: { left: box.left, top, width: box.width },
+        box: { left: box.left, top: box.top, width: box.width, height: box.height },
+      };
+    }
+    return {
+      line: {
+        left: box.left,
+        top: drop.kind === 'before' ? box.top : box.bottom,
+        width: box.width,
+      },
+    };
+  };
+
+  const reset = () => {
+    candidate.current = null;
+    draggingRef.current = false;
+    dropRef.current = null;
+    setDragging(false);
+    setGuide(null);
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (!onMoveRef.current || e.pointerType !== 'mouse' || e.button !== 0) return;
+    const target = e.target as HTMLElement;
+    // Leave real form controls inside a leaf alone (native focus / text select).
+    if (target.closest('input, textarea, select, [contenteditable="true"]')) return;
+    const wrapper = target.closest('[data-node-id][role="button"]');
+    if (!wrapper) return;
+    const id = wrapper.getAttribute('data-node-id');
+    if (!id) return;
+    // Don't drag a tree root (it has no parent to move within).
+    const root = rootOf(id);
+    if (!root || !findParent(root, id)) return;
+    // Record a candidate only — capture the pointer LATER, when the drag actually
+    // starts (in onPointerMove), so a plain click never captures or interferes.
+    candidate.current = { id, pointerId: e.pointerId, x: e.clientX, y: e.clientY };
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    const cand = candidate.current;
+    if (!cand) return;
+    if (cand.pointerId !== e.pointerId) return;
+    if (!draggingRef.current) {
+      if (Math.hypot(e.clientX - cand.x, e.clientY - cand.y) < DRAG_THRESHOLD) return;
+      draggingRef.current = true;
+      setDragging(true);
+      // Now that it's a real drag, capture the pointer so move/up keep arriving
+      // even if the cursor leaves the canvas.
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch {
+        // capture unsupported — the drag still works while the pointer stays inside
+      }
+    }
+    const drop = computeDrop(e.clientX, e.clientY, cand.id);
+    dropRef.current = drop;
+    setGuide(drop ? guideFor(drop) : null);
+  };
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    const cand = candidate.current;
+    if (!cand) return;
+    if (cand.pointerId !== e.pointerId) return;
+    const drop = dropRef.current;
+    if (draggingRef.current && drop) onMoveRef.current?.(cand.id, drop.parentId, drop.index);
+    if (draggingRef.current) suppressClick.current = true; // swallow the trailing click
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      // already released
+    }
+    reset();
+  };
+
+  // Capture-phase click guard: after a drag, swallow the synthetic click so it
+  // doesn't select a node or clear the selection.
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (suppressClick.current) {
+      suppressClick.current = false;
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  };
+
+  return { dragging, guide, onPointerDown, onPointerMove, onPointerUp, onClickCapture };
+}
+
+/** The drag overlay (docs/builder/05 §2.4): an insertion LINE showing where the
+ *  block lands plus, for an into-container drop, a highlight of the target. Fixed
+ *  to the viewport (so it ignores canvas scroll) and click-through. */
+function DragGuides({ guide }: { guide: DragGuide }) {
+  return (
+    <div className="bx-dragguide" aria-hidden>
+      {guide.box ? (
+        <div
+          className="bx-dragguide__box"
+          style={{
+            left: guide.box.left,
+            top: guide.box.top,
+            width: guide.box.width,
+            height: guide.box.height,
+          }}
+        />
+      ) : null}
+      <div
+        className="bx-dragguide__line"
+        style={{ left: guide.line.left, top: guide.line.top, width: guide.line.width }}
+      />
+    </div>
+  );
+}
+
 export function Canvas({
   tree,
   data,
@@ -691,13 +982,30 @@ export function Canvas({
   resolveVersion,
   device,
   selectedId,
+  selectedIds,
   onSelect,
+  onMove,
   chrome,
   chromeLocked = true,
   frame,
 }: CanvasProps) {
   const width = DEVICE_WIDTH[device];
   const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  // The secondary-selection set (every selected id except the primary), provided to
+  // each node via context so multi-selected blocks paint the lighter chrome.
+  const multiSet = React.useMemo(() => {
+    if (!selectedIds || selectedIds.length <= 1) return new Set<string>();
+    return new Set(selectedIds.filter((id) => id !== selectedId));
+  }, [selectedIds, selectedId]);
+
+  // Canvas drag searches BOTH the editable tree and (in the studio, where it's
+  // selectable) the chrome; a drop never crosses between them.
+  const dragRoots = React.useMemo(
+    () => [tree, ...(chrome && !chromeLocked ? [chrome] : [])],
+    [tree, chrome, chromeLocked]
+  );
+  const drag = useCanvasDrag(dragRoots, onMove, scrollRef);
 
   // Scroll the selected node into view (the preview side of select→reveal — e.g.
   // selecting a layer in the tree). `nearest` makes it a no-op when the node is
@@ -887,23 +1195,34 @@ export function Canvas({
       <EmailSampleContext.Provider value={emailSample}>
         <EmailBrandContext.Provider value={emailBrand}>
           <VersionResolverContext.Provider value={resolveVersion ?? null}>
-            <div
-              className="bx-canvas-scroll"
-              data-frame={frameKind}
-              ref={scrollRef}
-              role="button"
-              tabIndex={-1}
-              aria-label="Clear selection"
-              onClick={() => onSelect(null)}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') onSelect(null);
-              }}
-            >
-              {framed}
-            </div>
+            <MultiSelectContext.Provider value={multiSet}>
+              <div
+                className="bx-canvas-scroll"
+                data-frame={frameKind}
+                data-dragging={drag.dragging ? '' : undefined}
+                ref={scrollRef}
+                role="button"
+                tabIndex={-1}
+                aria-label="Clear selection"
+                onClick={() => onSelect(null)}
+                onClickCapture={drag.onClickCapture}
+                onPointerDown={drag.onPointerDown}
+                onPointerMove={drag.onPointerMove}
+                onPointerUp={drag.onPointerUp}
+                onPointerCancel={drag.onPointerUp}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') onSelect(null);
+                }}
+              >
+                {framed}
+              </div>
+            </MultiSelectContext.Provider>
           </VersionResolverContext.Provider>
         </EmailBrandContext.Provider>
       </EmailSampleContext.Provider>
+      {/* The drag guides are portaled to <body> so position:fixed coords are
+          immune to any transformed frame ancestor (bezel scale, etc.). */}
+      {drag.guide ? createPortal(<DragGuides guide={drag.guide} />, document.body) : null}
     </EditModeProvider>
   );
 }
