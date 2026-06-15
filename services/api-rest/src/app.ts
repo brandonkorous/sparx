@@ -59,6 +59,7 @@ import entryRoutes from './routes/v1/content/entries.js';
 import publishRoutes from './routes/v1/content/publish.js';
 import revisionRoutes from './routes/v1/content/revisions.js';
 import previewTokenRoutes from './routes/v1/content/preview-tokens.js';
+import contentReportRoutes from './routes/v1/content/reports.js';
 import navigationRoutes from './routes/v1/navigation/menus.js';
 import redirectRoutes from './routes/v1/redirects/index.js';
 import authorRoutes from './routes/v1/authors/index.js';
@@ -593,6 +594,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publishRoutes);
   await app.register(revisionRoutes);
   await app.register(previewTokenRoutes);
+  await app.register(contentReportRoutes);
   await app.register(navigationRoutes);
   await app.register(redirectRoutes);
   await app.register(authorRoutes);

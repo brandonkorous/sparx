@@ -1,6 +1,6 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 1.4
+**Version:** 1.5
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -84,7 +84,10 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 
 ### CMS / Content — Teal
 
-- 🔴 **Everything.** No content reporting exists. Counts (published / draft / scheduled) could be derived from `GET /v1/content` lists as a stopgap, but views, top content, and publishing cadence need a new `/v1/content/reports/*` surface.
+- ✅ Counts (published-30d / drafts / scheduled / total) + status pipeline + content-by-type — `GET /v1/content/reports/summary` (shipped 2026-06-15)
+- ✅ Publishing **cadence** (entries published per day/week/month) — `GET /v1/content/reports/cadence` (shipped 2026-06-15; live aggregate over `content_entries`, same daily-bucket chart shape as the rollups)
+- ✅ Recently-published / upcoming-scheduled / recent-activity feeds — `GET /v1/content/reports/recent` (shipped 2026-06-15)
+- 🔴 Content **views** / read-time / top-content-by-views — needs analytics event capture (workload B); KPIs + SEO-health card stay sample until site analytics lands
 
 ### CRM — Cyan
 
