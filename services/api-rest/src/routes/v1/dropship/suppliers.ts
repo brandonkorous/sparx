@@ -397,6 +397,9 @@ interface DropshipVariantData {
   msrpCents: number | null;
   weight: number | null;
   imageUrls?: string[];
+  /** Supplier can currently fulfill this combo; `false` → import as `deny`
+   *  (storefront greys it out). Absent/`true` → orderable. See NormalizedProductVariant. */
+  available?: boolean;
 }
 
 interface DropshipImportData {
@@ -431,9 +434,12 @@ async function createCommerceProductFromDropship(
     return existing !== null;
   });
 
-  // `inStock: true` because dropship items are supplier-fulfilled (made-to-order
-  // for POD) — we don't track their stock locally, so the storefront must never
-  // show them as sold out (the default `false` is what made imports read so).
+  // Dropship items are supplier-fulfilled (made-to-order for POD) — we don't
+  // track their stock locally, so the storefront must never show them as sold
+  // out (the default `false` is what made imports read so). The one exception:
+  // if the supplier reports EVERY combo currently unavailable, the product is
+  // genuinely unorderable, so reflect that at the product level too.
+  const anyVariantAvailable = variants.length === 0 || variants.some((v) => v.available !== false);
   const product = await tx.product.create({
     data: {
       tenantId,
@@ -442,7 +448,7 @@ async function createCommerceProductFromDropship(
       description: data.description ?? null,
       status: 'draft',
       fulfillmentType: 'physical',
-      inStock: true,
+      inStock: anyVariantAvailable,
       metadata: { dropshipSupplierId: supplierId, dropshipProductId },
     },
   });
@@ -469,7 +475,9 @@ async function createCommerceProductFromDropship(
           currency: 'USD',
           weightGrams: v.weight ?? undefined,
           // `continue` = orderable without tracked stock (supplier holds it).
-          inventoryPolicy: 'continue',
+          // `deny` for a combo the supplier currently can't make → the storefront
+          // computes inStock=false and greys just that colour/size out.
+          inventoryPolicy: v.available === false ? 'deny' : 'continue',
           isDefault: idx === 0,
           position: idx,
           dropshipSourceId: supplierId,
@@ -1067,6 +1075,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       inventoryQuantity: number | null;
       weight: number | null;
       imageUrls?: string[];
+      available?: boolean;
     }[];
 
     const result = await withTenant({ tenantId }, (tx) =>
@@ -1104,11 +1113,12 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
   // ── Re-sync an already-imported product from the supplier ────────────────────
   //
   // Refreshes the EXISTING commerce product in place (no duplicate, no SKU
-  // churn): restores dropship availability (inStock + every variant's
-  // inventoryPolicy → continue) and backfills supplier imagery when the product
-  // has none. This is how items imported before an import-path fix — or whose
-  // supplier photos changed — get corrected through the normal UI rather than a
-  // manual DB edit.
+  // churn): re-applies dropship availability from the supplier's latest snapshot
+  // (each combo's inventoryPolicy → continue, or deny for one the supplier
+  // currently can't make; product inStock false only if EVERY combo is
+  // unavailable) and backfills supplier imagery when the product has none. This
+  // is how items imported before an import-path fix — or whose supplier photos or
+  // availability changed — get corrected through the normal UI, not a manual DB edit.
 
   app.post('/v1/dropship/suppliers/:id/catalog/:productId/reimport', async (request, reply) => {
     await requireDropshipModule(request);
@@ -1136,12 +1146,36 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const result = await withTenant({ tenantId }, async (tx) => {
-      // Dropship items are supplier-fulfilled — always orderable, never sold out.
-      await tx.product.update({ where: { id: commerceProductId }, data: { inStock: true } });
+      // Re-apply availability from the supplier's latest snapshot. Dropship items
+      // are supplier-fulfilled, so an available combo is `continue` (orderable
+      // without tracked stock); a combo the supplier currently can't make is
+      // `deny`, so the storefront computes inStock=false and greys just it out.
+      // The product stays inStock unless EVERY combo is unavailable.
+      const syncedVariants = dropshipProduct.variants as {
+        supplierSku: string;
+        available?: boolean;
+      }[];
+      const denySkus = syncedVariants
+        .filter((v) => v.available === false)
+        .map((v) => v.supplierSku);
+      const anyAvailable = syncedVariants.length === 0 || denySkus.length < syncedVariants.length;
+
+      await tx.product.update({
+        where: { id: commerceProductId },
+        data: { inStock: anyAvailable },
+      });
+      // Default everything back to orderable, then deny the unavailable subset —
+      // two statements so a combo that came back in stock is restored to continue.
       await tx.productVariant.updateMany({
         where: { productId: commerceProductId, deletedAt: null },
         data: { inventoryPolicy: 'continue' },
       });
+      if (denySkus.length > 0) {
+        await tx.productVariant.updateMany({
+          where: { productId: commerceProductId, deletedAt: null, sku: { in: denySkus } },
+          data: { inventoryPolicy: 'deny' },
+        });
+      }
 
       // Only backfill imagery when the product has none, so re-syncing never
       // duplicates images a merchant may have already curated. Backfills BOTH
@@ -1216,7 +1250,12 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
         }
       }
 
-      return { productId: commerceProductId, imagesAdded, optionsAdded };
+      return {
+        productId: commerceProductId,
+        imagesAdded,
+        optionsAdded,
+        unavailableVariants: denySkus.length,
+      };
     });
 
     await publishEvent(

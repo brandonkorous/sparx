@@ -64,6 +64,11 @@ interface PrintifyVariant {
   title: string;
   grams: number;
   is_enabled: boolean;
+  // True when the print provider can currently produce this exact variant.
+  // Printify flips it false when a blank colour/size is temporarily out of stock
+  // (the variant stays enabled — the merchant still offers it — it just can't be
+  // made right now). Absent on older payloads → treat as available.
+  is_available?: boolean;
   options: number[]; // option-value ids, resolved via product.options
 }
 
@@ -289,6 +294,9 @@ export class PrintifyAdapter implements SupplierAdapter {
           costPriceCents: v.cost,
           msrpCents: v.price ?? null,
           inventoryQuantity: null, // POD — made to order
+          // Faithful to the supplier: an enabled-but-out-of-stock colour/size
+          // imports as a real variant flagged unavailable, not silently dropped.
+          available: v.is_available !== false,
           weight: v.grams ?? null,
           imageUrls: variantImages,
         };

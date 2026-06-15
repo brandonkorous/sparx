@@ -1,6 +1,6 @@
 # Sparx Platform — Dropship Integration PRD
 
-**Version:** 2.1
+**Version:** 2.2
 **Author:** Brandon Korous
 **Last Updated:** 2026-06-14
 
@@ -101,6 +101,22 @@ stock).
 encodes whatever its order API needs into that SKU during `syncCatalog`: Printful uses the
 `sync_variant_id`; Printify uses a composite `"{productId}:{variantId}"`; DSers/Spocket use the
 supplier SKU directly.
+
+**Variant availability (per exact combo).** A POD supplier can mark an individual colour/size
+combo temporarily unfulfillable while the merchant still _offers_ it — Printify's `is_available`
+(distinct from `is_enabled`, which is "merchant offers it at all"). `NormalizedProductVariant`
+carries an optional **`available`** flag for this (absent/`true` = orderable; `false` = the
+supplier currently can't make it). The two flags map differently on import:
+
+- **`is_enabled: false`** → the variant is **dropped** at normalize (the merchant never offered it).
+- **`is_available: false`** → the variant is **kept** but imported with `inventoryPolicy: 'deny'`
+  (and no stock rows), so the public PDP computes `inStock = false` and **greys out just that
+  combo** — the option pill goes disabled+struck-through, the colour swatch gets a diagonal slash.
+  A product is only flagged out of stock at the product level when **every** combo is unavailable.
+
+Re-sync (`/reimport`) re-applies the latest snapshot both ways: a combo that came back in stock is
+restored to `continue`, and the response reports `unavailableVariants`. Adapters without an
+availability signal simply omit the flag and every variant stays orderable, as before.
 
 ---
 

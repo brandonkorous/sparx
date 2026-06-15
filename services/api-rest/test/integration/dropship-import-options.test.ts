@@ -366,4 +366,174 @@ describe('dropship import → product option lattice', () => {
       await dropTestTenant(t.tenantId);
     }
   });
+
+  // A supplier (Printify) flips an individual colour/size combo out of stock via
+  // `is_available: false` while leaving it enabled. The import must keep the
+  // variant (faithful to the supplier) but mark it `deny` so the storefront greys
+  // just that combo out — `continue` for the rest. Absent flag → available.
+  const colourVariant = (
+    sku: string,
+    colour: string,
+    available?: boolean
+  ): Record<string, unknown> => ({
+    supplierSku: sku,
+    title: colour,
+    options: { Colour: colour },
+    costPriceCents: 1000,
+    msrpCents: 2400,
+    inventoryQuantity: null,
+    weight: 180,
+    ...(available === undefined ? {} : { available }),
+  });
+
+  it('imports an unavailable combo as deny while the rest stay orderable', async () => {
+    const t = await createTestTenant('owner');
+    try {
+      await enableDropship(t.tenantId);
+      const token = signToken(app, t);
+      const supplierId = await seedSupplier(t);
+      const dpId = await seedDropshipProduct(t, supplierId, 'PP-AVAIL', [
+        colourVariant('AV:red', 'Red', true),
+        colourVariant('AV:blue', 'Blue', false), // supplier currently can't make it
+        colourVariant('AV:green', 'Green'), // flag absent → available
+      ]);
+
+      const res = await app.inject({
+        method: 'POST',
+        url: `/v1/dropship/suppliers/${supplierId}/catalog/${dpId}/import`,
+        headers: authHeader(token),
+        payload: {},
+      });
+      expect(res.statusCode).toBe(201);
+      const productId = res.json().data.productId as string;
+
+      const { inStock, policyBySku } = await withTenant({ tenantId: t.tenantId }, async (tx) => {
+        const product = await tx.product.findUniqueOrThrow({
+          where: { id: productId },
+          select: { inStock: true },
+        });
+        const variants = await tx.productVariant.findMany({
+          where: { productId, deletedAt: null },
+          select: { sku: true, inventoryPolicy: true },
+        });
+        return {
+          inStock: product.inStock,
+          policyBySku: new Map(variants.map((v) => [v.sku, v.inventoryPolicy])),
+        };
+      });
+
+      expect(policyBySku.get('AV:blue')).toBe('deny');
+      expect(policyBySku.get('AV:red')).toBe('continue');
+      expect(policyBySku.get('AV:green')).toBe('continue');
+      // Other colours are orderable, so the product itself stays in stock.
+      expect(inStock).toBe(true);
+    } finally {
+      await dropTestTenant(t.tenantId);
+    }
+  });
+
+  it('marks the product out of stock when every combo is unavailable', async () => {
+    const t = await createTestTenant('owner');
+    try {
+      await enableDropship(t.tenantId);
+      const token = signToken(app, t);
+      const supplierId = await seedSupplier(t);
+      const dpId = await seedDropshipProduct(t, supplierId, 'PP-AVAIL-NONE', [
+        colourVariant('AN:red', 'Red', false),
+        colourVariant('AN:blue', 'Blue', false),
+      ]);
+
+      const res = await app.inject({
+        method: 'POST',
+        url: `/v1/dropship/suppliers/${supplierId}/catalog/${dpId}/import`,
+        headers: authHeader(token),
+        payload: {},
+      });
+      expect(res.statusCode).toBe(201);
+      const productId = res.json().data.productId as string;
+
+      const inStock = await withTenant({ tenantId: t.tenantId }, async (tx) => {
+        const p = await tx.product.findUniqueOrThrow({
+          where: { id: productId },
+          select: { inStock: true },
+        });
+        return p.inStock;
+      });
+      expect(inStock).toBe(false);
+    } finally {
+      await dropTestTenant(t.tenantId);
+    }
+  });
+
+  it('re-sync re-applies changed availability both ways (deny ⇄ continue)', async () => {
+    const t = await createTestTenant('owner');
+    try {
+      await enableDropship(t.tenantId);
+      const token = signToken(app, t);
+      const supplierId = await seedSupplier(t);
+      const allAvailable = [
+        colourVariant('RS:red', 'Red', true),
+        colourVariant('RS:blue', 'Blue', true),
+      ];
+      const dpId = await seedDropshipProduct(t, supplierId, 'PP-RESYNC-AVAIL', allAvailable);
+
+      const imp = await app.inject({
+        method: 'POST',
+        url: `/v1/dropship/suppliers/${supplierId}/catalog/${dpId}/import`,
+        headers: authHeader(token),
+        payload: {},
+      });
+      expect(imp.statusCode).toBe(201);
+      const productId = imp.json().data.productId as string;
+
+      const policiesNow = (): Promise<Map<string, string>> =>
+        withTenant({ tenantId: t.tenantId }, async (tx) => {
+          const vs = await tx.productVariant.findMany({
+            where: { productId, deletedAt: null },
+            select: { sku: true, inventoryPolicy: true },
+          });
+          return new Map(vs.map((v) => [v.sku, v.inventoryPolicy]));
+        });
+
+      // Supplier later reports Red out of stock → re-sync flips it to deny.
+      await withTenant({ tenantId: t.tenantId }, (tx) =>
+        tx.dropshipProduct.update({
+          where: { id: dpId },
+          data: { variants: [colourVariant('RS:red', 'Red', false), allAvailable[1]!] as object[] },
+        })
+      );
+      const down = await app.inject({
+        method: 'POST',
+        url: `/v1/dropship/suppliers/${supplierId}/catalog/${dpId}/reimport`,
+        headers: authHeader(token),
+        payload: {},
+      });
+      expect(down.statusCode).toBe(200);
+      expect(down.json().data.unavailableVariants).toBe(1);
+      const afterDown = await policiesNow();
+      expect(afterDown.get('RS:red')).toBe('deny');
+      expect(afterDown.get('RS:blue')).toBe('continue');
+
+      // Red comes back in stock → re-sync restores it to continue (not stuck deny).
+      await withTenant({ tenantId: t.tenantId }, (tx) =>
+        tx.dropshipProduct.update({
+          where: { id: dpId },
+          data: { variants: allAvailable },
+        })
+      );
+      const up = await app.inject({
+        method: 'POST',
+        url: `/v1/dropship/suppliers/${supplierId}/catalog/${dpId}/reimport`,
+        headers: authHeader(token),
+        payload: {},
+      });
+      expect(up.statusCode).toBe(200);
+      expect(up.json().data.unavailableVariants).toBe(0);
+      const afterUp = await policiesNow();
+      expect(afterUp.get('RS:red')).toBe('continue');
+      expect(afterUp.get('RS:blue')).toBe('continue');
+    } finally {
+      await dropTestTenant(t.tenantId);
+    }
+  });
 });

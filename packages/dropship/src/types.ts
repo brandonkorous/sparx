@@ -20,6 +20,15 @@ export interface NormalizedProductVariant {
   costPriceCents: number;
   msrpCents: number | null;
   inventoryQuantity: number | null;
+  /**
+   * Whether the supplier can currently FULFILL this exact variant. POD providers
+   * flip individual colour/size combos out when a blank is temporarily out of
+   * stock — distinct from `inventoryQuantity` (POD never tracks a count) and from
+   * the variant simply not existing. `false` = the merchant offers it but it
+   * can't be produced right now; absent/`true` = orderable. The import maps
+   * `false` → a `deny` inventory policy so the storefront greys the combo out.
+   */
+  available?: boolean;
   weight: number | null; // grams
   imageUrls: string[];
 }
