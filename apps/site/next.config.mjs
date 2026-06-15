@@ -6,7 +6,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  transpilePackages: ['@sparx/ui', '@sparx/cms-editor', '@sparx/chat-widget'],
+  transpilePackages: [
+    '@sparx/ui',
+    '@sparx/cms-editor',
+    '@sparx/chat-widget',
+    '@sparx/builder-render',
+  ],
   typedRoutes: false,
   output: 'standalone',
   outputFileTracingRoot: join(__dirname, '../../'),

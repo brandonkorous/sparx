@@ -1,14 +1,23 @@
 'use client';
 
-// The storefront Carousel (docs/45 / Tesla recreation). The server renderer
-// (builder-renderer.tsx) renders each Carousel child into a slide and hands them
-// here as `slides`; this component owns only the runtime concerns a server
-// component can't: the active-index state, autoplay timer, arrows, and dots.
+// The storefront Carousel (docs/45). The renderer renders each Carousel child into
+// a slide and hands them here as `slides`; this component owns only the runtime
+// concerns a server component can't: the active-index state, autoplay timer,
+// arrows, and dots.
 //
 // Pure CSS transform for the transition (no animation library) so it stays
 // themeable and light — the track translates by -index * 100%.
+//
+// Used by BOTH render surfaces (docs/builder/02): the live storefront and the
+// editor canvas. In the canvas (EditModeContext) the autoplay TIMER is suppressed
+// — a slide auto-advancing every few seconds would fight the author trying to
+// select a slide's contents — while the arrows, dots, and track stay live so the
+// preview still reads as the real, navigable carousel. Slides are always mounted
+// (translated off-screen), so every slide stays selectable from the Layers tree.
 
 import * as React from 'react';
+
+import { useEditMode } from './runtime-context';
 
 export interface BuilderCarouselProps {
   slides: React.ReactNode[];
@@ -26,6 +35,7 @@ export function BuilderCarousel({
   arrows = true,
   dots = true,
 }: BuilderCarouselProps) {
+  const editMode = useEditMode();
   const count = slides.length;
   const [index, setIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
@@ -35,12 +45,15 @@ export function BuilderCarousel({
     [count]
   );
 
+  // Autoplay runs on the live storefront only; in the editor canvas the timer is
+  // suppressed so it doesn't advance under the author's cursor.
+  const autoplaying = autoplay && !editMode;
   React.useEffect(() => {
-    if (!autoplay || paused || count <= 1) return;
+    if (!autoplaying || paused || count <= 1) return;
     const ms = Math.max(2, interval) * 1000;
     const t = setInterval(() => setIndex((p) => (p + 1) % count), ms);
     return () => clearInterval(t);
-  }, [autoplay, paused, interval, count]);
+  }, [autoplaying, paused, interval, count]);
 
   if (count === 0) return null;
   if (count === 1) return <div className="bx-carousel">{slides[0]}</div>;

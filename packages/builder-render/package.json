@@ -1,0 +1,41 @@
+{
+  "name": "@sparx/builder-render",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Sparx Builder render path — the single per-type node→element map shared by the live storefront renderer (apps/site) and the dashboard editor canvas (apps/dashboard), plus the interactive islands (commerce buy-box, carousel, signup, icon) and the edit-mode runtime. One render path so the canvas IS production (docs/builder/02).",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@sparx/builder-schemas": "workspace:*",
+    "@sparx/cms-editor": "workspace:*",
+    "@sparx/site-ui": "workspace:*",
+    "lucide-react": "^0.577.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

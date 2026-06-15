@@ -17,7 +17,7 @@ import { publicGet, type ApiEntry, type BlogPostBody } from './content';
 import { listProducts, type PublicProduct, type PublicProductListItem } from './commerce';
 import { mediaUrl } from './media';
 import type { ResolvedSite } from './site-context';
-import type { BuilderProduct } from '../components/builder-commerce';
+import type { BuilderProduct } from '@sparx/builder-render';
 
 function walkBindings(node: BuilderNode, visit: (path: string) => void): void {
   if (node.binding?.path) visit(node.binding.path);

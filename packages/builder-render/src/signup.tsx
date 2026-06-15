@@ -2,19 +2,22 @@
 
 // Newsletter signup island — the interactive half of the Builder "Email signup"
 // block (docs/51 §7). Renders the shared presentational <Signup> from site-ui
-// (identical markup to the editor canvas) and owns the submit lifecycle: it POSTs
-// the email to the public capture endpoint, then swaps the form for a thank-you.
-// Tenant + active site come from the customer context the layout already mounts.
+// (identical markup to the static preview) and owns the submit lifecycle: it
+// validates the email, calls the Builder runtime's capture effect, then swaps the
+// form for a thank-you.
+//
+// The capture effect is injected (runtime-context.tsx): live posts to the public
+// signup endpoint with the active tenant/site; the editor canvas no-ops it — so
+// the SAME form renders + validates in the canvas without capturing a contact.
 
 import { useState } from 'react';
 
 import { Signup } from '@sparx/site-ui';
 
-import { useCustomer } from '@/components/customer-provider';
-import { subscribeEmail } from '@/lib/signup-client';
+import { useBuilderRuntime } from './runtime-context';
 
 export function SignupForm({ cta }: { cta?: string }) {
-  const { tenantSlug, propertySlug } = useCustomer();
+  const { subscribeEmail } = useBuilderRuntime();
   const [status, setStatus] = useState<'idle' | 'pending' | 'done' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +34,7 @@ export function SignupForm({ cta }: { cta?: string }) {
     setStatus('pending');
     setError(null);
     try {
-      await subscribeEmail(tenantSlug, email, propertySlug);
+      await subscribeEmail(email);
       setStatus('done');
     } catch (err) {
       setStatus('error');

@@ -39,6 +39,18 @@ import {
 } from './model';
 import { moduleColor, moduleForPath } from './binding-catalog';
 import { getDef } from './registry';
+// The ONE per-type leaf map + the interactive islands, shared with the live
+// storefront renderer (docs/builder/02). The canvas wraps each node in its own
+// selection chrome, then renders this for the leaf body in `edit` mode — so the
+// preview IS what ships, no parallel mock render tree.
+import {
+  BuilderCarousel,
+  EditModeProvider,
+  ProductFormProvider,
+  leafWearsClass,
+  renderLeaf,
+  resolveBuilderProduct,
+} from '@sparx/builder-render';
 
 // ── Class-only rendering (docs/61) ────────────────────────────────────────────
 //
@@ -135,65 +147,38 @@ interface NodeProps {
   outletSlot?: React.ReactNode;
 }
 
-// In the editor a Carousel renders as a REAL carousel (active slide + arrows +
-// dots) so the preview matches the storefront — "what you see is what you ship."
-// Slides stay mounted (translated off-screen), so each is still selectable from
-// the Layers panel; control clicks don't bubble to node selection.
-function CanvasCarousel({ slides }: { slides: React.ReactNode[] }) {
-  const [index, setIndex] = React.useState(0);
-  const n = slides.length;
-  const go = (next: number) => setIndex(((next % n) + n) % n);
-  const stop = (fn: () => void) => (e: React.MouseEvent) => {
-    e.stopPropagation();
-    fn();
-  };
-  if (n === 0) return <div className="bx-empty">Carousel — add slides (each child is a slide)</div>;
+// The ghosted SAMPLE page shown at an Outlet in the layout editor when no real
+// page is framed (docs/45 §2.6). It anchors the header/footer chrome against
+// representative content — a hero + a feature grid in the tenant brand — instead
+// of a thin empty slot. Purely decorative + aria-hidden; clicking still selects
+// the single Outlet node (the wrapper owns selection). On the live site the routed
+// page mounts here instead.
+function OutletGhost() {
   return (
-    <div className="bx-ccarousel">
-      <div className="bx-ccarousel__viewport">
-        <div className="bx-ccarousel__track" style={{ transform: `translateX(-${index * 100}%)` }}>
-          {slides.map((slide, i) => (
-            <div className="bx-ccarousel__slide" key={i}>
-              {slide}
-            </div>
-          ))}
+    <div className="bx-outlet">
+      <span className="bx-outlet__tag">Page content renders here</span>
+      <div className="bx-outlet__sample" aria-hidden>
+        <div className="bx-outlet__hero">
+          <span className="bx-outlet__bar bx-outlet__bar--eyebrow" />
+          <span className="bx-outlet__bar bx-outlet__bar--title" />
+          <span className="bx-outlet__bar bx-outlet__bar--title bx-outlet__bar--title-2" />
+          <span className="bx-outlet__bar bx-outlet__bar--lede" />
+          <span className="bx-outlet__cta" />
         </div>
-      </div>
-      <span className="bx-ccarousel__badge">
-        Carousel · {n} {n === 1 ? 'slide' : 'slides'}
-      </span>
-      {n > 1 ? (
-        <>
-          <button
-            type="button"
-            className="bx-ccarousel__arrow bx-ccarousel__arrow--prev"
-            aria-label="Previous slide"
-            onClick={stop(() => go(index - 1))}
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            className="bx-ccarousel__arrow bx-ccarousel__arrow--next"
-            aria-label="Next slide"
-            onClick={stop(() => go(index + 1))}
-          >
-            ›
-          </button>
-          <div className="bx-ccarousel__dots">
-            {slides.map((_, i) => (
-              <button
-                type="button"
-                key={i}
-                className="bx-ccarousel__dot"
-                data-on={i === index}
-                aria-label={`Go to slide ${i + 1}`}
-                onClick={stop(() => go(i))}
-              />
+        <div className="bx-outlet__section">
+          <span className="bx-outlet__bar bx-outlet__bar--heading" />
+          <div className="bx-outlet__grid">
+            {['a', 'b', 'c'].map((k) => (
+              <div key={k} className="bx-outlet__card">
+                <span className="bx-outlet__thumb" />
+                <span className="bx-outlet__bar bx-outlet__bar--card-title" />
+                <span className="bx-outlet__bar bx-outlet__bar--line" />
+                <span className="bx-outlet__bar bx-outlet__bar--line bx-outlet__bar--short" />
+              </div>
             ))}
           </div>
-        </>
-      ) : null}
+        </div>
+      </div>
     </div>
   );
 }
@@ -410,10 +395,12 @@ function CanvasNode({
   // The surface COLOR comes from node.class (live-compiled into the canvas).
   const bgStyle = backgroundStyleFor(node, scope);
   // docs/61 — a presentational leaf wears node.class on its OWN element (renderLeaf
-  // → the Button `<span>`), so the content wrapper omits it to avoid double-paint.
-  // Every other node carries node.class on its content wrapper, where the live-
-  // compiled utilities (flex/grid/padding/surface) lay out + paint it.
-  const leafByClass = def.leafStylesByClass === true && /(^|\s)st-/.test(node.class ?? '');
+  // → the Button `<a>`, the Heading `<h2>`), so the content wrapper omits it to
+  // avoid double-paint. Every other node carries node.class on its content wrapper,
+  // where the live-compiled utilities (flex/grid/padding/surface) lay out + paint
+  // it. `leafWearsClass` is the SHARED predicate the live renderer uses, so both
+  // surfaces agree where node.class lands.
+  const leafByClass = leafWearsClass(node.type);
   // The `.bx-node` chrome wrapper is `display:contents` (builder.css) so the live
   // renderer's wrapperless DOM is reproduced and `node.class` sizing (w-full,
   // flex-1, mx-auto) resolves against the real flex/grid parent. The selection
@@ -428,10 +415,12 @@ function CanvasNode({
   );
 
   let body: React.ReactNode;
-  if (node.type === 'Outlet' && outletSlot !== undefined) {
+  if (node.type === 'Outlet') {
     // Framing the page editor: the layout is a locked backdrop and the editable
-    // page subtree drops in here, exactly where the storefront mounts it.
-    body = outletSlot;
+    // page subtree drops in here, exactly where the storefront mounts it. Editing
+    // the layout standalone (no page framed) → a ghosted sample page anchors the
+    // header/footer chrome instead of an empty slot.
+    body = outletSlot !== undefined ? outletSlot : <OutletGhost />;
   } else if (def.kind === 'container' && node.type === 'Carousel') {
     // A Carousel renders as a real carousel (each child = a slide). Mirrors the
     // storefront's iterate-or-static behaviour so the preview is faithful.
@@ -469,7 +458,22 @@ function CanvasNode({
         />
       ));
     }
-    body = <CanvasCarousel slides={slideNodes} />;
+    // The REAL storefront carousel (docs/builder/02): arrows/dots/track identical
+    // to production; the EditModeProvider suppresses its autoplay timer so it won't
+    // advance under the author. Slides stay mounted (translated off-screen), so each
+    // is still selectable from the Layers panel.
+    body =
+      slideNodes.length === 0 ? (
+        <div className="bx-empty">Carousel — add slides (each child is a slide)</div>
+      ) : (
+        <BuilderCarousel
+          slides={slideNodes}
+          autoplay={node.props.autoplay !== false}
+          interval={Number(node.props.interval) || 6}
+          arrows={node.props.arrows !== false}
+          dots={node.props.dots !== false}
+        />
+      );
   } else if (def.kind === 'container') {
     const kids = node.children ?? [];
     let scopes: { s: Scope; key: string }[];
@@ -520,17 +524,29 @@ function CanvasNode({
         outletSlot={outletSlot}
       />
     ));
-    body =
-      def.renderLeaf?.({
-        node,
-        value,
-        cardinality: card,
-        bound,
-        surface: emailMode ? 'email' : 'page',
-        emailSample: emailSample ?? undefined,
-        emailBrand: emailBrand ?? undefined,
-        children: kidNodes.length > 0 ? kidNodes : undefined,
-      }) ?? null;
+    body = renderLeaf({
+      node,
+      value,
+      cardinality: card,
+      bound,
+      mode: 'edit',
+      surface: emailMode ? 'email' : 'page',
+      leafClass: leafByClass ? node.class : undefined,
+      children: kidNodes.length > 0 ? kidNodes : undefined,
+      emailSample: emailSample ?? undefined,
+      emailBrand: emailBrand ?? undefined,
+    });
+  }
+
+  // A ProductForm container establishes the shared buy-box context over its subtree
+  // (mirrors the live renderer), so VariantPicker/Quantity/AddToCart placed inside
+  // stay in sync. In the canvas the product is the sample fixture (resolveBuilderProduct).
+  if (node.type === 'ProductForm') {
+    body = (
+      <ProductFormProvider product={resolveBuilderProduct(value, 'edit')}>
+        {body}
+      </ProductFormProvider>
+    );
   }
 
   if (locked) {
@@ -859,25 +875,29 @@ export function Canvas({
   }
 
   return (
-    <EmailSampleContext.Provider value={emailSample}>
-      <EmailBrandContext.Provider value={emailBrand}>
-        <VersionResolverContext.Provider value={resolveVersion ?? null}>
-          <div
-            className="bx-canvas-scroll"
-            data-frame={frameKind}
-            ref={scrollRef}
-            role="button"
-            tabIndex={-1}
-            aria-label="Clear selection"
-            onClick={() => onSelect(null)}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') onSelect(null);
-            }}
-          >
-            {framed}
-          </div>
-        </VersionResolverContext.Provider>
-      </EmailBrandContext.Provider>
-    </EmailSampleContext.Provider>
+    // Marks the whole canvas as the editor surface, so the shared islands suppress
+    // ambient effects a click-shield can't stop (the carousel autoplay timer).
+    <EditModeProvider>
+      <EmailSampleContext.Provider value={emailSample}>
+        <EmailBrandContext.Provider value={emailBrand}>
+          <VersionResolverContext.Provider value={resolveVersion ?? null}>
+            <div
+              className="bx-canvas-scroll"
+              data-frame={frameKind}
+              ref={scrollRef}
+              role="button"
+              tabIndex={-1}
+              aria-label="Clear selection"
+              onClick={() => onSelect(null)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') onSelect(null);
+              }}
+            >
+              {framed}
+            </div>
+          </VersionResolverContext.Provider>
+        </EmailBrandContext.Provider>
+      </EmailSampleContext.Provider>
+    </EditModeProvider>
   );
 }

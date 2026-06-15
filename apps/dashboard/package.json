@@ -23,6 +23,7 @@
     "@sparx/attribution": "workspace:*",
     "@sparx/auth": "workspace:*",
     "@sparx/automation-schemas": "workspace:*",
+    "@sparx/builder-render": "workspace:*",
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/cms-editor": "workspace:*",
     "@sparx/cms-schemas": "workspace:*",

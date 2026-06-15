@@ -17,6 +17,7 @@ const config = {
     '@sparx/cms-editor',
     '@sparx/cms-schemas',
     '@sparx/section-template-react',
+    '@sparx/builder-render',
   ],
   serverExternalPackages: [
     '@prisma/client',

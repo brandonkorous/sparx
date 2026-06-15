@@ -1,62 +1,36 @@
 // Renders a published Builder node tree to production storefront markup
-// (docs/44 §2.3, docs/61). Distinct from the dashboard editor canvas: no
-// selection chrome, semantic output. Each node's Tailwind-native `class` string
-// is applied verbatim and resolves against the compiled per-tenant stylesheet
-// (the same classes the editor canvas previews, so preview == production).
+// (docs/44 §2.3, docs/61). Distinct from the dashboard editor canvas only in its
+// PER-NODE WRAPPER (no selection chrome, semantic output) and its DATA (real
+// records vs the canvas sample): the per-type LEAF render is the ONE shared map in
+// `@sparx/builder-render` (docs/builder/02), so the canvas and this path can no
+// longer drift. Each node's Tailwind-native `class` string is applied verbatim and
+// resolves against the compiled per-tenant stylesheet (the same classes the editor
+// canvas previews, so preview == production).
 //
-// SLICE A.2 — BINDING-AWARE: bound nodes resolve against REAL records (passed in
-// as `data`) through the shared resolver. An array-bound container iterates its
-// children once per record (item scope); an object-bound container sets scope
-// and renders once; leaves resolve their bound value (text / richtext / price /
-// image). Unbound leaves render their own props (the A.1 static path). The CRM
-// Signup leaf is interactive (a client island posts to the capture endpoint);
-// per-record collection templates land in Slice B.
+// This file owns the TREE WALK: binding resolution + cardinality, container
+// iteration (an array-bound container repeats its children once per record), the
+// Carousel slide build, the Outlet, the ThemeToggle policy gate, and the single
+// `<div class={node.class}>` wrapper per node. Leaf content comes from the shared
+// `renderLeaf(mode: 'live')`; the interactive islands (BuyBox/Signup/…) it returns
+// read their effects from the BuilderRuntime mounted in the storefront layout.
 
 import * as React from 'react';
 import {
   cardinalityOf,
-  coerceNavLinks,
-  legacyButtonStyleToClass,
   resolvePath,
   type BuilderNode,
   type Cardinality,
   type DataSources,
   type Scope,
 } from '@sparx/builder-schemas';
-
+import { ThemeToggle } from '@sparx/site-ui';
 import {
-  CollapsibleNav,
-  Divider,
-  EditorialSection,
-  EmbedFrame,
-  FAQ,
-  FeatureGrid,
-  Heading,
-  Image,
-  Logo,
-  NavMenu,
-  PriceTag,
-  SocialLinks,
-  Stat,
-  Text,
-  ThemeToggle,
-  Wordmark,
-} from '@sparx/site-ui';
-// Server-safe JSON→HTML serializer (no React/jsdom) — the same path CMS pages
-// render through. Used by the Prose leaf to render a bound rich-text body.
-import { renderDocToHtml } from '@sparx/cms-editor/serialize';
-
-import { BuilderCarousel } from './builder-carousel';
-import { BuilderIcon } from './builder-icon';
-import {
-  BuilderAddToCart,
-  BuilderBuyBox,
-  BuilderQuantity,
-  BuilderVariantPicker,
+  BuilderCarousel,
   ProductFormProvider,
-  type BuilderProduct,
-} from './builder-commerce';
-import { SignupForm } from './signup-form';
+  leafWearsClass,
+  renderLeaf,
+  resolveBuilderProduct,
+} from '@sparx/builder-render';
 
 // ── Class-only rendering (docs/61) ────────────────────────────────────────────
 //
@@ -97,29 +71,12 @@ const BG_POSITION_CSS: Record<string, string> = {
 
 const CONTAINERS = new Set(['Section', 'Grid', 'Stack', 'Card', 'Carousel', 'ProductForm']);
 
-// Presentational leaves whose Surface component (or, for Button, the recipe class)
-// owns the node's brand class ON ITS OWN ELEMENT (docs/47 §7, docs/61). For these
-// renderLeaf applies node.class to the element itself, so the renderer returns it
-// directly (no wrapper). Leaves NOT listed (the interactive commerce atoms,
-// Outlet, the page-content widgets) get a wrapper div carrying node.class.
-const CLASS_ON_LEAF = new Set([
-  'Heading',
-  'Text',
-  'Prose',
-  'Button',
-  'Badge',
-  'Icon',
-  'Stat',
-  'Divider',
-  'PriceTag',
-  'Image',
-  'ImageDisplay',
-  'Video',
-  'Map',
-  'Logo',
-  'NavMenu',
-  'SocialLinks',
-]);
+/** The first image of a bound image/images value, or null. */
+function firstImage(value: unknown): { url?: string; alt?: string } | null {
+  const candidate = Array.isArray(value) ? (value as unknown[])[0] : value;
+  if (candidate && typeof candidate === 'object') return candidate;
+  return null;
+}
 
 /** The inline background-image style for a node, from its `bg-*` props (docs/61):
  *  a static `bgImage` URL or a record image resolved from `bgImageBinding` against
@@ -145,342 +102,6 @@ function backgroundStyleFor(node: BuilderNode, scope: Scope): React.CSSPropertie
   };
 }
 
-// ── Bound-value coercion ─────────────────────────────────────────────────────
-
-function docToPlainText(node: unknown): string {
-  if (!node || typeof node !== 'object') return '';
-  const n = node as { text?: string; content?: unknown[] };
-  if (typeof n.text === 'string') return n.text;
-  if (Array.isArray(n.content)) return n.content.map(docToPlainText).join(' ');
-  return '';
-}
-
-/** A bound value as display text: a string as-is, a number stringified, a
- *  rich-text doc flattened to plain text (full rich rendering is Slice B). */
-function asText(value: unknown): string {
-  if (typeof value === 'string') return value;
-  if (typeof value === 'number') return String(value);
-  if (value && typeof value === 'object' && (value as { type?: string }).type === 'doc') {
-    return docToPlainText(value);
-  }
-  return '';
-}
-
-/** The first image of a bound image/images value, or null. */
-function firstImage(value: unknown): { url?: string; alt?: string } | null {
-  const candidate = Array.isArray(value) ? (value as unknown[])[0] : value;
-  if (candidate && typeof candidate === 'object') return candidate;
-  return null;
-}
-
-// Embed helpers — mirror the editor registry (kept tiny + duplicated). A YouTube
-// watch/share/embed URL (or bare id) → a privacy-friendly embed; a place query →
-// a keyless Google Maps embed.
-function youtubeEmbed(url: string): string | null {
-  const u = (url ?? '').trim();
-  if (!u) return null;
-  const m = /(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([\w-]{6,})/.exec(u);
-  const id = m?.[1] ?? (/^[\w-]{6,}$/.test(u) ? u : null);
-  return id ? `https://www.youtube-nocookie.com/embed/${id}?rel=0` : null;
-}
-function mapEmbed(query: string, embedUrl: string): string | null {
-  if (embedUrl?.trim()) return embedUrl.trim();
-  const q = (query ?? '').trim();
-  return q ? `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed` : null;
-}
-// Authored-inline FAQ pairs / feature cards (the fallback when the FAQ /
-// FeatureGrid leaf isn't bound to a content list). Mirror the editor registry.
-function parseFaqItems(raw: string): { question: string; answer: string }[] {
-  return (raw ?? '')
-    .split(/\n\s*-{3,}\s*\n/)
-    .map((block) => {
-      const lines = block.split('\n').map((l) => l.trim());
-      const start = lines.findIndex((l) => l !== '');
-      if (start === -1) return null;
-      const question = lines[start];
-      const answer = lines
-        .slice(start + 1)
-        .filter(Boolean)
-        .join('\n\n');
-      return question ? { question, answer } : null;
-    })
-    .filter((x): x is { question: string; answer: string } => x !== null);
-}
-function parseFeatureItems(raw: string): { number: string; title: string; body: string }[] {
-  return (raw ?? '')
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line, i) => {
-      const parts = line.split('|').map((p) => p.trim());
-      const auto = String(i + 1).padStart(2, '0');
-      if (parts.length >= 3) {
-        return {
-          number: parts[0] ?? auto,
-          title: parts[1] ?? '',
-          body: parts.slice(2).join(' | '),
-        };
-      }
-      if (parts.length === 2) return { number: auto, title: parts[0] ?? '', body: parts[1] ?? '' };
-      return { number: auto, title: parts[0] ?? '', body: '' };
-    })
-    .filter((f) => f.title !== '');
-}
-// ── Leaf rendering ─────────────────────────────────────────────────────────
-
-function renderLeaf(
-  node: BuilderNode,
-  value: unknown,
-  bound: boolean,
-  /** The node's brand class, threaded here for leaves that style themselves by
-   *  class (Button) rather than via the box wrapper. Undefined otherwise. */
-  leafClass?: string,
-  /** Pre-rendered children for a leaf that nests them (Button → inline Icon). */
-  children?: React.ReactNode
-): React.ReactNode {
-  const p = node.props;
-  const str = (k: string): string => (typeof p[k] === 'string' ? p[k] : '');
-  switch (node.type) {
-    case 'Heading': {
-      const level = (str('level') || 'h2') as 'h1' | 'h2' | 'h3';
-      // Opt-in display/hero scale (docs/46) — a node can render an h1 at the
-      // larger, heavier display size without changing its semantic level.
-      const size = str('size') === 'display' ? 'display' : undefined;
-      return (
-        <Heading level={level} size={size} className={leafClass}>
-          {/* Graceful empty: a bound heading whose value resolves empty (e.g. a
-              hero bound to the latest post on a site with none) falls back to its
-              authored static text instead of rendering a blank <h1>. Matches the
-              Button/Stat leaves, which already prefer the bound value then the
-              static prop. */}
-          {(bound ? asText(value) : '') || str('text')}
-        </Heading>
-      );
-    }
-    case 'Text': {
-      const variant = (str('variant') || 'body') as 'body' | 'eyebrow' | 'meta';
-      return (
-        <Text variant={variant} className={leafClass}>
-          {/* Graceful empty (see Heading): bound-but-empty falls back to static. */}
-          {(bound ? asText(value) : '') || str('text')}
-        </Text>
-      );
-    }
-    case 'Prose': {
-      // The post body: serialize the bound rich-text doc to sanitised HTML through
-      // the shared CMS serializer, into the storefront's `.sparx-content` prose
-      // styles. `renderDocToHtml` returns '' for a non-doc value, so a legacy plain
-      // string falls back to a single paragraph; nothing bound → render nothing.
-      const cls = leafClass ? `sparx-content ${leafClass}` : 'sparx-content';
-      const html = bound ? renderDocToHtml(value) : '';
-      if (html) return <article className={cls} dangerouslySetInnerHTML={{ __html: html }} />;
-      const plain = bound ? asText(value) : '';
-      return plain ? (
-        <article className={cls}>
-          <p>{plain}</p>
-        </article>
-      ) : null;
-    }
-    case 'Button': {
-      const label = (bound ? asText(value) : '') || str('label') || 'Button';
-      const href = str('href');
-      // Class-first (docs/47 §7): a button's look is the Surface recipe class
-      // (`st-btn st-c-* st-v-* st-btn--sz-*`). A recipe-classed button carries it on
-      // the element; a LEGACY button (no class, styled via the old `props.style`
-      // enum) maps that enum to the SAME recipe, so it renders identically to the
-      // editor canvas + a class-first button — no parallel inline-style path.
-      // Semantics: a linked button is an `<a>`; an action button a real
-      // `<button type="button">` (accessible, never a bare `<span>`). The editor
-      // canvas uses an inert `<span>` ONLY because each node sits in a
-      // `role="button"` selection wrapper; the site ships the correct element. A
-      // nested Icon renders inline AFTER the label via `children`.
-      const className = leafClass ?? legacyButtonStyleToClass(str('style'));
-      return href ? (
-        <a href={href} className={className}>
-          {label}
-          {children}
-        </a>
-      ) : (
-        <button type="button" className={className}>
-          {label}
-          {children}
-        </button>
-      );
-    }
-    // Tier-2 commerce (docs/40 §7). BuyBox is self-contained (bound to `product`,
-    // value = the product object). The atoms read the shared ProductForm context
-    // established by a ProductForm container ancestor, so they ignore `value`.
-    case 'BuyBox':
-      return <BuilderBuyBox product={(value ?? {}) as BuilderProduct} />;
-    case 'VariantPicker':
-      return <BuilderVariantPicker />;
-    case 'Quantity':
-      return <BuilderQuantity />;
-    case 'AddToCart':
-      return <BuilderAddToCart label={str('label') || undefined} />;
-    case 'Badge': {
-      // Class-first like Button (docs/47 §7): the recipe class string
-      // (`st-badge st-c-* st-v-* st-badge--sz-*`) rides on the element itself, so a
-      // raw span carries it verbatim — matching the editor canvas. A nested Icon
-      // renders inline after the label.
-      const label = (bound ? asText(value) : '') || str('label') || 'Badge';
-      return (
-        <span className={leafClass}>
-          {label}
-          {children}
-        </span>
-      );
-    }
-    case 'Icon': {
-      // Stable kebab-case name from a bound scalar (e.g. a CMS "Feature › Icon")
-      // or the static prop; rendered via the lazy DynamicIcon client boundary.
-      const name = (bound ? asText(value) : '') || str('name') || 'star';
-      return <BuilderIcon name={name} className={leafClass} />;
-    }
-    case 'Divider':
-      return <Divider className={leafClass} />;
-    case 'PriceTag': {
-      const n = typeof value === 'number' ? value : null;
-      return <PriceTag amount={n} className={leafClass} />;
-    }
-    case 'Image':
-    case 'ImageDisplay': {
-      const ratio = (str('ratio') || 'wide') as 'wide' | 'square' | 'portrait';
-      const img = bound ? firstImage(value) : null;
-      return (
-        <Image src={img?.url} alt={img?.alt ?? str('alt')} ratio={ratio} className={leafClass} />
-      );
-    }
-    case 'Video': {
-      const src = youtubeEmbed(str('url'));
-      const ratio = (str('ratio') || 'wide') as 'wide' | 'square' | 'portrait';
-      if (!src) return null;
-      return (
-        <EmbedFrame src={src} title={node.name ?? 'Video'} ratio={ratio} className={leafClass} />
-      );
-    }
-    case 'Map': {
-      const src = mapEmbed(str('query'), str('embedUrl'));
-      const ratio = (str('ratio') || 'pano') as 'wide' | 'square' | 'portrait' | 'pano';
-      if (!src) return null;
-      return (
-        <EmbedFrame src={src} title={node.name ?? 'Map'} ratio={ratio} className={leafClass} />
-      );
-    }
-    case 'Stat': {
-      const big = (bound ? asText(value) : '') || str('value') || '0';
-      return <Stat value={big} label={str('label')} className={leafClass} />;
-    }
-    // ── Page-content widgets (docs/51 §7 — reclassified from content types) ───
-    case 'EditorialSection': {
-      // Authored inline, or bound to an object with the same field names. The
-      // shared site-ui composite renders it (docs/62) — both editor + site agree.
-      const obj =
-        bound && value && typeof value === 'object' && !Array.isArray(value)
-          ? (value as Record<string, unknown>)
-          : null;
-      const pick = (k: string, prop: string) => (obj ? asText(obj[k]) : '') || str(prop);
-      const ctaUrl = (obj && typeof obj.ctaUrl === 'string' ? obj.ctaUrl : '') || str('ctaUrl');
-      return (
-        <EditorialSection
-          eyebrow={pick('eyebrow', 'eyebrow')}
-          headline={pick('headline', 'headline')}
-          body={pick('body', 'body')}
-          ctaLabel={pick('ctaLabel', 'ctaLabel')}
-          ctaUrl={ctaUrl}
-          className={leafClass}
-        />
-      );
-    }
-    case 'FAQ': {
-      // Bound to an array of `{question, answer}` records, else authored inline.
-      const items =
-        bound && Array.isArray(value)
-          ? (value as Record<string, unknown>[]).map((it) => ({
-              question: asText(it.question),
-              answer: asText(it.answer),
-            }))
-          : parseFaqItems(str('items'));
-      return <FAQ items={items.filter((it) => it.question)} className={leafClass} />;
-    }
-    case 'FeatureGrid': {
-      // Bound to an array of `{number?, title, body}` records, else authored inline.
-      const items =
-        bound && Array.isArray(value)
-          ? (value as Record<string, unknown>[]).map((it, i) => ({
-              number: asText(it.number) || String(i + 1).padStart(2, '0'),
-              title: asText(it.title),
-              body: asText(it.body),
-            }))
-          : parseFeatureItems(str('items'));
-      const cols = Math.min(4, Math.max(2, Number(str('columns')) || 3)) as 2 | 3 | 4;
-      return <FeatureGrid cols={cols} items={items.filter((f) => f.title)} className={leafClass} />;
-    }
-    // ── Site chrome (docs/45) ────────────────────────────────────────────────
-    case 'Logo': {
-      const identity =
-        value && typeof value === 'object' ? (value as { name?: unknown; logo?: unknown }) : null;
-      const name = typeof identity?.name === 'string' ? identity.name : '';
-      const img = firstImage(identity?.logo);
-      return <Logo name={name} src={img?.url} alt={img?.alt ?? name} className={leafClass} />;
-    }
-    case 'Wordmark': {
-      // The brand lockup (docs/62): mark + name from site.identity, collapsing to
-      // the chosen target on narrow frames. Mirrors the editor's Wordmark leaf.
-      const identity =
-        value && typeof value === 'object' ? (value as { name?: unknown; logo?: unknown }) : null;
-      const name = typeof identity?.name === 'string' ? identity.name : '';
-      const img = firstImage(identity?.logo);
-      const collapse = (str('collapse') || 'mark') as 'mark' | 'name' | 'none';
-      return (
-        <Wordmark
-          name={name}
-          src={img?.url}
-          alt={img?.alt ?? name}
-          collapse={collapse}
-          className={leafClass}
-        />
-      );
-    }
-    case 'NavMenu': {
-      const orientation = (str('orientation') || 'row') as 'row' | 'stack';
-      // Navigation is node-owned (docs/57): the links live in `props.links`
-      // (existing CMS-bound nodes were migrated by 20260706_nav_into_builder).
-      // `value` is now always nullish for nav — coerceNavLinks keeps the bound
-      // path only as defensive normalization. Renders flat (children ignored).
-      const list = coerceNavLinks(node.props.links, value).map((l) => ({
-        label: l.label,
-        url: l.href,
-        ...(l.openInNewTab ? { openInNewTab: true } : {}),
-      }));
-      if (list.length === 0) return null;
-      // A row (primary/header) nav collapses to a hamburger + drawer on phones
-      // via the CollapsibleNav prebuilt (docs/62). Stacked (footer/secondary)
-      // stays static.
-      if (orientation === 'row') return <CollapsibleNav items={list} className={leafClass} />;
-      return <NavMenu items={list} orientation={orientation} className={leafClass} />;
-    }
-    case 'SocialLinks': {
-      const raw = Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
-      const items = raw.map((it) => ({
-        platform: typeof it.platform === 'string' ? it.platform : '',
-        url: typeof it.url === 'string' ? it.url : '#',
-      }));
-      return <SocialLinks items={items} className={leafClass} />;
-    }
-    // The email-capture block (docs/51 §7). Interactive: a client island owns
-    // submit + the thank-you state and POSTs to the public capture endpoint,
-    // which upserts a consenting CRM contact. Mirrors the editor canvas's inert
-    // <Signup> preview. Tenant + active site come from the customer context.
-    case 'Signup':
-      return <SignupForm cta={str('cta') || undefined} />;
-    // Outlet is handled in RenderNode (it renders the routed page, not a leaf
-    // value).
-    default:
-      return null;
-  }
-}
-
 // ── Recursive node ───────────────────────────────────────────────────────────
 
 function RenderNode({
@@ -498,8 +119,9 @@ function RenderNode({
   // docs/61: a presentational leaf carries node.class on its OWN element (its
   // Surface component / the Button recipe) via renderLeaf, so the renderer returns
   // it directly — no wrapper, no double-paint. Every other node gets ONE wrapper
-  // div carrying node.class. Exactly one styled element per node.
-  const leafStylesByClass = !isContainer && CLASS_ON_LEAF.has(node.type);
+  // div carrying node.class. Exactly one styled element per node. `leafWearsClass`
+  // is the SHARED predicate the canvas uses too, so both agree where the class sits.
+  const leafStylesByClass = !isContainer && leafWearsClass(node.type);
   const bound = Boolean(node.binding);
   const value = bound ? resolvePath(scope, node.binding!.path) : undefined;
   const card: Cardinality = bound ? cardinalityOf(value) : 'empty';
@@ -571,11 +193,11 @@ function RenderNode({
       ));
     }
   } else if (node.type === 'ThemeToggle') {
-    // Light/dark switch — interactive, so it can't go through the static renderLeaf
-    // (which has no scope). It auto-hides unless the site offers BOTH themes:
-    // appearance policy `toggle` (set in /builder/brand). Any single-theme policy
-    // (`light-only`/`dark-only`) — and `auto`, which follows the device with no
-    // manual control — renders nothing. `site.appearance` is threaded by loadSiteData.
+    // Light/dark switch — interactive, so it's gated here (renderLeaf has no scope).
+    // It auto-hides unless the site offers BOTH themes: appearance policy `toggle`
+    // (set in /builder/brand). Any single-theme policy (`light-only`/`dark-only`) —
+    // and `auto`, which follows the device with no manual control — renders nothing.
+    // `site.appearance` is threaded by loadSiteData.
     const appearance = resolvePath(scope, 'site.appearance') as
       | { policy?: string; initial?: 'light' | 'dark' }
       | undefined;
@@ -583,17 +205,22 @@ function RenderNode({
     body = <ThemeToggle initial={appearance.initial === 'dark' ? 'dark' : 'light'} />;
   } else {
     // A leaf may nest children (Button → an inline Icon, docs/47): render them in
-    // the current scope and hand them to renderLeaf, which places them itself.
+    // the current scope and hand them to the shared renderLeaf, which places them.
     const kids = (node.children ?? []).map((child) => (
       <RenderNode key={child.id} node={child} scope={scope} outlet={outlet} />
     ));
-    body = renderLeaf(
+    body = renderLeaf({
       node,
       value,
+      cardinality: card,
       bound,
-      leafStylesByClass ? node.class : undefined,
-      kids.length > 0 ? kids : undefined
-    );
+      mode: 'live',
+      // The live storefront is page/site (never email — the send path renders email
+      // through @sparx/email); renderLeaf treats page and site identically.
+      surface: 'page',
+      leafClass: leafStylesByClass ? node.class : undefined,
+      children: kids.length > 0 ? kids : undefined,
+    });
   }
 
   // A ProductForm container establishes the shared buy-box context over its
@@ -601,7 +228,9 @@ function RenderNode({
   // sync. Bound to `product` → `value` is the product object.
   if (node.type === 'ProductForm') {
     body = (
-      <ProductFormProvider product={(value ?? {}) as BuilderProduct}>{body}</ProductFormProvider>
+      <ProductFormProvider product={resolveBuilderProduct(value, 'live')}>
+        {body}
+      </ProductFormProvider>
     );
   }
 
