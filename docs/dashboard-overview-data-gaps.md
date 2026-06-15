@@ -120,7 +120,9 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 
 ### AI — Rose
 
-- 🔴 **Everything.** There is no `services/api-rest/src/routes/v1/ai/` folder at all. The entire `/v1/ai/reports/*` surface (usage, tokens, tool calls, cost, top intents) must be built before any tile goes live.
+- ✅ MCP usage (requests, success rate, distinct tools), the activity chart, top tools, API-key counts, automation runs, the combined "AI actions" total, and the recent-activity feed — `GET /v1/ai/reports/{summary,timeseries,top-tools,activity}` (shipped 2026-06-15). **No new capture needed**: every MCP tool call already lands in `audit_logs` (`entity_type='McpToolCall'`, `action='mcp.<tool>'`, `diff={input,outcome}` — services/api-mcp/src/audit.ts), so the whole MCP surface is a LIVE aggregate over that table. AI-module-gated (`lib/ai-context.ts`), viewer-read, tenant-scoped. Each tile `liveOr`-falls back to a badged sample until the tenant has MCP traffic
+- 🔴 Tokens / cost / model-mix — **not ours to capture**: the agent's LLM spend (model, tokens, $) lives in the _caller's_ LLM account, never on our MCP server. The "Usage & cost" card stays sample (workload B) unless/until a first-party copilot with server-side LLM calls ships
+- 🔴 Connected-surfaces permissions, approval queue, the automations table — sample until their own capture/endpoints land (automations have `/v1/automations`, not yet wired onto this overview)
 
 ### Dropship — Emerald
 

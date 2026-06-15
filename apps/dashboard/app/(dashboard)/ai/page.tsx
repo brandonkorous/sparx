@@ -50,26 +50,89 @@ import {
   TimelineTitle,
 } from '@sparx/ui';
 
+import { api } from '@/lib/api-rest-client';
 import {
   CardLink,
   MetricTile,
   OverviewCard,
   OverviewRow,
   SampleBadge,
+  fmtNumber,
+  fmtPercentRatio,
+  liveOr,
 } from '../_components/overview-bits';
 
 // AI overview — the AI module is different in kind from the rest. Where Commerce
 // shows what the store *did*, AI shows what your AI workforce *proposes* and what
 // it's allowed to touch: the signature pattern is "AI proposes / you approve".
 //
-// AI has no reliable metrics endpoints yet, so EVERY figure on this page is
-// illustrative — defined in the local SAMPLE_* constants below and surfaced
-// behind a <SampleBadge> per card, the dashboard's sanctioned interim until the
-// /v1/ai/reports/* endpoints land. Rose is the module identity (from the AI
-// <ModuleProvider> in layout.tsx); warm semantic colors (warning/danger) keep
-// their meaning. No props re-skin a control; module color flows via color="module".
+// The MCP surfaces are LIVE from /v1/ai/reports/* — every MCP tool call is
+// audited (audit_logs, entity_type='McpToolCall'), so requests, the activity
+// chart, top tools, API-key counts, and the recent-activity feed all derive
+// from real usage, each liveOr-falling back to a badged sample until the tenant
+// has MCP traffic. What we genuinely can't see is the client-side LLM spend
+// (the agent's model/token/cost lives in the caller's LLM account, never ours),
+// so the token/cost/model-mix card stays sample (workload B). The approval
+// queue, connected-surfaces permissions, and the automations table are sample
+// until their own capture/endpoints land. Rose is the module identity (from the
+// AI <ModuleProvider> in layout.tsx); warm semantic colors keep their meaning.
 
 export const dynamic = 'force-dynamic';
+
+// ── Live analytics shapes (/v1/ai/reports/*) ──
+interface AiSummary {
+  mcpRequests: number;
+  mcpSuccess: number;
+  mcpError: number;
+  successRate: number | null;
+  uniqueTools: number;
+  apiKeysActive: number;
+  apiKeysTotal: number;
+  automationRuns: number;
+  aiActions: number;
+}
+interface AiTimeseries {
+  points: { bucket: string; requests: number; errors: number }[];
+  totals: { requests: number; errors: number };
+}
+interface AiTopTool {
+  tool: string;
+  calls: number;
+  errors: number;
+  successRate: number | null;
+}
+interface AiActivityItem {
+  id: string;
+  tool: string;
+  actorId: string | null;
+  outcome: string;
+  createdAt: string;
+}
+
+// The normalized timeline entry — shared by live activity + the sample fallback.
+interface ActivityEntry {
+  key: string;
+  title: string;
+  when: string;
+}
+
+// Donut color cycle for the live top-tools split.
+const TOOL_DONUT_COLORS = [
+  'module',
+  'var(--module-active-tint)',
+  'var(--color-bg-muted)',
+  '#fda4af',
+];
+
+// Compact relative time for the activity feed (server-rendered).
+function timeAgo(iso: string, nowMs: number): string {
+  const mins = Math.round((nowMs - new Date(iso).getTime()) / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.round(hours / 24)}d ago`;
+}
 
 const TWO_COL_WIDE = 'grid grid-cols-1 gap-4 lg:grid-cols-[1.7fr_1fr]';
 // MCP server status is the signature row: a tight status card beside a wide chart.
@@ -138,8 +201,97 @@ const SAMPLE_AUTOMATIONS = [
   },
 ] as const;
 
+// Top MCP tools (donut) — sample until the tenant has MCP traffic.
+const SAMPLE_TOP_TOOLS = [
+  { label: 'product_update', value: 640, color: 'module' as const },
+  { label: 'order_search', value: 420, color: 'var(--module-active-tint)' },
+  { label: 'customer_get', value: 360, color: 'var(--color-bg-muted)' },
+  { label: 'content_publish', value: 180, color: '#fda4af' },
+];
+
+// Recent AI activity (timeline) — sample until the tenant has MCP traffic.
+const SAMPLE_ACTIVITY: ActivityEntry[] = [
+  { key: 's1', title: 'MCP product_update (success)', when: '20m ago' },
+  { key: 's2', title: 'MCP order_search (success)', when: '1h ago' },
+  { key: 's3', title: 'MCP customer_get (success)', when: '3h ago' },
+  { key: 's4', title: 'MCP content_publish (success)', when: '5h ago' },
+  { key: 's5', title: 'MCP inventory_adjust (error)', when: '1d ago' },
+];
+
 export default async function AiPage() {
   await requireSession();
+
+  const nowMs = Date.now();
+  const [summary, timeseries, topTools, activity] = await Promise.all([
+    api.get<AiSummary>('/v1/ai/reports/summary').catch(() => null),
+    api.get<AiTimeseries>('/v1/ai/reports/timeseries?grain=day').catch(() => null),
+    api.get<AiTopTool[]>('/v1/ai/reports/top-tools?limit=6').catch(() => null),
+    api.get<AiActivityItem[]>('/v1/ai/reports/activity?limit=6').catch(() => null),
+  ]);
+
+  // KPI + MCP-card values — live from the summary, else the sample figure.
+  const aiActionsKpi = summary ? fmtNumber(summary.aiActions) : '1,940';
+  const mcpRequestsKpi = summary ? fmtNumber(summary.mcpRequests) : '8,600';
+  const apiKeysRight = summary ? fmtNumber(summary.apiKeysActive) : '2';
+  const apiKeysHint = summary
+    ? `${fmtNumber(summary.apiKeysActive)} active · ${fmtNumber(summary.apiKeysTotal)} total`
+    : '2 active · 0 expiring soon';
+  const successRateLabel =
+    summary?.successRate != null ? fmtPercentRatio(summary.successRate, 1) : '99.2%';
+
+  // AI activity chart — live once the window has any MCP request.
+  const tsLive = timeseries != null && timeseries.totals.requests > 0;
+  const activityChart = liveOr(
+    tsLive
+      ? timeseries.points.map((p) => ({
+          label: new Date(`${p.bucket}T00:00:00Z`).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          }),
+          actions: p.requests,
+        }))
+      : null,
+    [...SAMPLE_AI_ACTIVITY_14D]
+  );
+  const activityFooter: [string, string][] = tsLive
+    ? [
+        ['Requests', fmtNumber(timeseries.totals.requests)],
+        ['Errors', fmtNumber(timeseries.totals.errors)],
+        ['Tools', fmtNumber(summary?.uniqueTools ?? 0)],
+        ['Total · 30d', fmtNumber(summary?.mcpRequests ?? timeseries.totals.requests)],
+      ]
+    : [
+        ['Copilot', '770'],
+        ['Agents', '660'],
+        ['Automations', '510'],
+        ['Total · 30d', '1,940'],
+      ];
+
+  // Top MCP tools (donut) — live once the tenant has MCP traffic.
+  const toolDonut = liveOr(
+    topTools && topTools.length > 0
+      ? topTools.slice(0, TOOL_DONUT_COLORS.length).map((t, i) => ({
+          label: t.tool,
+          value: t.calls,
+          color: TOOL_DONUT_COLORS[i],
+        }))
+      : null,
+    SAMPLE_TOP_TOOLS
+  );
+  const toolDonutCenter = summary ? fmtNumber(summary.mcpRequests) : '1,940';
+
+  // Recent AI activity — live MCP tool calls, else sample.
+  const activityFeed = liveOr<ActivityEntry[]>(
+    activity && activity.length > 0
+      ? activity.map((a) => ({
+          key: a.id,
+          title: `MCP ${a.tool} (${a.outcome})`,
+          when: timeAgo(a.createdAt, nowMs),
+        }))
+      : null,
+    SAMPLE_ACTIVITY
+  );
 
   return (
     <Container size="xl">
@@ -168,14 +320,14 @@ export default async function AiPage() {
           <Stat
             icon={<Sparkles className="h-4 w-4" />}
             label="AI actions · 30d"
-            value="1,940"
-            hint="Copilot, agents & automations"
+            value={aiActionsKpi}
+            hint="MCP tool calls + automation runs"
           />
           <Stat
             icon={<Server className="h-4 w-4" />}
             label="MCP requests · 30d"
-            value="8,600"
-            hint="≈ 287 / day across all clients"
+            value={mcpRequestsKpi}
+            hint="Across all clients"
           />
           <Stat
             icon={<Workflow className="h-4 w-4" />}
@@ -265,15 +417,15 @@ export default async function AiPage() {
               icon={<Key className="h-4 w-4" />}
               tone="module"
               title="API keys"
-              hint="2 active · 0 expiring soon"
-              right="2"
+              hint={apiKeysHint}
+              right={apiKeysRight}
             />
             <OverviewRow
               icon={<Server className="h-4 w-4" />}
               tone="module"
               title="Requests · 30d"
               hint="Across all clients"
-              right="8,600"
+              right={mcpRequestsKpi}
             />
             <OverviewRow
               icon={<CheckCircle2 className="h-4 w-4" />}
@@ -299,24 +451,19 @@ export default async function AiPage() {
           <OverviewCard
             title="AI activity"
             icon={<TrendingUp className="h-4 w-4" />}
-            description="Actions per day · last 14 days"
-            right={<SampleBadge />}
+            description="MCP requests per day · last 14 days"
+            right={activityChart.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
             <AreaChart
-              data={SAMPLE_AI_ACTIVITY_14D}
-              series={[{ key: 'actions', label: 'AI actions', color: 'module' }]}
+              data={activityChart.data}
+              series={[{ key: 'actions', label: 'MCP requests', color: 'module' }]}
               xKey="label"
               height={210}
               valueFormat="number"
-              ariaLabel="AI actions per day, last 14 days"
+              ariaLabel="MCP requests per day, last 14 days"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
-              {[
-                ['Copilot', '770'],
-                ['Agents', '660'],
-                ['Automations', '510'],
-                ['Total · 30d', '1,940'],
-              ].map(([label, value]) => (
+              {activityFooter.map(([label, value]) => (
                 <div key={label}>
                   <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
                   <div className="font-medium">{value}</div>
@@ -375,33 +522,22 @@ export default async function AiPage() {
           <OverviewCard
             title="Recent AI activity"
             icon={<Clock className="h-4 w-4" />}
-            right={<CardLink href="/ai/activity">Full log</CardLink>}
+            right={
+              activityFeed.isSample ? (
+                <SampleBadge reason="no-data" />
+              ) : (
+                <CardLink href="/ai/activity">Full log</CardLink>
+              )
+            }
           >
             <Timeline>
-              <TimelineItem>
-                <TimelineTitle>Copilot drafted 4 review replies</TimelineTitle>
-                <TimelineTime>20m ago</TimelineTime>
-              </TimelineItem>
-              <TimelineItem>
-                <TimelineTitle>MCP agent (Claude) updated 12 product descriptions</TimelineTitle>
-                <TimelineTime>1h ago</TimelineTime>
-              </TimelineItem>
-              <TimelineItem>
-                <TimelineTitle>Automation recovered a cart → $48 order</TimelineTitle>
-                <TimelineTime>3h ago</TimelineTime>
-              </TimelineItem>
-              <TimelineItem>
-                <TimelineTitle>Copilot answered “top products last week?”</TimelineTitle>
-                <TimelineTime>5h ago</TimelineTime>
-              </TimelineItem>
-              <TimelineItem showConnector={false}>
-                <TimelineTitle>MCP agent (ChatGPT) exported the orders report</TimelineTitle>
-                <TimelineTime>1d ago</TimelineTime>
-              </TimelineItem>
+              {activityFeed.data.map((a, i) => (
+                <TimelineItem key={a.key} showConnector={i < activityFeed.data.length - 1}>
+                  <TimelineTitle>{a.title}</TimelineTitle>
+                  <TimelineTime>{a.when}</TimelineTime>
+                </TimelineItem>
+              ))}
             </Timeline>
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
           </OverviewCard>
         </div>
 
@@ -478,24 +614,23 @@ export default async function AiPage() {
           </OverviewCard>
 
           <OverviewCard
-            title="Usage by surface"
+            title="Top MCP tools"
             icon={<Bot className="h-4 w-4" />}
-            right={<SampleBadge />}
+            right={toolDonut.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
             <DonutChart
-              data={[
-                { label: 'Copilot', value: 40, color: 'module' },
-                { label: 'MCP agents', value: 34, color: 'var(--module-active-tint)' },
-                { label: 'Automations', value: 26, color: 'var(--color-bg-muted)' },
-              ]}
-              valueFormat="percent"
-              centerValue="1,940"
-              centerLabel="actions"
-              ariaLabel="AI usage by surface"
+              data={toolDonut.data}
+              valueFormat="number"
+              centerValue={toolDonutCenter}
+              centerLabel="MCP calls"
+              ariaLabel="Top MCP tools by call count"
             />
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <MetricTile value="3" label="Active clients" />
-              <MetricTile value="99.2%" label="Action success" />
+              <MetricTile
+                value={summary ? fmtNumber(summary.uniqueTools) : '12'}
+                label="Tools used"
+              />
+              <MetricTile value={successRateLabel} label="Tool success" />
             </div>
           </OverviewCard>
 
