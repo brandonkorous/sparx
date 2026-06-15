@@ -1,6 +1,6 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 2.0
+**Version:** 2.1
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -144,7 +144,9 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 ### Inventory — Amber
 
 - ✅ Location & source **counts** — `GET /v1/inventory/locations`, `GET /v1/inventory/sources`
-- 🔴 Stock valuation, low/out-of-stock list, per-location quantities, POs, activity — the standalone inventory module has **only CRUD** (locations / sources / links). (Commerce has `inventory-valuation` + `inventory/low-stock`, but those are commerce-scoped and don't cover the multi-source inventory module.)
+- ✅ Valuation (units + cost/retail) + stock-status (out/low/healthy) + per-location quantities + source-feed health + low/out attention list — `GET /v1/inventory/reports/summary` (shipped 2026-06-15; live aggregates over the module's `stock_levels`, joined to variant cost/retail; "low" is a fixed available-units threshold since the module's StockLevel has no reorder point)
+- ✅ Recent stock changes feed — `GET /v1/inventory/reports/activity` (recently-updated stock levels; a movement-feed proxy)
+- 🔴 Purchase orders (no PO model) + value-over-time chart (no valuation snapshots) — stay sample; both need backing data the module doesn't capture yet
 
 ### Chat — Violet
 
