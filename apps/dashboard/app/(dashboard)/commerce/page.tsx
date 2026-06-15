@@ -50,6 +50,7 @@ import {
   fmtMoneyCents,
   fmtNumber,
   fmtPercentRatio,
+  liveOr,
 } from '../_components/overview-bits';
 
 // Commerce overview — the storekeeper's morning glance: revenue pulse, the
@@ -85,6 +86,26 @@ interface AbandonedCarts {
   abandonedCount: number;
   recoveredCount: number;
   recoveryRate: number;
+}
+interface RevenueTimeseriesPoint {
+  bucket: string;
+  ordersCount: number;
+  grossCents: number;
+  discountCents: number;
+  refundedCents: number;
+  netCents: number;
+}
+interface RevenueTimeseries {
+  range: { from: string; to: string; grain: string };
+  points: RevenueTimeseriesPoint[];
+  totals: {
+    ordersCount: number;
+    grossCents: number;
+    discountCents: number;
+    refundedCents: number;
+    netCents: number;
+  };
+  currency: string;
 }
 
 // ── Sample data (illustrative until the matching endpoints land) ──
@@ -188,15 +209,52 @@ export default async function CommercePage() {
   await requireSession();
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
   const range = `from=${encodeURIComponent(thirtyDaysAgo.toISOString())}&to=${encodeURIComponent(now.toISOString())}`;
+  const range14 = `from=${encodeURIComponent(fourteenDaysAgo.toISOString())}&to=${encodeURIComponent(now.toISOString())}`;
 
-  const [revenue, funnel, subs, abandoned] = await Promise.all([
+  const [revenue, funnel, subs, abandoned, revenueTs] = await Promise.all([
     api.get<RevenueSummary>(`/v1/commerce/reports/revenue-summary?${range}`).catch(() => null),
     api.get<ConversionFunnel>(`/v1/commerce/reports/conversion-funnel?${range}`).catch(() => null),
     api.get<SubscriptionMetrics>('/v1/commerce/reports/subscription-metrics').catch(() => null),
     api.get<AbandonedCarts>(`/v1/commerce/reports/abandoned-carts?${range}`).catch(() => null),
+    api
+      .get<RevenueTimeseries>(`/v1/commerce/reports/revenue-timeseries?${range14}&grain=day`)
+      .catch(() => null),
   ]);
   const currency = revenue?.currency ?? 'USD';
+
+  // Revenue chart + footer: live the moment the tenant has any orders in the
+  // window, else the illustrative sample (docs/97 §9). The endpoint returns a
+  // continuous zero-filled daily series, so we gate on totals.ordersCount.
+  const revenuePoints =
+    revenueTs && revenueTs.totals.ordersCount > 0
+      ? revenueTs.points.map((p) => ({
+          label: new Date(`${p.bucket}T00:00:00Z`).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          }),
+          revenue: p.netCents / 100,
+        }))
+      : null;
+  const revenue14d = liveOr(revenuePoints, SAMPLE_REVENUE_14D);
+  const neg = (cents: number) =>
+    cents > 0 ? `−${fmtMoneyCents(cents, currency)}` : fmtMoneyCents(cents, currency);
+  const revenueFooter: [string, string][] =
+    !revenue14d.isSample && revenueTs
+      ? [
+          ['Gross', fmtMoneyCents(revenueTs.totals.grossCents, currency)],
+          ['Refunds', neg(revenueTs.totals.refundedCents)],
+          ['Discounts', neg(revenueTs.totals.discountCents)],
+          ['Net', fmtMoneyCents(revenueTs.totals.netCents, currency)],
+        ]
+      : [
+          ['Gross', '$51,940'],
+          ['Refunds', '−$1,820'],
+          ['Discounts', '−$1,910'],
+          ['Net', '$48,210'],
+        ];
 
   return (
     <Container size="xl">
@@ -306,10 +364,10 @@ export default async function CommercePage() {
             title="Revenue"
             icon={<TrendingUp className="h-4 w-4" />}
             description="Net sales, last 14 days"
-            right={<SampleBadge />}
+            right={revenue14d.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
             <AreaChart
-              data={SAMPLE_REVENUE_14D}
+              data={revenue14d.data}
               series={[{ key: 'revenue', label: 'Revenue', color: 'module' }]}
               xKey="label"
               height={210}
@@ -317,12 +375,7 @@ export default async function CommercePage() {
               ariaLabel="Net revenue, last 14 days"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
-              {[
-                ['Gross', '$51,940'],
-                ['Refunds', '−$1,820'],
-                ['Discounts', '−$1,910'],
-                ['Net', '$48,210'],
-              ].map(([label, value]) => (
+              {revenueFooter.map(([label, value]) => (
                 <div key={label}>
                   <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
                   <div className="font-medium">{value}</div>
