@@ -1,8 +1,8 @@
 # Sparx Platform — Dropship Integration PRD
 
-**Version:** 2.0
+**Version:** 2.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-13
+**Last Updated:** 2026-06-14
 
 ---
 
@@ -68,6 +68,7 @@ storefront, not the reverse. Offering a vendor we can't actually fulfill would b
 | **Faire**                      | API is **brand/seller-side only** (no retailer/buyer sourcing endpoint), and Faire is wholesale, not dropship-to-consumer                                                                                                                                                                                                                                                                                        |
 | **Ninja Transfers / NinjaPOD** | Core business is DTF transfers + blank apparel you press yourself (not dropship). Their white-label POD arm, **NinjaPOD**, IS a real dropship fit (they print/pack/white-label ship) — but it's a **Shopify-app integration only**, with no public developer API to drive catalog/orders. Revisit if NinjaPOD ships an API. (evaluated 2026-06-14)                                                               |
 | **MyDesigns**                  | "Public API" page says **"API & Documentation coming soon"** and is **partner-gated** (contact form, not self-serve). Separately, MyDesigns is a design-generation + listing-automation + DAM layer that _routes orders to other fulfillment partners_ — it sits at the **same layer Sparx does**, not below us as a clean supplier, so it's a poor "vendor" fit even once an API exists. (evaluated 2026-06-14) |
+| **Vistaprint / Cimpress**      | Two layers, neither self-serve. **Vistaprint direct** has _no_ dropship API — its reseller arm **ProAdvantage** (on `cimpress.io`) is a manual web ordering portal with blind shipping, no programmatic order placement/webhooks, and subscriptions were **temporarily closed for a platform rebuild** at eval time. The real API is **Cimpress Open** (the MCP that grew out of Vistaprint), but access is **invitation + contract gated**: OAuth2 client-credentials provisioned only after a designated technical contact is invited and a Fulfillment Services Agreement is signed — same partnership-gated posture as AutoDS, not a paste-a-token flow. `open.cimpress.io` was also serving an **expired TLS cert** at eval. Fails the self-serve bar on both layers. Revisit if Cimpress Open opens a self-serve merchant tier (published commission terms, instant credentials) or ProAdvantage ships an API after its relaunch. (evaluated 2026-06-14) |
 
 > If any of these later open a self-serve API (or a tenant strikes a deal with AutoDS), they slot
 > in as a new adapter + `VENDOR_CATALOG` entry with no schema change. **NinjaPOD** is the most
