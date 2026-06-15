@@ -46,17 +46,21 @@ import {
   OverviewRow,
   SampleBadge,
   fmtNumber,
+  fmtPercentRatio,
+  liveOr,
 } from '../_components/overview-bits';
 import type { ConversationStatus, ConversationSummaryDto } from './_lib/types';
 
 // Live Chat overview — "Are conversations handled fast and well?". The
-// conversation pulse is LIVE from /v1/chat/conversations (open count, unassigned
-// queue, the recent-conversations table — fail soft to empty); the reporting
-// figures without an endpoint yet (response time, AI-vs-human resolution, CSAT,
-// channel mix, agent performance) are representative data behind a
-// <SampleBadge>. The /chat layout wraps this in <ModuleProvider module="chat">
-// + the module gate, so the page never re-wraps. The working inbox lives at
-// /chat/inbox.
+// conversation pulse, the volume timeseries, the AI-vs-human resolution split,
+// channel mix, agent performance, and the activity feed are all LIVE: the
+// recent-conversations table + counts from /v1/chat/conversations, and the
+// reporting figures from /v1/chat/analytics/* (summary, timeseries, agents,
+// activity). Each falls back to a badged sample until the tenant has chat
+// history. CSAT alone stays sample — there's no rating-capture model yet
+// (workload B, docs/97 §4). The /chat layout wraps this in
+// <ModuleProvider module="chat"> + the module gate, so the page never re-wraps.
+// The working inbox lives at /chat/inbox.
 
 export const dynamic = 'force-dynamic';
 
@@ -68,6 +72,93 @@ const STATUS_META: Record<ConversationStatus, { color: string; label: string }> 
   resolved: { color: 'success', label: 'Resolved' },
   spam: { color: 'neutral', label: 'Spam' },
 };
+
+// ── Live analytics shapes (/v1/chat/analytics/*) ──
+interface ChatSummary {
+  startedInRange: number;
+  resolvedInRange: number;
+  openNow: number;
+  avgFirstResponseSeconds: number | null;
+  aiResolved: number;
+  humanResolved: number;
+  aiHandledPct: number | null;
+  byChannel: { source: string; count: number }[];
+}
+
+interface ChatTimeseries {
+  points: { bucket: string; started: number; resolved: number }[];
+  totals: { started: number; resolved: number };
+}
+
+interface ChatAgentRow {
+  kind: 'staff' | 'ai';
+  id: string | null;
+  name: string;
+  handled: number;
+  avgResponseSeconds: number | null;
+}
+
+interface ChatActivityItem {
+  id: string;
+  conversationId: string;
+  senderType: string;
+  aiGenerated: boolean;
+  who: string;
+  snippet: string;
+  createdAt: string;
+}
+
+// The normalized rows the cards render — shared by live + sample so liveOr can
+// fall back cleanly.
+interface ChannelRow {
+  label: string;
+  value: number;
+}
+interface AgentDisplayRow {
+  key: string;
+  isAi: boolean;
+  name: string;
+  hint: string;
+}
+interface ActivityEntry {
+  key: string;
+  title: string;
+  when: string;
+}
+
+// Real conversation sources → friendly channel labels.
+const CHANNEL_LABEL: Record<string, string> = {
+  site: 'Website',
+  sparx_market: 'Sparx Market',
+  dashboard: 'Dashboard',
+};
+
+// Seconds → "Xm Ys" / "Ys" for response/handle latencies.
+function fmtDuration(seconds: number | null | undefined): string {
+  if (seconds == null || Number.isNaN(seconds)) return '—';
+  const s = Math.max(0, Math.round(seconds));
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60);
+  const rem = s % 60;
+  return rem > 0 ? `${m}m ${rem}s` : `${m}m`;
+}
+
+// Compact relative time for the activity feed (server-rendered).
+function timeAgo(iso: string, nowMs: number): string {
+  const mins = Math.round((nowMs - new Date(iso).getTime()) / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.round(hours / 24)}d ago`;
+}
+
+// A chat message → the activity verb shown in the timeline.
+function activityVerb(senderType: string, aiGenerated: boolean): string {
+  if (senderType === 'ai' || aiGenerated) return 'AI replied to';
+  if (senderType === 'staff') return 'Staff replied to';
+  return 'New message from';
+}
 
 // ── Sample data (illustrative until chat reporting endpoints land) ──
 const SAMPLE_CONVOS_14D = [
@@ -87,40 +178,25 @@ const SAMPLE_CONVOS_14D = [
   { label: 'Jun 13', started: 196, resolved: 188 },
 ] as const;
 
-const SAMPLE_CHANNELS = [
+const SAMPLE_CHANNELS: ChannelRow[] = [
   { label: 'Website', value: 58 },
   { label: 'Email', value: 22 },
-  { label: 'Instagram', value: 12, color: '#a78bfa' },
-  { label: 'Facebook', value: 8, color: '#c4b5fd' },
-] as const;
+  { label: 'Instagram', value: 12 },
+  { label: 'Facebook', value: 8 },
+];
 
-const SAMPLE_AGENTS = [
-  {
-    icon: <Users className="h-4 w-4" />,
-    name: 'Sam Ortiz',
-    hint: '142 handled · 1m 20s avg',
-    csat: '4.7',
-  },
-  {
-    icon: <Users className="h-4 w-4" />,
-    name: 'You',
-    hint: '88 handled · 2m 05s avg',
-    csat: '4.5',
-  },
-  {
-    icon: <Bot className="h-4 w-4" />,
-    name: 'AI assistant',
-    hint: '1,180 handled · instant',
-    csat: '4.5',
-  },
-] as const;
+const SAMPLE_AGENTS: AgentDisplayRow[] = [
+  { key: 'a1', isAi: false, name: 'Sam Ortiz', hint: '142 handled · 1m 20s avg' },
+  { key: 'a2', isAi: false, name: 'You', hint: '88 handled · 2m 05s avg' },
+  { key: 'a3', isAi: true, name: 'AI assistant', hint: '1,180 handled · instant' },
+];
 
-const SAMPLE_ACTIVITY = [
-  { title: 'AI resolved a chat with Maya Chen', when: 'just now' },
-  { title: 'AI escalated Theo Marsh to Sam Ortiz', when: '4 min ago' },
-  { title: 'You replied to Devon Walls', when: '12 min ago' },
-  { title: 'Priya Nair left a 5★ CSAT rating', when: '28 min ago' },
-] as const;
+const SAMPLE_ACTIVITY: ActivityEntry[] = [
+  { key: 'e1', title: 'AI replied to Maya Chen', when: 'just now' },
+  { key: 'e2', title: 'Staff replied to Theo Marsh', when: '4m ago' },
+  { key: 'e3', title: 'New message from Devon Walls', when: '12m ago' },
+  { key: 'e4', title: 'AI replied to Priya Nair', when: '28m ago' },
+];
 
 function waitLabel(c: ConversationSummaryDto): string {
   if (c.status === 'resolved' || c.status === 'spam' || !c.lastMessageAt) return '—';
@@ -134,11 +210,18 @@ function waitLabel(c: ConversationSummaryDto): string {
 export default async function ChatPage() {
   await requireSession();
 
-  const convos =
-    (await api
+  const nowMs = Date.now();
+
+  const [convos, summary, timeseries, agents, activity] = await Promise.all([
+    api
       .getPaged<ConversationSummaryDto[]>('/v1/chat/conversations?take=50')
-      .then((r) => r.data)
-      .catch(() => [] as ConversationSummaryDto[])) ?? [];
+      .then((r) => r.data ?? [])
+      .catch(() => [] as ConversationSummaryDto[]),
+    api.get<ChatSummary>('/v1/chat/analytics/summary').catch(() => null),
+    api.get<ChatTimeseries>('/v1/chat/analytics/timeseries?grain=day').catch(() => null),
+    api.get<ChatAgentRow[]>('/v1/chat/analytics/agents').catch(() => null),
+    api.get<ChatActivityItem[]>('/v1/chat/analytics/activity?limit=8').catch(() => null),
+  ]);
 
   const isOpen = (c: ConversationSummaryDto) => c.status === 'open' || c.status === 'pending';
   const openCount = convos.filter(isOpen).length;
@@ -147,6 +230,80 @@ export default async function ChatPage() {
   const recent = [...convos]
     .sort((a, b) => (b.lastMessageAt ?? '').localeCompare(a.lastMessageAt ?? ''))
     .slice(0, 6);
+
+  // KPI values — live from the summary, else the representative sample figure.
+  const avgFirstResponse =
+    summary?.avgFirstResponseSeconds != null
+      ? fmtDuration(summary.avgFirstResponseSeconds)
+      : '1m 48s';
+  const aiHandled =
+    summary?.aiHandledPct != null ? fmtPercentRatio(summary.aiHandledPct, 0) : '64%';
+
+  // AI-vs-human resolution split — live once any conversation has resolved.
+  const resolvedClassified = (summary?.aiResolved ?? 0) + (summary?.humanResolved ?? 0);
+  const resolutionLive = summary != null && resolvedClassified > 0;
+  const aiShare = resolutionLive
+    ? Math.round(((summary?.aiResolved ?? 0) / resolvedClassified) * 100)
+    : 64;
+  const donutData = resolutionLive
+    ? [
+        { label: 'AI-resolved', value: summary?.aiResolved ?? 0, color: 'module' },
+        { label: 'Human', value: summary?.humanResolved ?? 0, color: 'var(--module-active-tint)' },
+      ]
+    : [
+        { label: 'AI-resolved', value: 64, color: 'module' },
+        { label: 'Human', value: 36, color: 'var(--module-active-tint)' },
+      ];
+
+  // Conversations-over-time area — live once the window has any started convo.
+  const tsPoints =
+    timeseries && timeseries.totals.started > 0
+      ? timeseries.points.map((p) => ({
+          label: new Date(`${p.bucket}T00:00:00Z`).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          }),
+          started: p.started,
+          resolved: p.resolved,
+        }))
+      : null;
+  const convos14d = liveOr(tsPoints, [...SAMPLE_CONVOS_14D]);
+
+  // By channel — live source mix, else the representative sample.
+  const channelRows: ChannelRow[] | null =
+    summary && summary.byChannel.length > 0
+      ? summary.byChannel.map((c) => ({
+          label: CHANNEL_LABEL[c.source] ?? c.source,
+          value: c.count,
+        }))
+      : null;
+  const channels = liveOr<ChannelRow[]>(channelRows, SAMPLE_CHANNELS);
+
+  // Agent performance — first-responder rollup, else sample.
+  const agentRows: AgentDisplayRow[] | null =
+    agents && agents.length > 0
+      ? agents.map((a) => ({
+          key: a.id ?? a.kind,
+          isAi: a.kind === 'ai',
+          name: a.name,
+          hint: `${fmtNumber(a.handled)} handled${
+            a.avgResponseSeconds != null ? ` · ${fmtDuration(a.avgResponseSeconds)} avg` : ''
+          }`,
+        }))
+      : null;
+  const agentList = liveOr<AgentDisplayRow[]>(agentRows, SAMPLE_AGENTS);
+
+  // Recent activity — live message feed, else sample.
+  const activityRows: ActivityEntry[] | null =
+    activity && activity.length > 0
+      ? activity.map((a) => ({
+          key: a.id,
+          title: `${activityVerb(a.senderType, a.aiGenerated)} ${a.who}`,
+          when: timeAgo(a.createdAt, nowMs),
+        }))
+      : null;
+  const activityFeed = liveOr<ActivityEntry[]>(activityRows, SAMPLE_ACTIVITY);
 
   return (
     <Container size="xl">
@@ -181,14 +338,14 @@ export default async function ChatPage() {
           <Stat
             icon={<Clock className="h-4 w-4" />}
             label="Avg. first response"
-            value="1m 48s"
-            hint="Faster · 2m 24s → 1m 48s"
+            value={avgFirstResponse}
+            hint="First staff/AI reply · 30d"
           />
           <Stat
             icon={<Bot className="h-4 w-4" />}
             label="AI-handled"
-            value="64%"
-            hint="Of all conversations"
+            value={aiHandled}
+            hint="Of resolved conversations"
           />
           <Stat
             icon={<Star className="h-4 w-4" />}
@@ -247,21 +404,21 @@ export default async function ChatPage() {
           <OverviewCard
             title="AI vs human"
             icon={<Bot className="h-4 w-4" />}
-            right={<SampleBadge />}
+            right={resolutionLive ? undefined : <SampleBadge reason="no-data" />}
           >
             <DonutChart
-              data={[
-                { label: 'AI-resolved', value: 64, color: 'module' },
-                { label: 'Human', value: 36, color: 'var(--module-active-tint)' },
-              ]}
-              valueFormat="percent"
-              centerValue="64%"
+              data={donutData}
+              valueFormat={resolutionLive ? 'number' : 'percent'}
+              centerValue={`${aiShare}%`}
               centerLabel="AI-resolved"
               ariaLabel="AI vs human resolution"
             />
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <MetricTile value="4.6" label="CSAT · / 5" />
-              <MetricTile value="6m 12s" label="Avg. handle" />
+              <MetricTile
+                value={resolutionLive ? fmtNumber(summary?.resolvedInRange ?? 0) : '1,790'}
+                label="Resolved · 30d"
+              />
+              <MetricTile value={avgFirstResponse} label="Avg. response" />
             </div>
           </OverviewCard>
 
@@ -269,10 +426,10 @@ export default async function ChatPage() {
             title="Conversations over time"
             icon={<TrendingUp className="h-4 w-4" />}
             description="Started & resolved · last 14 days"
-            right={<SampleBadge />}
+            right={convos14d.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
             <AreaChart
-              data={[...SAMPLE_CONVOS_14D]}
+              data={convos14d.data}
               series={[
                 { key: 'started', label: 'Started', color: 'module' },
                 { key: 'resolved', label: 'Resolved', color: 'var(--module-active-tint)' },
@@ -283,12 +440,14 @@ export default async function ChatPage() {
               ariaLabel="Conversations started and resolved, last 14 days"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
-              {[
-                ['Conversations', '1,840'],
-                ['Resolved', '1,790'],
-                ['Avg. handle', '6m 12s'],
-                ['CSAT', '4.6'],
-              ].map(([label, value]) => (
+              {(
+                [
+                  ['Started', fmtNumber(timeseries?.totals.started ?? 1840)],
+                  ['Resolved', fmtNumber(timeseries?.totals.resolved ?? 1790)],
+                  ['Avg. response', avgFirstResponse],
+                  ['AI-handled', aiHandled],
+                ] as [string, string][]
+              ).map(([label, value]) => (
                 <div key={label}>
                   <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
                   <div className="font-medium">{value}</div>
@@ -364,54 +523,52 @@ export default async function ChatPage() {
           <OverviewCard
             title="By channel"
             icon={<TrendingUp className="h-4 w-4" />}
-            right={<SampleBadge />}
+            right={channels.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
             <BarList
-              items={SAMPLE_CHANNELS.map((c) => ({ ...c }))}
+              items={channels.data.map((c) => ({ ...c }))}
               color="module"
-              valueFormat="percent"
+              valueFormat={channels.isSample ? 'percent' : 'number'}
             />
             <p className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
               Top source ·{' '}
-              <span className="font-medium text-[var(--color-text-secondary)]">Website widget</span>{' '}
-              — 1,067 chats
+              <span className="font-medium text-[var(--color-text-secondary)]">
+                {channels.data[0]?.label ?? '—'}
+              </span>{' '}
+              — {fmtNumber(channels.data[0]?.value ?? 0)}
+              {channels.isSample ? '%' : ' chats'}
             </p>
           </OverviewCard>
 
           <OverviewCard
             title="Agent performance"
             icon={<Users className="h-4 w-4" />}
-            right={<SampleBadge />}
+            right={agentList.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
-            {SAMPLE_AGENTS.map((a) => (
+            {agentList.data.map((a) => (
               <OverviewRow
-                key={a.name}
-                icon={a.icon}
+                key={a.key}
+                icon={a.isAi ? <Bot className="h-4 w-4" /> : <Users className="h-4 w-4" />}
                 tone="module"
                 title={a.name}
                 hint={a.hint}
-                right={
-                  <span className="inline-flex items-center gap-1">
-                    <Star className="h-3.5 w-3.5 text-[var(--module-active)]" />
-                    {a.csat}
-                  </span>
-                }
               />
             ))}
           </OverviewCard>
 
-          <OverviewCard title="Recent activity" icon={<Clock className="h-4 w-4" />}>
+          <OverviewCard
+            title="Recent activity"
+            icon={<Clock className="h-4 w-4" />}
+            right={activityFeed.isSample ? <SampleBadge reason="no-data" /> : undefined}
+          >
             <Timeline>
-              {SAMPLE_ACTIVITY.map((a, i) => (
-                <TimelineItem key={a.title} showConnector={i < SAMPLE_ACTIVITY.length - 1}>
+              {activityFeed.data.map((a, i) => (
+                <TimelineItem key={a.key} showConnector={i < activityFeed.data.length - 1}>
                   <TimelineTitle>{a.title}</TimelineTitle>
                   <TimelineTime>{a.when}</TimelineTime>
                 </TimelineItem>
               ))}
             </Timeline>
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
           </OverviewCard>
         </Grid>
       </Stack>

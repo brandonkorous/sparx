@@ -3,11 +3,13 @@
 import type { FastifyPluginAsync } from 'fastify';
 
 import conversationRoutes from './conversations.js';
+import chatAnalyticsRoutes from './analytics.js';
 import quickReplyRoutes from './quick-replies.js';
 import chatSettingsRoutes from './settings.js';
 
 const chatRoutes: FastifyPluginAsync = async (app) => {
   await app.register(conversationRoutes);
+  await app.register(chatAnalyticsRoutes);
   await app.register(quickReplyRoutes);
   await app.register(chatSettingsRoutes);
 };

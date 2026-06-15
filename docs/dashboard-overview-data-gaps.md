@@ -152,7 +152,8 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 ### Chat — Violet
 
 - ✅ Conversation pulse (open / active / unassigned counts, recent list) — `GET /v1/chat/conversations?take=50`
-- 🔴 AI-vs-human resolution, volume timeseries, channel mix, agent performance, CSAT, activity — no chat analytics endpoint
+- ✅ AI-vs-human resolution, volume timeseries, channel mix, agent performance, activity — `GET /v1/chat/analytics/{summary,timeseries,agents,activity}` (shipped 2026-06-15): **live** aggregates over `chat_conversations` + `chat_messages` — resolution split (resolved with 0 staff messages = AI-handled), started/resolved per-day series, avg first-response latency, source mix, first-responder rollup (staff + AI), recent-message feed. Each `liveOr`-falls back to a badged sample until the tenant has chat history
+- 🔴 CSAT — no rating-capture model yet (workload B); the CSAT KPI stays sample until a post-chat rating is captured on a conversation
 
 ### Automations — Fuchsia
 
