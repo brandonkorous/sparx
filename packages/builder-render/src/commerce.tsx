@@ -8,57 +8,33 @@
 // bundles its own provider + the standard atoms.
 //
 // The variant-resolution + availability logic mirrors the legacy `ProductDetail`
-// (the PDP buy-box) so behavior is identical; the cart wiring reuses the same
-// global `useCart()` provider mounted in the storefront layout.
+// (the PDP buy-box) so behavior is identical. The terminal add-to-cart effect is
+// injected via the Builder runtime (runtime-context.tsx): live wires it to the
+// storefront <CartProvider>; the editor canvas leaves it a no-op, so the SAME
+// component renders + behaves in the canvas without mutating a cart.
 
 import * as React from 'react';
 
-import { formatMoney } from '@/lib/format';
-import { useCart } from './cart-provider';
+import type { BuilderProduct, BuilderVariant } from './commerce-types';
+import { useBuilderRuntime } from './runtime-context';
 
-// ── The product shape the buy-box reads (a subset of PublicProduct, mapped by
-//    `productToBuilderRecord` in lib/builder-data). Carries cents + currency so
-//    the client formats per selected variant. ────────────────────────────────
-export interface BuilderOptionValue {
-  id: string;
-  value: string;
-  swatchHex: string | null;
-}
-export interface BuilderOption {
-  id: string;
-  name: string;
-  displayType: string;
-  values: BuilderOptionValue[];
-}
-export interface BuilderVariant {
-  id: string;
-  sku: string;
-  title: string | null;
-  priceCents: number;
-  compareAtPriceCents: number | null;
-  isDefault: boolean;
-  inStock: boolean;
-  available: number | null;
-  optionValueIds: string[];
+export type {
+  BuilderProduct,
+  BuilderOption,
+  BuilderOptionValue,
+  BuilderVariant,
+} from './commerce-types';
+
+// Money is integer cents on the wire; format only at the render boundary, per the
+// selected variant + the product's currency. (Mirrors apps/site lib/format.)
+function formatMoney(cents: number, currency: string): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(cents / 100);
 }
 
 /** Display label for a variant chip in the option-less picker — its title, or
  *  the SKU when the supplier gave no title. */
 function variantLabel(v: BuilderVariant): string {
   return v.title ?? v.sku;
-}
-export interface BuilderProduct {
-  title: string;
-  price: number | null;
-  compareAtPrice: number | null;
-  description: string;
-  images: { url: string; alt: string }[];
-  sku: string;
-  currency: string;
-  priceMinCents: number | null;
-  priceMaxCents: number | null;
-  options: BuilderOption[];
-  variants: BuilderVariant[];
 }
 
 // A variant matches when every currently-selected option value is one of its
@@ -98,7 +74,9 @@ export function useProductForm(): ProductFormState | null {
 }
 
 function useProductFormState(product: BuilderProduct): ProductFormState {
-  const { addItem } = useCart();
+  // Terminal add-to-cart effect — the real storefront cart under a provider, a
+  // no-op in the editor canvas (runtime-context.tsx).
+  const runtime = useBuilderRuntime();
   // Memoize on the (stable) product prop so the derived useMemos below don't see
   // a fresh `[]` every render (react-hooks/exhaustive-deps).
   const variants = React.useMemo(() => product.variants ?? [], [product]);
@@ -168,11 +146,11 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
     if (!resolvedVariant?.inStock) return;
     setAdding(true);
     try {
-      await addItem(resolvedVariant.id, qty);
+      await runtime.addToCart(resolvedVariant.id, qty);
     } finally {
       setAdding(false);
     }
-  }, [addItem, resolvedVariant, qty]);
+  }, [runtime, resolvedVariant, qty]);
 
   return {
     product,
@@ -210,7 +188,7 @@ export function ProductFormProvider({
 }
 
 function moneyOf(cents: number, currency: string): string {
-  return formatMoney(cents, currency, 'en-US');
+  return formatMoney(cents, currency);
 }
 
 // ── Atoms (read the shared context) ──────────────────────────────────────────

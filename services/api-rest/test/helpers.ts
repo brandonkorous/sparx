@@ -56,9 +56,16 @@ export async function dropTestTenant(tenantId: string): Promise<void> {
 export function signToken(
   app: FastifyInstance,
   fixture: TestTenant,
-  role: StaffRole = 'owner'
+  role: StaffRole = 'owner',
+  // Mirrors the dashboard mint: the `ev` (email-verified) claim drives
+  // requireVerifiedEmail. Defaults to a verified staff user; pass false to
+  // exercise the verify-email gate.
+  opts: { emailVerified?: boolean } = {}
 ): string {
-  return app.jwt.sign({ sub: fixture.userId, tid: fixture.tenantId, role }, { expiresIn: '5m' });
+  return app.jwt.sign(
+    { sub: fixture.userId, tid: fixture.tenantId, role, ev: opts.emailVerified ?? true },
+    { expiresIn: '5m' }
+  );
 }
 
 export function authHeader(token: string): { authorization: string } {

@@ -38,6 +38,7 @@ import { PropSpecPanel } from './prop-spec-panel';
 import { deriveFieldKey } from './field-kinds';
 import { type SlotEditor } from './inspector';
 import { useBuilderEditor, type SaveStatus } from './use-builder-editor';
+import { UndoRedoButtons } from './editor-undo-redo';
 import { updateComponent } from '../components/_lib/component-actions';
 
 const DEVICES: { id: Device; label: string; icon: typeof Monitor }[] = [
@@ -213,6 +214,12 @@ export function ComponentBuilderApp({
             })}
           </div>
           <div className="bx-toolbar__actions">
+            <UndoRedoButtons
+              canUndo={editor.canUndo}
+              canRedo={editor.canRedo}
+              onUndo={editor.undo}
+              onRedo={editor.redo}
+            />
             <span className="bx-savestate" data-state={dirty ? 'idle' : editor.saveStatus}>
               {dirty ? `v${version} · unsaved` : (SAVE_LABEL[editor.saveStatus] ?? `v${version}`)}
             </span>

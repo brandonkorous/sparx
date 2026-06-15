@@ -29,7 +29,9 @@ export interface ActionResult<T = void> {
 async function run<T>(
   fn: () => Promise<T>,
   revalidate: boolean,
-  path = '/builder/page'
+  // The unified editor (docs/builder/07) — page + layout mutations both reflect on
+  // the one studio route now that the split editors are retired.
+  path = '/builder/studio'
 ): Promise<ActionResult<T>> {
   try {
     const data = await fn();
@@ -139,14 +141,18 @@ export async function compileSurfacePreview(
 
 // ── Site layout catalog (the chrome shells — docs/45) ────────────────────────
 // A tenant keeps many layouts; exactly one is ACTIVE (the live chrome). These
-// mirror the page actions but revalidate /builder/site. Activate is the new op:
-// it flips which published layout the storefront serves.
+// mirror the page actions, revalidating the unified studio. Activate is the new
+// op: it flips which published layout the storefront serves.
 
 export async function createLayout(input: {
   name: string;
   tree?: BuilderNode;
 }): Promise<ActionResult<BuilderLayoutDto>> {
-  return run(() => api.post<BuilderLayoutDto>('/v1/builder/layouts', input), true, '/builder/site');
+  return run(
+    () => api.post<BuilderLayoutDto>('/v1/builder/layouts', input),
+    true,
+    '/builder/studio'
+  );
 }
 
 /** The autosave path — save the layout's draft tree. No revalidate. */
@@ -164,19 +170,23 @@ export async function renameLayout(
   return run(
     () => api.patch<BuilderLayoutDto>(`/v1/builder/layouts/${id}`, { name }),
     true,
-    '/builder/site'
+    '/builder/studio'
   );
 }
 
 export async function deleteLayout(id: string): Promise<ActionResult<{ id: string }>> {
-  return run(() => api.delete<{ id: string }>(`/v1/builder/layouts/${id}`), true, '/builder/site');
+  return run(
+    () => api.delete<{ id: string }>(`/v1/builder/layouts/${id}`),
+    true,
+    '/builder/studio'
+  );
 }
 
 export async function publishLayout(id: string): Promise<ActionResult<BuilderLayoutDto>> {
   return run(
     () => api.post<BuilderLayoutDto>(`/v1/builder/layouts/${id}/publish`),
     true,
-    '/builder/site'
+    '/builder/studio'
   );
 }
 
@@ -185,7 +195,7 @@ export async function activateLayout(id: string): Promise<ActionResult<BuilderLa
   return run(
     () => api.post<BuilderLayoutDto>(`/v1/builder/layouts/${id}/activate`),
     true,
-    '/builder/site'
+    '/builder/studio'
   );
 }
 

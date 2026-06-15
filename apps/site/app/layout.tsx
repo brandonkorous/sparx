@@ -29,6 +29,7 @@ import { MotionController } from '@/components/motion-controller';
 import { SiteHeader, type NavItem } from '@/components/site-header';
 import { SiteFooter, type FooterColumn } from '@/components/site-footer';
 import { BuilderSiteChrome } from '@/components/builder-renderer';
+import { StorefrontBuilderRuntime } from '@/components/storefront-builder-runtime';
 import { listCollections } from '@/lib/commerce';
 import { getLegalFooterLinks } from '@/lib/legal';
 import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/builder';
@@ -425,56 +426,61 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 propertySlug={activePropertySlug ?? undefined}
                 currency={site.commerce.defaultCurrency}
               >
-                <div className="st-frame">
-                  <a href="#st-main" className="st-skip-link">
-                    Skip to content
-                  </a>
-                  {builderLayout && siteData ? (
-                    // A published Builder layout owns the chrome: render its tree
-                    // with the page dropped at the Outlet (docs/45 §2.6).
-                    <BuilderSiteChrome tree={builderLayout.tree} data={siteData}>
-                      <main className="st-main" id="st-main" tabIndex={-1}>
-                        {children}
-                      </main>
-                    </BuilderSiteChrome>
-                  ) : (
-                    <>
-                      <SiteHeader
-                        site={site}
-                        nav={nav}
-                        announcement={announcement}
-                        announcementHref={blankToNull(announceConfig.linkUrl)}
-                        showSearch={headerConfig.showSearch ?? true}
-                        logoPlacement={headerConfig.logoPlacement ?? 'left'}
-                        overlay={headerConfig.overlay ?? false}
-                        modeToggle={
-                          policy === 'toggle' ? <ModeToggle initial={initialTheme} /> : undefined
-                        }
-                      />
-                      <main className="st-main" id="st-main" tabIndex={-1}>
-                        {children}
-                      </main>
-                      <SiteFooter
-                        site={site}
-                        columns={footerColumns}
-                        year={FOOTER_YEAR}
-                        copyright={blankToNull(footerConfig.copyright)}
-                        socialLinks={socialLinks.map((s) => ({ platform: s.platform, url: s.url }))}
-                        variant={footerConfig.variant ?? 'columns'}
-                        tagline={blankToNull(footerConfig.tagline)}
-                      />
-                    </>
-                  )}
-                </div>
-                <MiniCart />
-                <ConsentManager tenant={site.slug} config={site.consent} />
-                {chatEnabled && chatApiUrl ? (
-                  <ChatWidget
-                    apiUrl={chatApiUrl}
-                    tenantSlug={site.slug}
-                    accentColor={site.theme?.colorPrimary ?? null}
-                  />
-                ) : null}
+                <StorefrontBuilderRuntime>
+                  <div className="st-frame">
+                    <a href="#st-main" className="st-skip-link">
+                      Skip to content
+                    </a>
+                    {builderLayout && siteData ? (
+                      // A published Builder layout owns the chrome: render its tree
+                      // with the page dropped at the Outlet (docs/45 §2.6).
+                      <BuilderSiteChrome tree={builderLayout.tree} data={siteData}>
+                        <main className="st-main" id="st-main" tabIndex={-1}>
+                          {children}
+                        </main>
+                      </BuilderSiteChrome>
+                    ) : (
+                      <>
+                        <SiteHeader
+                          site={site}
+                          nav={nav}
+                          announcement={announcement}
+                          announcementHref={blankToNull(announceConfig.linkUrl)}
+                          showSearch={headerConfig.showSearch ?? true}
+                          logoPlacement={headerConfig.logoPlacement ?? 'left'}
+                          overlay={headerConfig.overlay ?? false}
+                          modeToggle={
+                            policy === 'toggle' ? <ModeToggle initial={initialTheme} /> : undefined
+                          }
+                        />
+                        <main className="st-main" id="st-main" tabIndex={-1}>
+                          {children}
+                        </main>
+                        <SiteFooter
+                          site={site}
+                          columns={footerColumns}
+                          year={FOOTER_YEAR}
+                          copyright={blankToNull(footerConfig.copyright)}
+                          socialLinks={socialLinks.map((s) => ({
+                            platform: s.platform,
+                            url: s.url,
+                          }))}
+                          variant={footerConfig.variant ?? 'columns'}
+                          tagline={blankToNull(footerConfig.tagline)}
+                        />
+                      </>
+                    )}
+                  </div>
+                  <MiniCart />
+                  <ConsentManager tenant={site.slug} config={site.consent} />
+                  {chatEnabled && chatApiUrl ? (
+                    <ChatWidget
+                      apiUrl={chatApiUrl}
+                      tenantSlug={site.slug}
+                      accentColor={site.theme?.colorPrimary ?? null}
+                    />
+                  ) : null}
+                </StorefrontBuilderRuntime>
               </CartProvider>
             </WishlistProvider>
           </CustomerProvider>

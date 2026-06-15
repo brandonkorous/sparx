@@ -151,6 +151,106 @@ export function findParent(root: BuilderNode, id: string): BuilderNode | null {
   return null;
 }
 
+/** Depth-first PRE-ORDER list of every node id (root first). The canonical
+ *  document order — drives range-select (shift-click spans this order) and the
+ *  preorder normalization of a multi-node move/duplicate, so bulk ops keep the
+ *  visual top-to-bottom order regardless of click order. */
+export function preorderIds(root: BuilderNode): string[] {
+  const out: string[] = [root.id];
+  for (const child of root.children ?? []) out.push(...preorderIds(child));
+  return out;
+}
+
+/** The contiguous span of ids between `a` and `b` (inclusive) in document order
+ *  — the set a shift-click selects from the anchor to the clicked node. Order of
+ *  the args doesn't matter. Empty when either id isn't in the tree. */
+export function idRange(root: BuilderNode, a: string, b: string): string[] {
+  const order = preorderIds(root);
+  const i = order.indexOf(a);
+  const j = order.indexOf(b);
+  if (i === -1 || j === -1) return [];
+  return order.slice(Math.min(i, j), Math.max(i, j) + 1);
+}
+
+/** Reduce a selection set to its TOP-LEVEL members — ids whose ancestors are not
+ *  themselves selected — in document order. Moving/duplicating a parent already
+ *  carries its children, so a bulk op acts only on these roots (selecting a
+ *  container AND a node inside it moves the container once, not both). The root
+ *  is never included (it isn't movable). */
+export function topLevelSelected(root: BuilderNode, ids: ReadonlySet<string>): string[] {
+  const out: string[] = [];
+  const walk = (node: BuilderNode, ancestorSelected: boolean) => {
+    const selected = ids.has(node.id);
+    if (selected && !ancestorSelected && node.id !== root.id) out.push(node.id);
+    for (const child of node.children ?? []) walk(child, ancestorSelected || selected);
+  };
+  walk(root, false);
+  return out;
+}
+
+/** Insert `node` immediately AFTER the sibling `afterId` (same parent). A no-op
+ *  if `afterId` is the root or not found. Drives "duplicate" (the clone lands
+ *  next to its original) and same-parent paste. */
+export function insertAfter(root: BuilderNode, afterId: string, node: BuilderNode): BuilderNode {
+  const parent = findParent(root, afterId);
+  if (!parent) return root;
+  return updateNode(root, parent.id, (p) => {
+    const children = [...(p.children ?? [])];
+    const at = children.findIndex((c) => c.id === afterId);
+    if (at === -1) return p;
+    children.splice(at + 1, 0, node);
+    return { ...p, children };
+  });
+}
+
+/** Move SEVERAL nodes to be children of `parentId` at `index`, preserving their
+ *  document order. The multi-select counterpart of `moveNode`: it normalizes the
+ *  set to its top-level members (an already-carried descendant is dropped), then
+ *  pulls them all out and splices them in together — so a bulk canvas/layers drag
+ *  lands as one contiguous run.
+ *
+ *  Returns the tree UNCHANGED (a no-op) when the move is illegal for the same
+ *  reasons as `moveNode`: an unknown parent, or `parentId` living inside any of
+ *  the moved subtrees (a cycle). `index` is interpreted against the child list
+ *  AFTER the dragged nodes are removed, matching `moveNode`. */
+export function moveNodes(
+  root: BuilderNode,
+  dragIds: readonly string[],
+  parentId: string,
+  index: number
+): BuilderNode {
+  const tops = topLevelSelected(root, new Set(dragIds));
+  if (tops.length === 0) return root;
+  if (!findNode(root, parentId)) return root;
+  const dragged: BuilderNode[] = [];
+  for (const id of tops) {
+    const node = findNode(root, id);
+    if (!node) continue;
+    // The drop target can't be one of the moved nodes, nor inside any of them.
+    if (id === parentId || findNode(node, parentId)) return root;
+    dragged.push(node);
+  }
+  if (dragged.length === 0) return root;
+  let without = root;
+  for (const node of dragged) without = removeNode(without, node.id);
+  return updateNode(without, parentId, (parent) => {
+    const children = [...(parent.children ?? [])];
+    const at = Math.max(0, Math.min(index, children.length));
+    children.splice(at, 0, ...dragged);
+    return { ...parent, children };
+  });
+}
+
+/** Deep-clone a subtree with EVERY id regenerated, so the clone can coexist with
+ *  its original (duplicate) or be pasted into another tree without an id clash.
+ *  (`ensureUniqueIds` only re-ids true duplicates — a clone needs all-fresh ids.)
+ *  Names/props/binding/class are copied verbatim. */
+export function cloneWithFreshIds(node: BuilderNode): BuilderNode {
+  const next: BuilderNode = { ...node, id: makeId(node.type) };
+  if (node.children) next.children = node.children.map(cloneWithFreshIds);
+  return next;
+}
+
 let idCounter = 0;
 /** Stable-ish unique id for newly added nodes (client-only). Persisted with the
  *  tree on save, so on reload the id comes back from the server as plain data. */

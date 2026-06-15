@@ -1,12 +1,17 @@
-// /builder — the Builder overview/landing (docs/54 §13 step 2). It does two
-// jobs in one page: a live-site overview (status hero, traffic, top pages,
-// health, activity) AND the surface picker that was always here — "Start from a
-// blueprint" plus the build-it-yourself surfaces grid.
+// /builder — the Builder overview/landing (docs/builder/06). It does two jobs in
+// one page: a live-site overview (status hero, traffic, top pages, health,
+// activity) AND the surface picker — "Start from a blueprint" plus the
+// build-it-yourself surfaces grid, which now open the unified editor
+// (/builder/studio) after the Phase-7 cutover (docs/builder/07).
 //
-// Builder has no analytics endpoints, so the ONLY live data on this page is the
-// blueprint teaser (`/v1/blueprints` via api.getPaged). Every overview metric is
-// illustrative — defined locally as SAMPLE_* and rendered behind <SampleBadge/>,
-// the dashboard's sanctioned interim (see overview-charts.tsx).
+// LIVE today (real `/v1` reads, fail-soft behind <SampleBadge/> via liveOr):
+//   · Blueprint teaser — /v1/blueprints
+//   · Pages & content — /v1/builder/pages (published vs draft) + /v1/builder/components
+// SAMPLE (no endpoint yet — see docs/dashboard-overview-data-gaps.md §Site builder):
+//   · the analytics cards (visitors / pageviews / traffic / top pages / sources /
+//     signups) need a net-new per-site site-analytics surface; the status hero's
+//     publish/uptime facts, site health, needs-attention scan, and the activity
+//     feed need their own (modest) endpoints. All stay badged until wired.
 //
 // The builder layout is gate-only (no ModuleProvider, so the editor's full-height
 // shell isn't disturbed), so this page supplies its own module color via
@@ -76,11 +81,13 @@ import {
 import { api } from '@/lib/api-rest-client';
 import {
   CardLink,
+  liveOr,
   MetricTile,
   OverviewCard,
   OverviewRow,
   SampleBadge,
 } from '../_components/overview-bits';
+import { listComponentsFull, listPages } from './_lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -194,21 +201,24 @@ const SAMPLE_ACTIVITY = [
   { title: 'You added a new page: Wholesale', time: '1 week ago' },
 ] as const;
 
+// The build-it-yourself entry points. Brand / Site / Page open the unified editor
+// at the matching zone (docs/builder/07 §2.1 — the three split routes redirect
+// here); Email and Components keep their own surfaces.
 const SURFACES = [
   {
-    href: '/builder/brand',
+    href: '/builder/studio?zone=theme',
     icon: Fingerprint,
     title: 'Brand',
     description: 'Your identity — colors, type, logo, and rounding the whole site renders in.',
   },
   {
-    href: '/builder/site',
+    href: '/builder/studio?zone=layout',
     icon: Globe,
     title: 'Site',
     description: 'The site shell: header, footer, navigation, and page layouts.',
   },
   {
-    href: '/builder/page',
+    href: '/builder/studio',
     icon: File,
     title: 'Page',
     description: 'Design page templates on the visual canvas, bound to your content and catalog.',
@@ -289,6 +299,19 @@ export default async function BuilderOverviewPage() {
     teaser = null;
   }
 
+  // Pages & content — real catalog counts (published vs draft pages + saved
+  // components). Fail-soft to a badged example if either read errors. `published`
+  // marks a page that has a live snapshot; the rest are pure drafts.
+  let catalog: { published: number; drafts: number; components: number } | null = null;
+  try {
+    const [pages, components] = await Promise.all([listPages(), listComponentsFull()]);
+    const published = pages.filter((p) => p.published).length;
+    catalog = { published, drafts: pages.length - published, components: components.length };
+  } catch {
+    catalog = null;
+  }
+  const cat = liveOr(catalog, { published: 14, drafts: 3, components: 9 });
+
   return (
     <ModuleProvider module="builder">
       <Container size="xl">
@@ -300,10 +323,10 @@ export default async function BuilderOverviewPage() {
             actions={
               <>
                 <Button asChild variant="outline" leftIcon={<Eye className="h-4 w-4" />}>
-                  <Link href="/builder/site">Preview</Link>
+                  <Link href="/builder/studio?zone=layout">Preview</Link>
                 </Button>
                 <Button asChild color="module" leftIcon={<Pencil className="h-4 w-4" />}>
-                  <Link href="/builder/page">Open editor</Link>
+                  <Link href="/builder/studio">Open editor</Link>
                 </Button>
               </>
             }
@@ -351,7 +374,7 @@ export default async function BuilderOverviewPage() {
                       size="sm"
                       leftIcon={<Rocket className="h-4 w-4" />}
                     >
-                      <Link href="/builder/site">Review &amp; publish</Link>
+                      <Link href="/builder/studio">Review &amp; publish</Link>
                     </Button>
                   }
                 />
@@ -437,7 +460,7 @@ export default async function BuilderOverviewPage() {
             <OverviewCard
               title="Top pages"
               icon={<FileText className="h-4 w-4" />}
-              right={<CardLink href="/builder/site">All pages</CardLink>}
+              right={<CardLink href="/builder/studio">All pages</CardLink>}
             >
               <Table>
                 <TableHeader>
@@ -520,29 +543,31 @@ export default async function BuilderOverviewPage() {
             <OverviewCard
               title="Pages & content"
               icon={<FileText className="h-4 w-4" />}
-              right={<CardLink href="/builder/site">Manage</CardLink>}
+              right={<CardLink href="/builder/studio">Manage</CardLink>}
             >
               <div className="mb-3 grid grid-cols-2 gap-3">
-                <MetricTile value="14" label="Published" />
-                <MetricTile value="3" label="Drafts" tone="warning" />
+                <MetricTile value={String(cat.data.published)} label="Published" />
+                <MetricTile value={String(cat.data.drafts)} label="Drafts" tone="warning" />
               </div>
               <OverviewRow
                 icon={<Palette className="h-4 w-4" />}
                 tone="module"
                 title="Theme"
-                hint="Ember — warm, serif headings"
-                right={<CardLink href="/builder/brand">Edit</CardLink>}
+                hint="Your site's colors, type & rounding"
+                right={<CardLink href="/builder/studio?zone=theme">Edit</CardLink>}
               />
               <OverviewRow
                 icon={<Component className="h-4 w-4" />}
                 tone="module"
                 title="Components"
-                hint="9 saved · 2 custom"
+                hint={`${cat.data.components} saved`}
                 right={<CardLink href="/builder/components">Open</CardLink>}
               />
-              <div className="mt-3">
-                <SampleBadge />
-              </div>
+              {cat.isSample ? (
+                <div className="mt-3">
+                  <SampleBadge />
+                </div>
+              ) : null}
             </OverviewCard>
 
             <OverviewCard

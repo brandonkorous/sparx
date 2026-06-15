@@ -1,4 +1,4 @@
-// The component registry — the catalog the builder composes from.
+// The component registry — the catalog the builder composes from (METADATA ONLY).
 //
 // Tier-1 primitives (Section/Grid/Stack/Heading/Text/Image/Button) and Tier-2
 // data-aware components (ImageDisplay/PriceTag/Signup) live in ONE registry and
@@ -7,12 +7,15 @@
 //   · bindable    — can it bind to data, and which cardinalities it handles
 //   · box axes    — which parts of the universal box base are meaningful
 //   · props       — its own config (drives the inspector's component panel)
-//   · render      — leaf markup, or container chrome
 //
-// The canvas owns the universal concerns (box base, layout, iteration,
-// selection). A definition only describes what's specific to itself.
+// What this file NO LONGER owns: the per-type RENDER. Leaf markup lived here as a
+// second `renderLeaf` map that mirrored the live storefront renderer and drifted
+// from it (mocks for the commerce atoms, an inert <span> for Button). Both render
+// paths are now the ONE shared map in `@sparx/builder-render` (docs/builder/02),
+// which the live site and the editor canvas both call. This registry keeps only
+// the metadata — the palette grouping, binding cardinalities, defaults, props, and
+// the tree ops (makeNode/retypeNode) — that the editor needs to compose and edit.
 
-import * as React from 'react';
 import {
   Building2,
   DollarSign,
@@ -52,49 +55,11 @@ import {
   Type,
   type LucideIcon,
 } from 'lucide-react';
-// The full lucide catalog, lazy-loaded by name (code-split) — so the Icon node can
-// pick from ~1500 glyphs without bundling them all (docs/47). `iconNames` (the
-// searchable list) lives with the picker; here we only need the renderer.
-import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 
-import {
-  coerceNavLinks,
-  readClassGroup,
-  sampleEmailText,
-  setClassGroup,
-} from '@sparx/builder-schemas';
-// The canvas renders the SAME @sparx/site-ui components the live site does, so
-// the preview is faithful instead of a `bx-*` approximation (docs/62 / docs/23
-// §17). The remaining `bx-*` are editor chrome (selection, palette) + the media
-// empty-state Placeholder, not content rendering.
-import {
-  CollapsibleNav,
-  Divider,
-  EditorialSection,
-  EmbedFrame,
-  FAQ,
-  FeatureGrid,
-  Heading,
-  Image,
-  Logo,
-  NavMenu,
-  PriceTag,
-  Signup,
-  SocialLinks,
-  Stat,
-  Text,
-  ThemeToggle,
-  Wordmark,
-  type WordmarkCollapse,
-} from '@sparx/site-ui';
-// The React-free JSON→HTML serializer (the audited CMS path). Lets the canvas
-// preview an authored Prose doc as real HTML without pulling the TipTap editor
-// into this widely-imported registry chunk (docs/52 §9).
-import { renderDocToHtml } from '@sparx/cms-editor/serialize';
+import { readClassGroup, setClassGroup } from '@sparx/builder-schemas';
 
 import {
   boxLayoutClass,
-  legacyButtonStyleToClass,
   makeId,
   type BoxStyle,
   type BuilderNode,
@@ -102,18 +67,6 @@ import {
   type LayoutStyle,
 } from './model';
 import { COLOR_CONTROL, VARIANT_CONTROL } from './class-controls';
-// Email-faithful leaf rendering (docs/93): on the email surface a Heading/Text/
-// Button/Divider/Prose paints the @sparx/email pixel scale instead of the site-ui
-// hero typography, so the canvas reads like the actual send.
-import {
-  EmailButtonLeaf,
-  EmailDividerLeaf,
-  EmailHeadingLeaf,
-  EmailLineItemsLeaf,
-  EmailProseLeaf,
-  EmailTextLeaf,
-  EmailWordmarkLeaf,
-} from './email-leaf';
 
 export type NodeKind = 'container' | 'leaf';
 /** Composition axis (docs/23 §17) — orthogonal to `kind`/`group`/bindable.
@@ -171,30 +124,6 @@ export interface PropSpec {
 // seeds the real ContentBlockEditor with it.
 const EMPTY_PROSE_DOC = { type: 'doc', content: [] } as const;
 
-export interface LeafRenderArgs {
-  node: BuilderNode;
-  /** Resolved binding value (undefined when the node is unbound). */
-  value: unknown;
-  cardinality: Cardinality;
-  bound: boolean;
-  /** The editor surface this node renders on. A leaf paints differently for an
-   *  `email` (the @sparx/email pixel scale, docs/93) than for a page/site (the
-   *  @sparx/site-ui hero scale). `page` for everything that isn't an email. */
-  surface: EditorSurface;
-  /** Editor SAMPLE data for resolving `{{merge.tokens}}` in the canvas (docs/93).
-   *  The email surface passes `emailSampleData(realTenant)` so `{{tenant.name}}`
-   *  reads the store's real name; undefined ⇒ the generic placeholders. */
-  emailSample?: Record<string, unknown>;
-  /** The email surface's resolved brand identity — the tenant/site logo URL + store
-   *  name (docs/52 §1). The `email_wordmark` header leaf paints its CONTENT from this
-   *  (the node carries only the treatment); undefined on a page/site surface. */
-  emailBrand?: { logoUrl?: string | null; name?: string | null };
-  /** Pre-rendered child nodes, for a leaf that `acceptsChildren` (Button → an
-   *  inline Icon). Undefined for leaves with no children. The leaf decides where
-   *  they sit relative to its own content (Button renders them after the label). */
-  children?: React.ReactNode;
-}
-
 export interface ComponentDef {
   type: string;
   label: string;
@@ -246,7 +175,7 @@ export interface ComponentDef {
   boxAxes?: BoxAxis[];
   /** A LEAF that can still nest children — a drop target without being a full
    *  container (no Arrangement panel / layout). Button uses this so an Icon can be
-   *  dropped INSIDE it (icon + label); renderLeaf receives them as `children` and
+   *  dropped INSIDE it (icon + label); the renderer receives them as `children` and
    *  places them itself. Containers nest children inherently, so they leave this
    *  unset. */
   acceptsChildren?: boolean;
@@ -257,106 +186,7 @@ export interface ComponentDef {
    *  control and won't drag it; the editor's onRemove no-ops it; projectDrop keeps
    *  siblings from landing above it. Still selectable + editable (its props). */
   pinned?: boolean;
-  /** Leaf whose authored `node.class` styles the ELEMENT itself, not the box
-   *  wrapper (docs/47 §7 — e.g. Button → the `<span>`/`<a>`). When set, the canvas
-   *  renders `node.class` on the leaf (so the recipe paints it) and suppresses it
-   *  on the `.bx-node` wrapper to avoid double-paint — parity with the site
-   *  renderer's `leafStylesByClass`. */
-  leafStylesByClass?: boolean;
-  renderLeaf?: (a: LeafRenderArgs) => React.ReactNode;
 }
-
-// ── Small helpers ────────────────────────────────────────────────────────────
-
-const firstString = (...vals: unknown[]): string => {
-  for (const v of vals) {
-    if (typeof v === 'string' && v.trim() !== '') return v;
-  }
-  return '';
-};
-
-const asImage = (v: unknown): { url?: string; alt?: string; description?: string } | null =>
-  v && typeof v === 'object' && !Array.isArray(v) ? v : null;
-
-// YouTube watch/share/embed URL — or a bare id — → a privacy-friendly embed URL.
-// Mirrored in the storefront renderer (kept tiny + duplicated, like bgProps).
-export function youtubeEmbed(url: string): string | null {
-  const u = (url ?? '').trim();
-  if (!u) return null;
-  const m = /(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([\w-]{6,})/.exec(u);
-  const id = m?.[1] ?? (/^[\w-]{6,}$/.test(u) ? u : null);
-  return id ? `https://www.youtube-nocookie.com/embed/${id}?rel=0` : null;
-}
-
-// A Google Maps embed URL from an explicit embed URL or a free-text place query.
-// `?output=embed` needs no API key. Mirrored in the storefront renderer.
-export function mapEmbed(query: string, embedUrl: string): string | null {
-  if (embedUrl?.trim()) return embedUrl.trim();
-  const q = (query ?? '').trim();
-  return q ? `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed` : null;
-}
-
-// Authored-inline Q&A pairs for the FAQ component (the fallback when it isn't
-// bound to a content list). Items are separated by a line of three-or-more
-// dashes; within a block the FIRST non-empty line is the question and the rest
-// (joined) is the answer. Mirrored in the storefront renderer.
-export function parseFaqItems(raw: string): { question: string; answer: string }[] {
-  return (raw ?? '')
-    .split(/\n\s*-{3,}\s*\n/)
-    .map((block) => {
-      const lines = block.split('\n').map((l) => l.trim());
-      const start = lines.findIndex((l) => l !== '');
-      if (start === -1) return null;
-      const question = lines[start];
-      const answer = lines
-        .slice(start + 1)
-        .filter(Boolean)
-        .join('\n\n');
-      return question ? { question, answer } : null;
-    })
-    .filter((x): x is { question: string; answer: string } => x !== null);
-}
-
-// Authored-inline feature cards for the FeatureGrid component. One per line,
-// `Title | Body` (auto-numbered 01, 02, …) or `Number | Title | Body` to set the
-// ordinal explicitly. Mirrored in the storefront renderer.
-export function parseFeatureItems(raw: string): { number: string; title: string; body: string }[] {
-  return (raw ?? '')
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line, i) => {
-      const parts = line.split('|').map((p) => p.trim());
-      const auto = String(i + 1).padStart(2, '0');
-      if (parts.length >= 3) {
-        return {
-          number: firstString(parts[0], auto),
-          title: parts[1] ?? '',
-          body: parts.slice(2).join(' | '),
-        };
-      }
-      if (parts.length === 2) return { number: auto, title: parts[0] ?? '', body: parts[1] ?? '' };
-      return { number: auto, title: parts[0] ?? '', body: '' };
-    })
-    .filter((f) => f.title !== '');
-}
-
-function Placeholder({ label, ratio }: { label: string; ratio?: string }) {
-  return (
-    <div className={`bx-ph bx-ratio-${ratio ?? 'wide'}`}>
-      <ImageIcon className="bx-ph__icon" aria-hidden />
-      {label ? <span className="bx-ph__label">{label}</span> : null}
-    </div>
-  );
-}
-
-// Representative rows shown when a `line_item_table` isn't bound to a real
-// collection in the canvas — so the email's items table always previews its
-// structure (docs/93), like the FAQ / FeatureGrid placeholders.
-const SAMPLE_LINE_ITEMS: Record<string, unknown>[] = [
-  { name: 'Single-origin beans — Lot 7', quantity: '2', lineTotal: '$36.00' },
-  { name: 'Pour-over filters (100 ct)', quantity: '1', lineTotal: '$12.00' },
-];
 
 // ── The registry ─────────────────────────────────────────────────────────────
 
@@ -470,28 +300,6 @@ const DEFS: ComponentDef[] = [
       { key: 'text', label: 'Heading text', control: 'text', placeholder: 'Heading text' },
     ],
     defaults: { props: { level: 'h2', text: 'Heading' } },
-    renderLeaf: ({ node, value, bound, surface, emailSample }) => {
-      // Same site-ui Heading the live site renders; bare (node.class rides the
-      // canvas wrapper, since Heading isn't leafStylesByClass).
-      const level = ((node.props.level as string) ?? 'h2') as 'h1' | 'h2' | 'h3';
-      const size = node.props.size === 'display' ? 'display' : undefined;
-      // Graceful empty (mirrors the live renderer): a bound heading whose value
-      // resolves empty falls back to its authored static text, not a bare dash, so
-      // preview == production for a hero on a site with no records yet.
-      // Interpolate any `{{merge.token}}` against editor SAMPLE data (docs/93) so an
-      // email heading reads "Welcome to <real store name>" in the canvas, not raw
-      // braces. A no-op for site copy (no tokens); the real send resolves live data.
-      const fallback = sampleEmailText(firstString(node.props.text, 'Heading'), emailSample);
-      const text = bound ? firstString(value, fallback) : fallback;
-      // On email, paint the @sparx/email heading scale (20px / 16px), not the
-      // site's hero size (docs/93).
-      if (surface === 'email') return <EmailHeadingLeaf level={level}>{text}</EmailHeadingLeaf>;
-      return (
-        <Heading level={level} size={size}>
-          {text}
-        </Heading>
-      );
-    },
   },
   {
     type: 'Text',
@@ -515,16 +323,6 @@ const DEFS: ComponentDef[] = [
       { key: 'text', label: 'Text', control: 'textarea', placeholder: 'Type some text…' },
     ],
     defaults: { props: { variant: 'body', text: 'Some text' } },
-    renderLeaf: ({ node, value, bound, surface, emailSample }) => {
-      const variant = ((node.props.variant as string) ?? 'body') as 'body' | 'eyebrow' | 'meta';
-      // Graceful empty (mirrors the live renderer): bound-but-empty falls back to
-      // the authored static text rather than a bare dash.
-      const fallback = sampleEmailText(firstString(node.props.text, 'Some text'), emailSample);
-      const text = bound ? firstString(value, fallback) : fallback;
-      // On email, body → 14px paragraph, eyebrow/meta → 12px muted (docs/93).
-      if (surface === 'email') return <EmailTextLeaf variant={variant}>{text}</EmailTextLeaf>;
-      return <Text variant={variant}>{text}</Text>;
-    },
   },
   {
     // Rich prose — free-form authored body copy (paragraphs, headings, lists,
@@ -537,8 +335,6 @@ const DEFS: ComponentDef[] = [
     //   · BOUND: the BODY of a blog post / article — bind to a `richtext` scalar
     //     (e.g. "Blog post › Body"); richtext preview data is a plain string, so
     //     while editing the node reads as a representative paragraph.
-    // The canvas previews the authored doc as real HTML (via the React-free
-    // serializer) so the block reads WYSIWYG.
     type: 'Prose',
     label: 'Rich text',
     kind: 'leaf',
@@ -548,35 +344,6 @@ const DEFS: ComponentDef[] = [
     accepts: ['scalar'],
     props: [{ key: 'doc', label: 'Content', control: 'richtext' }],
     defaults: { props: { doc: EMPTY_PROSE_DOC } },
-    renderLeaf: ({ node, value, bound, surface }) => {
-      const email = surface === 'email';
-      // Bound to a CMS richtext field → preview data is a representative string.
-      if (bound && typeof value === 'string') {
-        if (email) return <EmailTextLeaf variant="body">{value}</EmailTextLeaf>;
-        return (
-          <div className="bx-prose">
-            <Text variant="body">{value}</Text>
-          </div>
-        );
-      }
-      // Authored → serialize the doc to HTML and preview it (the same audited
-      // path the email + site renderers use). On site it's styled by
-      // `.sparx-content`; on email it inherits the email body base (docs/93).
-      const html = node.props.doc ? renderDocToHtml(node.props.doc) : '';
-      if (html) {
-        if (email) return <EmailProseLeaf html={html} />;
-        return (
-          <div className="bx-prose sparx-content" dangerouslySetInnerHTML={{ __html: html }} />
-        );
-      }
-      const empty = 'Rich body content renders here — paragraphs, headings, lists, quotes, links.';
-      if (email) return <EmailTextLeaf variant="body">{empty}</EmailTextLeaf>;
-      return (
-        <div className="bx-prose">
-          <Text variant="body">{empty}</Text>
-        </div>
-      );
-    },
   },
   {
     type: 'Image',
@@ -609,12 +376,6 @@ const DEFS: ComponentDef[] = [
       },
     ],
     defaults: { props: { ratio: 'wide', alt: '' } },
-    renderLeaf: ({ node }) => (
-      <Placeholder
-        ratio={(node.props.ratio as string) ?? 'wide'}
-        label={firstString(node.props.alt)}
-      />
-    ),
   },
   {
     type: 'Button',
@@ -636,51 +397,14 @@ const DEFS: ComponentDef[] = [
     // Archetype (docs/47): a fresh Button IS the Surface button — the recipe's
     // base + a default colour/treatment/size. The inspector's Style panel drives
     // `st-c-*` / `st-v-*` from here, retiring the old freeform `style` prop (legacy
-    // trees that still carry `props.style` keep rendering via the canvas fallback).
+    // trees that still carry `props.style` keep rendering via the legacy fallback).
     defaults: {
       props: { label: 'Button', href: '' },
       class: 'st-btn st-c-primary st-v-solid st-btn--sz-md',
     },
-    leafStylesByClass: true,
     // A Button can nest an Icon (icon + label) without becoming a full container
     // (docs/47). The dropped Icon renders inline AFTER the label via `children`.
     acceptsChildren: true,
-    renderLeaf: ({ node, value, bound, children, surface, emailSample }) => {
-      const label = bound
-        ? firstString(value, 'Button')
-        : sampleEmailText(firstString(node.props.label, 'Button'), emailSample);
-      // On email, the filled accent CTA at the @sparx/email scale (docs/93) — the
-      // recipe `st-*` classes are a storefront concern that doesn't apply to email.
-      if (surface === 'email') {
-        return (
-          <EmailButtonLeaf>
-            {label}
-            {children}
-          </EmailButtonLeaf>
-        );
-      }
-      // Authored with the Surface recipe → render the REAL button so the
-      // inspector's Color / Variant / size paint live against the canvas-scoped
-      // @sparx/site-ui sheet (docs/47). Legacy buttons (no recipe class — e.g.
-      // starter trees carrying `props.style`) keep the neutral primitive chrome.
-      if (/(^|\s)st-/.test(node.class ?? '')) {
-        return (
-          <span className={node.class}>
-            {label}
-            {children}
-          </span>
-        );
-      }
-      // Legacy tree (no recipe class — a starter/blueprint button styled via the old
-      // `props.style` enum): map that enum to the SAME recipe class the storefront
-      // now uses, so the canvas preview matches the live site exactly (docs/47 §7).
-      return (
-        <span className={legacyButtonStyleToClass(firstString(node.props.style))}>
-          {label}
-          {children}
-        </span>
-      );
-    },
   },
   {
     // A compact status / count pill — the Surface Badge (docs/46 §3.6). Same
@@ -699,17 +423,7 @@ const DEFS: ComponentDef[] = [
       props: { label: 'Badge' },
       class: 'st-badge st-c-neutral st-v-soft st-badge--sz-md',
     },
-    leafStylesByClass: true,
     acceptsChildren: true,
-    renderLeaf: ({ node, value, bound, children }) => {
-      const label = bound ? firstString(value, 'Badge') : firstString(node.props.label, 'Badge');
-      return (
-        <span className={node.class ?? 'st-badge st-c-neutral st-v-soft st-badge--sz-md'}>
-          {label}
-          {children}
-        </span>
-      );
-    },
   },
   {
     // A lucide glyph as a first-class node (docs/47). Stores a stable kebab-case
@@ -730,15 +444,6 @@ const DEFS: ComponentDef[] = [
     props: [{ key: 'name', label: 'Icon', control: 'icon' }],
     defaults: { props: { name: 'star' }, class: 'st-icon' },
     archetype: 'st-icon st-icon--sz-md',
-    leafStylesByClass: true,
-    renderLeaf: ({ node, value, bound }) => {
-      const name = (bound ? firstString(value) : '') || firstString(node.props.name, 'star');
-      return (
-        <span className={node.class ?? 'st-icon'}>
-          <DynamicIcon name={name as IconName} />
-        </span>
-      );
-    },
   },
   {
     type: 'Divider',
@@ -750,7 +455,6 @@ const DEFS: ComponentDef[] = [
     accepts: [],
     props: [],
     defaults: {},
-    renderLeaf: ({ surface }) => (surface === 'email' ? <EmailDividerLeaf /> : <Divider />),
   },
   {
     type: 'Video',
@@ -779,14 +483,6 @@ const DEFS: ComponentDef[] = [
       },
     ],
     defaults: { props: { url: '', ratio: 'wide' } },
-    renderLeaf: ({ node }) => {
-      const ratio = ((node.props.ratio as string) ?? 'wide') as 'wide' | 'square' | 'portrait';
-      const src = youtubeEmbed((node.props.url as string) ?? '');
-      // Empty → the editor's authoring prompt; with a URL → the same site-ui
-      // EmbedFrame the live site renders.
-      if (!src) return <Placeholder ratio={ratio} label="Add a YouTube URL" />;
-      return <EmbedFrame src={src} title={firstString(node.name, 'Video')} ratio={ratio} />;
-    },
   },
   {
     type: 'Map',
@@ -815,20 +511,6 @@ const DEFS: ComponentDef[] = [
       },
     ],
     defaults: { props: { query: '', ratio: 'pano' } },
-    renderLeaf: ({ node }) => {
-      const ratio = ((node.props.ratio as string) ?? 'pano') as
-        | 'wide'
-        | 'square'
-        | 'portrait'
-        | 'pano';
-      const src = mapEmbed(
-        (node.props.query as string) ?? '',
-        (node.props.embedUrl as string) ?? ''
-      );
-      if (!src)
-        return <Placeholder ratio={ratio === 'pano' ? 'wide' : ratio} label="Add a place" />;
-      return <EmbedFrame src={src} title={firstString(node.name, 'Map')} ratio={ratio} />;
-    },
   },
   {
     type: 'Stat',
@@ -843,10 +525,6 @@ const DEFS: ComponentDef[] = [
       { key: 'label', label: 'Label', control: 'text', placeholder: 'Superchargers' },
     ],
     defaults: { props: { value: '0', label: 'Label' } },
-    renderLeaf: ({ node, value, bound }) => {
-      const big = bound ? firstString(value, '—') : firstString(node.props.value, '0');
-      return <Stat value={big} label={firstString(node.props.label)} />;
-    },
   },
   {
     // A long-form marketing block — eyebrow, headline, body, optional CTA
@@ -886,25 +564,6 @@ const DEFS: ComponentDef[] = [
         ctaUrl: '',
       },
     },
-    renderLeaf: ({ node, value, bound }) => {
-      // Same site-ui composite the live site renders (docs/62) — faithful preview,
-      // including a real Button (not a dead span).
-      const obj =
-        bound && value && typeof value === 'object' && !Array.isArray(value)
-          ? (value as Record<string, unknown>)
-          : null;
-      const pick = (k: string, prop: string, dflt = '') =>
-        firstString(obj?.[k], node.props[prop], dflt);
-      return (
-        <EditorialSection
-          eyebrow={pick('eyebrow', 'eyebrow')}
-          headline={pick('headline', 'headline', 'Headline')}
-          body={pick('body', 'body')}
-          ctaLabel={pick('ctaLabel', 'ctaLabel')}
-          ctaUrl={firstString(obj?.ctaUrl, node.props.ctaUrl)}
-        />
-      );
-    },
   },
   {
     // A list of question/answer pairs (docs/51 §7). Authored inline via a simple
@@ -932,21 +591,6 @@ const DEFS: ComponentDef[] = [
         items:
           'Can I get a live site in five minutes?\nYes — that’s the design target the whole platform is built around.\n---\nWhat happens if I turn a module off?\nBilling stops on the next cycle; your data stays exactly where it was.',
       },
-    },
-    renderLeaf: ({ node, value, cardinality }) => {
-      const items =
-        cardinality === 'array' && Array.isArray(value)
-          ? (value as Record<string, unknown>[]).map((it) => ({
-              question: firstString(it.question),
-              answer: firstString(it.answer),
-            }))
-          : parseFaqItems(firstString(node.props.items));
-      const list = items.filter((it) => it.question);
-      // Placeholder while unauthored so the node stays visible + selectable.
-      const show = list.length
-        ? list
-        : [{ question: 'Your question here?', answer: 'And the answer here.' }];
-      return <FAQ items={show} />;
     },
   },
   {
@@ -986,30 +630,6 @@ const DEFS: ComponentDef[] = [
           'Theme-first | Pick a polished theme, customize what matters, publish.\nBlock editor | Drag, drop, edit. Responsive and accessible by default.\nCustom domain + SSL | Point your DNS; we provision the certificate automatically.',
       },
     },
-    renderLeaf: ({ node, value, cardinality }) => {
-      // Same site-ui composite the live site renders (docs/62): a responsive Grid
-      // of Cards that collapses to one column on a phone — the canvas now reflects
-      // that instead of a fixed, never-collapsing grid.
-      const items =
-        cardinality === 'array' && Array.isArray(value)
-          ? (value as Record<string, unknown>[]).map((it, i) => ({
-              number: firstString(it.number, String(i + 1).padStart(2, '0')),
-              title: firstString(it.title),
-              body: firstString(it.body),
-            }))
-          : parseFeatureItems(firstString(node.props.items));
-      const list = items.filter((f) => f.title);
-      // Placeholder while unauthored so the node stays visible + selectable.
-      const show = list.length
-        ? list
-        : [
-            { number: '01', title: 'Feature one', body: 'What it does.' },
-            { number: '02', title: 'Feature two', body: 'What it does.' },
-            { number: '03', title: 'Feature three', body: 'What it does.' },
-          ];
-      const cols = Math.min(4, Math.max(2, Number(node.props.columns) || 3)) as 2 | 3 | 4;
-      return <FeatureGrid cols={cols} items={show} />;
-    },
   },
 
   // ---- Data-aware (Tier 2) ----
@@ -1038,34 +658,6 @@ const DEFS: ComponentDef[] = [
       },
     ],
     defaults: { props: { ratio: 'wide' } },
-    renderLeaf: ({ node, value, cardinality }) => {
-      const ratio = ((node.props.ratio as string) ?? 'wide') as 'wide' | 'square' | 'portrait';
-      if (cardinality === 'array') {
-        const count = Array.isArray(value) ? (value as unknown[]).length : 0;
-        return (
-          <div style={{ position: 'relative', width: '100%' }}>
-            <Image ratio={ratio} />
-            <span
-              style={{
-                position: 'absolute',
-                bottom: 6,
-                right: 6,
-                background: 'rgba(0,0,0,0.55)',
-                color: '#fff',
-                fontSize: 10,
-                padding: '2px 6px',
-                borderRadius: 4,
-              }}
-            >
-              {count} images · gallery
-            </span>
-          </div>
-        );
-      }
-      if (cardinality === 'empty') return <Image ratio={ratio} />;
-      const img = asImage(value);
-      return <Image src={firstString(img?.url)} alt={firstString(img?.alt)} ratio={ratio} />;
-    },
   },
   {
     type: 'PriceTag',
@@ -1079,11 +671,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['page'],
     props: [],
     defaults: {},
-    renderLeaf: ({ value, bound }) => {
-      // Same site-ui PriceTag the live site renders (formats + themes the amount).
-      const n = bound && typeof value === 'number' ? value : null;
-      return <PriceTag amount={n} />;
-    },
   },
   {
     type: 'Signup',
@@ -1097,9 +684,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['page'],
     props: [{ key: 'cta', label: 'Button', control: 'text', placeholder: 'Subscribe' }],
     defaults: { props: { cta: 'Subscribe' } },
-    // The same site-ui form the live site renders (inert here — the canvas is a
-    // faithful preview, the storefront island owns submit). Was a bespoke mock.
-    renderLeaf: ({ node }) => <Signup cta={firstString(node.props.cta, 'Subscribe')} />,
   },
 
   // ---- Commerce buy-box (Tier 2 — interactive, docs/40 §7) ----
@@ -1132,16 +716,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['page'],
     props: [],
     defaults: {},
-    renderLeaf: () => (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        <PriceTag amount={null} />
-        <div style={{ display: 'flex', gap: '0.4rem' }}>
-          <span className="st-btn st-c-neutral st-v-soft st-btn--sz-sm">Small</span>
-          <span className="st-btn st-c-neutral st-v-soft st-btn--sz-sm">Large</span>
-        </div>
-        <span className="st-btn st-c-primary st-v-solid st-btn--sz-md">Add to cart</span>
-      </div>
-    ),
   },
   {
     type: 'VariantPicker',
@@ -1155,13 +729,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['page'],
     props: [],
     defaults: {},
-    renderLeaf: () => (
-      <div style={{ display: 'flex', gap: '0.4rem' }}>
-        <span className="st-btn st-c-neutral st-v-soft st-btn--sz-sm">Small</span>
-        <span className="st-btn st-c-neutral st-v-soft st-btn--sz-sm">Medium</span>
-        <span className="st-btn st-c-neutral st-v-soft st-btn--sz-sm">Large</span>
-      </div>
-    ),
   },
   {
     type: 'Quantity',
@@ -1175,9 +742,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['page'],
     props: [],
     defaults: {},
-    renderLeaf: () => (
-      <span style={{ display: 'inline-flex', gap: '0.6rem', alignItems: 'center' }}>− 1 +</span>
-    ),
   },
   {
     type: 'AddToCart',
@@ -1191,11 +755,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['page'],
     props: [{ key: 'label', label: 'Label', control: 'text', placeholder: 'Add to cart' }],
     defaults: { props: { label: 'Add to cart' } },
-    renderLeaf: ({ node }) => (
-      <span className="st-btn st-c-primary st-v-solid st-btn--sz-md">
-        {firstString(node.props.label, 'Add to cart')}
-      </span>
-    ),
   },
 
   // ---- Site chrome (Tier 2 — the layout shell, docs/45 §2.5) ----
@@ -1216,41 +775,6 @@ const DEFS: ComponentDef[] = [
     // Edge-to-edge: the routed page manages its own width (its sections do
     // contained/full themselves), so the outlet never constrains it.
     defaults: { box: { padding: 'none', backgroundWidth: 'full', contentWidth: 'full' } },
-    // No real page is framed in the layout editor, so render a ghosted SAMPLE
-    // page (hero + feature grid, in the tenant brand) at a realistic height. It
-    // anchors the header/footer chrome against representative content instead of a
-    // thin empty slot. Purely decorative + aria-hidden — clicking still selects the
-    // single Outlet node; on the live site the routed page mounts here.
-    renderLeaf: () => (
-      <div className="bx-outlet">
-        <span className="bx-outlet__tag">
-          <SquareDashed className="bx-outlet__tag-icon" aria-hidden />
-          Page content renders here
-        </span>
-        <div className="bx-outlet__sample" aria-hidden>
-          <div className="bx-outlet__hero">
-            <span className="bx-outlet__bar bx-outlet__bar--eyebrow" />
-            <span className="bx-outlet__bar bx-outlet__bar--title" />
-            <span className="bx-outlet__bar bx-outlet__bar--title bx-outlet__bar--title-2" />
-            <span className="bx-outlet__bar bx-outlet__bar--lede" />
-            <span className="bx-outlet__cta" />
-          </div>
-          <div className="bx-outlet__section">
-            <span className="bx-outlet__bar bx-outlet__bar--heading" />
-            <div className="bx-outlet__grid">
-              {['a', 'b', 'c'].map((k) => (
-                <div key={k} className="bx-outlet__card">
-                  <span className="bx-outlet__thumb" />
-                  <span className="bx-outlet__bar bx-outlet__bar--card-title" />
-                  <span className="bx-outlet__bar bx-outlet__bar--line" />
-                  <span className="bx-outlet__bar bx-outlet__bar--line bx-outlet__bar--short" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    ),
   },
   {
     type: 'NavMenu',
@@ -1283,31 +807,6 @@ const DEFS: ComponentDef[] = [
       },
     ],
     defaults: { props: { orientation: 'row' } },
-    renderLeaf: ({ node, value }) => {
-      const orientation = (node.props.orientation as string) ?? 'row';
-      // Node-owned links win; a legacy CMS binding (value) is the fallback during
-      // the transition (docs/57). Empty everywhere → placeholder links so the node
-      // stays visible + selectable while unauthored (the live site renders nothing).
-      const links = coerceNavLinks(node.props.links, value);
-      const source =
-        links.length > 0
-          ? links
-          : ([
-              { label: 'Home', href: '/' },
-              { label: 'Shop', href: '/products' },
-              { label: 'About', href: '/about' },
-            ] as typeof links);
-      const items = source.map((l) => ({
-        label: l.label,
-        url: l.href,
-        ...(l.openInNewTab ? { openInNewTab: true } : {}),
-      }));
-      // Same components the live site renders (docs/62): row → the responsive
-      // CollapsibleNav (inline ↔ hamburger via the st-frame container query, so
-      // the canvas device preview collapses too); stack → the static NavMenu.
-      if (orientation === 'row') return <CollapsibleNav items={items} />;
-      return <NavMenu items={items} orientation="stack" />;
-    },
   },
   {
     type: 'Logo',
@@ -1321,18 +820,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['site'],
     props: [],
     defaults: {},
-    renderLeaf: ({ value }) => {
-      // Render the real Logo (docs/62): the image when the identity has one,
-      // the brand name otherwise — so the canvas matches the live site instead
-      // of always showing the name text.
-      const identity =
-        value && typeof value === 'object' ? (value as { name?: unknown; logo?: unknown }) : null;
-      const name = firstString(identity?.name);
-      const logoRaw = identity?.logo;
-      const logo = Array.isArray(logoRaw) ? (logoRaw as unknown[])[0] : logoRaw;
-      const img = asImage(logo);
-      return <Logo name={name} src={img?.url} alt={firstString(img?.alt, name)} />;
-    },
   },
   {
     type: 'Wordmark',
@@ -1360,25 +847,6 @@ const DEFS: ComponentDef[] = [
       },
     ],
     defaults: { props: { collapse: 'mark' } },
-    renderLeaf: ({ node, value }) => {
-      // Mark + name from site.identity, collapsing per the chosen mode — the same
-      // Wordmark the live site renders, so the canvas matches production.
-      const identity =
-        value && typeof value === 'object' ? (value as { name?: unknown; logo?: unknown }) : null;
-      const name = firstString(identity?.name);
-      const logoRaw = identity?.logo;
-      const logo = Array.isArray(logoRaw) ? (logoRaw as unknown[])[0] : logoRaw;
-      const img = asImage(logo);
-      const collapse = (node.props.collapse as WordmarkCollapse) ?? 'mark';
-      return (
-        <Wordmark
-          name={name}
-          src={img?.url}
-          alt={firstString(img?.alt, name)}
-          collapse={collapse}
-        />
-      );
-    },
   },
   {
     type: 'SocialLinks',
@@ -1392,25 +860,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['site'],
     props: [],
     defaults: {},
-    renderLeaf: ({ value, cardinality }) => {
-      const raw =
-        cardinality === 'array' && Array.isArray(value) ? (value as Record<string, unknown>[]) : [];
-      const items = raw.map((it) => ({
-        platform: typeof it.platform === 'string' ? it.platform : '',
-        url: typeof it.url === 'string' ? it.url : '#',
-      }));
-      // Real SocialLinks (docs/62). Placeholders while unbound so the node stays
-      // visible + selectable (the live site renders nothing when empty).
-      const source =
-        items.length > 0
-          ? items
-          : [
-              { platform: 'Twitter', url: '#' },
-              { platform: 'Instagram', url: '#' },
-              { platform: 'LinkedIn', url: '#' },
-            ];
-      return <SocialLinks items={source} />;
-    },
   },
   {
     type: 'ThemeToggle',
@@ -1424,12 +873,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['site'],
     props: [],
     defaults: {},
-    // The light/dark switch for the header. On the live site it auto-hides unless
-    // the site's appearance policy is `toggle` — both themes offered, set in
-    // /builder/brand (apps/site builder-renderer). The canvas always shows an inert
-    // preview (no document/cookie writes) so it stays placeable + selectable while
-    // composing, and never flips the dashboard's own theme.
-    renderLeaf: () => <ThemeToggle inert />,
   },
 
   // ---- Email automation nodes (docs/93) ----
@@ -1492,16 +935,6 @@ const DEFS: ComponentDef[] = [
       },
     ],
     defaults: { props: { treatment: 'lockup', align: 'left', size: 'md' } },
-    // CONTENT from the brand (emailBrand); the node carries only the treatment.
-    renderLeaf: ({ node, emailBrand }) => (
-      <EmailWordmarkLeaf
-        treatment={(node.props.treatment as 'lockup' | 'logo' | 'name') ?? 'lockup'}
-        align={(node.props.align as 'left' | 'center') ?? 'left'}
-        size={(node.props.size as 'sm' | 'md' | 'lg') ?? 'md'}
-        logoUrl={emailBrand?.logoUrl}
-        name={emailBrand?.name}
-      />
-    ),
   },
   {
     type: 'line_item_table',
@@ -1514,12 +947,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['email'],
     props: [],
     defaults: {},
-    // Always representative rows in the canvas: the table is bound to a commerce
-    // collection (order/cart/quote/invoice.items) the send resolves per-recipient,
-    // but the editor's generic preview data isn't line-item-shaped (it'd misalign
-    // name/qty/amount). Sample rows show the real structure; the binding still
-    // drives the actual send (mirrors the FAQ / FeatureGrid placeholder approach).
-    renderLeaf: () => <EmailLineItemsLeaf items={SAMPLE_LINE_ITEMS} />,
   },
   {
     // A block shown only when its `when` path is truthy at send (an optional credit
@@ -1549,13 +976,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['email'],
     props: [],
     defaults: {},
-    // The marketing one-click unsubscribe line (the real URL resolves at dispatch).
-    renderLeaf: () => (
-      <EmailTextLeaf variant="meta">
-        You’re receiving this because you opted in.{' '}
-        <span style={{ textDecoration: 'underline' }}>Unsubscribe</span>
-      </EmailTextLeaf>
-    ),
   },
   {
     type: 'physical_address',
@@ -1568,11 +988,6 @@ const DEFS: ComponentDef[] = [
     surfaces: ['email'],
     props: [],
     defaults: {},
-    // The tenant's CAN-SPAM postal address (EmailSettings.physicalAddress at send);
-    // a representative line in the canvas so the slot is visible.
-    renderLeaf: () => (
-      <EmailTextLeaf variant="meta">123 Example St, Springfield, IL 62704</EmailTextLeaf>
-    ),
   },
 ];
 

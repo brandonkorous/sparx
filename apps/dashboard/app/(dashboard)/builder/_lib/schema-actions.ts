@@ -8,7 +8,7 @@
 // Editing a platform built-in transparently FORKS it into a tenant-owned copy
 // server-side (PUT /v1/content/types/:key/schema); the dashboard never has to
 // know whether it's editing a fork or an original. Saving revalidates the
-// builder route so the binding catalog (a live server prop on BuilderApp) picks
+// builder studio so the binding catalog (a live server prop on SiteStudio) picks
 // up the new fields on the next render without losing client editor state.
 
 import { revalidatePath } from 'next/cache';
@@ -28,7 +28,7 @@ export interface ContentTypeSchemaDto {
 async function run<T>(fn: () => Promise<T>, revalidate: boolean): Promise<ActionResult<T>> {
   try {
     const data = await fn();
-    if (revalidate) revalidatePath('/builder/page', 'layout');
+    if (revalidate) revalidatePath('/builder/studio', 'layout');
     return { ok: true, data };
   } catch (err) {
     const e = err as ApiRestError;

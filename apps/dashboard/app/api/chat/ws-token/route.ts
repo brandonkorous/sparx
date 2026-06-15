@@ -19,7 +19,11 @@ export async function GET(): Promise<NextResponse> {
   }
 
   const now = Math.floor(Date.now() / 1000);
-  const token = await new SignJWT({ tid: session.user.tenantId, role: session.user.role })
+  const token = await new SignJWT({
+    tid: session.user.tenantId,
+    role: session.user.role,
+    ev: session.user.emailVerified,
+  })
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setSubject(session.user.id)
     .setIssuedAt(now)

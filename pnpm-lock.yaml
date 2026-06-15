@@ -68,6 +68,9 @@ importers:
       '@sparx/automation-schemas':
         specifier: workspace:*
         version: link:../../packages/automation-schemas
+      '@sparx/builder-render':
+        specifier: workspace:*
+        version: link:../../packages/builder-render
       '@sparx/builder-schemas':
         specifier: workspace:*
         version: link:../../packages/builder-schemas
@@ -201,9 +204,15 @@ importers:
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
   apps/site:
     dependencies:
+      '@sparx/builder-render':
+        specifier: workspace:*
+        version: link:../../packages/builder-render
       '@sparx/builder-schemas':
         specifier: workspace:*
         version: link:../../packages/builder-schemas
@@ -601,6 +610,43 @@ importers:
       '@types/node':
         specifier: ^25.9.1
         version: 25.9.1
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
+  packages/builder-render:
+    dependencies:
+      '@sparx/builder-schemas':
+        specifier: workspace:*
+        version: link:../builder-schemas
+      '@sparx/cms-editor':
+        specifier: workspace:*
+        version: link:../cms-editor
+      '@sparx/site-ui':
+        specifier: workspace:*
+        version: link:../site-ui
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.6)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.15
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.3(@types/react@19.2.15)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.6(react@19.2.6)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3

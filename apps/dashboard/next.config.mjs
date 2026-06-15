@@ -17,6 +17,7 @@ const config = {
     '@sparx/cms-editor',
     '@sparx/cms-schemas',
     '@sparx/section-template-react',
+    '@sparx/builder-render',
   ],
   serverExternalPackages: [
     '@prisma/client',
@@ -37,6 +38,14 @@ const config = {
     return [
       // /cms/pages was the single-type list; it's now the unified content list.
       { source: '/cms/pages', destination: '/cms/content', permanent: true },
+      // Builder cutover (docs/builder/07 §2.2): the three split editors are now
+      // zones of the one unified editor at /builder/studio. /builder/page carries
+      // its `?page=<id>` deep link through automatically (no query on the
+      // destination); brand/site open the matching zone. Keeps external links,
+      // bookmarks, and the onboarding hand-off working.
+      { source: '/builder/page', destination: '/builder/studio', permanent: true },
+      { source: '/builder/brand', destination: '/builder/studio?zone=theme', permanent: true },
+      { source: '/builder/site', destination: '/builder/studio?zone=layout', permanent: true },
     ];
   },
   async rewrites() {

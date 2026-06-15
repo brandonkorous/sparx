@@ -206,6 +206,21 @@ export interface ThemeCenterProps {
   // Where the live "Site" preview iframe points (docs/49) — the active site's
   // public origin + tenant/property slugs.
   sitePreview: SitePreviewConfig;
+  // ── Unified studio embedding (docs/builder/03 §2.3) ──────────────────────────
+  // 'page' (default): the standalone /builder/brand surface — toolbar, context bar,
+  // and the live preview column. 'inspector': mounted as the Theme-node inspector
+  // inside the unified studio — controls + theme switcher only; the studio CANVAS is
+  // the live preview, so this variant reports its compiled theme up via `onCanvasCss`
+  // (no own preview) and hides the global Save/Publish (the studio toolbar owns them).
+  variant?: 'page' | 'inspector';
+  // 'inspector' only: receives the compiled theme as CSS scoped to `.bx-canvas` on
+  // every edit, so the studio's page-in-chrome canvas re-themes live as you tune the
+  // brand — the "stacked Theme › Site › Page" feel (docs/builder/03 §2.3).
+  onCanvasCss?: (css: string) => void;
+  // 'inspector' only: the studio populates this with a force-flush of the debounced
+  // brand/site/settings autosave, so the unified toolbar's Save/Publish persists the
+  // latest theme edit before it acts (parity with the page/site flushSave).
+  flushRef?: React.MutableRefObject<(() => Promise<void>) | null>;
 }
 
 export function ThemeCenter({
@@ -216,6 +231,9 @@ export function ThemeCenter({
   savedThemes: initialSaved,
   media,
   sitePreview,
+  variant = 'page',
+  onCanvasCss,
+  flushRef,
 }: ThemeCenterProps) {
   // ── Per-site identity (persists on the Property, docs/49) ──────────────────
   // The customer-facing SITE name (Property.name) — NOT the tenant's legal name.
@@ -323,6 +341,20 @@ export function ThemeCenter({
   // iframe (the storefront's PreviewBridge injects it so the real site re-themes
   // on every edit). Separate from `css` only in selector scope.
   const rootCss = React.useMemo(() => buildThemeCssV2(compiled), [compiled]);
+
+  // Unified-studio embedding (docs/builder/03 §2.3): the SAME compiled theme scoped
+  // to the studio canvas, reported up on every edit so the page-in-chrome preview
+  // re-themes live. Only computed/reported in the 'inspector' variant.
+  const canvasCss = React.useMemo(
+    () =>
+      variant === 'inspector' ? buildThemeCssV2(compiled, { rootSelector: '.bx-canvas' }) : '',
+    [compiled, variant]
+  );
+  const onCanvasCssRef = React.useRef(onCanvasCss);
+  onCanvasCssRef.current = onCanvasCss;
+  React.useEffect(() => {
+    if (variant === 'inspector') onCanvasCssRef.current?.(canvasCss);
+  }, [canvasCss, variant]);
 
   // Which preview the right column shows: the component showcase (default) or the
   // tenant's live site in an iframe (docs/49). The site origin always resolves in
@@ -778,45 +810,63 @@ export function ThemeCenter({
     onRenameSaved(id, name);
   };
 
-  // Force-flush the debounced autosave: persist brand + settings now (the live
-  // preview already reflects the edit). Mirrors the page/site "Save".
+  // Force-flush the debounced autosave: persist brand + settings + site identity
+  // now, awaitably. The standalone "Save" wraps this in a transition; the unified
+  // studio (docs/builder/03) awaits it via `flushRef` before Save/Publish so the
+  // latest theme edit lands first. Returns true on full success.
+  const flushAll = React.useCallback(async (): Promise<boolean> => {
+    setStatus('saving');
+    const cleanSocials = socials
+      .map((s) => ({ platform: s.platform.trim(), url: s.url.trim() }))
+      .filter((s) => s.platform && s.url);
+    const [b, s, identity] = await Promise.all([
+      saveBrand(),
+      updateSettings({
+        settings: {
+          tokens: draftTokens.current,
+          customCss: draftCss.current,
+          presentation,
+          activeSavedThemeId,
+        },
+      }),
+      site.id
+        ? updateSiteIdentity(site.id, {
+            name: siteName.trim() || undefined,
+            socials: cleanSocials,
+          })
+        : Promise.resolve({ ok: true } as const),
+    ]);
+    if (b.ok && s.ok && identity.ok) {
+      savedBrandRef.current = JSON.stringify(brandPatch);
+      setSavedBrandColors(pickBrandColors(brandPatch));
+      savedSettingsRef.current = JSON.stringify({ presentation, activeSavedThemeId });
+      savedSiteRef.current = JSON.stringify({ name: siteName, socials });
+      setStatus('saved');
+      return true;
+    }
+    const identityErr = 'error' in identity ? identity.error : undefined;
+    setError((b.ok ? (s.ok ? identityErr : s.error) : b.error) ?? 'Could not save.');
+    setStatus('error');
+    toast.error('Could not save your changes.');
+    return false;
+  }, [socials, saveBrand, presentation, activeSavedThemeId, site.id, siteName, brandPatch]);
+
   const onSaveNow = () => {
-    startTransition(async () => {
-      setStatus('saving');
-      const cleanSocials = socials
-        .map((s) => ({ platform: s.platform.trim(), url: s.url.trim() }))
-        .filter((s) => s.platform && s.url);
-      const [b, s, identity] = await Promise.all([
-        saveBrand(),
-        updateSettings({
-          settings: {
-            tokens: draftTokens.current,
-            customCss: draftCss.current,
-            presentation,
-            activeSavedThemeId,
-          },
-        }),
-        site.id
-          ? updateSiteIdentity(site.id, {
-              name: siteName.trim() || undefined,
-              socials: cleanSocials,
-            })
-          : Promise.resolve({ ok: true } as const),
-      ]);
-      if (b.ok && s.ok && identity.ok) {
-        savedBrandRef.current = JSON.stringify(brandPatch);
-        setSavedBrandColors(pickBrandColors(brandPatch));
-        savedSettingsRef.current = JSON.stringify({ presentation, activeSavedThemeId });
-        savedSiteRef.current = JSON.stringify({ name: siteName, socials });
-        setStatus('saved');
-      } else {
-        const identityErr = 'error' in identity ? identity.error : undefined;
-        setError((b.ok ? (s.ok ? identityErr : s.error) : b.error) ?? 'Could not save.');
-        setStatus('error');
-        toast.error('Could not save your changes.');
-      }
+    startTransition(() => {
+      void flushAll();
     });
   };
+
+  // Expose the awaitable flush to the unified studio's toolbar (docs/builder/03 §2.8).
+  const flushAllRef = React.useRef(flushAll);
+  flushAllRef.current = flushAll;
+  React.useEffect(() => {
+    if (!flushRef) return;
+    flushRef.current = () => flushAllRef.current().then(() => undefined);
+    return () => {
+      flushRef.current = null;
+    };
+  }, [flushRef]);
 
   // Publish compiles the draft theme's light tokens into the live storefront
   // (docs/51) — the same backend the storefront reads. Gated behind a confirm.
@@ -867,6 +917,196 @@ export function ThemeCenter({
     })();
   };
 
+  // The theme switcher (saved + prebuilt dropdown) + new/rename/delete — shared by
+  // the standalone toolbar and the unified-studio Theme inspector (docs/builder/03).
+  const switcherTemplates = (
+    <>
+      {renaming ? (
+        <Input
+          ref={renameInputRef}
+          size="sm"
+          className="bx-tplselect"
+          value={nameDraft}
+          aria-label="Theme name"
+          onChange={(e) => setNameDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              e.currentTarget.blur();
+            } else if (e.key === 'Escape') {
+              e.preventDefault();
+              skipRenameCommit.current = true;
+              e.currentTarget.blur();
+            }
+          }}
+          onBlur={commitRename}
+        />
+      ) : (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              aria-label="Theme"
+              disabled={pending}
+              className="bx-tplselect inline-flex h-8 items-center gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] py-1.5 pr-2.5 pl-2.5 text-xs transition-colors hover:border-[var(--color-border-strong)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <ThemeDots colors={currentColors} />
+              <span className="min-w-0 flex-1 truncate text-left font-medium">{currentName}</span>
+              <ChevronDown aria-hidden className="h-4 w-4 shrink-0 opacity-50" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="max-h-[60vh] w-[260px] overflow-y-auto">
+            <DropdownMenuRadioGroup value={switcherValue} onValueChange={onSwitcherChange}>
+              <DropdownMenuLabel>My themes</DropdownMenuLabel>
+              {savedThemes.length === 0 ? (
+                <p className="px-2 py-1.5 text-xs text-[var(--color-text-muted)]">
+                  No saved themes yet
+                </p>
+              ) : (
+                savedThemes.map((t) => (
+                  <DropdownMenuRadioItem key={t.id} value={`saved:${t.id}`}>
+                    <ThemeDots
+                      colors={swatchFor(t.basePresetKey, {
+                        primary: t.brand?.colorPrimary,
+                        accent: t.brand?.colorAccent,
+                        base100: t.presentation.light?.base100,
+                      })}
+                    />
+                    <span className="min-w-0 flex-1 truncate">{t.name}</span>
+                  </DropdownMenuRadioItem>
+                ))
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>Prebuilt</DropdownMenuLabel>
+              {THEME_LIST.map((t) => (
+                <DropdownMenuRadioItem key={t.key} value={`preset:${t.key}`}>
+                  <ThemeDots colors={swatchFor(t.key)} />
+                  <span className="min-w-0 flex-1 truncate">{t.name}</span>
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+      <button
+        type="button"
+        className="bx-newtpl"
+        aria-label="Rename this theme"
+        disabled={pending || renaming || !activeSavedThemeId}
+        onClick={startRename}
+      >
+        <Pencil aria-hidden />
+      </button>
+      <button
+        type="button"
+        className="bx-newtpl"
+        aria-label="Save current look as a new theme"
+        disabled={pending || renaming}
+        onClick={() => onSaveCurrent('Untitled theme')}
+      >
+        <Plus aria-hidden />
+      </button>
+      <button
+        type="button"
+        className="bx-newtpl"
+        aria-label="Delete this theme"
+        disabled={pending || renaming || !activeSavedThemeId}
+        onClick={() => activeSavedThemeId && onDeleteSaved(activeSavedThemeId)}
+      >
+        <Trash2 aria-hidden />
+      </button>
+    </>
+  );
+
+  // Light/Dark mode toggle — shared by both layouts.
+  const lightDarkToggle = (['light', 'dark'] as const).map((m) => {
+    const Icon = m === 'light' ? Sun : Moon;
+    return (
+      <button
+        key={m}
+        type="button"
+        className="bx-device"
+        data-on={mode === m}
+        aria-label={m === 'light' ? 'Light' : 'Dark'}
+        aria-pressed={mode === m}
+        onClick={() => setMode(m)}
+      >
+        <Icon aria-hidden />
+      </button>
+    );
+  });
+
+  // The grouped brand + theme controls — identical in both layouts.
+  const controls = (
+    <BrandThemeControls
+      siteName={siteName}
+      setSiteName={setSiteName}
+      isPrimarySite={site.isPrimary}
+      socials={socials}
+      setSocials={setSocials}
+      tagline={tagline}
+      setTagline={setTagline}
+      logoLight={logoLight}
+      setLogoLight={setLogoLight}
+      logoDark={logoDark}
+      setLogoDark={setLogoDark}
+      favicon={favicon}
+      setFavicon={setFavicon}
+      colorPrimary={colorPrimary}
+      setColorPrimary={setColorPrimary}
+      colorPrimaryForeground={colorPrimaryForeground}
+      setColorPrimaryForeground={setColorPrimaryForeground}
+      colorAccent={colorAccent}
+      setColorAccent={setColorAccent}
+      colorAccentForeground={colorAccentForeground}
+      setColorAccentForeground={setColorAccentForeground}
+      colorSecondary={colorSecondary}
+      setColorSecondary={setColorSecondary}
+      colorSecondaryForeground={colorSecondaryForeground}
+      setColorSecondaryForeground={setColorSecondaryForeground}
+      savedBrandColors={savedBrandColors}
+      fontHeading={fontHeading}
+      setFontHeading={setFontHeading}
+      fontBody={fontBody}
+      setFontBody={setFontBody}
+      tokens={tokens}
+      setTokens={setTokens}
+      themeKey={themeKey}
+      mode={mode}
+      compiledColors={compiled[mode]}
+      presentation={presentation}
+      onPresentationChange={setPresentation}
+      policy={policy}
+      onPolicyChange={onPolicyChange}
+    />
+  );
+
+  // Unified-studio Theme inspector (docs/builder/03 §2.3): the theme switcher,
+  // Light/Dark + Copy-to-mode, and the full controls — but NO Save/Publish (the
+  // studio toolbar owns them) and NO preview column (the studio CANVAS is the live
+  // preview, re-themed via `onCanvasCss`). Save status rides the studio toolbar.
+  if (variant === 'inspector') {
+    return (
+      <div className="bx-theme-ins">
+        <div className="bx-theme-ins__switch">{switcherTemplates}</div>
+        <div className="bx-theme-ins__modes">
+          <div className="bx-toolbar__devices">{lightDarkToggle}</div>
+          <Button
+            size="sm"
+            variant="ghost"
+            leftIcon={<Copy className="h-3.5 w-3.5" />}
+            onClick={onCopyToOtherMode}
+            disabled={pending}
+            title={`Copy the ${mode} palette onto ${otherMode} mode`}
+          >
+            Copy to {otherMode}
+          </Button>
+        </div>
+        {controls}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col">
       {/* Toolbar — the shared Builder shape (docs/45): theme switcher (saved +
@@ -874,128 +1114,9 @@ export function ThemeCenter({
           page/site `bx-toolbar` classes for true symmetry; /builder/brand loads
           builder.css so they resolve. */}
       <div className="bx-toolbar">
-        <div className="bx-toolbar__templates">
-          {renaming ? (
-            <Input
-              ref={renameInputRef}
-              size="sm"
-              className="bx-tplselect"
-              value={nameDraft}
-              aria-label="Theme name"
-              onChange={(e) => setNameDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  e.currentTarget.blur();
-                } else if (e.key === 'Escape') {
-                  e.preventDefault();
-                  skipRenameCommit.current = true;
-                  e.currentTarget.blur();
-                }
-              }}
-              onBlur={commitRename}
-            />
-          ) : (
-            // Custom dropdown (not a native <select>) so each row — and the
-            // trigger — can show the theme's three signature color dots. The
-            // trigger is styled to read like the page/site editors' switcher
-            // field; text color inherits from the toolbar (the dots + name carry
-            // the meaning), which also keeps it clear of the raw-Tailwind rule.
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  aria-label="Theme"
-                  disabled={pending}
-                  className="bx-tplselect inline-flex h-8 items-center gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] py-1.5 pr-2.5 pl-2.5 text-xs transition-colors hover:border-[var(--color-border-strong)] focus-visible:ring-2 focus-visible:ring-[var(--color-border-focus)] focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <ThemeDots colors={currentColors} />
-                  <span className="min-w-0 flex-1 truncate text-left font-medium">
-                    {currentName}
-                  </span>
-                  <ChevronDown aria-hidden className="h-4 w-4 shrink-0 opacity-50" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="max-h-[60vh] w-[260px] overflow-y-auto">
-                <DropdownMenuRadioGroup value={switcherValue} onValueChange={onSwitcherChange}>
-                  <DropdownMenuLabel>My themes</DropdownMenuLabel>
-                  {savedThemes.length === 0 ? (
-                    <p className="px-2 py-1.5 text-xs text-[var(--color-text-muted)]">
-                      No saved themes yet
-                    </p>
-                  ) : (
-                    savedThemes.map((t) => (
-                      <DropdownMenuRadioItem key={t.id} value={`saved:${t.id}`}>
-                        <ThemeDots
-                          colors={swatchFor(t.basePresetKey, {
-                            primary: t.brand?.colorPrimary,
-                            accent: t.brand?.colorAccent,
-                            base100: t.presentation.light?.base100,
-                          })}
-                        />
-                        <span className="min-w-0 flex-1 truncate">{t.name}</span>
-                      </DropdownMenuRadioItem>
-                    ))
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel>Prebuilt</DropdownMenuLabel>
-                  {THEME_LIST.map((t) => (
-                    <DropdownMenuRadioItem key={t.key} value={`preset:${t.key}`}>
-                      <ThemeDots colors={swatchFor(t.key)} />
-                      <span className="min-w-0 flex-1 truncate">{t.name}</span>
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-          <button
-            type="button"
-            className="bx-newtpl"
-            aria-label="Rename this theme"
-            disabled={pending || renaming || !activeSavedThemeId}
-            onClick={startRename}
-          >
-            <Pencil aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="bx-newtpl"
-            aria-label="Save current look as a new theme"
-            disabled={pending || renaming}
-            onClick={() => onSaveCurrent('Untitled theme')}
-          >
-            <Plus aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="bx-newtpl"
-            aria-label="Delete this theme"
-            disabled={pending || renaming || !activeSavedThemeId}
-            onClick={() => activeSavedThemeId && onDeleteSaved(activeSavedThemeId)}
-          >
-            <Trash2 aria-hidden />
-          </button>
-        </div>
+        <div className="bx-toolbar__templates">{switcherTemplates}</div>
 
-        <div className="bx-toolbar__devices">
-          {(['light', 'dark'] as const).map((m) => {
-            const Icon = m === 'light' ? Sun : Moon;
-            return (
-              <button
-                key={m}
-                type="button"
-                className="bx-device"
-                data-on={mode === m}
-                aria-label={m === 'light' ? 'Light' : 'Dark'}
-                aria-pressed={mode === m}
-                onClick={() => setMode(m)}
-              >
-                <Icon aria-hidden />
-              </button>
-            );
-          })}
-        </div>
+        <div className="bx-toolbar__devices">{lightDarkToggle}</div>
 
         {/* Mirror the mode you're editing onto the other one — so light and dark
             stay aligned without re-entering every surface/status colour. */}
@@ -1057,47 +1178,7 @@ export function ThemeCenter({
             the preview sits on the darker "stage" (base-200). */}
         <div className="grid gap-4 lg:grid-cols-[400px_1fr]">
           <div className="min-w-0 rounded-[var(--radius-lg)] border border-[var(--color-border-default)] bg-[var(--color-bg-surface)] p-4">
-            <BrandThemeControls
-              siteName={siteName}
-              setSiteName={setSiteName}
-              isPrimarySite={site.isPrimary}
-              socials={socials}
-              setSocials={setSocials}
-              tagline={tagline}
-              setTagline={setTagline}
-              logoLight={logoLight}
-              setLogoLight={setLogoLight}
-              logoDark={logoDark}
-              setLogoDark={setLogoDark}
-              favicon={favicon}
-              setFavicon={setFavicon}
-              colorPrimary={colorPrimary}
-              setColorPrimary={setColorPrimary}
-              colorPrimaryForeground={colorPrimaryForeground}
-              setColorPrimaryForeground={setColorPrimaryForeground}
-              colorAccent={colorAccent}
-              setColorAccent={setColorAccent}
-              colorAccentForeground={colorAccentForeground}
-              setColorAccentForeground={setColorAccentForeground}
-              colorSecondary={colorSecondary}
-              setColorSecondary={setColorSecondary}
-              colorSecondaryForeground={colorSecondaryForeground}
-              setColorSecondaryForeground={setColorSecondaryForeground}
-              savedBrandColors={savedBrandColors}
-              fontHeading={fontHeading}
-              setFontHeading={setFontHeading}
-              fontBody={fontBody}
-              setFontBody={setFontBody}
-              tokens={tokens}
-              setTokens={setTokens}
-              themeKey={themeKey}
-              mode={mode}
-              compiledColors={compiled[mode]}
-              presentation={presentation}
-              onPresentationChange={setPresentation}
-              policy={policy}
-              onPolicyChange={onPolicyChange}
-            />
+            {controls}
           </div>
 
           <div className="min-w-0 rounded-[var(--radius-lg)] bg-[var(--color-bg-subtle)] p-4 lg:sticky lg:top-4 lg:self-start">

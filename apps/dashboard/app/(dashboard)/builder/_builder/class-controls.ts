@@ -611,6 +611,8 @@ export const JUSTIFY_CONTROL: ClassControl = {
     { value: 'center', label: 'Center', token: 'justify-center' },
     { value: 'end', label: 'End', token: 'justify-end' },
     { value: 'between', label: 'Spread apart', token: 'justify-between' },
+    { value: 'around', label: 'Even around', token: 'justify-around' },
+    { value: 'evenly', label: 'Even gaps', token: 'justify-evenly' },
   ],
 };
 
@@ -622,6 +624,7 @@ export const ALIGN_ITEMS_CONTROL: ClassControl = {
     { value: 'center', label: 'Center', token: 'items-center' },
     { value: 'end', label: 'End', token: 'items-end' },
     { value: 'stretch', label: 'Fill', token: 'items-stretch' },
+    { value: 'baseline', label: 'Baseline', token: 'items-baseline' },
   ],
 };
 
@@ -797,4 +800,410 @@ export function ensureArchetypeDefaults(classStr: string, archetype: string | un
     }
   }
   return out.join(' ');
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Phase 4 — the full design surface (docs/builder/04). The controls below
+// complete the structured Tailwind vocabulary so a power user reaches ~100% of
+// the practical surface from the UI — per breakpoint and per state — instead of
+// the raw-class hatch. EVERY token here is proven to compile against the real
+// Tailwind v4 compiler by packages/surface-compile/src/phase4-utilities.test.ts
+// (docs/builder/04 §5: a control that emits a class the compiler drops is worse
+// than no control). They drive through the same single-token group model as
+// every other control, so the context selector re-prefixes them for free.
+
+// ── Typography — decoration / clamp / wrapping ────────────────────────────────
+export const TEXT_DECORATION_CONTROL: ClassControl = {
+  id: 'decoration',
+  label: 'Decoration',
+  options: [
+    { value: 'underline', label: 'Underline', token: 'underline' },
+    { value: 'line-through', label: 'Strikethrough', token: 'line-through' },
+    { value: 'overline', label: 'Overline', token: 'overline' },
+    { value: 'none', label: 'None', token: 'no-underline' },
+  ],
+};
+
+// Truncate (single line, ellipsis) and line-clamp share one control — they're
+// mutually exclusive in intent and the group model swaps cleanly between them.
+export const LINE_CLAMP_CONTROL: ClassControl = {
+  id: 'lineClamp',
+  label: 'Limit lines',
+  options: [
+    { value: '1', label: '1 line (…)', token: 'truncate' },
+    { value: '2', label: '2 lines', token: 'line-clamp-2' },
+    { value: '3', label: '3 lines', token: 'line-clamp-3' },
+    { value: '4', label: '4 lines', token: 'line-clamp-4' },
+    { value: 'none', label: 'No limit', token: 'line-clamp-none' },
+  ],
+};
+
+export const WHITESPACE_CONTROL: ClassControl = {
+  id: 'whitespace',
+  label: 'Wrapping',
+  options: [
+    { value: 'normal', label: 'Normal', token: 'whitespace-normal' },
+    { value: 'nowrap', label: 'No wrap', token: 'whitespace-nowrap' },
+    { value: 'pre-line', label: 'Keep breaks', token: 'whitespace-pre-line' },
+    { value: 'pre-wrap', label: 'Keep spaces', token: 'whitespace-pre-wrap' },
+    { value: 'pre', label: 'Exact', token: 'whitespace-pre' },
+  ],
+};
+
+export const WORD_BREAK_CONTROL: ClassControl = {
+  id: 'wordBreak',
+  label: 'Break words',
+  options: [
+    { value: 'normal', label: 'Normal', token: 'break-normal' },
+    { value: 'words', label: 'Between words', token: 'break-words' },
+    { value: 'all', label: 'Anywhere', token: 'break-all' },
+    { value: 'keep', label: 'Keep (CJK)', token: 'break-keep' },
+  ],
+};
+
+// ── Layout — flex-wrap / grid rows / flow / item distribution ─────────────────
+export const FLEX_WRAP_CONTROL: ClassControl = {
+  id: 'flexWrap',
+  label: 'Wrap',
+  options: [
+    { value: 'nowrap', label: 'No wrap', token: 'flex-nowrap' },
+    { value: 'wrap', label: 'Wrap', token: 'flex-wrap' },
+    { value: 'reverse', label: 'Wrap reverse', token: 'flex-wrap-reverse' },
+  ],
+};
+
+export const GRID_ROWS_CONTROL: ClassControl = {
+  id: 'gridRows',
+  label: 'Rows',
+  options: [1, 2, 3, 4, 5, 6].map((n) => ({
+    value: String(n),
+    label: String(n),
+    token: `grid-rows-${n}`,
+  })),
+};
+
+export const GRID_FLOW_CONTROL: ClassControl = {
+  id: 'gridFlow',
+  label: 'Fill order',
+  options: [
+    { value: 'row', label: 'Rows', token: 'grid-flow-row' },
+    { value: 'col', label: 'Columns', token: 'grid-flow-col' },
+    { value: 'row-dense', label: 'Rows (dense)', token: 'grid-flow-row-dense' },
+    { value: 'col-dense', label: 'Columns (dense)', token: 'grid-flow-col-dense' },
+  ],
+};
+
+export const JUSTIFY_ITEMS_CONTROL: ClassControl = {
+  id: 'justifyItems',
+  label: 'Item align (across)',
+  options: [
+    { value: 'start', label: 'Start', token: 'justify-items-start' },
+    { value: 'center', label: 'Center', token: 'justify-items-center' },
+    { value: 'end', label: 'End', token: 'justify-items-end' },
+    { value: 'stretch', label: 'Fill', token: 'justify-items-stretch' },
+  ],
+};
+
+export const ALIGN_CONTENT_CONTROL: ClassControl = {
+  id: 'alignContent',
+  label: 'Rows distribute',
+  options: [
+    { value: 'start', label: 'Start', token: 'content-start' },
+    { value: 'center', label: 'Center', token: 'content-center' },
+    { value: 'end', label: 'End', token: 'content-end' },
+    { value: 'between', label: 'Spread apart', token: 'content-between' },
+    { value: 'around', label: 'Even around', token: 'content-around' },
+    { value: 'stretch', label: 'Fill', token: 'content-stretch' },
+  ],
+};
+
+// ── Child layout — how a flex/grid CHILD sizes & orders itself ────────────────
+export const FLEX_GROW_CONTROL: ClassControl = {
+  id: 'grow',
+  label: 'Grow',
+  options: [
+    { value: 'grow', label: 'Fill space', token: 'grow' },
+    { value: 'none', label: "Don't grow", token: 'grow-0' },
+  ],
+};
+
+export const FLEX_SHRINK_CONTROL: ClassControl = {
+  id: 'shrink',
+  label: 'Shrink',
+  options: [
+    { value: 'shrink', label: 'Allow', token: 'shrink' },
+    { value: 'none', label: "Don't shrink", token: 'shrink-0' },
+  ],
+};
+
+export const ALIGN_SELF_CONTROL: ClassControl = {
+  id: 'self',
+  label: 'Align self',
+  options: [
+    { value: 'auto', label: 'Auto', token: 'self-auto' },
+    { value: 'start', label: 'Start', token: 'self-start' },
+    { value: 'center', label: 'Center', token: 'self-center' },
+    { value: 'end', label: 'End', token: 'self-end' },
+    { value: 'stretch', label: 'Fill', token: 'self-stretch' },
+  ],
+};
+
+// ── Background — gradient (direction + stops), fit / position / repeat ─────────
+// The gradient stops + ring/shadow colors draw from the recipe palette (the same
+// tenant `--st-*` colors); `from-transparent`/`to-transparent` enable fade-outs.
+const STOP_COLOR_OPTIONS: ClassOption[] = [
+  { value: 'primary', label: 'Primary', token: 'primary' },
+  { value: 'secondary', label: 'Secondary', token: 'secondary' },
+  { value: 'accent', label: 'Accent', token: 'accent' },
+  { value: 'neutral', label: 'Neutral', token: 'neutral' },
+  { value: 'base-100', label: 'Page', token: 'base-100' },
+  { value: 'base-200', label: 'Subtle', token: 'base-200' },
+  { value: 'base-300', label: 'Muted', token: 'base-300' },
+  { value: 'transparent', label: 'Transparent', token: 'transparent' },
+];
+const stopControl = (id: string, label: string, util: 'from' | 'via' | 'to'): ClassControl => ({
+  id,
+  label,
+  options: STOP_COLOR_OPTIONS.map((o) => ({ ...o, token: `${util}-${o.token}` })),
+});
+
+export const GRADIENT_DIRECTION_CONTROL: ClassControl = {
+  id: 'gradientDir',
+  label: 'Gradient',
+  options: [
+    { value: 'r', label: 'Left → right', token: 'bg-linear-to-r' },
+    { value: 'l', label: 'Right → left', token: 'bg-linear-to-l' },
+    { value: 'b', label: 'Top → bottom', token: 'bg-linear-to-b' },
+    { value: 't', label: 'Bottom → top', token: 'bg-linear-to-t' },
+    { value: 'br', label: 'To bottom-right', token: 'bg-linear-to-br' },
+    { value: 'bl', label: 'To bottom-left', token: 'bg-linear-to-bl' },
+    { value: 'tr', label: 'To top-right', token: 'bg-linear-to-tr' },
+    { value: 'tl', label: 'To top-left', token: 'bg-linear-to-tl' },
+    { value: 'radial', label: 'Radial', token: 'bg-radial' },
+    { value: 'conic', label: 'Conic', token: 'bg-conic' },
+  ],
+};
+export const GRADIENT_FROM_CONTROL = stopControl('gradientFrom', 'From', 'from');
+export const GRADIENT_VIA_CONTROL = stopControl('gradientVia', 'Via (optional)', 'via');
+export const GRADIENT_TO_CONTROL = stopControl('gradientTo', 'To', 'to');
+
+export const BG_SIZE_CONTROL: ClassControl = {
+  id: 'bgSize',
+  label: 'Fit',
+  options: [
+    { value: 'auto', label: 'Auto', token: 'bg-auto' },
+    { value: 'cover', label: 'Cover', token: 'bg-cover' },
+    { value: 'contain', label: 'Contain', token: 'bg-contain' },
+  ],
+};
+
+export const BG_POSITION_CONTROL: ClassControl = {
+  id: 'bgPos',
+  label: 'Position',
+  options: [
+    { value: 'center', label: 'Center', token: 'bg-center' },
+    { value: 'top', label: 'Top', token: 'bg-top' },
+    { value: 'bottom', label: 'Bottom', token: 'bg-bottom' },
+    { value: 'left', label: 'Left', token: 'bg-left' },
+    { value: 'right', label: 'Right', token: 'bg-right' },
+  ],
+};
+
+export const BG_REPEAT_CONTROL: ClassControl = {
+  id: 'bgRepeat',
+  label: 'Repeat',
+  options: [
+    { value: 'no-repeat', label: 'No repeat', token: 'bg-no-repeat' },
+    { value: 'repeat', label: 'Tile', token: 'bg-repeat' },
+    { value: 'repeat-x', label: 'Tile across', token: 'bg-repeat-x' },
+    { value: 'repeat-y', label: 'Tile down', token: 'bg-repeat-y' },
+  ],
+};
+
+// ── Effects — shadow color / ring / blend / filters / origin ──────────────────
+export const SHADOW_COLOR_CONTROL: ClassControl = {
+  id: 'shadowColor',
+  label: 'Shadow color',
+  options: [
+    { value: 'primary', label: 'Primary', token: 'shadow-primary' },
+    { value: 'accent', label: 'Accent', token: 'shadow-accent' },
+    { value: 'neutral', label: 'Neutral', token: 'shadow-neutral' },
+    { value: 'black', label: 'Black', token: 'shadow-black' },
+  ],
+};
+
+export const RING_CONTROL: ClassControl = {
+  id: 'ring',
+  label: 'Ring',
+  options: [
+    { value: 'none', label: 'None', token: 'ring-0' },
+    { value: 'thin', label: 'Hairline', token: 'ring-1' },
+    { value: 'medium', label: 'Medium', token: 'ring-2' },
+    { value: 'thick', label: 'Thick', token: 'ring-4' },
+  ],
+};
+
+export const RING_COLOR_CONTROL: ClassControl = {
+  id: 'ringColor',
+  label: 'Ring color',
+  options: [
+    { value: 'primary', label: 'Primary', token: 'ring-primary' },
+    { value: 'accent', label: 'Accent', token: 'ring-accent' },
+    { value: 'neutral', label: 'Neutral', token: 'ring-neutral' },
+    { value: 'subtle', label: 'Subtle', token: 'ring-base-300' },
+  ],
+};
+
+export const MIX_BLEND_CONTROL: ClassControl = {
+  id: 'mixBlend',
+  label: 'Blend mode',
+  options: [
+    { value: 'normal', label: 'Normal', token: 'mix-blend-normal' },
+    { value: 'multiply', label: 'Multiply', token: 'mix-blend-multiply' },
+    { value: 'screen', label: 'Screen', token: 'mix-blend-screen' },
+    { value: 'overlay', label: 'Overlay', token: 'mix-blend-overlay' },
+    { value: 'darken', label: 'Darken', token: 'mix-blend-darken' },
+    { value: 'lighten', label: 'Lighten', token: 'mix-blend-lighten' },
+    { value: 'difference', label: 'Difference', token: 'mix-blend-difference' },
+  ],
+};
+
+export const BLUR_CONTROL: ClassControl = {
+  id: 'blur',
+  label: 'Blur',
+  options: [
+    { value: 'sm', label: 'Small', token: 'blur-sm' },
+    { value: 'md', label: 'Medium', token: 'blur-md' },
+    { value: 'lg', label: 'Large', token: 'blur-lg' },
+  ],
+};
+
+export const BACKDROP_BLUR_CONTROL: ClassControl = {
+  id: 'backdropBlur',
+  label: 'Backdrop blur',
+  options: [
+    { value: 'sm', label: 'Small', token: 'backdrop-blur-sm' },
+    { value: 'md', label: 'Medium', token: 'backdrop-blur-md' },
+    { value: 'lg', label: 'Large', token: 'backdrop-blur-lg' },
+  ],
+};
+
+export const GRAYSCALE_CONTROL: ClassControl = {
+  id: 'grayscale',
+  label: 'Grayscale',
+  options: [
+    { value: 'on', label: 'On', token: 'grayscale' },
+    { value: 'off', label: 'Off', token: 'grayscale-0' },
+  ],
+};
+
+export const TRANSFORM_ORIGIN_CONTROL: ClassControl = {
+  id: 'origin',
+  label: 'Transform origin',
+  options: [
+    { value: 'center', label: 'Center', token: 'origin-center' },
+    { value: 'top', label: 'Top', token: 'origin-top' },
+    { value: 'bottom', label: 'Bottom', token: 'origin-bottom' },
+    { value: 'left', label: 'Left', token: 'origin-left' },
+    { value: 'right', label: 'Right', token: 'origin-right' },
+    { value: 'top-left', label: 'Top-left', token: 'origin-top-left' },
+  ],
+};
+
+// ── Borders — per-side width / per-corner radius (factories) ──────────────────
+// Each side / corner is its own mutually-exclusive group, so the 4-side widget
+// (inspector) can set one edge without disturbing the others. The bare `border-t`
+// is 1px; `-0/-2/-4` are the width steps. Corners reuse the same `--st-radius-*`
+// scale as the all-corner RADIUS_CONTROL.
+export const BORDER_SIDES = [
+  { key: 't', label: 'Top' },
+  { key: 'r', label: 'Right' },
+  { key: 'b', label: 'Bottom' },
+  { key: 'l', label: 'Left' },
+] as const;
+export type BorderSide = (typeof BORDER_SIDES)[number]['key'];
+
+export function borderSideControl(side: BorderSide): ClassControl {
+  return {
+    id: `border-${side}`,
+    label: BORDER_SIDES.find((s) => s.key === side)?.label ?? side,
+    options: [
+      { value: 'none', label: 'None', token: `border-${side}-0` },
+      { value: 'thin', label: 'Hairline', token: `border-${side}` },
+      { value: 'strong', label: 'Strong', token: `border-${side}-2` },
+      { value: 'thick', label: 'Thick', token: `border-${side}-4` },
+    ],
+  };
+}
+
+export const RADIUS_CORNERS = [
+  { key: 'tl', label: 'Top left' },
+  { key: 'tr', label: 'Top right' },
+  { key: 'br', label: 'Bottom right' },
+  { key: 'bl', label: 'Bottom left' },
+] as const;
+export type RadiusCorner = (typeof RADIUS_CORNERS)[number]['key'];
+
+export function radiusCornerControl(corner: RadiusCorner): ClassControl {
+  return {
+    id: `rounded-${corner}`,
+    label: RADIUS_CORNERS.find((c) => c.key === corner)?.label ?? corner,
+    options: [
+      { value: 'none', label: 'Square', token: `rounded-${corner}-none` },
+      { value: 'sm', label: 'Small', token: `rounded-${corner}-field` },
+      { value: 'md', label: 'Medium', token: `rounded-${corner}-box` },
+      { value: 'lg', label: 'Large', token: `rounded-${corner}-2xl` },
+      { value: 'pill', label: 'Pill', token: `rounded-${corner}-full` },
+    ],
+  };
+}
+
+// ── Color + opacity (text / background / border) ──────────────────────────────
+// A color utility may carry a Tailwind opacity modifier — `text-primary/75`. The
+// slash breaks the exact-token group model (readClassGroup), so color-with-opacity
+// reads/writes through these helpers: the active option is matched with OR without
+// a trailing `/NN`, and the writer re-emits `<ctx><token>` plus `/NN` when < 100.
+export interface ColorOpacityState {
+  /** The active option VALUE of `control`, or null when no color is set. */
+  value: string | null;
+  /** 0–100; 100 = fully opaque (no modifier emitted). */
+  opacity: number;
+}
+
+/** Read the active color option + its opacity modifier for a control at a layer. */
+export function readColorOpacity(
+  classStr: string | undefined,
+  control: ClassControl,
+  ctx = ''
+): ColorOpacityState {
+  for (const token of (classStr ?? '').split(/\s+/).filter(Boolean)) {
+    for (const o of control.options) {
+      const base = ctx + o.token;
+      if (token === base) return { value: o.value, opacity: 100 };
+      if (token.startsWith(`${base}/`)) {
+        const n = Number(token.slice(base.length + 1));
+        return { value: o.value, opacity: Number.isFinite(n) ? n : 100 };
+      }
+    }
+  }
+  return { value: null, opacity: 100 };
+}
+
+/** Write a color option (or clear with null) + opacity at a layer. Removes any
+ *  existing member of the group (with or without a `/NN` modifier) first. */
+export function applyColorOpacity(
+  classStr: string | undefined,
+  control: ClassControl,
+  value: string | null,
+  opacity: number,
+  ctx = ''
+): string {
+  const bases = control.options.map((o) => ctx + o.token);
+  const kept = (classStr ?? '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((t) => !bases.some((b) => t === b || t.startsWith(`${b}/`)));
+  const token = value ? control.options.find((o) => o.value === value)?.token : null;
+  if (token) kept.push(ctx + token + (opacity < 100 ? `/${opacity}` : ''));
+  return kept.join(' ');
 }

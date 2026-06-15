@@ -1,8 +1,8 @@
 import type { EntityType } from '@sparx/seo-audit';
 
 // The dashboard editor URL for an audited entity, so the SEO report can link to
-// where the fixes are actually made. The builder page editor reads `?page=<id>`
-// to open that page active on mount (builder/page/page.tsx → BuilderApp).
+// where the fixes are actually made. The unified builder studio reads `?page=<id>`
+// to open that page in the Outlet on mount (builder/studio/page.tsx → SiteStudio).
 export function entityEditorHref(type: EntityType, id: string): string {
   switch (type) {
     case 'product':
@@ -12,7 +12,7 @@ export function entityEditorHref(type: EntityType, id: string): string {
     case 'cms_page':
       return `/cms/${id}`;
     case 'builder_page':
-      return `/builder/page?page=${id}`;
+      return `/builder/studio?page=${id}`;
   }
 }
 

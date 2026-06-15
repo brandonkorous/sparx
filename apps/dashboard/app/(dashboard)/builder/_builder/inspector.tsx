@@ -26,20 +26,27 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronUp,
+  ClipboardPaste,
+  Copy,
+  CopyPlus,
   Crosshair,
   Database,
   ExternalLink,
   FileText,
   LayoutGrid,
+  Layers,
   Link2,
   Mail,
   Maximize2,
   Palette,
+  Pencil,
   Plus,
+  Rocket,
   Search,
   Sparkles,
   SlidersHorizontal,
   Square,
+  Trash2,
   Type,
   X,
   type LucideIcon,
@@ -72,25 +79,52 @@ import { compatibleRetypeTargets, getDef, type ComponentDef, type EditorSurface 
 import { IconPicker } from './icon-picker';
 import { ProseControl } from './prose-control';
 import {
+  ALIGN_CONTENT_CONTROL,
   ALIGN_ITEMS_CONTROL,
+  ALIGN_SELF_CONTROL,
   ARRANGEMENT_CONTEXTS,
   ASPECT_CONTROL,
+  BACKDROP_BLUR_CONTROL,
+  BACKGROUND_CONTROL,
+  BASE_CONTEXT,
+  BG_POSITION_CONTROL,
+  BG_REPEAT_CONTROL,
+  BG_SIZE_CONTROL,
+  BLUR_CONTROL,
   BORDER_CONTROL,
   BORDER_COLOR_CONTROL,
+  BORDER_SIDES,
   BORDER_STYLE_CONTROL,
   BOX_DISPLAY_CONTROL,
   COLOR_CONTROL,
   DIRECTION_CONTROL,
   DISPLAY_CONTROL,
+  FLEX_GROW_CONTROL,
+  FLEX_SHRINK_CONTROL,
+  FLEX_WRAP_CONTROL,
   FONT_FAMILY_CONTROL,
   FONT_SIZE_CONTROL,
   FONT_WEIGHT_CONTROL,
   GAP_CONTROL,
+  GRADIENT_DIRECTION_CONTROL,
+  GRADIENT_FROM_CONTROL,
+  GRADIENT_TO_CONTROL,
+  GRADIENT_VIA_CONTROL,
+  GRAYSCALE_CONTROL,
+  GRID_FLOW_CONTROL,
+  GRID_ROWS_CONTROL,
   JUSTIFY_CONTROL,
+  JUSTIFY_ITEMS_CONTROL,
   LEADING_CONTROL,
+  LINE_CLAMP_CONTROL,
+  MIX_BLEND_CONTROL,
   OVERFLOW_CONTROL,
   POSITION_CONTROL,
   RADIUS_CONTROL,
+  RADIUS_CORNERS,
+  RING_COLOR_CONTROL,
+  RING_CONTROL,
+  SHADOW_COLOR_CONTROL,
   SHADOW_CONTROL,
   SKIN_CONTEXTS,
   STYLE_CONTROLS,
@@ -98,27 +132,35 @@ import {
   TEXT_ALIGN_CONTROL,
   TEXT_CASE_CONTROL,
   TEXT_COLOR_CONTROL,
+  TEXT_DECORATION_CONTROL,
   TRACKING_CONTROL,
+  TRANSFORM_ORIGIN_CONTROL,
   TRANSITION_CONTROL,
   VARIANT_CONTROL,
+  WHITESPACE_CONTROL,
+  WORD_BREAK_CONTROL,
   Z_INDEX_CONTROL,
   MOTION_ENTRANCES,
   MOTION_TRIGGERS,
   activeValue,
+  applyColorOpacity,
   applyValue,
   applyValueGroup,
   applyMotion,
+  borderSideControl,
   contextPrefix,
   ensureArchetypeDefaults,
   lengthDisplay,
   lengthSuffix,
+  radiusCornerControl,
+  readColorOpacity,
   readMotion,
   readValueGroup,
-  skinControlsFor,
   type ClassControl,
   type MotionState,
   type StyleContext,
 } from './class-controls';
+import { detectClassConflicts, resolveClassConflicts } from './class-conflicts';
 
 // ── Shared controls ──────────────────────────────────────────────────────────
 
@@ -692,19 +734,23 @@ function ColumnsField({
 function LayoutCard({
   node,
   def,
+  contexts,
   onClass,
 }: {
   node: BuilderNode;
   def: ComponentDef;
+  contexts: StyleContext[];
   onClass: (value: string) => void;
 }) {
-  const [ctx, setCtx] = React.useState('base');
-  const prefix = contextPrefix(ARRANGEMENT_CONTEXTS, ctx);
+  const { prefix, selector } = useLayerContext(contexts);
   const arrange = readArrangeAs(node.class, prefix);
   const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
   const setArrange = (v: 'row' | 'stack' | 'grid') => commit(applyArrangeAs(node.class, v, prefix));
   // Columns get the richer fluid control (below); gap/alignment are simple enums.
   const detailControls = [GAP_CONTROL, JUSTIFY_CONTROL, ALIGN_ITEMS_CONTROL];
+  // Wrap is a flex concept; the grid-specific distribution controls only apply to
+  // a grid. The inspector reveals each by the node's current "Arrange as".
+  const gridControls = [GRID_FLOW_CONTROL, JUSTIFY_ITEMS_CONTROL, ALIGN_CONTENT_CONTROL];
   return (
     <Card
       icon={LayoutGrid}
@@ -712,7 +758,7 @@ function LayoutCard({
       summary={layoutSummary(node)}
       caption="How the blocks inside line up. Pick a screen size to make it responsive."
     >
-      <ContextSelect contexts={ARRANGEMENT_CONTEXTS} value={ctx} onChange={setCtx} />
+      {selector}
       <Field label="Arrange as">
         <Segmented value={arrange} options={ARRANGE_OPTIONS} onChange={setArrange} />
       </Field>
@@ -727,45 +773,84 @@ function LayoutCard({
           onClass={onClass}
         />
       ))}
+      {arrange !== 'grid' ? (
+        <StyleControlField
+          node={node}
+          def={def}
+          control={FLEX_WRAP_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      ) : null}
+      {arrange === 'grid' ? (
+        <Subgroup title="Grid detail">
+          <GridRowsField node={node} prefix={prefix} commit={commit} />
+          {gridControls.map((control) => (
+            <StyleControlField
+              key={control.id}
+              node={node}
+              def={def}
+              control={control}
+              prefix={prefix}
+              onClass={onClass}
+            />
+          ))}
+        </Subgroup>
+      ) : null}
+      <Subgroup title="Independent spacing">
+        <div className="bx-row2">
+          <LengthField
+            label="Column gap"
+            node={node}
+            prefix="gap-x"
+            ctx={prefix}
+            presets={GAP_VALUE_PRESETS}
+            commit={commit}
+          />
+          <LengthField
+            label="Row gap"
+            node={node}
+            prefix="gap-y"
+            ctx={prefix}
+            presets={GAP_VALUE_PRESETS}
+            commit={commit}
+          />
+        </div>
+      </Subgroup>
     </Card>
   );
 }
 
-// The component builder's full Appearance surface (docs/61 §5.2, Phase 3): free
-// background / text color, type, corners / border / shadow, and motion — each
-// writable at a chosen context (a screen size, an interaction state, or Dark).
-// Gated to the component builder; on the page builder a component skins via its
-// recipe (the Style panel), never per-instance here.
-function AppearanceCard({
+// Grid row count — a plain enum (rows rarely need the fluid auto-fit treatment
+// columns get). Reuses GRID_ROWS_CONTROL; the value writes `grid-rows-N` at the
+// active layer.
+function GridRowsField({
   node,
-  def,
-  onClass,
+  prefix,
+  commit,
 }: {
   node: BuilderNode;
-  def: ComponentDef;
-  onClass: (value: string) => void;
+  prefix: string;
+  commit: (cls: string) => void;
 }) {
-  const [ctx, setCtx] = React.useState('base');
-  const prefix = contextPrefix(SKIN_CONTEXTS, ctx);
-  const controls = skinControlsFor();
   return (
-    <Card
-      icon={Palette}
-      title="Appearance"
-      caption="Colors, type, edges, and motion. Pick a context to style that layer — a screen size, a state like Hover, or Dark."
-    >
-      <ContextSelect contexts={SKIN_CONTEXTS} value={ctx} onChange={setCtx} />
-      {controls.map((control) => (
-        <StyleControlField
-          key={control.id}
-          node={node}
-          def={def}
-          control={control}
-          prefix={prefix}
-          onClass={onClass}
-        />
-      ))}
-    </Card>
+    <div className="bx-field">
+      <span className="bx-field__label">{GRID_ROWS_CONTROL.label}</span>
+      <NativeSelect
+        size="sm"
+        value={activeValue(node.class, GRID_ROWS_CONTROL, prefix) ?? ''}
+        onChange={(e) =>
+          commit(applyValue(node.class, GRID_ROWS_CONTROL, e.target.value || null, prefix))
+        }
+      >
+        <option value="">Auto</option>
+        {GRID_ROWS_CONTROL.options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </NativeSelect>
+    </div>
   );
 }
 
@@ -850,6 +935,7 @@ function LengthField({
   label,
   node,
   prefix,
+  ctx = '',
   presets,
   hint,
   commit,
@@ -857,11 +943,13 @@ function LengthField({
   label: string;
   node: BuilderNode;
   prefix: string;
+  /** The responsive/state layer this value writes into (`@lg:`, `hover:`); '' = base. */
+  ctx?: string;
   presets: LengthPreset[];
   hint?: string;
   commit: (cls: string) => void;
 }) {
-  const current = readValueGroup(node.class, prefix);
+  const current = readValueGroup(node.class, prefix, ctx);
   const isPreset = presets.some((p) => p.suffix === current);
   const [forceCustom, setForceCustom] = React.useState(false);
   const custom = forceCustom || (current !== null && !isPreset);
@@ -879,7 +967,7 @@ function LengthField({
           if (v === '__custom') setForceCustom(true);
           else {
             setForceCustom(false);
-            commit(applyValueGroup(node.class, prefix, v || null));
+            commit(applyValueGroup(node.class, prefix, v || null, ctx));
           }
         }}
       >
@@ -900,7 +988,7 @@ function LengthField({
           onKeyDown={(e) => {
             if (e.key === 'Enter') e.currentTarget.blur();
           }}
-          onBlur={() => commit(applyValueGroup(node.class, prefix, lengthSuffix(text)))}
+          onBlur={() => commit(applyValueGroup(node.class, prefix, lengthSuffix(text), ctx))}
         />
       ) : null}
       {hint ? <span className="bx-field__hint">{hint}</span> : null}
@@ -943,6 +1031,7 @@ function BoxSidesField({
   node,
   shorthand,
   sides,
+  ctx = '',
   hint,
   commit,
 }: {
@@ -951,11 +1040,13 @@ function BoxSidesField({
   shorthand: string;
   /** [top, right, bottom, left] prefixes, e.g. ['pt','pr','pb','pl']. */
   sides: [string, string, string, string];
+  /** The responsive layer this writes into (`@lg:`); '' = base. */
+  ctx?: string;
   hint?: string;
   commit: (cls: string) => void;
 }) {
-  const shVal = readValueGroup(node.class, shorthand);
-  const sideVals = sides.map((s) => readValueGroup(node.class, s)) as [
+  const shVal = readValueGroup(node.class, shorthand, ctx);
+  const sideVals = sides.map((s) => readValueGroup(node.class, s, ctx)) as [
     string | null,
     string | null,
     string | null,
@@ -967,26 +1058,26 @@ function BoxSidesField({
 
   const commitLinked = (suffix: string | null) => {
     let c = node.class ?? '';
-    sides.forEach((s) => (c = applyValueGroup(c, s, null)));
-    commit(applyValueGroup(c, shorthand, suffix));
+    sides.forEach((s) => (c = applyValueGroup(c, s, null, ctx)));
+    commit(applyValueGroup(c, shorthand, suffix, ctx));
   };
   const commitSide = (i: number, suffix: string | null) => {
-    let c = applyValueGroup(node.class, shorthand, null);
-    c = applyValueGroup(c, sides[i]!, suffix);
+    let c = applyValueGroup(node.class, shorthand, null, ctx);
+    c = applyValueGroup(c, sides[i]!, suffix, ctx);
     commit(c);
   };
   const toggleLink = () => {
     let c = node.class ?? '';
     if (linked) {
       const v = shVal;
-      c = applyValueGroup(c, shorthand, null);
-      sides.forEach((s) => (c = applyValueGroup(c, s, v)));
+      c = applyValueGroup(c, shorthand, null, ctx);
+      sides.forEach((s) => (c = applyValueGroup(c, s, v, ctx)));
       commit(c);
       setLinked(false);
     } else {
       const v = sideVals[0];
-      sides.forEach((s) => (c = applyValueGroup(c, s, null)));
-      commit(applyValueGroup(c, shorthand, v));
+      sides.forEach((s) => (c = applyValueGroup(c, s, null, ctx)));
+      commit(applyValueGroup(c, shorthand, v, ctx));
       setLinked(true);
     }
   };
@@ -1045,8 +1136,16 @@ function BoxSidesField({
 
 // Opacity — a slider + live readout, on the Tailwind opacity scale (steps of 5).
 // 100 clears the class (fully opaque is the default).
-function OpacitySlider({ node, commit }: { node: BuilderNode; commit: (cls: string) => void }) {
-  const raw = readValueGroup(node.class, 'opacity');
+function OpacitySlider({
+  node,
+  ctx = '',
+  commit,
+}: {
+  node: BuilderNode;
+  ctx?: string;
+  commit: (cls: string) => void;
+}) {
+  const raw = readValueGroup(node.class, 'opacity', ctx);
   const value = raw && /^\d+$/.test(raw) ? Number(raw) : 100;
   return (
     <div className="bx-field">
@@ -1062,7 +1161,7 @@ function OpacitySlider({ node, commit }: { node: BuilderNode; commit: (cls: stri
           aria-label="Opacity"
           onChange={(e) => {
             const n = Number(e.target.value);
-            commit(applyValueGroup(node.class, 'opacity', n === 100 ? null : String(n)));
+            commit(applyValueGroup(node.class, 'opacity', n === 100 ? null : String(n), ctx));
           }}
         />
         <output className="bx-slider__out">{value}%</output>
@@ -1082,6 +1181,287 @@ function Subgroup({ title, children }: { title: string; children: React.ReactNod
       </summary>
       <div className="bx-subgroup__body">{children}</div>
     </details>
+  );
+}
+
+// The per-card responsive/state layer state + its pill. A card calls this to get
+// the active variant `prefix` and the ContextSelect to render; the prefix flows
+// into every control below so a screen size / Hover / Dark edits that layer only
+// (docs/builder/04 §2.3). `contexts` is surface-scoped by the Inspector — email
+// collapses to [base] (mail clients strip state/breakpoint variants).
+function useLayerContext(contexts: StyleContext[]): {
+  prefix: string;
+  selector: React.ReactNode;
+} {
+  const [ctx, setCtx] = React.useState('base');
+  const prefix = contextPrefix(contexts, ctx);
+  const selector =
+    contexts.length > 1 ? (
+      <ContextSelect contexts={contexts} value={ctx} onChange={setCtx} />
+    ) : null;
+  return { prefix, selector };
+}
+
+// A color utility with an optional opacity modifier (`text-primary/75`,
+// docs/builder/04 §2.1). The color is an enum (`control`); the opacity is the
+// Tailwind alpha scale. Writes through applyColorOpacity so the slash round-trips
+// and the group stays single-token at its layer. Opacity is hidden until a color
+// is chosen (there's nothing to fade otherwise).
+const OPACITY_STEPS = [100, 90, 75, 50, 25, 10] as const;
+function ColorOpacityField({
+  node,
+  def,
+  control,
+  ctx = '',
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  control: ClassControl;
+  ctx?: string;
+  onClass: (value: string) => void;
+}) {
+  const state = readColorOpacity(node.class, control, ctx);
+  const commit = (value: string | null, opacity: number) =>
+    onClass(
+      ensureArchetypeDefaults(
+        applyColorOpacity(node.class, control, value, opacity, ctx),
+        def.defaults.class
+      )
+    );
+  return (
+    <div className="bx-field bx-coloropacity">
+      <span className="bx-field__label">{control.label}</span>
+      <div className="bx-coloropacity__row">
+        <NativeSelect
+          size="sm"
+          value={state.value ?? ''}
+          aria-label={control.label}
+          onChange={(e) => commit(e.target.value || null, state.opacity)}
+        >
+          <option value="">Default</option>
+          {control.options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </NativeSelect>
+        {state.value ? (
+          <NativeSelect
+            size="sm"
+            aria-label={`${control.label} opacity`}
+            value={String(state.opacity)}
+            onChange={(e) => commit(state.value, Number(e.target.value))}
+          >
+            {OPACITY_STEPS.map((n) => (
+              <option key={n} value={n}>
+                {n === 100 ? 'Solid' : `${n}%`}
+              </option>
+            ))}
+          </NativeSelect>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+// A 4-edge enum widget (per-side border width / per-corner radius) with a link-all
+// toggle, mirroring BoxSidesField but for ENUM groups. Linked → the shorthand
+// control (`border` / `rounded`) drives all edges and the per-edge tokens are
+// cleared; unlinked → each edge writes its own token and the shorthand is cleared,
+// so the two never fight. Values map across by option `value` on link/unlink.
+function QuadEnumField({
+  label,
+  node,
+  def,
+  ctx = '',
+  shorthand,
+  edges,
+  onClass,
+}: {
+  label: string;
+  node: BuilderNode;
+  def: ComponentDef;
+  ctx?: string;
+  shorthand: ClassControl;
+  /** [top/right/bottom/left] or [tl/tr/br/bl] controls, with display labels. */
+  edges: { label: string; control: ClassControl }[];
+  onClass: (value: string) => void;
+}) {
+  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
+  const shVal = activeValue(node.class, shorthand, ctx);
+  const edgeVals = edges.map((e) => activeValue(node.class, e.control, ctx));
+  const anyEdge = edgeVals.some((v) => v !== null);
+  const [linked, setLinked] = React.useState(!anyEdge);
+
+  const setShorthand = (value: string | null) => {
+    let c = node.class ?? '';
+    edges.forEach((e) => (c = applyValue(c, e.control, null, ctx)));
+    commit(applyValue(c, shorthand, value, ctx));
+  };
+  const setEdge = (i: number, value: string | null) => {
+    let c = applyValue(node.class, shorthand, null, ctx);
+    c = applyValue(c, edges[i]!.control, value, ctx);
+    commit(c);
+  };
+  const toggleLink = () => {
+    let c = node.class ?? '';
+    if (linked) {
+      edges.forEach((e) => (c = applyValue(c, e.control, shVal, ctx)));
+      commit(applyValue(c, shorthand, null, ctx));
+      setLinked(false);
+    } else {
+      const v = edgeVals[0] ?? null;
+      edges.forEach((e) => (c = applyValue(c, e.control, null, ctx)));
+      commit(applyValue(c, shorthand, v, ctx));
+      setLinked(true);
+    }
+  };
+
+  return (
+    <div className="bx-field">
+      <div className="bx-quad__head">
+        <span className="bx-field__label">{label}</span>
+        <button
+          type="button"
+          className="bx-quad__link"
+          data-on={linked}
+          aria-pressed={linked}
+          title={linked ? 'Edges linked — edit one, all change' : 'Edges independent'}
+          onClick={toggleLink}
+        >
+          <Link2 aria-hidden /> {linked ? 'Linked' : 'Per edge'}
+        </button>
+      </div>
+      {linked ? (
+        <NativeSelect
+          size="sm"
+          aria-label={label}
+          value={shVal ?? ''}
+          onChange={(e) => setShorthand(e.target.value || null)}
+        >
+          <option value="">Default</option>
+          {shorthand.options.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </NativeSelect>
+      ) : (
+        <div className="bx-quad">
+          {edges.map((e, i) => (
+            <label key={e.label} className="bx-quad__edge">
+              <span>{e.label}</span>
+              <NativeSelect
+                size="sm"
+                aria-label={`${label} — ${e.label}`}
+                value={edgeVals[i] ?? ''}
+                onChange={(ev) => setEdge(i, ev.target.value || null)}
+              >
+                <option value="">—</option>
+                {e.control.options.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </NativeSelect>
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// The static background IMAGE (docs/61) — authored as node PROPS (bgImage URL +
+// fit / focal point / overlay), rendered to inline style by the canvas + live
+// renderer's `backgroundStyleFor`. Deliberately NOT a class: an arbitrary
+// bracketed CSS-url background utility is blocked by the compile allowlist
+// (docs/61 §8 — exfiltration), so a media-backed image rides a prop instead,
+// exactly as it already renders.
+const BG_FOCAL_OPTIONS = [
+  { value: 'center', label: 'Center' },
+  { value: 'top', label: 'Top' },
+  { value: 'bottom', label: 'Bottom' },
+  { value: 'left', label: 'Left' },
+  { value: 'right', label: 'Right' },
+  { value: 'top-left', label: 'Top-left' },
+  { value: 'top-right', label: 'Top-right' },
+  { value: 'bottom-left', label: 'Bottom-left' },
+  { value: 'bottom-right', label: 'Bottom-right' },
+];
+const BG_OVERLAY_OPTIONS = [
+  { value: 'none', label: 'None' },
+  { value: 'dark', label: 'Dark scrim' },
+  { value: 'light', label: 'Light scrim' },
+  { value: 'gradient', label: 'Gradient scrim' },
+];
+function BackgroundImageField({
+  node,
+  onProp,
+}: {
+  node: BuilderNode;
+  onProp: (key: string, value: unknown) => void;
+}) {
+  const url = typeof node.props.bgImage === 'string' ? node.props.bgImage : '';
+  const [text, setText] = React.useState(url);
+  React.useEffect(() => setText(url), [url]);
+  const fit = node.props.bgFit === 'contain' ? 'contain' : 'cover';
+  const position = typeof node.props.bgPosition === 'string' ? node.props.bgPosition : 'center';
+  const overlay = typeof node.props.bgOverlay === 'string' ? node.props.bgOverlay : 'none';
+  return (
+    <div className="bx-field">
+      <span className="bx-field__label">Image</span>
+      <Input
+        size="sm"
+        value={text}
+        placeholder="Image URL — https://…/photo.jpg"
+        aria-label="Background image URL"
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') e.currentTarget.blur();
+        }}
+        onBlur={() => onProp('bgImage', text.trim() || undefined)}
+      />
+      {url ? (
+        <div className="bx-row2">
+          <Field label="Fit">
+            <NativeSelect size="sm" value={fit} onChange={(e) => onProp('bgFit', e.target.value)}>
+              <option value="cover">Cover</option>
+              <option value="contain">Contain</option>
+            </NativeSelect>
+          </Field>
+          <Field label="Focal point">
+            <NativeSelect
+              size="sm"
+              value={position}
+              onChange={(e) => onProp('bgPosition', e.target.value)}
+            >
+              {BG_FOCAL_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </NativeSelect>
+          </Field>
+        </div>
+      ) : null}
+      {url ? (
+        <Field label="Overlay">
+          <NativeSelect
+            size="sm"
+            value={overlay}
+            onChange={(e) => onProp('bgOverlay', e.target.value)}
+          >
+            {BG_OVERLAY_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </NativeSelect>
+        </Field>
+      ) : null}
+    </div>
   );
 }
 
@@ -1139,6 +1519,45 @@ const ROTATE_PRESETS: LengthPreset[] = [
   { label: '90°', suffix: '90' },
 ];
 const MOVE_PRESETS: LengthPreset[] = [{ label: 'None', suffix: '0' }];
+// Spacing scale steps for the independent gap / filter-intensity value fields.
+const GAP_VALUE_PRESETS: LengthPreset[] = [
+  { label: 'None', suffix: '0' },
+  { label: 'S', suffix: '2' },
+  { label: 'M', suffix: '4' },
+  { label: 'L', suffix: '6' },
+  { label: 'XL', suffix: '8' },
+];
+const FILTER_PRESETS: LengthPreset[] = [
+  { label: '50%', suffix: '50' },
+  { label: '75%', suffix: '75' },
+  { label: '100%', suffix: '100' },
+  { label: '110%', suffix: '110' },
+  { label: '125%', suffix: '125' },
+  { label: '150%', suffix: '150' },
+];
+const SKEW_PRESETS: LengthPreset[] = [
+  { label: '0°', suffix: '0' },
+  { label: '3°', suffix: '3' },
+  { label: '6°', suffix: '6' },
+  { label: '12°', suffix: '12' },
+];
+const DURATION_PRESETS: LengthPreset[] = [
+  { label: 'Fast (150ms)', suffix: '150' },
+  { label: 'Default (300ms)', suffix: '300' },
+  { label: 'Slow (500ms)', suffix: '500' },
+  { label: 'Slower (700ms)', suffix: '700' },
+];
+const ORDER_PRESETS: LengthPreset[] = [
+  { label: 'First', suffix: 'first' },
+  { label: 'Last', suffix: 'last' },
+  { label: 'None', suffix: 'none' },
+];
+const BASIS_PRESETS: LengthPreset[] = [
+  { label: 'Auto', suffix: 'auto' },
+  { label: 'Full', suffix: 'full' },
+  { label: 'Half', suffix: '1/2' },
+  { label: 'Third', suffix: '1/3' },
+];
 
 // ── Section summaries (collapsed-card previews) ─────────────────────────────────
 function sizeSummary(node: BuilderNode): string {
@@ -1172,33 +1591,68 @@ function typographySummary(node: BuilderNode): string {
       .join(' · ') || 'Inherited'
   );
 }
+function backgroundSummary(node: BuilderNode): string {
+  if (activeValue(node.class, GRADIENT_DIRECTION_CONTROL)) return 'Gradient';
+  if (typeof node.props.bgImage === 'string' && node.props.bgImage) return 'Image';
+  return activeLabel(node, BACKGROUND_CONTROL) ?? 'None';
+}
+function effectsSummary(node: BuilderNode): string {
+  return (
+    [
+      activeLabel(node, SHADOW_CONTROL),
+      activeLabel(node, RING_CONTROL),
+      readValueGroup(node.class, 'opacity') ? 'Opacity' : null,
+    ]
+      .filter(Boolean)
+      .join(' · ') || 'None'
+  );
+}
 
 // ── Power-user style sections ───────────────────────────────────────────────────
 
-// Size — width / height (preset + Custom), a Min & max reveal, aspect, overflow.
-// Leaves also get Display (block/inline/hidden); a container's display is the
-// Layout card's "Arrange as".
+// Size — width / height (preset + Custom), a Min & max reveal, aspect, overflow,
+// and (for a flex/grid child) a Child-layout subgroup. Leaves also get Display
+// (block/inline/hidden); a container's display is the Layout card's "Arrange as".
+// Per-breakpoint via the "Editing for" pill (docs/builder/04 §2.3).
 function SizeCard({
   node,
   def,
+  contexts,
   onClass,
 }: {
   node: BuilderNode;
   def: ComponentDef;
+  contexts: StyleContext[];
   onClass: (value: string) => void;
 }) {
+  const { prefix, selector } = useLayerContext(contexts);
   const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
   return (
     <Card icon={Maximize2} title="Size" summary={sizeSummary(node)} defaultOpen={false}>
+      {selector}
       {def.kind === 'leaf' ? (
-        <StyleControlField node={node} def={def} control={BOX_DISPLAY_CONTROL} onClass={onClass} />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={BOX_DISPLAY_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
       ) : null}
       <div className="bx-row2">
-        <LengthField label="Width" node={node} prefix="w" presets={WIDTH_PRESETS} commit={commit} />
+        <LengthField
+          label="Width"
+          node={node}
+          prefix="w"
+          ctx={prefix}
+          presets={WIDTH_PRESETS}
+          commit={commit}
+        />
         <LengthField
           label="Height"
           node={node}
           prefix="h"
+          ctx={prefix}
           presets={HEIGHT_PRESETS}
           commit={commit}
         />
@@ -1209,6 +1663,7 @@ function SizeCard({
             label="Min width"
             node={node}
             prefix="min-w"
+            ctx={prefix}
             presets={MINW_PRESETS}
             commit={commit}
           />
@@ -1216,6 +1671,7 @@ function SizeCard({
             label="Max width"
             node={node}
             prefix="max-w"
+            ctx={prefix}
             presets={MAXW_PRESETS}
             commit={commit}
           />
@@ -1225,6 +1681,7 @@ function SizeCard({
             label="Min height"
             node={node}
             prefix="min-h"
+            ctx={prefix}
             presets={MINH_PRESETS}
             commit={commit}
           />
@@ -1232,37 +1689,102 @@ function SizeCard({
             label="Max height"
             node={node}
             prefix="max-h"
+            ctx={prefix}
             presets={MAXH_PRESETS}
             commit={commit}
           />
         </div>
       </Subgroup>
       <div className="bx-row2">
-        <StyleControlField node={node} def={def} control={ASPECT_CONTROL} onClass={onClass} />
-        <StyleControlField node={node} def={def} control={OVERFLOW_CONTROL} onClass={onClass} />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={ASPECT_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={OVERFLOW_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
       </div>
+      {/* Child layout — how this block sizes / orders itself inside a flex or grid
+          parent (grow, shrink, basis, order, align-self). Harmless on a non-flex
+          parent, so shown for any node rather than threading the parent's display. */}
+      <Subgroup title="Child layout (in a flex/grid parent)">
+        <div className="bx-row2">
+          <StyleControlField
+            node={node}
+            def={def}
+            control={FLEX_GROW_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={FLEX_SHRINK_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+        </div>
+        <div className="bx-row2">
+          <LengthField
+            label="Basis"
+            node={node}
+            prefix="basis"
+            ctx={prefix}
+            presets={BASIS_PRESETS}
+            commit={commit}
+          />
+          <LengthField
+            label="Order"
+            node={node}
+            prefix="order"
+            ctx={prefix}
+            presets={ORDER_PRESETS}
+            commit={commit}
+          />
+        </div>
+        <StyleControlField
+          node={node}
+          def={def}
+          control={ALIGN_SELF_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </Subgroup>
     </Card>
   );
 }
 
-// Spacing — padding (inner) + margin (outer) as 4-side box-model widgets.
+// Spacing — padding (inner) + margin (outer) as 4-side box-model widgets, per
+// breakpoint via the "Editing for" pill.
 function SpacingCard({
   node,
   def,
+  contexts,
   onClass,
 }: {
   node: BuilderNode;
   def: ComponentDef;
+  contexts: StyleContext[];
   onClass: (value: string) => void;
 }) {
+  const { prefix, selector } = useLayerContext(contexts);
   const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
   return (
     <Card icon={Box} title="Spacing" summary={spacingSummary(node)} defaultOpen={false}>
+      {selector}
       <BoxSidesField
         label="Inner spacing (padding)"
         node={node}
         shorthand="p"
         sides={['pt', 'pr', 'pb', 'pl']}
+        ctx={prefix}
         hint="A step (4 = 1rem) or a value (16px). Link applies one value to all sides."
         commit={commit}
       />
@@ -1271,6 +1793,7 @@ function SpacingCard({
         node={node}
         shorthand="m"
         sides={['mt', 'mr', 'mb', 'ml']}
+        ctx={prefix}
         commit={commit}
       />
     </Card>
@@ -1282,17 +1805,27 @@ function SpacingCard({
 function PositionCard({
   node,
   def,
+  contexts,
   onClass,
 }: {
   node: BuilderNode;
   def: ComponentDef;
+  contexts: StyleContext[];
   onClass: (value: string) => void;
 }) {
+  const { prefix, selector } = useLayerContext(contexts);
   const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
-  const positioned = activeValue(node.class, POSITION_CONTROL) !== null;
+  const positioned = activeValue(node.class, POSITION_CONTROL, prefix) !== null;
   return (
     <Card icon={Crosshair} title="Position" summary={positionSummary(node)} defaultOpen={false}>
-      <StyleControlField node={node} def={def} control={POSITION_CONTROL} onClass={onClass} />
+      {selector}
+      <StyleControlField
+        node={node}
+        def={def}
+        control={POSITION_CONTROL}
+        prefix={prefix}
+        onClass={onClass}
+      />
       {positioned ? (
         <div className="bx-reveal">
           <span className="bx-field__label">Offsets</span>
@@ -1301,6 +1834,7 @@ function PositionCard({
               label="Top"
               node={node}
               prefix="top"
+              ctx={prefix}
               presets={OFFSET_PRESETS}
               commit={commit}
             />
@@ -1308,6 +1842,7 @@ function PositionCard({
               label="Right"
               node={node}
               prefix="right"
+              ctx={prefix}
               presets={OFFSET_PRESETS}
               commit={commit}
             />
@@ -1317,6 +1852,7 @@ function PositionCard({
               label="Bottom"
               node={node}
               prefix="bottom"
+              ctx={prefix}
               presets={OFFSET_PRESETS}
               commit={commit}
             />
@@ -1324,58 +1860,206 @@ function PositionCard({
               label="Left"
               node={node}
               prefix="left"
+              ctx={prefix}
               presets={OFFSET_PRESETS}
               commit={commit}
             />
           </div>
-          <StyleControlField node={node} def={def} control={Z_INDEX_CONTROL} onClass={onClass} />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={Z_INDEX_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
         </div>
       ) : null}
     </Card>
   );
 }
 
-// Borders — width / style / color / corners. Page builder only (the component
-// builder's Appearance card already owns the full skin set).
-function BordersCard({
+// Background — a free fill color (+ opacity), a gradient (direction + stops), a
+// static image (props → inline style), and how it fits / positions / repeats.
+// Per state / breakpoint via the pill (a hover or @lg background). The recipe
+// (Style card) stays the everyday default; this is the escape from its ceiling.
+function BackgroundCard({
   node,
   def,
+  contexts,
   onClass,
+  onProp,
 }: {
   node: BuilderNode;
   def: ComponentDef;
+  contexts: StyleContext[];
   onClass: (value: string) => void;
+  onProp: (key: string, value: unknown) => void;
 }) {
+  const { prefix, selector } = useLayerContext(contexts);
+  const hasGradient = activeValue(node.class, GRADIENT_DIRECTION_CONTROL, prefix) !== null;
   return (
-    <Card icon={Square} title="Borders" summary={bordersSummary(node)} defaultOpen={false}>
-      <div className="bx-row2">
-        <StyleControlField node={node} def={def} control={BORDER_CONTROL} onClass={onClass} />
-        <StyleControlField node={node} def={def} control={BORDER_STYLE_CONTROL} onClass={onClass} />
-      </div>
-      <StyleControlField node={node} def={def} control={BORDER_COLOR_CONTROL} onClass={onClass} />
-      <StyleControlField node={node} def={def} control={RADIUS_CONTROL} onClass={onClass} />
+    <Card icon={Palette} title="Background" summary={backgroundSummary(node)} defaultOpen={false}>
+      {selector}
+      <ColorOpacityField
+        node={node}
+        def={def}
+        control={BACKGROUND_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+      />
+      <Subgroup title="Gradient">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={GRADIENT_DIRECTION_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        {hasGradient ? (
+          <>
+            <div className="bx-row2">
+              <StyleControlField
+                node={node}
+                def={def}
+                control={GRADIENT_FROM_CONTROL}
+                prefix={prefix}
+                onClass={onClass}
+              />
+              <StyleControlField
+                node={node}
+                def={def}
+                control={GRADIENT_TO_CONTROL}
+                prefix={prefix}
+                onClass={onClass}
+              />
+            </div>
+            <StyleControlField
+              node={node}
+              def={def}
+              control={GRADIENT_VIA_CONTROL}
+              prefix={prefix}
+              onClass={onClass}
+            />
+          </>
+        ) : null}
+      </Subgroup>
+      <Subgroup title="Image">
+        <BackgroundImageField node={node} onProp={onProp} />
+        <div className="bx-row2">
+          <StyleControlField
+            node={node}
+            def={def}
+            control={BG_SIZE_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={BG_POSITION_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+        </div>
+        <StyleControlField
+          node={node}
+          def={def}
+          control={BG_REPEAT_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </Subgroup>
     </Card>
   );
 }
 
-// Effects — opacity, shadow, transform (scale / rotate / move), transition. Page
-// builder only (skin lives in the component builder's Appearance card).
+// Borders — width / style / color (+ opacity) / corners, plus per-side width and
+// per-corner radius widgets. Per state / breakpoint via the pill.
+function BordersCard({
+  node,
+  def,
+  contexts,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  contexts: StyleContext[];
+  onClass: (value: string) => void;
+}) {
+  const { prefix, selector } = useLayerContext(contexts);
+  return (
+    <Card icon={Square} title="Borders" summary={bordersSummary(node)} defaultOpen={false}>
+      {selector}
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={BORDER_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={BORDER_STYLE_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <ColorOpacityField
+        node={node}
+        def={def}
+        control={BORDER_COLOR_CONTROL}
+        ctx={prefix}
+        onClass={onClass}
+      />
+      <StyleControlField
+        node={node}
+        def={def}
+        control={RADIUS_CONTROL}
+        prefix={prefix}
+        onClass={onClass}
+      />
+      <Subgroup title="Per edge & corner">
+        <QuadEnumField
+          label="Border width"
+          node={node}
+          def={def}
+          ctx={prefix}
+          shorthand={BORDER_CONTROL}
+          edges={BORDER_SIDES.map((s) => ({ label: s.label, control: borderSideControl(s.key) }))}
+          onClass={onClass}
+        />
+        <QuadEnumField
+          label="Corner radius"
+          node={node}
+          def={def}
+          ctx={prefix}
+          shorthand={RADIUS_CONTROL}
+          edges={RADIUS_CORNERS.map((c) => ({
+            label: c.label,
+            control: radiusCornerControl(c.key),
+          }))}
+          onClass={onClass}
+        />
+      </Subgroup>
+    </Card>
+  );
+}
+
 // Style — the everyday "how it looks" card: the recipe axes (Color + Emphasis),
-// then the effects (opacity / shadow / transform / transition). `showEffects` is
-// off in the component builder, whose Appearance card already owns the full skin
-// set (with responsive/state layers) — so they aren't offered twice.
+// written to `node.class`. The recipe is the COMMON default and stays open; the
+// free fills / type / edges / effects live in their own (collapsed) cards so the
+// default view never crowds (docs/builder/04 §2.5). Identical on every surface.
 function StyleCard({
   node,
   def,
   onClass,
-  showEffects,
 }: {
   node: BuilderNode;
   def: ComponentDef;
   onClass: (value: string) => void;
-  showEffects: boolean;
 }) {
-  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
   return (
     <Card icon={Palette} title="Style" summary={styleSummary(node)}>
       {STYLE_CONTROLS.map((control) => (
@@ -1387,91 +2071,353 @@ function StyleCard({
           onClass={onClass}
         />
       ))}
-      {showEffects ? (
-        <>
-          <OpacitySlider node={node} commit={commit} />
-          <StyleControlField node={node} def={def} control={SHADOW_CONTROL} onClass={onClass} />
-          <StyleControlField node={node} def={def} control={TRANSITION_CONTROL} onClass={onClass} />
-          <Subgroup title="Transform">
-            <div className="bx-row2">
-              <LengthField
-                label="Scale"
-                node={node}
-                prefix="scale"
-                presets={SCALE_PRESETS}
-                commit={commit}
-              />
-              <LengthField
-                label="Rotate"
-                node={node}
-                prefix="rotate"
-                presets={ROTATE_PRESETS}
-                commit={commit}
-              />
-            </div>
-            <div className="bx-row2">
-              <LengthField
-                label="Move X"
-                node={node}
-                prefix="translate-x"
-                presets={MOVE_PRESETS}
-                commit={commit}
-              />
-              <LengthField
-                label="Move Y"
-                node={node}
-                prefix="translate-y"
-                presets={MOVE_PRESETS}
-                commit={commit}
-              />
-            </div>
-          </Subgroup>
-        </>
-      ) : null}
+    </Card>
+  );
+}
+
+// Effects — opacity, shadow (+ color), ring (+ color), blend mode, filters,
+// transforms, transitions. Per state / breakpoint via the pill (a hover ring, a
+// hover scale). The transform / transition pieces pair naturally with a Hover or
+// Focus context for interactive effects.
+function EffectsCard({
+  node,
+  def,
+  contexts,
+  onClass,
+}: {
+  node: BuilderNode;
+  def: ComponentDef;
+  contexts: StyleContext[];
+  onClass: (value: string) => void;
+}) {
+  const { prefix, selector } = useLayerContext(contexts);
+  const commit = (c: string) => onClass(ensureArchetypeDefaults(c, def.defaults.class));
+  return (
+    <Card icon={Sparkles} title="Effects" summary={effectsSummary(node)} defaultOpen={false}>
+      {selector}
+      <OpacitySlider node={node} ctx={prefix} commit={commit} />
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={SHADOW_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={SHADOW_COLOR_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <div className="bx-row2">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={RING_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={RING_COLOR_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </div>
+      <StyleControlField
+        node={node}
+        def={def}
+        control={MIX_BLEND_CONTROL}
+        prefix={prefix}
+        onClass={onClass}
+      />
+      <Subgroup title="Filters">
+        <div className="bx-row2">
+          <StyleControlField
+            node={node}
+            def={def}
+            control={BLUR_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={BACKDROP_BLUR_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+        </div>
+        <div className="bx-row2">
+          <LengthField
+            label="Brightness"
+            node={node}
+            prefix="brightness"
+            ctx={prefix}
+            presets={FILTER_PRESETS}
+            commit={commit}
+          />
+          <LengthField
+            label="Contrast"
+            node={node}
+            prefix="contrast"
+            ctx={prefix}
+            presets={FILTER_PRESETS}
+            commit={commit}
+          />
+        </div>
+        <div className="bx-row2">
+          <LengthField
+            label="Saturation"
+            node={node}
+            prefix="saturate"
+            ctx={prefix}
+            presets={FILTER_PRESETS}
+            commit={commit}
+          />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={GRAYSCALE_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+        </div>
+      </Subgroup>
+      <Subgroup title="Transform">
+        <div className="bx-row2">
+          <LengthField
+            label="Scale"
+            node={node}
+            prefix="scale"
+            ctx={prefix}
+            presets={SCALE_PRESETS}
+            commit={commit}
+          />
+          <LengthField
+            label="Rotate"
+            node={node}
+            prefix="rotate"
+            ctx={prefix}
+            presets={ROTATE_PRESETS}
+            commit={commit}
+          />
+        </div>
+        <div className="bx-row2">
+          <LengthField
+            label="Move X"
+            node={node}
+            prefix="translate-x"
+            ctx={prefix}
+            presets={MOVE_PRESETS}
+            commit={commit}
+          />
+          <LengthField
+            label="Move Y"
+            node={node}
+            prefix="translate-y"
+            ctx={prefix}
+            presets={MOVE_PRESETS}
+            commit={commit}
+          />
+        </div>
+        <div className="bx-row2">
+          <LengthField
+            label="Skew X"
+            node={node}
+            prefix="skew-x"
+            ctx={prefix}
+            presets={SKEW_PRESETS}
+            commit={commit}
+          />
+          <LengthField
+            label="Skew Y"
+            node={node}
+            prefix="skew-y"
+            ctx={prefix}
+            presets={SKEW_PRESETS}
+            commit={commit}
+          />
+        </div>
+        <StyleControlField
+          node={node}
+          def={def}
+          control={TRANSFORM_ORIGIN_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+      </Subgroup>
+      <Subgroup title="Transition">
+        <StyleControlField
+          node={node}
+          def={def}
+          control={TRANSITION_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <div className="bx-row2">
+          <LengthField
+            label="Duration"
+            node={node}
+            prefix="duration"
+            ctx={prefix}
+            presets={DURATION_PRESETS}
+            commit={commit}
+          />
+          <LengthField
+            label="Delay"
+            node={node}
+            prefix="delay"
+            ctx={prefix}
+            presets={DURATION_PRESETS}
+            commit={commit}
+          />
+        </div>
+      </Subgroup>
     </Card>
   );
 }
 
 // Typography — font / size / weight / line-height / spacing / alignment / case /
-// color. Page builder only; shown for text-bearing leaves.
+// color (+ opacity), plus decoration / clamp / wrapping. Per state / breakpoint
+// via the pill. Shown for text-bearing nodes.
 function TypographyCard({
   node,
   def,
+  contexts,
   onClass,
 }: {
   node: BuilderNode;
   def: ComponentDef;
+  contexts: StyleContext[];
   onClass: (value: string) => void;
 }) {
+  const { prefix, selector } = useLayerContext(contexts);
   return (
     <Card icon={Type} title="Typography" summary={typographySummary(node)} defaultOpen={false}>
+      {selector}
       <div className="bx-row2">
-        <StyleControlField node={node} def={def} control={FONT_FAMILY_CONTROL} onClass={onClass} />
-        <StyleControlField node={node} def={def} control={FONT_SIZE_CONTROL} onClass={onClass} />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={FONT_FAMILY_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={FONT_SIZE_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
       </div>
       <div className="bx-row2">
-        <StyleControlField node={node} def={def} control={FONT_WEIGHT_CONTROL} onClass={onClass} />
-        <StyleControlField node={node} def={def} control={LEADING_CONTROL} onClass={onClass} />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={FONT_WEIGHT_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={LEADING_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
       </div>
       <div className="bx-row2">
-        <StyleControlField node={node} def={def} control={TEXT_ALIGN_CONTROL} onClass={onClass} />
-        <StyleControlField node={node} def={def} control={TRACKING_CONTROL} onClass={onClass} />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={TEXT_ALIGN_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={TRACKING_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
       </div>
       <div className="bx-row2">
-        <StyleControlField node={node} def={def} control={TEXT_CASE_CONTROL} onClass={onClass} />
-        <StyleControlField node={node} def={def} control={TEXT_COLOR_CONTROL} onClass={onClass} />
+        <StyleControlField
+          node={node}
+          def={def}
+          control={TEXT_CASE_CONTROL}
+          prefix={prefix}
+          onClass={onClass}
+        />
+        <ColorOpacityField
+          node={node}
+          def={def}
+          control={TEXT_COLOR_CONTROL}
+          ctx={prefix}
+          onClass={onClass}
+        />
       </div>
+      <Subgroup title="Decoration & wrapping">
+        <div className="bx-row2">
+          <StyleControlField
+            node={node}
+            def={def}
+            control={TEXT_DECORATION_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={LINE_CLAMP_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+        </div>
+        <div className="bx-row2">
+          <StyleControlField
+            node={node}
+            def={def}
+            control={WHITESPACE_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+          <StyleControlField
+            node={node}
+            def={def}
+            control={WORD_BREAK_CONTROL}
+            prefix={prefix}
+            onClass={onClass}
+          />
+        </div>
+      </Subgroup>
     </Card>
   );
 }
 
-// Custom CSS — the raw class escape hatch (the final power-user out).
+// Custom CSS — the raw class escape hatch (the final power-user out), now a
+// ROUND-TRIPPING tool (docs/builder/04 §2.4): it shows the same `node.class` the
+// structured controls read/write, flags tokens that fight a structured group, and
+// offers a one-click tidy that dedupes those groups while preserving every
+// unrecognized class exactly.
 function CustomCssCard({ node, onClass }: { node: BuilderNode; onClass: (value: string) => void }) {
+  const conflicts = detectClassConflicts(node.class);
   return (
     <Card
       icon={SlidersHorizontal}
       title="Custom CSS"
-      summary="Raw classes"
+      summary={
+        conflicts.length
+          ? `${conflicts.length} conflict${conflicts.length > 1 ? 's' : ''}`
+          : 'Raw classes'
+      }
       defaultOpen={false}
       muted
     >
@@ -1487,6 +2433,25 @@ function CustomCssCard({ node, onClass }: { node: BuilderNode; onClass: (value: 
           onChange={(e) => onClass(e.target.value)}
         />
       </Field>
+      {conflicts.length ? (
+        <div className="bx-conflicts" role="status">
+          <p className="bx-conflicts__head">
+            These classes fight a control above — the structured controls win:
+          </p>
+          <ul className="bx-conflicts__list">
+            {conflicts.map((c, i) => (
+              <li key={i}>{c.message}</li>
+            ))}
+          </ul>
+          <button
+            type="button"
+            className="bx-conflicts__fix"
+            onClick={() => onClass(resolveClassConflicts(node.class))}
+          >
+            Tidy up — keep the first of each
+          </button>
+        </div>
+      ) : null}
     </Card>
   );
 }
@@ -2134,12 +3099,156 @@ function PageSeoPanel({
   );
 }
 
-export function LayoutSettings({ name }: { name: string }) {
+/** A layout in the catalog, reduced to what the settings panel needs. */
+export interface LayoutSettingsItem {
+  id: string;
+  name: string;
+  isActive: boolean;
+  published: boolean;
+}
+
+// The Site-layout zone's settings home (docs/builder/07 §1) — the layout CATALOG
+// the unified studio folds in from the retired /builder/site editor: switch the
+// edited layout, create / rename / delete one, and make a published layout live.
+// Mirrors the page catalog's capabilities (which live in the toolbar), kept here
+// because a tenant switches layouts far less often than pages. Import/export rides
+// the toolbar (zone-aware), alongside the page's.
+export function LayoutSettings({
+  name,
+  layouts,
+  editingId,
+  busy = false,
+  onSelect,
+  onNew,
+  onRename,
+  onDelete,
+  onActivate,
+}: {
+  name: string;
+  layouts: LayoutSettingsItem[];
+  editingId: string;
+  busy?: boolean;
+  onSelect: (id: string) => void;
+  onNew: () => void;
+  onRename: (name: string) => void;
+  onDelete: () => void;
+  onActivate: () => void;
+}) {
+  const editing = layouts.find((l) => l.id === editingId);
+  // Inline rename: the switcher swaps to a text input. Enter/blur commits, Esc
+  // cancels — self-contained here so the toolbar (page-centric) stays untouched.
+  const [renaming, setRenaming] = React.useState(false);
+  const [draft, setDraft] = React.useState(name);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  React.useEffect(() => setDraft(name), [name]);
+  React.useEffect(() => {
+    if (renaming) inputRef.current?.select();
+  }, [renaming]);
+
+  const commitRename = () => {
+    setRenaming(false);
+    const next = draft.trim();
+    if (next && next !== name) onRename(next);
+  };
+
   return (
     <div className="bx-inspector">
       <PanelHead icon={LayoutGrid} title={name} subtitle="The chrome that wraps every page" />
       <div className="bx-ins-stack">
-        <Card icon={LayoutGrid} title="Site layout">
+        <Card
+          icon={LayoutGrid}
+          title="Layouts"
+          caption="Switch which layout you’re editing, or manage the catalog. Exactly one layout is live at a time — the chrome every published page renders inside."
+        >
+          <Field label="Editing">
+            {renaming ? (
+              <Input
+                ref={inputRef}
+                size="sm"
+                value={draft}
+                aria-label="Layout name"
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.currentTarget.blur();
+                  else if (e.key === 'Escape') {
+                    setDraft(name);
+                    setRenaming(false);
+                  }
+                }}
+                onBlur={commitRename}
+              />
+            ) : (
+              <NativeSelect
+                size="sm"
+                value={editingId}
+                aria-label="Layout being edited"
+                onChange={(e) => onSelect(e.target.value)}
+              >
+                {layouts.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                    {l.isActive ? ' · Live' : ''}
+                  </option>
+                ))}
+              </NativeSelect>
+            )}
+          </Field>
+          <div className="bx-ins-bulk">
+            <button
+              type="button"
+              className="bx-ins-bulk__btn"
+              disabled={busy || renaming}
+              onClick={() => setRenaming(true)}
+            >
+              <Pencil className="h-3.5 w-3.5" aria-hidden /> Rename
+            </button>
+            <button
+              type="button"
+              className="bx-ins-bulk__btn"
+              disabled={busy || renaming}
+              onClick={onNew}
+            >
+              <Plus className="h-3.5 w-3.5" aria-hidden /> New
+            </button>
+            <button
+              type="button"
+              className="bx-ins-bulk__btn bx-ins-bulk__btn--danger"
+              disabled={busy || renaming || layouts.length <= 1 || editing?.isActive}
+              title={
+                editing?.isActive
+                  ? 'The live layout can’t be deleted — make another layout live first'
+                  : layouts.length <= 1
+                    ? 'Keep at least one layout'
+                    : undefined
+              }
+              onClick={onDelete}
+            >
+              <Trash2 className="h-3.5 w-3.5" aria-hidden /> Delete
+            </button>
+          </div>
+          {editing?.isActive ? (
+            <p className="bx-default__hint">
+              ✓ This layout is live — it’s the chrome every published page renders inside.
+            </p>
+          ) : (
+            <div className="bx-default">
+              <button
+                type="button"
+                className="bx-default__set"
+                disabled={busy || !editing?.published}
+                onClick={onActivate}
+              >
+                <Rocket className="h-3.5 w-3.5" aria-hidden /> Make this layout live
+              </button>
+              <p className="bx-default__hint">
+                {editing?.published
+                  ? 'Publishing the site already makes the layout you’re viewing live. Use this to switch the live layout without republishing.'
+                  : 'Publish this layout before it can go live.'}
+              </p>
+            </div>
+          )}
+        </Card>
+        <Card icon={LayoutGrid} title="About this layout">
           <p className="bx-card__caption">
             The header and footer that wrap every page. The <strong>Page content</strong> block
             marks where each routed page renders; everything around it persists across navigation.
@@ -2522,6 +3631,164 @@ export interface InspectorProps {
   onBind: (path: string | null) => void;
   onProp: (key: string, value: unknown) => void;
   onRetype: (targetType: string) => void;
+  // ── Multi-select + clipboard (docs/builder/05 §2.2 / §2.5) ──────────────────
+  /** How many nodes are selected. >1 switches the inspector to the bulk panel:
+   *  only the universal style controls (which fan out to the whole selection) plus
+   *  bulk actions. Defaults to 1 (the full single-node inspector). */
+  selectionCount?: number;
+  /** Duplicate the selection in place (Cmd/Ctrl+D). */
+  onDuplicate?: () => void;
+  /** Delete the whole selection (confirm-gated). */
+  onDelete?: () => void;
+  /** Copy the selection to the clipboard. */
+  onCopy?: () => void;
+  /** Copy the primary node's styles (its full class). */
+  onCopyStyles?: () => void;
+  /** Paste the copied styles onto every selected node. */
+  onPasteStyles?: () => void;
+  /** Whether a style has been copied (enables Paste styles). */
+  canPasteStyles?: boolean;
+}
+
+// The bulk-edit panel (docs/builder/05 §2.2) shown when more than one node is
+// selected: only the UNIVERSAL style controls — driven by the primary node, but
+// every change fans out to the whole selection via `onClass` — plus the bulk
+// actions (copy / duplicate / paste-styles / delete). Type-specific controls
+// (content, data binding, rename, retype) are hidden because they aren't valid
+// across a mixed selection ("a mixed selection shows only controls valid for all").
+function MultiSelectPanel({
+  node,
+  surface,
+  count,
+  onClass,
+  onProp,
+  onBack,
+  onCopy,
+  onDuplicate,
+  onDelete,
+  onPasteStyles,
+  canPasteStyles,
+}: {
+  node: BuilderNode;
+  surface: EditorSurface;
+  count: number;
+  onClass: (value: string) => void;
+  onProp: (key: string, value: unknown) => void;
+  onBack: () => void;
+  onCopy?: () => void;
+  onDuplicate?: () => void;
+  onDelete?: () => void;
+  onPasteStyles?: () => void;
+  canPasteStyles?: boolean;
+}) {
+  const def = getDef(node.type);
+  const skinContexts = surface === 'email' ? [BASE_CONTEXT] : SKIN_CONTEXTS;
+  const arrangeContexts = surface === 'email' ? [BASE_CONTEXT] : ARRANGEMENT_CONTEXTS;
+  return (
+    <div className="bx-inspector" key="__multi">
+      <button type="button" className="bx-ins-back" onClick={onBack}>
+        <ChevronLeft aria-hidden /> Clear selection
+      </button>
+      <header className="bx-ins-head">
+        <div className="bx-ins-head__row">
+          <span className="bx-ins-head__icon">
+            <Layers aria-hidden />
+          </span>
+          <div className="bx-ins-head__titles">
+            <h3>{count} blocks selected</h3>
+            <span className="bx-ins-head__sub">Style changes apply to all of them</span>
+          </div>
+        </div>
+        <div className="bx-ins-bulk">
+          {onCopy ? (
+            <button type="button" className="bx-ins-bulk__btn" onClick={onCopy}>
+              <Copy aria-hidden /> Copy
+            </button>
+          ) : null}
+          {onDuplicate ? (
+            <button type="button" className="bx-ins-bulk__btn" onClick={onDuplicate}>
+              <CopyPlus aria-hidden /> Duplicate
+            </button>
+          ) : null}
+          {canPasteStyles && onPasteStyles ? (
+            <button type="button" className="bx-ins-bulk__btn" onClick={onPasteStyles}>
+              <ClipboardPaste aria-hidden /> Paste styles
+            </button>
+          ) : null}
+          {onDelete ? (
+            <button
+              type="button"
+              className="bx-ins-bulk__btn bx-ins-bulk__btn--danger"
+              onClick={onDelete}
+            >
+              <Trash2 aria-hidden /> Delete
+            </button>
+          ) : null}
+        </div>
+      </header>
+      {def ? (
+        <div className="bx-ins-stack">
+          <StyleCard node={node} def={def} onClass={onClass} />
+          {def.kind === 'container' ? (
+            <LayoutCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+          ) : null}
+          <BackgroundCard
+            node={node}
+            def={def}
+            contexts={skinContexts}
+            onClass={onClass}
+            onProp={onProp}
+          />
+          <TypographyCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+          <BordersCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+          <EffectsCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+          <SizeCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+          <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+          <PositionCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+          {surface !== 'email' ? <MotionCard node={node} def={def} onClass={onClass} /> : null}
+          <CustomCssCard node={node} onClass={onClass} />
+        </div>
+      ) : (
+        <p className="bx-inspector__tip">These blocks don’t share editable styles.</p>
+      )}
+    </div>
+  );
+}
+
+/** The copy/paste-styles row in the single-node header (docs/builder/05 §2.5) —
+ *  lift a block's full class and drop it onto another. */
+function StyleClipRow({
+  onCopyStyles,
+  onPasteStyles,
+  canPasteStyles,
+}: {
+  onCopyStyles?: () => void;
+  onPasteStyles?: () => void;
+  canPasteStyles?: boolean;
+}) {
+  if (!onCopyStyles) return null;
+  return (
+    <div className="bx-ins-styleclip">
+      <button
+        type="button"
+        className="bx-ins-styleclip__btn"
+        onClick={onCopyStyles}
+        title="Copy this block’s styles"
+      >
+        <Copy aria-hidden /> Copy styles
+      </button>
+      {canPasteStyles && onPasteStyles ? (
+        <button
+          type="button"
+          className="bx-ins-styleclip__btn"
+          onClick={onPasteStyles}
+          title="Paste the copied styles onto this block"
+        >
+          <ClipboardPaste aria-hidden /> Paste styles
+        </button>
+      ) : null}
+    </div>
+  );
 }
 
 export function Inspector({
@@ -2542,9 +3809,34 @@ export function Inspector({
   onBind,
   onProp,
   onRetype,
+  selectionCount = 1,
+  onDuplicate,
+  onDelete,
+  onCopy,
+  onCopyStyles,
+  onPasteStyles,
+  canPasteStyles,
 }: InspectorProps) {
   if (!node) {
     return <>{settings}</>;
+  }
+  // More than one node selected → the bulk panel (universal styles + bulk actions).
+  if (selectionCount > 1) {
+    return (
+      <MultiSelectPanel
+        node={node}
+        surface={surface}
+        count={selectionCount}
+        onClass={onClass}
+        onProp={onProp}
+        onBack={onBack}
+        onCopy={onCopy}
+        onDuplicate={onDuplicate}
+        onDelete={onDelete}
+        onPasteStyles={onPasteStyles}
+        canPasteStyles={canPasteStyles}
+      />
+    );
   }
   // A `custom:*` placement (docs/53 P-B) has its own panel — identity, version
   // pin, configurable fields, and a link to edit the component itself.
@@ -2567,6 +3859,13 @@ export function Inspector({
 
   const TypeIcon = def.icon;
   const hasContent = def.props.length > 0 || def.bindable;
+  // The responsive/state layers a card may target. Email collapses to base only —
+  // mail clients strip `hover:`/`@md:`/`dark:` variants, so offering them would
+  // silently no-op (docs/builder/04 §2.3). The SAME full card set renders on
+  // page / site / component surfaces — the advanced surface is reachable
+  // everywhere, never gated to the component builder (docs/builder/04 §2.2 / §2.5).
+  const skinContexts = surface === 'email' ? [BASE_CONTEXT] : SKIN_CONTEXTS;
+  const arrangeContexts = surface === 'email' ? [BASE_CONTEXT] : ARRANGEMENT_CONTEXTS;
   // `key={node.id}` resets each card's open-state + the data-source toggle when a
   // different node is selected (so defaults are consistent per selection), while
   // edits to the SAME node preserve them.
@@ -2611,6 +3910,11 @@ export function Inspector({
             <Boxes aria-hidden /> Save as component
           </button>
         ) : null}
+        <StyleClipRow
+          onCopyStyles={onCopyStyles}
+          onPasteStyles={onPasteStyles}
+          canPasteStyles={canPasteStyles}
+        />
       </header>
 
       <div className="bx-ins-stack">
@@ -2630,32 +3934,35 @@ export function Inspector({
           </Card>
         ) : null}
 
-        {/* Style — Color + Emphasis, plus the effects (opacity/shadow/transform/
-            transition) on the page builder. In the component builder the Appearance
-            card owns the skin set, so Style stays Color + Emphasis (showEffects off). */}
-        <StyleCard node={node} def={def} onClass={onClass} showEffects={!slotEditor} />
-
-        {/* The full Appearance/skin surface (free color/type/edges + per
-            breakpoint/state/dark context) authors only in the component builder
-            (slotEditor present); on the page builder skin comes from the recipe,
-            not per-instance re-skinning (docs/61 §5.2). */}
-        {slotEditor ? <AppearanceCard node={node} def={def} onClass={onClass} /> : null}
+        {/* Style — the recipe axes (Color + Emphasis): the everyday default,
+            kept open. The free fills / type / edges / effects are their own
+            collapsed cards below — Advanced is the escape from the recipe ceiling,
+            not the default (docs/builder/04 §2.5). */}
+        <StyleCard node={node} def={def} onClass={onClass} />
 
         {/* Containers arrange their children (docs/61 §5.2). Leaves arrange
             nothing, so the card is hidden. */}
-        {def.kind === 'container' ? <LayoutCard node={node} def={def} onClass={onClass} /> : null}
-
-        {/* Power-user style sections — collapsed by default. Size / Spacing /
-            Position apply everywhere; Typography / Borders only on the page builder
-            (the component builder's Appearance card owns the full skin set, so they'd
-            duplicate it there). Effects now live in the Style card. */}
-        <SizeCard node={node} def={def} onClass={onClass} />
-        <SpacingCard node={node} def={def} onClass={onClass} />
-        <PositionCard node={node} def={def} onClass={onClass} />
-        {!slotEditor && def.kind === 'leaf' ? (
-          <TypographyCard node={node} def={def} onClass={onClass} />
+        {def.kind === 'container' ? (
+          <LayoutCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
         ) : null}
-        {!slotEditor ? <BordersCard node={node} def={def} onClass={onClass} /> : null}
+
+        {/* The full design surface — collapsed by default, reachable on EVERY
+            surface, each per breakpoint / state via its "Editing for" pill
+            (docs/builder/04 §2.1–2.3). */}
+        <BackgroundCard
+          node={node}
+          def={def}
+          contexts={skinContexts}
+          onClass={onClass}
+          onProp={onProp}
+        />
+        <TypographyCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+        <BordersCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+        <EffectsCard node={node} def={def} contexts={skinContexts} onClass={onClass} />
+
+        <SizeCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+        <SpacingCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
+        <PositionCard node={node} def={def} contexts={arrangeContexts} onClass={onClass} />
 
         {/* Motion (docs/61 §9) — entrance on every node. Hidden on the email
             surface (mail clients strip classes, so an entrance is inert there). */}

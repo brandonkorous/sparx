@@ -1,8 +1,10 @@
 // Server-side client for talking to services/api-rest from the dashboard.
 //
 // Every call requires an authenticated staff session. We sign a short-lived
-// HS256 JWT carrying {sub, tid, role} using the shared
+// HS256 JWT carrying {sub, tid, role, ev} using the shared
 // SPARX_INTERNAL_JWT_SECRET; api-rest verifies it with the same secret. The
+// `ev` (email-verified) claim lets api-rest gate sensitive actions without a
+// DB read the users-table RLS would block (see verified-email-guard.ts). The
 // dashboard never exposes the secret or the token to the browser — all calls
 // happen from server components or server actions.
 //
@@ -47,6 +49,7 @@ async function signToken(session: SparxSession): Promise<string> {
   return new SignJWT({
     tid: session.user.tenantId,
     role: session.user.role,
+    ev: session.user.emailVerified,
   })
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setSubject(session.user.id)

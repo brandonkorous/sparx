@@ -1,0 +1,78 @@
+'use client';
+
+// The Builder render RUNTIME boundary (docs/builder/02 §2.3).
+//
+// One render path serves two surfaces — the live storefront and the editor
+// canvas — that differ only in their terminal SIDE EFFECTS. A live `AddToCart`
+// must hit the cart API; the same component in the canvas must NOT (it's a
+// preview). Rather than fork the component (the divergence this phase removes),
+// the interactive islands read their effects from this injected runtime:
+//
+//   · LIVE (apps/site): a <BuilderRuntimeProvider> high in the storefront tree
+//     bridges these calls to the real <CartProvider>/<CustomerProvider> hooks,
+//     which stay in apps/site. See apps/site/components/storefront-builder-runtime.
+//   · EDIT (apps/dashboard canvas): no provider → the no-op default runs, so the
+//     real BuyBox/Signup render and behave (variant selection, qty, validation)
+//     yet never mutate a cart or capture a contact.
+//
+// The capture-phase interaction shield on the canvas root only `preventDefault`s
+// (stops link navigation / form submission); it does NOT stop a React onClick, so
+// a click-shield alone can't neutralize an `addToCart()` handler — hence this
+// explicit runtime + the EditModeContext below for effects a click can't reach
+// (a carousel autoplay timer).
+
+import * as React from 'react';
+
+/** The terminal side effects the interactive islands perform. Live wires these to
+ *  the storefront cart/capture APIs; the canvas leaves them as no-ops. */
+export interface BuilderRuntime {
+  /** Add a resolved variant to the active cart (and surface the cart drawer). */
+  addToCart: (variantId: string, quantity: number) => Promise<void>;
+  /** Subscribe an email address to the tenant's list via the public capture endpoint. */
+  subscribeEmail: (email: string) => Promise<void>;
+}
+
+// The canvas default: every effect is an inert resolved promise, so an island that
+// fires one in edit mode simply does nothing (no provider required).
+const NOOP_RUNTIME: BuilderRuntime = {
+  addToCart: () => Promise.resolve(),
+  subscribeEmail: () => Promise.resolve(),
+};
+
+const BuilderRuntimeContext = React.createContext<BuilderRuntime>(NOOP_RUNTIME);
+
+/** Read the active runtime — the real storefront effects under a provider, the
+ *  no-op default otherwise (the editor canvas). Always safe to call. */
+export function useBuilderRuntime(): BuilderRuntime {
+  return React.useContext(BuilderRuntimeContext);
+}
+
+/** Wraps a live render tree to supply real storefront effects. Mounted once in
+ *  apps/site, inside the cart/customer providers it bridges to. */
+export function BuilderRuntimeProvider({
+  runtime,
+  children,
+}: {
+  runtime: BuilderRuntime;
+  children: React.ReactNode;
+}) {
+  return (
+    <BuilderRuntimeContext.Provider value={runtime}>{children}</BuilderRuntimeContext.Provider>
+  );
+}
+
+// `true` ⇒ this tree is the editor CANVAS, not a live page. Islands read it to
+// drop effects a click-shield can't stop — chiefly a carousel autoplay timer that
+// would fight the author trying to select a slide. Default `false` ⇒ live.
+const EditModeContext = React.createContext(false);
+
+/** Whether the surrounding tree is the editor canvas (vs a live page). */
+export function useEditMode(): boolean {
+  return React.useContext(EditModeContext);
+}
+
+/** Marks its subtree as the editor canvas, so interactive islands suppress the
+ *  ambient effects (timers, observers) a click-shield can't neutralize. */
+export function EditModeProvider({ children }: { children: React.ReactNode }) {
+  return <EditModeContext.Provider value={true}>{children}</EditModeContext.Provider>;
+}

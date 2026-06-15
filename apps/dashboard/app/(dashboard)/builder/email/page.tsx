@@ -1,17 +1,8 @@
 import type { Metadata } from 'next';
-import type { BindingCatalog, BuilderEmailDto } from '@sparx/builder-schemas';
-import {
-  brandIdentityOverlay,
-  buildThemeCssV2,
-  compileThemeForTenant,
-  compileTokens,
-  DEFAULT_THEME_KEY,
-} from '@sparx/site-themes';
+import { buildThemeCssV2, compileThemeForTenant } from '@sparx/site-themes';
 
-import { getBrand, getConfig, getTenant, publicMediaUrl } from '../_brand/lib/api';
-import type { BrandDto } from '../_brand/lib/types';
-import { getEmailBindingCatalog, listEmails, listEmailsForProperty } from '../_lib/api';
-import { resolveSiteScope, type BrandOverride } from '@/lib/sites';
+import { getBrand, getConfig } from '../_brand/lib/api';
+import { loadEmailSurfaceData } from '../_lib/email-surface-data';
 import { EmailBuilderApp } from '../_builder/email-builder-app';
 import '../builder.css';
 // The Surface RECIPE — same canvas-scoped sheet the page/site editors load, so a
@@ -22,11 +13,10 @@ import '@sparx/site-ui/styles.canvas.css';
 // contained body tree, with the same editor brain as /builder/page. A tenant
 // keeps a catalog of emails; the list endpoint seeds the starter set on first use.
 //
-// Like the page editor, we compile the tenant brand to CSS scoped to the canvas so
-// the body previews in the real brand. The editor receives the EMAIL binding
-// catalog (docs/52 §7) — recipient / order / cart / loyalty / products / promotion
-// plus the tenant's CMS collections — so nodes can bind to per-recipient and
-// per-send data (the true render resolves it at preview/send, docs/52 §9 P4).
+// The per-site brand merge, the email-exact canvas theme, and the sender identity
+// are loaded by the shared `loadEmailSurfaceData` (also used by the unified studio's
+// Email sibling surface — docs/builder/03 §2.7), so that load-bearing logic lives
+// in one place.
 
 export const metadata: Metadata = {
   title: 'Builder · Email',
@@ -48,158 +38,9 @@ async function canvasThemeCss(): Promise<string> {
   }
 }
 
-// A font NAME → an email-safe family stack (no webfont reliance). Mirrors
-// email-platform brand-service's `fontStack` so the canvas font matches the send.
-function fontStack(name: string | undefined): string {
-  const clean = (name ?? '').replace(/['"]/g, '').trim();
-  return clean ? `'${clean}', Arial, Helvetica, sans-serif` : 'Helvetica, Arial, sans-serif';
-}
-
-// Merge the active site's `brand_override` (docs/49 §3, Property.brand_override)
-// OVER the tenant brand, field-by-field — IDENTICAL to the send path
-// (brand-service.resolveEmailBrand, docs/49 Phase 7): an absent/null override
-// field inherits the tenant brand. Identity-only — the override never changes
-// email shape/feel — so a multi-site tenant authoring a site with its own name /
-// colours / fonts / logo sees the canvas match THAT site's send, not the tenant
-// default. A single-site tenant (or a site with no override) passes `null` and
-// inherits the tenant brand unchanged.
-function mergeEmailBrandIdentity(brand: BrandDto, override: BrandOverride | null) {
-  return {
-    businessName: override?.businessName ?? brand.businessName,
-    logoMediaId: override?.logoMediaId ?? brand.logoLightMediaId,
-    colorPrimary: override?.colorPrimary ?? brand.colorPrimary,
-    colorPrimaryForeground: override?.colorPrimaryForeground ?? brand.colorPrimaryForeground,
-    colorAccent: override?.colorAccent ?? brand.colorAccent,
-    fontHeading: override?.fontHeading ?? brand.fontHeading,
-    fontBody: override?.fontBody ?? brand.fontBody,
-  };
-}
-
-// The EMAIL brand resolves DIFFERENTLY from the site theme (docs/93): the email
-// brand-service overlays the tenant's brand IDENTITY on the DEFAULT preset — it
-// never inherits the tenant's chosen SITE theme. So a tenant whose site theme
-// contributes a serif heading / warm hairline the email default doesn't would see
-// the canvas (site-themed) drift from the send. Resolve the email brand the SAME
-// way the brand-service does (the per-site override merged over the tenant brand,
-// then compileTokens over DEFAULT_THEME_KEY + identity) and emit it as a
-// `.bx-canvas[data-surface='email']` override — higher specificity than the site
-// theme's `.bx-canvas`, so the email leaves + chrome paint the SEND's fonts /
-// hairlines / accent, not the storefront's. Defensive: '' on a failed read (the
-// canvas keeps the site theme — still a faithful brand, just not email-exact).
-async function emailBrandCanvasCss(override: BrandOverride | null): Promise<string> {
-  try {
-    const brand = await getBrand();
-    const identity = mergeEmailBrandIdentity(brand, override);
-    const t = compileTokens(DEFAULT_THEME_KEY, { light: brandIdentityOverlay(identity) }).light;
-    const vars = [
-      `--st-base-100:${t.colorBackground}`,
-      `--st-base-200:${t.colorMuted}`,
-      `--st-base-content:${t.colorForeground}`,
-      `--st-primary:${t.colorPrimary}`,
-      `--st-primary-content:${t.colorPrimaryForeground}`,
-      `--st-border:${t.colorBorder}`,
-      `--st-font-heading:${fontStack(t.fontHeading)}`,
-      `--st-font-body:${fontStack(t.fontBody)}`,
-    ].join(';');
-    return `.bx-canvas[data-surface='email']{${vars}}`;
-  } catch {
-    return '';
-  }
-}
-
-// The emails the editor opens. For a single-site tenant (or when the site list
-// can't be read) this is the tenant-wide catalog (listOrSeed seeds the curated
-// starter set on first load). For a MULTI-site tenant it's the ACTIVE site's view
-// (docs/49 Phase 7b) — the tenant defaults with this site's overrides swapped in —
-// so switching sites in the breadcrumb re-scopes the editor. Defensive: any failed
-// read falls back to the tenant-wide list, then to [] (a recoverable message).
-async function loadEmails(propertyId: string | undefined): Promise<BuilderEmailDto[]> {
-  try {
-    return propertyId ? await listEmailsForProperty(propertyId) : await listEmails();
-  } catch {
-    try {
-      return await listEmails();
-    } catch {
-      return [];
-    }
-  }
-}
-
-// What an email can bind to (docs/52 §7). Defensive: a failed read yields an empty
-// catalog — the editor still runs, bindings just resolve to placeholders.
-async function loadCatalog(): Promise<BindingCatalog> {
-  try {
-    return await getEmailBindingCatalog();
-  } catch {
-    return { sources: [] };
-  }
-}
-
-// The tenant's sending identity for the canvas inbox-envelope `From` row. The
-// name is the SITE name (Property.name — passed in, the active site, else the
-// primary; docs/49), never the tenant's legal/org name; the address is the
-// tenant's default Sparx sending subdomain (`<slug>.sparx.email` — docs/13). The
-// active site's `brand_override` still wins for the LOGO (same merge as the send),
-// so a multi-site tenant's per-site logo shows on the canvas. Defensive: a failed
-// read yields a neutral label so the envelope still renders.
-async function loadSender(
-  override: BrandOverride | null,
-  siteName: string
-): Promise<{
-  name: string;
-  address: string | null;
-  logoUrl: string | null;
-  siteName: string;
-}> {
-  try {
-    const [brand, tenant] = await Promise.all([getBrand(), getTenant()]);
-    const identity = mergeEmailBrandIdentity(brand, override);
-    const address = tenant.slug ? `hello@${tenant.slug}.sparx.email` : null;
-    // The email wordmark renders the tenant's LIGHT logo when one is set (email is
-    // light-palette only), and then shows ONLY the logo — exactly like
-    // @sparx/email's EmailWordmark. So the canvas header shows the logo, not the
-    // name, matching the real send (docs/52); the name still appears in the
-    // envelope's From row, like a real inbox. The per-site override's logo wins
-    // (mergeEmailBrandIdentity), matching the send's resolveEmailBrand.
-    const logoUrl = tenant.slug ? publicMediaUrl(identity.logoMediaId, tenant.slug) : null;
-    // Both the From-row label and the customer-facing `{{site.name}}` resolve to the
-    // SITE name (Property.name — the active site, else the primary; docs/49), the
-    // SAME name the real send's wordmark/footer show — NEVER the tenant's legal/org
-    // name. Mirror it so the canvas headings read the real site.
-    return { name: siteName, address, logoUrl, siteName };
-  } catch {
-    return { name: siteName, address: null, logoUrl: null, siteName };
-  }
-}
-
 export default async function BuilderEmailRoute() {
-  // The active site (docs/49): a multi-site tenant authors ONE site at a time
-  // (the breadcrumb switcher's cookie); a single-site tenant gets `undefined` and
-  // the tenant-wide catalog, unchanged. `multiSite` gates the per-site editor
-  // affordances (the "Customize for this site" fork + the override badge).
-  const scope = await resolveSiteScope().catch(() => null);
-  const activePropertyId = scope?.activePropertyId;
-  const activeSite =
-    scope && activePropertyId ? scope.sites.find((s) => s.id === activePropertyId) : undefined;
-  // The active site's per-site brand override (docs/49 §3) — merged over the
-  // tenant brand for the canvas's email-exact theme + sender, the SAME merge the
-  // send does. Null for a single-site tenant or a site without an override.
-  const brandOverride = activeSite?.brandOverride ?? null;
-  // The customer-facing SITE name (Property.name) the canvas previews in headings +
-  // the From row — the active site, else the tenant's primary (docs/49). Never the
-  // tenant's legal/org name. Mirrors the send's resolveActivePropertyName.
-  const siteName =
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `||` is intended: an empty trimmed name must fall through to the primary site's name, then the placeholder, which `??` would not do.
-    activeSite?.name?.trim() || scope?.sites.find((s) => s.isPrimary)?.name?.trim() || 'Your site';
-
-  const [themeCss, emailBrandCss, emails, catalog, sender] = await Promise.all([
-    canvasThemeCss(),
-    emailBrandCanvasCss(brandOverride),
-    loadEmails(activePropertyId),
-    loadCatalog(),
-    loadSender(brandOverride, siteName),
-  ]);
-  if (emails.length === 0) {
+  const [themeCss, email] = await Promise.all([canvasThemeCss(), loadEmailSurfaceData()]);
+  if (email.kind === 'empty') {
     return (
       <div className="px-6 py-8 lg:px-10">
         <div className="rounded-xl border border-dashed border-[var(--color-border-default)] p-12 text-center text-sm text-[var(--color-text-muted)]">
@@ -213,20 +54,10 @@ export default async function BuilderEmailRoute() {
       {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
       {/* The email-brand override (docs/93) — after the site theme so it wins for
           the email canvas: its fonts / hairlines / accent match the real send. */}
-      {emailBrandCss ? <style dangerouslySetInnerHTML={{ __html: emailBrandCss }} /> : null}
-      <EmailBuilderApp
-        initialEmails={emails}
-        bindingCatalog={catalog}
-        senderName={sender.name}
-        senderAddress={sender.address}
-        senderLogoUrl={sender.logoUrl}
-        tenant={{ name: sender.siteName, supportEmail: sender.address }}
-        site={
-          activePropertyId && activeSite
-            ? { propertyId: activePropertyId, name: activeSite.name }
-            : undefined
-        }
-      />
+      {email.emailBrandCss ? (
+        <style dangerouslySetInnerHTML={{ __html: email.emailBrandCss }} />
+      ) : null}
+      <EmailBuilderApp {...email.props} />
     </>
   );
 }
