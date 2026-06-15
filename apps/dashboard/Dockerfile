@@ -51,6 +51,9 @@ COPY packages/sitebuilder/package.json packages/sitebuilder/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
+# @sparx/builder-render — the shared canvas↔live render path (docs/builder/02), a
+# dashboard dep. Its workspace deps (builder-schemas, cms-editor, site-ui) are above.
+COPY packages/builder-render/package.json packages/builder-render/
 COPY packages/attribution/package.json packages/attribution/
 # Automation authoring UI (docs/84 Slice G-UI) — pure zod schemas + the
 # triggerToColumns/FromColumns round-trip helpers; only dep is zod (already present).
@@ -96,6 +99,7 @@ COPY packages/sitebuilder packages/sitebuilder
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
 COPY packages/builder-schemas packages/builder-schemas
+COPY packages/builder-render packages/builder-render
 COPY packages/attribution packages/attribution
 COPY packages/automation-schemas packages/automation-schemas
 COPY apps/dashboard apps/dashboard
