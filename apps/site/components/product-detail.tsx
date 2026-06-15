@@ -53,7 +53,12 @@ export function ProductDetail({
   });
   const [qty, setQty] = useState(1);
   const [adding, setAdding] = useState(false);
-  const [activeImageId, setActiveImageId] = useState<string | null>(product.images[0]?.id ?? null);
+  const [activeImageId, setActiveImageId] = useState<string | null>(
+    () =>
+      product.images.find((img) => !img.variantId && img.optionValueIds.length === 0)?.id ??
+      product.images[0]?.id ??
+      null
+  );
 
   // Option-less multi-variant products — more than one purchasable SKU but no
   // ProductOption rows (e.g. a dropship import whose sizes/colours live only in
@@ -96,20 +101,31 @@ export function ProductDetail({
     return map;
   }, [product.options, product.variants, selected]);
 
-  // Gallery: prefer images tied to the resolved variant, then to selected
-  // option values, then the full set.
+  // Product-level images — pinned to no variant and no option value, i.e. the
+  // "shown for every variant" baseline. Once a product carries per-variant or
+  // per-option photos, this is the right fallback: returning EVERY image would
+  // pile all colorways together whenever the current selection has no shots.
+  const productLevelImages = useMemo(
+    () => product.images.filter((img) => !img.variantId && img.optionValueIds.length === 0),
+    [product.images]
+  );
+
+  // Gallery: prefer images tied to the resolved variant, then to the selected
+  // option values, then the product-level baseline.
   const galleryImages = useMemo(() => {
     if (resolvedVariant) {
       const byVariant = product.images.filter((img) => img.variantId === resolvedVariant.id);
       if (byVariant.length) return byVariant;
     }
     const selectedValueIds = Object.values(selected);
-    const byOption = product.images.filter((img) =>
-      img.optionValueIds.some((id) => selectedValueIds.includes(id))
+    const byOption = product.images.filter(
+      (img) =>
+        img.optionValueIds.length > 0 &&
+        img.optionValueIds.some((id) => selectedValueIds.includes(id))
     );
     if (byOption.length) return byOption;
-    return product.images;
-  }, [product.images, resolvedVariant, selected]);
+    return productLevelImages.length > 0 ? productLevelImages : product.images;
+  }, [product.images, productLevelImages, resolvedVariant, selected]);
 
   const activeImage = galleryImages.find((i) => i.id === activeImageId) ?? galleryImages[0] ?? null;
 

@@ -726,18 +726,34 @@ export async function addImage(ctx: ServiceContext, rawInput: unknown): Promise<
 export async function setImageBindings(ctx: ServiceContext, rawInput: unknown): Promise<void> {
   const input = SetVariantImageBindingsInput.parse(rawInput);
 
-  await withTenant(ctx, async (tx) => {
+  const result = await withTenant(ctx, async (tx) => {
     const image = await tx.variantImage.findFirst({
       where: { id: input.variantImageId },
       select: { id: true, productId: true },
     });
     if (!image) throw new CommerceNotFoundError('VariantImage', input.variantImageId);
 
+    // A non-null variant binding must point at a live variant of this product.
+    if (input.variantId) {
+      const variant = await tx.productVariant.findFirst({
+        where: { id: input.variantId, productId: image.productId, deletedAt: null },
+        select: { id: true },
+      });
+      if (!variant) throw new CommerceNotFoundError('Variant', input.variantId);
+    }
+
     if (input.optionValueIds.length > 0) {
       await validateOptionValueSet(tx, image.productId, input.optionValueIds, {
         strictSpanning: false,
       });
     }
+
+    // `variant_id` is authoritative on the row — set it (or clear to product-
+    // level). The storefront gallery prefers a variant's own images first.
+    await tx.variantImage.update({
+      where: { id: input.variantImageId },
+      data: { variantId: input.variantId },
+    });
 
     await tx.variantImageOptionValue.deleteMany({
       where: { variantImageId: input.variantImageId },
@@ -759,8 +775,22 @@ export async function setImageBindings(ctx: ServiceContext, rawInput: unknown): 
       action: 'commerce.variant.image_bindings_set',
       entityType: 'VariantImage',
       entityId: input.variantImageId,
-      diff: { after: { optionValueIds: input.optionValueIds } },
+      diff: { after: { variantId: input.variantId, optionValueIds: input.optionValueIds } },
     });
+
+    return { productId: image.productId };
+  });
+
+  // Bindings decide which photos a PDP shows — bust the storefront read cache.
+  await publishCommerceEvent({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    topic: 'variant.updated',
+    data: {
+      variantImageId: input.variantImageId,
+      productId: result.productId,
+      variantId: input.variantId,
+    },
   });
 }
 

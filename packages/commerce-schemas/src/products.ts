@@ -135,6 +135,11 @@ export type AssignVariantOptionValuesInput = z.infer<typeof AssignVariantOptionV
 
 export const SetVariantImageBindingsInput = z.object({
   variantImageId: Uuid,
+  // The specific variant (SKU) this image represents, or null for a
+  // product-level image shown for every variant. Authoritative — the service
+  // sets `VariantImage.variant_id` to exactly this value. The storefront PDP
+  // prefers a variant's own images over option-value or product-level ones.
+  variantId: Uuid.nullable().default(null),
   optionValueIds: z.array(Uuid).max(8).default([]),
 });
 export type SetVariantImageBindingsInput = z.infer<typeof SetVariantImageBindingsInput>;
