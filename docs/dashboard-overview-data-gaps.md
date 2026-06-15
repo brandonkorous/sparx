@@ -126,10 +126,11 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 
 - ✅ Headline KPIs (revenue, orders, margin) — `GET /v1/dropship/analytics`
 - ✅ Supplier profitability table + orders-by-supplier donut — wired to the `bySupplier` breakdown in `GET /v1/dropship/analytics`, with `liveOr` fallback to sample (2026-06-14)
-- 🟡 Per-order margin list — `GET /v1/dropship/analytics/orders` exists; not yet surfaced on the overview (no section for it)
-- 🔴 Supplier SLA (on-time %, fill rate, avg ship) — no delivery telemetry; the old "Supplier health" table invented these, now replaced by the live profitability table
+- ✅ Per-order margin list — `GET /v1/dropship/analytics/orders` now surfaced as the "Recent routed orders" table (order # / supplier / status / revenue / cost / profit / margin), `liveOr` fallback to sample (shipped 2026-06-15)
+- ✅ Supplier SLA (on-time %, fulfillment rate, avg ship/delivery) — `GET /v1/dropship/reports/supplier-sla`: derived **live** from the DropshipOrder lifecycle stamps (submittedAt → shippedAt → deliveredAt), overall + per-supplier; powers the "On-time delivery" KPI. The timestamps ARE the delivery telemetry (shipped 2026-06-15)
 - ✅ Revenue/orders **timeseries** — `GET /v1/dropship/reports/orders-timeseries` (shipped 2026-06-15; **third rollup** — `rollup_dropship_daily_orders` + nightly reconcile + live-overlay read per docs/97 §5; powers the "Order volume" chart + Routed/Revenue/Margin footer)
-- 🔴 Activity feed — no endpoint
+- ✅ Activity feed — `GET /v1/dropship/reports/activity`: most recently-touched routed orders (status + order # + supplier), `updatedAt` as the lifecycle proxy; powers the "Recent activity" timeline (shipped 2026-06-15)
+- 🔴 Reconciliation + routing rules — no backing model yet; remain sample behind `<SampleBadge>`
 
 ### Invoicing — Lime
 

@@ -10,7 +10,7 @@
 // Commerce tables carry integer cents. Reports surface integer cents
 // consistently so the dashboard doesn't have to juggle two formats.
 
-import { withTenant, type TxClient } from '@sparx/db';
+import { Prisma, withTenant, type TxClient } from '@sparx/db';
 
 import type { ServiceContext } from '../errors';
 
@@ -455,6 +455,214 @@ export async function dropshipMarginReport(
       bySupplier,
       currency: DEFAULT_CURRENCY,
     };
+  });
+}
+
+// ─── Dropship supplier SLA ───────────────────────────────────────────
+//
+// Fulfillment timeliness derived live from the DropshipOrder lifecycle
+// timestamps (submittedAt → shippedAt → deliveredAt). "Routed" = any order that
+// left `pending`; "fulfillment rate" = shipped ÷ routed; "on-time" = delivered
+// within ON_TIME_DELIVERY_DAYS of submission, as a share of delivered orders.
+// Ship/delivery durations average only the orders that reached each stage (and
+// whose timestamps are monotonic). Overall figures are computed in their own
+// pass so the averages stay order-weighted rather than supplier-averaged.
+
+// Delivery-window target (days from submission) an order must beat to count
+// "on-time". A routing operator's default expectation for a dropship leg.
+const ON_TIME_DELIVERY_DAYS = 7;
+
+export interface DropshipSlaMeasures {
+  routedOrders: number;
+  shippedOrders: number;
+  deliveredOrders: number;
+  failedOrders: number;
+  /** Avg submittedAt → shippedAt, in hours (null until any order has shipped). */
+  avgShipHours: number | null;
+  /** Avg shippedAt → deliveredAt, in hours (null until any order is delivered). */
+  avgDeliveryHours: number | null;
+  /** shipped ÷ routed (0–1). */
+  fulfillmentRate: number;
+  /** delivered-within-SLA ÷ delivered (0–1, null until any order is delivered). */
+  onTimeRate: number | null;
+}
+
+export interface DropshipSupplierSlaRow extends DropshipSlaMeasures {
+  supplierId: string;
+  supplierName: string;
+}
+
+export interface DropshipSupplierSlaReport extends DropshipSlaMeasures {
+  rangeLabel: string;
+  onTimeDeliveryDays: number;
+  bySupplier: DropshipSupplierSlaRow[];
+}
+
+interface RawSlaRow {
+  supplier_id?: string;
+  routed: number;
+  shipped: number;
+  delivered: number;
+  failed: number;
+  avg_ship_hours: unknown;
+  avg_delivery_hours: unknown;
+  on_time: number;
+}
+
+function numOrNull(v: unknown): number | null {
+  if (v == null) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function slaMeasures(r: RawSlaRow): DropshipSlaMeasures {
+  const routed = Number(r.routed);
+  const shipped = Number(r.shipped);
+  const delivered = Number(r.delivered);
+  return {
+    routedOrders: routed,
+    shippedOrders: shipped,
+    deliveredOrders: delivered,
+    failedOrders: Number(r.failed),
+    avgShipHours: numOrNull(r.avg_ship_hours),
+    avgDeliveryHours: numOrNull(r.avg_delivery_hours),
+    fulfillmentRate: routed > 0 ? +(shipped / routed).toFixed(4) : 0,
+    onTimeRate: delivered > 0 ? +(Number(r.on_time) / delivered).toFixed(4) : null,
+  };
+}
+
+// FILTERed lifecycle aggregation, optionally grouped by supplier. The measure
+// columns are identical for the overall pass (group=false) and the per-supplier
+// pass (group=true) so `slaMeasures` reads both. RLS scopes to the tenant.
+async function aggregateSla(
+  tx: TxClient,
+  from: Date,
+  to: Date,
+  group: boolean
+): Promise<RawSlaRow[]> {
+  const selectSupplier = group ? Prisma.sql`o.supplier_id,` : Prisma.empty;
+  const groupBy = group ? Prisma.sql`GROUP BY o.supplier_id` : Prisma.empty;
+  return tx.$queryRaw<RawSlaRow[]>`
+    SELECT
+      ${selectSupplier}
+      COUNT(*) FILTER (WHERE o.status <> 'pending')::int     AS routed,
+      COUNT(*) FILTER (WHERE o.shipped_at IS NOT NULL)::int  AS shipped,
+      COUNT(*) FILTER (WHERE o.delivered_at IS NOT NULL)::int AS delivered,
+      COUNT(*) FILTER (WHERE o.status = 'failed')::int       AS failed,
+      AVG(EXTRACT(EPOCH FROM (o.shipped_at - o.submitted_at)) / 3600.0)
+        FILTER (WHERE o.shipped_at IS NOT NULL AND o.submitted_at IS NOT NULL
+                AND o.shipped_at >= o.submitted_at)          AS avg_ship_hours,
+      AVG(EXTRACT(EPOCH FROM (o.delivered_at - o.shipped_at)) / 3600.0)
+        FILTER (WHERE o.delivered_at IS NOT NULL AND o.shipped_at IS NOT NULL
+                AND o.delivered_at >= o.shipped_at)          AS avg_delivery_hours,
+      COUNT(*) FILTER (
+        WHERE o.delivered_at IS NOT NULL AND o.submitted_at IS NOT NULL
+          AND o.delivered_at <= o.submitted_at + (${ON_TIME_DELIVERY_DAYS})::int * interval '1 day'
+      )::int                                                 AS on_time
+    FROM dropship_orders o
+    WHERE o.created_at >= ${from} AND o.created_at <= ${to}
+    ${groupBy}
+  `;
+}
+
+export async function dropshipSupplierSla(
+  ctx: ServiceContext,
+  range?: DateRange
+): Promise<DropshipSupplierSlaReport> {
+  const label = range ? rangeLabel(range) : 'All time';
+  const from = range ? new Date(range.from) : new Date(0);
+  const to = range ? new Date(range.to) : new Date();
+
+  return withTenant(ctx, async (tx) => {
+    const [perSupplier, totals, suppliers] = await Promise.all([
+      aggregateSla(tx, from, to, true),
+      aggregateSla(tx, from, to, false),
+      tx.dropshipSupplier.findMany({
+        where: { deletedAt: null },
+        select: { id: true, name: true },
+      }),
+    ]);
+
+    const supplierIndex = new Map(suppliers.map((s) => [s.id, s.name]));
+    const bySupplier: DropshipSupplierSlaRow[] = perSupplier
+      .filter((r) => Number(r.routed) > 0)
+      .map((r) => ({
+        supplierId: r.supplier_id ?? '',
+        supplierName: supplierIndex.get(r.supplier_id ?? '') ?? r.supplier_id ?? '—',
+        ...slaMeasures(r),
+      }))
+      .sort((a, b) => b.routedOrders - a.routedOrders);
+
+    const overall =
+      totals[0] != null
+        ? slaMeasures(totals[0])
+        : slaMeasures({
+            routed: 0,
+            shipped: 0,
+            delivered: 0,
+            failed: 0,
+            avg_ship_hours: null,
+            avg_delivery_hours: null,
+            on_time: 0,
+          });
+
+    return {
+      rangeLabel: label,
+      onTimeDeliveryDays: ON_TIME_DELIVERY_DAYS,
+      ...overall,
+      bySupplier,
+    };
+  });
+}
+
+// ─── Dropship activity feed ──────────────────────────────────────────
+//
+// The most recently-touched routed orders, newest first — a lifecycle feed for
+// the Dropship overview's "Recent activity" timeline. There is no per-event
+// ledger, so `updatedAt` (bumped on every status/tracking change) is the proxy
+// for "last thing that happened to this order".
+
+export interface DropshipActivityItem {
+  id: string;
+  orderId: string;
+  orderNumber: string | null;
+  supplierId: string;
+  supplierName: string;
+  status: string;
+  trackingNumber: string | null;
+  updatedAt: string;
+}
+
+export async function dropshipActivity(
+  ctx: ServiceContext,
+  limit = 12
+): Promise<DropshipActivityItem[]> {
+  const take = Math.min(Math.max(limit, 1), 50);
+  return withTenant(ctx, async (tx) => {
+    const orders = await tx.dropshipOrder.findMany({
+      orderBy: { updatedAt: 'desc' },
+      take,
+      select: {
+        id: true,
+        orderId: true,
+        supplierId: true,
+        status: true,
+        trackingNumber: true,
+        updatedAt: true,
+        order: { select: { orderNumber: true } },
+        supplier: { select: { name: true } },
+      },
+    });
+    return orders.map((o) => ({
+      id: o.id,
+      orderId: o.orderId,
+      orderNumber: o.order?.orderNumber ?? null,
+      supplierId: o.supplierId,
+      supplierName: o.supplier?.name ?? '—',
+      status: o.status,
+      trackingNumber: o.trackingNumber,
+      updatedAt: o.updatedAt.toISOString(),
+    }));
   });
 }
 

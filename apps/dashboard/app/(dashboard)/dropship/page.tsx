@@ -49,6 +49,7 @@ import {
   SampleBadge,
   fmtMoneyCents,
   fmtNumber,
+  fmtPercentRatio,
   liveOr,
 } from '../_components/overview-bits';
 
@@ -57,10 +58,12 @@ import {
 // actually clearing, and supplier profitability. Headline KPIs, the margin
 // breakdown, the per-supplier profitability table, and the orders-by-supplier
 // split are wired to the live /v1/dropship/analytics summary; the order-volume
-// chart reads the /v1/dropship/reports/orders-timeseries rollup (docs/97 §5).
-// Each falls back to an illustrative example via liveOr until the tenant has
-// routed orders. Sections with no backing endpoint yet (on-time/SLA delivery,
-// reconciliation, routing rules, the activity feed) render sample data behind a
+// chart reads the /v1/dropship/reports/orders-timeseries rollup; the on-time KPI
+// reads /v1/dropship/reports/supplier-sla; the per-order margin table reads
+// /v1/dropship/analytics/orders; the activity feed reads
+// /v1/dropship/reports/activity (docs/97 §5). Each falls back to an illustrative
+// example via liveOr until the tenant has routed orders. Sections with no
+// backing model yet (reconciliation, routing rules) render sample data behind a
 // <SampleBadge>.
 
 export const dynamic = 'force-dynamic';
@@ -111,6 +114,53 @@ interface DropshipTimeseries {
   currency: string;
 }
 
+// Live shape from /v1/dropship/reports/supplier-sla — fulfillment timeliness.
+interface DropshipSla {
+  rangeLabel: string;
+  onTimeDeliveryDays: number;
+  routedOrders: number;
+  shippedOrders: number;
+  deliveredOrders: number;
+  failedOrders: number;
+  avgShipHours: number | null;
+  avgDeliveryHours: number | null;
+  fulfillmentRate: number;
+  onTimeRate: number | null;
+}
+
+// Live shape from /v1/dropship/reports/activity — one routed order's last touch.
+interface DropshipActivityItem {
+  id: string;
+  orderId: string;
+  orderNumber: string | null;
+  supplierId: string;
+  supplierName: string;
+  status: string;
+  trackingNumber: string | null;
+  updatedAt: string;
+}
+
+// Live shape from /v1/dropship/analytics/orders — per-order margin detail (paged
+// rows; the overview surfaces the most recent page).
+interface DropshipOrderRow {
+  id: string;
+  orderNumber: string | null;
+  supplierName: string;
+  status: string;
+  revenueCents: number;
+  costCents: number;
+  profitCents: number;
+  marginPct: number;
+}
+
+// The normalized timeline entry — shared by live activity + the sample fallback.
+interface ActivityEntry {
+  key: string;
+  what: string;
+  detail: string;
+  when: string;
+}
+
 // The display row for the supplier table — shared by live + sample so liveOr can
 // fall back cleanly.
 interface SupplierRow {
@@ -119,6 +169,33 @@ interface SupplierRow {
   revenueCents: number;
   profitCents: number;
   marginPct: number;
+}
+
+type StatusTone = 'neutral' | 'module' | 'success' | 'warning' | 'danger';
+
+// Dropship-order lifecycle → badge label + tone, shared by the per-order margin
+// table and the activity feed so a status reads identically in both.
+const STATUS_META: Record<string, { label: string; tone: StatusTone }> = {
+  pending: { label: 'Pending', tone: 'neutral' },
+  submitted: { label: 'Routed', tone: 'module' },
+  shipped: { label: 'Shipped', tone: 'warning' },
+  delivered: { label: 'Delivered', tone: 'success' },
+  failed: { label: 'Failed', tone: 'danger' },
+};
+
+function statusMeta(status: string): { label: string; tone: StatusTone } {
+  return STATUS_META[status] ?? { label: status, tone: 'neutral' };
+}
+
+// Compact relative time for the activity feed (server-rendered, so `now` is the
+// request time passed in).
+function timeAgo(iso: string, nowMs: number): string {
+  const mins = Math.round((nowMs - new Date(iso).getTime()) / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.round(hours / 24)}d ago`;
 }
 
 // Status badge derived from realized margin — drives both live and sample rows.
@@ -202,13 +279,57 @@ const SAMPLE_ROUTING_RULES = [
   { title: 'Fallback → lowest cost', hint: 'When no rule matches', icon: 'scale' as const },
 ] as const;
 
-// Recent activity (timeline).
-const SAMPLE_ACTIVITY = [
-  { what: 'Order routed', detail: '#1042 → Cascade Roasting', when: '8m ago' },
-  { what: 'Tracking received', detail: '#1038 (Andes)', when: '1h ago' },
-  { what: 'Stockout', detail: 'PourCraft — Pour-over kit', when: '3h ago' },
-  { what: 'Reconciled', detail: '12 invoices (Cascade)', when: '1 day ago' },
-] as const;
+// Recent activity (timeline) — illustrative until the tenant has routed orders.
+const SAMPLE_ACTIVITY: ActivityEntry[] = [
+  { key: 'a1', what: 'Routed', detail: '#1042 → Cascade Roasting', when: '8m ago' },
+  { key: 'a2', what: 'Shipped', detail: '#1038 → Andes Green Beans', when: '1h ago' },
+  { key: 'a3', what: 'Delivered', detail: '#1031 → Cascade Roasting', when: '3h ago' },
+  { key: 'a4', what: 'Failed', detail: '#1029 → PourCraft Equipment', when: '1d ago' },
+];
+
+// Recent routed orders (per-order margin) — illustrative until real orders exist.
+const SAMPLE_RECENT_ORDERS: DropshipOrderRow[] = [
+  {
+    id: 's1',
+    orderNumber: '#1042',
+    supplierName: 'Cascade Roasting Co.',
+    status: 'shipped',
+    revenueCents: 8_400,
+    costCents: 5_200,
+    profitCents: 3_200,
+    marginPct: 38,
+  },
+  {
+    id: 's2',
+    orderNumber: '#1041',
+    supplierName: 'Andes Green Beans',
+    status: 'delivered',
+    revenueCents: 6_200,
+    costCents: 4_300,
+    profitCents: 1_900,
+    marginPct: 31,
+  },
+  {
+    id: 's3',
+    orderNumber: '#1039',
+    supplierName: 'PourCraft Equipment',
+    status: 'submitted',
+    revenueCents: 12_900,
+    costCents: 10_100,
+    profitCents: 2_800,
+    marginPct: 22,
+  },
+  {
+    id: 's4',
+    orderNumber: '#1038',
+    supplierName: 'Cascade Roasting Co.',
+    status: 'delivered',
+    revenueCents: 4_500,
+    costCents: 2_900,
+    profitCents: 1_600,
+    marginPct: 36,
+  },
+];
 
 export default async function DropshipPage() {
   await requireSession();
@@ -217,12 +338,18 @@ export default async function DropshipPage() {
   const range14 = `from=${encodeURIComponent(
     new Date(now.getTime() - 14 * 86_400_000).toISOString()
   )}&to=${encodeURIComponent(now.toISOString())}`;
+  const range30 = `from=${encodeURIComponent(
+    new Date(now.getTime() - 30 * 86_400_000).toISOString()
+  )}&to=${encodeURIComponent(now.toISOString())}`;
 
-  const [summary, volumeTs] = await Promise.all([
+  const [summary, volumeTs, sla, activity, recent] = await Promise.all([
     api.get<DropshipSummary>('/v1/dropship/analytics').catch(() => null),
     api
       .get<DropshipTimeseries>(`/v1/dropship/reports/orders-timeseries?${range14}&grain=day`)
       .catch(() => null),
+    api.get<DropshipSla>(`/v1/dropship/reports/supplier-sla?${range30}`).catch(() => null),
+    api.get<DropshipActivityItem[]>('/v1/dropship/reports/activity?limit=8').catch(() => null),
+    api.get<DropshipOrderRow[]>('/v1/dropship/analytics/orders?take=8').catch(() => null),
   ]);
 
   // Live where the summary is reachable; fail soft to the mockup figures so the
@@ -285,6 +412,29 @@ export default async function DropshipPage() {
           ['Avg ship', '2.4 days'],
         ];
 
+  // On-time delivery KPI — live from the supplier-SLA report once any order has
+  // been delivered (on-time %) / shipped (avg ship days); else the sample figures
+  // so the strip stays populated for a fresh tenant.
+  const avgShipDays = sla?.avgShipHours != null ? sla.avgShipHours / 24 : null;
+  const onTimeValue = sla && sla.deliveredOrders > 0 ? fmtPercentRatio(sla.onTimeRate) : '94%';
+  const onTimeHint =
+    avgShipDays != null ? `Avg ship ${avgShipDays.toFixed(1)} days` : 'Avg ship 2.4 days';
+
+  // Per-order margin table — live the moment the tenant has any routed orders,
+  // else the illustrative sample.
+  const recentOrders = liveOr<DropshipOrderRow[]>(recent, SAMPLE_RECENT_ORDERS);
+
+  // Activity feed — normalize live lifecycle rows into timeline entries, falling
+  // back to the sample until the tenant has routed orders.
+  const activityEntries: ActivityEntry[] | null =
+    activity?.map((a) => ({
+      key: a.id,
+      what: statusMeta(a.status).label,
+      detail: `${a.orderNumber ?? '#—'} → ${a.supplierName}`,
+      when: timeAgo(a.updatedAt, now.getTime()),
+    })) ?? null;
+  const activityFeed = liveOr<ActivityEntry[]>(activityEntries, SAMPLE_ACTIVITY);
+
   return (
     <Container size="xl">
       <Stack gap={6} className="py-8">
@@ -330,8 +480,8 @@ export default async function DropshipPage() {
           <Stat
             icon={<Truck className="h-4 w-4" />}
             label="On-time delivery"
-            value="94%"
-            hint="Avg ship 2.4 days"
+            value={onTimeValue}
+            hint={onTimeHint}
           />
         </Grid>
 
@@ -560,6 +710,60 @@ export default async function DropshipPage() {
           </OverviewCard>
         </div>
 
+        {/* Per-order margin — the routed orders behind the headline figures */}
+        <OverviewCard
+          title="Recent routed orders"
+          icon={<Package className="h-4 w-4" />}
+          description="Per-order margin · newest first"
+          right={
+            recentOrders.isSample ? (
+              <SampleBadge reason="no-data" />
+            ) : (
+              <CardLink href="/dropship/analytics">Full report</CardLink>
+            )
+          }
+        >
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Order</TableHead>
+                <TableHead>Supplier</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Revenue</TableHead>
+                <TableHead className="text-right">Cost</TableHead>
+                <TableHead className="text-right">Profit</TableHead>
+                <TableHead className="text-right">Margin</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {recentOrders.data.map((o) => {
+                const meta = statusMeta(o.status);
+                return (
+                  <TableRow key={o.id}>
+                    <TableCell className="font-medium">{o.orderNumber ?? '—'}</TableCell>
+                    <TableCell className="truncate">{o.supplierName}</TableCell>
+                    <TableCell>
+                      <Badge color={meta.tone} variant="soft">
+                        {meta.label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {fmtMoneyCents(o.revenueCents)}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {fmtMoneyCents(o.costCents)}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {fmtMoneyCents(o.profitCents)}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">{o.marginPct}%</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </OverviewCard>
+
         {/* Orders by supplier + routing rules + recent activity */}
         <Grid cols={1} mdCols={2} lgCols={3} gap={4}>
           <OverviewCard
@@ -607,10 +811,14 @@ export default async function DropshipPage() {
             </div>
           </OverviewCard>
 
-          <OverviewCard title="Recent activity" icon={<Clock className="h-4 w-4" />}>
+          <OverviewCard
+            title="Recent activity"
+            icon={<Clock className="h-4 w-4" />}
+            right={activityFeed.isSample ? <SampleBadge reason="no-data" /> : undefined}
+          >
             <Timeline>
-              {SAMPLE_ACTIVITY.map((a, i) => (
-                <TimelineItem key={`${a.what}-${i}`} showConnector={i < SAMPLE_ACTIVITY.length - 1}>
+              {activityFeed.data.map((a, i) => (
+                <TimelineItem key={a.key} showConnector={i < activityFeed.data.length - 1}>
                   <TimelineTitle>
                     <span className="font-medium">{a.what}</span>{' '}
                     <span className="font-normal text-[var(--color-text-secondary)]">
@@ -621,9 +829,6 @@ export default async function DropshipPage() {
                 </TimelineItem>
               ))}
             </Timeline>
-            <div className="mt-3">
-              <SampleBadge />
-            </div>
           </OverviewCard>
         </Grid>
       </Stack>
