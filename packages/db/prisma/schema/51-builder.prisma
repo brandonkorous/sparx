@@ -285,3 +285,34 @@ model BuilderComponentVersion {
   @@index([tenantId, componentId])
   @@map("builder_component_versions")
 }
+
+// Tenant-wide BUILDER GOVERNANCE (docs/61 §8, Phase 6b) — a singleton config row
+// per tenant for the brand-designer's safety/governance policy over the builder.
+// Deliberately NOT on TenantBrand: the allowlist is a governance policy, not brand
+// IDENTITY (which is drifting per-site via Property.brandOverride). Governance is
+// genuinely tenant-wide — it bounds what ANY author on the tenant can compile,
+// across all their sites — so it gets its own tenant-level home with room to grow.
+//
+// `utilityAllowlist` is the tenant's ADDITIONAL block rules (tighten-only). The
+// platform BASE denylist (fixed / url( / content-[ / arbitrary z-[ — clickjacking /
+// exfiltration / injection guards) is hardcoded in @sparx/surface-compile and is
+// NEVER relaxable; this column can only ADD blocks. Shape:
+//   { v: 1, blocks: [{ kind: 'prefix' | 'exact' | 'substring', value: string }] }
+// Null = no tenant additions → the platform base applies unchanged. Validated by
+// @sparx/surface-compile's parseAllowlistConfig, never by the DB.
+//
+// Tenant-scoped + ENABLE/FORCE RLS (hand-added in the migration), like every other
+// builder_* table. PK = tenantId (one governance row per tenant), upserted lazily
+// on first write — no row needed until a tenant tightens.
+model BuilderGovernance {
+  tenantId String @id @map("tenant_id") @db.Uuid
+
+  utilityAllowlist Json? @map("utility_allowlist") @db.JsonB
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("builder_governance")
+}
