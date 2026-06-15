@@ -167,24 +167,39 @@ function toSupplierView(s: {
   };
 }
 
+// Per-image cap — a many-angle catalog (Printify ships ~7 mockups per colour)
+// can't create an unbounded media fan-out at either the product or variant level.
+const DROPSHIP_IMAGE_CAP = 12;
+
 // Attach a dropship product's imagery to a commerce product as hot-linked media
 // (MediaAsset.key = the supplier's absolute URL; mediaPublicUrl() passes it
 // through — the blueprint-install pattern, docs/54 §6 — so there's no download/
-// re-upload). The first image becomes the hero (isPrimary), which is what the
-// PLP card + search index surface. Capped so a many-angle catalog can't create
-// an unbounded media fan-out. Returns the number of images attached.
+// re-upload). Two layers:
+//   • PRODUCT-LEVEL (`rawImages`) — the hero (isPrimary, surfaced on PLP cards +
+//     the search index) and the gallery baseline shown until a variant resolves;
+//   • PER-VARIANT (`variantImages`) — faithful to the supplier: each mockup is
+//     pinned to the exact variant(s) the supplier listed it for, so the PDP
+//     gallery swaps to a SKU's own shots when it's selected. Printify shares one
+//     colour mockup across every size, so the same URL recurs across a colour's
+//     variants — we dedupe the MediaAsset by URL, so one asset backs every row.
+// Returns the total number of VariantImage rows attached.
 async function attachDropshipImages(
   tx: Parameters<Parameters<typeof withTenant>[1]>[0],
   tenantId: string,
   productId: string,
-  rawImages: unknown
+  rawImages: unknown,
+  variantImages: { variantId: string; imageUrls: string[] }[] = []
 ): Promise<number> {
-  const imageUrls = ((rawImages as string[] | null) ?? [])
-    .filter((u) => typeof u === 'string' && /^https?:\/\//i.test(u))
-    .slice(0, 12);
-  for (const [imgIdx, url] of imageUrls.entries()) {
+  const isHttpUrl = (u: unknown): u is string => typeof u === 'string' && /^https?:\/\//i.test(u);
+
+  // One MediaAsset per distinct supplier URL, reused across every VariantImage
+  // that references it (a colour mockup shared by all its sizes → one asset).
+  const assetIdByUrl = new Map<string, string>();
+  const ensureAsset = async (url: string): Promise<string> => {
+    const cached = assetIdByUrl.get(url);
+    if (cached) return cached;
     const rawName = url.split('/').pop()?.split('?')[0];
-    const fileName = rawName && rawName.length > 0 ? rawName : `dropship-image-${imgIdx}.jpg`;
+    const fileName = rawName && rawName.length > 0 ? rawName : 'dropship-image.jpg';
     const asset = await tx.mediaAsset.create({
       data: {
         tenantId,
@@ -196,17 +211,48 @@ async function attachDropshipImages(
       },
       select: { id: true },
     });
+    assetIdByUrl.set(url, asset.id);
+    return asset.id;
+  };
+
+  let attached = 0;
+
+  // Product-level (the hero + fallback gallery).
+  const productUrls = ((rawImages as string[] | null) ?? [])
+    .filter(isHttpUrl)
+    .slice(0, DROPSHIP_IMAGE_CAP);
+  for (const [imgIdx, url] of productUrls.entries()) {
     await tx.variantImage.create({
       data: {
         tenantId,
         productId,
-        mediaAssetId: asset.id,
+        mediaAssetId: await ensureAsset(url),
         position: imgIdx,
         isPrimary: imgIdx === 0,
       },
     });
+    attached += 1;
   }
-  return imageUrls.length;
+
+  // Per-variant (pinned to the SKU; never the hero).
+  for (const { variantId, imageUrls } of variantImages) {
+    const urls = imageUrls.filter(isHttpUrl).slice(0, DROPSHIP_IMAGE_CAP);
+    for (const [imgIdx, url] of urls.entries()) {
+      await tx.variantImage.create({
+        data: {
+          tenantId,
+          productId,
+          variantId,
+          mediaAssetId: await ensureAsset(url),
+          position: imgIdx,
+          isPrimary: false,
+        },
+      });
+      attached += 1;
+    }
+  }
+
+  return attached;
 }
 
 // Materialize a product's option lattice (ProductOption + ProductOptionValue)
@@ -676,6 +722,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       msrpCents: number | null;
       inventoryQuantity: number | null;
       weight: number | null;
+      imageUrls?: string[];
     }[];
 
     const result = await withTenant({ tenantId }, async (tx) => {
@@ -766,9 +813,21 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
         });
       }
 
-      // Copy the supplier's product imagery into the commerce catalog (hot-linked
-      // media; see attachDropshipImages).
-      await attachDropshipImages(tx, tenantId, product.id, dropshipProduct.images);
+      // Copy the supplier's imagery into the commerce catalog (hot-linked media;
+      // see attachDropshipImages). createdVariants is index-aligned with
+      // `variants` (Promise.all), so each commerce variant carries its source
+      // variant's per-colour mockups, pinned to its SKU.
+      const perVariantImages = createdVariants.map((cv, idx) => ({
+        variantId: cv.id,
+        imageUrls: variants[idx]?.imageUrls ?? [],
+      }));
+      await attachDropshipImages(
+        tx,
+        tenantId,
+        product.id,
+        dropshipProduct.images,
+        perVariantImages
+      );
 
       // Link the dropship product
       const link = await tx.dropshipProductLink.create({
@@ -858,14 +917,39 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
       });
 
       // Only backfill imagery when the product has none, so re-syncing never
-      // duplicates images a merchant may have already curated.
+      // duplicates images a merchant may have already curated. Backfills BOTH
+      // the product-level gallery and the per-variant mockups (which earlier
+      // imports dropped) — this is how a product imported before the per-variant
+      // image fix gets its colour-specific photos through the normal UI.
       const existingImages = await tx.variantImage.count({
         where: { productId: commerceProductId },
       });
-      const imagesAdded =
-        existingImages === 0
-          ? await attachDropshipImages(tx, tenantId, commerceProductId, dropshipProduct.images)
-          : 0;
+      let imagesAdded = 0;
+      if (existingImages === 0) {
+        const imageVariants = dropshipProduct.variants as {
+          supplierSku: string;
+          imageUrls?: string[];
+        }[];
+        const imageUrlsBySku = new Map(
+          imageVariants.map((v) => [v.supplierSku, v.imageUrls ?? []])
+        );
+        // Map back onto the commerce variants by sku (sku = supplierSku).
+        const commerceVariants = await tx.productVariant.findMany({
+          where: { productId: commerceProductId, deletedAt: null },
+          select: { id: true, sku: true },
+        });
+        const perVariantImages = commerceVariants.map((cv) => ({
+          variantId: cv.id,
+          imageUrls: imageUrlsBySku.get(cv.sku) ?? [],
+        }));
+        imagesAdded = await attachDropshipImages(
+          tx,
+          tenantId,
+          commerceProductId,
+          dropshipProduct.images,
+          perVariantImages
+        );
+      }
 
       // Backfill the option lattice for products imported before options were
       // materialized — their variants exist but carry no ProductOption rows, so

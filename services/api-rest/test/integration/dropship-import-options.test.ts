@@ -27,7 +27,10 @@ import {
   type TestTenant,
 } from '../helpers.js';
 
-// Printify-shaped normalized variants: each carries its options inline.
+// Printify-shaped normalized variants: each carries its options inline, plus the
+// per-variant mockups the adapter resolved from the supplier's `variant_ids`. The
+// `shared.png` URL recurs across every variant (as a colour mockup would across
+// its sizes) so the import's MediaAsset dedupe is exercised.
 const SIZE_VARIANTS = [
   {
     supplierSku: 'PP1:101',
@@ -37,6 +40,7 @@ const SIZE_VARIANTS = [
     msrpCents: 236,
     inventoryQuantity: null,
     weight: 5,
+    imageUrls: ['https://example.test/2x2.png', 'https://example.test/shared.png'],
   },
   {
     supplierSku: 'PP1:102',
@@ -46,6 +50,7 @@ const SIZE_VARIANTS = [
     msrpCents: 263,
     inventoryQuantity: null,
     weight: 7,
+    imageUrls: ['https://example.test/3x3.png', 'https://example.test/shared.png'],
   },
   {
     supplierSku: 'PP1:103',
@@ -55,6 +60,7 @@ const SIZE_VARIANTS = [
     msrpCents: 333,
     inventoryQuantity: null,
     weight: 9,
+    imageUrls: ['https://example.test/4x4.png', 'https://example.test/shared.png'],
   },
   {
     supplierSku: 'PP1:104',
@@ -64,6 +70,7 @@ const SIZE_VARIANTS = [
     msrpCents: 386,
     inventoryQuantity: null,
     weight: 12,
+    imageUrls: ['https://example.test/6x6.png', 'https://example.test/shared.png'],
   },
 ];
 
@@ -298,6 +305,63 @@ describe('dropship import → product option lattice', () => {
       });
       expect(again.statusCode).toBe(200);
       expect(again.json().data.optionsAdded).toBe(0);
+    } finally {
+      await dropTestTenant(t.tenantId);
+    }
+  });
+
+  it('pins each variant’s mockups to its SKU and dedupes shared URLs', async () => {
+    const t = await createTestTenant('owner');
+    try {
+      await enableDropship(t.tenantId);
+      const token = signToken(app, t);
+      const supplierId = await seedSupplier(t);
+      const dpId = await seedDropshipProduct(t, supplierId, 'PP-IMG', SIZE_VARIANTS);
+
+      const res = await app.inject({
+        method: 'POST',
+        url: `/v1/dropship/suppliers/${supplierId}/catalog/${dpId}/import`,
+        headers: authHeader(token),
+        payload: {},
+      });
+      expect(res.statusCode).toBe(201);
+      const productId = res.json().data.productId as string;
+
+      const { images, keyById } = await withTenant({ tenantId: t.tenantId }, async (tx) => {
+        const images = await tx.variantImage.findMany({
+          where: { productId },
+          select: { variantId: true, mediaAssetId: true, isPrimary: true },
+        });
+        const assets = await tx.mediaAsset.findMany({
+          where: { id: { in: images.map((i) => i.mediaAssetId) } },
+          select: { id: true, key: true },
+        });
+        return { images, keyById: new Map(assets.map((a) => [a.id, a.key])) };
+      });
+
+      // 1 product-level hero + 4 variants × 2 mockups = 9 rows.
+      expect(images).toHaveLength(9);
+
+      // Exactly one product-level image, and it's the hero.
+      const productLevel = images.filter((i) => i.variantId === null);
+      expect(productLevel).toHaveLength(1);
+      expect(productLevel[0]!.isPrimary).toBe(true);
+      expect(keyById.get(productLevel[0]!.mediaAssetId)).toBe('https://example.test/sticker.png');
+
+      // Every variant got its two mockups, pinned to its SKU; none is the hero.
+      const perVariant = images.filter((i) => i.variantId !== null);
+      expect(perVariant).toHaveLength(8);
+      expect(perVariant.every((i) => !i.isPrimary)).toBe(true);
+
+      // The shared mockup is ONE MediaAsset reused across all four variants.
+      const sharedRows = perVariant.filter(
+        (i) => keyById.get(i.mediaAssetId) === 'https://example.test/shared.png'
+      );
+      expect(sharedRows).toHaveLength(4);
+      expect(new Set(sharedRows.map((i) => i.mediaAssetId)).size).toBe(1);
+
+      // Distinct assets total: sticker + shared + one per size = 6 (deduped).
+      expect(new Set(images.map((i) => i.mediaAssetId)).size).toBe(6);
     } finally {
       await dropTestTenant(t.tenantId);
     }
