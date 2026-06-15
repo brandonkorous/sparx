@@ -26,6 +26,10 @@ COPY packages/site-ui/package.json packages/site-ui/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
+# @sparx/builder-render — the shared canvas↔live render path (docs/builder/02); the
+# live storefront renders through it. Its workspace deps (builder-schemas, cms-editor,
+# site-ui) are above.
+COPY packages/builder-render/package.json packages/builder-render/
 COPY packages/chat-widget/package.json packages/chat-widget/
 
 # Install only the @sparx/site subgraph (its deps + transitive workspace deps).
@@ -39,6 +43,7 @@ COPY packages/site-ui packages/site-ui
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
 COPY packages/builder-schemas packages/builder-schemas
+COPY packages/builder-render packages/builder-render
 COPY packages/chat-widget packages/chat-widget
 COPY apps/site apps/site
 
