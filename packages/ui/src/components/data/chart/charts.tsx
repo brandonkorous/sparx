@@ -19,7 +19,9 @@ import { cn } from '../../../utils/cn';
 import {
   type ChartSeries,
   type ValueFormatter,
+  type ValueFormat,
   resolveSeriesColor,
+  resolveFormatter,
   AXIS_TICK,
   AXIS_LINE,
   GRID_STROKE,
@@ -27,7 +29,7 @@ import {
   ChartLegendContent,
 } from './chart-utils';
 
-export type { ChartSeries } from './chart-utils';
+export type { ChartSeries, ValueFormat } from './chart-utils';
 
 // Opinionated, token-themed chart components (docs/34 §15) built on Recharts.
 // Recharts itself never leaves this package — feature code passes plain
@@ -48,8 +50,13 @@ export interface BaseChartProps {
   showLegend?: boolean;
   showXAxis?: boolean;
   showYAxis?: boolean;
-  /** Format Y-axis ticks + tooltip values (e.g. currency). */
+  /** Format Y-axis ticks + tooltip values (e.g. currency). Client-only — a
+   *  function can't cross the RSC boundary; from a Server Component use
+   *  `valueFormat` instead. When both are set, `valueFormatter` wins. */
   valueFormatter?: ValueFormatter;
+  /** Serializable formatting spec for Y-axis ticks + tooltip values. Safe to
+   *  pass from Server Components (e.g. `valueFormat="currency"`). */
+  valueFormat?: ValueFormat;
   /** Format X-axis tick labels (e.g. short dates). */
   xTickFormatter?: (value: string | number) => string;
   className?: string;
@@ -100,13 +107,15 @@ export function LineChart({
   showLegend,
   showXAxis = true,
   showYAxis = true,
-  valueFormatter,
+  valueFormatter: valueFormatterProp,
+  valueFormat,
   xTickFormatter,
   curved = true,
   className,
   ariaLabel,
 }: LineChartProps) {
   const legend = showLegend ?? series.length > 1;
+  const valueFormatter = resolveFormatter(valueFormatterProp, valueFormat);
   return (
     <ChartFrame height={height} ariaLabel={ariaLabel} className={className}>
       <RLineChart data={data} margin={CHART_MARGIN}>
@@ -169,13 +178,15 @@ export function BarChart({
   showLegend,
   showXAxis = true,
   showYAxis = true,
-  valueFormatter,
+  valueFormatter: valueFormatterProp,
+  valueFormat,
   xTickFormatter,
   stacked = false,
   className,
   ariaLabel,
 }: BarChartProps) {
   const legend = showLegend ?? series.length > 1;
+  const valueFormatter = resolveFormatter(valueFormatterProp, valueFormat);
   return (
     <ChartFrame height={height} ariaLabel={ariaLabel} className={className}>
       <RBarChart data={data} margin={CHART_MARGIN}>
@@ -236,7 +247,8 @@ export function AreaChart({
   showLegend,
   showXAxis = true,
   showYAxis = true,
-  valueFormatter,
+  valueFormatter: valueFormatterProp,
+  valueFormat,
   xTickFormatter,
   curved = true,
   stacked = false,
@@ -244,6 +256,7 @@ export function AreaChart({
   ariaLabel,
 }: AreaChartProps) {
   const legend = showLegend ?? series.length > 1;
+  const valueFormatter = resolveFormatter(valueFormatterProp, valueFormat);
   const gradientId = React.useId();
   return (
     <ChartFrame height={height} ariaLabel={ariaLabel} className={className}>

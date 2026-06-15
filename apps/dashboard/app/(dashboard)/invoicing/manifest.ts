@@ -14,7 +14,7 @@ export const invoicingManifest: ModuleManifest = {
   icon: ReceiptText,
   routePrefix: '/invoicing',
   sections: [
-    { id: 'documents', label: 'Documents', icon: FileText, href: '/invoicing' },
+    { id: 'documents', label: 'Documents', icon: FileText, href: '/invoicing/documents' },
     {
       id: 'workflows',
       label: 'Workflows',

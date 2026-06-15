@@ -9,6 +9,34 @@ Four Kubernetes `CronJob` resources that POST to `/internal/crm/*` on api-rest. 
 | `crm-overdue-reminders`   | `0 4 * * *` | `POST /internal/crm/overdue-reminders`   | Mid-morning UTC ≈ early US workday         |
 | `crm-segment-recompute`   | `0 5 * * *` | `POST /internal/crm/segment-recompute`   | Latest — heaviest, runs after the rest     |
 
+## Commerce scheduled jobs
+
+Wiring for the schedulers under [packages/commerce/src/schedulers/](../../packages/commerce/src/schedulers/).
+
+| CronJob                       | Schedule      | Endpoint                                     | Why this time                                            |
+| ----------------------------- | ------------- | -------------------------------------------- | -------------------------------------------------------- |
+| `commerce-reservation-reaper` | `*/1 * * * *` | `POST /internal/commerce/reservation-reaper` | Every minute — a stuck cart reservation holds stock      |
+| `commerce-revenue-rollup`     | `0 6 * * *`   | `POST /internal/commerce/revenue-rollup`     | Nightly, after the day closes and the CRM jobs (docs/97) |
+
+`commerce-revenue-rollup` reconciles `rollup_commerce_daily_revenue` per active
+tenant. It accepts an optional `?days=N` to widen the recomputed window for a
+one-shot backfill (default 400 days). The read endpoint live-overlays "today",
+so this job only keeps closed days correct.
+
+## Invoicing scheduled jobs
+
+Wiring for the invoicing schedulers under [packages/crm/src/schedulers/](../../packages/crm/src/schedulers/) (invoicing lives on the CRM customer spine, gated on its own `invoicing` module flag).
+
+| CronJob                      | Schedule     | Endpoint                                    | Why this time                                          |
+| ---------------------------- | ------------ | ------------------------------------------- | ------------------------------------------------------ |
+| `invoicing-collected-rollup` | `30 6 * * *` | `POST /internal/invoicing/collected-rollup` | Nightly, after the commerce revenue rollup (06:00 UTC) |
+
+`invoicing-collected-rollup` reconciles `rollup_invoicing_daily_collected` per
+active tenant from the source-of-truth payments + finalized documents. Like the
+commerce rollup it accepts an optional `?days=N` window override (default 400
+days) and the read endpoint live-overlays "today", so this job only keeps closed
+days correct.
+
 All schedules are UTC. All endpoints are guarded by the
 `X-Sparx-Internal-Cron-Token` shared secret, sourced from the
 `sparx-app-secrets` Secret (key: `SPARX_INTERNAL_CRON_TOKEN`).

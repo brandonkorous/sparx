@@ -10,7 +10,7 @@
 // Commerce tables carry integer cents. Reports surface integer cents
 // consistently so the dashboard doesn't have to juggle two formats.
 
-import { withTenant } from '@sparx/db';
+import { withTenant, type TxClient } from '@sparx/db';
 
 import type { ServiceContext } from '../errors';
 
@@ -515,6 +515,310 @@ export async function inventoryValuation(ctx: ServiceContext): Promise<Inventory
       totalRetailCents,
       currency: DEFAULT_CURRENCY,
       asOf: new Date().toISOString(),
+    };
+  });
+}
+
+// ─── Revenue timeseries (rollup, docs/97) ────────────────────────────
+//
+// The Commerce overview's revenue chart reads daily buckets from the
+// `rollup_commerce_daily_revenue` table (pre-aggregated nightly by the
+// reconcile below) for closed days, and recomputes the most recent open day(s)
+// live so "today" is always fresh — no event-increment worker needed. Buckets
+// are by `placed_at`'s UTC date; `net_cents` matches revenueSummary's net so
+// the chart and the headline KPI never disagree.
+
+export type RollupGrain = 'day' | 'week' | 'month';
+
+export interface RevenueTimeseriesPoint {
+  /** Start of the bucket, UTC date `YYYY-MM-DD`. */
+  bucket: string;
+  ordersCount: number;
+  grossCents: number;
+  discountCents: number;
+  refundedCents: number;
+  netCents: number;
+}
+
+export interface RevenueTimeseries {
+  range: { from: string; to: string; grain: RollupGrain };
+  points: RevenueTimeseriesPoint[];
+  totals: {
+    ordersCount: number;
+    grossCents: number;
+    discountCents: number;
+    refundedCents: number;
+    netCents: number;
+  };
+  currency: string;
+}
+
+export interface RevenueRollupReconcileResult {
+  /** Days with at least one non-cancelled order in the reconciled window. */
+  days: number;
+  ordersCount: number;
+  windowStart: string;
+}
+
+// How many trailing days the read recomputes live on every call (today +
+// yesterday at 1). The reconcile writes these too, but the live overlay wins so
+// a same-day order shows up without waiting for the nightly job.
+const OVERLAY_DAYS = 1;
+
+// Trailing window the nightly reconcile recomputes from source-of-truth orders.
+// At Phase-1 volumes this effectively recomputes all history each night (and is
+// the one-shot backfill); narrow it once per-tenant order counts grow large.
+const DEFAULT_RECONCILE_DAYS = 400;
+
+const ZERO_MEASURES = {
+  ordersCount: 0,
+  grossCents: 0,
+  discountCents: 0,
+  refundedCents: 0,
+  netCents: 0,
+} as const;
+
+interface DayMeasures {
+  ordersCount: number;
+  grossCents: number;
+  discountCents: number;
+  refundedCents: number;
+  netCents: number;
+}
+
+interface DayRow extends DayMeasures {
+  /** UTC date key `YYYY-MM-DD`. */
+  key: string;
+  /** UTC-midnight Date for the bucket (used as the rollup PK value). */
+  date: Date;
+}
+
+function startOfUtcDay(d: Date): Date {
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+}
+
+function addUtcDays(d: Date, n: number): Date {
+  return new Date(d.getTime() + n * 86_400_000);
+}
+
+function utcDateKey(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+function eachUtcDay(from: Date, to: Date): Date[] {
+  const out: Date[] = [];
+  const end = startOfUtcDay(to).getTime();
+  for (let d = startOfUtcDay(from); d.getTime() <= end; d = addUtcDays(d, 1)) out.push(d);
+  return out;
+}
+
+// Handles the several shapes a Decimal SUM can take back from $queryRaw
+// (Prisma.Decimal | string | number) → integer cents.
+function rawToCents(v: unknown): number {
+  if (v == null) return 0;
+  if (typeof v === 'number') return Math.round(v * 100);
+  if (typeof v === 'bigint') return Number(v) * 100;
+  if (typeof v === 'string') {
+    const n = Number.parseFloat(v);
+    return Number.isFinite(n) ? Math.round(n * 100) : 0;
+  }
+  if (typeof v === 'object' && 'toNumber' in v && typeof v.toNumber === 'function') {
+    return Math.round((v as { toNumber(): number }).toNumber() * 100);
+  }
+  return 0;
+}
+
+interface RawDayRow {
+  bucket: Date;
+  orders_count: number;
+  gross: unknown;
+  discount: unknown;
+  refunded: unknown;
+  collected: unknown;
+}
+
+// One GROUP-BY-day pass over non-cancelled orders in [from, toExclusive).
+// Bucketed by placed_at's UTC date. RLS scopes the read to the tenant. Shared by
+// the live overlay/cold-start in revenueTimeseries and by the nightly reconcile.
+async function aggregateRevenueByDay(
+  tx: TxClient,
+  from: Date,
+  toExclusive: Date
+): Promise<DayRow[]> {
+  const rows = await tx.$queryRaw<RawDayRow[]>`
+    SELECT
+      (placed_at AT TIME ZONE 'UTC')::date AS bucket,
+      COUNT(*)::int                        AS orders_count,
+      COALESCE(SUM(subtotal), 0)           AS gross,
+      COALESCE(SUM(discount_total), 0)     AS discount,
+      COALESCE(SUM(refund_total), 0)       AS refunded,
+      COALESCE(SUM(total), 0)              AS collected
+    FROM orders
+    WHERE status <> 'cancelled'
+      AND placed_at >= ${from}
+      AND placed_at < ${toExclusive}
+    GROUP BY 1
+    ORDER BY 1
+  `;
+
+  return rows.map((r) => {
+    const date = startOfUtcDay(new Date(r.bucket));
+    const refundedCents = rawToCents(r.refunded);
+    return {
+      key: utcDateKey(date),
+      date,
+      ordersCount: Number(r.orders_count ?? 0),
+      grossCents: rawToCents(r.gross),
+      discountCents: rawToCents(r.discount),
+      refundedCents,
+      netCents: rawToCents(r.collected) - refundedCents,
+    };
+  });
+}
+
+function bucketStartFor(dateKey: string, grain: 'week' | 'month'): string {
+  const d = new Date(`${dateKey}T00:00:00.000Z`);
+  if (grain === 'month') {
+    return utcDateKey(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)));
+  }
+  // ISO week: snap back to Monday.
+  const deltaToMonday = (d.getUTCDay() + 6) % 7;
+  return utcDateKey(addUtcDays(startOfUtcDay(d), -deltaToMonday));
+}
+
+function foldByGrain(
+  daily: RevenueTimeseriesPoint[],
+  grain: 'week' | 'month'
+): RevenueTimeseriesPoint[] {
+  const map = new Map<string, RevenueTimeseriesPoint>();
+  for (const p of daily) {
+    const key = bucketStartFor(p.bucket, grain);
+    const cur = map.get(key);
+    if (cur) {
+      cur.ordersCount += p.ordersCount;
+      cur.grossCents += p.grossCents;
+      cur.discountCents += p.discountCents;
+      cur.refundedCents += p.refundedCents;
+      cur.netCents += p.netCents;
+    } else {
+      map.set(key, { ...p, bucket: key });
+    }
+  }
+  return [...map.values()].sort((a, b) => (a.bucket < b.bucket ? -1 : 1));
+}
+
+export async function revenueTimeseries(
+  ctx: ServiceContext,
+  input: { range: DateRange; grain?: RollupGrain }
+): Promise<RevenueTimeseries> {
+  const grain = input.grain ?? 'day';
+  const from = startOfUtcDay(new Date(input.range.from));
+  const to = startOfUtcDay(new Date(input.range.to));
+  // First day served live (recomputed on every read). Everything before it is a
+  // closed day read from the rollup.
+  const overlayStart = addUtcDays(startOfUtcDay(new Date()), -OVERLAY_DAYS);
+
+  return withTenant(ctx, async (tx) => {
+    const toExclusive = addUtcDays(to, 1);
+    const closedToExclusive = new Date(Math.min(toExclusive.getTime(), overlayStart.getTime()));
+    const byKey = new Map<string, DayMeasures>();
+
+    // 1) Closed days from the rollup. Cold-start fallback: if the rollup hasn't
+    //    been reconciled yet, aggregate the closed window live so a fresh deploy
+    //    still serves real history immediately (cheap at Phase-1 volumes).
+    if (closedToExclusive.getTime() > from.getTime()) {
+      const rollup = await tx.rollupCommerceDailyRevenue.findMany({
+        where: { bucket: { gte: from, lt: closedToExclusive } },
+        orderBy: { bucket: 'asc' },
+      });
+      if (rollup.length > 0) {
+        for (const r of rollup) {
+          byKey.set(utcDateKey(startOfUtcDay(new Date(r.bucket))), {
+            ordersCount: r.ordersCount,
+            grossCents: Number(r.grossCents),
+            discountCents: Number(r.discountCents),
+            refundedCents: Number(r.refundedCents),
+            netCents: Number(r.netCents),
+          });
+        }
+      } else {
+        for (const d of await aggregateRevenueByDay(tx, from, closedToExclusive)) {
+          byKey.set(d.key, d);
+        }
+      }
+    }
+
+    // 2) Open days (today + yesterday) always recomputed live so they're fresh.
+    const overlayFrom = new Date(Math.max(from.getTime(), overlayStart.getTime()));
+    if (toExclusive.getTime() > overlayFrom.getTime()) {
+      for (const d of await aggregateRevenueByDay(tx, overlayFrom, toExclusive)) {
+        byKey.set(d.key, d);
+      }
+    }
+
+    // 3) Continuous, zero-filled daily series so the chart has a clean axis.
+    const daily: RevenueTimeseriesPoint[] = eachUtcDay(from, to).map((d) => ({
+      bucket: utcDateKey(d),
+      ...(byKey.get(utcDateKey(d)) ?? ZERO_MEASURES),
+    }));
+
+    const points = grain === 'day' ? daily : foldByGrain(daily, grain);
+    const totals = daily.reduce(
+      (acc, p) => ({
+        ordersCount: acc.ordersCount + p.ordersCount,
+        grossCents: acc.grossCents + p.grossCents,
+        discountCents: acc.discountCents + p.discountCents,
+        refundedCents: acc.refundedCents + p.refundedCents,
+        netCents: acc.netCents + p.netCents,
+      }),
+      { ordersCount: 0, grossCents: 0, discountCents: 0, refundedCents: 0, netCents: 0 }
+    );
+
+    return {
+      range: { from: utcDateKey(from), to: utcDateKey(to), grain },
+      points,
+      totals,
+      currency: DEFAULT_CURRENCY,
+    };
+  });
+}
+
+// Nightly maintenance (docs/97 §5): recompute the trailing window from orders
+// and overwrite the rollup. Delete-then-insert the window so late refunds /
+// cancellations against older days self-heal in one pass. Run once over full
+// history, this is also the backfill. Invoked per active tenant by
+// `/internal/commerce/revenue-rollup`.
+export async function reconcileRevenueRollup(
+  ctx: ServiceContext,
+  opts?: { sinceDays?: number }
+): Promise<RevenueRollupReconcileResult> {
+  const sinceDays = Math.max(0, opts?.sinceDays ?? DEFAULT_RECONCILE_DAYS);
+  const today = startOfUtcDay(new Date());
+  const windowStart = addUtcDays(today, -sinceDays);
+  const toExclusive = addUtcDays(today, 1); // include today
+
+  return withTenant(ctx, async (tx) => {
+    const rows = await aggregateRevenueByDay(tx, windowStart, toExclusive);
+
+    await tx.rollupCommerceDailyRevenue.deleteMany({ where: { bucket: { gte: windowStart } } });
+    if (rows.length > 0) {
+      await tx.rollupCommerceDailyRevenue.createMany({
+        data: rows.map((r) => ({
+          tenantId: ctx.tenantId,
+          bucket: r.date,
+          ordersCount: r.ordersCount,
+          grossCents: BigInt(r.grossCents),
+          discountCents: BigInt(r.discountCents),
+          refundedCents: BigInt(r.refundedCents),
+          netCents: BigInt(r.netCents),
+        })),
+      });
+    }
+
+    return {
+      days: rows.length,
+      ordersCount: rows.reduce((s, r) => s + r.ordersCount, 0),
+      windowStart: utcDateKey(windowStart),
     };
   });
 }

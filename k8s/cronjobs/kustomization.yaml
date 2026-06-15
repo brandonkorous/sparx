@@ -7,3 +7,5 @@ resources:
   - crm-overdue-reminders.yaml
   - crm-segment-recompute.yaml
   - commerce-reservation-reaper.yaml
+  - commerce-revenue-rollup.yaml
+  - invoicing-collected-rollup.yaml

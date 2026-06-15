@@ -61,3 +61,8 @@ export {
 // CRM reporting — read-only metrics for the dashboard reports page and
 // the MCP get_crm_metrics tool. Live queries today; nightly rollup later.
 export * as reportingService from './reporting-service';
+
+// Invoicing reporting (docs/87 §8, docs/97 §5) — collected/billed timeseries
+// from the `rollup_invoicing_daily_collected` rollup, with the same nightly
+// reconcile + read-endpoint live-overlay pattern as commerce's revenue rollup.
+export * as invoicingReportingService from './invoicing-reporting-service';

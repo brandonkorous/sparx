@@ -15,6 +15,8 @@ export type {
   SupplierType,
   DropshipSupplierView,
   DropshipProductView,
+  PendingPublish,
+  PublishExternalRef,
 } from './types.js';
 
 export { applyPricingRule } from './types.js';

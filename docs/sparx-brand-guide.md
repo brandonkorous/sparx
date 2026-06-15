@@ -1,8 +1,8 @@
 # Sparx Brand Guide
 
-**Version:** 1.3
+**Version:** 1.4
 **Author:** Brandon Korous / WizeWorks
-**Last Updated:** 2026-06-03
+**Last Updated:** 2026-06-14
 
 ---
 
@@ -76,10 +76,15 @@ Each module owns one color. This color appears identically across three touchpoi
 | B2B/Wholesale | Slate      | `#475569` | Serious, industrial, business-grade                      |
 | AI/MCP        | Rose       | `#EC4899` | Premium, intelligent, unexpected — different in kind     |
 | Dropship      | Emerald    | `#10B981` | Growth, supply chain, organic                            |
+| Invoicing     | Lime       | `#65A30D` | Getting paid — cashflow, money in                        |
+| Inventory     | Amber      | `#F59E0B` | Stock, supply, the warehouse                             |
+| Live Chat     | Violet     | `#8B5CF6` | Conversational, responsive, human                        |
+| Automations   | Fuchsia    | `#D946EF` | Workflows firing — work happening on its own             |
+| SEO           | Yellow     | `#EAB308` | Visibility, getting found, daylight                      |
 
 ### The AI/MCP Exception
 
-The AI/MCP module is the only module that falls outside the cool/blue/green spectrum. Rose (`#EC4899`) was chosen deliberately:
+AI/MCP was the first module to reach outside the original cool/blue/green spectrum, and Rose (`#EC4899`) stays reserved for it even as the palette has since grown to cover the full spectrum (Commerce orange, Invoicing lime, Inventory amber, Automations fuchsia, SEO yellow). Rose was chosen deliberately:
 
 - Every other AI product in 2023–24 reached for purple, teal, or blue
 - Rose is completely unused in B2B SaaS AI branding
@@ -88,17 +93,19 @@ The AI/MCP module is the only module that falls outside the cool/blue/green spec
 
 ### Color Rules
 
-**What warm colors (amber, red, orange) are reserved for:**
+The module palette spans the full spectrum — twelve modules need twelve distinct hues, so warm colors (orange, lime, amber, fuchsia, yellow, rose) are first-class module identities, not off-limits. What stays reserved is the **semantic** layer:
+
+**Reserved semantic tokens — never repurposed as decoration:**
 
 - `--color-warning` (#F59E0B) — caution alerts, approaching limits
 - `--color-danger` (#EF4444) — errors, destructive actions
-- `--module-commerce` (#F97316) — Commerce module only
+- `--color-success` (#10B981) — confirmations, healthy states
 
-**What warm colors are never used for:**
+**When a module color collides with a semantic hue:**
 
-- Decorative elements
-- Other module identities
-- Brand accents outside of their defined semantic roles
+- Inventory (Amber `#F59E0B`) **is** the warning hue. Inside Inventory, status signals must stay distinguishable from the module chrome — use danger/red for stock alerts so "warning" still reads.
+- On a **solid** Amber or Yellow fill (Inventory, SEO), text/icons use dark ink — white fails AA. Other module fills use white.
+- Semantic warning/danger/success keep their meaning on every surface, in every module, regardless of the module's own accent.
 
 ---
 

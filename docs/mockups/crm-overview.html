@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en" data-module="crm">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CRM · Overview — Sparx (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   Sparx dashboard mockup — CRM overview (cyan module)
+   Same shell/tokens as the Commerce mockup; --module swapped to
+   CRM Cyan. Warm colors stay strictly semantic (amber/red);
+   cyan carries the module identity.
+   ============================================================ */
+:root{
+  --module:#06b6d4; --module-hover:#0891b2; --module-tint:#ecfeff; --module-text:#0e7490;
+  --builder:#6366f1; --commerce:#f97316; --cms:#14b8a6; --email:#0ea5e9; --b2b:#475569; --ai:#ec4899; --dropship:#10b981;
+  --bg-page:#fafafa; --bg-surface:#fff; --bg-subtle:#f4f4f5; --bg-muted:#e4e4e7;
+  --border:#e5e5e5; --border-strong:#d4d4d8;
+  --text:#0a0a0a; --text-2:#52525b; --text-3:#a1a1aa;
+  --success:#10b981; --success-tint:#ecfdf5; --success-text:#065f46;
+  --warning:#f59e0b; --warning-tint:#fffbeb; --warning-text:#92400e;
+  --danger:#ef4444;  --danger-tint:#fef2f2;  --danger-text:#991b1b;
+  --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-full:9999px;
+  --font:'Geist','Inter',system-ui,-apple-system,sans-serif;
+  --mono:'Geist Mono','JetBrains Mono',monospace;
+  --shadow-sm:0 1px 2px 0 rgb(0 0 0 / .05);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--font);background:var(--bg-page);color:var(--text);font-size:14px;line-height:1.5;font-weight:400;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit;text-decoration:none}
+.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic.sm{width:15px;height:15px}
+.muted{color:var(--text-2)} .faint{color:var(--text-3)}
+
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.side{background:var(--bg-surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:9px;padding:18px 20px 14px}
+.wordmark{font-size:19px;font-weight:500;letter-spacing:-.03em}
+.wordmark .x{color:var(--builder)}
+.mark{width:26px;height:26px;border-radius:7px;background:#0a0a0a;color:#fff;display:grid;place-items:center;font-weight:500;font-size:13px;letter-spacing:-.04em}
+.mark .x{color:var(--builder)}
+.siteswitch{margin:2px 12px 8px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-md);display:flex;align-items:center;gap:9px;cursor:pointer;background:var(--bg-surface)}
+.siteswitch:hover{border-color:var(--border-strong)}
+.siteswitch .fav{width:22px;height:22px;border-radius:5px;background:linear-gradient(135deg,#b45309,#7c2d12);flex:none}
+.siteswitch .nm{font-weight:500;font-size:13px;line-height:1.1}
+.siteswitch .sub{font-size:11px;color:var(--text-3)}
+.siteswitch .ic{margin-left:auto;color:var(--text-3)}
+.nav{padding:6px 12px;overflow-y:auto;flex:1}
+.nav__item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:var(--r-md);color:var(--text-2);font-size:13px;cursor:pointer;position:relative;margin-bottom:1px}
+.nav__item:hover{background:var(--bg-subtle);color:var(--text)}
+.nav__item .ic{color:var(--text-3)}
+.nav__item:hover .ic{color:var(--text-2)}
+.nav__item.active{background:var(--module-tint);color:var(--module-text);font-weight:500}
+.nav__item.active .ic{color:var(--module)}
+.nav__item.active::before{content:"";position:absolute;left:-12px;top:6px;bottom:6px;width:3px;border-radius:0 3px 3px 0;background:var(--module)}
+.nav__dot{width:7px;height:7px;border-radius:var(--r-full);flex:none;margin-left:auto}
+.nav__sep{height:1px;background:var(--border);margin:8px 6px}
+.account{border-top:1px solid var(--border);padding:10px 12px;display:flex;align-items:center;gap:10px}
+.avatar{width:30px;height:30px;border-radius:var(--r-full);background:#0a0a0a;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:500;flex:none}
+.account .nm{font-size:13px;font-weight:500;line-height:1.15}
+.account .sub{font-size:11px;color:var(--text-3)}
+
+.main{display:flex;flex-direction:column;min-width:0}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(250,250,250,.82);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:11px 26px}
+.crumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2)}
+.crumb .here{color:var(--text);font-weight:500}
+.crumb .ic{color:var(--text-3)}
+.search{margin-left:8px;display:flex;align-items:center;gap:8px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-md);padding:7px 11px;width:260px;color:var(--text-3);font-size:13px}
+.search kbd{margin-left:auto;font-family:var(--mono);font-size:10px;border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--text-3)}
+.topbar .spacer{flex:1}
+.iconbtn{width:34px;height:34px;border-radius:var(--r-md);display:grid;place-items:center;color:var(--text-2);cursor:pointer;border:1px solid transparent}
+.iconbtn:hover{background:var(--bg-subtle);border-color:var(--border)}
+.dotred{position:relative}
+.dotred::after{content:"";position:absolute;top:7px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--danger);border:1.5px solid var(--bg-page)}
+
+.btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:500;padding:8px 13px;border-radius:var(--r-md);border:1px solid transparent;cursor:pointer;white-space:nowrap;line-height:1;transition:background .12s,border-color .12s}
+.btn.sm{padding:6px 10px;font-size:12px}
+.btn--module{background:var(--module);color:#fff}
+.btn--module:hover{background:var(--module-hover)}
+.btn--outline{background:var(--bg-surface);border-color:var(--border-strong);color:var(--text)}
+.btn--outline:hover{background:var(--bg-subtle)}
+.btn--ghost{background:transparent;color:var(--text-2)}
+.btn--ghost:hover{background:var(--bg-subtle);color:var(--text)}
+
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:var(--r-full);line-height:1.3;white-space:nowrap}
+.badge--module{background:var(--module-tint);color:var(--module-text)}
+.badge--green{background:var(--success-tint);color:var(--success-text)}
+.badge--amber{background:var(--warning-tint);color:var(--warning-text)}
+.badge--red{background:var(--danger-tint);color:var(--danger-text)}
+.badge--muted{background:var(--bg-subtle);color:var(--text-2)}
+.badge--outline{background:transparent;border:1px solid var(--border);color:var(--text-2)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.dot--green{background:var(--success)} .dot--amber{background:var(--warning)} .dot--red{background:var(--danger)}
+
+.content{padding:24px 26px 56px;max-width:1320px;width:100%}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.pagehead h1{font-size:24px;font-weight:500;letter-spacing:-.02em;margin:0 0 3px}
+.pagehead .sub{color:var(--text-2);font-size:13px}
+.pagehead .actions{display:flex;gap:9px}
+
+.grid{display:grid;gap:16px}
+.g-4{grid-template-columns:repeat(4,1fr)}
+.g-2{grid-template-columns:1fr 1fr}
+.g-3{grid-template-columns:repeat(3,1fr)}
+.stack{display:flex;flex-direction:column;gap:16px}
+
+.card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px}
+.card--module{border-top:3px solid var(--module);padding-top:16px}
+.card__head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.card__title{font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px}
+.card__title .ic{color:var(--module)}
+.card__sub{font-size:12px;color:var(--text-3);margin-top:2px}
+.card__link{font-size:12px;color:var(--module-text);font-weight:500;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.card__link:hover{filter:brightness(1.1)}
+
+.stat .lbl{display:flex;align-items:center;gap:7px;color:var(--text-2);font-size:12.5px;margin-bottom:9px}
+.stat .lbl .ic{color:var(--text-3)}
+.stat .val{font-size:27px;font-weight:500;letter-spacing:-.02em;line-height:1}
+.stat .meta{display:flex;align-items:center;gap:7px;margin-top:9px;font-size:12px}
+.delta{display:inline-flex;align-items:center;gap:3px;font-weight:500}
+.delta--up{color:var(--success-text)} .delta--down{color:var(--danger-text)} .delta--flat{color:var(--text-3)}
+.delta .ic{width:13px;height:13px}
+.spark{margin-top:12px}
+
+/* ── Action queue tiles ────────────────────────────────────── */
+.queue{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tile{display:flex;align-items:center;gap:13px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:15px;cursor:pointer;transition:border-color .12s,background .12s}
+.tile:hover{border-color:var(--border-strong);background:#fff}
+.tile .ico{width:40px;height:40px;border-radius:var(--r-md);display:grid;place-items:center;flex:none}
+.ico--module{background:var(--module-tint);color:var(--module-text)}
+.ico--amber{background:var(--warning-tint);color:var(--warning-text)}
+.ico--red{background:var(--danger-tint);color:var(--danger-text)}
+.ico--green{background:var(--success-tint);color:var(--success-text)}
+.ico--builder{background:#eef2ff;color:#4338ca}
+.tile .n{font-size:22px;font-weight:500;line-height:1}
+.tile .l{font-size:12.5px;color:var(--text-2);margin-top:3px}
+.tile .go{margin-left:auto;color:var(--text-3)}
+.tile:hover .go{color:var(--module)}
+
+/* ── Tables ────────────────────────────────────────────────── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:400;color:var(--text-3);font-size:12px;padding:0 12px 9px;border-bottom:1px solid var(--border)}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td.num,.tbl th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl .ordno{font-family:var(--mono);font-size:12px;color:var(--module-text)}
+.tbl .cust{font-weight:500}
+.tbl tbody tr:hover{background:var(--bg-subtle)}
+
+/* ── Top customers (avatar rows) ───────────────────────────── */
+.cavatar{width:30px;height:30px;border-radius:var(--r-full);display:grid;place-items:center;font-size:11px;font-weight:500;color:#fff;flex:none}
+.custcell{display:flex;align-items:center;gap:10px}
+
+/* ── List rows ─────────────────────────────────────────────── */
+.list{display:flex;flex-direction:column}
+.lrow{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--border)}
+.lrow:last-child{border-bottom:none}
+.lrow .ico{width:30px;height:30px;border-radius:var(--r-md);display:grid;place-items:center;flex:none}
+.lrow .tt{flex:1;min-width:0}
+.lrow .tt .a{font-size:13px;font-weight:500}
+.lrow .tt .b{font-size:12px;color:var(--text-3);margin-top:1px}
+.lrow .val{font-weight:500;font-size:13px;font-variant-numeric:tabular-nums}
+
+/* ── Donut + legend ────────────────────────────────────────── */
+.donutwrap{display:flex;align-items:center;gap:20px}
+.donut-legend{display:flex;flex-direction:column;gap:11px;font-size:13px}
+.donut-legend .it{display:flex;align-items:center;gap:9px}
+.donut-legend .k{width:10px;height:10px;border-radius:3px;flex:none}
+.donut-legend .v{margin-left:auto;font-weight:500;font-variant-numeric:tabular-nums;padding-left:18px}
+
+.legend{display:flex;gap:14px;font-size:12px;color:var(--text-2)}
+.legend i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:6px;vertical-align:-1px}
+.chartwrap{position:relative}
+.axis{display:flex;justify-content:space-between;margin-top:8px;font-size:10.5px;color:var(--text-3);font-variant-numeric:tabular-nums}
+
+/* ── Bar list (open deals by stage) ────────────────────────── */
+.barlist{display:flex;flex-direction:column;gap:13px}
+.barrow{display:grid;grid-template-columns:84px 1fr 52px;align-items:center;gap:12px;font-size:13px}
+.barrow .nm{display:flex;align-items:center;gap:7px;color:var(--text-2)}
+.bartrack{height:8px;background:var(--bg-subtle);border-radius:var(--r-full);overflow:hidden}
+.barfill{height:100%;border-radius:var(--r-full);background:var(--module)}
+.barrow .pct{text-align:right;font-variant-numeric:tabular-nums;color:var(--text);font-weight:500}
+
+/* ── Activity timeline ─────────────────────────────────────── */
+.activity{display:flex;flex-direction:column;gap:0}
+.act{display:flex;gap:12px;padding:10px 0;position:relative}
+.act:not(:last-child)::before{content:"";position:absolute;left:5px;top:24px;bottom:-2px;width:1px;background:var(--border)}
+.act .pip{width:11px;height:11px;border-radius:50%;border:2px solid var(--bg-surface);background:var(--module);margin-top:4px;flex:none;box-shadow:0 0 0 1px var(--border)}
+.act .pip.cms{background:var(--cms)} .act .pip.muted{background:var(--text-3)}
+.act .a{font-size:13px}
+.act .a b{font-weight:500}
+.act .time{font-size:11.5px;color:var(--text-3);margin-top:1px}
+
+/* ── Pipeline stages ───────────────────────────────────────── */
+.stages{display:flex;flex-direction:column;gap:9px}
+.stagebar{display:grid;grid-template-columns:120px 1fr 92px;align-items:center;gap:12px;font-size:13px}
+.stagebar .nm2{color:var(--text-2)}
+.stagebar .track{height:28px;background:var(--bg-subtle);border-radius:var(--r-md);overflow:hidden;display:flex;align-items:center}
+.stagebar .fill{height:100%;background:var(--module-tint);border-right:2px solid var(--module);display:flex;align-items:center;padding:0 10px;font-size:12px;color:var(--module-text);font-weight:500;white-space:nowrap}
+.stagebar .amt{text-align:right;font-weight:500;font-variant-numeric:tabular-nums}
+
+.mockflag{position:fixed;bottom:14px;right:16px;z-index:60;background:#0a0a0a;color:#fff;font-size:11px;padding:6px 12px;border-radius:var(--r-full);opacity:.78;font-weight:500}
+
+@media (max-width:1180px){.queue{grid-template-columns:1fr 1fr}}
+@media (max-width:1080px){.g-4{grid-template-columns:1fr 1fr}.g-3{grid-template-columns:1fr}.g-2{grid-template-columns:1fr}}
+@media (max-width:920px){
+  .app{grid-template-columns:64px 1fr}
+  .brand .wordmark,.siteswitch .nm,.siteswitch .sub,.siteswitch .ic,.nav__item span,.nav__dot,.account .nm,.account .sub{display:none}
+  .siteswitch{justify-content:center}.nav__item{justify-content:center}.brand{justify-content:center;padding:16px 0}.search{display:none}
+}
+@media (max-width:640px){.g-4{grid-template-columns:1fr}.queue{grid-template-columns:1fr}.content{padding:18px 14px 48px}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-7h6v7"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.3"/><rect x="14" y="3" width="7" height="7" rx="1.3"/><rect x="3" y="14" width="7" height="7" rx="1.3"/><rect x="14" y="14" width="7" height="7" rx="1.3"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.4"/><circle cx="19" cy="20" r="1.4"/><path d="M2 3h2.2l2.3 12.1a1.6 1.6 0 0 0 1.6 1.3h9.1a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.5"/><path d="M22 21v-2a4 4 0 0 0-3-3.85"/><path d="M16 3.15a4 4 0 0 1 0 7.7"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m3 7 9 5.5L21 7"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="1.2"/><path d="M9.5 21.5v-3.5h5v3.5"/><path d="M9 6.5h.01M12 6.5h.01M15 6.5h.01M9 10.5h.01M12 10.5h.01M15 10.5h.01M9 14h.01M12 14h.01M15 14h.01"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M10 17.5h4V5.5H2.5v12H5"/><path d="M14 9.5h4l3 3v5h-2"/><circle cx="7.5" cy="17.5" r="1.6"/><circle cx="17.5" cy="17.5" r="1.6"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3.5 13.7 8 18 9.5 13.7 11 12 15.5 10.3 11 6 9.5 10.3 8z"/><path d="M19 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v2.2M12 19.3v2.2M4.3 4.3l1.6 1.6M18.1 18.1l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.3 19.7l1.6-1.6M18.1 5.9l1.6-1.6"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M5 2.5h14L21 7v0a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M4 9v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 6 2.5 8 2.5 8H3.5S6 14 6 8"/><path d="M10.5 20.5a2 2 0 0 0 3 0"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 0 1 4.7 1c0 1.6-2.3 2-2.3 3.2"/><path d="M12 17.5h.01"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10.5 13.5 21 3"/><path d="M18 13.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5.5"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.9 18a2 2 0 0 0 1.7 3h16.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4.5M12 17.5h.01"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-8"/><path d="M17 7h4v4"/></symbol>
+  <symbol id="i-package" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7.1 8.7 5 8.7-5M12 22V12"/></symbol>
+  <symbol id="i-dollar" viewBox="0 0 24 24"><path d="M12 1.5v21"/><path d="M17 5.5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></symbol>
+  <symbol id="i-percent" viewBox="0 0 24 24"><path d="M19 5 5 19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.6 1-4.7 4.6 1.1 6.5L12 21.4 6.1 20.5l1.1-6.5L2.5 9.4l6.6-1z"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20 12.5 12.5 20a1.5 1.5 0 0 1-2.1 0L3.5 13V4.5a1 1 0 0 1 1-1H13l7 7a1.5 1.5 0 0 1 0 2Z"/><circle cx="8" cy="8" r="1.2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/></symbol>
+  <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 21h14"/></symbol>
+  <symbol id="i-funnel" viewBox="0 0 24 24"><path d="M3 4.5h18l-7 8.2V20l-4-2.2v-5.1z"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></symbol>
+  <symbol id="i-check-sq" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="m8 12 2.6 2.6L16 9"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.5 3h3l1.5 4.5-2 1.5a12 12 0 0 0 6 6l1.5-2L21 14.5v3a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.5 5.2 2 2 0 0 1 6.5 3Z"/></symbol>
+  <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16" rx="2"/><path d="M9 4.5V3.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M8.5 11h7M8.5 15h5"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="mark">S<span class="x">x</span></div>
+      <span class="wordmark">Spar<span class="x">x</span></span>
+    </div>
+    <div class="siteswitch" title="Switch site">
+      <span class="fav"></span>
+      <span style="min-width:0"><span class="nm">switchback.coffee</span><br/><span class="sub">1 of 2 sites</span></span>
+      <svg class="ic sm"><use href="#i-chev-d"/></svg>
+    </div>
+    <nav class="nav">
+      <a class="nav__item"><svg class="ic"><use href="#i-home"/></svg><span>Home</span></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-grid"/></svg><span>Builder</span><i class="nav__dot" style="background:var(--builder)"></i></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-cart"/></svg><span>Commerce</span><i class="nav__dot" style="background:var(--commerce)"></i></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-layers"/></svg><span>CMS</span><i class="nav__dot" style="background:var(--cms)"></i></a>
+      <a class="nav__item active"><svg class="ic"><use href="#i-users"/></svg><span>CRM</span></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-mail"/></svg><span>Email</span><i class="nav__dot" style="background:var(--email)"></i></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-building"/></svg><span>B2B</span><i class="nav__dot" style="background:var(--b2b)"></i></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-truck"/></svg><span>Dropship</span><i class="nav__dot" style="background:var(--dropship)"></i></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-sparkles"/></svg><span>AI</span><i class="nav__dot" style="background:var(--ai)"></i></a>
+      <div class="nav__sep"></div>
+      <a class="nav__item"><svg class="ic"><use href="#i-store"/></svg><span>Marketplace</span></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-settings"/></svg><span>Settings</span></a>
+    </nav>
+    <div class="account">
+      <div class="avatar">JR</div>
+      <div><div class="nm">Jordan Reyes</div><div class="sub">Owner · Switchback</div></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">
+        <svg class="ic sm"><use href="#i-users"/></svg>
+        <span class="here">CRM</span>
+        <svg class="ic sm"><use href="#i-chev-r"/></svg>
+        <span>Overview</span>
+      </div>
+      <div class="search"><svg class="ic sm"><use href="#i-search"/></svg><span>Search customers, deals…</span><kbd>⌘K</kbd></div>
+      <div class="spacer"></div>
+      <a class="btn btn--outline sm"><svg class="ic sm"><use href="#i-ext"/></svg>Visit store</a>
+      <div class="iconbtn dotred"><svg class="ic"><use href="#i-bell"/></svg></div>
+      <div class="iconbtn"><svg class="ic"><use href="#i-help"/></svg></div>
+      <div class="avatar" style="width:32px;height:32px">JR</div>
+    </header>
+
+    <main class="content">
+      <div class="pagehead">
+        <div>
+          <h1>CRM</h1>
+          <div class="sub">Customers &amp; pipeline · last 30 days</div>
+        </div>
+        <div class="actions">
+          <a class="btn btn--outline"><svg class="ic sm"><use href="#i-download"/></svg>Import</a>
+          <a class="btn btn--outline"><svg class="ic sm"><use href="#i-check-sq"/></svg>New task</a>
+          <a class="btn btn--module"><svg class="ic sm"><use href="#i-plus"/></svg>Add customer</a>
+        </div>
+      </div>
+
+      <div class="stack">
+
+        <!-- KPI strip -->
+        <section class="grid g-4">
+          <div class="card stat card--module">
+            <div class="lbl"><svg class="ic sm"><use href="#i-users"/></svg>Customers</div>
+            <div class="val">4,820</div>
+            <div class="meta"><span class="delta delta--up"><svg class="ic"><use href="#i-up"/></svg>3.1%</span><span class="faint">vs prev. 30d</span></div>
+            <svg class="spark" viewBox="0 0 240 40" width="100%" height="40" preserveAspectRatio="none">
+              <defs><linearGradient id="spk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#06b6d4" stop-opacity=".18"/><stop offset="1" stop-color="#06b6d4" stop-opacity="0"/></linearGradient></defs>
+              <path d="M0,31 24,29 48,30 72,25 96,27 120,21 144,22 168,16 192,18 216,11 240,9 L240,40 0,40Z" fill="url(#spk)"/>
+              <polyline fill="none" stroke="#06b6d4" stroke-width="2" points="0,31 24,29 48,30 72,25 96,27 120,21 144,22 168,16 192,18 216,11 240,9"/>
+            </svg>
+          </div>
+          <div class="card stat">
+            <div class="lbl"><svg class="ic sm"><use href="#i-plus"/></svg>New · 30d</div>
+            <div class="val">486</div>
+            <div class="meta"><span class="delta delta--up"><svg class="ic"><use href="#i-up"/></svg>12%</span><span class="faint">16 / day avg.</span></div>
+          </div>
+          <div class="card stat">
+            <div class="lbl"><svg class="ic sm"><use href="#i-funnel"/></svg>Open pipeline</div>
+            <div class="val">$42,400</div>
+            <div class="meta"><span class="faint">31 active deals</span></div>
+          </div>
+          <div class="card stat">
+            <div class="lbl"><svg class="ic sm"><use href="#i-percent"/></svg>Win rate</div>
+            <div class="val">28%</div>
+            <div class="meta"><span class="delta delta--up"><svg class="ic"><use href="#i-up"/></svg>2pt</span><span class="faint">last quarter</span></div>
+          </div>
+        </section>
+
+        <!-- Action queue: needs attention -->
+        <section>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px">
+            <h2 style="font-size:15px;font-weight:500;margin:0;display:flex;align-items:center;gap:8px"><svg class="ic sm" style="color:var(--module)"><use href="#i-alert"/></svg> Needs attention</h2>
+            <span class="faint" style="font-size:12px">19 items across your pipeline</span>
+          </div>
+          <div class="queue">
+            <div class="tile">
+              <span class="ico ico--module"><svg class="ic"><use href="#i-phone"/></svg></span>
+              <div><div class="n">7</div><div class="l">Follow-ups due today</div></div>
+              <svg class="ic go"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="tile">
+              <span class="ico ico--amber"><svg class="ic"><use href="#i-users"/></svg></span>
+              <div><div class="n">5</div><div class="l">Leads unassigned</div></div>
+              <svg class="ic go"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="tile">
+              <span class="ico ico--amber"><svg class="ic"><use href="#i-clock"/></svg></span>
+              <div><div class="n">4</div><div class="l">Deals stalled 14+ days</div></div>
+              <svg class="ic go"><use href="#i-chev-r"/></svg>
+            </div>
+            <div class="tile">
+              <span class="ico ico--red"><svg class="ic"><use href="#i-alert"/></svg></span>
+              <div><div class="n">3</div><div class="l">Tasks overdue</div></div>
+              <svg class="ic go"><use href="#i-chev-r"/></svg>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sales pipeline -->
+        <section class="card card--module">
+          <div class="card__head">
+            <div class="card__title"><svg class="ic"><use href="#i-funnel"/></svg>Sales pipeline</div>
+            <span class="faint" style="font-size:12.5px">Weighted value <b style="color:var(--text-2)">$42,400</b></span>
+          </div>
+          <div class="stages">
+            <div class="stagebar"><span class="nm2">Lead</span><span class="track"><span class="fill" style="width:100%">$96k</span></span><span class="amt">142</span></div>
+            <div class="stagebar"><span class="nm2">Qualified</span><span class="track"><span class="fill" style="width:69%">$71k</span></span><span class="amt">98</span></div>
+            <div class="stagebar"><span class="nm2">Proposal</span><span class="track"><span class="fill" style="width:38%">$48k</span></span><span class="amt">54</span></div>
+            <div class="stagebar"><span class="nm2">Negotiation</span><span class="track"><span class="fill" style="width:22%">$29k</span></span><span class="amt">31</span></div>
+            <div class="stagebar"><span class="nm2">Won · 30d</span><span class="track"><span class="fill" style="width:13%">$22k</span></span><span class="amt">19</span></div>
+          </div>
+        </section>
+
+        <!-- Customer growth + Leads by source -->
+        <section class="grid" style="grid-template-columns:1.9fr 1fr">
+          <div class="card">
+            <div class="card__head">
+              <div>
+                <div class="card__title"><svg class="ic"><use href="#i-trend"/></svg>Customer growth</div>
+                <div class="card__sub">Total customers · last 12 weeks</div>
+              </div>
+              <div class="legend"><span><i style="background:var(--module)"></i>Customers</span></div>
+            </div>
+            <div class="chartwrap">
+              <svg viewBox="0 0 640 210" width="100%" height="210" preserveAspectRatio="none" role="img" aria-label="Customer growth trend">
+                <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#06b6d4" stop-opacity=".17"/><stop offset="1" stop-color="#06b6d4" stop-opacity="0"/></linearGradient></defs>
+                <g stroke="#eee" stroke-width="1"><line x1="0" y1="52" x2="640" y2="52"/><line x1="0" y1="104" x2="640" y2="104"/><line x1="0" y1="156" x2="640" y2="156"/></g>
+                <path d="M0,162 58,158 116,150 174,148 232,138 290,132 348,122 406,116 464,104 522,92 580,82 640,68 L640,210 0,210Z" fill="url(#cg)"/>
+                <polyline fill="none" stroke="#06b6d4" stroke-width="2.6" points="0,162 58,158 116,150 174,148 232,138 290,132 348,122 406,116 464,104 522,92 580,82 640,68"/>
+                <circle cx="640" cy="68" r="3.6" fill="#06b6d4"/>
+              </svg>
+              <div class="axis"><span>W1</span><span>W3</span><span>W5</span><span>W7</span><span>W9</span><span>W11</span><span>W12</span></div>
+            </div>
+            <div style="display:flex;gap:26px;border-top:1px solid var(--border);margin-top:14px;padding-top:13px">
+              <div><div class="faint" style="font-size:12px">Total</div><div style="font-weight:500">4,820</div></div>
+              <div><div class="faint" style="font-size:12px">New</div><div style="font-weight:500;color:var(--module-text)">486</div></div>
+              <div><div class="faint" style="font-size:12px">Churn</div><div style="font-weight:500">1.2%</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head">
+              <div class="card__title"><svg class="ic"><use href="#i-target"/></svg>Leads by source</div>
+              <span class="card__link">Details<svg class="ic sm"><use href="#i-chev-r"/></svg></span>
+            </div>
+            <div class="donutwrap">
+              <svg width="116" height="116" viewBox="0 0 42 42" aria-label="Leads by source">
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#e4e4e7" stroke-width="6"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#06b6d4" stroke-width="6" stroke-dasharray="44 56" stroke-dashoffset="25"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#22d3ee" stroke-width="6" stroke-dasharray="26 74" stroke-dashoffset="-19"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#67e8f9" stroke-width="6" stroke-dasharray="18 82" stroke-dashoffset="-45"/>
+                <circle cx="21" cy="21" r="15.9" fill="none" stroke="#a5f3fc" stroke-width="6" stroke-dasharray="12 88" stroke-dashoffset="-63"/>
+                <text x="21" y="20.5" text-anchor="middle" font-size="7" font-weight="500" fill="#0a0a0a">486</text>
+                <text x="21" y="26.5" text-anchor="middle" font-size="3.4" fill="#a1a1aa">new leads</text>
+              </svg>
+              <div class="donut-legend">
+                <div class="it"><span class="k" style="background:#06b6d4"></span>Storefront<span class="v">44%</span></div>
+                <div class="it"><span class="k" style="background:#22d3ee"></span>Wholesale form<span class="v">26%</span></div>
+                <div class="it"><span class="k" style="background:#67e8f9"></span>Referral<span class="v">18%</span></div>
+                <div class="it"><span class="k" style="background:#a5f3fc"></span>Import<span class="v">12%</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Top customers + Tasks due today -->
+        <section class="grid" style="grid-template-columns:1.7fr 1fr">
+          <div class="card">
+            <div class="card__head">
+              <div class="card__title"><svg class="ic"><use href="#i-users"/></svg>Top customers</div>
+              <span class="card__link">All customers<svg class="ic sm"><use href="#i-chev-r"/></svg></span>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>Customer</th><th>Type</th><th class="num">Orders</th><th class="num">Lifetime value</th><th class="num">Last order</th></tr></thead>
+              <tbody>
+                <tr><td><div class="custcell"><span class="cavatar" style="background:linear-gradient(135deg,#0891b2,#0e7490)">FC</span><span class="cust">Foglight Café</span></div></td><td><span class="badge badge--muted">Wholesale</span></td><td class="num">28</td><td class="num">$4,210</td><td class="num faint">2d ago</td></tr>
+                <tr><td><div class="custcell"><span class="cavatar" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">MC</span><span class="cust">Maya Chen</span></div></td><td><span class="badge badge--module">Retail</span></td><td class="num">14</td><td class="num">$612</td><td class="num faint">1d ago</td></tr>
+                <tr><td><div class="custcell"><span class="cavatar" style="background:linear-gradient(135deg,#0d9488,#0f766e)">MO</span><span class="cust">Meridian Offices</span></div></td><td><span class="badge badge--muted">Wholesale</span></td><td class="num">19</td><td class="num">$3,840</td><td class="num faint">5d ago</td></tr>
+                <tr><td><div class="custcell"><span class="cavatar" style="background:linear-gradient(135deg,#db2777,#be185d)">PN</span><span class="cust">Priya Nair</span></div></td><td><span class="badge badge--module">Retail</span></td><td class="num">9</td><td class="num">$498</td><td class="num faint">3d ago</td></tr>
+                <tr><td><div class="custcell"><span class="cavatar" style="background:linear-gradient(135deg,#475569,#334155)">HG</span><span class="cust">Harbor Grocery Co.</span></div></td><td><span class="badge badge--muted">Wholesale</span></td><td class="num">11</td><td class="num">$2,910</td><td class="num faint">1w ago</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card__head">
+              <div class="card__title"><svg class="ic"><use href="#i-check-sq"/></svg>Tasks due today</div>
+              <span class="card__link">All tasks<svg class="ic sm"><use href="#i-chev-r"/></svg></span>
+            </div>
+            <div class="list">
+              <div class="lrow"><span class="ico ico--red"><svg class="ic sm"><use href="#i-phone"/></svg></span><div class="tt"><div class="a">Call Foglight Café re: reorder</div><div class="b">Owner · Jordan Reyes</div></div><span class="badge badge--red">Overdue</span></div>
+              <div class="lrow"><span class="ico ico--module"><svg class="ic sm"><use href="#i-mail"/></svg></span><div class="tt"><div class="a">Email Q3 wholesale pricing to Meridian</div><div class="b">Meridian Offices</div></div><span class="badge badge--muted">Today</span></div>
+              <div class="lrow"><span class="ico ico--module"><svg class="ic sm"><use href="#i-clipboard"/></svg></span><div class="tt"><div class="a">Follow up: Harbor Grocery quote</div><div class="b">Proposal · $2,400</div></div><span class="badge badge--muted">Today</span></div>
+              <div class="lrow"><span class="ico ico--module"><svg class="ic sm"><use href="#i-phone"/></svg></span><div class="tt"><div class="a">Welcome call: 3 new VIPs</div><div class="b">Onboarding</div></div><span class="badge badge--muted">Today</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Segments + Recent activity + Open deals by stage -->
+        <section class="grid g-3">
+          <div class="card">
+            <div class="card__head"><div class="card__title"><svg class="ic"><use href="#i-tag"/></svg>Segments</div><span class="card__link">Manage<svg class="ic sm"><use href="#i-chev-r"/></svg></span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div style="border:1px solid var(--border);border-radius:var(--r-md);padding:12px"><div style="font-size:20px;font-weight:500">142</div><div class="faint" style="font-size:11.5px">VIP</div></div>
+              <div style="border:1px solid var(--border);border-radius:var(--r-md);padding:12px"><div style="font-size:20px;font-weight:500;color:var(--warning-text)">89</div><div class="faint" style="font-size:11.5px">At-risk</div></div>
+              <div style="border:1px solid var(--border);border-radius:var(--r-md);padding:12px"><div style="font-size:20px;font-weight:500">486</div><div class="faint" style="font-size:11.5px">New</div></div>
+              <div style="border:1px solid var(--border);border-radius:var(--r-md);padding:12px"><div style="font-size:20px;font-weight:500">64</div><div class="faint" style="font-size:11.5px">Wholesale</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head"><div class="card__title"><svg class="ic"><use href="#i-clock"/></svg>Recent activity</div></div>
+            <div class="activity">
+              <div class="act"><span class="pip"></span><div><div class="a"><b>New lead</b> — Granite City Diner (Wholesale form)</div><div class="time">1 hour ago</div></div></div>
+              <div class="act"><span class="pip"></span><div><div class="a"><b>Deal moved</b> to Negotiation — Meridian Offices</div><div class="time">3 hours ago</div></div></div>
+              <div class="act"><span class="pip muted"></span><div><div class="a"><b>You</b> logged a call with Foglight Café</div><div class="time">6 hours ago</div></div></div>
+              <div class="act"><span class="pip cms"></span><div><div class="a"><b>Sam Ortiz</b> added a note to Maya Chen</div><div class="time">1 day ago</div></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head"><div class="card__title"><svg class="ic"><use href="#i-funnel"/></svg>Open deals by stage</div></div>
+            <div class="card__sub" style="margin:-8px 0 14px">Share of open pipeline value</div>
+            <div class="barlist">
+              <div class="barrow"><span class="nm">Lead</span><span class="bartrack"><span class="barfill" style="width:23%"></span></span><span class="pct">23%</span></div>
+              <div class="barrow"><span class="nm">Qualified</span><span class="bartrack"><span class="barfill" style="width:24%"></span></span><span class="pct">24%</span></div>
+              <div class="barrow"><span class="nm">Proposal</span><span class="bartrack"><span class="barfill" style="width:28%;background:#22d3ee"></span></span><span class="pct">28%</span></div>
+              <div class="barrow"><span class="nm">Negotiation</span><span class="bartrack"><span class="barfill" style="width:25%;background:#67e8f9"></span></span><span class="pct">25%</span></div>
+            </div>
+            <div style="border-top:1px solid var(--border);margin-top:15px;padding-top:13px" class="faint">
+              <span style="font-size:12px">Open pipeline · <b style="color:var(--text-2)">$42,400</b> across 31 deals</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="mockflag">Design mockup · illustrative data</div>
+</body>
+</html>

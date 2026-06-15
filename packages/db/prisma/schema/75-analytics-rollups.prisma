@@ -1,0 +1,72 @@
+// Analytics rollups (docs/97) — pre-aggregated, tenant-scoped summary tables
+// that the dashboard overview pages read instead of running heavy GROUP BYs on
+// the operational hot path. Each table is keyed by a time bucket (+ optional
+// dimension) so a report is a trivial indexed range scan.
+//
+// Maintenance (docs/97 §5): a nightly cron `reconcile` recomputes a trailing
+// window from the source-of-truth tables and overwrites the rollup (also the
+// one-shot backfill). The READ endpoint live-overlays the most recent open
+// day(s) so "today" is fresh without an event-increment consumer — for
+// workload A (reporting over data we already own) the source is always
+// recomputable, so reconcile + live-overlay is strictly correct and cheaper
+// than an incremental worker. Money is stored as integer cents (BIGINT) to
+// match the cents convention every `/reports/*` endpoint surfaces.
+
+// One row per (tenant, UTC day) of commerce revenue. Buckets by `placed_at`'s
+// UTC date over non-cancelled orders. `net_cents` = collected − refunds, the
+// same definition the live `revenue-summary` KPI uses, so the chart and the
+// headline never disagree.
+model RollupCommerceDailyRevenue {
+  tenantId String   @map("tenant_id") @db.Uuid
+  // The UTC day this row aggregates (date only — no time component).
+  bucket   DateTime @db.Date
+
+  ordersCount   Int    @default(0) @map("orders_count")
+  // Merchandise subtotal before discounts (sum of order.subtotal).
+  grossCents    BigInt @default(0) @map("gross_cents")
+  // Total discounts applied (sum of order.discount_total) — informational.
+  discountCents BigInt @default(0) @map("discount_cents")
+  // Total refunded (sum of order.refund_total).
+  refundedCents BigInt @default(0) @map("refunded_cents")
+  // Collected revenue net of refunds (sum(order.total) − sum(order.refund_total)).
+  netCents      BigInt @default(0) @map("net_cents")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, bucket], map: "rollup_commerce_daily_revenue_pkey")
+  @@map("rollup_commerce_daily_revenue")
+}
+
+// One row per (tenant, UTC day) of invoicing cashflow (docs/87 §8, docs/97 §5).
+// Holds two independent daily series keyed to the same calendar axis: money
+// COLLECTED (payments received that day, bucketed by `billing_document_payments.
+// received_at`) and money BILLED (documents finalized that day, bucketed by
+// `billing_documents.finalized_at`). The Invoicing overview's "collected over
+// time" chart overlays them and derives a collection rate. `collected_cents` is
+// net of refunds — the same net cash definition `aggregatePayments` uses — so
+// the chart never disagrees with the AR figures.
+model RollupInvoicingDailyCollected {
+  tenantId String   @map("tenant_id") @db.Uuid
+  // The UTC day this row aggregates (date only — no time component).
+  bucket   DateTime @db.Date
+
+  // Payment/deposit events received this day (refunds excluded from the count).
+  paymentsCount  Int    @default(0) @map("payments_count")
+  // Documents finalized (became billable) this day.
+  invoicesCount  Int    @default(0) @map("invoices_count")
+  // Net cash received: sum(deposit + payment) − sum(refund), by received_at.
+  collectedCents BigInt @default(0) @map("collected_cents")
+  // Refunds issued this day (so gross collected = collected + refunded).
+  refundedCents  BigInt @default(0) @map("refunded_cents")
+  // Sum of finalized document totals — the amount billed this day.
+  billedCents    BigInt @default(0) @map("billed_cents")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, bucket], map: "rollup_invoicing_daily_collected_pkey")
+  @@map("rollup_invoicing_daily_collected")
+}

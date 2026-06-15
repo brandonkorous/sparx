@@ -22,6 +22,9 @@ packages/db/prisma/migrations/**
 # Locally-installed Claude Code skills (untracked, regenerated on install)
 .claude/skills/**
 
+# Agent git worktrees — ephemeral isolated checkouts, formatted on their own branch
+.claude/worktrees/**
+
 # Marketplace bundle-authoring scratch
 marketplace-catalog/_src/**
 marketplace-catalog/_gen/**

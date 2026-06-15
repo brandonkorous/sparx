@@ -792,6 +792,26 @@
     0 0 0 2px var(--st-surface),
     0 0 0 4px var(--st-primary);
 }
+/* Unavailable colour (supplier can't currently fulfill this combo): dim it and
+   strike a diagonal slash across the circle — the universal "out" affordance,
+   since a greyed swatch alone reads as a muted colour, not as disabled. */
+.st-swatch[disabled] {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.st-swatch[disabled]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    to top left,
+    transparent calc(50% - 1px),
+    var(--st-text) calc(50% - 1px),
+    var(--st-text) calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+}
 
 /* Stock + meta */
 .st-stock {

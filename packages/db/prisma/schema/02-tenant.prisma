@@ -355,6 +355,10 @@ model Tenant {
   paymentIntents PaymentIntent[]
   paymentEvents  PaymentEvent[]
 
+  // Analytics rollups (docs/97) — pre-aggregated reporting summaries
+  rollupCommerceDailyRevenue    RollupCommerceDailyRevenue[]
+  rollupInvoicingDailyCollected RollupInvoicingDailyCollected[]
+
   @@map("tenants")
 }
 

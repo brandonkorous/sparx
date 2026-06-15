@@ -26,7 +26,7 @@ export async function setConversationStatusAction(
   const data = await api.patch<ConversationSummaryDto>(`/v1/chat/conversations/${conversationId}`, {
     status,
   });
-  revalidatePath('/chat');
+  revalidatePath('/chat/inbox', 'layout');
   return data;
 }
 
@@ -37,7 +37,7 @@ export async function assignConversationAction(
   const data = await api.patch<ConversationSummaryDto>(`/v1/chat/conversations/${conversationId}`, {
     assignedToId,
   });
-  revalidatePath('/chat');
+  revalidatePath('/chat/inbox', 'layout');
   return data;
 }
 

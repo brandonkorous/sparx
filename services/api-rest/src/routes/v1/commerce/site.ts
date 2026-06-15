@@ -27,6 +27,10 @@ const LimitedRangeQuery = RangeQuery.extend({
   limit: z.coerce.number().int().min(1).max(100).optional(),
 });
 
+const TimeseriesQuery = RangeQuery.extend({
+  grain: z.enum(['day', 'week', 'month']).optional(),
+});
+
 function resolveRange(input: { from?: string; to?: string }): { from: string; to: string } {
   const to = input.to ?? new Date().toISOString();
   const from = input.from ?? new Date(new Date(to).getTime() - 30 * 24 * 60 * 60_000).toISOString();
@@ -76,6 +80,22 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const range = resolveRange(RangeQuery.parse(request.query));
     return ok(await reportingService.revenueSummary(toCommerceContext(request), range));
+  });
+
+  // Daily/weekly/monthly revenue timeseries from the rollup (docs/97). Closed
+  // days come from rollup_commerce_daily_revenue; the most recent open day(s)
+  // are recomputed live so "today" is fresh. Powers the overview's revenue chart.
+  app.get('/v1/commerce/reports/revenue-timeseries', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const q = TimeseriesQuery.parse(request.query);
+    const range = resolveRange(q);
+    return ok(
+      await reportingService.revenueTimeseries(toCommerceContext(request), {
+        range,
+        ...(q.grain ? { grain: q.grain } : {}),
+      })
+    );
   });
 
   app.get('/v1/commerce/reports/top-products', async (request) => {
