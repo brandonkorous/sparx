@@ -214,6 +214,28 @@ const SAMPLE_PIPELINE = [
   { label: 'Won · 30d', value: 19, display: '19 · $22k' },
 ] as const;
 
+interface LeadSourceRow {
+  source: string;
+  label: string;
+  count: number;
+  sharePct: number;
+}
+interface LeadsBySource {
+  rangeLabel: string;
+  totalLeads: number;
+  bySource: LeadSourceRow[];
+}
+interface TaskMetrics {
+  open: number;
+  overdue: number;
+  dueToday: number;
+  completedLast30d: number;
+  byPriority: { low: number; medium: number; high: number; urgent: number };
+}
+
+// Cyan donut palette (CRM module color + tints) for the lead-source split.
+const SOURCE_COLORS = ['module', 'var(--module-active-tint)', '#67e8f9', '#a5f3fc', '#cffafe'];
+
 const SAMPLE_LEAD_SOURCES = [
   { label: 'Storefront', value: 44, color: 'module' },
   { label: 'Wholesale form', value: 26, color: 'var(--module-active-tint)' },
@@ -354,15 +376,25 @@ function monthLabel(yyyymm: string): string {
 export default async function CrmOverviewPage() {
   await requireSession();
 
-  const [snapshot, acquisition, pipelinesPage, topCustomersLive, todayTasksLive, segmentsPage] =
-    await Promise.all([
-      api.get<CrmSnapshot>('/v1/crm/reports/snapshot').catch(() => null),
-      api.get<AcquisitionPoint[]>('/v1/crm/reports/acquisition?months=12').catch(() => null),
-      api.getPaged<PipelineRow[]>('/v1/crm/pipelines?take=50').catch(() => null),
-      api.get<CrmCustomer[]>('/v1/crm/customers/top?limit=5').catch(() => null),
-      api.get<CrmTask[]>('/v1/crm/tasks/today').catch(() => null),
-      api.getPaged<SegmentRow[]>('/v1/crm/segments?take=4').catch(() => null),
-    ]);
+  const [
+    snapshot,
+    acquisition,
+    pipelinesPage,
+    topCustomersLive,
+    todayTasksLive,
+    segmentsPage,
+    leadsSrc,
+    taskStats,
+  ] = await Promise.all([
+    api.get<CrmSnapshot>('/v1/crm/reports/snapshot').catch(() => null),
+    api.get<AcquisitionPoint[]>('/v1/crm/reports/acquisition?months=12').catch(() => null),
+    api.getPaged<PipelineRow[]>('/v1/crm/pipelines?take=50').catch(() => null),
+    api.get<CrmCustomer[]>('/v1/crm/customers/top?limit=5').catch(() => null),
+    api.get<CrmTask[]>('/v1/crm/tasks/today').catch(() => null),
+    api.getPaged<SegmentRow[]>('/v1/crm/segments?take=4').catch(() => null),
+    api.get<LeadsBySource>('/v1/crm/reports/leads-by-source').catch(() => null),
+    api.get<TaskMetrics>('/v1/crm/reports/tasks').catch(() => null),
+  ]);
 
   const defaultPipeline =
     pipelinesPage?.data.find((p) => p.isDefault) ?? pipelinesPage?.data[0] ?? null;
@@ -451,6 +483,18 @@ export default async function CrmOverviewPage() {
     }) ?? null,
     [...SAMPLE_TOP_CUSTOMERS]
   );
+
+  // Leads by source — live once any leads exist in the window, else the badged
+  // example. Counts new customers grouped by their derived acquisition source.
+  const leadSourceData =
+    leadsSrc && leadsSrc.totalLeads > 0
+      ? leadsSrc.bySource.map((s, i) => ({
+          label: s.label,
+          value: s.count,
+          color: SOURCE_COLORS[i % SOURCE_COLORS.length],
+        }))
+      : null;
+
   // Tasks due today — a successful fetch is trusted even when empty (a real
   // "all caught up" state), so it does NOT fall back to sample. Only a failed
   // fetch (null) shows a badged example.
@@ -628,19 +672,37 @@ export default async function CrmOverviewPage() {
           <OverviewCard
             title="Leads by source"
             icon={<Target className="h-4 w-4" />}
-            right={<SampleBadge />}
+            description="New customers by acquisition source · last 90 days"
+            right={leadSourceData ? undefined : <SampleBadge reason="no-data" />}
           >
             <DonutChart
-              data={SAMPLE_LEAD_SOURCES.map((s) => ({
-                label: s.label,
-                value: s.value,
-                color: s.color,
-              }))}
-              valueFormat="percent"
-              centerValue="486"
+              data={
+                leadSourceData ??
+                SAMPLE_LEAD_SOURCES.map((s) => ({
+                  label: s.label,
+                  value: s.value,
+                  color: s.color,
+                }))
+              }
+              valueFormat={leadSourceData ? 'number' : 'percent'}
+              centerValue={leadSourceData ? fmtNumber(leadsSrc?.totalLeads) : '486'}
               centerLabel="new leads"
               ariaLabel="Leads by source"
             />
+            {taskStats ? (
+              <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-[var(--color-border-default)] pt-3 text-xs">
+                {[
+                  ['Open tasks', fmtNumber(taskStats.open)],
+                  ['Overdue', fmtNumber(taskStats.overdue)],
+                  ['Done · 30d', fmtNumber(taskStats.completedLast30d)],
+                ].map(([label, value]) => (
+                  <div key={label}>
+                    <div className="text-[var(--color-text-tertiary)]">{label}</div>
+                    <div className="font-medium text-[var(--color-text-secondary)]">{value}</div>
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </OverviewCard>
         </div>
 

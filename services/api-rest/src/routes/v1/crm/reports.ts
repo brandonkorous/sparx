@@ -19,6 +19,13 @@ const WinLossQuery = z.object({
   since: z.string().datetime().optional(),
 });
 const AcquisitionQuery = z.object({ months: z.coerce.number().int().min(1).max(36).optional() });
+const RangeQuery = z.object({
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+});
+const SegmentSummaryQuery = z.object({
+  limit: z.coerce.number().int().min(1).max(100).optional(),
+});
 
 const reportRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/crm/reports/snapshot', async (request) => {
@@ -56,6 +63,41 @@ const reportRoutes: FastifyPluginAsync = (app) => {
     });
     return ok(rows);
   });
+
+  // New customers grouped by their derived acquisition source (first-order
+  // channel, falling back to b2b/direct). Defaults to the last 90 days.
+  app.get('/v1/crm/reports/leads-by-source', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const q = RangeQuery.parse(request.query);
+    const range =
+      q.from !== undefined && q.to !== undefined ? { from: q.from, to: q.to } : undefined;
+    return ok(
+      await reportingService.leadsBySource(toCrmContext(request), range ? { range } : undefined)
+    );
+  });
+
+  // Aggregate task health: open / overdue / due-today / completed-30d + the
+  // open-task priority mix.
+  app.get('/v1/crm/reports/tasks', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    return ok(await reportingService.taskMetrics(toCrmContext(request)));
+  });
+
+  // Every active segment with its member count in one call.
+  app.get('/v1/crm/reports/segments', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const limit = SegmentSummaryQuery.parse(request.query).limit;
+    return ok(
+      await reportingService.segmentSummary(
+        toCrmContext(request),
+        limit !== undefined ? { limit } : undefined
+      )
+    );
+  });
+
   return Promise.resolve();
 };
 

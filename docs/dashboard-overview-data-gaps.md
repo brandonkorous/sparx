@@ -1,6 +1,6 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 1.8
+**Version:** 1.9
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -99,8 +99,9 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 - ✅ Tasks due today — `GET /v1/crm/tasks/today` (wired 2026-06-14)
 - ✅ Segment sizes — `GET /v1/crm/segments` + `GET /v1/crm/segments/:id/member-count` (wired 2026-06-14)
 - ✅ New · 30d KPI — derived from the latest `GET /v1/crm/reports/acquisition` month (wired 2026-06-14)
-- 🔴 Leads-by-source — no lead-source tracking in the report layer
-- 🔴 Aggregate task metrics & cross-segment summary — only per-entity lists/counts exist
+- ✅ Leads-by-source — `GET /v1/crm/reports/leads-by-source` (shipped 2026-06-15; the CRM has no structured `source` column, so source is derived from each new customer's **first-order channel** (storefront/b2b_portal/admin/import/mcp), falling back to b2b/direct)
+- ✅ Aggregate task metrics — `GET /v1/crm/reports/tasks` (open/overdue/due-today/completed-30d + open-task priority mix)
+- ✅ Cross-segment summary — `GET /v1/crm/reports/segments` (every active segment + member count in one call)
 
 ### Email — Sky
 
