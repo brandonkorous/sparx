@@ -528,6 +528,10 @@ interface ReconcileSummary {
   imported: number;
   confirmed: number;
   failed: number;
+  /** Per-product failure messages (`<supplierProductId>: <reason>`) — carries the
+   *  supplier's actual error (e.g. a 403 scope rejection) so the cause is visible
+   *  in the endpoint response and logs instead of failing silently. */
+  errors: string[];
 }
 
 // Close the publish handshake for a supplier (docs/14): custom-integration
@@ -546,13 +550,14 @@ export async function reconcileSupplierPublishes(
   onImported: (productId: string) => Promise<void>
 ): Promise<ReconcileSummary> {
   if (!adapter.listPendingPublish || !adapter.confirmPublish) {
-    return { pending: 0, imported: 0, confirmed: 0, failed: 0 };
+    return { pending: 0, imported: 0, confirmed: 0, failed: 0, errors: [] };
   }
 
   const pending = await adapter.listPendingPublish();
   let imported = 0;
   let confirmed = 0;
   let failed = 0;
+  const errors: string[] = [];
 
   for (const item of pending) {
     try {
@@ -624,13 +629,12 @@ export async function reconcileSupplierPublishes(
       confirmed += 1;
     } catch (err) {
       failed += 1;
+      const message = err instanceof Error ? err.message : String(err);
+      errors.push(`${item.supplierProductId}: ${message}`);
       // Never leave it stuck: report the failure so the supplier unlocks it.
       if (adapter.failPublish) {
         try {
-          await adapter.failPublish(
-            item.supplierProductId,
-            err instanceof Error ? err.message : 'Publish import failed'
-          );
+          await adapter.failPublish(item.supplierProductId, message);
         } catch {
           // best-effort — the next reconcile will retry
         }
@@ -638,7 +642,7 @@ export async function reconcileSupplierPublishes(
     }
   }
 
-  return { pending: pending.length, imported, confirmed, failed };
+  return { pending: pending.length, imported, confirmed, failed, errors };
 }
 
 // Build the adapter from a supplier row and run the publish reconcile, emitting a
@@ -921,6 +925,15 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     try {
       const summary = await runPublishReconcile(supplier, tenantId, userId);
       publishesConfirmed = summary.confirmed;
+      // Per-product failures don't throw (so the rest still reconcile) — log the
+      // supplier's actual errors (e.g. a 403 scope rejection) so the Sync path
+      // isn't a silent no-op when the publish callback is rejected.
+      if (summary.failed > 0) {
+        request.log.warn(
+          { supplierId: id, failed: summary.failed, errors: summary.errors },
+          'dropship publish reconcile had per-product failures'
+        );
+      }
     } catch (err) {
       request.log.warn({ err, supplierId: id }, 'dropship publish reconcile failed during sync');
     }

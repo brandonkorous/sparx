@@ -195,7 +195,8 @@ export class PrintifyAdapter implements SupplierAdapter {
         `${BASE_URL}/shops/${shopId}/products.json?page=${page}&limit=${limit}`,
         { headers: this.headers(), signal: AbortSignal.timeout(30_000) }
       );
-      if (!res.ok) throw new Error(`Printify products fetch failed: ${res.status}`);
+      if (!res.ok)
+        throw new Error(`Printify products fetch failed: ${await this.describeError(res)}`);
 
       const body = (await res.json()) as {
         data?: PrintifyProduct[];
@@ -217,6 +218,19 @@ export class PrintifyAdapter implements SupplierAdapter {
     return pending;
   }
 
+  // Status + a slice of the response body, so a failure surfaces WHY (e.g. a
+  // missing token scope returns `403 {"error":"Invalid scope(s) provided."}`)
+  // instead of a bare status code the caller can't act on.
+  private async describeError(res: Response): Promise<string> {
+    let detail = '';
+    try {
+      detail = (await res.text()).slice(0, 300).trim();
+    } catch {
+      // body unreadable — status alone has to do
+    }
+    return detail ? `${res.status} ${detail}` : `${res.status}`;
+  }
+
   async confirmPublish(supplierProductId: string, external: PublishExternalRef): Promise<void> {
     const shopId = await this.getShopId();
     const res = await fetch(
@@ -228,7 +242,8 @@ export class PrintifyAdapter implements SupplierAdapter {
         signal: AbortSignal.timeout(15_000),
       }
     );
-    if (!res.ok) throw new Error(`Printify publish confirm failed: ${res.status}`);
+    if (!res.ok)
+      throw new Error(`Printify publish confirm failed: ${await this.describeError(res)}`);
   }
 
   async failPublish(supplierProductId: string, reason: string): Promise<void> {
@@ -242,7 +257,8 @@ export class PrintifyAdapter implements SupplierAdapter {
         signal: AbortSignal.timeout(15_000),
       }
     );
-    if (!res.ok) throw new Error(`Printify publish-fail report failed: ${res.status}`);
+    if (!res.ok)
+      throw new Error(`Printify publish-fail report failed: ${await this.describeError(res)}`);
   }
 
   private normalize(p: PrintifyProduct): NormalizedProduct {

@@ -220,6 +220,9 @@ describe('dropship publish reconcile — unlock the "publishing" handshake', () 
 
       // Import failed → reported as a publish failure (unlocks the product), not confirmed.
       expect(summary).toMatchObject({ pending: 1, imported: 0, confirmed: 0, failed: 1 });
+      // The cause is captured (keyed by supplier product id) rather than swallowed.
+      expect(summary.errors).toHaveLength(1);
+      expect(summary.errors[0]).toContain('PUB-3');
       expect(log.confirmed).toHaveLength(0);
       expect(log.failed).toHaveLength(1);
       expect(log.failed[0]!.id).toBe('PUB-3');
