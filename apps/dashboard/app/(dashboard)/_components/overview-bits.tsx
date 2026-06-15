@@ -9,6 +9,39 @@ import { Button, Card, cn, colorClass } from '@sparx/ui';
 // metric tile those pages reuse so every module overview reads identically.
 
 export { SampleBadge } from './overview-charts';
+export type { SampleReason } from './overview-charts';
+
+// ── liveOr: "sample until real" ──────────────────────────────
+// Choose live data when the tenant actually has some, else fall back to the
+// section's illustrative sample so a new/quiet tenant still sees a populated
+// screen instead of a wall of "—". Returns the chosen data plus whether it's
+// sample, so the caller renders <SampleBadge reason="no-data" /> only when it
+// fell back. See docs/97-analytics-reporting-architecture.md §9.
+//
+//   const suppliers = liveOr(live?.bySupplier, SAMPLE_SUPPLIERS);
+//   // supplier rows: ≥1 real row counts as live (a single row flips it).
+//   <OverviewCard right={suppliers.isSample ? <SampleBadge reason="no-data" /> : undefined}>
+//
+// Arrays are "live enough" at length >= min (default 1 — a single row counts);
+// scalars/objects are live when non-null. Charts that read poorly with one point
+// can raise the bar with { min: 2 }.
+
+export interface SampleResolution<T> {
+  /** Live data when available, otherwise the sample fallback. */
+  data: T;
+  /** True when we fell back to sample — gate the badge on this. */
+  isSample: boolean;
+}
+
+export function liveOr<T>(
+  live: T | null | undefined,
+  sample: T,
+  opts?: { min?: number }
+): SampleResolution<T> {
+  const min = opts?.min ?? 1;
+  const enough = Array.isArray(live) ? live.length >= min : live != null;
+  return enough ? { data: live as T, isSample: false } : { data: sample, isSample: true };
+}
 
 // ── Formatters ───────────────────────────────────────────────
 // All fail soft to an em dash so a missing/forbidden metric renders "—" rather

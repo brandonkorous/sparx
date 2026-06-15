@@ -26,8 +26,22 @@ import {
 // Search this file for SAMPLE_ to find everything that must be replaced.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const SAMPLE_NOTE =
-  'Illustrative sample data — live metrics appear once reporting timeseries endpoints land.';
+// Why a section is showing sample data, which drives the badge copy + tooltip:
+//  - 'pending-endpoint' → no reporting endpoint exists yet (static, design-time).
+//  - 'no-data'          → the endpoint is live but this tenant has nothing to show
+//                         yet, so we fall back to an illustrative example (see liveOr).
+export type SampleReason = 'pending-endpoint' | 'no-data';
+
+const SAMPLE_NOTE: Record<SampleReason, { label: string; title: string }> = {
+  'pending-endpoint': {
+    label: 'Sample data',
+    title: 'Illustrative sample data — live metrics appear once reporting endpoints land.',
+  },
+  'no-data': {
+    label: 'Example data',
+    title: 'Example data shown until you have enough activity here — it fills in automatically.',
+  },
+};
 
 type Format = 'currency' | 'number' | 'percent' | 'compact';
 
@@ -45,8 +59,10 @@ export interface OverviewChartCardProps {
   type?: 'area' | 'bar' | 'line';
   format?: Format;
   height?: number;
-  /** Show the "Sample data" badge. Default true. Set false once data is live. */
+  /** Show the sample badge. Default true. Pass `liveOr(...).isSample` once wired. */
   sample?: boolean;
+  /** Badge wording when `sample` is true. Default 'pending-endpoint'. */
+  sampleReason?: SampleReason;
 }
 
 function makeFormatter(format: Format): (value: number) => string {
@@ -68,10 +84,11 @@ function makeFormatter(format: Format): (value: number) => string {
   }
 }
 
-export function SampleBadge() {
+export function SampleBadge({ reason = 'pending-endpoint' }: { reason?: SampleReason } = {}) {
+  const { label, title } = SAMPLE_NOTE[reason];
   return (
-    <Badge color="warning" variant="soft" title={SAMPLE_NOTE}>
-      Sample data
+    <Badge color="warning" variant="soft" title={title}>
+      {label}
     </Badge>
   );
 }
@@ -86,6 +103,7 @@ export function OverviewChartCard({
   format = 'number',
   height = 220,
   sample = true,
+  sampleReason = 'pending-endpoint',
 }: OverviewChartCardProps) {
   const valueFormatter = makeFormatter(format);
   const chartProps = {
@@ -104,7 +122,7 @@ export function OverviewChartCard({
             <CardTitle>{title}</CardTitle>
             {description && <CardDescription>{description}</CardDescription>}
           </div>
-          {sample && <SampleBadge />}
+          {sample && <SampleBadge reason={sampleReason} />}
         </div>
       </CardHeader>
       <CardContent>
