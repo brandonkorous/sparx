@@ -38,3 +38,35 @@ model RollupCommerceDailyRevenue {
   @@id([tenantId, bucket], map: "rollup_commerce_daily_revenue_pkey")
   @@map("rollup_commerce_daily_revenue")
 }
+
+// One row per (tenant, UTC day) of invoicing cashflow (docs/87 §8, docs/97 §5).
+// Holds two independent daily series keyed to the same calendar axis: money
+// COLLECTED (payments received that day, bucketed by `billing_document_payments.
+// received_at`) and money BILLED (documents finalized that day, bucketed by
+// `billing_documents.finalized_at`). The Invoicing overview's "collected over
+// time" chart overlays them and derives a collection rate. `collected_cents` is
+// net of refunds — the same net cash definition `aggregatePayments` uses — so
+// the chart never disagrees with the AR figures.
+model RollupInvoicingDailyCollected {
+  tenantId String   @map("tenant_id") @db.Uuid
+  // The UTC day this row aggregates (date only — no time component).
+  bucket   DateTime @db.Date
+
+  // Payment/deposit events received this day (refunds excluded from the count).
+  paymentsCount  Int    @default(0) @map("payments_count")
+  // Documents finalized (became billable) this day.
+  invoicesCount  Int    @default(0) @map("invoices_count")
+  // Net cash received: sum(deposit + payment) − sum(refund), by received_at.
+  collectedCents BigInt @default(0) @map("collected_cents")
+  // Refunds issued this day (so gross collected = collected + refunded).
+  refundedCents  BigInt @default(0) @map("refunded_cents")
+  // Sum of finalized document totals — the amount billed this day.
+  billedCents    BigInt @default(0) @map("billed_cents")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, bucket], map: "rollup_invoicing_daily_collected_pkey")
+  @@map("rollup_invoicing_daily_collected")
+}

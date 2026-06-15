@@ -1,8 +1,8 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous / WizeWorks
-**Last Updated:** 2026-06-14
+**Last Updated:** 2026-06-15
 
 ---
 
@@ -125,7 +125,7 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 - ✅ A/R aging buckets — `GET /v1/invoicing/aging`
 - ✅ Recent documents — `GET /v1/invoicing/documents?take=6`
 - ✅ Workflows — `GET /v1/invoicing/workflows`
-- 🔴 Collected-over-time timeseries — new `…/reports/collected-timeseries`
+- ✅ Collected-over-time timeseries — `GET /v1/invoicing/reports/collected-timeseries` (shipped 2026-06-15; **second rollup** — `rollup_invoicing_daily_collected` + nightly reconcile + live-overlay read per docs/97 §5; powers the collected-vs-billed chart + Collected/Billed/rate footer + the Collected · 30d KPI)
 - 🔴 Days-to-pay — no endpoint
 - 🔴 Customer breakdown — no endpoint
 - 🔴 Reminder-automation stats — no endpoint
@@ -157,7 +157,7 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 ## Suggested order of work
 
 1. **🟡 Wire-now pass (frontend-only).** Commerce (top products, top customers, inventory value), CRM (pipeline, win rate, top customers, tasks, segment sizes), Email (broadcasts, domains), Dropship (supplier breakdown, orders). Each drops a `<SampleBadge>` and replaces sample constants with an `api.get(...)` call — no backend change.
-2. **🔴 Timeseries reports** are the most common backend gap and power the signature charts: commerce `revenue-timeseries` **✅ (shipped 2026-06-15 — the rollup reference impl, docs/97)**, then invoicing `collected-timeseries`, dropship `…/analytics?timeseries`, automations `reports/runs`. The shared "daily bucket over a date range" rollup pattern (table + nightly reconcile + live-overlay read) is now established — copy it for the rest.
+2. **🔴 Timeseries reports** are the most common backend gap and power the signature charts: commerce `revenue-timeseries` **✅ (shipped 2026-06-15 — the rollup reference impl, docs/97)**, invoicing `collected-timeseries` **✅ (shipped 2026-06-15 — `rollup_invoicing_daily_collected`)**, then dropship `…/analytics?timeseries`, automations `reports/runs`. The shared "daily bucket over a date range" rollup pattern (table + nightly reconcile + live-overlay read) is now established — copy it for the rest.
 3. **🔴 Net-new analytics surfaces** (larger): site analytics (builder), chat analytics, CMS reporting, B2B reporting, and the entire AI reports surface. These need new aggregation + likely event capture, not just a query.
 4. **🔴 External ingestion:** SEO Search Console (organic traffic / queries) and email revenue attribution depend on data we don't yet collect.
 

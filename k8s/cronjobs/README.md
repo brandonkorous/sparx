@@ -23,6 +23,20 @@ tenant. It accepts an optional `?days=N` to widen the recomputed window for a
 one-shot backfill (default 400 days). The read endpoint live-overlays "today",
 so this job only keeps closed days correct.
 
+## Invoicing scheduled jobs
+
+Wiring for the invoicing schedulers under [packages/crm/src/schedulers/](../../packages/crm/src/schedulers/) (invoicing lives on the CRM customer spine, gated on its own `invoicing` module flag).
+
+| CronJob                      | Schedule     | Endpoint                                    | Why this time                                          |
+| ---------------------------- | ------------ | ------------------------------------------- | ------------------------------------------------------ |
+| `invoicing-collected-rollup` | `30 6 * * *` | `POST /internal/invoicing/collected-rollup` | Nightly, after the commerce revenue rollup (06:00 UTC) |
+
+`invoicing-collected-rollup` reconciles `rollup_invoicing_daily_collected` per
+active tenant from the source-of-truth payments + finalized documents. Like the
+commerce rollup it accepts an optional `?days=N` window override (default 400
+days) and the read endpoint live-overlays "today", so this job only keeps closed
+days correct.
+
 All schedules are UTC. All endpoints are guarded by the
 `X-Sparx-Internal-Cron-Token` shared secret, sourced from the
 `sparx-app-secrets` Secret (key: `SPARX_INTERNAL_CRON_TOKEN`).
