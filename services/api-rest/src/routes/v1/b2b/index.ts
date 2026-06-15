@@ -8,6 +8,7 @@ import b2bInvoiceRoutes from './invoices.js';
 import b2bApprovalRoutes from './approval.js';
 import b2bSchedulingRoutes from './scheduling.js';
 import b2bImportExportRoutes from './import.js';
+import b2bReportRoutes from './reports.js';
 
 const b2bRoutes: FastifyPluginAsync = async (app) => {
   await app.register(b2bAccountRoutes);
@@ -17,6 +18,7 @@ const b2bRoutes: FastifyPluginAsync = async (app) => {
   await app.register(b2bApprovalRoutes);
   await app.register(b2bSchedulingRoutes);
   await app.register(b2bImportExportRoutes);
+  await app.register(b2bReportRoutes);
 };
 
 export default b2bRoutes;

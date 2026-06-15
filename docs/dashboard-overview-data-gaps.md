@@ -1,6 +1,6 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 1.5
+**Version:** 1.6
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -112,9 +112,10 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 
 ### B2B — Slate
 
-- ✅ Active account count — `GET /v1/b2b/accounts` (meta.total)
-- 🟡 Open quotes / pending invoices / approval-queue counts — derivable from existing CRUD lists (`/quotes`, `/invoices`, `/approval`) as a stopgap
-- 🔴 B2B reporting (order volume over time, revenue, approvals over time) — no reporting endpoint
+- ✅ Account health + open quotes + invoices (outstanding/overdue/aging) + approval-queue + credit + tier split — `GET /v1/b2b/reports/summary` (shipped 2026-06-15)
+- ✅ Order volume / revenue **timeseries** — `GET /v1/b2b/reports/timeseries` (shipped 2026-06-15; live aggregate over b2b_portal orders, same daily-bucket chart shape as the rollups)
+- ✅ Open-quotes list + top-accounts (by invoiced amount) — `GET /v1/b2b/reports/open-quotes`, `GET /v1/b2b/reports/top-accounts` (shipped 2026-06-15)
+- 🔴 Pending applications (no application model) + activity feed (no event log) — stay sample
 
 ### AI — Rose
 
