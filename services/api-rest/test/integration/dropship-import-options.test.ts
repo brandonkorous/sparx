@@ -17,7 +17,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { invalidateModuleCache } from '@sparx/auth';
-import { prisma, withTenant } from '@sparx/db';
+import { type Prisma, prisma, withTenant } from '@sparx/db';
 import { createApp } from '../../src/app.js';
 import {
   authHeader,
@@ -518,7 +518,7 @@ describe('dropship import → product option lattice', () => {
       await withTenant({ tenantId: t.tenantId }, (tx) =>
         tx.dropshipProduct.update({
           where: { id: dpId },
-          data: { variants: allAvailable },
+          data: { variants: allAvailable as unknown as Prisma.InputJsonValue },
         })
       );
       const up = await app.inject({
