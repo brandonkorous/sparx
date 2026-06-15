@@ -3,12 +3,10 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock,
-  Code,
   FileText,
   Gauge,
   Globe,
   Search,
-  Smartphone,
   Target,
   TrendingUp,
   Zap,
@@ -49,21 +47,98 @@ import {
   OverviewRow,
   SampleBadge,
   fmtNumber,
+  liveOr,
 } from '../_components/overview-bits';
 import { RescanButton } from './_components/rescan-button';
 
 // SEO overview — "Am I getting found, and what do I fix?". Substantially LIVE:
 // the health score, pages-scored, issue counts, the issue breakdown, and the
 // worst-pages table all derive from the stored audit snapshots
-// (`GET /v1/seo/audits`). Search-console-style figures (organic clicks /
-// impressions / CTR / position, top queries) have no backing endpoint yet and
-// render as representative data behind a <SampleBadge>. The seo layout wraps
-// this in <ModuleProvider module="seo">, so the page never re-wraps.
+// (`GET /v1/seo/audits`); the technical checklist rolls every page's audit
+// checks up site-wide (`GET /v1/seo/reports/checklist`) and the activity feed
+// reads recent audit runs (`GET /v1/seo/reports/activity`). Search-console-style
+// figures (organic clicks / impressions / CTR / position, top queries) have no
+// backing endpoint yet (GSC ingestion, workload B) and render as representative
+// data behind a <SampleBadge>. The seo layout wraps this in
+// <ModuleProvider module="seo">, so the page never re-wraps.
 
 export const dynamic = 'force-dynamic';
 
 const TWO_COL_FLIP = 'grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1.9fr]';
 const TONE_CYCLE = ['warning', 'danger', 'warning', 'module'] as const;
+
+// ── Live analytics shapes (/v1/seo/reports/*) ──
+type ChecklistStatus = 'pass' | 'warn' | 'fail' | 'info';
+
+interface ChecklistCheck {
+  id: string;
+  label: string;
+  category: string;
+  status: ChecklistStatus;
+  pagesPass: number;
+  pagesWarn: number;
+  pagesFail: number;
+  pagesScored: number;
+  passRate: number | null;
+}
+
+interface SeoChecklist {
+  summary: {
+    pagesScored: number;
+    checks: number;
+    passing: number;
+    warning: number;
+    failing: number;
+  };
+  checks: ChecklistCheck[];
+}
+
+interface SeoActivityItem {
+  id: string;
+  entityType: string;
+  title: string | null;
+  path: string | null;
+  score: number;
+  grade: string;
+  fixFirst: string | null;
+  computedAt: string;
+}
+
+// The normalized rows the cards render — shared by live + sample so liveOr can
+// fall back cleanly.
+interface ChecklistRow {
+  key: string;
+  tone: 'success' | 'warning' | 'danger' | 'neutral';
+  title: string;
+  status: string;
+  hint: string | null;
+}
+interface ActivityEntry {
+  key: string;
+  title: string;
+  when: string;
+}
+
+// Check status → row tone + badge label.
+const CHECK_STATUS_META: Record<
+  ChecklistStatus,
+  { tone: 'success' | 'warning' | 'danger' | 'neutral'; label: string }
+> = {
+  pass: { tone: 'success', label: 'Good' },
+  warn: { tone: 'warning', label: 'Partial' },
+  fail: { tone: 'danger', label: 'Needs work' },
+  info: { tone: 'neutral', label: 'Info' },
+};
+
+// Compact relative time for the activity feed (server-rendered).
+function timeAgo(iso: string, nowMs: number): string {
+  const mins = Math.round((nowMs - new Date(iso).getTime()) / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.round(hours / 24)}d ago`;
+}
 
 // ── Sample data (illustrative until search-console ingestion lands) ──
 const SAMPLE_TRAFFIC_14D = [
@@ -83,33 +158,25 @@ const SAMPLE_TRAFFIC_14D = [
   { label: 'Jun 13', clicks: 684, impressions: 12400 },
 ] as const;
 
-const SAMPLE_CHECKLIST = [
+const SAMPLE_CHECKLIST: ChecklistRow[] = [
+  { key: 'c1', tone: 'success', title: 'Meta title is set', status: 'Good', hint: '18/18 pages' },
   {
-    icon: <CheckCircle2 className="h-4 w-4" />,
-    tone: 'success',
-    title: 'Sitemap submitted',
-    status: 'Done',
-  },
-  {
-    icon: <CheckCircle2 className="h-4 w-4" />,
-    tone: 'success',
-    title: 'Robots.txt',
-    status: 'Valid',
-  },
-  {
-    icon: <Code className="h-4 w-4" />,
+    key: 'c2',
     tone: 'warning',
-    title: 'Structured data',
+    title: 'Description length',
     status: 'Partial',
+    hint: '6/18 pages',
   },
   {
-    icon: <Smartphone className="h-4 w-4" />,
-    tone: 'success',
-    title: 'Mobile-friendly',
-    status: 'Pass',
+    key: 'c3',
+    tone: 'warning',
+    title: 'Structured data (JSON-LD)',
+    status: 'Partial',
+    hint: '10/18 pages',
   },
-  { icon: <Zap className="h-4 w-4" />, tone: 'success', title: 'Core Web Vitals', status: 'Good' },
-] as const;
+  { key: 'c4', tone: 'danger', title: 'Image alt text', status: 'Needs work', hint: '11/18 pages' },
+  { key: 'c5', tone: 'success', title: 'Page is indexable', status: 'Good', hint: '18/18 pages' },
+];
 
 const SAMPLE_QUERIES = [
   { q: 'switchback coffee', hint: 'Position 2.1 · brand', clicks: '1,240' },
@@ -118,12 +185,12 @@ const SAMPLE_QUERIES = [
   { q: 'coffee subscription', hint: 'Position 11.5', clicks: '410' },
 ] as const;
 
-const SAMPLE_ACTIVITY = [
-  { title: 'Audit ran — found 11 issues', when: '2 hours ago' },
-  { title: 'Sam Ortiz fixed a broken link on /shop', when: 'Yesterday' },
-  { title: '/subscriptions was indexed by Google', when: '2 days ago' },
-  { title: 'You submitted the sitemap', when: '3 days ago' },
-] as const;
+const SAMPLE_ACTIVITY: ActivityEntry[] = [
+  { key: 's1', title: 'Audited Home — scored 88/100', when: '2h ago' },
+  { key: 's2', title: 'Audited Cold Brew Concentrate — scored 72/100', when: '1d ago' },
+  { key: 's3', title: 'Audited Subscriptions — scored 64/100', when: '2d ago' },
+  { key: 's4', title: 'Audited Shop — scored 91/100', when: '3d ago' },
+];
 
 function healthBand(score: number): { color: 'success' | 'warning' | 'danger'; label: string } {
   if (score >= 80) return { color: 'success', label: 'Good' };
@@ -136,7 +203,15 @@ export default async function SeoPage() {
   const role = session.user.role;
   const canScan = role === 'owner' || role === 'admin' || role === 'editor';
 
-  const rows = (await api.get<SeoAuditRow[]>('/v1/seo/audits').catch(() => null)) ?? [];
+  const nowMs = Date.now();
+  const [rows, checklist, activity] = await Promise.all([
+    api
+      .get<SeoAuditRow[]>('/v1/seo/audits')
+      .then((r) => r ?? [])
+      .catch(() => [] as SeoAuditRow[]),
+    api.get<SeoChecklist>('/v1/seo/reports/checklist').catch(() => null),
+    api.get<SeoActivityItem[]>('/v1/seo/reports/activity?limit=8').catch(() => null),
+  ]);
 
   const count = rows.length;
   const avg = count ? Math.round(rows.reduce((sum, r) => sum + r.score, 0) / count) : null;
@@ -153,6 +228,40 @@ export default async function SeoPage() {
   const issuesTotal = rows.filter((r) => r.fixFirst).length;
 
   const worst = [...rows].sort((a, b) => a.score - b.score).slice(0, 6);
+
+  // Technical checklist — site-wide roll-up of every page's audit checks,
+  // attention-first; falls back to the representative sample until audited.
+  const checklistRows: ChecklistRow[] | null =
+    checklist && checklist.checks.length > 0
+      ? checklist.checks.slice(0, 7).map((c) => {
+          const meta = CHECK_STATUS_META[c.status];
+          return {
+            key: c.id,
+            tone: meta.tone,
+            title: c.label,
+            status: meta.label,
+            hint:
+              c.pagesScored > 0
+                ? `${fmtNumber(c.pagesPass)}/${fmtNumber(c.pagesScored)} pages`
+                : null,
+          };
+        })
+      : null;
+  const checklistDisplay = liveOr<ChecklistRow[]>(checklistRows, SAMPLE_CHECKLIST);
+
+  // Activity feed — recent audit runs, else the representative sample.
+  const activityRows: ActivityEntry[] | null =
+    activity && activity.length > 0
+      ? activity.map((a) => {
+          const label = ENTITY_LABEL[a.entityType as keyof typeof ENTITY_LABEL] ?? a.entityType;
+          return {
+            key: a.id,
+            title: `Audited ${a.title ?? label} — scored ${a.score}/100`,
+            when: timeAgo(a.computedAt, nowMs),
+          };
+        })
+      : null;
+  const activityFeed = liveOr<ActivityEntry[]>(activityRows, SAMPLE_ACTIVITY);
 
   const allAuditsBtn = (
     <Button asChild variant="outline" leftIcon={<Gauge className="h-4 w-4" />}>
@@ -265,12 +374,19 @@ export default async function SeoPage() {
                   <span className="text-[var(--color-text-secondary)]">{fmtNumber(count)}</span>{' '}
                   scored page{count === 1 ? '' : 's'}
                 </p>
-                {SAMPLE_CHECKLIST.map((c) => (
+                {checklistDisplay.data.map((c) => (
                   <OverviewRow
-                    key={c.title}
-                    icon={c.icon}
+                    key={c.key}
+                    icon={
+                      c.tone === 'success' ? (
+                        <CheckCircle2 className="h-4 w-4" />
+                      ) : (
+                        <AlertTriangle className="h-4 w-4" />
+                      )
+                    }
                     tone={c.tone}
                     title={c.title}
+                    hint={c.hint ?? undefined}
                     right={
                       <Badge color={c.tone} variant="soft">
                         {c.status}
@@ -278,12 +394,11 @@ export default async function SeoPage() {
                     }
                   />
                 ))}
-                <div className="mt-3 flex items-center gap-2">
-                  <SampleBadge />
-                  <span className="text-xs text-[var(--color-text-tertiary)]">
-                    Score is live · checklist illustrative
-                  </span>
-                </div>
+                {checklistDisplay.isSample && (
+                  <div className="mt-3">
+                    <SampleBadge reason="no-data" />
+                  </div>
+                )}
               </OverviewCard>
 
               <OverviewCard
@@ -409,18 +524,19 @@ export default async function SeoPage() {
                 ))}
               </OverviewCard>
 
-              <OverviewCard title="Recent activity" icon={<Clock className="h-4 w-4" />}>
+              <OverviewCard
+                title="Recent activity"
+                icon={<Clock className="h-4 w-4" />}
+                right={activityFeed.isSample ? <SampleBadge reason="no-data" /> : undefined}
+              >
                 <Timeline>
-                  {SAMPLE_ACTIVITY.map((a, i) => (
-                    <TimelineItem key={a.title} showConnector={i < SAMPLE_ACTIVITY.length - 1}>
+                  {activityFeed.data.map((a, i) => (
+                    <TimelineItem key={a.key} showConnector={i < activityFeed.data.length - 1}>
                       <TimelineTitle>{a.title}</TimelineTitle>
                       <TimelineTime>{a.when}</TimelineTime>
                     </TimelineItem>
                   ))}
                 </Timeline>
-                <div className="mt-3">
-                  <SampleBadge />
-                </div>
               </OverviewCard>
             </Grid>
           </>

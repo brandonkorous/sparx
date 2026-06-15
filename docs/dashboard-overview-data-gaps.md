@@ -164,8 +164,8 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 ### SEO — Yellow
 
 - ✅ Health score, pages scored, issue breakdown, worst-pages table — `GET /v1/seo/audits`
+- ✅ Technical checklist status & activity feed — `GET /v1/seo/reports/{checklist,activity}` (shipped 2026-06-15): the checklist **rolls every page's audit `card->'checks'` up site-wide** (per check: how many pages pass/warn/fail → a derived site status + pass rate, attention-first); the activity feed reads recent audit runs (`computedAt` desc). Both `liveOr`-fall back to a badged sample until the site is audited. The checklist is the REAL audit signal (title/description/structured-data/alt-text/headings/sitemap/indexable/…), not invented sitemap/robots/CWV rows
 - 🔴 Organic clicks / impressions / CTR / avg position, top queries — needs **Search Console ingestion** (no endpoint)
-- 🔴 Technical checklist status (sitemap, robots, structured data, CWV) & activity feed — no endpoint
 
 ---
 

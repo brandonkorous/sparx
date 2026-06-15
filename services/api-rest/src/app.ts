@@ -119,6 +119,7 @@ import emailUnsubscribeRoutes from './routes/v1/public/email-unsubscribe.js';
 import dashboardRoutes from './routes/v1/dashboard.js';
 import searchRoutes from './routes/v1/search.js';
 import seoAuditRoutes from './routes/v1/seo/audit.js';
+import seoReportRoutes from './routes/v1/seo/reports.js';
 import automationRoutes from './routes/v1/automations/index.js';
 import { bootstrapProviders } from './lib/providers-bootstrap.js';
 import pretty from 'pino-pretty';
@@ -654,6 +655,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(dashboardRoutes);
   await app.register(searchRoutes);
   await app.register(seoAuditRoutes);
+  await app.register(seoReportRoutes);
   await app.register(automationRoutes);
 
   return app;
