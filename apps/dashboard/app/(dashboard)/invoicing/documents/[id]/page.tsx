@@ -17,7 +17,7 @@ export default async function DocumentEditorPage({ params }: PageProps) {
     <Container size="xl">
       <Stack gap={6} className="py-8">
         <Button asChild variant="ghost" size="sm" leftIcon={<ArrowLeft className="h-4 w-4" />}>
-          <Link href="/invoicing">All documents</Link>
+          <Link href="/invoicing/documents">All documents</Link>
         </Button>
         <DocumentEditorContent id={id} />
       </Stack>

@@ -51,7 +51,9 @@ export function ConversationList({
   const { socket } = useChatSocket();
   const router = useRouter();
   const pathname = usePathname();
-  const activeId = pathname.startsWith('/chat/') ? pathname.slice('/chat/'.length) : null;
+  const activeId = pathname.startsWith('/chat/inbox/')
+    ? pathname.slice('/chat/inbox/'.length)
+    : null;
 
   // Re-sync to fresh server data when the layout re-fetches (router.refresh on a
   // brand-new conversation). React's sanctioned "adjust state during render"
@@ -139,7 +141,7 @@ export function ConversationList({
           filtered.map((c) => (
             <Link
               key={c.id}
-              href={`/chat/${c.id}`}
+              href={`/chat/inbox/${c.id}`}
               className={`block border-b border-[var(--color-border)] px-4 py-3 ${
                 c.id === activeId ? 'bg-[var(--module-active-tint)]' : ''
               }`}

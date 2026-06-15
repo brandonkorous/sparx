@@ -17,7 +17,7 @@ interface DocRef {
   number: string | null;
 }
 
-const listPath = '/invoicing';
+const listPath = '/invoicing/documents';
 const docPath = (id: string) => `/invoicing/documents/${id}`;
 
 function revalidateDoc(id: string): void {

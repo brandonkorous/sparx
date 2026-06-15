@@ -331,7 +331,7 @@ export default async function DropshipPage() {
               series={[{ key: 'routed', label: 'Routed', color: 'module' }]}
               xKey="label"
               height={210}
-              valueFormatter={(v) => fmtNumber(v)}
+              valueFormat="number"
               ariaLabel="Orders routed, last 14 days"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
@@ -449,7 +449,7 @@ export default async function DropshipPage() {
           >
             <DonutChart
               data={SAMPLE_BY_SUPPLIER}
-              valueFormatter={(v) => `${v}%`}
+              valueFormat="percent"
               centerValue={fmtNumber(ordersRouted)}
               centerLabel="orders"
               ariaLabel="Orders by supplier"

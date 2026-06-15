@@ -50,7 +50,6 @@ import {
   OverviewCard,
   OverviewRow,
   SampleBadge,
-  fmtNumber,
 } from '../_components/overview-bits';
 
 // CMS overview — the editor's morning glance at how content on switchback.coffee
@@ -268,7 +267,7 @@ export default async function CmsPage() {
           <BarList
             items={SAMPLE_PIPELINE.map((s) => ({ label: s.label, value: s.value }))}
             color="module"
-            valueFormatter={(v) => fmtNumber(v)}
+            valueFormat="number"
           />
         </OverviewCard>
 
@@ -285,7 +284,7 @@ export default async function CmsPage() {
               series={[{ key: 'views', label: 'Views', color: 'module' }]}
               xKey="label"
               height={210}
-              valueFormatter={(v) => fmtNumber(v)}
+              valueFormat="number"
               ariaLabel="Content views, last 14 days"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
@@ -309,7 +308,7 @@ export default async function CmsPage() {
           >
             <DonutChart
               data={SAMPLE_BY_TYPE}
-              valueFormatter={(v) => `${v}%`}
+              valueFormat="percent"
               centerValue="48%"
               centerLabel="blog"
               ariaLabel="Views by content type"

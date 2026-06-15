@@ -307,7 +307,7 @@ export default async function AiPage() {
               series={[{ key: 'actions', label: 'AI actions', color: 'module' }]}
               xKey="label"
               height={210}
-              valueFormatter={(v) => new Intl.NumberFormat('en-US').format(v)}
+              valueFormat="number"
               ariaLabel="AI actions per day, last 14 days"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
@@ -488,7 +488,7 @@ export default async function AiPage() {
                 { label: 'MCP agents', value: 34, color: 'var(--module-active-tint)' },
                 { label: 'Automations', value: 26, color: 'var(--color-bg-muted)' },
               ]}
-              valueFormatter={(v) => `${v}%`}
+              valueFormat="percent"
               centerValue="1,940"
               centerLabel="actions"
               ariaLabel="AI usage by surface"
@@ -512,7 +512,7 @@ export default async function AiPage() {
                 { label: 'Haiku 4.5', value: 15, color: 'var(--color-bg-muted)' },
               ]}
               max={100}
-              valueFormatter={(v) => `${v}%`}
+              valueFormat="percent"
             />
             <div className="mt-4 flex items-center justify-between gap-3 border-t border-[var(--color-border-default)] pt-3">
               <span className="text-xs text-[var(--color-text-tertiary)]">

@@ -390,7 +390,7 @@ export default async function EmailPage() {
               ]}
               xKey="label"
               height={210}
-              valueFormatter={(v) => `${v.toFixed(1)}%`}
+              valueFormat={{ kind: 'percent', digits: 1 }}
               ariaLabel="Open and click rate, last 8 weeks"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
@@ -497,10 +497,7 @@ export default async function EmailPage() {
               <MetricTile value="+524" label="Net" tone="module" />
             </div>
             <p className="mb-3 text-xs text-[var(--color-text-tertiary)]">Subscribers by source</p>
-            <BarList
-              items={SAMPLE_GROWTH_SOURCES.map((s) => ({ ...s }))}
-              valueFormatter={(v) => `${v}%`}
-            />
+            <BarList items={SAMPLE_GROWTH_SOURCES.map((s) => ({ ...s }))} valueFormat="percent" />
             <div className="mt-4">
               <SampleBadge />
             </div>
@@ -514,10 +511,7 @@ export default async function EmailPage() {
             icon={<Link2 className="h-4 w-4" />}
             right={<CardLink href="/email/broadcasts">Details</CardLink>}
           >
-            <BarList
-              items={SAMPLE_TOP_LINKS.map((s) => ({ ...s }))}
-              valueFormatter={(v) => `${v}%`}
-            />
+            <BarList items={SAMPLE_TOP_LINKS.map((s) => ({ ...s }))} valueFormat="percent" />
             <div className="mt-4 border-t border-[var(--color-border-default)] pt-3 text-xs text-[var(--color-text-tertiary)]">
               Top click ·{' '}
               <span className="text-[var(--color-text-secondary)]">/shop/all-beans</span> — 1,420

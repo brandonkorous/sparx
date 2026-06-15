@@ -2,6 +2,7 @@ import * as React from 'react';
 import { cn } from '../../utils/cn';
 import { Progress } from './progress';
 import { type ColorKey } from '../_recipes/variants';
+import { resolveFormatter, type ValueFormat } from './chart/value-format';
 
 // BarList — a labelled set of horizontal proportional bars (traffic sources,
 // A/R aging buckets, model mix, pipeline stages). Each row is label · track ·
@@ -28,15 +29,27 @@ export interface BarListProps extends React.HTMLAttributes<HTMLDivElement> {
   color?: ColorKey | (string & {});
   /** Hide the right-hand value column. */
   showValue?: boolean;
-  /** Format the default right-hand value. */
+  /** Format the default right-hand value (client callers). */
   valueFormatter?: (value: number) => string;
+  /** Serializable formatting spec, safe from Server Components (e.g. `'percent'`). */
+  valueFormat?: ValueFormat;
 }
 
 export const BarList = React.forwardRef<HTMLDivElement, BarListProps>(
   (
-    { className, items, max, color = 'module', showValue = true, valueFormatter, ...props },
+    {
+      className,
+      items,
+      max,
+      color = 'module',
+      showValue = true,
+      valueFormatter: valueFormatterProp,
+      valueFormat,
+      ...props
+    },
     ref
   ) => {
+    const valueFormatter = resolveFormatter(valueFormatterProp, valueFormat);
     const ceiling = max ?? Math.max(1, ...items.map((i) => i.value));
     return (
       <div ref={ref} className={cn('flex flex-col gap-3', className)} {...props}>
