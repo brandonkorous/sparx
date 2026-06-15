@@ -81,5 +81,57 @@ export default tseslint.config(
       'jsx-a11y/label-has-associated-control': 'off',
     },
   },
+  // --- File & function size limits (CLAUDE.md "File & function size") -------
+  // Warn-only, non-blocking: 250 lines/file, 50 lines/function. The target is
+  // cohesion, not the number — split when a unit carries a SECOND responsibility,
+  // not merely to satisfy the cap (three files that only call each other are
+  // worse than one). Enforced opportunistically (boy-scout: split when you're
+  // already touching the file), never as a dedicated sweep. Nothing sets
+  // --max-warnings, so these never fail the pre-push guard or CI.
+  {
+    files: ['**/*.{ts,tsx,js,jsx,mjs,cjs}'],
+    rules: {
+      'max-lines': ['warn', { max: 250, skipBlankLines: true, skipComments: true }],
+      'max-lines-per-function': [
+        'warn',
+        { max: 50, skipBlankLines: true, skipComments: true, IIFEs: true },
+      ],
+    },
+  },
+  // Component bodies legitimately carry JSX markup — a 50-line cap would flag
+  // every non-trivial component and push toward over-fragmentation. The 250-line
+  // file cap still applies; only per-function is relaxed for .tsx/.jsx.
+  {
+    files: ['**/*.{tsx,jsx}'],
+    rules: {
+      'max-lines-per-function': [
+        'warn',
+        { max: 120, skipBlankLines: true, skipComments: true, IIFEs: true },
+      ],
+    },
+  },
+  // Exempt: data-as-code (blueprints, seed, catalogs, legal/email templates) is
+  // large by nature (declarative data), and tests run long per suite. Splitting
+  // these by line count hurts more than it helps. (.md/.sql/.prisma/.css aren't
+  // linted by this config at all, so they need no exemption here.)
+  {
+    files: [
+      'packages/blueprints/**',
+      'marketplace-catalog/**',
+      'packages/legal-templates/**',
+      'packages/builder-schemas/src/default-emails.ts',
+      '**/seed.ts',
+      '**/_lib/catalog.ts',
+      '**/module-catalog.ts',
+      '**/*.{test,spec}.{ts,tsx}',
+      '**/test/**',
+      '**/e2e/**',
+      '**/vitest.setup.{ts,tsx}',
+    ],
+    rules: {
+      'max-lines': 'off',
+      'max-lines-per-function': 'off',
+    },
+  },
   prettierConfig
 );

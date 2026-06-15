@@ -29,6 +29,10 @@ Nothing has been `pnpm install`ed yet — the first time anyone clones, they nee
 
 `pnpm install` wires `git config core.hooksPath .githooks` (via the root `prepare` script), which enables [.githooks/pre-push](.githooks/pre-push). Every `git push` first runs `pnpm install --frozen-lockfile && pnpm format:check && pnpm lint && pnpm typecheck` against the working tree. A red local check blocks the push — this is intentional: CI on `main` is the production tripwire, not a debugging surface. Bypass deliberately with `git push --no-verify` if you really need to (e.g. recovering from a hook bug).
 
+### File & function size
+
+Target **≤250 lines per file** and **≤50 lines per function** (≤120 for JSX component bodies). The point is **cohesion — one file/function, one responsibility** — with line count as the smell detector, not the verdict. **Split when a unit carries a second responsibility; never fragment a single cohesive one just to hit the number** (three files that only call each other read worse than one). ESLint enforces this as a **`warn` that never blocks push/CI** (`max-lines`, `max-lines-per-function` in [eslint.config.js](eslint.config.js)); tests and data-as-code (blueprints, seed, catalogs, legal/email templates) are exempt. **Enforcement is boy-scout, not a migration:** when you're already editing a flagged file, split it then — there is no dedicated refactor sweep, and a pre-existing over-limit file is not a reason to block unrelated work.
+
 ## What this product is
 
 Sparx (sparx.works) is WizeWorks' modular content and commerce OS — a single platform combining storefront, commerce, CRM, CMS, email, B2B/wholesale, dropship, and MCP/AI integration. It serves content, commerce, or both: a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class — selling is one capability, never the assumption. Modules activate independently; a tenant pays only for what they use. The first Enterprise client driving the initial feature set is **Gillett Diesel Service** (B2B + fleet + MCP requirements), but the platform is not commerce- or industry-specific.
