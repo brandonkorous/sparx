@@ -22,3 +22,16 @@ export async function listCrmActiveTenants(): Promise<{ id: string }[]> {
     select: { id: true },
   });
 }
+
+/** All tenants where `settings.modules.invoicing.enabled = true`. The invoicing
+ *  module is gated independently of CRM (a tenant can bill without the full CRM
+ *  surface), so the collected-rollup reconcile enumerates its own active set. */
+export async function listInvoicingActiveTenants(): Promise<{ id: string }[]> {
+  return prisma.tenant.findMany({
+    where: {
+      status: 'active',
+      settings: { path: ['modules', 'invoicing', 'enabled'], equals: true },
+    },
+    select: { id: true },
+  });
+}

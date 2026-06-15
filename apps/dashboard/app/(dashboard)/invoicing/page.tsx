@@ -42,16 +42,21 @@ import {
   OverviewRow,
   SampleBadge,
   fmtMoney,
+  fmtMoneyCents,
   fmtNumber,
+  fmtPercentRatio,
+  liveOr,
 } from '../_components/overview-bits';
 
 // Invoicing overview — the founder's "am I getting paid?" glance. The signature
 // pair is A/R aging (how much is owed, and how old) + collected-over-time. The
-// A/R aging buckets and the recent-documents table are wired LIVE to the
-// canonical /v1/invoicing endpoints (fail-soft to "—"); the collected timeseries,
-// days-to-pay, and customer breakdown render representative data behind a
-// <SampleBadge> until matching reporting endpoints land. Warm colors stay
-// strictly semantic — overdue balances escalate module → warning → danger.
+// A/R aging buckets, the recent-documents table, the Collected · 30d KPI, and the
+// collected-vs-billed timeseries are wired LIVE to the canonical /v1/invoicing
+// endpoints (the timeseries off the rollup_invoicing_daily_collected rollup,
+// docs/97; fail-soft to "—" / sample); days-to-pay and the customer breakdown
+// render representative data behind a <SampleBadge> until matching reporting
+// endpoints land. Warm colors stay strictly semantic — overdue balances escalate
+// module → warning → danger.
 
 export const dynamic = 'force-dynamic';
 
@@ -84,6 +89,27 @@ interface DocumentRow {
   updatedAt: string;
 }
 
+interface CollectedTimeseriesPoint {
+  bucket: string;
+  paymentsCount: number;
+  invoicesCount: number;
+  collectedCents: number;
+  refundedCents: number;
+  billedCents: number;
+}
+interface CollectedTimeseries {
+  range: { from: string; to: string; grain: string };
+  points: CollectedTimeseriesPoint[];
+  totals: {
+    paymentsCount: number;
+    invoicesCount: number;
+    collectedCents: number;
+    refundedCents: number;
+    billedCents: number;
+  };
+  currency: string;
+}
+
 interface StageLite {
   id: string;
   customerLabel: string;
@@ -109,9 +135,10 @@ const OVERDUE_KEYS: AgingBucket['key'][] = ['d1_30', 'd31_60', 'd61_90', 'd90_pl
 
 // ── Sample data (illustrative until the matching reporting endpoints land) ──
 
-// Money collected per week — the second half of "am I getting paid?". Replace
-// with a live /v1/invoicing/reports/collected-timeseries when it lands.
-const SAMPLE_COLLECTED_12W = [
+// Money collected per week — the second half of "am I getting paid?". The
+// illustrative fallback shown (badged) until the tenant has real payments; the
+// live series comes from /v1/invoicing/reports/collected-timeseries.
+const SAMPLE_COLLECTED_12W: { label: string; collected: number; billed: number }[] = [
   { label: 'Mar 24', collected: 8120, billed: 9400 },
   { label: 'Mar 31', collected: 9340, billed: 10100 },
   { label: 'Apr 7', collected: 7610, billed: 8800 },
@@ -124,7 +151,7 @@ const SAMPLE_COLLECTED_12W = [
   { label: 'May 26', collected: 12880, billed: 13500 },
   { label: 'Jun 2', collected: 15240, billed: 15800 },
   { label: 'Jun 9', collected: 16030, billed: 16400 },
-] as const;
+];
 
 // Customer breakdown of what's outstanding — who owes the most.
 const SAMPLE_TOP_DEBTORS = [
@@ -164,17 +191,65 @@ const DEBTOR_TONE: Record<string, string> = {
 export default async function InvoicingPage() {
   await requireSession();
 
+  // Date windows for the collected-vs-billed rollup reads: the chart spans the
+  // last 12 weeks (weekly buckets); the headline KPI sums the last 30 days.
+  const now = new Date();
+  const daysAgo = (n: number) => new Date(now.getTime() - n * 86_400_000).toISOString();
+  const range12w = `from=${encodeURIComponent(daysAgo(84))}&to=${encodeURIComponent(now.toISOString())}`;
+  const range30 = `from=${encodeURIComponent(daysAgo(30))}&to=${encodeURIComponent(now.toISOString())}`;
+
   // Live: the canonical A/R aging report, the recent documents (also gives us the
-  // status counts), and the workflows (stage → customer label for each row).
-  const [aging, recent, workflows] = await Promise.all([
+  // status counts), the workflows (stage → customer label for each row), and the
+  // collected/billed timeseries off the rollup (docs/97).
+  const [aging, recent, workflows, collectedTs, collected30] = await Promise.all([
     api.get<AgingReport>('/v1/invoicing/aging').catch(() => null),
     api.getPaged<DocumentRow[]>('/v1/invoicing/documents?take=6').catch(() => null),
     api.get<WorkflowLite[]>('/v1/invoicing/workflows').catch(() => null),
+    api
+      .get<CollectedTimeseries>(`/v1/invoicing/reports/collected-timeseries?${range12w}&grain=week`)
+      .catch(() => null),
+    api
+      .get<CollectedTimeseries>(`/v1/invoicing/reports/collected-timeseries?${range30}&grain=day`)
+      .catch(() => null),
   ]);
 
   const documents = recent?.data ?? [];
   const totalDocuments = (recent?.meta?.total as number | undefined) ?? documents.length;
-  const currency = documents[0]?.currency ?? 'USD';
+  const currency = documents[0]?.currency ?? collectedTs?.currency ?? 'USD';
+
+  // Collected-vs-billed chart + footer: live the moment the tenant has any
+  // payments or billed documents in the window, else the illustrative sample
+  // (docs/97 §9). The endpoint returns a continuous zero-filled weekly series, so
+  // we gate on the window totals rather than point count.
+  const collectedPoints =
+    collectedTs && (collectedTs.totals.collectedCents > 0 || collectedTs.totals.billedCents > 0)
+      ? collectedTs.points.map((p) => ({
+          label: new Date(`${p.bucket}T00:00:00Z`).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          }),
+          collected: p.collectedCents / 100,
+          billed: p.billedCents / 100,
+        }))
+      : null;
+  const collected12w = liveOr(collectedPoints, SAMPLE_COLLECTED_12W);
+  const collectionRate =
+    collectedTs && collectedTs.totals.billedCents > 0
+      ? collectedTs.totals.collectedCents / collectedTs.totals.billedCents
+      : null;
+  const collectedFooter: [string, string][] =
+    !collected12w.isSample && collectedTs
+      ? [
+          ['Collected · 12w', fmtMoneyCents(collectedTs.totals.collectedCents, currency)],
+          ['Billed · 12w', fmtMoneyCents(collectedTs.totals.billedCents, currency)],
+          ['Collection rate', fmtPercentRatio(collectionRate)],
+        ]
+      : [
+          ['Collected · 12w', '$145,290'],
+          ['Billed · 12w', '$152,700'],
+          ['Collection rate', '95.1%'],
+        ];
 
   const stageLabels: Record<string, string> = {};
   for (const w of workflows ?? []) for (const s of w.stages) stageLabels[s.id] = s.customerLabel;
@@ -245,8 +320,12 @@ export default async function InvoicingPage() {
           <Stat
             icon={<TrendingUp className="h-4 w-4" />}
             label="Collected · 30d"
-            value="$48,210"
-            hint="Payments received this month"
+            value={fmtMoneyCents(collected30?.totals.collectedCents, currency)}
+            hint={
+              collected30 && collected30.totals.collectedCents > 0
+                ? `${fmtNumber(collected30.totals.paymentsCount)} payment${collected30.totals.paymentsCount === 1 ? '' : 's'} · last 30 days`
+                : 'No payments received yet'
+            }
           />
           <Stat
             icon={<CalendarClock className="h-4 w-4" />}
@@ -340,10 +419,10 @@ export default async function InvoicingPage() {
             title="Collected over time"
             icon={<TrendingUp className="h-4 w-4" />}
             description="Payments received vs. billed · last 12 weeks"
-            right={<SampleBadge />}
+            right={collected12w.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
             <AreaChart
-              data={[...SAMPLE_COLLECTED_12W]}
+              data={collected12w.data}
               series={[
                 { key: 'collected', label: 'Collected', color: 'module' },
                 { key: 'billed', label: 'Billed', color: 'var(--module-active-tint)' },
@@ -354,11 +433,7 @@ export default async function InvoicingPage() {
               ariaLabel="Collected vs. billed, last 12 weeks"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
-              {[
-                ['Collected · 12w', '$145,290'],
-                ['Billed · 12w', '$152,700'],
-                ['Collection rate', '95.1%'],
-              ].map(([label, value]) => (
+              {collectedFooter.map(([label, value]) => (
                 <div key={label}>
                   <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
                   <div className="font-medium">{value}</div>

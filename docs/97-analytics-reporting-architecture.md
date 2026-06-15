@@ -1,6 +1,6 @@
 # Analytics & Reporting Architecture
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -245,21 +245,21 @@ tenant has data.
 From the gap doc, each missing metric gets a home: 🟢 **wire-now** (endpoint exists today),
 📊 **rollup** (§5), 📡 **event-capture** (§6), 🌐 **external-pull** (scheduled ingestion).
 
-| Module               | 🟢 wire-now                                                     | 📊 rollup                                                             | 📡 event-capture                                                        | 🌐 external-pull                                                         |
-| -------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Commerce             | top-products, top-customers, inventory-value                    | sales timeseries, discount performance                                | —                                                                       | —                                                                        |
-| CRM                  | pipeline-funnel, win-loss, top-customers, tasks, segment sizes  | leads-by-source, cross-segment & task aggregates                      | —                                                                       | —                                                                        |
-| Email                | recent broadcasts, domain SPF/DKIM/DMARC                        | subscriber-growth, revenue attribution                                | —                                                                       | —                                                                        |
-| Dropship             | supplier breakdown, per-order margin                            | revenue/orders timeseries, on-time rate, activity                     | —                                                                       | —                                                                        |
-| Invoicing            | (aging/docs/workflows already live)                             | collected timeseries, days-to-pay, customer breakdown, reminder stats | —                                                                       | —                                                                        |
-| Automations          | per-automation runs list                                        | aggregate runs timeseries, success rate                               | —                                                                       | —                                                                        |
-| Inventory            | location/source counts (live)                                   | valuation, low/out-of-stock, per-location qty, POs, activity          | —                                                                       | —                                                                        |
-| B2B                  | active accounts (live); quote/invoice/approval counts derivable | order-volume, revenue, approvals over time                            | —                                                                       | —                                                                        |
-| CMS                  | published/draft counts (derivable)                              | publishing cadence                                                    | content views, top content                                              | —                                                                        |
-| Chat                 | conversation counts (live)                                      | volume, AI-vs-human, channel mix, agent perf                          | CSAT                                                                    | —                                                                        |
-| Storefront (builder) | blueprint teaser (live)                                         | top pages (from captured events)                                      | **page views, sessions, visitors**                                      | —                                                                        |
-| AI                   | —                                                               | usage rollups                                                         | **MCP/AI calls: tokens, tool, cost** (and build the `/v1/ai/*` surface) | —                                                                        |
-| SEO                  | audits (live)                                                   | technical-checklist, activity                                         | —                                                                       | **Search Console: organic clicks/impressions/CTR/position, top queries** |
+| Module               | 🟢 wire-now                                                     | 📊 rollup                                                                | 📡 event-capture                                                        | 🌐 external-pull                                                         |
+| -------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Commerce             | top-products, top-customers, inventory-value                    | sales timeseries ✅, discount performance                                | —                                                                       | —                                                                        |
+| CRM                  | pipeline-funnel, win-loss, top-customers, tasks, segment sizes  | leads-by-source, cross-segment & task aggregates                         | —                                                                       | —                                                                        |
+| Email                | recent broadcasts, domain SPF/DKIM/DMARC                        | subscriber-growth, revenue attribution                                   | —                                                                       | —                                                                        |
+| Dropship             | supplier breakdown, per-order margin                            | revenue/orders timeseries, on-time rate, activity                        | —                                                                       | —                                                                        |
+| Invoicing            | (aging/docs/workflows already live)                             | collected timeseries ✅, days-to-pay, customer breakdown, reminder stats | —                                                                       | —                                                                        |
+| Automations          | per-automation runs list                                        | aggregate runs timeseries, success rate                                  | —                                                                       | —                                                                        |
+| Inventory            | location/source counts (live)                                   | valuation, low/out-of-stock, per-location qty, POs, activity             | —                                                                       | —                                                                        |
+| B2B                  | active accounts (live); quote/invoice/approval counts derivable | order-volume, revenue, approvals over time                               | —                                                                       | —                                                                        |
+| CMS                  | published/draft counts (derivable)                              | publishing cadence                                                       | content views, top content                                              | —                                                                        |
+| Chat                 | conversation counts (live)                                      | volume, AI-vs-human, channel mix, agent perf                             | CSAT                                                                    | —                                                                        |
+| Storefront (builder) | blueprint teaser (live)                                         | top pages (from captured events)                                         | **page views, sessions, visitors**                                      | —                                                                        |
+| AI                   | —                                                               | usage rollups                                                            | **MCP/AI calls: tokens, tool, cost** (and build the `/v1/ai/*` surface) | —                                                                        |
+| SEO                  | audits (live)                                                   | technical-checklist, activity                                            | —                                                                       | **Search Console: organic clicks/impressions/CTR/position, top queries** |
 
 ---
 
@@ -274,8 +274,9 @@ We wire real data **as we progress through each overview page**, cheapest first:
 2. **📊 Timeseries rollups.** The most common gap and what powers the signature charts. Build
    the shared rollup pattern (table + RLS migration + nightly reconcile cron + live-overlay
    read) once, then apply it: commerce revenue **✅ (shipped 2026-06-15 — the reference
-   implementation)**, invoicing collected, dropship, automation runs. Each new chart is then
-   a small endpoint + a `liveOr(...)` swap.
+   implementation)**, invoicing collected **✅ (shipped 2026-06-15 — `rollup_invoicing_daily_collected`,
+   collected-vs-billed)**, dropship, automation runs. Each new chart is then a small endpoint
+   - a `liveOr(...)` swap.
 3. **📊 Remaining operational rollups.** CRM leads/segments/tasks, B2B reporting, inventory
    summaries, chat volume/agent metrics, CMS publishing cadence.
 4. **📡 Event-capture surfaces (larger).** Site analytics first (the flagship; BigQuery
