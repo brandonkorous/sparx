@@ -72,7 +72,7 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 - ✅ Top products — `GET /v1/commerce/reports/top-products` (wired 2026-06-14)
 - ✅ Top customers — `GET /v1/commerce/reports/top-customers` (wired 2026-06-14; replaced the unbacked new-vs-returning donut)
 - ✅ Inventory value — `GET /v1/commerce/reports/inventory-valuation` (wired 2026-06-14; units + stock value on the Inventory card)
-- 🔴 Sales **timeseries** (the sales-over-time chart needs daily/weekly points; `revenue-summary` returns one aggregate) — new `…/reports/revenue-timeseries`
+- ✅ Sales **timeseries** — `GET /v1/commerce/reports/revenue-timeseries` (shipped 2026-06-15; **first rollup** — `rollup_commerce_daily_revenue` + nightly reconcile + live-overlay read per docs/97 §5; powers the Revenue chart + Gross/Refunds/Discounts/Net footer)
 - 🔴 Traffic sources / channel breakdown — no endpoint
 - 🔴 Discount performance — no endpoint (only `/discounts` CRUD)
 
@@ -157,7 +157,7 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 ## Suggested order of work
 
 1. **🟡 Wire-now pass (frontend-only).** Commerce (top products, top customers, inventory value), CRM (pipeline, win rate, top customers, tasks, segment sizes), Email (broadcasts, domains), Dropship (supplier breakdown, orders). Each drops a `<SampleBadge>` and replaces sample constants with an `api.get(...)` call — no backend change.
-2. **🔴 Timeseries reports** are the most common backend gap and power the signature charts: commerce `revenue-timeseries`, invoicing `collected-timeseries`, dropship `…/analytics?timeseries`, automations `reports/runs`. A shared "daily bucket over a date range" report pattern would cover most.
+2. **🔴 Timeseries reports** are the most common backend gap and power the signature charts: commerce `revenue-timeseries` **✅ (shipped 2026-06-15 — the rollup reference impl, docs/97)**, then invoicing `collected-timeseries`, dropship `…/analytics?timeseries`, automations `reports/runs`. The shared "daily bucket over a date range" rollup pattern (table + nightly reconcile + live-overlay read) is now established — copy it for the rest.
 3. **🔴 Net-new analytics surfaces** (larger): site analytics (builder), chat analytics, CMS reporting, B2B reporting, and the entire AI reports surface. These need new aggregation + likely event capture, not just a query.
 4. **🔴 External ingestion:** SEO Search Console (organic traffic / queries) and email revenue attribution depend on data we don't yet collect.
 
