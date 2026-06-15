@@ -1,6 +1,6 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -61,13 +61,13 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 ### Storefront / Site builder — Indigo
 
 - ✅ Blueprint teaser — `GET /v1/blueprints`
-- ✅ Pages & content — published vs draft page counts (`GET /v1/builder/pages`) + saved-component count (`GET /v1/builder/components`) (wired 2026-06-15, docs/builder/06; `liveOr` fallback to a badged example)
+- ✅ Pages & content — published vs draft page counts (`GET /v1/builder/pages`) + saved-component count (`GET /v1/builder/components`) (wired 2026-06-15, docs/builder/06)
+- ✅ Status hero — pages-live, last-published, and the **unpublished-changes** count derived from the page + layout catalog timestamps (`GET /v1/builder/pages` + `/v1/builder/layouts`; a draft is unpublished when never published or `updatedAt > publishedAt`) + domain & SSL from `GET /v1/domains` (canonical/verified). The uptime/performance tiles (no telemetry) were replaced with real Components + avg-SEO-score tiles (wired 2026-06-15).
+- ✅ Site health — SSL (`GET /v1/domains`) + SEO metadata coverage & avg score (`GET /v1/seo/audits?type=builder_page`). The performance/mobile/sitemap rows were dropped (need telemetry) rather than badged.
+- ✅ Needs attention — real SEO issues: worst-scoring builder pages + their `fixFirst` from `GET /v1/seo/audits?type=builder_page`. (Broken-links / alt-text would need a published-tree scan — not covered.)
+- ✅ Recent activity — derived from the page/layout catalog timestamps (created → edited → published, most-recent-first). Real "what + when"; no actor ("who") without audit-log instrumentation of builder mutations.
 - ✅ Editor entry-points open the unified editor `/builder/studio` (docs/builder/07 cutover) — Brand → `?zone=theme`, Site → `?zone=layout`, Page → page zone
-- 🔴 Every KPI (page views, sessions, visitors, top pages, traffic over time, traffic sources, email signups) — **no site-analytics endpoint exists.** Needs an analytics ingestion + reporting surface (`/v1/builder/analytics/*` or a dedicated analytics service). The largest gap; sequenced under "net-new analytics surfaces".
-- 🔴 Status hero publish facts (last-published, unpublished-changes diff, uptime, performance) — `publishedAt` is on the page/layout DTOs, but the **unpublished-changes** count needs a draft-vs-published **diff** endpoint (modest); uptime/perf need telemetry.
-- 🔴 Site health (SEO metadata coverage, SSL, sitemap, performance) — partially wire-now: SEO coverage from `GET /v1/seo/audits?type=builder_page`, SSL from `GET /v1/domains`; sitemap/perf need telemetry.
-- 🔴 Needs-attention scan (missing meta, broken links, missing alt) — a background scan over the published tree (modest job), not an on-render compute.
-- 🔴 Recent activity — needs a builder activity/audit-feed endpoint.
+- 🔴 Analytics ONLY — visitors / pageviews / traffic over time / top pages / traffic sources / email signups — **no per-site site-analytics endpoint exists.** Needs an analytics ingestion + reporting surface (`/v1/builder/analytics/*` or a dedicated service). The remaining gap; sequenced under "net-new analytics surfaces".
 
 ### Commerce — Orange
 

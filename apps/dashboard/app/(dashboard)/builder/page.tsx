@@ -4,14 +4,16 @@
 // build-it-yourself surfaces grid, which now open the unified editor
 // (/builder/studio) after the Phase-7 cutover (docs/builder/07).
 //
-// LIVE today (real `/v1` reads, fail-soft behind <SampleBadge/> via liveOr):
+// LIVE today (real `/v1` reads, each fail-soft behind <SampleBadge/> / an em dash):
 //   · Blueprint teaser — /v1/blueprints
-//   · Pages & content — /v1/builder/pages (published vs draft) + /v1/builder/components
+//   · Pages & content + status hero (pages live · last published · unpublished
+//     changes) — /v1/builder/pages + /v1/builder/layouts (the catalog timestamps)
+//   · Domain & SSL — /v1/domains (the canonical/verified domain)
+//   · Site health + Needs attention (SEO) — /v1/seo/audits?type=builder_page
+//   · Recent activity — derived from the page/layout catalog timestamps
 // SAMPLE (no endpoint yet — see docs/dashboard-overview-data-gaps.md §Site builder):
-//   · the analytics cards (visitors / pageviews / traffic / top pages / sources /
-//     signups) need a net-new per-site site-analytics surface; the status hero's
-//     publish/uptime facts, site health, needs-attention scan, and the activity
-//     feed need their own (modest) endpoints. All stay badged until wired.
+//   · the analytics cards ONLY — visitors / pageviews / traffic / top pages /
+//     sources / email signups need a net-new per-site site-analytics surface.
 //
 // The builder layout is gate-only (no ModuleProvider, so the editor's full-height
 // shell isn't disturbed), so this page supplies its own module color via
@@ -79,6 +81,7 @@ import {
 } from '@sparx/ui';
 
 import { api } from '@/lib/api-rest-client';
+import type { SeoAuditRow } from '@/components/seo/types';
 import {
   CardLink,
   liveOr,
@@ -87,7 +90,7 @@ import {
   OverviewRow,
   SampleBadge,
 } from '../_components/overview-bits';
-import { listComponentsFull, listPages } from './_lib/api';
+import { listComponentsFull, listLayouts, listPages } from './_lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -287,6 +290,97 @@ function SitePreview() {
 const ATTENTION_TONE: Record<string, string> = { warning: 'warning', module: 'module' };
 const HEALTH_TONE: Record<string, string> = { success: 'success', warning: 'warning' };
 
+// ── Live-data shapes + derivations ───────────────────────────────────────────
+/** The fields the overview reads off `GET /v1/domains` (the full view has more). */
+interface DomainView {
+  host: string;
+  type: string;
+  status: string;
+  isCanonical: boolean;
+}
+
+// A builder page is "healthy" at SEO ≥ this; below it lands in Needs attention.
+const SEO_OK = 80;
+
+interface CatalogEntry {
+  published: boolean;
+  publishedAt: string | null;
+  updatedAt: string;
+}
+
+// A draft has unpublished changes when it was never published, or edited since the
+// last snapshot (the storefront still serves the older published tree).
+function hasUnpublishedChanges(e: CatalogEntry): boolean {
+  if (!e.published || !e.publishedAt) return true;
+  return e.updatedAt > e.publishedAt;
+}
+
+function derivePublishStatus(
+  pages: CatalogEntry[] | null,
+  layouts: CatalogEntry[] | null
+): { live: boolean; pagesLive: number; unpublished: number; lastPublishedAt: string | null } {
+  if (!pages) return { live: false, pagesLive: 0, unpublished: 0, lastPublishedAt: null };
+  const all = [...pages, ...(layouts ?? [])];
+  const published = all.map((e) => e.publishedAt).filter((x): x is string => Boolean(x));
+  return {
+    live: true,
+    pagesLive: pages.filter((p) => p.published).length,
+    unpublished: all.filter(hasUnpublishedChanges).length,
+    lastPublishedAt: published.length ? published.sort().at(-1)! : null,
+  };
+}
+
+interface ActivityEntry {
+  title: string;
+  at: string;
+}
+interface TimedEntity {
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string | null;
+}
+
+// The single most-recent action on an entity (created → edited → published).
+function recentAction(name: string, e: TimedEntity): ActivityEntry {
+  const events: ActivityEntry[] = [{ title: `Created ${name}`, at: e.createdAt }];
+  if (e.updatedAt > e.createdAt) events.push({ title: `Edited ${name}`, at: e.updatedAt });
+  if (e.publishedAt) events.push({ title: `Published ${name}`, at: e.publishedAt });
+  return events.reduce((latest, ev) => (ev.at > latest.at ? ev : latest));
+}
+
+function deriveActivity(
+  pages: TimedEntity[] | null,
+  layouts: TimedEntity[] | null
+): ActivityEntry[] | null {
+  if (!pages && !layouts) return null;
+  return [
+    ...(pages ?? []).map((p) => recentAction(p.name, p)),
+    ...(layouts ?? []).map((l) => recentAction(`the ${l.name} layout`, l)),
+  ]
+    .sort((a, b) => (a.at > b.at ? -1 : 1))
+    .slice(0, 5);
+}
+
+// Relative "time ago" for a timestamp — this is a force-dynamic server component,
+// so `Date` is evaluated per request.
+function timeAgo(iso: string | null): string {
+  if (!iso) return '—';
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return '—';
+  const secs = Math.max(0, Math.round((Date.now() - then) / 1000));
+  if (secs < 60) return 'just now';
+  const mins = Math.round(secs / 60);
+  if (mins < 60) return `${mins} min ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.round(hrs / 24);
+  if (days < 30) return `${days}d ago`;
+  const months = Math.round(days / 30);
+  if (months < 12) return `${months}mo ago`;
+  return `${Math.round(months / 12)}y ago`;
+}
+
 export default async function BuilderOverviewPage() {
   // Teaser the blueprint catalog in-context (count + a few names). Degrades to a
   // plain CTA if the catalog read fails — this is the one piece of LIVE data here.
@@ -299,18 +393,61 @@ export default async function BuilderOverviewPage() {
     teaser = null;
   }
 
-  // Pages & content — real catalog counts (published vs draft pages + saved
-  // components). Fail-soft to a badged example if either read errors. `published`
-  // marks a page that has a live snapshot; the rest are pure drafts.
-  let catalog: { published: number; drafts: number; components: number } | null = null;
-  try {
-    const [pages, components] = await Promise.all([listPages(), listComponentsFull()]);
-    const published = pages.filter((p) => p.published).length;
-    catalog = { published, drafts: pages.length - published, components: components.length };
-  } catch {
-    catalog = null;
-  }
+  // ── Live reads (all fail-soft; the page is force-dynamic + tenant/property-scoped) ──
+  // The builder catalog + its SEO snapshots + the active property's domains are the
+  // real signals behind this overview; analytics (visitors / pageviews / traffic)
+  // has no endpoint yet, so those cards stay on the sample data above.
+  const [pages, layouts, components, audits, domains] = await Promise.all([
+    listPages().catch(() => null),
+    listLayouts().catch(() => null),
+    listComponentsFull().catch(() => null),
+    api.get<SeoAuditRow[]>('/v1/seo/audits?type=builder_page').catch(() => null),
+    api.get<DomainView[]>('/v1/domains').catch(() => null),
+  ]);
+
+  // Pages & content — published vs pure-draft pages + saved components.
+  const catalog =
+    pages && components
+      ? {
+          published: pages.filter((p) => p.published).length,
+          drafts: pages.filter((p) => !p.published).length,
+          components: components.length,
+        }
+      : null;
   const cat = liveOr(catalog, { published: 14, drafts: 3, components: 9 });
+
+  // Status hero — a draft is "unpublished" when it was never published OR edited
+  // since its last snapshot; `lastPublishedAt` is the newest snapshot across the
+  // page + layout catalog; the live domain is the canonical (else verified) one.
+  const status = derivePublishStatus(pages, layouts);
+  const siteDomain =
+    domains?.find((d) => d.isCanonical) ??
+    domains?.find((d) => d.status === 'active' || d.status === 'verified') ??
+    domains?.[0] ??
+    null;
+  const sslActive = siteDomain
+    ? siteDomain.status === 'active' || siteDomain.status === 'verified'
+    : false;
+
+  // SEO health — from the stored builder-page audits (worst-scoring first).
+  const seoCount = audits?.length ?? 0;
+  const seoHealthy = audits?.filter((a) => a.score >= SEO_OK).length ?? 0;
+  const seoAvg =
+    audits && seoCount ? Math.round(audits.reduce((s, a) => s + a.score, 0) / seoCount) : null;
+  const seoAttention = audits
+    ? [...audits]
+        .sort((a, b) => a.score - b.score)
+        .filter((a) => a.score < SEO_OK)
+        .slice(0, 4)
+        .map((a) => ({
+          title: a.fixFirst ?? `Improve “${a.title ?? a.path ?? 'a page'}”`,
+          hint: `${a.title ?? a.path ?? 'Page'} · scores ${a.score}/100`,
+        }))
+    : null;
+
+  // Recent activity — derived from catalog timestamps (the most recent action per
+  // page/layout). Real "what + when" without an audit-feed endpoint.
+  const activity = deriveActivity(pages, layouts);
 
   return (
     <ModuleProvider module="builder">
@@ -332,11 +469,11 @@ export default async function BuilderOverviewPage() {
             }
           />
 
-          {/* Status hero — the live-site glance: preview, status, two side facts. */}
+          {/* Status hero — the live-site glance: domain/SSL + real publish state. */}
           <OverviewCard
             title="Your site"
             icon={<Globe className="h-4 w-4" />}
-            right={<SampleBadge />}
+            right={status.live ? undefined : <SampleBadge />}
           >
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[18rem_1fr_auto] lg:items-center">
               <SitePreview />
@@ -345,44 +482,78 @@ export default async function BuilderOverviewPage() {
                 <p className="flex items-center gap-2 text-lg font-medium text-[var(--color-text-primary)]">
                   <span
                     aria-hidden
-                    className="h-2 w-2 rounded-full bg-[var(--color-success-text)]"
+                    className={`h-2 w-2 rounded-full ${
+                      status.pagesLive > 0
+                        ? 'bg-[var(--color-success-text)]'
+                        : 'bg-[var(--color-bg-muted)]'
+                    }`}
                   />
-                  Your site is live
+                  {status.pagesLive > 0 ? 'Your site is live' : 'Your site isn’t published yet'}
                 </p>
-                <a
-                  href="https://switchback.coffee"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-[var(--module-active-text)]"
-                >
-                  <Lock className="h-3.5 w-3.5 text-[var(--color-success-text)]" />
-                  switchback.coffee
-                </a>
+                {siteDomain ? (
+                  <a
+                    href={`https://${siteDomain.host}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-[var(--module-active-text)]"
+                  >
+                    <Lock
+                      className={`h-3.5 w-3.5 ${
+                        sslActive
+                          ? 'text-[var(--color-success-text)]'
+                          : 'text-[var(--color-text-tertiary)]'
+                      }`}
+                    />
+                    {siteDomain.host}
+                  </a>
+                ) : (
+                  <p className="mt-2 text-sm text-[var(--color-text-tertiary)]">
+                    No domain connected yet
+                  </p>
+                )}
                 <p className="mt-3 text-sm text-[var(--color-text-secondary)]">
-                  Custom domain · SSL active · Last published 2 days ago · 14 pages live
+                  {siteDomain
+                    ? `${siteDomain.type === 'custom' ? 'Custom domain' : 'Sparx domain'} · ${
+                        sslActive ? 'SSL active' : 'SSL pending'
+                      } · `
+                    : ''}
+                  Last published {timeAgo(status.lastPublishedAt)} ·{' '}
+                  {status.live ? status.pagesLive : '—'} pages live
                 </p>
-                <OverviewRow
-                  className="mt-4 rounded-md border border-[var(--color-border-default)] bg-[var(--color-warning-tint)] px-3"
-                  icon={<AlertTriangle className="h-4 w-4" />}
-                  tone="warning"
-                  title="3 unpublished changes"
-                  hint="On Home, Shop, and your theme — waiting to go live."
-                  right={
-                    <Button
-                      asChild
-                      color="module"
-                      size="sm"
-                      leftIcon={<Rocket className="h-4 w-4" />}
-                    >
-                      <Link href="/builder/studio">Review &amp; publish</Link>
-                    </Button>
-                  }
-                />
+                {status.unpublished > 0 ? (
+                  <OverviewRow
+                    className="mt-4 rounded-md border border-[var(--color-border-default)] bg-[var(--color-warning-tint)] px-3"
+                    icon={<AlertTriangle className="h-4 w-4" />}
+                    tone="warning"
+                    title={`${status.unpublished} unpublished change${
+                      status.unpublished === 1 ? '' : 's'
+                    }`}
+                    hint="Across your pages and layouts — waiting to go live."
+                    right={
+                      <Button
+                        asChild
+                        color="module"
+                        size="sm"
+                        leftIcon={<Rocket className="h-4 w-4" />}
+                      >
+                        <Link href="/builder/studio">Review &amp; publish</Link>
+                      </Button>
+                    }
+                  />
+                ) : null}
               </div>
 
               <div className="flex flex-row gap-3 lg:min-w-[10rem] lg:flex-col">
-                <MetricTile className="flex-1" value="99.98%" label="Uptime · 30d" />
-                <MetricTile className="flex-1" value="94 / 100" label="Performance score" />
+                <MetricTile
+                  className="flex-1"
+                  value={components ? String(components.length) : '—'}
+                  label="Components"
+                />
+                <MetricTile
+                  className="flex-1"
+                  value={seoAvg != null ? `${seoAvg} / 100` : '—'}
+                  label="SEO score"
+                />
               </div>
             </div>
           </OverviewCard>
@@ -495,23 +666,51 @@ export default async function BuilderOverviewPage() {
             <OverviewCard
               title="Needs attention"
               icon={<AlertTriangle className="h-4 w-4" />}
-              description="Fix these to improve reach & quality"
-              right={<SampleBadge />}
+              description={
+                seoAttention
+                  ? 'SEO issues from your latest page audits'
+                  : 'Fix these to improve reach & quality'
+              }
+              right={seoAttention ? <CardLink href="/seo">SEO report</CardLink> : <SampleBadge />}
             >
-              {SAMPLE_ATTENTION.map((a) => (
+              {seoAttention === null ? (
+                SAMPLE_ATTENTION.map((a) => (
+                  <OverviewRow
+                    key={a.title}
+                    icon={a.icon}
+                    tone={ATTENTION_TONE[a.tone]}
+                    title={a.title}
+                    hint={a.hint}
+                    right={
+                      <Badge color={a.tone === 'module' ? 'module' : 'warning'} variant="soft">
+                        {a.action}
+                      </Badge>
+                    }
+                  />
+                ))
+              ) : seoAttention.length === 0 ? (
                 <OverviewRow
-                  key={a.title}
-                  icon={a.icon}
-                  tone={ATTENTION_TONE[a.tone]}
-                  title={a.title}
-                  hint={a.hint}
-                  right={
-                    <Badge color={a.tone === 'module' ? 'module' : 'warning'} variant="soft">
-                      {a.action}
-                    </Badge>
-                  }
+                  icon={<CheckCircle2 className="h-4 w-4" />}
+                  tone="success"
+                  title="No SEO issues to fix"
+                  hint="Every audited page scores well — nice work."
                 />
-              ))}
+              ) : (
+                seoAttention.map((a) => (
+                  <OverviewRow
+                    key={a.hint}
+                    icon={<Search className="h-4 w-4" />}
+                    tone="warning"
+                    title={a.title}
+                    hint={a.hint}
+                    right={
+                      <Badge color="warning" variant="soft">
+                        Fix
+                      </Badge>
+                    }
+                  />
+                ))
+              )}
             </OverviewCard>
           </div>
 
@@ -521,23 +720,73 @@ export default async function BuilderOverviewPage() {
               title="Site health"
               icon={<Zap className="h-4 w-4" />}
               right={
-                <Badge color="success" variant="soft">
-                  Good
-                </Badge>
+                audits || domains ? (
+                  <Badge
+                    color={
+                      (!siteDomain || sslActive) && (seoCount === 0 || seoHealthy === seoCount)
+                        ? 'success'
+                        : 'warning'
+                    }
+                    variant="soft"
+                  >
+                    {(!siteDomain || sslActive) && (seoCount === 0 || seoHealthy === seoCount)
+                      ? 'Good'
+                      : 'Review'}
+                  </Badge>
+                ) : (
+                  <Badge color="success" variant="soft">
+                    Good
+                  </Badge>
+                )
               }
             >
-              {SAMPLE_HEALTH.map((h) => (
-                <OverviewRow
-                  key={h.title}
-                  icon={h.icon}
-                  tone={HEALTH_TONE[h.tone]}
-                  title={h.title}
-                  right={h.right}
-                />
-              ))}
-              <div className="mt-3">
-                <SampleBadge />
-              </div>
+              {audits || domains ? (
+                <>
+                  {domains ? (
+                    <OverviewRow
+                      icon={<ShieldCheck className="h-4 w-4" />}
+                      tone={sslActive ? 'success' : 'warning'}
+                      title="SSL & HTTPS"
+                      right={
+                        <Badge color={sslActive ? 'success' : 'warning'} variant="soft">
+                          {sslActive ? 'Active' : siteDomain ? 'Pending' : 'No domain'}
+                        </Badge>
+                      }
+                    />
+                  ) : null}
+                  {audits ? (
+                    <OverviewRow
+                      icon={<Search className="h-4 w-4" />}
+                      tone={seoCount > 0 && seoHealthy === seoCount ? 'success' : 'warning'}
+                      title="SEO metadata"
+                      right={`${seoHealthy} / ${seoCount} pages`}
+                    />
+                  ) : null}
+                  {seoAvg != null ? (
+                    <OverviewRow
+                      icon={<Gauge className="h-4 w-4" />}
+                      tone={seoAvg >= SEO_OK ? 'success' : 'warning'}
+                      title="Avg. SEO score"
+                      right={`${seoAvg} / 100`}
+                    />
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  {SAMPLE_HEALTH.map((h) => (
+                    <OverviewRow
+                      key={h.title}
+                      icon={h.icon}
+                      tone={HEALTH_TONE[h.tone]}
+                      title={h.title}
+                      right={h.right}
+                    />
+                  ))}
+                  <div className="mt-3">
+                    <SampleBadge />
+                  </div>
+                </>
+              )}
             </OverviewCard>
 
             <OverviewCard
@@ -573,16 +822,34 @@ export default async function BuilderOverviewPage() {
             <OverviewCard
               title="Recent activity"
               icon={<Clock className="h-4 w-4" />}
-              right={<SampleBadge />}
+              right={activity ? undefined : <SampleBadge />}
             >
-              <Timeline>
-                {SAMPLE_ACTIVITY.map((a, i) => (
-                  <TimelineItem key={a.title} showConnector={i < SAMPLE_ACTIVITY.length - 1}>
-                    <TimelineTitle>{a.title}</TimelineTitle>
-                    <TimelineTime>{a.time}</TimelineTime>
-                  </TimelineItem>
-                ))}
-              </Timeline>
+              {activity && activity.length > 0 ? (
+                <Timeline>
+                  {activity.map((a, i) => (
+                    <TimelineItem
+                      key={`${a.title}-${a.at}`}
+                      showConnector={i < activity.length - 1}
+                    >
+                      <TimelineTitle>{a.title}</TimelineTitle>
+                      <TimelineTime>{timeAgo(a.at)}</TimelineTime>
+                    </TimelineItem>
+                  ))}
+                </Timeline>
+              ) : activity ? (
+                <Text size="sm" variant="muted">
+                  No activity yet — your edits and publishes will show up here.
+                </Text>
+              ) : (
+                <Timeline>
+                  {SAMPLE_ACTIVITY.map((a, i) => (
+                    <TimelineItem key={a.title} showConnector={i < SAMPLE_ACTIVITY.length - 1}>
+                      <TimelineTitle>{a.title}</TimelineTitle>
+                      <TimelineTime>{a.time}</TimelineTime>
+                    </TimelineItem>
+                  ))}
+                </Timeline>
+              )}
             </OverviewCard>
           </Grid>
 
