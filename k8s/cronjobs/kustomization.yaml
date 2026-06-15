@@ -9,3 +9,4 @@ resources:
   - commerce-reservation-reaper.yaml
   - commerce-revenue-rollup.yaml
   - invoicing-collected-rollup.yaml
+  - dropship-orders-rollup.yaml

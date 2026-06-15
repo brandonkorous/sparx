@@ -19,3 +19,17 @@ export async function listCommerceActiveTenants(): Promise<{ id: string }[]> {
     select: { id: true },
   });
 }
+
+/** All tenants where `settings.modules.dropship.enabled = true` (status
+ *  'active'). Dropship is its own module flag, distinct from commerce, so the
+ *  dropship-orders rollup reconcile enumerates this set rather than the commerce
+ *  one — a commerce-only tenant does no dropship rollup work. */
+export async function listDropshipActiveTenants(): Promise<{ id: string }[]> {
+  return prisma.tenant.findMany({
+    where: {
+      status: 'active',
+      settings: { path: ['modules', 'dropship', 'enabled'], equals: true },
+    },
+    select: { id: true },
+  });
+}

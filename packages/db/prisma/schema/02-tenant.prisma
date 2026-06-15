@@ -358,6 +358,7 @@ model Tenant {
   // Analytics rollups (docs/97) — pre-aggregated reporting summaries
   rollupCommerceDailyRevenue    RollupCommerceDailyRevenue[]
   rollupInvoicingDailyCollected RollupInvoicingDailyCollected[]
+  rollupDropshipDailyOrders     RollupDropshipDailyOrders[]
 
   @@map("tenants")
 }

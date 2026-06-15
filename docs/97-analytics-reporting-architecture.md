@@ -1,6 +1,6 @@
 # Analytics & Reporting Architecture
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -250,7 +250,7 @@ From the gap doc, each missing metric gets a home: 🟢 **wire-now** (endpoint e
 | Commerce             | top-products, top-customers, inventory-value                    | sales timeseries ✅, discount performance                                | —                                                                       | —                                                                        |
 | CRM                  | pipeline-funnel, win-loss, top-customers, tasks, segment sizes  | leads-by-source, cross-segment & task aggregates                         | —                                                                       | —                                                                        |
 | Email                | recent broadcasts, domain SPF/DKIM/DMARC                        | subscriber-growth, revenue attribution                                   | —                                                                       | —                                                                        |
-| Dropship             | supplier breakdown, per-order margin                            | revenue/orders timeseries, on-time rate, activity                        | —                                                                       | —                                                                        |
+| Dropship             | supplier breakdown, per-order margin                            | revenue/orders timeseries ✅, on-time rate, activity                     | —                                                                       | —                                                                        |
 | Invoicing            | (aging/docs/workflows already live)                             | collected timeseries ✅, days-to-pay, customer breakdown, reminder stats | —                                                                       | —                                                                        |
 | Automations          | per-automation runs list                                        | aggregate runs timeseries, success rate                                  | —                                                                       | —                                                                        |
 | Inventory            | location/source counts (live)                                   | valuation, low/out-of-stock, per-location qty, POs, activity             | —                                                                       | —                                                                        |
@@ -275,7 +275,8 @@ We wire real data **as we progress through each overview page**, cheapest first:
    the shared rollup pattern (table + RLS migration + nightly reconcile cron + live-overlay
    read) once, then apply it: commerce revenue **✅ (shipped 2026-06-15 — the reference
    implementation)**, invoicing collected **✅ (shipped 2026-06-15 — `rollup_invoicing_daily_collected`,
-   collected-vs-billed)**, dropship, automation runs. Each new chart is then a small endpoint
+   collected-vs-billed)**, dropship orders **✅ (shipped 2026-06-15 — `rollup_dropship_daily_orders`,
+   orders/revenue/cost)**, automation runs. Each new chart is then a small endpoint
    - a `liveOr(...)` swap.
 3. **📊 Remaining operational rollups.** CRM leads/segments/tasks, B2B reporting, inventory
    summaries, chat volume/agent metrics, CMS publishing cadence.

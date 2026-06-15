@@ -2,6 +2,7 @@
 // digest, analytics-rollup reconcile — each is one function the api-rest
 // /internal/commerce/* cron route invokes per tenant.
 
-export { listCommerceActiveTenants } from './active-tenants';
+export { listCommerceActiveTenants, listDropshipActiveTenants } from './active-tenants';
 export { reapExpiredReservations } from './reservation-reaper';
 export { reconcileRevenueRollup } from './revenue-rollup';
+export { reconcileDropshipOrdersRollup, type DropshipOrdersRollupResult } from './dropship-rollup';

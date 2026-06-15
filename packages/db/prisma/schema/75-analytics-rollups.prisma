@@ -70,3 +70,36 @@ model RollupInvoicingDailyCollected {
   @@id([tenantId, bucket], map: "rollup_invoicing_daily_collected_pkey")
   @@map("rollup_invoicing_daily_collected")
 }
+
+// One row per (tenant, UTC day) of dropship economics (docs/97 §5). Buckets
+// dropship orders by `created_at`'s UTC date over the fulfilled-ish set
+// (submitted | shipped | delivered — the same statuses the live `/v1/dropship/
+// analytics` margin report counts). `cost_cents` sums each order's supplier
+// line-item cost (the `line_items` JSON: Σ quantity × unitPriceCents);
+// `revenue_cents` sums the matching storefront order-item revenue (order_items
+// whose variant's `dropship_source_id` is this order's supplier). Profit and
+// margin are DERIVED in the read (revenue − cost) so the chart never disagrees
+// with the `/analytics` headline. Maintained by the nightly
+// `/internal/dropship/orders-rollup` reconcile (also the backfill); the read
+// live-overlays the most recent open day(s) so "today" stays fresh.
+model RollupDropshipDailyOrders {
+  tenantId String   @map("tenant_id") @db.Uuid
+  // The UTC day this row aggregates (date only — no time component).
+  bucket   DateTime @db.Date
+
+  // Dropship orders routed (submitted | shipped | delivered) this day.
+  ordersCount  Int    @default(0) @map("orders_count")
+  // Storefront revenue attributed to those routed orders (sum of order-item
+  // quantity × unit price, in cents).
+  revenueCents BigInt @default(0) @map("revenue_cents")
+  // Supplier cost of those routed orders (sum of line-item quantity ×
+  // unitPriceCents, in cents). Net profit = revenue − cost.
+  costCents    BigInt @default(0) @map("cost_cents")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, bucket], map: "rollup_dropship_daily_orders_pkey")
+  @@map("rollup_dropship_daily_orders")
+}

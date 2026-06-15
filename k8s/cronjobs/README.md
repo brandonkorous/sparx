@@ -37,6 +37,24 @@ commerce rollup it accepts an optional `?days=N` window override (default 400
 days) and the read endpoint live-overlays "today", so this job only keeps closed
 days correct.
 
+## Dropship scheduled jobs
+
+Wiring for the dropship reconcile, which lives on the commerce scheduler spine
+([packages/commerce/src/schedulers/](../../packages/commerce/src/schedulers/)) —
+`reportingService` owns the dropship margin/timeseries logic — but enumerates
+the dropship-active tenant set, gated on its own `dropship` module flag.
+
+| CronJob                  | Schedule    | Endpoint                                | Why this time                                                     |
+| ------------------------ | ----------- | --------------------------------------- | ----------------------------------------------------------------- |
+| `dropship-orders-rollup` | `0 7 * * *` | `POST /internal/dropship/orders-rollup` | Nightly, after the commerce (06:00) and invoicing (06:30) rollups |
+
+`dropship-orders-rollup` reconciles `rollup_dropship_daily_orders` per
+dropship-active tenant from the source-of-truth dropship orders + storefront
+items (routed-order count, attributed revenue, supplier cost). Like the other
+rollups it accepts an optional `?days=N` window override (default 400 days) and
+the read endpoint live-overlays "today", so this job only keeps closed days
+correct.
+
 All schedules are UTC. All endpoints are guarded by the
 `X-Sparx-Internal-Cron-Token` shared secret, sourced from the
 `sparx-app-secrets` Secret (key: `SPARX_INTERNAL_CRON_TOKEN`).

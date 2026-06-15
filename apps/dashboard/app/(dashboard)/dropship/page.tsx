@@ -56,10 +56,12 @@ import {
 // throughput, the daily routing/exception queue, the margin the network is
 // actually clearing, and supplier profitability. Headline KPIs, the margin
 // breakdown, the per-supplier profitability table, and the orders-by-supplier
-// split are wired to the live /v1/dropship/analytics summary; each falls back to
-// an illustrative example via liveOr until the tenant has routed orders. Sections
-// with no backing endpoint yet (on-time/SLA delivery, reconciliation, routing
-// rules, the activity feed) render sample data behind a <SampleBadge>.
+// split are wired to the live /v1/dropship/analytics summary; the order-volume
+// chart reads the /v1/dropship/reports/orders-timeseries rollup (docs/97 §5).
+// Each falls back to an illustrative example via liveOr until the tenant has
+// routed orders. Sections with no backing endpoint yet (on-time/SLA delivery,
+// reconciliation, routing rules, the activity feed) render sample data behind a
+// <SampleBadge>.
 
 export const dynamic = 'force-dynamic';
 
@@ -86,6 +88,29 @@ interface DropshipSummary {
   bySupplier: DropshipSupplierStat[];
 }
 
+// Live shape from /v1/dropship/reports/orders-timeseries (rollup, docs/97 §5) —
+// daily routed-order count + attributed revenue + supplier cost.
+interface DropshipTimeseriesPoint {
+  bucket: string;
+  ordersCount: number;
+  revenueCents: number;
+  costCents: number;
+  profitCents: number;
+}
+
+interface DropshipTimeseries {
+  range: { from: string; to: string; grain: string };
+  points: DropshipTimeseriesPoint[];
+  totals: {
+    ordersCount: number;
+    revenueCents: number;
+    costCents: number;
+    profitCents: number;
+    marginPct: number;
+  };
+  currency: string;
+}
+
 // The display row for the supplier table — shared by live + sample so liveOr can
 // fall back cleanly.
 interface SupplierRow {
@@ -105,9 +130,10 @@ function marginTone(pct: number): { tone: 'success' | 'warning' | 'danger'; labe
 
 // ── Sample data (illustrative until matching endpoints land) ──
 
-// Order volume over the last 14 days (area chart series). No live timeseries
-// endpoint yet — replace with /v1/dropship/reports/*-timeseries when it lands.
-const SAMPLE_VOLUME_14D = [
+// Order volume over the last 14 days (area chart series). Live via
+// /v1/dropship/reports/orders-timeseries (rollup); this is the liveOr fallback
+// until the tenant has routed orders.
+const SAMPLE_VOLUME_14D: { label: string; routed: number }[] = [
   { label: 'May 31', routed: 26 },
   { label: 'Jun 1', routed: 22 },
   { label: 'Jun 2', routed: 30 },
@@ -122,7 +148,7 @@ const SAMPLE_VOLUME_14D = [
   { label: 'Jun 11', routed: 36 },
   { label: 'Jun 12', routed: 44 },
   { label: 'Jun 13', routed: 42 },
-] as const;
+];
 
 // Supplier profitability — illustrative until the tenant has routed orders.
 const SAMPLE_SUPPLIER_PROFIT: SupplierRow[] = [
@@ -187,7 +213,17 @@ const SAMPLE_ACTIVITY = [
 export default async function DropshipPage() {
   await requireSession();
 
-  const summary = await api.get<DropshipSummary>('/v1/dropship/analytics').catch(() => null);
+  const now = new Date();
+  const range14 = `from=${encodeURIComponent(
+    new Date(now.getTime() - 14 * 86_400_000).toISOString()
+  )}&to=${encodeURIComponent(now.toISOString())}`;
+
+  const [summary, volumeTs] = await Promise.all([
+    api.get<DropshipSummary>('/v1/dropship/analytics').catch(() => null),
+    api
+      .get<DropshipTimeseries>(`/v1/dropship/reports/orders-timeseries?${range14}&grain=day`)
+      .catch(() => null),
+  ]);
 
   // Live where the summary is reachable; fail soft to the mockup figures so the
   // page is reviewable before any dropship orders exist.
@@ -217,6 +253,37 @@ export default async function DropshipPage() {
       .map((s, i) => ({ label: s.supplierName, value: s.orders, color: DONUT_COLORS[i] })) ?? null,
     SAMPLE_BY_SUPPLIER
   );
+
+  // Order-volume chart + footer: live the moment the tenant has any routed
+  // orders in the window, else the illustrative sample (docs/97 §9). The
+  // endpoint returns a continuous zero-filled daily series, so we gate on
+  // totals.ordersCount.
+  const volumePoints =
+    volumeTs && volumeTs.totals.ordersCount > 0
+      ? volumeTs.points.map((p) => ({
+          label: new Date(`${p.bucket}T00:00:00Z`).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          }),
+          routed: p.ordersCount,
+        }))
+      : null;
+  const volume14d = liveOr(volumePoints, SAMPLE_VOLUME_14D);
+  // When live, surface real totals from the same series; the sample footer keeps
+  // the illustrative auto-route / ship-time figures (no endpoint backs those).
+  const volumeFooter: [string, string][] =
+    !volume14d.isSample && volumeTs
+      ? [
+          ['Routed', fmtNumber(volumeTs.totals.ordersCount)],
+          ['Revenue', fmtMoneyCents(volumeTs.totals.revenueCents)],
+          ['Margin', `${volumeTs.totals.marginPct}%`],
+        ]
+      : [
+          ['Routed', fmtNumber(ordersRouted)],
+          ['Auto-routed', '86%'],
+          ['Avg ship', '2.4 days'],
+        ];
 
   return (
     <Container size="xl">
@@ -370,10 +437,10 @@ export default async function DropshipPage() {
             title="Order volume"
             icon={<TrendingUp className="h-4 w-4" />}
             description="Orders routed · last 14 days"
-            right={<SampleBadge />}
+            right={volume14d.isSample ? <SampleBadge reason="no-data" /> : undefined}
           >
             <AreaChart
-              data={[...SAMPLE_VOLUME_14D]}
+              data={volume14d.data}
               series={[{ key: 'routed', label: 'Routed', color: 'module' }]}
               xKey="label"
               height={210}
@@ -381,11 +448,7 @@ export default async function DropshipPage() {
               ariaLabel="Orders routed, last 14 days"
             />
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 border-t border-[var(--color-border-default)] pt-3 text-sm">
-              {[
-                ['Routed', fmtNumber(ordersRouted)],
-                ['Auto-routed', '86%'],
-                ['Avg ship', '2.4 days'],
-              ].map(([label, value]) => (
+              {volumeFooter.map(([label, value]) => (
                 <div key={label}>
                   <div className="text-xs text-[var(--color-text-tertiary)]">{label}</div>
                   <div className="font-medium">{value}</div>

@@ -822,3 +822,304 @@ export async function reconcileRevenueRollup(
     };
   });
 }
+
+// ─── Dropship orders timeseries (rollup, docs/97) ────────────────────
+//
+// The Dropship overview's "order volume" chart reads daily buckets from the
+// `rollup_dropship_daily_orders` table for closed days and recomputes the most
+// recent open day(s) live. Buckets dropship orders by `created_at`'s UTC date
+// over the fulfilled-ish set (submitted | shipped | delivered) — the same
+// statuses `dropshipMarginReport` counts, so the chart and the margin headline
+// agree. Per day: routed order count, supplier cost (Σ over each order's
+// `line_items` JSON of quantity × unitPriceCents) and the storefront revenue
+// attributed to those orders (order_items whose variant's dropship_source_id is
+// the order's supplier). Profit/margin are derived (revenue − cost). Reuses the
+// UTC-day/grain helpers and the OVERLAY/RECONCILE constants from the revenue
+// rollup above.
+
+export interface DropshipOrdersTimeseriesPoint {
+  /** Start of the bucket, UTC date `YYYY-MM-DD`. */
+  bucket: string;
+  ordersCount: number;
+  revenueCents: number;
+  costCents: number;
+  /** Derived: revenueCents − costCents. */
+  profitCents: number;
+}
+
+export interface DropshipOrdersTimeseries {
+  range: { from: string; to: string; grain: RollupGrain };
+  points: DropshipOrdersTimeseriesPoint[];
+  totals: {
+    ordersCount: number;
+    revenueCents: number;
+    costCents: number;
+    profitCents: number;
+    marginPct: number;
+  };
+  currency: string;
+}
+
+export interface DropshipOrdersRollupReconcileResult {
+  /** Days with at least one routed dropship order in the reconciled window. */
+  days: number;
+  ordersCount: number;
+  windowStart: string;
+}
+
+interface DropshipDayMeasures {
+  ordersCount: number;
+  revenueCents: number;
+  costCents: number;
+}
+
+const DROPSHIP_ZERO: DropshipDayMeasures = {
+  ordersCount: 0,
+  revenueCents: 0,
+  costCents: 0,
+};
+
+interface DropshipDayRow extends DropshipDayMeasures {
+  /** UTC date key `YYYY-MM-DD`. */
+  key: string;
+  /** UTC-midnight Date for the bucket (used as the rollup PK value). */
+  date: Date;
+}
+
+// Unlike `rawToCents` (which scales Decimal *dollar* SUMs by 100), the dropship
+// SUMs already come back in integer cents — line_items.unitPriceCents and
+// quantity × ROUND(unit_price × 100) are both cents — so this must NOT re-scale.
+function rawCents(v: unknown): number {
+  if (v == null) return 0;
+  if (typeof v === 'number') return Math.round(v);
+  if (typeof v === 'bigint') return Number(v);
+  if (typeof v === 'string') {
+    const n = Number.parseFloat(v);
+    return Number.isFinite(n) ? Math.round(n) : 0;
+  }
+  if (typeof v === 'object' && 'toNumber' in v && typeof v.toNumber === 'function') {
+    return Math.round((v as { toNumber(): number }).toNumber());
+  }
+  return 0;
+}
+
+interface RawDropshipDayRow {
+  bucket: Date;
+  orders_count: number;
+  revenue: unknown;
+  cost: unknown;
+}
+
+// One GROUP-BY-day pass over routed dropship orders in [from, toExclusive),
+// bucketed by created_at's UTC date. Cost expands each order's `line_items`
+// JSON; revenue joins the order's storefront items to the variant whose
+// dropship_source_id matches the order's supplier — the same attribution
+// `dropshipMarginReport` does, aggregated per day in SQL. The revenue CTE is
+// bounded to the window's orders so the live overlay stays cheap. RLS scopes
+// every table to the tenant. Shared by the live overlay/cold-start and the
+// nightly reconcile.
+async function aggregateDropshipByDay(
+  tx: TxClient,
+  from: Date,
+  toExclusive: Date
+): Promise<DropshipDayRow[]> {
+  const rows = await tx.$queryRaw<RawDropshipDayRow[]>`
+    WITH ds AS (
+      SELECT
+        o.order_id    AS order_id,
+        o.supplier_id AS supplier_id,
+        (o.created_at AT TIME ZONE 'UTC')::date AS bucket,
+        COALESCE((
+          SELECT SUM(
+            COALESCE((li ->> 'quantity')::numeric, 0)
+            * COALESCE((li ->> 'unitPriceCents')::numeric, 0)
+          )
+          FROM jsonb_array_elements(
+            CASE WHEN jsonb_typeof(o.line_items) = 'array' THEN o.line_items ELSE '[]'::jsonb END
+          ) AS li
+        ), 0) AS cost_cents
+      FROM dropship_orders o
+      WHERE o.status IN ('submitted', 'shipped', 'delivered')
+        AND o.created_at >= ${from}
+        AND o.created_at < ${toExclusive}
+    ),
+    rev AS (
+      SELECT
+        oi.order_id           AS order_id,
+        pv.dropship_source_id AS supplier_id,
+        SUM(oi.quantity * ROUND(oi.unit_price * 100)) AS revenue_cents
+      FROM order_items oi
+      JOIN commerce_product_variants pv ON pv.id = oi.variant_id
+      WHERE pv.dropship_source_id IS NOT NULL
+        AND oi.order_id IN (SELECT order_id FROM ds)
+      GROUP BY oi.order_id, pv.dropship_source_id
+    )
+    SELECT
+      ds.bucket                           AS bucket,
+      COUNT(*)::int                       AS orders_count,
+      COALESCE(SUM(rev.revenue_cents), 0) AS revenue,
+      COALESCE(SUM(ds.cost_cents), 0)     AS cost
+    FROM ds
+    LEFT JOIN rev
+      ON rev.order_id = ds.order_id
+     AND rev.supplier_id = ds.supplier_id
+    GROUP BY ds.bucket
+    ORDER BY ds.bucket
+  `;
+
+  return rows.map((r) => {
+    const date = startOfUtcDay(new Date(r.bucket));
+    return {
+      key: utcDateKey(date),
+      date,
+      ordersCount: Number(r.orders_count ?? 0),
+      revenueCents: rawCents(r.revenue),
+      costCents: rawCents(r.cost),
+    };
+  });
+}
+
+function foldDropshipByGrain(
+  daily: DropshipOrdersTimeseriesPoint[],
+  grain: 'week' | 'month'
+): DropshipOrdersTimeseriesPoint[] {
+  const map = new Map<string, DropshipOrdersTimeseriesPoint>();
+  for (const p of daily) {
+    const key = bucketStartFor(p.bucket, grain);
+    const cur = map.get(key);
+    if (cur) {
+      cur.ordersCount += p.ordersCount;
+      cur.revenueCents += p.revenueCents;
+      cur.costCents += p.costCents;
+      cur.profitCents += p.profitCents;
+    } else {
+      map.set(key, { ...p, bucket: key });
+    }
+  }
+  return [...map.values()].sort((a, b) => (a.bucket < b.bucket ? -1 : 1));
+}
+
+function toDropshipPoint(bucket: string, m: DropshipDayMeasures): DropshipOrdersTimeseriesPoint {
+  return {
+    bucket,
+    ordersCount: m.ordersCount,
+    revenueCents: m.revenueCents,
+    costCents: m.costCents,
+    profitCents: m.revenueCents - m.costCents,
+  };
+}
+
+export async function dropshipOrdersTimeseries(
+  ctx: ServiceContext,
+  input: { range: DateRange; grain?: RollupGrain }
+): Promise<DropshipOrdersTimeseries> {
+  const grain = input.grain ?? 'day';
+  const from = startOfUtcDay(new Date(input.range.from));
+  const to = startOfUtcDay(new Date(input.range.to));
+  const overlayStart = addUtcDays(startOfUtcDay(new Date()), -OVERLAY_DAYS);
+
+  return withTenant(ctx, async (tx) => {
+    const toExclusive = addUtcDays(to, 1);
+    const closedToExclusive = new Date(Math.min(toExclusive.getTime(), overlayStart.getTime()));
+    const byKey = new Map<string, DropshipDayMeasures>();
+
+    // 1) Closed days from the rollup, with a live cold-start fallback so a fresh
+    //    deploy serves real history before the first reconcile runs.
+    if (closedToExclusive.getTime() > from.getTime()) {
+      const rollup = await tx.rollupDropshipDailyOrders.findMany({
+        where: { bucket: { gte: from, lt: closedToExclusive } },
+        orderBy: { bucket: 'asc' },
+      });
+      if (rollup.length > 0) {
+        for (const r of rollup) {
+          byKey.set(utcDateKey(startOfUtcDay(new Date(r.bucket))), {
+            ordersCount: r.ordersCount,
+            revenueCents: Number(r.revenueCents),
+            costCents: Number(r.costCents),
+          });
+        }
+      } else {
+        for (const d of await aggregateDropshipByDay(tx, from, closedToExclusive)) {
+          byKey.set(d.key, d);
+        }
+      }
+    }
+
+    // 2) Open days (today + yesterday) always recomputed live so they're fresh.
+    const overlayFrom = new Date(Math.max(from.getTime(), overlayStart.getTime()));
+    if (toExclusive.getTime() > overlayFrom.getTime()) {
+      for (const d of await aggregateDropshipByDay(tx, overlayFrom, toExclusive)) {
+        byKey.set(d.key, d);
+      }
+    }
+
+    // 3) Continuous, zero-filled daily series so the chart has a clean axis.
+    const daily: DropshipOrdersTimeseriesPoint[] = eachUtcDay(from, to).map((d) =>
+      toDropshipPoint(utcDateKey(d), byKey.get(utcDateKey(d)) ?? DROPSHIP_ZERO)
+    );
+
+    const points = grain === 'day' ? daily : foldDropshipByGrain(daily, grain);
+    const totalsBase = daily.reduce(
+      (acc, p) => ({
+        ordersCount: acc.ordersCount + p.ordersCount,
+        revenueCents: acc.revenueCents + p.revenueCents,
+        costCents: acc.costCents + p.costCents,
+      }),
+      { ordersCount: 0, revenueCents: 0, costCents: 0 }
+    );
+    const profitCents = totalsBase.revenueCents - totalsBase.costCents;
+
+    return {
+      range: { from: utcDateKey(from), to: utcDateKey(to), grain },
+      points,
+      totals: {
+        ...totalsBase,
+        profitCents,
+        marginPct:
+          totalsBase.revenueCents > 0
+            ? +((profitCents / totalsBase.revenueCents) * 100).toFixed(1)
+            : 0,
+      },
+      currency: DEFAULT_CURRENCY,
+    };
+  });
+}
+
+// Nightly maintenance (docs/97 §5): recompute the trailing window from the
+// source-of-truth dropship orders + storefront items and overwrite the rollup.
+// Delete-then-insert the window so status changes (a pending order becoming
+// shipped) and late edits self-heal in one pass. Run once over full history,
+// this is also the backfill. Invoked per active tenant by
+// `/internal/dropship/orders-rollup`.
+export async function reconcileDropshipOrdersRollup(
+  ctx: ServiceContext,
+  opts?: { sinceDays?: number }
+): Promise<DropshipOrdersRollupReconcileResult> {
+  const sinceDays = Math.max(0, opts?.sinceDays ?? DEFAULT_RECONCILE_DAYS);
+  const today = startOfUtcDay(new Date());
+  const windowStart = addUtcDays(today, -sinceDays);
+  const toExclusive = addUtcDays(today, 1); // include today
+
+  return withTenant(ctx, async (tx) => {
+    const rows = await aggregateDropshipByDay(tx, windowStart, toExclusive);
+
+    await tx.rollupDropshipDailyOrders.deleteMany({ where: { bucket: { gte: windowStart } } });
+    if (rows.length > 0) {
+      await tx.rollupDropshipDailyOrders.createMany({
+        data: rows.map((r) => ({
+          tenantId: ctx.tenantId,
+          bucket: r.date,
+          ordersCount: r.ordersCount,
+          revenueCents: BigInt(r.revenueCents),
+          costCents: BigInt(r.costCents),
+        })),
+      });
+    }
+
+    return {
+      days: rows.length,
+      ordersCount: rows.reduce((s, r) => s + r.ordersCount, 0),
+      windowStart: utcDateKey(windowStart),
+    };
+  });
+}
