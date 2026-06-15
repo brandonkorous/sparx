@@ -658,6 +658,11 @@ export interface CanvasProps {
    *  the layout's Outlet — the same composition the storefront ships, so the
    *  overlay header/footer preview correctly. */
   chrome?: BuilderNode | null;
+  /** Whether the framing `chrome` renders as a non-interactive backdrop (the page
+   *  editor: you edit the page, the chrome is a locked preview) or as SELECTABLE
+   *  nodes (the unified studio, docs/builder/03: header/footer are editable layout-
+   *  owned nodes alongside the page). Ignored without `chrome`. Default true. */
+  chromeLocked?: boolean;
   /** Frames the preview as a site (browser/bezel) or an email (envelope). The
    *  frame is chrome only — it never wraps the editable tree in a node. Omitted ⇒
    *  the bare canvas card. */
@@ -688,6 +693,7 @@ export function Canvas({
   selectedId,
   onSelect,
   chrome,
+  chromeLocked = true,
   frame,
 }: CanvasProps) {
   const width = DEVICE_WIDTH[device];
@@ -793,7 +799,7 @@ export function Canvas({
           components={components}
           selectedId={selectedId}
           onSelect={onSelect}
-          locked
+          locked={chromeLocked}
           outletSlot={page}
         />
       ) : (

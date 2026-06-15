@@ -9,6 +9,8 @@
     "start": "next start --port 3001",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
     "e2e": "playwright test",
     "e2e:headed": "playwright test --headed",
     "e2e:ui": "playwright test --ui",
@@ -68,6 +70,7 @@
     "@types/react-dom": "^19.0.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^4.3.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }
