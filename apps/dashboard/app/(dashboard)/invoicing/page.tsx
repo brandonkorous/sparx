@@ -49,14 +49,15 @@ import {
 } from '../_components/overview-bits';
 
 // Invoicing overview — the founder's "am I getting paid?" glance. The signature
-// pair is A/R aging (how much is owed, and how old) + collected-over-time. The
-// A/R aging buckets, the recent-documents table, the Collected · 30d KPI, and the
-// collected-vs-billed timeseries are wired LIVE to the canonical /v1/invoicing
-// endpoints (the timeseries off the rollup_invoicing_daily_collected rollup,
-// docs/97; fail-soft to "—" / sample); days-to-pay and the customer breakdown
-// render representative data behind a <SampleBadge> until matching reporting
-// endpoints land. Warm colors stay strictly semantic — overdue balances escalate
-// module → warning → danger.
+// pair is A/R aging (how much is owed, and how old) + collected-over-time. Nearly
+// everything is now LIVE off the canonical /v1/invoicing endpoints: A/R aging,
+// recent documents, the Collected · 30d KPI and collected-vs-billed timeseries
+// (off the rollup_invoicing_daily_collected rollup, docs/97), plus avg-days-to-
+// pay, the Collections card, the open-balance-by-stage split, and the "who owes
+// you" debtor list (off /v1/invoicing/reports/collections + customer-breakdown).
+// Only the reminder-automation history stays sample (it needs a reminder event
+// log — workload B). Warm colors stay strictly semantic — overdue balances
+// escalate module → warning → danger.
 
 export const dynamic = 'force-dynamic';
 
@@ -108,6 +109,32 @@ interface CollectedTimeseries {
     billedCents: number;
   };
   currency: string;
+}
+
+interface CollectionsSummary {
+  collectedThisMonthCents: number;
+  collectedLastMonthCents: number;
+  paidInFull: { count: number; totalCents: number };
+  depositsCents: number;
+  avgDaysToPay: number | null;
+  medianDaysToPay: number | null;
+  paidCount: number;
+  openBalance: {
+    estimatesCents: number;
+    estimatesCount: number;
+    invoicedOpenCents: number;
+    invoicedOpenCount: number;
+    overdueCents: number;
+    overdueCount: number;
+  };
+  currency: string;
+}
+interface DebtorRow {
+  customerId: string;
+  name: string;
+  openInvoices: number;
+  outstandingCents: number;
+  oldestOverdueDays: number | null;
 }
 
 interface StageLite {
@@ -201,17 +228,22 @@ export default async function InvoicingPage() {
   // Live: the canonical A/R aging report, the recent documents (also gives us the
   // status counts), the workflows (stage → customer label for each row), and the
   // collected/billed timeseries off the rollup (docs/97).
-  const [aging, recent, workflows, collectedTs, collected30] = await Promise.all([
-    api.get<AgingReport>('/v1/invoicing/aging').catch(() => null),
-    api.getPaged<DocumentRow[]>('/v1/invoicing/documents?take=6').catch(() => null),
-    api.get<WorkflowLite[]>('/v1/invoicing/workflows').catch(() => null),
-    api
-      .get<CollectedTimeseries>(`/v1/invoicing/reports/collected-timeseries?${range12w}&grain=week`)
-      .catch(() => null),
-    api
-      .get<CollectedTimeseries>(`/v1/invoicing/reports/collected-timeseries?${range30}&grain=day`)
-      .catch(() => null),
-  ]);
+  const [aging, recent, workflows, collectedTs, collected30, collections, debtors] =
+    await Promise.all([
+      api.get<AgingReport>('/v1/invoicing/aging').catch(() => null),
+      api.getPaged<DocumentRow[]>('/v1/invoicing/documents?take=6').catch(() => null),
+      api.get<WorkflowLite[]>('/v1/invoicing/workflows').catch(() => null),
+      api
+        .get<CollectedTimeseries>(
+          `/v1/invoicing/reports/collected-timeseries?${range12w}&grain=week`
+        )
+        .catch(() => null),
+      api
+        .get<CollectedTimeseries>(`/v1/invoicing/reports/collected-timeseries?${range30}&grain=day`)
+        .catch(() => null),
+      api.get<CollectionsSummary>('/v1/invoicing/reports/collections').catch(() => null),
+      api.get<DebtorRow[]>('/v1/invoicing/reports/customer-breakdown?limit=5').catch(() => null),
+    ]);
 
   const documents = recent?.data ?? [];
   const totalDocuments = (recent?.meta?.total as number | undefined) ?? documents.length;
@@ -276,6 +308,18 @@ export default async function InvoicingPage() {
   // Draft documents still need to be sent before they can be collected.
   const draftCount = documents.filter((d) => d.status === 'unpaid').length;
 
+  // Collections trend: this month vs. last (month-over-month change in cash in).
+  const collectedTrend =
+    collections && collections.collectedLastMonthCents > 0
+      ? (collections.collectedThisMonthCents - collections.collectedLastMonthCents) /
+        collections.collectedLastMonthCents
+      : null;
+
+  // Debtor tone escalates by how overdue the oldest open invoice is.
+  const debtorTone = (days: number | null): string =>
+    days == null ? 'module' : days >= 60 ? 'danger' : days >= 30 ? 'warning' : 'module';
+  const liveDebtors = debtors && debtors.length > 0 ? debtors : null;
+
   return (
     <Container size="xl">
       <Stack gap={6} className="py-8">
@@ -330,8 +374,12 @@ export default async function InvoicingPage() {
           <Stat
             icon={<CalendarClock className="h-4 w-4" />}
             label="Avg. days to pay"
-            value="24 days"
-            hint="From invoice to payment"
+            value={collections?.avgDaysToPay != null ? `${collections.avgDaysToPay} days` : '—'}
+            hint={
+              collections && collections.paidCount > 0
+                ? `Median ${collections.medianDaysToPay ?? '—'} days · ${fmtNumber(collections.paidCount)} paid`
+                : 'From finalize to payment'
+            }
           />
         </Grid>
 
@@ -500,33 +548,48 @@ export default async function InvoicingPage() {
           <OverviewCard
             title="Collections"
             icon={<DollarSign className="h-4 w-4" />}
-            right={<SampleBadge />}
+            right={collections ? undefined : <SampleBadge />}
           >
-            <p className="text-[1.65rem] leading-none font-medium">$48,210</p>
+            <p className="text-[1.65rem] leading-none font-medium">
+              {collections ? fmtMoneyCents(collections.collectedThisMonthCents, currency) : '—'}
+            </p>
             <p className="mt-1.5 mb-3 text-sm text-[var(--color-text-tertiary)]">
-              Collected this month ·{' '}
-              <span className="text-[var(--color-text-secondary)]">+12% vs. last</span>
+              Collected this month
+              {collectedTrend != null ? (
+                <>
+                  {' '}
+                  ·{' '}
+                  <span className="text-[var(--color-text-secondary)]">
+                    {collectedTrend >= 0 ? '+' : ''}
+                    {fmtPercentRatio(collectedTrend)} vs. last
+                  </span>
+                </>
+              ) : null}
             </p>
             <OverviewRow
               icon={<DollarSign className="h-4 w-4" />}
               tone="success"
               title="Paid in full · 30d"
-              hint="42 documents settled"
-              right="$41,980"
+              hint={
+                collections
+                  ? `${fmtNumber(collections.paidInFull.count)} document${collections.paidInFull.count === 1 ? '' : 's'} settled`
+                  : '—'
+              }
+              right={collections ? fmtMoneyCents(collections.paidInFull.totalCents, currency) : '—'}
             />
             <OverviewRow
               icon={<Clock className="h-4 w-4" />}
               tone="warning"
-              title="Deposits collected"
-              hint="On open estimates"
-              right="$6,230"
+              title="Deposits held"
+              hint="On open documents"
+              right={collections ? fmtMoneyCents(collections.depositsCents, currency) : '—'}
             />
             <OverviewRow
               icon={<CalendarClock className="h-4 w-4" />}
               tone="module"
               title="Avg. days to pay"
               hint="From finalize to settled"
-              right="24 days"
+              right={collections?.avgDaysToPay != null ? `${collections.avgDaysToPay} days` : '—'}
             />
             <Button asChild variant="outline" size="sm" className="mt-4 w-full">
               <Link href="/invoicing/documents?status=paid">View paid documents</Link>
@@ -539,29 +602,72 @@ export default async function InvoicingPage() {
           <OverviewCard
             title="Who owes you"
             icon={<Users className="h-4 w-4" />}
-            right={<SampleBadge />}
+            right={
+              liveDebtors ? (
+                <CardLink href="/invoicing/documents?status=overdue">All</CardLink>
+              ) : (
+                <SampleBadge reason="no-data" />
+              )
+            }
           >
-            {SAMPLE_TOP_DEBTORS.map((c) => (
-              <OverviewRow
-                key={c.name}
-                icon={<Users className="h-4 w-4" />}
-                tone={DEBTOR_TONE[c.tone]}
-                title={c.name}
-                hint={c.meta}
-                right={c.balance}
-              />
-            ))}
+            {liveDebtors
+              ? liveDebtors.map((c) => (
+                  <OverviewRow
+                    key={c.customerId}
+                    icon={<Users className="h-4 w-4" />}
+                    tone={debtorTone(c.oldestOverdueDays)}
+                    title={c.name}
+                    hint={
+                      c.oldestOverdueDays != null
+                        ? `${fmtNumber(c.openInvoices)} open · oldest ${fmtNumber(c.oldestOverdueDays)}d past due`
+                        : `${fmtNumber(c.openInvoices)} open · within terms`
+                    }
+                    right={fmtMoneyCents(c.outstandingCents, currency)}
+                  />
+                ))
+              : SAMPLE_TOP_DEBTORS.map((c) => (
+                  <OverviewRow
+                    key={c.name}
+                    icon={<Users className="h-4 w-4" />}
+                    tone={DEBTOR_TONE[c.tone]}
+                    title={c.name}
+                    hint={c.meta}
+                    right={c.balance}
+                  />
+                ))}
           </OverviewCard>
 
           <OverviewCard
             title="Open balance by stage"
             icon={<ReceiptText className="h-4 w-4" />}
-            right={<SampleBadge />}
+            right={collections ? undefined : <SampleBadge />}
           >
             <div className="mb-3 grid grid-cols-3 gap-3 text-center">
-              <MetricTile value="$34.2k" label="Estimates" tone="module" />
-              <MetricTile value="$11.4k" label="Invoiced" tone="warning" />
-              <MetricTile value="$6.5k" label="Overdue" tone="danger" />
+              <MetricTile
+                value={
+                  collections
+                    ? fmtMoneyCents(collections.openBalance.estimatesCents, currency)
+                    : '—'
+                }
+                label="Estimates"
+                tone="module"
+              />
+              <MetricTile
+                value={
+                  collections
+                    ? fmtMoneyCents(collections.openBalance.invoicedOpenCents, currency)
+                    : '—'
+                }
+                label="Invoiced"
+                tone="warning"
+              />
+              <MetricTile
+                value={
+                  collections ? fmtMoneyCents(collections.openBalance.overdueCents, currency) : '—'
+                }
+                label="Overdue"
+                tone="danger"
+              />
             </div>
             <OverviewRow
               icon={<FileText className="h-4 w-4" />}
@@ -570,7 +676,7 @@ export default async function InvoicingPage() {
               hint="Not yet billable"
               right={
                 <Badge color="neutral" variant="soft">
-                  12 open
+                  {fmtNumber(collections?.openBalance.estimatesCount ?? 0)} open
                 </Badge>
               }
             />
@@ -581,7 +687,7 @@ export default async function InvoicingPage() {
               hint="Within terms"
               right={
                 <Badge color="warning" variant="soft">
-                  19 open
+                  {fmtNumber(collections?.openBalance.invoicedOpenCount ?? 0)} open
                 </Badge>
               }
             />
@@ -592,7 +698,7 @@ export default async function InvoicingPage() {
               hint="Needs a follow-up"
               right={
                 <Badge color="danger" variant="soft">
-                  {fmtNumber(overdueCount)} open
+                  {fmtNumber(collections?.openBalance.overdueCount ?? overdueCount ?? 0)} open
                 </Badge>
               }
             />

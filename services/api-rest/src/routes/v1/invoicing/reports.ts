@@ -24,6 +24,10 @@ const TimeseriesQuery = z.object({
   grain: z.enum(['day', 'week', 'month']).optional(),
 });
 
+const CustomerBreakdownQuery = z.object({
+  limit: z.coerce.number().int().min(1).max(50).optional(),
+});
+
 function resolveRange(input: { from?: string; to?: string }): { from: string; to: string } {
   const to = input.to ?? new Date().toISOString();
   const from = input.from ?? new Date(Date.now() - 30 * 86_400_000).toISOString();
@@ -41,6 +45,27 @@ const reportRoutes: FastifyPluginAsync = (app) => {
         range,
         ...(q.grain ? { grain: q.grain } : {}),
       })
+    );
+  });
+
+  // Collections summary — collected this/last month, paid-in-full, deposits,
+  // days-to-pay, and the open-balance-by-stage split (live aggregates).
+  app.get('/v1/invoicing/reports/collections', async (request) => {
+    requireRole(request, 'viewer');
+    await requireInvoicingModule(request);
+    return ok(await invoicingReportingService.collectionsSummary(toInvoicingContext(request)));
+  });
+
+  // Who owes you — top customers by outstanding balance.
+  app.get('/v1/invoicing/reports/customer-breakdown', async (request) => {
+    requireRole(request, 'viewer');
+    await requireInvoicingModule(request);
+    const limit = CustomerBreakdownQuery.parse(request.query).limit;
+    return ok(
+      await invoicingReportingService.customerBreakdown(
+        toInvoicingContext(request),
+        limit !== undefined ? { limit } : undefined
+      )
     );
   });
 

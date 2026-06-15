@@ -346,3 +346,241 @@ export async function reconcileCollectedRollup(
     };
   });
 }
+
+// ─── Collections summary + days-to-pay + debtors (live aggregates) ───
+//
+// Point-in-time summaries read live (not rollup-backed): the working sets — open
+// documents, recent payments, recently-paid docs — are small and every query
+// rides an existing index (`[tenantId, status, dueAt]`, `[tenantId, documentId,
+// receivedAt]`). Powers the Invoicing overview's Collections card, the Avg-
+// days-to-pay KPI, the open-balance-by-stage breakdown, and the "who owes you"
+// debtor list. Money in the source tables is Decimal *dollars*; everything here
+// surfaces integer cents to match the rest of the reporting layer.
+
+// How far back recently-paid documents are sampled for the days-to-pay figure.
+// A trailing window keeps the metric reflective of *current* paying behaviour
+// rather than dragging in years-old settlements.
+const DAYS_TO_PAY_WINDOW = 180;
+
+function dollarsToCents(v: unknown): number {
+  if (v == null) return 0;
+  if (typeof v === 'number') return Math.round(v * 100);
+  if (typeof v === 'bigint') return Number(v) * 100;
+  if (typeof v === 'string') {
+    const n = Number.parseFloat(v);
+    return Number.isFinite(n) ? Math.round(n * 100) : 0;
+  }
+  if (typeof v === 'object' && 'toNumber' in v && typeof v.toNumber === 'function') {
+    return Math.round((v as { toNumber(): number }).toNumber() * 100);
+  }
+  return 0;
+}
+
+function rawFloat(v: unknown): number | null {
+  if (v == null) return null;
+  if (typeof v === 'number') return Number.isFinite(v) ? v : null;
+  if (typeof v === 'string') {
+    const n = Number.parseFloat(v);
+    return Number.isFinite(n) ? n : null;
+  }
+  if (typeof v === 'object' && 'toNumber' in v && typeof v.toNumber === 'function') {
+    return (v as { toNumber(): number }).toNumber();
+  }
+  return null;
+}
+
+export interface CollectionsSummary {
+  collectedThisMonthCents: number;
+  collectedLastMonthCents: number;
+  /** Documents settled in full in the last 30 days. */
+  paidInFull: { count: number; totalCents: number };
+  /** Deposits currently held against still-open documents. */
+  depositsCents: number;
+  avgDaysToPay: number | null;
+  medianDaysToPay: number | null;
+  paidCount: number;
+  /** Open balance split by document lifecycle: not-yet-finalized estimates,
+   *  finalized-and-within-terms invoices, and past-due. */
+  openBalance: {
+    estimatesCents: number;
+    estimatesCount: number;
+    invoicedOpenCents: number;
+    invoicedOpenCount: number;
+    overdueCents: number;
+    overdueCount: number;
+  };
+  currency: string;
+}
+
+interface RawCollected {
+  this_month: unknown;
+  last_month: unknown;
+}
+interface RawDaysToPay {
+  avg_days: unknown;
+  median_days: unknown;
+  paid_count: number;
+}
+interface RawOpenBalance {
+  est_cents: unknown;
+  est_count: number;
+  inv_cents: unknown;
+  inv_count: number;
+  ovd_cents: unknown;
+  ovd_count: number;
+}
+
+export async function collectionsSummary(ctx: ServiceContext): Promise<CollectionsSummary> {
+  return withTenant(ctx, async (tx) => {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 86_400_000);
+    const daysToPayStart = new Date(Date.now() - DAYS_TO_PAY_WINDOW * 86_400_000);
+
+    const [collectedRows, daysRows, openRows, paidAgg, depositAgg] = await Promise.all([
+      tx.$queryRaw<RawCollected[]>`
+        SELECT
+          COALESCE(SUM(CASE WHEN kind = 'refund' THEN -amount ELSE amount END)
+            FILTER (WHERE received_at >= date_trunc('month', now())), 0) AS this_month,
+          COALESCE(SUM(CASE WHEN kind = 'refund' THEN -amount ELSE amount END)
+            FILTER (WHERE received_at >= date_trunc('month', now()) - interval '1 month'
+                      AND received_at <  date_trunc('month', now())), 0) AS last_month
+        FROM billing_document_payments
+      `,
+      tx.$queryRaw<RawDaysToPay[]>`
+        SELECT
+          AVG(EXTRACT(EPOCH FROM (paid_at - finalized_at)) / 86400.0)::float AS avg_days,
+          (percentile_cont(0.5) WITHIN GROUP (
+            ORDER BY EXTRACT(EPOCH FROM (paid_at - finalized_at)) / 86400.0))::float AS median_days,
+          COUNT(*)::int AS paid_count
+        FROM billing_documents
+        WHERE status = 'paid'
+          AND paid_at IS NOT NULL
+          AND finalized_at IS NOT NULL
+          AND paid_at >= finalized_at
+          AND paid_at >= ${daysToPayStart}
+          AND deleted_at IS NULL
+          AND voided_at IS NULL
+      `,
+      tx.$queryRaw<RawOpenBalance[]>`
+        SELECT
+          COALESCE(SUM(total - amount_paid) FILTER (WHERE finalized_at IS NULL), 0)              AS est_cents,
+          COUNT(*) FILTER (WHERE finalized_at IS NULL)::int                                       AS est_count,
+          COALESCE(SUM(total - amount_paid) FILTER (
+            WHERE finalized_at IS NOT NULL AND status <> 'overdue'
+              AND (due_at IS NULL OR due_at >= now())), 0)                                         AS inv_cents,
+          COUNT(*) FILTER (
+            WHERE finalized_at IS NOT NULL AND status <> 'overdue'
+              AND (due_at IS NULL OR due_at >= now()))::int                                        AS inv_count,
+          COALESCE(SUM(total - amount_paid) FILTER (
+            WHERE finalized_at IS NOT NULL
+              AND (status = 'overdue' OR (due_at IS NOT NULL AND due_at < now()))), 0)             AS ovd_cents,
+          COUNT(*) FILTER (
+            WHERE finalized_at IS NOT NULL
+              AND (status = 'overdue' OR (due_at IS NOT NULL AND due_at < now())))::int            AS ovd_count
+        FROM billing_documents
+        WHERE deleted_at IS NULL AND voided_at IS NULL
+          AND status NOT IN ('paid', 'void')
+          AND (total - amount_paid) > 0.005
+      `,
+      tx.billingDocument.aggregate({
+        where: { status: 'paid', paidAt: { gte: thirtyDaysAgo }, deletedAt: null, voidedAt: null },
+        _count: { _all: true },
+        _sum: { total: true },
+      }),
+      tx.billingDocument.aggregate({
+        where: { deletedAt: null, voidedAt: null, status: { notIn: ['paid', 'void'] } },
+        _sum: { depositTotal: true },
+      }),
+    ]);
+
+    const collected = collectedRows[0];
+    const days = daysRows[0];
+    const open = openRows[0];
+
+    return {
+      collectedThisMonthCents: dollarsToCents(collected?.this_month),
+      collectedLastMonthCents: dollarsToCents(collected?.last_month),
+      paidInFull: {
+        count: paidAgg._count._all,
+        totalCents: dollarsToCents(paidAgg._sum.total),
+      },
+      depositsCents: dollarsToCents(depositAgg._sum.depositTotal),
+      avgDaysToPay:
+        days?.avg_days != null ? Math.round((rawFloat(days.avg_days) ?? 0) * 10) / 10 : null,
+      medianDaysToPay:
+        days?.median_days != null ? Math.round((rawFloat(days.median_days) ?? 0) * 10) / 10 : null,
+      paidCount: Number(days?.paid_count ?? 0),
+      openBalance: {
+        estimatesCents: dollarsToCents(open?.est_cents),
+        estimatesCount: Number(open?.est_count ?? 0),
+        invoicedOpenCents: dollarsToCents(open?.inv_cents),
+        invoicedOpenCount: Number(open?.inv_count ?? 0),
+        overdueCents: dollarsToCents(open?.ovd_cents),
+        overdueCount: Number(open?.ovd_count ?? 0),
+      },
+      currency: DEFAULT_CURRENCY,
+    };
+  });
+}
+
+export interface DebtorRow {
+  customerId: string;
+  name: string;
+  openInvoices: number;
+  outstandingCents: number;
+  /** Days past the oldest overdue document's due date; null if none past due. */
+  oldestOverdueDays: number | null;
+}
+
+interface RawDebtor {
+  customer_id: string;
+  open_invoices: number;
+  outstanding: unknown;
+  oldest_days: unknown;
+}
+
+export async function customerBreakdown(
+  ctx: ServiceContext,
+  opts?: { limit?: number }
+): Promise<DebtorRow[]> {
+  const limit = Math.min(Math.max(opts?.limit ?? 5, 1), 50);
+
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.$queryRaw<RawDebtor[]>`
+      SELECT
+        customer_id,
+        COUNT(*)::int                  AS open_invoices,
+        COALESCE(SUM(total - amount_paid), 0) AS outstanding,
+        MAX(CASE WHEN due_at IS NOT NULL AND due_at < now()
+              THEN EXTRACT(EPOCH FROM (now() - due_at)) / 86400.0 ELSE NULL END) AS oldest_days
+      FROM billing_documents
+      WHERE deleted_at IS NULL AND voided_at IS NULL
+        AND status NOT IN ('paid', 'void')
+        AND (total - amount_paid) > 0.005
+        AND customer_id IS NOT NULL
+      GROUP BY customer_id
+      ORDER BY outstanding DESC
+      LIMIT ${limit}
+    `;
+    if (rows.length === 0) return [];
+
+    const customers = await tx.customer.findMany({
+      where: { id: { in: rows.map((r) => r.customer_id) } },
+      select: { id: true, firstName: true, lastName: true, email: true },
+    });
+    const byId = new Map(customers.map((c) => [c.id, c]));
+
+    return rows.map((r) => {
+      const c = byId.get(r.customer_id);
+      const joined = c ? [c.firstName, c.lastName].filter(Boolean).join(' ').trim() : '';
+      const name = joined.length > 0 ? joined : (c?.email ?? '—');
+      const oldest = rawFloat(r.oldest_days);
+      return {
+        customerId: r.customer_id,
+        name,
+        openInvoices: Number(r.open_invoices ?? 0),
+        outstandingCents: dollarsToCents(r.outstanding),
+        oldestOverdueDays: oldest != null ? Math.floor(oldest) : null,
+      };
+    });
+  });
+}

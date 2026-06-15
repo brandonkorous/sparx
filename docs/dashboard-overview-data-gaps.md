@@ -1,6 +1,6 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 1.6
+**Version:** 1.7
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -136,9 +136,9 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 - ✅ Recent documents — `GET /v1/invoicing/documents?take=6`
 - ✅ Workflows — `GET /v1/invoicing/workflows`
 - ✅ Collected-over-time timeseries — `GET /v1/invoicing/reports/collected-timeseries` (shipped 2026-06-15; **second rollup** — `rollup_invoicing_daily_collected` + nightly reconcile + live-overlay read per docs/97 §5; powers the collected-vs-billed chart + Collected/Billed/rate footer + the Collected · 30d KPI)
-- 🔴 Days-to-pay — no endpoint
-- 🔴 Customer breakdown — no endpoint
-- 🔴 Reminder-automation stats — no endpoint
+- ✅ Days-to-pay (avg + median) + collections summary (collected this/last month, paid-in-full, deposits) + open-balance-by-stage — `GET /v1/invoicing/reports/collections` (shipped 2026-06-15)
+- ✅ Customer breakdown ("who owes you", top debtors by outstanding) — `GET /v1/invoicing/reports/customer-breakdown` (shipped 2026-06-15)
+- 🔴 Reminder-automation stats (reminders sent over time) — needs a reminder event log (workload B); reminders flow through automations/email events, not a dedicated table
 
 ### Inventory — Amber
 
