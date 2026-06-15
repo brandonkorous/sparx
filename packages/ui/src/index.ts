@@ -330,6 +330,13 @@ export {
 } from './components/data/table';
 export { DataTable, type DataTableProps } from './components/data/data-table';
 export { Stat, type StatProps, type StatDelta } from './components/data/stat';
+export {
+  ActionTile,
+  ActionQueue,
+  type ActionTileProps,
+  type ActionQueueProps,
+} from './components/data/action-tile';
+export { BarList, type BarListProps, type BarListItem } from './components/data/bar-list';
 export { EmptyState, type EmptyStateProps } from './components/data/empty-state';
 export { FilterBar, type FilterBarProps } from './components/data/filter-bar';
 export {
@@ -375,10 +382,13 @@ export {
   BarChart,
   AreaChart,
   Sparkline,
+  DonutChart,
   type ChartSeries,
   type BaseChartProps,
   type LineChartProps,
   type BarChartProps,
   type AreaChartProps,
   type SparklineProps,
+  type DonutChartProps,
+  type DonutDatum,
 } from './components/data/chart';

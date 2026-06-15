@@ -9,3 +9,4 @@ export {
   type AreaChartProps,
 } from './charts';
 export { Sparkline, type SparklineProps } from './sparkline';
+export { DonutChart, type DonutChartProps, type DonutDatum } from './donut-chart';

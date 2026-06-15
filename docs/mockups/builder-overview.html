@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en" data-module="builder">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Builder · Overview — Sparx (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   Sparx dashboard mockup — Builder overview
+   Tokens lifted from docs/sparx-design-tokens.css. Flat by
+   default, two font weights (400/500), 3px module stripe,
+   warm colors reserved for semantic states only.
+   ============================================================ */
+:root{
+  --module:#6366f1; --module-hover:#4f46e5; --module-tint:#eef2ff; --module-text:#4338ca;
+  --commerce:#f97316; --cms:#14b8a6; --crm:#06b6d4; --email:#0ea5e9; --b2b:#475569; --ai:#ec4899; --dropship:#10b981;
+  --bg-page:#fafafa; --bg-surface:#fff; --bg-subtle:#f4f4f5; --bg-muted:#e4e4e7;
+  --border:#e5e5e5; --border-strong:#d4d4d8;
+  --text:#0a0a0a; --text-2:#52525b; --text-3:#a1a1aa;
+  --success:#10b981; --success-tint:#ecfdf5; --success-text:#065f46;
+  --warning:#f59e0b; --warning-tint:#fffbeb; --warning-text:#92400e;
+  --danger:#ef4444;  --danger-tint:#fef2f2;  --danger-text:#991b1b;
+  --r-sm:4px; --r-md:6px; --r-lg:8px; --r-xl:12px; --r-full:9999px;
+  --font:'Geist','Inter',system-ui,-apple-system,sans-serif;
+  --mono:'Geist Mono','JetBrains Mono',monospace;
+  --shadow-sm:0 1px 2px 0 rgb(0 0 0 / .05);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:var(--font); background:var(--bg-page); color:var(--text);
+  font-size:14px; line-height:1.5; font-weight:400;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+a{color:inherit;text-decoration:none}
+.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ic.sm{width:15px;height:15px}
+.ic.lg{width:22px;height:22px}
+.muted{color:var(--text-2)}
+.faint{color:var(--text-3)}
+
+/* ── App shell ─────────────────────────────────────────────── */
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.side{
+  background:var(--bg-surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+}
+.brand{display:flex;align-items:center;gap:9px;padding:18px 20px 14px}
+.wordmark{font-size:19px;font-weight:500;letter-spacing:-.03em}
+.wordmark .x{color:var(--module)}
+.mark{width:26px;height:26px;border-radius:7px;background:#0a0a0a;color:#fff;display:grid;place-items:center;font-weight:500;font-size:13px;letter-spacing:-.04em}
+.mark .x{color:var(--module)}
+
+.siteswitch{
+  margin:2px 12px 8px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-md);
+  display:flex;align-items:center;gap:9px;cursor:pointer;background:var(--bg-surface);
+}
+.siteswitch:hover{border-color:var(--border-strong)}
+.siteswitch .fav{width:22px;height:22px;border-radius:5px;background:linear-gradient(135deg,#b45309,#7c2d12);flex:none}
+.siteswitch .nm{font-weight:500;font-size:13px;line-height:1.1}
+.siteswitch .sub{font-size:11px;color:var(--text-3)}
+.siteswitch .ic{margin-left:auto;color:var(--text-3)}
+
+.nav{padding:6px 12px;overflow-y:auto;flex:1}
+.nav__item{
+  display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:var(--r-md);
+  color:var(--text-2);font-size:13px;cursor:pointer;position:relative;margin-bottom:1px;
+}
+.nav__item:hover{background:var(--bg-subtle);color:var(--text)}
+.nav__item .ic{color:var(--text-3)}
+.nav__item:hover .ic{color:var(--text-2)}
+.nav__item.active{background:var(--module-tint);color:var(--module-text);font-weight:500}
+.nav__item.active .ic{color:var(--module)}
+.nav__item.active::before{content:"";position:absolute;left:-12px;top:6px;bottom:6px;width:3px;border-radius:0 3px 3px 0;background:var(--module)}
+.nav__dot{width:7px;height:7px;border-radius:var(--r-full);flex:none;margin-left:auto}
+.nav__sep{height:1px;background:var(--border);margin:8px 6px}
+
+.account{border-top:1px solid var(--border);padding:10px 12px;display:flex;align-items:center;gap:10px}
+.avatar{width:30px;height:30px;border-radius:var(--r-full);background:#0a0a0a;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:500;flex:none}
+.account .nm{font-size:13px;font-weight:500;line-height:1.15}
+.account .sub{font-size:11px;color:var(--text-3)}
+
+/* ── Top bar ───────────────────────────────────────────────── */
+.main{display:flex;flex-direction:column;min-width:0}
+.topbar{
+  position:sticky;top:0;z-index:20;background:rgba(250,250,250,.82);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:11px 26px;
+}
+.crumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2)}
+.crumb .here{color:var(--text);font-weight:500}
+.crumb .ic{color:var(--text-3)}
+.search{
+  margin-left:8px;display:flex;align-items:center;gap:8px;background:var(--bg-surface);
+  border:1px solid var(--border);border-radius:var(--r-md);padding:7px 11px;width:260px;color:var(--text-3);font-size:13px;
+}
+.search kbd{margin-left:auto;font-family:var(--mono);font-size:10px;border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--text-3)}
+.topbar .spacer{flex:1}
+.iconbtn{width:34px;height:34px;border-radius:var(--r-md);display:grid;place-items:center;color:var(--text-2);cursor:pointer;border:1px solid transparent}
+.iconbtn:hover{background:var(--bg-subtle);border-color:var(--border)}
+.dotred{position:relative}
+.dotred::after{content:"";position:absolute;top:7px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--danger);border:1.5px solid var(--bg-page)}
+
+/* ── Buttons / badges ──────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:13px;font-weight:500;
+  padding:8px 13px;border-radius:var(--r-md);border:1px solid transparent;cursor:pointer;white-space:nowrap;line-height:1;transition:background .12s,border-color .12s}
+.btn.sm{padding:6px 10px;font-size:12px}
+.btn--module{background:var(--module);color:#fff}
+.btn--module:hover{background:var(--module-hover)}
+.btn--outline{background:var(--bg-surface);border-color:var(--border-strong);color:var(--text)}
+.btn--outline:hover{background:var(--bg-subtle)}
+.btn--ghost{background:transparent;color:var(--text-2)}
+.btn--ghost:hover{background:var(--bg-subtle);color:var(--text)}
+.btn--amber{background:var(--warning);color:#fff}
+.btn--amber:hover{filter:brightness(.95)}
+
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:var(--r-full);line-height:1.3;white-space:nowrap}
+.badge--module{background:var(--module-tint);color:var(--module-text)}
+.badge--green{background:var(--success-tint);color:var(--success-text)}
+.badge--amber{background:var(--warning-tint);color:var(--warning-text)}
+.badge--red{background:var(--danger-tint);color:var(--danger-text)}
+.badge--muted{background:var(--bg-subtle);color:var(--text-2)}
+.badge--outline{background:transparent;border:1px solid var(--border);color:var(--text-2)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.dot--green{background:var(--success)} .dot--amber{background:var(--warning)} .dot--red{background:var(--danger)} .dot--module{background:var(--module)}
+
+/* ── Layout / cards ────────────────────────────────────────── */
+.content{padding:24px 26px 56px;max-width:1320px;width:100%}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.pagehead h1{font-size:24px;font-weight:500;letter-spacing:-.02em;margin:0 0 3px}
+.pagehead .sub{color:var(--text-2);font-size:13px}
+.pagehead .actions{display:flex;gap:9px}
+
+.grid{display:grid;gap:16px}
+.g-4{grid-template-columns:repeat(4,1fr)}
+.g-2{grid-template-columns:1fr 1fr}
+.g-3{grid-template-columns:repeat(3,1fr)}
+.span2{grid-column:span 2}
+.row{display:flex;gap:16px}
+.stack{display:flex;flex-direction:column;gap:16px}
+
+.card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px}
+.card--module{border-top:3px solid var(--module);padding-top:16px}
+.card__head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.card__title{font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px}
+.card__title .ic{color:var(--module)}
+.card__sub{font-size:12px;color:var(--text-3);margin-top:2px}
+.card__link{font-size:12px;color:var(--module-text);font-weight:500;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.card__link:hover{color:var(--module)}
+
+/* ── Stat ──────────────────────────────────────────────────── */
+.stat .lbl{display:flex;align-items:center;gap:7px;color:var(--text-2);font-size:12.5px;margin-bottom:9px}
+.stat .lbl .ic{color:var(--text-3)}
+.stat .val{font-size:27px;font-weight:500;letter-spacing:-.02em;line-height:1}
+.stat .meta{display:flex;align-items:center;gap:7px;margin-top:9px;font-size:12px}
+.delta{display:inline-flex;align-items:center;gap:3px;font-weight:500}
+.delta--up{color:var(--success-text)} .delta--down{color:var(--danger-text)} .delta--flat{color:var(--text-3)}
+.delta .ic{width:13px;height:13px}
+
+/* ── Hero status ───────────────────────────────────────────── */
+.hero{display:grid;grid-template-columns:288px 1fr auto;gap:24px;align-items:center}
+.browser{border:1px solid var(--border-strong);border-radius:var(--r-lg);overflow:hidden;background:#fff;box-shadow:var(--shadow-sm)}
+.browser__bar{display:flex;align-items:center;gap:6px;padding:7px 10px;background:#f4f1ec;border-bottom:1px solid #e7e1d8}
+.browser__bar i{width:8px;height:8px;border-radius:50%;background:#d8cfc2}
+.browser__url{margin-left:8px;font-family:var(--mono);font-size:9px;color:#9c8e7a;background:#fff;border-radius:4px;padding:2px 8px;flex:1}
+.site{font-family:var(--font);background:#fbf7f0;color:#3a2d1f;padding:0 0 10px}
+.site__nav{display:flex;align-items:center;gap:6px;padding:8px 11px;border-bottom:1px solid #efe6d8}
+.site__logo{font-size:10px;font-weight:500;color:#7c2d12}
+.site__nav .ln{height:4px;width:22px;background:#e6d8c4;border-radius:2px;margin-left:auto}
+.site__nav .ln+.ln{margin-left:6px}
+.site__hero{padding:14px 12px 12px;background:linear-gradient(160deg,#fdf6ea,#f6e7cf)}
+.site__h{height:9px;width:70%;background:#b45309;border-radius:3px}
+.site__h2{height:6px;width:88%;background:#d6b48a;border-radius:3px;margin-top:7px}
+.site__btn{margin-top:11px;height:15px;width:64px;background:#7c2d12;border-radius:4px}
+.site__row{display:flex;gap:7px;padding:11px 12px 0}
+.site__cardp{flex:1;border:1px solid #efe6d8;border-radius:5px;padding:5px;background:#fff}
+.site__img{height:24px;border-radius:3px;background:linear-gradient(135deg,#e8d3b3,#cda06a)}
+.site__l{height:4px;background:#e6d8c4;border-radius:2px;margin-top:5px}
+.site__l.short{width:60%}
+
+.hero__info .title{font-size:18px;font-weight:500;display:flex;align-items:center;gap:9px;letter-spacing:-.01em}
+.hero__url{display:inline-flex;align-items:center;gap:7px;margin-top:9px;font-size:14px;color:var(--module-text);font-weight:500}
+.hero__url .ic{width:15px;height:15px;color:var(--success)}
+.hero__meta{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:13px;font-size:12.5px;color:var(--text-2)}
+.hero__meta b{font-weight:500;color:var(--text)}
+.nudge{display:flex;align-items:center;gap:11px;margin-top:16px;padding:11px 13px;background:var(--warning-tint);border:1px solid #fde68a;border-radius:var(--r-md)}
+.nudge .ic{color:var(--warning-text)}
+.nudge .t{font-size:12.5px;color:var(--warning-text)}
+.nudge .t b{font-weight:500}
+.nudge .btn{margin-left:auto}
+.hero__side{display:flex;flex-direction:column;gap:10px;align-items:stretch;min-width:172px}
+.hero__kpi{border:1px solid var(--border);border-radius:var(--r-md);padding:11px 13px;text-align:left}
+.hero__kpi .v{font-size:18px;font-weight:500}
+.hero__kpi .l{font-size:11.5px;color:var(--text-3);margin-top:2px}
+
+/* ── Bar list (sources) ────────────────────────────────────── */
+.barlist{display:flex;flex-direction:column;gap:13px}
+.barrow{display:grid;grid-template-columns:84px 1fr 52px;align-items:center;gap:12px;font-size:13px}
+.barrow .nm{display:flex;align-items:center;gap:7px;color:var(--text-2)}
+.bartrack{height:8px;background:var(--bg-subtle);border-radius:var(--r-full);overflow:hidden}
+.barfill{height:100%;border-radius:var(--r-full);background:var(--module)}
+.barrow .pct{text-align:right;font-variant-numeric:tabular-nums;color:var(--text);font-weight:500}
+
+/* ── Tables ────────────────────────────────────────────────── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-weight:400;color:var(--text-3);font-size:12px;padding:0 12px 9px;border-bottom:1px solid var(--border)}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td.num,.tbl th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl .path{font-family:var(--mono);font-size:12px;color:var(--module-text)}
+.tbl .pg{font-weight:500}
+.tbl tbody tr:hover{background:var(--bg-subtle)}
+
+/* ── Health / attention / activity ─────────────────────────── */
+.list{display:flex;flex-direction:column}
+.lrow{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--border)}
+.lrow:last-child{border-bottom:none}
+.lrow .ico{width:30px;height:30px;border-radius:var(--r-md);display:grid;place-items:center;flex:none}
+.ico--green{background:var(--success-tint);color:var(--success-text)}
+.ico--amber{background:var(--warning-tint);color:var(--warning-text)}
+.ico--module{background:var(--module-tint);color:var(--module-text)}
+.ico--red{background:var(--danger-tint);color:var(--danger-text)}
+.lrow .tt{flex:1;min-width:0}
+.lrow .tt .a{font-size:13px;font-weight:500}
+.lrow .tt .b{font-size:12px;color:var(--text-3);margin-top:1px}
+.lrow .val{font-weight:500;font-size:13px;font-variant-numeric:tabular-nums}
+
+.activity{display:flex;flex-direction:column;gap:0}
+.act{display:flex;gap:12px;padding:10px 0;position:relative}
+.act:not(:last-child)::before{content:"";position:absolute;left:5px;top:24px;bottom:-2px;width:1px;background:var(--border)}
+.act .pip{width:11px;height:11px;border-radius:50%;border:2px solid var(--bg-surface);background:var(--module);margin-top:4px;flex:none;box-shadow:0 0 0 1px var(--border)}
+.act .pip.cms{background:var(--cms)} .act .pip.muted{background:var(--text-3)}
+.act .a{font-size:13px}
+.act .a b{font-weight:500}
+.act .time{font-size:11.5px;color:var(--text-3);margin-top:1px}
+
+/* ── Mini chart axis labels ────────────────────────────────── */
+.chartwrap{position:relative}
+.axis{display:flex;justify-content:space-between;margin-top:8px;font-size:10.5px;color:var(--text-3);font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--text-2);margin-top:2px}
+.legend i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:6px;vertical-align:-1px}
+
+.mockflag{position:fixed;bottom:14px;right:16px;z-index:60;background:#0a0a0a;color:#fff;font-size:11px;
+  padding:6px 12px;border-radius:var(--r-full);opacity:.78;font-weight:500;letter-spacing:.01em}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width:1180px){
+  .hero{grid-template-columns:1fr;}
+  .hero__side{flex-direction:row;min-width:0}
+  .hero__kpi{flex:1}
+  .browser{max-width:340px}
+}
+@media (max-width:1080px){
+  .g-4{grid-template-columns:1fr 1fr}
+  .g-3{grid-template-columns:1fr}
+  .g-2{grid-template-columns:1fr}
+  .span2{grid-column:auto}
+}
+@media (max-width:920px){
+  .app{grid-template-columns:64px 1fr}
+  .brand .wordmark,.siteswitch .nm,.siteswitch .sub,.siteswitch .ic,.nav__item span,.nav__dot,.account .nm,.account .sub{display:none}
+  .siteswitch{justify-content:center}.nav__item{justify-content:center}.brand{justify-content:center;padding:16px 0}
+  .search{display:none}
+}
+@media (max-width:640px){
+  .g-4{grid-template-columns:1fr}
+  .content{padding:18px 14px 48px}
+  .hero__side{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-7h6v7"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.3"/><rect x="14" y="3" width="7" height="7" rx="1.3"/><rect x="3" y="14" width="7" height="7" rx="1.3"/><rect x="14" y="14" width="7" height="7" rx="1.3"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.4"/><circle cx="19" cy="20" r="1.4"/><path d="M2 3h2.2l2.3 12.1a1.6 1.6 0 0 0 1.6 1.3h9.1a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.5"/><path d="M22 21v-2a4 4 0 0 0-3-3.85"/><path d="M16 3.15a4 4 0 0 1 0 7.7"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m3 7 9 5.5L21 7"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="1.2"/><path d="M9.5 21.5v-3.5h5v3.5"/><path d="M9 6.5h.01M12 6.5h.01M15 6.5h.01M9 10.5h.01M12 10.5h.01M15 10.5h.01M9 14h.01M12 14h.01M15 14h.01"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M10 17.5h4V5.5H2.5v12H5"/><path d="M14 9.5h4l3 3v5h-2"/><circle cx="7.5" cy="17.5" r="1.6"/><circle cx="17.5" cy="17.5" r="1.6"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3.5 13.7 8 18 9.5 13.7 11 12 15.5 10.3 11 6 9.5 10.3 8z"/><path d="M19 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v2.2M12 19.3v2.2M4.3 4.3l1.6 1.6M18.1 18.1l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.3 19.7l1.6-1.6M18.1 5.9l1.6-1.6"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M5 2.5h14L21 7v0a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M4 9v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 6 2.5 8 2.5 8H3.5S6 14 6 8"/><path d="M10.5 20.5a2 2 0 0 0 3 0"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 0 1 4.7 1c0 1.6-2.3 2-2.3 3.2"/><path d="M12 17.5h.01"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10.5 13.5 21 3"/><path d="M18 13.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5.5"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.9 18a2 2 0 0 0 1.7 3h16.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4.5M12 17.5h.01"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M12.5 20H21"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-8"/><path d="M17 7h4v4"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 4 13.5h6.5L9 22l9-11.5h-6.5z"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10.5 13a4 4 0 0 0 6 .4l2.4-2.4a4 4 0 0 0-5.7-5.7L12 6.5"/><path d="M13.5 11a4 4 0 0 0-6-.4L5.1 13a4 4 0 0 0 5.7 5.7L12 17.5"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.8"/><path d="m21 15.5-5-5L5 21"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2.5H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 2.5V8h5"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="1.2"/><circle cx="17.5" cy="11" r="1.2"/><circle cx="8.5" cy="6" r="1.2"/><circle cx="6.5" cy="11" r="1.2"/><path d="M12 2.5a9.5 9.5 0 0 0 0 19c1.1 0 1.8-.9 1.8-1.9a2 2 0 0 1 2-2H18a3.5 3.5 0 0 0 3.5-3.6A9.6 9.6 0 0 0 12 2.5Z"/></symbol>
+  <symbol id="i-comp" viewBox="0 0 24 24"><path d="M12 2.5 5 6.2v7.6L12 17.5l7-3.7V6.2z"/><path d="M5 6.2 12 10l7-3.8M12 10v7.5"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="11" width="15" height="9.5" rx="2"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/></symbol>
+  <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M5 15c-1.5 1.2-2 5-2 5s3.8-.5 5-2a2.8 2.8 0 0 0-3-3Z"/><path d="M9.5 14.5 6 11s.5-5 5.5-8 6.5-.5 6.5-.5.5 1.5-2.5 6.5-8 5.5-8 5.5Z"/><circle cx="14.5" cy="8.5" r="1.4"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></symbol>
+</svg>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="side">
+    <div class="brand">
+      <div class="mark">S<span class="x">x</span></div>
+      <span class="wordmark">Spar<span class="x">x</span></span>
+    </div>
+
+    <div class="siteswitch" title="Switch site">
+      <span class="fav"></span>
+      <span style="min-width:0">
+        <span class="nm">switchback.coffee</span><br/>
+        <span class="sub">1 of 2 sites</span>
+      </span>
+      <svg class="ic sm"><use href="#i-chev-d"/></svg>
+    </div>
+
+    <nav class="nav">
+      <a class="nav__item"><svg class="ic"><use href="#i-home"/></svg><span>Home</span></a>
+      <a class="nav__item active"><svg class="ic"><use href="#i-grid"/></svg><span>Builder</span></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-cart"/></svg><span>Commerce</span><i class="nav__dot" style="background:var(--commerce)"></i></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-layers"/></svg><span>CMS</span><i class="nav__dot" style="background:var(--cms)"></i></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-users"/></svg><span>CRM</span><i class="nav__dot" style="background:var(--crm)"></i></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-mail"/></svg><span>Email</span><i class="nav__dot" style="background:var(--email)"></i></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-building"/></svg><span>B2B</span><i class="nav__dot" style="background:var(--b2b)"></i></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-truck"/></svg><span>Dropship</span><i class="nav__dot" style="background:var(--dropship)"></i></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-sparkles"/></svg><span>AI</span><i class="nav__dot" style="background:var(--ai)"></i></a>
+      <div class="nav__sep"></div>
+      <a class="nav__item"><svg class="ic"><use href="#i-store"/></svg><span>Marketplace</span></a>
+      <a class="nav__item"><svg class="ic"><use href="#i-settings"/></svg><span>Settings</span></a>
+    </nav>
+
+    <div class="account">
+      <div class="avatar">JM</div>
+      <div>
+        <div class="nm">Jordan Reyes</div>
+        <div class="sub">Owner · Switchback</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">
+        <svg class="ic sm"><use href="#i-grid"/></svg>
+        <span class="here">Builder</span>
+        <svg class="ic sm"><use href="#i-chev-r"/></svg>
+        <span>Overview</span>
+      </div>
+      <div class="search">
+        <svg class="ic sm"><use href="#i-search"/></svg>
+        <span>Search pages, components…</span>
+        <kbd>⌘K</kbd>
+      </div>
+      <div class="spacer"></div>
+      <a class="btn btn--outline sm"><svg class="ic sm"><use href="#i-ext"/></svg>Visit site</a>
+      <div class="iconbtn dotred"><svg class="ic"><use href="#i-bell"/></svg></div>
+      <div class="iconbtn"><svg class="ic"><use href="#i-help"/></svg></div>
+      <div class="avatar" style="width:32px;height:32px">JR</div>
+    </header>
+
+    <main class="content">
+      <!-- Page header -->
+      <div class="pagehead">
+        <div>
+          <h1>Builder</h1>
+          <div class="sub">Design and manage everything visitors see on <b>switchback.coffee</b>.</div>
+        </div>
+        <div class="actions">
+          <a class="btn btn--outline"><svg class="ic sm"><use href="#i-eye"/></svg>Preview</a>
+          <a class="btn btn--module"><svg class="ic sm"><use href="#i-pencil"/></svg>Open editor</a>
+        </div>
+      </div>
+
+      <div class="stack">
+
+        <!-- Hero: site status -->
+        <section class="card card--module">
+          <div class="hero">
+            <div class="browser" aria-hidden="true">
+              <div class="browser__bar"><i></i><i></i><i></i><span class="browser__url">switchback.coffee</span></div>
+              <div class="site">
+                <div class="site__nav"><span class="site__logo">SWITCHBACK</span><span class="ln"></span><span class="ln"></span><span class="ln"></span></div>
+                <div class="site__hero">
+                  <div class="site__h"></div><div class="site__h2"></div><div class="site__btn"></div>
+                </div>
+                <div class="site__row">
+                  <div class="site__cardp"><div class="site__img"></div><div class="site__l"></div><div class="site__l short"></div></div>
+                  <div class="site__cardp"><div class="site__img"></div><div class="site__l"></div><div class="site__l short"></div></div>
+                  <div class="site__cardp"><div class="site__img"></div><div class="site__l"></div><div class="site__l short"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero__info">
+              <div class="title"><span class="dot dot--green"></span> Your site is live</div>
+              <a class="hero__url"><svg class="ic"><use href="#i-lock"/></svg> switchback.coffee <svg class="ic sm" style="color:var(--text-3)"><use href="#i-ext"/></svg></a>
+              <div class="hero__meta">
+                <span><b>Custom domain</b> · SSL active</span>
+                <span>Last published <b>2 days ago</b> by you</span>
+                <span><b>14</b> pages live</span>
+              </div>
+              <div class="nudge">
+                <svg class="ic"><use href="#i-alert"/></svg>
+                <div class="t"><b>3 unpublished changes</b> on Home, Shop, and your theme are waiting to go live.</div>
+                <a class="btn btn--amber sm"><svg class="ic sm"><use href="#i-rocket"/></svg>Review &amp; publish</a>
+              </div>
+            </div>
+
+            <div class="hero__side">
+              <div class="hero__kpi"><div class="v">99.98%</div><div class="l">Uptime · 30d</div></div>
+              <div class="hero__kpi"><div class="v">94<span class="faint" style="font-size:12px"> /100</span></div><div class="l">Performance score</div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- KPI strip -->
+        <section class="grid g-4">
+          <div class="card stat">
+            <div class="lbl"><svg class="ic sm"><use href="#i-users"/></svg>Visitors · 30d</div>
+            <div class="val">8,420</div>
+            <div class="meta"><span class="delta delta--up"><svg class="ic"><use href="#i-up"/></svg>12.4%</span><span class="faint">vs prev. 30d</span></div>
+          </div>
+          <div class="card stat">
+            <div class="lbl"><svg class="ic sm"><use href="#i-eye"/></svg>Pageviews · 30d</div>
+            <div class="val">23,180</div>
+            <div class="meta"><span class="delta delta--up"><svg class="ic"><use href="#i-up"/></svg>9.1%</span><span class="faint">2.75 / visit</span></div>
+          </div>
+          <div class="card stat">
+            <div class="lbl"><svg class="ic sm"><use href="#i-zap"/></svg>Avg. load time</div>
+            <div class="val">0.9s</div>
+            <div class="meta"><span class="badge badge--green">Fast</span><span class="faint">LCP 1.2s · CLS 0.02</span></div>
+          </div>
+          <div class="card stat">
+            <div class="lbl"><svg class="ic sm"><use href="#i-mail"/></svg>Email signups · 30d</div>
+            <div class="val">312</div>
+            <div class="meta"><span class="delta delta--up"><svg class="ic"><use href="#i-up"/></svg>18.0%</span><span class="faint">3.7% of visitors</span></div>
+          </div>
+        </section>
+
+        <!-- Charts: traffic + sources -->
+        <section class="grid g-2">
+          <div class="card span2" style="grid-column:span 1">
+            <div class="card__head">
+              <div>
+                <div class="card__title"><svg class="ic"><use href="#i-trend"/></svg>Traffic</div>
+                <div class="card__sub">Visitors &amp; pageviews · last 14 days</div>
+              </div>
+              <div class="legend"><span><i style="background:var(--module)"></i>Visitors</span><span><i style="background:#c7d2fe"></i>Pageviews</span></div>
+            </div>
+            <div class="chartwrap">
+              <svg viewBox="0 0 560 200" width="100%" height="200" preserveAspectRatio="none" role="img" aria-label="Traffic trend">
+                <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6366f1" stop-opacity=".16"/><stop offset="1" stop-color="#6366f1" stop-opacity="0"/></linearGradient></defs>
+                <g stroke="#eee" stroke-width="1"><line x1="0" y1="50" x2="560" y2="50"/><line x1="0" y1="100" x2="560" y2="100"/><line x1="0" y1="150" x2="560" y2="150"/></g>
+                <!-- pageviews (light) -->
+                <polyline fill="none" stroke="#c7d2fe" stroke-width="2" points="0,150 43,138 86,144 129,120 172,108 215,118 258,96 301,104 344,80 387,70 430,86 473,58 516,48 560,62"/>
+                <!-- visitors (module) -->
+                <path d="M0,168 43,160 86,164 129,148 172,140 215,150 258,128 301,134 344,116 387,108 430,122 473,98 516,92 560,104 L560,200 L0,200 Z" fill="url(#g1)"/>
+                <polyline fill="none" stroke="#6366f1" stroke-width="2.4" points="0,168 43,160 86,164 129,148 172,140 215,150 258,128 301,134 344,116 387,108 430,122 473,98 516,92 560,104"/>
+                <circle cx="560" cy="104" r="3.5" fill="#6366f1"/>
+              </svg>
+              <div class="axis"><span>May 31</span><span>Jun 4</span><span>Jun 8</span><span>Jun 11</span><span>Jun 14</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head">
+              <div class="card__title"><svg class="ic"><use href="#i-target"/></svg>Where visitors come from</div>
+              <span class="card__link">Details<svg class="ic sm"><use href="#i-chev-r"/></svg></span>
+            </div>
+            <div class="barlist">
+              <div class="barrow"><span class="nm">Search</span><span class="bartrack"><span class="barfill" style="width:48%"></span></span><span class="pct">48%</span></div>
+              <div class="barrow"><span class="nm">Direct</span><span class="bartrack"><span class="barfill" style="width:26%"></span></span><span class="pct">26%</span></div>
+              <div class="barrow"><span class="nm">Social</span><span class="bartrack"><span class="barfill" style="width:18%;background:#818cf8"></span></span><span class="pct">18%</span></div>
+              <div class="barrow"><span class="nm">Referral</span><span class="bartrack"><span class="barfill" style="width:8%;background:#a5b4fc"></span></span><span class="pct">8%</span></div>
+            </div>
+            <div style="border-top:1px solid var(--border);margin-top:15px;padding-top:13px" class="faint">
+              <span style="font-size:12px">Top referrer · <b style="color:var(--text-2)">instagram.com</b> — 1,140 visits</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Top pages + Needs attention -->
+        <section class="grid" style="grid-template-columns:1.7fr 1fr">
+          <div class="card">
+            <div class="card__head">
+              <div class="card__title"><svg class="ic"><use href="#i-file"/></svg>Top pages</div>
+              <span class="card__link">All pages<svg class="ic sm"><use href="#i-chev-r"/></svg></span>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>Page</th><th class="num">Views</th><th class="num">Avg. time</th><th class="num">Signup conv.</th></tr></thead>
+              <tbody>
+                <tr><td><div class="pg">Home</div><div class="path">/</div></td><td class="num">9,840</td><td class="num">1m 12s</td><td class="num">4.1%</td></tr>
+                <tr><td><div class="pg">Shop</div><div class="path">/shop</div></td><td class="num">6,210</td><td class="num">2m 04s</td><td class="num">6.8%</td></tr>
+                <tr><td><div class="pg">Subscriptions</div><div class="path">/subscriptions</div></td><td class="num">3,005</td><td class="num">2m 41s</td><td class="num">9.2%</td></tr>
+                <tr><td><div class="pg">Our Story</div><div class="path">/about</div></td><td class="num">1,690</td><td class="num">0m 58s</td><td class="num">2.0%</td></tr>
+                <tr><td><div class="pg">Wholesale</div><div class="path">/wholesale</div></td><td class="num">1,120</td><td class="num">1m 36s</td><td class="num">7.4%</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card__head">
+              <div>
+                <div class="card__title"><svg class="ic"><use href="#i-alert"/></svg>Needs attention</div>
+                <div class="card__sub">Fix these to improve reach &amp; quality</div>
+              </div>
+            </div>
+            <div class="list">
+              <div class="lrow">
+                <span class="ico ico--amber"><svg class="ic sm"><use href="#i-search"/></svg></span>
+                <div class="tt"><div class="a">2 pages missing meta descriptions</div><div class="b">Home · Wholesale — hurts search ranking</div></div>
+                <a class="btn btn--ghost sm">Fix</a>
+              </div>
+              <div class="lrow">
+                <span class="ico ico--amber"><svg class="ic sm"><use href="#i-link"/></svg></span>
+                <div class="tt"><div class="a">2 broken links</div><div class="b">In footer &amp; the Cold Brew product page</div></div>
+                <a class="btn btn--ghost sm">Review</a>
+              </div>
+              <div class="lrow">
+                <span class="ico ico--amber"><svg class="ic sm"><use href="#i-image"/></svg></span>
+                <div class="tt"><div class="a">5 images missing alt text</div><div class="b">Affects accessibility &amp; image search</div></div>
+                <a class="btn btn--ghost sm">Fix</a>
+              </div>
+              <div class="lrow">
+                <span class="ico ico--module"><svg class="ic sm"><use href="#i-globe"/></svg></span>
+                <div class="tt"><div class="a">Connect a marketing pixel</div><div class="b">No analytics tag detected yet</div></div>
+                <a class="btn btn--ghost sm">Add</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Site health + Pages + Activity -->
+        <section class="grid g-3">
+          <div class="card">
+            <div class="card__head"><div class="card__title"><svg class="ic"><use href="#i-zap"/></svg>Site health</div><span class="badge badge--green">Good</span></div>
+            <div class="list">
+              <div class="lrow"><span class="ico ico--green"><svg class="ic sm"><use href="#i-check"/></svg></span><div class="tt"><div class="a">Performance</div></div><span class="val">94 / 100</span></div>
+              <div class="lrow"><span class="ico ico--green"><svg class="ic sm"><use href="#i-check"/></svg></span><div class="tt"><div class="a">Mobile-friendly</div></div><span class="val badge badge--green">Pass</span></div>
+              <div class="lrow"><span class="ico ico--green"><svg class="ic sm"><use href="#i-check"/></svg></span><div class="tt"><div class="a">SSL &amp; HTTPS</div></div><span class="val badge badge--green">Active</span></div>
+              <div class="lrow"><span class="ico ico--green"><svg class="ic sm"><use href="#i-check"/></svg></span><div class="tt"><div class="a">Sitemap submitted</div></div><span class="val faint">Jun 12</span></div>
+              <div class="lrow"><span class="ico ico--amber"><svg class="ic sm"><use href="#i-alert"/></svg></span><div class="tt"><div class="a">SEO metadata</div></div><span class="val">12 / 14</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head"><div class="card__title"><svg class="ic"><use href="#i-file"/></svg>Pages &amp; content</div><span class="card__link">Manage<svg class="ic sm"><use href="#i-chev-r"/></svg></span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px">
+              <div style="border:1px solid var(--border);border-radius:var(--r-md);padding:12px"><div style="font-size:22px;font-weight:500">14</div><div class="faint" style="font-size:12px">Published</div></div>
+              <div style="border:1px solid var(--border);border-radius:var(--r-md);padding:12px"><div style="font-size:22px;font-weight:500">3</div><div class="faint" style="font-size:12px">Drafts</div></div>
+            </div>
+            <div class="list">
+              <div class="lrow"><span class="ico ico--module"><svg class="ic sm"><use href="#i-palette"/></svg></span><div class="tt"><div class="a">Theme</div><div class="b">Ember — warm, serif headings</div></div><a class="btn btn--ghost sm">Edit</a></div>
+              <div class="lrow"><span class="ico ico--module"><svg class="ic sm"><use href="#i-comp"/></svg></span><div class="tt"><div class="a">Components</div><div class="b">9 saved · 2 custom</div></div><a class="btn btn--ghost sm">Open</a></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__head"><div class="card__title"><svg class="ic"><use href="#i-clock"/></svg>Recent activity</div></div>
+            <div class="activity">
+              <div class="act"><span class="pip"></span><div><div class="a"><b>You</b> published the site</div><div class="time">2 days ago</div></div></div>
+              <div class="act"><span class="pip cms"></span><div><div class="a"><b>Sam Ortiz</b> edited <b>Shop</b> — added 3 products</div><div class="time">3 days ago</div></div></div>
+              <div class="act"><span class="pip"></span><div><div class="a"><b>You</b> changed the brand accent to <b>Ember Orange</b></div><div class="time">5 days ago</div></div></div>
+              <div class="act"><span class="pip muted"></span><div><div class="a"><b>You</b> added a new page: <b>Wholesale</b></div><div class="time">1 week ago</div></div></div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="mockflag">Design mockup · illustrative data</div>
+</body>
+</html>
