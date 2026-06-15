@@ -1,8 +1,8 @@
 # Analytics & Reporting Architecture
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous / WizeWorks
-**Last Updated:** 2026-06-14
+**Last Updated:** 2026-06-15
 
 ---
 
@@ -118,16 +118,29 @@ optional dimension). Reads become indexed range scans.
   policy, and `FORCE ROW LEVEL SECURITY`. The policy SQL is hand-authored, not
   Prisma-generated, and ships through the migration pipeline — see
   [packages/db/CLAUDE.md](../packages/db/CLAUDE.md), including the FORCE-RLS backfill footgun.
-- **Two update paths, both required:**
-  1. **Incremental** — a Pub/Sub event worker bumps the bucket on each business event, e.g.
-     `INSERT … ON CONFLICT (tenant_id, bucket) DO UPDATE SET revenue_cents = rollup.revenue_cents + excluded.revenue_cents`.
-     Low-latency, eventually consistent.
-  2. **Nightly reconcile** — a cron worker recomputes the trailing window (e.g. last 35 days)
-     from the source-of-truth tables and overwrites the rollup. This is the correctness
-     backstop that heals any drift from missed/duplicated events. Incremental makes it fresh;
-     reconcile makes it right.
+- **Keeping it fresh — two strategies, picked per workload:**
+  1. **Reconcile + live-overlay (the workload-A default).** A nightly cron recomputes the
+     trailing window from the source-of-truth tables and overwrites the rollup — closed-day
+     correctness that heals late refunds, cancellations, and any missed events. The _read_
+     endpoint then recomputes the most recent open day(s) live and overlays them on the
+     rollup, so "today" is fresh **without any event worker**. Because workload-A data is
+     always recomputable from operational tables, this is strictly correct (no drift) and
+     cheaper than running a consumer — so it is the default. Reconcile makes closed days
+     right; the live overlay makes the open day fresh.
+  2. **Incremental event-increment (workload B, or very high write volume).** A Pub/Sub event
+     worker bumps the bucket on each business event, e.g. `INSERT … ON CONFLICT
+(tenant_id, bucket) DO UPDATE SET … = rollup.… + excluded.…`. Reserved for when there is
+     **no source to recompute from** (captured events, §6), or when even a per-day live
+     overlay is too heavy at scale. Always pair it with a nightly reconcile as the
+     correctness backstop.
 - **Backfill:** the reconcile job, run once over full history, is also the backfill — no
   separate tooling.
+- **Reference implementation:** `rollup_commerce_daily_revenue` (commerce sales timeseries)
+  is the first rollup and the canonical example of the reconcile + live-overlay pattern:
+  the table + RLS migration, `reportingService.{revenueTimeseries,reconcileRevenueRollup}`,
+  the `/internal/commerce/revenue-rollup` cron endpoint + `commerce-revenue-rollup` CronJob,
+  read via `GET /v1/commerce/reports/revenue-timeseries`. Copy it for invoicing collected,
+  dropship, and automation-runs timeseries.
 
 Rollups are the home for: commerce sales timeseries & discount performance; invoicing
 collected/days-to-pay/customer-breakdown/reminder stats; dropship timeseries & on-time rate;
@@ -259,9 +272,10 @@ We wire real data **as we progress through each overview page**, cheapest first:
    (top products/customers, inventory value), CRM (pipeline, win-rate, top customers, tasks,
    segments), Email (broadcasts, domains), Dropship (supplier breakdown, orders).
 2. **📊 Timeseries rollups.** The most common gap and what powers the signature charts. Build
-   the shared rollup pattern (table + event-increment worker + nightly reconcile) once, then
-   apply it: commerce revenue, invoicing collected, dropship, automation runs. Each new
-   chart is then a small endpoint + a `liveOr(...)` swap.
+   the shared rollup pattern (table + RLS migration + nightly reconcile cron + live-overlay
+   read) once, then apply it: commerce revenue **✅ (shipped 2026-06-15 — the reference
+   implementation)**, invoicing collected, dropship, automation runs. Each new chart is then
+   a small endpoint + a `liveOr(...)` swap.
 3. **📊 Remaining operational rollups.** CRM leads/segments/tasks, B2B reporting, inventory
    summaries, chat volume/agent metrics, CMS publishing cadence.
 4. **📡 Event-capture surfaces (larger).** Site analytics first (the flagship; BigQuery

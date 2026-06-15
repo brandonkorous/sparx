@@ -6,11 +6,13 @@
 //
 // Each endpoint runs one scheduler:
 //   • POST /internal/commerce/reservation-reaper  → releases expired cart reservations
+//   • POST /internal/commerce/revenue-rollup      → reconciles the daily-revenue rollup
 //
 // Per-tenant loops are sequential to keep DB load predictable. Commerce
 // reaper runs every minute on a tight loop because the impact of a stuck
 // reservation (held stock that a real shopper can't buy) gets worse the
-// longer it sits.
+// longer it sits. The revenue-rollup reconcile runs nightly (docs/97 §5) and
+// accepts an optional `?days=` to widen the recomputed window for a backfill.
 
 import { timingSafeEqual } from 'node:crypto';
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
@@ -64,6 +66,15 @@ async function forEachActiveTenant<T>(
   return { tenants: tenants.length, outcomes };
 }
 
+/** Parse `?days=` into a positive integer window override, or undefined to use
+ *  the scheduler default. Garbage / non-positive values fall through to the
+ *  default rather than erroring a cron run. */
+function parseDays(raw: unknown): number | undefined {
+  if (typeof raw !== 'string') return undefined;
+  const n = Number.parseInt(raw, 10);
+  return Number.isFinite(n) && n > 0 ? n : undefined;
+}
+
 const commerceCronRoutes: FastifyPluginAsync = (app) => {
   app.post('/internal/commerce/reservation-reaper', async (request) => {
     authorize(request);
@@ -72,6 +83,21 @@ const commerceCronRoutes: FastifyPluginAsync = (app) => {
     );
     return { success: true, data: summary };
   });
+
+  app.post<{ Querystring: { days?: string } }>(
+    '/internal/commerce/revenue-rollup',
+    async (request) => {
+      authorize(request);
+      const sinceDays = parseDays(request.query.days);
+      const summary = await forEachActiveTenant((tenantId) =>
+        commerceSchedulers.reconcileRevenueRollup(
+          sinceDays !== undefined ? { tenantId, sinceDays } : { tenantId }
+        )
+      );
+      return { success: true, data: summary };
+    }
+  );
+
   return Promise.resolve();
 };
 

@@ -1,0 +1,40 @@
+// Analytics rollups (docs/97) — pre-aggregated, tenant-scoped summary tables
+// that the dashboard overview pages read instead of running heavy GROUP BYs on
+// the operational hot path. Each table is keyed by a time bucket (+ optional
+// dimension) so a report is a trivial indexed range scan.
+//
+// Maintenance (docs/97 §5): a nightly cron `reconcile` recomputes a trailing
+// window from the source-of-truth tables and overwrites the rollup (also the
+// one-shot backfill). The READ endpoint live-overlays the most recent open
+// day(s) so "today" is fresh without an event-increment consumer — for
+// workload A (reporting over data we already own) the source is always
+// recomputable, so reconcile + live-overlay is strictly correct and cheaper
+// than an incremental worker. Money is stored as integer cents (BIGINT) to
+// match the cents convention every `/reports/*` endpoint surfaces.
+
+// One row per (tenant, UTC day) of commerce revenue. Buckets by `placed_at`'s
+// UTC date over non-cancelled orders. `net_cents` = collected − refunds, the
+// same definition the live `revenue-summary` KPI uses, so the chart and the
+// headline never disagree.
+model RollupCommerceDailyRevenue {
+  tenantId String   @map("tenant_id") @db.Uuid
+  // The UTC day this row aggregates (date only — no time component).
+  bucket   DateTime @db.Date
+
+  ordersCount   Int    @default(0) @map("orders_count")
+  // Merchandise subtotal before discounts (sum of order.subtotal).
+  grossCents    BigInt @default(0) @map("gross_cents")
+  // Total discounts applied (sum of order.discount_total) — informational.
+  discountCents BigInt @default(0) @map("discount_cents")
+  // Total refunded (sum of order.refund_total).
+  refundedCents BigInt @default(0) @map("refunded_cents")
+  // Collected revenue net of refunds (sum(order.total) − sum(order.refund_total)).
+  netCents      BigInt @default(0) @map("net_cents")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@id([tenantId, bucket], map: "rollup_commerce_daily_revenue_pkey")
+  @@map("rollup_commerce_daily_revenue")
+}
