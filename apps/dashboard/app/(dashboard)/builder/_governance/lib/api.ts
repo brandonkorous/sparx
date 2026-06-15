@@ -3,6 +3,7 @@
 
 import 'server-only';
 import { api } from '@/lib/api-rest-client';
+import type { ArchetypeSummaryDto } from '@sparx/builder-schemas';
 import type { AllowlistDto } from './types';
 
 // The tenant's utility-allowlist governance — the immutable platform base rules
@@ -13,6 +14,20 @@ export async function getAllowlist(): Promise<AllowlistDto> {
     return await api.get<AllowlistDto>('/v1/builder/governance/allowlist');
   } catch {
     return { base: [], tenant: [] };
+  }
+}
+
+// The tenant's brand-section archetype CATALOG (summaries, no tree) — seeds the
+// platform defaults on first call. The governance Sections tab manages these.
+// Defensive empty on failure.
+export async function getArchetypes(): Promise<ArchetypeSummaryDto[]> {
+  try {
+    const { archetypes } = await api.get<{ archetypes: ArchetypeSummaryDto[] }>(
+      '/v1/builder/archetypes'
+    );
+    return Array.isArray(archetypes) ? archetypes : [];
+  } catch {
+    return [];
   }
 }
 

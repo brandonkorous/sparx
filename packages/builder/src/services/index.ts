@@ -9,3 +9,4 @@ export * as componentService from './component-service';
 export * as bindingService from './binding-service';
 export * as surfaceCssService from './surface-css-service';
 export * as governanceService from './governance-service';
+export * as archetypeService from './archetype-service';

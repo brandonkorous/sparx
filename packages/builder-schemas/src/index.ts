@@ -14,6 +14,7 @@ export * from './merge-tags';
 export * from './email-design';
 export * from './component';
 export * from './starters';
+export * from './archetypes';
 export * from './default-emails';
 export * from './binding';
 export * from './nav';

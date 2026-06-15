@@ -61,6 +61,7 @@ import {
   toPageDocument,
 } from '@sparx/builder-schemas';
 import type {
+  ArchetypeDto,
   BindingCatalog,
   BuilderLayoutDto,
   BuilderPageDto,
@@ -279,6 +280,8 @@ export interface SiteStudioProps {
   /** What the active page can bind to (the tenant's CMS/commerce/CRM sources). */
   pageCatalog: BindingCatalog;
   components?: ComponentDto[];
+  /** Brand-section archetypes (docs/61 §6) the Add palette stamps. */
+  archetypes?: ArchetypeDto[];
   /** The active web property's live origin — the canvas browser-frame address bar. */
   siteOrigin?: string;
   /** Real site-chrome data (brand identity + social) for the canvas preview. */
@@ -308,6 +311,7 @@ export function SiteStudio({
   initialPages,
   pageCatalog,
   components = [],
+  archetypes = [],
   siteOrigin,
   sitePreview,
   initialPageId,
@@ -1138,8 +1142,10 @@ export function SiteStudio({
                 <AddPalette
                   targetName={studio.targetName}
                   onAdd={studio.onAdd}
+                  onStamp={studio.onStamp}
                   surface={studio.activeZone === 'layout' ? 'site' : 'page'}
                   customComponents={components.length ? components : undefined}
+                  archetypes={archetypes.length ? archetypes : undefined}
                 />
               ) : (
                 <p className="bx-inspector__tip">Select a page or layout layer to add blocks.</p>

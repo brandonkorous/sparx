@@ -207,6 +207,9 @@ export interface StudioEditor {
   onClass: (value: string) => void;
   onBind: (path: string | null) => void;
   onAdd: (type: string) => void;
+  /** Stamp a brand-section archetype (docs/61 §6) — fork a COPY of its tree
+   *  (fresh ids) into the active drop target, NOT a live reference. */
+  onStamp: (tree: BuilderNode) => void;
   replaceNode: (id: string, next: BuilderNode) => void;
   onRemove: (id: string) => void;
   onMove: (dragId: string, parentId: string, index: number) => void;
@@ -598,6 +601,24 @@ export function useStudioEditor({
     setRailTab('layers');
   };
 
+  // Stamp a brand-section archetype (docs/61 §6): fork a COPY of its tree (fresh,
+  // page-unique ids via cloneWithFreshIds) into the active drop target. Unlike
+  // onAdd's `custom:<key>` placement, this is a ONE-TIME copy — the dropped nodes
+  // are ordinary nodes the author edits freely; later edits to the archetype never
+  // touch them.
+  const onStamp = (tree: BuilderNode) => {
+    if (!target) return;
+    const child = cloneWithFreshIds(tree);
+    const targetId = target.id;
+    const zone = selectionRef.current.zone;
+    updateActiveTree((t) => appendChild(t, targetId, child), {
+      zone,
+      id: child.id,
+      ids: [child.id],
+    });
+    setRailTab('layers');
+  };
+
   // Swap node `id` for `next` (same position) — "Save as component". `id` is always
   // in the active zone (the action originates from the selected node), so select the
   // replacement directly (same reason as onAdd — the trees ref lags this render).
@@ -884,6 +905,7 @@ export function useStudioEditor({
     onClass,
     onBind,
     onAdd,
+    onStamp,
     replaceNode,
     onRemove,
     onMove,
