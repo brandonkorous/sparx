@@ -285,3 +285,84 @@ model BuilderComponentVersion {
   @@index([tenantId, componentId])
   @@map("builder_component_versions")
 }
+
+// Tenant-wide BUILDER GOVERNANCE (docs/61 §8, Phase 6b) — a singleton config row
+// per tenant for the brand-designer's safety/governance policy over the builder.
+// Deliberately NOT on TenantBrand: the allowlist is a governance policy, not brand
+// IDENTITY (which is drifting per-site via Property.brandOverride). Governance is
+// genuinely tenant-wide — it bounds what ANY author on the tenant can compile,
+// across all their sites — so it gets its own tenant-level home with room to grow.
+//
+// `utilityAllowlist` is the tenant's ADDITIONAL block rules (tighten-only). The
+// platform BASE denylist (fixed / url( / content-[ / arbitrary z-[ — clickjacking /
+// exfiltration / injection guards) is hardcoded in @sparx/surface-compile and is
+// NEVER relaxable; this column can only ADD blocks. Shape:
+//   { v: 1, blocks: [{ kind: 'prefix' | 'exact' | 'substring', value: string }] }
+// Null = no tenant additions → the platform base applies unchanged. Validated by
+// @sparx/surface-compile's parseAllowlistConfig, never by the DB.
+//
+// Tenant-scoped + ENABLE/FORCE RLS (hand-added in the migration), like every other
+// builder_* table. PK = tenantId (one governance row per tenant), upserted lazily
+// on first write — no row needed until a tenant tightens.
+model BuilderGovernance {
+  tenantId String @id @map("tenant_id") @db.Uuid
+
+  utilityAllowlist Json? @map("utility_allowlist") @db.JsonB
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("builder_governance")
+}
+
+// A brand-governed ARCHETYPE (docs/61 §6 Phase 6b) — a curated section/layout
+// STARTING POINT a user stamps onto a page. Stamping drops a FORKED, fully-
+// editable copy of `tree` (fresh ids) into the page — NOT a live reference. This
+// is the key difference from BuilderComponent (a `custom:<key>` $ref pinned to a
+// version): nothing ever references an archetype after the drop, so it needs no
+// versioning (a single mutable tree) and no where-used guard on delete.
+//
+// `source` distinguishes platform-seeded defaults ('platform', seeded lazily on
+// first list from PLATFORM_ARCHETYPES) from tenant-authored additions ('tenant').
+// `enabled=false` hides an archetype from the Add palette without deleting it —
+// the lever for curating the platform defaults. `tree` is a BuilderNode validated
+// by @sparx/builder-schemas, never the DB.
+//
+// Tenant-scoped + ENABLE/FORCE RLS (hand-added in the migration), like every other
+// builder_* table.
+model BuilderArchetype {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Stable key, unique per tenant. Platform defaults keep their PLATFORM_ARCHETYPES
+  // key so re-seed / enable / disable is idempotent.
+  key         String  @db.VarChar(64)
+  name        String  @db.VarChar(120)
+  // Layout family: hero | feature | cta | gallery | testimonial | header | footer |
+  // content … A VarChar (not an enum) so a new family needs no migration.
+  family      String  @default("content") @db.VarChar(32)
+  icon        String  @default("box") @db.VarChar(64)
+  description String? @db.VarChar(500)
+  // Editor surfaces this archetype appears in (e.g. ["page","site"]).
+  surfaces    Json    @default("[\"page\"]")
+  // The BuilderNode root stamped (forked) into the page. Validated by @sparx/builder-schemas.
+  tree        Json
+  // platform (a seeded default) | tenant (authored by this tenant).
+  source      String  @default("tenant") @db.VarChar(16)
+  // Disabled archetypes stay in the catalog but drop out of the Add palette.
+  enabled     Boolean @default(true)
+  // Optional preview image URL (URL-first, cf. BuilderPage.ogImage); null → the icon.
+  thumbnail   String? @db.VarChar(2048)
+  position    Int     @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key])
+  @@index([tenantId, family, position])
+  @@map("builder_archetypes")
+}

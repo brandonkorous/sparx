@@ -9,7 +9,7 @@ import * as React from 'react';
 import { Layers } from 'lucide-react';
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 import { cn } from '@sparx/ui';
-import { customType, type ComponentDto } from '@sparx/builder-schemas';
+import { customType, type ArchetypeDto, type ComponentDto } from '@sparx/builder-schemas';
 
 import {
   paletteForSurface,
@@ -70,23 +70,56 @@ function CustomTile({ comp, onAdd }: { comp: ComponentDto; onAdd: (type: string)
   );
 }
 
+// A brand-section archetype tile (docs/61 §6). Clicking STAMPS a forked copy of
+// the archetype's tree into the current target — a one-time copy, not a `custom:`
+// reference. Its icon is a lucide NAME (stored as a string), rendered lazily.
+function ArchetypeTile({
+  archetype,
+  onStamp,
+}: {
+  archetype: ArchetypeDto;
+  onStamp: (tree: ArchetypeDto['tree']) => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="bx-tile bx-tile--archetype"
+      onClick={() => onStamp(archetype.tree)}
+      title={archetype.description ?? undefined}
+    >
+      <span className="bx-tile__mod" style={{ background: 'var(--module-active)' }}>
+        SECTION
+      </span>
+      <DynamicIcon name={archetype.icon as IconName} className="bx-tile__icon" aria-hidden />
+      <span className="bx-tile__name">{archetype.name}</span>
+    </button>
+  );
+}
+
 export function AddPalette({
   targetName,
   onAdd,
+  onStamp,
   surface = 'page',
   customComponents,
+  archetypes,
 }: {
   targetName: string;
   onAdd: (type: string) => void;
+  /** Stamp a brand-section archetype — drops a forked copy (docs/61 §6). */
+  onStamp?: (tree: ArchetypeDto['tree']) => void;
   /** Which editor this palette serves — gates which components show (docs/45). */
   surface?: EditorSurface;
   /** The tenant's custom components (docs/53 P-B). Shown under "Your components",
    *  filtered to those available on this surface. */
   customComponents?: ComponentDto[];
+  /** Brand-section archetypes (docs/61 §6), filtered to this surface. */
+  archetypes?: ArchetypeDto[];
 }) {
   const offModules = MODULES.filter((m) => !m.on);
   const palette = paletteForSurface(surface);
   const mine = (customComponents ?? []).filter((c) => c.surfaces.includes(surface));
+  const sections = (archetypes ?? []).filter((a) => a.surfaces.includes(surface));
   return (
     <div className="bx-palette">
       <p className="bx-pal-target">
@@ -121,6 +154,20 @@ export function AddPalette({
           </section>
         );
       })}
+
+      {/* Brand sections (docs/61 §6) — curated, on-brand starting points. Clicking
+          STAMPS a forked copy (not a reference), so the dropped section is yours to
+          edit freely. */}
+      {onStamp && sections.length > 0 ? (
+        <section className="bx-pal-group">
+          <h4 className="bx-pal-label">Brand sections</h4>
+          <div className="bx-tiles">
+            {sections.map((a) => (
+              <ArchetypeTile key={a.key} archetype={a} onStamp={onStamp} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {/* Tenant components (docs/53). A component you built, dropped as a pinned
           reference — edits to the component update everywhere it's placed. */}

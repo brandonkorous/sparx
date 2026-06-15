@@ -154,6 +154,8 @@ export type {
   BuilderEmail,
   BuilderComponent,
   BuilderComponentVersion,
+  BuilderGovernance,
+  BuilderArchetype,
   // Email platform
   EmailSettings,
   SendingDomain,

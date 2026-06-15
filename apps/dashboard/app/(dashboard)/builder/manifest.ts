@@ -8,7 +8,7 @@
 // migration completes, at which point the `storefront` id retires.
 
 import type { ModuleManifest } from '@sparx/ui/shell';
-import { Boxes, Component, LayoutTemplate, Mail, Pencil } from 'lucide-react';
+import { Boxes, Component, LayoutTemplate, Mail, Pencil, ShieldCheck } from 'lucide-react';
 
 export const builderManifest: ModuleManifest = {
   id: 'builder',
@@ -36,6 +36,10 @@ export const builderManifest: ModuleManifest = {
     // Components — the catalog of building blocks (Tier-1 primitives + Tier-2
     // data-aware components) a template composes from (docs/51 §4.2).
     { id: 'component', label: 'Components', icon: Component, href: '/builder/components' },
+    // Governance — the brand-designer's guardrails (docs/61 §8 Phase 6b): the
+    // tighten-only utility allowlist (and, Phase 6b Part B, the brand-section
+    // archetype set). Owner/admin shape what every author on the tenant can build.
+    { id: 'governance', label: 'Governance', icon: ShieldCheck, href: '/builder/governance' },
   ],
   actions: [],
   entityTypes: [

@@ -13,7 +13,13 @@ import {
 import { applyBrandOverride } from '../_brand/lib/site-brand';
 import { propertyOrigin } from '../_brand/lib/property';
 import { getActiveProperty } from '@/lib/sites';
-import { getBindingCatalog, listComponentsFull, listLayouts, listPages } from '../_lib/api';
+import {
+  getBindingCatalog,
+  listArchetypes,
+  listComponentsFull,
+  listLayouts,
+  listPages,
+} from '../_lib/api';
 import { loadEmailSurfaceData } from '../_lib/email-surface-data';
 import type { BrandDto, SiteConfigDto, SiteDto, SitePreviewConfig } from '../_brand/lib/types';
 import { StudioApp } from '../_builder/studio-app';
@@ -92,6 +98,7 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     pages,
     pageCatalog,
     components,
+    archetypes,
     email,
   ] = await Promise.all([
     searchParams,
@@ -104,6 +111,7 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
     loadPages(),
     loadCatalog(),
     listComponentsFull(),
+    listArchetypes(),
     loadEmailSurfaceData(),
   ]);
 
@@ -169,6 +177,7 @@ export default async function BuilderStudioRoute({ searchParams }: BuilderStudio
           initialPages: pages,
           pageCatalog,
           components,
+          archetypes,
           siteOrigin,
           sitePreview,
           initialPageId,

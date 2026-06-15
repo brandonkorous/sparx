@@ -17,7 +17,17 @@ import { contentHash } from './hash';
 
 export { collectClasses } from './extract';
 export { compileClasses, type CompileOptions } from './compile';
-export { isClassAllowed, validateClasses, baseUtility, type ClassValidation } from './allowlist';
+export {
+  isClassAllowed,
+  validateClasses,
+  baseUtility,
+  parseAllowlistConfig,
+  BASE_RULES_DESCRIPTION,
+  type ClassValidation,
+  type AllowlistConfig,
+  type AllowlistRule,
+  type BaseRuleDescription,
+} from './allowlist';
 export { contentHash } from './hash';
 export { SURFACE_THEME_CSS } from './theme';
 export { REDUCED_MOTION_CSS, SCROLL_MOTION_CSS } from './motion';

@@ -288,6 +288,10 @@ model Tenant {
   // Builder module — tenant-authored components + their versions (docs/53)
   builderComponents        BuilderComponent[]
   builderComponentVersions BuilderComponentVersion[]
+  // Builder module — tenant-wide governance singleton (allowlist, docs/61 §8)
+  builderGovernance        BuilderGovernance?
+  // Builder module — brand-governed section archetypes (docs/61 §6)
+  builderArchetypes        BuilderArchetype[]
 
   // SEO — stored audit scorecard snapshots for the site-wide overview (docs/50 §7)
   seoAudits SeoAudit[]

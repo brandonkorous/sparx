@@ -13,7 +13,7 @@
 import { fileURLToPath } from 'node:url';
 import { compile, optimize } from '@tailwindcss/node';
 import { SURFACE_THEME_CSS } from './theme';
-import { isClassAllowed } from './allowlist';
+import { isClassAllowed, type AllowlistConfig } from './allowlist';
 
 // Resolve `@import 'tailwindcss/...'` relative to this package (tailwindcss is a
 // direct dependency). `import.meta.url` works in both tsx runtime and vitest.
@@ -32,6 +32,10 @@ export interface CompileOptions {
   /** Minify the output via Lightning CSS — use for the published tenant.css; skip
    *  for the editor's save-time temp.css to keep it fast + readable. */
   minify?: boolean;
+  /** Per-tenant ADDITIONAL denylist (tighten-only, docs/61 §8 Phase 6b). Absent =
+   *  the platform base allowlist only. A pure pre-filter — never part of the
+   *  compiler cache key, so the memoized compiler is untouched. */
+  allowlist?: AllowlistConfig;
 }
 
 /**
@@ -46,7 +50,8 @@ export async function compileClasses(
   // Defense in depth: the safety allowlist (docs/61 §8) drops weaponizable
   // tokens at the compile choke point, so no render path can emit them even if a
   // caller skipped validateClasses(). Unknown classes Tailwind ignores anyway.
-  const safe = classes.filter(isClassAllowed);
+  // A per-tenant `allowlist` tightens this further (Phase 6b).
+  const safe = classes.filter((c) => isClassAllowed(c, opts.allowlist));
   if (safe.length === 0) return '';
   const compiler = await getCompiler();
   const css = compiler.build(safe);

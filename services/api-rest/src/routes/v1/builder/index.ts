@@ -10,6 +10,8 @@ import componentRoutes from './components.js';
 import bindingSchemaRoutes from './binding-schema.js';
 import surfaceRoutes from './surface.js';
 import previewRoutes from './preview.js';
+import governanceRoutes from './governance.js';
+import archetypeRoutes from './archetypes.js';
 
 const builderRoutes: FastifyPluginAsync = async (app) => {
   await app.register(pageRoutes);
@@ -20,6 +22,8 @@ const builderRoutes: FastifyPluginAsync = async (app) => {
   await app.register(bindingSchemaRoutes);
   await app.register(surfaceRoutes);
   await app.register(previewRoutes);
+  await app.register(governanceRoutes);
+  await app.register(archetypeRoutes);
 };
 
 export default builderRoutes;
