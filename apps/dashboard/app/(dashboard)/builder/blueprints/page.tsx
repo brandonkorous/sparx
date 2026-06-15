@@ -74,8 +74,15 @@ export default async function BuilderBlueprintsPage({ searchParams }: PageProps)
   const [session, prefs, catalog] = await Promise.all([
     requireSession(),
     getUserPreferences(),
+    // `installed=true` scopes the catalog (and its total) to THIS site's installs,
+    // so the pager reflects the installed list rather than the whole marketplace
+    // (eval Finding 8).
     api.getPaged<ApiBlueprintCard[]>(
-      `/v1/blueprints?${new URLSearchParams({ take: String(take), skip: String(skip) }).toString()}`
+      `/v1/blueprints?${new URLSearchParams({
+        take: String(take),
+        skip: String(skip),
+        installed: 'true',
+      }).toString()}`
     ),
   ]);
   const total = (catalog.meta?.total as number | undefined) ?? catalog.data.length;
@@ -147,10 +154,13 @@ export default async function BuilderBlueprintsPage({ searchParams }: PageProps)
               </CardContent>
             </Card>
           ) : (
-            <BlueprintsList rows={installed} view={view} canInstall={canInstall} />
+            <>
+              <BlueprintsList rows={installed} view={view} canInstall={canInstall} />
+              {/* The pager rides the installed list only — never over the empty
+                  state, and its total is now the installed count (eval Finding 8). */}
+              <ListPager total={total} />
+            </>
           )}
-
-          <ListPager total={total} />
         </Stack>
       </Container>
     </ModuleProvider>

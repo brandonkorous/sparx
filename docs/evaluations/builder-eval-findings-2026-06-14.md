@@ -1,6 +1,6 @@
 # Sparx `/builder` — Evaluation Findings
 
-> **Version:** 1.0 · **Author:** Brandon Korous · **Last Updated:** 2026-06-14
+> **Version:** 1.1 · **Author:** Brandon Korous · **Last Updated:** 2026-06-15
 > Evaluation brief: [builder-eval-prompt.md](builder-eval-prompt.md). Driven against the locally-running stack (dashboard `:3001`, api-rest `:3100`, site `:3004`) as the seeded `e2e-staff@sparx.test` user, tenant **E2E Store**, with the active site set to the non-primary **Ironleaf Tattoo Co.** property for most of the pass. Screenshots under [assets/builder-eval/](assets/builder-eval/).
 
 ---
@@ -26,6 +26,25 @@
 3. **No undo/redo, no multi-select, no canvas drag-to-move, no alignment guides** (Missing, High). Autosave-only with no history stack; a mis-edit can't be reversed. Reordering is layers-tree-only.
 4. **Canvas↔live divergence on commerce atoms and buttons** (Bug/Design, High). BuyBox/VariantPicker/Quantity/AddToCart/PriceTag/ImageDisplay render _static mocks_ in the canvas; Button is an inert `<span>` in canvas vs an interactive `<a>/<button>` live. Authors design against a baseline that isn't what ships.
 5. **Custom-CSS raw class doesn't round-trip with structured controls** (Properties/Bug, Medium) and a scatter of smaller rough edges (Site "Preview" button hard-disabled with no tooltip; Blueprints pager "1–17 of 17" over an empty installed list; three stray "Untitled component" customs).
+
+### Resolution status (2026-06-15)
+
+**All 12 findings are now addressed.** Most were closed by the Builder v2 phases; the remaining tail landed in a dedicated follow-up. Verified against the code on the `builder-overview-endpoints` branch (dashboard build green). The findings below are kept verbatim as the original evaluation record; this table is the closure overlay.
+
+| #   | Finding                                       | Status | Resolved by                                                                                                                                                               |
+| --- | --------------------------------------------- | :----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Publish email-gate (RLS)                      |   ✅   | Builder v2 — [01-publish-gate-fix](../builder/01-publish-gate-fix.md): the guard reads `emailVerified` from the JWT, not a base-client read                               |
+| 2   | Properties ≠ "full Tailwind"                  |   ✅   | Builder v2 — [04-inspector-full-design-surface](../builder/04-inspector-full-design-surface.md): Effects card + the missing controls + page-builder skin/state/breakpoint |
+| 3   | No undo/redo                                  |   ✅   | Builder v2 — [05-editor-affordances](../builder/05-editor-affordances.md): history stack + keymap                                                                         |
+| 4   | Canvas↔live divergence                        |   ✅   | Builder v2 — [02-canvas-live-renderer-unification](../builder/02-canvas-live-renderer-unification.md): one `@sparx/builder-render` path                                   |
+| 5   | No drag / multi-select / guides / copy-styles |   ✅   | Builder v2 (drag · multi-select · copy-styles) **+ this follow-up** — alignment guides during canvas drag (§2.4)                                                          |
+| 6   | Site Preview button dead                      |   ✅   | Builder v2 — unified-studio Preview with contextual tooltips                                                                                                              |
+| 7   | Canvas overflows on mobile                    |   ✅   | **This follow-up** — canvas zoom-to-fit + a manual zoom control                                                                                                           |
+| 8   | Blueprints pager over empty list              |   ✅   | **This follow-up** — installed-only API filter; the pager is bound to the installed list and never shows over the empty state                                             |
+| 9   | Stray "Untitled component" customs            |   ✅   | **This follow-up** — a required-name dialog on component create                                                                                                           |
+| 10  | Custom-CSS doesn't round-trip                 |   ✅   | Builder v2 — conflict detection + "Tidy up" in the Custom CSS card                                                                                                        |
+| 11  | Welcome subject uses `tenant.name`            |   ✅   | Builder v2 — the default email subject now reads `{{site.name}}`                                                                                                          |
+| 12  | Stuck file-chooser modals                     |   ✅   | Builder v2 — the hidden file input fires only on a user click                                                                                                             |
 
 ---
 

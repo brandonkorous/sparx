@@ -46,6 +46,11 @@ const IdParam = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
+  // `installed=true` restricts the catalog to THIS site's installs (the in-Builder
+  // /builder/blueprints view), so the list + pager total reflect what's installed
+  // rather than the whole marketplace (eval Finding 8). An enum so only the literal
+  // 'true' filters — `z.coerce.boolean()` would treat 'false' as truthy.
+  installed: z.enum(['true', 'false']).optional(),
 });
 // Install target (docs/49 Phase 8): an explicit site to install into. Optional —
 // absent falls back to the active site (header) then primary. The body itself is
@@ -145,6 +150,7 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     const q = ListQuery.parse(request.query);
     const take = Math.min(q.take ?? 50, 250);
     const skip = q.skip ?? 0;
+    const installedOnly = q.installed === 'true';
     // Per-site install state (docs/49 Phase 8): a blueprint installs into a
     // specific site, so the catalog reads the ACTIVE site's install rows (the
     // switcher's header, else primary) — a secondary site shows ITS own
@@ -153,8 +159,27 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
       auth.tenantId,
       activePropertyHeader(request.headers)
     );
-    const where = { status: 'published', visibility: 'public' } as const;
-    const [rows, catalogTotal, installs] = await Promise.all([
+    // The active site's install rows drive the per-card badges AND — for the
+    // installed-only view — which catalog rows the list + count are scoped to, so
+    // they must be read BEFORE the catalog query to build its `where`.
+    const installs = await withTenant({ tenantId: auth.tenantId }, (tx) =>
+      tx.tenantBlueprintInstall.findMany({
+        where: { propertyId },
+        select: { id: true, blueprintKey: true, blueprintVersion: true, status: true },
+      })
+    );
+    const byKey = new Map(installs.map((i) => [i.blueprintKey, i]));
+
+    // Installed-only (docs/54): /builder/blueprints lists ONLY this site's
+    // installs, so the catalog query + count are restricted to the installed slugs
+    // — the pager total then reflects the installed list, not the whole marketplace
+    // (eval Finding 8). With no installs, `slug: { in: [] }` matches nothing, so the
+    // page is empty and never falls back to the in-code registry.
+    const installedKeys = installs.map((i) => i.blueprintKey);
+    const where = installedOnly
+      ? { status: 'published' as const, visibility: 'public' as const, slug: { in: installedKeys } }
+      : { status: 'published' as const, visibility: 'public' as const };
+    const [rows, catalogTotal] = await Promise.all([
       // DATA-first (docs/85): the catalog is the thin marketplace rows, so
       // bundle-ingested blueprints show up here alongside the legacy code ones.
       withTenant({ tenantId: auth.tenantId }, (tx) =>
@@ -177,14 +202,7 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
         })
       ),
       withTenant({ tenantId: auth.tenantId }, (tx) => tx.marketplaceBlueprint.count({ where })),
-      withTenant({ tenantId: auth.tenantId }, (tx) =>
-        tx.tenantBlueprintInstall.findMany({
-          where: { propertyId },
-          select: { id: true, blueprintKey: true, blueprintVersion: true, status: true },
-        })
-      ),
     ]);
-    const byKey = new Map(installs.map((i) => [i.blueprintKey, i]));
 
     const installState = (key: string, version: string) => {
       const inst = byKey.get(key);
@@ -203,8 +221,9 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     // Fallback to the in-code registry only when the catalog table is genuinely
     // empty (a fresh dev DB before the seed/ingest has run) — NOT merely when a
     // paginated page lands past the last row, which would wrongly resurrect the
-    // legacy list on page 2+.
-    const usingFallback = catalogTotal === 0;
+    // legacy list on page 2+. The installed-only view never falls back (an empty
+    // install set is a real "nothing installed", not a missing catalog).
+    const usingFallback = !installedOnly && catalogTotal === 0;
     const fallbackAll = usingFallback ? listBlueprints() : [];
     const total = usingFallback ? fallbackAll.length : catalogTotal;
 
