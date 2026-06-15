@@ -1,6 +1,6 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 1.9
+**Version:** 2.0
 **Author:** Brandon Korous / WizeWorks
 **Last Updated:** 2026-06-15
 
@@ -108,8 +108,8 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 - ✅ Engagement & deliverability (sent, opens, clicks, bounces, complaints, suppressions, open/click rate) — `GET /v1/email/analytics/overview?days=30`
 - ✅ Recent broadcasts (sent date, recipients, open/click) — `GET /v1/email/broadcasts` + per-send `/:id/stats` (wired 2026-06-14; revenue column dropped — no attribution endpoint)
 - ✅ Sending-domain verification — `GET /v1/email/domains` (wired 2026-06-14; replaced the fabricated 98/100 score + static SPF/DKIM/DMARC "Pass" rows with live per-domain state)
-- 🔴 Subscriber-growth / list-size timeseries — no endpoint
-- 🔴 Revenue attribution — no endpoint
+- ✅ Subscriber-growth / list-size timeseries — `GET /v1/email/analytics/subscriber-growth` (shipped 2026-06-15; the email module has no subscriber table, so list growth is derived: contacts added (customers w/ email) − removed (marketing suppressions) per bucket, plus the current mailable list size)
+- 🔴 Revenue attribution — needs conversion event capture (workload B): tying an order back to an email click requires a click→order link that doesn't exist yet
 
 ### B2B — Slate
 

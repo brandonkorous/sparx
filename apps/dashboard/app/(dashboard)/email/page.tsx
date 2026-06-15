@@ -254,12 +254,26 @@ function ratePercent(numerator?: number | null, denominator?: number | null, dig
   return `${((numerator / denominator) * 100).toFixed(digits)}%`;
 }
 
+interface SubscriberGrowthPoint {
+  bucket: string;
+  added: number;
+  removed: number;
+  net: number;
+}
+interface SubscriberGrowth {
+  range: { from: string; to: string; grain: string };
+  points: SubscriberGrowthPoint[];
+  totals: { added: number; removed: number; net: number };
+  currentSubscribers: number;
+}
+
 export default async function EmailPage() {
   await requireSession();
 
-  const overview = await api
-    .get<OverviewResult>('/v1/email/analytics/overview?days=30')
-    .catch(() => null);
+  const [overview, subGrowth] = await Promise.all([
+    api.get<OverviewResult>('/v1/email/analytics/overview?days=30').catch(() => null),
+    api.get<SubscriberGrowth>('/v1/email/analytics/subscriber-growth?grain=day').catch(() => null),
+  ]);
   const counts = overview?.counts ?? null;
 
   // LIVE engagement + deliverability ratios.
@@ -350,8 +364,12 @@ export default async function EmailPage() {
           <Stat
             icon={<Users className="h-4 w-4" />}
             label="Subscribers"
-            value="9,240"
-            hint="+612 this month"
+            value={subGrowth ? fmtNumber(subGrowth.currentSubscribers) : '—'}
+            hint={
+              subGrowth
+                ? `${subGrowth.totals.net >= 0 ? '+' : ''}${fmtNumber(subGrowth.totals.net)} net · last 30d`
+                : 'Mailable contacts'
+            }
           />
           <Stat
             icon={<Eye className="h-4 w-4" />}
@@ -584,18 +602,48 @@ export default async function EmailPage() {
           <OverviewCard
             title="List growth"
             icon={<TrendingUp className="h-4 w-4" />}
-            right={<CardLink href="/crm/customers">Report</CardLink>}
+            description="Contacts added vs. unsubscribed · last 30 days"
+            right={
+              subGrowth ? <CardLink href="/crm/customers">Contacts</CardLink> : <SampleBadge />
+            }
           >
             <div className="mb-4 grid grid-cols-3 gap-3 text-center">
-              <MetricTile value="+612" label="New · 30d" tone="success" />
-              <MetricTile value="−88" label="Unsubscribed" tone="danger" />
-              <MetricTile value="+524" label="Net" tone="module" />
+              <MetricTile
+                value={subGrowth ? `+${fmtNumber(subGrowth.totals.added)}` : '+612'}
+                label="New · 30d"
+                tone="success"
+              />
+              <MetricTile
+                value={subGrowth ? `−${fmtNumber(subGrowth.totals.removed)}` : '−88'}
+                label="Unsubscribed"
+                tone="danger"
+              />
+              <MetricTile
+                value={
+                  subGrowth
+                    ? `${subGrowth.totals.net >= 0 ? '+' : ''}${fmtNumber(subGrowth.totals.net)}`
+                    : '+524'
+                }
+                label="Net"
+                tone="module"
+              />
             </div>
-            <p className="mb-3 text-xs text-[var(--color-text-tertiary)]">Subscribers by source</p>
-            <BarList items={SAMPLE_GROWTH_SOURCES.map((s) => ({ ...s }))} valueFormat="percent" />
-            <div className="mt-4">
-              <SampleBadge />
-            </div>
+            {subGrowth ? (
+              <div className="flex items-baseline justify-between border-t border-[var(--color-border-default)] pt-3 text-sm">
+                <span className="text-[var(--color-text-tertiary)]">Current list size</span>
+                <span className="font-medium">{fmtNumber(subGrowth.currentSubscribers)}</span>
+              </div>
+            ) : (
+              <>
+                <p className="mb-3 text-xs text-[var(--color-text-tertiary)]">
+                  Subscribers by source
+                </p>
+                <BarList
+                  items={SAMPLE_GROWTH_SOURCES.map((s) => ({ ...s }))}
+                  valueFormat="percent"
+                />
+              </>
+            )}
           </OverviewCard>
         </div>
 
